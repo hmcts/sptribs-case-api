@@ -91,10 +91,6 @@ public class CaseworkerDocumentManagement implements CCDConfig<CaseData, State, 
         final CaseDetails<CaseData, State> beforeDetails
     ) {
         final CaseData caseData = details.getData();
-        List<ListValue<CaseworkerCICDocumentUpload>> uploadedDocuments = caseData.getNewDocManagement().getCaseworkerCICDocumentUpload();
-        List<ListValue<CaseworkerCICDocument>> documents = addDateToUploadedDocuments(uploadedDocuments);
-        caseData.getNewDocManagement().setCaseworkerCICDocumentUpload(new ArrayList<>());
-        caseData.getNewDocManagement().setCaseworkerCICDocument(documents);
         uploadDocument(caseData);
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()

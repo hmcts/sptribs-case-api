@@ -102,6 +102,11 @@ public final class DocumentUtil {
     }
 
     public static void uploadDocument(CaseData data) {
+        List<ListValue<CaseworkerCICDocumentUpload>> uploadedDocuments = data.getNewDocManagement().getCaseworkerCICDocumentUpload();
+        List<ListValue<CaseworkerCICDocument>> documents = addDateToUploadedDocuments(uploadedDocuments);
+        data.getNewDocManagement().setCaseworkerCICDocumentUpload(new ArrayList<>());
+        data.getNewDocManagement().setCaseworkerCICDocument(documents);
+
         updateCategoryToCaseworkerDocument(data.getNewDocManagement().getCaseworkerCICDocument());
         data.getAllDocManagement().getCaseworkerCICDocument().addAll(data.getNewDocManagement().getCaseworkerCICDocument());
         data.getNewDocManagement().setCaseworkerCICDocument(new ArrayList<>());
