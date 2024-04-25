@@ -157,45 +157,49 @@ public final class DocumentUtil {
         Clock clock = Clock.systemDefaultZone();
 
         List<ListValue<CaseworkerCICDocument>> documentList = new ArrayList<>();
-        uploadedDocuments.forEach(
-            listValue -> {
-                CaseworkerCICDocumentUpload uploadedDocument = listValue.getValue();
-                CaseworkerCICDocument document = CaseworkerCICDocument.builder()
-                    .documentCategory(uploadedDocument.getDocumentCategory())
-                    .documentEmailContent(uploadedDocument.getDocumentEmailContent())
-                    .documentLink(uploadedDocument.getDocumentLink())
-                    .date(LocalDate.now(clock))
-                    .build();
+        if (uploadedDocuments != null && !uploadedDocuments.isEmpty()) {
+            uploadedDocuments.forEach(
+                listValue -> {
+                    CaseworkerCICDocumentUpload uploadedDocument = listValue.getValue();
+                    CaseworkerCICDocument document = CaseworkerCICDocument.builder()
+                        .documentCategory(uploadedDocument.getDocumentCategory())
+                        .documentEmailContent(uploadedDocument.getDocumentEmailContent())
+                        .documentLink(uploadedDocument.getDocumentLink())
+                        .date(LocalDate.now(clock))
+                        .build();
 
-                ListValue<CaseworkerCICDocument> documentListValue = new ListValue<>();
-                documentListValue.setId(listValue.getId());
-                documentListValue.setValue(document);
+                    ListValue<CaseworkerCICDocument> documentListValue = new ListValue<>();
+                    documentListValue.setId(listValue.getId());
+                    documentListValue.setValue(document);
 
-                documentList.add(documentListValue);
-            }
-        );
+                    documentList.add(documentListValue);
+                }
+            );
+        }
 
         return documentList;
     }
 
-    public static List<ListValue<CaseworkerCICDocumentUpload>> removeDateFromUploadedDocuments(List<ListValue<CaseworkerCICDocument>> uploadDocuments) {
+    public static List<ListValue<CaseworkerCICDocumentUpload>> removeDateFromUploadedDocuments(List<ListValue<CaseworkerCICDocument>> uploadedDocuments) {
         List<ListValue<CaseworkerCICDocumentUpload>> documentList = new ArrayList<>();
-        uploadDocuments.forEach(
-            listValue -> {
-                CaseworkerCICDocument uploadedDocument = listValue.getValue();
-                CaseworkerCICDocumentUpload document = CaseworkerCICDocumentUpload.builder()
-                    .documentCategory(uploadedDocument.getDocumentCategory())
-                    .documentEmailContent(uploadedDocument.getDocumentEmailContent())
-                    .documentLink(uploadedDocument.getDocumentLink())
-                    .build();
+        if (uploadedDocuments != null && !uploadedDocuments.isEmpty()) {
+            uploadedDocuments.forEach(
+                listValue -> {
+                    CaseworkerCICDocument uploadedDocument = listValue.getValue();
+                    CaseworkerCICDocumentUpload document = CaseworkerCICDocumentUpload.builder()
+                        .documentCategory(uploadedDocument.getDocumentCategory())
+                        .documentEmailContent(uploadedDocument.getDocumentEmailContent())
+                        .documentLink(uploadedDocument.getDocumentLink())
+                        .build();
 
-                ListValue<CaseworkerCICDocumentUpload> documentListValue = new ListValue<>();
-                documentListValue.setId(listValue.getId());
-                documentListValue.setValue(document);
+                    ListValue<CaseworkerCICDocumentUpload> documentListValue = new ListValue<>();
+                    documentListValue.setId(listValue.getId());
+                    documentListValue.setValue(document);
 
-                documentList.add(documentListValue);
-            }
-        );
+                    documentList.add(documentListValue);
+                }
+            );
+        }
 
         return documentList;
     }

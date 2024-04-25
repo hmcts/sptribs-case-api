@@ -30,6 +30,7 @@ import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.common.notification.CaseWithdrawnNotification;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
+import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocumentUpload;
 import uk.gov.hmcts.sptribs.judicialrefdata.JudicialService;
 
 import java.util.List;
@@ -47,8 +48,10 @@ import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_CASEWORK
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_JUDGE;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE;
+import static uk.gov.hmcts.sptribs.document.DocumentUtil.addDateToUploadedDocuments;
+import static uk.gov.hmcts.sptribs.document.DocumentUtil.removeDateFromUploadedDocuments;
 import static uk.gov.hmcts.sptribs.document.DocumentUtil.updateCategoryToCaseworkerDocument;
-import static uk.gov.hmcts.sptribs.document.DocumentUtil.validateUploadedDocuments;
+import static uk.gov.hmcts.sptribs.document.DocumentUtil.validateCICUploadedDocuments;
 
 @Component
 @Slf4j
@@ -117,6 +120,10 @@ public class CaseworkerCloseTheCase implements CCDConfig<CaseData, State, UserRo
         caseData.getCloseCase().setRejectionName(judicialUsersDynamicList);
         caseData.getCloseCase().setStrikeOutName(judicialUsersDynamicList);
 
+        List<ListValue<CaseworkerCICDocument>> documents = caseData.getCloseCase().getDocuments();
+        List<ListValue<CaseworkerCICDocumentUpload>> uploadedDocuments = removeDateFromUploadedDocuments(documents);
+        caseData.getCloseCase().setDocumentsUpload(uploadedDocuments);
+
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
             .build();
@@ -128,7 +135,11 @@ public class CaseworkerCloseTheCase implements CCDConfig<CaseData, State, UserRo
     ) {
         log.info("Caseworker close the case callback invoked for Case Id: {}", details.getId());
         final CaseData caseData = details.getData();
-        updateCategoryToCaseworkerDocument(caseData.getCloseCase().getDocuments());
+        List<ListValue<CaseworkerCICDocumentUpload>> uploadedDocuments = caseData.getCloseCase().getDocumentsUpload();
+        List<ListValue<CaseworkerCICDocument>> documents = addDateToUploadedDocuments(uploadedDocuments);
+        updateCategoryToCaseworkerDocument(documents);
+        caseData.getCloseCase().setDocuments(documents);
+
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
             .state(CaseClosed)
@@ -156,8 +167,8 @@ public class CaseworkerCloseTheCase implements CCDConfig<CaseData, State, UserRo
     public AboutToStartOrSubmitResponse<CaseData, State> midEvent(CaseDetails<CaseData, State> details,
                                                                   CaseDetails<CaseData, State> detailsBefore) {
         final CaseData data = details.getData();
-        List<ListValue<CaseworkerCICDocument>> uploadedDocuments = data.getCloseCase().getDocuments();
-        final List<String> errors = validateUploadedDocuments(uploadedDocuments);
+        List<ListValue<CaseworkerCICDocumentUpload>> uploadedDocuments = data.getCloseCase().getDocumentsUpload();
+        final List<String> errors = validateCICUploadedDocuments(uploadedDocuments);
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(data)
             .errors(errors)
@@ -200,7 +211,7 @@ public class CaseworkerCloseTheCase implements CCDConfig<CaseData, State, UserRo
 
 
             .complex(CaseData::getCloseCase)
-            .optionalWithLabel(CloseCase::getDocuments, "File Attachments")
+            .optionalWithLabel(CloseCase::getDocumentsUpload, "File Attachments")
             .done();
     }
 }
