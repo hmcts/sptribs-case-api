@@ -12,7 +12,6 @@ properties([
 @Library("Infrastructure")
 
 import uk.gov.hmcts.contino.GradleBuilder
-GradleBuilder builder = new GradleBuilder(this, product)
 
 def type = "java"
 def product = "sptribs"
@@ -35,6 +34,8 @@ def secrets = [
     secret('citizen-password', 'IDAM_CITIZEN_PASSWORD')
   ]
 ]
+
+GradleBuilder builder = new GradleBuilder(this, product)
 
 withNightlyPipeline(type, product, component) {
   env.TEST_URL = "http://sptribs-case-api-aat.service.core-compute-aat.internal"
