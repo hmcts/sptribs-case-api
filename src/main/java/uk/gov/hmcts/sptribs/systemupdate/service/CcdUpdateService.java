@@ -29,16 +29,12 @@ public class CcdUpdateService {
     private final CcdCaseDataContentProvider ccdCaseDataContentProvider;
 
 
-    private final CaseDetailsUpdater caseDetailsUpdater;
-
     @Autowired
     public CcdUpdateService(
         CoreCaseDataApi coreCaseDataApi,
-        CcdCaseDataContentProvider ccdCaseDataContentProvider,
-        CaseDetailsUpdater caseDetailsUpdater) {
+        CcdCaseDataContentProvider ccdCaseDataContentProvider) {
         this.coreCaseDataApi = coreCaseDataApi;
         this.ccdCaseDataContentProvider = ccdCaseDataContentProvider;
-        this.caseDetailsUpdater = caseDetailsUpdater;
     }
 
 
@@ -94,7 +90,7 @@ public class CcdUpdateService {
                     startEventResponse,
                     SPTRIBS_CASE_SUBMISSION_EVENT_SUMMARY,
                     SPTRIBS_CASE_SUBMISSION_EVENT_DESCRIPTION,
-                    caseDetailsUpdater.updateCaseData(caseTask, startEventResponse).getData());
+                    caseTask);
 
             coreCaseDataApi.submitEventForCaseWorker(
                     authorization,
@@ -133,8 +129,7 @@ public class CcdUpdateService {
         final CaseDataContent caseDataContent = ccdCaseDataContentProvider.createCaseDataContent(
                 startEventResponse,
                 SPTRIBS_CASE_SUBMISSION_EVENT_SUMMARY,
-                SPTRIBS_CASE_SUBMISSION_EVENT_DESCRIPTION,
-                startEventResponse.getCaseDetails().getData());
+                SPTRIBS_CASE_SUBMISSION_EVENT_DESCRIPTION);
 
         coreCaseDataApi.submitEventForCaseWorker(
                 authorization,

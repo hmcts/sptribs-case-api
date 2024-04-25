@@ -29,9 +29,13 @@ def secrets = [
   'sptribs-${env}'    :[
     secret('idam-secret', 'OAUTH2_CLIENT_SECRET'),
     secret('idam-solicitor-username', 'IDAM_SOLICITOR_USERNAME'),
-    secret('idam-solicitor-password', 'IDAM_SOLICITOR_PASSWORD')
+    secret('idam-solicitor-password', 'IDAM_SOLICITOR_PASSWORD'),
+    secret('citizen-user', 'IDAM_CITIZEN_USERNAME'),
+    secret('citizen-password', 'IDAM_CITIZEN_PASSWORD')
   ]
 ]
+
+GradleBuilder builder = new GradleBuilder(this, product)
 
 withNightlyPipeline(type, product, component) {
   env.TEST_URL = "http://sptribs-case-api-aat.service.core-compute-aat.internal"
@@ -41,6 +45,20 @@ withNightlyPipeline(type, product, component) {
 
   afterAlways('fortify-scan') {
     steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/Fortify Scan/**/*'
-  }
 
+    stage("Case-API E2E tests") {
+      try {
+        builder.gradle('e2eTests')
+      } finally {
+        publishHTML target: [
+          allowMissing         : true,
+          alwaysLinkToLastBuild: true,
+          keepAll              : true,
+          reportDir            : "build/reports",
+          reportFiles          : "index.html",
+          reportName           : "E2E Tests Report"
+        ]
+      }
+    }
+  }
 }
