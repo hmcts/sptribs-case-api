@@ -97,7 +97,7 @@ public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole>
                                                                        final CaseDetails<CaseData, State> beforeDetails) {
 
         final CaseData caseData = details.getData();
-        if (null != caseData.getCicCase().getOrderFile()) {
+        if (caseData.getCicCase().getOrderFile() != null) {
             updateCategoryToDocument(caseData.getCicCase().getOrderFile(), DocumentType.TRIBUNAL_DIRECTION.getCategory());
         }
 
@@ -110,7 +110,7 @@ public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole>
             .orderSentDate(LocalDate.now())
             .reminderDay(caseData.getCicCase().getOrderReminderDays()).build();
 
-        if (null != caseData.getCicCase().getOrderIssuingType() && null != caseData.getCicCase().getDraftOrderDynamicList()
+        if (caseData.getCicCase().getOrderIssuingType() != null && caseData.getCicCase().getDraftOrderDynamicList() != null
             && caseData.getCicCase().getOrderIssuingType().equals(OrderIssuingType.ISSUE_AND_SEND_AN_EXISTING_DRAFT)) {
 
             selectedDynamicDraft = caseData.getCicCase().getDraftOrderDynamicList().getValue().getLabel();
@@ -133,7 +133,7 @@ public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole>
         caseData.getCicCase().setOrderReminderYesOrNo(null);
         caseData.getCicCase().setOrderReminderDays(null);
 
-        if (null != selectedDraftOrder) {
+        if (selectedDraftOrder != null) {
             DynamicList dynamicList = caseData.getCicCase().getDraftOrderDynamicList();
             List<DynamicListElement> newElements = new ArrayList<>();
             for (DynamicListElement element : dynamicList.getListItems()) {
