@@ -8,13 +8,11 @@ import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
-import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocumentUpload;
 
 import java.util.List;
 
 import static uk.gov.hmcts.sptribs.document.DocumentUtil.validateCICUploadedDocuments;
-import static uk.gov.hmcts.sptribs.document.DocumentUtil.validateUploadedDocuments;
 
 public class ReinstateUploadDocuments implements CcdPageConfiguration {
 
