@@ -35,6 +35,8 @@ def secrets = [
   ]
 ]
 
+GradleBuilder builder = new GradleBuilder(this, product)
+
 withNightlyPipeline(type, product, component) {
   env.TEST_URL = "http://sptribs-case-api-aat.service.core-compute-aat.internal"
   loadVaultSecrets(secrets)
@@ -52,7 +54,7 @@ withNightlyPipeline(type, product, component) {
           allowMissing         : true,
           alwaysLinkToLastBuild: true,
           keepAll              : true,
-          reportDir            : "build/reports/tests/e2eTests",
+          reportDir            : "build/reports",
           reportFiles          : "index.html",
           reportName           : "E2E Tests Report"
         ]
