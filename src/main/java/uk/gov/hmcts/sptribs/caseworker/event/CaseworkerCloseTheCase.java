@@ -101,17 +101,6 @@ public class CaseworkerCloseTheCase implements CCDConfig<CaseData, State, UserRo
             .grantHistoryOnly(ST_CIC_JUDGE));
     }
 
-    public AboutToStartOrSubmitResponse<CaseData, State> midEvent(CaseDetails<CaseData, State> details,
-                                                                  CaseDetails<CaseData, State> detailsBefore) {
-        final CaseData data = details.getData();
-        List<ListValue<CaseworkerCICDocument>> uploadedDocuments = data.getCloseCase().getDocuments();
-        final List<String> errors = validateUploadedDocuments(uploadedDocuments);
-        return AboutToStartOrSubmitResponse.<CaseData, State>builder()
-            .data(data)
-            .errors(errors)
-            .build();
-    }
-
     private void uploadDocuments(PageBuilder pageBuilder) {
         String pageNameUpload = "closeCaseUploadDocuments";
         pageBuilder.page(pageNameUpload, this::midEvent)
@@ -134,6 +123,19 @@ public class CaseworkerCloseTheCase implements CCDConfig<CaseData, State, UserRo
             .complex(CaseData::getCloseCase)
             .optionalWithLabel(CloseCase::getDocuments, "File Attachments")
             .done();
+    }
+
+    public AboutToStartOrSubmitResponse<CaseData, State> midEvent(CaseDetails<CaseData, State> details,
+                                                                  CaseDetails<CaseData, State> detailsBefore) {
+
+        final CaseData data = details.getData();
+        final List<ListValue<CaseworkerCICDocument>> uploadedDocuments = data.getCloseCase().getDocuments();
+        final List<String> errors = validateUploadedDocuments(uploadedDocuments);
+
+        return AboutToStartOrSubmitResponse.<CaseData, State>builder()
+            .data(data)
+            .errors(errors)
+            .build();
     }
 
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToStart(CaseDetails<CaseData, State> details) {
