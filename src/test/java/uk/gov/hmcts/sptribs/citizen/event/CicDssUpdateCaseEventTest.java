@@ -58,9 +58,6 @@ class CicDssUpdateCaseEventTest {
     @Mock
     private IdamService idamService;
 
-    @Mock
-    private Clock clock;
-
     @InjectMocks
     private CicDssUpdateCaseEvent cicDssUpdateCaseEvent;
 
@@ -108,10 +105,6 @@ class CicDssUpdateCaseEventTest {
 
         when(request.getHeader(AUTHORIZATION)).thenReturn(TEST_AUTHORIZATION_TOKEN);
         when(idamService.retrieveUser(TEST_AUTHORIZATION_TOKEN)).thenReturn(TestDataHelper.getUser());
-
-        when(clock.instant()).thenReturn(Instant.now());
-        when(clock.getZone()).thenReturn(ZoneId.systemDefault());
-
         AboutToStartOrSubmitResponse<CaseData, State> response =
             cicDssUpdateCaseEvent.aboutToSubmit(details, details);
 
@@ -152,10 +145,6 @@ class CicDssUpdateCaseEventTest {
 
         final CaseDetails<CaseData, State> details = new CaseDetails<>();
         details.setData(caseData);
-
-        when(clock.instant()).thenReturn(Instant.now());
-        when(clock.getZone()).thenReturn(ZoneId.systemDefault());
-
         AboutToStartOrSubmitResponse<CaseData, State> response =
             cicDssUpdateCaseEvent.aboutToSubmit(details, details);
 
@@ -196,10 +185,6 @@ class CicDssUpdateCaseEventTest {
 
         final CaseDetails<CaseData, State> details = new CaseDetails<>();
         details.setData(caseData);
-
-        when(clock.instant()).thenReturn(Instant.now());
-        when(clock.getZone()).thenReturn(ZoneId.systemDefault());
-
         AboutToStartOrSubmitResponse<CaseData, State> response =
             cicDssUpdateCaseEvent.aboutToSubmit(details, details);
 
@@ -228,8 +213,6 @@ class CicDssUpdateCaseEventTest {
 
         when(request.getHeader(AUTHORIZATION)).thenReturn(TEST_AUTHORIZATION_TOKEN);
         when(idamService.retrieveUser(TEST_AUTHORIZATION_TOKEN)).thenReturn(TestDataHelper.getUser());
-        when(clock.instant()).thenReturn(Instant.now());
-        when(clock.getZone()).thenReturn(ZoneId.systemDefault());
 
         AboutToStartOrSubmitResponse<CaseData, State> response =
             cicDssUpdateCaseEvent.aboutToSubmit(details, details);
@@ -280,55 +263,6 @@ class CicDssUpdateCaseEventTest {
         assertThat(response.getConfirmationHeader())
             .contains("# CIC Dss Update Case Event Email notification failed %n## Please resend the notification");
     }
-
-    @Test void shouldAddDateToUploadedDocument() {
-        final EdgeCaseDocument document = new EdgeCaseDocument();
-        document.setDocumentLink(
-            Document.builder()
-                .filename("doc1.pdf")
-                .binaryUrl("doc1.pdf/binary")
-                .categoryId("test category")
-                .build()
-        );
-        document.setComment("this doc is relevant to the case");
-
-        final List<ListValue<EdgeCaseDocument>> dssCaseDataOtherInfoDocuments = List.of(
-            new ListValue<>("1", document)
-        );
-
-        final DssCaseData dssCaseData = DssCaseData.builder()
-            .otherInfoDocuments(dssCaseDataOtherInfoDocuments)
-            .build();
-
-
-        final CaseData caseData = CaseData.builder()
-            .cicCase(
-                CicCase.builder()
-                    .applicantDocumentsUploaded(new ArrayList<>())
-                    .build()
-            )
-            .dssCaseData(dssCaseData)
-            .build();
-        caseData.getDssCaseData().setAdditionalInformation(null);
-
-        final CaseDetails<CaseData, State> details = new CaseDetails<>();
-        details.setData(caseData);
-
-        final Instant instant = Instant.now();
-        final ZoneId zoneId = ZoneId.systemDefault();
-        final LocalDate expectedDate = LocalDate.ofInstant(instant, zoneId);
-
-        when(clock.instant()).thenReturn(instant);
-        when(clock.getZone()).thenReturn(zoneId);
-
-        AboutToStartOrSubmitResponse<CaseData, State> response =
-            cicDssUpdateCaseEvent.aboutToSubmit(details, details);
-
-        assertThat(response.getData().getCicCase().getApplicantDocumentsUploaded()).isNotEmpty();
-        assertThat(response.getData().getCicCase().getApplicantDocumentsUploaded()).hasSize(1);
-        assertThat(response.getData().getCicCase().getApplicantDocumentsUploaded().get(0).getValue().getDate()).isEqualTo(expectedDate);
-    }
-
     private DssCaseData getDssCaseData() {
         EdgeCaseDocument doc1 = new EdgeCaseDocument();
         doc1.setDocumentLink(

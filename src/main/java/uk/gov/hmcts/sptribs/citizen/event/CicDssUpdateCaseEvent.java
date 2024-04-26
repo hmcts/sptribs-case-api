@@ -124,7 +124,6 @@ public class CicDssUpdateCaseEvent implements CCDConfig<CaseData, State, UserRol
                     .documentLink(document)
                     .documentEmailContent(documentComment)
                     .documentCategory(DocumentType.DSS_OTHER)
-                    .date(LocalDate.now(clock))
                     .build();
                 if (!documentList.contains(caseworkerCICDocument)) {
                     documentList.add(caseworkerCICDocument);
