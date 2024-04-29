@@ -30,6 +30,8 @@ import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getCICDocument;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getCICDocumentList;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getCaseworkerCICDocument;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getCaseworkerCICDocumentList;
+import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getCaseworkerCICDocumentUpload;
+import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getCaseworkerCICDocumentUploadList;
 
 @ExtendWith(MockitoExtension.class)
 class DocumentUtilTest {
@@ -297,8 +299,8 @@ class DocumentUtilTest {
     @Test
     void shouldReturnErrorsWhenCaseworkerCICDocumentIsNull() {
         //Given
-        ListValue<CaseworkerCICDocument> document = getCaseworkerCICDocument(INVALID_FILE);
-        List<ListValue<CaseworkerCICDocument>> documentList = new ArrayList<>();
+        ListValue<CaseworkerCICDocumentUpload> document = getCaseworkerCICDocumentUpload(INVALID_FILE);
+        List<ListValue<CaseworkerCICDocumentUpload>> documentList = new ArrayList<>();
         documentList.add(document);
         documentList.add(null);
 
@@ -313,7 +315,7 @@ class DocumentUtilTest {
     @Test
     void shouldNotReturnErrorsForValidCaseworkerCICDocument() {
         //Given
-        List<ListValue<CaseworkerCICDocument>> documentList = getCaseworkerCICDocumentList(PDF_FILE);
+        List<ListValue<CaseworkerCICDocumentUpload>> documentList = getCaseworkerCICDocumentUploadList(PDF_FILE);
 
         //When
         List<String> errors = DocumentUtil.validateCaseworkerCICDocumentFormat(documentList);
@@ -325,9 +327,9 @@ class DocumentUtilTest {
     @Test
     void shouldNotReturnErrorsForValidCaseworkerCICDocuments() {
         //Given
-        ListValue<CaseworkerCICDocument> document1 = getCaseworkerCICDocument(PDF_FILE);
-        ListValue<CaseworkerCICDocument> document2 = getCaseworkerCICDocument(DOCX_FILE);
-        List<ListValue<CaseworkerCICDocument>> documentList = new ArrayList<>();
+        ListValue<CaseworkerCICDocumentUpload> document1 = getCaseworkerCICDocumentUpload(PDF_FILE);
+        ListValue<CaseworkerCICDocumentUpload> document2 = getCaseworkerCICDocumentUpload(DOCX_FILE);
+        List<ListValue<CaseworkerCICDocumentUpload>> documentList = new ArrayList<>();
         documentList.add(document1);
         documentList.add(document2);
 
@@ -341,7 +343,7 @@ class DocumentUtilTest {
     @Test
     void shouldReturnErrorsForInvalidCaseworkerCICDocument() {
         //Given
-        List<ListValue<CaseworkerCICDocument>> documentList = getCaseworkerCICDocumentList(INVALID_FILE);
+        List<ListValue<CaseworkerCICDocumentUpload>> documentList = getCaseworkerCICDocumentUploadList(INVALID_FILE);
 
         //When
         List<String> errors = DocumentUtil.validateCaseworkerCICDocumentFormat(documentList);
@@ -354,9 +356,9 @@ class DocumentUtilTest {
     @Test
     void shouldReturnErrorsForInvalidCaseworkerCICDocuments() {
         //Given
-        ListValue<CaseworkerCICDocument> document1 = getCaseworkerCICDocument(PDF_FILE);
-        ListValue<CaseworkerCICDocument> document2 = getCaseworkerCICDocument(INVALID_FILE);
-        List<ListValue<CaseworkerCICDocument>> documentList = new ArrayList<>();
+        ListValue<CaseworkerCICDocumentUpload> document1 = getCaseworkerCICDocumentUpload(PDF_FILE);
+        ListValue<CaseworkerCICDocumentUpload> document2 = getCaseworkerCICDocumentUpload(INVALID_FILE);
+        List<ListValue<CaseworkerCICDocumentUpload>> documentList = new ArrayList<>();
         documentList.add(document1);
         documentList.add(document2);
 
