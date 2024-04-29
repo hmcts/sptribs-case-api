@@ -13,6 +13,8 @@ import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 
+import java.util.ArrayList;
+
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.RESPONDENT_DOCUMENT_MANAGEMENT;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingOutcome;
@@ -77,6 +79,7 @@ public class RespondentDocumentManagement implements CCDConfig<CaseData, State, 
 
         final CaseData caseData = details.getData();
         uploadDocument(caseData);
+        caseData.getNewDocManagement().setCaseworkerCICDocumentUpload(new ArrayList<>());
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
