@@ -24,6 +24,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.SubjectCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.notification.CaseReinstatedNotification;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
+import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocumentUpload;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
 
 import java.util.List;
@@ -183,13 +184,13 @@ class ReinstateCaseTest {
     @Test
     void shouldReturnErrorsIfNoDescriptionOnDocument() {
         final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
-        CaseworkerCICDocument document = new CaseworkerCICDocument();
+        CaseworkerCICDocumentUpload document = new CaseworkerCICDocumentUpload();
         document.setDocumentCategory(DocumentType.CARE_PLAN);
         document.setDocumentLink(Document.builder().binaryUrl("url").filename("file.xml").build());
-        ListValue<CaseworkerCICDocument> documentListValue = new ListValue<>();
+        ListValue<CaseworkerCICDocumentUpload> documentListValue = new ListValue<>();
         documentListValue.setValue(document);
         CicCase cicCase = CicCase.builder()
-            .reinstateDocuments(List.of(documentListValue))
+            .reinstateDocumentsUpload(List.of(documentListValue))
             .build();
         final CaseData caseData = CaseData.builder()
             .cicCase(cicCase)
