@@ -99,30 +99,7 @@ public final class DocumentUtil {
         data.getNewDocManagement().setCaseworkerCICDocument(new ArrayList<>());
     }
 
-    public static List<String> validateUploadedDocuments(List<ListValue<CaseworkerCICDocument>> uploadedDocuments) {
-        List<String> errors = new ArrayList<>();
-
-        if (CollectionUtils.isNotEmpty(uploadedDocuments)) {
-            for (ListValue<CaseworkerCICDocument> documentListValue : uploadedDocuments) {
-                if (ObjectUtils.isEmpty(documentListValue.getValue().getDocumentLink())) {
-                    errors.add("Please attach the document");
-                } else {
-                    errors.addAll(validateCaseworkerCICDocumentFormat(List.of(documentListValue)));
-
-                    if (StringUtils.isEmpty(documentListValue.getValue().getDocumentEmailContent())) {
-                        errors.add("Description is mandatory for each document");
-                    }
-                    if (ObjectUtils.isEmpty(documentListValue.getValue().getDocumentCategory())) {
-                        errors.add("Category is mandatory for each document");
-                    }
-                }
-            }
-        }
-
-        return errors;
-    }
-
-    public static List<String> validateCICUploadedDocuments(List<ListValue<CaseworkerCICDocumentUpload>> uploadedDocuments) {
+    public static List<String> validateUploadedDocuments(List<ListValue<CaseworkerCICDocumentUpload>> uploadedDocuments) {
         List<String> errors = new ArrayList<>();
 
         if (CollectionUtils.isNotEmpty(uploadedDocuments)) {

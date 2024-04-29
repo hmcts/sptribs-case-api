@@ -12,7 +12,7 @@ import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocumentUpload;
 
 import java.util.List;
 
-import static uk.gov.hmcts.sptribs.document.DocumentUtil.validateCICUploadedDocuments;
+import static uk.gov.hmcts.sptribs.document.DocumentUtil.validateUploadedDocuments;
 
 public class ReinstateUploadDocuments implements CcdPageConfiguration {
 
@@ -48,7 +48,7 @@ public class ReinstateUploadDocuments implements CcdPageConfiguration {
                                                                   CaseDetails<CaseData, State> detailsBefore) {
         final CaseData data = details.getData();
         List<ListValue<CaseworkerCICDocumentUpload>> documents = data.getCicCase().getReinstateDocumentsUpload();
-        List<String> errors = validateCICUploadedDocuments(documents);
+        List<String> errors = validateUploadedDocuments(documents);
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(data)

@@ -51,7 +51,7 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 import static uk.gov.hmcts.sptribs.document.DocumentUtil.addDateToUploadedDocuments;
 import static uk.gov.hmcts.sptribs.document.DocumentUtil.removeDateFromUploadedDocuments;
 import static uk.gov.hmcts.sptribs.document.DocumentUtil.updateCategoryToCaseworkerDocument;
-import static uk.gov.hmcts.sptribs.document.DocumentUtil.validateCICUploadedDocuments;
+import static uk.gov.hmcts.sptribs.document.DocumentUtil.validateUploadedDocuments;
 
 @Component
 @Slf4j
@@ -168,7 +168,7 @@ public class CaseworkerCloseTheCase implements CCDConfig<CaseData, State, UserRo
                                                                   CaseDetails<CaseData, State> detailsBefore) {
         final CaseData data = details.getData();
         List<ListValue<CaseworkerCICDocumentUpload>> uploadedDocuments = data.getCloseCase().getDocumentsUpload();
-        final List<String> errors = validateCICUploadedDocuments(uploadedDocuments);
+        final List<String> errors = validateUploadedDocuments(uploadedDocuments);
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(data)
             .errors(errors)

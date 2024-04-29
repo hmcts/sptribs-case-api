@@ -441,9 +441,9 @@ class DocumentUtilTest {
     @Test
     void shouldNotReturnErrorsForValidUploadedDocuments() {
         //Given
-        ListValue<CaseworkerCICDocument> document1 = getCaseworkerCICDocument(PDF_FILE);
-        ListValue<CaseworkerCICDocument> document2 = getCaseworkerCICDocument(DOCX_FILE);
-        List<ListValue<CaseworkerCICDocument>> documentList = new ArrayList<>();
+        ListValue<CaseworkerCICDocumentUpload> document1 = getCaseworkerCICDocumentUpload(PDF_FILE);
+        ListValue<CaseworkerCICDocumentUpload> document2 = getCaseworkerCICDocumentUpload(DOCX_FILE);
+        List<ListValue<CaseworkerCICDocumentUpload>> documentList = new ArrayList<>();
         documentList.add(document1);
         documentList.add(document2);
 
@@ -457,7 +457,7 @@ class DocumentUtilTest {
     @Test
     void shouldReturnErrorsWhenUploadedDocumentIsMissingLink() {
         //Given
-        List<ListValue<CaseworkerCICDocument>> documentList = createCaseworkerCICDocumentList(false, null, true, true);
+        List<ListValue<CaseworkerCICDocumentUpload>> documentList = createCaseworkerCICDocumentUploadList(false, null, true, true);
 
         //When
         List<String> errors = DocumentUtil.validateUploadedDocuments(documentList);
@@ -470,7 +470,7 @@ class DocumentUtilTest {
     @Test
     void shouldReturnErrorsWhenUploadedDocumentIsMissingEmailContent() {
         //Given
-        List<ListValue<CaseworkerCICDocument>> documentList = createCaseworkerCICDocumentList(true, PDF_FILE, false, true);
+        List<ListValue<CaseworkerCICDocumentUpload>> documentList = createCaseworkerCICDocumentUploadList(true, PDF_FILE, false, true);
 
         //When
         List<String> errors = DocumentUtil.validateUploadedDocuments(documentList);
@@ -483,7 +483,7 @@ class DocumentUtilTest {
     @Test
     void shouldReturnErrorsWhenUploadedDocumentIsMissingCategory() {
         //Given
-        List<ListValue<CaseworkerCICDocument>> documentList = createCaseworkerCICDocumentList(true, PDF_FILE, true, false);
+        List<ListValue<CaseworkerCICDocumentUpload>> documentList = createCaseworkerCICDocumentUploadList(true, PDF_FILE, true, false);
 
         //When
         List<String> errors = DocumentUtil.validateUploadedDocuments(documentList);
@@ -496,18 +496,18 @@ class DocumentUtilTest {
     @Test
     void shouldReturnErrorsForInvalidUploadedDocuments() {
         //Given
-        final CaseworkerCICDocument document1 = createCaseworkerCICDocument(true, PDF_FILE, false, true);
-        final CaseworkerCICDocument document2 = createCaseworkerCICDocument(true, PDF_FILE, true, false);
-        final CaseworkerCICDocument document3 = createCaseworkerCICDocument(false, null, true, true);
+        final CaseworkerCICDocumentUpload document1 = createCaseworkerCICDocumentUpload(true, PDF_FILE, false, true);
+        final CaseworkerCICDocumentUpload document2 = createCaseworkerCICDocumentUpload(true, PDF_FILE, true, false);
+        final CaseworkerCICDocumentUpload document3 = createCaseworkerCICDocumentUpload(false, null, true, true);
 
-        ListValue<CaseworkerCICDocument> documentListValue1 = new ListValue<>();
+        ListValue<CaseworkerCICDocumentUpload> documentListValue1 = new ListValue<>();
         documentListValue1.setValue(document1);
-        ListValue<CaseworkerCICDocument> documentListValue2 = new ListValue<>();
+        ListValue<CaseworkerCICDocumentUpload> documentListValue2 = new ListValue<>();
         documentListValue2.setValue(document2);
-        ListValue<CaseworkerCICDocument> documentListValue3 = new ListValue<>();
+        ListValue<CaseworkerCICDocumentUpload> documentListValue3 = new ListValue<>();
         documentListValue3.setValue(document3);
 
-        List<ListValue<CaseworkerCICDocument>> documentList = new ArrayList<>();
+        List<ListValue<CaseworkerCICDocumentUpload>> documentList = new ArrayList<>();
         documentList.add(documentListValue1);
         documentList.add(documentListValue2);
         documentList.add(documentListValue3);
