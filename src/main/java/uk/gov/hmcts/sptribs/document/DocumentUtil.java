@@ -90,7 +90,7 @@ public final class DocumentUtil {
 
     public static void uploadDocument(CaseData data) {
         List<ListValue<CaseworkerCICDocumentUpload>> uploadedDocuments = data.getNewDocManagement().getCaseworkerCICDocumentUpload();
-        List<ListValue<CaseworkerCICDocument>> documents = addDateToUploadedDocuments(uploadedDocuments);
+        List<ListValue<CaseworkerCICDocument>> documents = convertToCaseworkerCICDocumentUpload(uploadedDocuments, true);
         data.getNewDocManagement().setCaseworkerCICDocumentUpload(new ArrayList<>());
         data.getNewDocManagement().setCaseworkerCICDocument(documents);
 
@@ -122,8 +122,18 @@ public final class DocumentUtil {
         return errors;
     }
 
-    public static List<ListValue<CaseworkerCICDocument>> addDateToUploadedDocuments(List<ListValue<CaseworkerCICDocumentUpload>> uploadedDocuments) {
-        Clock clock = Clock.systemDefaultZone();
+    public static List<ListValue<CaseworkerCICDocument>> convertToCaseworkerCICDocumentUpload(
+        List<ListValue<CaseworkerCICDocumentUpload>> uploadedDocuments,
+        Boolean addDate
+    ) {
+        LocalDate date;
+
+        if (addDate) {
+            Clock clock = Clock.systemDefaultZone();
+            date = LocalDate.now(clock);
+        } else {
+            date = null;
+        }
 
         List<ListValue<CaseworkerCICDocument>> documentList = new ArrayList<>();
         if (uploadedDocuments != null && !uploadedDocuments.isEmpty()) {
@@ -134,7 +144,7 @@ public final class DocumentUtil {
                         .documentCategory(uploadedDocument.getDocumentCategory())
                         .documentEmailContent(uploadedDocument.getDocumentEmailContent())
                         .documentLink(uploadedDocument.getDocumentLink())
-                        .date(LocalDate.now(clock))
+                        .date(date)
                         .build();
 
                     ListValue<CaseworkerCICDocument> documentListValue = new ListValue<>();

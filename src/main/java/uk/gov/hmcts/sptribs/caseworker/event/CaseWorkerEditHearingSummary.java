@@ -42,7 +42,7 @@ import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_CASEWORK
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_JUDGE;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE;
-import static uk.gov.hmcts.sptribs.document.DocumentUtil.addDateToUploadedDocuments;
+import static uk.gov.hmcts.sptribs.document.DocumentUtil.convertToCaseworkerCICDocumentUpload;
 import static uk.gov.hmcts.sptribs.document.DocumentUtil.removeDateFromUploadedDocuments;
 import static uk.gov.hmcts.sptribs.document.DocumentUtil.updateCategoryToCaseworkerDocument;
 
@@ -128,7 +128,7 @@ public class CaseWorkerEditHearingSummary implements CCDConfig<CaseData, State, 
         caseData.getListing().getSummary().setJudgeList(null);
 
         final List<ListValue<CaseworkerCICDocumentUpload>> uploadedDocuments = caseData.getListing().getSummary().getRecFileUpload();
-        final List<ListValue<CaseworkerCICDocument>> documents = addDateToUploadedDocuments(uploadedDocuments);
+        final List<ListValue<CaseworkerCICDocument>> documents = convertToCaseworkerCICDocumentUpload(uploadedDocuments, false);
         updateCategoryToCaseworkerDocument(documents);
         caseData.getListing().getSummary().setRecFile(documents);
         caseData.getListing().getSummary().setRecFileUpload(new ArrayList<>());
