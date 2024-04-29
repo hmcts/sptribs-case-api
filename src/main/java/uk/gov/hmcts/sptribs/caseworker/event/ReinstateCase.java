@@ -40,7 +40,7 @@ import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_CASEWORK
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_JUDGE;
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE;
 import static uk.gov.hmcts.sptribs.document.DocumentUtil.convertToCaseworkerCICDocumentUpload;
-import static uk.gov.hmcts.sptribs.document.DocumentUtil.removeDateFromUploadedDocuments;
+import static uk.gov.hmcts.sptribs.document.DocumentUtil.convertToCaseworkerCICDocument;
 import static uk.gov.hmcts.sptribs.document.DocumentUtil.updateCategoryToCaseworkerDocument;
 
 @Component
@@ -91,7 +91,7 @@ public class ReinstateCase implements CCDConfig<CaseData, State, UserRole> {
     private AboutToStartOrSubmitResponse<CaseData, State> aboutToStart(CaseDetails<CaseData, State> details) {
         final CaseData caseData = details.getData();
         List<ListValue<CaseworkerCICDocument>> documents = caseData.getCicCase().getReinstateDocuments();
-        List<ListValue<CaseworkerCICDocumentUpload>> uploadedDocuments = removeDateFromUploadedDocuments(documents);
+        List<ListValue<CaseworkerCICDocumentUpload>> uploadedDocuments = convertToCaseworkerCICDocument(documents);
         caseData.getCicCase().setReinstateDocumentsUpload(uploadedDocuments);
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()

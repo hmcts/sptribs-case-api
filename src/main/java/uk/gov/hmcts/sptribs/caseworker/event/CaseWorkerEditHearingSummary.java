@@ -43,7 +43,7 @@ import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_JUDGE;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE;
 import static uk.gov.hmcts.sptribs.document.DocumentUtil.convertToCaseworkerCICDocumentUpload;
-import static uk.gov.hmcts.sptribs.document.DocumentUtil.removeDateFromUploadedDocuments;
+import static uk.gov.hmcts.sptribs.document.DocumentUtil.convertToCaseworkerCICDocument;
 import static uk.gov.hmcts.sptribs.document.DocumentUtil.updateCategoryToCaseworkerDocument;
 
 @Component
@@ -107,7 +107,7 @@ public class CaseWorkerEditHearingSummary implements CCDConfig<CaseData, State, 
         if (caseData.getListing().getSummary() != null && caseData.getListing().getHearingFormat() != null) {
             caseData.getListing().setHearingSummaryExists("YES");
             List<ListValue<CaseworkerCICDocument>> documents = caseData.getListing().getSummary().getRecFile();
-            List<ListValue<CaseworkerCICDocumentUpload>> uploadedDocuments = removeDateFromUploadedDocuments(documents);
+            List<ListValue<CaseworkerCICDocumentUpload>> uploadedDocuments = convertToCaseworkerCICDocument(documents);
             caseData.getListing().getSummary().setRecFileUpload(uploadedDocuments);
         } else {
             caseData.getListing().setHearingSummaryExists("There are no Completed Hearings to edit");

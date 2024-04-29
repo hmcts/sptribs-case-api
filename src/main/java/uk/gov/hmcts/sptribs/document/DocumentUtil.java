@@ -91,7 +91,6 @@ public final class DocumentUtil {
     public static void uploadDocument(CaseData data) {
         List<ListValue<CaseworkerCICDocumentUpload>> uploadedDocuments = data.getNewDocManagement().getCaseworkerCICDocumentUpload();
         List<ListValue<CaseworkerCICDocument>> documents = convertToCaseworkerCICDocumentUpload(uploadedDocuments, true);
-        data.getNewDocManagement().setCaseworkerCICDocumentUpload(new ArrayList<>());
         data.getNewDocManagement().setCaseworkerCICDocument(documents);
 
         updateCategoryToCaseworkerDocument(data.getNewDocManagement().getCaseworkerCICDocument());
@@ -159,7 +158,7 @@ public final class DocumentUtil {
         return documentList;
     }
 
-    public static List<ListValue<CaseworkerCICDocumentUpload>> removeDateFromUploadedDocuments(List<ListValue<CaseworkerCICDocument>> uploadedDocuments) {
+    public static List<ListValue<CaseworkerCICDocumentUpload>> convertToCaseworkerCICDocument(List<ListValue<CaseworkerCICDocument>> uploadedDocuments) {
         List<ListValue<CaseworkerCICDocumentUpload>> documentList = new ArrayList<>();
         if (uploadedDocuments != null && !uploadedDocuments.isEmpty()) {
             uploadedDocuments.forEach(
