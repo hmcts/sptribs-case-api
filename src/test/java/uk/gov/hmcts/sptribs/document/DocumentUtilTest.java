@@ -547,7 +547,7 @@ class DocumentUtilTest {
         List<ListValue<CaseworkerCICDocument>> documentList = new ArrayList<>();
         documentList.add(documentListValue);
 
-        List<ListValue<CaseworkerCICDocumentUpload>> outputList = DocumentUtil.removeDateFromUploadedDocuments(documentList);
+        List<ListValue<CaseworkerCICDocumentUpload>> outputList = DocumentUtil.convertToCaseworkerCICDocument(documentList);
 
         assertThat(outputList).hasSize(1);
         assertThat(outputList.get(0).getValue().getDocumentCategory()).isEqualTo(document.getDocumentCategory());
