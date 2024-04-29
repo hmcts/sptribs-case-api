@@ -44,6 +44,8 @@ public final class EventConstants {
     public static final String CASEWORKER_REINSTATE_CASE = "caseworker-reinstate-state";
     public static final String CASEWORKER_HEARING_OPTIONS = "caseworker-hearing-options";
     public static final String CASEWORKER_CLEAR_HEARING_OPTIONS = "caseworker-clear-hearing-options";
+    public static final String CASEWORKER_PANEL_COMPOSITION = "caseworker-panel-composition";
+    public static final String CASEWORKER_EDIT_PANEL_COMPOSITION = "caseworker-edit-panel-composition";
     public static final String CHANGE_SECURITY_CLASS = "change-security-class";
     public static final String CASEWORKER_REFER_TO_JUDGE = "refer-to-judge";
     public static final String CREATE_BUNDLE = "createBundle";
@@ -53,6 +55,8 @@ public final class EventConstants {
     public static final String CLONE_BUNDLE = "cloneBundle";
 
     public static final String CITIZEN_CIC_CREATE_CASE = "citizen-cic-create-dss-application";
+    public static final String CITIZEN_CIC_UPDATE_CASE = "citizen-cic-update-dss-application";
+    public static final String CITIZEN_CIC_SUBMIT_CASE = "citizen-cic-submit-dss-application";
     public static final String CITIZEN_DSS_UPDATE_CASE_SUBMISSION = "citizen-cic-dss-update-case";
 
     public static final String CASEWORKER_REFER_TO_LEGAL_OFFICER = "refer-to-legal-officer";
