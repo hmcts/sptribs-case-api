@@ -66,20 +66,7 @@ public final class DocumentUtil {
         return errors;
     }
 
-    public static List<String> validateCaseworkerCICDocumentFormat(List<ListValue<CaseworkerCICDocument>> documentList) {
-        final List<String> errors = new ArrayList<>();
-
-        if (CollectionUtils.isNotEmpty(documentList)) {
-            documentList.stream()
-                .filter(value -> value != null && !value.getValue().isDocumentValid())
-                .findFirst()
-                .ifPresent(x -> errors.add(DOCUMENT_VALIDATION_MESSAGE));
-        }
-
-        return errors;
-    }
-
-    public static List<String> validateCaseworkerCICDocumentUploadFormat(List<ListValue<CaseworkerCICDocumentUpload>> documentList) {
+    public static List<String> validateCaseworkerCICDocumentFormat(List<ListValue<CaseworkerCICDocumentUpload>> documentList) {
         final List<String> errors = new ArrayList<>();
 
         if (CollectionUtils.isNotEmpty(documentList)) {
@@ -143,7 +130,7 @@ public final class DocumentUtil {
                 if (ObjectUtils.isEmpty(documentListValue.getValue().getDocumentLink())) {
                     errors.add("Please attach the document");
                 } else {
-                    errors.addAll(validateCaseworkerCICDocumentUploadFormat(List.of(documentListValue)));
+                    errors.addAll(validateCaseworkerCICDocumentFormat(List.of(documentListValue)));
 
                     if (StringUtils.isEmpty(documentListValue.getValue().getDocumentEmailContent())) {
                         errors.add("Description is mandatory for each document");

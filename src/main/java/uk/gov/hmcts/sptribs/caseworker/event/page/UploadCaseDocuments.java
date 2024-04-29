@@ -12,7 +12,7 @@ import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocumentUpload;
 
 import java.util.List;
 
-import static uk.gov.hmcts.sptribs.document.DocumentUtil.validateCaseworkerCICDocumentUploadFormat;
+import static uk.gov.hmcts.sptribs.document.DocumentUtil.validateCaseworkerCICDocumentFormat;
 
 public class UploadCaseDocuments implements CcdPageConfiguration {
 
@@ -50,7 +50,7 @@ public class UploadCaseDocuments implements CcdPageConfiguration {
         final CaseData data = details.getData();
 
         List<ListValue<CaseworkerCICDocumentUpload>> uploadedDocuments = data.getNewDocManagement().getCaseworkerCICDocumentUpload();
-        List<String> errors = validateCaseworkerCICDocumentUploadFormat(uploadedDocuments);
+        List<String> errors = validateCaseworkerCICDocumentFormat(uploadedDocuments);
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(data)
