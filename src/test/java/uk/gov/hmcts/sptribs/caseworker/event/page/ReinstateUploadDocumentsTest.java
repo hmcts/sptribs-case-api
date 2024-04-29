@@ -21,6 +21,7 @@ import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.Mockito.times;
 import static uk.gov.hmcts.sptribs.document.DocumentConstants.DOCUMENT_VALIDATION_MESSAGE;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getCaseworkerCICDocumentList;
+import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getCaseworkerCICDocumentUploadList;
 
 @ExtendWith(MockitoExtension.class)
 public class ReinstateUploadDocumentsTest {
@@ -52,7 +53,7 @@ public class ReinstateUploadDocumentsTest {
     void midEventReturnsErrorWithWrongDocumentType() {
         final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
         final CicCase cicCase = CicCase.builder()
-            .reinstateDocuments(getCaseworkerCICDocumentList("file.xml"))
+            .reinstateDocumentsUpload(getCaseworkerCICDocumentUploadList("file.xml"))
             .build();
         final CaseData caseData = CaseData.builder()
             .cicCase(cicCase)
@@ -67,7 +68,7 @@ public class ReinstateUploadDocumentsTest {
     void midEventValidatesUploadedDocuments() {
         final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
         final CicCase cicCase = CicCase.builder()
-            .reinstateDocuments(getCaseworkerCICDocumentList("file.xml"))
+            .reinstateDocumentsUpload(getCaseworkerCICDocumentUploadList("file.xml"))
             .build();
         final CaseData caseData = CaseData.builder()
             .cicCase(cicCase)
