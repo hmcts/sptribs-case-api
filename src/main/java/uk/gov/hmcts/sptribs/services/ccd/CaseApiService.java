@@ -63,25 +63,29 @@ public class CaseApiService {
 
     public String getEventToken(String authorization, String userId, String eventId,
                                 AppsConfig.AppsDetails appsDetails) {
-        final StartEventResponse res = coreCaseDataApi.startForCitizen(authorization,
+        final StartEventResponse res = coreCaseDataApi.startForCitizen(
+            authorization,
             authTokenGenerator.generate(),
             userId,
             appsDetails.getJurisdiction(),
             appsDetails.getCaseType(),
-            eventId);
+            eventId
+        );
 
         return res.getToken();
     }
 
     public String getEventTokenForUpdate(String authorization, String userId, String eventId, String caseId,
                                          AppsConfig.AppsDetails appsDetails) {
-        final StartEventResponse res = coreCaseDataApi.startEventForCitizen(authorization,
+        final StartEventResponse res = coreCaseDataApi.startEventForCitizen(
+            authorization,
             authTokenGenerator.generate(),
             userId,
             appsDetails.getJurisdiction(),
             appsDetails.getCaseType(),
             caseId,
-            eventId);
+            eventId
+        );
 
         return res.getToken();
     }
@@ -105,15 +109,27 @@ public class CaseApiService {
 
     private CaseDataContent getCaseDataContent(String authorization, CaseData caseData, Event eventEnum,
                                                String userId, String caseId, AppsConfig.AppsDetails appsDetails) {
+
         final CaseDataContent.CaseDataContentBuilder builder = CaseDataContent.builder().data(caseData);
+
         if (eventEnum.getEventType().equalsIgnoreCase(Event.UPDATE.getEventType())) {
+
             builder.event(uk.gov.hmcts.reform.ccd.client.model.Event.builder().id(appsDetails.getEventIds().getUpdateEvent()).build())
                 .eventToken(getEventTokenForUpdate(authorization, userId, appsDetails.getEventIds().getUpdateEvent(),
                                                    caseId, appsDetails));
+
         } else if (eventEnum.getEventType().equalsIgnoreCase(Event.SUBMIT.getEventType())) {
+
             builder.event(uk.gov.hmcts.reform.ccd.client.model.Event.builder().id(appsDetails.getEventIds().getSubmitEvent()).build())
                 .eventToken(getEventTokenForUpdate(authorization, userId, appsDetails.getEventIds().getSubmitEvent(),
                                                    caseId, appsDetails));
+
+        } else if (eventEnum.getEventType().equalsIgnoreCase(Event.UPDATE_CASE.getEventType())) {
+
+            builder.event(uk.gov.hmcts.reform.ccd.client.model.Event.builder().id(appsDetails.getEventIds().getUpdateCaseEvent()).build())
+                .eventToken(getEventTokenForUpdate(authorization, userId, appsDetails.getEventIds().getUpdateCaseEvent(),
+                    caseId, appsDetails));
+
         }
         return builder.build();
     }

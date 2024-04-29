@@ -11,6 +11,7 @@ import uk.gov.hmcts.ccd.sdk.type.DynamicList;
 import uk.gov.hmcts.ccd.sdk.type.DynamicListElement;
 import uk.gov.hmcts.ccd.sdk.type.DynamicMultiSelectList;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
+import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.idam.client.models.User;
@@ -203,8 +204,9 @@ public class TestDataHelper {
         listing.setVideoCallLink("");
         listing.setDate(LocalDate.now());
         listing.setHearingTime("10:00");
-        listing.setDate(LocalDate.of(2023, 04, 21));
+        listing.setDate(LocalDate.of(2023, 4, 21));
         listing.setHearingStatus(HearingState.Listed);
+        listing.setNumberOfDays(YesOrNo.NO);
         return listing;
     }
 

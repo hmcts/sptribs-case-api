@@ -4,7 +4,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.idam.client.models.User;
 import uk.gov.hmcts.sptribs.idam.IdamService;
 
@@ -19,25 +18,16 @@ public class AuthorisationService {
 
     private HttpServletRequest httpServletRequest;
 
-    private AuthTokenGenerator authTokenGenerator;
 
     @Autowired
-    public AuthorisationService(IdamService idamService, HttpServletRequest httpServletRequest,
-            AuthTokenGenerator authTokenGenerator) {
+    public AuthorisationService(IdamService idamService, HttpServletRequest httpServletRequest) {
         this.idamService = idamService;
         this.httpServletRequest = httpServletRequest;
-        this.authTokenGenerator = authTokenGenerator;
     }
 
     public String getAuthorisation() {
         final User user = idamService.retrieveUser(httpServletRequest.getHeader(AUTHORIZATION));
         return user.getAuthToken().startsWith(BEARER_PREFIX)
             ? user.getAuthToken() : BEARER_PREFIX + user.getAuthToken();
-    }
-
-    public String getServiceAuthorization() {
-        String serviceAuthorization = authTokenGenerator.generate();
-        return serviceAuthorization.startsWith(BEARER_PREFIX)
-            ? serviceAuthorization.substring(7) : serviceAuthorization;
     }
 }

@@ -6,7 +6,7 @@ import uk.gov.hmcts.sptribs.exception.InvalidResourceException;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
@@ -18,10 +18,10 @@ public final class FileUtil {
     }
 
     public static String loadJson(final String filePath) throws IOException {
-        return new String(loadResource(filePath), Charset.forName("utf-8"));
+        return new String(loadResource(filePath), StandardCharsets.UTF_8);
     }
 
-    public static byte[] loadResource(final String filePath) throws IOException {
+    public static byte[] loadResource(final String filePath) {
         try {
             URL url = Thread.currentThread().getContextClassLoader().getResource(filePath);
 

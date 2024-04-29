@@ -1,0 +1,52 @@
+{
+  "messages": [
+    {
+      "id": "1",
+      "value": {
+        "dateReceived": "2024-01-01",
+        "receivedFrom": "User Test"
+      }
+    }
+  ],
+  "cicCaseApplicantDocumentsUploaded": [
+    {
+      "id": "1",
+      "value": {
+        "documentLink": {
+          "category_id": "DSS",
+          "document_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/4ee1bc04-47a9-48da-9370-9f6b9c54ccaa",
+          "document_filename": "mockFile.pdf",
+          "document_binary_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/4ee1bc04-47a9-48da-9370-9f6b9c54ccaa/binary"
+        },
+        "documentCategory": "DSS Tribunal form uploaded documents"
+      }
+    },
+    {
+      "id": "2",
+      "value": {
+        "documentLink": {
+          "category_id": "DSS",
+          "document_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/9d046706-8fa5-4c24-968d-f0aa30a9ceb8",
+          "document_filename": "mockFile.txt",
+          "document_binary_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/9d046706-8fa5-4c24-968d-f0aa30a9ceb8/binary"
+        },
+        "documentCategory": "DSS Supporting uploaded documents"
+      }
+    }
+  ],
+  "dssCaseDataAdditionalInformation": "some documents relevant to the case",
+  "dssCaseDataOtherInfoDocuments": [
+    {
+      "id": "1",
+      "value": {
+        "documentLink": {
+          "category_id": "DSS",
+          "document_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/328c674f-59c3-418a-b76b-78f2cc52d21a",
+          "document_filename": "mockFileUpdated.pdf",
+          "document_binary_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/328c674f-59c3-418a-b76b-78f2cc52d21a/binary"
+        },
+        "comment": "a relevant doc"
+      }
+    }
+  ]
+}

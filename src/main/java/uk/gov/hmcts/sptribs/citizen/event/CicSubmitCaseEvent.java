@@ -4,9 +4,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
@@ -14,12 +12,15 @@ import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
+import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.reform.idam.client.models.User;
 import uk.gov.hmcts.sptribs.caseworker.util.DocumentManagementUtil;
+import uk.gov.hmcts.sptribs.caseworker.util.MessageUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.ContactPreferenceType;
 import uk.gov.hmcts.sptribs.ciccase.model.DssCaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.DssMessage;
+import uk.gov.hmcts.sptribs.ciccase.model.NotificationParties;
 import uk.gov.hmcts.sptribs.ciccase.model.PartiesCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.RepresentativeCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
@@ -40,7 +41,11 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
+import static java.lang.String.format;
+import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
+import static uk.gov.hmcts.sptribs.ciccase.model.State.DSS_Draft;
+import static uk.gov.hmcts.sptribs.ciccase.model.State.DSS_Submitted;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.CITIZEN;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.CREATOR;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_CASEWORKER;
@@ -59,9 +64,6 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 @Setter
 public class CicSubmitCaseEvent implements CCDConfig<CaseData, State, UserRole> {
 
-    @Value("${feature.dss-frontend.enabled}")
-    private boolean dssSubmitCaseEnabled;
-
     @Autowired
     private HttpServletRequest request;
 
@@ -69,20 +71,17 @@ public class CicSubmitCaseEvent implements CCDConfig<CaseData, State, UserRole> 
     private IdamService idamService;
 
     @Autowired
-    AppsConfig appsConfig;
+    private AppsConfig appsConfig;
+
+    @Autowired
+    private DssApplicationReceivedNotification dssApplicationReceivedNotification;
 
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
-        if (dssSubmitCaseEnabled) {
-            doConfigure(configBuilder);
-        }
-    }
-
-    private void doConfigure(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         configBuilder
             .event(AppsUtil.getExactAppsDetailsByCaseType(appsConfig, CcdCaseType.CIC.getCaseTypeName()).getEventIds()
                 .getSubmitEvent())
-            .forStates(State.DSS_Draft)
+            .forStateTransition(DSS_Draft, DSS_Submitted)
             .name("Submit case (cic)")
             .description("Application submit (cic)")
             .retries(120, 120)
@@ -98,21 +97,49 @@ public class CicSubmitCaseEvent implements CCDConfig<CaseData, State, UserRole> 
                 ST_CIC_JUDGE,
                 CITIZEN,
                 CREATOR)
-            .aboutToSubmitCallback(this::aboutToSubmit);
+            .aboutToSubmitCallback(this::aboutToSubmit)
+            .submittedCallback(this::submitted);
     }
 
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(CaseDetails<CaseData, State> details,
                                                                        CaseDetails<CaseData, State> beforeDetails) {
-
         final CaseData data = details.getData();
         final DssCaseData dssData = details.getData().getDssCaseData();
         final CaseData caseData = getCaseData(data, dssData);
-
         setDssMetaData(data);
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
             .state(State.DSS_Submitted)
+            .build();
+    }
+
+    public SubmittedCallbackResponse submitted(CaseDetails<CaseData, State> details,
+                                               CaseDetails<CaseData, State> beforeDetails) {
+        final CaseData data = details.getData();
+        DssCaseData dssCaseData = data.getDssCaseData();
+        generateNotifyParties(dssCaseData);
+
+        final String caseNumber = data.getHyphenatedCaseRef();
+
+        try {
+            sendApplicationReceivedNotification(caseNumber, dssCaseData);
+        } catch (Exception notificationException) {
+            log.error("Application Received notification failed with exception : {}", notificationException.getMessage());
+            return SubmittedCallbackResponse.builder()
+                .confirmationHeader("# Application Received notification failed %n## Please resend the notification")
+                .build();
+        }
+
+        if (isNotEmpty(dssCaseData.getNotificationParties())) {
+            return SubmittedCallbackResponse.builder()
+                .confirmationHeader(format("# Application Received %n## %s",
+                    MessageUtil.generateSimpleMessage(dssCaseData.getNotificationParties())))
+                .build();
+        }
+
+        return SubmittedCallbackResponse.builder()
+            .confirmationHeader("# Application Received %n##")
             .build();
     }
 
@@ -124,19 +151,46 @@ public class CicSubmitCaseEvent implements CCDConfig<CaseData, State, UserRole> 
         data.setDssHeaderDetails("Subject of this case");
     }
 
+    private void generateNotifyParties(DssCaseData dssCaseData) {
+        Set<NotificationParties> notificationParties = new HashSet<>();
+
+        if (dssCaseData.getSubjectEmailAddress() != null) {
+            notificationParties.add(NotificationParties.SUBJECT);
+        }
+
+        if (dssCaseData.getRepresentativeEmailAddress() != null) {
+            notificationParties.add(NotificationParties.REPRESENTATIVE);
+        }
+
+        dssCaseData.setNotificationParties(notificationParties);
+    }
+
+    private void sendApplicationReceivedNotification(String caseNumber, DssCaseData dssCaseData) {
+        if (dssCaseData.getNotificationParties().contains(NotificationParties.SUBJECT)) {
+            dssApplicationReceivedNotification.sendToSubject(dssCaseData, caseNumber);
+        }
+
+        if (dssCaseData.getNotificationParties().contains(NotificationParties.REPRESENTATIVE)) {
+            dssApplicationReceivedNotification.sendToRepresentative(dssCaseData, caseNumber);
+        }
+    }
+
     private CaseData getCaseData(final CaseData caseData, final DssCaseData dssCaseData) {
         caseData.getCicCase().setCaseReceivedDate(LocalDate.now());
         caseData.getCicCase().setFullName(dssCaseData.getSubjectFullName());
         caseData.getCicCase().setDateOfBirth(dssCaseData.getSubjectDateOfBirth());
         caseData.getCicCase().setEmail(dssCaseData.getSubjectEmailAddress());
         caseData.getCicCase().setPhoneNumber(dssCaseData.getSubjectContactNumber());
+
         final Set<PartiesCIC> setParty = new HashSet<>();
         setParty.add(PartiesCIC.SUBJECT);
         caseData.getCicCase().setPartiesCIC(setParty);
+
         final Set<SubjectCIC> set = new HashSet<>();
         set.add(SubjectCIC.SUBJECT);
         caseData.getCicCase().setSubjectCIC(set);
         caseData.getCicCase().setContactPreferenceType(ContactPreferenceType.EMAIL);
+
         if (!ObjectUtils.isEmpty(dssCaseData.getRepresentativeFullName())) {
             caseData.getCicCase().setRepresentativeFullName(dssCaseData.getRepresentativeFullName());
             caseData.getCicCase().setRepresentativeOrgName(dssCaseData.getRepresentativeOrganisationName());
@@ -149,9 +203,11 @@ public class CicSubmitCaseEvent implements CCDConfig<CaseData, State, UserRole> 
             caseData.getCicCase().setRepresentativeCIC(setRep);
             caseData.getCicCase().setRepresentativeContactDetailsPreference(ContactPreferenceType.EMAIL);
         }
+
         List<CaseworkerCICDocument> docList = new ArrayList<>();
         List<ListValue<DssMessage>> listValues = new ArrayList<>();
-        if (!CollectionUtils.isEmpty(dssCaseData.getOtherInfoDocuments())) {
+
+        if (isNotEmpty(dssCaseData.getOtherInfoDocuments())) {
             //For showing additional information page data on tab
             for (ListValue<EdgeCaseDocument> documentListValue : dssCaseData.getOtherInfoDocuments()) {
                 Document doc = documentListValue.getValue().getDocumentLink();
@@ -160,6 +216,11 @@ public class CicSubmitCaseEvent implements CCDConfig<CaseData, State, UserRole> 
                     .documentLink(doc)
                     .documentCategory(DocumentType.DSS_OTHER)
                     .build();
+
+                if (!docList.contains(caseworkerCICDocument)) {
+                    docList.add(caseworkerCICDocument);
+                }
+
                 final User caseworkerUser = idamService.retrieveUser(request.getHeader(AUTHORIZATION));
 
                 final DssMessage message = DssMessage.builder()
@@ -167,7 +228,6 @@ public class CicSubmitCaseEvent implements CCDConfig<CaseData, State, UserRole> 
                     .dateReceived(LocalDate.now())
                     .receivedFrom(caseworkerUser.getUserDetails().getFullName())
                     .documentRelevance(dssCaseData.getDocumentRelevance())
-                    .otherInfoDocument(caseworkerCICDocument)
                     .build();
 
                 final ListValue<DssMessage> listValue = ListValue
@@ -177,12 +237,11 @@ public class CicSubmitCaseEvent implements CCDConfig<CaseData, State, UserRole> 
                     .build();
 
                 listValues.add(listValue);
-
             }
         }
         caseData.setMessages(listValues);
 
-        if (!CollectionUtils.isEmpty(dssCaseData.getSupportingDocuments())) {
+        if (isNotEmpty(dssCaseData.getSupportingDocuments())) {
             for (ListValue<EdgeCaseDocument> documentListValue : dssCaseData.getSupportingDocuments()) {
                 Document doc = documentListValue.getValue().getDocumentLink();
                 doc.setCategoryId(DocumentType.DSS_SUPPORTING.getCategory());
@@ -196,7 +255,7 @@ public class CicSubmitCaseEvent implements CCDConfig<CaseData, State, UserRole> 
             }
         }
 
-        if (!CollectionUtils.isEmpty(dssCaseData.getTribunalFormDocuments())) {
+        if (isNotEmpty(dssCaseData.getTribunalFormDocuments())) {
             for (ListValue<EdgeCaseDocument> documentListValue : dssCaseData.getTribunalFormDocuments()) {
                 Document doc = documentListValue.getValue().getDocumentLink();
                 doc.setCategoryId(DocumentType.DSS_TRIBUNAL_FORM.getCategory());
@@ -209,6 +268,7 @@ public class CicSubmitCaseEvent implements CCDConfig<CaseData, State, UserRole> 
                 }
             }
         }
+
         caseData.getCicCase().setApplicantDocumentsUploaded(DocumentManagementUtil.buildListValues(docList));
         dssCaseData.setTribunalFormDocuments(new ArrayList<>());
         dssCaseData.setSupportingDocuments(new ArrayList<>());
@@ -216,6 +276,5 @@ public class CicSubmitCaseEvent implements CCDConfig<CaseData, State, UserRole> 
         caseData.setDssCaseData(dssCaseData);
         return caseData;
     }
-
 
 }

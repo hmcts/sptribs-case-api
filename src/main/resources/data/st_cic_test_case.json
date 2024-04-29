@@ -1,5 +1,6 @@
 {
-  "date": "2024-02-05",
+  "date": "2025-02-05",
+  "hearingCreatedDate": "2024-02-05",
   "recFile": [],
   "session": "morning",
   "addlInstr": "Updated Lorem Ipsum is simply dummy text of the printing and typesetting industry",
@@ -64,7 +65,8 @@
     {
       "id": "1",
       "value": {
-        "date": "2024-02-05",
+        "hearingCreatedDate": "2024-02-05",
+        "date": "2025-02-05",
         "recFile": [],
         "session": "morning",
         "addlInstr": "Updated Lorem Ipsum is simply dummy text of the printing and typesetting industry",

@@ -21,7 +21,7 @@ import static uk.gov.hmcts.sptribs.testutil.TestResourceUtil.expectedResponse;
 @SpringBootTest
 public class CaseworkerSendOrderFT extends FunctionalTestSuite {
 
-    private static final String REQUEST = "classpath:request/casedata/ccd-callback-casedata-send-order-about-to-start.json";
+    private static final String REQUEST = "classpath:request/casedata/ccd-callback-casedata-send-order-about-to-submit.json";
     private static final String RESPONSE = "classpath:responses/response-caseworker-send-order-about-to-submit.json";
 
     @Test

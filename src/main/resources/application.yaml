@@ -23,8 +23,13 @@ spring:
     allow-bean-definition-overriding: true
   servlet:
     multipart:
-      max-file-size: 100MB
-      max-request-size: 100MB
+      max-file-size: 500MB
+      max-request-size: 500MB
+
+logging:
+  level:
+    root: info
+    web: info
 
 springdoc:
   packagesToScan: uk.gov.hmcts.sptribs,uk.gov.hmcts.ccd.sdk.runtime
@@ -84,6 +89,8 @@ uk:
           NEW_ORDER_ISSUED_POST: '797e62bd-a1d4-4a6a-b15d-ddd642d2b14b'
           CASE_LINKED_EMAIL: '8af9efba-9861-4663-8305-0a378def1e46'
           CASE_LINKED_POST: 'd69207af-ed64-4a60-b0a3-224d429d8b17'
+          UPDATE_RECEIVED_CITIZEN: 'ada9b776-877b-4bf4-9093-d814f9a18d43'
+          UPDATE_RECEIVED_CASEWORKER: '69034ba0-ed92-479f-822e-a4103cc1b6c6'
 
         templates:
           english:
@@ -212,12 +219,12 @@ feature:
     enabled: ${CLONE_BUNDLING_FEATURE:true}
   bundling-stitch:
     enabled: ${STITCH_BUNDLING_FEATURE:true}
-  dss-frontend:
-    enabled: ${DSS_FRONTEND_FEATURE:true}
   security-classification:
     enabled: ${SECURITY_CLASSIFICATION:true}
   access-profiles:
     enabled: ${ACCESS_PROFILES_ENABLED:true}
+  update-case:
+    enabled: ${DSS_UPDATE_CASE_ENABLED:false}
 
 caseinfo:
   apps:
@@ -226,7 +233,7 @@ caseinfo:
       eventIds:
         createEvent: citizen-cic-create-dss-application
         updateEvent: citizen-cic-update-dss-application
+        updateCaseEvent: citizen-cic-dss-update-case
         submitEvent: citizen-cic-submit-dss-application
-        dssUpdateEvent: citizen-cic-dssUpdate-dss-application
       caseTypeOfApplication:
         - CIC

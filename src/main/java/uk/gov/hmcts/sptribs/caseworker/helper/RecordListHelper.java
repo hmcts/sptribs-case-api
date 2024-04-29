@@ -1,9 +1,9 @@
 package uk.gov.hmcts.sptribs.caseworker.helper;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.util.CollectionUtils;
 import uk.gov.hmcts.ccd.sdk.type.DynamicList;
 import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 import uk.gov.hmcts.sptribs.caseworker.model.Listing;
@@ -25,8 +25,12 @@ import static uk.gov.hmcts.sptribs.caseworker.util.EventUtil.parseHyphen;
 @Slf4j
 public class RecordListHelper {
 
+    private final LocationService locationService;
+
     @Autowired
-    private LocationService locationService;
+    public RecordListHelper(LocationService locationService) {
+        this.locationService = locationService;
+    }
 
     public void regionData(CaseData caseData) {
 
@@ -45,7 +49,7 @@ public class RecordListHelper {
         String selectedRegion = caseData.getListing().getSelectedRegionVal();
         String regionId = locationService.getRegionId(selectedRegion);
 
-        if (null != regionId) {
+        if (regionId != null) {
             DynamicList hearingVenueList = locationService.getHearingVenuesByRegion(regionId);
             caseData.getListing().setHearingVenues(hearingVenueList);
 
@@ -57,25 +61,25 @@ public class RecordListHelper {
     }
 
     public boolean checkNullCondition(CicCase cicCase) {
-        return null != cicCase
-            && CollectionUtils.isEmpty(cicCase.getNotifyPartySubject())
-            && CollectionUtils.isEmpty(cicCase.getNotifyPartyRepresentative())
-            && CollectionUtils.isEmpty(cicCase.getNotifyPartyRespondent());
+        return cicCase == null
+            || (CollectionUtils.isEmpty(cicCase.getNotifyPartySubject())
+                && CollectionUtils.isEmpty(cicCase.getNotifyPartyRepresentative())
+                && CollectionUtils.isEmpty(cicCase.getNotifyPartyRespondent()));
     }
 
     public void getNotificationParties(CaseData caseData) {
         Set<NotificationParties> partiesSet = new HashSet<>();
 
-        if (!CollectionUtils.isEmpty(caseData.getCicCase().getNotifyPartySubject())) {
+        if (CollectionUtils.isNotEmpty(caseData.getCicCase().getNotifyPartySubject())) {
             partiesSet.add(NotificationParties.SUBJECT);
         }
-        if (!CollectionUtils.isEmpty(caseData.getCicCase().getNotifyPartyRepresentative())) {
+        if (CollectionUtils.isNotEmpty(caseData.getCicCase().getNotifyPartyRepresentative())) {
             partiesSet.add(NotificationParties.REPRESENTATIVE);
         }
-        if (!CollectionUtils.isEmpty(caseData.getCicCase().getNotifyPartyRespondent())) {
+        if (CollectionUtils.isNotEmpty(caseData.getCicCase().getNotifyPartyRespondent())) {
             partiesSet.add(NotificationParties.RESPONDENT);
         }
-        if (!CollectionUtils.isEmpty(caseData.getCicCase().getNotifyPartyApplicant())) {
+        if (CollectionUtils.isNotEmpty(caseData.getCicCase().getNotifyPartyApplicant())) {
             partiesSet.add(NotificationParties.APPLICANT);
         }
 
@@ -107,9 +111,13 @@ public class RecordListHelper {
             .label("LabelOtherInfo", "")
             .complex(CaseData::getListing)
             .label("labelOtherInfoDetails",
-                "\nEnter any other important information about this hearing.\n"
-                    + "\nThis may include any reasonable adjustments that need to be made, or details"
-                    + " of anyone who should be excluded from attending this hearing. (Optional)\n")
+                """
+
+                    Enter any other important information about this hearing.
+
+                    This may include any reasonable adjustments that need to be made, or details of anyone who should be excluded \
+                    from attending this hearing. (Optional)
+                    """)
             .optional(Listing::getImportantInfoDetails)
             .done();
     }
@@ -126,25 +134,28 @@ public class RecordListHelper {
     }
 
     public Listing checkAndUpdateVenueInformationSummary(Listing listing) {
-        if ((null == listing.getVenueNotListedOption()
+        if ((listing.getVenueNotListedOption() == null
             || !listing.getVenueNotListedOption().contains(VenueNotListed.VENUE_NOT_LISTED))
-            && null != listing.getReadOnlyHearingVenueName() && !listing.getReadOnlyHearingVenueName().isEmpty()) {
+            && listing.getReadOnlyHearingVenueName() != null && !listing.getReadOnlyHearingVenueName().isEmpty()) {
             listing.setHearingVenueNameAndAddress(listing.getReadOnlyHearingVenueName());
         }
         return listing;
     }
 
     public Listing saveSummary(CaseData caseData) {
-        caseData.getListing().setHearingFormat(caseData.getListing().getHearingFormat());
-        caseData.getListing().setHearingType(caseData.getListing().getHearingType());
-        caseData.getListing().getSummary().setSubjectName(caseData.getCicCase().getFullName());
-        caseData.setCurrentEvent("");
-        if (null != caseData.getListing()
-            && null != caseData.getListing().getNumberOfDays()
-            && caseData.getListing().getNumberOfDays().equals(YesOrNo.NO)) {
-            caseData.getListing().setAdditionalHearingDate(null);
-        }
+        final Listing listing = caseData.getListing();
+        if (listing != null) {
+            listing.setHearingFormat(listing.getHearingFormat());
+            listing.setHearingType(listing.getHearingType());
+            listing.getSummary().setSubjectName(caseData.getCicCase().getFullName());
+            caseData.setCurrentEvent("");
 
-        return checkAndUpdateVenueInformationSummary(caseData.getListing());
+            if (listing.getNumberOfDays() != null
+                && listing.getNumberOfDays().equals(YesOrNo.NO)) {
+                listing.setAdditionalHearingDate(null);
+            }
+            return checkAndUpdateVenueInformationSummary(listing);
+        }
+        return null;
     }
 }

@@ -26,6 +26,7 @@ public final class CaseFieldsConstants {
     public static final String LAST_MODIFIED_DATE = "[LAST_MODIFIED_DATE]";
     public static final String LAST_STATE_MODIFIED_DATE = "[LAST_STATE_MODIFIED_DATE]";
     public static final String CASE_CICA_REFERENCE = "cicCaseCicaReferenceNumber";
+    public static final String PANEL_COMPOSITION = "panelComposition";
 
     public static final String APPLICANT_DETAILS = "applicantDetails";
     public static final String APPLICANT_NAME = "cicCaseApplicantFullName";
@@ -34,7 +35,7 @@ public final class CaseFieldsConstants {
     public static final String APPLICANT_ADDRESS = "cicCaseApplicantAddress";
     public static final String APPLICANT_PHONE_NUMBER = "cicCaseApplicantPhoneNumber";
     public static final String APPLICANT_CONTACT_PREFERENCE = "cicCaseApplicantContactDetailsPreference";
-    
+
     public static final String REPRESENTATIVE_DETAILS = "representativeDetails";
     public static final String REPRESENTATIVE_REFERENCE = "cicCaseRepresentativeReference";
     public static final String REPRESENTATIVE_QUALIFIED = "cicCaseIsRepresentativeQualified";
@@ -56,17 +57,19 @@ public final class CaseFieldsConstants {
     public static final String REMOVE_STAY_REASON = "removeStayStayRemoveReason";
     public static final String REMOVE_STAY_OTHER_DESCRIPTION = "removeStayStayRemoveOtherDescription";
     public static final String REMOVE_STAY_ADDITIONAL_DETAIL = "removeStayAdditionalDetail";
-    
+
     //Conditions
     public static final String COND_REPRESENTATIVE_NOT_EMPTY = "cicCaseRepresentativeFullName!=\"\"";
     public static final String COND_ALWAYS_HIDE_STAY_REASON = "stayStayReason=\"NEVER_SHOW\"";
     public static final String COND_IS_CASE_STAYED = "stayIsCaseStayed=\"Yes\"";
     public static final String COND_IS_NOT_CASE_STAYED = "stayIsCaseStayed=\"No\"";
-    public static final String COND_HEARING_LIST_NOT_ANY_AND_CANCELLATION_REASON_NOT_EMPTY 
+    public static final String COND_HEARING_LIST_NOT_ANY_AND_CANCELLATION_REASON_NOT_EMPTY
         = "hearingList!=\"*\" AND cicCaseHearingCancellationReason!=\"\"";
-    public static final String COND_HEARING_LIST_NOT_ANY_AND_CASE_POSTPONE_REASON_NOT_EMPTY 
+    public static final String COND_HEARING_LIST_NOT_ANY_AND_CASE_POSTPONE_REASON_NOT_EMPTY
         = "hearingList!=\"*\" AND cicCasePostponeReason!=\"\"";
-    public static final String COND_HEARING_LIST_NOT_ANY_AND_IS_FULL_PANEL_NOT_EMPTY = "hearingList!=\"*\" AND isFullPanel!=\"\"";
+    public static final String COND_HEARING_LIST_NOT_ANY_AND_IS_FULL_PANEL_NOT_EMPTY =
+        "panel1=\"Tribunal Judge\" OR hearingList!=\"*\" AND isFullPanel!=\"\"";
+    public static final String PANEL_COMPOSITION_DEFINED = "panel1=\"Tribunal Judge\"";
     public static final String COND_APPLICANT_FULL_NAME_NOT_EMPTY = "cicCaseApplicantFullName!=\"\"";
     public static final String COND_HEARING_LIST_NOT_ANY_AND_HEARING_TYPE_NOT_EMPTY = "hearingList!=\"*\" AND hearingType!=\"\"";
     public static final String COND_REPRESENTATIVE_FULL_NAME_NOT_EMPTY = "cicCaseRepresentativeFullName!=\"\"";
