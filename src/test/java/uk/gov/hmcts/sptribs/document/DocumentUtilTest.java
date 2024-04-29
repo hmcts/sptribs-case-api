@@ -540,6 +540,36 @@ class DocumentUtilTest {
     }
 
     @Test
+    void shouldConvertDocumentsWithoutAddingDates() {
+        final CaseworkerCICDocumentUpload documentUpload = createCaseworkerCICDocumentUpload(true, PDF_FILE, true, true);
+        final ListValue<CaseworkerCICDocumentUpload> documentUploadListValue = new ListValue<>();
+        documentUploadListValue.setValue(documentUpload);
+        final List<ListValue<CaseworkerCICDocumentUpload>> documentUploadList = new ArrayList<>();
+        documentUploadList.add(documentUploadListValue);
+
+        List<ListValue<CaseworkerCICDocument>> outputList = DocumentUtil.convertToCaseworkerCICDocumentUpload(documentUploadList, false);
+
+        assertThat(outputList).hasSize(1);
+        assertThat(outputList.get(0).getValue().getDocumentCategory()).isEqualTo(documentUpload.getDocumentCategory());
+        assertThat(outputList.get(0).getValue().getDocumentEmailContent()).isEqualTo(documentUpload.getDocumentEmailContent());
+        assertThat(outputList.get(0).getValue().getDocumentLink()).isEqualTo(documentUpload.getDocumentLink());
+        assertThat(outputList.get(0).getValue().getDate()).isNull();
+    }
+
+    @Test
+    void shouldHandleConvertToCaseworkerCICDocumentUploadWithEmptyList() {
+        final List<ListValue<CaseworkerCICDocumentUpload>> documentUploadList = new ArrayList<>();
+        List<ListValue<CaseworkerCICDocument>> outputList = DocumentUtil.convertToCaseworkerCICDocumentUpload(documentUploadList, false);
+        assertThat(outputList).hasSize(0);
+    }
+
+    @Test
+    void shouldHandleConvertToCaseworkerCICDocumentUploadWithNullList() {
+        List<ListValue<CaseworkerCICDocument>> outputList = DocumentUtil.convertToCaseworkerCICDocumentUpload(null, false);
+        assertThat(outputList).hasSize(0);
+    }
+
+    @Test
     void shouldRemoveDatesFromUploadedDocuments() {
         final CaseworkerCICDocument document = createCaseworkerCICDocument(true, PDF_FILE, true, true);
         ListValue<CaseworkerCICDocument> documentListValue = new ListValue<>();
@@ -553,6 +583,19 @@ class DocumentUtilTest {
         assertThat(outputList.get(0).getValue().getDocumentCategory()).isEqualTo(document.getDocumentCategory());
         assertThat(outputList.get(0).getValue().getDocumentEmailContent()).isEqualTo(document.getDocumentEmailContent());
         assertThat(outputList.get(0).getValue().getDocumentLink()).isEqualTo(document.getDocumentLink());
+    }
+
+    @Test
+    void shouldHandleConvertToCaseworkerCICDocumentWithEmptyList() {
+        final List<ListValue<CaseworkerCICDocument>> documentUploadList = new ArrayList<>();
+        List<ListValue<CaseworkerCICDocumentUpload>> outputList = DocumentUtil.convertToCaseworkerCICDocument(documentUploadList);
+        assertThat(outputList).hasSize(0);
+    }
+
+    @Test
+    void shouldHandleConvertToCaseworkerCICDocumentWithNullList() {
+        List<ListValue<CaseworkerCICDocumentUpload>> outputList = DocumentUtil.convertToCaseworkerCICDocument(null);
+        assertThat(outputList).hasSize(0);
     }
 
     private DocumentInfo documentInfo() {
