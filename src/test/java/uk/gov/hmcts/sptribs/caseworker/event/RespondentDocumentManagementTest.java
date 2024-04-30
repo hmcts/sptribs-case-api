@@ -33,13 +33,10 @@ class RespondentDocumentManagementTest {
 
     @Test
     void shouldAddConfigurationToConfigBuilder() {
-        //Given
         final ConfigBuilderImpl<CaseData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
 
-        //When
         respondentDocumentManagement.configure(configBuilder);
 
-        //Then
         assertThat(getEventsFrom(configBuilder).values())
             .extracting(Event::getId)
             .contains(RESPONDENT_DOCUMENT_MANAGEMENT);
