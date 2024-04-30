@@ -27,6 +27,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.notification.CaseWithdrawnNotification;
 import uk.gov.hmcts.sptribs.document.DocumentUtil;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
+import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocumentUpload;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
 import uk.gov.hmcts.sptribs.judicialrefdata.JudicialService;
 
@@ -100,19 +101,18 @@ class CaseWorkerCloseTheCaseTest {
 
     @Test
     void shouldSuccessfullyChangeCaseManagementStateToClosedState() {
-        //Given
         final CaseData caseData = closedCaseData();
-        final CaseworkerCICDocument caseworkerCICDocument = CaseworkerCICDocument.builder()
+        final CaseworkerCICDocumentUpload document = CaseworkerCICDocumentUpload.builder()
             .documentLink(Document.builder().build())
             .documentEmailContent("some email content")
             .documentCategory(DocumentType.LINKED_DOCS)
             .build();
-        final List<ListValue<CaseworkerCICDocument>> documentList = new ArrayList<>();
-        final ListValue<CaseworkerCICDocument> caseworkerCICDocumentListValue = new ListValue<>();
-        caseworkerCICDocumentListValue.setValue(caseworkerCICDocument);
-        documentList.add(caseworkerCICDocumentListValue);
+        final List<ListValue<CaseworkerCICDocumentUpload>> documentList = new ArrayList<>();
+        final ListValue<CaseworkerCICDocumentUpload> documentListValue = new ListValue<>();
+        documentListValue.setValue(document);
+        documentList.add(documentListValue);
 
-        final CloseCase closeCase = CloseCase.builder().documents(documentList).build();
+        final CloseCase closeCase = CloseCase.builder().documentsUpload(documentList).build();
         caseData.setCloseCase(closeCase);
 
         final CicCase cicCase = CicCase.builder()
@@ -136,7 +136,6 @@ class CaseWorkerCloseTheCaseTest {
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
 
-        //When
         assertThat(caseData.getCaseStatus()).isEqualTo(State.CaseManagement);
         final AboutToStartOrSubmitResponse<CaseData, State> response =
             caseworkerCloseTheCase.aboutToSubmit(updatedCaseDetails, beforeDetails);
@@ -144,7 +143,6 @@ class CaseWorkerCloseTheCaseTest {
         final SubmittedCallbackResponse closedCase =
             caseworkerCloseTheCase.closed(updatedCaseDetails, beforeDetails);
 
-        //Then
         assertThat(closedCase).isNotNull();
         assertThat(closedCase.getConfirmationHeader()).contains("Case closed");
         assertThat(response.getState()).isEqualTo(State.CaseClosed);
