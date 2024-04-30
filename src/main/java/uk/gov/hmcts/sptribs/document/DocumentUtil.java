@@ -154,7 +154,9 @@ public final class DocumentUtil {
         return documentList;
     }
 
-    public static List<ListValue<CaseworkerCICDocumentUpload>> convertToCaseworkerCICDocument(List<ListValue<CaseworkerCICDocument>> uploadedDocuments) {
+    public static List<ListValue<CaseworkerCICDocumentUpload>> convertToCaseworkerCICDocument(
+        List<ListValue<CaseworkerCICDocument>> uploadedDocuments
+    ) {
         List<ListValue<CaseworkerCICDocumentUpload>> documentList = new ArrayList<>();
         if (uploadedDocuments != null && !uploadedDocuments.isEmpty()) {
             uploadedDocuments.forEach(

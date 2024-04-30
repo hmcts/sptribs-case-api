@@ -462,19 +462,6 @@ public class TestDataHelper {
         return documentList;
     }
 
-    public static List<ListValue<CaseworkerCICDocumentUpload>> getCaseworkerCICDocumentUploadList(String fileName) {
-        final CaseworkerCICDocumentUpload caseworkerCICDocument = CaseworkerCICDocumentUpload.builder()
-            .documentLink(Document.builder().filename(fileName).build())
-            .documentCategory(DocumentType.LINKED_DOCS)
-            .documentEmailContent("some email content")
-            .build();
-        List<ListValue<CaseworkerCICDocumentUpload>> documentList = new ArrayList<>();
-        ListValue<CaseworkerCICDocumentUpload> caseworkerCICDocumentListValue = new ListValue<>();
-        caseworkerCICDocumentListValue.setValue(caseworkerCICDocument);
-        documentList.add(caseworkerCICDocumentListValue);
-        return documentList;
-    }
-
     public static List<ListValue<CaseworkerCICDocument>> getCaseworkerCICDocumentList(String fileName, DocumentType category) {
         final CaseworkerCICDocument caseworkerCICDocument = CaseworkerCICDocument.builder()
             .documentLink(Document.builder().filename(fileName).build())
@@ -500,6 +487,19 @@ public class TestDataHelper {
             .build();
         List<ListValue<CaseworkerCICDocument>> documentList = new ArrayList<>();
         ListValue<CaseworkerCICDocument> caseworkerCICDocumentListValue = new ListValue<>();
+        caseworkerCICDocumentListValue.setValue(caseworkerCICDocument);
+        documentList.add(caseworkerCICDocumentListValue);
+        return documentList;
+    }
+
+    public static List<ListValue<CaseworkerCICDocumentUpload>> getCaseworkerCICDocumentUploadList(String fileName) {
+        final CaseworkerCICDocumentUpload caseworkerCICDocument = CaseworkerCICDocumentUpload.builder()
+            .documentLink(Document.builder().filename(fileName).build())
+            .documentCategory(DocumentType.LINKED_DOCS)
+            .documentEmailContent("some email content")
+            .build();
+        List<ListValue<CaseworkerCICDocumentUpload>> documentList = new ArrayList<>();
+        ListValue<CaseworkerCICDocumentUpload> caseworkerCICDocumentListValue = new ListValue<>();
         caseworkerCICDocumentListValue.setValue(caseworkerCICDocument);
         documentList.add(caseworkerCICDocumentListValue);
         return documentList;

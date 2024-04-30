@@ -27,10 +27,6 @@ import uk.gov.hmcts.sptribs.idam.IdamService;
 import uk.gov.hmcts.sptribs.notification.exception.NotificationException;
 import uk.gov.hmcts.sptribs.testutil.TestDataHelper;
 
-import java.time.Clock;
-import java.time.Instant;
-import java.time.LocalDate;
-import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -263,6 +259,7 @@ class CicDssUpdateCaseEventTest {
         assertThat(response.getConfirmationHeader())
             .contains("# CIC Dss Update Case Event Email notification failed %n## Please resend the notification");
     }
+
     private DssCaseData getDssCaseData() {
         EdgeCaseDocument doc1 = new EdgeCaseDocument();
         doc1.setDocumentLink(
