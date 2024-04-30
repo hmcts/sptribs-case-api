@@ -95,15 +95,20 @@ public class DocumentManagementUtilTest {
     void shouldSuccessfullyBuildList() {
         //Given
         List<CaseworkerCICDocument> list = new ArrayList<>();
-        CaseworkerCICDocument doc = CaseworkerCICDocument.builder()
+        CaseworkerCICDocument doc1 = CaseworkerCICDocument.builder()
             .documentLink(Document.builder().url("url1").binaryUrl("url1").filename("name1").build())
             .build();
-        list.add(doc);
+        CaseworkerCICDocument doc2 = CaseworkerCICDocument.builder()
+            .documentLink(Document.builder().url("url2").binaryUrl("url2").filename("name2").build())
+            .build();
+        list.add(doc1);
+        list.add(doc2);
 
         //When
         List<ListValue<CaseworkerCICDocument>> result = DocumentManagementUtil.buildListValues(list);
 
         //Then
         assertThat(result).isNotNull();
+        assertThat(result.size()).isEqualTo(2);
     }
 }

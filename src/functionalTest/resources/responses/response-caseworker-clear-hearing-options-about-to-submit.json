@@ -1,0 +1,14 @@
+{
+  "data": {
+    "allCaseworkerCICDocument": [],
+    "newCaseworkerCICDocument": [],
+    "editCicaCaseDetails": {},
+    "contactParties": {},
+    "cicCaseRespondentName": "Appeals team",
+    "cicCaseRespondentOrganisation": "CICA",
+    "cicCaseRespondentEmail": "appeals.team@cica.gov.uk",
+    "stayIsCaseStayed": "No",
+    "hearingSummaryExists": "YES",
+    "closedDayCount": ""
+  }
+}

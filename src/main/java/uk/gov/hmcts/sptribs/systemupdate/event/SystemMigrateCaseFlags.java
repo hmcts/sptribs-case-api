@@ -17,7 +17,7 @@ import uk.gov.hmcts.sptribs.common.service.CcdSupplementaryDataService;
 
 import java.util.ArrayList;
 
-import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SYSTEMUPDATE;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SYSTEM_UPDATE;
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE_DELETE;
 
 @Component
@@ -27,11 +27,16 @@ public class SystemMigrateCaseFlags implements CCDConfig<CaseData, State, UserRo
 
     public static final String SYSTEM_MIGRATE_CASE_FLAGS = "system-migrate-case-flags";
 
-    @Autowired
     private CcdSupplementaryDataService ccdSupplementaryDataService;
 
     @Value("${feature.migration.enabled}")
     private boolean migrationFlagEnabled;
+
+
+    @Autowired
+    public SystemMigrateCaseFlags(CcdSupplementaryDataService ccdSupplementaryDataService) {
+        this.ccdSupplementaryDataService = ccdSupplementaryDataService;
+    }
 
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
@@ -42,19 +47,19 @@ public class SystemMigrateCaseFlags implements CCDConfig<CaseData, State, UserRo
                 .aboutToSubmitCallback(this::aboutToSubmit)
                 .name("Migrate case flags")
                 .description("Migrate case flags for old cases")
-                .grant(CREATE_READ_UPDATE_DELETE, SYSTEMUPDATE);
+                .grant(CREATE_READ_UPDATE_DELETE, SYSTEM_UPDATE);
         }
-
     }
 
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(final CaseDetails<CaseData, State> details,
                                                                        final CaseDetails<CaseData, State> beforeDetails) {
 
-        log.info("Migrating case flags for case Id: {}", details.getId());
-
-        CaseData data = details.getData();
-        initialiseFlags(data);
-        setSupplementaryData(details.getId());
+        if (migrationFlagEnabled) {
+            log.info("Migrating case flags for case Id: {}", details.getId());
+            CaseData data = details.getData();
+            initialiseFlags(data);
+            setSupplementaryData(details.getId());
+        }
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(details.getData())
@@ -68,7 +73,7 @@ public class SystemMigrateCaseFlags implements CCDConfig<CaseData, State, UserRo
             .roleOnCase(null)
             .build());
 
-        if (null != data.getCicCase().getFullName()) {
+        if (data.getCicCase().getFullName() != null) {
             data.setSubjectFlags(Flags.builder()
                 .details(new ArrayList<>())
                 .partyName(data.getCicCase().getFullName())
@@ -77,7 +82,7 @@ public class SystemMigrateCaseFlags implements CCDConfig<CaseData, State, UserRo
             );
         }
 
-        if (null != data.getCicCase().getApplicantFullName()) {
+        if (data.getCicCase().getApplicantFullName() != null) {
             data.setApplicantFlags(Flags.builder()
                 .details(new ArrayList<>())
                 .partyName(data.getCicCase().getApplicantFullName())
@@ -86,7 +91,7 @@ public class SystemMigrateCaseFlags implements CCDConfig<CaseData, State, UserRo
             );
         }
 
-        if (null != data.getCicCase().getRepresentativeFullName()) {
+        if (data.getCicCase().getRepresentativeFullName() != null) {
             data.setRepresentativeFlags(Flags.builder()
                 .details(new ArrayList<>())
                 .partyName(data.getCicCase().getRepresentativeFullName())
@@ -103,5 +108,4 @@ public class SystemMigrateCaseFlags implements CCDConfig<CaseData, State, UserRo
             log.error("Unable to set Supplementary data with exception : {}", exception.getMessage());
         }
     }
-
 }

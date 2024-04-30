@@ -26,6 +26,8 @@ public enum SecurityClass implements HasLabel {
 
     @JsonProperty("Restricted")
     RESTRICTED("RESTRICTED", new String[] {
+        "caseworker-st_cic-hearing-centre-team-leader",
+        "caseworker-st_cic-senior-caseworker",
         "caseworker-st_cic-senior-judge"
     });
 

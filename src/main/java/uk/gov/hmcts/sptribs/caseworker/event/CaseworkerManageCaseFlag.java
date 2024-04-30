@@ -33,8 +33,8 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 @Setter
 public class CaseworkerManageCaseFlag implements CCDConfig<CaseData, State, UserRole> {
 
-
     private static final String ALWAYS_HIDE = "flagLauncher = \"ALWAYS_HIDE\"";
+
     @Value("${feature.case-flags.enabled}")
     private boolean caseFlagsEnabled;
 
@@ -80,7 +80,7 @@ public class CaseworkerManageCaseFlag implements CCDConfig<CaseData, State, User
         final CaseDetails<CaseData, State> details,
         final CaseDetails<CaseData, State> beforeDetails
     ) {
-        var caseData = details.getData();
+        final CaseData caseData = details.getData();
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .state(details.getState())
@@ -91,7 +91,6 @@ public class CaseworkerManageCaseFlag implements CCDConfig<CaseData, State, User
 
     public SubmittedCallbackResponse submitted(CaseDetails<CaseData, State> details,
                                                CaseDetails<CaseData, State> beforeDetails) {
-
         return SubmittedCallbackResponse.builder()
             .confirmationHeader("# Flag updated")
             .build();

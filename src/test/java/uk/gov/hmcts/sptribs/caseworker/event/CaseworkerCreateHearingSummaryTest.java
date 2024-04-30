@@ -35,6 +35,7 @@ import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigBuilder;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.getEventsFrom;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getCaseworkerCICDocumentList;
+import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getDynamicList;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getRecordListing;
 import static uk.gov.hmcts.sptribs.testutil.TestEventConstants.CASEWORKER_CREATE_HEARING_SUMMARY;
 
@@ -76,8 +77,9 @@ class CaseworkerCreateHearingSummaryTest {
             .cicCase(cicCase)
             .build();
         updatedCaseDetails.setData(caseData);
+
         when(hearingService.getListedHearingDynamicList(any())).thenReturn(null);
-        when(judicialService.getAllUsers()).thenReturn(null);
+        when(judicialService.getAllUsers(caseData)).thenReturn(getDynamicList());
 
         //When
         AboutToStartOrSubmitResponse<CaseData, State> response = caseWorkerCreateHearingSummary.aboutToStart(updatedCaseDetails);
@@ -104,7 +106,7 @@ class CaseworkerCreateHearingSummaryTest {
         Listing recordListing = getRecordListing();
         caseData.setListing(recordListing);
 
-        List<ListValue<CaseworkerCICDocument>> documentList = getCaseworkerCICDocumentList();
+        List<ListValue<CaseworkerCICDocument>> documentList = getCaseworkerCICDocumentList("file.pdf");
 
         HearingSummary hearingSummary = HearingSummary.builder().recFile(documentList).build();
         recordListing.setSummary(hearingSummary);
@@ -112,6 +114,7 @@ class CaseworkerCreateHearingSummaryTest {
         updatedCaseDetails.setData(caseData);
         final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
         when(recordListHelper.saveSummary(any())).thenReturn(recordListing);
+        when(judicialService.populateJudicialId(any())).thenReturn("personal_code");
 
         //When
         AboutToStartOrSubmitResponse<CaseData, State> response =
@@ -119,7 +122,14 @@ class CaseworkerCreateHearingSummaryTest {
 
         //Then
         assertThat(response).isNotNull();
-        assert (response.getData().getListing().getHearingStatus().equals(HearingState.Complete));
+        assertThat(response.getData().getListing().getHearingStatus())
+            .isEqualTo(HearingState.Complete);
+        assertThat(response.getData().getJudicialId())
+            .isEqualTo("personal_code");
+        assertThat(response.getData().getListing())
+            .isEqualTo(recordListing);
+        assertThat(response.getData().getListing().getSummary().getJudgeList())
+            .isNull();
     }
 
     @Test

@@ -20,7 +20,14 @@ import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingOutcome;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseClosed;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseStayed;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_CASEWORKER;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_HEARING_CENTRE_ADMIN;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_HEARING_CENTRE_TEAM_LEADER;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_JUDGE;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_RESPONDENT;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_CASEWORKER;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_JUDGE;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE;
 
 
@@ -42,7 +49,15 @@ public class CaseWorkerEditCicaCaseDetails implements CCDConfig<CaseData, State,
                 .showSummary()
                 .aboutToSubmitCallback(this::aboutToSubmit)
                 .submittedCallback(this::detailsUpdated)
-                .grant(CREATE_READ_UPDATE, ST_CIC_RESPONDENT));
+                .grant(CREATE_READ_UPDATE, SUPER_USER, ST_CIC_RESPONDENT)
+                .grantHistoryOnly(
+                    ST_CIC_CASEWORKER,
+                    ST_CIC_SENIOR_CASEWORKER,
+                    ST_CIC_HEARING_CENTRE_ADMIN,
+                    ST_CIC_HEARING_CENTRE_TEAM_LEADER,
+                    ST_CIC_SENIOR_JUDGE,
+                    SUPER_USER,
+                    ST_CIC_JUDGE));
         editCicaCaseDetailsPage.addTo(pageBuilder);
 
 
@@ -62,7 +77,7 @@ public class CaseWorkerEditCicaCaseDetails implements CCDConfig<CaseData, State,
     }
 
     public SubmittedCallbackResponse detailsUpdated(CaseDetails<CaseData, State> details,
-                                                  CaseDetails<CaseData, State> beforeDetails) {
+                                                    CaseDetails<CaseData, State> beforeDetails) {
         return SubmittedCallbackResponse.builder()
             .confirmationHeader("# Case details updated. ")
             .build();

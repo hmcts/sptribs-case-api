@@ -14,7 +14,4 @@ public enum ApplicantCIC implements HasLabel {
 
     private final String label;
 
-    public boolean isApplicantCIC() {
-        return APPLICANT_CIC.name().equalsIgnoreCase(this.name());
-    }
 }

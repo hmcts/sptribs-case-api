@@ -1,7 +1,6 @@
 package uk.gov.hmcts.sptribs.caseworker.util;
 
 public final class EventConstants {
-
     public static final String HYPHEN = "-";
     public static final String DOUBLE_HYPHEN = "--";
     public static final String SPACE = " ";
@@ -39,22 +38,30 @@ public final class EventConstants {
     public static final String CASEWORKER_AMEND_DUE_DATE = "caseworker-amend-due-date";
     public static final String CASEWORKER_POSTPONE_HEARING = "caseworker-postpone-hearing";
     public static final String CASEWORKER_RECORD_LISTING = "caseworker-record-listing";
-    public static final String CASEWORKER_CASE_FILE_VIEW = "caseworker-case-file-view";
     public static final String CASEWORKER_REMOVE_STAY = "caseworker-remove-stay";
     public static final String CASEWORKER_SEND_ORDER = "caseworker-send-order";
     public static final String CASEWORKER_STAY_THE_CASE = "caseworker-stay-the-case";
     public static final String CASEWORKER_REINSTATE_CASE = "caseworker-reinstate-state";
-    public static final String TEST_CHANGE_STATE = "change-state";
+    public static final String CASEWORKER_HEARING_OPTIONS = "caseworker-hearing-options";
+    public static final String CASEWORKER_CLEAR_HEARING_OPTIONS = "caseworker-clear-hearing-options";
+    public static final String CASEWORKER_PANEL_COMPOSITION = "caseworker-panel-composition";
+    public static final String CASEWORKER_EDIT_PANEL_COMPOSITION = "caseworker-edit-panel-composition";
     public static final String CHANGE_SECURITY_CLASS = "change-security-class";
     public static final String CASEWORKER_REFER_TO_JUDGE = "refer-to-judge";
     public static final String CREATE_BUNDLE = "createBundle";
+    public static final String ASYNC_STITCH_COMPLETE = "asyncStitchingComplete";
     public static final String STITCH_BUNDLE = "stitchBundle";
     public static final String EDIT_BUNDLE = "editBundle";
     public static final String CLONE_BUNDLE = "cloneBundle";
 
+    public static final String CITIZEN_CIC_CREATE_CASE = "citizen-cic-create-dss-application";
+    public static final String CITIZEN_CIC_UPDATE_CASE = "citizen-cic-update-dss-application";
+    public static final String CITIZEN_CIC_SUBMIT_CASE = "citizen-cic-submit-dss-application";
+    public static final String CITIZEN_DSS_UPDATE_CASE_SUBMISSION = "citizen-cic-dss-update-case";
+
     public static final String CASEWORKER_REFER_TO_LEGAL_OFFICER = "refer-to-legal-officer";
+    public static final String YES = "YES";
 
     private EventConstants() {
     }
-
 }

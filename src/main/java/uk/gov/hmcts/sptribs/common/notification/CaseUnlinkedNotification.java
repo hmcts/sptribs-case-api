@@ -19,17 +19,21 @@ import java.util.Map;
 @Slf4j
 public class CaseUnlinkedNotification implements PartiesNotification {
 
-    @Autowired
-    private NotificationServiceCIC notificationService;
+    private final NotificationServiceCIC notificationService;
+
+    private final NotificationHelper notificationHelper;
 
     @Autowired
-    private NotificationHelper notificationHelper;
+    public CaseUnlinkedNotification(NotificationServiceCIC notificationService, NotificationHelper notificationHelper) {
+        this.notificationService = notificationService;
+        this.notificationHelper = notificationHelper;
+    }
 
     @Override
     public void sendToSubject(final CaseData caseData, final String caseNumber) {
-        CicCase cicCase = caseData.getCicCase();
+        final CicCase cicCase = caseData.getCicCase();
+        final Map<String, Object> templateVars = notificationHelper.getSubjectCommonVars(caseNumber, cicCase);
 
-        Map<String, Object> templateVars = notificationHelper.getSubjectCommonVars(caseNumber, cicCase);
         if (cicCase.getContactPreferenceType() == ContactPreferenceType.EMAIL) {
             NotificationResponse response = sendEmailNotification(cicCase.getEmail(), templateVars);
             cicCase.setSubjectNotifyList(response);

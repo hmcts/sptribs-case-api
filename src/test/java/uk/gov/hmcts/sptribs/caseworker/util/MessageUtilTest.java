@@ -71,12 +71,13 @@ public class MessageUtilTest {
         parties.add(NotificationParties.SUBJECT);
         parties.add(NotificationParties.RESPONDENT);
         parties.add(NotificationParties.REPRESENTATIVE);
+        parties.add(NotificationParties.APPLICANT);
 
         //When
         String result = MessageUtil.generateSimpleMessage(parties);
 
         //Then
-        assertThat(result).contains("Subject");
+        assertThat(result).contains("Respondent").contains("Representative").contains("Subject").contains("Applicant");
     }
 
     @Test

@@ -15,7 +15,6 @@ import static uk.gov.hmcts.sptribs.systemupdate.event.SystemMigrateCase.SYSTEM_M
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigBuilder;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.getEventsFrom;
 
-
 @ExtendWith(SpringExtension.class)
 public class SystemMigrateCaseTest {
 
@@ -32,5 +31,4 @@ public class SystemMigrateCaseTest {
                 .extracting(Event::getId)
                 .contains(SYSTEM_MIGRATE_CASE);
     }
-
 }

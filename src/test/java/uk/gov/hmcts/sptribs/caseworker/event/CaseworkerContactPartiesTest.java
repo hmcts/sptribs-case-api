@@ -35,6 +35,7 @@ import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.doThrow;
+import static uk.gov.hmcts.sptribs.caseworker.util.ErrorConstants.SELECT_AT_LEAST_ONE_CONTACT_PARTY;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigBuilder;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.getEventsFrom;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.SOLICITOR_ADDRESS;
@@ -97,7 +98,7 @@ class CaseworkerContactPartiesTest {
         List<ListValue<CaseworkerCICDocument>> listValueList = new ArrayList<>();
         final CaseworkerCICDocument doc = CaseworkerCICDocument.builder()
             .documentCategory(DocumentType.LINKED_DOCS)
-            .documentLink(Document.builder().url("url").binaryUrl("url").filename("name").build())
+            .documentLink(Document.builder().url("url").binaryUrl("url").filename("name.pdf").build())
             .build();
         ListValue<CaseworkerCICDocument> list = new ListValue<>();
         list.setValue(doc);
@@ -169,7 +170,6 @@ class CaseworkerContactPartiesTest {
 
         AboutToStartOrSubmitResponse<CaseData, State> response =
             partiesToContact.midEvent(updatedCaseDetails, beforeDetails);
-
         assertThat(response).isNotNull();
         assertThat(response.getErrors()).isEmpty();
     }
@@ -196,16 +196,14 @@ class CaseworkerContactPartiesTest {
 
         assertThat(response).isNotNull();
         assertThat(response.getErrors()).hasSize(1);
-        assertThat(response.getErrors()).contains("Which parties do you want to contact is required.");
+        assertThat(response.getErrors()).contains(SELECT_AT_LEAST_ONE_CONTACT_PARTY);
 
         SubmittedCallbackResponse contactPartiesResponse = caseWorkerContactParties.partiesContacted(updatedCaseDetails, beforeDetails);
-
         assertThat(contactPartiesResponse).isNotNull();
         assertThat(contactPartiesResponse.getConfirmationHeader()).doesNotContain("Subject");
         assertThat(contactPartiesResponse.getConfirmationHeader()).doesNotContain("Representative");
         assertThat(contactPartiesResponse.getConfirmationHeader()).doesNotContain("Respondent");
     }
-
 
     @Test
     void shouldDisplayTheCorrectMessageWithCommaSeparation() {
@@ -274,7 +272,6 @@ class CaseworkerContactPartiesTest {
 
         SubmittedCallbackResponse response =
             caseWorkerContactParties.partiesContacted(updatedCaseDetails, beforeDetails);
-
         assertThat(caseData.getCicCase().getNotifyPartyRepresentative()).hasSize(1);
         assertThat(caseData.getCicCase().getNotifyPartyRespondent()).hasSize(1);
         assertThat(caseData.getCicCase().getNotifyPartyApplicant()).hasSize(1);
@@ -307,7 +304,6 @@ class CaseworkerContactPartiesTest {
 
         doThrow(NotificationException.class)
             .when(contactPartiesNotification).sendToRepresentative(caseData, caseData.getHyphenatedCaseRef());
-
         SubmittedCallbackResponse response =
             caseWorkerContactParties.partiesContacted(updatedCaseDetails, beforeDetails);
 
@@ -330,7 +326,6 @@ class CaseworkerContactPartiesTest {
             .notifyPartySubject(Set.of(SubjectCIC.SUBJECT))
             .notifyPartyRespondent(Set.of(RespondentCIC.RESPONDENT)).build();
         caseData.setCicCase(cicCase);
-        caseData.getContactParties().setRepresentativeContactParties(Set.of(RepresentativeCIC.REPRESENTATIVE));
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
         final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
         updatedCaseDetails.setData(caseData);
@@ -377,7 +372,40 @@ class CaseworkerContactPartiesTest {
         AboutToStartOrSubmitResponse<CaseData, State> response =
             contactPartiesSelectDocument.midEvent(updatedCaseDetails, beforeDetails);
 
+
         //Then
         assertThat(response.getErrors()).hasSize(1);
     }
+
+    @Test
+    void shouldRunAboutToStart() {
+        //Given
+        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
+
+        List<ListValue<CaseworkerCICDocument>> listValueList = new ArrayList<>();
+        CaseworkerCICDocument doc = CaseworkerCICDocument.builder()
+            .documentCategory(DocumentType.LINKED_DOCS)
+            .documentLink(Document.builder().url("url").binaryUrl("url").filename("name.pdf").build())
+            .build();
+        ListValue<CaseworkerCICDocument> list = new ListValue<>();
+        list.setValue(doc);
+        listValueList.add(list);
+        CicCase cicCase = CicCase.builder()
+            .reinstateDocuments(listValueList)
+            .build();
+        final CaseData caseData = CaseData.builder()
+            .cicCase(cicCase)
+            .build();
+        updatedCaseDetails.setData(caseData);
+
+        //When
+        AboutToStartOrSubmitResponse<CaseData, State> response = caseWorkerContactParties.aboutToStart(updatedCaseDetails);
+
+        //Then
+        assertThat(response).isNotNull();
+        assertThat(response.getData().getContactPartiesDocuments().getDocumentList().getListItems()).hasSize(1);
+        assertThat(response.getData().getCicCase().getNotifyPartyMessage()).isEqualTo("");
+    }
+
 }
+

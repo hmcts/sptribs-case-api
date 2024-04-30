@@ -14,13 +14,15 @@ import uk.gov.hmcts.sptribs.idam.IdamService;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_AUTHORIZATION_TOKEN;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_SERVICE_AUTH_TOKEN;
 
 @ExtendWith(MockitoExtension.class)
-public class CcdSupplementaryDataServiceTest {
+class CcdSupplementaryDataServiceTest {
+
     @InjectMocks
-    private CcdSupplementaryDataService coreCaseApiService;
+    private CcdSupplementaryDataService ccdSupplementaryDataService;
 
     @Mock
     private CoreCaseDataApi coreCaseDataApi;
@@ -44,8 +46,9 @@ public class CcdSupplementaryDataServiceTest {
     void shouldSubmitSupplementaryDataToCcd() {
         //Given
         when(authTokenGenerator.generate()).thenReturn(TEST_SERVICE_AUTH_TOKEN);
+
         //When
-        coreCaseApiService.submitSupplementaryDataToCcd(TEST_CASE_ID.toString());
+        ccdSupplementaryDataService.submitSupplementaryDataToCcd(TEST_CASE_ID.toString());
 
         //Then
         verify(coreCaseDataApi).submitSupplementaryData(any(),any(),any(),any());
@@ -56,9 +59,10 @@ public class CcdSupplementaryDataServiceTest {
         //Given
         when(authTokenGenerator.generate()).thenReturn(TEST_SERVICE_AUTH_TOKEN);
         when(idamService.retrieveSystemUpdateUserDetails()).thenReturn(user);
-        when(user.getAuthToken()).thenReturn("token");
+        when(user.getAuthToken()).thenReturn(TEST_AUTHORIZATION_TOKEN);
+
         //When
-        coreCaseApiService.submitSupplementaryDataRequestToCcd(TEST_CASE_ID.toString());
+        ccdSupplementaryDataService.submitSupplementaryDataRequestToCcd(TEST_CASE_ID.toString());
 
         //Then
         verify(coreCaseDataApi).submitSupplementaryData(any(),any(),any(),any());

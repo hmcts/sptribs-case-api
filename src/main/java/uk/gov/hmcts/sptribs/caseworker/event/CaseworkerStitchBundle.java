@@ -14,11 +14,15 @@ import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.STITCH_BUNDLE;
-import static uk.gov.hmcts.sptribs.ciccase.model.State.BUNDLE_STATES;
+import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
+import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_CASEWORKER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_HEARING_CENTRE_ADMIN;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_HEARING_CENTRE_TEAM_LEADER;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_JUDGE;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_CASEWORKER;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_JUDGE;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE;
 
 @Component
@@ -26,7 +30,9 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 @Setter
 public class CaseworkerStitchBundle implements CCDConfig<CaseData, State, UserRole> {
 
-    @Value("${feature.bundling.enabled}")
+    private static final String ALWAYS_HIDE = "[STATE]=\"ALWAYS_HIDE\"";
+
+    @Value("${feature.bundling-stitch.enabled}")
     private boolean bundlingEnabled;
 
     @Override
@@ -39,26 +45,34 @@ public class CaseworkerStitchBundle implements CCDConfig<CaseData, State, UserRo
     private void doConfigure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         new PageBuilder(configBuilder
             .event(STITCH_BUNDLE)
-            .forStates(BUNDLE_STATES)
+            .forStates(CaseManagement, AwaitingHearing)
             .name("Bundle: Stitch a bundle")
             .description("Bundle: Stitch a bundle")
+            .showCondition(ALWAYS_HIDE)
+            .showSummary()
             .aboutToSubmitCallback(this::aboutToSubmit)
-            .grant(CREATE_READ_UPDATE,
+            .grant(CREATE_READ_UPDATE, SUPER_USER,
                 ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER, ST_CIC_HEARING_CENTRE_ADMIN,
-                ST_CIC_HEARING_CENTRE_TEAM_LEADER))
+                ST_CIC_HEARING_CENTRE_TEAM_LEADER)
+            .grantHistoryOnly(
+                ST_CIC_CASEWORKER,
+                ST_CIC_SENIOR_CASEWORKER,
+                ST_CIC_HEARING_CENTRE_ADMIN,
+                ST_CIC_HEARING_CENTRE_TEAM_LEADER,
+                ST_CIC_SENIOR_JUDGE,
+                SUPER_USER,
+                ST_CIC_JUDGE))
             .page("stitchBundle")
             .pageLabel("Stitch a bundle")
             .done();
     }
 
-    public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(
-        final CaseDetails<CaseData, State> details,
-        final CaseDetails<CaseData, State> beforeDetails
-    ) {
+    public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(final CaseDetails<CaseData, State> details,
+                                                                       final CaseDetails<CaseData, State> beforeDetails) {
+
         log.info("Caseworker create bundle callback invoked for Case Id: {}", details.getId());
 
-        var caseData = details.getData();
-
+        final CaseData caseData = details.getData();
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)

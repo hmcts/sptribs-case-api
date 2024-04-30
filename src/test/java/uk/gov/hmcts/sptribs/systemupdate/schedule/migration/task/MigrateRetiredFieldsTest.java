@@ -1,7 +1,6 @@
 package uk.gov.hmcts.sptribs.systemupdate.schedule.migration.task;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -11,6 +10,9 @@ import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.testutil.TestDataHelper;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 
 @ExtendWith(MockitoExtension.class)
@@ -31,6 +33,9 @@ class MigrateRetiredFieldsTest {
 
         final CaseDetails<CaseData, State> result = migrateRetiredFields.apply(caseDetails);
 
-        Assertions.assertThat(result.getData().getCaseStatus()).isEqualTo(State.AwaitingOutcome);
+        assertNotNull(result);
+        assertEquals(State.AwaitingOutcome, result.getData().getCaseStatus());
+        assertEquals(caseDetails.getData(), result.getData());
+
     }
 }

@@ -10,7 +10,6 @@ public final class FormatUtil {
 
     public static final DateTimeFormatter DATE_TIME_FORMATTER = ofPattern("d MMMM yyyy", UK);
     public static final DateTimeFormatter FILE_NAME_DATE_FORMATTER = ofPattern("yyyy-MM-dd", UK);
-    public static final DateTimeFormatter TIME_FORMATTER = ofPattern("H:mm a", UK);
 
     private FormatUtil() {
     }

@@ -35,17 +35,21 @@ public class SelectHearing implements CcdPageConfiguration {
 
     public AboutToStartOrSubmitResponse<CaseData, State> midEvent(CaseDetails<CaseData, State> details,
                                                                   CaseDetails<CaseData, State> detailsBefore) {
+
         final CaseData data = details.getData();
         final List<String> errors = new ArrayList<>();
-        String selectedHearing = data.getCicCase().getHearingList().getValue().getLabel();
-        String id = getId(selectedHearing);
-        var hearingList = data.getHearingList();
+
+        final String selectedHearing = data.getCicCase().getHearingList().getValue().getLabel();
+        final String id = getId(selectedHearing);
+        final List<ListValue<Listing>> hearingList = data.getHearingList();
+
         for (ListValue<Listing> listingListValue : hearingList) {
             if (null != id && id.equals(listingListValue.getId())) {
                 data.setListing(listingListValue.getValue());
                 break;
             }
         }
+
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(data)
             .errors(errors)

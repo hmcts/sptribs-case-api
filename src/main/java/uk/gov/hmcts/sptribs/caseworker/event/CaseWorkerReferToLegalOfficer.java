@@ -23,10 +23,14 @@ import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingOutcome;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseClosed;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseStayed;
+import static uk.gov.hmcts.sptribs.ciccase.model.State.ReadyToList;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_CASEWORKER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_HEARING_CENTRE_ADMIN;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_HEARING_CENTRE_TEAM_LEADER;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_JUDGE;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_CASEWORKER;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_JUDGE;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE;
 
 @Component
@@ -40,15 +44,24 @@ public class CaseWorkerReferToLegalOfficer implements CCDConfig<CaseData, State,
     public void configure(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         PageBuilder pageBuilder = new PageBuilder(configBuilder
             .event(CASEWORKER_REFER_TO_LEGAL_OFFICER)
-            .forStates(CaseManagement, AwaitingHearing, AwaitingOutcome, CaseClosed, CaseStayed)
+            .forStates(CaseManagement, ReadyToList, AwaitingHearing, AwaitingOutcome, CaseClosed, CaseStayed)
             .name("Refer case to legal officer")
             .showSummary()
             .showEventNotes()
             .aboutToStartCallback(this::aboutToStart)
             .aboutToSubmitCallback(this::aboutToSubmit)
             .submittedCallback(this::submitted)
-            .grant(CREATE_READ_UPDATE, ST_CIC_HEARING_CENTRE_ADMIN, ST_CIC_HEARING_CENTRE_TEAM_LEADER,
-                ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER));
+            .grant(CREATE_READ_UPDATE, SUPER_USER,
+                ST_CIC_HEARING_CENTRE_ADMIN, ST_CIC_HEARING_CENTRE_TEAM_LEADER,
+                ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER, ST_CIC_JUDGE, ST_CIC_SENIOR_JUDGE)
+            .grantHistoryOnly(
+                ST_CIC_CASEWORKER,
+                ST_CIC_SENIOR_CASEWORKER,
+                ST_CIC_HEARING_CENTRE_ADMIN,
+                ST_CIC_HEARING_CENTRE_TEAM_LEADER,
+                ST_CIC_SENIOR_JUDGE,
+                SUPER_USER,
+                ST_CIC_JUDGE));
 
         referToLegalOfficerReason.addTo(pageBuilder);
         referToLegalOfficerAdditionalInfo.addTo(pageBuilder);

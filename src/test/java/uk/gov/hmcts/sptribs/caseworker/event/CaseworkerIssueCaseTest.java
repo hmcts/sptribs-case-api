@@ -11,16 +11,14 @@ import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.Event;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.ccd.sdk.type.Document;
+import uk.gov.hmcts.ccd.sdk.type.DynamicMultiSelectList;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
-import uk.gov.hmcts.sptribs.caseworker.event.page.IssueCaseNotifyParties;
 import uk.gov.hmcts.sptribs.caseworker.event.page.IssueCaseSelectDocument;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseIssue;
 import uk.gov.hmcts.sptribs.ciccase.model.ApplicantCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
-import uk.gov.hmcts.sptribs.ciccase.model.CaseSubcategory;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
-import uk.gov.hmcts.sptribs.ciccase.model.PartiesCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.RepresentativeCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.RespondentCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
@@ -45,7 +43,7 @@ import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_FIRST_NAME;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_SOLICITOR_NAME;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.LOCAL_DATE_TIME;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.caseData;
-import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getDynamicMultiSelectDocumentListWith6Elements;
+import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getDynamicMultiSelectDocumentListWithXElements;
 import static uk.gov.hmcts.sptribs.testutil.TestEventConstants.CASEWORKER_ISSUE_CASE;
 
 
@@ -54,9 +52,6 @@ class CaseworkerIssueCaseTest {
 
     @InjectMocks
     private CaseworkerIssueCase caseworkerIssueCase;
-
-    @InjectMocks
-    private IssueCaseNotifyParties issueCaseNotifyParties;
 
     @InjectMocks
     private IssueCaseSelectDocument issueCaseSelectDocument;
@@ -137,7 +132,7 @@ class CaseworkerIssueCaseTest {
         caseData.setCicCase(cicCase);
 
         final CaseIssue caseIssue = new CaseIssue();
-        caseIssue.setDocumentList(getDynamicMultiSelectDocumentListWith6Elements());
+        caseIssue.setDocumentList(getDynamicMultiSelectDocumentListWithXElements(6));
         caseData.setCaseIssue(caseIssue);
 
         caseData.setHyphenatedCaseRef("1234-5678-3456");
@@ -190,46 +185,14 @@ class CaseworkerIssueCaseTest {
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
 
-
         //When
-        AboutToStartOrSubmitResponse<CaseData, State> response =
-            caseworkerIssueCase.aboutToStart(updatedCaseDetails);
-
+        AboutToStartOrSubmitResponse<CaseData, State> response = caseworkerIssueCase.aboutToStart(updatedCaseDetails);
 
         //Then
         assertThat(response).isNotNull();
-        assertThat(response.getData().getCaseIssue().getDocumentList()).isNotNull();
-        assertThat(response.getData().getCaseIssue().getDocumentList().getListItems()).hasSize(1);
-    }
-
-    @Test
-    void shouldReturnErrorsIfNoFlagPartySelected() {
-        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
-        final CaseData caseData = CaseData.builder().build();
-        caseDetails.setData(caseData);
-
-        AboutToStartOrSubmitResponse<CaseData, State> response = issueCaseNotifyParties.midEvent(caseDetails, caseDetails);
-
-        assertThat(response.getErrors()).hasSize(1);
-    }
-
-    @Test
-    void shouldSelectContactPreferenceMinor() {
-        //Given
-        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
-        final CicCase cicCase = CicCase.builder()
-            .caseSubcategory(CaseSubcategory.MINOR)
-            .notifyPartySubject(Set.of(SubjectCIC.SUBJECT))
-            .partiesCIC(Set.of(PartiesCIC.SUBJECT)).build();
-        final CaseData caseData = CaseData.builder()
-            .cicCase(cicCase)
-            .build();
-        caseDetails.setData(caseData);
-
-        //When
-        final AboutToStartOrSubmitResponse<CaseData, State> response = issueCaseNotifyParties.midEvent(caseDetails, caseDetails);
-
-        //Then
-        assertThat(response.getErrors()).isNotNull();
+        DynamicMultiSelectList documentList = response.getData().getCaseIssue().getDocumentList();
+        assertThat(documentList).isNotNull();
+        assertThat(documentList.getListItems()).hasSize(1);
+        assertThat(documentList.getListItems().get(0).getLabel()).isEqualTo("[name.pdf A - Application Form](nulldocuments//binary)");
     }
 }

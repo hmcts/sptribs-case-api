@@ -12,7 +12,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 
-import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SYSTEMUPDATE;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SYSTEM_UPDATE;
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE_DELETE;
 
 @Component
@@ -21,8 +21,12 @@ public class SystemMigrateOldHearing implements CCDConfig<CaseData, State, UserR
 
     public static final String SYSTEM_MIGRATE_OLD_HEARING = "system-migrate-old-hearing";
 
+    private final HearingService hearingService;
+
     @Autowired
-    private HearingService hearingService;
+    public SystemMigrateOldHearing(HearingService hearingService) {
+        this.hearingService = hearingService;
+    }
 
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
@@ -32,7 +36,7 @@ public class SystemMigrateOldHearing implements CCDConfig<CaseData, State, UserR
             .aboutToSubmitCallback(this::aboutToSubmit)
             .name("Migrate old hearing")
             .description("Migrate old hearing to new hearing list")
-            .grant(CREATE_READ_UPDATE_DELETE, SYSTEMUPDATE);
+            .grant(CREATE_READ_UPDATE_DELETE, SYSTEM_UPDATE);
 
     }
 

@@ -15,10 +15,10 @@ public class SetStateAfterSubmission implements CaseTask {
 
     @Override
     public CaseDetails<CaseData, State> apply(final CaseDetails<CaseData, State> caseDetails) {
-
-        caseDetails.setState(Submitted);
-
-        log.info("State set to {}, CaseID {}", caseDetails.getState(), caseDetails.getId());
+        if (caseDetails != null) {
+            caseDetails.setState(Submitted);
+            log.debug("State set to {}, CaseID {}", caseDetails.getState(), caseDetails.getId());
+        }
 
         return caseDetails;
     }

@@ -6,7 +6,6 @@ import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.task.CaseTaskRunner;
-import uk.gov.hmcts.sptribs.common.service.task.SendSubmissionNotifications;
 import uk.gov.hmcts.sptribs.common.service.task.SetHyphenatedCaseRef;
 import uk.gov.hmcts.sptribs.common.service.task.SetStateAfterSubmission;
 
@@ -19,15 +18,11 @@ public class SubmissionService {
     @Autowired
     private SetStateAfterSubmission setStateAfterSubmission;
 
-    @Autowired
-    private SendSubmissionNotifications sendSubmissionNotifications;
-
     public CaseDetails<CaseData, State> submitApplication(final CaseDetails<CaseData, State> caseDetails) {
 
         return CaseTaskRunner.caseTasks(
             setHyphenatedCaseRef,
-            setStateAfterSubmission,
-            sendSubmissionNotifications
+            setStateAfterSubmission
         ).run(caseDetails);
     }
 }

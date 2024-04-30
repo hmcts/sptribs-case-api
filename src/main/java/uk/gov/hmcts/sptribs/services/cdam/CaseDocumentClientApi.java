@@ -31,7 +31,7 @@ public interface CaseDocumentClientApi {
 
     @DeleteMapping(value = "/{documentId}")
     void deleteDocument(@RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation,
-                        @RequestHeader(SERVICE_AUTHORIZATION) String serviceAuth,
-                        @PathVariable(DOCUMENT_ID) UUID documentId,
-                        @RequestParam("permanent") boolean permanent);
+                                  @RequestHeader(SERVICE_AUTHORIZATION) String serviceAuth,
+                                  @PathVariable(DOCUMENT_ID) UUID documentId,
+                                  @RequestParam("permanent") boolean permanent);
 }

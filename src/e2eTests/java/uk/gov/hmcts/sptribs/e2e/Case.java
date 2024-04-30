@@ -20,7 +20,6 @@ import java.util.Calendar;
 import java.util.List;
 
 import static com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat;
-import static java.lang.String.format;
 import static java.lang.String.valueOf;
 import static java.time.LocalDate.now;
 import static uk.gov.hmcts.sptribs.e2e.enums.Actions.BuildCase;
@@ -28,8 +27,6 @@ import static uk.gov.hmcts.sptribs.e2e.enums.Actions.CloseCase;
 import static uk.gov.hmcts.sptribs.e2e.enums.Actions.CreateDraft;
 import static uk.gov.hmcts.sptribs.e2e.enums.Actions.CreateEditStay;
 import static uk.gov.hmcts.sptribs.e2e.enums.Actions.CreateFlag;
-import static uk.gov.hmcts.sptribs.e2e.enums.Actions.LinkCases;
-import static uk.gov.hmcts.sptribs.e2e.enums.Actions.ManageCaseLinks;
 import static uk.gov.hmcts.sptribs.e2e.enums.Actions.ManageDueDate;
 import static uk.gov.hmcts.sptribs.e2e.enums.Actions.ManageFlags;
 import static uk.gov.hmcts.sptribs.e2e.enums.Actions.SendOrder;
@@ -195,7 +192,7 @@ public class Case {
         clickButton(page, "Add new");
         String documentCategory = "A - Application Form";
         page.selectOption("#cicCaseApplicantDocumentsUploaded_0_documentCategory", new SelectOption().setLabel(documentCategory));
-        String documentName = "sample_file.pdf";
+        String documentName = "sample_A_application_document.pdf";
         page.setInputFiles("input[type='file']", Paths.get("src/e2eTests/java/uk/gov/hmcts/sptribs/testutils/files/" + documentName));
         page.waitForSelector("//span[contains(text(), 'Uploading...')]",
             new Page.WaitForSelectorOptions().setState(WaitForSelectorState.DETACHED));
@@ -238,134 +235,6 @@ public class Case {
         return page.locator("ccd-markdown markdown h3")
             .textContent().substring(caseNumberHeading.lastIndexOf(" ")).trim();
     }
-
-    /*public String editDssCase(String... args) {
-        startNextStepAction(EditCase);
-        // Select case categories
-        assertThat(page.locator("h1"))
-            .hasText("Case categorisation", textOptionsWithTimeout(30000));
-        page.selectOption("#cicCaseCaseCategory", new SelectOption().setLabel("Assessment")); // Available options: Assessment, Eligibility
-        page.selectOption("#cicCaseCaseSubcategory", new SelectOption().setLabel("Fatal")); // Available options: Fatal, Sexual Abuse, Other
-        clickButton(page, "Continue");
-
-        // Fill date case received form
-        assertThat(page.locator("h1"))
-            .hasText("When was the case received?", textOptionsWithTimeout(30000));
-        Calendar date = DateHelpers.getYesterdaysDate();
-        getTextBoxByLabel(page, "Day").fill(valueOf(date.get(Calendar.DAY_OF_MONTH)));
-        getTextBoxByLabel(page, "Month").fill(valueOf(date.get(Calendar.MONTH) + 1));
-        getTextBoxByLabel(page, "Year").type(valueOf(date.get(Calendar.YEAR)));
-        clickButton(page, "Continue");
-
-        // Fill identified parties form
-        assertThat(page.locator("h1"))
-            .hasText("Who are the parties in this case?", textOptionsWithTimeout(30000));
-        getCheckBoxByLabel(page, "Subject").first().check();
-
-        List<String> options = Arrays.stream(args).map(String::toLowerCase).toList();
-        if (options.contains("representative")) {
-            getCheckBoxByLabel(page, "Representative").check();
-        }
-        if (options.contains("applicant")) {
-            getCheckBoxByLabel(page, "Applicant (if different from subject)").check();
-        }
-        clickButton(page, "Continue");
-
-        // Fill subject details form
-        assertThat(page.locator("h1"))
-            .hasText("Who is the subject of this case?", textOptionsWithTimeout(30000));
-        page.locator("text = What is subject's contact preference type?").click();
-        fillAddressDetails("Subject");
-        clickButton(page, "Continue");
-
-        // Fill applicant details form
-        if (options.contains("applicant")) {
-            assertThat(page.locator("h1"))
-                .hasText("Who is the applicant in this case?", textOptionsWithTimeout(60000));
-            getTextBoxByLabel(page, "Applicant's full name").fill("Applicant " + StringHelpers.getRandomString(9));
-            getTextBoxByLabel(page, "Applicant's phone number").fill("07465730467");
-            getTextBoxByLabel(page, "Day").fill("3");
-            getTextBoxByLabel(page, "Month").fill("10");
-            getTextBoxByLabel(page, "Year").fill("1992");
-            page.locator("text = What is applicant's contact preference?").click();
-            if (options.contains("post")) {
-                getRadioButtonByLabel(page, "Post").click();
-                fillAddressDetails("Applicant");
-            } else {
-                getRadioButtonByLabel(page, "Email").click();
-                getTextBoxByLabel(page, "Applicant's email address")
-                    .fill(StringHelpers.getRandomString(9).toLowerCase() + "@applicant.com");
-            }
-        }
-
-        clickButton(page, "Continue");
-
-        // Fill representative details form
-        if (options.contains("representative")) {
-            assertThat(page.locator("h1"))
-                .hasText("Who is the Representative for this case?", textOptionsWithTimeout(60000));
-            getTextBoxByLabel(page, "Representative's full name").fill("Representative " + StringHelpers.getRandomString(9));
-            getTextBoxByLabel(page, "Organisation or business name (Optional)").fill(StringHelpers.getRandomString(10) + " Limited");
-            getTextBoxByLabel(page, "Representative's contact number").fill("07456831774");
-            getTextBoxByLabel(page, "Representative's reference (Optional)").fill(StringHelpers.getRandomString(10));
-            getRadioButtonByLabel(page, "Yes").click();
-            page.locator("text = What is representative's contact preference?").click();
-            if (options.contains("post")) {
-                getRadioButtonByLabel(page, "Post").click();
-                fillAddressDetails("Representative");
-            } else {
-                getRadioButtonByLabel(page, "Email").click();
-                getTextBoxByLabel(page, "Representative's email address")
-                    .fill(StringHelpers.getRandomString(9).toLowerCase() + "@representative.com");
-            }
-        }
-
-        clickButton(page, "Continue");
-
-        // Fill contact preferences form
-        assertThat(page.locator("h1"))
-            .hasText("Who should receive information about the case?", textOptionsWithTimeout(30000));
-        getCheckBoxByLabel(page, "Subject").first().check();
-        if (page.isVisible("#cicCaseApplicantCIC-ApplicantCIC")) {
-            getCheckBoxByLabel(page, "Applicant (if different from subject)").check();
-        }
-        if (page.isVisible("#cicCaseRepresentativeCIC-RepresentativeCIC")) {
-            getCheckBoxByLabel(page, "Representative").check();
-        }
-        clickButton(page, "Continue");
-
-        // Fill further details form
-        assertThat(page.locator("h1"))
-            .hasText("Enter further details about this case", textOptionsWithTimeout(30000));
-        page.selectOption("#cicCaseSchemeCic", new SelectOption().setLabel("2001"));
-        page.locator("#cicCaseClaimLinkedToCic_Yes").click();
-        getTextBoxByLabel(page, "CICA reference number").fill("CICATestReference");
-        page.locator("#cicCaseCompensationClaimLinkCIC_Yes").click();
-        getTextBoxByLabel(page, "Police Authority Management Incident").fill("PAMITestReference");
-        page.locator("#cicCaseFormReceivedInTime_Yes").click();
-        page.locator("#cicCaseMissedTheDeadLineCic_Yes").click();
-        clickButton(page, "Continue");
-
-        // Check your answers form
-        page.waitForSelector("h2.heading-h2", selectorOptionsWithTimeout(30000));
-        assertThat(page.locator("h2.heading-h2"))
-            .hasText("Check your answers", textOptionsWithTimeout(30000));
-        clickButton(page, "Save and continue");
-
-        // Case created confirmation screen
-        assertThat(page.locator("ccd-markdown markdown h1"))
-            .hasText("Case Updated", textOptionsWithTimeout(60000));
-        clickButton(page, "Close and Return to case details");
-
-        // Case details screen
-        assertThat(page.locator("h2.heading-h2").first())
-            .hasText("History", textOptionsWithTimeout(60000));
-        Assertions.assertEquals(Submitted.label, getCaseStatus());
-
-        String caseNumberHeading = page.locator("ccd-markdown markdown h3").textContent();
-        return page.locator("ccd-markdown markdown h3")
-            .textContent().substring(caseNumberHeading.lastIndexOf(" ")).trim();
-    }*/
 
     public void buildCase() {
         startNextStepAction(BuildCase);
@@ -487,7 +356,7 @@ public class Case {
 
         // Select to make flag inactive
         clickButton(page, "Make inactive");
-        page.locator("#flagComments").type("Test Manage case flag, making the flag inactive");
+        page.locator("#flagComment").type("Test Manage case flag, making the flag inactive");
         clickButton(page, "Next");
 
         // Review flag details screen
@@ -670,64 +539,4 @@ public class Case {
             .hasText(ManageDueDate.label, textOptionsWithTimeout(60000));
     }
 
-    public void linkCase(String caseId1, String caseId2) {
-        openCase(caseId1);
-        startNextStepAction(LinkCases);
-        assertThat(page.locator("h1"))
-            .hasText("Before you start", textOptionsWithTimeout(60000));
-        clickButton(page, "Next");
-        assertThat(page.locator("h1"))
-            .hasText("Select a case you want to link to this case", textOptionsWithTimeout(60000));
-        page.locator("#caseNumber input").fill(caseId2);
-        page.getByLabel("Bail").check();
-        clickButton(page, "Propose case link");
-        page.waitForSelector("//td/span[contains(text(), 'Bail')]",
-            new Page.WaitForSelectorOptions().setState(WaitForSelectorState.VISIBLE));
-        clickButton(page, "Next");
-        assertThat(page.locator("h1"))
-            .hasText("Check your answers", textOptionsWithTimeout(60000));
-        clickButton(page, "Submit");
-        assertThat(page.locator("h1").last())
-            .hasText("Case Link created", textOptionsWithTimeout(60000));
-        clickButton(page, "Close and Return to case details");
-        assertThat(page.locator("h2.heading-h2").first())
-            .hasText("History", textOptionsWithTimeout(60000));
-        Assertions.assertEquals(CaseManagement.label, getCaseStatus());
-    }
-
-    public void unlinkCase(String caseId1, String caseId2) {
-        openCase(caseId1);
-        startNextStepAction(ManageCaseLinks);
-        assertThat(page.locator("h1"))
-            .hasText("Before you start", textOptionsWithTimeout(60000));
-        clickButton(page, "Next");
-        assertThat(page.locator("h1").last())
-            .hasText("Select the cases you want to unlink from this case", textOptionsWithTimeout(60000));
-        page.locator(format("#case-reference-%s", caseId2.replace("-", ""))).check();
-        clickButton(page, "Next");
-        assertThat(page.locator("h1").last())
-            .hasText("Check your answers", textOptionsWithTimeout(60000));
-        clickButton(page, "Submit");
-        assertThat(page.locator("h1").last())
-            .hasText("Case Link updated", textOptionsWithTimeout(60000));
-        clickButton(page, "Close and Return to case details");
-        assertThat(page.locator("h2.heading-h2").first())
-            .hasText("History", textOptionsWithTimeout(60000));
-        Assertions.assertEquals(CaseManagement.label, getCaseStatus());
-    }
-
-    private void openCase(String caseId) {
-        clickLink(page, "Find Case");
-        page.selectOption("#s-jurisdiction", new SelectOption().setLabel("CIC"));
-        page.selectOption("#s-case-type", new SelectOption().setLabel("CIC"));
-        page.locator("input[id*=CASE_REFERENCE]").fill(caseId);
-        clickButton(page, "Apply");
-        String selector = "//ccd-read-text-field/span[contains(text(), '" + caseId + "')]";
-        page.waitForSelector(selector, new Page.WaitForSelectorOptions().setState(WaitForSelectorState.VISIBLE));
-        page.waitForSelector("xuilib-loading-spinner div.spinner-inner-container",
-            new Page.WaitForSelectorOptions().setState(WaitForSelectorState.DETACHED).setTimeout(60000));
-        page.locator(selector).click();
-        assertThat(page.locator("h2.heading-h2").first())
-            .hasText("History", textOptionsWithTimeout(60000));
-    }
 }

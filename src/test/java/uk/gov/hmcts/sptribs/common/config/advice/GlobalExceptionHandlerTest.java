@@ -1,7 +1,6 @@
 package uk.gov.hmcts.sptribs.common.config.advice;
 
 import feign.FeignException;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -9,12 +8,23 @@ import uk.gov.hmcts.sptribs.common.config.interceptors.UnAuthorisedServiceExcept
 import uk.gov.hmcts.sptribs.notification.exception.NotificationException;
 import uk.gov.service.notify.NotificationClientException;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
+import java.util.Collection;
+import java.util.Map;
+
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-class GlobalExceptionHandlerTest {
+public class GlobalExceptionHandlerTest {
+
+    static class CustomFeignException extends FeignException {
+        protected CustomFeignException(int status,
+                                          String message,
+                                          byte[] responseBody,
+                                          Map<String, Collection<String>> responseHeaders) {
+            super(status, message, responseBody, responseHeaders);
+        }
+    }
 
     @Test
     void shouldHandleNotificationException() {
@@ -25,13 +35,11 @@ class GlobalExceptionHandlerTest {
         when(notificationException.getCause()).thenReturn(new NotificationClientException("some exception"));
 
         //When
-        final ResponseEntity<Object> actualResponse =
-            exceptionHandler.handleNotificationException(notificationException);
+        final ResponseEntity<Object> actualResponse = exceptionHandler.handleNotificationException(notificationException);
 
         //Then
-        assertThat(actualResponse.getStatusCode(), is(HttpStatus.BAD_REQUEST));
-
-        assertThat(actualResponse.getBody(), is("some exception"));
+        assertThat(actualResponse.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+        assertThat(actualResponse.getBody()).isEqualTo("some exception");
     }
 
     @Test
@@ -41,27 +49,25 @@ class GlobalExceptionHandlerTest {
         final UnAuthorisedServiceException unAuthorisedServiceException = new UnAuthorisedServiceException("error");
 
         //When
-        final ResponseEntity<Object> actualResponse =
-            exceptionHandler.handleUnAuthorisedServiceException(unAuthorisedServiceException);
+        final ResponseEntity<Object> actualResponse = exceptionHandler.handleUnAuthorisedServiceException(unAuthorisedServiceException);
 
         //Then
-        assertThat(actualResponse.getStatusCode(), is(HttpStatus.FORBIDDEN));
-
+        assertThat(actualResponse.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
+        assertThat(actualResponse.getBody()).isEqualTo("error");
     }
 
     @Test
     void shouldHandleFeignException() {
         //Given
         final GlobalExceptionHandler exceptionHandler = new GlobalExceptionHandler();
-        final FeignException feignException = mock(FeignException.class);
+        final FeignException feignException = new CustomFeignException(500, "internal error", "content".getBytes(), null);
 
         //When
-        final ResponseEntity<Object> actualResponse =
-            exceptionHandler.handleFeignException(feignException);
+        final ResponseEntity<Object> actualResponse = exceptionHandler.handleFeignException(feignException);
 
         //Then
-        Assertions.assertThat(actualResponse.getBody()).isNotNull();
-
+        assertThat(actualResponse.getStatusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
+        assertThat(actualResponse.getBody()).isEqualTo("internal error - content");
     }
 
     @Test
@@ -70,10 +76,10 @@ class GlobalExceptionHandlerTest {
         final GlobalExceptionHandler exceptionHandler = new GlobalExceptionHandler();
 
         //When
-        final ResponseEntity<Object> actualResponse =
-            exceptionHandler.handleInvalidTokenException();
+        final ResponseEntity<Object> actualResponse = exceptionHandler.handleInvalidTokenException();
 
         //Then
-        assertThat(actualResponse.getStatusCode(), is(HttpStatus.UNAUTHORIZED));
+        assertThat(actualResponse.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
+        assertThat(actualResponse.getBody()).isNull();
     }
 }

@@ -17,9 +17,9 @@ import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_HEARING_CENTRE_
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_HEARING_CENTRE_TEAM_LEADER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_CASEWORKER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_JUDGE;
-import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SYSTEMUPDATE;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SYSTEM_UPDATE;
 
-public class CaseLinksDefaultAccessTest {
+class CaseLinksDefaultAccessTest {
     @Test
     void shouldGrantDefaultAccess() {
         //When
@@ -50,10 +50,10 @@ public class CaseLinksDefaultAccessTest {
                 entry(ST_CIC_SENIOR_JUDGE, C),
                 entry(ST_CIC_SENIOR_JUDGE, R),
                 entry(ST_CIC_SENIOR_JUDGE, U),
-                entry(SYSTEMUPDATE, C),
-                entry(SYSTEMUPDATE, R),
-                entry(SYSTEMUPDATE, U),
-                entry(SYSTEMUPDATE, D)
+                entry(SYSTEM_UPDATE, C),
+                entry(SYSTEM_UPDATE, R),
+                entry(SYSTEM_UPDATE, U),
+                entry(SYSTEM_UPDATE, D)
             );
     }
 }

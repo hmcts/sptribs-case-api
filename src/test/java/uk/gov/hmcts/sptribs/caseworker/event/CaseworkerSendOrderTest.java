@@ -85,7 +85,6 @@ class CaseworkerSendOrderTest {
             .contains(CASEWORKER_SEND_ORDER);
     }
 
-
     @Test
     void shouldSuccessfullySendOrderWithEmail() {
         //Given
@@ -105,7 +104,7 @@ class CaseworkerSendOrderTest {
             .documentLink(Document.builder().binaryUrl("http://url/" + uuid).url("http://url/" + uuid).build())
             .documentEmailContent("content")
             .build();
-        ListValue<CICDocument> documentListValue = new ListValue<>();
+        final ListValue<CICDocument> documentListValue = new ListValue<>();
         documentListValue.setValue(document);
 
         final CicCase cicCase = CicCase.builder()
@@ -138,14 +137,14 @@ class CaseworkerSendOrderTest {
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
 
         //When
-        AboutToStartOrSubmitResponse<CaseData, State> response =
+        final AboutToStartOrSubmitResponse<CaseData, State> response =
             caseworkerSendOrder.aboutToSubmit(updatedCaseDetails, beforeDetails);
-        SubmittedCallbackResponse sent = caseworkerSendOrder.sent(updatedCaseDetails, beforeDetails);
+        final SubmittedCallbackResponse sent = caseworkerSendOrder.sent(updatedCaseDetails, beforeDetails);
 
         //Then
         assertThat(sent).isNotNull();
         assertThat(response).isNotNull();
-        Order order = response.getData().getCicCase().getOrderList().get(0).getValue();
+        final Order order = response.getData().getCicCase().getOrderList().get(0).getValue();
         assertThat(order.getDueDateList().get(0).getValue().getDueDate()).isNotNull();
         assertThat(order.getUploadedFile()).isNotNull();
     }
@@ -169,7 +168,7 @@ class CaseworkerSendOrderTest {
             .documentLink(Document.builder().binaryUrl("http://url/" + uuid).url("http://url/" + uuid).build())
             .documentEmailContent("content")
             .build();
-        ListValue<CICDocument> documentListValue = new ListValue<>();
+        final ListValue<CICDocument> documentListValue = new ListValue<>();
         documentListValue.setValue(document);
 
         final CicCase cicCase = CicCase.builder()
@@ -202,16 +201,17 @@ class CaseworkerSendOrderTest {
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
 
         //When
-        AboutToStartOrSubmitResponse<CaseData, State> response =
+        final AboutToStartOrSubmitResponse<CaseData, State> response =
             caseworkerSendOrder.aboutToSubmit(updatedCaseDetails, beforeDetails);
-        SubmittedCallbackResponse sent = caseworkerSendOrder.sent(updatedCaseDetails, beforeDetails);
+        final SubmittedCallbackResponse sent = caseworkerSendOrder.sent(updatedCaseDetails, beforeDetails);
 
         //Then
-        Order order = response.getData().getCicCase().getOrderList().get(0).getValue();
+        final Order order = response.getData().getCicCase().getOrderList().get(0).getValue();
         assertThat(order.getDraftOrder().getTemplateGeneratedDocument().getFilename())
             .isNotNull();
         assertThat(order.getDraftOrder().getTemplateGeneratedDocument().getFilename())
             .isEqualTo(SENT + COLON + "aa--bb--cc");
+        assertThat(sent.getConfirmationHeader()).contains("Order sent");
     }
 
     @Test
@@ -233,7 +233,7 @@ class CaseworkerSendOrderTest {
             .documentLink(Document.builder().binaryUrl("http://url/" + uuid).url("http://url/" + uuid).build())
             .documentEmailContent("content")
             .build();
-        ListValue<CICDocument> documentListValue = new ListValue<>();
+        final ListValue<CICDocument> documentListValue = new ListValue<>();
         documentListValue.setValue(document);
 
         final CicCase cicCase = CicCase.builder()
@@ -266,9 +266,9 @@ class CaseworkerSendOrderTest {
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
 
         //When
-        AboutToStartOrSubmitResponse<CaseData, State> response =
+        final AboutToStartOrSubmitResponse<CaseData, State> response =
             caseworkerSendOrder.aboutToSubmit(updatedCaseDetails, beforeDetails);
-        SubmittedCallbackResponse sent = caseworkerSendOrder.sent(updatedCaseDetails, beforeDetails);
+        final SubmittedCallbackResponse sent = caseworkerSendOrder.sent(updatedCaseDetails, beforeDetails);
 
         //Then
         Order order = response.getData().getCicCase().getOrderList().get(0).getValue();
@@ -276,6 +276,7 @@ class CaseworkerSendOrderTest {
             .isNotNull();
         assertThat(order.getDraftOrder().getTemplateGeneratedDocument().getFilename())
             .isEqualTo(SENT + COLON + "aa--bb--cc");
+        assertThat(sent.getConfirmationHeader()).contains("Order sent");
     }
 
     @Test
@@ -292,7 +293,7 @@ class CaseworkerSendOrderTest {
         draftOrderCICListValue.setValue(draftOrderCIC);
         draftOrderCICListValue.setId("0");
 
-        List<ListValue<CICDocument>> documentList = getCICDocumentList();
+        final List<ListValue<CICDocument>> documentList = getCICDocumentList("file.pdf");
 
         final CicCase cicCase = CicCase.builder()
             .draftOrderCICList(List.of(draftOrderCICListValue))
@@ -322,12 +323,12 @@ class CaseworkerSendOrderTest {
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
 
         //When
-        AboutToStartOrSubmitResponse<CaseData, State> response =
+        final AboutToStartOrSubmitResponse<CaseData, State> response =
             caseworkerSendOrder.aboutToSubmit(updatedCaseDetails, beforeDetails);
-        SubmittedCallbackResponse sent = caseworkerSendOrder.sent(updatedCaseDetails, beforeDetails);
+        final SubmittedCallbackResponse sent = caseworkerSendOrder.sent(updatedCaseDetails, beforeDetails);
 
         //Then
-        assertThat(sent).isNotNull();
+        assertThat(sent.getConfirmationHeader()).contains("Order sent");
         assertThat(response).isNotNull();
         Order order = response.getData().getCicCase().getOrderList().get(0).getValue();
         assertThat(order.getDueDateList().get(0).getValue().getDueDate()).isNotNull();
@@ -349,7 +350,7 @@ class CaseworkerSendOrderTest {
         draftOrderCICListValue.setValue(draftOrderCIC);
         draftOrderCICListValue.setId("0");
 
-        List<ListValue<CICDocument>> documentList = getCICDocumentList();
+        final List<ListValue<CICDocument>> documentList = getCICDocumentList("file.pdf");
 
         final CicCase cicCase = CicCase.builder()
             .draftOrderCICList(List.of(draftOrderCICListValue))
@@ -377,12 +378,12 @@ class CaseworkerSendOrderTest {
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
 
         //When
-        AboutToStartOrSubmitResponse<CaseData, State> response =
+        final AboutToStartOrSubmitResponse<CaseData, State> response =
             caseworkerSendOrder.aboutToSubmit(updatedCaseDetails, beforeDetails);
-        SubmittedCallbackResponse sent = caseworkerSendOrder.sent(updatedCaseDetails, beforeDetails);
+        final SubmittedCallbackResponse sent = caseworkerSendOrder.sent(updatedCaseDetails, beforeDetails);
 
         //Then
-        assertThat(sent).isNotNull();
+        assertThat(sent.getConfirmationHeader()).contains("Order sent");
         assertThat(response).isNotNull();
         Order order = response.getData().getCicCase().getOrderList().get(0).getValue();
         assertThat(order.getDueDateList().get(0).getValue().getDueDate()).isNotNull();
@@ -411,11 +412,11 @@ class CaseworkerSendOrderTest {
         final ListValue<DraftOrderCIC> secondValue = new ListValue<>();
         secondValue.setValue(secondDraftOrder);
         secondValue.setId("1");
-        List<ListValue<DraftOrderCIC>> draftOrderList = new ArrayList<>();
+        final List<ListValue<DraftOrderCIC>> draftOrderList = new ArrayList<>();
         draftOrderList.add(firstValue);
         draftOrderList.add(secondValue);
 
-        List<ListValue<CICDocument>> documentList = getCICDocumentList();
+        final List<ListValue<CICDocument>> documentList = getCICDocumentList("file.pdf");
 
         final CicCase cicCase = CicCase.builder()
             .draftOrderCICList(draftOrderList)
@@ -443,15 +444,15 @@ class CaseworkerSendOrderTest {
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
 
         //When
-        AboutToStartOrSubmitResponse<CaseData, State> response =
+        final AboutToStartOrSubmitResponse<CaseData, State> response =
             caseworkerSendOrder.aboutToSubmit(updatedCaseDetails, beforeDetails);
-        SubmittedCallbackResponse sent = caseworkerSendOrder.sent(updatedCaseDetails, beforeDetails);
+        final SubmittedCallbackResponse sent = caseworkerSendOrder.sent(updatedCaseDetails, beforeDetails);
         updatedCaseDetails.setData(caseData);
-        AboutToStartOrSubmitResponse<CaseData, State> response2 =
+        final AboutToStartOrSubmitResponse<CaseData, State> response2 =
             caseworkerSendOrder.aboutToSubmit(updatedCaseDetails, beforeDetails);
 
         //Then
-        assertThat(sent).isNotNull();
+        assertThat(sent.getConfirmationHeader()).contains("Order sent");
         assertThat(response).isNotNull();
         assertThat(response2.getData().getCicCase().getOrderList()).hasSize(2);
     }
@@ -471,20 +472,20 @@ class CaseworkerSendOrderTest {
             .value(element)
             .build();
         final List<ListValue<DraftOrderCIC>> draftOrderCICList = new ArrayList<>();
-        DraftOrderContentCIC contentCIC = DraftOrderContentCIC.builder()
+        final DraftOrderContentCIC contentCIC = DraftOrderContentCIC.builder()
             .mainContent("content")
             .orderSignature("signature")
             .orderTemplate(OrderTemplate.CIC6_GENERAL_DIRECTIONS)
             .build();
-        DraftOrderCIC orderCIC = DraftOrderCIC.builder()
+        final DraftOrderCIC orderCIC = DraftOrderCIC.builder()
             .draftOrderContentCIC(contentCIC)
             .build();
-        ListValue<DraftOrderCIC> listValue = ListValue.<DraftOrderCIC>builder()
+        final ListValue<DraftOrderCIC> listValue = ListValue.<DraftOrderCIC>builder()
             .value(orderCIC)
             .build();
         draftOrderCICList.add(listValue);
 
-        List<ListValue<CICDocument>> documentList = getCICDocumentList();
+        final List<ListValue<CICDocument>> documentList = getCICDocumentList("file.pdf");
 
         final CicCase cicCase = CicCase.builder()
             .draftOrderDynamicList(dynamicList)
@@ -497,11 +498,10 @@ class CaseworkerSendOrderTest {
         caseDetails.setData(caseData);
 
         // When
-        caseworkerSendOrder.aboutToSubmit(caseDetails, caseDetails);
+        final AboutToStartOrSubmitResponse<CaseData, State> response = caseworkerSendOrder.aboutToSubmit(caseDetails, caseDetails);
 
         // Then
-        assertThat(caseDetails.getData().getCicCase().getDraftOrderDynamicList().getListItems()
-            .contains(OrderTemplate.CIC6_GENERAL_DIRECTIONS));
+        assertThat(response.getData().getCicCase().getDraftOrderCICList()).isEqualTo(draftOrderCICList);
     }
 
     @Test
@@ -518,13 +518,13 @@ class CaseworkerSendOrderTest {
 
         // When
         caseworkerSendOrder.sent(caseDetails, beforeDetails);
-        SubmittedCallbackResponse s = SubmittedCallbackResponse.builder()
+        final SubmittedCallbackResponse s = SubmittedCallbackResponse.builder()
             .confirmationHeader(format("# Order sent %n## %s",
                 MessageUtil.generateSimpleMessage(cicCase)))
             .build();
 
         // Then
-        assertThat(s.getConfirmationHeader().contains("# Order sent %n## %s"));
+        assertThat(s.getConfirmationHeader()).contains("# Order sent");
     }
 
     private DynamicList getDraftOrderList() {

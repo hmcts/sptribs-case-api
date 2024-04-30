@@ -29,7 +29,11 @@ import static uk.gov.hmcts.ccd.sdk.type.FieldType.TextArea;
 @Data
 @NoArgsConstructor
 public class RetiredFields {
-    @CCD(label = "Case data version", access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
+
+    @CCD(
+        label = "Case data version",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
     private int dataVersion;
 
     @CCD(
@@ -139,6 +143,14 @@ public class RetiredFields {
         typeOverride = Collection,
         typeParameterOverride = "CaseLinks")
     private List<ListValue<CaseLinks>> cicCaseCaseLinks;
+
+    @CCD(
+        label = "Case Status",
+        typeOverride = FixedRadioList,
+        typeParameterOverride = "State",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private State cicCaseTestState;
 
     @JsonIgnore
     private static final TriConsumer<Map<String, Object>, String, Object> DO_NOTHING = (data, key, val) -> {

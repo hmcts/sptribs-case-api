@@ -1,5 +1,6 @@
 package uk.gov.hmcts.sptribs.caseworker.event;
 
+import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -22,7 +23,7 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.ArrayList;
-import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
@@ -55,13 +56,10 @@ class CaseworkerAddNoteTest {
 
     @Test
     void shouldAddConfigurationToConfigBuilder() throws Exception {
-        //Given
         final ConfigBuilderImpl<CaseData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
 
-        //When
         caseworkerAddNote.configure(configBuilder);
 
-        //Then
         assertThat(getEventsFrom(configBuilder).values())
             .extracting(Event::getId)
             .contains(CASEWORKER_ADD_NOTE);
@@ -78,9 +76,9 @@ class CaseworkerAddNoteTest {
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
 
-        final var instant = Instant.now();
-        final var zoneId = ZoneId.systemDefault();
-        final var expectedDate = LocalDate.ofInstant(instant, zoneId);
+        final Instant instant = Instant.now();
+        final ZoneId zoneId = ZoneId.systemDefault();
+        final LocalDate expectedDate = LocalDate.ofInstant(instant, zoneId);
 
         when(clock.instant()).thenReturn(instant);
         when(clock.getZone()).thenReturn(zoneId);
@@ -90,7 +88,7 @@ class CaseworkerAddNoteTest {
         when(idamService.retrieveUser(TEST_AUTHORIZATION_TOKEN)).thenReturn(TestDataHelper.getUser());
 
         //When
-        AboutToStartOrSubmitResponse<CaseData, State> response =
+        final AboutToStartOrSubmitResponse<CaseData, State> response =
             caseworkerAddNote.aboutToSubmit(updatedCaseDetails, CaseDetails.<CaseData, State>builder().build());
 
         //Then
@@ -115,9 +113,9 @@ class CaseworkerAddNoteTest {
         final CaseData caseData = caseData();
         caseData.setNote("This is a test note 2");
 
-        var caseNoteAddedDate = LocalDate.of(2021, 1, 1);
+        final LocalDate caseNoteAddedDate = LocalDate.of(2021, 1, 1);
 
-        var notes = new ArrayList<ListValue<CaseNote>>();
+        final List<ListValue<CaseNote>> notes = new ArrayList<>();
         notes.add(ListValue
             .<CaseNote>builder()
             .id("1")
@@ -131,9 +129,9 @@ class CaseworkerAddNoteTest {
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
 
-        final var instant = Instant.now();
-        final var zoneId = ZoneId.systemDefault();
-        final var expectedDate = LocalDate.ofInstant(instant, zoneId);
+        final Instant instant = Instant.now();
+        final ZoneId zoneId = ZoneId.systemDefault();
+        final LocalDate expectedDate = LocalDate.ofInstant(instant, zoneId);
 
         when(clock.instant()).thenReturn(instant);
         when(clock.getZone()).thenReturn(zoneId);
@@ -143,7 +141,7 @@ class CaseworkerAddNoteTest {
         when(idamService.retrieveUser(TEST_AUTHORIZATION_TOKEN)).thenReturn(TestDataHelper.getUser());
 
         //When
-        AboutToStartOrSubmitResponse<CaseData, State> response =
+        final AboutToStartOrSubmitResponse<CaseData, State> response =
             caseworkerAddNote.aboutToSubmit(updatedCaseDetails, CaseDetails.<CaseData, State>builder().build());
 
         //Then

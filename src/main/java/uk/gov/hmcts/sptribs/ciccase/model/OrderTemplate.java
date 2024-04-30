@@ -9,6 +9,9 @@ import uk.gov.hmcts.ccd.sdk.api.HasLabel;
 @AllArgsConstructor
 public enum OrderTemplate implements HasLabel {
 
+    @JsonProperty("CIC3_Rule_27")
+    CIC3_RULE_27("CIC3 - Rule 27", "CIC3_Rule_27"),
+
     @JsonProperty("CIC6_General_Directions")
     CIC6_GENERAL_DIRECTIONS("CIC6 - General Directions", "CIC6_General_Directions"),
 

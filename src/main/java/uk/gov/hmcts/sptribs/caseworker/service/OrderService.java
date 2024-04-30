@@ -1,9 +1,10 @@
 package uk.gov.hmcts.sptribs.caseworker.service;
 
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.util.CollectionUtils;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.ccd.sdk.type.DynamicList;
@@ -20,8 +21,6 @@ import uk.gov.hmcts.sptribs.document.content.PreviewDraftOrderTemplateContent;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
-import javax.servlet.http.HttpServletRequest;
 
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.COLON;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.DOUBLE_HYPHEN;
@@ -43,7 +42,7 @@ public class OrderService {
         CaseData data = caseDetails.getData();
         List<ListValue<Order>> orderList = data.getCicCase().getOrderList();
         List<String> orders = new ArrayList<>();
-        if (!CollectionUtils.isEmpty(orderList)) {
+        if (CollectionUtils.isNotEmpty(orderList)) {
             for (ListValue<Order> order : orderList) {
                 if (null != order.getValue().getDraftOrder()) {
                     String item = order.getId() + EventConstants.HYPHEN
@@ -59,7 +58,7 @@ public class OrderService {
                 .stream()
                 .sorted()
                 .map(order -> DynamicListElement.builder().label(order).code(UUID.randomUUID()).build())
-                .collect(Collectors.toList());
+                .toList();
 
             return DynamicList
                 .builder()

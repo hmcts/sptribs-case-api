@@ -22,8 +22,8 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(value = NotificationException.class)
     public ResponseEntity<Object> handleNotificationException(NotificationException notificationException) {
         log.error(notificationException.getMessage(), notificationException);
-        NotificationClientException notificationClientException =
-            (NotificationClientException) notificationException.getCause();
+        NotificationClientException notificationClientException = (NotificationClientException) notificationException.getCause();
+
         return new ResponseEntity<>(
             notificationClientException.getMessage(),
             new HttpHeaders(),
@@ -37,9 +37,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     @ExceptionHandler(UnAuthorisedServiceException.class)
-    public ResponseEntity<Object> handleUnAuthorisedServiceException(
-        UnAuthorisedServiceException unAuthorisedServiceException
-    ) {
+    public ResponseEntity<Object> handleUnAuthorisedServiceException(UnAuthorisedServiceException unAuthorisedServiceException) {
         return new ResponseEntity<>(
             unAuthorisedServiceException.getMessage(),
             HttpStatus.FORBIDDEN
@@ -47,7 +45,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     @ExceptionHandler(FeignException.class)
-    ResponseEntity<Object> handleFeignException(FeignException exception) {
+    public ResponseEntity<Object> handleFeignException(FeignException exception) {
         log.error(exception.getMessage(), exception);
 
         return status(exception.status()).body(

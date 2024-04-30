@@ -1,5 +1,6 @@
 package uk.gov.hmcts.sptribs.caseworker.event;
 
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,13 +24,16 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import javax.servlet.http.HttpServletRequest;
 
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CHANGE_SECURITY_CLASS;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_CASEWORKER;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_HEARING_CENTRE_ADMIN;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_HEARING_CENTRE_TEAM_LEADER;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_JUDGE;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_CASEWORKER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_JUDGE;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE;
 
 @Component
@@ -67,7 +71,15 @@ public class CaseworkerChangeSecurityClassification implements CCDConfig<CaseDat
             .aboutToSubmitCallback(this::aboutToSubmit)
             .submittedCallback(this::submitted)
             .grant(CREATE_READ_UPDATE,
-                ST_CIC_SENIOR_CASEWORKER, ST_CIC_HEARING_CENTRE_TEAM_LEADER, ST_CIC_SENIOR_JUDGE));
+                ST_CIC_SENIOR_CASEWORKER, ST_CIC_HEARING_CENTRE_TEAM_LEADER, ST_CIC_SENIOR_JUDGE)
+            .grantHistoryOnly(
+                ST_CIC_CASEWORKER,
+                ST_CIC_SENIOR_CASEWORKER,
+                ST_CIC_HEARING_CENTRE_ADMIN,
+                ST_CIC_HEARING_CENTRE_TEAM_LEADER,
+                ST_CIC_SENIOR_JUDGE,
+                SUPER_USER,
+                ST_CIC_JUDGE));
         changeSecurityClass(pageBuilder);
     }
 
@@ -75,7 +87,7 @@ public class CaseworkerChangeSecurityClassification implements CCDConfig<CaseDat
         final CaseDetails<CaseData, State> details,
         final CaseDetails<CaseData, State> beforeDetails
     ) {
-        var caseData = details.getData();
+        final CaseData caseData = details.getData();
         String securityClassification = caseData.getSecurityClass().getLabel();
         Map<String, Object> dataClassification = caseDataService.getDataClassification(details.getId().toString());
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
@@ -96,7 +108,6 @@ public class CaseworkerChangeSecurityClassification implements CCDConfig<CaseDat
         pageBuilder.page("changeSecurityClass", this::midEvent)
             .pageLabel("Security classification selection")
             .mandatory(CaseData::getSecurityClass);
-
     }
 
     public AboutToStartOrSubmitResponse<CaseData, State> midEvent(
@@ -105,7 +116,7 @@ public class CaseworkerChangeSecurityClassification implements CCDConfig<CaseDat
     ) {
 
         final List<String> errors = new ArrayList<>();
-        var caseData = details.getData();
+        final CaseData caseData = details.getData();
 
         final User user = idamService.retrieveUser(request.getHeader(AUTHORIZATION));
         if (!checkAvailableForNewClass(user, caseData.getSecurityClass())) {
@@ -116,11 +127,10 @@ public class CaseworkerChangeSecurityClassification implements CCDConfig<CaseDat
             .data(caseData)
             .errors(errors)
             .build();
-
     }
 
     private boolean checkAvailableForNewClass(User user, SecurityClass newClass) {
         List<String> roles = user.getUserDetails().getRoles();
-        return Arrays.stream(newClass.getPermittedRoles()).anyMatch(role -> roles.contains(role));
+        return Arrays.stream(newClass.getPermittedRoles()).anyMatch(roles::contains);
     }
 }

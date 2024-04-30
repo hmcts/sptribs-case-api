@@ -48,12 +48,12 @@ public class CancelHearingNotificationTest {
     private CancelHearingNotification cancelHearingNotification;
 
     @Test
-    void shouldNotifySubjectWithEmail() {
+    void shouldNotifySubjectOfCaseCancelHearingWithEmail() {
         //Given
-        LocalDate expDate = LocalDate.now();
+        final LocalDate expDate = LocalDate.now();
         final CaseData data = getMockCaseData(expDate);
         data.getCicCase().setContactPreferenceType(ContactPreferenceType.EMAIL);
-        data.getCicCase().setEmail("testrepr@outlook.com");
+        data.getCicCase().setEmail("testSubject@outlook.com");
         data.getCicCase().setHearingList(getDynamicList());
 
         //When
@@ -64,12 +64,16 @@ public class CancelHearingNotificationTest {
 
         //Then
         verify(notificationService).sendEmail(any(NotificationRequest.class));
+        verify(notificationHelper).buildEmailNotificationRequest(
+            data.getCicCase().getEmail(),
+            new HashMap<>(),
+            TemplateName.CASE_CANCEL_HEARING_EMAIL);
     }
 
     @Test
-    void shouldNotifySubjectWithPost() {
+    void shouldNotifySubjectOfCaseCancelHearingWithPost() {
         //Given
-        LocalDate expDate = LocalDate.now();
+        final LocalDate expDate = LocalDate.now();
         final CaseData data = getMockCaseData(expDate);
         data.getCicCase().setContactPreferenceType(ContactPreferenceType.POST);
         data.getCicCase().setAddress(AddressGlobalUK.builder().build());
@@ -84,15 +88,18 @@ public class CancelHearingNotificationTest {
 
         //Then
         verify(notificationService).sendLetter(any(NotificationRequest.class));
+        verify(notificationHelper).buildLetterNotificationRequest(
+            new HashMap<>(),
+            TemplateName.CASE_CANCEL_HEARING_POST);
     }
 
     @Test
-    void shouldNotifyRespondentWithEmail() {
+    void shouldNotifyRespondentOfCaseCancelHearingWithEmail() {
         //Given
-        LocalDate expDate = LocalDate.now();
+        final LocalDate expDate = LocalDate.now();
         final CaseData data = getMockCaseData(expDate);
         data.getCicCase().setRespondentName("respondentName");
-        data.getCicCase().setRespondentEmail("testrepr@outlook.com");
+        data.getCicCase().setRespondentEmail("testRespondent@outlook.com");
         data.getCicCase().setReinstateReason(ReinstateReason.OTHER);
 
         //When
@@ -103,12 +110,16 @@ public class CancelHearingNotificationTest {
 
         //Then
         verify(notificationService).sendEmail(any(NotificationRequest.class));
+        verify(notificationHelper).buildEmailNotificationRequest(
+            data.getCicCase().getRespondentEmail(),
+            new HashMap<>(),
+            TemplateName.CASE_CANCEL_HEARING_EMAIL);
     }
 
     @Test
-    void shouldNotifyRepresentativeWithEmail() {
+    void shouldNotifyRepresentativeOfCaseCancelHearingWithEmail() {
         //Given
-        LocalDate expDate = LocalDate.now();
+        final LocalDate expDate = LocalDate.now();
         final CaseData data = getMockCaseData(expDate);
         data.getCicCase().setRepresentativeFullName("repFullName");
         data.getCicCase().setRepresentativeContactDetailsPreference(ContactPreferenceType.EMAIL);
@@ -123,12 +134,16 @@ public class CancelHearingNotificationTest {
 
         //Then
         verify(notificationService).sendEmail(any(NotificationRequest.class));
+        verify(notificationHelper).buildEmailNotificationRequest(
+            data.getCicCase().getRepresentativeEmailAddress(),
+            new HashMap<>(),
+            TemplateName.CASE_CANCEL_HEARING_EMAIL);
     }
 
     @Test
-    void shouldNotifyRepresentativeWithPost() {
+    void shouldNotifyRepresentativeOfCaseCancelHearingWithPost() {
         //Given
-        LocalDate expDate = LocalDate.now();
+        final LocalDate expDate = LocalDate.now();
         final CaseData data = getMockCaseData(expDate);
         data.getCicCase().setRepresentativeFullName("repFullName");
         data.getCicCase().setRepresentativeContactDetailsPreference(ContactPreferenceType.POST);
@@ -144,13 +159,16 @@ public class CancelHearingNotificationTest {
 
         //Then
         verify(notificationService).sendLetter(any(NotificationRequest.class));
+        verify(notificationHelper).buildLetterNotificationRequest(
+            new HashMap<>(),
+            TemplateName.CASE_CANCEL_HEARING_POST);
     }
 
 
     @Test
-    void shouldNotifyApplicantWithEmail() {
+    void shouldNotifyApplicantOfCaseCancelHearingWithEmail() {
         //Given
-        LocalDate expDate = LocalDate.now();
+        final LocalDate expDate = LocalDate.now();
         final CaseData data = getMockCaseData(expDate);
         data.getCicCase().setApplicantFullName("applicantFullName");
         data.getCicCase().setApplicantContactDetailsPreference(ContactPreferenceType.EMAIL);
@@ -165,12 +183,16 @@ public class CancelHearingNotificationTest {
 
         //Then
         verify(notificationService).sendEmail(any(NotificationRequest.class));
+        verify(notificationHelper).buildEmailNotificationRequest(
+            data.getCicCase().getApplicantEmailAddress(),
+            new HashMap<>(),
+            TemplateName.CASE_CANCEL_HEARING_EMAIL);
     }
 
     @Test
-    void shouldNotifyApplicantWithPost() {
+    void shouldNotifyApplicantOfCaseCancelHearingWithPost() {
         //Given
-        LocalDate expDate = LocalDate.now();
+        final LocalDate expDate = LocalDate.now();
         final CaseData data = getMockCaseData(expDate);
         data.getCicCase().setApplicantFullName("applicantFullName");
         data.getCicCase().setApplicantContactDetailsPreference(ContactPreferenceType.POST);
@@ -186,20 +208,26 @@ public class CancelHearingNotificationTest {
 
         //Then
         verify(notificationService).sendLetter(any(NotificationRequest.class));
+        verify(notificationHelper).buildLetterNotificationRequest(
+            new HashMap<>(),
+            TemplateName.CASE_CANCEL_HEARING_POST);
     }
 
+
     private CaseData getMockCaseData(LocalDate stayCaseExpDate) {
-        CicCase cicCase = CicCase.builder()
+        final CicCase cicCase = CicCase.builder()
             .fullName("fullName").caseNumber("CN1")
             .build();
-        CaseStay caseStay = CaseStay.builder()
+        final CaseStay caseStay = CaseStay.builder()
             .expirationDate(stayCaseExpDate)
             .stayReason(StayReason.OTHER)
             .additionalDetail("addlDetail")
             .build();
-        CaseData caseData = CaseData.builder().cicCase(cicCase).caseStay(caseStay).build();
 
-        return caseData;
+        return CaseData.builder()
+            .cicCase(cicCase)
+            .caseStay(caseStay)
+            .build();
     }
 
     private DynamicList getDynamicList() {
@@ -214,5 +242,4 @@ public class CancelHearingNotificationTest {
             .listItems(List.of(listItem))
             .build();
     }
-
 }

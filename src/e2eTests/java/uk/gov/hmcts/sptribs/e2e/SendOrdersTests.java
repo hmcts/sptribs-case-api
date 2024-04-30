@@ -1,34 +1,34 @@
 package uk.gov.hmcts.sptribs.e2e;
 
 import com.microsoft.playwright.Page;
-import org.junit.jupiter.api.Disabled;
+import io.github.artsok.RepeatedIfExceptionsTest;
 
 import static java.time.LocalDate.now;
 import static uk.gov.hmcts.sptribs.e2e.enums.DraftOrderTemplate.CIC6GeneralDirections;
 
 public class SendOrdersTests extends Base {
-    Case newCase;
 
-    @Disabled
-    void sendAnExistingDraftOrder() {
-        createCase();
-        newCase.buildCase();
+    @RepeatedIfExceptionsTest
+    public void sendAnExistingDraftOrder() {
+        Page page = getPage();
+        Case newCase = createAndBuildCase(page);
         newCase.createDraft(CIC6GeneralDirections);
         newCase.selectAnExistingDraftOrderAndSend();
     }
 
-    @Disabled
-    void uploadAndSendOrder() {
-        createCase();
-        newCase.buildCase();
+    @RepeatedIfExceptionsTest
+    public void uploadAndSendOrder() {
+        Page page = getPage();
+        Case newCase = createAndBuildCase(page);
         newCase.uploadAndSendOrder(now().plusMonths(1));
     }
 
-    private void createCase() {
-        Page page = getPage();
+    private Case createAndBuildCase(Page page) {
         Login login = new Login(page);
-        login.loginAsStTest1User();
-        newCase = new Case(page);
+        login.loginAsCaseWorker();
+        Case newCase = new Case(page);
         newCase.createCase();
+        newCase.buildCase();
+        return newCase;
     }
 }

@@ -77,6 +77,21 @@ public class CheckRequiredUtilTest {
     }
 
     @Test
+    void shouldSuccessfullyCheckNullSubjectRepresentativeRespondentWithApplicant() {
+        //Given
+        final CaseData caseData = new CaseData();
+        final CicCase cicCase = new CicCase();
+        cicCase.setNotifyPartyApplicant(Set.of(ApplicantCIC.APPLICANT_CIC));
+        caseData.setCicCase(cicCase);
+
+        //When
+        boolean result = CheckRequiredUtil.checkNullSubjectRepresentativeRespondent(caseData);
+
+        //Then
+        assertThat(result).isFalse();
+    }
+
+    @Test
     void shouldSuccessfullyCheckNullSubjectRepresentativeApplicant() {
         //Given
         final CaseData caseData = new CaseData();
@@ -189,24 +204,6 @@ public class CheckRequiredUtilTest {
         assertThat(result).isTrue();
     }
 
-    @Test
-    void shouldSuccessfullyCheckMultiSubjectRepresentativeApplicantWithRepresentativeApplicantRespondent() {
-        //Given
-        final CaseData caseData = new CaseData();
-        final CicCase cicCase = CicCase.builder()
-            .notifyPartyRepresentative(Set.of(RepresentativeCIC.REPRESENTATIVE))
-            .notifyPartyApplicant(Set.of(ApplicantCIC.APPLICANT_CIC))
-            .notifyPartyRespondent(Set.of(RespondentCIC.RESPONDENT))
-            .build();
-        caseData.setCicCase(cicCase);
-
-        //When
-        boolean result = CheckRequiredUtil.checkMultiSubjectRepresentativeApplicant(caseData);
-
-        //Then
-        assertThat(result).isTrue();
-    }
-
 
     @Test
     void shouldSuccessfullyCheckMultiSubjectRepresentativeApplicantWithSubject() {
@@ -224,13 +221,14 @@ public class CheckRequiredUtilTest {
         assertThat(result).isFalse();
     }
 
+
     @Test
-    void shouldSuccessfullyCheckMultiSubjectRepresentativeApplicantWithRepRes() {
+    void shouldSuccessfullyCheckMultiSubjectApplicantWithSubject() {
         //Given
         final CaseData caseData = new CaseData();
         final CicCase cicCase = CicCase.builder()
-            .notifyPartyRepresentative(Set.of(RepresentativeCIC.REPRESENTATIVE))
-            .notifyPartyRespondent(Set.of(RespondentCIC.RESPONDENT))
+            .notifyPartySubject(Set.of(SubjectCIC.SUBJECT))
+            .notifyPartyApplicant(Set.of(ApplicantCIC.APPLICANT_CIC))
             .build();
         caseData.setCicCase(cicCase);
 

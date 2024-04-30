@@ -3,6 +3,7 @@ package uk.gov.hmcts.sptribs.caseworker.event;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.ccd.sdk.ConfigBuilderImpl;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
@@ -11,8 +12,8 @@ import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.event.page.RespondentPartiesToContact;
 import uk.gov.hmcts.sptribs.caseworker.model.ContactParties;
+import uk.gov.hmcts.sptribs.ciccase.model.ApplicantCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
-import uk.gov.hmcts.sptribs.ciccase.model.CaseSubcategory;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.ContactPartiesCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.RepresentativeCIC;
@@ -20,11 +21,13 @@ import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.SubjectCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.TribunalCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
+import uk.gov.hmcts.sptribs.common.notification.ContactPartiesNotification;
 
 import java.util.HashSet;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static uk.gov.hmcts.sptribs.caseworker.util.ErrorConstants.SELECT_AT_LEAST_ONE_CONTACT_PARTY;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.RESPONDENT_CONTACT_PARTIES;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigBuilder;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.getEventsFrom;
@@ -41,6 +44,8 @@ class RespondentContactPartiesTest {
     @InjectMocks
     private RespondentPartiesToContact respondentPartiesToContact;
 
+    @Mock
+    private ContactPartiesNotification contactPartiesNotification;
 
     @Test
     void shouldAddConfigurationToConfigBuilder() {
@@ -56,19 +61,22 @@ class RespondentContactPartiesTest {
             .contains(RESPONDENT_CONTACT_PARTIES);
     }
 
-
     @Test
     void shouldSuccessfullySaveResContactParties() {
         //Given
         final CaseData caseData = caseData();
         caseData.getContactParties().setSubjectContactParties(Set.of(SubjectCIC.SUBJECT));
+        caseData.getContactParties().setApplicantContactParties(Set.of(ApplicantCIC.APPLICANT_CIC));
         caseData.getContactParties().setRepresentativeContactParties(Set.of(RepresentativeCIC.REPRESENTATIVE));
         caseData.getContactParties().setTribunal(Set.of(TribunalCIC.TRIBUNAL));
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
         final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
 
-        ContactParties contactParties = ContactParties.builder().subjectContactParties(Set.of(SubjectCIC.SUBJECT))
-            .representativeContactParties(Set.of(RepresentativeCIC.REPRESENTATIVE)).tribunal(Set.of(TribunalCIC.TRIBUNAL)).build();
+        ContactParties contactParties = ContactParties.builder()
+            .subjectContactParties(Set.of(SubjectCIC.SUBJECT))
+            .applicantContactParties(Set.of(ApplicantCIC.APPLICANT_CIC))
+            .representativeContactParties(Set.of(RepresentativeCIC.REPRESENTATIVE))
+            .tribunal(Set.of(TribunalCIC.TRIBUNAL)).build();
         caseData.setContactParties(contactParties);
 
         updatedCaseDetails.setData(caseData);
@@ -78,45 +86,57 @@ class RespondentContactPartiesTest {
         //When
         AboutToStartOrSubmitResponse<CaseData, State> response =
             respondentContactParties.aboutToSubmit(updatedCaseDetails, beforeDetails);
+
+        //Then
         assertThat(caseData.getContactParties().getSubjectContactParties()).hasSize(1);
+        assertThat(caseData.getContactParties().getApplicantContactParties()).hasSize(1);
         assertThat(caseData.getContactParties().getRepresentativeContactParties()).hasSize(1);
         assertThat(caseData.getContactParties().getTribunal()).hasSize(1);
         assertThat(response).isNotNull();
 
+        //When
         SubmittedCallbackResponse resContactPartiesResponse = respondentContactParties.partiesContacted(updatedCaseDetails, beforeDetails);
+
+        //Then
         assertThat(resContactPartiesResponse).isNotNull();
-
     }
-
 
     @Test
     void shouldSuccessfullyMoveToNextPage() {
+        //Given
         final CaseData caseData = caseData();
         CicCase cicCase = CicCase.builder().contactPartiesCIC(Set.of(ContactPartiesCIC.SUBJECTTOCONTACT)).build();
         caseData.getContactParties().setTribunal(Set.of(TribunalCIC.TRIBUNAL));
         caseData.setCicCase(cicCase);
+
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
         final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
         updatedCaseDetails.setData(caseData);
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
+
+        //When
         AboutToStartOrSubmitResponse<CaseData, State> response =
             respondentPartiesToContact.midEvent(updatedCaseDetails, beforeDetails);
+
+        //Then
         assertThat(response).isNotNull();
-
-
     }
 
     @Test
     void shouldNotSuccessfullyMoveToNextPageWithError() {
-        final CaseData caseData = caseData();
-
+        //Given
         Set<SubjectCIC> sub = new HashSet<>();
+        Set<ApplicantCIC> app = new HashSet<>();
         Set<RepresentativeCIC> rep = new HashSet<>();
         Set<TribunalCIC> tri = new HashSet<>();
 
-        ContactParties contactParties = ContactParties.builder().subjectContactParties(sub)
-            .representativeContactParties(rep).tribunal(tri).build();
+        ContactParties contactParties = ContactParties.builder()
+            .subjectContactParties(sub)
+            .applicantContactParties(app)
+            .representativeContactParties(rep)
+            .tribunal(tri).build();
+        final CaseData caseData = caseData();
         caseData.setContactParties(contactParties);
 
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
@@ -125,38 +145,48 @@ class RespondentContactPartiesTest {
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
 
+        //When
         AboutToStartOrSubmitResponse<CaseData, State> response =
             respondentPartiesToContact.midEvent(updatedCaseDetails, beforeDetails);
 
-
+        //Then
         assertThat(caseData.getContactParties().getSubjectContactParties()).isEmpty();
+        assertThat(caseData.getContactParties().getApplicantContactParties()).isEmpty();
         assertThat(caseData.getContactParties().getRepresentativeContactParties()).isEmpty();
         assertThat(caseData.getContactParties().getTribunal()).isEmpty();
         assertThat(response).isNotNull();
         assertThat(response.getErrors()).hasSize(1);
+        assertThat(response.getErrors()).contains(SELECT_AT_LEAST_ONE_CONTACT_PARTY);
 
+        //When
         SubmittedCallbackResponse contactPartiesResponse = respondentContactParties.partiesContacted(updatedCaseDetails, beforeDetails);
+
+        //Then
         assertThat(contactPartiesResponse).isNotNull();
         assertThat(contactPartiesResponse.getConfirmationHeader()).doesNotContain("Subject");
+        assertThat(contactPartiesResponse.getConfirmationHeader()).doesNotContain("Applicant");
         assertThat(contactPartiesResponse.getConfirmationHeader()).doesNotContain("Representative");
         assertThat(contactPartiesResponse.getConfirmationHeader()).doesNotContain("Tribunal");
-
-
     }
 
     @Test
     void shouldDisplayTheCorrectMessageWithCommaSeparation() {
-        final CaseData caseData = caseData();
-
+        //Given
         Set<SubjectCIC> sub = new HashSet<>();
         sub.add(SubjectCIC.SUBJECT);
+        Set<ApplicantCIC> app = new HashSet<>();
+        app.add(ApplicantCIC.APPLICANT_CIC);
         Set<RepresentativeCIC> rep = new HashSet<>();
         rep.add(RepresentativeCIC.REPRESENTATIVE);
         Set<TribunalCIC> tri = new HashSet<>();
         tri.add(TribunalCIC.TRIBUNAL);
 
-        ContactParties contactParties = ContactParties.builder().subjectContactParties(sub)
-            .representativeContactParties(rep).tribunal(tri).build();
+        ContactParties contactParties = ContactParties.builder()
+            .subjectContactParties(sub)
+            .applicantContactParties(app)
+            .representativeContactParties(rep)
+            .tribunal(tri).build();
+        final CaseData caseData = caseData();
         caseData.setContactParties(contactParties);
 
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
@@ -165,78 +195,51 @@ class RespondentContactPartiesTest {
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
 
+        //When
         SubmittedCallbackResponse response =
             respondentContactParties.partiesContacted(updatedCaseDetails, beforeDetails);
 
-
+        //Then
         assertThat(caseData.getContactParties().getSubjectContactParties()).hasSize(1);
+        assertThat(caseData.getContactParties().getApplicantContactParties()).hasSize(1);
         assertThat(caseData.getContactParties().getRepresentativeContactParties()).hasSize(1);
         assertThat(caseData.getContactParties().getTribunal()).hasSize(1);
         assertThat(response).isNotNull();
+
+        //When
         SubmittedCallbackResponse resContactPartiesResponse = respondentContactParties.partiesContacted(updatedCaseDetails, beforeDetails);
+
+        //Then
         assertThat(resContactPartiesResponse).isNotNull();
         assertThat(resContactPartiesResponse.getConfirmationHeader()).contains("Subject");
+        assertThat(resContactPartiesResponse.getConfirmationHeader()).contains("Applicant");
         assertThat(resContactPartiesResponse.getConfirmationHeader()).contains("Representative");
         assertThat(resContactPartiesResponse.getConfirmationHeader()).contains("Tribunal");
         assertThat(resContactPartiesResponse.getConfirmationHeader()).contains(",");
     }
 
-
     @Test
     void shouldSuccessfullyMoveToNextPageWithOutError() {
+        //Given
         final CaseData caseData = caseData();
-
         CicCase cicCase = CicCase.builder().contactPartiesCIC(Set.of()).build();
         cicCase.setRepresentativeFullName("www");
         caseData.setCicCase(cicCase);
         caseData.getContactParties().setRepresentativeContactParties(Set.of(RepresentativeCIC.REPRESENTATIVE));
+
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
         final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
         updatedCaseDetails.setData(caseData);
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
+
+        //When
         AboutToStartOrSubmitResponse<CaseData, State> response =
             respondentPartiesToContact.midEvent(updatedCaseDetails, beforeDetails);
+
+        //Then
         assertThat(response).isNotNull();
         assertThat(response.getErrors()).isEmpty();
-
-
-    }
-
-    @Test
-    void shouldReturnErrorsIfMinor() {
-        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
-        final CaseData caseData = CaseData.builder()
-            .contactParties(ContactParties.builder().subjectContactParties(Set.of(SubjectCIC.SUBJECT)).build())
-            .build();
-        final CicCase cicCase = CicCase.builder()
-            .caseSubcategory(CaseSubcategory.MINOR)
-            .notifyPartySubject(Set.of(SubjectCIC.SUBJECT))
-            .build();
-        caseData.setCicCase(cicCase);
-        caseDetails.setData(caseData);
-
-        AboutToStartOrSubmitResponse<CaseData, State> response = respondentPartiesToContact.midEvent(caseDetails, caseDetails);
-
-        assertThat(response.getErrors()).hasSize(1);
-    }
-
-    @Test
-    void shouldReturnErrorsIfFatal() {
-        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
-        final CaseData caseData = CaseData.builder()
-            .contactParties(ContactParties.builder().subjectContactParties(Set.of(SubjectCIC.SUBJECT)).build())
-            .build();
-        final CicCase cicCase = CicCase.builder()
-            .caseSubcategory(CaseSubcategory.FATAL)
-            .notifyPartySubject(Set.of(SubjectCIC.SUBJECT))
-            .build();
-        caseData.setCicCase(cicCase);
-        caseDetails.setData(caseData);
-
-        AboutToStartOrSubmitResponse<CaseData, State> response = respondentPartiesToContact.midEvent(caseDetails, caseDetails);
-
-        assertThat(response.getErrors()).hasSize(1);
     }
 
 }

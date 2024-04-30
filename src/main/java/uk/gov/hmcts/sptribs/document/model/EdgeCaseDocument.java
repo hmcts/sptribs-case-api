@@ -14,8 +14,14 @@ public class EdgeCaseDocument {
 
     @CCD(
         label = "Document",
-        regex = ".doc,.docx,.pdf,.png,.xls,.xlsx,.jpg,.txt,.rtf,.rtf2,.gif,.mp3,.mp4",
+        regex = ".csv,.doc,.docx,.pdf,.png,.xls,.xlsx,.jpg,.txt,.rtf,.rtf2,.gif,.mp3,.mp4,.msg,.eml",
         access = {DefaultAccess.class, CitizenAccess.class}
     )
     private uk.gov.hmcts.ccd.sdk.type.Document documentLink;
+
+    @CCD(
+        label = "Document description",
+        access = {DefaultAccess.class, CitizenAccess.class}
+    )
+    private String comment;
 }

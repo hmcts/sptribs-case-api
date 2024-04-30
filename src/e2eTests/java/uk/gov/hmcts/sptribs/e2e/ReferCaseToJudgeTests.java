@@ -9,11 +9,11 @@ import uk.gov.hmcts.sptribs.e2e.enums.Actions;
 import uk.gov.hmcts.sptribs.testutils.PageHelpers;
 
 import static com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat;
+import static uk.gov.hmcts.sptribs.caseworker.util.ErrorConstants.INCOMPATIBLE_REFERRAL_REASON;
 import static uk.gov.hmcts.sptribs.e2e.enums.CaseState.CaseManagement;
 import static uk.gov.hmcts.sptribs.testutils.AssertionHelpers.textOptionsWithTimeout;
 import static uk.gov.hmcts.sptribs.testutils.PageHelpers.clickButton;
 import static uk.gov.hmcts.sptribs.testutils.PageHelpers.getTextBoxByLabel;
-
 
 public class ReferCaseToJudgeTests extends Base {
 
@@ -49,7 +49,7 @@ public class ReferCaseToJudgeTests extends Base {
             new SelectOption().setLabel("Reinstatement request"));
         PageHelpers.clickButton(page, "Continue");
         assertThat(page.locator("#errors li"))
-            .hasText("The case state is incompatible with the selected referral reason", textOptionsWithTimeout(30000));
+            .hasText(INCOMPATIBLE_REFERRAL_REASON, textOptionsWithTimeout(30000));
     }
 
     private void startReferCaseToJudgeJourney(Page page) {

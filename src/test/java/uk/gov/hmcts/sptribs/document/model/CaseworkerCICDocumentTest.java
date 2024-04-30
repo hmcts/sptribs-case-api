@@ -1,46 +1,50 @@
 package uk.gov.hmcts.sptribs.document.model;
 
-
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import uk.gov.hmcts.ccd.sdk.type.Document;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class CaseworkerCICDocumentTest {
+class CaseworkerCICDocumentTest {
 
-    @Test
-    public void shouldCheckIsValid() {
+    @ParameterizedTest
+    @ValueSource(strings = {
+        "test.pdf",
+        "test.csv",
+        "test.txt",
+        "test.rtf",
+        "test.xlsx",
+        "test.docx",
+        "test.doc",
+        "test.xls",
+        "test.mp3",
+        "test.m4a",
+        "test.mp4"
+    })
+    void shouldCheckIsValid(String filename) {
         CaseworkerCICDocument document = CaseworkerCICDocument.builder()
             .documentCategory(DocumentType.LINKED_DOCS)
-            .documentLink(Document.builder().filename("test.pdf").build())
+            .documentLink(Document.builder().filename(filename).build())
             .build();
 
-        boolean result = document.isDocumentValid();
-
-        assertThat(result).isTrue();
+        assertTrue(document.isDocumentValid());
     }
 
-    @Test
-    public void shouldCheckIsValidForM4AFileType() {
+    @ParameterizedTest
+    @ValueSource(strings = {
+        "test.xml",
+        "test.eml",
+        "test.msg",
+        "test.uml"
+    })
+    void shouldCheckIsValidInvalid(String filename) {
         CaseworkerCICDocument document = CaseworkerCICDocument.builder()
             .documentCategory(DocumentType.LINKED_DOCS)
-            .documentLink(Document.builder().filename("test.m4a").build())
+            .documentLink(Document.builder().filename(filename).build())
             .build();
 
-        boolean result = document.isDocumentValid();
-
-        assertThat(result).isTrue();
-    }
-
-    @Test
-    public void shouldCheckIsValidInvalid() {
-        CaseworkerCICDocument document = CaseworkerCICDocument.builder()
-            .documentCategory(DocumentType.LINKED_DOCS)
-            .documentLink(Document.builder().filename("test.xml").build())
-            .build();
-
-        boolean result = document.isDocumentValid();
-
-        assertThat(result).isFalse();
+        assertFalse(document.isDocumentValid());
     }
 }

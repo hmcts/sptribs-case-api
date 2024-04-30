@@ -2,6 +2,7 @@ package uk.gov.hmcts.sptribs.caseworker.util;
 
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
+import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.sptribs.caseworker.model.Order;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
@@ -28,8 +29,9 @@ public final class OrderDocumentListUtil {
                 if (null != orderListValue.getValue().getDraftOrder()
                     && null != orderListValue.getValue().getDraftOrder().getTemplateGeneratedDocument()
                     && !ObjectUtils.isEmpty(orderListValue.getValue().getDraftOrder().getTemplateGeneratedDocument().getFilename())) {
+                    Document templateGeneratedDoc = orderListValue.getValue().getDraftOrder().getTemplateGeneratedDocument();
                     CaseworkerCICDocument doc = CaseworkerCICDocument.builder()
-                        .documentLink(orderListValue.getValue().getDraftOrder().getTemplateGeneratedDocument())
+                        .documentLink(templateGeneratedDoc)
                         .documentCategory(DocumentType.TRIBUNAL_DIRECTION)
                         .build();
                     orderList.add(doc);

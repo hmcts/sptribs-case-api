@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import uk.gov.hmcts.ccd.sdk.api.CCD;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 
 import java.util.List;
@@ -18,10 +19,16 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class BundleSubFolder2 {
-
+    @CCD(
+        label = "SubFolder2 Name"
+    )
     private String name;
-
+    @CCD(
+        label = "SubFolder2 Documents"
+    )
     private List<ListValue<BundleDocument>> documents;
-
+    @CCD(
+        label = "Sort Index"
+    )
     private int sortIndex;
 }

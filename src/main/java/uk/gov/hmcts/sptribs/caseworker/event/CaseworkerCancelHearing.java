@@ -25,6 +25,8 @@ import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.common.notification.CancelHearingNotification;
 
+import java.time.LocalDate;
+
 import static java.lang.String.format;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_CANCEL_HEARING;
 import static uk.gov.hmcts.sptribs.ciccase.model.HearingState.Cancelled;
@@ -48,15 +50,20 @@ public class CaseworkerCancelHearing implements CCDConfig<CaseData, State, UserR
 
     private static final CcdPageConfiguration recordNotifyParties = new RecordNotifyParties();
 
-    @Autowired
-    private HearingService hearingService;
+    private final HearingService hearingService;
+
+    private final CancelHearingNotification cancelHearingNotification;
 
     @Autowired
-    private CancelHearingNotification cancelHearingNotification;
+    public CaseworkerCancelHearing(HearingService hearingService,
+                                   CancelHearingNotification cancelHearingNotification) {
+        this.hearingService = hearingService;
+        this.cancelHearingNotification = cancelHearingNotification;
+    }
 
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
-        var pageBuilder = cancelStart(configBuilder);
+        final PageBuilder pageBuilder = cancelStart(configBuilder);
         hearingDateSelect.addTo(pageBuilder);
         reasonSelect.addTo(pageBuilder);
         recordNotifyParties.addTo(pageBuilder);
@@ -72,7 +79,7 @@ public class CaseworkerCancelHearing implements CCDConfig<CaseData, State, UserR
             .aboutToStartCallback(this::aboutToStart)
             .aboutToSubmitCallback(this::aboutToSubmit)
             .submittedCallback(this::hearingCancelled)
-            .grant(CREATE_READ_UPDATE,
+            .grant(CREATE_READ_UPDATE, SUPER_USER,
                 ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER, ST_CIC_HEARING_CENTRE_ADMIN,
                 ST_CIC_HEARING_CENTRE_TEAM_LEADER, ST_CIC_SENIOR_JUDGE)
             .grantHistoryOnly(
@@ -88,7 +95,7 @@ public class CaseworkerCancelHearing implements CCDConfig<CaseData, State, UserR
     }
 
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToStart(CaseDetails<CaseData, State> details) {
-        var caseData = details.getData();
+        final CaseData caseData = details.getData();
         DynamicList hearingDateDynamicList = hearingService.getListedHearingDynamicList(caseData);
         caseData.getCicCase().setHearingList(hearingDateDynamicList);
 
@@ -102,8 +109,8 @@ public class CaseworkerCancelHearing implements CCDConfig<CaseData, State, UserR
                                                                        CaseDetails<CaseData, State> beforeDetails) {
         log.info("Caseworker case cancel hearing callback invoked for Case Id: {}", details.getId());
 
-        var caseData = details.getData();
-        var state = details.getState();
+        final CaseData caseData = details.getData();
+        State state = details.getState();
 
         DynamicListElement selectedHearing = caseData.getCicCase().getHearingList().getValue();
 
@@ -111,6 +118,7 @@ public class CaseworkerCancelHearing implements CCDConfig<CaseData, State, UserR
             state = CaseManagement;
         }
         caseData.getListing().setHearingStatus(Cancelled);
+        caseData.getListing().setCancelledDate(LocalDate.now());
         hearingService.updateHearingList(caseData);
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)

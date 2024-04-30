@@ -2,6 +2,7 @@ package uk.gov.hmcts.sptribs.notification;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -19,7 +20,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.apache.commons.collections4.CollectionUtils.isEmpty;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.HYPHEN;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.SPACE;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.ADDRESS_LINE_1;
@@ -34,12 +34,13 @@ import static uk.gov.hmcts.sptribs.common.CommonConstants.CIC_CASE_NUMBER;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.CIC_CASE_SUBJECT_NAME;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.CONTACT_NAME;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.DOC_AVAILABLE;
-import static uk.gov.hmcts.sptribs.common.CommonConstants.EMPTY_STRING;
+import static uk.gov.hmcts.sptribs.common.CommonConstants.EMPTY_PLACEHOLDER;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.HEARING_DATE;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.HEARING_TIME;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.MARKUP_SEPARATOR;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.NO;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.TRIBUNAL_NAME;
+import static uk.gov.hmcts.sptribs.common.CommonConstants.TRIBUNAL_NAME_VALUE;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.YES;
 import static uk.gov.hmcts.sptribs.common.ccd.CcdCaseType.CIC;
 
@@ -47,14 +48,6 @@ import static uk.gov.hmcts.sptribs.common.ccd.CcdCaseType.CIC;
 public class NotificationHelper {
 
     private static final Logger LOG = LoggerFactory.getLogger(NotificationHelper.class);
-
-    public Map<String, Object> commonTemplateVars(final CicCase cicCase, final String caseNumber) {
-        final Map<String, Object> templateVars = new HashMap<>();
-        templateVars.put(TRIBUNAL_NAME, CIC);
-        templateVars.put(CIC_CASE_NUMBER, caseNumber);
-        templateVars.put(CIC_CASE_SUBJECT_NAME, cicCase.getFullName());
-        return templateVars;
-    }
 
     public void addAddressTemplateVars(AddressGlobalUK address, Map<String, Object> templateVars) {
         templateVars.put(ADDRESS_LINE_1, address.getAddressLine1());
@@ -67,25 +60,31 @@ public class NotificationHelper {
     }
 
     public Map<String, Object> getSubjectCommonVars(String caseNumber, CicCase cicCase) {
-        Map<String, Object> templateVars = commonTemplateVars(cicCase, caseNumber);
+        final Map<String, Object> templateVars = commonTemplateVars(cicCase, caseNumber);
         templateVars.put(CONTACT_NAME, cicCase.getFullName());
         return templateVars;
     }
 
     public Map<String, Object> getRepresentativeCommonVars(String caseNumber, CicCase cicCase) {
-        Map<String, Object> templateVars = commonTemplateVars(cicCase, caseNumber);
+        final Map<String, Object> templateVars = commonTemplateVars(cicCase, caseNumber);
         templateVars.put(CONTACT_NAME, cicCase.getRepresentativeFullName());
         return templateVars;
     }
 
     public Map<String, Object> getRespondentCommonVars(String caseNumber, CicCase cicCase) {
-        Map<String, Object> templateVars = commonTemplateVars(cicCase, caseNumber);
+        final Map<String, Object> templateVars = commonTemplateVars(cicCase, caseNumber);
         templateVars.put(CONTACT_NAME, cicCase.getRespondentName());
         return templateVars;
     }
 
+    public Map<String, Object> getTribunalCommonVars(String caseNumber, CicCase cicCase) {
+        final Map<String, Object> templateVars = commonTemplateVars(cicCase, caseNumber);
+        templateVars.put(CONTACT_NAME, TRIBUNAL_NAME_VALUE);
+        return templateVars;
+    }
+
     public Map<String, Object> getApplicantCommonVars(String caseNumber, CicCase cicCase) {
-        Map<String, Object> templateVars = commonTemplateVars(cicCase, caseNumber);
+        final Map<String, Object> templateVars = commonTemplateVars(cicCase, caseNumber);
         templateVars.put(CONTACT_NAME, cicCase.getApplicantFullName());
         return templateVars;
     }
@@ -125,7 +124,7 @@ public class NotificationHelper {
     public void setRecordingTemplateVars(Map<String, Object> templateVars, Listing listing) {
         templateVars.put(CommonConstants.CIC_CASE_HEARING_TYPE, listing.getHearingType());
 
-        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(CommonConstants.CIC_CASE_UK_DATE_FORMAT);
+        final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(CommonConstants.CIC_CASE_UK_DATE_FORMAT);
         templateVars.put(CommonConstants.CIC_CASE_HEARING_DATE, listing.getDate().format(dateTimeFormatter));
         templateVars.put(CommonConstants.CIC_CASE_HEARING_TIME, listing.getHearingTime());
 
@@ -144,13 +143,11 @@ public class NotificationHelper {
         } else {
             templateVars.put(CommonConstants.CIC_CASE_HEARING_INFO, " ");
         }
-
         if (listing.getVideoCallLink() != null) {
             templateVars.put(CommonConstants.CIC_CASE_RECORD_VIDEO_CALL_LINK, listing.getVideoCallLink());
         } else {
             templateVars.put(CommonConstants.CIC_CASE_RECORD_VIDEO_CALL_LINK, " ");
         }
-
         if (listing.getConferenceCallNumber() != null) {
             templateVars.put(CommonConstants.CIC_CASE_RECORD_CONF_CALL_NUM, listing.getConferenceCallNumber());
         } else {
@@ -177,69 +174,68 @@ public class NotificationHelper {
     }
 
     public Map<String, String> buildDocumentList(DynamicMultiSelectList documentList, int docAttachLimit) {
-        Map<String, String> uploadedDocuments = new HashMap<>();
+        final Map<String, String> uploadedDocuments = new HashMap<>();
 
         int count = 0;
-        if (!isEmpty(documentList.getValue())) {
-            List<DynamicListElement> documents = documentList.getValue();
+        if (ObjectUtils.isNotEmpty(documentList.getValue())) {
+            final List<DynamicListElement> documents = documentList.getValue();
             for (DynamicListElement element : documents) {
                 count++;
-                String[] labels = element.getLabel().split(MARKUP_SEPARATOR);
+                final String[] labels = element.getLabel().split(MARKUP_SEPARATOR);
                 uploadedDocuments.put(DOC_AVAILABLE + count, YES);
                 uploadedDocuments.put(CASE_DOCUMENT + count,
                     StringUtils.substringAfterLast(labels[1].substring(1, labels[1].length() - 8),
                         "/"));
-
-                final String message = String.format(
-                    "Document when Available: %d, %s with value %s",
-                    count,
-                    uploadedDocuments.get(DOC_AVAILABLE + count),
-                    uploadedDocuments.get(CASE_DOCUMENT + count)
-                );
-                LOG.info(message);
+                LOG.info("Document when Available: {}, {} with value {}", count, uploadedDocuments.get(DOC_AVAILABLE + count),
+                    uploadedDocuments.get(CASE_DOCUMENT + count));
             }
         }
         while (count < docAttachLimit) {
             count++;
             uploadedDocuments.put(DOC_AVAILABLE + count, NO);
-            uploadedDocuments.put(CASE_DOCUMENT + count, EMPTY_STRING);
-
-            final String message = String.format(
-                "Document not Available: %d, %s with value %s",
-                count,
-                uploadedDocuments.get(DOC_AVAILABLE + count),
-                uploadedDocuments.get(CASE_DOCUMENT + count)
-            );
-            LOG.info(message);
+            uploadedDocuments.put(CASE_DOCUMENT + count, EMPTY_PLACEHOLDER);
+            LOG.info("Document not Available: {}, {} with value {}", count, uploadedDocuments.get(DOC_AVAILABLE + count),
+                uploadedDocuments.get(CASE_DOCUMENT + count));
         }
 
         return uploadedDocuments;
     }
 
-    private boolean isFaceToFaceFormat(Listing listing) {
-        return null != listing.getHearingFormat() && listing.getHearingFormat().equals(HearingFormat.FACE_TO_FACE);
-    }
-
-    private boolean isVideoFormat(Listing listing) {
-        return null != listing.getHearingFormat() && listing.getHearingFormat().equals(HearingFormat.VIDEO);
-    }
-
-    private boolean isTelephoneFormat(Listing listing) {
-        return null != listing.getHearingFormat() && listing.getHearingFormat().equals(HearingFormat.TELEPHONE);
-    }
-
     public void addHearingPostponedTemplateVars(CicCase cicCase, Map<String, Object> templateVars) {
-        String selectedHearingDateTime = cicCase.getSelectedHearingToCancel();
-        String[] hearingDateTimeArr = (null != selectedHearingDateTime) ? selectedHearingDateTime.split(SPACE + HYPHEN + SPACE) : null;
-        int lastIndex = (hearingDateTimeArr != null ? hearingDateTimeArr.length : 0) > 0 ? hearingDateTimeArr.length - 1 : 0;
-        String hearingDate = ArrayUtils.isNotEmpty(hearingDateTimeArr)
+        final String selectedHearingDateTime = cicCase.getSelectedHearingToCancel();
+        final String[] hearingDateTimeArr = (selectedHearingDateTime != null)
+            ? selectedHearingDateTime.split(SPACE + HYPHEN + SPACE) : null;
+        final int arrayLength = hearingDateTimeArr != null ? hearingDateTimeArr.length : 0;
+        final int lastIndex = arrayLength > 0 ? hearingDateTimeArr.length - 1 : 0;
+        final String hearingDate = ArrayUtils.isNotEmpty(hearingDateTimeArr)
             ? hearingDateTimeArr[lastIndex].substring(0, hearingDateTimeArr[lastIndex].lastIndexOf(SPACE))
             : null;
-        String hearingTime = ArrayUtils.isNotEmpty(hearingDateTimeArr)
+        final String hearingTime = ArrayUtils.isNotEmpty(hearingDateTimeArr)
             ? hearingDateTimeArr[lastIndex].substring(hearingDateTimeArr[lastIndex].lastIndexOf(SPACE) + 1)
             : null;
 
         templateVars.put(HEARING_DATE, hearingDate);
         templateVars.put(HEARING_TIME, hearingTime);
     }
+
+    private Map<String, Object> commonTemplateVars(final CicCase cicCase, final String caseNumber) {
+        final Map<String, Object> templateVars = new HashMap<>();
+        templateVars.put(TRIBUNAL_NAME, CIC);
+        templateVars.put(CIC_CASE_NUMBER, caseNumber);
+        templateVars.put(CIC_CASE_SUBJECT_NAME, cicCase.getFullName());
+        return templateVars;
+    }
+
+    private boolean isFaceToFaceFormat(Listing listing) {
+        return listing.getHearingFormat() != null && listing.getHearingFormat().equals(HearingFormat.FACE_TO_FACE);
+    }
+
+    private boolean isVideoFormat(Listing listing) {
+        return listing.getHearingFormat() != null && listing.getHearingFormat().equals(HearingFormat.VIDEO);
+    }
+
+    private boolean isTelephoneFormat(Listing listing) {
+        return listing.getHearingFormat() != null && listing.getHearingFormat().equals(HearingFormat.TELEPHONE);
+    }
+
 }

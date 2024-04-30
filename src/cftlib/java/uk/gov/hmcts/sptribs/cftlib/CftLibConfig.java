@@ -24,47 +24,33 @@ public class CftLibConfig implements CFTLibConfigurer {
     @Value("Submitted")
     String state;
 
-
     @Autowired
     CCDDefinitionGenerator configWriter;
 
     @Override
     public void configure(CFTLib lib) throws Exception {
 
-        var roleList = List.of("caseworker",
+        List<String> roleList = List.of("caseworker",
+            "caseworker-st_cic",
             "caseworker-st_cic-caseworker",
             "pui-case-manager",
-            "jrd-system-user",
             "jrd-admin");
 
-        var users = Map.of(
+        Map<String, List<String>> users = Map.of(
             "TEST_CASE_WORKER_USER@mailinator.com", roleList,
             "TEST_SOLICITOR@mailinator.com", roleList);
 
-        for (var p : users.entrySet()) {
+        for (Map.Entry<String, List<String>> p : users.entrySet()) {
             lib.createIdamUser(p.getKey(), p.getValue().toArray(new String[0]));
             lib.createProfile(p.getKey(), CcdJurisdiction.CRIMINAL_INJURIES_COMPENSATION.getJurisdictionId(),
                 CcdServiceCode.ST_CIC.getCaseType().getCaseTypeName(), state);
-            lib.createProfile(p.getKey(), CcdJurisdiction.CARE_STANDARDS.getJurisdictionId(),
-                CcdServiceCode.ST_CS.getCaseType().getCaseTypeName(), state);
-            lib.createProfile(p.getKey(), CcdJurisdiction.MENTAL_HEALTH.getJurisdictionId(),
-                CcdServiceCode.ST_MH.getCaseType().getCaseTypeName(), state);
-            lib.createProfile(p.getKey(), CcdJurisdiction.PRIMARY_HEALTH_LISTS.getJurisdictionId(),
-                CcdServiceCode.ST_PHL.getCaseType().getCaseTypeName(), state);
-            lib.createProfile(p.getKey(), CcdJurisdiction.SPECIAL_EDUCATIONAL_NEEDS_AND_DISCRIMINATION.getJurisdictionId(),
-                CcdServiceCode.ST_SEN.getCaseType().getCaseTypeName(), state);
-            lib.createProfile(p.getKey(), CcdJurisdiction.SPECIAL_EDUCATIONAL_NEEDS_AND_DISCRIMINATION.getJurisdictionId(),
-                CcdServiceCode.ST_DD.getCaseType().getCaseTypeName(), state);
         }
 
         lib.createRoles(
             "caseworker-sptribs-superuser",
             "caseworker-sptribs-systemupdate",
             "caseworker-sptribs",
-            "caseworker-sptribs-cic-courtadmin",
             "caseworker-st_cic",
-            "caseworker-sptribs-cic-caseofficer",
-            "caseworker-sptribs-cic-districtregistrar",
             "caseworker-sptribs-cic-districtjudge",
             "caseworker-sptribs-cic-respondent",
             "caseworker",
@@ -73,7 +59,6 @@ public class CftLibConfig implements CFTLibConfigurer {
             "pui-finance-manager",
             "pui-organisation-manager",
             "pui-user-manager",
-            "jrd-system-user",
             "jrd-admin",
             "caseworker-st_cic-caseworker",
             "caseworker-st_cic-senior-caseworker",
@@ -82,23 +67,19 @@ public class CftLibConfig implements CFTLibConfigurer {
             "caseworker-st_cic-senior-judge",
             "caseworker-st_cic-judge",
             "caseworker-st_cic-respondent",
-            "caseworker-admin",
             "caseflags-admin",
             "caseflags-viewer",
             "citizen"
         );
+
         ResourceLoader resourceLoader = new DefaultResourceLoader();
-        var json = IOUtils.toString(resourceLoader.getResource("classpath:cftlib-am-role-assignments.json")
+        String json = IOUtils.toString(resourceLoader.getResource("classpath:cftlib-am-role-assignments.json")
             .getInputStream(), Charset.defaultCharset());
         lib.configureRoleAssignments(json);
 
         configWriter.generateAllCaseTypesToJSON(new File(BUILD_DEFINITIONS));
-        // Load the JSON definitions for each caseType.
+        // Load the JSON definitions for ST_CIC caseType.
         lib.importJsonDefinition(new File(BUILD_DEFINITIONS + CcdServiceCode.ST_CIC.getCaseType().getCaseTypeName()));
-        lib.importJsonDefinition(new File(BUILD_DEFINITIONS + CcdServiceCode.ST_CS.getCaseType().getCaseTypeName()));
-        lib.importJsonDefinition(new File(BUILD_DEFINITIONS + CcdServiceCode.ST_DD.getCaseType().getCaseTypeName()));
-        lib.importJsonDefinition(new File(BUILD_DEFINITIONS + CcdServiceCode.ST_MH.getCaseType().getCaseTypeName()));
-        lib.importJsonDefinition(new File(BUILD_DEFINITIONS + CcdServiceCode.ST_PHL.getCaseType().getCaseTypeName()));
-        lib.importJsonDefinition(new File(BUILD_DEFINITIONS + CcdServiceCode.ST_SEN.getCaseType().getCaseTypeName()));
     }
+
 }

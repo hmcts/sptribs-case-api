@@ -1,5 +1,6 @@
 package uk.gov.hmcts.sptribs.caseworker.event;
 
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +19,7 @@ import uk.gov.hmcts.sptribs.caseworker.event.page.IssueFinalDecisionSelectTempla
 import uk.gov.hmcts.sptribs.caseworker.model.CaseIssueFinalDecision;
 import uk.gov.hmcts.sptribs.caseworker.util.MessageUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.LanguagePreference;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
@@ -33,7 +35,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import javax.servlet.http.HttpServletRequest;
 
 import static java.lang.String.format;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_ISSUE_FINAL_DECISION;
@@ -46,6 +47,7 @@ import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_HEARING_CENTRE_
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_JUDGE;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_CASEWORKER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_JUDGE;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE;
 import static uk.gov.hmcts.sptribs.document.DocumentConstants.FINAL_DECISION_ANNEX_FILE;
 import static uk.gov.hmcts.sptribs.document.DocumentConstants.FINAL_DECISION_ANNEX_TEMPLATE_ID;
@@ -91,7 +93,7 @@ public class CaseworkerIssueFinalDecision implements CCDConfig<CaseData, State, 
             .aboutToStartCallback(this::aboutToStart)
             .aboutToSubmitCallback(this::aboutToSubmit)
             .submittedCallback(this::submitted)
-            .grant(CREATE_READ_UPDATE,
+            .grant(CREATE_READ_UPDATE, SUPER_USER,
                 ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER, ST_CIC_HEARING_CENTRE_ADMIN,
                 ST_CIC_HEARING_CENTRE_TEAM_LEADER, ST_CIC_SENIOR_JUDGE, ST_CIC_JUDGE));
         issueFinalDecisionNotice.addTo(pageBuilder);
@@ -104,7 +106,7 @@ public class CaseworkerIssueFinalDecision implements CCDConfig<CaseData, State, 
     }
 
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToStart(CaseDetails<CaseData, State> details) {
-        var caseData = details.getData();
+        final CaseData caseData = details.getData();
 
         caseData.setDecisionSignature("");
 
@@ -123,6 +125,11 @@ public class CaseworkerIssueFinalDecision implements CCDConfig<CaseData, State, 
                   *  <h3>The decision notice should be:</h3>
                   *  a maximum of 100MB in size (larger files must be split)
                   *  labelled clearly, e.g. applicant-name-decision-notice.pdf
+
+
+
+
+                  Note: If the remove button is disabled, please refresh the page to remove attachments
                 """
             )
             .complex(CaseData::getCaseIssueFinalDecision)
@@ -145,16 +152,12 @@ public class CaseworkerIssueFinalDecision implements CCDConfig<CaseData, State, 
             .done();
     }
 
-    public AboutToStartOrSubmitResponse<CaseData, State> midEvent(
-        CaseDetails<CaseData, State> details,
-        CaseDetails<CaseData, State> detailsBefore
-    ) {
+    public AboutToStartOrSubmitResponse<CaseData, State> midEvent(CaseDetails<CaseData, State> details,
+                                                                  CaseDetails<CaseData, State> detailsBefore) {
 
-        CaseData caseData = details.getData();
-        var finalDecision = caseData.getCaseIssueFinalDecision();
-
+        final CaseData caseData = details.getData();
+        final CaseIssueFinalDecision finalDecision = caseData.getCaseIssueFinalDecision();
         final Long caseId = details.getId();
-
         final String filename = FINAL_DECISION_FILE + LocalDateTime.now().format(formatter);
 
         Document generalOrderDocument = caseDataDocumentService.renderDocument(
@@ -188,8 +191,8 @@ public class CaseworkerIssueFinalDecision implements CCDConfig<CaseData, State, 
 
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(CaseDetails<CaseData, State> details,
                                                                        CaseDetails<CaseData, State> beforeDetails) {
-        var caseData = details.getData();
-        var finalDecisionDocument = caseData.getCaseIssueFinalDecision().getDocument();
+        final CaseData caseData = details.getData();
+        final CICDocument finalDecisionDocument = caseData.getCaseIssueFinalDecision().getDocument();
 
         if (null != finalDecisionDocument) {
             finalDecisionDocument.getDocumentLink().setCategoryId("TD");
@@ -203,9 +206,9 @@ public class CaseworkerIssueFinalDecision implements CCDConfig<CaseData, State, 
 
     public SubmittedCallbackResponse submitted(CaseDetails<CaseData, State> details,
                                                CaseDetails<CaseData, State> beforeDetails) {
-        var data = details.getData();
-        var cicCase = data.getCicCase();
-        String caseNumber = data.getHyphenatedCaseRef();
+        final CaseData data = details.getData();
+        final CicCase cicCase = data.getCicCase();
+        final String caseNumber = data.getHyphenatedCaseRef();
 
         Document finalDecisionGuidance = getFinalDecisionGuidanceDocument(details.getId());
         data.getCaseIssueFinalDecision().setFinalDecisionGuidance(finalDecisionGuidance);
@@ -234,6 +237,7 @@ public class CaseworkerIssueFinalDecision implements CCDConfig<CaseData, State, 
                 .confirmationHeader(format("# Issue final decision notification failed %n## Please resend the notification"))
                 .build();
         }
+
         return SubmittedCallbackResponse.builder()
             .confirmationHeader(format("# Final decision notice issued %n## %s",
                 MessageUtil.generateSimpleMessage(cicCase)))

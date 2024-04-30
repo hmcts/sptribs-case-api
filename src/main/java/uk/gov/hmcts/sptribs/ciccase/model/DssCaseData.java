@@ -13,12 +13,14 @@ import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerWithCAAAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CitizenAccess;
+import uk.gov.hmcts.sptribs.ciccase.model.access.CitizenDocumentAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.DefaultAccess;
 import uk.gov.hmcts.sptribs.common.MappableObject;
 import uk.gov.hmcts.sptribs.document.model.EdgeCaseDocument;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Set;
 
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.Collection;
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.TextArea;
@@ -121,12 +123,27 @@ public class DssCaseData implements MappableObject {
     )
     private String pcqId;
 
+    @CCD(
+        access = {DefaultAccess.class, CitizenAccess.class}
+    )
+    private NotificationResponse subjectNotificationResponse;
+
+    @CCD(
+        access = {DefaultAccess.class, CitizenAccess.class}
+    )
+    private NotificationResponse repNotificationResponse;
+
+    @CCD(
+        label = "Notified Parties",
+        access = {DefaultAccess.class, CitizenAccess.class}
+    )
+    private Set<NotificationParties> notificationParties;
 
     @CCD(
         label = "Tribunal form uploaded documents",
         typeOverride = Collection,
         typeParameterOverride = "EdgeCaseDocument",
-        access = {DefaultAccess.class, CitizenAccess.class}
+        access = {DefaultAccess.class, CitizenDocumentAccess.class}
     )
     private List<ListValue<EdgeCaseDocument>> tribunalFormDocuments;
 
@@ -134,7 +151,7 @@ public class DssCaseData implements MappableObject {
         label = "Supporting uploaded documents",
         typeOverride = Collection,
         typeParameterOverride = "EdgeCaseDocument",
-        access = {DefaultAccess.class, CitizenAccess.class}
+        access = {DefaultAccess.class, CitizenDocumentAccess.class}
     )
     private List<ListValue<EdgeCaseDocument>> supportingDocuments;
 
@@ -142,20 +159,20 @@ public class DssCaseData implements MappableObject {
         label = "Other information uploaded documents",
         typeOverride = Collection,
         typeParameterOverride = "EdgeCaseDocument",
-        access = {DefaultAccess.class, CitizenAccess.class}
+        access = {DefaultAccess.class, CitizenDocumentAccess.class}
     )
     private List<ListValue<EdgeCaseDocument>> otherInfoDocuments;
 
     @CCD(
         label = "Message",
-        typeOverride = TextArea
+        typeOverride = TextArea,
+        access = {DefaultAccess.class, CitizenAccess.class}
     )
     private String notifyPartyMessage;
 
     @CCD(
         label = "Is there a representative?",
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class, CitizenAccess.class}
     )
     private YesOrNo isRepresentativePresent;
-
 }

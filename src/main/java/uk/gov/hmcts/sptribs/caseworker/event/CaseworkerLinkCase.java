@@ -21,6 +21,7 @@ import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_LIN
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingOutcome;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
+import static uk.gov.hmcts.sptribs.ciccase.model.State.ReadyToList;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.Submitted;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_CASEWORKER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_HEARING_CENTRE_ADMIN;
@@ -41,15 +42,19 @@ public class CaseworkerLinkCase implements CCDConfig<CaseData, State, UserRole> 
     @Value("${feature.link-case.enabled}")
     private boolean linkCaseEnabled;
 
+    private final CaseLinkedNotification caseLinkedNotification;
+
     @Autowired
-    CaseLinkedNotification caseLinkedNotification;
+    public CaseworkerLinkCase(CaseLinkedNotification caseLinkedNotification) {
+        this.caseLinkedNotification = caseLinkedNotification;
+    }
 
     @Override
-    public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
+    public void configure(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         if (linkCaseEnabled) {
             new PageBuilder(configBuilder
                 .event(CASEWORKER_LINK_CASE)
-                .forStates(Submitted, CaseManagement, AwaitingHearing, AwaitingOutcome)
+                .forStates(Submitted, CaseManagement, AwaitingHearing, AwaitingOutcome, ReadyToList)
                 .name("Link cases")
                 .description("To link related cases")
                 .submittedCallback(this::submitted)
@@ -95,15 +100,15 @@ public class CaseworkerLinkCase implements CCDConfig<CaseData, State, UserRole> 
     private void linkedCaseNotification(String caseNumber, CaseData data) {
         CicCase cicCase = data.getCicCase();
 
-        if (null != cicCase.getSubjectCIC() && !cicCase.getSubjectCIC().isEmpty()) {
+        if (cicCase.getSubjectCIC() != null && !cicCase.getSubjectCIC().isEmpty()) {
             caseLinkedNotification.sendToSubject(data, caseNumber);
         }
 
-        if (null != cicCase.getApplicantCIC() && !cicCase.getApplicantCIC().isEmpty()) {
+        if (cicCase.getApplicantCIC() != null && !cicCase.getApplicantCIC().isEmpty()) {
             caseLinkedNotification.sendToApplicant(data, caseNumber);
         }
 
-        if (null != cicCase.getRepresentativeCIC() && !cicCase.getRepresentativeCIC().isEmpty()) {
+        if (cicCase.getRepresentativeCIC() != null && !cicCase.getRepresentativeCIC().isEmpty()) {
             caseLinkedNotification.sendToRepresentative(data, caseNumber);
         }
     }

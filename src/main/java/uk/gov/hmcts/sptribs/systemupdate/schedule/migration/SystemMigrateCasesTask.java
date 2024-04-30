@@ -6,7 +6,6 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.idam.client.models.User;
 import uk.gov.hmcts.sptribs.idam.IdamService;
-import uk.gov.hmcts.sptribs.systemupdate.schedule.migration.Migration;
 
 import java.util.List;
 
@@ -16,14 +15,19 @@ import static java.util.Comparator.comparing;
 @Slf4j
 public class SystemMigrateCasesTask implements Runnable {
 
-    @Autowired
-    private IdamService idamService;
+    private final IdamService idamService;
+
+    private final AuthTokenGenerator authTokenGenerator;
+
+    private final List<Migration> migrations;
 
     @Autowired
-    private AuthTokenGenerator authTokenGenerator;
-
-    @Autowired
-    private List<Migration> migrations;
+    public SystemMigrateCasesTask(IdamService idamService, AuthTokenGenerator authTokenGenerator,
+            List<Migration> migrations) {
+        this.idamService = idamService;
+        this.authTokenGenerator = authTokenGenerator;
+        this.migrations = migrations;
+    }
 
     @Override
     public void run() {

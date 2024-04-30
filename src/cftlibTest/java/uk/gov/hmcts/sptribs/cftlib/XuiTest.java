@@ -49,11 +49,11 @@ public class XuiTest extends CftlibTest {
     @BeforeAll
     void launchBrowser() {
         playwright = Playwright.create();
-        var launchOptions = getenv("CI") == null
+        final BrowserType.LaunchOptions launchOptions = getenv("CI") == null
             ? new BrowserType.LaunchOptions().setHeadless(false).setSlowMo(50)
             : new BrowserType.LaunchOptions().setHeadless(true);
 
-        var browserType = getenv("BROWSER") == null ? "chromium" : getenv("BROWSER");
+        final String browserType = getenv("BROWSER") == null ? "chromium" : getenv("BROWSER");
         switch (browserType) {
             case "firefox" -> browser = playwright.firefox().launch(launchOptions);
             case "webkit" -> browser = playwright.webkit().launch(launchOptions);

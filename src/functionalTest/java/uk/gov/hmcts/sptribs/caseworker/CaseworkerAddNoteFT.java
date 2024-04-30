@@ -21,20 +21,17 @@ import static uk.gov.hmcts.sptribs.testutil.TestResourceUtil.expectedResponse;
 public class CaseworkerAddNoteFT extends FunctionalTestSuite {
 
     private static final String REQUEST = "classpath:request/casedata/ccd-callback-casedata.json";
+    private static final String RESPONSE = "classpath:responses/response-caseworker-add-notes-about-to-submit.json";
 
     @Test
     public void shouldUpdateCaseDataWithNotesWhenAboutToSubmitCallbackIsInvoked() throws Exception {
         final Map<String, Object> caseData = caseData(REQUEST);
 
         final Response response = triggerCallback(caseData, EventConstants.CASEWORKER_ADD_NOTE, ABOUT_TO_SUBMIT_URL);
-        assertThat(response.getStatusCode()).isEqualTo(OK.value());
 
-        // notes.date value is compared using ${json-unit.any-string}
-        // assertion will fail if the above value is missing
+        assertThat(response.getStatusCode()).isEqualTo(OK.value());
         assertThatJson(response.asString())
             .when(IGNORING_EXTRA_FIELDS)
-            .isEqualTo(json(expectedResponse(
-                "classpath:responses/response-caseworker-add-notes-about-to-submit.json"
-            )));
+            .isEqualTo(json(expectedResponse(RESPONSE)));
     }
 }

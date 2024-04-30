@@ -24,16 +24,19 @@ idam-pr:
 ccd-case-document-am-api:
   enabled: false
 
+em-ccdorc:
+  enabled: false
+
+em-stitching:
+  enabled: false
+
 java:
   applicationPort: 4013
   image: 'hmctspublic.azurecr.io/sptribs/case-api:latest'
   ingressHost: sptribs-case-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal
-  aadIdentityName: sptribs
-  autoscaling:
+  spotInstances:
     enabled: true
-    maxReplicas: 9
-    minReplicas: 2
-    targetCPUUtilizationPercentage: 80 # Default is 80% target CPU utilization
+  aadIdentityName: sptribs
   keyVaults:
     sptribs:
       secrets:
@@ -55,6 +58,7 @@ java:
     S2S_URL: http://rpe-service-auth-provider-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal
     FEE_API_URL: http://fees-register-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal
     LOCATION_API_URL: http://rd-location-ref-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal
+    REF_DATA_COMMON_API_URL: http://rd-commondata-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal
     JUDICIAL_API_URL: http://rd-judicial-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal
     BUNDLING_API_URL: http://em-ccd-orchestrator-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal
     IDAM_API_REDIRECT_URL: https://div-pfe-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal/authenticated
@@ -71,4 +75,4 @@ java:
     SERVICE_AUTH_MICROSERVICE: sptribs_case_api
     SERVICE_AUTH_PROVIDER_URL: http://rpe-service-auth-provider-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal
     NOTIFY_TEMPLATE_SIGN_IN_PROFESSIONAL_USERS_URL: https://manage-case.{{ .Values.global.environment }}.platform.hmcts.net/cases/case-details/
-    S2S_AUTHORISED_SERVICES: ccd_definition,ccd_data,xui_webapp,sptribs_case_api,ccd_gw,sptribs_frontend
+    S2S_AUTHORISED_SERVICES: ccd_definition,ccd_data,xui_webapp,sptribs_case_api,ccd_gw,sptribs_frontend,sptribs_dss_update_case_web

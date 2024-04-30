@@ -23,19 +23,19 @@ public class DssCaseDocumentClient {
     public UploadResponse uploadDocuments(String authorisation, String serviceAuth, String caseTypeId,
                                           String jurisdictionId, List<MultipartFile> files) {
         return uploadDocuments(authorisation, serviceAuth, caseTypeId, jurisdictionId, files,
-            Classification.RESTRICTED);
+                               Classification.RESTRICTED);
     }
 
     public UploadResponse uploadDocuments(String authorisation, String serviceAuth,
-                                          String caseTypeId,
-                                          String jurisdictionId,
-                                          List<MultipartFile> files,
-                                          Classification classification) {
+                                           String caseTypeId,
+                                           String jurisdictionId,
+                                           List<MultipartFile> files,
+                                           Classification classification) {
 
-        DocumentUploadRequest documentUploadRequest = new DocumentUploadRequest(classification.toString(),
-            caseTypeId,
-            jurisdictionId,
-            files);
+        final DocumentUploadRequest documentUploadRequest = new DocumentUploadRequest(classification.toString(),
+                                                                                caseTypeId,
+                                                                                jurisdictionId,
+                                                                                files);
 
         return caseDocumentClientApi.uploadDocuments(authorisation, serviceAuth, documentUploadRequest);
     }

@@ -2,12 +2,18 @@ package uk.gov.hmcts.sptribs.caseworker.helper;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
+import uk.gov.hmcts.ccd.sdk.type.DynamicList;
+import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 import uk.gov.hmcts.sptribs.caseworker.model.HearingSummary;
 import uk.gov.hmcts.sptribs.caseworker.model.Listing;
+import uk.gov.hmcts.sptribs.caseworker.util.DynamicListUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.ApplicantCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
@@ -20,10 +26,17 @@ import uk.gov.hmcts.sptribs.ciccase.model.SubjectCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.VenueNotListed;
 import uk.gov.hmcts.sptribs.recordlisting.LocationService;
 
+import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.LOCAL_DATE_TIME;
@@ -34,16 +47,15 @@ import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getMockedRegionData;
 @ExtendWith(MockitoExtension.class)
 class RecordListHelperTest {
 
+    public static final DynamicList EMPTY_DYNAMIC_LIST = DynamicListUtil.createDynamicList(Collections.emptyList());
     @InjectMocks
     private RecordListHelper recordListHelper;
 
     @Mock
     private LocationService locationService;
 
-
     @Test
     void shouldAboutToStartMethodSuccessfullyPopulateRegionData() {
-        //Given
         final CaseData caseData = caseData();
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
         final Listing listing = new Listing();
@@ -54,17 +66,25 @@ class RecordListHelperTest {
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
 
-        //When
         when(locationService.getAllRegions()).thenReturn(getMockedRegionData());
         recordListHelper.regionData(caseData);
-
 
         //Then
         assertThat(caseData.getListing().getRegionList().getValue().getLabel()).isEqualTo("1-region");
         assertThat(caseData.getListing().getRegionList().getListItems()).hasSize(1);
         assertThat(caseData.getListing().getRegionList().getListItems().get(0).getLabel()).isEqualTo("1-region");
+        assertThat(caseData.getListing().getRegionsMessage()).isNull();
+    }
 
+    @ParameterizedTest
+    @MethodSource("emptyAndNullDynamicListSource")
+    void shouldSetRegionMessageToUnableToRetrieveWhenRegionsListIsNullOrEmpty(DynamicList regionList) {
+        final CaseData caseData = caseData();
 
+        when(locationService.getAllRegions()).thenReturn(regionList);
+        recordListHelper.regionData(caseData);
+
+        assertThat(caseData.getListing().getRegionsMessage()).contains("Unable to retrieve Region data");
     }
 
     @Test
@@ -79,17 +99,54 @@ class RecordListHelperTest {
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
 
+        when(locationService.getRegionId("1-region")).thenReturn("1");
         when(locationService.getHearingVenuesByRegion("1")).thenReturn(getMockedHearingVenueData());
-        recordListHelper.populatedVenuesData(caseData);
+        recordListHelper.populateVenuesData(caseData);
 
-        //Then
         assertThat(caseData.getListing().getHearingVenues()
             .getValue().getLabel()).isEqualTo("courtname-courtAddress");
         assertThat(caseData.getListing().getHearingVenues().getListItems()).hasSize(1);
         assertThat(caseData.getListing().getHearingVenues()
             .getListItems().get(0).getLabel()).isEqualTo("courtname-courtAddress");
+        assertThat(caseData.getListing().getHearingVenuesMessage()).isNull();
+    }
 
+    @ParameterizedTest
+    @MethodSource("emptyAndNullDynamicListSource")
+    void shouldSetHearingVenuesMessageToUnableToRetrieveWhenHearingVenueListIsNullOrEmpty(DynamicList dynamicList) {
+        final CaseData caseData = caseData();
+        final Listing listing = new Listing();
+        listing.setHearingFormat(HearingFormat.FACE_TO_FACE);
+        listing.setRegionList(getMockedRegionData());
+        caseData.setListing(listing);
 
+        when(locationService.getRegionId("1-region")).thenReturn("1");
+        when(locationService.getHearingVenuesByRegion("1")).thenReturn((dynamicList));
+        recordListHelper.populateVenuesData(caseData);
+
+        assertThat(caseData.getListing().getHearingVenuesMessage()).contains("Unable to retrieve Hearing Venues data");
+    }
+
+    @Test
+    void shouldNotSetHearingVenueWhenRegionIdIsNull() {
+        final CaseData caseData = caseData();
+        final Listing listing = new Listing();
+        listing.setHearingFormat(HearingFormat.FACE_TO_FACE);
+        listing.setRegionList(getMockedRegionData());
+        caseData.setListing(listing);
+
+        when(locationService.getRegionId("1-region")).thenReturn(null);
+        recordListHelper.populateVenuesData(caseData);
+
+        verify(locationService, never()).getHearingVenuesByRegion(any());
+        assertThat(caseData.getListing().getHearingVenuesMessage()).isNull();
+    }
+
+    @ParameterizedTest
+    @MethodSource("cicCaseNotifyValues")
+    void checkNullConditions(CicCase cicCase, boolean expected) {
+        boolean result = recordListHelper.checkNullCondition(cicCase);
+        assertThat(result).isEqualTo(expected);
     }
 
     @Test
@@ -103,14 +160,27 @@ class RecordListHelperTest {
         cicCase.setNotifyPartyRespondent(Set.of(RespondentCIC.RESPONDENT));
         caseData.setCicCase(cicCase);
 
-        recordListHelper.checkNullCondition(cicCase);
-        recordListHelper.getErrorMsg(cicCase);
+        final boolean result = recordListHelper.checkNullCondition(cicCase);
+        final List<String> errors = recordListHelper.getErrorMsg(cicCase);
 
         assertThat(caseData.getCicCase().getNotifyPartySubject()).isNotNull();
         assertThat(caseData.getCicCase().getNotifyPartyRepresentative()).isNotNull();
         assertThat(caseData.getCicCase().getNotifyPartyRespondent()).isNotNull();
+        assertThat(result).isFalse();
+        assertThat(errors).isEmpty();
     }
 
+    @Test
+    void shouldGetErrorMessageForMissingNotificationParties() {
+        final CaseData caseData = caseData();
+        final CicCase cicCase = new CicCase();
+        caseData.setCicCase(cicCase);
+
+        final List<String> errors = recordListHelper.getErrorMsg(cicCase);
+        assertThat(errors)
+            .isNotEmpty()
+            .contains("One party must be selected.");
+    }
 
     @Test
     void shouldSuccessfullyAddNotificationParties() {
@@ -128,72 +198,195 @@ class RecordListHelperTest {
 
         recordListHelper.getNotificationParties(caseData);
 
+        assertThat(caseData.getCicCase()).isNotNull();
         assertThat(caseData.getCicCase().getHearingNotificationParties()).hasSize(4);
         assertThat(caseData.getCicCase().getHearingNotificationParties()).contains(NotificationParties.SUBJECT);
         assertThat(caseData.getCicCase().getHearingNotificationParties()).contains(NotificationParties.REPRESENTATIVE);
         assertThat(caseData.getCicCase().getHearingNotificationParties()).contains(NotificationParties.RESPONDENT);
         assertThat(caseData.getCicCase().getHearingNotificationParties()).contains(NotificationParties.APPLICANT);
-        assertThat(caseData.getCicCase()).isNotNull();
+    }
+
+    @Test
+    void shouldGetEmptySetOfNotificationParties() {
+        final CaseData caseData = caseData();
+
+        recordListHelper.getNotificationParties(caseData);
+
+        assertThat(caseData.getCicCase().getHearingNotificationParties()).isEmpty();
     }
 
     @Test
     void shouldSuccessfullyCheckAndUpdateVenueInformationVenueNotListed() {
-
-        Listing listing = Listing.builder()
+        final Listing listing = Listing.builder()
             .hearingVenueNameAndAddress("name-address")
             .readOnlyHearingVenueName("name-address")
             .venueNotListedOption(Set.of(VenueNotListed.VENUE_NOT_LISTED))
             .build();
 
-        Listing result = recordListHelper.checkAndUpdateVenueInformation(listing);
+        final Listing result = recordListHelper.checkAndUpdateVenueInformation(listing);
 
         assertThat(result.getReadOnlyHearingVenueName()).isNull();
     }
 
     @Test
     void shouldSuccessfullyCheckAndUpdateVenueInformation() {
-        Set<VenueNotListed> venueNotListedOption = new HashSet<>();
-        Listing listing = Listing.builder()
+        final Set<VenueNotListed> venueNotListedOption = new HashSet<>();
+        final Listing listing = Listing.builder()
             .hearingVenueNameAndAddress("name-address")
             .readOnlyHearingVenueName("name-address")
             .hearingVenues(getMockedHearingVenueData())
             .venueNotListedOption(venueNotListedOption)
             .build();
 
-        Listing result = recordListHelper.checkAndUpdateVenueInformation(listing);
+        final Listing result = recordListHelper.checkAndUpdateVenueInformation(listing);
 
         assertThat(result.getReadOnlyHearingVenueName()).isNotNull();
     }
 
     @Test
     void shouldSuccessfullyCheckAndUpdateVenueInformationSummary() {
-        Set<VenueNotListed> venueNotListedOption = new HashSet<>();
-        Listing listing = Listing.builder()
+        final Set<VenueNotListed> venueNotListedOption = new HashSet<>();
+        final Listing listing = Listing.builder()
             .readOnlyHearingVenueName("name-address")
             .hearingVenues(getMockedHearingVenueData())
             .venueNotListedOption(venueNotListedOption)
             .build();
 
-        Listing result = recordListHelper.checkAndUpdateVenueInformationSummary(listing);
+        final Listing result = recordListHelper.checkAndUpdateVenueInformationSummary(listing);
 
         assertThat(result.getHearingVenueNameAndAddress()).isNotNull();
+        assertThat(result.getHearingVenueNameAndAddress()).isEqualTo(listing.getReadOnlyHearingVenueName());
+    }
+
+    @Test
+    void shouldNotUpdateVenueInformationSummaryWhenVenueNotListed() {
+        final Listing listing = Listing.builder()
+            .readOnlyHearingVenueName("name-address")
+            .hearingVenues(getMockedHearingVenueData())
+            .venueNotListedOption(Set.of(VenueNotListed.VENUE_NOT_LISTED))
+            .build();
+
+        final Listing result = recordListHelper.checkAndUpdateVenueInformationSummary(listing);
+
+        assertThat(result.getHearingVenueNameAndAddress()).isNull();
+    }
+
+    @Test
+    void shouldNotUpdateVenueInformationSummaryWhenVenueNotListedAndReadOnlyHearingVenueIsEmpty() {
+        final Listing listing = Listing.builder()
+            .readOnlyHearingVenueName("")
+            .hearingVenues(getMockedHearingVenueData())
+            .venueNotListedOption(Set.of(VenueNotListed.VENUE_NOT_LISTED))
+            .build();
+
+        final Listing result = recordListHelper.checkAndUpdateVenueInformationSummary(listing);
+
+        assertThat(result.getHearingVenueNameAndAddress()).isNull();
     }
 
     @Test
     void shouldSuccessfullySaveSummary() {
-        Set<VenueNotListed> venueNotListedOption = new HashSet<>();
-        HearingSummary summary = HearingSummary.builder().build();
-        Listing listing = Listing.builder()
+        final Set<VenueNotListed> venueNotListedOption = new HashSet<>();
+        final HearingSummary summary = HearingSummary.builder().build();
+        final Listing listing = Listing.builder()
             .readOnlyHearingVenueName("name-address")
             .summary(summary)
             .hearingVenues(getMockedHearingVenueData())
             .venueNotListedOption(venueNotListedOption)
             .build();
-        CaseData data = caseData();
-        caseData().setListing(listing);
-        Listing result = recordListHelper.saveSummary(data);
+        final CaseData data = caseData();
+        data.setListing(listing);
+        final CicCase cicCase = CicCase.builder()
+            .fullName("John McNeil")
+            .build();
+        data.setCicCase(cicCase);
+
+        final Listing result = recordListHelper.saveSummary(data);
 
         assertThat(result).isNotNull();
+        assertThat(result.getSummary().getSubjectName()).isEqualTo("John McNeil");
     }
 
+    @Test
+    void saveSummaryShouldUpdateAdditionalHearingDate() {
+        final Set<VenueNotListed> venueNotListedOption = new HashSet<>();
+        final HearingSummary summary = HearingSummary.builder().build();
+        final Listing listing = Listing.builder()
+            .readOnlyHearingVenueName("name-address")
+            .summary(summary)
+            .hearingVenues(getMockedHearingVenueData())
+            .venueNotListedOption(venueNotListedOption)
+            .numberOfDays(YesOrNo.NO)
+            .build();
+        final Listing spyListing = spy(listing);
+        final CaseData data = caseData();
+        data.setListing(spyListing);
+        final CicCase cicCase = CicCase.builder()
+            .fullName("John McNeil")
+            .build();
+        data.setCicCase(cicCase);
+
+        final Listing result = recordListHelper.saveSummary(data);
+        assertThat(result).isNotNull();
+        assertThat(result.getSummary().getSubjectName()).isEqualTo("John McNeil");
+        verify(spyListing).setAdditionalHearingDate(null);
+    }
+
+    @Test
+    void shouldNotSaveSummaryAndReturnNullWhenListingIsNull() {
+        final CaseData caseData = caseData();
+        caseData.setListing(null);
+        final Listing result = recordListHelper.saveSummary(caseData);
+        assertThat(result).isNull();
+    }
+
+    private static Stream<Arguments> emptyAndNullDynamicListSource() {
+        return Stream.of(
+            null,
+            Arguments.arguments(EMPTY_DYNAMIC_LIST)
+        );
+    }
+
+    private static Stream<Arguments> cicCaseNotifyValues() {
+        final CicCase emptyCicCase = CicCase.builder().build();
+        final CicCase notifySubject = CicCase.builder()
+            .notifyPartySubject(Set.of(SubjectCIC.SUBJECT))
+            .build();
+        final CicCase notifyRepresentative = CicCase.builder()
+            .notifyPartyRepresentative(Set.of(RepresentativeCIC.REPRESENTATIVE))
+            .build();
+        final CicCase notifyRespondent = CicCase.builder()
+            .notifyPartyRespondent(Set.of(RespondentCIC.RESPONDENT))
+            .build();
+        final CicCase notifySubjectRepresentative = CicCase.builder()
+            .notifyPartySubject(Set.of(SubjectCIC.SUBJECT))
+            .notifyPartyRepresentative(Set.of(RepresentativeCIC.REPRESENTATIVE))
+            .build();
+        final CicCase notifySubjectRespondent = CicCase.builder()
+            .notifyPartySubject(Set.of(SubjectCIC.SUBJECT))
+            .notifyPartyRespondent(Set.of(RespondentCIC.RESPONDENT))
+            .build();
+        final CicCase notifyRepresentativeRespondent =  CicCase.builder()
+            .notifyPartySubject(Set.of(SubjectCIC.SUBJECT))
+            .notifyPartyRepresentative(Set.of(RepresentativeCIC.REPRESENTATIVE))
+            .notifyPartyRespondent(Set.of(RespondentCIC.RESPONDENT))
+            .build();
+        final CicCase notifyAll = CicCase.builder()
+            .notifyPartySubject(Set.of(SubjectCIC.SUBJECT))
+            .notifyPartyRepresentative(Set.of(RepresentativeCIC.REPRESENTATIVE))
+            .notifyPartyRespondent(Set.of(RespondentCIC.RESPONDENT))
+            .build();
+
+        return Stream.of(
+            Arguments.arguments(null, true),
+            Arguments.arguments(emptyCicCase, true),
+            Arguments.arguments(notifySubject, false),
+            Arguments.arguments(notifyRepresentative, false),
+            Arguments.arguments(notifyRespondent, false),
+            Arguments.arguments(notifySubjectRepresentative, false),
+            Arguments.arguments(notifySubjectRespondent, false),
+            Arguments.arguments(notifyRepresentativeRespondent, false),
+            Arguments.arguments(notifyAll, false)
+        );
+    }
 }

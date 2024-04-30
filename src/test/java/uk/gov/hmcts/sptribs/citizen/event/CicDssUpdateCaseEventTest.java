@@ -1,79 +1,295 @@
 package uk.gov.hmcts.sptribs.citizen.event;
 
-import org.junit.jupiter.api.BeforeEach;
+import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.test.util.ReflectionTestUtils;
 import uk.gov.hmcts.ccd.sdk.ConfigBuilderImpl;
+import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.Event;
+import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
+import uk.gov.hmcts.ccd.sdk.type.Document;
+import uk.gov.hmcts.ccd.sdk.type.ListValue;
+import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
+import uk.gov.hmcts.sptribs.ciccase.model.DssCaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.DssMessage;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
-import uk.gov.hmcts.sptribs.common.config.AppsConfig;
-import uk.gov.hmcts.sptribs.constants.CommonConstants;
+import uk.gov.hmcts.sptribs.common.notification.DssUpdateCaseSubmissionNotification;
+import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
+import uk.gov.hmcts.sptribs.document.model.EdgeCaseDocument;
+import uk.gov.hmcts.sptribs.idam.IdamService;
+import uk.gov.hmcts.sptribs.notification.exception.NotificationException;
+import uk.gov.hmcts.sptribs.testutil.TestDataHelper;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.springframework.http.HttpHeaders.AUTHORIZATION;
+import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CITIZEN_DSS_UPDATE_CASE_SUBMISSION;
+import static uk.gov.hmcts.sptribs.document.model.DocumentType.DSS_TRIBUNAL_FORM;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigBuilder;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.getEventsFrom;
-import static uk.gov.hmcts.sptribs.testutil.TestConstants.CASE_DATA_CIC_ID;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_AUTHORIZATION_TOKEN;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID;
 
-@ExtendWith(SpringExtension.class)
-@SpringBootTest
-@TestPropertySource("classpath:application.yaml")
-@ActiveProfiles("test")
-public class CicDssUpdateCaseEventTest {
+@ExtendWith(MockitoExtension.class)
+class CicDssUpdateCaseEventTest {
+
+    @Mock
+    private DssUpdateCaseSubmissionNotification dssUpdateCaseSubmissionNotification;
+
+    @Mock
+    private HttpServletRequest request;
+
+    @Mock
+    private IdamService idamService;
 
     @InjectMocks
     private CicDssUpdateCaseEvent cicDssUpdateCaseEvent;
 
-    @Mock
-    private AppsConfig appsConfig;
-
-    @Mock
-    private AppsConfig.AppsDetails cicAppDetail;
-
-    @BeforeEach
-    public void setUp() {
-        MockitoAnnotations.openMocks(this);
-        cicAppDetail = new AppsConfig.AppsDetails();
-        cicAppDetail.setCaseType(CommonConstants.ST_CIC_CASE_TYPE);
-        cicAppDetail.setJurisdiction(CommonConstants.ST_CIC_JURISDICTION);
-        cicAppDetail.setCaseTypeOfApplication(List.of(CASE_DATA_CIC_ID));
-
-        AppsConfig.EventsConfig eventsConfig = new AppsConfig.EventsConfig();
-        eventsConfig.setDssUpdateEvent("citizen-cic-dssUpdate-dss-application");
-
-        cicAppDetail.setEventIds(eventsConfig);
-
-    }
-
     @Test
     void shouldAddConfigurationToConfigBuilder() {
-        final ConfigBuilderImpl<CaseData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
+        ReflectionTestUtils.setField(cicDssUpdateCaseEvent, "dssUpdateCaseEnabled", true);
 
-        cicDssUpdateCaseEvent.setDssUpdateCaseEnabled(true);
-        when(appsConfig.getApps()).thenReturn(Arrays.asList(cicAppDetail));
+        final ConfigBuilderImpl<CaseData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
 
         cicDssUpdateCaseEvent.configure(configBuilder);
 
         assertThat(getEventsFrom(configBuilder).values())
             .extracting(Event::getId)
-            .contains("citizen-cic-dssUpdate-dss-application");
-        assertThat(getEventsFrom(configBuilder).values())
-            .extracting(Event::getDescription)
-            .contains("Application DSS Update (cic)");
-        assertThat(getEventsFrom(configBuilder).values())
-            .extracting(Event::getName)
-            .contains("DSS Update case (cic)");
+            .contains(CITIZEN_DSS_UPDATE_CASE_SUBMISSION);
+    }
+
+    @Test
+    void shouldAddDocumentsAndMessagesToCaseDataInAboutToSubmitCallback() {
+        final CaseworkerCICDocument caseworkerCICDocument =
+            CaseworkerCICDocument.builder()
+                .documentLink(Document.builder().build())
+                .documentCategory(DSS_TRIBUNAL_FORM)
+                .build();
+        final List<ListValue<CaseworkerCICDocument>> applicantDocumentsUploaded = new ArrayList<>();
+        applicantDocumentsUploaded.add(new ListValue<>("3", caseworkerCICDocument));
+
+        final DssMessage message = DssMessage.builder()
+            .message("new doc")
+            .build();
+        final List<ListValue<DssMessage>> messages = new ArrayList<>();
+        messages.add(new ListValue<>("1", message));
+
+        final CaseData caseData = CaseData.builder()
+            .cicCase(
+                CicCase.builder()
+                    .applicantDocumentsUploaded(applicantDocumentsUploaded)
+                    .build()
+            )
+            .messages(messages)
+            .dssCaseData(getDssCaseData())
+            .build();
+
+        final CaseDetails<CaseData, State> details = new CaseDetails<>();
+        details.setData(caseData);
+
+        when(request.getHeader(AUTHORIZATION)).thenReturn(TEST_AUTHORIZATION_TOKEN);
+        when(idamService.retrieveUser(TEST_AUTHORIZATION_TOKEN)).thenReturn(TestDataHelper.getUser());
+
+        AboutToStartOrSubmitResponse<CaseData, State> response =
+            cicDssUpdateCaseEvent.aboutToSubmit(details, details);
+
+        assertThat(response.getData().getCicCase().getApplicantDocumentsUploaded()).isNotEmpty();
+        assertThat(response.getData().getCicCase().getApplicantDocumentsUploaded()).hasSize(3);
+        assertThat(response.getData().getMessages()).isNotEmpty();
+        assertThat(response.getData().getMessages()).hasSize(2);
+        assertThat(response.getData().getDssCaseData().getOtherInfoDocuments()).isEmpty();
+        assertThat(response.getData().getDssCaseData().getAdditionalInformation()).isNull();
+    }
+
+    @Test
+    void shouldAddDocumentsOnlyToCaseDataInAboutToSubmitCallbackIfAdditionalInfoFieldIsEmpty() {
+        final CaseworkerCICDocument caseworkerCICDocument =
+            CaseworkerCICDocument.builder()
+                .documentLink(Document.builder().build())
+                .documentCategory(DSS_TRIBUNAL_FORM)
+                .build();
+        final List<ListValue<CaseworkerCICDocument>> applicantDocumentsUploaded = new ArrayList<>();
+        applicantDocumentsUploaded.add(new ListValue<>("3", caseworkerCICDocument));
+
+        final DssMessage message = DssMessage.builder()
+            .message("new doc")
+            .build();
+        final List<ListValue<DssMessage>> messages = new ArrayList<>();
+        messages.add(new ListValue<>("1", message));
+
+        final CaseData caseData = CaseData.builder()
+            .cicCase(
+                CicCase.builder()
+                    .applicantDocumentsUploaded(applicantDocumentsUploaded)
+                    .build()
+            )
+            .messages(messages)
+            .dssCaseData(getDssCaseData())
+            .build();
+        caseData.getDssCaseData().setAdditionalInformation("");
+
+        final CaseDetails<CaseData, State> details = new CaseDetails<>();
+        details.setData(caseData);
+
+        AboutToStartOrSubmitResponse<CaseData, State> response =
+            cicDssUpdateCaseEvent.aboutToSubmit(details, details);
+
+        assertThat(response.getData().getCicCase().getApplicantDocumentsUploaded()).isNotEmpty();
+        assertThat(response.getData().getCicCase().getApplicantDocumentsUploaded()).hasSize(3);
+        assertThat(response.getData().getMessages()).isNotEmpty();
+        assertThat(response.getData().getMessages()).hasSize(1);
+        assertThat(response.getData().getDssCaseData().getOtherInfoDocuments()).isEmpty();
+        assertThat(response.getData().getDssCaseData().getAdditionalInformation()).isNull();
+    }
+
+    @Test
+    void shouldAddDocumentsOnlyToCaseDataInAboutToSubmitCallbackIfAdditionalInfoFieldIsNull() {
+        final CaseworkerCICDocument caseworkerCICDocument =
+            CaseworkerCICDocument.builder()
+                .documentLink(Document.builder().build())
+                .documentCategory(DSS_TRIBUNAL_FORM)
+                .build();
+        final List<ListValue<CaseworkerCICDocument>> applicantDocumentsUploaded = new ArrayList<>();
+        applicantDocumentsUploaded.add(new ListValue<>("3", caseworkerCICDocument));
+
+        final DssMessage message = DssMessage.builder()
+            .message("new doc")
+            .build();
+        final List<ListValue<DssMessage>> messages = new ArrayList<>();
+        messages.add(new ListValue<>("1", message));
+
+        final CaseData caseData = CaseData.builder()
+            .cicCase(
+                CicCase.builder()
+                    .applicantDocumentsUploaded(applicantDocumentsUploaded)
+                    .build()
+            )
+            .messages(messages)
+            .dssCaseData(getDssCaseData())
+            .build();
+        caseData.getDssCaseData().setAdditionalInformation(null);
+
+        final CaseDetails<CaseData, State> details = new CaseDetails<>();
+        details.setData(caseData);
+
+        AboutToStartOrSubmitResponse<CaseData, State> response =
+            cicDssUpdateCaseEvent.aboutToSubmit(details, details);
+
+        assertThat(response.getData().getCicCase().getApplicantDocumentsUploaded()).isNotEmpty();
+        assertThat(response.getData().getCicCase().getApplicantDocumentsUploaded()).hasSize(3);
+        assertThat(response.getData().getMessages()).isNotEmpty();
+        assertThat(response.getData().getMessages()).hasSize(1);
+        assertThat(response.getData().getDssCaseData().getOtherInfoDocuments()).isEmpty();
+        assertThat(response.getData().getDssCaseData().getAdditionalInformation()).isNull();
+    }
+
+    @Test
+    void shouldCreateNewApplicantDocumentsUploadedAndMessagesListIfEmptyInAboutToSubmitCallback() {
+        final CaseData caseData = CaseData.builder()
+            .cicCase(
+                CicCase.builder()
+                    .applicantDocumentsUploaded(new ArrayList<>())
+                    .build()
+            )
+            .messages(new ArrayList<>())
+            .dssCaseData(getDssCaseData())
+            .build();
+
+        final CaseDetails<CaseData, State> details = new CaseDetails<>();
+        details.setData(caseData);
+
+        when(request.getHeader(AUTHORIZATION)).thenReturn(TEST_AUTHORIZATION_TOKEN);
+        when(idamService.retrieveUser(TEST_AUTHORIZATION_TOKEN)).thenReturn(TestDataHelper.getUser());
+
+        AboutToStartOrSubmitResponse<CaseData, State> response =
+            cicDssUpdateCaseEvent.aboutToSubmit(details, details);
+
+        assertThat(response.getData().getCicCase().getApplicantDocumentsUploaded()).isNotEmpty();
+        assertThat(response.getData().getCicCase().getApplicantDocumentsUploaded()).hasSize(2);
+        assertThat(response.getData().getMessages()).isNotEmpty();
+        assertThat(response.getData().getMessages()).hasSize(1);
+        assertThat(response.getData().getDssCaseData().getOtherInfoDocuments()).isEmpty();
+        assertThat(response.getData().getDssCaseData().getAdditionalInformation()).isNull();
+    }
+
+    @Test
+    void shouldSendEmailNotifications() {
+        final CaseData caseData = CaseData.builder().build();
+        final CaseDetails<CaseData, State> details = new CaseDetails<>();
+        details.setId(TEST_CASE_ID);
+        details.setData(caseData);
+
+        SubmittedCallbackResponse response = cicDssUpdateCaseEvent.submitted(details, details);
+
+        assertThat(response.getConfirmationHeader())
+            .isEqualTo("# CIC Dss Update Case Event Email notifications sent");
+
+        verify(dssUpdateCaseSubmissionNotification).sendToApplicant(
+            details.getData(),
+            TEST_CASE_ID.toString()
+        );
+        verify(dssUpdateCaseSubmissionNotification).sendToTribunal(
+            details.getData(),
+            TEST_CASE_ID.toString()
+        );
+    }
+
+    @Test
+    void shouldCatchErrorIfSendEmailNotificationFails() {
+        final CaseData caseData = CaseData.builder().build();
+        final CaseDetails<CaseData, State> details = new CaseDetails<>();
+        details.setId(TEST_CASE_ID);
+        details.setData(caseData);
+
+        doThrow(NotificationException.class)
+            .when(dssUpdateCaseSubmissionNotification)
+            .sendToApplicant(details.getData(), TEST_CASE_ID.toString());
+
+        SubmittedCallbackResponse response = cicDssUpdateCaseEvent.submitted(details, details);
+
+        assertThat(response.getConfirmationHeader())
+            .contains("# CIC Dss Update Case Event Email notification failed %n## Please resend the notification");
+    }
+
+    private DssCaseData getDssCaseData() {
+        EdgeCaseDocument doc1 = new EdgeCaseDocument();
+        doc1.setDocumentLink(
+            Document.builder()
+                .filename("doc1.pdf")
+                .binaryUrl("doc1.pdf/binary")
+                .categoryId("test category")
+                .build()
+        );
+        doc1.setComment("this doc is relevant to the case");
+        EdgeCaseDocument doc2 = new EdgeCaseDocument();
+        doc2.setDocumentLink(
+            Document.builder()
+                .filename("doc2.pdf")
+                .binaryUrl("doc2.pdf/binary")
+                .categoryId("test category")
+                .build()
+        );
+        doc2.setComment("this doc is also relevant to the case");
+        final List<ListValue<EdgeCaseDocument>> dssCaseDataOtherInfoDocuments = List.of(
+            new ListValue<>("1", doc1),
+            new ListValue<>("2", doc2)
+        );
+
+        return DssCaseData.builder()
+            .additionalInformation("some additional info")
+            .otherInfoDocuments(dssCaseDataOtherInfoDocuments)
+            .build();
     }
 }

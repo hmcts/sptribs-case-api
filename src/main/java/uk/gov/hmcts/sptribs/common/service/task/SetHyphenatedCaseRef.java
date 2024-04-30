@@ -9,15 +9,15 @@ import uk.gov.hmcts.sptribs.ciccase.task.CaseTask;
 
 @Component
 @Slf4j
-public class SetHyphenatedCaseRef  implements CaseTask {
+public class SetHyphenatedCaseRef implements CaseTask {
 
     @Override
     public CaseDetails<CaseData, State> apply(final CaseDetails<CaseData, State> caseDetails) {
-        caseDetails.getData().setHyphenatedCaseRef(caseDetails.getData().formatCaseRef(caseDetails.getId()));
-
-        log.info("Setting CaseId to {}, State: {}",
-            caseDetails.getId(),
-            caseDetails.getState());
+        if (caseDetails != null
+            && caseDetails.getData() != null
+            && caseDetails.getId() != null) {
+            caseDetails.getData().setHyphenatedCaseRef(caseDetails.getData().formatCaseRef(caseDetails.getId()));
+        }
 
         return caseDetails;
     }

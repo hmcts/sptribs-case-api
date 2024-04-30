@@ -43,7 +43,6 @@ public class CaseworkerCICDocument {
     )
     private Document documentLink;
 
-
     //Add handwritten constructor as a workaround for @JsonUnwrapped prefix issue
     @JsonCreator
     public CaseworkerCICDocument(@JsonProperty("documentCategory") DocumentType documentCategory,
@@ -56,7 +55,7 @@ public class CaseworkerCICDocument {
 
     @JsonIgnore
     public boolean isDocumentValid() {
-        return isDocumentValid("pdf,csv,txt,rtf,xlsx,docx,doc,xls,mp3,m4a");
+        return isDocumentValid("pdf,csv,txt,rtf,xlsx,docx,doc,xls,mp3,m4a,mp4");
     }
 
     public boolean isDocumentValid(String validExtensions) {

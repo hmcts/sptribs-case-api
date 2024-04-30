@@ -12,7 +12,7 @@ public class CreateDraftOrderTests extends Base {
     void createDraftOrder() {
         Page page = getPage();
         Login login = new Login(page);
-        login.loginAsStTest1User();
+        login.loginAsCaseWorker();
         Case newCase = new Case(page);
         newCase.createCase("representative", "applicant");
         newCase.buildCase();

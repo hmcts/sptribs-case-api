@@ -42,11 +42,11 @@ public class HearingService {
     }
 
     public void addListingIfExists(CaseData data) {
-        if (null != data.getListing().getHearingType() && data.getHearingList().isEmpty()) {
+        if (data.getListing().getHearingType() != null && data.getHearingList().isEmpty()) {
             addListing(data, data.getListing());
 
             ListValue<Listing> firstListing = data.getHearingList().stream().findFirst().orElse(null);
-            if (null != firstListing && null != data.getRetiredFields()) {
+            if (firstListing != null && data.getRetiredFields() != null) {
                 firstListing.getValue().setHearingCancellationReason(data.getRetiredFields().getCicCaseHearingCancellationReason());
                 firstListing.getValue().setCancelHearingAdditionalDetail(data.getRetiredFields().getCicCaseCancelHearingAdditionalDetail());
                 firstListing.getValue().setPostponeReason(data.getRetiredFields().getCicCasePostponeReason());
@@ -90,7 +90,7 @@ public class HearingService {
         if (CollectionUtils.isEmpty(caseData.getHearingList())) {
             List<ListValue<Listing>> listValues = new ArrayList<>();
 
-            var listValue = ListValue
+            ListValue<Listing> listValue = ListValue
                 .<Listing>builder()
                 .id("1")
                 .value(listing)
@@ -101,7 +101,7 @@ public class HearingService {
             caseData.setHearingList(listValues);
         } else {
             AtomicInteger listValueIndex = new AtomicInteger(0);
-            var listValue = ListValue
+            ListValue<Listing> listValue = ListValue
                 .<Listing>builder()
                 .value(listing)
                 .build();

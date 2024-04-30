@@ -12,14 +12,11 @@ public enum UserRole implements HasRole {
     // Common User roles
     //TODO: update : SUPER_USER, SOLICITOR before prod deploy
     SUPER_USER("caseworker-sptribs-superuser", "CRU"),
-    SYSTEMUPDATE("caseworker-sptribs-systemupdate", "CRUD"),
-    SOLICITOR("caseworker", "CRU"),
+    SYSTEM_UPDATE("caseworker-sptribs-systemupdate", "CRUD"),
+    CASEWORKER("caseworker", "CRU"),
     CREATOR("[CREATOR]", "CRU"),
 
     // CIC User roles
-    COURT_ADMIN_CIC("caseworker-sptribs-cic-courtadmin", "CRU"),
-    CASE_OFFICER_CIC("caseworker-sptribs-cic-caseofficer", "CRU"),
-    DISTRICT_REGISTRAR_CIC("caseworker-sptribs-cic-districtregistrar", "CRU"),
     DISTRICT_JUDGE_CIC("caseworker-sptribs-cic-districtjudge", "CRU"),
     RESPONDENT_CIC("caseworker-sptribs-cic-respondent", "CRU"),
 
@@ -31,9 +28,10 @@ public enum UserRole implements HasRole {
 
     ST_CIC_JUDGE("caseworker-st_cic-judge", "CRU"),
     ST_CIC_RESPONDENT("caseworker-st_cic-respondent", "CRU"),
-    AC_CASEFLAGS_ADMIN("caseflags-admin", "CRU"),
-    AC_CASEFLAGS_VIEWER("caseflags-viewer", "R"),
-    CITIZEN_CIC("citizen", "CRU");
+    AC_CASE_FLAGS_ADMIN("caseflags-admin", "CRU"),
+    AC_CASE_FLAGS_VIEWER("caseflags-viewer", "R"),
+
+    CITIZEN("citizen", "CRU");
 
     @JsonValue
     private final String role;

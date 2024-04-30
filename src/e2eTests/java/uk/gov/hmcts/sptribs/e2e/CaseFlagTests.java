@@ -17,7 +17,7 @@ public class CaseFlagTests extends Base {
     public void caseWorkerShouldBeAbleToCreateACaseLevelFlag() {
         Page page = getPage();
         Login login = new Login(page);
-        login.loginAsStTest1User();
+        login.loginAsCaseWorker();
         Case newCase = new Case(page);
         newCase.createCase();
         newCase.buildCase();
@@ -34,7 +34,7 @@ public class CaseFlagTests extends Base {
     public void caseWorkedShouldBeAbleToCreatePartyLevelFlag() {
         Page page = getPage();
         Login login = new Login(page);
-        login.loginAsStTest1User();
+        login.loginAsCaseWorker();
         Case newCase = new Case(page);
         newCase.createCase(CaseParties.Subject.label, CaseParties.Representative.label, CaseParties.Applicant.label);
         newCase.buildCase();
@@ -45,7 +45,7 @@ public class CaseFlagTests extends Base {
     public void caseWorkerShouldBeAbleToManageFlags() {
         Page page = getPage();
         Login login = new Login(page);
-        login.loginAsStTest1User();
+        login.loginAsCaseWorker();
         Case newCase = new Case(page);
         newCase.createCase();
         newCase.buildCase();
@@ -57,7 +57,7 @@ public class CaseFlagTests extends Base {
     }
 
     private String getCaseLevelFlagStatus(Page page) {
-        String selector = 
+        String selector =
             "//ccd-case-flag-table[.//caption[contains(text(), 'Case level flags')]]//td/strong[contains(@class, 'govuk-tag')]";
         ElementHandle element = page.waitForSelector(selector, new Page.WaitForSelectorOptions().setState(WaitForSelectorState.VISIBLE));
         String flagStatusElement = element.textContent();

@@ -17,8 +17,6 @@ def type = "java"
 def product = "sptribs"
 def component = "case-api"
 
-GradleBuilder builder = new GradleBuilder(this, product)
-
 static Map<String, Object> secret(String secretName, String envVariable) {
   [$class     : 'AzureKeyVaultSecret',
    secretType : 'Secret',
@@ -31,57 +29,35 @@ def secrets = [
   'sptribs-${env}'    :[
     secret('idam-secret', 'OAUTH2_CLIENT_SECRET'),
     secret('idam-solicitor-username', 'IDAM_SOLICITOR_USERNAME'),
-    secret('idam-solicitor-password', 'IDAM_SOLICITOR_PASSWORD')
+    secret('idam-solicitor-password', 'IDAM_SOLICITOR_PASSWORD'),
+    secret('citizen-user', 'IDAM_CITIZEN_USERNAME'),
+    secret('citizen-password', 'IDAM_CITIZEN_PASSWORD')
   ]
 ]
+
+GradleBuilder builder = new GradleBuilder(this, product)
 
 withNightlyPipeline(type, product, component) {
   env.TEST_URL = "http://sptribs-case-api-aat.service.core-compute-aat.internal"
   loadVaultSecrets(secrets)
   enableSlackNotifications('#special-tribunals-builds')
   enableFortifyScan()
-  enableFullFunctionalTest()
 
   afterAlways('fortify-scan') {
     steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/Fortify Scan/**/*'
-  }
 
-  afterAlways('fullFunctionalTest') {
-    archiveArtifacts allowEmptyArchive: true, artifacts: 'output/**/*'
-  }
-
-  afterSuccess('fullFunctionalTest') {
-
-    Exception ex = null;
-    try {
-      builder.gradle('e2eTestsNightlyFirefox')
-    } catch (Exception caught) {
-      ex = caught;
-    } finally {
-
-      publishHTML target: [
-        allowMissing         : true,
-        alwaysLinkToLastBuild: true,
-        keepAll              : true,
-        reportDir            : "build/reports/tests/e2eTestsNightlyFirefox",
-        reportFiles          : "index.html",
-        reportName           : "E2E Tests Report Firefox"
-      ]
+    stage("Case-API E2E tests") {
       try {
-        builder.gradle('e2eTestsNightlyMsEdge')
+        builder.gradle('e2eTests')
       } finally {
-
         publishHTML target: [
           allowMissing         : true,
           alwaysLinkToLastBuild: true,
           keepAll              : true,
-          reportDir            : "build/reports/tests/e2eTestsNightlyMsEdge",
+          reportDir            : "build/reports",
           reportFiles          : "index.html",
-          reportName           : "E2E Tests Report MS Edge"
+          reportName           : "E2E Tests Report"
         ]
-        if (ex != null) {
-          throw ex;
-        }
       }
     }
   }

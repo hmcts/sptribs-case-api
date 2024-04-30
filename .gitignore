@@ -37,3 +37,5 @@ ccd-definitions/definitions/development
 # Terraform
 .terraform.lock.hcl
 .terraform
+
+/pacts/

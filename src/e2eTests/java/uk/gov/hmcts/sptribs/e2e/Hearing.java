@@ -377,7 +377,7 @@ public class Hearing {
         // Check your answers form
         assertThat(page.locator("h2.heading-h2"))
             .hasText("Check your answers", textOptionsWithTimeout(30000));
-        String cancelReason = getValueFromTableFor(page, "Why was the hearing cancelled?");
+        String cancelReason = getValueFromTableFor(page, "Reason Cancelled");
         Assertions.assertEquals("Incomplete Panel", cancelReason);
         clickButton(page, "Save and continue");
 
@@ -449,7 +449,7 @@ public class Hearing {
     private String getRandomNameFromJudgesList(Page page) {
         page.waitForSelector("#judge",
             new Page.WaitForSelectorOptions().setState(WaitForSelectorState.VISIBLE));
-        var elements = page.querySelectorAll("#judge option");
+        final List<ElementHandle> elements = page.querySelectorAll("#judge option");
         Assertions.assertTrue(elements.size() > 1, "Judges dropdown list is empty");
         return getRandomOptionFromTheList(elements);
     }
@@ -457,14 +457,14 @@ public class Hearing {
     private String getRandomNameFromPanelMembersList(Page page) {
         page.waitForSelector("#memberList_0_name",
             new Page.WaitForSelectorOptions().setState(WaitForSelectorState.VISIBLE));
-        var elements = page.querySelectorAll("#memberList_0_name option");
+        final List<ElementHandle> elements = page.querySelectorAll("#memberList_0_name option");
         Assertions.assertTrue(elements.size() > 1, "Panel members dropdown list is empty");
         return getRandomOptionFromTheList(elements);
     }
 
     private String getRandomOptionFromTheList(List<ElementHandle> list) {
-        var elements = list.subList(1, list.size());
-        return (String) elements.stream()
+        final List<ElementHandle> elements = list.subList(1, list.size());
+        return elements.stream()
             .skip(new Random().nextInt(elements.size()))
             .findFirst()
             .map(ElementHandle::textContent)

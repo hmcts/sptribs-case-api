@@ -12,14 +12,15 @@ import uk.gov.hmcts.sptribs.ciccase.model.State;
 @Component
 public class CaseDetailsConverter {
 
-    @Autowired
-    private ObjectMapper objectMapper;
+    private final ObjectMapper objectMapper;
 
-    public CaseDetails convertToReformModelFromCaseDetails(final uk.gov.hmcts.ccd.sdk.api.CaseDetails<CaseData, State> caseDetails) {
-        return objectMapper.convertValue(caseDetails, CaseDetails.class);
+    @Autowired
+    public CaseDetailsConverter(ObjectMapper objectMapper) {
+        this.objectMapper = objectMapper;
     }
 
-    public uk.gov.hmcts.ccd.sdk.api.CaseDetails<CaseData, State> convertToCaseDetailsFromReformModel(final CaseDetails caseDetails) {
+    public uk.gov.hmcts.ccd.sdk.api.CaseDetails<CaseData, State> convertToCaseDetailsFromReformModel(
+        final CaseDetails caseDetails) {
         return objectMapper.convertValue(caseDetails, new TypeReference<>() {
         });
     }

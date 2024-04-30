@@ -31,21 +31,21 @@ public class CaseTypeTabTest {
     @Test
     void shouldConfigureCaseTypeTab() {
         //Given
-        caseTypeTab.setCaseFileViewAndDocumentManagementEnabled(true);
+        caseTypeTab.setCaseFileViewEnabled(true);
         caseTypeTab.setBundlingEnabled(true);
-        Tab.TabBuilder<CaseData, UserRole> summaryTabBuilder = Tab.TabBuilder.builder(CaseData.class, utils);
-        Tab.TabBuilder<CaseData, UserRole> stateTabBuilder = Tab.TabBuilder.builder(CaseData.class, utils);
-        Tab.TabBuilder<CaseData, UserRole> notesTabBuilder = Tab.TabBuilder.builder(CaseData.class, utils);
-        Tab.TabBuilder<CaseData, UserRole> caseDetailsTabBuilder = Tab.TabBuilder.builder(CaseData.class, utils);
-        Tab.TabBuilder<CaseData, UserRole> casePartiesTabBuilder = Tab.TabBuilder.builder(CaseData.class, utils);
-        Tab.TabBuilder<CaseData, UserRole> ordersTabBuilder = Tab.TabBuilder.builder(CaseData.class, utils);
-        Tab.TabBuilder<CaseData, UserRole> caseDocsTabBuilder = Tab.TabBuilder.builder(CaseData.class, utils);
-        Tab.TabBuilder<CaseData, UserRole> hearingsTabBuilder = Tab.TabBuilder.builder(CaseData.class, utils);
-        Tab.TabBuilder<CaseData, UserRole> cicaDetailsTabBuilder = Tab.TabBuilder.builder(CaseData.class, utils);
-        Tab.TabBuilder<CaseData, UserRole> caseCategoryTabBuilder = Tab.TabBuilder.builder(CaseData.class, utils);
-        Tab.TabBuilder<CaseData, UserRole> bundlingTabBuilder = Tab.TabBuilder.builder(CaseData.class, utils);
-        Tab.TabBuilder<CaseData, UserRole> messagesTabBuilder = Tab.TabBuilder.builder(CaseData.class, utils);
-        Tab.TabBuilder<CaseData, UserRole> caseReferralTabBuilder = Tab.TabBuilder.builder(CaseData.class, utils);
+        final Tab.TabBuilder<CaseData, UserRole> summaryTabBuilder = Tab.TabBuilder.builder(CaseData.class, utils);
+        final Tab.TabBuilder<CaseData, UserRole> stateTabBuilder = Tab.TabBuilder.builder(CaseData.class, utils);
+        final Tab.TabBuilder<CaseData, UserRole> notesTabBuilder = Tab.TabBuilder.builder(CaseData.class, utils);
+        final Tab.TabBuilder<CaseData, UserRole> caseDetailsTabBuilder = Tab.TabBuilder.builder(CaseData.class, utils);
+        final Tab.TabBuilder<CaseData, UserRole> casePartiesTabBuilder = Tab.TabBuilder.builder(CaseData.class, utils);
+        final Tab.TabBuilder<CaseData, UserRole> ordersTabBuilder = Tab.TabBuilder.builder(CaseData.class, utils);
+        final Tab.TabBuilder<CaseData, UserRole> caseDocsTabBuilder = Tab.TabBuilder.builder(CaseData.class, utils);
+        final Tab.TabBuilder<CaseData, UserRole> hearingsTabBuilder = Tab.TabBuilder.builder(CaseData.class, utils);
+        final Tab.TabBuilder<CaseData, UserRole> cicaDetailsTabBuilder = Tab.TabBuilder.builder(CaseData.class, utils);
+        final Tab.TabBuilder<CaseData, UserRole> caseCategoryTabBuilder = Tab.TabBuilder.builder(CaseData.class, utils);
+        final Tab.TabBuilder<CaseData, UserRole> bundlingTabBuilder = Tab.TabBuilder.builder(CaseData.class, utils);
+        final Tab.TabBuilder<CaseData, UserRole> messagesTabBuilder = Tab.TabBuilder.builder(CaseData.class, utils);
+        final Tab.TabBuilder<CaseData, UserRole> caseReferralTabBuilder = Tab.TabBuilder.builder(CaseData.class, utils);
 
         when(configBuilder.tab("summary", "Summary")).thenReturn(summaryTabBuilder);
         when(configBuilder.tab("state", "State")).thenReturn(stateTabBuilder);
@@ -63,17 +63,17 @@ public class CaseTypeTabTest {
 
         //When
         caseTypeTab.configure(configBuilder);
-        Tab<CaseData, UserRole> summaryTab = summaryTabBuilder.build();
-        Tab<CaseData, UserRole> caseDetailsTab = caseDetailsTabBuilder.build();
-        Tab<CaseData, UserRole> casePartiesTab = casePartiesTabBuilder.build();
-        Tab<CaseData, UserRole> ordersTab = ordersTabBuilder.build();
-        Tab<CaseData, UserRole> caseDocsTab = caseDocsTabBuilder.build();
-        Tab<CaseData, UserRole> hearingsTab = hearingsTabBuilder.build();
-        Tab<CaseData, UserRole> cicaDetailsTab = cicaDetailsTabBuilder.build();
-        Tab<CaseData, UserRole> caseCategoryTab = caseCategoryTabBuilder.build();
-        Tab<CaseData, UserRole> messages = messagesTabBuilder.build();
-        Tab<CaseData, UserRole> bundlingTab = bundlingTabBuilder.build();
-        Tab<CaseData, UserRole> caseReferralTab = caseReferralTabBuilder.build();
+        final Tab<CaseData, UserRole> summaryTab = summaryTabBuilder.build();
+        final Tab<CaseData, UserRole> caseDetailsTab = caseDetailsTabBuilder.build();
+        final Tab<CaseData, UserRole> casePartiesTab = casePartiesTabBuilder.build();
+        final Tab<CaseData, UserRole> ordersTab = ordersTabBuilder.build();
+        final Tab<CaseData, UserRole> caseDocsTab = caseDocsTabBuilder.build();
+        final Tab<CaseData, UserRole> hearingsTab = hearingsTabBuilder.build();
+        final Tab<CaseData, UserRole> cicaDetailsTab = cicaDetailsTabBuilder.build();
+        final Tab<CaseData, UserRole> caseCategoryTab = caseCategoryTabBuilder.build();
+        final Tab<CaseData, UserRole> messages = messagesTabBuilder.build();
+        final Tab<CaseData, UserRole> bundlingTab = bundlingTabBuilder.build();
+        final Tab<CaseData, UserRole> caseReferralTab = caseReferralTabBuilder.build();
 
         //Then
         assertThat(summaryTab.getFields()).extracting(TabField::getId).contains("cicCaseFullName");
@@ -81,9 +81,11 @@ public class CaseTypeTabTest {
         assertThat(casePartiesTab.getFields()).extracting(TabField::getId).contains("cicCaseFullName");
         assertThat(ordersTab.getFields()).extracting(TabField::getId).contains("cicCaseOrderList");
         assertThat(caseDocsTab.getFields()).extracting(TabField::getId).contains("cicCaseApplicantDocumentsUploaded");
+        assertThat(hearingsTab.getFields()).extracting(TabField::getId).contains("hearingStatus");
         assertThat(cicaDetailsTab.getFields()).extracting(TabField::getId).contains("CICA Details");
         assertThat(caseCategoryTab.getFields()).extracting(TabField::getDisplayContextParameter).isNotNull();
         assertThat(messages.getFields()).extracting(TabField::getId).isNotNull();
+        assertThat(bundlingTab.getFields()).extracting(TabField::getId).isNotNull();
         assertThat(caseReferralTab.getFields()).extracting(TabField::getId).contains("Referral to Judge");
         assertThat(caseReferralTab.getFields()).extracting(TabField::getId).contains("Referral to Legal Officer");
     }

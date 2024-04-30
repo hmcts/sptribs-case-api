@@ -1,7 +1,9 @@
 package uk.gov.hmcts.sptribs.caseworker.event.page;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
@@ -29,11 +31,23 @@ public class HearingRecordingUploadPage implements CcdPageConfiguration {
             .label("LabelHearingRecordingUploadPage", "")
             .pageShowConditions(PageShowConditionsUtil.editSummaryShowConditions())
             .label("theHearingRecordingUpload",
-                "\n<h2>Upload the recording of the hearing (Optional)</h2>\n"
-                    + "\n\nAdvice on uploads\n\n"
-                    + "\n- File must be no larger than 500 MB\n"
-                    + "\n- You can only upload mp3 files\n"
-                    + "\n- Give the files a meaningful name. for example, bail-hearing-John-Smith.mp3\n")
+                """
+
+                    <h2>Upload the recording of the hearing (Optional)</h2>
+
+
+                    Advice on uploads
+
+
+                    - File must be no larger than 500 MB
+
+                    - You can only upload mp3 files
+
+                    - Give the files a meaningful name. for example, bail-hearing-John-Smith.mp3
+
+
+
+                    Note: If the remove button is disabled, please refresh the page to remove attachments""")
             .complex(CaseData::getListing)
             .complex(Listing::getSummary)
             .optionalWithLabel(HearingSummary::getRecFile, "Upload file")
@@ -48,9 +62,10 @@ public class HearingRecordingUploadPage implements CcdPageConfiguration {
         final CaseData data = details.getData();
         List<ListValue<CaseworkerCICDocument>> uploadedDocuments = data.getListing().getSummary().getRecFile();
         List<String> errors = new ArrayList<>();
-        if (null != uploadedDocuments) {
+        if (!CollectionUtils.isEmpty(uploadedDocuments)) {
             for (ListValue<CaseworkerCICDocument> documentListValue : uploadedDocuments) {
-                if (null == documentListValue.getValue().getDocumentLink()) {
+                if (ObjectUtils.isEmpty(documentListValue.getValue())
+                    || ObjectUtils.isEmpty(documentListValue.getValue().getDocumentLink())) {
                     errors.add("Please attach the document");
                 } else {
                     if (!documentListValue.getValue().isDocumentValid("mp3")) {
@@ -59,7 +74,7 @@ public class HearingRecordingUploadPage implements CcdPageConfiguration {
                     if (StringUtils.isEmpty(documentListValue.getValue().getDocumentEmailContent())) {
                         errors.add("Description is mandatory for each document");
                     }
-                    if (null == documentListValue.getValue().getDocumentCategory()) {
+                    if (ObjectUtils.isEmpty(documentListValue.getValue().getDocumentCategory())) {
                         errors.add("Category is mandatory for each document");
                     }
                 }

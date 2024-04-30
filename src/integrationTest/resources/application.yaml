@@ -52,6 +52,11 @@ judicial:
   api:
     baseUrl: ${JUDICIAL_API_URL:http://rd-judicial-api-aat.service.core-compute-aat.internal}
 
+refdata_common:
+  api:
+    baseUrl: ${REF_DATA_COMMON_API_URL:http://rd-commondata-api-aat.service.core-compute-aat.internal}
+
+
 bundling:
   api:
     baseUrl: ${BUNDLING_API_URL:http://em-ccd-orchestrator-aat.service.core-compute-aat.internal}
@@ -99,7 +104,6 @@ SERVICE_AUTH_MICROSERVICE: sptribs_case_api
 
 toggle:
   enable_entitlement_email: ${ENABLE_ENTITLEMENT_EMAIL:true}
-  enable_jrd_api_v2: ${ENABLE_JRD_API_V2:false}
 
 feature:
   contact-parties:
@@ -109,15 +113,25 @@ feature:
   case-flags:
     enabled: ${CASE_FLAGS_FEATURE:true}
   migration:
-    enabled: ${MIGRATION_ENABLED:false}
-  case-file-view-and-document-management:
-    enabled: ${CASE_FILE_VIEW_AND_DOCUMENT_MANAGEMENT_FEATURE:false}
-  bundling:
-    enabled: ${BUNDLING_FEATURE:false}
-  dss-frontend:
-    enabled: ${DSS_FRONTEND_FEATURE:false}
+    enabled: ${MIGRATION_ENABLED:true}
+  case-file-view:
+    enabled: ${CASE_FILE_VIEW_FEATURE:true}
+  document-management:
+    enabled: ${DOCUMENT_MANAGEMENT_FEATURE:true}
+  bundling-create:
+    enabled: ${CREATE_BUNDLING_FEATURE:true}
+  bundling-edit:
+    enabled: ${EDIT_BUNDLING_FEATURE:true}
+  bundling-clone:
+    enabled: ${CLONE_BUNDLING_FEATURE:true}
+  bundling-stitch:
+    enabled: ${STITCH_BUNDLING_FEATURE:true}
   security-classification:
     enabled: ${SECURITY_CLASSIFICATION:false}
+  access-profiles:
+    enabled: ${ACCESS_PROFILES_ENABLED:true}
+  update-case:
+    enabled: ${DSS_UPDATE_CASE_ENABLED:true}
 
 caseinfo:
   apps:
@@ -126,7 +140,7 @@ caseinfo:
       eventIds:
         createEvent: citizen-cic-create-dss-application
         updateEvent: citizen-cic-update-dss-application
+        updateCaseEvent: citizen-cic-dss-update-case
         submitEvent: citizen-cic-submit-dss-application
-        dssUpdateEvent: citizen-cic-dssUpdate-dss-application
       caseTypeOfApplication:
         - CIC

@@ -4,42 +4,106 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
+import uk.gov.hmcts.ccd.sdk.type.ListValue;
+import uk.gov.hmcts.sptribs.caseworker.model.HearingSummary;
+import uk.gov.hmcts.sptribs.caseworker.model.Listing;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
+import uk.gov.hmcts.sptribs.ciccase.model.HearingState;
 import uk.gov.hmcts.sptribs.ciccase.model.SchemeCic;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.entry;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.sptribs.document.content.DocmosisTemplateConstants.HEARING_DATE;
+import static uk.gov.hmcts.sptribs.document.content.DocmosisTemplateConstants.ORDER_SIGNATURE;
+import static uk.gov.hmcts.sptribs.document.content.DocmosisTemplateConstants.SUBJECT_FULL_NAME;
+import static uk.gov.hmcts.sptribs.document.content.DocmosisTemplateConstants.TRIBUNAL_MEMBERS;
+import static uk.gov.hmcts.sptribs.document.content.DocmosisTemplateConstants.formatter;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID;
+import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getMembers;
 
 
 @ExtendWith(MockitoExtension.class)
-public class PreviewDraftOrderTemplateContentTest {
+class PreviewDraftOrderTemplateContentTest {
 
     @InjectMocks
     private PreviewDraftOrderTemplateContent previewDraftOrderTemplateContent;
 
-    private static final LocalDate ISSUE_DATE = LocalDate.of(2022, 2, 2);
-
     @Test
-    public void shouldSuccessfullyPreviewDraftOrderContent() {
-        //Given
+    void shouldSuccessfullyPreviewDraftOrderContent() {
         CaseData caseData = buildCaseData();
+        final HearingSummary summary = HearingSummary.builder()
+            .memberList(getMembers())
+            .build();
+        final Listing listing = Listing.builder()
+            .date(LocalDate.now())
+            .hearingTime("11::00")
+            .hearingStatus(HearingState.Complete)
+            .summary(summary)
+            .build();
+        final ListValue<Listing> listingListValue = new ListValue<>();
+        listingListValue.setValue(listing);
+        caseData.setHearingList(List.of(listingListValue));
 
-        //When
         Map<String, Object> result = previewDraftOrderTemplateContent.apply(caseData, TEST_CASE_ID);
 
-        //Then
-        assertThat(result).contains(
-            entry("cicCaseSchemeCic", SchemeCic.Year1996.getLabel())
-        );
+        assertThat(result)
+            .contains(entry("cicCaseSchemeCic", SchemeCic.Year1996.getLabel()))
+            .contains(entry(SUBJECT_FULL_NAME, "John Smith"))
+            .contains(entry(HEARING_DATE, LocalDate.now().format(formatter)));
+    }
+
+    @Test
+    void shouldSuccessfullyApplyPreviewDraftOrderContentNoMembers() {
+        final CaseData caseData = buildCaseData();
+        final HearingSummary summary = HearingSummary.builder()
+            .build();
+        final Listing listing = Listing.builder()
+            .summary(summary)
+            .date(LocalDate.now())
+            .hearingTime("11::00")
+            .build();
+        final ListValue<Listing> listingListValue = new ListValue<>();
+        listingListValue.setValue(listing);
+        caseData.setHearingList(List.of(listingListValue));
+        final Map<String, Object> result = previewDraftOrderTemplateContent.apply(caseData, TEST_CASE_ID);
+
+        assertThat(result)
+            .contains(entry("cicCaseSchemeCic", SchemeCic.Year1996.getLabel()))
+            .contains(entry(ORDER_SIGNATURE, null))
+            .contains(entry(TRIBUNAL_MEMBERS, ""));
+    }
+
+    @Test
+    void shouldSuccessfullyApplyPreviewDraftOrderContentWithEmptyDate() {
+        final CaseData caseData = buildCaseData();
+        final HearingSummary summary = HearingSummary.builder()
+            .build();
+        final Listing listing = Listing.builder()
+            .summary(summary)
+            .date(null)
+            .hearingTime("15:30")
+            .build();
+
+        //Using a spy as getLatestCompletedHearing cannot handle a null date
+        final CaseData caseDataMock = spy(caseData);
+        when(caseDataMock.getLatestCompletedHearing()).thenReturn(listing);
+
+        final Map<String, Object> result = previewDraftOrderTemplateContent.apply(caseDataMock, TEST_CASE_ID);
+
+        assertThat(result)
+            .contains(entry("cicCaseSchemeCic", SchemeCic.Year1996.getLabel()))
+            .contains(entry(HEARING_DATE, ""));
     }
 
     private CaseData buildCaseData() {
-        final CicCase cicCase = CicCase.builder().schemeCic(SchemeCic.Year1996).build();
+        final CicCase cicCase = CicCase.builder().fullName("John Smith").schemeCic(SchemeCic.Year1996).build();
 
         return CaseData.builder()
             .cicCase(cicCase)

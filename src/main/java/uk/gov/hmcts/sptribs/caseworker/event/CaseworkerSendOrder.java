@@ -23,7 +23,6 @@ import uk.gov.hmcts.sptribs.caseworker.model.Order;
 import uk.gov.hmcts.sptribs.caseworker.model.OrderIssuingType;
 import uk.gov.hmcts.sptribs.caseworker.util.MessageUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
-import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
@@ -46,6 +45,7 @@ import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseClosed;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseStayed;
+import static uk.gov.hmcts.sptribs.ciccase.model.State.ReadyToList;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_CASEWORKER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_HEARING_CENTRE_ADMIN;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_HEARING_CENTRE_TEAM_LEADER;
@@ -70,7 +70,7 @@ public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole>
 
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
-        var pageBuilder = send(configBuilder);
+        final PageBuilder pageBuilder = send(configBuilder);
         orderIssuingSelect.addTo(pageBuilder);
         draftOrder.addTo(pageBuilder);
         uploadOrder.addTo(pageBuilder);
@@ -82,7 +82,7 @@ public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole>
     public PageBuilder send(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         return new PageBuilder(configBuilder
             .event(CASEWORKER_SEND_ORDER)
-            .forStates(CaseManagement, AwaitingHearing, CaseClosed, CaseStayed)
+            .forStates(CaseManagement, ReadyToList, AwaitingHearing, CaseClosed, CaseStayed)
             .name("Orders: Send order")
             .description("Orders: Send order")
             .showSummary()
@@ -93,18 +93,17 @@ public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole>
                 ST_CIC_HEARING_CENTRE_TEAM_LEADER, ST_CIC_SENIOR_JUDGE, ST_CIC_JUDGE));
     }
 
-    public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(
-        final CaseDetails<CaseData, State> details,
-        final CaseDetails<CaseData, State> beforeDetails
-    ) {
-        var caseData = details.getData();
+    public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(final CaseDetails<CaseData, State> details,
+                                                                       final CaseDetails<CaseData, State> beforeDetails) {
+
+        final CaseData caseData = details.getData();
         if (null != caseData.getCicCase().getOrderFile()) {
             updateCategoryToDocument(caseData.getCicCase().getOrderFile(), DocumentType.TRIBUNAL_DIRECTION.getCategory());
         }
 
         DraftOrderCIC selectedDraftOrder = null;
         String selectedDynamicDraft = null;
-        var order = Order.builder()
+        final Order order = Order.builder()
             .uploadedFile(caseData.getCicCase().getOrderFile())
             .dueDateList(caseData.getCicCase().getOrderDueDates())
             .parties(getRecipients(caseData.getCicCase()))
@@ -127,7 +126,6 @@ public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole>
             }
         }
 
-        updateSelectedOrder(caseData.getCicCase(), order);
         updateCicCaseOrderList(caseData, order);
 
         caseData.getCicCase().setOrderIssuingType(null);
@@ -151,7 +149,7 @@ public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole>
             AtomicInteger listValueIndex = new AtomicInteger(0);
             for (ListValue<DraftOrderCIC> draftValue : caseData.getCicCase().getDraftOrderCICList()) {
                 if (!draftValue.getValue().getDraftOrderContentCIC().equals(selectedDraftOrder.getDraftOrderContentCIC())) {
-                    var listValue = ListValue
+                    ListValue<DraftOrderCIC> listValue = ListValue
                         .<DraftOrderCIC>builder()
                         .value(draftValue.getValue())
                         .build();
@@ -193,7 +191,7 @@ public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole>
         if (CollectionUtils.isEmpty(caseData.getCicCase().getOrderList())) {
             List<ListValue<Order>> listValues = new ArrayList<>();
 
-            var listValue = ListValue
+            ListValue<Order> listValue = ListValue
                 .<Order>builder()
                 .id("1")
                 .value(order)
@@ -204,7 +202,7 @@ public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole>
             caseData.getCicCase().setOrderList(listValues);
         } else {
             AtomicInteger listValueIndex = new AtomicInteger(0);
-            var listValue = ListValue
+            ListValue<Order> listValue = ListValue
                 .<Order>builder()
                 .value(order)
                 .build();
@@ -213,15 +211,6 @@ public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole>
 
             caseData.getCicCase().getOrderList().forEach(
                 caseNoteListValue -> caseNoteListValue.setId(String.valueOf(listValueIndex.incrementAndGet())));
-        }
-    }
-
-    private void updateSelectedOrder(CicCase cicCase, Order order) {
-        if (order.getDraftOrder() != null) {
-            cicCase.setSelectedOrder(order.getDraftOrder().getTemplateGeneratedDocument());
-        } else if (order.getUploadedFile() != null && !CollectionUtils.isEmpty(order.getUploadedFile())) {
-            updateCategoryToDocument(order.getUploadedFile(), DocumentType.TRIBUNAL_DIRECTION.getCategory());
-            cicCase.setSelectedOrder(order.getUploadedFile().get(0).getValue().getDocumentLink());
         }
     }
 
@@ -242,7 +231,5 @@ public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole>
             newOrderIssuedNotification.sendToApplicant(caseData, caseNumber);
         }
 
-        //Once Notification is sent, nullify the last selected order
-        caseData.getCicCase().setSelectedOrder(null);
     }
 }

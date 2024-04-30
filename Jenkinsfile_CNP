@@ -3,8 +3,10 @@
 @Library("Infrastructure")
 
 import uk.gov.hmcts.contino.AppPipelineConfig
+import uk.gov.hmcts.contino.AppPipelineDsl
 import uk.gov.hmcts.contino.GradleBuilder
 import uk.gov.hmcts.contino.MetricsPublisher
+import uk.gov.hmcts.contino.GithubAPI
 
 def type = "java"
 def product = "sptribs"
@@ -43,7 +45,19 @@ def secrets = [
                 secret('idam-solicitor-username', 'IDAM_SOLICITOR_USERNAME'),
                 secret('idam-solicitor-password', 'IDAM_SOLICITOR_PASSWORD'),
                 secret('idam-systemupdate-username', 'IDAM_SYSTEM_UPDATE_USERNAME'),
-                secret('idam-systemupdate-password', 'IDAM_SYSTEM_UPDATE_PASSWORD')
+                secret('idam-systemupdate-password', 'IDAM_SYSTEM_UPDATE_PASSWORD'),
+                secret('citizen-user', 'IDAM_CITIZEN_USERNAME'),
+                secret('citizen-password', 'IDAM_CITIZEN_PASSWORD'),
+                secret('sptribs-postgres-username-preview', 'SPTRIBS_POSTGRES_USERNAME_PREVIEW'),
+                secret('sptribs-postgres-password-preview', 'SPTRIBS_POSTGRES_PASSWORD_PREVIEW'),
+                secret('ccd-global-postgres-username-preview', 'CCD_GLOBAL_POSTGRES_USERNAME_PREVIEW'),
+                secret('ccd-global-postgres-password-preview', 'CCD_GLOBAL_POSTGRES_PASSWORD_PREVIEW'),
+                secret('ccd-data-store-db-username-preview', 'CCD_DATA_STORE_DB_USERNAME_PREVIEW'),
+                secret('ccd-data-store-db-password-preview', 'CCD_DATA_STORE_DB_PASSWORD_PREVIEW'),
+                secret('ccd-user-profile-db-username-preview', 'CCD_USER_PROFILE_DB_USERNAME_PREVIEW'),
+                secret('ccd-user-profile-db-password-preview', 'CCD_USER_PROFILE_DB_PASSWORD_PREVIEW'),
+                secret('em-spring-datasource-username-preview', 'EM_SPRING_DATASOURCE_USERNAME_PREVIEW'),
+                secret('em-spring-datasource-password-preview', 'EM_SPRING_DATASOURCE_PASSWORD_PREVIEW')
         ],
         'civil-${env}'    :[
           secret('ccd-importer-username', 'DEFINITION_IMPORTER_USERNAME'),
@@ -51,9 +65,10 @@ def secrets = [
         ]
 ]
 
-def pipelineConf = new AppPipelineConfig()
+AppPipelineConfig pipelineConf = new AppPipelineConfig()
 pipelineConf.vaultSecrets = secrets
 
+env.PACT_BROKER_FULL_URL = 'https://pact-broker.platform.hmcts.net'
 
 withPipeline(type, product, component) {
     enableAksStagingDeployment()
@@ -198,41 +213,32 @@ withPipeline(type, product, component) {
       env.TEST_E2E_URL = "https://xui-sptribs-case-api-pr-${CHANGE_ID}.preview.platform.hmcts.net"
       setCommonEnvVariables()
       setFeatureFlags(env.ENVIRONMENT)
+
+      enablePactAs([AppPipelineDsl.PactRoles.CONSUMER])
     }
 
     onMaster {
-        env.ENVIRONMENT="aat"
-        env.CASE_API_URL="http://sptribs-case-api-aat.service.core-compute-aat.internal"
-        env.CCD_DEF_NAME="aat"
-        env.ELASTIC_SEARCH_ENABLED=true
-        env.CITIZEN_UPDATE_CASE_STATE_ENABLED=true
-        env.SERVICE_AUTH_MICROSERVICE = "sptribs_case_api"
-        env.SERVICE_AUTH_PROVIDER_URL = "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
-        setCommonEnvVariables()
-        setFeatureFlags(env.ENVIRONMENT)
+      env.ENVIRONMENT="aat"
+      env.CASE_API_URL="http://sptribs-case-api-aat.service.core-compute-aat.internal"
+      env.CCD_DEF_NAME="aat"
+      env.ELASTIC_SEARCH_ENABLED=true
+      env.CITIZEN_UPDATE_CASE_STATE_ENABLED=true
+      env.SERVICE_AUTH_MICROSERVICE = "sptribs_case_api"
+      env.SERVICE_AUTH_PROVIDER_URL = "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
+      setCommonEnvVariables()
+      setFeatureFlags(env.ENVIRONMENT)
+
+      enablePactAs([AppPipelineDsl.PactRoles.CONSUMER])
     }
 
     afterSuccess('functionalTest:aat') {
-
-       try {
-         builder.gradle('e2eTests')
-       } finally {
-
-          publishHTML target: [
-             allowMissing         : true,
-             alwaysLinkToLastBuild: true,
-             keepAll              : true,
-             reportDir            : "build/reports/tests/e2eTests",
-             reportFiles          : "index.html",
-             reportName           : "E2E Tests Report"
-          ]
-       }
 
         env.ENVIRONMENT="prod"
         env.CASE_API_URL="http://sptribs-case-api-prod.service.core-compute-prod.internal"
         env.CCD_DEF_NAME="prod"
         env.DEFINITION_STORE_URL_BASE="http://ccd-definition-store-api-prod.service.core-compute-prod.internal"
         env.CITIZEN_UPDATE_CASE_STATE_ENABLED=false
+        env.CASE_API_DOCUMENT_DOWNLOAD_URL = "http://manage-case.platform.hmcts.net/"
         env.SERVICE_AUTH_MICROSERVICE = "sptribs_case_api"
         env.SERVICE_AUTH_PROVIDER_URL = "http://rpe-service-auth-provider-prod.service.core-compute-prod.internal"
         env.IDAM_API_URL_BASE = "https://idam-api.platform.hmcts.net"
@@ -245,27 +251,29 @@ withPipeline(type, product, component) {
         generateDefinitions()
     }
 
-  /* afterSuccess('functionalTest:preview') {
+  def githubApi = new GithubAPI(this) as Object
+  if (githubApi.getLabelsbyPattern(env.BRANCH_NAME, "enable-e2e-tests")) {
+    afterSuccess('functionalTest:preview') {
+      try {
+        builder.gradle('e2eTests')
+      } finally {
+        publishHTML target: [
+          allowMissing         : true,
+          alwaysLinkToLastBuild: true,
+          keepAll              : true,
+          reportDir            : "build/reports/tests/e2eTests",
+          reportFiles          : "index.html",
+          reportName           : "E2E Tests Report"
+        ]
+      }
+    }
+  }
 
-        try {
-            builder.gradle('e2eTests')
-        } finally {
 
-            publishHTML target: [
-                    allowMissing         : true,
-                    alwaysLinkToLastBuild: true,
-                    keepAll              : true,
-                    reportDir            : "build/reports/tests/e2eTests",
-                    reportFiles          : "index.html",
-                    reportName           : "E2E Tests Report"
-            ]
-        }
-    }*/
-
-
-        onDemo {
+  onDemo {
       env.ENVIRONMENT="demo"
       env.CASE_API_URL = "http://sptribs-case-api-demo.service.core-compute-demo.internal"
+      env.CASE_API_DOCUMENT_DOWNLOAD_URL = "http://manage-case.demo.platform.hmcts.net/"
       env.CCD_DEF_NAME = "demo"
       env.IDAM_API_URL_BASE = "https://idam-api.demo.platform.hmcts.net"
       env.S2S_URL_BASE = "http://rpe-service-auth-provider-demo.service.core-compute-demo.internal"
@@ -329,28 +337,43 @@ def setFeatureFlags(environment) {
     env.CONTACT_PARTIES_FEATURE = true
     env.LINK_CASE_FEATURE = true
     env.CASE_FLAGS_FEATURE = true
-    env.CASE_FILE_VIEW_AND_DOCUMENT_MANAGEMENT_FEATURE = true
-    env.BUNDLING_FEATURE = true
-    env.DSS_FRONTEND_FEATURE = true
+    env.CASE_FILE_VIEW = true
+    env.DOCUMENT_MANAGEMENT_FEATURE = true
+    env.CREATE_BUNDLING_FEATURE = true
+    env.EDIT_BUNDLING_FEATURE = true
+    env.CLONE_BUNDLING_FEATURE = true
+    env.STITCH_BUNDLING_FEATURE = true
     env.SECURITY_CLASSIFICATION = true
     env.MIGRATION_ENABLED = true
+    env.ACCESS_PROFILES_ENABLED = true
+    env.DSS_UPDATE_CASE_ENABLED = true
   } else if (environment =~ /aat/) {
     env.CONTACT_PARTIES_FEATURE = true
     env.LINK_CASE_FEATURE = true
     env.CASE_FLAGS_FEATURE = true
-    env.CASE_FILE_VIEW_AND_DOCUMENT_MANAGEMENT_FEATURE = true
-    env.DSS_FRONTEND_FEATURE = true
-    env.BUNDLING_FEATURE = false
-    env.SECURITY_CLASSIFICATION = false
+    env.CASE_FILE_VIEW = true
+    env.DOCUMENT_MANAGEMENT_FEATURE = true
+    env.CREATE_BUNDLING_FEATURE = true
+    env.EDIT_BUNDLING_FEATURE = true
+    env.CLONE_BUNDLING_FEATURE = true
+    env.STITCH_BUNDLING_FEATURE = true
+    env.SECURITY_CLASSIFICATION = true
     env.MIGRATION_ENABLED = true
+    env.ACCESS_PROFILES_ENABLED = true
+    env.DSS_UPDATE_CASE_ENABLED = true
   } else if (environment =~ /prod/) {
     env.CONTACT_PARTIES_FEATURE = true
+    env.CASE_FILE_VIEW = false
+    env.DOCUMENT_MANAGEMENT_FEATURE = true
     env.LINK_CASE_FEATURE = true
     env.CASE_FLAGS_FEATURE = true
-    env.CASE_FILE_VIEW_AND_DOCUMENT_MANAGEMENT_FEATURE = true
-    env.BUNDLING_FEATURE = false
-    env.DSS_FRONTEND_FEATURE = false
+    env.CREATE_BUNDLING_FEATURE = true
+    env.EDIT_BUNDLING_FEATURE = true
+    env.CLONE_BUNDLING_FEATURE = true
+    env.STITCH_BUNDLING_FEATURE = true
     env.SECURITY_CLASSIFICATION = false
     env.MIGRATION_ENABLED = true
+    env.ACCESS_PROFILES_ENABLED = true
+    env.DSS_UPDATE_CASE_ENABLED = false
   }
 }

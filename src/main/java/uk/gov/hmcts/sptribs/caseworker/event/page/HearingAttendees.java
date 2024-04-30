@@ -13,6 +13,8 @@ import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 @Component
 public class HearingAttendees implements CcdPageConfiguration {
 
+    private static final String ALWAYS_HIDE = "venueNotListedOption=\"ALWAYS_HIDE\"";
+
     @Override
     public void addTo(PageBuilder pageBuilder) {
         pageBuilder.page("hearingAttendees")
@@ -22,6 +24,7 @@ public class HearingAttendees implements CcdPageConfiguration {
             .complex(CaseData::getListing)
             .complex(Listing::getSummary)
             .optional(HearingSummary::getJudge)
+            .readonly(HearingSummary::getJudgeList, ALWAYS_HIDE)
             .mandatory(HearingSummary::getIsFullPanel)
             .mandatory(HearingSummary::getMemberList, "isFullPanel = \"Yes\"")
             .done();

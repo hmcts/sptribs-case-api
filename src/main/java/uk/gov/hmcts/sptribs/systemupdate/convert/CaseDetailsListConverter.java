@@ -10,14 +10,16 @@ import uk.gov.hmcts.sptribs.ciccase.model.State;
 import java.util.List;
 import java.util.Objects;
 
-import static java.util.stream.Collectors.toList;
-
 @Component
 @Slf4j
 public class CaseDetailsListConverter {
 
+    private final CaseDetailsConverter caseDetailsConverter;
+
     @Autowired
-    private CaseDetailsConverter caseDetailsConverter;
+    public CaseDetailsListConverter(CaseDetailsConverter caseDetailsConverter) {
+        this.caseDetailsConverter = caseDetailsConverter;
+    }
 
     public List<CaseDetails<CaseData, State>> convertToListOfValidCaseDetails(
         final List<uk.gov.hmcts.reform.ccd.client.model.CaseDetails> caseDetailsList) {
@@ -34,6 +36,6 @@ public class CaseDetailsListConverter {
                 }
             })
             .filter(Objects::nonNull)
-            .collect(toList());
+            .toList();
     }
 }

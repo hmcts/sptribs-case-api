@@ -1,10 +1,14 @@
 package uk.gov.hmcts.sptribs.document.bundling.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.PropertyNamingStrategy;
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
+import lombok.Getter;
+import lombok.Setter;
 
-@JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
+@Getter
+@Setter
+@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class BundleCallback extends Callback {
 
     @JsonProperty("caseTypeId")
@@ -15,24 +19,7 @@ public class BundleCallback extends Callback {
 
     public BundleCallback(Callback callback) {
         super(callback.getCaseDetails(), callback.getCaseDetailsBefore(), callback.getEvent(), callback.isIgnoreWarnings());
-        this.caseTypeId = callback.getCaseDetails().getCaseTypeId();
-        this.jurisdictionId = callback.getCaseDetails().getJurisdiction();
+        setCaseTypeId(callback.getCaseDetails().getCaseTypeId());
+        setJurisdictionId(callback.getCaseDetails().getJurisdiction());
     }
-
-    public String getCaseTypeId() {
-        return caseTypeId;
-    }
-
-    public void setCaseTypeId(String caseTypeId) {
-        this.caseTypeId = caseTypeId;
-    }
-
-    public String getJurisdictionId() {
-        return jurisdictionId;
-    }
-
-    public void setJurisdictionId(String jurisdictionId) {
-        this.jurisdictionId = jurisdictionId;
-    }
-
 }

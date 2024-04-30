@@ -2,6 +2,7 @@ package uk.gov.hmcts.sptribs.caseworker.util;
 
 import org.springframework.util.CollectionUtils;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 
 import static uk.gov.hmcts.sptribs.caseworker.util.DecisionDocumentListUtil.removeDecisionDoc;
 import static uk.gov.hmcts.sptribs.caseworker.util.DecisionDocumentListUtil.removeFinalDecisionDoc;
@@ -18,7 +19,7 @@ public final class DocumentRemoveListUtil {
     public static CaseData removeEvaluatedListDoc(CaseData caseData, CaseData oldData) {
         removeDecisionDoc(caseData, oldData);
         removeFinalDecisionDoc(caseData, oldData);
-        var cic = caseData.getCicCase();
+        final CicCase cic = caseData.getCicCase();
         removeOrderDoc(cic, oldData.getCicCase());
         if (!CollectionUtils.isEmpty(oldData.getAllDocManagement().getCaseworkerCICDocument())
             && (CollectionUtils.isEmpty(caseData.getAllDocManagement().getCaseworkerCICDocument())

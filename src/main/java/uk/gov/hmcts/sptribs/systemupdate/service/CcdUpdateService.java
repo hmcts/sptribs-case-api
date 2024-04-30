@@ -10,7 +10,6 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDataContent;
 import uk.gov.hmcts.reform.ccd.client.model.StartEventResponse;
 import uk.gov.hmcts.reform.idam.client.models.User;
 import uk.gov.hmcts.sptribs.ciccase.task.CaseTask;
-import uk.gov.hmcts.sptribs.systemupdate.convert.CaseDetailsConverter;
 
 import static java.lang.String.format;
 import static org.springframework.http.HttpStatus.CONFLICT;
@@ -25,17 +24,18 @@ public class CcdUpdateService {
     static final String SPTRIBS_CASE_SUBMISSION_EVENT_DESCRIPTION = "Submitting Sptribs Case Event";
 
 
-    @Autowired
-    private CoreCaseDataApi coreCaseDataApi;
+    private final CoreCaseDataApi coreCaseDataApi;
+
+    private final CcdCaseDataContentProvider ccdCaseDataContentProvider;
+
 
     @Autowired
-    private CcdCaseDataContentProvider ccdCaseDataContentProvider;
-
-    @Autowired
-    private CaseDetailsConverter caseDetailsConverter;
-
-    @Autowired
-    private CaseDetailsUpdater caseDetailsUpdater;
+    public CcdUpdateService(
+        CoreCaseDataApi coreCaseDataApi,
+        CcdCaseDataContentProvider ccdCaseDataContentProvider) {
+        this.coreCaseDataApi = coreCaseDataApi;
+        this.ccdCaseDataContentProvider = ccdCaseDataContentProvider;
+    }
 
 
     public void submitEvent(final Long caseId,
@@ -90,7 +90,7 @@ public class CcdUpdateService {
                     startEventResponse,
                     SPTRIBS_CASE_SUBMISSION_EVENT_SUMMARY,
                     SPTRIBS_CASE_SUBMISSION_EVENT_DESCRIPTION,
-                    caseDetailsUpdater.updateCaseData(caseTask, startEventResponse).getData());
+                    caseTask);
 
             coreCaseDataApi.submitEventForCaseWorker(
                     authorization,
@@ -111,13 +111,6 @@ public class CcdUpdateService {
     }
 
 
-
-
-
-
-
-
-
     private void startAndSubmitEventForCaseworkers(final String eventId,
                                                    final String serviceAuth,
                                                    final String caseId,
@@ -136,8 +129,7 @@ public class CcdUpdateService {
         final CaseDataContent caseDataContent = ccdCaseDataContentProvider.createCaseDataContent(
                 startEventResponse,
                 SPTRIBS_CASE_SUBMISSION_EVENT_SUMMARY,
-                SPTRIBS_CASE_SUBMISSION_EVENT_DESCRIPTION,
-                startEventResponse.getCaseDetails().getData());
+                SPTRIBS_CASE_SUBMISSION_EVENT_DESCRIPTION);
 
         coreCaseDataApi.submitEventForCaseWorker(
                 authorization,

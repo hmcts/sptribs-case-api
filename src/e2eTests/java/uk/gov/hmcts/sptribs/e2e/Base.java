@@ -30,21 +30,17 @@ public abstract class Base {
 
     protected static final String CASE_API_AAT_URL = "https://manage-case.aat.platform.hmcts.net";
 
-    protected static final String DSS_AAT_URL = "https://sptribs-frontend.aat.platform.hmcts.net";
-
     public static String CASE_API_BASE_URL;
-
-    public static String DSS_BASE_URL;
 
     @BeforeAll
     public void setUp() {
         playwright = Playwright.create();
 
-        var launchOptions = getenv("CI").equalsIgnoreCase("true")
+        final BrowserType.LaunchOptions launchOptions = getenv("CI").equalsIgnoreCase("true")
             ? new BrowserType.LaunchOptions().setHeadless(true).setSlowMo(100)
             : new BrowserType.LaunchOptions().setHeadless(false).setSlowMo(100);
 
-        var browserType = getenv("BROWSER") == null ? "chromium" : getenv("BROWSER").toLowerCase();
+        final String browserType = getenv("BROWSER") == null ? "chromium" : getenv("BROWSER").toLowerCase();
 
         switch (browserType) {
             case "msedge", "chrome" -> browser = playwright.chromium().launch(launchOptions.setChannel(browserType));

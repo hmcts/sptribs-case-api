@@ -23,14 +23,18 @@ import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseClosed;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseStayed;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.NewCaseReceived;
+import static uk.gov.hmcts.sptribs.ciccase.model.State.ReadyToList;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.Rejected;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.Submitted;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.Withdrawn;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_CASEWORKER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_HEARING_CENTRE_ADMIN;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_HEARING_CENTRE_TEAM_LEADER;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_JUDGE;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_RESPONDENT;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_CASEWORKER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_JUDGE;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE;
 
 @Component
@@ -38,13 +42,13 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 @Setter
 public class CaseworkerDocumentManagement implements CCDConfig<CaseData, State, UserRole> {
 
-    @Value("${feature.case-file-view-and-document-management.enabled}")
-    private boolean caseFileViewAndDocumentManagementEnabled;
+    @Value("${feature.document-management.enabled}")
+    private boolean documentManagementEnabled;
 
     private final UploadCaseDocuments uploadCaseDocuments = new UploadCaseDocuments();
 
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
-        if (caseFileViewAndDocumentManagementEnabled) {
+        if (documentManagementEnabled) {
             doConfigure(configBuilder);
         }
     }
@@ -57,6 +61,7 @@ public class CaseworkerDocumentManagement implements CCDConfig<CaseData, State, 
                 Submitted,
                 NewCaseReceived,
                 CaseManagement,
+                ReadyToList,
                 AwaitingHearing,
                 AwaitingOutcome,
                 CaseClosed,
@@ -65,8 +70,9 @@ public class CaseworkerDocumentManagement implements CCDConfig<CaseData, State, 
             .description("Document management: Upload")
             .showSummary()
             .grant(CREATE_READ_UPDATE,
-                ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER, ST_CIC_HEARING_CENTRE_ADMIN,
-                ST_CIC_HEARING_CENTRE_TEAM_LEADER, ST_CIC_SENIOR_JUDGE)
+                SUPER_USER, ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER, ST_CIC_HEARING_CENTRE_ADMIN,
+                ST_CIC_HEARING_CENTRE_TEAM_LEADER, ST_CIC_SENIOR_JUDGE, ST_CIC_RESPONDENT)
+            .grantHistoryOnly(SUPER_USER, ST_CIC_JUDGE)
             .aboutToSubmitCallback(this::aboutToSubmit)
             .submittedCallback(this::submitted));
 
@@ -77,7 +83,7 @@ public class CaseworkerDocumentManagement implements CCDConfig<CaseData, State, 
         final CaseDetails<CaseData, State> details,
         final CaseDetails<CaseData, State> beforeDetails
     ) {
-        var caseData = details.getData();
+        final CaseData caseData = details.getData();
         DocumentUtil.uploadDocument(caseData);
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()

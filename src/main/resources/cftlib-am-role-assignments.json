@@ -18,59 +18,7 @@
       },
       {
         "roleType": "CASE",
-        "roleName": "idam:caseworker-sptribs-cic-courtadmin",
-        "grantType": "SPECIFIC",
-        "roleCategory": "PROFESSIONAL",
-        "classification": "RESTRICTED",
-        "readOnly": false,
-        "attributes": {
-          "caseType": "CriminalInjuriesCompensation",
-          "jurisdiction": "ST_CIC"
-        },
-        "authorisations": []
-      },
-      {
-        "roleType": "CASE",
         "roleName": "idam:caseworker-st_cic",
-        "grantType": "SPECIFIC",
-        "roleCategory": "PROFESSIONAL",
-        "classification": "RESTRICTED",
-        "readOnly": false,
-        "attributes": {
-          "caseType": "CriminalInjuriesCompensation",
-          "jurisdiction": "ST_CIC"
-        },
-        "authorisations": []
-      },
-      {
-        "roleType": "CASE",
-        "roleName": "idam:caseworker-sptribs-cic-caseofficer",
-        "grantType": "SPECIFIC",
-        "roleCategory": "PROFESSIONAL",
-        "classification": "RESTRICTED",
-        "readOnly": false,
-        "attributes": {
-          "caseType": "CriminalInjuriesCompensation",
-          "jurisdiction": "ST_CIC"
-        },
-        "authorisations": []
-      },
-      {
-        "roleType": "CASE",
-        "roleName": "idam:caseworker-sptribs-cic-districtregistrar",
-        "grantType": "SPECIFIC",
-        "roleCategory": "PROFESSIONAL",
-        "classification": "RESTRICTED",
-        "readOnly": false,
-        "attributes": {
-          "caseType": "CriminalInjuriesCompensation",
-          "jurisdiction": "ST_CIC"
-        },
-        "authorisations": []
-      },
-      {
-        "roleType": "CASE",
-        "roleName": "idam:caseworker-sptribs-cic-districtregistrar",
         "grantType": "SPECIFIC",
         "roleCategory": "PROFESSIONAL",
         "classification": "RESTRICTED",

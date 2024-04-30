@@ -32,12 +32,16 @@ import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingOutcome;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.DSS_Submitted;
+import static uk.gov.hmcts.sptribs.ciccase.model.State.ReadyToList;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.Submitted;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_CASEWORKER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_HEARING_CENTRE_ADMIN;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_HEARING_CENTRE_TEAM_LEADER;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_JUDGE;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_RESPONDENT;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_CASEWORKER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_JUDGE;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE;
 
 @Component
@@ -52,16 +56,16 @@ public class CaseworkerEditCase implements CCDConfig<CaseData, State, UserRole> 
     private static final CcdPageConfiguration editFurtherDetails = new FurtherDetails();
     private static final CcdPageConfiguration editContactPreferenceDetails = new ContactPreferenceDetails();
 
-    @Autowired
     private final SubmissionService submissionService;
 
+    @Autowired
     public CaseworkerEditCase(SubmissionService submissionService) {
         this.submissionService = submissionService;
     }
 
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
-        var pageBuilder = addEventConfig(configBuilder);
+        final PageBuilder pageBuilder = addEventConfig(configBuilder);
         editCaseCategorisationDetails.addTo(pageBuilder);
         dateOfReceipt.addTo(pageBuilder);
         editSelectedPartiesDetails.addTo(pageBuilder);
@@ -75,13 +79,14 @@ public class CaseworkerEditCase implements CCDConfig<CaseData, State, UserRole> 
     private PageBuilder addEventConfig(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         return new PageBuilder(configBuilder
             .event(CASEWORKER_EDIT_CASE)
-            .forStates(DSS_Submitted, Submitted, CaseManagement, AwaitingHearing, AwaitingOutcome)
+            .forStates(DSS_Submitted, Submitted, CaseManagement, ReadyToList, AwaitingHearing, AwaitingOutcome)
             .name("Case: Edit case")
             .description("Case: Edit case")
             .showSummary()
-            .grant(CREATE_READ_UPDATE,
+            .grant(CREATE_READ_UPDATE, SUPER_USER,
                 ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER, ST_CIC_HEARING_CENTRE_ADMIN,
-                ST_CIC_HEARING_CENTRE_TEAM_LEADER, ST_CIC_SENIOR_JUDGE)
+                ST_CIC_HEARING_CENTRE_TEAM_LEADER, ST_CIC_SENIOR_JUDGE, ST_CIC_RESPONDENT)
+            .grantHistoryOnly(SUPER_USER, ST_CIC_JUDGE)
             .aboutToSubmitCallback(this::aboutToSubmit)
             .submittedCallback(this::submitted));
     }
@@ -90,6 +95,7 @@ public class CaseworkerEditCase implements CCDConfig<CaseData, State, UserRole> 
                                                                        CaseDetails<CaseData, State> beforeDetails) {
         CaseData data = details.getData();
         CaseData beforeData = beforeDetails.getData();
+
         if (checkNull(beforeData) && beforeData.getCicCase().getPartiesCIC().contains(PartiesCIC.REPRESENTATIVE)
             && checkNull(data) && !data.getCicCase().getPartiesCIC().contains(PartiesCIC.REPRESENTATIVE)) {
             data.getCicCase().removeRepresentative();
@@ -100,9 +106,9 @@ public class CaseworkerEditCase implements CCDConfig<CaseData, State, UserRole> 
             data.getCicCase().removeApplicant();
         }
 
-        var submittedDetails = submissionService.submitApplication(details);
+        CaseDetails<CaseData, State> submittedDetails = submissionService.submitApplication(details);
         data = submittedDetails.getData();
-        var state = beforeDetails.getState();
+        State state = beforeDetails.getState();
         if (state == DSS_Submitted) {
             state = Submitted;
         }
@@ -140,8 +146,7 @@ public class CaseworkerEditCase implements CCDConfig<CaseData, State, UserRole> 
                 .details(new ArrayList<>())
                 .partyName(data.getCicCase().getFullName())
                 .roleOnCase("subject")
-                .build()
-            );
+                .build());
         }
 
         updateApplicantFlags(data);

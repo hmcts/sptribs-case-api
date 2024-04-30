@@ -1,5 +1,6 @@
 package uk.gov.hmcts.sptribs.common.service;
 
+import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -9,17 +10,14 @@ import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.idam.client.models.User;
 import uk.gov.hmcts.sptribs.idam.IdamService;
 
-import javax.servlet.http.HttpServletRequest;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
-import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_AUTHORIZATION_TOKEN;
-import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_SERVICE_AUTH_TOKEN;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.BEARER;
 
 @ExtendWith(MockitoExtension.class)
-public class AuthorisationServiceTest {
+class AuthorisationServiceTest {
     @InjectMocks
     private AuthorisationService authorisationService;
 
@@ -35,44 +33,34 @@ public class AuthorisationServiceTest {
     @Mock
     private User user;
 
-    @Test
-    void shouldGetAuthorisation() {
-        //Given
+    private static final String TEST_TOKEN = "token";
+    private static final String TEST_BEARER_TOKEN = BEARER + TEST_TOKEN;
 
-        when(httpServletRequest.getHeader(AUTHORIZATION)).thenReturn(TEST_AUTHORIZATION_TOKEN);
+    @Test
+    void shouldAddBearerTokenToAuthorisation() {
+        //Given
+        when(httpServletRequest.getHeader(AUTHORIZATION)).thenReturn(TEST_TOKEN);
         when(idamService.retrieveUser(any())).thenReturn(user);
-        when(user.getAuthToken()).thenReturn("token");
+        when(user.getAuthToken()).thenReturn(TEST_TOKEN);
+
         //When
         String response = authorisationService.getAuthorisation();
 
         //Then
-        assertThat(response).isNotNull();
+        assertThat(response).isEqualTo(TEST_BEARER_TOKEN);
     }
 
     @Test
-    void shouldGetAuthorisationStartingBearer() {
+    void shouldNotAddBearerTokenToAuthorisation() {
         //Given
-
-        when(httpServletRequest.getHeader(AUTHORIZATION)).thenReturn(TEST_AUTHORIZATION_TOKEN);
+        when(httpServletRequest.getHeader(AUTHORIZATION)).thenReturn(TEST_BEARER_TOKEN);
         when(idamService.retrieveUser(any())).thenReturn(user);
-        when(user.getAuthToken()).thenReturn("Bearer token");
+        when(user.getAuthToken()).thenReturn(TEST_BEARER_TOKEN);
+
         //When
         String response = authorisationService.getAuthorisation();
 
         //Then
-        assertThat(response).isNotNull();
-    }
-
-    @Test
-    void shouldGetServiceAuth() {
-        //Given
-
-        when(authTokenGenerator.generate()).thenReturn(TEST_SERVICE_AUTH_TOKEN);
-
-        //When
-        String response = authorisationService.getServiceAuthorization();
-
-        //Then
-        assertThat(response).isNotNull();
+        assertThat(response).isEqualTo(TEST_BEARER_TOKEN);
     }
 }

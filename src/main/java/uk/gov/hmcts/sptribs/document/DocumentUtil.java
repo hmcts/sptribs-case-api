@@ -1,6 +1,8 @@
 package uk.gov.hmcts.sptribs.document;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
@@ -28,32 +30,32 @@ public final class DocumentUtil {
     }
 
     public static void updateCategoryToCaseworkerDocument(List<ListValue<CaseworkerCICDocument>> documentList) {
-        if (documentList != null && !documentList.isEmpty()) {
-            documentList.forEach(doc -> doc.getValue().getDocumentLink()
-                .setCategoryId(doc.getValue().getDocumentCategory().getCategory()));
+        if (CollectionUtils.isNotEmpty(documentList)) {
+            documentList.forEach(doc -> {
+                if (doc != null) {
+                    doc.getValue().getDocumentLink()
+                        .setCategoryId(doc.getValue().getDocumentCategory().getCategory());
+                }
+            });
         }
     }
 
     public static void updateCategoryToDocument(List<ListValue<CICDocument>> documentList, String categoryId) {
-        if (documentList != null && !documentList.isEmpty()) {
-            documentList.forEach(doc -> doc.getValue().getDocumentLink().setCategoryId(categoryId));
+        if (CollectionUtils.isNotEmpty(documentList)) {
+            documentList.forEach(doc -> {
+                if (doc != null) {
+                    doc.getValue().getDocumentLink().setCategoryId(categoryId);
+                }
+            });
         }
     }
 
     public static List<String> validateDocumentFormat(List<ListValue<CICDocument>> documentList) {
         final List<String> errors = new ArrayList<>();
-        if (!documentList.isEmpty() && !documentList.get(0).getValue().isDocumentValid()) {
-            errors.add(DOCUMENT_VALIDATION_MESSAGE);
-        }
 
-        return errors;
-    }
-
-    public static List<String> validateCaseworkerCICDocumentFormat(List<ListValue<CaseworkerCICDocument>> documentList) {
-        final List<String> errors = new ArrayList<>();
-        if (documentList != null) {
+        if (CollectionUtils.isNotEmpty(documentList)) {
             documentList.stream()
-                .filter(value -> !value.getValue().isDocumentValid())
+                .filter(value -> value != null && !value.getValue().isDocumentValid())
                 .findFirst()
                 .ifPresent(x -> errors.add(DOCUMENT_VALIDATION_MESSAGE));
         }
@@ -61,10 +63,14 @@ public final class DocumentUtil {
         return errors;
     }
 
-    public static List<String> validateCICDocumentFormat(CaseworkerCICDocument document) {
+    public static List<String> validateCaseworkerCICDocumentFormat(List<ListValue<CaseworkerCICDocument>> documentList) {
         final List<String> errors = new ArrayList<>();
-        if (null != document && !document.isDocumentValid()) {
-            errors.add(DOCUMENT_VALIDATION_MESSAGE);
+
+        if (CollectionUtils.isNotEmpty(documentList)) {
+            documentList.stream()
+                .filter(value -> value != null && !value.getValue().isDocumentValid())
+                .findFirst()
+                .ifPresent(x -> errors.add(DOCUMENT_VALIDATION_MESSAGE));
         }
 
         return errors;
@@ -72,7 +78,7 @@ public final class DocumentUtil {
 
     public static List<String> validateDecisionDocumentFormat(CICDocument document) {
         final List<String> errors = new ArrayList<>();
-        if (null != document && !document.isDocumentValid()) {
+        if (document != null && !document.isDocumentValid()) {
             errors.add(DOCUMENT_VALIDATION_MESSAGE);
         }
 
@@ -87,22 +93,25 @@ public final class DocumentUtil {
 
     public static List<String> validateUploadedDocuments(List<ListValue<CaseworkerCICDocument>> uploadedDocuments) {
         List<String> errors = new ArrayList<>();
-        if (null != uploadedDocuments) {
+
+        if (CollectionUtils.isNotEmpty(uploadedDocuments)) {
             for (ListValue<CaseworkerCICDocument> documentListValue : uploadedDocuments) {
-                if (null == documentListValue.getValue().getDocumentLink()) {
+                if (ObjectUtils.isEmpty(documentListValue.getValue().getDocumentLink())) {
                     errors.add("Please attach the document");
                 } else {
-                    errors.addAll(validateCICDocumentFormat(documentListValue.getValue()));
+                    errors.addAll(validateCaseworkerCICDocumentFormat(List.of(documentListValue)));
 
                     if (StringUtils.isEmpty(documentListValue.getValue().getDocumentEmailContent())) {
                         errors.add("Description is mandatory for each document");
                     }
-                    if (null == documentListValue.getValue().getDocumentCategory()) {
+                    if (ObjectUtils.isEmpty(documentListValue.getValue().getDocumentCategory())) {
                         errors.add("Category is mandatory for each document");
                     }
                 }
             }
         }
+
         return errors;
     }
+
 }

@@ -19,18 +19,23 @@ import java.util.Map;
 @Slf4j
 public class CaseLinkedNotification implements PartiesNotification {
 
-    @Autowired
-    private NotificationServiceCIC notificationService;
+    private final NotificationServiceCIC notificationService;
+
+    private final NotificationHelper notificationHelper;
+
 
     @Autowired
-    private NotificationHelper notificationHelper;
+    public CaseLinkedNotification(NotificationServiceCIC notificationService, NotificationHelper notificationHelper) {
+        this.notificationService = notificationService;
+        this.notificationHelper = notificationHelper;
+    }
 
     @Override
     public void sendToSubject(final CaseData caseData, final String caseNumber) {
-        CicCase cicCase = caseData.getCicCase();
-        Map<String, Object> templateVars = notificationHelper.getSubjectCommonVars(caseNumber, cicCase);
+        final CicCase cicCase = caseData.getCicCase();
+        final Map<String, Object> templateVars = notificationHelper.getSubjectCommonVars(caseNumber, cicCase);
 
-        NotificationResponse notificationResponse;
+        final NotificationResponse notificationResponse;
         if (cicCase.getContactPreferenceType() == ContactPreferenceType.EMAIL) {
             notificationResponse = sendEmailNotification(cicCase.getEmail(), templateVars);
         } else {
@@ -43,10 +48,10 @@ public class CaseLinkedNotification implements PartiesNotification {
 
     @Override
     public void sendToApplicant(final CaseData caseData, final String caseNumber) {
-        CicCase cicCase = caseData.getCicCase();
-        Map<String, Object> applicantCommonVars = notificationHelper.getApplicantCommonVars(caseNumber, cicCase);
+        final CicCase cicCase = caseData.getCicCase();
+        final Map<String, Object> applicantCommonVars = notificationHelper.getApplicantCommonVars(caseNumber, cicCase);
 
-        NotificationResponse notificationResponse;
+        final NotificationResponse notificationResponse;
         if (cicCase.getApplicantContactDetailsPreference() == ContactPreferenceType.EMAIL) {
             notificationResponse = sendEmailNotification(cicCase.getApplicantEmailAddress(), applicantCommonVars);
         } else {
@@ -59,10 +64,10 @@ public class CaseLinkedNotification implements PartiesNotification {
 
     @Override
     public void sendToRepresentative(final CaseData caseData, final String caseNumber) {
-        CicCase cicCase = caseData.getCicCase();
-        Map<String, Object> representativeCommonVars = notificationHelper.getRepresentativeCommonVars(caseNumber, cicCase);
+        final CicCase cicCase = caseData.getCicCase();
+        final Map<String, Object> representativeCommonVars = notificationHelper.getRepresentativeCommonVars(caseNumber, cicCase);
 
-        NotificationResponse notificationResponse;
+        final NotificationResponse notificationResponse;
         if (cicCase.getRepresentativeContactDetailsPreference() == ContactPreferenceType.EMAIL) {
             notificationResponse = sendEmailNotification(cicCase.getRepresentativeEmailAddress(), representativeCommonVars);
         } else {
@@ -74,7 +79,7 @@ public class CaseLinkedNotification implements PartiesNotification {
     }
 
     private NotificationResponse sendEmailNotification(final String destinationAddress, final Map<String, Object> templateVars) {
-        NotificationRequest request = notificationHelper.buildEmailNotificationRequest(
+        final NotificationRequest request = notificationHelper.buildEmailNotificationRequest(
             destinationAddress,
             templateVars,
             TemplateName.CASE_LINKED_EMAIL);
@@ -82,7 +87,7 @@ public class CaseLinkedNotification implements PartiesNotification {
     }
 
     private NotificationResponse sendLetterNotification(Map<String, Object> templateVarsLetter) {
-        NotificationRequest letterRequest = notificationHelper.buildLetterNotificationRequest(templateVarsLetter,
+        final NotificationRequest letterRequest = notificationHelper.buildLetterNotificationRequest(templateVarsLetter,
             TemplateName.CASE_LINKED_POST);
         return notificationService.sendLetter(letterRequest);
     }
