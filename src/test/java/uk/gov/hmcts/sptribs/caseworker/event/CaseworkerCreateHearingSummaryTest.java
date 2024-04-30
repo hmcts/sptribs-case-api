@@ -24,6 +24,8 @@ import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.SubjectCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
+import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocumentUpload;
+import uk.gov.hmcts.sptribs.document.model.DocumentType;
 import uk.gov.hmcts.sptribs.judicialrefdata.JudicialService;
 
 import java.util.List;
@@ -35,6 +37,7 @@ import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigBuilder;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.getEventsFrom;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getCaseworkerCICDocumentList;
+import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getCaseworkerCICDocumentUploadList;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getDynamicList;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getRecordListing;
 import static uk.gov.hmcts.sptribs.testutil.TestEventConstants.CASEWORKER_CREATE_HEARING_SUMMARY;
@@ -56,13 +59,10 @@ class CaseworkerCreateHearingSummaryTest {
 
     @Test
     void shouldAddConfigurationToConfigBuilder() {
-        //Given
         final ConfigBuilderImpl<CaseData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
 
-        //When
         caseWorkerCreateHearingSummary.configure(configBuilder);
 
-        //Then
         assertThat(getEventsFrom(configBuilder).values())
             .extracting(Event::getId)
             .contains(CASEWORKER_CREATE_HEARING_SUMMARY);
@@ -70,7 +70,6 @@ class CaseworkerCreateHearingSummaryTest {
 
     @Test
     void shouldRunAboutToStart() {
-        //Given
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
         final CicCase cicCase = CicCase.builder().build();
         final CaseData caseData = CaseData.builder()
@@ -81,10 +80,8 @@ class CaseworkerCreateHearingSummaryTest {
         when(hearingService.getListedHearingDynamicList(any())).thenReturn(null);
         when(judicialService.getAllUsers(caseData)).thenReturn(getDynamicList());
 
-        //When
         AboutToStartOrSubmitResponse<CaseData, State> response = caseWorkerCreateHearingSummary.aboutToStart(updatedCaseDetails);
 
-        //Then
         assertThat(response).isNotNull();
         assertThat(response.getData().getCicCase().getHearingList()).isNull();
         assertThat(response.getData().getCurrentEvent()).isEqualTo(CASEWORKER_CREATE_HEARING_SUMMARY);
@@ -92,7 +89,6 @@ class CaseworkerCreateHearingSummaryTest {
 
     @Test
     void shouldRunAboutToSubmit() {
-        //Given
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
         final CicCase cicCase = CicCase.builder()
             .notifyPartyRepresentative(Set.of(RepresentativeCIC.REPRESENTATIVE))
@@ -106,9 +102,9 @@ class CaseworkerCreateHearingSummaryTest {
         Listing recordListing = getRecordListing();
         caseData.setListing(recordListing);
 
-        List<ListValue<CaseworkerCICDocument>> documentList = getCaseworkerCICDocumentList("file.pdf");
+        List<ListValue<CaseworkerCICDocumentUpload>> documentList = getCaseworkerCICDocumentUploadList("file.pdf");
 
-        HearingSummary hearingSummary = HearingSummary.builder().recFile(documentList).build();
+        HearingSummary hearingSummary = HearingSummary.builder().recFileUpload(documentList).build();
         recordListing.setSummary(hearingSummary);
 
         updatedCaseDetails.setData(caseData);
@@ -116,11 +112,9 @@ class CaseworkerCreateHearingSummaryTest {
         when(recordListHelper.saveSummary(any())).thenReturn(recordListing);
         when(judicialService.populateJudicialId(any())).thenReturn("personal_code");
 
-        //When
         AboutToStartOrSubmitResponse<CaseData, State> response =
             caseWorkerCreateHearingSummary.aboutToSubmit(updatedCaseDetails, beforeDetails);
 
-        //Then
         assertThat(response).isNotNull();
         assertThat(response.getData().getListing().getHearingStatus())
             .isEqualTo(HearingState.Complete);
@@ -130,19 +124,25 @@ class CaseworkerCreateHearingSummaryTest {
             .isEqualTo(recordListing);
         assertThat(response.getData().getListing().getSummary().getJudgeList())
             .isNull();
+        assertThat(response.getData().getListing().getSummary().getRecFileUpload()).hasSize(0);
+        assertThat(response.getData().getListing().getSummary().getRecFile()).hasSize(1);
+        assertThat(response.getData().getListing().getSummary().getRecFile().get(0).getValue().getDocumentCategory())
+            .isEqualTo(DocumentType.LINKED_DOCS);
+        assertThat(response.getData().getListing().getSummary().getRecFile().get(0).getValue().getDocumentEmailContent())
+            .isEqualTo("some email content");
+        assertThat(response.getData().getListing().getSummary().getRecFile().get(0).getValue().getDocumentLink().getFilename())
+            .isEqualTo("file.pdf");
+        assertThat(response.getData().getListing().getSummary().getRecFile().get(0).getValue().getDate()).isNull();
     }
 
     @Test
     void shouldRunSubmitted() {
-        //Given
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
         final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
 
-        //When
         SubmittedCallbackResponse response =
             caseWorkerCreateHearingSummary.summaryCreated(updatedCaseDetails, beforeDetails);
 
-        //Then
         assertThat(response).isNotNull();
         assertThat(response.getConfirmationHeader()).contains("Hearing summary created");
     }
