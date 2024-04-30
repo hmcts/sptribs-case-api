@@ -89,10 +89,6 @@ public final class DocumentUtil {
     }
 
     public static void uploadDocument(CaseData data) {
-        List<ListValue<CaseworkerCICDocumentUpload>> uploadedDocuments = data.getNewDocManagement().getCaseworkerCICDocumentUpload();
-        List<ListValue<CaseworkerCICDocument>> documents = convertToCaseworkerCICDocumentUpload(uploadedDocuments, true);
-        data.getNewDocManagement().setCaseworkerCICDocument(documents);
-
         updateCategoryToCaseworkerDocument(data.getNewDocManagement().getCaseworkerCICDocument());
         data.getAllDocManagement().getCaseworkerCICDocument().addAll(data.getNewDocManagement().getCaseworkerCICDocument());
         data.getNewDocManagement().setCaseworkerCICDocument(new ArrayList<>());
