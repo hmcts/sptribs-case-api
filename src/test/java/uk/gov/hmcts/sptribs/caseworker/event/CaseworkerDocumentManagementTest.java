@@ -14,6 +14,7 @@ import uk.gov.hmcts.sptribs.caseworker.model.DocumentManagement;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
+import uk.gov.hmcts.sptribs.document.model.DocumentType;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigBuilder;
@@ -22,6 +23,7 @@ import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.LOCAL_DATE_TIME;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.caseData;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getCaseworkerCICDocumentList;
+import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getCaseworkerCICDocumentUploadList;
 import static uk.gov.hmcts.sptribs.testutil.TestEventConstants.CASEWORKER_DOCUMENT_MANAGEMENT;
 
 @ExtendWith(MockitoExtension.class)
@@ -35,14 +37,11 @@ public class CaseworkerDocumentManagementTest {
 
     @Test
     void shouldAddConfigurationToConfigBuilder() {
-        //Given
         caseworkerDocumentManagement.setDocumentManagementEnabled(true);
         final ConfigBuilderImpl<CaseData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
 
-        //When
         caseworkerDocumentManagement.configure(configBuilder);
 
-        //Then
         assertThat(getEventsFrom(configBuilder).values())
             .extracting(Event::getId)
             .contains(CASEWORKER_DOCUMENT_MANAGEMENT);
@@ -50,48 +49,70 @@ public class CaseworkerDocumentManagementTest {
 
     @Test
     void shouldNotConfigureMaintainLinkCaseIfFeatureFlagFalse() {
-        //Given
         final ConfigBuilderImpl<CaseData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
 
-        //When
         caseworkerDocumentManagement.configure(configBuilder);
 
-        //Then
         assertThat(getEventsFrom(configBuilder).values())
             .extracting(Event::getId)
             .doesNotContain(CASEWORKER_DOCUMENT_MANAGEMENT);
     }
 
     @Test
-    void shouldSuccessfullyAddDocument() {
-        //Given
+    void shouldSuccessfullyCheckUploadedDocumentsInMidEvent() {
         final CaseData caseData = caseData();
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
         final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
         DocumentManagement documentManagement = DocumentManagement.builder()
-            .caseworkerCICDocument(getCaseworkerCICDocumentList("file.pdf"))
+            .caseworkerCICDocumentUpload(getCaseworkerCICDocumentUploadList("file.pdf"))
             .build();
-        caseData.setAllDocManagement(documentManagement);
+        caseData.setNewDocManagement(documentManagement);
+        beforeDetails.setData(caseData);
+        updatedCaseDetails.setData(caseData);
+
+        AboutToStartOrSubmitResponse<CaseData, State> response =
+            uploadCaseDocuments.midEvent(updatedCaseDetails, beforeDetails);
+
+        assertThat(response.getErrors()).isEmpty();
+    }
+
+    @Test
+    void shouldSuccessfullyAddDocumentInAboutToSubmit() {
+        final CaseData caseData = caseData();
+        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
+        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        DocumentManagement documentManagement = DocumentManagement.builder()
+            .caseworkerCICDocumentUpload(getCaseworkerCICDocumentUploadList("file.pdf"))
+            .build();
+        caseData.setNewDocManagement(documentManagement);
         beforeDetails.setData(caseData);
         updatedCaseDetails.setData(caseData);
         updatedCaseDetails.setState(State.CaseManagement);
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
 
-        //When
-
-        AboutToStartOrSubmitResponse<CaseData, State> midResponse =
-            uploadCaseDocuments.midEvent(updatedCaseDetails, beforeDetails);
         AboutToStartOrSubmitResponse<CaseData, State> response =
             caseworkerDocumentManagement.aboutToSubmit(updatedCaseDetails, beforeDetails);
-        SubmittedCallbackResponse documentMgmtResponse = caseworkerDocumentManagement.submitted(updatedCaseDetails, beforeDetails);
-
-        //Then
-        assertThat(midResponse).isNotNull();
-        assertThat(response).isNotNull();
-        assertThat(documentMgmtResponse).isNotNull();
 
         assertThat(response.getData().getNewDocManagement().getCaseworkerCICDocument()).isEmpty();
+        assertThat(response.getData().getNewDocManagement().getCaseworkerCICDocumentUpload()).isEmpty();
         assertThat(response.getData().getAllDocManagement().getCaseworkerCICDocument()).hasSize(1);
+        assertThat(response.getData().getAllDocManagement().getCaseworkerCICDocumentUpload()).isEmpty();
+        assertThat(response.getData().getAllDocManagement().getCaseworkerCICDocument().get(0).getValue().getDocumentCategory())
+            .isEqualTo(DocumentType.LINKED_DOCS);
+        assertThat(response.getData().getAllDocManagement().getCaseworkerCICDocument().get(0).getValue().getDocumentEmailContent())
+            .isEqualTo("some email content");
+        assertThat(response.getData().getAllDocManagement().getCaseworkerCICDocument().get(0).getValue().getDocumentLink().getFilename())
+            .isEqualTo("file.pdf");
+        assertThat(response.getData().getAllDocManagement().getCaseworkerCICDocument().get(0).getValue().getDate()).isNotNull();
+    }
+
+    @Test
+    void shouldSuccessfullySubmit() {
+        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
+        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+
+        SubmittedCallbackResponse response = caseworkerDocumentManagement.submitted(updatedCaseDetails, beforeDetails);
+        assertThat(response.getConfirmationHeader()).isEqualTo("# Case Updated");
     }
 }
