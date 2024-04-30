@@ -62,7 +62,7 @@ public class CaseworkerCancelHearingFT extends FunctionalTestSuite {
     }
 
     @Test
-    public void shouldRecieveErrorIfInvalidRequestIsInvoked() throws Exception {
+    public void shouldReceiveErrorIfInvalidRequestIsInvoked() throws Exception {
         JSONObject emptyJsonObject = new JSONObject();
         Map<String, Object> caseData = new HashMap<>();
         caseData.put("emptyString", "");
