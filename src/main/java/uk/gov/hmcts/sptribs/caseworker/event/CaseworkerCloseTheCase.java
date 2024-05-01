@@ -49,6 +49,7 @@ import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_JUDGE;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE;
 import static uk.gov.hmcts.sptribs.document.DocumentUtil.convertToCaseworkerCICDocument;
+import static uk.gov.hmcts.sptribs.document.DocumentUtil.convertToCaseworkerCICDocumentUpload;
 import static uk.gov.hmcts.sptribs.document.DocumentUtil.updateCategoryToCaseworkerDocument;
 import static uk.gov.hmcts.sptribs.document.DocumentUtil.validateUploadedDocuments;
 
@@ -163,7 +164,10 @@ public class CaseworkerCloseTheCase implements CCDConfig<CaseData, State, UserRo
         log.info("Caseworker close the case callback invoked for Case Id: {}", details.getId());
 
         final CaseData caseData = details.getData();
-        updateCategoryToCaseworkerDocument(caseData.getCloseCase().getDocuments());
+        List<ListValue<CaseworkerCICDocumentUpload>> uploadedDocuments = caseData.getCloseCase().getDocumentsUpload();
+        List<ListValue<CaseworkerCICDocument>> documents = convertToCaseworkerCICDocumentUpload(uploadedDocuments, false);
+        updateCategoryToCaseworkerDocument(documents);
+        caseData.getCloseCase().setDocuments(documents);
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
