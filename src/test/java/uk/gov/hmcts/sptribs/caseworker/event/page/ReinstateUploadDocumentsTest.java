@@ -33,18 +33,18 @@ public class ReinstateUploadDocumentsTest {
     void midEventReturnsNoErrorsWithUploadedDocuments() {
         final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
         final CicCase cicCase = CicCase.builder()
-            .reinstateDocuments(getCaseworkerCICDocumentList("file.pdf"))
+            .reinstateDocumentsUpload(getCaseworkerCICDocumentUploadList("file.pdf"))
             .build();
         final CaseData caseData = CaseData.builder()
             .cicCase(cicCase)
             .build();
         caseDetails.setData(caseData);
         final AboutToStartOrSubmitResponse<CaseData, State> response = reinstateUploadDocuments.midEvent(caseDetails, caseDetails);
-        assertThat(response.getData().getCicCase().getReinstateDocuments()).isNotNull();
-        assertThat(response.getData().getCicCase().getReinstateDocuments()).hasSize(1);
-        assertThat(response.getData().getCicCase().getReinstateDocuments().get(0).getValue()).isNotNull();
-        assertThat(response.getData().getCicCase().getReinstateDocuments().get(0).getValue().getDocumentLink()).isNotNull();
-        assertThat(response.getData().getCicCase().getReinstateDocuments().get(0).getValue().getDocumentLink().getFilename())
+        assertThat(response.getData().getCicCase().getReinstateDocumentsUpload()).isNotNull();
+        assertThat(response.getData().getCicCase().getReinstateDocumentsUpload()).hasSize(1);
+        assertThat(response.getData().getCicCase().getReinstateDocumentsUpload().get(0).getValue()).isNotNull();
+        assertThat(response.getData().getCicCase().getReinstateDocumentsUpload().get(0).getValue().getDocumentLink()).isNotNull();
+        assertThat(response.getData().getCicCase().getReinstateDocumentsUpload().get(0).getValue().getDocumentLink().getFilename())
             .isEqualTo("file.pdf");
         assertTrue(response.getErrors().isEmpty());
     }
