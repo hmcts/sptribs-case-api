@@ -73,7 +73,7 @@ class CaseWorkerCreateDraftOrderTest {
             caseWorkerDraftOrder.aboutToSubmit(updatedCaseDetails, beforeDetails);
         assertThat(response).isNotNull();
 
-        SubmittedCallbackResponse draftCreatedResponse = caseWorkerDraftOrder.draftCreated(updatedCaseDetails, beforeDetails);
+        SubmittedCallbackResponse draftCreatedResponse = caseWorkerDraftOrder.submitted(updatedCaseDetails, beforeDetails);
         //  Then
         assertThat(draftCreatedResponse).isNotNull();
 
@@ -98,7 +98,7 @@ class CaseWorkerCreateDraftOrderTest {
         AboutToStartOrSubmitResponse<CaseData, State> response =
             caseWorkerDraftOrder.aboutToSubmit(updatedCaseDetails, beforeDetails);
         assertThat(response).isNotNull();
-        SubmittedCallbackResponse draftCreatedResponse = caseWorkerDraftOrder.draftCreated(updatedCaseDetails, beforeDetails);
+        SubmittedCallbackResponse draftCreatedResponse = caseWorkerDraftOrder.submitted(updatedCaseDetails, beforeDetails);
         //  Then
         assertThat(draftCreatedResponse).isNotNull();
 
@@ -152,7 +152,7 @@ class CaseWorkerCreateDraftOrderTest {
         assertThat(response).isNotNull();
 
         //When
-        SubmittedCallbackResponse draftCreatedResponse = caseWorkerDraftOrder.draftCreated(updatedCaseDetails, beforeDetails);
+        SubmittedCallbackResponse draftCreatedResponse = caseWorkerDraftOrder.submitted(updatedCaseDetails, beforeDetails);
 
         //  Then
         assertThat(draftCreatedResponse).isNotNull();
