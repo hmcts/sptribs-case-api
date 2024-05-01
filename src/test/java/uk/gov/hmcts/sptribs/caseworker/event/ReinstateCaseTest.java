@@ -61,13 +61,10 @@ class ReinstateCaseTest {
 
     @Test
     void shouldAddConfigurationToConfigBuilder() {
-        //Given
         final ConfigBuilderImpl<CaseData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
 
-        //When
         reinstateCase.configure(configBuilder);
 
-        //Then
         assertThat(getEventsFrom(configBuilder).values())
             .extracting(Event::getId)
             .contains(CASEWORKER_REINSTATE_CASE);
@@ -75,14 +72,13 @@ class ReinstateCaseTest {
 
     @Test
     void shouldSuccessfullyReinstateTheCaseEmail() {
-        //Given
         final CaseData caseData = caseData();
-        final CaseworkerCICDocument document = CaseworkerCICDocument.builder()
+        final CaseworkerCICDocumentUpload document = CaseworkerCICDocumentUpload.builder()
             .documentLink(Document.builder().build())
             .documentEmailContent("content")
             .documentCategory(DocumentType.APPLICATION_FORM)
             .build();
-        ListValue<CaseworkerCICDocument> documentListValue = new ListValue<>();
+        ListValue<CaseworkerCICDocumentUpload> documentListValue = new ListValue<>();
         documentListValue.setValue(document);
         CicCase cicCase = CicCase.builder()
             .reinstateReason(ReinstateReason.CASE_HAD_BEEN_CLOSED_IN_ERROR)
@@ -101,7 +97,7 @@ class ReinstateCaseTest {
             .subjectCIC(Set.of())
             .applicantCIC(Set.of())
             .representativeCIC(Set.of())
-            .reinstateDocuments(List.of(documentListValue))
+            .reinstateDocumentsUpload(List.of(documentListValue))
             .build();
         caseData.setCicCase(cicCase);
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
@@ -110,14 +106,21 @@ class ReinstateCaseTest {
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
 
-        //When
         AboutToStartOrSubmitResponse<CaseData, State> response =
             reinstateCase.aboutToSubmit(updatedCaseDetails, beforeDetails);
         SubmittedCallbackResponse responseReinstate =
             reinstateCase.reinstated(updatedCaseDetails, beforeDetails);
 
-        //Then
         assertThat(responseReinstate).isNotNull();
+        assertThat(response.getData().getCicCase().getReinstateDocumentsUpload()).isEmpty();
+        assertThat(response.getData().getCicCase().getReinstateDocuments()).hasSize(1);
+        assertThat(response.getData().getCicCase().getReinstateDocuments().get(0).getValue().getDocumentCategory())
+            .isEqualTo(DocumentType.APPLICATION_FORM);
+        assertThat(response.getData().getCicCase().getReinstateDocuments().get(0).getValue().getDocumentEmailContent())
+            .isEqualTo("content");
+        assertThat(response.getData().getCicCase().getReinstateDocuments().get(0).getValue().getDocumentLink()).isNotNull();
+        assertThat(response.getData().getCicCase().getReinstateDocuments().get(0).getValue().getDate()).isNull();
+        assertThat(responseReinstate.getConfirmationHeader()).contains("# Case reinstated \n##  The case record will now be reopened");
         assertThat(responseReinstate.getConfirmationHeader()).contains("Subject");
         assertThat(responseReinstate.getConfirmationHeader()).contains("Respondent");
         assertThat(responseReinstate.getConfirmationHeader()).contains("Representative");
@@ -129,14 +132,13 @@ class ReinstateCaseTest {
 
     @Test
     void shouldSuccessfullyReinstateTheCasePost() {
-        //Given
         final CaseData caseData = caseData();
-        final CaseworkerCICDocument document = CaseworkerCICDocument.builder()
+        final CaseworkerCICDocumentUpload document = CaseworkerCICDocumentUpload.builder()
             .documentLink(Document.builder().build())
             .documentEmailContent("content")
             .documentCategory(DocumentType.LINKED_DOCS)
             .build();
-        ListValue<CaseworkerCICDocument> documentListValue = new ListValue<>();
+        ListValue<CaseworkerCICDocumentUpload> documentListValue = new ListValue<>();
         documentListValue.setValue(document);
         CicCase cicCase = CicCase.builder()
             .reinstateReason(ReinstateReason.CASE_HAD_BEEN_CLOSED_IN_ERROR)
@@ -155,7 +157,7 @@ class ReinstateCaseTest {
             .subjectCIC(Set.of(SubjectCIC.SUBJECT))
             .applicantCIC(Set.of(ApplicantCIC.APPLICANT_CIC))
             .representativeCIC(Set.of(RepresentativeCIC.REPRESENTATIVE))
-            .reinstateDocuments(List.of(documentListValue))
+            .reinstateDocumentsUpload(List.of(documentListValue))
             .build();
         caseData.setCicCase(cicCase);
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
@@ -164,18 +166,25 @@ class ReinstateCaseTest {
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
 
-        //When
         AboutToStartOrSubmitResponse<CaseData, State> response =
             reinstateCase.aboutToSubmit(updatedCaseDetails, beforeDetails);
         SubmittedCallbackResponse responseReinstate =
             reinstateCase.reinstated(updatedCaseDetails, beforeDetails);
 
-        //Then
         assertThat(responseReinstate).isNotNull();
+        assertThat(responseReinstate.getConfirmationHeader()).contains("# Case reinstated \n##  The case record will now be reopened");
         assertThat(responseReinstate.getConfirmationHeader()).contains("Subject");
         assertThat(responseReinstate.getConfirmationHeader()).contains("Respondent");
         assertThat(responseReinstate.getConfirmationHeader()).contains("Representative");
         assertThat(response.getData().getCicCase().getReinstateReason()).isNotNull();
+        assertThat(response.getData().getCicCase().getReinstateDocumentsUpload()).isEmpty();
+        assertThat(response.getData().getCicCase().getReinstateDocuments()).hasSize(1);
+        assertThat(response.getData().getCicCase().getReinstateDocuments().get(0).getValue().getDocumentCategory())
+            .isEqualTo(DocumentType.LINKED_DOCS);
+        assertThat(response.getData().getCicCase().getReinstateDocuments().get(0).getValue().getDocumentEmailContent())
+            .isEqualTo("content");
+        assertThat(response.getData().getCicCase().getReinstateDocuments().get(0).getValue().getDocumentLink()).isNotNull();
+        assertThat(response.getData().getCicCase().getReinstateDocuments().get(0).getValue().getDate()).isNull();
         assertThat(response.getState()).isEqualTo(State.CaseManagement);
 
     }
