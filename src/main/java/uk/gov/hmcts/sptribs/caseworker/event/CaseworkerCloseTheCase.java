@@ -91,93 +91,14 @@ public class CaseworkerCloseTheCase implements CCDConfig<CaseData, State, UserRo
             .event(CASEWORKER_CLOSE_THE_CASE)
             .forStates(CaseManagement, ReadyToList)
             .name("Case: Close case")
-            .showSummary()
             .description("Close the case")
+            .showSummary()
             .aboutToStartCallback(this::aboutToStart)
             .aboutToSubmitCallback(this::aboutToSubmit)
-            .submittedCallback(this::closed)
-            .grant(CREATE_READ_UPDATE, SUPER_USER,
-                ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER, ST_CIC_HEARING_CENTRE_ADMIN,
-                ST_CIC_HEARING_CENTRE_TEAM_LEADER, ST_CIC_SENIOR_JUDGE)
-            .grantHistoryOnly(
-                ST_CIC_CASEWORKER,
-                ST_CIC_SENIOR_CASEWORKER,
-                ST_CIC_HEARING_CENTRE_ADMIN,
-                ST_CIC_HEARING_CENTRE_TEAM_LEADER,
-                ST_CIC_SENIOR_JUDGE,
-                SUPER_USER,
-                ST_CIC_JUDGE));
-    }
-
-    public AboutToStartOrSubmitResponse<CaseData, State> aboutToStart(CaseDetails<CaseData, State> details) {
-        final CaseData caseData = details.getData();
-        caseData.setCurrentEvent(CASEWORKER_CLOSE_THE_CASE);
-
-        DynamicList judicialUsersDynamicList = judicialService.getAllUsers(caseData);
-        caseData.getCloseCase().setRejectionName(judicialUsersDynamicList);
-        caseData.getCloseCase().setStrikeOutName(judicialUsersDynamicList);
-
-        return AboutToStartOrSubmitResponse.<CaseData, State>builder()
-            .data(caseData)
-            .build();
-    }
-
-    public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(
-        final CaseDetails<CaseData, State> details,
-        final CaseDetails<CaseData, State> beforeDetails
-    ) {
-        log.info("Caseworker close the case callback invoked for Case Id: {}", details.getId());
-        final CaseData caseData = details.getData();
-        updateCategoryToCaseworkerDocument(caseData.getCloseCase().getDocuments());
-        return AboutToStartOrSubmitResponse.<CaseData, State>builder()
-            .data(caseData)
-            .state(CaseClosed)
-            .build();
-    }
-
-    public SubmittedCallbackResponse closed(CaseDetails<CaseData, State> details,
-                                            CaseDetails<CaseData, State> beforeDetails) {
-
-        String message = MessageUtil.generateSimpleMessage(details.getData().getCicCase(), "Case closed",
-            "Use 'Reinstate case' if this case needs to be reopened in the future.");
-        try {
-            sendCaseWithdrawnNotification(details.getData().getHyphenatedCaseRef(), details.getData());
-        } catch (Exception notificationException) {
-            log.error("Case close notification failed with exception : {}", notificationException.getMessage());
-            return SubmittedCallbackResponse.builder()
-                .confirmationHeader(format("# Case close notification failed %n## Please resend the notification"))
-                .build();
-        }
-        return SubmittedCallbackResponse.builder()
-            .confirmationHeader(message)
-            .build();
-    }
-
-    public AboutToStartOrSubmitResponse<CaseData, State> midEvent(CaseDetails<CaseData, State> details,
-                                                                  CaseDetails<CaseData, State> detailsBefore) {
-        final CaseData data = details.getData();
-        List<ListValue<CaseworkerCICDocument>> uploadedDocuments = data.getCloseCase().getDocuments();
-        final List<String> errors = validateUploadedDocuments(uploadedDocuments);
-        return AboutToStartOrSubmitResponse.<CaseData, State>builder()
-            .data(data)
-            .errors(errors)
-            .build();
-    }
-
-    private void sendCaseWithdrawnNotification(String caseNumber, CaseData caseData) {
-        CicCase cicCase = caseData.getCicCase();
-        if (!CollectionUtils.isEmpty(cicCase.getNotifyPartySubject())) {
-            caseWithdrawnNotification.sendToSubject(caseData, caseNumber);
-        }
-        if (!CollectionUtils.isEmpty(cicCase.getNotifyPartyRespondent())) {
-            caseWithdrawnNotification.sendToRespondent(caseData, caseNumber);
-        }
-        if (!CollectionUtils.isEmpty(cicCase.getNotifyPartyRepresentative())) {
-            caseWithdrawnNotification.sendToRepresentative(caseData, caseNumber);
-        }
-        if (!CollectionUtils.isEmpty(cicCase.getNotifyPartyApplicant())) {
-            caseWithdrawnNotification.sendToApplicant(caseData, caseNumber);
-        }
+            .submittedCallback(this::submitted)
+            .grant(CREATE_READ_UPDATE, SUPER_USER, ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER,
+                ST_CIC_HEARING_CENTRE_ADMIN, ST_CIC_HEARING_CENTRE_TEAM_LEADER, ST_CIC_SENIOR_JUDGE)
+            .grantHistoryOnly(ST_CIC_JUDGE));
     }
 
     private void uploadDocuments(PageBuilder pageBuilder) {
@@ -202,5 +123,85 @@ public class CaseworkerCloseTheCase implements CCDConfig<CaseData, State, UserRo
             .complex(CaseData::getCloseCase)
             .optionalWithLabel(CloseCase::getDocuments, "File Attachments")
             .done();
+    }
+
+    public AboutToStartOrSubmitResponse<CaseData, State> midEvent(CaseDetails<CaseData, State> details,
+                                                                  CaseDetails<CaseData, State> detailsBefore) {
+
+        final CaseData data = details.getData();
+        final List<ListValue<CaseworkerCICDocument>> uploadedDocuments = data.getCloseCase().getDocuments();
+        final List<String> errors = validateUploadedDocuments(uploadedDocuments);
+
+        return AboutToStartOrSubmitResponse.<CaseData, State>builder()
+            .data(data)
+            .errors(errors)
+            .build();
+    }
+
+    public AboutToStartOrSubmitResponse<CaseData, State> aboutToStart(CaseDetails<CaseData, State> details) {
+        final CaseData caseData = details.getData();
+        caseData.setCurrentEvent(CASEWORKER_CLOSE_THE_CASE);
+
+        final DynamicList judicialUsersDynamicList = judicialService.getAllUsers(caseData);
+        caseData.getCloseCase().setRejectionName(judicialUsersDynamicList);
+        caseData.getCloseCase().setStrikeOutName(judicialUsersDynamicList);
+
+        return AboutToStartOrSubmitResponse.<CaseData, State>builder()
+            .data(caseData)
+            .build();
+    }
+
+    public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(CaseDetails<CaseData, State> details,
+                                                                       CaseDetails<CaseData, State> beforeDetails) {
+
+        log.info("Caseworker close the case callback invoked for Case Id: {}", details.getId());
+
+        final CaseData caseData = details.getData();
+        updateCategoryToCaseworkerDocument(caseData.getCloseCase().getDocuments());
+
+        return AboutToStartOrSubmitResponse.<CaseData, State>builder()
+            .data(caseData)
+            .state(CaseClosed)
+            .build();
+    }
+
+    public SubmittedCallbackResponse submitted(CaseDetails<CaseData, State> details,
+                                               CaseDetails<CaseData, State> beforeDetails) {
+
+        String message = MessageUtil.generateSimpleMessage(
+            details.getData().getCicCase(),
+            "Case closed",
+            "Use 'Reinstate case' if this case needs to be reopened in the future."
+        );
+
+        try {
+            sendCaseWithdrawnNotification(details.getData().getHyphenatedCaseRef(), details.getData());
+        } catch (Exception notificationException) {
+            log.error("Case close notification failed with exception : {}", notificationException.getMessage());
+
+            return SubmittedCallbackResponse.builder()
+                .confirmationHeader(format("# Case close notification failed %n## Please resend the notification"))
+                .build();
+        }
+
+        return SubmittedCallbackResponse.builder()
+            .confirmationHeader(message)
+            .build();
+    }
+
+    private void sendCaseWithdrawnNotification(String caseNumber, CaseData caseData) {
+        CicCase cicCase = caseData.getCicCase();
+        if (!CollectionUtils.isEmpty(cicCase.getNotifyPartySubject())) {
+            caseWithdrawnNotification.sendToSubject(caseData, caseNumber);
+        }
+        if (!CollectionUtils.isEmpty(cicCase.getNotifyPartyRespondent())) {
+            caseWithdrawnNotification.sendToRespondent(caseData, caseNumber);
+        }
+        if (!CollectionUtils.isEmpty(cicCase.getNotifyPartyRepresentative())) {
+            caseWithdrawnNotification.sendToRepresentative(caseData, caseNumber);
+        }
+        if (!CollectionUtils.isEmpty(cicCase.getNotifyPartyApplicant())) {
+            caseWithdrawnNotification.sendToApplicant(caseData, caseNumber);
+        }
     }
 }

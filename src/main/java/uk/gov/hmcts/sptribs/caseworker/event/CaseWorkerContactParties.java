@@ -25,9 +25,6 @@ import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.common.event.page.PartiesToContact;
 import uk.gov.hmcts.sptribs.common.notification.ContactPartiesNotification;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import static java.lang.String.format;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_CONTACT_PARTIES;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
@@ -92,9 +89,8 @@ public class CaseWorkerContactParties implements CCDConfig<CaseData, State, User
                     CaseStayed)
                 .name("Case: Contact parties")
                 .showSummary()
-                .aboutToSubmitCallback(this::aboutToSubmit)
                 .aboutToStartCallback(this::aboutToStart)
-                .submittedCallback(this::partiesContacted)
+                .submittedCallback(this::submitted)
                 .grant(CREATE_READ_UPDATE, SUPER_USER,
                     ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER, ST_CIC_HEARING_CENTRE_ADMIN,
                     ST_CIC_HEARING_CENTRE_TEAM_LEADER, ST_CIC_SENIOR_JUDGE)
@@ -122,19 +118,8 @@ public class CaseWorkerContactParties implements CCDConfig<CaseData, State, User
             .build();
     }
 
-    public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(CaseDetails<CaseData, State> details,
-                                                                       CaseDetails<CaseData, State> detailsBefore) {
-        final CaseData caseData = details.getData();
-        final List<String> errors = new ArrayList<>();
-
-        return AboutToStartOrSubmitResponse.<CaseData, State>builder()
-            .data(caseData)
-            .errors(errors)
-            .build();
-    }
-
-    public SubmittedCallbackResponse partiesContacted(CaseDetails<CaseData, State> details,
-                                                      CaseDetails<CaseData, State> beforeDetails) {
+    public SubmittedCallbackResponse submitted(CaseDetails<CaseData, State> details,
+                                               CaseDetails<CaseData, State> beforeDetails) {
 
         final CaseData data = details.getData();
         final CicCase cicCase = data.getCicCase();
@@ -142,18 +127,17 @@ public class CaseWorkerContactParties implements CCDConfig<CaseData, State, User
 
         try {
             sendContactPartiesNotification(details, cicCase, caseNumber);
+
+            return SubmittedCallbackResponse.builder()
+                .confirmationHeader(format("# Message sent %n## %s", MessageUtil.generateSimpleMessage(cicCase)))
+                .build();
         } catch (Exception notificationException) {
             log.error("Contact Parties notification failed with exception : {}", notificationException.getMessage());
+
             return SubmittedCallbackResponse.builder()
                 .confirmationHeader(format("# Contact Parties notification failed %n## Please resend the notification"))
                 .build();
         }
-
-        return SubmittedCallbackResponse.builder()
-            .confirmationHeader(format("# Message sent %n## %s",
-                MessageUtil.generateSimpleMessage(cicCase)
-            ))
-            .build();
     }
 
     private void sendContactPartiesNotification(CaseDetails<CaseData, State> details, CicCase cicCase, String caseNumber) {

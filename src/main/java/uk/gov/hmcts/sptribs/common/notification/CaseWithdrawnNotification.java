@@ -42,7 +42,7 @@ public class CaseWithdrawnNotification implements PartiesNotification {
         final Map<String, Object> templateVars = notificationHelper.getSubjectCommonVars(caseNumber, cicCase);
         addCaseClosedTemplateVars(caseData, templateVars);
 
-        if (cicCase.getContactPreferenceType() == ContactPreferenceType.EMAIL) {
+        if (ContactPreferenceType.EMAIL.equals(cicCase.getContactPreferenceType())) {
             final NotificationResponse caseWithdrawnNotifyResponse = sendEmailNotification(cicCase.getEmail(), templateVars);
             cicCase.setSubjectNotifyList(caseWithdrawnNotifyResponse);
         } else {
