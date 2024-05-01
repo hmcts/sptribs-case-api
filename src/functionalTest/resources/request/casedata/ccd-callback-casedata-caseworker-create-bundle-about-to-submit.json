@@ -1,0 +1,16 @@
+{
+  "subjectRepFullName": "Subject Name",
+  "cicCaseSchemeCic": "Preference",
+  "cicCaseApplicantDocumentsUploaded": [
+    {
+      "id": "150dc5ce-cc10-4edf-9a0b-7dbc456f7ced",
+      "value": {
+        "documentCategory": "ApplicationForm",
+        "documentEmailContent": "Lorem ipsum",
+        "documentLink": {
+          "document_filename": "pdf.pdf"
+        }
+      }
+    }
+  ]
+}

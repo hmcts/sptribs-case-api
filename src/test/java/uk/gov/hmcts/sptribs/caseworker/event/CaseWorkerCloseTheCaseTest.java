@@ -139,7 +139,7 @@ class CaseWorkerCloseTheCaseTest {
             caseworkerCloseTheCase.aboutToSubmit(updatedCaseDetails, beforeDetails);
 
         final SubmittedCallbackResponse closedCase =
-            caseworkerCloseTheCase.closed(updatedCaseDetails, beforeDetails);
+            caseworkerCloseTheCase.submitted(updatedCaseDetails, beforeDetails);
 
         assertThat(closedCase).isNotNull();
         assertThat(closedCase.getConfirmationHeader()).contains("Case closed");

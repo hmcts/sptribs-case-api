@@ -1,0 +1,104 @@
+{
+  "data": {
+    "caseBundles": [
+      {
+        "id": "1",
+        "value": {
+          "id": "${json-unit.any-string}",
+          "title": "CIC Bundle",
+          "description": "",
+          "folders": [
+            {
+              "id": "37",
+              "value": {
+                "name": "General evidence",
+                "sortIndex": 8
+              }
+            },
+            {
+              "id": "38",
+              "value": {
+                "name": "Direction - decision notices",
+                "sortIndex": 7
+              }
+            },
+            {
+              "id": "39",
+              "value": {
+                "name": "Witness Statements",
+                "sortIndex": 6
+              }
+            },
+            {
+              "id": "40",
+              "value": {
+                "name": "Linked documents",
+                "sortIndex": 5
+              }
+            },
+            {
+              "id": "41",
+              "value": {
+                "name": "Other evidence",
+                "sortIndex": 4
+              }
+            },
+            {
+              "id": "42",
+              "value": {
+                "name": "Financial records",
+                "sortIndex": 3
+              }
+            },
+            {
+              "id": "43",
+              "value": {
+                "name": "Medical records",
+                "sortIndex": 2
+              }
+            },
+            {
+              "id": "44",
+              "value": {
+                "name": "Police evidence",
+                "sortIndex": 1
+              }
+            },
+            {
+              "id": "45",
+              "value": {
+                "name": "Application Documents",
+                "sortIndex": 0
+              }
+            }
+          ],
+          "paginationStyle": "bottomCenter",
+          "pageNumberFormat": "numberOfPages",
+          "stitchingFailureMessage": "",
+          "stitchStatus": ""
+        }
+      }
+    ],
+    "cicCaseRespondentName": "Appeals team",
+    "cicCaseRespondentOrganisation": "CICA",
+    "cicCaseRespondentEmail": "appeals.team@cica.gov.uk",
+    "cicCaseSchemeCic": "Preference",
+    "cicCaseApplicantDocumentsUploaded": [
+      {
+        "id": "150dc5ce-cc10-4edf-9a0b-7dbc456f7ced",
+        "value": {
+          "documentCategory": "ApplicationForm",
+          "documentEmailContent": "Lorem ipsum",
+          "documentLink": {
+            "document_filename": "pdf.pdf"
+          }
+        }
+      }
+    ],
+    "caseNumber": "1234567890123456",
+    "schemeLabel": "1996",
+    "bundleConfiguration": {
+      "value": "st_cic_bundle_all_case.yaml"
+    }
+  }
+}

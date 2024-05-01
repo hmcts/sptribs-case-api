@@ -1,0 +1,93 @@
+{
+  "data": {
+    "cicCaseDraftOrderDynamicList": {
+      "list_items": [
+        {
+          "code": "${json-unit.any-string}",
+          "label": "CIC3 - Rule 27--26-04-2024 10:09:12.pdf--draft.pdf"
+        }
+      ]
+    },
+    "cicCaseDraftOrderCICList": [
+      {
+        "id": "1",
+        "value": {
+          "templateGeneratedDocument": {
+            "document_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/5d76ff31-8547-4702-b2c8-34c43a53d220",
+            "document_filename": "DRAFT :Order--[Subject Name]--26-04-2024 10:09:12.pdf",
+            "document_binary_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/5d76ff31-8547-4702-b2c8-34c43a53d220/binary",
+            "category_id": "TD"
+          },
+          "orderContentOrderTemplate": "CIC3_Rule_27",
+          "orderContentMainContent": "Order Main Content",
+          "orderContentOrderSignature": "Order Signatory"
+        }
+      }
+    ],
+    "cicCaseRespondentName": "Appeals team",
+    "cicCaseRespondentOrganisation": "CICA",
+    "cicCaseRespondentEmail": "appeals.team@cica.gov.uk",
+    "cicCaseFullName": "Subject Name",
+    "hearingList": [
+      {
+        "id": "${json-unit.any-string}",
+        "value": {
+          "hearingType": "CaseManagement",
+          "hearingVenueNameAndAddress": "",
+          "date": "2023-04-21",
+          "hearingTime": "09:00",
+          "memberList": [
+            {
+              "id": "${json-unit.any-string}",
+              "value": {
+                "name": {
+                  "value": {
+                    "code": "fc65ee31-7e4b-47e3-ab40-1fead37bac5a",
+                    "label": "panel member 1"
+                  },
+                  "list_items": [
+                    {
+                      "code": "fc65ee31-7e4b-47e3-ab40-1fead37bac5a",
+                      "label": "panel member 1"
+                    },
+                    {
+                      "code": "684df3d2-8218-4093-acbb-f84fe6032fb1",
+                      "label": "panel member 2"
+                    }
+                  ],
+                  "valueLabel": "panel member 1",
+                  "valueCode": "fc65ee31-7e4b-47e3-ab40-1fead37bac5a"
+                },
+                "role": "fullMember"
+              }
+            },
+            {
+              "id": "2",
+              "value": {
+                "name": {
+                  "value": {
+                    "code": "684df3d2-8218-4093-acbb-f84fe6032fb1",
+                    "label": "panel member 2"
+                  },
+                  "list_items": [
+                    {
+                      "code": "fc65ee31-7e4b-47e3-ab40-1fead37bac5a",
+                      "label": "panel member 1"
+                    },
+                    {
+                      "code": "684df3d2-8218-4093-acbb-f84fe6032fb1",
+                      "label": "panel member 2"
+                    }
+                  ],
+                  "valueLabel": "panel member 2",
+                  "valueCode": "684df3d2-8218-4093-acbb-f84fe6032fb1"
+                },
+                "role": "observer"
+              }
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

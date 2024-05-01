@@ -65,14 +65,11 @@ class CaseworkerContactPartiesTest {
 
     @Test
     void shouldAddConfigurationToConfigBuilder() {
-        //Given
         caseWorkerContactParties.setContactPartiesEnabled(true);
         final ConfigBuilderImpl<CaseData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
 
-        //When
         caseWorkerContactParties.configure(configBuilder);
 
-        //Then
         assertThat(getEventsFrom(configBuilder).values())
             .extracting(Event::getId)
             .contains(CASEWORKER_CONTACT_PARTIES);
@@ -82,10 +79,8 @@ class CaseworkerContactPartiesTest {
     void shouldNotConfigureContactPartiesIfFeatureFlagFalse() {
         final ConfigBuilderImpl<CaseData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
 
-        //When
         caseWorkerContactParties.configure(configBuilder);
 
-        //Then
         assertThat(getEventsFrom(configBuilder).values())
             .extracting(Event::getId)
             .doesNotContain(CASEWORKER_CONTACT_PARTIES);
@@ -93,7 +88,6 @@ class CaseworkerContactPartiesTest {
 
     @Test
     void shouldSuccessfullyPrepareDocumentListInAboutToStartCallback() {
-        //Given
         final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
         List<ListValue<CaseworkerCICDocument>> listValueList = new ArrayList<>();
         final CaseworkerCICDocument doc = CaseworkerCICDocument.builder()
@@ -110,46 +104,10 @@ class CaseworkerContactPartiesTest {
         caseData.setCicCase(cicCase);
         caseDetails.setData(caseData);
 
-        //When
         AboutToStartOrSubmitResponse<CaseData, State> response = caseWorkerContactParties.aboutToStart(caseDetails);
 
-        //Then
         assertThat(response.getData().getContactPartiesDocuments().getDocumentList()).isNotNull();
         assertThat(response.getData().getContactPartiesDocuments().getDocumentList().getListItems()).hasSize(1);
-    }
-
-    @Test
-    void shouldSuccessfullySaveContactParties() {
-        //Given
-        final CaseData caseData = caseData();
-        final CicCase cicCase = CicCase.builder()
-            .fullName(TEST_FIRST_NAME)
-            .address(SUBJECT_ADDRESS)
-            .applicantEmailAddress(TEST_APPLICANT_EMAIL)
-            .representativeFullName(TEST_SOLICITOR_NAME)
-            .representativeAddress(SOLICITOR_ADDRESS)
-            .notifyPartyRepresentative(Set.of(RepresentativeCIC.REPRESENTATIVE))
-            .notifyPartyApplicant(Set.of(ApplicantCIC.APPLICANT_CIC))
-            .notifyPartySubject(Set.of(SubjectCIC.SUBJECT))
-            .notifyPartyRespondent(Set.of(RespondentCIC.RESPONDENT)).build();
-        caseData.setCicCase(cicCase);
-
-        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
-        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
-        updatedCaseDetails.setData(caseData);
-        updatedCaseDetails.setId(TEST_CASE_ID);
-        updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
-
-        //When
-        AboutToStartOrSubmitResponse<CaseData, State> response =
-            caseWorkerContactParties.aboutToSubmit(updatedCaseDetails, beforeDetails);
-        assertThat(caseData.getCicCase().getNotifyPartySubject()).hasSize(1);
-        assertThat(caseData.getCicCase().getNotifyPartyRepresentative()).hasSize(1);
-        assertThat(caseData.getCicCase().getNotifyPartyRespondent()).hasSize(1);
-        assertThat(response).isNotNull();
-
-        SubmittedCallbackResponse contactPartiesResponse = caseWorkerContactParties.partiesContacted(updatedCaseDetails, beforeDetails);
-        assertThat(contactPartiesResponse).isNotNull();
     }
 
     @Test
@@ -198,7 +156,7 @@ class CaseworkerContactPartiesTest {
         assertThat(response.getErrors()).hasSize(1);
         assertThat(response.getErrors()).contains(SELECT_AT_LEAST_ONE_CONTACT_PARTY);
 
-        SubmittedCallbackResponse contactPartiesResponse = caseWorkerContactParties.partiesContacted(updatedCaseDetails, beforeDetails);
+        SubmittedCallbackResponse contactPartiesResponse = caseWorkerContactParties.submitted(updatedCaseDetails, beforeDetails);
         assertThat(contactPartiesResponse).isNotNull();
         assertThat(contactPartiesResponse.getConfirmationHeader()).doesNotContain("Subject");
         assertThat(contactPartiesResponse.getConfirmationHeader()).doesNotContain("Representative");
@@ -207,7 +165,6 @@ class CaseworkerContactPartiesTest {
 
     @Test
     void shouldDisplayTheCorrectMessageWithCommaSeparation() {
-        //Given
         final CaseData caseData = caseData();
         final CicCase cicCase = CicCase.builder()
             .fullName(TEST_FIRST_NAME)
@@ -228,7 +185,7 @@ class CaseworkerContactPartiesTest {
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
 
         SubmittedCallbackResponse response =
-            caseWorkerContactParties.partiesContacted(updatedCaseDetails, beforeDetails);
+            caseWorkerContactParties.submitted(updatedCaseDetails, beforeDetails);
 
         assertThat(caseData.getCicCase().getNotifyPartySubject()).hasSize(1);
         assertThat(caseData.getCicCase().getNotifyPartyRepresentative()).hasSize(1);
@@ -236,7 +193,7 @@ class CaseworkerContactPartiesTest {
         assertThat(caseData.getCicCase().getNotifyPartyApplicant()).hasSize(1);
         assertThat(response).isNotNull();
 
-        SubmittedCallbackResponse contactPartiesResponse = caseWorkerContactParties.partiesContacted(updatedCaseDetails, beforeDetails);
+        SubmittedCallbackResponse contactPartiesResponse = caseWorkerContactParties.submitted(updatedCaseDetails, beforeDetails);
 
         assertThat(contactPartiesResponse).isNotNull();
         assertThat(contactPartiesResponse.getConfirmationHeader()).contains("Subject");
@@ -247,7 +204,6 @@ class CaseworkerContactPartiesTest {
 
     @Test
     void shouldDisplayTheCorrectMessageWithCommaSeparationIfSubjectIsNull() {
-        //Given
         final CaseData caseData = caseData();
         final CicCase cicCase = CicCase.builder()
             .fullName(TEST_FIRST_NAME)
@@ -271,13 +227,13 @@ class CaseworkerContactPartiesTest {
         Mockito.doNothing().when(contactPartiesNotification).sendToRespondent(caseData, caseData.getHyphenatedCaseRef());
 
         SubmittedCallbackResponse response =
-            caseWorkerContactParties.partiesContacted(updatedCaseDetails, beforeDetails);
+            caseWorkerContactParties.submitted(updatedCaseDetails, beforeDetails);
         assertThat(caseData.getCicCase().getNotifyPartyRepresentative()).hasSize(1);
         assertThat(caseData.getCicCase().getNotifyPartyRespondent()).hasSize(1);
         assertThat(caseData.getCicCase().getNotifyPartyApplicant()).hasSize(1);
         assertThat(response).isNotNull();
 
-        SubmittedCallbackResponse contactPartiesResponse = caseWorkerContactParties.partiesContacted(updatedCaseDetails, beforeDetails);
+        SubmittedCallbackResponse contactPartiesResponse = caseWorkerContactParties.submitted(updatedCaseDetails, beforeDetails);
 
         assertThat(contactPartiesResponse).isNotNull();
         assertThat(contactPartiesResponse.getConfirmationHeader()).doesNotContain("Subject");
@@ -289,7 +245,6 @@ class CaseworkerContactPartiesTest {
 
     @Test
     void shouldDisplayTheCorrectFailureMessageIfExceptionThrownByNotification() {
-        //Given
         final CaseData caseData = caseData();
         final CicCase cicCase = CicCase.builder()
             .notifyPartyRepresentative(Set.of(RepresentativeCIC.REPRESENTATIVE))
@@ -304,8 +259,9 @@ class CaseworkerContactPartiesTest {
 
         doThrow(NotificationException.class)
             .when(contactPartiesNotification).sendToRepresentative(caseData, caseData.getHyphenatedCaseRef());
+
         SubmittedCallbackResponse response =
-            caseWorkerContactParties.partiesContacted(updatedCaseDetails, beforeDetails);
+            caseWorkerContactParties.submitted(updatedCaseDetails, beforeDetails);
 
         assertThat(response.getConfirmationHeader()).contains("Contact Parties notification failed");
         assertThat(response.getConfirmationHeader()).contains("Please resend the notification");
@@ -341,7 +297,6 @@ class CaseworkerContactPartiesTest {
 
     @Test
     void shouldSendErrorOnTooManyDocuments() {
-        //Given
         final CaseData caseData = caseData();
         final CicCase cicCase = CicCase.builder()
             .fullName(TEST_FIRST_NAME)
@@ -368,18 +323,14 @@ class CaseworkerContactPartiesTest {
 
         final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
 
-        //When
         AboutToStartOrSubmitResponse<CaseData, State> response =
             contactPartiesSelectDocument.midEvent(updatedCaseDetails, beforeDetails);
 
-
-        //Then
         assertThat(response.getErrors()).hasSize(1);
     }
 
     @Test
     void shouldRunAboutToStart() {
-        //Given
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
 
         List<ListValue<CaseworkerCICDocument>> listValueList = new ArrayList<>();
@@ -398,14 +349,11 @@ class CaseworkerContactPartiesTest {
             .build();
         updatedCaseDetails.setData(caseData);
 
-        //When
         AboutToStartOrSubmitResponse<CaseData, State> response = caseWorkerContactParties.aboutToStart(updatedCaseDetails);
 
-        //Then
         assertThat(response).isNotNull();
         assertThat(response.getData().getContactPartiesDocuments().getDocumentList().getListItems()).hasSize(1);
         assertThat(response.getData().getCicCase().getNotifyPartyMessage()).isEqualTo("");
     }
-
 }
 

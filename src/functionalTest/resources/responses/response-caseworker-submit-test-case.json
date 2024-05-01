@@ -1,0 +1,285 @@
+{
+  "data": {
+    "caseNameHmctsInternal": "Subject kaikaqsrf",
+    "subjectFlags": {
+      "partyName": "Subject kaikaqsrf",
+      "roleOnCase": "subject"
+    },
+    "representativeFlags": {
+      "partyName": "Representative juiutsqbg",
+      "roleOnCase": "Representative"
+    },
+    "securityClass": "PUBLIC",
+    "cicCaseHearingList": {
+      "value": {
+        "code": "34064639-3e4d-4cea-9395-4dddddf75060",
+        "label": "1 - Case management - 21 Jan 2024 10:10"
+      },
+      "list_items": [
+        {
+          "code": "34064639-3e4d-4cea-9395-4dddddf75060",
+          "label": "1 - Case management - 21 Jan 2024 10:10"
+        }
+      ],
+      "valueCode": "34064639-3e4d-4cea-9395-4dddddf75060",
+      "valueLabel": "1 - Case management - 21 Jan 2024 10:10"
+    },
+    "cicCaseHearingNotificationParties": [
+      "Respondent",
+      "Subject",
+      "Representative"
+    ],
+    "cicCaseCaseCategory": "Assessment",
+    "cicCaseCaseSubcategory": "MedicalReOpening",
+    "cicCaseCaseReceivedDate": "2023-12-21",
+    "cicCasePartiesCIC": [
+      "SubjectCIC",
+      "RepresentativeCIC"
+    ],
+    "cicCaseSubjectCIC": [
+      "SubjectCIC"
+    ],
+    "cicCaseRepresentativeCIC": [
+      "RepresentativeCIC"
+    ],
+    "cicCaseNotifyPartySubject": [
+      "SubjectCIC"
+    ],
+    "cicCaseNotifyPartyRepresentative": [
+      "RepresentativeCIC"
+    ],
+    "cicCaseNotifyPartyRespondent": [
+      "RespondentCIC"
+    ],
+    "cicCaseRespondentName": "Appeals team",
+    "cicCaseRespondentOrganisation": "CICA",
+    "cicCaseRespondentEmail": "appeals.team@cica.gov.uk",
+    "cicCaseFullName": "Subject kaikaqsrf",
+    "cicCaseAddress": {
+      "AddressLine1": "1 Subject Rse Way",
+      "AddressLine2": "Test Address Line 2",
+      "AddressLine3": "Test Address Line 3",
+      "PostTown": "London",
+      "County": "London",
+      "PostCode": "SW11 1PD",
+      "Country": "UK"
+    },
+    "cicCasePhoneNumber": "07465730467",
+    "cicCaseEmail": "mhiuixlpc@sub.com",
+    "cicCaseDateOfBirth": "1990-01-01",
+    "cicCaseContactPreferenceType": "Email",
+    "cicCaseSchemeCic": "Year2001",
+    "cicCaseRegionCIC": "London",
+    "cicCaseCicaReferenceNumber": "CICATestReference",
+    "cicCaseRepresentativeFullName": "Representative juiutsqbg",
+    "cicCaseRepresentativeOrgName": "mchbnwimfi Limited",
+    "cicCaseRepresentativeReference": "inthiruvir",
+    "cicCaseRepresentativePhoneNumber": "07456831774",
+    "cicCaseRepresentativeEmailAddress": "laggbmcju@representative.com",
+    "cicCaseRepresentativeContactDetailsPreference": "Email",
+    "cicCaseIsRepresentativeQualified": "Yes",
+    "cicCaseFormReceivedInTime": "No",
+    "cicCaseMissedTheDeadLineCic": "Yes",
+    "cicCaseClaimLinkedToCic": "Yes",
+    "cicCaseCompensationClaimLinkCIC": "Yes",
+    "cicCaseIsRepresentativePresent": "Yes",
+    "cicCaseApplicantDocumentsUploaded": [
+      {
+        "id": "e8479029-f964-4210-9bfb-5e5a212a5954",
+        "value": {
+          "documentCategory": "ApplicationForm",
+          "documentEmailContent": "This is a test document uploaded during create case journey",
+          "documentLink": {
+            "document_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/ee195897-14ca-4ff2-aafc-bbc891597469",
+            "document_filename": "sample_file.pdf",
+            "document_binary_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/ee195897-14ca-4ff2-aafc-bbc891597469/binary",
+            "category_id": "A"
+          }
+        }
+      }
+    ],
+    "cicCaseFirstDueDate": "",
+    "stayIsCaseStayed": "No",
+    "hearingCreatedDate": "2024-02-05",
+    "hearingStatus": "Listed",
+    "hearingType": "Interlocutory",
+    "hearingFormat": "Video",
+    "hearingVenues": {
+      "value": {
+        "code": "1bd7f723-a4ff-4e46-b8ce-965acc80d04c",
+        "label": "East London Tribunal Hearing Centre-2 Clove Crescent, East India Dock London"
+      },
+      "list_items": [
+        {
+          "code": "1bd7f723-a4ff-4e46-b8ce-965acc80d04c",
+          "label": "East London Tribunal Hearing Centre-2 Clove Crescent, East India Dock London"
+        },
+        {
+          "code": "7e3e5d7e-4cda-419a-8e59-206ba4024c52",
+          "label": "Fox Court - London (Central) SSCS Tribunal-4th Floor, Fox Court, 30 Brooke Street, London"
+        }
+      ],
+      "valueCode": "1bd7f723-a4ff-4e46-b8ce-965acc80d04c",
+      "valueLabel": "East London Tribunal Hearing Centre-2 Clove Crescent, East India Dock London"
+    },
+    "regionList": {
+      "value": {
+        "code": "60441279-18cc-4310-8a9f-04d18c37f775",
+        "label": "1-London"
+      },
+      "list_items": [
+        {
+          "code": "60441279-18cc-4310-8a9f-04d18c37f775",
+          "label": "1-London"
+        },
+        {
+          "code": "3efe333f-a137-4cc6-800f-96cc4a58726e",
+          "label": "10-Northern Ireland"
+        },
+        {
+          "code": "e0f37105-99bc-49a5-ba21-2eeb275e1aa6",
+          "label": "11-Scotland"
+        },
+        {
+          "code": "bb68236a-b9a0-460d-b448-ba024d6e4aae",
+          "label": "12-National"
+        },
+        {
+          "code": "a7d2b88a-4f3e-4f6b-bfc8-5858dfa3c4e5",
+          "label": "2-Midlands"
+        },
+        {
+          "code": "e33bb14a-ec27-48ae-b377-252cb238fe85",
+          "label": "3-North East"
+        },
+        {
+          "code": "a1d7d962-92bb-4fb8-bfc2-11135555f446",
+          "label": "4-North West"
+        },
+        {
+          "code": "7dc7ac8c-2b42-4dad-af04-dcf1d08dc5d1",
+          "label": "5-South East"
+        },
+        {
+          "code": "82598053-187c-4994-b558-51ac54015efa",
+          "label": "6-South West"
+        },
+        {
+          "code": "5fe7ca1d-5002-489d-8170-df65071d4b5a",
+          "label": "7-Wales"
+        }
+      ],
+      "valueCode": "60441279-18cc-4310-8a9f-04d18c37f775",
+      "valueLabel": "1-London"
+    },
+    "hearingVenueNameAndAddress": "East London Tribunal Hearing Centre-2 Clove Crescent, East India Dock London",
+    "readOnlyHearingVenueName": "East London Tribunal Hearing Centre",
+    "roomAtVenue": "The Court Room 2",
+    "addlInstr": "Updated Lorem Ipsum is simply dummy text of the printing and typesetting industry",
+    "date": "2025-02-05",
+    "hearingTime": "10:10",
+    "session": "morning",
+    "numberOfDays": "No",
+    "videoCallLink": "http://localhost:3001",
+    "conferenceCallNumber": "01762534634",
+    "importantInfoDetails": "Updated Lorem Ipsum is simply dummy text of the printing and typesetting industry",
+    "recordListingChangeReason": "Listing record is being changed for testing purpose",
+    "hearingList": [
+      {
+        "id": "1",
+        "value": {
+          "hearingCreatedDate": "2024-02-05",
+          "hearingStatus": "Listed",
+          "hearingType": "Interlocutory",
+          "hearingFormat": "Video",
+          "hearingVenues": {
+            "value": {
+              "code": "1bd7f723-a4ff-4e46-b8ce-965acc80d04c",
+              "label": "East London Tribunal Hearing Centre-2 Clove Crescent, East India Dock London"
+            },
+            "list_items": [
+              {
+                "code": "1bd7f723-a4ff-4e46-b8ce-965acc80d04c",
+                "label": "East London Tribunal Hearing Centre-2 Clove Crescent,East India Dock London"
+              },
+              {
+                "code": "7e3e5d7e-4cda-419a-8e59-206ba4024c52",
+                "label": "Fox Court - London (Central) SSCS Tribunal-4th Floor, Fox Court, 30 Brooke Street, London"
+              }
+            ],
+            "valueCode": "1bd7f723-a4ff-4e46-b8ce-965acc80d04c",
+            "valueLabel": "East London Tribunal Hearing Centre-2 Clove Crescent, East India Dock London"
+          },
+          "regionList": {
+            "value": {
+              "code": "60441279-18cc-4310-8a9f-04d18c37f775",
+              "label": "1-London"
+            },
+            "list_items": [
+              {
+                "code": "60441279-18cc-4310-8a9f-04d18c37f775",
+                "label": "1-London"
+              },
+              {
+                "code": "3efe333f-a137-4cc6-800f-96cc4a58726e",
+                "label": "10-Northern Ireland"
+              },
+              {
+                "code": "e0f37105-99bc-49a5-ba21-2eeb275e1aa6",
+                "label": "11-Scotland"
+              },
+              {
+                "code": "bb68236a-b9a0-460d-b448-ba024d6e4aae",
+                "label": "12-National"
+              },
+              {
+                "code": "a7d2b88a-4f3e-4f6b-bfc8-5858dfa3c4e5",
+                "label": "2-Midlands"
+              },
+              {
+                "code": "e33bb14a-ec27-48ae-b377-252cb238fe85",
+                "label": "3-North East"
+              },
+              {
+                "code": "a1d7d962-92bb-4fb8-bfc2-11135555f446",
+                "label": "4-North West"
+              },
+              {
+                "code": "7dc7ac8c-2b42-4dad-af04-dcf1d08dc5d1",
+                "label": "5-South East"
+              },
+              {
+                "code": "82598053-187c-4994-b558-51ac54015efa",
+                "label": "6-South West"
+              },
+              {
+                "code": "5fe7ca1d-5002-489d-8170-df65071d4b5a",
+                "label": "7-Wales"
+              }
+            ],
+            "valueCode": "60441279-18cc-4310-8a9f-04d18c37f775",
+            "valueLabel": "1-London"
+          },
+          "hearingVenueNameAndAddress": "East London Tribunal Hearing Centre-2 Clove Crescent, East India Dock London",
+          "readOnlyHearingVenueName": "East London Tribunal Hearing Centre",
+          "roomAtVenue": "The Court Room 2",
+          "addlInstr": "Updated Lorem Ipsum is simply dummy text of the printing and typesetting industry",
+          "date": "2025-02-05",
+          "hearingTime": "10:10",
+          "session": "morning",
+          "numberOfDays": "No",
+          "videoCallLink": "http://localhost:3001",
+          "conferenceCallNumber": "01762534634",
+          "importantInfoDetails": "Updated Lorem Ipsum is simply dummy text of the printing and typesetting industry",
+          "recordListingChangeReason": "Listing record is being changed for testing purpose"
+        }
+      }
+    ],
+    "hyphenatedCaseRef": "1234-5678-9012-3456",
+    "closedDayCount": "",
+    "currentEvent": "",
+    "firstHearingDate": "05 Feb 2025",
+    "hearingVenueName": "East London Tribunal Hearing Centre-2 Clove Crescent, East India Dock London",
+    "dataVersion": 0
+  }
+}

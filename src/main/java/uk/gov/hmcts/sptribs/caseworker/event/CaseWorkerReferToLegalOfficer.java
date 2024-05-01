@@ -9,6 +9,7 @@ import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.event.page.ReferToLegalOfficerAdditionalInfo;
 import uk.gov.hmcts.sptribs.caseworker.event.page.ReferToLegalOfficerReason;
+import uk.gov.hmcts.sptribs.caseworker.model.ReferToLegalOfficer;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
@@ -47,8 +48,9 @@ public class CaseWorkerReferToLegalOfficer implements CCDConfig<CaseData, State,
             .name("Refer case to legal officer")
             .showSummary()
             .showEventNotes()
+            .aboutToStartCallback(this::aboutToStart)
             .aboutToSubmitCallback(this::aboutToSubmit)
-            .submittedCallback(this::referred)
+            .submittedCallback(this::submitted)
             .grant(CREATE_READ_UPDATE, SUPER_USER,
                 ST_CIC_HEARING_CENTRE_ADMIN, ST_CIC_HEARING_CENTRE_TEAM_LEADER,
                 ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER, ST_CIC_JUDGE, ST_CIC_SENIOR_JUDGE)
@@ -65,6 +67,15 @@ public class CaseWorkerReferToLegalOfficer implements CCDConfig<CaseData, State,
         referToLegalOfficerAdditionalInfo.addTo(pageBuilder);
     }
 
+    public AboutToStartOrSubmitResponse<CaseData, State> aboutToStart(CaseDetails<CaseData, State> details) {
+        CaseData caseData = details.getData();
+        caseData.setReferToLegalOfficer(new ReferToLegalOfficer());
+
+        return AboutToStartOrSubmitResponse.<CaseData, State>builder()
+            .data(caseData)
+            .build();
+    }
+
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(CaseDetails<CaseData, State> details,
                                                                        CaseDetails<CaseData, State> beforeDetails) {
         log.info("Caseworker refer case to legal officer for Case Id: {}", details.getId());
@@ -77,7 +88,7 @@ public class CaseWorkerReferToLegalOfficer implements CCDConfig<CaseData, State,
             .build();
     }
 
-    public SubmittedCallbackResponse referred(CaseDetails<CaseData, State> details,
+    public SubmittedCallbackResponse submitted(CaseDetails<CaseData, State> details,
                                               CaseDetails<CaseData, State> beforeDetails) {
         return SubmittedCallbackResponse.builder()
             .confirmationHeader("# Referral completed")
