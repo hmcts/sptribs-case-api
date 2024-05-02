@@ -1,0 +1,23 @@
+{
+  "hyphenatedCaseRef": "1234-5678-9012-3456",
+  "cicCaseFullName": "Test Tester",
+  "cicCaseHearingNotificationParties": [
+    "Subject"
+  ],
+  "cicCaseContactPreferenceType": "Email",
+  "cicCaseEmail": "test@email.com",
+  "cicCaseApplicantDocumentsUploaded": [
+    {
+      "id": "150dc5ce-cc10-4edf-9a0b-7dbc456f7ced",
+      "value": {
+        "documentCategory": "ApplicationForm",
+        "documentEmailContent": "Lorem ipsum",
+        "documentLink": {
+          "document_url": null,
+          "document_binary_url": null,
+          "document_filename": "pdf.pdf"
+        }
+      }
+    }
+  ]
+}
