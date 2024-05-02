@@ -19,7 +19,6 @@ public class CaseworkerCaseFlagFT extends FunctionalTestSuite {
 
     private static final String CONFIRMATION_HEADER = "$.confirmation_header";
 
-
     @Test
     public void shouldTriggerSuccessfulResponseIfSubmitCallbackIsInvoked() throws Exception {
         final Map<String, Object> caseData = caseData(REQUEST);
