@@ -42,7 +42,7 @@ public class ReinstateCaseFT extends FunctionalTestSuite {
     private static final String CONFIRMATION_HEADER = "$.confirmation_header";
 
     @Test
-    public void shouldValidateCloseCaseDocumentsInMidEventCallback() throws Exception {
+    public void shouldValidateReinstateCaseDocumentsInMidEventCallback() throws Exception {
         final Map<String, Object> caseData = caseData(MID_EVENT_REQUEST);
 
         final Response response = triggerCallback(
