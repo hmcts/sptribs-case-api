@@ -51,8 +51,6 @@ public class ReinstateCaseFT extends FunctionalTestSuite {
             REINSTATE_CASE_UPLOAD_DOCUMENTS_MID_EVENT_URL
         );
 
-        System.out.println(response.asString());
-
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
         assertThatJson(response.asString())
             .when(IGNORING_EXTRA_FIELDS)
@@ -69,8 +67,6 @@ public class ReinstateCaseFT extends FunctionalTestSuite {
             REINSTATE_CASE_UPLOAD_DOCUMENTS_MID_EVENT_URL
         );
 
-        System.out.println(response.asString());
-
         assertThatJson(response.asString())
             .inPath("$.errors")
             .isArray()
@@ -82,7 +78,6 @@ public class ReinstateCaseFT extends FunctionalTestSuite {
         final Map<String, Object> caseData = caseData(ABOUT_TO_SUBMIT_REQUEST);
 
         final Response response = triggerCallback(caseData, CASEWORKER_REINSTATE_CASE, ABOUT_TO_SUBMIT_URL);
-        System.out.println(response.asString());
 
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
         assertThatJson(response.asString())
@@ -95,7 +90,6 @@ public class ReinstateCaseFT extends FunctionalTestSuite {
         final Map<String, Object> caseData = caseData(SUBMITTED_REQUEST);
 
         final Response response = triggerCallback(caseData, CASEWORKER_REINSTATE_CASE, SUBMITTED_URL);
-        System.out.println(response.asString());
 
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
         assertThatJson(response.asString())
@@ -113,7 +107,6 @@ public class ReinstateCaseFT extends FunctionalTestSuite {
         final Map<String, Object> caseData = caseData(SUBMITTED_REQUEST_WITHOUT_EMAIL);
 
         final Response response = triggerCallback(caseData, CASEWORKER_REINSTATE_CASE, SUBMITTED_URL);
-        System.out.println(response.asString());
 
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
         assertThatJson(response.asString())
