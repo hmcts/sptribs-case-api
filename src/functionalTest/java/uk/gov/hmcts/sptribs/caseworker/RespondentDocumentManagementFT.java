@@ -28,7 +28,7 @@ public class RespondentDocumentManagementFT extends FunctionalTestSuite {
     private static final String MID_EVENT_REQUEST =
         "classpath:request/casedata/ccd-callback-casedata-caseworker-document-management-mid-event.json";
     private static final String MID_EVENT_RESPONSE =
-        "classpath:responses/response-caseworker-caseworker-document-management-mid-event.json";
+        "classpath:responses/response-caseworker-document-management-mid-event.json";
 
     private static final String ABOUT_TO_SUBMIT_REQUEST =
         "classpath:request/casedata/ccd-callback-casedata-caseworker-document-management-about-to-submit.json";
