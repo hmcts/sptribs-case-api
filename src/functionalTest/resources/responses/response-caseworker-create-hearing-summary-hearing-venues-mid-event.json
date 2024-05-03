@@ -1,0 +1,25 @@
+{
+  "data": {
+    "cicCaseRespondentName": "Appeals team",
+    "cicCaseRespondentOrganisation": "CICA",
+    "cicCaseRespondentEmail": "appeals.team@cica.gov.uk",
+    "stayIsCaseStayed": "No",
+    "hearingVenues": {
+      "value": {
+        "code": "fc65ee31-7e4b-47e3-ab40-1fead37bac5a",
+        "label": "courtname-courtAddress"
+      },
+      "list_items": [
+        {
+          "code": "fc65ee31-7e4b-47e3-ab40-1fead37bac5a",
+          "label": "courtname-courtAddress"
+        }
+      ],
+      "valueCode": "fc65ee31-7e4b-47e3-ab40-1fead37bac5a",
+      "valueLabel": "courtname-courtAddress"
+    },
+    "venueNotListedOption": [],
+    "hearingVenueNameAndAddress": "courtname-courtAddress"
+  },
+  "errors": []
+}
