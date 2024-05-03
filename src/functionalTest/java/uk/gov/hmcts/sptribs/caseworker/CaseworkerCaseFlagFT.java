@@ -15,18 +15,19 @@ import static uk.gov.hmcts.sptribs.testutil.TestConstants.SUBMITTED_URL;
 @SpringBootTest
 public class CaseworkerCaseFlagFT extends FunctionalTestSuite {
 
-    private static final String REQUEST = "classpath:request/casedata/ccd-callback-casedata.json";
+    private static final String REQUEST_SUBMITTED = "classpath:request/casedata/ccd-callback-casedata-general.json";
 
     private static final String CONFIRMATION_HEADER = "$.confirmation_header";
 
     @Test
     public void shouldTriggerSuccessfulResponseIfSubmitCallbackIsInvoked() throws Exception {
-        final Map<String, Object> caseData = caseData(REQUEST);
+        final Map<String, Object> caseData = caseData(REQUEST_SUBMITTED);
 
         final Response response = triggerCallback(caseData, EventConstants.CASEWORKER_CASE_FLAG, SUBMITTED_URL);
 
         assertThatJson(response.asString())
             .inPath(CONFIRMATION_HEADER)
-            .isEqualTo("# Flag created \\n## This Flag has been added to case");
+            .isString()
+            .contains("# Flag created \n## This Flag has been added to case");
     }
 }

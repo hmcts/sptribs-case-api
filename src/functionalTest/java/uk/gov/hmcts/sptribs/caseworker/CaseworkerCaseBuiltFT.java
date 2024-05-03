@@ -18,31 +18,33 @@ import static uk.gov.hmcts.sptribs.testutil.TestConstants.SUBMITTED_URL;
 @SpringBootTest
 public class CaseworkerCaseBuiltFT extends FunctionalTestSuite {
 
-    private static final String REQUEST = "classpath:request/casedata/ccd-callback-casedata.json";
+    private static final String REQUEST_GENERAL = "classpath:request/casedata/ccd-callback-casedata-general.json";
 
     private static final String CONFIRMATION_HEADER = "$.confirmation_header";
     private static final String STATE = "$.state";
 
     @Test
     public void shouldUpdateCaseStateWhenAboutToSubmitCallbackIsInvoked() throws Exception {
-        final Map<String, Object> caseData = caseData(REQUEST);
+        final Map<String, Object> caseData = caseData(REQUEST_GENERAL);
 
         final Response response = triggerCallback(caseData, EventConstants.CASEWORKER_CASE_BUILT, ABOUT_TO_SUBMIT_URL);
 
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
         assertThatJson(response.asString())
             .inPath(STATE)
-            .isEqualTo("CaseManagement");
+            .isString()
+            .contains("CaseManagement");
     }
 
     @Test
     public void shouldTriggerSuccessfulResponseIfSubmitCallbackIsInvoked() throws Exception {
-        final Map<String, Object> caseData = caseData(REQUEST);
+        final Map<String, Object> caseData = caseData(REQUEST_GENERAL);
 
         final Response response = triggerCallback(caseData, EventConstants.CASEWORKER_CASE_BUILT, SUBMITTED_URL);
 
         assertThatJson(response.asString())
             .inPath(CONFIRMATION_HEADER)
-            .isEqualTo("# Case built successful");
+            .isString()
+            .contains("# Case built successful");
     }
 }

@@ -40,7 +40,7 @@ public class CaseWorkerCreateDraftOrderFT extends FunctionalTestSuite {
         "classpath:responses/response-caseworker-create-draft-order-about-to-submit.json";
 
     private static final String SUBMITTED_REQUEST =
-        "classpath:request/casedata/ccd-callback-casedata.json";
+        "classpath:request/casedata/ccd-callback-casedata-general.json";
 
     private static final String CONFIRMATION_HEADER = "$.confirmation_header";
 

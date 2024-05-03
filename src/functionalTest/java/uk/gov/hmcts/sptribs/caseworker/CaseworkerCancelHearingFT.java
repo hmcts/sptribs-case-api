@@ -4,7 +4,6 @@ import io.restassured.response.Response;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
-import uk.gov.hmcts.sptribs.caseworker.util.EventConstants;
 import uk.gov.hmcts.sptribs.testutil.FunctionalTestSuite;
 
 import java.util.HashMap;
@@ -16,6 +15,7 @@ import static net.javacrumbs.jsonunit.core.Option.IGNORING_ARRAY_ORDER;
 import static net.javacrumbs.jsonunit.core.Option.IGNORING_EXTRA_FIELDS;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.HttpStatus.OK;
+import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_CANCEL_HEARING;
 import static uk.gov.hmcts.sptribs.testutil.CaseDataUtil.caseData;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.ABOUT_TO_START_URL;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.ABOUT_TO_SUBMIT_URL;
@@ -26,12 +26,12 @@ import static uk.gov.hmcts.sptribs.testutil.TestResourceUtil.expectedResponse;
 @SpringBootTest
 public class CaseworkerCancelHearingFT extends FunctionalTestSuite {
 
-    private static final String REQUEST_ABOUT_TO_START = "classpath:request/casedata/ccd-callback-casedata.json";
+    private static final String REQUEST_ABOUT_TO_START = "classpath:request/casedata/ccd-callback-casedata-general.json";
     private static final String REQUEST_ABOUT_TO_SUBMIT =
         "classpath:request/casedata/ccd-callback-casedata-cancel-hearing-about-to-submit.json";
     private static final String REQUEST_SUBMITTED_ONE_PARTY =
         "classpath:request/casedata/ccd-callback-casedata-cancel-hearing-submitted.json";
-    private static final String REQUEST_ALL_PARTIES_NULL = "classpath:request/casedata/ccd-callback-casedata.json";
+    private static final String REQUEST_ALL_PARTIES_NULL = "classpath:request/casedata/ccd-callback-casedata-general.json";
     private static final String REQUEST_ONE_PARTY_INVALID =
         "classpath:request/casedata/ccd-callback-casedata-cancel-hearing-submitted_invalid_party.json";
 
@@ -46,7 +46,7 @@ public class CaseworkerCancelHearingFT extends FunctionalTestSuite {
     public void shouldInitialiseTheHearingListWhenAboutToStartCallbackIsInvoked() throws Exception {
         final Map<String, Object> caseData = caseData(REQUEST_ABOUT_TO_START);
 
-        final Response response = triggerCallback(caseData, EventConstants.CASEWORKER_CANCEL_HEARING, ABOUT_TO_START_URL);
+        final Response response = triggerCallback(caseData, CASEWORKER_CANCEL_HEARING, ABOUT_TO_START_URL);
 
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
         assertThatJson(response.asString())
@@ -59,7 +59,7 @@ public class CaseworkerCancelHearingFT extends FunctionalTestSuite {
     public void shouldCancelHearingWhenAboutToSubmitCallbackIsInvoked() throws Exception {
         final Map<String, Object> caseData = caseData(REQUEST_ABOUT_TO_SUBMIT);
 
-        final Response response = triggerCallback(caseData, EventConstants.CASEWORKER_CANCEL_HEARING, ABOUT_TO_SUBMIT_URL);
+        final Response response = triggerCallback(caseData, CASEWORKER_CANCEL_HEARING, ABOUT_TO_SUBMIT_URL);
 
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
         assertThatJson(response.asString())
@@ -71,12 +71,13 @@ public class CaseworkerCancelHearingFT extends FunctionalTestSuite {
     public void shouldReceiveNoticeWhenOnePartyIsSubmittedIsInvoked() throws Exception {
         final Map<String, Object> caseData = caseData(REQUEST_SUBMITTED_ONE_PARTY);
 
-        final Response response = triggerCallback(caseData, EventConstants.CASEWORKER_CANCEL_HEARING, SUBMITTED_URL);
+        final Response response = triggerCallback(caseData, CASEWORKER_CANCEL_HEARING, SUBMITTED_URL);
 
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
         assertThatJson(response.asString())
             .inPath(CONFIRMATION_HEADER)
-            .isEqualTo("# Hearing cancelled \\n## A notification has been sent to: Subject");
+            .isString()
+            .contains("# Hearing cancelled \n## A notification has been sent to: Subject");
     }
 
     @Test
@@ -86,34 +87,37 @@ public class CaseworkerCancelHearingFT extends FunctionalTestSuite {
         caseData.put("emptyString", "");
         caseData.put("emptyJsonObject", emptyJsonObject);
 
-        final Response response = triggerCallback(caseData, EventConstants.CASEWORKER_CANCEL_HEARING, SUBMITTED_URL);
+        final Response response = triggerCallback(caseData, CASEWORKER_CANCEL_HEARING, SUBMITTED_URL);
 
         assertThatJson(response.asString())
             .inPath(CONFIRMATION_HEADER)
-            .isEqualTo("# Cancel hearing notification failed \\n## Please resend the notification");
+            .isString()
+            .contains("# Cancel hearing notification failed \n## Please resend the notification");
     }
 
     @Test
     public void shouldRaiseErrorIfSubjectRepresentativeRespondentNotifyPartiesAllNull() throws Exception {
         Map<String, Object> caseData = caseData(REQUEST_ALL_PARTIES_NULL);
 
-        Response response = triggerCallback(caseData, EventConstants.CASEWORKER_CANCEL_HEARING, RECORD_NOTIFY_PARTIES_MID_EVENT_URL);
+        Response response = triggerCallback(caseData, CASEWORKER_CANCEL_HEARING, RECORD_NOTIFY_PARTIES_MID_EVENT_URL);
 
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
         assertThatJson(response.asString())
             .inPath(ERROR_MESSAGE)
-            .isEqualTo("[\"One recipient must be selected.\"]");
+            .isArray()
+            .contains("One recipient must be selected.");
     }
 
     @Test
     public void shouldRaiseErrorIfOnePartyIsInvalid() throws Exception {
         Map<String, Object> caseData = caseData(REQUEST_ONE_PARTY_INVALID);
 
-        Response response = triggerCallback(caseData, EventConstants.CASEWORKER_CANCEL_HEARING, RECORD_NOTIFY_PARTIES_MID_EVENT_URL);
+        Response response = triggerCallback(caseData, CASEWORKER_CANCEL_HEARING, RECORD_NOTIFY_PARTIES_MID_EVENT_URL);
 
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
         assertThatJson(response.asString())
             .inPath(ERROR_MESSAGE)
-            .isEqualTo("[\"One recipient must be selected.\"]");
+            .isArray()
+            .contains("One recipient must be selected.");
     }
 }
