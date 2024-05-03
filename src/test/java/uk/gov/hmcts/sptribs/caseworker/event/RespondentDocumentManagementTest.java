@@ -71,7 +71,7 @@ class RespondentDocumentManagementTest {
             .isEqualTo("some email content");
         assertThat(response.getData().getAllDocManagement().getCaseworkerCICDocument().get(0).getValue().getDocumentLink().getFilename())
             .isEqualTo("file.pdf");
-        assertThat(response.getData().getAllDocManagement().getCaseworkerCICDocument().get(0).getValue().getDate()).isNotNull();
+        assertThat(response.getData().getAllDocManagement().getCaseworkerCICDocument().get(0).getValue().getDate()).isNull();
     }
 
     @Test

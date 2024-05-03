@@ -84,7 +84,7 @@ public class RespondentDocumentManagement implements CCDConfig<CaseData, State, 
 
         final CaseData caseData = details.getData();
         List<ListValue<CaseworkerCICDocumentUpload>> uploadedDocuments = caseData.getNewDocManagement().getCaseworkerCICDocumentUpload();
-        List<ListValue<CaseworkerCICDocument>> documents = convertToCaseworkerCICDocumentUpload(uploadedDocuments, true);
+        List<ListValue<CaseworkerCICDocument>> documents = convertToCaseworkerCICDocumentUpload(uploadedDocuments, false);
         caseData.getNewDocManagement().setCaseworkerCICDocumentUpload(new ArrayList<>());
         caseData.getNewDocManagement().setCaseworkerCICDocument(documents);
         uploadDocument(caseData);
