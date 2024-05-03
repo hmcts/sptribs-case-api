@@ -61,7 +61,6 @@ public class CaseworkerCreateHearingSummaryFT extends FunctionalTestSuite {
         final Response response = triggerCallback(caseData, CASEWORKER_CREATE_HEARING_SUMMARY, ABOUT_TO_START_URL);
 
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
-        System.out.println(response.asString());
 
         assertThatJson(response.asString())
             .inPath("$.data.judge.list_items")
