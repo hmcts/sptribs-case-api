@@ -25,7 +25,7 @@ public class CaseworkerCloseTheCaseFT extends FunctionalTestSuite {
     public static final String CLOSE_CASE_UPLOAD_DOCUMENTS_MID_EVENT_URL =
         "/callbacks/mid-event?page=closeCaseUploadDocuments";
 
-    private static final String CALLBACK_CASE_DATA = "classpath:request/casedata/ccd-callback-casedata.json";
+    private static final String CALLBACK_CASE_DATA = "classpath:request/casedata/ccd-callback-casedata-general.json";
 
     private static final String MID_EVENT_REQUEST =
         "classpath:request/casedata/ccd-callback-casedata-caseworker-close-case-mid-event.json";
