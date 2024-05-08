@@ -46,8 +46,7 @@ import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_HEARING_CENTRE_
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_CASEWORKER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_JUDGE;
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE;
-import static uk.gov.hmcts.sptribs.document.DocumentUtil.convertToCaseworkerCICDocumentUpload;
-import static uk.gov.hmcts.sptribs.document.DocumentUtil.updateCategoryToCaseworkerDocument;
+import static uk.gov.hmcts.sptribs.document.DocumentUtil.updateUploadedDocumentCategory;
 
 @Slf4j
 @Component
@@ -108,10 +107,9 @@ public class CreateCase implements CCDConfig<CaseData, State, UserRole> {
         final CaseData caseData = submittedDetails.getData();
 
         List<ListValue<CaseworkerCICDocumentUpload>> uploadedDocuments = caseData.getCicCase().getCaseDocumentsUpload();
-        List<ListValue<CaseworkerCICDocument>> documents = convertToCaseworkerCICDocumentUpload(uploadedDocuments, false);
+        List<ListValue<CaseworkerCICDocument>> documents = updateUploadedDocumentCategory(uploadedDocuments, false);
         caseData.getCicCase().setCaseDocumentsUpload(new ArrayList<>());
 
-        updateCategoryToCaseworkerDocument(documents);
         caseData.getCicCase().setApplicantDocumentsUploaded(documents);
         setIsRepresentativePresent(caseData);
         caseData.setSecurityClass(SecurityClass.PUBLIC);

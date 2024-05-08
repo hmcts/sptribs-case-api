@@ -595,6 +595,40 @@ class DocumentUtilTest {
         assertThat(outputList).hasSize(0);
     }
 
+    @Test
+    void shouldUpdateUploadedDocumentCategoryWithDate() {
+        final CaseworkerCICDocumentUpload documentUpload = createCaseworkerCICDocumentUpload(true, PDF_FILE, true, true);
+        final ListValue<CaseworkerCICDocumentUpload> documentUploadListValue = new ListValue<>();
+        documentUploadListValue.setValue(documentUpload);
+        final List<ListValue<CaseworkerCICDocumentUpload>> documentUploadList = new ArrayList<>();
+        documentUploadList.add(documentUploadListValue);
+
+        List<ListValue<CaseworkerCICDocument>> outputList = DocumentUtil.updateUploadedDocumentCategory(documentUploadList, true);
+
+        assertThat(outputList).hasSize(1);
+        assertThat(outputList.get(0).getValue().getDocumentCategory()).isEqualTo(documentUpload.getDocumentCategory());
+        assertThat(outputList.get(0).getValue().getDocumentEmailContent()).isEqualTo(documentUpload.getDocumentEmailContent());
+        assertThat(outputList.get(0).getValue().getDocumentLink()).isEqualTo(documentUpload.getDocumentLink());
+        assertThat(outputList.get(0).getValue().getDate()).isNotNull();
+    }
+
+    @Test
+    void shouldUpdateUploadedDocumentCategoryWithoutDate() {
+        final CaseworkerCICDocumentUpload documentUpload = createCaseworkerCICDocumentUpload(true, PDF_FILE, true, true);
+        final ListValue<CaseworkerCICDocumentUpload> documentUploadListValue = new ListValue<>();
+        documentUploadListValue.setValue(documentUpload);
+        final List<ListValue<CaseworkerCICDocumentUpload>> documentUploadList = new ArrayList<>();
+        documentUploadList.add(documentUploadListValue);
+
+        List<ListValue<CaseworkerCICDocument>> outputList = DocumentUtil.updateUploadedDocumentCategory(documentUploadList, false);
+
+        assertThat(outputList).hasSize(1);
+        assertThat(outputList.get(0).getValue().getDocumentCategory()).isEqualTo(documentUpload.getDocumentCategory());
+        assertThat(outputList.get(0).getValue().getDocumentEmailContent()).isEqualTo(documentUpload.getDocumentEmailContent());
+        assertThat(outputList.get(0).getValue().getDocumentLink()).isEqualTo(documentUpload.getDocumentLink());
+        assertThat(outputList.get(0).getValue().getDate()).isNull();
+    }
+
     private DocumentInfo documentInfo() {
         return new DocumentInfo(
             DOC_URL,

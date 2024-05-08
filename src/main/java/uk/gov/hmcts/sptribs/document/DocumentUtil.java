@@ -32,6 +32,13 @@ public final class DocumentUtil {
         );
     }
 
+    public static List<ListValue<CaseworkerCICDocument>> updateUploadedDocumentCategory(
+        List<ListValue<CaseworkerCICDocumentUpload>> uploadedDocuments, Boolean addDate) {
+        List<ListValue<CaseworkerCICDocument>> documents = convertToCaseworkerCICDocumentUpload(uploadedDocuments, addDate);
+        updateCategoryToCaseworkerDocument(documents);
+        return documents;
+    }
+
     public static void updateCategoryToCaseworkerDocument(List<ListValue<CaseworkerCICDocument>> documentList) {
         if (CollectionUtils.isNotEmpty(documentList)) {
             documentList.forEach(doc -> {
