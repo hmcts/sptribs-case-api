@@ -15,7 +15,6 @@ import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocumentUpload;
 import uk.gov.hmcts.sptribs.document.model.DocumentInfo;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
