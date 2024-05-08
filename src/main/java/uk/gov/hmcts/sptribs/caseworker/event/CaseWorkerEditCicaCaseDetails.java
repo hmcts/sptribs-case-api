@@ -48,7 +48,7 @@ public class CaseWorkerEditCicaCaseDetails implements CCDConfig<CaseData, State,
                 .description("Edit case details")
                 .showSummary()
                 .aboutToSubmitCallback(this::aboutToSubmit)
-                .submittedCallback(this::detailsUpdated)
+                .submittedCallback(this::submitted)
                 .grant(CREATE_READ_UPDATE, SUPER_USER, ST_CIC_RESPONDENT)
                 .grantHistoryOnly(
                     ST_CIC_CASEWORKER,
@@ -56,7 +56,6 @@ public class CaseWorkerEditCicaCaseDetails implements CCDConfig<CaseData, State,
                     ST_CIC_HEARING_CENTRE_ADMIN,
                     ST_CIC_HEARING_CENTRE_TEAM_LEADER,
                     ST_CIC_SENIOR_JUDGE,
-                    SUPER_USER,
                     ST_CIC_JUDGE));
         editCicaCaseDetailsPage.addTo(pageBuilder);
 
@@ -76,7 +75,7 @@ public class CaseWorkerEditCicaCaseDetails implements CCDConfig<CaseData, State,
             .build();
     }
 
-    public SubmittedCallbackResponse detailsUpdated(CaseDetails<CaseData, State> details,
+    public SubmittedCallbackResponse submitted(CaseDetails<CaseData, State> details,
                                                     CaseDetails<CaseData, State> beforeDetails) {
         return SubmittedCallbackResponse.builder()
             .confirmationHeader("# Case details updated. ")
