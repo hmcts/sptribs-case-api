@@ -25,12 +25,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
-import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
-import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocumentUpload;
 import uk.gov.hmcts.sptribs.judicialrefdata.JudicialService;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_CREATE_HEARING_SUMMARY;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventUtil.getPanelMembers;
@@ -45,7 +40,7 @@ import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_CASEWORK
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_JUDGE;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE;
-import static uk.gov.hmcts.sptribs.document.DocumentUtil.updateUploadedDocumentCategory;
+import static uk.gov.hmcts.sptribs.document.DocumentUtil.uploadRecFile;
 
 @Component
 @Slf4j
@@ -126,11 +121,8 @@ public class CaseWorkerCreateHearingSummary implements CCDConfig<CaseData, State
         caseData.getListing().getSummary().setJudgeList(null);
         caseData.setListing(recordListHelper.saveSummary(details.getData()));
         caseData.setCurrentEvent("");
+        uploadRecFile(caseData);
 
-        List<ListValue<CaseworkerCICDocumentUpload>> uploadedDocuments = caseData.getListing().getSummary().getRecFileUpload();
-        List<ListValue<CaseworkerCICDocument>> documents = updateUploadedDocumentCategory(uploadedDocuments, false);
-        caseData.getListing().getSummary().setRecFile(documents);
-        caseData.getListing().getSummary().setRecFileUpload(new ArrayList<>());
         hearingService.updateHearingList(caseData);
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)

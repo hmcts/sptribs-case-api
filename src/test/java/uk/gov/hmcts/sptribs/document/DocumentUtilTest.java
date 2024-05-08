@@ -6,6 +6,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.sptribs.caseworker.model.DocumentManagement;
+import uk.gov.hmcts.sptribs.caseworker.model.HearingSummary;
+import uk.gov.hmcts.sptribs.caseworker.model.Listing;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.document.model.CICDocument;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
@@ -13,6 +15,7 @@ import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocumentUpload;
 import uk.gov.hmcts.sptribs.document.model.DocumentInfo;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -45,6 +48,8 @@ class DocumentUtilTest {
     private static final String JPG_FILE = "file.jpg";
     private static final String PDF_FILE = "file.pdf";
     private static final String DOCX_FILE = "file.docx";
+
+    private static final String MP4_FILE = "file.mp4";
     private static final String INVALID_FILE = "file.xyz";
     private static final String EMAIL_CONTENT = "Test Email Content";
 
@@ -627,6 +632,35 @@ class DocumentUtilTest {
         assertThat(outputList.get(0).getValue().getDocumentEmailContent()).isEqualTo(documentUpload.getDocumentEmailContent());
         assertThat(outputList.get(0).getValue().getDocumentLink()).isEqualTo(documentUpload.getDocumentLink());
         assertThat(outputList.get(0).getValue().getDate()).isNull();
+    }
+
+    @Test
+    void shouldSuccessfullyAddRecFile() {
+        final CaseworkerCICDocumentUpload documentUpload = createCaseworkerCICDocumentUpload(true, MP4_FILE, true, true);
+        final ListValue<CaseworkerCICDocumentUpload> documentUploadListValue = new ListValue<>();
+        documentUploadListValue.setValue(documentUpload);
+        final List<ListValue<CaseworkerCICDocumentUpload>> documentUploadList = new ArrayList<>();
+        documentUploadList.add(documentUploadListValue);
+        final CaseData caseData = caseData();
+        final HearingSummary summary = HearingSummary.builder()
+            .recFileUpload(documentUploadList)
+            .build();
+        final Listing listing = Listing.builder()
+            .summary(summary)
+            .build();
+        caseData.setListing(listing);
+
+        DocumentUtil.uploadRecFile(caseData);
+
+        assertThat(caseData.getListing().getSummary().getRecFileUpload()).hasSize(0);
+        assertThat(caseData.getListing().getSummary().getRecFile()).hasSize(1);
+        assertThat(caseData.getListing().getSummary().getRecFile().get(0).getValue().getDocumentCategory())
+            .isEqualTo(documentUpload.getDocumentCategory());
+        assertThat(caseData.getListing().getSummary().getRecFile().get(0).getValue().getDocumentEmailContent())
+            .isEqualTo(documentUpload.getDocumentEmailContent());
+        assertThat(caseData.getListing().getSummary().getRecFile().get(0).getValue().getDocumentLink())
+            .isEqualTo(documentUpload.getDocumentLink());
+        assertThat(caseData.getListing().getSummary().getRecFile().get(0).getValue().getDate()).isNull();
     }
 
     private DocumentInfo documentInfo() {

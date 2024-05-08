@@ -101,6 +101,13 @@ public final class DocumentUtil {
         data.getNewDocManagement().setCaseworkerCICDocument(new ArrayList<>());
     }
 
+    public static void uploadRecFile(CaseData data) {
+        List<ListValue<CaseworkerCICDocumentUpload>> uploadedDocuments = data.getListing().getSummary().getRecFileUpload();
+        List<ListValue<CaseworkerCICDocument>> documents = updateUploadedDocumentCategory(uploadedDocuments, false);
+        data.getListing().getSummary().setRecFile(documents);
+        data.getListing().getSummary().setRecFileUpload(new ArrayList<>());
+    }
+
     public static List<String> validateUploadedDocuments(List<ListValue<CaseworkerCICDocumentUpload>> uploadedDocuments) {
         List<String> errors = new ArrayList<>();
 

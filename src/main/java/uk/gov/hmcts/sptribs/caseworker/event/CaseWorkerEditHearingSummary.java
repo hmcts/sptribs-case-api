@@ -29,7 +29,6 @@ import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocumentUpload;
 import uk.gov.hmcts.sptribs.judicialrefdata.JudicialService;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_EDIT_HEARING_SUMMARY;
@@ -43,7 +42,7 @@ import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_JUDGE;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE;
 import static uk.gov.hmcts.sptribs.document.DocumentUtil.convertToCaseworkerCICDocument;
-import static uk.gov.hmcts.sptribs.document.DocumentUtil.updateUploadedDocumentCategory;
+import static uk.gov.hmcts.sptribs.document.DocumentUtil.uploadRecFile;
 
 @Component
 @Slf4j
@@ -125,11 +124,7 @@ public class CaseWorkerEditHearingSummary implements CCDConfig<CaseData, State, 
         final CaseData caseData = details.getData();
         caseData.setJudicialId(judicialService.populateJudicialId(caseData));
         caseData.getListing().getSummary().setJudgeList(null);
-
-        final List<ListValue<CaseworkerCICDocumentUpload>> uploadedDocuments = caseData.getListing().getSummary().getRecFileUpload();
-        final List<ListValue<CaseworkerCICDocument>> documents = updateUploadedDocumentCategory(uploadedDocuments, false);
-        caseData.getListing().getSummary().setRecFile(documents);
-        caseData.getListing().getSummary().setRecFileUpload(new ArrayList<>());
+        uploadRecFile(caseData);
 
         recordListHelper.saveSummary(details.getData());
         hearingService.updateHearingSummaryList(caseData);
