@@ -25,7 +25,7 @@ public class CaseworkerDocumentManagementAmendFT extends FunctionalTestSuite {
 
     private static final String REQUEST_ABOUT_TO_START = "classpath:request/casedata/ccd-callback-casedata-general.json";
     private static final String CALLBACK_REQUEST =
-        "classpath:request/casedata/ccd-callback-casedata-caseworker-document-management-amend-about-to-submit.json";
+        "classpath:request/casedata/ccd-callback-casedata-caseworker-document-management-amend-request.json";
 
     private static final String RESPONSE_ABOUT_TO_START =
         "classpath:responses/response-caseworker-document-management-amend-about-to-start.json";
