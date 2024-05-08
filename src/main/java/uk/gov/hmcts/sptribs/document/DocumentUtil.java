@@ -131,7 +131,7 @@ public final class DocumentUtil {
         }
 
         List<ListValue<CaseworkerCICDocument>> documentList = new ArrayList<>();
-        if (uploadedDocuments != null && !uploadedDocuments.isEmpty()) {
+        if (CollectionUtils.isNotEmpty(uploadedDocuments)) {
             uploadedDocuments.forEach(
                 listValue -> {
                     CaseworkerCICDocumentUpload uploadedDocument = listValue.getValue();
@@ -158,7 +158,7 @@ public final class DocumentUtil {
         List<ListValue<CaseworkerCICDocument>> uploadedDocuments
     ) {
         List<ListValue<CaseworkerCICDocumentUpload>> documentList = new ArrayList<>();
-        if (uploadedDocuments != null && !uploadedDocuments.isEmpty()) {
+        if (CollectionUtils.isNotEmpty(uploadedDocuments)) {
             uploadedDocuments.forEach(
                 listValue -> {
                     CaseworkerCICDocument uploadedDocument = listValue.getValue();
