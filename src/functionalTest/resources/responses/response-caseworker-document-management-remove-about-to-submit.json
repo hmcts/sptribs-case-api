@@ -1,0 +1,17 @@
+{
+  "data": {
+    "allCaseworkerCICDocument": [],
+    "newCaseworkerCICDocument": [],
+    "cicCaseOrderDocumentList": [],
+    "cicCaseRespondentName": "Appeals team",
+    "cicCaseRespondentOrganisation": "CICA",
+    "cicCaseRespondentEmail": "appeals.team@cica.gov.uk",
+    "cicCaseApplicantDocumentsUploaded": [],
+    "cicCaseReinstateDocuments": [],
+    "cicCaseDecisionDocumentList": [],
+    "cicCaseRemovedDocumentList": [],
+    "cicCaseFinalDecisionDocumentList": [],
+    "stayIsCaseStayed": "No",
+    "closeDocuments": []
+  }
+}
