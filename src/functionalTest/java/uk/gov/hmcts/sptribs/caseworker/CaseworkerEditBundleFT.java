@@ -20,7 +20,8 @@ import static uk.gov.hmcts.sptribs.testutil.TestResourceUtil.expectedResponse;
 
 @SpringBootTest
 public class CaseworkerEditBundleFT extends FunctionalTestSuite {
-    private static final String REQUEST_ABOUT_TO_SUBMIT = "classpath:request/casedata/ccd-callback-casedata-caseworker-edit-bundle.json";
+    private static final String REQUEST_ABOUT_TO_SUBMIT =
+        "classpath:request/casedata/ccd-callback-casedata-caseworker-edit-bundle-about-to-submit.json";
 
     private static final String RESPONSE_ABOUT_TO_SUBMIT = "classpath:responses/response-caseworker-edit-bundle-about-to-submit.json";
 

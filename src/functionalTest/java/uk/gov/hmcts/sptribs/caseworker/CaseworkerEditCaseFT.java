@@ -22,7 +22,7 @@ import static uk.gov.hmcts.sptribs.testutil.TestResourceUtil.expectedResponse;
 @SpringBootTest
 public class CaseworkerEditCaseFT extends FunctionalTestSuite {
     private static final String CALLBACK_REQUEST =
-        "classpath:request/casedata/ccd-callback-casedata-caseworker-edit-case-callback.json";
+        "classpath:request/casedata/ccd-callback-casedata-caseworker-edit-case-request.json";
 
     private static final String RESPONSE_ABOUT_TO_SUBMIT =
         "classpath:responses/response-caseworker-edit-case-about-to-submit.json";
