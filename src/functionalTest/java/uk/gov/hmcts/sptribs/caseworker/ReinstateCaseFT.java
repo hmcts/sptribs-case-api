@@ -22,7 +22,7 @@ import static uk.gov.hmcts.sptribs.testutil.TestResourceUtil.expectedResponse;
 public class ReinstateCaseFT extends FunctionalTestSuite {
     public static final String REINSTATE_CASE_UPLOAD_DOCUMENTS_MID_EVENT_URL = "/callbacks/mid-event?page=reinstateUploadDocument";
 
-    private static final String CALLBACK_CASE_DATA = "classpath:request/casedata/ccd-callback-casedata.json";
+    private static final String CALLBACK_CASE_DATA = "classpath:request/casedata/ccd-callback-casedata-general.json";
 
     private static final String MID_EVENT_REQUEST =
         "classpath:request/casedata/ccd-callback-casedata-reinstate-case-mid-event.json";
