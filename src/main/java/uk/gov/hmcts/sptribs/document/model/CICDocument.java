@@ -13,6 +13,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerWithCAAAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.DefaultAccess;
 
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.TextArea;
+import static uk.gov.hmcts.sptribs.document.DocumentUtil.isValidDocument;
 
 @Data
 @NoArgsConstructor
@@ -42,10 +43,9 @@ public class CICDocument {
 
     @JsonIgnore
     public boolean isDocumentValid() {
-        String regex = ".pdf,.csv,.txt,.rtf,.xlsx,.docx,.doc,.xls,.tif,.tiff,.jpg,.jpeg,.png,.mp3,.m4a,.mp4";
-        String fileName = this.documentLink.getFilename();
-        String fileExtension = StringUtils.substringAfter(fileName, ".");
-
-        return regex.contains(fileExtension);
+        return isValidDocument(
+            this.documentLink.getFilename(),
+            "pdf,csv,txt,rtf,xlsx,docx,doc,xls,tif,tiff,jpg,jpeg,png,mp3,m4a,mp4"
+        );
     }
 }

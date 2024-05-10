@@ -16,6 +16,7 @@ import java.util.Arrays;
 
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.FixedList;
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.TextArea;
+import static uk.gov.hmcts.sptribs.document.DocumentUtil.isValidDocument;
 
 @Data
 @NoArgsConstructor
@@ -55,12 +56,14 @@ public class CaseworkerCICDocument {
 
     @JsonIgnore
     public boolean isDocumentValid() {
-        return isDocumentValid("pdf,csv,txt,rtf,xlsx,docx,doc,xls,mp3,m4a,mp4");
+        return isValidDocument(this.documentLink.getFilename(), "pdf,csv,txt,rtf,xlsx,docx,doc,xls,mp3,m4a,mp4");
     }
 
     public boolean isDocumentValid(String validExtensions) {
-        String fileName = this.documentLink.getFilename();
-        String fileExtension = StringUtils.substringAfterLast(fileName, ".");
-        return Arrays.asList(validExtensions.split(",")).contains(fileExtension);
+        return isValidDocument(this.documentLink.getFilename(), validExtensions);
+    }
+
+    public boolean isValidBundleDocument() {
+        return isValidDocument(this.documentLink.getFilename(),"pdf,txt,xlsx,docx,doc,xls");
     }
 }

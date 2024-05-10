@@ -23,7 +23,7 @@ class CaseworkerCICDocumentTest {
         "test.m4a",
         "test.mp4"
     })
-    void shouldCheckIsValid(String filename) {
+    void shouldCheckDocumentIsValid(String filename) {
         CaseworkerCICDocument document = CaseworkerCICDocument.builder()
             .documentCategory(DocumentType.LINKED_DOCS)
             .documentLink(Document.builder().filename(filename).build())
@@ -39,12 +39,50 @@ class CaseworkerCICDocumentTest {
         "test.msg",
         "test.uml"
     })
-    void shouldCheckIsValidInvalid(String filename) {
+    void shouldCheckDocumentIsInvalid(String filename) {
         CaseworkerCICDocument document = CaseworkerCICDocument.builder()
             .documentCategory(DocumentType.LINKED_DOCS)
             .documentLink(Document.builder().filename(filename).build())
             .build();
 
         assertFalse(document.isDocumentValid());
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {
+        "test.pdf",
+        "test.txt",
+        "test.xlsx",
+        "test.docx",
+        "test.doc",
+        "test.xls",
+    })
+    void shouldCheckIsValidBundleDocument(String filename) {
+        CaseworkerCICDocument document = CaseworkerCICDocument.builder()
+            .documentCategory(DocumentType.LINKED_DOCS)
+            .documentLink(Document.builder().filename(filename).build())
+            .build();
+
+        assertTrue(document.isValidBundleDocument());
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {
+        "test.xml",
+        "test.eml",
+        "test.msg",
+        "test.uml",
+        "test.csv",
+        "test.mp3",
+        "test.m4a",
+        "test.mp4"
+    })
+    void shouldCheckIsInvalidBundleDocument(String filename) {
+        CaseworkerCICDocument document = CaseworkerCICDocument.builder()
+            .documentCategory(DocumentType.LINKED_DOCS)
+            .documentLink(Document.builder().filename(filename).build())
+            .build();
+
+        assertFalse(document.isValidBundleDocument());
     }
 }
