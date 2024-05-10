@@ -13,7 +13,7 @@ import uk.gov.hmcts.sptribs.document.model.DocumentInfo;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.microsoft.applicationinsights.boot.dependencies.apachecommons.lang3.StringUtils.substringAfterLast;
+import static org.apache.commons.lang3.StringUtils.substringAfterLast;
 import static uk.gov.hmcts.sptribs.document.DocumentConstants.DOCUMENT_VALIDATION_MESSAGE;
 
 public final class DocumentUtil {
