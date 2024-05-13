@@ -1,0 +1,27 @@
+{
+  "cicCaseAmendDocumentList": {
+    "value": {
+      "code": "087adf88-f5fb-495a-8c7b-dfc66fd3efd8",
+      "label": "CASE--mockFile.pdf--A - Application Form"
+    },
+    "list_items": [
+      {
+        "code": "087adf88-f5fb-495a-8c7b-dfc66fd3efd8",
+        "label": "CASE--mockFile.pdf--A - Application Form"
+      }
+    ],
+    "valueCode": "087adf88-f5fb-495a-8c7b-dfc66fd3efd8",
+    "valueLabel": "CASE--mockFile.pdf--A - Application Form"
+  },
+  "cicCaseSelectedDocumentType": "CASE",
+  "cicCaseIsDocumentCreatedFromTemplate": null,
+  "cicCaseSelectedDocument": {
+    "documentCategory": "ApplicationForm",
+    "documentEmailContent": "Lorem ipsum text A - Application Form",
+    "documentLink": {
+      "document_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/467d1fd1-75bd-4760-b993-51be259daebe",
+      "document_binary_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/467d1fd1-75bd-4760-b993-51be259daebe/binary",
+      "document_filename": "mockFile.pdf"
+    }
+  }
+}
