@@ -16,6 +16,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.apache.commons.lang3.StringUtils.substringAfterLast;
 import static uk.gov.hmcts.sptribs.document.DocumentConstants.DOCUMENT_VALIDATION_MESSAGE;
 
 public final class DocumentUtil {
@@ -192,6 +193,11 @@ public final class DocumentUtil {
         }
 
         return documentList;
+    }
+
+    public static boolean isValidDocument(String fileName, String validExtensions) {
+        String fileExtension = substringAfterLast(fileName, ".");
+        return fileExtension != null && validExtensions.contains(fileExtension);
     }
 
 }

@@ -2,6 +2,8 @@ package uk.gov.hmcts.sptribs.document;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
@@ -20,6 +22,8 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static uk.gov.hmcts.sptribs.document.DocumentConstants.DOCUMENT_VALIDATION_MESSAGE;
 import static uk.gov.hmcts.sptribs.document.DocumentUtil.documentFrom;
 import static uk.gov.hmcts.sptribs.document.DocumentUtil.updateCategoryToCaseworkerDocument;
@@ -660,6 +664,41 @@ class DocumentUtilTest {
         assertThat(caseData.getListing().getSummary().getRecFile().get(0).getValue().getDocumentLink())
             .isEqualTo(documentUpload.getDocumentLink());
         assertThat(caseData.getListing().getSummary().getRecFile().get(0).getValue().getDate()).isNull();
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {
+        "test.pdf",
+        "test.txt",
+        "test.rtf",
+        "test.xlsx",
+        "test.docx",
+        "test.doc",
+        "test.xls",
+    })
+    void shouldCheckValidFileTypeInList(String filename) {
+        assertTrue(DocumentUtil.isValidDocument(filename, "pdf,txt,rtf,xlsx,docx,doc,xls"));
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {
+        "test.mp3",
+        "test.mp4",
+        "test.csv",
+        "test.jpeg",
+    })
+    void shouldCheckInvalidFileTypeInList(String filename) {
+        assertFalse(DocumentUtil.isValidDocument(filename, "pdf,txt,rtf,xlsx,docx,doc,xls"));
+    }
+
+    @Test
+    void shouldCheckValidFileWithOnlyOneValidFileType() {
+        assertTrue(DocumentUtil.isValidDocument("test.mp3", "mp3"));
+    }
+
+    @Test
+    void shouldCheckFileWithNullFileName() {
+        assertFalse(DocumentUtil.isValidDocument(null, "mp3"));
     }
 
     private DocumentInfo documentInfo() {
