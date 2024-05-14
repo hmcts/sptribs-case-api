@@ -1,0 +1,17 @@
+{
+  "shortNotice": "Yes",
+  "hearingFormat": "Face to Face",
+  "regionList": {
+    "value": {
+      "code": "36ff4c99-11ad-4371-b556-3ceff49c4fed",
+      "label": "1-London"
+    },
+    "list_items": null
+  },
+  "cicCaseRespondentEmail": "appeals.team@cica.gov.uk",
+  "cicCaseRespondentName": "Appeals team",
+  "roomAtVenue": "G.01",
+  "cicCaseRespondentOrganisation": "CICA",
+  "addlInstr": "Ground floor",
+  "hearingSummaryExists": "YES"
+}
