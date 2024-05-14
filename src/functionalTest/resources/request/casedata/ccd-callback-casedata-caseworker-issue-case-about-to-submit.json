@@ -1,0 +1,32 @@
+{
+  "issueCaseDocumentList": {
+    "value": [
+      {
+        "code": "b021bbb3-ae9c-4f3c-9732-884e31ca9aff",
+        "label": "[pdf.pdf A - Application Form](http://manage-case.aat.platform.hmcts.net/documents/f3335647-6277-40af-ba66-c09365c0776e/binary)"
+      }
+    ],
+    "list_items": [
+      {
+        "code": "b021bbb3-ae9c-4f3c-9732-884e31ca9aff",
+        "label": "[pdf.pdf A - Application Form](http://manage-case.aat.platform.hmcts.net/documents/f3335647-6277-40af-ba66-c09365c0776e/binary)"
+      }
+    ]
+  },
+  "cicCaseFullName": "Testing subject",
+  "cicCaseNotifyPartySubject": [
+    "SubjectCIC"
+  ],
+  "cicCaseRepresentativeFullName": "Testing representative",
+  "cicCaseNotifyPartyRepresentative": [
+    "RepresentativeCIC"
+  ],
+  "cicCaseRespondentName": "Appeals team",
+  "cicCaseNotifyPartyRespondent": [
+    "RespondentCIC"
+  ],
+  "cicCaseApplicantFullName": "Testing applicant",
+  "cicCaseNotifyPartyApplicant": [
+    "ApplicantCIC"
+  ]
+}
