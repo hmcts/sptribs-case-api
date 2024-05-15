@@ -9,6 +9,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.ResponseEntity;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.idam.client.models.User;
+import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.common.config.EmailTemplatesConfigCIC;
 import uk.gov.hmcts.sptribs.document.DocumentClient;
 import uk.gov.hmcts.sptribs.idam.IdamService;
@@ -20,17 +21,15 @@ import uk.gov.service.notify.NotificationClientException;
 import uk.gov.service.notify.SendEmailResponse;
 import uk.gov.service.notify.SendLetterResponse;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
 import static java.util.UUID.randomUUID;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.doThrow;
@@ -78,7 +77,7 @@ public class NotificationServiceCICTest {
 
     @Test
     void shouldInvokeNotificationClientToSendEmail() throws NotificationClientException {
-        //Given
+        final CaseData caseData = new CaseData();
         final String templateId = UUID.randomUUID().toString();
         final Map<String, String> templateNameMap = Map.of(APPLICATION_RECEIVED.name(), templateId);
         final Map<String, Object> templateVars = new HashMap<>();
@@ -116,10 +115,8 @@ public class NotificationServiceCICTest {
             any()
         )).thenReturn(sendEmailResponse);
 
-        //When
-        notificationService.sendEmail(request);
+        notificationService.sendEmailNew(request, "Subject", caseData);
 
-        //Then
         verify(notificationClient).sendEmail(
             eq(templateId),
             eq(EMAIL_ADDRESS),
@@ -129,11 +126,18 @@ public class NotificationServiceCICTest {
         verify(sendEmailResponse, times(2)).getNotificationId();
         verify(sendEmailResponse, times(2)).getReference();
 
+        assertThat(caseData.getCaseNotifications()).hasSize(1);
+        assertThat(caseData.getCaseNotifications().get(0).getSentAt()).isNotNull();
+        assertThat(caseData.getCaseNotifications().get(0).getEmailAddress()).isEqualTo(EMAIL_ADDRESS);
+        assertThat(caseData.getCaseNotifications().get(0).getReference()).isNotNull();
+        assertThat(caseData.getCaseNotifications().get(0).getNotificationType()).isEqualTo("Email");
+        assertThat(caseData.getCaseNotifications().get(0).getStatus()).isEqualTo("Sent");
+
     }
 
     @Test
     void shouldInvokeNotificationClientToSendEmailWithNoDocumentFound() throws NotificationClientException {
-        //Given
+        final CaseData caseData = new CaseData();
         final String templateId = UUID.randomUUID().toString();
         final Map<String, String> templateNameMap = Map.of(APPLICATION_RECEIVED.name(), templateId);
         final Map<String, Object> templateVars = new HashMap<>();
@@ -166,10 +170,8 @@ public class NotificationServiceCICTest {
             any()
         )).thenReturn(sendEmailResponse);
 
-        //When
-        notificationService.sendEmail(request);
+        notificationService.sendEmailNew(request, "Subject", caseData);
 
-        //Then
         verify(notificationClient).sendEmail(
             eq(templateId),
             eq(EMAIL_ADDRESS),
@@ -179,11 +181,18 @@ public class NotificationServiceCICTest {
         verify(sendEmailResponse, times(2)).getNotificationId();
         verify(sendEmailResponse, times(2)).getReference();
 
+        assertThat(caseData.getCaseNotifications()).hasSize(1);
+        assertThat(caseData.getCaseNotifications().get(0).getSentAt()).isNotNull();
+        assertThat(caseData.getCaseNotifications().get(0).getEmailAddress()).isEqualTo(EMAIL_ADDRESS);
+        assertThat(caseData.getCaseNotifications().get(0).getReference()).isNotNull();
+        assertThat(caseData.getCaseNotifications().get(0).getNotificationType()).isEqualTo("Email");
+        assertThat(caseData.getCaseNotifications().get(0).getStatus()).isEqualTo("Sent");
+
     }
 
     @Test
     void shouldInvokeNotificationClientToSendLetter() throws NotificationClientException {
-        //Given
+        final CaseData caseData = new CaseData();
         final String templateId = UUID.randomUUID().toString();
         final Map<String, String> templateVars = Map.of(CASE_ISSUED_CITIZEN_POST.name(), templateId);
         final NotificationRequest request = NotificationRequest.builder()
@@ -201,10 +210,8 @@ public class NotificationServiceCICTest {
             any()
         )).thenReturn(sendLetterResponse);
 
-        //When
-        notificationService.sendLetter(request);
+        notificationService.sendLetterNew(request, "Subject", caseData);
 
-        //Then
         verify(notificationClient).sendLetter(
             eq(templateId),
             any(),
@@ -212,13 +219,18 @@ public class NotificationServiceCICTest {
 
         verify(sendLetterResponse, times(2)).getNotificationId();
         verify(sendLetterResponse, times(2)).getReference();
+
+        assertThat(caseData.getCaseNotifications()).hasSize(1);
+        assertThat(caseData.getCaseNotifications().get(0).getSentAt()).isNotNull();
+        assertThat(caseData.getCaseNotifications().get(0).getEmailAddress()).isNull();
+        assertThat(caseData.getCaseNotifications().get(0).getReference()).isNotNull();
+        assertThat(caseData.getCaseNotifications().get(0).getNotificationType()).isEqualTo("Letter");
+        assertThat(caseData.getCaseNotifications().get(0).getStatus()).isEqualTo("Sent");
     }
 
     @Test
-    void shouldThrowNotificationExceptionWhenClientFailsToSendEmail()
-        throws NotificationClientException {
-
-        //Given
+    void shouldThrowNotificationExceptionWhenClientFailsToSendEmail() throws NotificationClientException {
+        final CaseData caseData = new CaseData();
         final String templateId = UUID.randomUUID().toString();
         final Map<String, String> templateNameMap = Map.of(APPLICATION_RECEIVED.name(), templateId);
         final Map<String, Object> templateVars = new HashMap<>();
@@ -241,8 +253,7 @@ public class NotificationServiceCICTest {
 
         when(emailTemplatesConfig.getTemplatesCIC()).thenReturn(templateNameMap);
 
-        //When&Then
-        assertThatThrownBy(() -> notificationService.sendEmail(request))
+        assertThatThrownBy(() -> notificationService.sendEmailNew(request, "Subject", caseData))
             .isInstanceOf(NotificationException.class)
             .hasMessageContaining("some message");
 
@@ -251,13 +262,18 @@ public class NotificationServiceCICTest {
             eq(EMAIL_ADDRESS),
             any(),
             any());
+
+        assertThat(caseData.getCaseNotifications()).hasSize(1);
+        assertThat(caseData.getCaseNotifications().get(0).getSentAt()).isNotNull();
+        assertThat(caseData.getCaseNotifications().get(0).getEmailAddress()).isEqualTo(EMAIL_ADDRESS);
+        assertThat(caseData.getCaseNotifications().get(0).getReference()).isNotNull();
+        assertThat(caseData.getCaseNotifications().get(0).getNotificationType()).isEqualTo("Email");
+        assertThat(caseData.getCaseNotifications().get(0).getStatus()).isEqualTo("Failed");
     }
 
     @Test
-    void shouldThrowNotificationClientExceptionWhenIssueWithAttachDocFailsToSendEmail()
-        throws NotificationClientException {
-
-        //Given
+    void shouldThrowNotificationClientExceptionWhenIssueWithAttachDocFailsToSendEmail() throws NotificationClientException {
+        final CaseData caseData = new CaseData();
         final String templateId = UUID.randomUUID().toString();
         final Map<String, String> templateNameMap = Map.of(APPLICATION_RECEIVED.name(), templateId);
         final Map<String, Object> templateVars = new HashMap<>();
@@ -271,7 +287,7 @@ public class NotificationServiceCICTest {
             .uploadedDocuments(new HashMap<>())
             .build();
 
-        doThrow(new NotificationException(new IOException()))
+        doThrow(new NotificationClientException("notification client exception message"))
             .when(notificationClient).sendEmail(
                 eq(templateId),
                 eq(EMAIL_ADDRESS),
@@ -280,24 +296,27 @@ public class NotificationServiceCICTest {
 
         when(emailTemplatesConfig.getTemplatesCIC()).thenReturn(templateNameMap);
 
-        //When&Then
-        assertThatThrownBy(() -> notificationService.sendEmail(request))
+        assertThatThrownBy(() -> notificationService.sendEmailNew(request, "Subject", caseData))
             .isInstanceOf(NotificationException.class)
-            .satisfies(e -> assertAll(
-                () -> assertTrue(e.getCause() instanceof IOException)
-            ));
+            .hasMessageContaining("notification client exception message");
 
         verify(notificationClient).sendEmail(
             eq(templateId),
             eq(EMAIL_ADDRESS),
             any(),
             any());
+
+        assertThat(caseData.getCaseNotifications()).hasSize(1);
+        assertThat(caseData.getCaseNotifications().get(0).getSentAt()).isNotNull();
+        assertThat(caseData.getCaseNotifications().get(0).getEmailAddress()).isEqualTo(EMAIL_ADDRESS);
+        assertThat(caseData.getCaseNotifications().get(0).getReference()).isNotNull();
+        assertThat(caseData.getCaseNotifications().get(0).getNotificationType()).isEqualTo("Email");
+        assertThat(caseData.getCaseNotifications().get(0).getStatus()).isEqualTo("Failed");
     }
 
     @Test
     void shouldThrowNotificationExceptionWhileFileUploadToSendEmail() throws NotificationClientException {
-
-        //Given
+        final CaseData caseData = new CaseData();
         final String templateId = UUID.randomUUID().toString();
         final Map<String, Object> templateVars = new HashMap<>();
         templateVars.put(APPLICATION_RECEIVED.name(), templateId);
@@ -328,16 +347,14 @@ public class NotificationServiceCICTest {
         mockStatic(NotificationClient.class);
         when(NotificationClient.prepareUpload(newUploadDocument)).thenThrow(NotificationClientException.class);
 
-        //When&Then
-        assertThatThrownBy(() -> notificationService.sendEmail(request))
+        assertThatThrownBy(() -> notificationService.sendEmailNew(request, "Subject", caseData))
             .isInstanceOf(NotificationException.class)
             .hasMessageContaining("uk.gov.service.notify.NotificationClientException");
     }
 
     @Test
-    void shouldThrowNotificationExceptionWhenClientFailsToSendLetter()
-        throws NotificationClientException {
-        //Given
+    void shouldThrowNotificationExceptionWhenClientFailsToSendLetter() throws NotificationClientException {
+        final CaseData caseData = new CaseData();
         final String templateId = UUID.randomUUID().toString();
         final Map<String, String> templateVars = Map.of(CASE_ISSUED_CITIZEN_POST.name(), templateId);
         final NotificationRequest request = NotificationRequest.builder()
@@ -353,8 +370,7 @@ public class NotificationServiceCICTest {
 
         when(emailTemplatesConfig.getTemplatesCIC()).thenReturn(templateVars);
 
-        //When&Then
-        assertThatThrownBy(() -> notificationService.sendLetter(request))
+        assertThatThrownBy(() -> notificationService.sendLetterNew(request, "Subject", caseData))
             .isInstanceOf(NotificationException.class)
             .hasMessageContaining("some message");
 

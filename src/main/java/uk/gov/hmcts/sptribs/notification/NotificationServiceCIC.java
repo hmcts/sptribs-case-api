@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.idam.client.models.User;
+import uk.gov.hmcts.sptribs.caseworker.model.CaseNotification;
+import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.NotificationResponse;
 import uk.gov.hmcts.sptribs.ciccase.model.NotificationType;
 import uk.gov.hmcts.sptribs.common.config.EmailTemplatesConfigCIC;
@@ -22,6 +24,7 @@ import uk.gov.service.notify.SendLetterResponse;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -65,6 +68,97 @@ public class NotificationServiceCIC {
         this.request = request;
         this.authTokenGenerator = authTokenGenerator;
         this.caseDocumentClient = caseDocumentClient;
+    }
+
+    public NotificationResponse sendEmailNew(NotificationRequest notificationRequest, String party, CaseData caseData) {
+        final SendEmailResponse sendEmailResponse;
+        final String destinationAddress = notificationRequest.getDestinationAddress();
+        final TemplateName template = notificationRequest.getTemplate();
+        final Map<String, Object> templateVars = notificationRequest.getTemplateVars();
+
+        final String referenceId = UUID.randomUUID().toString();
+
+        try {
+            if (notificationRequest.isHasFileAttachments()) {
+                addAttachmentsToTemplateVars(templateVars, notificationRequest.getUploadedDocuments());
+            }
+
+            String templateId = emailTemplatesConfig.getTemplatesCIC().get(template.name());
+
+            log.info("Sending email for reference id : {} using template : {}", referenceId, templateId);
+
+            sendEmailResponse =
+                notificationClient.sendEmail(
+                    templateId,
+                    destinationAddress,
+                    templateVars,
+                    referenceId
+                );
+
+            log.info("Successfully sent email with notification id {} and reference {}",
+                sendEmailResponse.getNotificationId(),
+                sendEmailResponse.getReference().orElse(referenceId)
+            );
+
+            addCaseNotification(referenceId, destinationAddress, "Email", party, "Sent", caseData);
+
+            return getNotificationResponse(sendEmailResponse);
+        } catch (NotificationClientException notificationClientException) {
+            log.error("Failed to send email. Reference ID: {}. Reason: {}",
+                referenceId,
+                notificationClientException.getMessage(),
+                notificationClientException
+            );
+            addCaseNotification(referenceId, destinationAddress, "Email", party, "Failed", caseData);
+            throw new NotificationException(notificationClientException);
+        } catch (IOException ioException) {
+            log.error("Issue with attach documents to Notification. Failed to send email. Reference ID: {}. Reason: {}",
+                referenceId,
+                ioException.getMessage(),
+                ioException
+            );
+            addCaseNotification(referenceId, destinationAddress, "Email", party, "Failed", caseData);
+            throw new NotificationException(ioException);
+        }
+    }
+
+    public NotificationResponse sendLetterNew(NotificationRequest notificationRequest, String party, CaseData caseData) {
+        final TemplateName template = notificationRequest.getTemplate();
+        final Map<String, Object> templateVars = notificationRequest.getTemplateVars();
+
+        final String referenceId = UUID.randomUUID().toString();
+
+        try {
+            final String templateId = emailTemplatesConfig.getTemplatesCIC().get(template.name());
+
+            log.info("Sending letter for reference id : {} using template : {}", referenceId, templateId);
+
+            SendLetterResponse sendLetterResponse =
+                notificationClient.sendLetter(
+                    templateId,
+                    templateVars,
+                    referenceId
+                );
+
+            log.info("Successfully sent letter with notification id {} and reference {}",
+                sendLetterResponse.getNotificationId(),
+                sendLetterResponse.getReference().orElse(referenceId)
+            );
+
+            addCaseNotification(referenceId, null, "Letter", party, "Sent", caseData);
+
+            return getLetterNotificationResponse(sendLetterResponse);
+        } catch (NotificationClientException notificationClientException) {
+            log.error("Failed to send letter. Reference ID: {}. Reason: {}",
+                referenceId,
+                notificationClientException.getMessage(),
+                notificationClientException
+            );
+
+            addCaseNotification(referenceId, null, "Letter", party, "Failed", caseData);
+
+            throw new NotificationException(notificationClientException);
+        }
     }
 
     public NotificationResponse sendEmail(NotificationRequest notificationRequest) {
@@ -227,5 +321,20 @@ public class NotificationServiceCIC {
             .createdAtTime(LocalDateTime.now())
             .status("Received")
             .build();
+    }
+
+    private void addCaseNotification(String referenceId, String emailAddress, String notificationType, String party, String status, CaseData caseData) {
+        CaseNotification notification = CaseNotification.builder()
+            .sentAt(LocalDateTime.now())
+            .reference(referenceId)
+            .emailAddress(emailAddress)
+            .notificationType(notificationType)
+            .party(party)
+            .status(status)
+            .build();
+
+        List<CaseNotification> notificationList = caseData.getCaseNotifications();
+        notificationList.add(notification);
+        caseData.setCaseNotifications(notificationList);
     }
 }

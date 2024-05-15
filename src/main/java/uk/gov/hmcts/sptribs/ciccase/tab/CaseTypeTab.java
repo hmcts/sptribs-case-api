@@ -104,6 +104,7 @@ public class CaseTypeTab implements CCDConfig<CaseData, State, UserRole> {
         buildCaseFlagTab(configBuilder);
         buildCaseReferralTab(configBuilder);
         buildCaseLinkTab(configBuilder);
+        buildNotificationsTab(configBuilder);
     }
 
     private void buildCaseFlagTab(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
@@ -396,5 +397,12 @@ public class CaseTypeTab implements CCDConfig<CaseData, State, UserRole> {
             .field("referToLegalOfficerReasonForReferral")
             .field("referToLegalOfficerAdditionalInformation")
             .field("referToLegalOfficerReferralDate");
+    }
+
+    private void buildNotificationsTab(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
+        configBuilder.tab("notifications", "Notifications")
+            .forRoles(ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER, ST_CIC_HEARING_CENTRE_ADMIN,
+                ST_CIC_HEARING_CENTRE_TEAM_LEADER, ST_CIC_SENIOR_JUDGE, ST_CIC_JUDGE, ST_CIC_RESPONDENT, SUPER_USER)
+            .field(CaseData::getCaseNotifications);
     }
 }
