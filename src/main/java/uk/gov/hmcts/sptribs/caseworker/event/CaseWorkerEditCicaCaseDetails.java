@@ -39,7 +39,6 @@ public class CaseWorkerEditCicaCaseDetails implements CCDConfig<CaseData, State,
 
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
-
         PageBuilder pageBuilder = new PageBuilder(
             configBuilder
                 .event(CASEWORKER_EDIT_CICA_CASE_DETAILS)
@@ -48,7 +47,7 @@ public class CaseWorkerEditCicaCaseDetails implements CCDConfig<CaseData, State,
                 .description("Edit case details")
                 .showSummary()
                 .aboutToSubmitCallback(this::aboutToSubmit)
-                .submittedCallback(this::detailsUpdated)
+                .submittedCallback(this::submitted)
                 .grant(CREATE_READ_UPDATE, SUPER_USER, ST_CIC_RESPONDENT)
                 .grantHistoryOnly(
                     ST_CIC_CASEWORKER,
@@ -56,32 +55,27 @@ public class CaseWorkerEditCicaCaseDetails implements CCDConfig<CaseData, State,
                     ST_CIC_HEARING_CENTRE_ADMIN,
                     ST_CIC_HEARING_CENTRE_TEAM_LEADER,
                     ST_CIC_SENIOR_JUDGE,
-                    SUPER_USER,
                     ST_CIC_JUDGE));
         editCicaCaseDetailsPage.addTo(pageBuilder);
-
-
     }
-
 
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(
         final CaseDetails<CaseData, State> details,
         final CaseDetails<CaseData, State> beforeDetails
     ) {
-        CaseData caseData = details.getData();
 
+        CaseData caseData = details.getData();
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
             .state(details.getState())
             .build();
     }
 
-    public SubmittedCallbackResponse detailsUpdated(CaseDetails<CaseData, State> details,
+    public SubmittedCallbackResponse submitted(CaseDetails<CaseData, State> details,
                                                     CaseDetails<CaseData, State> beforeDetails) {
+
         return SubmittedCallbackResponse.builder()
             .confirmationHeader("# Case details updated. ")
             .build();
     }
-
-
 }

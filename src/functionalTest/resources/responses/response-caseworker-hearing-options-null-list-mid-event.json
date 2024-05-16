@@ -1,0 +1,38 @@
+{
+  "data": {
+    "cicCaseRespondentName": "Appeals team",
+    "cicCaseRespondentOrganisation": "CICA",
+    "cicCaseRespondentEmail": "appeals.team@cica.gov.uk",
+    "cicCaseFirstDueDate": "",
+    "stayIsCaseStayed": "No",
+    "hearingFormat": "Face to Face",
+    "shortNotice": "Yes",
+    "hearingVenues": {
+      "list_items": [
+        {
+          "code": "${json-unit.any-string}",
+          "label": "East London Tribunal Hearing Centre-2 Clove Crescent, East India Dock London"
+        },
+        {
+          "code": "${json-unit.any-string}",
+          "label": "Fox Court - London (Central) SSCS Tribunal-4th Floor, Fox Court, 30 Brooke Street, London"
+        }
+      ]
+    },
+    "regionList": {
+      "value": {
+        "code": "${json-unit.any-string}",
+        "label": "1-London"
+      },
+      "valueLabel": "1-London",
+      "valueCode": "${json-unit.any-string}"
+    },
+    "roomAtVenue": "G.01",
+    "addlInstr": "Ground floor",
+    "hearingSummaryExists": "YES",
+    "hearingList": [],
+    "closedDayCount": "",
+    "firstHearingDate": "",
+    "dataVersion": 0
+  }
+}

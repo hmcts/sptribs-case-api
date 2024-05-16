@@ -10,6 +10,8 @@ import uk.gov.hmcts.ccd.sdk.ConfigBuilderImpl;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.Event;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
+import uk.gov.hmcts.ccd.sdk.type.DynamicList;
+import uk.gov.hmcts.ccd.sdk.type.DynamicListElement;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.helper.RecordListHelper;
 import uk.gov.hmcts.sptribs.caseworker.model.Listing;
@@ -31,6 +33,8 @@ import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigBuilder;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.getEventsFrom;
@@ -56,6 +60,18 @@ class CaseworkerEditRecordListingTest {
 
     @Mock
     private ListingUpdatedNotification listingUpdatedNotification;
+
+    @Mock
+    private CaseData caseDataBefore;
+
+    @Mock
+    private CaseData caseDataAfter;
+    @Mock
+    private Listing listingBefore;
+    @Mock
+    private Listing listingAfter;
+    @Mock
+    private DynamicList dynamicListMock;
 
     @Test
     void shouldAddConfigurationToConfigBuilder() {
@@ -181,6 +197,100 @@ class CaseworkerEditRecordListingTest {
         //Then
         assertThat(response).isNotNull();
         assertThat(caseData.getListing().getSelectedRegionVal()).isNotNull();
+    }
+
+    @Test
+    void shouldMidEventMethodSuccessfullyPopulateHearingVenues() {
+        //Given
+        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
+        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        DynamicList hearingVenueList = getMockedHearingVenueData();
+        when(caseDataBefore.getListing()).thenReturn(listingBefore);
+        when(caseDataAfter.getListing()).thenReturn(listingAfter);
+        when(listingBefore.getReadOnlyHearingVenueName()).thenReturn("Read Only Hearing Venue Name");
+        when(listingBefore.getSelectedRegionVal()).thenReturn("Read Only Hearing Venue Name");
+        when(listingBefore.getHearingVenues()).thenReturn(hearingVenueList);
+        when(listingAfter.getSelectedRegionVal()).thenReturn("Read Only Hearing Venue Name");
+        when(listingAfter.getHearingVenues()).thenReturn(dynamicListMock);
+        updatedCaseDetails.setData(caseDataAfter);
+        beforeDetails.setData(caseDataBefore);
+        //When
+        caseworkerEditRecordList.midEvent(updatedCaseDetails, beforeDetails);
+        //Then
+        verify(listingAfter, times(1)).setHearingVenues(any(DynamicList.class));
+        verify(dynamicListMock, times(1)).setValue(any(DynamicListElement.class));
+    }
+
+    @Test
+    void shouldMidEventMethodSuccessfullyPopulateHearingVenuesWhenHearingNameIsNull() {
+        //Given
+        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
+        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        when(caseDataBefore.getListing()).thenReturn(listingBefore);
+        when(listingBefore.getReadOnlyHearingVenueName()).thenReturn(null);
+        updatedCaseDetails.setData(caseDataAfter);
+        beforeDetails.setData(caseDataBefore);
+        //When
+        caseworkerEditRecordList.midEvent(updatedCaseDetails, beforeDetails);
+        //Then
+        verify(listingAfter, times(0)).setHearingVenues(any(DynamicList.class));
+        verify(dynamicListMock, times(0)).setValue(any(DynamicListElement.class));
+    }
+
+    @Test
+    void shouldMidEventMethodSuccessfullyPopulateHearingVenuesWhenRegionIsNull() {
+        //Given
+        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
+        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        when(caseDataBefore.getListing()).thenReturn(listingBefore);
+        when(caseDataAfter.getListing()).thenReturn(listingAfter);
+        when(listingBefore.getReadOnlyHearingVenueName()).thenReturn("Read Only Hearing Venue Name");
+        when(listingAfter.getSelectedRegionVal()).thenReturn(null);
+        updatedCaseDetails.setData(caseDataAfter);
+        beforeDetails.setData(caseDataBefore);
+        //When
+        caseworkerEditRecordList.midEvent(updatedCaseDetails, beforeDetails);
+        //Then
+        verify(listingAfter, times(0)).setHearingVenues(any(DynamicList.class));
+        verify(dynamicListMock, times(0)).setValue(any(DynamicListElement.class));
+    }
+
+    @Test
+    void shouldMidEventMethodSuccessfullyPopulateHearingVenuesWhenRegionValChanges() {
+        //Given
+        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
+        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        when(caseDataBefore.getListing()).thenReturn(listingBefore);
+        when(caseDataAfter.getListing()).thenReturn(listingAfter);
+        when(listingBefore.getReadOnlyHearingVenueName()).thenReturn("Read Only Hearing Venue Name");
+        when(listingBefore.getSelectedRegionVal()).thenReturn("Read Only Hearing Venue Name");
+        when(listingAfter.getSelectedRegionVal()).thenReturn("Read Only Hearing Venue Name DIFFERENT");
+        updatedCaseDetails.setData(caseDataAfter);
+        beforeDetails.setData(caseDataBefore);
+        //When
+        caseworkerEditRecordList.midEvent(updatedCaseDetails, beforeDetails);
+        //Then
+        verify(listingAfter, times(0)).setHearingVenues(any(DynamicList.class));
+        verify(dynamicListMock, times(0)).setValue(any(DynamicListElement.class));
+    }
+
+    @Test
+    void shouldMidEventMethodSuccessfullyPopulateHearingVenuesWhenHearingVenuesAreNull() {
+        //Given
+        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
+        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        when(caseDataBefore.getListing()).thenReturn(listingBefore);
+        when(caseDataAfter.getListing()).thenReturn(listingAfter);
+        when(listingBefore.getReadOnlyHearingVenueName()).thenReturn("Read Only Hearing Venue Name");
+        when(listingBefore.getSelectedRegionVal()).thenReturn("Read Only Hearing Venue Name");
+        when(listingAfter.getSelectedRegionVal()).thenReturn("Read Only Hearing Venue Name");
+        updatedCaseDetails.setData(caseDataAfter);
+        beforeDetails.setData(caseDataBefore);
+        //When
+        caseworkerEditRecordList.midEvent(updatedCaseDetails, beforeDetails);
+        //Then
+        verify(listingAfter, times(0)).setHearingVenues(any(DynamicList.class));
+        verify(dynamicListMock, times(0)).setValue(any(DynamicListElement.class));
     }
 
     @Test

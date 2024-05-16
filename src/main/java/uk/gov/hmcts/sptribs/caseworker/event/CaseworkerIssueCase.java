@@ -58,16 +58,11 @@ public class CaseworkerIssueCase implements CCDConfig<CaseData, State, UserRole>
             .showSummary()
             .aboutToStartCallback(this::aboutToStart)
             .aboutToSubmitCallback(this::aboutToSubmit)
-            .submittedCallback(this::issued)
+            .submittedCallback(this::submitted)
             .grant(CREATE_READ_UPDATE, SUPER_USER,
                 ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER, ST_CIC_HEARING_CENTRE_ADMIN,
                 ST_CIC_HEARING_CENTRE_TEAM_LEADER, ST_CIC_SENIOR_JUDGE)
             .grantHistoryOnly(
-                ST_CIC_CASEWORKER,
-                ST_CIC_SENIOR_CASEWORKER,
-                ST_CIC_HEARING_CENTRE_ADMIN,
-                ST_CIC_HEARING_CENTRE_TEAM_LEADER,
-                ST_CIC_SENIOR_JUDGE,
                 SUPER_USER,
                 ST_CIC_JUDGE));
         issueCaseSelectDocument.addTo(pageBuilder);
@@ -94,7 +89,7 @@ public class CaseworkerIssueCase implements CCDConfig<CaseData, State, UserRole>
             .build();
     }
 
-    public SubmittedCallbackResponse issued(CaseDetails<CaseData, State> details,
+    public SubmittedCallbackResponse submitted(CaseDetails<CaseData, State> details,
                                             CaseDetails<CaseData, State> beforeDetails) {
         final CaseData data = details.getData();
         final CicCase cicCase = data.getCicCase();

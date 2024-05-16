@@ -124,6 +124,26 @@ public class CaseworkerEditRecordListing implements CCDConfig<CaseData, State, U
             .build();
     }
 
+    public AboutToStartOrSubmitResponse<CaseData, State> midEvent(CaseDetails<CaseData, State> details,
+                                                                  CaseDetails<CaseData, State> detailsBefore) {
+        final CaseData caseData = details.getData();
+        final CaseData caseDataBefore = detailsBefore.getData();
+
+        recordListHelper.populateVenuesData(caseData);
+
+        if (null != caseDataBefore.getListing().getReadOnlyHearingVenueName()
+            && null != caseData.getListing().getSelectedRegionVal()
+            && caseData.getListing().getSelectedRegionVal().equals(caseDataBefore.getListing().getSelectedRegionVal())
+            && null != caseDataBefore.getListing().getHearingVenues()) {
+            caseData.getListing().setHearingVenues(caseDataBefore.getListing().getHearingVenues());
+            caseData.getListing().getHearingVenues().setValue(caseDataBefore.getListing().getHearingVenues().getValue());
+
+        }
+        return AboutToStartOrSubmitResponse.<CaseData, State>builder()
+            .data(caseData)
+            .build();
+    }
+
     @SneakyThrows
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(CaseDetails<CaseData, State> details,
                                                                        CaseDetails<CaseData, State> beforeDetails) {
@@ -187,25 +207,5 @@ public class CaseworkerEditRecordListing implements CCDConfig<CaseData, State, U
             .readonly(Listing::getRegionsMessage)
             .optional(Listing::getRegionList)
             .done();
-    }
-
-    public AboutToStartOrSubmitResponse<CaseData, State> midEvent(CaseDetails<CaseData, State> details,
-                                                                  CaseDetails<CaseData, State> detailsBefore) {
-        final CaseData caseData = details.getData();
-        final CaseData caseDataBefore = detailsBefore.getData();
-
-        recordListHelper.populateVenuesData(caseData);
-
-        if (null != caseDataBefore.getListing().getReadOnlyHearingVenueName()
-            && null != caseData.getListing().getSelectedRegionVal()
-            && caseData.getListing().getSelectedRegionVal().equals(caseDataBefore.getListing().getSelectedRegionVal())
-            && null != caseDataBefore.getListing().getHearingVenues()) {
-            caseData.getListing().setHearingVenues(caseDataBefore.getListing().getHearingVenues());
-            caseData.getListing().getHearingVenues().setValue(caseDataBefore.getListing().getHearingVenues().getValue());
-
-        }
-        return AboutToStartOrSubmitResponse.<CaseData, State>builder()
-            .data(caseData)
-            .build();
     }
 }

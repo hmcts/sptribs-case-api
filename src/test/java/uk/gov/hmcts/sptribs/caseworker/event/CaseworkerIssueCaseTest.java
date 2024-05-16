@@ -108,11 +108,11 @@ class CaseworkerIssueCaseTest {
         Mockito.doNothing().when(caseIssuedNotification).sendToApplicant(caseData, caseData.getHyphenatedCaseRef());
         Mockito.doNothing().when(caseIssuedNotification).sendToRepresentative(caseData, caseData.getHyphenatedCaseRef());
         Mockito.doNothing().when(caseIssuedNotification).sendToRespondent(caseData, caseData.getHyphenatedCaseRef());
-        SubmittedCallbackResponse issuedResponse = caseworkerIssueCase.issued(updatedCaseDetails, beforeDetails);
+        SubmittedCallbackResponse submittedResponse = caseworkerIssueCase.submitted(updatedCaseDetails, beforeDetails);
 
         //Then
         assertThat(response.getData().getCicCase().getNotifyPartyApplicant()).isNotNull();
-        assertThat(issuedResponse).isNotNull();
+        assertThat(submittedResponse).isNotNull();
     }
 
     @Test

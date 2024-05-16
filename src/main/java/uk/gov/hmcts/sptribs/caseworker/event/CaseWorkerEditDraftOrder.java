@@ -63,7 +63,6 @@ public class CaseWorkerEditDraftOrder implements CCDConfig<CaseData, State, User
 
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
-
         PageBuilder pageBuilder = new PageBuilder(
             configBuilder
                 .event(CASEWORKER_EDIT_DRAFT_ORDER)
@@ -71,7 +70,7 @@ public class CaseWorkerEditDraftOrder implements CCDConfig<CaseData, State, User
                 .name("Orders: Edit draft")
                 .showSummary()
                 .aboutToSubmitCallback(this::aboutToSubmit)
-                .submittedCallback(this::draftUpdated)
+                .submittedCallback(this::submitted)
                 .grant(CREATE_READ_UPDATE, SUPER_USER,
                     ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER, ST_CIC_HEARING_CENTRE_ADMIN,
                     ST_CIC_HEARING_CENTRE_TEAM_LEADER, ST_CIC_SENIOR_JUDGE, ST_CIC_JUDGE));
@@ -79,7 +78,6 @@ public class CaseWorkerEditDraftOrder implements CCDConfig<CaseData, State, User
         draftOrderEditMainContentPage.addTo(pageBuilder);
         editDraftOrderAddDocumentFooter(pageBuilder);
         previewOrder.addTo(pageBuilder);
-
     }
 
     private void editDraftOrderAddDocumentFooter(PageBuilder pageBuilder) {
@@ -115,6 +113,7 @@ public class CaseWorkerEditDraftOrder implements CCDConfig<CaseData, State, User
         final CaseDetails<CaseData, State> details,
         final CaseDetails<CaseData, State> beforeDetails
     ) {
+
         CaseData caseData = details.getData();
         DynamicList dynamicList = caseData.getCicCase().getDraftOrderDynamicList();
         UUID code = dynamicList.getValue().getCode();
@@ -149,8 +148,9 @@ public class CaseWorkerEditDraftOrder implements CCDConfig<CaseData, State, User
             .build();
     }
 
-    public SubmittedCallbackResponse draftUpdated(CaseDetails<CaseData, State> details,
+    public SubmittedCallbackResponse submitted(CaseDetails<CaseData, State> details,
                                                   CaseDetails<CaseData, State> beforeDetails) {
+
         return SubmittedCallbackResponse.builder()
             .confirmationHeader(format("# Draft order updated %n## Use "
                 + "'Send order' to send the case documentation to parties in the case."))

@@ -1,0 +1,48 @@
+{
+  "data": {
+    "caseLinks": [],
+    "allCaseworkerCICDocument": [],
+    "newCaseworkerCICDocument": [],
+    "editCicaCaseDetails": {},
+    "contactParties": {},
+    "caseBundles": [],
+    "cicCaseNotifyPartyApplicant": [
+      "ApplicantCIC"
+    ],
+    "cicCaseNotifyPartySubject": [
+      "SubjectCIC"
+    ],
+    "cicCaseNotifyPartyRepresentative": [
+      "RepresentativeCIC"
+    ],
+    "cicCaseNotifyPartyRespondent": [
+      "RespondentCIC"
+    ],
+    "cicCaseRespondentName": "Appeals team",
+    "cicCaseRespondentOrganisation": "CICA",
+    "cicCaseRespondentEmail": "appeals.team@cica.gov.uk",
+    "cicCaseFullName": "Testing subject",
+    "cicCaseApplicantFullName": "Testing applicant",
+    "cicCaseRepresentativeFullName": "Testing representative",
+    "cicCaseFirstDueDate": "",
+    "stayIsCaseStayed": "No",
+    "hearingList": [],
+    "closedDayCount": "",
+    "issueCaseDocumentList": {
+      "value": [
+        {
+          "code": "${json-unit.any-string}",
+          "label": "${json-unit.any-string}"
+        }
+      ],
+      "list_items": [
+        {
+          "code": "${json-unit.any-string}",
+          "label": "${json-unit.any-string}"
+        }
+      ]
+    },
+    "firstHearingDate": "",
+    "dataVersion": 0
+  }
+}
