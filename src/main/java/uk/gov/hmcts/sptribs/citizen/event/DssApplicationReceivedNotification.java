@@ -3,6 +3,7 @@ package uk.gov.hmcts.sptribs.citizen.event;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.DssCaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.NotificationResponse;
 import uk.gov.hmcts.sptribs.notification.DssNotificationHelper;
@@ -28,29 +29,36 @@ public class DssApplicationReceivedNotification implements PartiesNotification {
     private DssNotificationHelper dssNotificationHelper;
 
     @Override
-    public void sendToSubject(final DssCaseData dssCaseData, final String caseNumber) {
+    public void sendToSubject(final DssCaseData dssCaseData, final String caseNumber, final CaseData caseData) {
         final Map<String, Object> templateVarsSubject = dssNotificationHelper.getSubjectCommonVars(caseNumber, dssCaseData);
         templateVarsSubject.put(CIC_CASE_SUBJECT_NAME, dssCaseData.getSubjectFullName());
         templateVarsSubject.put(CONTACT_PARTY_INFO, dssCaseData.getNotifyPartyMessage());
 
-        NotificationResponse notificationResponse = sendEmailNotification(templateVarsSubject, dssCaseData.getSubjectEmailAddress());
+        NotificationResponse notificationResponse = sendEmailNotification(
+            templateVarsSubject, dssCaseData.getSubjectEmailAddress(), "Subject", caseData);
         dssCaseData.setSubjectNotificationResponse(notificationResponse);
     }
 
     @Override
-    public void sendToRepresentative(final DssCaseData dssCaseData, final String caseNumber) {
+    public void sendToRepresentative(final DssCaseData dssCaseData, final String caseNumber, final CaseData caseData) {
         final Map<String, Object> templateVarsRep = dssNotificationHelper.getRepresentativeCommonVars(caseNumber, dssCaseData);
         templateVarsRep.put(CIC_CASE_REPRESENTATIVE_NAME, dssCaseData.getRepresentativeFullName());
         templateVarsRep.put(CONTACT_PARTY_INFO, dssCaseData.getNotifyPartyMessage());
 
-        NotificationResponse notificationResponse = sendEmailNotification(templateVarsRep, dssCaseData.getRepresentativeEmailAddress());
+        NotificationResponse notificationResponse = sendEmailNotification(
+            templateVarsRep, dssCaseData.getRepresentativeEmailAddress(), "Representative", caseData);
         dssCaseData.setRepNotificationResponse(notificationResponse);
     }
 
-    private NotificationResponse sendEmailNotification(final Map<String, Object> templateVars, String toEmail) {
+    private NotificationResponse sendEmailNotification(
+        final Map<String, Object> templateVars,
+        String toEmail,
+        String party,
+        CaseData caseData
+    ) {
         NotificationRequest request = dssNotificationHelper.buildEmailNotificationRequest(
             toEmail, templateVars, TemplateName.APPLICATION_RECEIVED);
-        return notificationService.sendEmail(request);
+        return notificationService.sendEmailNew(request, party, caseData);
     }
 
 }

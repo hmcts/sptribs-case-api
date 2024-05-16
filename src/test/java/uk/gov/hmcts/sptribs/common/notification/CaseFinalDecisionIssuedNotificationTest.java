@@ -48,7 +48,6 @@ public class CaseFinalDecisionIssuedNotificationTest {
 
     @Test
     void shouldNotifySubjectOfCaseFinalDecisionIssuedWithEmail() {
-        //Given
         final LocalDate expDate = LocalDate.now();
         final CaseData data = getMockCaseData(expDate);
         data.getCicCase().setContactPreferenceType(ContactPreferenceType.EMAIL);
@@ -67,15 +66,13 @@ public class CaseFinalDecisionIssuedNotificationTest {
             .finalDecisionGuidance(guidanceDocument).build();
         data.setCaseIssueFinalDecision(caseIssueFinalDecision);
 
-        //When
         when(notificationHelper.buildEmailNotificationRequest(any(), anyBoolean(), anyMap(), anyMap(), any(TemplateName.class)))
             .thenReturn(NotificationRequest.builder().build());
         when(notificationHelper.getSubjectCommonVars(any(), any(CicCase.class))).thenReturn(new HashMap<>());
 
         finalDecisionIssuedNotification.sendToSubject(data, "CN1");
 
-        //Then
-        verify(notificationService).sendEmail(any(NotificationRequest.class));
+        verify(notificationService).sendEmailNew(any(NotificationRequest.class), any(), any(CaseData.class));
         verify(notificationHelper).buildEmailNotificationRequest(
             data.getCicCase().getEmail(),
             true,
@@ -88,7 +85,6 @@ public class CaseFinalDecisionIssuedNotificationTest {
 
     @Test
     void shouldNotifySubjectOfCaseFinalDecisionIssuedWithEmailWithoutDecisionDocument() {
-        //Given
         final LocalDate expDate = LocalDate.now();
         final CaseData data = getMockCaseData(expDate);
         data.getCicCase().setContactPreferenceType(ContactPreferenceType.EMAIL);
@@ -104,15 +100,13 @@ public class CaseFinalDecisionIssuedNotificationTest {
             .finalDecisionGuidance(guidanceDocument).build();
         data.setCaseIssueFinalDecision(caseIssueFinalDecision);
 
-        //When
         when(notificationHelper.buildEmailNotificationRequest(any(), anyBoolean(), anyMap(), anyMap(), any(TemplateName.class)))
             .thenReturn(NotificationRequest.builder().build());
         when(notificationHelper.getSubjectCommonVars(any(), any(CicCase.class))).thenReturn(new HashMap<>());
 
         finalDecisionIssuedNotification.sendToSubject(data, "CN1");
 
-        //Then
-        verify(notificationService).sendEmail(any(NotificationRequest.class));
+        verify(notificationService).sendEmailNew(any(NotificationRequest.class), any(), any(CaseData.class));
         verify(notificationHelper).buildEmailNotificationRequest(
             data.getCicCase().getEmail(),
             true,
@@ -125,22 +119,19 @@ public class CaseFinalDecisionIssuedNotificationTest {
 
     @Test
     void shouldNotifySubjectOfCaseFinalDecisionIssuedWithPost() {
-        //Given
         LocalDate expDate = LocalDate.now();
         final CaseData data = getMockCaseData(expDate);
         data.getCicCase().setContactPreferenceType(ContactPreferenceType.POST);
         data.getCicCase().setAddress(AddressGlobalUK.builder().build());
         data.getCicCase().setReinstateReason(ReinstateReason.OTHER);
 
-        //When
         when(notificationHelper.buildLetterNotificationRequest(anyMap(), any(TemplateName.class)))
             .thenReturn(NotificationRequest.builder().build());
         when(notificationHelper.getSubjectCommonVars(any(), any(CicCase.class))).thenReturn(new HashMap<>());
         doNothing().when(notificationHelper).addAddressTemplateVars(any(AddressGlobalUK.class), anyMap());
         finalDecisionIssuedNotification.sendToSubject(data, "CN1");
 
-        //Then
-        verify(notificationService).sendLetter(any(NotificationRequest.class));
+        verify(notificationService).sendLetterNew(any(NotificationRequest.class), any(), any(CaseData.class));
         verify(notificationHelper).buildLetterNotificationRequest(
             new HashMap<>(),
             TemplateName.CASE_FINAL_DECISION_ISSUED_POST);
@@ -148,7 +139,6 @@ public class CaseFinalDecisionIssuedNotificationTest {
 
     @Test
     void shouldNotifyRespondentOfCaseFinalDecisionIssuedWithEmail() {
-        //Given
         LocalDate expDate = LocalDate.now();
         final CaseData data = getMockCaseData(expDate);
         data.getCicCase().setRespondentName("respondentName");
@@ -164,14 +154,12 @@ public class CaseFinalDecisionIssuedNotificationTest {
             .build();
         data.setCaseIssueFinalDecision(caseIssueFinalDecision);
 
-        //When
         when(notificationHelper.buildEmailNotificationRequest(any(), anyBoolean(), anyMap(), anyMap(), any(TemplateName.class)))
             .thenReturn(NotificationRequest.builder().build());
         when(notificationHelper.getRespondentCommonVars(any(), any(CicCase.class))).thenReturn(new HashMap<>());
         finalDecisionIssuedNotification.sendToRespondent(data, "CN1");
 
-        //Then
-        verify(notificationService).sendEmail(any(NotificationRequest.class));
+        verify(notificationService).sendEmailNew(any(NotificationRequest.class), any(), any(CaseData.class));
         verify(notificationHelper).buildEmailNotificationRequest(
             data.getCicCase().getRespondentEmail(),
             true,
@@ -184,7 +172,6 @@ public class CaseFinalDecisionIssuedNotificationTest {
 
     @Test
     void shouldNotifyRespondentOfCaseFinalDecisionIssuedWithEmailWithoutDecisionNotice() {
-        //Given
         LocalDate expDate = LocalDate.now();
         final CaseData data = getMockCaseData(expDate);
         data.getCicCase().setRespondentName("respondentName");
@@ -200,14 +187,13 @@ public class CaseFinalDecisionIssuedNotificationTest {
             .build();
         data.setCaseIssueFinalDecision(caseIssueFinalDecision);
 
-        //When
         when(notificationHelper.buildEmailNotificationRequest(any(), anyBoolean(), anyMap(), anyMap(), any(TemplateName.class)))
             .thenReturn(NotificationRequest.builder().build());
         when(notificationHelper.getRespondentCommonVars(any(), any(CicCase.class))).thenReturn(new HashMap<>());
         finalDecisionIssuedNotification.sendToRespondent(data, "CN1");
 
         //Then
-        verify(notificationService).sendEmail(any(NotificationRequest.class));
+        verify(notificationService).sendEmailNew(any(NotificationRequest.class), any(), any(CaseData.class));
         verify(notificationHelper).buildEmailNotificationRequest(
             data.getCicCase().getRespondentEmail(),
             true,
@@ -220,7 +206,6 @@ public class CaseFinalDecisionIssuedNotificationTest {
 
     @Test
     void shouldNotifyRepresentativeOfCaseFinalDecisionIssuedWithEmail() {
-        //Given
         LocalDate expDate = LocalDate.now();
         final CaseData data = getMockCaseData(expDate);
         data.getCicCase().setRepresentativeFullName("repFullName");
@@ -238,16 +223,13 @@ public class CaseFinalDecisionIssuedNotificationTest {
             .build();
         data.setCaseIssueFinalDecision(caseIssueFinalDecision);
 
-
-        //When
         when(notificationHelper.buildEmailNotificationRequest(any(), anyBoolean(), anyMap(), anyMap(), any(TemplateName.class)))
             .thenReturn(NotificationRequest.builder().build());
         when(notificationHelper.getRepresentativeCommonVars(any(), any(CicCase.class))).thenReturn(new HashMap<>());
 
         finalDecisionIssuedNotification.sendToRepresentative(data, "CN1");
 
-        //Then
-        verify(notificationService).sendEmail(any(NotificationRequest.class));
+        verify(notificationService).sendEmailNew(any(NotificationRequest.class), any(), any(CaseData.class));
         verify(notificationHelper).buildEmailNotificationRequest(
             data.getCicCase().getRepresentativeEmailAddress(),
             true,
@@ -260,7 +242,6 @@ public class CaseFinalDecisionIssuedNotificationTest {
 
     @Test
     void shouldNotifyRepresentativeOfCaseFinalDecisionIssuedWithEmailWithoutDecisionDraft() {
-        //Given
         LocalDate expDate = LocalDate.now();
         final CaseData data = getMockCaseData(expDate);
         data.getCicCase().setRepresentativeFullName("repFullName");
@@ -278,16 +259,13 @@ public class CaseFinalDecisionIssuedNotificationTest {
             .build();
         data.setCaseIssueFinalDecision(caseIssueFinalDecision);
 
-
-        //When
         when(notificationHelper.buildEmailNotificationRequest(any(), anyBoolean(), anyMap(), anyMap(), any(TemplateName.class)))
             .thenReturn(NotificationRequest.builder().build());
         when(notificationHelper.getRepresentativeCommonVars(any(), any(CicCase.class))).thenReturn(new HashMap<>());
 
         finalDecisionIssuedNotification.sendToRepresentative(data, "CN1");
 
-        //Then
-        verify(notificationService).sendEmail(any(NotificationRequest.class));
+        verify(notificationService).sendEmailNew(any(NotificationRequest.class), any(), any(CaseData.class));
         verify(notificationHelper).buildEmailNotificationRequest(
             data.getCicCase().getRepresentativeEmailAddress(),
             true,
@@ -300,22 +278,19 @@ public class CaseFinalDecisionIssuedNotificationTest {
 
     @Test
     void shouldNotifyRepresentativeOfCaseFinalDecisionIssuedWithPost() {
-        //Given
         LocalDate expDate = LocalDate.now();
         final CaseData data = getMockCaseData(expDate);
         data.getCicCase().setRepresentativeFullName("repFullName");
         data.getCicCase().setRepresentativeContactDetailsPreference(ContactPreferenceType.POST);
         data.getCicCase().setRepresentativeAddress(AddressGlobalUK.builder().build());
 
-        //When
         when(notificationHelper.buildLetterNotificationRequest(anyMap(), any(TemplateName.class)))
             .thenReturn(NotificationRequest.builder().build());
         when(notificationHelper.getRepresentativeCommonVars(any(), any(CicCase.class))).thenReturn(new HashMap<>());
         doNothing().when(notificationHelper).addAddressTemplateVars(any(), anyMap());
         finalDecisionIssuedNotification.sendToRepresentative(data, "CN1");
 
-        //Then
-        verify(notificationService).sendLetter(any(NotificationRequest.class));
+        verify(notificationService).sendLetterNew(any(NotificationRequest.class), any(), any(CaseData.class));
         verify(notificationHelper).buildLetterNotificationRequest(
             new HashMap<>(),
             TemplateName.CASE_FINAL_DECISION_ISSUED_POST);
@@ -323,7 +298,6 @@ public class CaseFinalDecisionIssuedNotificationTest {
 
     @Test
     void shouldNotifyApplicantOfCaseFinalDecisionIssuedWithEmail() {
-        //Given
         LocalDate expDate = LocalDate.now();
         final CaseData data = getMockCaseData(expDate);
         data.getCicCase().setContactPreferenceType(ContactPreferenceType.EMAIL);
@@ -342,16 +316,13 @@ public class CaseFinalDecisionIssuedNotificationTest {
             .finalDecisionGuidance(guidanceDocument).build();
         data.setCaseIssueFinalDecision(caseIssueFinalDecision);
 
-
-        //When
         when(notificationHelper.buildEmailNotificationRequest(any(), anyBoolean(), anyMap(), anyMap(), any(TemplateName.class)))
             .thenReturn(NotificationRequest.builder().build());
         when(notificationHelper.getApplicantCommonVars(any(), any(CicCase.class))).thenReturn(new HashMap<>());
 
         finalDecisionIssuedNotification.sendToApplicant(data, "CN1");
 
-        //Then
-        verify(notificationService).sendEmail(any(NotificationRequest.class));
+        verify(notificationService).sendEmailNew(any(NotificationRequest.class), any(), any(CaseData.class));
         verify(notificationHelper).buildEmailNotificationRequest(
             data.getCicCase().getApplicantEmailAddress(),
             true,
@@ -364,22 +335,19 @@ public class CaseFinalDecisionIssuedNotificationTest {
 
     @Test
     void shouldNotifyApplicantOfCaseFinalDecisionIssuedWithPost() {
-        //Given
         LocalDate expDate = LocalDate.now();
         final CaseData data = getMockCaseData(expDate);
         data.getCicCase().setContactPreferenceType(ContactPreferenceType.POST);
         data.getCicCase().setApplicantAddress(AddressGlobalUK.builder().build());
         data.getCicCase().setReinstateReason(ReinstateReason.OTHER);
 
-        //When
         when(notificationHelper.buildLetterNotificationRequest(anyMap(), any(TemplateName.class)))
             .thenReturn(NotificationRequest.builder().build());
         when(notificationHelper.getApplicantCommonVars(any(), any(CicCase.class))).thenReturn(new HashMap<>());
         doNothing().when(notificationHelper).addAddressTemplateVars(any(AddressGlobalUK.class), anyMap());
         finalDecisionIssuedNotification.sendToApplicant(data, "CN1");
 
-        //Then
-        verify(notificationService).sendLetter(any(NotificationRequest.class));
+        verify(notificationService).sendLetterNew(any(NotificationRequest.class), any(), any(CaseData.class));
         verify(notificationHelper).buildLetterNotificationRequest(
             new HashMap<>(),
             TemplateName.CASE_FINAL_DECISION_ISSUED_POST);

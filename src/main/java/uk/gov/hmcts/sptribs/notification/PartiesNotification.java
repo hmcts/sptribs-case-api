@@ -8,7 +8,7 @@ public interface PartiesNotification {
         //No operation
     }
 
-    default void sendToSubject(final DssCaseData dssCaseData, final String caseNumber) {
+    default void sendToSubject(final DssCaseData dssCaseData, final String caseNumber, final CaseData caseData) {
         //No operation
     }
 
@@ -20,7 +20,7 @@ public interface PartiesNotification {
         //No operation
     }
 
-    default void sendToRepresentative(final DssCaseData dssCaseData, final String caseNumber) {
+    default void sendToRepresentative(final DssCaseData dssCaseData, final String caseNumber, final CaseData caseData) {
         //No operation
     }
 

@@ -43,11 +43,12 @@ public class CaseWithdrawnNotification implements PartiesNotification {
         addCaseClosedTemplateVars(caseData, templateVars);
 
         if (ContactPreferenceType.EMAIL.equals(cicCase.getContactPreferenceType())) {
-            final NotificationResponse caseWithdrawnNotifyResponse = sendEmailNotification(cicCase.getEmail(), templateVars);
+            final NotificationResponse caseWithdrawnNotifyResponse = sendEmailNotification(
+                cicCase.getEmail(), templateVars, "Subject", caseData);
             cicCase.setSubjectNotifyList(caseWithdrawnNotifyResponse);
         } else {
             notificationHelper.addAddressTemplateVars(cicCase.getAddress(), templateVars);
-            sendLetterNotification(templateVars);
+            sendLetterNotification(templateVars, "Subject", caseData);
         }
     }
 
@@ -60,11 +61,11 @@ public class CaseWithdrawnNotification implements PartiesNotification {
 
         if (cicCase.getRepresentativeContactDetailsPreference() == ContactPreferenceType.EMAIL) {
             final NotificationResponse caseWithdrawnNotifyResponse =
-                sendEmailNotification(cicCase.getRepresentativeEmailAddress(), templateVars);
+                sendEmailNotification(cicCase.getRepresentativeEmailAddress(), templateVars, "Representative", caseData);
             cicCase.setRepNotificationResponse(caseWithdrawnNotifyResponse);
         } else {
             notificationHelper.addAddressTemplateVars(cicCase.getRepresentativeAddress(), templateVars);
-            sendLetterNotification(templateVars);
+            sendLetterNotification(templateVars, "Representative", caseData);
         }
     }
 
@@ -76,7 +77,7 @@ public class CaseWithdrawnNotification implements PartiesNotification {
         addCaseClosedTemplateVars(caseData, respondentTemplateVars);
 
         final NotificationResponse caseWithdrawnNotifyResponse =
-            sendEmailNotification(cicCase.getRespondentEmail(), respondentTemplateVars);
+            sendEmailNotification(cicCase.getRespondentEmail(), respondentTemplateVars, "Respondent", caseData);
         cicCase.setResNotificationResponse(caseWithdrawnNotifyResponse);
     }
 
@@ -89,27 +90,32 @@ public class CaseWithdrawnNotification implements PartiesNotification {
 
         if (cicCase.getContactPreferenceType() == ContactPreferenceType.EMAIL) {
             final NotificationResponse caseWithdrawnNotifyResponse =
-                sendEmailNotification(cicCase.getApplicantEmailAddress(), templateVars);
+                sendEmailNotification(cicCase.getApplicantEmailAddress(), templateVars, "Applicant", caseData);
             cicCase.setAppNotificationResponse(caseWithdrawnNotifyResponse);
         } else {
             notificationHelper.addAddressTemplateVars(cicCase.getApplicantAddress(), templateVars);
-            sendLetterNotification(templateVars);
+            sendLetterNotification(templateVars, "Applicant", caseData);
         }
     }
 
-    private NotificationResponse sendEmailNotification(final String destinationAddress, final Map<String, Object> templateVars) {
+    private NotificationResponse sendEmailNotification(
+        final String destinationAddress,
+        final Map<String, Object> templateVars,
+        String party,
+        CaseData caseData
+    ) {
         final NotificationRequest request = notificationHelper.buildEmailNotificationRequest(
             destinationAddress,
             templateVars,
             TemplateName.CASE_WITHDRAWN_EMAIL);
-        return notificationService.sendEmail(request);
+        return notificationService.sendEmailNew(request, party, caseData);
     }
 
-    private void sendLetterNotification(Map<String, Object> templateVarsLetter) {
+    private void sendLetterNotification(Map<String, Object> templateVarsLetter, String party, CaseData caseData) {
         final NotificationRequest letterRequest = notificationHelper.buildLetterNotificationRequest(
             templateVarsLetter,
             TemplateName.CASE_WITHDRAWN_POST);
-        notificationService.sendLetter(letterRequest);
+        notificationService.sendLetterNew(letterRequest, party, caseData);
     }
 
     private void addCaseClosedTemplateVars(CaseData caseData, Map<String, Object> templateVars) {
