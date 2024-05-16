@@ -13,6 +13,7 @@ import uk.gov.hmcts.sptribs.document.model.DocumentInfo;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.apache.commons.lang3.StringUtils.substringAfterLast;
 import static uk.gov.hmcts.sptribs.document.DocumentConstants.DOCUMENT_VALIDATION_MESSAGE;
 
 public final class DocumentUtil {
@@ -112,6 +113,11 @@ public final class DocumentUtil {
         }
 
         return errors;
+    }
+
+    public static boolean isValidDocument(String fileName, String validExtensions) {
+        String fileExtension = substringAfterLast(fileName, ".");
+        return fileExtension != null && validExtensions.contains(fileExtension);
     }
 
 }

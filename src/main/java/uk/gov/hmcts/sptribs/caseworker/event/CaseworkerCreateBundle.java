@@ -89,7 +89,10 @@ public class CaseworkerCreateBundle implements CCDConfig<CaseData, State, UserRo
         final List<AbstractCaseworkerCICDocument<CaseworkerCICDocument>> abstractCaseworkerCICDocumentList = new ArrayList<>();
 
         for (ListValue<CaseworkerCICDocument> caseworkerCICDocumentListValue : documentListValues) {
-            abstractCaseworkerCICDocumentList.add(new AbstractCaseworkerCICDocument<>(caseworkerCICDocumentListValue.getValue()));
+            CaseworkerCICDocument document = caseworkerCICDocumentListValue.getValue();
+            if (document.isValidBundleDocument()) {
+                abstractCaseworkerCICDocumentList.add(new AbstractCaseworkerCICDocument<>(caseworkerCICDocumentListValue.getValue()));
+            }
         }
 
         caseData.setCaseDocuments(abstractCaseworkerCICDocumentList);

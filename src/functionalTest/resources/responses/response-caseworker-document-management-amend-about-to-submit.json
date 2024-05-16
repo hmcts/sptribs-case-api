@@ -1,0 +1,23 @@
+{
+  "data": {
+    "cicCaseAmendDocumentList": {
+      "value": {
+        "code": "${json-unit.any-string}",
+        "label": "CASE--mockFile.pdf--A - Application Form"
+      },
+      "list_items": [
+        {
+          "code": "${json-unit.any-string}",
+          "label": "CASE--mockFile.pdf--A - Application Form"
+        }
+      ],
+      "valueCode": "${json-unit.any-string}",
+      "valueLabel": "CASE--mockFile.pdf--A - Application Form"
+    },
+    "cicCaseSelectedDocumentType": "CASE",
+    "cicCaseRespondentName": "Appeals team",
+    "cicCaseRespondentOrganisation": "CICA",
+    "cicCaseRespondentEmail": "appeals.team@cica.gov.uk",
+    "stayIsCaseStayed": "No"
+  }
+}

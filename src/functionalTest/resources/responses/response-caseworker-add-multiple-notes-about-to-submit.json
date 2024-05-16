@@ -1,0 +1,32 @@
+{
+  "data": {
+    "cicCaseRespondentName": "Appeals team",
+    "cicCaseRespondentOrganisation": "CICA",
+    "cicCaseRespondentEmail": "appeals.team@cica.gov.uk",
+    "notes": [
+      {
+        "id": "1",
+        "value": {
+          "author": "User Test",
+          "date": "${json-unit.any-string}"
+        }
+      },
+      {
+        "id": "2",
+        "value": {
+          "author": "User Test",
+          "date": "${json-unit.any-string}"
+        }
+      },
+      {
+        "id": "3",
+        "value": {
+          "author": "User Test",
+          "date": "${json-unit.any-string}"
+        }
+      }
+    ],
+    "stayIsCaseStayed": "No",
+    "hyphenatedCaseRef": "1234-5678-9012-3456"
+  }
+}

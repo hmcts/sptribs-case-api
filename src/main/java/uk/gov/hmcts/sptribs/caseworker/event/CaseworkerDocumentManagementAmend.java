@@ -101,6 +101,19 @@ public class CaseworkerDocumentManagementAmend implements CCDConfig<CaseData, St
         amendDocuments.addTo(pageBuilder);
     }
 
+    public AboutToStartOrSubmitResponse<CaseData, State> aboutToStart(CaseDetails<CaseData, State> details) {
+        var caseData = details.getData();
+        var cicCase = caseData.getCicCase();
+
+        DynamicList documentList = DocumentListUtil.prepareCICDocumentListWithAllDocuments(caseData);
+        cicCase.setAmendDocumentList(documentList);
+
+        return AboutToStartOrSubmitResponse.<CaseData, State>builder()
+            .data(caseData)
+            .build();
+
+    }
+
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(
         final CaseDetails<CaseData, State> details,
         final CaseDetails<CaseData, State> beforeDetails
@@ -133,19 +146,6 @@ public class CaseworkerDocumentManagementAmend implements CCDConfig<CaseData, St
         cicCase.setSelectedDocument(null);
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(data)
-            .build();
-
-    }
-
-    public AboutToStartOrSubmitResponse<CaseData, State> aboutToStart(CaseDetails<CaseData, State> details) {
-        var caseData = details.getData();
-        var cicCase = caseData.getCicCase();
-
-        DynamicList documentList = DocumentListUtil.prepareCICDocumentListWithAllDocuments(caseData);
-        cicCase.setAmendDocumentList(documentList);
-
-        return AboutToStartOrSubmitResponse.<CaseData, State>builder()
-            .data(caseData)
             .build();
 
     }
