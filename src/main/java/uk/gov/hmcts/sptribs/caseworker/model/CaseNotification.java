@@ -57,9 +57,9 @@ public class CaseNotification {
     )
     private String party;
 
-    @CCD(
-        label = "Document URL",
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
-    )
-    private Document document;
+//    @CCD(
+//        label = "Document URL",
+//        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+//    )
+//    private Document document;
 }
