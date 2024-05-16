@@ -36,7 +36,26 @@ public enum UserRolesForAccessProfiles implements HasRole {
     AC_CASEWORKER("caseworker", "CRU"),
     AC_CITIZEN("citizen", "CRU"),
     AC_CASEFLAGS_ADMIN("caseflags-admin", "CRU"),
-    AC_CASEFLAGS_VIEWER("caseflags-viewer", "R");
+    AC_CASEFLAGS_VIEWER("caseflags-viewer", "R"),
+
+    // Below are the RAS Roles
+    RAS_ST_SENIOR_TRIBUNAL_CASEWORKER("senior-tribunal-caseworker", "CRU"),
+    RAS_ST_TRIBUNAL_CASEWORKER("tribunal-caseworker", "CRU"),
+    RAS_ST_HEARING_CENTRE_TEAM_LEADER("hearing-centre-team-leader", "CRU"),
+    RAS_ST_HEARING_CENTRE_ADMIN("hearing-centre-admin", "CRU"),
+    RAS_ST_REGIONAL_CENTRE_TEAM_LEADER("regional-centre-team-leader", "CRU"),
+    RAS_ST_REGIONAL_CENTRE_ADMIN("regional-centre-admin", "CRU"),
+    RAS_ST_CICA("cica", "CRU"),
+    RAS_ST_CTSC_TEAM_LEADER("ctsc-team-leader", "CRU"),
+    RAS_ST_CTSC("ctsc", "CRU"),
+    RAS_ST_CASE_ALLOCATOR("case-allocator", "CRU"),
+    RAS_ST_TASK_SUPERVISOR("task-supervisor", "CRU"),
+    RAS_ST_HMCTS_LEGAL_OPERATIONS("hmcts-legal-operations", "CRU"),
+    RAS_ST_SPECIFIC_ACCESS_APPROVER_LEGAL_OPS("specific-access-approver-legal-ops", "CRU"),
+    RAS_ST_HMCTS_ADMIN("hmcts-admin", "CRU"),
+    RAS_ST_SPECIFIC_ACCESS_APPROVER_ADMIN("specific-access-approver-admin", "CRU"),
+    RAS_ST_HMCTS_CTSC("hmcts-ctsc", "CRU"),
+    RAS_ST_SPECIFIC_ACCESS_APPROVER_CTSC("specific-access-approver-ctsc", "CRU");
 
     @JsonValue
     private final String role;

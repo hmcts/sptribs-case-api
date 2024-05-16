@@ -69,5 +69,65 @@ public class CICAccessProfile implements CCDConfig<CriminalInjuriesCompensationD
         configBuilder.caseRoleToAccessProfile(UserRolesForAccessProfiles.SYSTEMUPDATE)
             .accessProfiles(UserRolesForAccessProfiles.AC_SYSTEMUPDATE.getRole())
             .build();
+        configBuilder.caseRoleToAccessProfile(UserRolesForAccessProfiles.RAS_ST_SENIOR_TRIBUNAL_CASEWORKER)
+            .accessProfiles(UserRolesForAccessProfiles.CIC_SENIOR_CASEWORKER.getRole(),
+                UserRolesForAccessProfiles.AC_CASEFLAGS_ADMIN.getRole())
+            .build();
+        configBuilder.caseRoleToAccessProfile(UserRolesForAccessProfiles.RAS_ST_TRIBUNAL_CASEWORKER)
+            .accessProfiles(UserRolesForAccessProfiles.CIC_CASEWORKER.getRole(),
+                UserRolesForAccessProfiles.AC_CASEFLAGS_ADMIN.getRole())
+            .build();
+        configBuilder.caseRoleToAccessProfile(UserRolesForAccessProfiles.RAS_ST_REGIONAL_CENTRE_TEAM_LEADER)
+            .accessProfiles(UserRolesForAccessProfiles.RAS_ST_HEARING_CENTRE_TEAM_LEADER.getRole(),
+                UserRolesForAccessProfiles.AC_CASEFLAGS_ADMIN.getRole())
+            .build();
+        configBuilder.caseRoleToAccessProfile(UserRolesForAccessProfiles.RAS_ST_HEARING_CENTRE_TEAM_LEADER)
+            .accessProfiles(UserRolesForAccessProfiles.CIC_CENTRE_TEAM_LEADER.getRole(),
+                UserRolesForAccessProfiles.AC_CASEFLAGS_ADMIN.getRole())
+            .build();
+        configBuilder.caseRoleToAccessProfile(UserRolesForAccessProfiles.RAS_ST_CTSC_TEAM_LEADER)
+            .accessProfiles(UserRolesForAccessProfiles.CIC_CENTRE_TEAM_LEADER.getRole(),
+                UserRolesForAccessProfiles.AC_CASEFLAGS_ADMIN.getRole())
+            .build();
+        configBuilder.caseRoleToAccessProfile(UserRolesForAccessProfiles.RAS_ST_REGIONAL_CENTRE_ADMIN)
+            .accessProfiles(UserRolesForAccessProfiles.CIC_CENTRE_ADMIN.getRole(),
+                UserRolesForAccessProfiles.AC_CASEFLAGS_ADMIN.getRole())
+            .build();
+        configBuilder.caseRoleToAccessProfile(UserRolesForAccessProfiles.RAS_ST_HEARING_CENTRE_ADMIN)
+            .accessProfiles(UserRolesForAccessProfiles.CIC_CENTRE_ADMIN.getRole(),
+                UserRolesForAccessProfiles.AC_CASEFLAGS_ADMIN.getRole())
+            .build();
+        configBuilder.caseRoleToAccessProfile(UserRolesForAccessProfiles.RAS_ST_CTSC)
+            .accessProfiles(UserRolesForAccessProfiles.CIC_CENTRE_ADMIN.getRole(),
+                UserRolesForAccessProfiles.AC_CASEFLAGS_ADMIN.getRole())
+            .build();
+        configBuilder.caseRoleToAccessProfile(UserRolesForAccessProfiles.RAS_ST_CICA)
+            .accessProfiles(UserRolesForAccessProfiles.CIC_RESPONDENT.getRole(),
+                UserRolesForAccessProfiles.AC_CASEFLAGS_ADMIN.getRole())
+            .build();
+        /*configBuilder.caseRoleToAccessProfile(UserRolesForAccessProfiles.RAS_ST_SPECIFIC_ACCESS_APPROVER_LEGAL_OPS)
+            .accessProfiles()
+            .build();
+        configBuilder.caseRoleToAccessProfile(UserRolesForAccessProfiles.RAS_ST_SPECIFIC_ACCESS_APPROVER_CTSC)
+            .accessProfiles()
+            .build();
+        configBuilder.caseRoleToAccessProfile(UserRolesForAccessProfiles.RAS_ST_SPECIFIC_ACCESS_APPROVER_ADMIN)
+            .accessProfiles()
+            .build();
+        configBuilder.caseRoleToAccessProfile(UserRolesForAccessProfiles.RAS_ST_HMCTS_LEGAL_OPERATIONS)
+            .accessProfiles()
+            .build();
+        configBuilder.caseRoleToAccessProfile(UserRolesForAccessProfiles.RAS_ST_HMCTS_CTSC)
+            .accessProfiles()
+            .build();
+        configBuilder.caseRoleToAccessProfile(UserRolesForAccessProfiles.RAS_ST_HMCTS_ADMIN)
+            .accessProfiles()
+            .build();
+        configBuilder.caseRoleToAccessProfile(UserRolesForAccessProfiles.RAS_ST_TASK_SUPERVISOR)
+            .accessProfiles()
+            .build();
+        configBuilder.caseRoleToAccessProfile(UserRolesForAccessProfiles.RAS_ST_CASE_ALLOCATOR)
+            .accessProfiles()
+            .build();*/
     }
 }
