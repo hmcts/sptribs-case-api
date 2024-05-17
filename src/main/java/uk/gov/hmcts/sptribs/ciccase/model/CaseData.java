@@ -47,6 +47,7 @@ import uk.gov.hmcts.sptribs.document.bundling.model.Bundle;
 import uk.gov.hmcts.sptribs.document.bundling.model.MultiBundleConfig;
 import uk.gov.hmcts.sptribs.document.model.AbstractCaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
+import uk.gov.hmcts.sptribs.model.CaseNotification;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -455,6 +456,19 @@ public class CaseData {
     @CCD(access = {DefaultAccess.class})
     @JsonUnwrapped
     private RetiredFields retiredFields;
+
+    @CCD(
+        label = "Correspondence",
+        typeOverride = Collection,
+        typeParameterOverride = "CaseNotification",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    @Builder.Default
+    private List<CaseNotification> caseNotifications = new ArrayList<>();
+
+    @CCD(access = {DefaultAccess.class})
+    @Builder.Default
+    private Boolean sendNotifcations = false;
 
     public String getFirstHearingDate() {
 
