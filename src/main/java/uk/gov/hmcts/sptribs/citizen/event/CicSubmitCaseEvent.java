@@ -84,6 +84,7 @@ public class CicSubmitCaseEvent implements CCDConfig<CaseData, State, UserRole> 
             .forStateTransition(DSS_Draft, DSS_Submitted)
             .name("Submit case (cic)")
             .description("Application submit (cic)")
+            .publishToCamunda()
             .retries(120, 120)
             .grant(CREATE_READ_UPDATE_DELETE, CITIZEN)
             .grant(CREATE_READ_UPDATE, SYSTEM_UPDATE, CREATOR)

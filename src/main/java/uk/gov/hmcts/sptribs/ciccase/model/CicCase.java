@@ -49,6 +49,10 @@ import static uk.gov.hmcts.ccd.sdk.type.FieldType.TextArea;
 @Builder(toBuilder = true)
 @JsonNaming(PropertyNamingStrategies.UpperCamelCaseStrategy.class)
 public class CicCase {
+    @CCD(
+        access = {DefaultAccess.class}
+    )
+    private String referralTypeForWA;
 
     @CCD(
         label = "Preview order",

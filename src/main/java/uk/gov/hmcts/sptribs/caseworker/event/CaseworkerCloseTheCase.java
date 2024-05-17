@@ -92,6 +92,7 @@ public class CaseworkerCloseTheCase implements CCDConfig<CaseData, State, UserRo
             .forStates(CaseManagement, ReadyToList)
             .name("Case: Close case")
             .description("Close the case")
+            .publishToCamunda()
             .showSummary()
             .aboutToStartCallback(this::aboutToStart)
             .aboutToSubmitCallback(this::aboutToSubmit)

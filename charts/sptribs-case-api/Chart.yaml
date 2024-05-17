@@ -43,3 +43,19 @@ dependencies:
     version: 1.0.31
     repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
     condition: em-stitching.enabled
+  - name: camunda-bpm
+    version: 0.0.9
+    repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
+    condition: camunda-bpm.enabled
+  - name: wa
+    version: ~1.0.4
+    repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
+    condition: wa.enabled
+  - name: servicebus
+    version: 1.0.4
+    repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
+    condition: servicebus.enabled
+  - name: am-org-role-mapping-service
+    version: ~0.0.48
+    repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
+    condition: am-org-role-mapping-service.enabled

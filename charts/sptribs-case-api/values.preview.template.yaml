@@ -102,8 +102,12 @@ ccd:
     dmStoreUrl: http://dm-store-aat.service.core-compute-aat.internal
     ccdAdminWebIngress: admin-web-${SERVICE_FQDN}
     ccdApiGatewayIngress: gateway-${SERVICE_FQDN}
+    ccdCaseManagementWebIngress: case-management-web-${SERVICE_FQDN}
     postgresUsername: ${CCD_GLOBAL_POSTGRES_USERNAME_PREVIEW}
     postgresPassword: ${CCD_GLOBAL_POSTGRES_PASSWORD_PREVIEW}
+    postgresSecret: postgres
+    postgresHostname: sptribs-preview.postgres.database.azure.com
+    databaseNamePrefix: "pr-${CHANGE_ID}-"
     s2sUrl: http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
 
   ccd-api-gateway-web:
@@ -129,7 +133,7 @@ ccd:
         DATA_STORE_IDAM_KEY: ${DATA_STORE_S2S_KEY}
         DATA_STORE_DEFAULT_LOG_LEVEL: info
         LOG_CALLBACK_DETAILS: "*"
-        DATA_STORE_S2S_AUTHORISED_SERVICES: ccd_gw,ccd_gateway,ccd_data,aac_manage_case_assignment,xui_webapp,ccd_case_document_am_api,sptribs_frontend,sptribs_case_api,em_ccd_orchestrator
+        DATA_STORE_S2S_AUTHORISED_SERVICES: ccd_gw,ccd_gateway,ccd_data,ccd_ps,aac_manage_case_assignment,xui_webapp,ccd_case_document_am_api,sptribs_frontend,sptribs_case_api,em_ccd_orchestrator,wa_workflow_api,wa_task_configuration_api,wa_task_management_api,wa_task_monitor,wa_case_event_handler,am_role_assignment_service
         CCD_S2S_AUTHORISED_SERVICES_CASE_USER_ROLES: aac_manage_case_assignment,fpl_case_service,finrem_case_orchestration,iac,sptribs_frontend,civil_service,sptribs_case_api
         ELASTIC_SEARCH_ENABLED: true
         ELASTIC_SEARCH_HOSTS: ${SERVICE_NAME}-es-master:9200
@@ -154,6 +158,21 @@ ccd:
       environment:
         CCD_DATA_STORE_URL: http://{{ .Release.Name }}-ccd-data-store-api
         RUN_LD_ON_STARTUP: false
+      ingressHost: am-role-assignment-${SERVICE_FQDN}
+      ROLE_ASSIGNMENT_S2S_AUTHORISED_SERVICES: ccd_gw,am_role_assignment_service,am_org_role_mapping_service,wa_task_management_api,wa_task_configuration_api,xui_webapp,aac_manage_case_assignment,ccd_data,wa_workflow_api,wa_task_monitor,wa_case_event_handler,iac,hmc_cft_hearing_service,ccd_case_disposer,sscs,fis_hmc_api,sptribs_frontend,sptribs_case_api
+      keyVaults:
+        am:
+          secrets:
+            - name: am-role-assignment-service-s2s-secret
+              alias: AM_ROLE_ASSIGNMENT_SERVICE_SECRET
+            - name: app-insights-connection-string
+              alias: app-insights-connection-string
+            - name: role-assignment-service-IDAM-CLIENT-SECRET
+              alias: ROLE_ASSIGNMENT_IDAM_CLIENT_SECRET
+            - name: role-assignment-service-IDAM-ADMIN-SECRET
+              alias: ROLE_ASSIGNMENT_IDAM_ADMIN_PASSWORD
+            - name: role-assignment-service-LD-SDK-KEY
+              alias: LD_SDK_KEY
 
   ccd-definition-store-api:
     java:
@@ -415,9 +434,10 @@ xui-webapp:
     releaseNameOverride: ${SERVICE_NAME}-xui-webapp
     image: hmctspublic.azurecr.io/xui/webapp:latest
     ingressHost: xui-${SERVICE_FQDN}
-    devcpuRequests: 250m
-    devmemoryRequests: 1024Mi
-    devmemoryLimits: 1024Mi
+    devcpuRequests: 500m
+    devmemoryRequests: 1Gi
+    devcpuLimits: 1
+    devmemoryLimits: 4Gi
     environment:
       SERVICES_CCD_COMPONENT_API: http://{{ .Release.Name }}-ccd-api-gw
       SERVICES_CCD_DATA_STORE_API: http://{{ .Release.Name }}-ccd-data-store-api
@@ -425,11 +445,17 @@ xui-webapp:
       SERVICES_CCD_CASE_ASSIGNMENT_API: http://{{ .Release.Name }}-aac-manage-case-assignment
       JURISDICTIONS: ST_CIC,ST_CS,ST_MH,ST_PHL,ST_SEN,ST_DD
       CASE_TYPES: CIC,CS,MH,PHL,SEN,DD
+      WA_SUPPORTED_JURISDICTIONS: ST_CIC
+      GLOBAL_SEARCH_SERVICES: IA,CIVIL,PRIVATELAW,PUBLICLAW,SCSS,ST_CIC,EMPLOYMENT
+      SERVICES_WORK_ALLOCATION_TASK_API: http://{{ .Release.Name }}-wa-task-management-api
+      SERVICES_WA_WORKFLOW_API_URL: http://{{ .Release.Name }}-wa-workflow-api
       FEATURE_REDIS_ENABLED: false
+      FEATURE_WORK_ALLOCATION_ENABLED: true
       FEATURE_APP_INSIGHTS_ENABLED: true
       NODE_OPTIONS: --max-old-space-size=900
       HEALTH_ROLE_ASSIGNMENT_API: http://sptribs-case-api-pr-${CHANGE_ID}-am-role-assignment-service
       SERVICES_ROLE_ASSIGNMENT_API: http://sptribs-case-api-pr-${CHANGE_ID}-am-role-assignment-service
+      SERVICES_ROLE_ASSIGNMENT_MAPPING_API: http://sptribs-case-api-pr-${CHANGE_ID}-am-org-role-mapping-service
 
 xui-mo-webapp:
   enabled: true
@@ -533,4 +559,139 @@ em-stitching:
       RUN_DB_MIGRATION_ON_STARTUP: true
       FLYWAY_POSTGRESQL_TRANSACTIONAL_LOCK: false
       LOGGING_LEVEL_UK_GOV_HMCTS_REFORM_EM: DEBUG
+wa:
+  enabled: true
+  global:
+    postgresUsername: hmcts
+    postgresSecret: postgres
+    postgresHost: sptribs-preview.postgres.database.azure.com
+    databaseNamePrefix: "pr-${CHANGE_ID}-"
+  wa-initiation-batch:
+    job:
+      releaseNameOverride: "{{ .Release.Name }}-wa-task-batch"
+  wa-reconfiguration-batch:
+    job:
+      releaseNameOverride: "{{ .Release.Name }}-reconfiguration"
+  wa-termination-batch:
+    job:
+      releaseNameOverride: "{{ .Release.Name }}-termination-batch"
+  wa-message-cron-service:
+    job:
+      releaseNameOverride: "{{ .Release.Name }}-wa-message-cron"
 
+  camunda-bpm:
+    java:
+      environment:
+        CAMUNDA_DB_CONN_OPTIONS: "?stringtype=unspecified&reWriteBatchedInserts=true&sslmode=require"
+
+  wa-task-management-api:
+    java:
+      ingressHost: wa-task-management-api-${SERVICE_FQDN}
+      environment:
+        CAMUNDA_URL: "http://{{ .Release.Name }}-camunda/engine-rest"
+        IDAM_URL: "https://idam-api.{{ .Values.global.environment }}.platform.hmcts.net"
+        S2S_URL: "http://rpe-service-auth-provider-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal"
+        OPEN_ID_IDAM_URL: "https://idam-web-public.{{ .Values.global.environment }}.platform.hmcts.net"
+        ROLE_ASSIGNMENT_URL: https://am-role-assignment-${SERVICE_FQDN}
+        ALLOWED_JURISDICTIONS: ST_CIC
+        ALLOWED_CASE_TYPES: criminalinjuriescompensation
+
+  wa-case-event-handler:
+    java:
+      ingressHost: wa-case-event-handler-${SERVICE_FQDN}
+      releaseNameOverride: ${SERVICE_NAME}-wa-case-event-handler
+      secrets:
+        AZURE_SERVICE_BUS_CONNECTION_STRING:
+          secretRef: sptribs-sb-preview
+          key: connectionString
+      environment:
+        CAMUNDA_URL: "http://{{ .Release.Name }}-camunda/engine-rest"
+        CCD_URL: "http://{{ .Release.Name }}-ccd-data-store-api"
+        CCD_SEARCH_URL: "http://{{ .Release.Name }}-ccd-data-store-api"
+        ROLE_ASSIGNMENT_URL: http://sptribs-case-api-pr-${CHANGE_ID}-am-role-assignment-service
+        WA_WORKFLOW_API_URL: "http://{{ .Release.Name }}-wa-workflow-api"
+        WA_TASK_MANAGEMENT_API_URL: "http://{{ .Release.Name }}-wa-task-management-api"
+        AZURE_SERVICE_BUS_TOPIC_NAME: ${SERVICE_NAME}-ccd-case-events
+        AZURE_SERVICE_BUS_SUBSCRIPTION_NAME: ${SERVICE_NAME}-ccd-case-events
+        AZURE_SERVICE_BUS_CCD_CASE_EVENTS_SUBSCRIPTION_NAME: ${SERVICE_NAME}-ccd-case-events
+  wa-task-monitor:
+    java:
+      ingressHost: wa-task-monitor-${SERVICE_FQDN}
+      environment:
+        WA_TASK_MANAGEMENT_API_URL: http://{{ .Release.Name }}-wa-task-management-api
+  wa:
+    postgresql:
+      enabled: false
+
+am-org-role-mapping-service:
+  enabled: true
+  java:
+    image: 'hmctspublic.azurecr.io/am/org-role-mapping-service:latest'
+    ingressHost: am-org-role-mapping-service-${SERVICE_FQDN}
+    releaseNameOverride: ${SERVICE_NAME}-am-org-role-mapping-service
+    devmemoryRequests: 1024Mi
+    devcpuRequests: 250m
+    devmemoryLimits: 2048Mi
+    devcpuLimits: 1500m
+    keyVaults:
+      am:
+        secrets:
+          - name: app-insights-connection-string
+            alias: app-insights-connection-string
+          - name: am-org-role-mapping-service-s2s-secret
+            alias: AM_ORG_ROLE_MAPPING_SERVICE_SECRET
+          - name: role-assignment-service-LD-SDK-KEY
+            alias: LD_SDK_KEY
+          - name: orm-IDAM-CLIENT-ID
+            alias: ORM_IDAM_CLIENT_ID
+          - name: orm-IDAM-CLIENT-SECRET
+            alias: ORG_ROLE_MAPPING_IDAM_CLIENT_SECRET
+          - name: orm-IDAM-ADMIN-SECRET
+            alias: ORG_ROLE_MAPPING_IDAM_ADMIN_PASSWORD
+          - name: caseworker-topic-primary-send-listen-shared-access-key
+            alias: AMQP_CRD_SHARED_ACCESS_KEY_VALUE
+          - name: judicial-topic-primary-send-listen-shared-access-key
+            alias: AMQP_JRD_SHARED_ACCESS_KEY_VALUE
+    secrets:
+      SB_ACCESS_KEY:
+        secretRef: sptribs-sb-preview
+        key: primaryKey
+      SB_CONNECTION_STRING:
+        secretRef: sptribs-sb-preview
+        key: connectionString
+      ORG_ROLE_MAPPING_DB_PASSWORD:
+        secretRef: postgres
+        key: PASSWORD
+        disabled: false
+    environment:
+      ROLE_ASSIGNMENT_URL: http://sptribs-case-api-pr-${CHANGE_ID}-am-role-assignment-service
+      LAUNCH_DARKLY_ENV: pr
+      AMQP_SHARED_ACCESS_KEY_NAME: RootManageSharedAccessKey
+      AMQP_HOST: "sptribs-sb-preview.servicebus.windows.net"
+      CRD_SUBSCRIPTION_NAME: "{{ .Release.Name}}-crd-topic"
+      JRD_SUBSCRIPTION_NAME: "{{ .Release.Name}}-jrd-topic"
+      CRD_TOPIC_NAME: "{{ .Release.Name}}-crd-topic"
+      JRD_TOPIC_NAME: "{{ .Release.Name}}-jrd-topic"
+      AMQP_CRD_SHARED_ACCESS_KEY_VALUE: "$(SB_ACCESS_KEY)"
+      AMQP_JRD_SHARED_ACCESS_KEY_VALUE: "$(SB_ACCESS_KEY)"
+      ORG_ROLE_MAPPING_DB_HOST: sptribs-preview.postgres.database.azure.com
+      ORG_ROLE_MAPPING_DB_NAME: "pr-${CHANGE_ID}-org_role_mapping"
+      ORG_ROLE_MAPPING_DB_USERNAME: hmcts
+      ORG_ROLE_MAPPING_DB_PORT: 5432
+      ORG_ROLE_MAPPING_DB_OPTIONS: "?stringtype=unspecified&reWriteBatchedInserts=true&sslmode=require"
+      RUN_LD_ON_STARTUP: true
+
+servicebus:
+  enabled: true
+  releaseNameOverride: ${SERVICE_NAME}
+  resourceGroup: sptribs-aso-preview-rg
+  sbNamespace: sptribs-servicebus-preview
+  setup:
+    topics:
+      - name: ccd-case-events
+        subscriptionNeeded: yes
+        requiresSession: true
+      - name: crd-topic
+        subscriptionNeeded: yes
+      - name: jrd-topic
+        subscriptionNeeded: yes

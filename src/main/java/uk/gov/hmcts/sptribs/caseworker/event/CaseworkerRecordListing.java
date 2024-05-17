@@ -78,6 +78,7 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
             .forStates(CaseManagement, ReadyToList)
             .name("Hearings: Create listing")
             .description("Hearings: Create listing")
+            .publishToCamunda()
             .showSummary()
             .aboutToStartCallback(this::aboutToStart)
             .aboutToSubmitCallback(this::aboutToSubmit)
