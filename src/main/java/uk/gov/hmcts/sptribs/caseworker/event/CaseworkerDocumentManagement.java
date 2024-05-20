@@ -8,13 +8,18 @@ import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
+import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.event.page.UploadCaseDocuments;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
-import uk.gov.hmcts.sptribs.document.DocumentUtil;
+import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
+import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocumentUpload;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_DOCUMENT_MANAGEMENT;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
@@ -36,6 +41,8 @@ import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_CASEWORK
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_JUDGE;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE;
+import static uk.gov.hmcts.sptribs.document.DocumentUtil.convertToCaseworkerCICDocumentUpload;
+import static uk.gov.hmcts.sptribs.document.DocumentUtil.uploadDocument;
 
 @Component
 @Slf4j
@@ -84,7 +91,11 @@ public class CaseworkerDocumentManagement implements CCDConfig<CaseData, State, 
         final CaseDetails<CaseData, State> beforeDetails
     ) {
         final CaseData caseData = details.getData();
-        DocumentUtil.uploadDocument(caseData);
+        List<ListValue<CaseworkerCICDocumentUpload>> uploadedDocuments = caseData.getNewDocManagement().getCaseworkerCICDocumentUpload();
+        List<ListValue<CaseworkerCICDocument>> documents = convertToCaseworkerCICDocumentUpload(uploadedDocuments, true);
+        caseData.getNewDocManagement().setCaseworkerCICDocumentUpload(new ArrayList<>());
+        caseData.getNewDocManagement().setCaseworkerCICDocument(documents);
+        uploadDocument(caseData);
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)

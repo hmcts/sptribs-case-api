@@ -1,9 +1,6 @@
 {
   "data": {
-    "cicCaseRespondentName": "Appeals team",
-    "cicCaseRespondentOrganisation": "CICA",
-    "cicCaseRespondentEmail": "appeals.team@cica.gov.uk",
-    "closeDocumentsUpload": [
+    "allCaseworkerCICDocument": [
       {
         "id": "1",
         "value": {
@@ -14,7 +11,8 @@
             "document_filename": "mockFile.pdf",
             "document_binary_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/4ee1bc04-47a9-48da-9370-9f6b9c54ccaa/binary",
             "category_id": "DSS"
-          }
+          },
+          "date": "${json-unit.any-string}"
         }
       },
       {
@@ -27,7 +25,8 @@
             "document_filename": "mockFile.txt",
             "document_binary_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/9d046706-8fa5-4c24-968d-f0aa30a9ceb8/binary",
             "category_id": "DSS"
-          }
+          },
+          "date": "${json-unit.any-string}"
         }
       },
       {
@@ -40,10 +39,18 @@
             "document_filename": "mockFileUpdated.pdf",
             "document_binary_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/328c674f-59c3-418a-b76b-78f2cc52d21a/binary",
             "category_id": "DSS"
-          }
+          },
+          "date": "${json-unit.any-string}"
         }
       }
-    ]
-  },
-  "errors": []
+    ],
+    "allCaseworkerCICDocumentUpload": [],
+    "newCaseworkerCICDocument": [],
+    "newCaseworkerCICDocumentUpload": [],
+    "cicCaseRespondentName": "Appeals team",
+    "cicCaseRespondentOrganisation": "CICA",
+    "cicCaseRespondentEmail": "appeals.team@cica.gov.uk",
+    "stayIsCaseStayed": "No",
+    "dataVersion": 0
+  }
 }

@@ -1,9 +1,6 @@
 {
   "data": {
-    "cicCaseRespondentName": "Appeals team",
-    "cicCaseRespondentOrganisation": "CICA",
-    "cicCaseRespondentEmail": "appeals.team@cica.gov.uk",
-    "closeDocumentsUpload": [
+    "allCaseworkerCICDocument": [
       {
         "id": "1",
         "value": {
@@ -43,7 +40,14 @@
           }
         }
       }
-    ]
-  },
-  "errors": []
+    ],
+    "allCaseworkerCICDocumentUpload": [],
+    "newCaseworkerCICDocument": [],
+    "newCaseworkerCICDocumentUpload": [],
+    "cicCaseRespondentName": "Appeals team",
+    "cicCaseRespondentOrganisation": "CICA",
+    "cicCaseRespondentEmail": "appeals.team@cica.gov.uk",
+    "stayIsCaseStayed": "No",
+    "dataVersion": 0
+  }
 }
