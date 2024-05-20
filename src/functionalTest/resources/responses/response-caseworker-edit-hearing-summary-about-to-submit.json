@@ -3,7 +3,8 @@
     "cicCaseRespondentName": "Appeals team",
     "cicCaseRespondentOrganisation": "CICA",
     "cicCaseRespondentEmail": "appeals.team@cica.gov.uk",
-    "closeDocumentsUpload": [
+    "stayIsCaseStayed": "No",
+    "recFile": [
       {
         "id": "1",
         "value": {
@@ -11,7 +12,7 @@
           "documentEmailContent": "a relevant doc",
           "documentLink": {
             "document_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/4ee1bc04-47a9-48da-9370-9f6b9c54ccaa",
-            "document_filename": "mockFile.pdf",
+            "document_filename": "mockFile.mp3",
             "document_binary_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/4ee1bc04-47a9-48da-9370-9f6b9c54ccaa/binary",
             "category_id": "DSS"
           }
@@ -24,7 +25,7 @@
           "documentEmailContent": "a relevant doc",
           "documentLink": {
             "document_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/9d046706-8fa5-4c24-968d-f0aa30a9ceb8",
-            "document_filename": "mockFile.txt",
+            "document_filename": "mockFile.mp3",
             "document_binary_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/9d046706-8fa5-4c24-968d-f0aa30a9ceb8/binary",
             "category_id": "DSS"
           }
@@ -37,13 +38,15 @@
           "documentEmailContent": "a relevant doc",
           "documentLink": {
             "document_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/328c674f-59c3-418a-b76b-78f2cc52d21a",
-            "document_filename": "mockFileUpdated.pdf",
+            "document_filename": "mockFileUpdated.mp3",
             "document_binary_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/328c674f-59c3-418a-b76b-78f2cc52d21a/binary",
             "category_id": "DSS"
           }
         }
       }
-    ]
+    ],
+    "recFileUpload": [],
+    "dataVersion": 0
   },
-  "errors": []
+  "state": "AwaitingOutcome"
 }

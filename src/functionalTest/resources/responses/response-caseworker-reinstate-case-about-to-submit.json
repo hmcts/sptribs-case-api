@@ -3,7 +3,7 @@
     "cicCaseRespondentName": "Appeals team",
     "cicCaseRespondentOrganisation": "CICA",
     "cicCaseRespondentEmail": "appeals.team@cica.gov.uk",
-    "closeDocumentsUpload": [
+    "cicCaseReinstateDocuments": [
       {
         "id": "1",
         "value": {
@@ -45,5 +45,5 @@
       }
     ]
   },
-  "errors": []
+  "state": "CaseManagement"
 }

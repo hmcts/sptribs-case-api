@@ -14,6 +14,7 @@ import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerWithCAAAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.DefaultAccess;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
+import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocumentUpload;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -119,4 +120,12 @@ public class CloseCase {
         access = {DefaultAccess.class}
     )
     private List<ListValue<CaseworkerCICDocument>>  documents;
+
+    @CCD(
+        label = "Close case documents",
+        typeOverride = Collection,
+        typeParameterOverride = "CaseworkerCICDocumentUpload",
+        access = {DefaultAccess.class}
+    )
+    private List<ListValue<CaseworkerCICDocumentUpload>>  documentsUpload;
 }

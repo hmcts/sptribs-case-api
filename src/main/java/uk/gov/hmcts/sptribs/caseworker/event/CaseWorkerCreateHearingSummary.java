@@ -39,7 +39,7 @@ import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_CASEWORK
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_JUDGE;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE;
-import static uk.gov.hmcts.sptribs.document.DocumentUtil.updateCategoryToCaseworkerDocument;
+import static uk.gov.hmcts.sptribs.document.DocumentUtil.uploadRecFile;
 
 @Component
 @Slf4j
@@ -120,8 +120,8 @@ public class CaseWorkerCreateHearingSummary implements CCDConfig<CaseData, State
         caseData.getListing().getSummary().setJudgeList(null);
         caseData.setListing(recordListHelper.saveSummary(details.getData()));
         caseData.setCurrentEvent("");
+        uploadRecFile(caseData);
 
-        updateCategoryToCaseworkerDocument(caseData.getListing().getSummary().getRecFile());
         hearingService.updateHearingList(caseData);
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
