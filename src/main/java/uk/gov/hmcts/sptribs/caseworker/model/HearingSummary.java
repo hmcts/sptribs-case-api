@@ -20,6 +20,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerWithCAAAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CollectionDefaultAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.DefaultAccess;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
+import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocumentUpload;
 
 import java.util.List;
 import java.util.Set;
@@ -129,6 +130,14 @@ public class HearingSummary {
         access = {CollectionDefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private List<ListValue<CaseworkerCICDocument>> recFile;
+
+    @CCD(
+        label = "Upload the recording of the hearing",
+        typeOverride = Collection,
+        typeParameterOverride = "CaseworkerCICDocumentUpload",
+        access = {CollectionDefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private List<ListValue<CaseworkerCICDocumentUpload>> recFileUpload;
 
     @CCD(
         label = "Panel 1",
