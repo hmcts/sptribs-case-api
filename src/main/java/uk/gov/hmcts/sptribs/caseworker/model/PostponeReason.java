@@ -44,9 +44,9 @@ public enum PostponeReason implements HasLabel {
     FACE_TO_FACE_HEARING_REQUIRED("Face to face hearing required", "Face to face hearing required"),
 
 
-    @JsonProperty(" Last minute submissions i.e. 1-2 weeks prior to hearing")
-    LAST_MINUTE_SUBMISSION(" Last minute submissions i.e. 1-2 weeks prior to hearing",
-        " Last minute submissions i.e. 1-2 weeks prior to hearing"),
+    @JsonProperty("Last minute submissions i.e. 1-2 weeks prior to hearing")
+    LAST_MINUTE_SUBMISSION("Last minute submissions i.e. 1-2 weeks prior to hearing",
+        "Last minute submissions i.e. 1-2 weeks prior to hearing"),
 
     @JsonProperty("Linked cases - to be heard together")
     LINKED_CASE_TO_BE_HEARD_TOGETHER("Linked cases - to be heard together", "Linked cases - to be heard together"),
@@ -54,21 +54,21 @@ public enum PostponeReason implements HasLabel {
     @JsonProperty("Member excluded - listed in error")
     MEMBER_EXCLUDED_LISTED_IN_ERROR("Member excluded - listed in error", "Member excluded - listed in error"),
 
-    @JsonProperty(" Representative/Solicitor cannot make contact with Appellant")
-    REPRESENTATIVE_CANNOT_MAKE_CONTACT_WITH_APPELLANT(" Representative/Solicitor cannot make contact with Appellant",
-        " Representative/Solicitor cannot make contact with Appellant"),
+    @JsonProperty("Representative/Solicitor cannot make contact with Appellant")
+    REPRESENTATIVE_CANNOT_MAKE_CONTACT_WITH_APPELLANT("Representative/Solicitor cannot make contact with Appellant",
+        "Representative/Solicitor cannot make contact with Appellant"),
 
-    @JsonProperty("  Representative/Solicitor seeking further evidence")
-    REPRESENTATIVE_SEEKING_FURTHER_EVIDENCE("  Representative/Solicitor seeking further evidence",
-        "  Representative/Solicitor seeking further evidence"),
+    @JsonProperty("Representative/Solicitor seeking further evidence")
+    REPRESENTATIVE_SEEKING_FURTHER_EVIDENCE("Representative/Solicitor seeking further evidence",
+        "Representative/Solicitor seeking further evidence"),
 
-    @JsonProperty(" Representative/Solicitor unavailable (holiday/work/appointment/unwell)")
-    REPRESENTATIVE_UNAVAILABLE(" Representative/Solicitor unavailable (holiday/work/appointment/unwell)",
-        " Representative/Solicitor unavailable (holiday/work/appointment/unwell)"),
+    @JsonProperty("Representative/Solicitor unavailable (holiday/work/appointment/unwell)")
+    REPRESENTATIVE_UNAVAILABLE("Representative/Solicitor unavailable (holiday/work/appointment/unwell)",
+        "Representative/Solicitor unavailable (holiday/work/appointment/unwell)"),
 
-    @JsonProperty(" Tribunal members unavailable (holiday/work/appointment/unwell)")
-    TRIBUNAL_MEMBER_UNAVAILABLE(" Tribunal members unavailable (holiday/work/appointment/unwell)",
-        " Tribunal members unavailable (holiday/work/appointment/unwell)"),
+    @JsonProperty("Tribunal members unavailable (holiday/work/appointment/unwell)")
+    TRIBUNAL_MEMBER_UNAVAILABLE("Tribunal members unavailable (holiday/work/appointment/unwell)",
+        "Tribunal members unavailable (holiday/work/appointment/unwell)"),
 
     @JsonProperty("Tribunal members deemed listing time directed inadequate")
     TRIBUNAL_MEMBER_DEEMED_LISTING_TIME_DIRECTED_INEDEQUATE("Tribunal members deemed listing time directed inadequate",
