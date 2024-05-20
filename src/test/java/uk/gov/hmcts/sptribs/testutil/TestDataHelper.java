@@ -30,6 +30,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.common.ccd.CcdCaseType;
 import uk.gov.hmcts.sptribs.document.model.CICDocument;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
+import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocumentUpload;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
 
 import java.time.LocalDate;
@@ -409,6 +410,17 @@ public class TestDataHelper {
         return documentListValue;
     }
 
+    public static ListValue<CaseworkerCICDocumentUpload> getCaseworkerCICDocumentUpload(String fileName) {
+        final CaseworkerCICDocumentUpload document = CaseworkerCICDocumentUpload.builder()
+            .documentLink(Document.builder().filename(fileName).build())
+            .documentCategory(DocumentType.LINKED_DOCS)
+            .documentEmailContent("some email content")
+            .build();
+        ListValue<CaseworkerCICDocumentUpload> documentListValue = new ListValue<>();
+        documentListValue.setValue(document);
+        return documentListValue;
+    }
+
     public static List<ListValue<CICDocument>> getCICDocumentList(String fileName) {
         List<ListValue<CICDocument>> documentList = new ArrayList<>();
         final CICDocument document = CICDocument.builder()
@@ -475,6 +487,19 @@ public class TestDataHelper {
             .build();
         List<ListValue<CaseworkerCICDocument>> documentList = new ArrayList<>();
         ListValue<CaseworkerCICDocument> caseworkerCICDocumentListValue = new ListValue<>();
+        caseworkerCICDocumentListValue.setValue(caseworkerCICDocument);
+        documentList.add(caseworkerCICDocumentListValue);
+        return documentList;
+    }
+
+    public static List<ListValue<CaseworkerCICDocumentUpload>> getCaseworkerCICDocumentUploadList(String fileName) {
+        final CaseworkerCICDocumentUpload caseworkerCICDocument = CaseworkerCICDocumentUpload.builder()
+            .documentLink(Document.builder().filename(fileName).build())
+            .documentCategory(DocumentType.LINKED_DOCS)
+            .documentEmailContent("some email content")
+            .build();
+        List<ListValue<CaseworkerCICDocumentUpload>> documentList = new ArrayList<>();
+        ListValue<CaseworkerCICDocumentUpload> caseworkerCICDocumentListValue = new ListValue<>();
         caseworkerCICDocumentListValue.setValue(caseworkerCICDocument);
         documentList.add(caseworkerCICDocumentListValue);
         return documentList;
