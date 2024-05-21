@@ -9,6 +9,7 @@ import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.ccd.sdk.type.Flags;
+import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.model.SecurityClass;
@@ -30,8 +31,11 @@ import uk.gov.hmcts.sptribs.common.event.page.SubjectDetails;
 import uk.gov.hmcts.sptribs.common.notification.ApplicationReceivedNotification;
 import uk.gov.hmcts.sptribs.common.service.CcdSupplementaryDataService;
 import uk.gov.hmcts.sptribs.common.service.SubmissionService;
+import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
+import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocumentUpload;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import static java.lang.String.format;
 import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
@@ -42,7 +46,7 @@ import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_HEARING_CENTRE_
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_CASEWORKER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_JUDGE;
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE;
-import static uk.gov.hmcts.sptribs.document.DocumentUtil.updateCategoryToCaseworkerDocument;
+import static uk.gov.hmcts.sptribs.document.DocumentUtil.updateUploadedDocumentCategory;
 
 @Slf4j
 @Component
@@ -102,7 +106,11 @@ public class CreateCase implements CCDConfig<CaseData, State, UserRole> {
         final CaseDetails<CaseData, State> submittedDetails = submissionService.submitApplication(details);
         final CaseData caseData = submittedDetails.getData();
 
-        updateCategoryToCaseworkerDocument(caseData.getCicCase().getApplicantDocumentsUploaded());
+        List<ListValue<CaseworkerCICDocumentUpload>> uploadedDocuments = caseData.getCicCase().getCaseDocumentsUpload();
+        List<ListValue<CaseworkerCICDocument>> documents = updateUploadedDocumentCategory(uploadedDocuments, false);
+        caseData.getCicCase().setCaseDocumentsUpload(new ArrayList<>());
+
+        caseData.getCicCase().setApplicantDocumentsUploaded(documents);
         setIsRepresentativePresent(caseData);
         caseData.setSecurityClass(SecurityClass.PUBLIC);
         caseData.setCaseNameHmctsInternal(caseData.getCicCase().getFullName());

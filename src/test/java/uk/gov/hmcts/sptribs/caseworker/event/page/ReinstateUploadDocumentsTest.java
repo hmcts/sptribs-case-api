@@ -20,7 +20,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.Mockito.times;
 import static uk.gov.hmcts.sptribs.document.DocumentConstants.DOCUMENT_VALIDATION_MESSAGE;
-import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getCaseworkerCICDocumentList;
+import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getCaseworkerCICDocumentUploadList;
 
 @ExtendWith(MockitoExtension.class)
 public class ReinstateUploadDocumentsTest {
@@ -32,18 +32,18 @@ public class ReinstateUploadDocumentsTest {
     void midEventReturnsNoErrorsWithUploadedDocuments() {
         final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
         final CicCase cicCase = CicCase.builder()
-            .reinstateDocuments(getCaseworkerCICDocumentList("file.pdf"))
+            .reinstateDocumentsUpload(getCaseworkerCICDocumentUploadList("file.pdf"))
             .build();
         final CaseData caseData = CaseData.builder()
             .cicCase(cicCase)
             .build();
         caseDetails.setData(caseData);
         final AboutToStartOrSubmitResponse<CaseData, State> response = reinstateUploadDocuments.midEvent(caseDetails, caseDetails);
-        assertThat(response.getData().getCicCase().getReinstateDocuments()).isNotNull();
-        assertThat(response.getData().getCicCase().getReinstateDocuments()).hasSize(1);
-        assertThat(response.getData().getCicCase().getReinstateDocuments().get(0).getValue()).isNotNull();
-        assertThat(response.getData().getCicCase().getReinstateDocuments().get(0).getValue().getDocumentLink()).isNotNull();
-        assertThat(response.getData().getCicCase().getReinstateDocuments().get(0).getValue().getDocumentLink().getFilename())
+        assertThat(response.getData().getCicCase().getReinstateDocumentsUpload()).isNotNull();
+        assertThat(response.getData().getCicCase().getReinstateDocumentsUpload()).hasSize(1);
+        assertThat(response.getData().getCicCase().getReinstateDocumentsUpload().get(0).getValue()).isNotNull();
+        assertThat(response.getData().getCicCase().getReinstateDocumentsUpload().get(0).getValue().getDocumentLink()).isNotNull();
+        assertThat(response.getData().getCicCase().getReinstateDocumentsUpload().get(0).getValue().getDocumentLink().getFilename())
             .isEqualTo("file.pdf");
         assertTrue(response.getErrors().isEmpty());
     }
@@ -52,7 +52,7 @@ public class ReinstateUploadDocumentsTest {
     void midEventReturnsErrorWithWrongDocumentType() {
         final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
         final CicCase cicCase = CicCase.builder()
-            .reinstateDocuments(getCaseworkerCICDocumentList("file.xml"))
+            .reinstateDocumentsUpload(getCaseworkerCICDocumentUploadList("file.xml"))
             .build();
         final CaseData caseData = CaseData.builder()
             .cicCase(cicCase)
@@ -67,7 +67,7 @@ public class ReinstateUploadDocumentsTest {
     void midEventValidatesUploadedDocuments() {
         final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
         final CicCase cicCase = CicCase.builder()
-            .reinstateDocuments(getCaseworkerCICDocumentList("file.xml"))
+            .reinstateDocumentsUpload(getCaseworkerCICDocumentUploadList("file.xml"))
             .build();
         final CaseData caseData = CaseData.builder()
             .cicCase(cicCase)

@@ -34,6 +34,7 @@ import uk.gov.hmcts.sptribs.document.model.EdgeCaseDocument;
 import uk.gov.hmcts.sptribs.idam.IdamService;
 import uk.gov.hmcts.sptribs.util.AppsUtil;
 
+import java.time.Clock;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -75,6 +76,9 @@ public class CicSubmitCaseEvent implements CCDConfig<CaseData, State, UserRole> 
 
     @Autowired
     private DssApplicationReceivedNotification dssApplicationReceivedNotification;
+
+    @Autowired
+    private Clock clock;
 
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
