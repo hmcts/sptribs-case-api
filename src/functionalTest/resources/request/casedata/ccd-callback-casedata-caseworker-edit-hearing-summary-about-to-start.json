@@ -1,0 +1,45 @@
+{
+  "cicCaseHearingList": {
+    "value": {
+      "code": "18b88d33-9da8-4ee0-946d-de71d33e4d6f",
+      "label": "Case management - 21 Apr 2023 09:00"
+    },
+    "list_items": [
+      {
+        "code": "18b88d33-9da8-4ee0-946d-de71d33e4d6f",
+        "label": "Case management - 21 Apr 2023 09:00"
+      }
+    ],
+    "valueCode": "18b88d33-9da8-4ee0-946d-de71d33e4d6f",
+    "valueLabel": "Case management - 21 Apr 2023 09:00"
+  },
+  "hearingList": [
+    {
+      "id": "1",
+      "value": {
+        "hearingType": "CaseManagement",
+        "date": "2023-04-21",
+        "hearingTime": "09:00"
+      }
+    }
+  ],
+  "judge": {
+    "list_items": [
+      {
+        "code": "28f720cd-7b08-4f54-a4ad-7a735ceb5ae7",
+        "label": "District Judge Jonathan Casey"
+      }
+    ]
+  },
+  "judgeList": [
+    {
+      "id": "6",
+      "value": {
+        "uuid": "28f720cd-7b08-4f54-a4ad-7a735ceb5ae7",
+        "judgeFullName": "District Judge Jonathan Casey",
+        "personalCode": "4925500"
+      }
+    }
+  ],
+  "hearingFormat": "Face to Face"
+}

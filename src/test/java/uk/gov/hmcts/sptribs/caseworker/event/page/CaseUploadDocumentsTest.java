@@ -21,7 +21,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.Mockito.times;
-import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getCaseworkerCICDocumentList;
+import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getCaseworkerCICDocumentUploadList;
 
 @ExtendWith(MockitoExtension.class)
 public class CaseUploadDocumentsTest {
@@ -35,7 +35,7 @@ public class CaseUploadDocumentsTest {
     void setUp() {
         caseDetails = new CaseDetails<>();
         final CicCase cicCase = CicCase.builder()
-            .applicantDocumentsUploaded(getCaseworkerCICDocumentList("file.pdf"))
+            .caseDocumentsUpload(getCaseworkerCICDocumentUploadList("file.pdf"))
             .build();
         final CaseData caseData = CaseData.builder()
             .cicCase(cicCase)
@@ -46,7 +46,7 @@ public class CaseUploadDocumentsTest {
     @Test
     void midEventReturnsNoErrorsWithUploadedDocuments() {
         final AboutToStartOrSubmitResponse<CaseData, State> response = caseUploadDocuments.midEvent(caseDetails, caseDetails);
-        assertThat(response.getData().getCicCase().getApplicantDocumentsUploaded()).isNotNull();
+        assertThat(response.getData().getCicCase().getCaseDocumentsUpload()).isNotNull();
         assertTrue(response.getErrors().isEmpty());
     }
 
