@@ -191,7 +191,7 @@ public class Case {
             .hasText("Upload tribunal forms", textOptionsWithTimeout(60000));
         clickButton(page, "Add new");
         String documentCategory = "A - Application Form";
-        page.selectOption("#cicCaseApplicantDocumentsUploaded_0_documentCategory", new SelectOption().setLabel(documentCategory));
+        page.selectOption("#cicCaseApplicantDocumentsUpload_0_documentCategory", new SelectOption().setLabel(documentCategory));
         String documentName = "sample_A_application_document.pdf";
         page.setInputFiles("input[type='file']", Paths.get("src/e2eTests/java/uk/gov/hmcts/sptribs/testutils/files/" + documentName));
         page.waitForSelector("//span[contains(text(), 'Uploading...')]",
@@ -199,7 +199,7 @@ public class Case {
         page.waitForFunction("selector => document.querySelector(selector).disabled === true",
             "button[aria-label='Cancel upload']", functionOptionsWithTimeout(15000));
         String documentDescription = "This is a test document uploaded during create case journey";
-        page.locator("#cicCaseApplicantDocumentsUploaded_0_documentEmailContent").type(documentDescription);
+        page.locator("#cicCaseApplicantDocumentsUpload_0_documentEmailContent").type(documentDescription);
         page.locator("//h2[contains(text(), 'File Attachments')]").click();
         clickButton(page, "Continue");
 
