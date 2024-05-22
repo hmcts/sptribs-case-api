@@ -15,16 +15,18 @@ import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.common.config.AppsConfig;
+import uk.gov.hmcts.sptribs.common.service.CcdSupplementaryDataService;
 import uk.gov.hmcts.sptribs.constants.CommonConstants;
 
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.verify;
+import static uk.gov.hmcts.sptribs.ciccase.model.State.Submitted;
 import static uk.gov.hmcts.sptribs.constants.CommonConstants.ST_CIC_CASE_TYPE;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.CASE_DATA_CIC_ID;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.caseData;
-
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
@@ -37,6 +39,9 @@ class CicCreateCaseEventTest {
 
     @Mock
     private AppsConfig.AppsDetails cicAppDetail;
+
+    @Mock
+    private CcdSupplementaryDataService ccdSupplementaryDataService;
 
     @BeforeEach
     public void setUp() {
@@ -68,5 +73,19 @@ class CicCreateCaseEventTest {
             );
 
         assertThat(response.getState()).isEqualTo(State.DSS_Draft);
+    }
+
+    @Test
+    void shouldSubmitSupplementaryDataToCcdWhenSubmittedEventTriggered() {
+        final CaseData caseData = caseData();
+
+        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+        caseDetails.setData(caseData);
+        caseDetails.setState(Submitted);
+        caseDetails.setId(TEST_CASE_ID);
+
+        cicCreateCaseEvent.submitted(caseDetails, caseDetails);
+
+        verify(ccdSupplementaryDataService).submitSupplementaryDataToCcd(TEST_CASE_ID.toString());
     }
 }
