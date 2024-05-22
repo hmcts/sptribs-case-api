@@ -39,6 +39,34 @@ class CICDocumentTest {
 
     @ParameterizedTest
     @ValueSource(strings = {
+        "test.PDF",
+        "test.TIF",
+        "test.TIFF",
+        "test.JPG",
+        "test.JPEG",
+        "test.pnG",
+        "test.mP3",
+        "test.M4a",
+        "test.MP4",
+        "test.cSv",
+        "test.txT",
+        "test.RTF",
+        "test.XLSX",
+        "test.DOCX",
+        "test.Doc",
+        "test.Xls"
+    })
+    void shouldCheckUppercaseDocumentExtensionIsValid(String filename) {
+        CICDocument document = CICDocument.builder()
+            .documentEmailContent("Dear sir/madam, here is an email.")
+            .documentLink(Document.builder().filename(filename).build())
+            .build();
+
+        assertTrue(document.isDocumentValid());
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {
         "test.xml",
         "test.eml",
         "test.msg",
