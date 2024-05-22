@@ -215,10 +215,12 @@ public class CicSubmitCaseEvent implements CCDConfig<CaseData, State, UserRole> 
             //For showing additional information page data on tab
             for (ListValue<EdgeCaseDocument> documentListValue : dssCaseData.getOtherInfoDocuments()) {
                 Document doc = documentListValue.getValue().getDocumentLink();
+                String documentComment = documentListValue.getValue().getComment();
                 doc.setCategoryId(DocumentType.DSS_OTHER.getCategory());
                 CaseworkerCICDocument caseworkerCICDocument = CaseworkerCICDocument.builder()
                     .documentLink(doc)
                     .documentCategory(DocumentType.DSS_OTHER)
+                    .documentEmailContent(documentComment)
                     .build();
 
                 if (!docList.contains(caseworkerCICDocument)) {
@@ -226,12 +228,11 @@ public class CicSubmitCaseEvent implements CCDConfig<CaseData, State, UserRole> 
                 }
 
                 final User caseworkerUser = idamService.retrieveUser(request.getHeader(AUTHORIZATION));
-
                 final DssMessage message = DssMessage.builder()
                     .message(dssCaseData.getAdditionalInformation())
                     .dateReceived(LocalDate.now())
                     .receivedFrom(caseworkerUser.getUserDetails().getFullName())
-                    .documentRelevance(dssCaseData.getDocumentRelevance())
+                    .documentRelevance(documentComment)
                     .build();
 
                 final ListValue<DssMessage> listValue = ListValue
