@@ -94,7 +94,7 @@ class CaseWorkerEditDraftOrderTest {
         assertThat(updatedDraftOrder.getDraftOrderContentCIC().getOrderTemplate()).isEqualTo(OrderTemplate.CIC6_GENERAL_DIRECTIONS);
         assertThat(updatedDraftOrder.getTemplateGeneratedDocument()).isNotNull();
 
-        SubmittedCallbackResponse draftCreatedResponse = caseWorkerEditDraftOrder.draftUpdated(updatedCaseDetails, beforeDetails);
+        SubmittedCallbackResponse draftCreatedResponse = caseWorkerEditDraftOrder.submitted(updatedCaseDetails, beforeDetails);
         //  Then
         assertThat(draftCreatedResponse).isNotNull();
     }

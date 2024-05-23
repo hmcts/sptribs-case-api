@@ -1,0 +1,17 @@
+{
+  "hearingVenues": {
+    "value": {
+      "code": "fc65ee31-7e4b-47e3-ab40-1fead37bac5a",
+      "label": "courtname-courtAddress"
+    },
+    "list_items": [
+      {
+        "code": "fc65ee31-7e4b-47e3-ab40-1fead37bac5a",
+        "label": "courtname-courtAddress"
+      }
+    ],
+    "valueLabel": "courtname-courtAddress",
+    "valueCode": "fc65ee31-7e4b-47e3-ab40-1fead37bac5a"
+  },
+  "venueNotListedOption": []
+}

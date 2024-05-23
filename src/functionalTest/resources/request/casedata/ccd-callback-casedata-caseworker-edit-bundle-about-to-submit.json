@@ -1,0 +1,92 @@
+{
+  "hyphenatedCaseRef": "1714-0484-2347-8720",
+  "caseBundles": [
+    {
+      "value": {
+        "id": "f1b4c0d5-bb1b-4063-90e1-6d13c5e5bc9e",
+        "title": "CIC Bundle",
+        "description": "",
+        "folders": [
+          {
+            "value": {
+              "name": "General evidence",
+              "sortIndex": 8
+            },
+            "id": "37"
+          },
+          {
+            "value": {
+              "name": "Direction - decision notices",
+              "sortIndex": 7
+            },
+            "id": "38"
+          },
+          {
+            "value": {
+              "name": "Witness Statements",
+              "sortIndex": 6
+            },
+            "id": "39"
+          },
+          {
+            "value": {
+              "name": "Linked documents",
+              "sortIndex": 5
+            },
+            "id": "40"
+          },
+          {
+            "value": {
+              "name": "Other evidence",
+              "sortIndex": 4
+            },
+            "id": "41"
+          },
+          {
+            "value": {
+              "name": "Financial records",
+              "sortIndex": 3
+            },
+            "id": "42"
+          },
+          {
+            "value": {
+              "name": "Medical records",
+              "sortIndex": 2
+            },
+            "id": "43"
+          },
+          {
+            "value": {
+              "name": "Police evidence",
+              "sortIndex": 1
+            },
+            "id": "44"
+          },
+          {
+            "value": {
+              "name": "Application Documents",
+              "documents": [
+                {
+                  "value": {
+                    "name": "sample_file.pdf",
+                    "description": "",
+                    "sortIndex": 0
+                  },
+                  "id": "1"
+                }
+              ],
+              "sortIndex": 0
+            },
+            "id": "45"
+          }
+        ],
+        "paginationStyle": "bottomCenter",
+        "pageNumberFormat": "numberOfPages",
+        "stitchingFailureMessage": "",
+        "stitchStatus": ""
+      },
+      "id": "1"
+    }
+  ]
+}
