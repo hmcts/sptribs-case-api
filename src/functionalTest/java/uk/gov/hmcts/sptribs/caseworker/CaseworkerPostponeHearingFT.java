@@ -79,7 +79,7 @@ public class CaseworkerPostponeHearingFT extends FunctionalTestSuite {
         final Map<String, Object> caseData = caseData(REQUEST_SUBMITTED);
 
         ArrayList<String> invalidReasons = new ArrayList<>(List.of(
-            "invalid reason", "TEST_APPELLANT_IS_OUT_OF_COUNTRY"));
+            "invalid reason", "APPELLANT_IS_OUT_OF_COUNTRY"));
 
         for (String invalidReason : invalidReasons) {
             caseData.put("postponeReason", invalidReason);
