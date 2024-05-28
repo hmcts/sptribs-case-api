@@ -15,7 +15,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
-import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
+import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocumentUpload;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -50,7 +50,7 @@ public class HearingRecordingUploadPage implements CcdPageConfiguration {
                     Note: If the remove button is disabled, please refresh the page to remove attachments""")
             .complex(CaseData::getListing)
             .complex(Listing::getSummary)
-            .optionalWithLabel(HearingSummary::getRecFile, "Upload file")
+            .optionalWithLabel(HearingSummary::getRecFileUpload, "Upload file")
             .label("theHearingRecordDescription", "<h3>If you can't upload a recording of the hearing, "
                 + "please describe where it can be found. You can also enter a link to the recording</h3>")
             .optional(HearingSummary::getRecDesc)
@@ -60,10 +60,10 @@ public class HearingRecordingUploadPage implements CcdPageConfiguration {
     public AboutToStartOrSubmitResponse<CaseData, State> midEvent(CaseDetails<CaseData, State> details,
                                                                   CaseDetails<CaseData, State> detailsBefore) {
         final CaseData data = details.getData();
-        List<ListValue<CaseworkerCICDocument>> uploadedDocuments = data.getListing().getSummary().getRecFile();
+        List<ListValue<CaseworkerCICDocumentUpload>> uploadedDocuments = data.getListing().getSummary().getRecFileUpload();
         List<String> errors = new ArrayList<>();
         if (!CollectionUtils.isEmpty(uploadedDocuments)) {
-            for (ListValue<CaseworkerCICDocument> documentListValue : uploadedDocuments) {
+            for (ListValue<CaseworkerCICDocumentUpload> documentListValue : uploadedDocuments) {
                 if (ObjectUtils.isEmpty(documentListValue.getValue())
                     || ObjectUtils.isEmpty(documentListValue.getValue().getDocumentLink())) {
                     errors.add("Please attach the document");

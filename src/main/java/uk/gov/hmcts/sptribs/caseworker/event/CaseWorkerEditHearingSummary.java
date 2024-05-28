@@ -7,6 +7,7 @@ import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
+import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.event.page.EditHearingLoadingPage;
 import uk.gov.hmcts.sptribs.caseworker.event.page.EditHearingSummarySelect;
@@ -24,7 +25,11 @@ import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
+import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
+import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocumentUpload;
 import uk.gov.hmcts.sptribs.judicialrefdata.JudicialService;
+
+import java.util.List;
 
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_EDIT_HEARING_SUMMARY;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingOutcome;
@@ -36,6 +41,8 @@ import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_CASEWORK
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_JUDGE;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE;
+import static uk.gov.hmcts.sptribs.document.DocumentUtil.convertToCaseworkerCICDocument;
+import static uk.gov.hmcts.sptribs.document.DocumentUtil.uploadRecFile;
 
 @Component
 @Slf4j
@@ -95,8 +102,11 @@ public class CaseWorkerEditHearingSummary implements CCDConfig<CaseData, State, 
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToStart(CaseDetails<CaseData, State> details) {
         final CaseData caseData = details.getData();
         caseData.setCurrentEvent(CASEWORKER_EDIT_HEARING_SUMMARY);
-        if (null != caseData.getListing().getSummary() && null != caseData.getListing().getHearingFormat()) {
+        if (caseData.getListing().getSummary() != null && caseData.getListing().getHearingFormat() != null) {
             caseData.getListing().setHearingSummaryExists("YES");
+            List<ListValue<CaseworkerCICDocument>> documents = caseData.getListing().getSummary().getRecFile();
+            List<ListValue<CaseworkerCICDocumentUpload>> uploadedDocuments = convertToCaseworkerCICDocument(documents);
+            caseData.getListing().getSummary().setRecFileUpload(uploadedDocuments);
         } else {
             caseData.getListing().setHearingSummaryExists("There are no Completed Hearings to edit");
         }
@@ -114,6 +124,7 @@ public class CaseWorkerEditHearingSummary implements CCDConfig<CaseData, State, 
         final CaseData caseData = details.getData();
         caseData.setJudicialId(judicialService.populateJudicialId(caseData));
         caseData.getListing().getSummary().setJudgeList(null);
+        uploadRecFile(caseData);
 
         recordListHelper.saveSummary(details.getData());
         hearingService.updateHearingSummaryList(caseData);

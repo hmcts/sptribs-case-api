@@ -2,7 +2,7 @@
   "cicCaseRespondentName": "Appeals team",
   "cicCaseRespondentOrganisation": "CICA",
   "cicCaseRespondentEmail": "appeals.team@cica.gov.uk",
-  "closeDocuments": [
+  "closeDocumentsUpload": [
     {
       "id": "1",
       "value": {

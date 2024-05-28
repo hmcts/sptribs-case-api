@@ -26,7 +26,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.SubjectCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.notification.CaseWithdrawnNotification;
 import uk.gov.hmcts.sptribs.document.DocumentUtil;
-import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
+import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocumentUpload;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
 import uk.gov.hmcts.sptribs.judicialrefdata.JudicialService;
 
@@ -52,7 +52,7 @@ import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_SOLICITOR_NAME;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_SUBJECT_EMAIL;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.LOCAL_DATE_TIME;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.closedCaseData;
-import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getCaseworkerCICDocumentList;
+import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getCaseworkerCICDocumentUploadList;
 import static uk.gov.hmcts.sptribs.testutil.TestEventConstants.CASEWORKER_CLOSE_THE_CASE;
 
 @ExtendWith(MockitoExtension.class)
@@ -99,19 +99,18 @@ class CaseWorkerCloseTheCaseTest {
 
     @Test
     void shouldSuccessfullyChangeCaseManagementStateToClosedState() {
-        //Given
         final CaseData caseData = closedCaseData();
-        final CaseworkerCICDocument caseworkerCICDocument = CaseworkerCICDocument.builder()
+        final CaseworkerCICDocumentUpload document = CaseworkerCICDocumentUpload.builder()
             .documentLink(Document.builder().build())
             .documentEmailContent("some email content")
             .documentCategory(DocumentType.LINKED_DOCS)
             .build();
-        final List<ListValue<CaseworkerCICDocument>> documentList = new ArrayList<>();
-        final ListValue<CaseworkerCICDocument> caseworkerCICDocumentListValue = new ListValue<>();
-        caseworkerCICDocumentListValue.setValue(caseworkerCICDocument);
-        documentList.add(caseworkerCICDocumentListValue);
+        final List<ListValue<CaseworkerCICDocumentUpload>> documentList = new ArrayList<>();
+        final ListValue<CaseworkerCICDocumentUpload> documentListValue = new ListValue<>();
+        documentListValue.setValue(document);
+        documentList.add(documentListValue);
 
-        final CloseCase closeCase = CloseCase.builder().documents(documentList).build();
+        final CloseCase closeCase = CloseCase.builder().documentsUpload(documentList).build();
         caseData.setCloseCase(closeCase);
 
         final CicCase cicCase = CicCase.builder()
@@ -135,7 +134,6 @@ class CaseWorkerCloseTheCaseTest {
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
 
-        //When
         assertThat(caseData.getCaseStatus()).isEqualTo(State.CaseManagement);
         final AboutToStartOrSubmitResponse<CaseData, State> response =
             caseworkerCloseTheCase.aboutToSubmit(updatedCaseDetails, beforeDetails);
@@ -143,7 +141,6 @@ class CaseWorkerCloseTheCaseTest {
         final SubmittedCallbackResponse closedCase =
             caseworkerCloseTheCase.submitted(updatedCaseDetails, beforeDetails);
 
-        //Then
         assertThat(closedCase).isNotNull();
         assertThat(closedCase.getConfirmationHeader()).contains("Case closed");
         assertThat(response.getState()).isEqualTo(State.CaseClosed);
@@ -152,7 +149,7 @@ class CaseWorkerCloseTheCaseTest {
     @Test
     void shouldReturnErrorForInvalidUploadedDocument() {
         final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
-        final CloseCase closeCase = CloseCase.builder().documents(getCaseworkerCICDocumentList("file.xml")).build();
+        final CloseCase closeCase = CloseCase.builder().documentsUpload(getCaseworkerCICDocumentUploadList("file.xml")).build();
         final CaseData caseData = CaseData.builder()
             .closeCase(closeCase)
             .build();
@@ -166,7 +163,7 @@ class CaseWorkerCloseTheCaseTest {
     @Test
     void midEventShouldValidateUploadedDocumentsOnce() {
         final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
-        final CloseCase closeCase = CloseCase.builder().documents(getCaseworkerCICDocumentList("file.xml")).build();
+        final CloseCase closeCase = CloseCase.builder().documentsUpload(getCaseworkerCICDocumentUploadList("file.xml")).build();
         final CaseData caseData = CaseData.builder()
             .closeCase(closeCase)
             .build();
