@@ -88,8 +88,9 @@ public class CaseworkerPostponeHearingFT extends FunctionalTestSuite {
             assertThatJson(response.asString())
                 .inPath(TRACE_HEADER)
                 .isString()
-                .contains("Cannot deserialize value of type `uk.gov.hmcts.sptribs.caseworker.model.PostponeReason` from String \"" +
-                    invalidReason + "\": not one of the values accepted for Enum class:");
+                .contains("Cannot deserialize value of type `uk.gov.hmcts.sptribs.caseworker.model.PostponeReason` from String \""
+                    + invalidReason
+                    + "\": not one of the values accepted for Enum class:");
         }
 
         ArrayList<String> emptyReasons = new ArrayList<>(List.of("", " "));
