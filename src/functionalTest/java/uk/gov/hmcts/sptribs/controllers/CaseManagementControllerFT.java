@@ -120,8 +120,6 @@ public class CaseManagementControllerFT extends FunctionalTestSuite {
             .when()
             .put("/case/dss-orchestration/" + caseReference +  "/update");
 
-        System.out.println(response.asString());
-
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
         assertThatJson(response.asString())
             .when(IGNORING_EXTRA_FIELDS)
