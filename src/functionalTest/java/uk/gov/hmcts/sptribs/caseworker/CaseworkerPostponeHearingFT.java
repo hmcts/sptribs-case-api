@@ -46,7 +46,7 @@ public class CaseworkerPostponeHearingFT extends FunctionalTestSuite {
     public void shouldConfirmHearingPostponedNotificationIsSentToSubjectForAllGivenReasonsWhenSubmittedIsInvoked() throws Exception {
         final Map<String, Object> caseData = caseData(REQUEST_SUBMITTED);
 
-        for(PostponeReason postponeReason : PostponeReason.values()) {
+        for (PostponeReason postponeReason : PostponeReason.values()) {
             caseData.put("postponeReason", postponeReason.getReason());
 
             final Response response = triggerCallback(caseData, CASEWORKER_POSTPONE_HEARING, SUBMITTED_URL);
@@ -80,7 +80,7 @@ public class CaseworkerPostponeHearingFT extends FunctionalTestSuite {
         ArrayList<String> invalidReasons = new ArrayList<>(List.of(
             "invalid reason", "APPELLANT_IS_OUT_OF_COUNTRY"));
 
-        for(String invalidReason : invalidReasons) {
+        for (String invalidReason : invalidReasons) {
             caseData.put("postponeReason", invalidReason);
 
             final Response response = triggerCallback(caseData, CASEWORKER_POSTPONE_HEARING, SUBMITTED_URL);
@@ -94,7 +94,7 @@ public class CaseworkerPostponeHearingFT extends FunctionalTestSuite {
 
         ArrayList<String> emptyReasons = new ArrayList<>(List.of("", " "));
 
-        for(String emptyReason : emptyReasons) {
+        for (String emptyReason : emptyReasons) {
             caseData.put("postponeReason", emptyReason);
 
             final Response response = triggerCallback(caseData, CASEWORKER_POSTPONE_HEARING, SUBMITTED_URL);
@@ -111,7 +111,7 @@ public class CaseworkerPostponeHearingFT extends FunctionalTestSuite {
     public void shouldResetCurrentEventAndSetStatusesAndSetPostponeDateWhenAboutToSubmitCallbackIsInvoked() throws Exception {
         final Map<String, Object> caseData = caseData(REQUEST_ABOUT_TO_SUBMIT);
 
-        for(PostponeReason postponeReason : PostponeReason.values()) {
+        for (PostponeReason postponeReason : PostponeReason.values()) {
             caseData.put("postponeReason", postponeReason.getReason());
 
             final Response response = triggerCallback(caseData, CASEWORKER_POSTPONE_HEARING, ABOUT_TO_SUBMIT_URL);
