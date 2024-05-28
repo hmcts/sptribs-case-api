@@ -26,9 +26,11 @@ public class CaseworkerIssueFinalDecisionFT extends FunctionalTestSuite {
 
     private static final String REQUEST_ABOUT_TO_START = "classpath:request/casedata/ccd-callback-casedata-general.json";
     private static final String CALLBACK_REQUEST =
-        "classpath:request/casedata/ccd-callback-casedata-caseworker-issue-final-decision-mid-event.json";
+        "classpath:request/casedata/ccd-callback-casedata-caseworker-issue-final-decision-callback-request.json";
     private static final String REQUEST_UPLOAD_DOCUMENT_MID_EVENT =
         "classpath:request/casedata/ccd-callback-casedata-caseworker-issue-final-decision-upload-document-mid-event.json";
+    private static final String REQUEST_SUBMITTED_UNHAPPY_PATH =
+        "classpath:request/casedata/ccd-callback-casedata-caseworker-issue-final-decision-bad-submitted.json";
 
     private static final String RESPONSE_MID_EVENT = "classpath:responses/response-caseworker-issue-final-decision-mid-event.json";
 
@@ -94,5 +96,17 @@ public class CaseworkerIssueFinalDecisionFT extends FunctionalTestSuite {
             .inPath(CONFIRMATION_HEADER)
             .isString()
             .isEqualTo("# Final decision notice issued \n## A notification has been sent to");
+    }
+
+    @Test
+    public void shouldUnsuccessfullySendNotificationWhenBadSubmittedEventCallbackIsInvoked() throws Exception {
+        final Map<String, Object> caseData = caseData(REQUEST_SUBMITTED_UNHAPPY_PATH);
+        final Response response = triggerCallback(caseData, CASEWORKER_ISSUE_FINAL_DECISION, SUBMITTED_URL);
+
+        assertThat(response.getStatusCode()).isEqualTo(OK.value());
+        assertThatJson(response.asString())
+            .inPath(CONFIRMATION_HEADER)
+            .isString()
+            .isEqualTo("# Issue final decision notification failed \n## Please resend the notification");
     }
 }
