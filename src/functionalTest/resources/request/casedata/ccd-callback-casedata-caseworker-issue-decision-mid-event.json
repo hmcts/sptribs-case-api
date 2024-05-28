@@ -1,189 +1,140 @@
 {
-  "date": "2024-05-27",
-  "currentEvent": "",
   "hearingType": "CaseManagement",
   "cicCasePartiesCIC": [
     "SubjectCIC"
   ],
   "caseIssueDecisionDecisionNotice": "Create from a template",
-  "cicCaseCompensationClaimLinkCIC": "Yes",
-  "cicCaseIsRepresentativeQualified": "Yes",
+  "cicCaseCompensationClaimLinkCIC": "No",
   "cicCaseFormReceivedInTime": "Yes",
-  "cicCaseRepresentativePhoneNumber": "01234567893",
-  "cicCaseDateOfBirth": "2000-02-01",
+  "cicCaseDateOfBirth": "2000-01-01",
   "caseIssueDecisionIssueDecisionTemplate": "CIC1 - Eligibility",
   "hearingStatus": "Complete",
-  "addlInstr": "Lorem ipsum instructions",
   "firstHearingDate": "",
-  "cicCaseSchemeCic": "Preference",
-  "cicCaseApplicantPhoneNumber": "01234567892",
-  "cicCaseRepresentativeEmailAddress": "AutoTestRepresentative@mail.com",
-  "hyphenatedCaseRef": "1716-8117-5432-3189",
+  "cicCaseSchemeCic": "Year2012",
+  "hearingVenues": {
+    "value": {
+      "code": "7b98eb0a-c29e-44fe-82a9-d721c2352b9b",
+      "label": "East London Tribunal Hearing Centre-2 Clove Crescent, East India Dock London"
+    },
+    "list_items": [
+      {
+        "code": "7b98eb0a-c29e-44fe-82a9-d721c2352b9b",
+        "label": "East London Tribunal Hearing Centre-2 Clove Crescent, East India Dock London"
+      },
+      {
+        "code": "e412cce5-37d9-4254-8feb-bf168ab67893",
+        "label": "Fox Court - London (Central) SSCS Tribunal-4th Floor, Fox Court, 30 Brooke Street, London"
+      }
+    ],
+    "valueCode": "7b98eb0a-c29e-44fe-82a9-d721c2352b9b",
+    "valueLabel": "East London Tribunal Hearing Centre-2 Clove Crescent, East India Dock London"
+  },
+  "hyphenatedCaseRef": "1716-8905-3287-8722",
   "subjectFlags": {
-    "partyName": "Subject AutoTesting",
+    "partyName": "Testing subject",
     "roleOnCase": "subject",
     "details": []
   },
-  "others": "Test attendee",
-  "cicCaseApplicantDateOfBirth": "2000-01-01",
-  "hearingVenueNameAndAddress": "Fox Court",
-  "newCaseworkerCICDocumentUpload": [],
+  "hearingVenueNameAndAddress": "East London Tribunal Hearing Centre",
   "cicCaseRespondentName": "Appeals team",
-  "cicCaseApplicantContactDetailsPreference": "Email",
-  "decisionSignature": "Lorem ipsum",
-  "readOnlyHearingVenueName": "Fox Court",
+  "decisionSignature": "Lorem ipsum signature",
+  "readOnlyHearingVenueName": "East London Tribunal Hearing Centre",
   "cicCaseHearingNotificationParties": [
     "Subject"
   ],
   "decisionMainContent": "1.     The appeal against the CICA’s Review decision dated…..under paragraph….. is successful. Mr/Mrs …… is eligible for compensation. The CICA must now consider if any compensation should be awarded.\n2.     Mr/ Mrs …….application is now returned to the CICA for further decision making and action.\n3.     Summary of reasons for the decision",
-  "hearingFormat": "Hybrid",
-  "hearingTime": "9:00",
-  "representativeFlags": {
-    "partyName": "Representative AutoTesting",
-    "roleOnCase": "Representative",
-    "details": []
-  },
-  "roomAtVenue": "Lorem ipsum room",
+  "hearingFormat": "Face to Face",
+  "hearingTime": "09:00",
   "cicCaseContactPreferenceType": "Email",
   "closedDayCount": "",
-  "recDesc": "Lorem ipsum recording found here",
   "cicCaseApplicantDocumentsUploaded": [
     {
       "value": {
         "documentCategory": "ApplicationForm",
-        "documentEmailContent": "Lorem ipsum text A - Application Form",
+        "documentEmailContent": "Lorem ipsum application form",
         "documentLink": {
-          "document_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/2e46f9cb-34f5-48d4-a0e2-610a82896f98",
-          "document_filename": "mockFile.pdf",
-          "document_binary_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/2e46f9cb-34f5-48d4-a0e2-610a82896f98/binary",
+          "document_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/d06c860a-030a-4d23-933b-0d16042e6c45",
+          "document_filename": "pdf.pdf",
+          "document_binary_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/d06c860a-030a-4d23-933b-0d16042e6c45/binary",
           "category_id": "A"
         }
       },
-      "id": "cb91e2c3-97d0-4d77-8e1c-f4a3c361d74e"
+      "id": "2b0e49a2-d78f-4bcf-a22b-160f3bfe2350"
     }
   ],
   "cicCaseCaseSubcategory": "other",
-  "cicCaseApplicantEmailAddress": "AutoTestApplicant@mail.com",
-  "cicCasePhoneNumber": "01234567891",
-  "cicCaseRegionCIC": "Scotland",
-  "applicantFlags": {
-    "partyName": "Applicant AutoTesting",
-    "roleOnCase": "applicant",
-    "details": []
-  },
-  "cicCaseCicaReferenceNumber": "1",
+  "cicCasePhoneNumber": "",
+  "cicCaseRegionCIC": "London",
   "session": "morning",
-  "isFullPanel": "Yes",
+  "isFullPanel": "No. It was a 'sit alone' hearing",
   "roles": [
-    "representativeNonLegal",
-    "victim",
-    "Tribunal clerk",
-    "appraiser",
-    "representativeLegal",
-    "Counsel",
-    "medicalMember",
-    "observer",
-    "Tribunal Judge",
-    "mainAppellant",
-    "appellant",
-    "layMember",
-    "witnessPolice",
-    "other",
-    "Witness - General",
-    "presentingOfficer",
-    "interpreter"
+    "appellant"
   ],
   "numberOfDays": "No",
-  "cicCaseIsRepresentativePresent": "Yes",
-  "hearingCreatedDate": "2024-05-27",
-  "cicCaseRepresentativeCIC": [
-    "RepresentativeCIC"
-  ],
-  "conferenceCallNumber": "12345",
-  "recFile": [
-    {
-      "value": {
-        "documentCategory": "ApplicationForm",
-        "documentEmailContent": "Lorem ipsum description",
-        "documentLink": {
-          "document_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/99ffef19-0435-402c-a1f2-8ec0e5b9d76f",
-          "document_filename": "mockFile.mp3",
-          "document_binary_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/99ffef19-0435-402c-a1f2-8ec0e5b9d76f/binary",
-          "category_id": "A"
-        }
-      },
-      "id": "30834996-1544-4792-a87e-e1f6a7b75270"
-    }
-  ],
-  "videoCallLink": "test",
+  "cicCaseIsRepresentativePresent": "No",
+  "hearingCreatedDate": "2024-05-28",
   "outcome": "Allowed",
-  "cicCaseClaimLinkedToCic": "Yes",
-  "subjectName": "Subject AutoTesting",
+  "cicCaseClaimLinkedToCic": "No",
+  "subjectName": "Testing subject",
   "securityClass": "PUBLIC",
-  "caseIssueDecisionIssueDecisionDraft": {
-  },
-  "judicialId": "4925195",
+  "caseIssueDecisionIssueDecisionDraft": {},
   "regionList": {
     "value": {
-      "code": "3dd47502-3694-449c-beba-6d41f86c1c54",
+      "code": "bfc93094-d20c-432a-9908-29d032425f4d",
       "label": "1-London"
     },
     "list_items": [
       {
-        "code": "3dd47502-3694-449c-beba-6d41f86c1c54",
+        "code": "bfc93094-d20c-432a-9908-29d032425f4d",
         "label": "1-London"
       },
       {
-        "code": "3fc92b12-c320-43d2-8629-6fb2663355fc",
+        "code": "b9da6092-8fea-4d45-b5b2-04ceb9585726",
         "label": "10-Northern Ireland"
       },
       {
-        "code": "f2979350-50bc-4e82-b461-b4cbeff08973",
+        "code": "989b4010-e8e5-43c3-b3d8-8d8f107a4f55",
         "label": "11-Scotland"
       },
       {
-        "code": "caeb19dc-296b-431c-8c88-f22b35944b0d",
+        "code": "f343aa8d-556f-4261-9425-92c0ae3c16be",
         "label": "12-National"
       },
       {
-        "code": "ead5f6b0-0da3-4edd-a70c-8bd29c772225",
+        "code": "f0749837-54fd-41c7-b74f-e9799794a961",
         "label": "2-Midlands"
       },
       {
-        "code": "86ae9709-e1da-4c2d-9557-2aec8a1f67ec",
+        "code": "1d4f9a78-2f4c-4eaa-b316-b04c3084935f",
         "label": "3-North East"
       },
       {
-        "code": "67350b82-a06d-4324-9384-e6b636dd8fa6",
+        "code": "17ba1d72-a6e5-4f12-9cea-e8582086bb81",
         "label": "4-North West"
       },
       {
-        "code": "95f053df-d50f-4905-8eb4-60d3b6d67a36",
+        "code": "953477ec-e05c-414d-9c27-f3eef5572b77",
         "label": "5-South East"
       },
       {
-        "code": "c60ba61c-d151-4059-b98f-78519d8d7ef8",
+        "code": "465070c1-cd4f-4d48-82a7-b194d56ad59e",
         "label": "6-South West"
       },
       {
-        "code": "452eadb7-1d59-4d22-bb3b-76a9e47e70dc",
+        "code": "d5b4eb72-e747-4a4d-b4e9-0c340156841a",
         "label": "7-Wales"
       }
     ],
-    "valueCode": "3dd47502-3694-449c-beba-6d41f86c1c54",
+    "valueCode": "bfc93094-d20c-432a-9908-29d032425f4d",
     "valueLabel": "1-London"
   },
   "dataVersion": 0,
   "cicCaseSubjectCIC": [
     "SubjectCIC"
   ],
-  "cicCaseEmail": "AutoTestSubject@mail.com",
-  "importantInfoDetails": "Lorem ipsum other important information",
-  "cicCaseCaseReceivedDate": "2000-01-02",
-  "caseNameHmctsInternal": "Subject AutoTesting",
-  "cicCaseApplicantCIC": [
-    "ApplicantCIC"
-  ],
+  "cicCaseEmail": "subject@hmcts.net",
+  "cicCaseCaseReceivedDate": "2000-01-01",
+  "caseNameHmctsInternal": "Testing subject",
   "cicCaseAddress": {
     "AddressLine1": "Buckingham Palace",
     "AddressLine2": "",
@@ -198,1330 +149,96 @@
   "cicCaseRespondentOrganisation": "CICA",
   "cicCaseCaseCategory": "Assessment",
   "cicCaseFirstDueDate": "",
-  "cicCaseRepresentativeContactDetailsPreference": "Email",
-  "cicCaseRepresentativeOrgName": "HMCTS",
   "hearingList": [
     {
       "value": {
-        "hearingCreatedDate": "2024-05-27",
+        "hearingCreatedDate": "2024-05-28",
         "hearingStatus": "Complete",
         "hearingType": "CaseManagement",
-        "hearingFormat": "Hybrid",
+        "hearingFormat": "Face to Face",
         "hearingVenues": {
           "value": {
-            "code": "4e05c9c8-e6e7-489b-b087-c55ea0a311c8",
-            "label": "Fox Court - London (Central) SSCS Tribunal-4th Floor, Fox Court, 30 Brooke Street, London"
+            "code": "7b98eb0a-c29e-44fe-82a9-d721c2352b9b",
+            "label": "East London Tribunal Hearing Centre-2 Clove Crescent, East India Dock London"
           },
           "list_items": [
             {
-              "code": "da345354-a71c-4de2-a562-3a7c1122ac05",
+              "code": "7b98eb0a-c29e-44fe-82a9-d721c2352b9b",
               "label": "East London Tribunal Hearing Centre-2 Clove Crescent, East India Dock London"
             },
             {
-              "code": "4e05c9c8-e6e7-489b-b087-c55ea0a311c8",
+              "code": "e412cce5-37d9-4254-8feb-bf168ab67893",
               "label": "Fox Court - London (Central) SSCS Tribunal-4th Floor, Fox Court, 30 Brooke Street, London"
             }
           ],
-          "valueCode": "4e05c9c8-e6e7-489b-b087-c55ea0a311c8",
-          "valueLabel": "Fox Court - London (Central) SSCS Tribunal-4th Floor, Fox Court, 30 Brooke Street, London"
+          "valueCode": "7b98eb0a-c29e-44fe-82a9-d721c2352b9b",
+          "valueLabel": "East London Tribunal Hearing Centre-2 Clove Crescent, East India Dock London"
         },
         "regionList": {
           "value": {
-            "code": "3dd47502-3694-449c-beba-6d41f86c1c54",
+            "code": "bfc93094-d20c-432a-9908-29d032425f4d",
             "label": "1-London"
           },
           "list_items": [
             {
-              "code": "3dd47502-3694-449c-beba-6d41f86c1c54",
+              "code": "bfc93094-d20c-432a-9908-29d032425f4d",
               "label": "1-London"
             },
             {
-              "code": "3fc92b12-c320-43d2-8629-6fb2663355fc",
+              "code": "b9da6092-8fea-4d45-b5b2-04ceb9585726",
               "label": "10-Northern Ireland"
             },
             {
-              "code": "f2979350-50bc-4e82-b461-b4cbeff08973",
+              "code": "989b4010-e8e5-43c3-b3d8-8d8f107a4f55",
               "label": "11-Scotland"
             },
             {
-              "code": "caeb19dc-296b-431c-8c88-f22b35944b0d",
+              "code": "f343aa8d-556f-4261-9425-92c0ae3c16be",
               "label": "12-National"
             },
             {
-              "code": "ead5f6b0-0da3-4edd-a70c-8bd29c772225",
+              "code": "f0749837-54fd-41c7-b74f-e9799794a961",
               "label": "2-Midlands"
             },
             {
-              "code": "86ae9709-e1da-4c2d-9557-2aec8a1f67ec",
+              "code": "1d4f9a78-2f4c-4eaa-b316-b04c3084935f",
               "label": "3-North East"
             },
             {
-              "code": "67350b82-a06d-4324-9384-e6b636dd8fa6",
+              "code": "17ba1d72-a6e5-4f12-9cea-e8582086bb81",
               "label": "4-North West"
             },
             {
-              "code": "95f053df-d50f-4905-8eb4-60d3b6d67a36",
+              "code": "953477ec-e05c-414d-9c27-f3eef5572b77",
               "label": "5-South East"
             },
             {
-              "code": "c60ba61c-d151-4059-b98f-78519d8d7ef8",
+              "code": "465070c1-cd4f-4d48-82a7-b194d56ad59e",
               "label": "6-South West"
             },
             {
-              "code": "452eadb7-1d59-4d22-bb3b-76a9e47e70dc",
+              "code": "d5b4eb72-e747-4a4d-b4e9-0c340156841a",
               "label": "7-Wales"
             }
           ],
-          "valueCode": "3dd47502-3694-449c-beba-6d41f86c1c54",
+          "valueCode": "bfc93094-d20c-432a-9908-29d032425f4d",
           "valueLabel": "1-London"
         },
         "venueNotListedOption": [],
-        "hearingVenueNameAndAddress": "Fox Court",
-        "readOnlyHearingVenueName": "Fox Court",
-        "roomAtVenue": "Lorem ipsum room",
-        "addlInstr": "Lorem ipsum instructions",
-        "date": "2024-05-27",
-        "hearingTime": "9:00",
+        "hearingVenueNameAndAddress": "East London Tribunal Hearing Centre",
+        "readOnlyHearingVenueName": "East London Tribunal Hearing Centre",
+        "date": "2026-01-01",
+        "hearingTime": "09:00",
         "session": "morning",
         "numberOfDays": "No",
-        "videoCallLink": "test",
-        "conferenceCallNumber": "12345",
-        "importantInfoDetails": "Lorem ipsum other important information",
-        "judge": {
-          "value": {
-            "code": "ca3266a2-34b9-4665-85bb-df13956c939f",
-            "label": "Anish Osborne"
-          },
-          "list_items": [
-            {
-              "code": "ca3266a2-34b9-4665-85bb-df13956c939f",
-              "label": "Anish Osborne"
-            },
-            {
-              "code": "6df091e9-fcb0-4a49-92bf-b3270c958f1d",
-              "label": "Carys Cotton"
-            },
-            {
-              "code": "525a9908-e4fc-4f2b-b4bf-ba9e2dfcfab9",
-              "label": "Charis Farley"
-            },
-            {
-              "code": "ac51f5c6-72d5-4b00-bc01-1e8d527d6e7c",
-              "label": "Dalton Rivera"
-            },
-            {
-              "code": "2be1bcf8-0a24-499d-88b3-3e224a62f511",
-              "label": "Dana Osborn"
-            },
-            {
-              "code": "89e47595-5787-41d0-bfe0-9e2ea7577e3c",
-              "label": "District Judge Jonathan Casey"
-            },
-            {
-              "code": "2c2c7f76-c8fc-4f72-8e0c-4fcf82bb0a8b",
-              "label": "Dr Alicia Jones"
-            },
-            {
-              "code": "84818583-ef4d-49db-817c-a7374972af2e",
-              "label": "Dr Amanda Knight"
-            },
-            {
-              "code": "8da4fea9-571a-47b3-9d2c-724c8d5c06f7",
-              "label": "Dr Brittney Smith"
-            },
-            {
-              "code": "7b4f5b66-0c9c-45e4-ae90-3e23483febbb",
-              "label": "Dr Denise Stark"
-            },
-            {
-              "code": "1d647c65-5624-42b7-b42c-77c8c7a14acf",
-              "label": "Dr Heather Woods"
-            },
-            {
-              "code": "460dd741-7b18-4bd4-aafa-3e08540d3669",
-              "label": "Dr James House"
-            },
-            {
-              "code": "55a02c84-29a5-44c2-b23e-6f77699f190b",
-              "label": "Dr Lori Chang"
-            },
-            {
-              "code": "53f928b7-02f4-42d8-bfe0-cec47f738fef",
-              "label": "Dr Ricky Mcgee"
-            },
-            {
-              "code": "78d78b6a-65c7-4cee-bd7e-a23687e9270d",
-              "label": "Dr Scott Davis"
-            },
-            {
-              "code": "52dc8dad-1074-424c-b58c-e1dcdbdc84c6",
-              "label": "Dr Stacy Odom"
-            },
-            {
-              "code": "17442a07-bf94-4282-bb51-0aa3a997c762",
-              "label": "Dr Steven Morgan"
-            },
-            {
-              "code": "e4d2179f-36d6-4375-8073-50ae7abc2721",
-              "label": "Dr Thomas Mitchell"
-            },
-            {
-              "code": "33369000-0ad5-4bfd-90c1-f5aa0c32ecf5",
-              "label": "Emmy Ortiz"
-            },
-            {
-              "code": "44d94773-610f-4091-8bac-f01fe1576ed9",
-              "label": "Her Honour Judge Nicole Cooper"
-            },
-            {
-              "code": "faceaa72-7a1e-465c-ada7-5d9269722f24",
-              "label": "His Honour Judge Thomas Anderson"
-            },
-            {
-              "code": "37488df0-784c-4174-9714-35b0458e5f68",
-              "label": "Jaxon Little"
-            },
-            {
-              "code": "30f9f861-93b0-4702-b229-0bf3fcc9261b",
-              "label": "Josef Newman"
-            },
-            {
-              "code": "581b857f-195c-4404-ba3e-8944daec68fd",
-              "label": "Mary Gallegos"
-            },
-            {
-              "code": "11685ad5-26fa-44d4-9742-cf2ee280ad5e",
-              "label": "Miss Kristen Stephenson"
-            },
-            {
-              "code": "2f3416f7-0cdd-44be-a63d-169a2458dd25",
-              "label": "Miss Linda Moore"
-            },
-            {
-              "code": "b4573e4b-0787-4ac0-9667-bceff71443d1",
-              "label": "Miss Samantha Dunlap"
-            },
-            {
-              "code": "1fdbe0f6-b913-476c-a798-f57aa78bbcf6",
-              "label": "Miss Yolanda Velasquez"
-            },
-            {
-              "code": "e3849f84-30cd-4fa9-85fa-999a7c79b8f4",
-              "label": "Mr Brandon Robles"
-            },
-            {
-              "code": "f17c50d5-97e9-4293-94fa-1a0cfd07bfa1",
-              "label": "Mr Craig Rivera"
-            },
-            {
-              "code": "280b6632-bb6b-4ea6-b5f8-35b45131444b",
-              "label": "Mr David Bradshaw"
-            },
-            {
-              "code": "63e78a95-9999-4bf4-b6fd-5b1f76d5136f",
-              "label": "Mr David Hampton"
-            },
-            {
-              "code": "e9b8b1a8-08f5-4dc4-9756-1ec02f3ab803",
-              "label": "Mr Evan Fitzgerald"
-            },
-            {
-              "code": "83380984-146a-415d-992a-e7f6c7f9c3c7",
-              "label": "Mr Garrett Nichols"
-            },
-            {
-              "code": "c46debef-92c8-48e1-ad14-65a0c9bd6af0",
-              "label": "Mr Jacob Gonzalez"
-            },
-            {
-              "code": "e4b7eb59-bb50-458c-b184-2ab8c0fa2388",
-              "label": "Mr James Kaiser"
-            },
-            {
-              "code": "8525f91b-4a5f-4835-a1ce-55a96a74e83f",
-              "label": "Mr Jeffery Anderson"
-            },
-            {
-              "code": "2cea781b-626b-4c47-a3bf-2c97c1f2b974",
-              "label": "Mr John Jones"
-            },
-            {
-              "code": "8284dc55-ee5b-4b21-b09f-7f93d5eab3c6",
-              "label": "Mr Jon Moore"
-            },
-            {
-              "code": "218edce1-89b3-4253-b437-f583abef94a7",
-              "label": "Mr Karl Hogan"
-            },
-            {
-              "code": "72c9596e-74ce-442c-9d61-a49f9be46782",
-              "label": "Mr Logan Everett"
-            },
-            {
-              "code": "f5ed22b2-1113-4611-9eb0-974d089696f6",
-              "label": "Mr Robert Delacruz"
-            },
-            {
-              "code": "d1e3dbc7-95df-48cd-bb74-277c117ea591",
-              "label": "Mr Samuel Reed"
-            },
-            {
-              "code": "5e1954a6-72ed-47d1-9180-23cef5b61482",
-              "label": "Mr Terry Johnston"
-            },
-            {
-              "code": "d4c76ca2-0cab-40dd-b3a6-c5a567413d7b",
-              "label": "Mrs Anna Morris"
-            },
-            {
-              "code": "951bdcc3-e4db-479a-891b-c68f2615e5b8",
-              "label": "Mrs Danielle Ross"
-            },
-            {
-              "code": "6e186d10-5eae-4ffd-a63f-49d4f3a0636b",
-              "label": "Mrs Dorothy Higgins"
-            },
-            {
-              "code": "e14152a5-6f50-4b2f-aa1e-df43011bca85",
-              "label": "Mrs Nancy Kelley"
-            },
-            {
-              "code": "5cebb154-fecd-4023-8f59-d92810e671b7",
-              "label": "Mrs Stephanie Taylor"
-            },
-            {
-              "code": "989dea71-1b19-498d-8c8f-b160b2384816",
-              "label": "Ms Alyssa Stewart"
-            },
-            {
-              "code": "56644739-fd0c-441e-bcf9-0fe62ea139ac",
-              "label": "Ms Autumn Chase"
-            },
-            {
-              "code": "54283032-abc9-41ec-adf6-c883f060badb",
-              "label": "Ms Catherine Stevens"
-            },
-            {
-              "code": "44a6e303-7cde-41e9-8276-52d3ce74058e",
-              "label": "Ms Courtney Edwards"
-            },
-            {
-              "code": "d705003b-20ed-4922-9c5e-ebe5f9a2c5e8",
-              "label": "Ms Elizabeth Phillips"
-            },
-            {
-              "code": "0029191c-f64b-42a6-b262-55e697cc7718",
-              "label": "Ms Jacqueline Park"
-            },
-            {
-              "code": "284f5cc3-0775-4b9a-999b-9de4e37eeaa6",
-              "label": "Ms Julie Sanford"
-            },
-            {
-              "code": "8aa74464-402b-48f6-82d1-851ba30f7c4b",
-              "label": "Ms Kathleen Mcfarland"
-            },
-            {
-              "code": "b1523867-f50e-4b95-9433-e35679ae94f5",
-              "label": "Ms Kayla Adams"
-            },
-            {
-              "code": "32f495c5-13db-41b4-83d3-767a9f3432dd",
-              "label": "Ms Lauren Wood"
-            },
-            {
-              "code": "f8a529cb-0162-48c6-9026-aa49e2b657ef",
-              "label": "Ms Lynn Schwartz"
-            },
-            {
-              "code": "6685b0df-b77e-4e07-94e3-e1fb7301cbb5",
-              "label": "Ms Megan Richards"
-            },
-            {
-              "code": "4a8b3caa-2985-465e-b1a2-e0e1cc29dd5a",
-              "label": "Ms Stephanie Smith"
-            },
-            {
-              "code": "feb75425-22aa-4460-8fea-4bdf35e5fa35",
-              "label": "Ms Susan Phillips"
-            },
-            {
-              "code": "5b9e4119-96cb-4c4b-9597-77e7367f77b5",
-              "label": "Ms Tracey Brandt"
-            },
-            {
-              "code": "c8ad43eb-dd9c-409a-9722-617e723023e7",
-              "label": "Ms Virginia Garcia"
-            },
-            {
-              "code": "b648f237-3d8b-4446-95b0-ea8b87402bd7",
-              "label": "Ms Whitney Lamb"
-            },
-            {
-              "code": "0e4b88a9-4dda-4d5e-9214-d2f74f6b6338",
-              "label": "Nathaniel Burton"
-            },
-            {
-              "code": "5defd858-577d-4804-a4c6-cbdf6a821ee5",
-              "label": "Professor Dylan Bradley"
-            },
-            {
-              "code": "fce9ca78-d952-4b96-a856-7f4f62b46085",
-              "label": "Professor Jordan Smith"
-            },
-            {
-              "code": "73a52944-76d9-4e65-93b5-b55160e62c56",
-              "label": "Regan McClure"
-            },
-            {
-              "code": "12486f08-ef79-4c2b-bd28-e76e668ba92c",
-              "label": "Zaid Sutton"
-            }
-          ],
-          "valueCode": "ca3266a2-34b9-4665-85bb-df13956c939f",
-          "valueLabel": "Anish Osborne"
-        },
-        "isFullPanel": "Yes",
-        "memberList": [
-          {
-            "value": {
-              "name": {
-                "value": {
-                  "code": "6df091e9-fcb0-4a49-92bf-b3270c958f1d",
-                  "label": "Carys Cotton"
-                },
-                "list_items": [
-                  {
-                    "code": "ca3266a2-34b9-4665-85bb-df13956c939f",
-                    "label": "Anish Osborne"
-                  },
-                  {
-                    "code": "6df091e9-fcb0-4a49-92bf-b3270c958f1d",
-                    "label": "Carys Cotton"
-                  },
-                  {
-                    "code": "525a9908-e4fc-4f2b-b4bf-ba9e2dfcfab9",
-                    "label": "Charis Farley"
-                  },
-                  {
-                    "code": "ac51f5c6-72d5-4b00-bc01-1e8d527d6e7c",
-                    "label": "Dalton Rivera"
-                  },
-                  {
-                    "code": "2be1bcf8-0a24-499d-88b3-3e224a62f511",
-                    "label": "Dana Osborn"
-                  },
-                  {
-                    "code": "89e47595-5787-41d0-bfe0-9e2ea7577e3c",
-                    "label": "District Judge Jonathan Casey"
-                  },
-                  {
-                    "code": "2c2c7f76-c8fc-4f72-8e0c-4fcf82bb0a8b",
-                    "label": "Dr Alicia Jones"
-                  },
-                  {
-                    "code": "84818583-ef4d-49db-817c-a7374972af2e",
-                    "label": "Dr Amanda Knight"
-                  },
-                  {
-                    "code": "8da4fea9-571a-47b3-9d2c-724c8d5c06f7",
-                    "label": "Dr Brittney Smith"
-                  },
-                  {
-                    "code": "7b4f5b66-0c9c-45e4-ae90-3e23483febbb",
-                    "label": "Dr Denise Stark"
-                  },
-                  {
-                    "code": "1d647c65-5624-42b7-b42c-77c8c7a14acf",
-                    "label": "Dr Heather Woods"
-                  },
-                  {
-                    "code": "460dd741-7b18-4bd4-aafa-3e08540d3669",
-                    "label": "Dr James House"
-                  },
-                  {
-                    "code": "55a02c84-29a5-44c2-b23e-6f77699f190b",
-                    "label": "Dr Lori Chang"
-                  },
-                  {
-                    "code": "53f928b7-02f4-42d8-bfe0-cec47f738fef",
-                    "label": "Dr Ricky Mcgee"
-                  },
-                  {
-                    "code": "78d78b6a-65c7-4cee-bd7e-a23687e9270d",
-                    "label": "Dr Scott Davis"
-                  },
-                  {
-                    "code": "52dc8dad-1074-424c-b58c-e1dcdbdc84c6",
-                    "label": "Dr Stacy Odom"
-                  },
-                  {
-                    "code": "17442a07-bf94-4282-bb51-0aa3a997c762",
-                    "label": "Dr Steven Morgan"
-                  },
-                  {
-                    "code": "e4d2179f-36d6-4375-8073-50ae7abc2721",
-                    "label": "Dr Thomas Mitchell"
-                  },
-                  {
-                    "code": "33369000-0ad5-4bfd-90c1-f5aa0c32ecf5",
-                    "label": "Emmy Ortiz"
-                  },
-                  {
-                    "code": "44d94773-610f-4091-8bac-f01fe1576ed9",
-                    "label": "Her Honour Judge Nicole Cooper"
-                  },
-                  {
-                    "code": "faceaa72-7a1e-465c-ada7-5d9269722f24",
-                    "label": "His Honour Judge Thomas Anderson"
-                  },
-                  {
-                    "code": "37488df0-784c-4174-9714-35b0458e5f68",
-                    "label": "Jaxon Little"
-                  },
-                  {
-                    "code": "30f9f861-93b0-4702-b229-0bf3fcc9261b",
-                    "label": "Josef Newman"
-                  },
-                  {
-                    "code": "581b857f-195c-4404-ba3e-8944daec68fd",
-                    "label": "Mary Gallegos"
-                  },
-                  {
-                    "code": "11685ad5-26fa-44d4-9742-cf2ee280ad5e",
-                    "label": "Miss Kristen Stephenson"
-                  },
-                  {
-                    "code": "2f3416f7-0cdd-44be-a63d-169a2458dd25",
-                    "label": "Miss Linda Moore"
-                  },
-                  {
-                    "code": "b4573e4b-0787-4ac0-9667-bceff71443d1",
-                    "label": "Miss Samantha Dunlap"
-                  },
-                  {
-                    "code": "1fdbe0f6-b913-476c-a798-f57aa78bbcf6",
-                    "label": "Miss Yolanda Velasquez"
-                  },
-                  {
-                    "code": "e3849f84-30cd-4fa9-85fa-999a7c79b8f4",
-                    "label": "Mr Brandon Robles"
-                  },
-                  {
-                    "code": "f17c50d5-97e9-4293-94fa-1a0cfd07bfa1",
-                    "label": "Mr Craig Rivera"
-                  },
-                  {
-                    "code": "280b6632-bb6b-4ea6-b5f8-35b45131444b",
-                    "label": "Mr David Bradshaw"
-                  },
-                  {
-                    "code": "63e78a95-9999-4bf4-b6fd-5b1f76d5136f",
-                    "label": "Mr David Hampton"
-                  },
-                  {
-                    "code": "e9b8b1a8-08f5-4dc4-9756-1ec02f3ab803",
-                    "label": "Mr Evan Fitzgerald"
-                  },
-                  {
-                    "code": "83380984-146a-415d-992a-e7f6c7f9c3c7",
-                    "label": "Mr Garrett Nichols"
-                  },
-                  {
-                    "code": "c46debef-92c8-48e1-ad14-65a0c9bd6af0",
-                    "label": "Mr Jacob Gonzalez"
-                  },
-                  {
-                    "code": "e4b7eb59-bb50-458c-b184-2ab8c0fa2388",
-                    "label": "Mr James Kaiser"
-                  },
-                  {
-                    "code": "8525f91b-4a5f-4835-a1ce-55a96a74e83f",
-                    "label": "Mr Jeffery Anderson"
-                  },
-                  {
-                    "code": "2cea781b-626b-4c47-a3bf-2c97c1f2b974",
-                    "label": "Mr John Jones"
-                  },
-                  {
-                    "code": "8284dc55-ee5b-4b21-b09f-7f93d5eab3c6",
-                    "label": "Mr Jon Moore"
-                  },
-                  {
-                    "code": "218edce1-89b3-4253-b437-f583abef94a7",
-                    "label": "Mr Karl Hogan"
-                  },
-                  {
-                    "code": "72c9596e-74ce-442c-9d61-a49f9be46782",
-                    "label": "Mr Logan Everett"
-                  },
-                  {
-                    "code": "f5ed22b2-1113-4611-9eb0-974d089696f6",
-                    "label": "Mr Robert Delacruz"
-                  },
-                  {
-                    "code": "d1e3dbc7-95df-48cd-bb74-277c117ea591",
-                    "label": "Mr Samuel Reed"
-                  },
-                  {
-                    "code": "5e1954a6-72ed-47d1-9180-23cef5b61482",
-                    "label": "Mr Terry Johnston"
-                  },
-                  {
-                    "code": "d4c76ca2-0cab-40dd-b3a6-c5a567413d7b",
-                    "label": "Mrs Anna Morris"
-                  },
-                  {
-                    "code": "951bdcc3-e4db-479a-891b-c68f2615e5b8",
-                    "label": "Mrs Danielle Ross"
-                  },
-                  {
-                    "code": "6e186d10-5eae-4ffd-a63f-49d4f3a0636b",
-                    "label": "Mrs Dorothy Higgins"
-                  },
-                  {
-                    "code": "e14152a5-6f50-4b2f-aa1e-df43011bca85",
-                    "label": "Mrs Nancy Kelley"
-                  },
-                  {
-                    "code": "5cebb154-fecd-4023-8f59-d92810e671b7",
-                    "label": "Mrs Stephanie Taylor"
-                  },
-                  {
-                    "code": "989dea71-1b19-498d-8c8f-b160b2384816",
-                    "label": "Ms Alyssa Stewart"
-                  },
-                  {
-                    "code": "56644739-fd0c-441e-bcf9-0fe62ea139ac",
-                    "label": "Ms Autumn Chase"
-                  },
-                  {
-                    "code": "54283032-abc9-41ec-adf6-c883f060badb",
-                    "label": "Ms Catherine Stevens"
-                  },
-                  {
-                    "code": "44a6e303-7cde-41e9-8276-52d3ce74058e",
-                    "label": "Ms Courtney Edwards"
-                  },
-                  {
-                    "code": "d705003b-20ed-4922-9c5e-ebe5f9a2c5e8",
-                    "label": "Ms Elizabeth Phillips"
-                  },
-                  {
-                    "code": "0029191c-f64b-42a6-b262-55e697cc7718",
-                    "label": "Ms Jacqueline Park"
-                  },
-                  {
-                    "code": "284f5cc3-0775-4b9a-999b-9de4e37eeaa6",
-                    "label": "Ms Julie Sanford"
-                  },
-                  {
-                    "code": "8aa74464-402b-48f6-82d1-851ba30f7c4b",
-                    "label": "Ms Kathleen Mcfarland"
-                  },
-                  {
-                    "code": "b1523867-f50e-4b95-9433-e35679ae94f5",
-                    "label": "Ms Kayla Adams"
-                  },
-                  {
-                    "code": "32f495c5-13db-41b4-83d3-767a9f3432dd",
-                    "label": "Ms Lauren Wood"
-                  },
-                  {
-                    "code": "f8a529cb-0162-48c6-9026-aa49e2b657ef",
-                    "label": "Ms Lynn Schwartz"
-                  },
-                  {
-                    "code": "6685b0df-b77e-4e07-94e3-e1fb7301cbb5",
-                    "label": "Ms Megan Richards"
-                  },
-                  {
-                    "code": "4a8b3caa-2985-465e-b1a2-e0e1cc29dd5a",
-                    "label": "Ms Stephanie Smith"
-                  },
-                  {
-                    "code": "feb75425-22aa-4460-8fea-4bdf35e5fa35",
-                    "label": "Ms Susan Phillips"
-                  },
-                  {
-                    "code": "5b9e4119-96cb-4c4b-9597-77e7367f77b5",
-                    "label": "Ms Tracey Brandt"
-                  },
-                  {
-                    "code": "c8ad43eb-dd9c-409a-9722-617e723023e7",
-                    "label": "Ms Virginia Garcia"
-                  },
-                  {
-                    "code": "b648f237-3d8b-4446-95b0-ea8b87402bd7",
-                    "label": "Ms Whitney Lamb"
-                  },
-                  {
-                    "code": "0e4b88a9-4dda-4d5e-9214-d2f74f6b6338",
-                    "label": "Nathaniel Burton"
-                  },
-                  {
-                    "code": "5defd858-577d-4804-a4c6-cbdf6a821ee5",
-                    "label": "Professor Dylan Bradley"
-                  },
-                  {
-                    "code": "fce9ca78-d952-4b96-a856-7f4f62b46085",
-                    "label": "Professor Jordan Smith"
-                  },
-                  {
-                    "code": "73a52944-76d9-4e65-93b5-b55160e62c56",
-                    "label": "Regan McClure"
-                  },
-                  {
-                    "code": "12486f08-ef79-4c2b-bd28-e76e668ba92c",
-                    "label": "Zaid Sutton"
-                  }
-                ],
-                "valueCode": "6df091e9-fcb0-4a49-92bf-b3270c958f1d",
-                "valueLabel": "Carys Cotton"
-              },
-              "role": "fullMember"
-            },
-            "id": "49ccbb41-bc2d-463b-8162-d988e03d320d"
-          },
-          {
-            "value": {
-              "name": {
-                "value": {
-                  "code": "525a9908-e4fc-4f2b-b4bf-ba9e2dfcfab9",
-                  "label": "Charis Farley"
-                },
-                "list_items": [
-                  {
-                    "code": "ca3266a2-34b9-4665-85bb-df13956c939f",
-                    "label": "Anish Osborne"
-                  },
-                  {
-                    "code": "6df091e9-fcb0-4a49-92bf-b3270c958f1d",
-                    "label": "Carys Cotton"
-                  },
-                  {
-                    "code": "525a9908-e4fc-4f2b-b4bf-ba9e2dfcfab9",
-                    "label": "Charis Farley"
-                  },
-                  {
-                    "code": "ac51f5c6-72d5-4b00-bc01-1e8d527d6e7c",
-                    "label": "Dalton Rivera"
-                  },
-                  {
-                    "code": "2be1bcf8-0a24-499d-88b3-3e224a62f511",
-                    "label": "Dana Osborn"
-                  },
-                  {
-                    "code": "89e47595-5787-41d0-bfe0-9e2ea7577e3c",
-                    "label": "District Judge Jonathan Casey"
-                  },
-                  {
-                    "code": "2c2c7f76-c8fc-4f72-8e0c-4fcf82bb0a8b",
-                    "label": "Dr Alicia Jones"
-                  },
-                  {
-                    "code": "84818583-ef4d-49db-817c-a7374972af2e",
-                    "label": "Dr Amanda Knight"
-                  },
-                  {
-                    "code": "8da4fea9-571a-47b3-9d2c-724c8d5c06f7",
-                    "label": "Dr Brittney Smith"
-                  },
-                  {
-                    "code": "7b4f5b66-0c9c-45e4-ae90-3e23483febbb",
-                    "label": "Dr Denise Stark"
-                  },
-                  {
-                    "code": "1d647c65-5624-42b7-b42c-77c8c7a14acf",
-                    "label": "Dr Heather Woods"
-                  },
-                  {
-                    "code": "460dd741-7b18-4bd4-aafa-3e08540d3669",
-                    "label": "Dr James House"
-                  },
-                  {
-                    "code": "55a02c84-29a5-44c2-b23e-6f77699f190b",
-                    "label": "Dr Lori Chang"
-                  },
-                  {
-                    "code": "53f928b7-02f4-42d8-bfe0-cec47f738fef",
-                    "label": "Dr Ricky Mcgee"
-                  },
-                  {
-                    "code": "78d78b6a-65c7-4cee-bd7e-a23687e9270d",
-                    "label": "Dr Scott Davis"
-                  },
-                  {
-                    "code": "52dc8dad-1074-424c-b58c-e1dcdbdc84c6",
-                    "label": "Dr Stacy Odom"
-                  },
-                  {
-                    "code": "17442a07-bf94-4282-bb51-0aa3a997c762",
-                    "label": "Dr Steven Morgan"
-                  },
-                  {
-                    "code": "e4d2179f-36d6-4375-8073-50ae7abc2721",
-                    "label": "Dr Thomas Mitchell"
-                  },
-                  {
-                    "code": "33369000-0ad5-4bfd-90c1-f5aa0c32ecf5",
-                    "label": "Emmy Ortiz"
-                  },
-                  {
-                    "code": "44d94773-610f-4091-8bac-f01fe1576ed9",
-                    "label": "Her Honour Judge Nicole Cooper"
-                  },
-                  {
-                    "code": "faceaa72-7a1e-465c-ada7-5d9269722f24",
-                    "label": "His Honour Judge Thomas Anderson"
-                  },
-                  {
-                    "code": "37488df0-784c-4174-9714-35b0458e5f68",
-                    "label": "Jaxon Little"
-                  },
-                  {
-                    "code": "30f9f861-93b0-4702-b229-0bf3fcc9261b",
-                    "label": "Josef Newman"
-                  },
-                  {
-                    "code": "581b857f-195c-4404-ba3e-8944daec68fd",
-                    "label": "Mary Gallegos"
-                  },
-                  {
-                    "code": "11685ad5-26fa-44d4-9742-cf2ee280ad5e",
-                    "label": "Miss Kristen Stephenson"
-                  },
-                  {
-                    "code": "2f3416f7-0cdd-44be-a63d-169a2458dd25",
-                    "label": "Miss Linda Moore"
-                  },
-                  {
-                    "code": "b4573e4b-0787-4ac0-9667-bceff71443d1",
-                    "label": "Miss Samantha Dunlap"
-                  },
-                  {
-                    "code": "1fdbe0f6-b913-476c-a798-f57aa78bbcf6",
-                    "label": "Miss Yolanda Velasquez"
-                  },
-                  {
-                    "code": "e3849f84-30cd-4fa9-85fa-999a7c79b8f4",
-                    "label": "Mr Brandon Robles"
-                  },
-                  {
-                    "code": "f17c50d5-97e9-4293-94fa-1a0cfd07bfa1",
-                    "label": "Mr Craig Rivera"
-                  },
-                  {
-                    "code": "280b6632-bb6b-4ea6-b5f8-35b45131444b",
-                    "label": "Mr David Bradshaw"
-                  },
-                  {
-                    "code": "63e78a95-9999-4bf4-b6fd-5b1f76d5136f",
-                    "label": "Mr David Hampton"
-                  },
-                  {
-                    "code": "e9b8b1a8-08f5-4dc4-9756-1ec02f3ab803",
-                    "label": "Mr Evan Fitzgerald"
-                  },
-                  {
-                    "code": "83380984-146a-415d-992a-e7f6c7f9c3c7",
-                    "label": "Mr Garrett Nichols"
-                  },
-                  {
-                    "code": "c46debef-92c8-48e1-ad14-65a0c9bd6af0",
-                    "label": "Mr Jacob Gonzalez"
-                  },
-                  {
-                    "code": "e4b7eb59-bb50-458c-b184-2ab8c0fa2388",
-                    "label": "Mr James Kaiser"
-                  },
-                  {
-                    "code": "8525f91b-4a5f-4835-a1ce-55a96a74e83f",
-                    "label": "Mr Jeffery Anderson"
-                  },
-                  {
-                    "code": "2cea781b-626b-4c47-a3bf-2c97c1f2b974",
-                    "label": "Mr John Jones"
-                  },
-                  {
-                    "code": "8284dc55-ee5b-4b21-b09f-7f93d5eab3c6",
-                    "label": "Mr Jon Moore"
-                  },
-                  {
-                    "code": "218edce1-89b3-4253-b437-f583abef94a7",
-                    "label": "Mr Karl Hogan"
-                  },
-                  {
-                    "code": "72c9596e-74ce-442c-9d61-a49f9be46782",
-                    "label": "Mr Logan Everett"
-                  },
-                  {
-                    "code": "f5ed22b2-1113-4611-9eb0-974d089696f6",
-                    "label": "Mr Robert Delacruz"
-                  },
-                  {
-                    "code": "d1e3dbc7-95df-48cd-bb74-277c117ea591",
-                    "label": "Mr Samuel Reed"
-                  },
-                  {
-                    "code": "5e1954a6-72ed-47d1-9180-23cef5b61482",
-                    "label": "Mr Terry Johnston"
-                  },
-                  {
-                    "code": "d4c76ca2-0cab-40dd-b3a6-c5a567413d7b",
-                    "label": "Mrs Anna Morris"
-                  },
-                  {
-                    "code": "951bdcc3-e4db-479a-891b-c68f2615e5b8",
-                    "label": "Mrs Danielle Ross"
-                  },
-                  {
-                    "code": "6e186d10-5eae-4ffd-a63f-49d4f3a0636b",
-                    "label": "Mrs Dorothy Higgins"
-                  },
-                  {
-                    "code": "e14152a5-6f50-4b2f-aa1e-df43011bca85",
-                    "label": "Mrs Nancy Kelley"
-                  },
-                  {
-                    "code": "5cebb154-fecd-4023-8f59-d92810e671b7",
-                    "label": "Mrs Stephanie Taylor"
-                  },
-                  {
-                    "code": "989dea71-1b19-498d-8c8f-b160b2384816",
-                    "label": "Ms Alyssa Stewart"
-                  },
-                  {
-                    "code": "56644739-fd0c-441e-bcf9-0fe62ea139ac",
-                    "label": "Ms Autumn Chase"
-                  },
-                  {
-                    "code": "54283032-abc9-41ec-adf6-c883f060badb",
-                    "label": "Ms Catherine Stevens"
-                  },
-                  {
-                    "code": "44a6e303-7cde-41e9-8276-52d3ce74058e",
-                    "label": "Ms Courtney Edwards"
-                  },
-                  {
-                    "code": "d705003b-20ed-4922-9c5e-ebe5f9a2c5e8",
-                    "label": "Ms Elizabeth Phillips"
-                  },
-                  {
-                    "code": "0029191c-f64b-42a6-b262-55e697cc7718",
-                    "label": "Ms Jacqueline Park"
-                  },
-                  {
-                    "code": "284f5cc3-0775-4b9a-999b-9de4e37eeaa6",
-                    "label": "Ms Julie Sanford"
-                  },
-                  {
-                    "code": "8aa74464-402b-48f6-82d1-851ba30f7c4b",
-                    "label": "Ms Kathleen Mcfarland"
-                  },
-                  {
-                    "code": "b1523867-f50e-4b95-9433-e35679ae94f5",
-                    "label": "Ms Kayla Adams"
-                  },
-                  {
-                    "code": "32f495c5-13db-41b4-83d3-767a9f3432dd",
-                    "label": "Ms Lauren Wood"
-                  },
-                  {
-                    "code": "f8a529cb-0162-48c6-9026-aa49e2b657ef",
-                    "label": "Ms Lynn Schwartz"
-                  },
-                  {
-                    "code": "6685b0df-b77e-4e07-94e3-e1fb7301cbb5",
-                    "label": "Ms Megan Richards"
-                  },
-                  {
-                    "code": "4a8b3caa-2985-465e-b1a2-e0e1cc29dd5a",
-                    "label": "Ms Stephanie Smith"
-                  },
-                  {
-                    "code": "feb75425-22aa-4460-8fea-4bdf35e5fa35",
-                    "label": "Ms Susan Phillips"
-                  },
-                  {
-                    "code": "5b9e4119-96cb-4c4b-9597-77e7367f77b5",
-                    "label": "Ms Tracey Brandt"
-                  },
-                  {
-                    "code": "c8ad43eb-dd9c-409a-9722-617e723023e7",
-                    "label": "Ms Virginia Garcia"
-                  },
-                  {
-                    "code": "b648f237-3d8b-4446-95b0-ea8b87402bd7",
-                    "label": "Ms Whitney Lamb"
-                  },
-                  {
-                    "code": "0e4b88a9-4dda-4d5e-9214-d2f74f6b6338",
-                    "label": "Nathaniel Burton"
-                  },
-                  {
-                    "code": "5defd858-577d-4804-a4c6-cbdf6a821ee5",
-                    "label": "Professor Dylan Bradley"
-                  },
-                  {
-                    "code": "fce9ca78-d952-4b96-a856-7f4f62b46085",
-                    "label": "Professor Jordan Smith"
-                  },
-                  {
-                    "code": "73a52944-76d9-4e65-93b5-b55160e62c56",
-                    "label": "Regan McClure"
-                  },
-                  {
-                    "code": "12486f08-ef79-4c2b-bd28-e76e668ba92c",
-                    "label": "Zaid Sutton"
-                  }
-                ],
-                "valueCode": "525a9908-e4fc-4f2b-b4bf-ba9e2dfcfab9",
-                "valueLabel": "Charis Farley"
-              },
-              "role": "observer"
-            },
-            "id": "a1e8eb3a-1754-4169-a4e2-e52ca9d5eda6"
-          },
-          {
-            "value": {
-              "name": {
-                "value": {
-                  "code": "ac51f5c6-72d5-4b00-bc01-1e8d527d6e7c",
-                  "label": "Dalton Rivera"
-                },
-                "list_items": [
-                  {
-                    "code": "ca3266a2-34b9-4665-85bb-df13956c939f",
-                    "label": "Anish Osborne"
-                  },
-                  {
-                    "code": "6df091e9-fcb0-4a49-92bf-b3270c958f1d",
-                    "label": "Carys Cotton"
-                  },
-                  {
-                    "code": "525a9908-e4fc-4f2b-b4bf-ba9e2dfcfab9",
-                    "label": "Charis Farley"
-                  },
-                  {
-                    "code": "ac51f5c6-72d5-4b00-bc01-1e8d527d6e7c",
-                    "label": "Dalton Rivera"
-                  },
-                  {
-                    "code": "2be1bcf8-0a24-499d-88b3-3e224a62f511",
-                    "label": "Dana Osborn"
-                  },
-                  {
-                    "code": "89e47595-5787-41d0-bfe0-9e2ea7577e3c",
-                    "label": "District Judge Jonathan Casey"
-                  },
-                  {
-                    "code": "2c2c7f76-c8fc-4f72-8e0c-4fcf82bb0a8b",
-                    "label": "Dr Alicia Jones"
-                  },
-                  {
-                    "code": "84818583-ef4d-49db-817c-a7374972af2e",
-                    "label": "Dr Amanda Knight"
-                  },
-                  {
-                    "code": "8da4fea9-571a-47b3-9d2c-724c8d5c06f7",
-                    "label": "Dr Brittney Smith"
-                  },
-                  {
-                    "code": "7b4f5b66-0c9c-45e4-ae90-3e23483febbb",
-                    "label": "Dr Denise Stark"
-                  },
-                  {
-                    "code": "1d647c65-5624-42b7-b42c-77c8c7a14acf",
-                    "label": "Dr Heather Woods"
-                  },
-                  {
-                    "code": "460dd741-7b18-4bd4-aafa-3e08540d3669",
-                    "label": "Dr James House"
-                  },
-                  {
-                    "code": "55a02c84-29a5-44c2-b23e-6f77699f190b",
-                    "label": "Dr Lori Chang"
-                  },
-                  {
-                    "code": "53f928b7-02f4-42d8-bfe0-cec47f738fef",
-                    "label": "Dr Ricky Mcgee"
-                  },
-                  {
-                    "code": "78d78b6a-65c7-4cee-bd7e-a23687e9270d",
-                    "label": "Dr Scott Davis"
-                  },
-                  {
-                    "code": "52dc8dad-1074-424c-b58c-e1dcdbdc84c6",
-                    "label": "Dr Stacy Odom"
-                  },
-                  {
-                    "code": "17442a07-bf94-4282-bb51-0aa3a997c762",
-                    "label": "Dr Steven Morgan"
-                  },
-                  {
-                    "code": "e4d2179f-36d6-4375-8073-50ae7abc2721",
-                    "label": "Dr Thomas Mitchell"
-                  },
-                  {
-                    "code": "33369000-0ad5-4bfd-90c1-f5aa0c32ecf5",
-                    "label": "Emmy Ortiz"
-                  },
-                  {
-                    "code": "44d94773-610f-4091-8bac-f01fe1576ed9",
-                    "label": "Her Honour Judge Nicole Cooper"
-                  },
-                  {
-                    "code": "faceaa72-7a1e-465c-ada7-5d9269722f24",
-                    "label": "His Honour Judge Thomas Anderson"
-                  },
-                  {
-                    "code": "37488df0-784c-4174-9714-35b0458e5f68",
-                    "label": "Jaxon Little"
-                  },
-                  {
-                    "code": "30f9f861-93b0-4702-b229-0bf3fcc9261b",
-                    "label": "Josef Newman"
-                  },
-                  {
-                    "code": "581b857f-195c-4404-ba3e-8944daec68fd",
-                    "label": "Mary Gallegos"
-                  },
-                  {
-                    "code": "11685ad5-26fa-44d4-9742-cf2ee280ad5e",
-                    "label": "Miss Kristen Stephenson"
-                  },
-                  {
-                    "code": "2f3416f7-0cdd-44be-a63d-169a2458dd25",
-                    "label": "Miss Linda Moore"
-                  },
-                  {
-                    "code": "b4573e4b-0787-4ac0-9667-bceff71443d1",
-                    "label": "Miss Samantha Dunlap"
-                  },
-                  {
-                    "code": "1fdbe0f6-b913-476c-a798-f57aa78bbcf6",
-                    "label": "Miss Yolanda Velasquez"
-                  },
-                  {
-                    "code": "e3849f84-30cd-4fa9-85fa-999a7c79b8f4",
-                    "label": "Mr Brandon Robles"
-                  },
-                  {
-                    "code": "f17c50d5-97e9-4293-94fa-1a0cfd07bfa1",
-                    "label": "Mr Craig Rivera"
-                  },
-                  {
-                    "code": "280b6632-bb6b-4ea6-b5f8-35b45131444b",
-                    "label": "Mr David Bradshaw"
-                  },
-                  {
-                    "code": "63e78a95-9999-4bf4-b6fd-5b1f76d5136f",
-                    "label": "Mr David Hampton"
-                  },
-                  {
-                    "code": "e9b8b1a8-08f5-4dc4-9756-1ec02f3ab803",
-                    "label": "Mr Evan Fitzgerald"
-                  },
-                  {
-                    "code": "83380984-146a-415d-992a-e7f6c7f9c3c7",
-                    "label": "Mr Garrett Nichols"
-                  },
-                  {
-                    "code": "c46debef-92c8-48e1-ad14-65a0c9bd6af0",
-                    "label": "Mr Jacob Gonzalez"
-                  },
-                  {
-                    "code": "e4b7eb59-bb50-458c-b184-2ab8c0fa2388",
-                    "label": "Mr James Kaiser"
-                  },
-                  {
-                    "code": "8525f91b-4a5f-4835-a1ce-55a96a74e83f",
-                    "label": "Mr Jeffery Anderson"
-                  },
-                  {
-                    "code": "2cea781b-626b-4c47-a3bf-2c97c1f2b974",
-                    "label": "Mr John Jones"
-                  },
-                  {
-                    "code": "8284dc55-ee5b-4b21-b09f-7f93d5eab3c6",
-                    "label": "Mr Jon Moore"
-                  },
-                  {
-                    "code": "218edce1-89b3-4253-b437-f583abef94a7",
-                    "label": "Mr Karl Hogan"
-                  },
-                  {
-                    "code": "72c9596e-74ce-442c-9d61-a49f9be46782",
-                    "label": "Mr Logan Everett"
-                  },
-                  {
-                    "code": "f5ed22b2-1113-4611-9eb0-974d089696f6",
-                    "label": "Mr Robert Delacruz"
-                  },
-                  {
-                    "code": "d1e3dbc7-95df-48cd-bb74-277c117ea591",
-                    "label": "Mr Samuel Reed"
-                  },
-                  {
-                    "code": "5e1954a6-72ed-47d1-9180-23cef5b61482",
-                    "label": "Mr Terry Johnston"
-                  },
-                  {
-                    "code": "d4c76ca2-0cab-40dd-b3a6-c5a567413d7b",
-                    "label": "Mrs Anna Morris"
-                  },
-                  {
-                    "code": "951bdcc3-e4db-479a-891b-c68f2615e5b8",
-                    "label": "Mrs Danielle Ross"
-                  },
-                  {
-                    "code": "6e186d10-5eae-4ffd-a63f-49d4f3a0636b",
-                    "label": "Mrs Dorothy Higgins"
-                  },
-                  {
-                    "code": "e14152a5-6f50-4b2f-aa1e-df43011bca85",
-                    "label": "Mrs Nancy Kelley"
-                  },
-                  {
-                    "code": "5cebb154-fecd-4023-8f59-d92810e671b7",
-                    "label": "Mrs Stephanie Taylor"
-                  },
-                  {
-                    "code": "989dea71-1b19-498d-8c8f-b160b2384816",
-                    "label": "Ms Alyssa Stewart"
-                  },
-                  {
-                    "code": "56644739-fd0c-441e-bcf9-0fe62ea139ac",
-                    "label": "Ms Autumn Chase"
-                  },
-                  {
-                    "code": "54283032-abc9-41ec-adf6-c883f060badb",
-                    "label": "Ms Catherine Stevens"
-                  },
-                  {
-                    "code": "44a6e303-7cde-41e9-8276-52d3ce74058e",
-                    "label": "Ms Courtney Edwards"
-                  },
-                  {
-                    "code": "d705003b-20ed-4922-9c5e-ebe5f9a2c5e8",
-                    "label": "Ms Elizabeth Phillips"
-                  },
-                  {
-                    "code": "0029191c-f64b-42a6-b262-55e697cc7718",
-                    "label": "Ms Jacqueline Park"
-                  },
-                  {
-                    "code": "284f5cc3-0775-4b9a-999b-9de4e37eeaa6",
-                    "label": "Ms Julie Sanford"
-                  },
-                  {
-                    "code": "8aa74464-402b-48f6-82d1-851ba30f7c4b",
-                    "label": "Ms Kathleen Mcfarland"
-                  },
-                  {
-                    "code": "b1523867-f50e-4b95-9433-e35679ae94f5",
-                    "label": "Ms Kayla Adams"
-                  },
-                  {
-                    "code": "32f495c5-13db-41b4-83d3-767a9f3432dd",
-                    "label": "Ms Lauren Wood"
-                  },
-                  {
-                    "code": "f8a529cb-0162-48c6-9026-aa49e2b657ef",
-                    "label": "Ms Lynn Schwartz"
-                  },
-                  {
-                    "code": "6685b0df-b77e-4e07-94e3-e1fb7301cbb5",
-                    "label": "Ms Megan Richards"
-                  },
-                  {
-                    "code": "4a8b3caa-2985-465e-b1a2-e0e1cc29dd5a",
-                    "label": "Ms Stephanie Smith"
-                  },
-                  {
-                    "code": "feb75425-22aa-4460-8fea-4bdf35e5fa35",
-                    "label": "Ms Susan Phillips"
-                  },
-                  {
-                    "code": "5b9e4119-96cb-4c4b-9597-77e7367f77b5",
-                    "label": "Ms Tracey Brandt"
-                  },
-                  {
-                    "code": "c8ad43eb-dd9c-409a-9722-617e723023e7",
-                    "label": "Ms Virginia Garcia"
-                  },
-                  {
-                    "code": "b648f237-3d8b-4446-95b0-ea8b87402bd7",
-                    "label": "Ms Whitney Lamb"
-                  },
-                  {
-                    "code": "0e4b88a9-4dda-4d5e-9214-d2f74f6b6338",
-                    "label": "Nathaniel Burton"
-                  },
-                  {
-                    "code": "5defd858-577d-4804-a4c6-cbdf6a821ee5",
-                    "label": "Professor Dylan Bradley"
-                  },
-                  {
-                    "code": "fce9ca78-d952-4b96-a856-7f4f62b46085",
-                    "label": "Professor Jordan Smith"
-                  },
-                  {
-                    "code": "73a52944-76d9-4e65-93b5-b55160e62c56",
-                    "label": "Regan McClure"
-                  },
-                  {
-                    "code": "12486f08-ef79-4c2b-bd28-e76e668ba92c",
-                    "label": "Zaid Sutton"
-                  }
-                ],
-                "valueCode": "ac51f5c6-72d5-4b00-bc01-1e8d527d6e7c",
-                "valueLabel": "Dalton Rivera"
-              },
-              "role": "appraiser"
-            },
-            "id": "364e22c4-46ed-410e-b8b3-412a168ba16c"
-          }
-        ],
+        "isFullPanel": "No. It was a 'sit alone' hearing",
+        "memberList": [],
         "roles": [
-          "representativeNonLegal",
-          "victim",
-          "Tribunal clerk",
-          "appraiser",
-          "representativeLegal",
-          "Counsel",
-          "medicalMember",
-          "observer",
-          "Tribunal Judge",
-          "mainAppellant",
-          "appellant",
-          "layMember",
-          "witnessPolice",
-          "other",
-          "Witness - General",
-          "presentingOfficer",
-          "interpreter"
+          "appellant"
         ],
-        "others": "Test attendee",
         "outcome": "Allowed",
-        "subjectName": "Subject AutoTesting",
-        "recDesc": "Lorem ipsum recording found here",
-        "recFile": [
-          {
-            "value": {
-              "documentCategory": "ApplicationForm",
-              "documentEmailContent": "Lorem ipsum description",
-              "documentLink": {
-                "document_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/99ffef19-0435-402c-a1f2-8ec0e5b9d76f",
-                "document_filename": "mockFile.mp3",
-                "document_binary_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/99ffef19-0435-402c-a1f2-8ec0e5b9d76f/binary",
-                "category_id": "A"
-              }
-            },
-            "id": "30834996-1544-4792-a87e-e1f6a7b75270"
-          }
-        ],
+        "subjectName": "Testing subject",
+        "recFile": [],
         "recFileUpload": []
       },
       "id": "1"
@@ -1529,16 +246,16 @@
   ],
   "cicCaseHearingList": {
     "value": {
-      "code": "6df99832-8de1-457d-8cd4-a85deada9bca",
-      "label": "1 - Case management - 27 May 2024 9:00"
+      "code": "c7275d19-d764-421f-99f3-8cbd7bd97747",
+      "label": "1 - Case management - 01 Jan 2026 09:00"
     },
     "list_items": [
       {
-        "code": "6df99832-8de1-457d-8cd4-a85deada9bca",
-        "label": "1 - Case management - 27 May 2024 9:00"
+        "code": "c7275d19-d764-421f-99f3-8cbd7bd97747",
+        "label": "1 - Case management - 01 Jan 2026 09:00"
       }
     ],
-    "valueCode": "6df99832-8de1-457d-8cd4-a85deada9bca",
-    "valueLabel": "1 - Case management - 27 May 2024 9:00"
+    "valueCode": "c7275d19-d764-421f-99f3-8cbd7bd97747",
+    "valueLabel": "1 - Case management - 01 Jan 2026 09:00"
   }
 }
