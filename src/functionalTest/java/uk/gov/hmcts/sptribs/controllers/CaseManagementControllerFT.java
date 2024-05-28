@@ -28,9 +28,12 @@ public class CaseManagementControllerFT extends FunctionalTestSuite {
         "classpath:responses/response-citizen-create-case.json";
     private static final String UPDATE_CASE_RESPONSE =
         "classpath:responses/response-citizen-update-case.json";
+    private static final String DSS_UPDATE_CASE_RESPONSE =
+        "classpath:responses/response-citizen-dss-update-case.json";
 
     private static final String EVENT_PARAM = "event";
     private static final String UPDATE = "UPDATE";
+    private static final String UPDATE_CASE = "UPDATE_CASE";
     private static final String SUBMIT = "SUBMIT";
 
 
@@ -67,7 +70,7 @@ public class CaseManagementControllerFT extends FunctionalTestSuite {
             .header(SERVICE_AUTHORIZATION, serviceAuthenticationGenerator.generate())
             .header(AUTHORIZATION, idamTokenGenerator.generateIdamTokenForCitizen())
             .param(EVENT_PARAM, UPDATE)
-            .body(getDssCaseData())
+            .body(getDssCaseDataUpdated())
             .when()
             .put("/case/dss-orchestration/" + caseReference +  "/update");
 
@@ -90,7 +93,7 @@ public class CaseManagementControllerFT extends FunctionalTestSuite {
             .header(SERVICE_AUTHORIZATION, serviceAuthenticationGenerator.generate())
             .header(AUTHORIZATION, idamTokenGenerator.generateIdamTokenForCitizen())
             .param(EVENT_PARAM, SUBMIT)
-            .body(getDssCaseData())
+            .body(getDssCaseDataUpdated())
             .when()
             .put("/case/dss-orchestration/" + caseReference +  "/update");
 
@@ -98,6 +101,29 @@ public class CaseManagementControllerFT extends FunctionalTestSuite {
         assertThatJson(response.asString())
             .when(IGNORING_EXTRA_FIELDS)
             .isEqualTo(json(expectedResponse(UPDATE_CASE_RESPONSE)));
+    }
+
+    @Test
+    public void shouldTriggerDssUpdateCaseWhenEndpointTriggered() throws IOException {
+
+        final long caseReference = createAndSubmitTestCaseAndGetCaseReference();
+
+        Response response = RestAssured
+            .given()
+            .relaxedHTTPSValidation()
+            .baseUri(testUrl)
+            .header(CONTENT_TYPE, APPLICATION_JSON_VALUE)
+            .header(SERVICE_AUTHORIZATION, serviceAuthenticationGenerator.generate())
+            .header(AUTHORIZATION, idamTokenGenerator.generateIdamTokenForCitizen())
+            .param(EVENT_PARAM, UPDATE_CASE)
+            .body(getDssCaseDataUpdated())
+            .when()
+            .put("/case/dss-orchestration/" + caseReference +  "/update");
+
+        assertThat(response.getStatusCode()).isEqualTo(OK.value());
+        assertThatJson(response.asString())
+            .when(IGNORING_EXTRA_FIELDS)
+            .isEqualTo(json(expectedResponse(DSS_UPDATE_CASE_RESPONSE)));
     }
 
     @Test
@@ -133,6 +159,23 @@ public class CaseManagementControllerFT extends FunctionalTestSuite {
             .path("id");
     }
 
+    private long createAndSubmitTestCaseAndGetCaseReference() {
+        final long caseReference = createTestCaseAndGetCaseReference();
+        return RestAssured
+            .given()
+            .relaxedHTTPSValidation()
+            .baseUri(testUrl)
+            .header(CONTENT_TYPE, APPLICATION_JSON_VALUE)
+            .header(SERVICE_AUTHORIZATION, serviceAuthenticationGenerator.generate())
+            .header(AUTHORIZATION, idamTokenGenerator.generateIdamTokenForCitizen())
+            .param(EVENT_PARAM, SUBMIT)
+            .body(getDssCaseData())
+            .when()
+            .put("/case/dss-orchestration/" + caseReference +  "/update")
+            .getBody()
+            .path("id");
+    }
+
     private DssCaseData getDssCaseData() {
         return DssCaseData.builder()
             .subjectFullName("Test Name")
@@ -140,6 +183,13 @@ public class CaseManagementControllerFT extends FunctionalTestSuite {
             .subjectEmailAddress("test@email.com")
             .subjectContactNumber("07123412345")
             .caseTypeOfApplication("CIC")
+            .build();
+    }
+
+    private DssCaseData getDssCaseDataUpdated() {
+        return DssCaseData.builder()
+            .caseTypeOfApplication("CIC")
+            .additionalInformation("some additional info")
             .build();
     }
 }
