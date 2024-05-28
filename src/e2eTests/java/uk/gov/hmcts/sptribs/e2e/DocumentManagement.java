@@ -90,13 +90,13 @@ public class DocumentManagement {
 
     private void uploadDocument(Page page, String documentCategory, String documentDescription, String documentName) {
         clickButton(page, "Add new");
-        page.selectOption("#newCaseworkerCICDocument_0_documentCategory", new SelectOption().setLabel(documentCategory));
+        page.selectOption("#newCaseworkerCICDocumentUpload_0_documentCategory", new SelectOption().setLabel(documentCategory));
         page.setInputFiles("input[type='file']", Paths.get("src/e2eTests/java/uk/gov/hmcts/sptribs/testutils/files/" + documentName));
         page.waitForSelector("//span[contains(text(), 'Uploading...')]",
             new Page.WaitForSelectorOptions().setState(WaitForSelectorState.DETACHED));
         page.waitForFunction("selector => document.querySelector(selector).disabled === true",
             "button[aria-label='Cancel upload']", functionOptionsWithTimeout(15000));
-        page.locator("#newCaseworkerCICDocument_0_documentEmailContent").type(documentDescription);
+        page.locator("#newCaseworkerCICDocumentUpload_0_documentEmailContent").type(documentDescription);
         page.locator("//div[contains(@id, 'newCaseworkerCICDocument')]//h2[contains(text(), 'Documents')]").click();
     }
 }
