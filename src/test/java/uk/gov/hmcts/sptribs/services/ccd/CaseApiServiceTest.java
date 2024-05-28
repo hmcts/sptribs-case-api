@@ -13,6 +13,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.test.util.ReflectionTestUtils;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.ccd.client.CoreCaseDataApi;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDataContent;
@@ -35,6 +36,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.sptribs.constants.CommonConstants.ST_CIC_CASE_TYPE;
 import static uk.gov.hmcts.sptribs.constants.CommonConstants.ST_CIC_JURISDICTION;
+import static uk.gov.hmcts.sptribs.controllers.model.DssCaseDataRequest.convertDssCaseDataToRequest;
 import static uk.gov.hmcts.sptribs.edgecase.event.Event.UPDATE_CASE;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.CASE_DATA_CIC_ID;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.CASE_DATA_FILE_CIC;
@@ -84,6 +86,7 @@ class CaseApiServiceTest {
         MockitoAnnotations.openMocks(this);
         cicAppDetails = appsConfig.getApps().stream().filter(eachApps -> eachApps.getCaseTypeOfApplication().contains(
             CASE_DATA_CIC_ID)).findAny().orElse(null);
+        ReflectionTestUtils.setField(caseApiService, "dtsstci861Enabled", true);
     }
 
     @Test
@@ -191,7 +194,7 @@ class CaseApiServiceTest {
         )).thenReturn(eventRes);
 
         final CaseDataContent caseDataContent = CaseDataContent.builder()
-            .data(caseData)
+            .data(convertDssCaseDataToRequest(caseData.getDssCaseData()))
             .event(Event.builder().id(getExactAppsDetailsByCaseType(
                 appsConfig,
                 ST_CIC_CASE_TYPE
@@ -350,7 +353,7 @@ class CaseApiServiceTest {
         )).thenReturn(eventRes);
 
         final CaseDataContent caseDataContent = CaseDataContent.builder()
-            .data(caseData)
+            .data(convertDssCaseDataToRequest(caseData.getDssCaseData()))
             .event(Event.builder().id(getExactAppsDetailsByCaseType(
                 appsConfig,
                 ST_CIC_CASE_TYPE
