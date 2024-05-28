@@ -26,7 +26,12 @@ class CICDocumentTest {
         "test.xlsx",
         "test.docx",
         "test.doc",
-        "test.xls"
+        "test.jpg",
+        "test.jpeg",
+        "test.bmp",
+        "test.tif",
+        "test.tiff",
+        "test.png"
     })
     void shouldCheckDocumentIsValid(String filename) {
         CICDocument document = CICDocument.builder()
@@ -54,7 +59,13 @@ class CICDocumentTest {
         "test.XLSX",
         "test.DOCX",
         "test.Doc",
-        "test.Xls"
+        "test.Xls",
+        "test.JPG",
+        "test.Jpeg",
+        "test.bMP",
+        "test.TIf",
+        "test.TIff",
+        "test.PnG"
     })
     void shouldCheckUppercaseDocumentExtensionIsValid(String filename) {
         CICDocument document = CICDocument.builder()
