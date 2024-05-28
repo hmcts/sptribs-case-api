@@ -32,8 +32,8 @@ public class CaseworkerPostponeHearingFT extends FunctionalTestSuite {
     private static final String REQUEST_ABOUT_TO_START =
         "classpath:request/casedata/ccd-callback-casedata-general.json";
     private static final String REQUEST_ABOUT_TO_SUBMIT =
-        "classpath:request/casedata/ccd-callback-casedata-postpone-hearing-about-to-submit.json";
-    private static final String REQUEST_SUBMITTED = "classpath:request/casedata/ccd-callback-casedata-postpone-hearing-submitted.json";
+        "classpath:request/casedata/ccd-callback-casedata-caseworker-postpone-hearing-about-to-submit.json";
+    private static final String REQUEST_SUBMITTED = "classpath:request/casedata/ccd-callback-casedata-caseworker-postpone-hearing-submitted.json";
 
     private static final String RESPONSE_ABOUT_TO_START =
         "classpath:responses/response-caseworker-postpone-hearing-about-to-start.json";
