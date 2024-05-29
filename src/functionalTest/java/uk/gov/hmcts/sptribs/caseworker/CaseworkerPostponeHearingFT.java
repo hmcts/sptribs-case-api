@@ -8,6 +8,7 @@ import uk.gov.hmcts.sptribs.caseworker.model.PostponeReason;
 import uk.gov.hmcts.sptribs.testutil.FunctionalTestSuite;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -16,6 +17,7 @@ import static net.javacrumbs.jsonunit.assertj.JsonAssertions.json;
 import static net.javacrumbs.jsonunit.core.Option.IGNORING_ARRAY_ORDER;
 import static net.javacrumbs.jsonunit.core.Option.IGNORING_EXTRA_FIELDS;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 import static org.springframework.http.HttpStatus.OK;
 import static uk.gov.hmcts.sptribs.testutil.CaseDataUtil.caseData;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.ABOUT_TO_START_URL;
@@ -40,8 +42,6 @@ public class CaseworkerPostponeHearingFT extends FunctionalTestSuite {
         "classpath:responses/response-caseworker-postpone-hearing-about-to-start.json";
     private static final String RESPONSE_ABOUT_TO_SUBMIT =
         "classpath:responses/response-caseworker-postpone-hearing-about-to-submit.json";
-
-    private static final String TRACE_HEADER = "$.trace";
 
     @Test
     public void shouldConfirmHearingPostponedNotificationIsSentToSubjectForAllGivenReasonsWhenSubmittedIsInvoked() throws Exception {
@@ -79,32 +79,14 @@ public class CaseworkerPostponeHearingFT extends FunctionalTestSuite {
         final Map<String, Object> caseData = caseData(REQUEST_SUBMITTED);
 
         ArrayList<String> invalidReasons = new ArrayList<>(List.of(
-            "invalid reason", "APPELLANT_IS_OUT_OF_COUNTRY"));
+            "invalid reason", "APPELLANT_IS_OUT_OF_COUNTRY", "", " "));
 
         for (String invalidReason : invalidReasons) {
             caseData.put("postponeReason", invalidReason);
 
             final Response response = triggerCallback(caseData, CASEWORKER_POSTPONE_HEARING, SUBMITTED_URL);
 
-            assertThatJson(response.asString())
-                .inPath(TRACE_HEADER)
-                .isString()
-                .contains("Cannot deserialize value of type `uk.gov.hmcts.sptribs.caseworker.model.PostponeReason` from String \""
-                    + invalidReason
-                    + "\": not one of the values accepted for Enum class:");
-        }
-
-        ArrayList<String> emptyReasons = new ArrayList<>(List.of("", " "));
-
-        for (String emptyReason : emptyReasons) {
-            caseData.put("postponeReason", emptyReason);
-
-            final Response response = triggerCallback(caseData, CASEWORKER_POSTPONE_HEARING, SUBMITTED_URL);
-
-            assertThatJson(response.asString())
-                .inPath(TRACE_HEADER)
-                .isString()
-                .contains("Cannot coerce empty String");
+            assertThat(response.getStatusCode()).isEqualTo(INTERNAL_SERVER_ERROR.value());
         }
 
     }

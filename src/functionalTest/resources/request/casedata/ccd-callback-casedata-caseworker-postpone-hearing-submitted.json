@@ -4,6 +4,7 @@
   "cicCaseHearingNotificationParties": [
     "Subject"
   ],
+  "cicCaseNotifyPartySubject": ["SubjectCIC"],
   "cicCaseContactPreferenceType": "Email",
   "cicCaseEmail": "a@b.com",
   "date": "2023-04-21",
