@@ -14,7 +14,6 @@
       "valueLabel": "1 - Case management - 21 Apr 2023 09:00",
       "valueCode": "18b88d33-9da8-4ee0-946d-de71d33e4d6f"
     },
-    "cicCaseHearingNotificationParties": [],
     "cicCaseRespondentName": "Appeals team",
     "cicCaseRespondentOrganisation": "CICA",
     "cicCaseRespondentEmail": "appeals.team@cica.gov.uk",
@@ -36,10 +35,6 @@
         }
       }
     ],
-    "hyphenatedCaseRef": "1234-5678-9012-3456",
-    "closedDayCount": "",
-    "currentEvent": "",
-    "firstHearingDate": "",
-    "dataVersion": 0
+    "hyphenatedCaseRef": "1234-5678-9012-3456"
   }
 }

@@ -3,6 +3,9 @@ package uk.gov.hmcts.sptribs.caseworker;
 import io.restassured.response.Response;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.boot.test.context.SpringBootTest;
 import uk.gov.hmcts.sptribs.caseworker.model.PostponeReason;
 import uk.gov.hmcts.sptribs.testutil.FunctionalTestSuite;
@@ -42,22 +45,23 @@ public class CaseworkerPostponeHearingFT extends FunctionalTestSuite {
     private static final String RESPONSE_ABOUT_TO_SUBMIT =
         "classpath:responses/response-caseworker-postpone-hearing-about-to-submit.json";
 
-    @Test
-    public void shouldConfirmHearingPostponedNotificationIsSentToSubjectForAllGivenReasonsWhenSubmittedIsInvoked() throws Exception {
+    @ParameterizedTest
+    @EnumSource(PostponeReason.class)
+    public void shouldConfirmHearingPostponedNotificationIsSentToSubjectForAllGivenReasonsWhenSubmittedIsInvoked(
+        PostponeReason postponeReason) throws Exception {
+
         final Map<String, Object> caseData = caseData(REQUEST_SUBMITTED);
 
-        for (PostponeReason postponeReason : PostponeReason.values()) {
-            caseData.put("postponeReason", postponeReason.getReason());
+        caseData.put("postponeReason", postponeReason.getReason());
 
-            final Response response = triggerCallback(caseData, CASEWORKER_POSTPONE_HEARING, SUBMITTED_URL);
+        final Response response = triggerCallback(caseData, CASEWORKER_POSTPONE_HEARING, SUBMITTED_URL);
 
-            assertThat(response.getStatusCode()).isEqualTo(OK.value());
-            assertThatJson(response.asString())
-                .inPath(CONFIRMATION_HEADER)
-                .isString()
-                .contains("# Hearing Postponed \n## The hearing has been postponed, the case has been updated \n"
-                    + "## A notification has been sent to: Subject");
-        }
+        assertThat(response.getStatusCode()).isEqualTo(OK.value());
+        assertThatJson(response.asString())
+            .inPath(CONFIRMATION_HEADER)
+            .isString()
+            .contains("# Hearing Postponed \n## The hearing has been postponed, the case has been updated \n"
+                + "## A notification has been sent to: Subject");
     }
 
     @Test
@@ -71,44 +75,44 @@ public class CaseworkerPostponeHearingFT extends FunctionalTestSuite {
             .when(IGNORING_ARRAY_ORDER)
             .when(IGNORING_EXTRA_FIELDS)
             .isEqualTo(json(expectedResponse(RESPONSE_ABOUT_TO_START)));
+        assertThatJson(response.asString())
+            .inPath("$.data.cicCaseHearingList.list_items")
+            .isArray()
+            .isEmpty();;
     }
 
-    @Test
-    public void shouldReceiveErrorIfInvalidReasonIsSubmitted() throws Exception {
+    @ParameterizedTest
+    @ValueSource(strings = {"invalid reason", "APPELLANT_IS_OUT_OF_COUNTRY", "", " "})
+    public void shouldReceiveErrorIfInvalidReasonIsSubmitted(String invalidReason) throws Exception {
         final Map<String, Object> caseData = caseData(REQUEST_SUBMITTED);
 
-        ArrayList<String> invalidReasons = new ArrayList<>(List.of(
-            "invalid reason", "APPELLANT_IS_OUT_OF_COUNTRY", "", " "));
+        caseData.put("postponeReason", invalidReason);
 
-        for (String invalidReason : invalidReasons) {
-            caseData.put("postponeReason", invalidReason);
+        final Response response = triggerCallback(caseData, CASEWORKER_POSTPONE_HEARING, SUBMITTED_URL);
 
-            final Response response = triggerCallback(caseData, CASEWORKER_POSTPONE_HEARING, SUBMITTED_URL);
-
-            assertThat(response.getStatusCode()).isEqualTo(INTERNAL_SERVER_ERROR.value());
-        }
-
+        assertThat(response.getStatusCode()).isEqualTo(INTERNAL_SERVER_ERROR.value());
     }
 
-    @Test
-    public void shouldResetCurrentEventAndSetStatusesAndSetPostponeDateWhenAboutToSubmitCallbackIsInvoked() throws Exception {
+    @ParameterizedTest
+    @EnumSource(PostponeReason.class)
+    public void shouldResetCurrentEventAndSetStatusesAndSetPostponeDateWhenAboutToSubmitCallbackIsInvoked(
+        PostponeReason postponeReason) throws Exception {
+
         final Map<String, Object> caseData = caseData(REQUEST_ABOUT_TO_SUBMIT);
 
-        for (PostponeReason postponeReason : PostponeReason.values()) {
-            caseData.put("postponeReason", postponeReason.getReason());
+        caseData.put("postponeReason", postponeReason.getReason());
 
-            final Response response = triggerCallback(caseData, CASEWORKER_POSTPONE_HEARING, ABOUT_TO_SUBMIT_URL);
+        final Response response = triggerCallback(caseData, CASEWORKER_POSTPONE_HEARING, ABOUT_TO_SUBMIT_URL);
 
-            JSONObject responseAboutToSubmit = new JSONObject(expectedResponse(RESPONSE_ABOUT_TO_SUBMIT));
-            JSONObject responseAboutToSubmitData = new JSONObject((responseAboutToSubmit.get("data")).toString());
-            responseAboutToSubmitData.put("postponeReason", postponeReason.getReason());
-            responseAboutToSubmit.put("data", responseAboutToSubmitData);
+        JSONObject responseAboutToSubmit = new JSONObject(expectedResponse(RESPONSE_ABOUT_TO_SUBMIT));
+        JSONObject responseAboutToSubmitData = new JSONObject((responseAboutToSubmit.get("data")).toString());
+        responseAboutToSubmitData.put("postponeReason", postponeReason.getReason());
+        responseAboutToSubmit.put("data", responseAboutToSubmitData);
 
-            assertThat(response.getStatusCode()).isEqualTo(OK.value());
-            assertThatJson(response.asString())
-                .when(IGNORING_ARRAY_ORDER)
-                .when(IGNORING_EXTRA_FIELDS)
-                .isEqualTo(responseAboutToSubmit);
-        }
+        assertThat(response.getStatusCode()).isEqualTo(OK.value());
+        assertThatJson(response.asString())
+            .when(IGNORING_ARRAY_ORDER)
+            .when(IGNORING_EXTRA_FIELDS)
+            .isEqualTo(responseAboutToSubmit);
     }
 }
