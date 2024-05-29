@@ -44,30 +44,30 @@ dependencies:
     repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
     condition: em-stitching.enabled
     #Work Allocation
-  - name: camunda-bpm
-    version: 0.0.47
-    repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
-    condition: camunda-bpm.enabled
-  - name: wa-task-management-api
-    version: 0.0.52
-    repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
-    condition: wa.enabled
-  - name: wa-task-monitor
-    version: 0.0.35
-    repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
-    condition: wa.enabled
-  - name: wa-case-event-handler
-    version: 0.0.40
-    repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
-    condition: wa.enabled
-  - name: wa-workflow-api
-    version: 0.0.41
-    repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
-    condition: wa.enabled
-    #Initiation
-  - name: wa-task-batch-service
-    version: ~0.0.16
-    repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
+#  - name: camunda-bpm
+#    version: 0.0.47
+#    repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
+#    condition: wa.enabled
+#  - name: wa-task-management-api
+#    version: 0.0.52
+#    repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
+#    condition: wa.enabled
+#  - name: wa-task-monitor
+#    version: 0.0.35
+#    repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
+#    condition: wa.enabled
+#  - name: wa-case-event-handler
+#    version: 0.0.40
+#    repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
+#    condition: wa.enabled
+#  - name: wa-workflow-api
+#    version: 0.0.41
+#    repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
+#    condition: wa.enabled
+#    #Initiation
+#  - name: wa-task-batch-service
+#    version: ~0.0.16
+#    repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
 #    alias: wa-initiation-batch
 #    condition: wa.taskBatchCron.enabled
 #    #Reconfiguration
@@ -82,19 +82,19 @@ dependencies:
 #    repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
 #    alias: wa-termination-batch
 #    condition: wa.terminationBatchCron.enabled
-  - name: wa-message-cron-service
-    version: ~0.0.3
-    repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
-    condition: wa.enabled
-  - name: ccd-message-publisher
-    version: ~0.1.7
-    repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
-    condition: wa.enabled
-  - name: servicebus
-    version: 1.0.4
-    repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
-    condition: servicebus.enabled
-  - name: am-org-role-mapping-service
-    version: 0.0.63
-    repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
-    condition: am-org-role-mapping-service.enabled
+#  - name: wa-message-cron-service
+#    version: ~0.0.3
+#    repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
+#    condition: wa.enabled
+#  - name: ccd-message-publisher
+#    version: ~0.1.7
+#    repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
+#    condition: wa.enabled
+#  - name: servicebus
+#    version: 1.0.4
+#    repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
+#    condition: servicebus.enabled
+#  - name: am-org-role-mapping-service
+#    version: 0.0.63
+#    repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
+#    condition: am-org-role-mapping-service.enabled
