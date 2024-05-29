@@ -46,10 +46,8 @@ class CaseworkerLinkCaseTest {
         //Given
         caseWorkerLinkCase.setLinkCaseEnabled(true);
         final ConfigBuilderImpl<CaseData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
-
         //When
         caseWorkerLinkCase.configure(configBuilder);
-
         //Then
         assertThat(getEventsFrom(configBuilder).values())
             .extracting(Event::getId)
@@ -60,10 +58,8 @@ class CaseworkerLinkCaseTest {
     void shouldNotConfigureLinkCaseIfFeatureFlagFalse() {
         //Given
         final ConfigBuilderImpl<CaseData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
-
         //When
         caseWorkerLinkCase.configure(configBuilder);
-
         //Then
         assertThat(getEventsFrom(configBuilder).values())
             .extracting(Event::getId)
@@ -84,15 +80,12 @@ class CaseworkerLinkCaseTest {
         updatedCaseDetails.setData(caseData);
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
-
         //When
         doNothing().when(caseLinkedNotification).sendToSubject(any(CaseData.class), eq(null));
         doNothing().when(caseLinkedNotification).sendToApplicant(any(CaseData.class), eq(null));
         doNothing().when(caseLinkedNotification).sendToRepresentative(any(CaseData.class), eq(null));
-
         SubmittedCallbackResponse response =
             caseWorkerLinkCase.submitted(updatedCaseDetails, beforeDetails);
-
         //Then
         assertThat(response).isNotNull();
         assertThat(response.getConfirmationHeader()).contains("Case Link created");
@@ -110,12 +103,9 @@ class CaseworkerLinkCaseTest {
         updatedCaseDetails.setData(caseData);
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
-
         // When
         doThrow(new RuntimeException("Notification error")).when(caseLinkedNotification).sendToSubject(any(CaseData.class), anyString());
-
         SubmittedCallbackResponse response = caseWorkerLinkCase.submitted(updatedCaseDetails, beforeDetails);
-
         // Then
         assertThat(response).isNotNull();
         assertThat(response.getConfirmationHeader()).contains("Case Link notification failed");

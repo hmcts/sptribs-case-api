@@ -42,7 +42,7 @@ public class CaseworkerMaintainLinkCase implements CCDConfig<CaseData, State, Us
     private boolean linkCaseEnabled;
 
     private final CaseUnlinkedNotification caseUnlinkedNotification;
-    
+
     @Autowired
     public CaseworkerMaintainLinkCase(CaseUnlinkedNotification caseUnlinkedNotification) {
         this.caseUnlinkedNotification = caseUnlinkedNotification;
@@ -55,7 +55,7 @@ public class CaseworkerMaintainLinkCase implements CCDConfig<CaseData, State, Us
                 .event(CASEWORKER_MAINTAIN_LINK_CASE)
                 .forStates(Submitted, CaseManagement, AwaitingHearing, AwaitingOutcome)
                 .name("Manage case links")
-                .submittedCallback(this::linkUpdated)
+                .submittedCallback(this::submitted)
                 .description("To maintain linked cases")
                 .grant(CREATE_READ_UPDATE, SUPER_USER,
                     ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER, ST_CIC_HEARING_CENTRE_ADMIN,
@@ -76,39 +76,32 @@ public class CaseworkerMaintainLinkCase implements CCDConfig<CaseData, State, Us
         }
     }
 
-    public SubmittedCallbackResponse linkUpdated(CaseDetails<CaseData, State> details,
-                                                 CaseDetails<CaseData, State> beforeDetails) {
+    public SubmittedCallbackResponse submitted(CaseDetails<CaseData, State> details,
+                                               CaseDetails<CaseData, State> beforeDetails) {
         CaseData data = details.getData();
-
         try {
             unLinkedCaseNotification(data.getHyphenatedCaseRef(), data);
         } catch (Exception notificationException) {
-            log.error("Case Link notification failed with exception : {}", notificationException.getMessage());
+            log.error("Case Link update notification failed with exception : {}", notificationException.getMessage());
             return SubmittedCallbackResponse.builder()
-                .confirmationHeader(format("# Case Link updated %n"))
+                .confirmationHeader(format("# Case Link update notification failed %n## Please resend the notification %n"))
                 .build();
         }
-
         return SubmittedCallbackResponse.builder()
             .confirmationHeader(format("# Case Link updated %n"))
             .build();
     }
 
-
     private void unLinkedCaseNotification(String caseNumber, CaseData data) {
         CicCase cicCase = data.getCicCase();
-
         if (null != cicCase.getSubjectCIC() && !cicCase.getSubjectCIC().isEmpty()) {
             caseUnlinkedNotification.sendToSubject(data, caseNumber);
         }
-
         if (null != cicCase.getApplicantCIC() && !cicCase.getApplicantCIC().isEmpty()) {
             caseUnlinkedNotification.sendToApplicant(data, caseNumber);
         }
-
         if (null != cicCase.getRepresentativeCIC() && !cicCase.getRepresentativeCIC().isEmpty()) {
             caseUnlinkedNotification.sendToRepresentative(data, caseNumber);
         }
     }
-
 }

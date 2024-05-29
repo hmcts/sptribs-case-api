@@ -22,8 +22,10 @@ import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doThrow;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigBuilder;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.getEventsFrom;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID;
@@ -44,10 +46,8 @@ class CaseworkerMaintainLinkCaseTest {
         //Given
         caseWorkerMaintainLinkCase.setLinkCaseEnabled(true);
         final ConfigBuilderImpl<CaseData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
-
         //When
         caseWorkerMaintainLinkCase.configure(configBuilder);
-
         //Then
         assertThat(getEventsFrom(configBuilder).values())
             .extracting(Event::getId)
@@ -58,10 +58,8 @@ class CaseworkerMaintainLinkCaseTest {
     void shouldNotConfigureMaintainLinkCaseIfFeatureFlagFalse() {
         //Given
         final ConfigBuilderImpl<CaseData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
-
         //When
         caseWorkerMaintainLinkCase.configure(configBuilder);
-
         //Then
         assertThat(getEventsFrom(configBuilder).values())
             .extracting(Event::getId)
@@ -82,19 +80,35 @@ class CaseworkerMaintainLinkCaseTest {
         updatedCaseDetails.setData(caseData);
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
-
         //When
         doNothing().when(caseUnlinkedNotification).sendToSubject(any(CaseData.class), eq(null));
         doNothing().when(caseUnlinkedNotification).sendToApplicant(any(CaseData.class), eq(null));
         doNothing().when(caseUnlinkedNotification).sendToRepresentative(any(CaseData.class), eq(null));
-
         SubmittedCallbackResponse response =
-            caseWorkerMaintainLinkCase.linkUpdated(updatedCaseDetails, beforeDetails);
-
+            caseWorkerMaintainLinkCase.submitted(updatedCaseDetails, beforeDetails);
         //Then
         assertThat(response).isNotNull();
         assertThat(response.getConfirmationHeader()).contains("Case Link updated");
-
     }
 
+    @Test
+    void shouldHandleNotificationFailureGracefully() {
+        // Given
+        final CaseData caseData = caseData();
+        CicCase cicCase = new CicCase();
+        cicCase.setSubjectCIC(Set.of(SubjectCIC.SUBJECT));
+        caseData.setCicCase(cicCase);
+        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
+        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        updatedCaseDetails.setData(caseData);
+        updatedCaseDetails.setId(TEST_CASE_ID);
+        updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
+        // When
+        doThrow(new RuntimeException("Notification error")).when(caseUnlinkedNotification).sendToSubject(any(CaseData.class), anyString());
+        SubmittedCallbackResponse response = caseWorkerMaintainLinkCase.submitted(updatedCaseDetails, beforeDetails);
+        // Then
+        assertThat(response).isNotNull();
+        assertThat(response.getConfirmationHeader()).contains("Case Link update notification failed");
+        assertThat(response.getConfirmationHeader()).contains("Please resend the notification");
+    }
 }
