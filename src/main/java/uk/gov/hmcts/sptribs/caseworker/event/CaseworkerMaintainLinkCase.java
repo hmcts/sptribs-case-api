@@ -61,10 +61,6 @@ public class CaseworkerMaintainLinkCase implements CCDConfig<CaseData, State, Us
                     ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER, ST_CIC_HEARING_CENTRE_ADMIN,
                     ST_CIC_HEARING_CENTRE_TEAM_LEADER)
                 .grantHistoryOnly(
-                    ST_CIC_CASEWORKER,
-                    ST_CIC_SENIOR_CASEWORKER,
-                    ST_CIC_HEARING_CENTRE_ADMIN,
-                    ST_CIC_HEARING_CENTRE_TEAM_LEADER,
                     ST_CIC_SENIOR_JUDGE,
                     SUPER_USER,
                     ST_CIC_JUDGE))
