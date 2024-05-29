@@ -399,7 +399,7 @@ def setFeatureFlags(environment) {
     env.SECURITY_CLASSIFICATION = false
     env.MIGRATION_ENABLED = true
     env.ACCESS_PROFILES_ENABLED = true
-    env.DSS_UPDATE_CASE_ENABLED = false
+    env.DSS_UPDATE_CASE_ENABLED = true
     env.WA_FEATURE_ENABLED = false
   }
 }
