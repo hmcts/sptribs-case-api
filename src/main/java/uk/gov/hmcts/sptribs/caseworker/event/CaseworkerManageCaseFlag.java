@@ -58,12 +58,7 @@ public class CaseworkerManageCaseFlag implements CCDConfig<CaseData, State, User
                 ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER, ST_CIC_HEARING_CENTRE_ADMIN,
                 ST_CIC_HEARING_CENTRE_TEAM_LEADER)
             .grantHistoryOnly(
-                ST_CIC_CASEWORKER,
-                ST_CIC_SENIOR_CASEWORKER,
-                ST_CIC_HEARING_CENTRE_ADMIN,
-                ST_CIC_HEARING_CENTRE_TEAM_LEADER,
                 ST_CIC_SENIOR_JUDGE,
-                SUPER_USER,
                 ST_CIC_JUDGE))
             .page("caseworkerManageCaseFlag")
             .pageLabel("Manage Case Flags")
@@ -75,7 +70,6 @@ public class CaseworkerManageCaseFlag implements CCDConfig<CaseData, State, User
                 null, null, null, null, "#ARGUMENT(UPDATE)");
     }
 
-
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(
         final CaseDetails<CaseData, State> details,
         final CaseDetails<CaseData, State> beforeDetails
@@ -86,7 +80,6 @@ public class CaseworkerManageCaseFlag implements CCDConfig<CaseData, State, User
             .state(details.getState())
             .data(caseData)
             .build();
-
     }
 
     public SubmittedCallbackResponse submitted(CaseDetails<CaseData, State> details,
@@ -95,5 +88,4 @@ public class CaseworkerManageCaseFlag implements CCDConfig<CaseData, State, User
             .confirmationHeader("# Flag updated")
             .build();
     }
-
 }
