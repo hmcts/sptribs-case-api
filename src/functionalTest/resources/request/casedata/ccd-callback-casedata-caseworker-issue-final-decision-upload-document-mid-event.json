@@ -36,7 +36,6 @@
   },
   "caseIssueFinalDecisionFinalDecisionNotice": "Upload from your computer",
   "hearingVenueNameAndAddress": "East London Tribunal Hearing Centre",
-  "newCaseworkerCICDocumentUpload": [],
   "cicCaseRespondentName": "Appeals team",
   "readOnlyHearingVenueName": "East London Tribunal Hearing Centre",
   "cicCaseHearingNotificationParties": [
@@ -46,7 +45,6 @@
   "hearingFormat": "Face to Face",
   "hearingTime": "09:00",
   "cicCaseContactPreferenceType": "Email",
-  "closedDayCount": "",
   "cicCaseApplicantDocumentsUploaded": [
     {
       "value": {
@@ -63,7 +61,6 @@
     }
   ],
   "cicCaseCaseSubcategory": "other",
-  "cicCasePhoneNumber": "",
   "cicCaseRegionCIC": "London",
   "session": "morning",
   "isFullPanel": "No. It was a 'sit alone' hearing",
@@ -135,7 +132,6 @@
     "valueCode": "bfc93094-d20c-432a-9908-29d032425f4d",
     "valueLabel": "1-London"
   },
-  "dataVersion": 0,
   "cicCaseSubjectCIC": [
     "SubjectCIC"
   ],
@@ -155,7 +151,6 @@
   "cicCaseRespondentEmail": "appeals.team@cica.gov.uk",
   "cicCaseRespondentOrganisation": "CICA",
   "cicCaseCaseCategory": "Assessment",
-  "cicCaseFirstDueDate": "",
   "hearingList": [
     {
       "value": {

@@ -27,7 +27,7 @@ public class CaseworkerIssueDecisionFT extends FunctionalTestSuite {
     private static final String CALLBACK_REQUEST =
         "classpath:request/casedata/ccd-callback-casedata-caseworker-issue-decision-callback-request.json";
     private static final String REQUEST_SUBMITTED_UNHAPPY_PATH =
-        "classpath:request/casedata/ccd-callback-casedata-caseworker-issue-decision-bad-submitted.json";
+        "classpath:request/casedata/ccd-callback-casedata-caseworker-issue-decision-unhappy-submitted.json";
 
     private static final String RESPONSE_MID_EVENT = "classpath:responses/response-caseworker-issue-decision-mid-event.json";
 

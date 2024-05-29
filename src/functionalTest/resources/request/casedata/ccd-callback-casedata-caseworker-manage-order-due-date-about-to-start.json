@@ -1,0 +1,150 @@
+{
+  "subjectFlags": {
+    "details": [],
+    "partyName": "Subject AutoTesting",
+    "roleOnCase": "subject"
+  },
+  "securityClass": "PUBLIC",
+  "applicantFlags": {
+    "details": [],
+    "partyName": "Applicant AutoTesting",
+    "roleOnCase": "applicant"
+  },
+  "cicCaseAddress": {
+    "County": "",
+    "Country": "United Kingdom",
+    "PostCode": "SW1A 1AA",
+    "PostTown": "London",
+    "AddressLine1": "Buckingham Palace",
+    "AddressLine2": "",
+    "AddressLine3": ""
+  },
+  "cicCaseFullName": "Subject AutoTesting",
+  "cicCaseOrderList": [
+    {
+      "id": "1",
+      "value": {
+        "parties": "Subject, Respondent, Representative, Applicant",
+        "draftOrder": {
+          "orderContentMainContent": "1.     Rule 27 (4) provides that the Tribunal may make a decision which disposes of proceedings without a hearing.\n2.     The Tribunal has decided to make a decision without a hearing because\n3.     The appeal is\n4.     Decision;\n5.     The Tribunal made the following findings of facts\n6.     Any party may make a written application to the Tribunal for the decision to be reconsider at a hearing. Any application must be received within one month after the date on which the Tribunal sent notice of the decision to the party making the application.",
+          "orderContentOrderTemplate": "CIC3_Rule_27",
+          "templateGeneratedDocument": {
+            "category_id": "TD",
+            "document_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/e58a6e2b-9fdf-45ba-975f-6bcd59c71344",
+            "document_filename": "SENT :Order--[Subject AutoTesting]--29-05-2024 13:36:27.pdf",
+            "document_binary_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/e58a6e2b-9fdf-45ba-975f-6bcd59c71344/binary"
+          },
+          "orderContentOrderSignature": "Lorem ipsum signature 1"
+        },
+        "dueDateList": [
+          {
+            "id": "33b567cb-a291-4002-a119-30f23c46675d",
+            "value": {
+              "dueDate": "2025-01-01",
+              "information": "Lorem ipsum information",
+              "orderMarkAsCompleted": []
+            }
+          }
+        ],
+        "orderSentDate": "2024-05-29"
+      }
+    }
+  ],
+  "cicCaseRegionCIC": "Midlands",
+  "cicCaseSchemeCic": "Preference",
+  "firstHearingDate": "",
+  "stayIsCaseStayed": "No",
+  "cicCasePartiesCIC": [
+    "SubjectCIC",
+    "RepresentativeCIC",
+    "ApplicantCIC"
+  ],
+  "cicCaseSubjectCIC": [
+    "SubjectCIC"
+  ],
+  "hyphenatedCaseRef": "1716-9837-7233-9560",
+  "cicCaseDateOfBirth": "2000-02-01",
+  "cicCasePhoneNumber": "01234567891",
+  "cicCaseApplicantCIC": [
+    "ApplicantCIC"
+  ],
+  "cicCaseCaseCategory": "Assessment",
+  "cicCaseFirstDueDate": "01 Jan 2025",
+  "representativeFlags": {
+    "details": [],
+    "partyName": "Representative AutoTesting",
+    "roleOnCase": "Representative"
+  },
+  "caseNameHmctsInternal": "Subject AutoTesting",
+  "cicCaseRespondentName": "Appeals team",
+  "cicCaseCaseSubcategory": "other",
+  "cicCaseRespondentEmail": "appeals.team@cica.gov.uk",
+  "cicCaseApplicantAddress": {
+    "County": "",
+    "Country": "United Kingdom",
+    "PostCode": "SW1A 1AA",
+    "PostTown": "London",
+    "AddressLine1": "Buckingham Palace",
+    "AddressLine2": "",
+    "AddressLine3": ""
+  },
+  "cicCaseCaseReceivedDate": "2000-01-02",
+  "cicCaseClaimLinkedToCic": "Yes",
+  "cicCaseApplicantFullName": "Applicant AutoTesting",
+  "cicCaseRepresentativeCIC": [
+    "RepresentativeCIC"
+  ],
+  "cicCaseFormReceivedInTime": "Yes",
+  "cicCaseNotifyPartySubject": [
+    "SubjectCIC"
+  ],
+  "cicCaseCicaReferenceNumber": "1",
+  "cicCaseApplicantDateOfBirth": "2000-01-01",
+  "cicCaseApplicantPhoneNumber": "01234567892",
+  "cicCaseNotifyPartyApplicant": [
+    "ApplicantCIC"
+  ],
+  "cicCaseContactPreferenceType": "Post",
+  "cicCaseDraftOrderDynamicList": {
+    "list_items": []
+  },
+  "cicCaseNotifyPartyRespondent": [
+    "RespondentCIC"
+  ],
+  "cicCaseRepresentativeAddress": {
+    "County": "",
+    "Country": "United Kingdom",
+    "PostCode": "SW1A 1AA",
+    "PostTown": "London",
+    "AddressLine1": "Buckingham Palace",
+    "AddressLine2": "",
+    "AddressLine3": ""
+  },
+  "cicCaseRepresentativeOrgName": "HMCTS",
+  "cicCaseRepresentativeFullName": "Representative AutoTesting",
+  "cicCaseRespondentOrganisation": "CICA",
+  "cicCaseIsRepresentativePresent": "Yes",
+  "cicCaseCompensationClaimLinkCIC": "No",
+  "cicCaseIsRepresentativeQualified": "Yes",
+  "cicCaseNotifyPartyRepresentative": [
+    "RepresentativeCIC"
+  ],
+  "cicCaseRepresentativePhoneNumber": "01234567893",
+  "cicCaseApplicantDocumentsUploaded": [
+    {
+      "id": "4a857263-e5a1-4bd9-8112-f5b0d23734e3",
+      "value": {
+        "documentLink": {
+          "category_id": "A",
+          "document_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/20f4cf09-b0c8-455f-840d-bd403b66fedb",
+          "document_filename": "mockFile.pdf",
+          "document_binary_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/20f4cf09-b0c8-455f-840d-bd403b66fedb/binary"
+        },
+        "documentCategory": "ApplicationForm",
+        "documentEmailContent": "Lorem ipsum text A - Application Form"
+      }
+    }
+  ],
+  "cicCaseApplicantContactDetailsPreference": "Post",
+  "cicCaseRepresentativeContactDetailsPreference": "Post"
+}

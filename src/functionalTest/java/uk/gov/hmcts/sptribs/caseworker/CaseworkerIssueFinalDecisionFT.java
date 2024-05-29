@@ -30,7 +30,7 @@ public class CaseworkerIssueFinalDecisionFT extends FunctionalTestSuite {
     private static final String REQUEST_UPLOAD_DOCUMENT_MID_EVENT =
         "classpath:request/casedata/ccd-callback-casedata-caseworker-issue-final-decision-upload-document-mid-event.json";
     private static final String REQUEST_SUBMITTED_UNHAPPY_PATH =
-        "classpath:request/casedata/ccd-callback-casedata-caseworker-issue-final-decision-bad-submitted.json";
+        "classpath:request/casedata/ccd-callback-casedata-caseworker-issue-final-decision-unhappy-submitted.json";
 
     private static final String RESPONSE_MID_EVENT = "classpath:responses/response-caseworker-issue-final-decision-mid-event.json";
 
