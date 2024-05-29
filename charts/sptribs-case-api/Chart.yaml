@@ -66,22 +66,22 @@ dependencies:
     condition: wa.enabled
     #Initiation
   - name: wa-task-batch-service
-    version: ~0.0.15
-    repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
-    alias: wa-initiation-batch
-    condition: wa.taskBatchCron.enabled
-    #Reconfiguration
-  - name: wa-task-batch-service
     version: ~0.0.16
     repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
-    alias: wa-reconfiguration-batch
-    condition: wa.reconfigurationBatchCron.enabled
-    #Termination
-  - name: wa-task-batch-service
-    version: ~0.0.16
-    repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
-    alias: wa-termination-batch
-    condition: wa.terminationBatchCron.enabled
+#    alias: wa-initiation-batch
+#    condition: wa.taskBatchCron.enabled
+#    #Reconfiguration
+#  - name: wa-task-batch-service
+#    version: ~0.0.16
+#    repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
+#    alias: wa-reconfiguration-batch
+#    condition: wa.reconfigurationBatchCron.enabled
+#    #Termination
+#  - name: wa-task-batch-service
+#    version: ~0.0.16
+#    repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
+#    alias: wa-termination-batch
+#    condition: wa.terminationBatchCron.enabled
   - name: wa-message-cron-service
     version: ~0.0.3
     repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
