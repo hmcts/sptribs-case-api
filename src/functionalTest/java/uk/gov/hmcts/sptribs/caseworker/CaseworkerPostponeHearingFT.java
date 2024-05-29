@@ -10,8 +10,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import uk.gov.hmcts.sptribs.caseworker.model.PostponeReason;
 import uk.gov.hmcts.sptribs.testutil.FunctionalTestSuite;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
