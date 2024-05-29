@@ -6,6 +6,8 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -77,8 +79,9 @@ public class CaseworkerPostponeHearingIT {
         IdamWireMock.stopAndReset();
     }
 
-    @Test
-    void shouldSuccessfullyPostponeHearingForAnyValidPostponeReason() throws Exception {
+    @ParameterizedTest
+    @EnumSource(PostponeReason.class)
+    void shouldSuccessfullyPostponeHearingForAnyValidPostponeReason(PostponeReason postponeReason) throws Exception {
         final CaseData caseData = caseData();
 
         final Set<NotificationParties> parties = new HashSet<>();
@@ -102,30 +105,28 @@ public class CaseworkerPostponeHearingIT {
         caseData.setListing(listing);
         caseData.setCicCase(cicCase);
 
-        for (PostponeReason postponeReason : PostponeReason.values()) {
-            caseData.getListing().setPostponeReason(postponeReason);
+        caseData.getListing().setPostponeReason(postponeReason);
 
-            JSONObject responseAboutToSubmit = new JSONObject(expectedResponse(CASEWORKER_POSTPONE_HEARING_RESPONSE));
-            JSONObject responseAboutToSubmitData = new JSONObject((responseAboutToSubmit.get("data")).toString());
-            responseAboutToSubmitData.put("postponeReason", postponeReason.getReason());
-            responseAboutToSubmit.put("data", responseAboutToSubmitData);
+        JSONObject responseAboutToSubmit = new JSONObject(expectedResponse(CASEWORKER_POSTPONE_HEARING_RESPONSE));
+        JSONObject responseAboutToSubmitData = new JSONObject((responseAboutToSubmit.get("data")).toString());
+        responseAboutToSubmitData.put("postponeReason", postponeReason.getReason());
+        responseAboutToSubmit.put("data", responseAboutToSubmitData);
 
-            stubForIdamDetails(TEST_AUTHORIZATION_TOKEN, CASEWORKER_USER_ID, ST_CIC_CASEWORKER);
+        stubForIdamDetails(TEST_AUTHORIZATION_TOKEN, CASEWORKER_USER_ID, ST_CIC_CASEWORKER);
 
-            mockMvc.perform(post(ABOUT_TO_SUBMIT_URL)
-                    .contentType(APPLICATION_JSON)
-                    .header(SERVICE_AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
-                    .header(AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
-                    .content(objectMapper.writeValueAsString(
-                        callbackRequest(
-                            caseData,
-                            CASEWORKER_POSTPONE_HEARING)))
-                    .accept(APPLICATION_JSON))
-                .andExpect(
-                    status().isOk())
-                .andExpect(
-                    content().json(responseAboutToSubmit.toString())
-                );
-        }
+        mockMvc.perform(post(ABOUT_TO_SUBMIT_URL)
+                .contentType(APPLICATION_JSON)
+                .header(SERVICE_AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
+                .header(AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
+                .content(objectMapper.writeValueAsString(
+                    callbackRequest(
+                        caseData,
+                        CASEWORKER_POSTPONE_HEARING)))
+                .accept(APPLICATION_JSON))
+            .andExpect(
+                status().isOk())
+            .andExpect(
+                content().json(responseAboutToSubmit.toString())
+            );
     }
 }
