@@ -682,6 +682,20 @@ class DocumentUtilTest {
 
     @ParameterizedTest
     @ValueSource(strings = {
+        "test.PDF",
+        "test.TXT",
+        "test.rTF",
+        "test.XlSx",
+        "test.Docx",
+        "test.doC",
+        "test.xLs",
+    })
+    void shouldCheckValidFileTypeInListUppercase(String filename) {
+        assertTrue(DocumentUtil.isValidDocument(filename, "pdf,txt,rtf,xlsx,docx,doc,xls"));
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {
         "test.mp3",
         "test.mp4",
         "test.csv",
