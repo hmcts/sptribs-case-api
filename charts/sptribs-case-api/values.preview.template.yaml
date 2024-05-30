@@ -580,9 +580,17 @@ wa:
       releaseNameOverride: "{{ .Release.Name }}-wa-message-cron"
 
   camunda-bpm:
+    enabled: true
     java:
+      imagePullPolicy: Always
+      disableKeyVaults: true
+      ingressHost: camunda-${SERVICE_FQDN}
+      releaseNameOverride: ${SERVICE_NAME}-camunda
       environment:
-        CAMUNDA_DB_CONN_OPTIONS: "?stringtype=unspecified&reWriteBatchedInserts=true&sslmode=require"
+        CAMUNDA_API_AUTH_ENABLED: false
+        CAMUNDA_BPM_DATABASE_SCHEMA_UPDATE: true
+        S2S_URL: http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
+        CAMUNDA_DB_CONN_OPTIONS: ""
 
   wa-task-management-api:
     java:
