@@ -42,6 +42,7 @@ import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CITIZEN_CIC_SU
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CITIZEN_CIC_UPDATE_CASE;
 import static uk.gov.hmcts.sptribs.constants.CommonConstants.ST_CIC_CASE_TYPE;
 import static uk.gov.hmcts.sptribs.constants.CommonConstants.ST_CIC_JURISDICTION;
+import static uk.gov.hmcts.sptribs.controllers.model.DssCaseDataRequest.convertDssCaseDataToRequest;
 import static uk.gov.hmcts.sptribs.testutil.IdamWireMock.ST_CIC_CASEWORKER;
 import static uk.gov.hmcts.sptribs.testutil.IdamWireMock.stubForIdamDetails;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.AUTHORIZATION;
@@ -220,7 +221,7 @@ public class CaseManagementControllerIT {
             .build();
 
         final CaseDataContent caseDataContent = CaseDataContent.builder()
-            .data(caseData)
+            .data(convertDssCaseDataToRequest(caseData.getDssCaseData()))
             .event(uk.gov.hmcts.reform.ccd.client.model.Event.builder()
                 .id(CITIZEN_CIC_UPDATE_CASE)
                 .build()
@@ -319,7 +320,7 @@ public class CaseManagementControllerIT {
             .build();
 
         final CaseDataContent caseDataContent = CaseDataContent.builder()
-            .data(caseData)
+            .data(convertDssCaseDataToRequest(caseData.getDssCaseData()))
             .event(uk.gov.hmcts.reform.ccd.client.model.Event.builder()
                 .id(CITIZEN_CIC_SUBMIT_CASE)
                 .build()
