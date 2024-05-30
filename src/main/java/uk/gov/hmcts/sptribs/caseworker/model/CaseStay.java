@@ -47,7 +47,7 @@ public class CaseStay {
 
 
     @CCD(
-        label = " Enter a flag type ",
+        label = "Enter reason for stay",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private String flagType;
