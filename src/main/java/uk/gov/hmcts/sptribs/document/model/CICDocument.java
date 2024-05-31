@@ -44,7 +44,7 @@ public class CICDocument {
     public boolean isDocumentValid() {
         return isValidDocument(
             this.documentLink.getFilename(),
-            "pdf,csv,txt,rtf,xlsx,docx,doc,xls,tif,tiff,jpg,jpeg,png,mp3,m4a,mp4"
+            "pdf,csv,txt,rtf,xlsx,docx,doc,xls,tif,tiff,bmp,jpg,jpeg,png,mp3,m4a,mp4"
         );
     }
 }
