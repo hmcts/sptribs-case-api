@@ -10,6 +10,7 @@
     "cicCaseRespondentEmail": "appeals.team@cica.gov.uk",
     "dssCaseDataSubjectDateOfBirth": "1990-01-01",
     "hyphenatedCaseRef": "${json-unit.any-string}",
-    "dssCaseDataSubjectEmailAddress": "test@email.com"
+    "dssCaseDataSubjectEmailAddress": "test@email.com",
+    "dssCaseDataAdditionalInformation": "some additional info"
   }
 }

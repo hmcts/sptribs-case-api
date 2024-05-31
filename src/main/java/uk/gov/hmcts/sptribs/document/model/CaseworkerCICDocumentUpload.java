@@ -6,7 +6,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.apache.commons.lang3.StringUtils;
 import uk.gov.hmcts.ccd.sdk.api.CCD;
 import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerWithCAAAccess;
@@ -14,6 +13,8 @@ import uk.gov.hmcts.sptribs.ciccase.model.access.DefaultAccess;
 
 import java.util.Arrays;
 
+import static java.util.Locale.ROOT;
+import static org.apache.commons.lang.StringUtils.substringAfterLast;
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.FixedList;
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.TextArea;
 
@@ -53,12 +54,12 @@ public class CaseworkerCICDocumentUpload {
 
     @JsonIgnore
     public boolean isDocumentValid() {
-        return isDocumentValid("pdf,csv,txt,rtf,xlsx,docx,doc,xls,mp3,m4a,mp4");
+        return isDocumentValid("pdf,csv,txt,rtf,xlsx,docx,doc,xls,mp3,m4a,mp4,jpg,jpeg,bmp,tif,tiff,png");
     }
 
     public boolean isDocumentValid(String validExtensions) {
         String fileName = this.documentLink.getFilename();
-        String fileExtension = StringUtils.substringAfterLast(fileName, ".");
-        return Arrays.asList(validExtensions.split(",")).contains(fileExtension);
+        String fileExtension = substringAfterLast(fileName, ".");
+        return fileExtension != null && Arrays.asList(validExtensions.split(",")).contains(fileExtension.toLowerCase(ROOT));
     }
 }
