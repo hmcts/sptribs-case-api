@@ -53,7 +53,6 @@ class CaseworkerDocumentManagementAmendTest {
     @Test
     void shouldAddConfigurationToConfigBuilder() {
         //Given
-        caseworkerDocumentManagementAmend.setDocumentManagementEnabled(true);
         final ConfigBuilderImpl<CaseData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
 
         //When
@@ -63,20 +62,6 @@ class CaseworkerDocumentManagementAmendTest {
         assertThat(getEventsFrom(configBuilder).values())
             .extracting(Event::getId)
             .contains(CASEWORKER_DOCUMENT_MANAGEMENT_AMEND);
-    }
-
-    @Test
-    void shouldNotConfigureMaintainLinkCaseIfFeatureFlagFalse() {
-        //Given
-        final ConfigBuilderImpl<CaseData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
-
-        //When
-        caseworkerDocumentManagementAmend.configure(configBuilder);
-
-        //Then
-        assertThat(getEventsFrom(configBuilder).values())
-            .extracting(Event::getId)
-            .doesNotContain(CASEWORKER_DOCUMENT_MANAGEMENT_AMEND);
     }
 
     @Test

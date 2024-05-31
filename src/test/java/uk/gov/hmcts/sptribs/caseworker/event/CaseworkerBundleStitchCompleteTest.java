@@ -29,7 +29,6 @@ class CaseworkerBundleStitchCompleteTest {
     @Test
     void shouldAddConfigurationToConfigBuilder() throws Exception {
         //Given
-        caseworkerBundleStitchComplete.setBundlingEnabled(true);
         final ConfigBuilderImpl<CaseData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
 
         //When
@@ -39,20 +38,6 @@ class CaseworkerBundleStitchCompleteTest {
         assertThat(getEventsFrom(configBuilder).values())
             .extracting(Event::getId)
             .contains(ASYNC_STITCH_COMPLETE);
-    }
-
-    @Test
-    void shouldNotAddConfigurationToConfigBuilderIfFeatureFlagFalse() {
-        //Given
-        final ConfigBuilderImpl<CaseData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
-
-        //When
-        caseworkerBundleStitchComplete.configure(configBuilder);
-
-        //Then
-        assertThat(getEventsFrom(configBuilder).values())
-            .extracting(Event::getId)
-            .doesNotContain(ASYNC_STITCH_COMPLETE);
     }
 
     @Test
