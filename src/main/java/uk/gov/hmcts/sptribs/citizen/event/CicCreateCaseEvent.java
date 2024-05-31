@@ -65,7 +65,7 @@ public class CicCreateCaseEvent implements CCDConfig<CaseData, State, UserRole> 
         final CaseData caseData = details.getData();
         setSupplementaryData(details.getId());
         final String caseReference = caseData.getHyphenatedCaseRef();
-
+        log.info("Supplementary data updated for case : {}", caseReference);
         return SubmittedCallbackResponse.builder()
             .confirmationHeader(format("# Case Created %n## Case reference number: %n## %s", caseReference))
             .build();
