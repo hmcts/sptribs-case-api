@@ -28,6 +28,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.SubjectCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.CcdCaseType;
 import uk.gov.hmcts.sptribs.common.config.AppsConfig;
+import uk.gov.hmcts.sptribs.common.service.CcdSupplementaryDataService;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
 import uk.gov.hmcts.sptribs.document.model.EdgeCaseDocument;
@@ -80,6 +81,9 @@ public class CicSubmitCaseEvent implements CCDConfig<CaseData, State, UserRole> 
     @Autowired
     private Clock clock;
 
+    @Autowired
+    private CcdSupplementaryDataService ccdSupplementaryDataService;
+
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         configBuilder
@@ -124,6 +128,7 @@ public class CicSubmitCaseEvent implements CCDConfig<CaseData, State, UserRole> 
         DssCaseData dssCaseData = data.getDssCaseData();
         generateNotifyParties(dssCaseData);
 
+        setSupplementaryData(details.getId());
         final String caseNumber = data.getHyphenatedCaseRef();
 
         try {
@@ -279,6 +284,14 @@ public class CicSubmitCaseEvent implements CCDConfig<CaseData, State, UserRole> 
         dssCaseData.setOtherInfoDocuments(new ArrayList<>());
         caseData.setDssCaseData(dssCaseData);
         return caseData;
+    }
+
+    private void setSupplementaryData(Long caseId) {
+        try {
+            ccdSupplementaryDataService.submitSupplementaryDataToCcd(caseId.toString());
+        } catch (Exception exception) {
+            log.error("Unable to set Supplementary data with exception : {}", exception.getMessage());
+        }
     }
 
 }
