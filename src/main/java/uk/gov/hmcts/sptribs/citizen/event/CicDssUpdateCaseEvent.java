@@ -131,45 +131,36 @@ public class CicDssUpdateCaseEvent implements CCDConfig<CaseData, State, UserRol
                 if (isNotBlank(dssCaseData.getAdditionalInformation()) || isNotBlank(documentComment)) {
                     final User user = idamService.retrieveUser(request.getHeader(AUTHORIZATION));
 
+                    final DssMessage message = DssMessage.builder()
+                        .dateReceived(LocalDate.now())
+                        .receivedFrom(user.getUserDetails().getFullName())
+                        .build();
+
                     if (isNotBlank(dssCaseData.getAdditionalInformation())) {
-                        final DssMessage message = DssMessage.builder()
-                            .message(dssCaseData.getAdditionalInformation())
-                            .dateReceived(LocalDate.now())
-                            .receivedFrom(user.getUserDetails().getFullName())
-                            .build();
-
-                        final ListValue<DssMessage> listValue = ListValue
-                            .<DssMessage>builder()
-                            .id(UUID.randomUUID().toString())
-                            .value(message)
-                            .build();
-
-                        messagesList.add(listValue);
+                        message.setMessage(dssCaseData.getAdditionalInformation());
                     }
+
                     if (isNotBlank(documentComment)) {
-                        final DssMessage message = DssMessage.builder()
-                            .message(documentComment)
-                            .dateReceived(LocalDate.now())
-                            .receivedFrom(user.getUserDetails().getFullName())
-                            .build();
-
-                        final ListValue<DssMessage> listValue = ListValue
-                            .<DssMessage>builder()
-                            .id(UUID.randomUUID().toString())
-                            .value(message)
-                            .build();
-
-                        messagesList.add(listValue);
+                        message.setDocumentRelevance(documentComment);
                     }
 
-                    final List<ListValue<DssMessage>> updatedMessagesList =
-                        isEmpty(caseData.getMessages())
-                            ? messagesList
-                            : Stream.concat(caseData.getMessages().stream(), messagesList.stream()).toList();
-                    caseData.setMessages(updatedMessagesList);
+                    final ListValue<DssMessage> listValue = ListValue
+                        .<DssMessage>builder()
+                        .id(UUID.randomUUID().toString())
+                        .value(message)
+                        .build();
+
+                    messagesList.add(listValue);
                 }
+
+                final List<ListValue<DssMessage>> updatedMessagesList =
+                    isEmpty(caseData.getMessages())
+                        ? messagesList
+                        : Stream.concat(caseData.getMessages().stream(), messagesList.stream()).toList();
+                caseData.setMessages(updatedMessagesList);
             }
         }
+
 
         final List<ListValue<CaseworkerCICDocument>> documentListUpdated = DocumentManagementUtil.buildListValues(documentList);
         final List<ListValue<CaseworkerCICDocument>> applicantDocumentsUploaded =

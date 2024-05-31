@@ -107,7 +107,7 @@ class CicDssUpdateCaseEventTest {
         assertThat(response.getData().getCicCase().getApplicantDocumentsUploaded()).isNotEmpty();
         assertThat(response.getData().getCicCase().getApplicantDocumentsUploaded()).hasSize(3);
         assertThat(response.getData().getMessages()).isNotEmpty();
-        assertThat(response.getData().getMessages()).hasSize(2);
+        assertThat(response.getData().getMessages()).hasSize(3);
         assertThat(response.getData().getDssCaseData().getOtherInfoDocuments()).isEmpty();
         assertThat(response.getData().getDssCaseData().getAdditionalInformation()).isNull();
     }
@@ -142,8 +142,8 @@ class CicDssUpdateCaseEventTest {
         final CaseDetails<CaseData, State> details = new CaseDetails<>();
         details.setData(caseData);
 
-         when(request.getHeader(AUTHORIZATION)).thenReturn(TEST_AUTHORIZATION_TOKEN);
-         when(idamService.retrieveUser(TEST_AUTHORIZATION_TOKEN)).thenReturn(TestDataHelper.getUser());
+        when(request.getHeader(AUTHORIZATION)).thenReturn(TEST_AUTHORIZATION_TOKEN);
+        when(idamService.retrieveUser(TEST_AUTHORIZATION_TOKEN)).thenReturn(TestDataHelper.getUser());
 
         AboutToStartOrSubmitResponse<CaseData, State> response =
             cicDssUpdateCaseEvent.aboutToSubmit(details, details);
@@ -185,13 +185,17 @@ class CicDssUpdateCaseEventTest {
 
         final CaseDetails<CaseData, State> details = new CaseDetails<>();
         details.setData(caseData);
+
+        when(request.getHeader(AUTHORIZATION)).thenReturn(TEST_AUTHORIZATION_TOKEN);
+        when(idamService.retrieveUser(TEST_AUTHORIZATION_TOKEN)).thenReturn(TestDataHelper.getUser());
+
         AboutToStartOrSubmitResponse<CaseData, State> response =
             cicDssUpdateCaseEvent.aboutToSubmit(details, details);
 
         assertThat(response.getData().getCicCase().getApplicantDocumentsUploaded()).isNotEmpty();
         assertThat(response.getData().getCicCase().getApplicantDocumentsUploaded()).hasSize(3);
         assertThat(response.getData().getMessages()).isNotEmpty();
-        assertThat(response.getData().getMessages()).hasSize(1);
+        assertThat(response.getData().getMessages()).hasSize(3);
         assertThat(response.getData().getDssCaseData().getOtherInfoDocuments()).isEmpty();
         assertThat(response.getData().getDssCaseData().getAdditionalInformation()).isNull();
     }
@@ -220,7 +224,7 @@ class CicDssUpdateCaseEventTest {
         assertThat(response.getData().getCicCase().getApplicantDocumentsUploaded()).isNotEmpty();
         assertThat(response.getData().getCicCase().getApplicantDocumentsUploaded()).hasSize(2);
         assertThat(response.getData().getMessages()).isNotEmpty();
-        assertThat(response.getData().getMessages()).hasSize(1);
+        assertThat(response.getData().getMessages()).hasSize(2);
         assertThat(response.getData().getDssCaseData().getOtherInfoDocuments()).isEmpty();
         assertThat(response.getData().getDssCaseData().getAdditionalInformation()).isNull();
     }
