@@ -28,11 +28,4 @@ public class SystemTriggerCompleteHearingOutcome implements CCDConfig<CaseData, 
             .submittedCallback(this::submitted)
             .grant(CREATE_READ_UPDATE_DELETE, SYSTEM_UPDATE);
     }
-
-    public SubmittedCallbackResponse submitted(CaseDetails<CaseData, State> details,
-                                               CaseDetails<CaseData, State> beforeDetails) {
-        return SubmittedCallbackResponse.builder()
-            .confirmationHeader("# CompleteHearingOutcome WA Task Triggered")
-            .build();
-    }
 }
