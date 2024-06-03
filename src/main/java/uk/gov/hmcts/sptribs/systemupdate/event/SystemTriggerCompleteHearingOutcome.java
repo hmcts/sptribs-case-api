@@ -2,7 +2,9 @@ package uk.gov.hmcts.sptribs.systemupdate.event;
 
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
+import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
+import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
@@ -23,6 +25,14 @@ public class SystemTriggerCompleteHearingOutcome implements CCDConfig<CaseData, 
             .forState(AwaitingHearing)
             .name("Trigger hearing outcome")
             .description("Trigger hearing outcome")
+            .submittedCallback(this::submitted)
             .grant(CREATE_READ_UPDATE_DELETE, SYSTEM_UPDATE);
+    }
+
+    public SubmittedCallbackResponse submitted(CaseDetails<CaseData, State> details,
+                                               CaseDetails<CaseData, State> beforeDetails) {
+        return SubmittedCallbackResponse.builder()
+            .confirmationHeader("# CompleteHearingOutcome WA Task Triggered")
+            .build();
     }
 }
