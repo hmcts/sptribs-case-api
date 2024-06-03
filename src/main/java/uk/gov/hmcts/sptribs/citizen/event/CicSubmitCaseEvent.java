@@ -35,7 +35,6 @@ import uk.gov.hmcts.sptribs.document.model.EdgeCaseDocument;
 import uk.gov.hmcts.sptribs.idam.IdamService;
 import uk.gov.hmcts.sptribs.util.AppsUtil;
 
-import java.time.Clock;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -66,23 +65,22 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 @Setter
 public class CicSubmitCaseEvent implements CCDConfig<CaseData, State, UserRole> {
 
-    @Autowired
     private HttpServletRequest request;
-
-    @Autowired
     private IdamService idamService;
-
-    @Autowired
     private AppsConfig appsConfig;
-
-    @Autowired
     private DssApplicationReceivedNotification dssApplicationReceivedNotification;
-
-    @Autowired
-    private Clock clock;
-
-    @Autowired
     private CcdSupplementaryDataService ccdSupplementaryDataService;
+
+    @Autowired
+    public CicSubmitCaseEvent(HttpServletRequest request, IdamService idamService, AppsConfig appsConfig,
+                              DssApplicationReceivedNotification dssApplicationReceivedNotification,
+                              CcdSupplementaryDataService ccdSupplementaryDataService) {
+        this.request = request;
+        this.idamService = idamService;
+        this.appsConfig = appsConfig;
+        this.dssApplicationReceivedNotification = dssApplicationReceivedNotification;
+        this.ccdSupplementaryDataService = ccdSupplementaryDataService;
+    }
 
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
@@ -128,8 +126,8 @@ public class CicSubmitCaseEvent implements CCDConfig<CaseData, State, UserRole> 
         DssCaseData dssCaseData = data.getDssCaseData();
         generateNotifyParties(dssCaseData);
 
-        setSupplementaryData(details.getId());
         final String caseNumber = data.getHyphenatedCaseRef();
+        ccdSupplementaryDataService.submitSupplementaryDataRequestToCcd(details.getId().toString());
 
         try {
             sendApplicationReceivedNotification(caseNumber, dssCaseData);
@@ -284,14 +282,6 @@ public class CicSubmitCaseEvent implements CCDConfig<CaseData, State, UserRole> 
         dssCaseData.setOtherInfoDocuments(new ArrayList<>());
         caseData.setDssCaseData(dssCaseData);
         return caseData;
-    }
-
-    private void setSupplementaryData(Long caseId) {
-        try {
-            ccdSupplementaryDataService.submitSupplementaryDataToCcd(caseId.toString());
-        } catch (Exception exception) {
-            log.error("Unable to set Supplementary data with exception : {}", exception.getMessage());
-        }
     }
 
 }

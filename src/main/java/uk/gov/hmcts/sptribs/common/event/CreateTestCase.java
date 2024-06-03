@@ -41,11 +41,14 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
     private static final String TEST_CREATE = "create-test-case";
     private static final String TEST_CASE_DATA_FILE = "classpath:data/st_cic_test_case.json";
 
-    @Autowired
     private ObjectMapper objectMapper;
+    private CcdSupplementaryDataService ccdSupplementaryDataService;
 
     @Autowired
-    private CcdSupplementaryDataService ccdSupplementaryDataService;
+    public CreateTestCase(ObjectMapper objectMapper, CcdSupplementaryDataService ccdSupplementaryDataService) {
+        this.objectMapper = objectMapper;
+        this.ccdSupplementaryDataService = ccdSupplementaryDataService;
+    }
 
     @Override
     public void configure(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
@@ -94,19 +97,13 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
                                                CaseDetails<CaseData, State> beforeDetails) {
 
         final CaseData caseData = details.getData();
-        setSupplementaryData(details.getId());
         final String caseReference = caseData.getHyphenatedCaseRef();
+
+        ccdSupplementaryDataService.submitSupplementaryDataToCcd(details.getId().toString());
 
         return SubmittedCallbackResponse.builder()
             .confirmationHeader(format("# Case Created %n## Case reference number: %n## %s", caseReference))
             .build();
     }
 
-    private void setSupplementaryData(Long caseId) {
-        try {
-            ccdSupplementaryDataService.submitSupplementaryDataToCcd(caseId.toString());
-        } catch (Exception exception) {
-            log.error("Unable to set Supplementary data with exception : {}", exception.getMessage());
-        }
-    }
 }

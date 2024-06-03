@@ -25,6 +25,7 @@ import static uk.gov.hmcts.sptribs.testutil.TestConstants.CASE_DATA_CIC_ID;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.caseData;
 
+
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
 @TestPropertySource("classpath:application.yaml")
@@ -49,6 +50,7 @@ class CicCreateCaseEventTest {
         eventsConfig.setCreateEvent("citizen-cic-create-dss-application");
 
         cicAppDetail.setEventIds(eventsConfig);
+
     }
 
     @Test
@@ -67,5 +69,4 @@ class CicCreateCaseEventTest {
 
         assertThat(response.getState()).isEqualTo(State.DSS_Draft);
     }
-
 }

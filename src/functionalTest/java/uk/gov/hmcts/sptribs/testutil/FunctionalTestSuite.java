@@ -77,11 +77,7 @@ public abstract class FunctionalTestSuite {
         return submitNewCase(caseDataContent, caseworkerToken, s2sTokenForCaseApi, caseworkerUserId);
     }
 
-    private StartEventResponse startEventForCreateCase(
-        String caseworkerToken,
-        String s2sToken,
-        String caseworkerUserId
-    ) {
+    private StartEventResponse startEventForCreateCase(String caseworkerToken, String s2sToken, String caseworkerUserId) {
         // not including in try catch to fail fast the method
         return coreCaseDataApi.startForCaseworker(
             caseworkerToken,
@@ -93,12 +89,7 @@ public abstract class FunctionalTestSuite {
         );
     }
 
-    private CaseDetails submitNewCase(
-        CaseDataContent caseDataContent,
-        String solicitorToken,
-        String s2sToken,
-        String solicitorUserId
-    ) {
+    private CaseDetails submitNewCase(CaseDataContent caseDataContent, String solicitorToken, String s2sToken, String solicitorUserId) {
         // not including in try catch to fast fail the method
         return coreCaseDataApi.submitForCaseworker(
             solicitorToken,
