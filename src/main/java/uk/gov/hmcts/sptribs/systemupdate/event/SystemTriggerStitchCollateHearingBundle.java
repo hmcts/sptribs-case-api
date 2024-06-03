@@ -20,8 +20,8 @@ public class SystemTriggerStitchCollateHearingBundle implements CCDConfig<CaseDa
         configBuilder
             .event(SYSTEM_TRIGGER_STITCH_COLLATE_HEARING_BUNDLE)
             .forState(AwaitingHearing)
-            .name("System trigger stitch collate hearing bundle")
-            .description("Event to trigger StitchCollateHearingBundle WA task")
+            .name("Trigger stitch hearing bundle")
+            .description("Trigger stitch hearing bundle")
             .grant(CREATE_READ_UPDATE_DELETE, SYSTEM_UPDATE);
     }
 }

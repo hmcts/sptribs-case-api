@@ -21,8 +21,8 @@ public class SystemTriggerCompleteHearingOutcome implements CCDConfig<CaseData, 
         configBuilder
             .event(SYSTEM_TRIGGER_COMPLETE_HEARING_OUTCOME)
             .forState(AwaitingHearing)
-            .name("System trigger complete hearing outcome")
-            .description("Event to trigger CompleteHearingOutcome WA task")
+            .name("Trigger hearing outcome")
+            .description("Trigger hearing outcome")
             .grant(CREATE_READ_UPDATE_DELETE, SYSTEM_UPDATE);
     }
 }
