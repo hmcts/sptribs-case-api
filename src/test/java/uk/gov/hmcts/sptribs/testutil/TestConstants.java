@@ -25,9 +25,6 @@ public final class TestConstants {
     public static final String HEARING_OPTIONS_REGION_DATA_MID_EVENT_URL = "/callbacks/mid-event?page=hearingOptionsRegionData";
     public static final String EDIT_DRAFT_ORDER_MID_EVENT_URL = "callbacks/mid-event?page=editDraftOrderAddDocumentFooter";
     public static final String EDIT_RECORD_LISTING_MID_EVENT_URL = "callbacks/mid-event?page=regionInfo";
-    public static final String ISSUE_DECISION_MID_EVENT_URL = "callbacks/mid-event?page=issueDecisionAddDocumentFooter";
-    public static final String ISSUE_FINAL_DECISION_MID_EVENT_URL = "callbacks/mid-event?page=issueFinalDecisionAddDocumentFooter";
-    public static final String ISSUE_FINAL_DECISION_UPLOAD_MID_EVENT_URL = "callbacks/mid-event?page=issueFinalDecisionUpload";
 
     public static final String AUTH_HEADER_VALUE = "auth-header-value";
     public static final String INVALID_AUTH_TOKEN = "invalid_token";

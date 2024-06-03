@@ -16,13 +16,13 @@ import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_ISS
 import static uk.gov.hmcts.sptribs.testutil.CaseDataUtil.caseData;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.ABOUT_TO_START_URL;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.ABOUT_TO_SUBMIT_URL;
-import static uk.gov.hmcts.sptribs.testutil.TestConstants.ISSUE_FINAL_DECISION_MID_EVENT_URL;
-import static uk.gov.hmcts.sptribs.testutil.TestConstants.ISSUE_FINAL_DECISION_UPLOAD_MID_EVENT_URL;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.SUBMITTED_URL;
 import static uk.gov.hmcts.sptribs.testutil.TestResourceUtil.expectedResponse;
 
 @SpringBootTest
 public class CaseworkerIssueFinalDecisionFT extends FunctionalTestSuite {
+    private static final String ISSUE_FINAL_DECISION_MID_EVENT_URL = "callbacks/mid-event?page=issueFinalDecisionAddDocumentFooter";
+    private static final String ISSUE_FINAL_DECISION_UPLOAD_MID_EVENT_URL = "callbacks/mid-event?page=issueFinalDecisionUpload";
 
     private static final String REQUEST_ABOUT_TO_START = "classpath:request/casedata/ccd-callback-casedata-general.json";
     private static final String CALLBACK_REQUEST =
