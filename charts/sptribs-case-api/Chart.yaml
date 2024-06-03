@@ -44,10 +44,14 @@ dependencies:
     repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
     condition: em-stitching.enabled
 #    Work Allocation
-  - name: camunda-bpm
-    version: 0.0.47
+  - name: wa-chart
+    version: 1.0.5
     repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
     condition: wa.enabled
+#  - name: camunda-bpm
+#    version: 0.0.47
+#    repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
+#    condition: wa.enabled
 #  - name: wa-task-management-api
 #    version: 0.0.52
 #    repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'

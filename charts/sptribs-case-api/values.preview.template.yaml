@@ -691,7 +691,7 @@ am-org-role-mapping-service:
 
 servicebus:
   enabled: true
-  releaseNameOverride: ${SERVICE_NAME}
+  releaseNameOverride: ${SERVICE_NAME}-asb
   resourceGroup: sptribs-aso-preview-rg
   sbNamespace: sptribs-servicebus-preview
   setup:
@@ -699,7 +699,7 @@ servicebus:
       - name: ccd-case-events
         subscriptionNeeded: yes
         requiresSession: true
-      - name: crd-topic
-        subscriptionNeeded: yes
-      - name: jrd-topic
-        subscriptionNeeded: yes
+#      - name: crd-topic
+#        subscriptionNeeded: yes
+#      - name: jrd-topic
+#        subscriptionNeeded: yes
