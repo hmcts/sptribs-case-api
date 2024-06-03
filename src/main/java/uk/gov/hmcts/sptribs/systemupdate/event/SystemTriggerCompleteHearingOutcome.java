@@ -25,7 +25,6 @@ public class SystemTriggerCompleteHearingOutcome implements CCDConfig<CaseData, 
             .forState(AwaitingHearing)
             .name("Trigger hearing outcome")
             .description("Trigger hearing outcome")
-            .submittedCallback(this::submitted)
             .grant(CREATE_READ_UPDATE_DELETE, SYSTEM_UPDATE);
     }
 }
