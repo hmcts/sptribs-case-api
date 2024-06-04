@@ -147,9 +147,9 @@ ccd:
       keyVaults:
         ccd:
           secrets:
-            - name: data-store-api-POSTGRES-USER
+            - name: data-store-api-POSTGRES-USER-V15
               alias: DATA_STORE_DB_USERNAME
-            - name: data-store-api-POSTGRES-PASS
+            - name: data-store-api-POSTGRES-PASS-V15
               alias: DATA_STORE_DB_PASSWORD
             - name: data-store-api-draft-key
               alias: CCD_DRAFT_ENCRYPTION_KEY
