@@ -45,7 +45,7 @@ dependencies:
     condition: em-stitching.enabled
 #    Work Allocation
   - name: wa
-    version: 1.0.5
+    version: ~1.0.5
     repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
     condition: wa.enabled
   - name: ccd-message-publisher
@@ -53,6 +53,6 @@ dependencies:
     repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
     condition: wa.enabled
   - name: servicebus
-    version: 1.0.4
+    version: ~1.0.4
     repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
     condition: wa.enabled
