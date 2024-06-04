@@ -141,7 +141,6 @@ class CicDssUpdateCaseEventTest {
 
         final CaseDetails<CaseData, State> details = new CaseDetails<>();
         details.setData(caseData);
-
         AboutToStartOrSubmitResponse<CaseData, State> response =
             cicDssUpdateCaseEvent.aboutToSubmit(details, details);
 
@@ -182,7 +181,6 @@ class CicDssUpdateCaseEventTest {
 
         final CaseDetails<CaseData, State> details = new CaseDetails<>();
         details.setData(caseData);
-
         AboutToStartOrSubmitResponse<CaseData, State> response =
             cicDssUpdateCaseEvent.aboutToSubmit(details, details);
 
