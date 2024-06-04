@@ -426,7 +426,6 @@ xui-webapp:
       JURISDICTIONS: ST_CIC,ST_CS,ST_MH,ST_PHL,ST_SEN,ST_DD
       CASE_TYPES: CIC,CS,MH,PHL,SEN,DD
       FEATURE_REDIS_ENABLED: false
-      FEATURE_WORK_ALLOCATION_ENABLED: true
       FEATURE_APP_INSIGHTS_ENABLED: true
       NODE_OPTIONS: --max-old-space-size=900
       HEALTH_ROLE_ASSIGNMENT_API: http://sptribs-case-api-pr-${CHANGE_ID}-am-role-assignment-service
