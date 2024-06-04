@@ -454,7 +454,6 @@ public class CaseData {
     private String judicialId;
 
     @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
-    @Builder.Default
     private YesNo stitchHearingBundleTask;
 
     @CCD(access = {DefaultAccess.class})
