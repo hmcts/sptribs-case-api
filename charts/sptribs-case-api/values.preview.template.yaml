@@ -103,7 +103,7 @@ ccd:
     ccdAdminWebIngress: admin-web-${SERVICE_FQDN}
     ccdApiGatewayIngress: gateway-${SERVICE_FQDN}
     postgresUsername: hmcts
-    postgresHostname: "sptribs-case-api-preview.postgres.database.azure.com"
+    postgresHostname: "sptribs-preview.postgres.database.azure.com"
     postgresSecret: postgres
     databaseNamePrefix: "pr-${CHANGE_ID}-"
     s2sUrl: http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
