@@ -99,13 +99,12 @@ ccd:
 
   ccd-data-store-api:
     java:
-      disableKeyVaults: true
       imagePullPolicy: Always
       environment:
         CASE_DOCUMENT_AM_API_ATTACH_DOCUMENT_ENABLED: true
-        DATA_STORE_DB_HOST: '{{ tpl .Values.global.postgresHostname $}}'
-        DATA_STORE_DB_USERNAME: ${CCD_DATA_STORE_DB_USERNAME_PREVIEW}
-        DATA_STORE_DB_PASSWORD: ${CCD_DATA_STORE_DB_PASSWORD_PREVIEW}
+        DATA_STORE_DB_HOST: sptribs-preview.postgres.database.azure.com
+        DATA_STORE_DB_USERNAME: hmcts
+        DATA_STORE_DB_NAME: "pr-${CHANGE_ID}-data-store"
         DATA_STORE_IDAM_KEY: ${DATA_STORE_S2S_KEY}
         DATA_STORE_DEFAULT_LOG_LEVEL: info
         LOG_CALLBACK_DETAILS: "*"
@@ -124,7 +123,11 @@ ccd:
         IDAM_DATA_STORE_SYSTEM_USER_USERNAME: ${IDAM_DATA_STORE_SYSTEM_USER_USERNAME}
         IDAM_DATA_STORE_SYSTEM_USER_PASSWORD: ${IDAM_DATA_STORE_SYSTEM_USER_PASSWORD}
         ROLE_ASSIGNMENT_URL: http://sptribs-case-api-pr-${CHANGE_ID}-am-role-assignment-service
-      keyVaults: [ ]
+      secrets:
+        DATA_STORE_DB_PASSWORD:
+          secretRef: postgres
+          key: PASSWORD
+          disabled: false
       ingressHost: ccd-data-store-api-${SERVICE_FQDN}
       autoscaling:
         enabled: false
