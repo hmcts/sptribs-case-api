@@ -42,6 +42,7 @@ public class SystemTriggerCompleteHearingOutcomeTask implements Runnable {
         this.idamService = idamService;
         this.authTokenGenerator = authTokenGenerator;
     }
+
     @Override
     public void run() {
         final User user = idamService.retrieveSystemUpdateUserDetails();
