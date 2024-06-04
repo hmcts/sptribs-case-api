@@ -499,10 +499,9 @@ dependencies {
   implementation group: 'org.json', name: 'json', version: '20231013'
   implementation group: 'jakarta.enterprise', name: 'jakarta.enterprise.cdi-api', version: '4.0.1'
   implementation group: 'javax.annotation', name: 'javax.annotation-api', version: '1.3.2'
-  implementation 'com.azure.resourcemanager:azure-resourcemanager-botservice:1.0.0-beta.5'
-  implementation group: 'com.azure', name: 'azure-core', version: '1.39.0'
-  implementation group: 'com.azure', name: 'azure-messaging-servicebus', version: '7.13.4'
-
+//  implementation 'com.azure.resourcemanager:azure-resourcemanager-botservice:1.0.0-beta.5'
+//  implementation group: 'com.azure', name: 'azure-core', version: '1.39.0'
+//  implementation group: 'com.azure', name: 'azure-messaging-servicebus', version: '7.13.4'
 
   annotationProcessor group: 'org.projectlombok', name: 'lombok', version: versions.lombok
   testImplementation 'com.github.hmcts:fortify-client:1.3.0:all'
@@ -658,25 +657,6 @@ bootWithCCD {
         }
         //environment 'CITIZEN_UPDATE_CASE_STATE_ENABLED', 'true'
     }
-    environment 'ADDITIONAL_COMPOSE_FILES_WA', 'cft-lib-work-allocation.yml'
-    environment 'ENABLE_WORK_ALLOCATION', 'true'
-    environment 'RSE_LIB_ADDITIONAL_DATABASES', 'emstitch,ccd_data,camunda,cft_task_db,sscsjobscheduler,evidence,wa_case_event_messages_db,wa_workflow_api'
-    environment 'CASE_DOCUMENT_S2S_AUTHORISED_SERVICES', 'ccd_case_document_am_api,ccd_gw,xui_webapp,ccd_data,bulk_scan_processor,sscs,wa_task_management_api,wa_task_monitor,camunda_bpm,wa_workflow_api,wa_case_event_handler,em_stitching_api'
-    environment 'DATA_STORE_S2S_AUTHORISED_SERVICES', 'ccd_gw,ccd_data,ccd_ps,payment-api,xui_webapp,sscs,ccd_case_document_am_api,am_role_assignment_service,em_ccd_orchestrator,em_stitching_api,wa_task_management_api,wa_task_monitor,camunda_bpm,wa_workflow_api,wa_case_event_handler'
-    environment 'AZURE_SERVICE_BUS_CONNECTION_STRING','Endpoint=sb://ccd-servicebus-demo.servicebus.windows.net/;SharedAccessKeyName=SendAndReceiveCCDMessage;SharedAccessKey=BXOmN0uU5RZN7KW51soNUv7xNBcNtXqwh+ASbD8y4p4=;EntityPath=st-ccd-case-event'
-    environment 'AZURE_SERVICE_BUS_TOPIC_NAME','st-ccd-case-event'
-    environment 'AZURE_SERVICE_BUS_SUBSCRIPTION_NAME', 'sptribs_sabir_local'
-    environment 'AZURE_SERVICE_BUS_CCD_CASE_EVENTS_SUBSCRIPTION_NAME', 'sptribs_sabir_local'
-    environment 'AZURE_SERVICE_BUS_MESSAGE_AUTHOR', 'shweta'
-    environment 'IDAM_API_BASEURL_WA', 'https://idam-web-public.aat.platform.hmcts.net'
-    environment 'S2S_URL_WA', 'http://rpe-service-auth-provider-aat.service.core-compute-aat.internal'
-    environment 'S2S_SECRET_WORKFLOW_API','MZEGJJ5JWRCYXTOI'
-    environment 'S2S_SECRET_CASE_EVENT_HANDLER','6NVQZ2FE46UPTHRO'
-    environment 'S2S_SECRET_TASK_MONITOR','KNIV46LMP5OGAAAY'
-    environment 'S2S_SECRET_TASK_MANAGEMENT_API','UYIEF2FUGBFE666Y'
-    environment 'LAUNCH_DARKLY_SDK_KEY_WA' ,'api-0ba8bb5e-0b11-4f84-9655-93f9f8ccca94'
-    environment 'WA_SYSTEM_USERNAME','wa-system-user@hmcts.net'
-    environment 'WA_SYSTEM_PASSWORD', 'System01'
 }
 
 

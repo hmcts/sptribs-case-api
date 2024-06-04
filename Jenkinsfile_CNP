@@ -27,17 +27,13 @@ static Map<String, Object> secret(String secretName, String envVariable) {
 }
 
 def secrets = [
-        'rpx-${env}'      : [
-          secret('mc-idam-client-secret', 'IDAM_CLIENT_SECRET'),
-        ],
         's2s-${env}'      : [
                 secret('microservicekey-ccd-data', 'DATA_STORE_S2S_KEY'),
                 secret('microservicekey-ccd-definition', 'DEFINITION_STORE_S2S_KEY'),
                 secret('microservicekey-ccd-gw', 'CCD_API_GATEWAY_S2S_KEY'),
                 secret('microservicekey-ccd-admin', 'ADMIN_S2S_KEY'),
                 secret('microservicekey-ccd-data', 'CCD_DATA_STORE_S2S_SECRET'),
-                secret('microservicekey-ccd-definition', 'CCD_DEFINITION_STORE_S2S_SECRET'),
-                secret('microservicekey-sptribs-case-api', 'ST_CASE_API_S2S_KEY')
+                secret('microservicekey-ccd-definition', 'CCD_DEFINITION_STORE_S2S_SECRET')
         ],
         'ccd-${env}'      : [
                 secret('ccd-api-gateway-oauth2-client-secret', 'CCD_API_GATEWAY_OAUTH2_CLIENT_SECRET'),
@@ -278,16 +274,18 @@ withPipeline(type, product, component) {
 
   afterSuccess('akschartsinstall') {
     onPR {
-        env.CASE_DATA_STORE_BASEURL = "https://ccd-data-store-api-sptribs-case-api-pr-${CHANGE_ID}.preview.platform.hmcts.net"
-        env.IDAM_API_URL = "https://idam-api.aat.platform.hmcts.net"
-        env.CAMUNDA_BASE_URL = "https://camunda-sptribs-case-api-pr-${CHANGE_ID}.preview.platform.hmcts.net"
-        env.SERVICE_AUTH_PROVIDER_API_BASE_URL = "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
+        for (label in githubApi.getLabelsbyPattern(env.BRANCH_NAME, "pr-values:wa") ) {
+            env.CASE_DATA_STORE_BASEURL = "https://ccd-data-store-api-sptribs-case-api-pr-${CHANGE_ID}.preview.platform.hmcts.net"
+            env.IDAM_API_URL = "https://idam-api.aat.platform.hmcts.net"
+            env.CAMUNDA_BASE_URL = "https://camunda-sptribs-case-api-pr-${CHANGE_ID}.preview.platform.hmcts.net"
+            env.SERVICE_AUTH_PROVIDER_API_BASE_URL = "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
 
-        println """After akschartsinstall Using CASE_DATA_STORE_BASEURL: ${env.CASE_DATA_STORE_BASEURL}""".stripIndent()
-        sh """
-                  ./bin/pull-latest-camunda-dmn-files.sh ${dmnBranch}
-                  ./bin/pull-latest-camunda-bpmn-files.sh ${bpmnBranch}
-                  """
+            println """After akschartsinstall Using CASE_DATA_STORE_BASEURL: ${env.CASE_DATA_STORE_BASEURL}""".stripIndent()
+            sh """
+                      ./bin/pull-latest-camunda-dmn-files.sh ${dmnBranch}
+                      ./bin/pull-latest-camunda-bpmn-files.sh ${bpmnBranch}
+                      """
+        }
     }
   }
 
