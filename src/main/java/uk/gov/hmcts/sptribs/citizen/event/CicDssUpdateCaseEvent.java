@@ -130,6 +130,7 @@ public class CicDssUpdateCaseEvent implements CCDConfig<CaseData, State, UserRol
                 }
             }
         }
+
         if (isNotBlank(dssCaseData.getAdditionalInformation())) {
             final User user = idamService.retrieveUser(request.getHeader(AUTHORIZATION));
 
@@ -147,15 +148,12 @@ public class CicDssUpdateCaseEvent implements CCDConfig<CaseData, State, UserRol
 
             messagesList.add(listValue);
 
-
-        final List<ListValue<DssMessage>> updatedMessagesList =
-            isEmpty(caseData.getMessages())
-                ? messagesList
-                : Stream.concat(caseData.getMessages().stream(), messagesList.stream()).toList();
-        caseData.setMessages(updatedMessagesList);
-    }
-
-
+            final List<ListValue<DssMessage>> updatedMessagesList =
+                isEmpty(caseData.getMessages())
+                    ? messagesList
+                    : Stream.concat(caseData.getMessages().stream(), messagesList.stream()).toList();
+            caseData.setMessages(updatedMessagesList);
+        }
 
         final List<ListValue<CaseworkerCICDocument>> documentListUpdated = DocumentManagementUtil.buildListValues(documentList);
         final List<ListValue<CaseworkerCICDocument>> applicantDocumentsUploaded =
