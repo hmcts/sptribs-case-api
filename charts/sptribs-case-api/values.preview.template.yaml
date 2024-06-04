@@ -135,6 +135,9 @@ ccd:
       environment:
         CCD_DATA_STORE_URL: http://{{ .Release.Name }}-ccd-data-store-api
         RUN_LD_ON_STARTUP: false
+        ROLE_ASSIGNMENT_DB_HOST: sptribs-preview.postgres.database.azure.com
+        ROLE_ASSIGNMENT_DB_NAME: "pr-${CHANGE_ID}-role_assignment"
+        ROLE_ASSIGNMENT_DB_OPTIONS: "?stringtype=unspecified&ssl=disable&gssEncMode=disable"
       keyVaults: [ ]
 
   ccd-definition-store-api:
