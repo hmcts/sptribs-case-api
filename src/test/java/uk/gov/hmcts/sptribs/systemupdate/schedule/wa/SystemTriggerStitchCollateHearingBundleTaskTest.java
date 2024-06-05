@@ -37,7 +37,7 @@ import static uk.gov.hmcts.sptribs.testutil.TestConstants.SYSTEM_UPDATE_AUTH_TOK
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID;
 
 @ExtendWith(MockitoExtension.class)
-public class SystemTriggerStitchCollateHearingBundleTaskTest {
+class SystemTriggerStitchCollateHearingBundleTaskTest {
 
     @Mock
     private IdamService idamService;

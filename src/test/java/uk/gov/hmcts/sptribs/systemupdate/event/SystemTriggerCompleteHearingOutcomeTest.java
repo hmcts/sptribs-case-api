@@ -16,7 +16,7 @@ import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigB
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.getEventsFrom;
 
 @ExtendWith(MockitoExtension.class)
-public class SystemTriggerCompleteHearingOutcomeTest {
+class SystemTriggerCompleteHearingOutcomeTest {
 
     @InjectMocks
     private SystemTriggerCompleteHearingOutcome systemTriggerCompleteHearingOutcome;
