@@ -12,8 +12,7 @@ java:
     CITIZEN_UPDATE_CASE_STATE_ENABLED: true
     POSTGRES_HOST: sptribs-preview.postgres.database.azure.com
     POSTGRES_NAME: "{{ .Values.global.databaseNamePrefix }}sptribs-case-api"
-    POSTGRES_USERNAME: ${SPTRIBS_POSTGRES_USERNAME_PREVIEW}
-    POSTGRES_PASSWORD: ${SPTRIBS_POSTGRES_PASSWORD_PREVIEW}
+    POSTGRES_USERNAME: hmcts
     POSTGRES_CONNECTION_OPTIONS: ""
 
   keyVaults:
@@ -35,10 +34,11 @@ java:
           alias: IDAM_SYSTEM_UPDATE_PASSWORD
         - name: launchdarkly-sdk-key
           alias: LAUNCH_DARKLY_SDK_KEY
-        - name: sptribs-postgres-username-preview
-          alias: SPTRIBS_POSTGRES_USERNAME_PREVIEW
-        - name: sptribs-postgres-password-preview
-          alias: SPTRIBS_POSTGRES_PASSWORD_PREVIEW
+  secrets:
+    POSTGRES_PASSWORD:
+      secretRef: postgres
+      key: PASSWORD
+      disabled: false
 
 ccd:
   ccd:
