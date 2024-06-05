@@ -12,7 +12,7 @@
   "dssCaseDataRepresentativeContactNumber": null,
   "dssCaseDataRepresentativeEmailAddress": "solicitor@test.com",
   "dssCaseDataDocumentRelevance": null,
-  "dssCaseDataAdditionalInformation": null,
+  "dssCaseDataAdditionalInformation": "This is additional information about the case.",
   "dssCaseDataPcqId": null,
   "dssCaseDataTribunalFormDocuments": [
     {
@@ -49,7 +49,8 @@
           "document_filename": null,
           "document_binary_url": null,
           "category_id": null
-        }
+        },
+        "comment": null
       }
     }
   ]
