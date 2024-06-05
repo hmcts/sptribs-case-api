@@ -58,7 +58,7 @@ class SystemTriggerCompleteHearingOutcomeTaskTest {
 
     private static final BoolQueryBuilder query = boolQuery()
         .must(matchQuery("state", "AwaitingHearing"))
-        .filter(rangeQuery("data.hearingList.value.date").lte(LocalDate.now()).gte(LocalDate.now()));
+        .filter(rangeQuery("data.hearingList.value.date").to(LocalDate.now()).from(LocalDate.now()));
 
     @BeforeEach
     void setUp() {
