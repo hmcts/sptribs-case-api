@@ -39,22 +39,6 @@ java:
           alias: SPTRIBS_POSTGRES_USERNAME_PREVIEW
         - name: sptribs-postgres-password-preview
           alias: SPTRIBS_POSTGRES_PASSWORD_PREVIEW
-        - name: ccd-global-postgres-username-preview
-          alias: CCD_GLOBAL_POSTGRES_USERNAME_PREVIEW
-        - name: ccd-global-postgres-password-preview
-          alias: CCD_GLOBAL_POSTGRES_PASSWORD_PREVIEW
-        - name: ccd-data-store-db-username-preview
-          alias: CCD_DATA_STORE_DB_USERNAME_PREVIEW
-        - name: ccd-data-store-db-password-preview
-          alias: CCD_DATA_STORE_DB_PASSWORD_PREVIEW
-        - name: ccd-user-profile-db-username-preview
-          alias: CCD_USER_PROFILE_DB_USERNAME_PREVIEW
-        - name: ccd-user-profile-db-password-preview
-          alias: CCD_USER_PROFILE_DB_PASSWORD_PREVIEW
-        - name: em-spring-datasource-username-preview
-          alias: EM_SPRING_DATASOURCE_USERNAME_PREVIEW
-        - name: em-spring-datasource-password-preview
-          alias: EM_SPRING_DATASOURCE_PASSWORD_PREVIEW
 
 ccd:
   ccd:
