@@ -48,16 +48,7 @@ import static org.apache.commons.lang.StringUtils.isNotBlank;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.DSS_Draft;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.DSS_Submitted;
-import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.CITIZEN;
-import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.CREATOR;
-import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_CASEWORKER;
-import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_HEARING_CENTRE_ADMIN;
-import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_HEARING_CENTRE_TEAM_LEADER;
-import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_JUDGE;
-import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_CASEWORKER;
-import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_JUDGE;
-import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
-import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SYSTEM_UPDATE;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.*;
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE;
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE_DELETE;
 
@@ -99,9 +90,7 @@ public class CicSubmitCaseEvent implements CCDConfig<CaseData, State, UserRole> 
                 ST_CIC_HEARING_CENTRE_TEAM_LEADER,
                 ST_CIC_SENIOR_JUDGE,
                 SUPER_USER,
-                ST_CIC_JUDGE,
-                CITIZEN,
-                CREATOR)
+                ST_CIC_JUDGE)
             .aboutToSubmitCallback(this::aboutToSubmit)
             .submittedCallback(this::submitted);
     }
@@ -210,7 +199,7 @@ public class CicSubmitCaseEvent implements CCDConfig<CaseData, State, UserRole> 
         }
 
         List<CaseworkerCICDocument> docList = new ArrayList<>();
-        List<ListValue<DssMessage>> listValues = new ArrayList<>();
+        List<ListValue<DssMessage>> messagesList = new ArrayList<>();
 
         if (isNotEmpty(dssCaseData.getOtherInfoDocuments())) {
             for (ListValue<EdgeCaseDocument> documentListValue : dssCaseData.getOtherInfoDocuments()) {
@@ -226,26 +215,25 @@ public class CicSubmitCaseEvent implements CCDConfig<CaseData, State, UserRole> 
                 if (!docList.contains(caseworkerCICDocument)) {
                     docList.add(caseworkerCICDocument);
                 }
-
-                if (isNotBlank(dssCaseData.getAdditionalInformation())) {
-                    final User caseworkerUser = idamService.retrieveUser(request.getHeader(AUTHORIZATION));
-                    final DssMessage message = DssMessage.builder()
-                        .message(dssCaseData.getAdditionalInformation())
-                        .dateReceived(LocalDate.now())
-                        .receivedFrom(caseworkerUser.getUserDetails().getFullName())
-                        .build();
-
-                    final ListValue<DssMessage> listValue = ListValue
-                        .<DssMessage>builder()
-                        .id(UUID.randomUUID().toString())
-                        .value(message)
-                        .build();
-
-                    listValues.add(listValue);
-                }
             }
         }
-        caseData.setMessages(listValues);
+
+        if (isNotBlank(dssCaseData.getAdditionalInformation())) {
+            final User caseworkerUser = idamService.retrieveUser(request.getHeader(AUTHORIZATION));
+            final DssMessage message = DssMessage.builder()
+                .message(dssCaseData.getAdditionalInformation())
+                .dateReceived(LocalDate.now())
+                .receivedFrom(caseworkerUser.getUserDetails().getFullName())
+                .build();
+
+            final ListValue<DssMessage> listValue = ListValue
+                .<DssMessage>builder()
+                .id(UUID.randomUUID().toString())
+                .value(message)
+                .build();
+            messagesList.add(listValue);
+            caseData.setMessages(messagesList);
+        }
 
         if (isNotEmpty(dssCaseData.getSupportingDocuments())) {
             for (ListValue<EdgeCaseDocument> documentListValue : dssCaseData.getSupportingDocuments()) {
