@@ -59,7 +59,7 @@ class SystemTriggerStitchCollateHearingBundleTaskTest {
     private static final BoolQueryBuilder query = boolQuery()
         .must(matchQuery("state", "AwaitingHearing"))
         .mustNot(matchQuery("data.stitchHearingBundleTask", "Yes"))
-        .filter(rangeQuery("data.hearingList.value.date").lte(LocalDate.now().plusDays(14)));
+        .filter(rangeQuery("data.hearingList.value.date").to(LocalDate.now().plusDays(14)).from(LocalDate.now()));
 
 
     @BeforeEach
