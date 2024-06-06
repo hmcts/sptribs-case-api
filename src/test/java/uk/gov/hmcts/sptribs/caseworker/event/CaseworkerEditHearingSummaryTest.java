@@ -22,9 +22,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.RespondentCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.SubjectCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
-import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocumentUpload;
-import uk.gov.hmcts.sptribs.document.model.DocumentType;
 import uk.gov.hmcts.sptribs.judicialrefdata.JudicialService;
 
 import java.util.List;
@@ -35,7 +33,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigBuilder;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.getEventsFrom;
-import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getCaseworkerCICDocumentList;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getCaseworkerCICDocumentUploadList;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getRecordListing;
 import static uk.gov.hmcts.sptribs.testutil.TestEventConstants.CASEWORKER_EDIT_HEARING_SUMMARY;
@@ -67,31 +64,38 @@ class CaseworkerEditHearingSummaryTest {
     }
 
     @Test
-    void shouldRunAboutToStart() {
-        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
-        final CicCase cicCase = CicCase.builder().build();
+    void shouldRunAboutToStartCallbackWhenHearingSummaryExists() {
+        final Listing recordListing = getRecordListing();
         final CaseData caseData = CaseData.builder()
-            .cicCase(cicCase)
+            .cicCase(CicCase.builder().build())
+            .listing(recordListing)
             .build();
+        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
         updatedCaseDetails.setData(caseData);
-        Listing recordListing = getRecordListing();
-        caseData.setListing(recordListing);
-        List<ListValue<CaseworkerCICDocument>> documentList = getCaseworkerCICDocumentList("file.pdf");
-        HearingSummary hearingSummary = HearingSummary.builder().recFile(documentList).build();
-        recordListing.setSummary(hearingSummary);
 
         AboutToStartOrSubmitResponse<CaseData, State> response = caseWorkerEditHearingSummary.aboutToStart(updatedCaseDetails);
 
         assertThat(response).isNotNull();
         assertThat(response.getData().getCicCase().getHearingList()).isNull();
         assertThat(response.getData().getCurrentEvent()).isEqualTo(CASEWORKER_EDIT_HEARING_SUMMARY);
-        assertThat(response.getData().getListing().getSummary().getRecFileUpload()).hasSize(1);
-        assertThat(response.getData().getListing().getSummary().getRecFileUpload().get(0).getValue().getDocumentCategory())
-            .isEqualTo(DocumentType.LINKED_DOCS);
-        assertThat(response.getData().getListing().getSummary().getRecFileUpload().get(0).getValue().getDocumentEmailContent())
-            .isEqualTo("some email content");
-        assertThat(response.getData().getListing().getSummary().getRecFileUpload().get(0).getValue().getDocumentLink().getFilename())
-            .isEqualTo("file.pdf");
+        assertThat(response.getData().getListing().getHearingSummaryExists()).isEqualTo("YES");
+    }
+
+    @Test
+    void shouldRunAboutToStartCallbackWhenHearingSummaryDoesNotExist() {
+        final CaseData caseData = CaseData.builder()
+            .cicCase(CicCase.builder().build())
+            .listing(Listing.builder().build())
+            .build();
+        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
+        updatedCaseDetails.setData(caseData);
+
+        AboutToStartOrSubmitResponse<CaseData, State> response = caseWorkerEditHearingSummary.aboutToStart(updatedCaseDetails);
+
+        assertThat(response).isNotNull();
+        assertThat(response.getData().getCicCase().getHearingList()).isNull();
+        assertThat(response.getData().getCurrentEvent()).isEqualTo(CASEWORKER_EDIT_HEARING_SUMMARY);
+        assertThat(response.getData().getListing().getHearingSummaryExists()).isEqualTo("There are no Completed Hearings to edit");
     }
 
     @Test

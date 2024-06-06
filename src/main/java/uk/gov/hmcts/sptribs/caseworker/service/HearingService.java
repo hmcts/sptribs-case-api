@@ -121,9 +121,8 @@ public class HearingService {
 
     @SneakyThrows
     public void updateHearingList(CaseData caseData) {
+        String hearingName = caseData.getCicCase().getHearingList().getValue().getLabel();
         for (ListValue<Listing> listingListValue : caseData.getHearingList()) {
-            String hearingName = caseData.getCicCase().getHearingList().getValue().getLabel();
-            System.out.println("updateHearingList hearing name HERE: " + hearingName);
             if (isMatchingHearing(listingListValue, hearingName)) {
                 // deep copy of listing needed in order to clear rec file
                 Listing listingDeepCopy = objectMapper
@@ -136,9 +135,8 @@ public class HearingService {
 
     @SneakyThrows
     public void updateHearingSummaryList(CaseData caseData) {
+        String hearingName = caseData.getCicCase().getHearingSummaryList().getValue().getLabel();
         for (ListValue<Listing> listingListValue : caseData.getHearingList()) {
-            String hearingName = caseData.getCicCase().getHearingSummaryList().getValue().getLabel();
-            System.out.println("updateHearingSummaryList hearing name HERE: " + hearingName);
             if (isMatchingHearing(listingListValue, hearingName)) {
                 // deep copy of listing needed in order to clear rec file
                 Listing listingDeepCopy = objectMapper
@@ -149,10 +147,9 @@ public class HearingService {
         }
     }
 
-    private boolean isMatchingHearing(ListValue<Listing> listingListValue, String hearingName) {
+    public boolean isMatchingHearing(ListValue<Listing> listingListValue, String hearingName) {
         return hearingName.contains(listingListValue.getValue().getHearingTime())
             && hearingName.contains(listingListValue.getValue().getHearingType().getLabel())
             && hearingName.contains(listingListValue.getValue().getDate().format(dateFormatter));
     }
-
 }
