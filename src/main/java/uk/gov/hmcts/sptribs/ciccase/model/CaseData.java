@@ -35,6 +35,7 @@ import uk.gov.hmcts.sptribs.caseworker.model.ReferToJudge;
 import uk.gov.hmcts.sptribs.caseworker.model.ReferToLegalOfficer;
 import uk.gov.hmcts.sptribs.caseworker.model.RemoveCaseStay;
 import uk.gov.hmcts.sptribs.caseworker.model.SecurityClass;
+import uk.gov.hmcts.sptribs.caseworker.model.YesNo;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseFlagsAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseLinksDefaultAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerAccess;
@@ -451,6 +452,9 @@ public class CaseData {
 
     @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
     private String judicialId;
+
+    @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
+    private YesNo stitchHearingBundleTask;
 
     @CCD(access = {DefaultAccess.class})
     @JsonUnwrapped
