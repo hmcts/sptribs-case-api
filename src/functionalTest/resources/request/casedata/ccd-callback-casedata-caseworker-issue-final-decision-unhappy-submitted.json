@@ -1,0 +1,290 @@
+{
+  "date": "2025-01-01",
+  "roles": [
+    "appellant"
+  ],
+  "outcome": "Allowed",
+  "recFile": [],
+  "session": "morning",
+  "caseFlags": {
+    "details": []
+  },
+  "caseLinks": [],
+  "judicialId": "",
+  "memberList": [],
+  "regionList": {
+    "value": {
+      "code": "1f102fed-39ed-43fc-ad83-71d392c4da68",
+      "label": "1-London"
+    },
+    "valueCode": "1f102fed-39ed-43fc-ad83-71d392c4da68",
+    "list_items": [
+      {
+        "code": "1f102fed-39ed-43fc-ad83-71d392c4da68",
+        "label": "1-London"
+      },
+      {
+        "code": "636d9ce7-7bfa-47f4-bc94-77e20b0f8548",
+        "label": "10-Northern Ireland"
+      },
+      {
+        "code": "9e88dd37-dff2-4bbc-acb6-e332aa8b50a6",
+        "label": "11-Scotland"
+      },
+      {
+        "code": "523c6b65-92d8-4ca9-bceb-f6e7fa63cff6",
+        "label": "12-National"
+      },
+      {
+        "code": "0ccaf6ac-19b2-47df-9a57-618b4a816295",
+        "label": "2-Midlands"
+      },
+      {
+        "code": "213dd2a3-42c3-4e41-a28b-e08188e1ebd6",
+        "label": "3-North East"
+      },
+      {
+        "code": "93e57a36-5db7-452f-9c6c-28ebe9199b07",
+        "label": "4-North West"
+      },
+      {
+        "code": "7ec03e68-6edd-4e56-ba06-735b25282b2a",
+        "label": "5-South East"
+      },
+      {
+        "code": "0fc8c67b-122e-47c2-81f2-63711fba5c14",
+        "label": "6-South West"
+      },
+      {
+        "code": "fe75594e-40d9-443d-8a2f-fe21bb65fc40",
+        "label": "7-Wales"
+      }
+    ],
+    "valueLabel": "1-London"
+  },
+  "caseBundles": [],
+  "dataVersion": 0,
+  "hearingList": [
+    {
+      "id": "1",
+      "value": {
+        "date": "2025-01-01",
+        "roles": [
+          "appellant"
+        ],
+        "outcome": "Allowed",
+        "recFile": [],
+        "session": "morning",
+        "memberList": [],
+        "regionList": {
+          "value": {
+            "code": "1f102fed-39ed-43fc-ad83-71d392c4da68",
+            "label": "1-London"
+          },
+          "valueCode": "1f102fed-39ed-43fc-ad83-71d392c4da68",
+          "list_items": [
+            {
+              "code": "1f102fed-39ed-43fc-ad83-71d392c4da68",
+              "label": "1-London"
+            },
+            {
+              "code": "636d9ce7-7bfa-47f4-bc94-77e20b0f8548",
+              "label": "10-Northern Ireland"
+            },
+            {
+              "code": "9e88dd37-dff2-4bbc-acb6-e332aa8b50a6",
+              "label": "11-Scotland"
+            },
+            {
+              "code": "523c6b65-92d8-4ca9-bceb-f6e7fa63cff6",
+              "label": "12-National"
+            },
+            {
+              "code": "0ccaf6ac-19b2-47df-9a57-618b4a816295",
+              "label": "2-Midlands"
+            },
+            {
+              "code": "213dd2a3-42c3-4e41-a28b-e08188e1ebd6",
+              "label": "3-North East"
+            },
+            {
+              "code": "93e57a36-5db7-452f-9c6c-28ebe9199b07",
+              "label": "4-North West"
+            },
+            {
+              "code": "7ec03e68-6edd-4e56-ba06-735b25282b2a",
+              "label": "5-South East"
+            },
+            {
+              "code": "0fc8c67b-122e-47c2-81f2-63711fba5c14",
+              "label": "6-South West"
+            },
+            {
+              "code": "fe75594e-40d9-443d-8a2f-fe21bb65fc40",
+              "label": "7-Wales"
+            }
+          ],
+          "valueLabel": "1-London"
+        },
+        "hearingTime": "09:00",
+        "hearingType": "Final",
+        "isFullPanel": "No. It was a 'sit alone' hearing",
+        "subjectName": "Testing subject",
+        "numberOfDays": "No",
+        "hearingFormat": "Face to Face",
+        "hearingStatus": "Complete",
+        "hearingVenues": {
+          "value": {
+            "code": "3a22233e-8615-4535-aeeb-80e66461998a",
+            "label": "East London Tribunal Hearing Centre-2 Clove Crescent, East India Dock London"
+          },
+          "valueCode": "3a22233e-8615-4535-aeeb-80e66461998a",
+          "list_items": [
+            {
+              "code": "3a22233e-8615-4535-aeeb-80e66461998a",
+              "label": "East London Tribunal Hearing Centre-2 Clove Crescent, East India Dock London"
+            },
+            {
+              "code": "834c0451-18e4-49f1-a3da-0e44e15d27d2",
+              "label": "Fox Court - London (Central) SSCS Tribunal-4th Floor, Fox Court, 30 Brooke Street, London"
+            }
+          ],
+          "valueLabel": "East London Tribunal Hearing Centre-2 Clove Crescent, East India Dock London"
+        },
+        "recFileUpload": [],
+        "hearingCreatedDate": "2024-05-28",
+        "venueNotListedOption": [],
+        "readOnlyHearingVenueName": "East London Tribunal Hearing Centre",
+        "hearingVenueNameAndAddress": "East London Tribunal Hearing Centre"
+      }
+    }
+  ],
+  "hearingTime": "09:00",
+  "hearingType": "Final",
+  "isFullPanel": "No. It was a 'sit alone' hearing",
+  "subjectName": "Testing subject",
+  "cicCaseEmail": "subject@hmcts.net",
+  "currentEvent": "",
+  "numberOfDays": "No",
+  "subjectFlags": {
+    "details": [],
+    "partyName": "Testing subject",
+    "roleOnCase": "subject"
+  },
+  "hearingFormat": "Face to Face",
+  "hearingStatus": "Complete",
+  "hearingVenues": {
+    "value": {
+      "code": "3a22233e-8615-4535-aeeb-80e66461998a",
+      "label": "East London Tribunal Hearing Centre-2 Clove Crescent, East India Dock London"
+    },
+    "valueCode": "3a22233e-8615-4535-aeeb-80e66461998a",
+    "list_items": [
+      {
+        "code": "3a22233e-8615-4535-aeeb-80e66461998a",
+        "label": "East London Tribunal Hearing Centre-2 Clove Crescent, East India Dock London"
+      },
+      {
+        "code": "834c0451-18e4-49f1-a3da-0e44e15d27d2",
+        "label": "Fox Court - London (Central) SSCS Tribunal-4th Floor, Fox Court, 30 Brooke Street, London"
+      }
+    ],
+    "valueLabel": "East London Tribunal Hearing Centre-2 Clove Crescent, East India Dock London"
+  },
+  "recFileUpload": [],
+  "securityClass": "PUBLIC",
+  "cicCaseAddress": {
+    "County": "",
+    "Country": "United Kingdom",
+    "PostCode": "SW1A 1AA",
+    "PostTown": "London",
+    "AddressLine1": "Buckingham Palace",
+    "AddressLine2": "",
+    "AddressLine3": ""
+  },
+  "closedDayCount": "",
+  "contactParties": {},
+  "cicCaseFullName": "Testing subject",
+  "cicCaseRegionCIC": "London",
+  "cicCaseSchemeCic": "Year2012",
+  "firstHearingDate": "",
+  "stayIsCaseStayed": "No",
+  "cicCasePartiesCIC": [
+    "SubjectCIC"
+  ],
+  "cicCaseSubjectCIC": [
+    "SubjectCIC"
+  ],
+  "decisionSignature": "Lorem ipsum notice",
+  "hyphenatedCaseRef": "1716-9110-7606-6894",
+  "cicCaseDateOfBirth": "2000-01-01",
+  "cicCaseHearingList": {
+    "value": {
+      "code": "683c88ce-9d88-4424-bab0-ef92ff5f9da4",
+      "label": "1 - Final - 01 Jan 2025 09:00"
+    },
+    "valueCode": "683c88ce-9d88-4424-bab0-ef92ff5f9da4",
+    "list_items": [
+      {
+        "code": "683c88ce-9d88-4424-bab0-ef92ff5f9da4",
+        "label": "1 - Final - 01 Jan 2025 09:00"
+      }
+    ],
+    "valueLabel": "1 - Final - 01 Jan 2025 09:00"
+  },
+  "cicCasePhoneNumber": "",
+  "hearingCreatedDate": "2024-05-28",
+  "cicCaseCaseCategory": "Assessment",
+  "cicCaseFirstDueDate": "",
+  "decisionMainContent": "1.     The appeal against the CICA’s Review decision dated…..under paragraph….. is successful. Mr/Mrs …… is eligible for compensation. The CICA must now consider if any compensation should be awarded.\n2.     Mr/ Mrs …….application is now returned to the CICA for further decision making and action.\n3.     Summary of reasons for the decision",
+  "editCicaCaseDetails": {},
+  "venueNotListedOption": [],
+  "caseNameHmctsInternal": "Testing subject",
+  "cicCaseRespondentName": "Appeals team",
+  "cicCaseCaseSubcategory": "other",
+  "cicCaseRespondentEmail": "appeals.team@cica.gov.uk",
+  "cicCaseCaseReceivedDate": "2000-01-01",
+  "cicCaseClaimLinkedToCic": "No",
+  "allCaseworkerCICDocument": [],
+  "newCaseworkerCICDocument": [],
+  "readOnlyHearingVenueName": "East London Tribunal Hearing Centre",
+  "cicCaseFormReceivedInTime": "Yes",
+  "cicCaseNotifyPartySubject": [
+    "SubjectCIC"
+  ],
+  "cicCaseCaseDocumentsUpload": [],
+  "hearingVenueNameAndAddress": "East London Tribunal Hearing Centre",
+  "cicCaseContactPreferenceType": "Email",
+  "cicCaseNotifyPartyRespondent": [],
+  "cicCaseRespondentOrganisation": "CICA",
+  "allCaseworkerCICDocumentUpload": [],
+  "cicCaseIsRepresentativePresent": "No",
+  "newCaseworkerCICDocumentUpload": [],
+  "cicCaseCompensationClaimLinkCIC": "No",
+  "cicCaseApplicantDocumentsUploaded": [
+    {
+      "id": "ea4e59f0-5a60-473e-a44d-5d3eb5f8f817",
+      "value": {
+        "documentLink": {
+          "category_id": "A",
+          "document_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/5f9c2b1a-1762-420a-9474-ad044188ba73",
+          "document_filename": "pdf.pdf",
+          "document_binary_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/5f9c2b1a-1762-420a-9474-ad044188ba73/binary"
+        },
+        "documentCategory": "ApplicationForm",
+        "documentEmailContent": "Lorem ipsum PDF"
+      }
+    }
+  ],
+  "cicCaseHearingNotificationParties": [
+    "Subject"
+  ],
+  "caseIssueFinalDecisionDecisionTemplate": "CIC1 - Eligibility",
+  "caseIssueFinalDecisionFinalDecisionDraft": {
+    "category_id": "TD",
+    "document_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/31c74acb-4293-4147-a076-d2039c819f29",
+    "document_filename": "Final-decision-notice2024-05-28 16:46:46.pdf",
+    "document_binary_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/31c74acb-4293-4147-a076-d2039c819f29/binary"
+  },
+  "caseIssueFinalDecisionFinalDecisionNotice": "Create from a template"
+}

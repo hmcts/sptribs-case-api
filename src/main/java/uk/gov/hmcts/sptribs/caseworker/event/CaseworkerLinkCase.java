@@ -57,12 +57,7 @@ public class CaseworkerLinkCase implements CCDConfig<CaseData, State, UserRole> 
                 ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER, ST_CIC_HEARING_CENTRE_ADMIN,
                 ST_CIC_HEARING_CENTRE_TEAM_LEADER)
             .grantHistoryOnly(
-                ST_CIC_CASEWORKER,
-                ST_CIC_SENIOR_CASEWORKER,
-                ST_CIC_HEARING_CENTRE_ADMIN,
-                ST_CIC_HEARING_CENTRE_TEAM_LEADER,
                 ST_CIC_SENIOR_JUDGE,
-                SUPER_USER,
                 ST_CIC_JUDGE))
             .page("createCaseLink")
             .pageLabel("Case Link")
@@ -74,37 +69,29 @@ public class CaseworkerLinkCase implements CCDConfig<CaseData, State, UserRole> 
     public SubmittedCallbackResponse submitted(CaseDetails<CaseData, State> details,
                                                CaseDetails<CaseData, State> beforeDetails) {
         CaseData data = details.getData();
-
         try {
             linkedCaseNotification(data.getHyphenatedCaseRef(), data);
         } catch (Exception notificationException) {
             log.error("Case Link notification failed with exception : {}", notificationException.getMessage());
             return SubmittedCallbackResponse.builder()
-                .confirmationHeader(format("# Case Link created %n"))
+                .confirmationHeader(format("# Case Link notification failed %n## Please resend the notification"))
                 .build();
         }
-
         return SubmittedCallbackResponse.builder()
             .confirmationHeader(format("# Case Link created %n"))
             .build();
     }
 
-
     private void linkedCaseNotification(String caseNumber, CaseData data) {
         CicCase cicCase = data.getCicCase();
-
         if (cicCase.getSubjectCIC() != null && !cicCase.getSubjectCIC().isEmpty()) {
             caseLinkedNotification.sendToSubject(data, caseNumber);
         }
-
         if (cicCase.getApplicantCIC() != null && !cicCase.getApplicantCIC().isEmpty()) {
             caseLinkedNotification.sendToApplicant(data, caseNumber);
         }
-
         if (cicCase.getRepresentativeCIC() != null && !cicCase.getRepresentativeCIC().isEmpty()) {
             caseLinkedNotification.sendToRepresentative(data, caseNumber);
         }
     }
-
-
 }
