@@ -132,8 +132,6 @@ feature:
     enabled: ${ACCESS_PROFILES_ENABLED:true}
   update-case:
     enabled: ${DSS_UPDATE_CASE_ENABLED:true}
-  dtsstci-861:
-    enabled: ${DTSSTCI_861_ENABLED:true}
   wa:
     enabled: ${WA_FEATURE_ENABLED:false}
 

@@ -14,12 +14,15 @@ import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
+import uk.gov.hmcts.sptribs.common.service.CcdSupplementaryDataService;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
+import static uk.gov.hmcts.sptribs.ciccase.model.State.Submitted;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigBuilder;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.getEventsFrom;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID;
@@ -33,6 +36,9 @@ public class CreateTestCaseTest {
 
     @Mock
     private ObjectMapper mapper;
+
+    @Mock
+    private CcdSupplementaryDataService ccdSupplementaryDataService;
 
     @Test
     void shouldAddConfigurationToConfigBuilder() {
@@ -63,5 +69,19 @@ public class CreateTestCaseTest {
 
         assertThat(response.getState()).isEqualTo(CaseManagement);
         assertThat(response.getData().getHyphenatedCaseRef()).isEqualTo("1616-5914-0147-3378");
+    }
+
+    @Test
+    void shouldSubmitSupplementaryDataToCcdWhenSubmittedEventTriggered() {
+        final CaseData caseData = caseData();
+
+        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+        caseDetails.setData(caseData);
+        caseDetails.setState(Submitted);
+        caseDetails.setId(TEST_CASE_ID);
+
+        createTestCase.submitted(caseDetails, caseDetails);
+
+        verify(ccdSupplementaryDataService).submitSupplementaryDataToCcd(TEST_CASE_ID.toString());
     }
 }
