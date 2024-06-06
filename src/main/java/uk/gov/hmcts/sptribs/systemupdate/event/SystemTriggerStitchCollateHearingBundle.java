@@ -16,7 +16,7 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 
 @Component
 public class SystemTriggerStitchCollateHearingBundle implements CCDConfig<CaseData, State, UserRole> {
-    public static final String SYSTEM_TRIGGER_STITCH_COLLATE_HEARING_BUNDLE = "system-stitch-collate-hearing-bundle";
+    public static final String SYSTEM_TRIGGER_STITCH_COLLATE_HEARING_BUNDLE = "system-trigger-stitch-collate-hearing-bundle";
 
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
