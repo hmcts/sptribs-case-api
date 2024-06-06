@@ -28,8 +28,8 @@ import java.util.Map;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_CREATE_CASE;
 import static uk.gov.hmcts.sptribs.common.config.ControllerConstants.SERVICE_AUTHORIZATION;
-import static uk.gov.hmcts.sptribs.common.event.CreateCase.TEST_CREATE;
 
 @TestPropertySource("classpath:application.yaml")
 public abstract class FunctionalTestSuite {
@@ -66,7 +66,7 @@ public abstract class FunctionalTestSuite {
         CaseDataContent caseDataContent = CaseDataContent.builder()
             .eventToken(startEventResponse.getToken())
             .event(Event.builder()
-                .id(TEST_CREATE)
+                .id(CASEWORKER_CREATE_CASE)
                 .summary("Create draft case")
                 .description("Create draft case for functional tests")
                 .build())
@@ -77,11 +77,7 @@ public abstract class FunctionalTestSuite {
         return submitNewCase(caseDataContent, caseworkerToken, s2sTokenForCaseApi, caseworkerUserId);
     }
 
-    private StartEventResponse startEventForCreateCase(
-        String caseworkerToken,
-        String s2sToken,
-        String caseworkerUserId
-    ) {
+    private StartEventResponse startEventForCreateCase(String caseworkerToken, String s2sToken, String caseworkerUserId) {
         // not including in try catch to fail fast the method
         return coreCaseDataApi.startForCaseworker(
             caseworkerToken,
@@ -89,16 +85,11 @@ public abstract class FunctionalTestSuite {
             caseworkerUserId,
             CcdJurisdiction.CRIMINAL_INJURIES_COMPENSATION.getJurisdictionId(),
             CcdServiceCode.ST_CIC.getCaseType().getCaseTypeName(),
-            TEST_CREATE
+            CASEWORKER_CREATE_CASE
         );
     }
 
-    private CaseDetails submitNewCase(
-        CaseDataContent caseDataContent,
-        String solicitorToken,
-        String s2sToken,
-        String solicitorUserId
-    ) {
+    private CaseDetails submitNewCase(CaseDataContent caseDataContent, String solicitorToken, String s2sToken, String solicitorUserId) {
         // not including in try catch to fast fail the method
         return coreCaseDataApi.submitForCaseworker(
             solicitorToken,
