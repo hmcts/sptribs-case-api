@@ -10,10 +10,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.ccd.sdk.ConfigBuilderImpl;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.Event;
@@ -29,10 +29,12 @@ import uk.gov.hmcts.sptribs.ciccase.model.DssCaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.config.AppsConfig;
+import uk.gov.hmcts.sptribs.common.service.CcdSupplementaryDataService;
 import uk.gov.hmcts.sptribs.constants.CommonConstants;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
 import uk.gov.hmcts.sptribs.document.model.EdgeCaseDocument;
 import uk.gov.hmcts.sptribs.idam.IdamService;
+import uk.gov.hmcts.sptribs.notification.exception.NotificationException;
 import uk.gov.hmcts.sptribs.testutil.TestDataHelper;
 import uk.gov.hmcts.sptribs.util.AppsUtil;
 
@@ -41,9 +43,12 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
+import static uk.gov.hmcts.sptribs.ciccase.model.State.Submitted;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigBuilder;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.getEventsFrom;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.CASE_DATA_CIC_ID;
@@ -58,7 +63,7 @@ import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.LOCAL_DATE_TIME;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.caseData;
 import static uk.gov.hmcts.sptribs.testutil.TestFileUtil.loadJson;
 
-@ExtendWith(SpringExtension.class)
+@ExtendWith({MockitoExtension.class})
 @SpringBootTest
 @TestPropertySource("classpath:application.yaml")
 @ActiveProfiles("test")
@@ -82,6 +87,9 @@ class CicSubmitCaseEventTest {
 
     @Mock
     private IdamService idamService;
+
+    @Mock
+    private CcdSupplementaryDataService ccdSupplementaryDataService;
 
     private AutoCloseable autoCloseableMocks;
 
@@ -181,8 +189,6 @@ class CicSubmitCaseEventTest {
         caseDetails.getData().getDssCaseData().setRepresentativeFullName(TEST_FIRST_NAME);
         caseDetails.getData().getDssCaseData().setRepresentativeEmailAddress(TEST_UPDATE_CASE_EMAIL_ADDRESS);
 
-        when(request.getHeader(AUTHORIZATION)).thenReturn(TEST_AUTHORIZATION_TOKEN);
-        when(idamService.retrieveUser(TEST_AUTHORIZATION_TOKEN)).thenReturn(TestDataHelper.getUser());
         when(appsConfig.getApps()).thenReturn(List.of(cicAppDetail));
         cicSubmitCaseEvent.configure(configBuilder);
 
@@ -228,8 +234,6 @@ class CicSubmitCaseEventTest {
         caseDetails.getData().getDssCaseData().setSubjectFullName(TEST_FIRST_NAME);
         caseDetails.getData().getDssCaseData().setRepresentativeFullName(TEST_FIRST_NAME);
 
-        when(request.getHeader(AUTHORIZATION)).thenReturn(TEST_AUTHORIZATION_TOKEN);
-        when(idamService.retrieveUser(TEST_AUTHORIZATION_TOKEN)).thenReturn(TestDataHelper.getUser());
         when(appsConfig.getApps()).thenReturn(List.of(cicAppDetail));
         cicSubmitCaseEvent.configure(configBuilder);
 
@@ -249,6 +253,45 @@ class CicSubmitCaseEventTest {
 
         assertThat(submittedResponse.getConfirmationHeader())
             .isEqualTo("# Application Received %n##");
+    }
+
+    @Test
+    void shouldCatchErrorIfSendEmailNotificationFails() {
+        CaseData caseData = CaseData.builder().build();
+        DssCaseData dssCaseData = DssCaseData.builder().build();
+        dssCaseData.setSubjectEmailAddress(TEST_UPDATE_CASE_EMAIL_ADDRESS);
+        dssCaseData.setRepresentativeEmailAddress(TEST_UPDATE_CASE_EMAIL_ADDRESS);
+        caseData.setDssCaseData(dssCaseData);
+
+        final CaseDetails<CaseData, State> details = new CaseDetails<>();
+        details.setId(TEST_CASE_ID);
+        details.setData(caseData);
+
+        doThrow(NotificationException.class)
+            .when(dssApplicationReceivedNotification)
+            .sendToSubject(any(DssCaseData.class), anyString());
+        doThrow(NotificationException.class)
+            .when(dssApplicationReceivedNotification)
+            .sendToRepresentative(any(DssCaseData.class), anyString());
+
+        SubmittedCallbackResponse response = cicSubmitCaseEvent.submitted(details, details);
+
+        assertThat(response.getConfirmationHeader())
+            .contains("# Application Received notification failed %n## Please resend the notification");
+    }
+
+    @Test
+    void shouldSubmitSupplementaryDataToCcdWhenSubmittedEventTriggered() {
+        final CaseData caseData = caseData();
+
+        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+        caseDetails.setData(caseData);
+        caseDetails.setState(Submitted);
+        caseDetails.setId(TEST_CASE_ID);
+
+        cicSubmitCaseEvent.submitted(caseDetails, caseDetails);
+
+        verify(ccdSupplementaryDataService).submitSupplementaryDataRequestToCcd(TEST_CASE_ID.toString());
     }
 
 }
