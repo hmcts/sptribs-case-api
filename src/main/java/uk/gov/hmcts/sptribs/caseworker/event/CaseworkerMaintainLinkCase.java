@@ -3,7 +3,6 @@ package uk.gov.hmcts.sptribs.caseworker.event;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
@@ -38,11 +37,8 @@ public class CaseworkerMaintainLinkCase implements CCDConfig<CaseData, State, Us
 
     private static final String ALWAYS_HIDE = "LinkedCasesComponentLauncher = \"DONOTSHOW\"";
 
-    @Value("${feature.link-case.enabled}")
-    private boolean linkCaseEnabled;
-
     private final CaseUnlinkedNotification caseUnlinkedNotification;
-    
+
     @Autowired
     public CaseworkerMaintainLinkCase(CaseUnlinkedNotification caseUnlinkedNotification) {
         this.caseUnlinkedNotification = caseUnlinkedNotification;
@@ -50,30 +46,28 @@ public class CaseworkerMaintainLinkCase implements CCDConfig<CaseData, State, Us
 
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
-        if (linkCaseEnabled) {
-            new PageBuilder(configBuilder
-                .event(CASEWORKER_MAINTAIN_LINK_CASE)
-                .forStates(Submitted, CaseManagement, AwaitingHearing, AwaitingOutcome)
-                .name("Manage case links")
-                .submittedCallback(this::linkUpdated)
-                .description("To maintain linked cases")
-                .grant(CREATE_READ_UPDATE, SUPER_USER,
-                    ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER, ST_CIC_HEARING_CENTRE_ADMIN,
-                    ST_CIC_HEARING_CENTRE_TEAM_LEADER)
-                .grantHistoryOnly(
-                    ST_CIC_CASEWORKER,
-                    ST_CIC_SENIOR_CASEWORKER,
-                    ST_CIC_HEARING_CENTRE_ADMIN,
-                    ST_CIC_HEARING_CENTRE_TEAM_LEADER,
-                    ST_CIC_SENIOR_JUDGE,
-                    SUPER_USER,
-                    ST_CIC_JUDGE))
-                .page("maintainCaseLink")
-                .pageLabel("Maintain Case Link")
-                .optional(CaseData::getCaseLinks, ALWAYS_HIDE, null, true)
-                .optional(CaseData::getLinkedCasesComponentLauncher,
-                    null, null, null, null, "#ARGUMENT(UPDATE,LinkedCases)");
-        }
+        new PageBuilder(configBuilder
+            .event(CASEWORKER_MAINTAIN_LINK_CASE)
+            .forStates(Submitted, CaseManagement, AwaitingHearing, AwaitingOutcome)
+            .name("Manage case links")
+            .submittedCallback(this::linkUpdated)
+            .description("To maintain linked cases")
+            .grant(CREATE_READ_UPDATE, SUPER_USER,
+                ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER, ST_CIC_HEARING_CENTRE_ADMIN,
+                ST_CIC_HEARING_CENTRE_TEAM_LEADER)
+            .grantHistoryOnly(
+                ST_CIC_CASEWORKER,
+                ST_CIC_SENIOR_CASEWORKER,
+                ST_CIC_HEARING_CENTRE_ADMIN,
+                ST_CIC_HEARING_CENTRE_TEAM_LEADER,
+                ST_CIC_SENIOR_JUDGE,
+                SUPER_USER,
+                ST_CIC_JUDGE))
+            .page("maintainCaseLink")
+            .pageLabel("Maintain Case Link")
+            .optional(CaseData::getCaseLinks, ALWAYS_HIDE, null, true)
+            .optional(CaseData::getLinkedCasesComponentLauncher,
+                null, null, null, null, "#ARGUMENT(UPDATE,LinkedCases)");
     }
 
     public SubmittedCallbackResponse linkUpdated(CaseDetails<CaseData, State> details,

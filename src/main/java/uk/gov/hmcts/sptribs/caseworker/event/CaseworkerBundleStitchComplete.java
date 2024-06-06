@@ -3,7 +3,6 @@ package uk.gov.hmcts.sptribs.caseworker.event;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
@@ -37,17 +36,8 @@ public class CaseworkerBundleStitchComplete implements CCDConfig<CaseData, State
     @Autowired
     BundlingService bundlingService;
 
-    @Value("${feature.bundling-stitch.enabled}")
-    private boolean bundlingEnabled;
-
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
-        if (bundlingEnabled) {
-            doConfigure(configBuilder);
-        }
-    }
-
-    private void doConfigure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         new PageBuilder(configBuilder
             .event(ASYNC_STITCH_COMPLETE)
             .forStates(CaseManagement, AwaitingHearing)
