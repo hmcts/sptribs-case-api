@@ -1,4 +1,4 @@
-package uk.gov.hmcts.sptribs.caseworker.event;
+package uk.gov.hmcts.sptribs.systemupdate.event;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -11,24 +11,24 @@ import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static uk.gov.hmcts.sptribs.systemupdate.event.SystemTriggerCompleteHearingOutcome.SYSTEM_TRIGGER_COMPLETE_HEARING_OUTCOME;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigBuilder;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.getEventsFrom;
-import static uk.gov.hmcts.sptribs.testutil.TestEventConstants.CLONE_BUNDLE;
 
 @ExtendWith(MockitoExtension.class)
-class CaseworkerCloneBundleTest {
+class SystemTriggerCompleteHearingOutcomeTest {
 
     @InjectMocks
-    private CaseworkerCloneBundle caseworkerCloneBundle;
+    private SystemTriggerCompleteHearingOutcome systemTriggerCompleteHearingOutcome;
 
     @Test
-    void shouldAddConfigurationToConfigBuilder() throws Exception {
+    void shouldAddConfigurationToConfigBuilder() {
         final ConfigBuilderImpl<CaseData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
 
-        caseworkerCloneBundle.configure(configBuilder);
+        systemTriggerCompleteHearingOutcome.configure(configBuilder);
 
         assertThat(getEventsFrom(configBuilder).values())
             .extracting(Event::getId)
-            .contains(CLONE_BUNDLE);
+            .contains(SYSTEM_TRIGGER_COMPLETE_HEARING_OUTCOME);
     }
 }

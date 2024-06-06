@@ -1,7 +1,6 @@
 package uk.gov.hmcts.sptribs.ciccase.tab;
 
 import lombok.Setter;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
@@ -75,18 +74,6 @@ import static uk.gov.hmcts.sptribs.ciccase.search.CaseFieldsConstants.SUBJECT_PH
 @Setter
 public class CaseTypeTab implements CCDConfig<CaseData, State, UserRole> {
 
-    @Value("${feature.case-file-view.enabled}")
-    private boolean caseFileViewEnabled;
-
-    @Value("${feature.case-flags.enabled}")
-    private boolean caseFlagsEnabled;
-
-    @Value("${feature.link-case.enabled}")
-    private boolean caseLinkEnabled;
-
-    @Value("${feature.bundling-create.enabled}")
-    private boolean bundlingEnabled;
-
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         buildSummaryTab(configBuilder);
@@ -107,27 +94,6 @@ public class CaseTypeTab implements CCDConfig<CaseData, State, UserRole> {
     }
 
     private void buildCaseFlagTab(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
-        if (caseFlagsEnabled) {
-            doBuildCaseFlagTab(configBuilder);
-        }
-    }
-
-    private void buildCaseLinkTab(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
-        if (caseLinkEnabled) {
-            doBuildCaseLinkTab(configBuilder);
-        }
-    }
-
-    private void doBuildCaseLinkTab(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
-        configBuilder.tab("caseLinks", "Linked cases")
-            .forRoles(ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER, ST_CIC_HEARING_CENTRE_ADMIN,
-                ST_CIC_HEARING_CENTRE_TEAM_LEADER, ST_CIC_SENIOR_JUDGE, ST_CIC_JUDGE, ST_CIC_RESPONDENT, SUPER_USER)
-            .field(CaseData::getLinkedCasesComponentLauncher, null, "#ARGUMENT(LinkedCases)")
-            .field(CaseData::getCaseNameHmctsInternal, COND_ALWAYS_HIDE_STAY_REASON, null)
-            .field(CaseData::getCaseLinks, "LinkedCasesComponentLauncher!=\"\"", "#ARGUMENT(LinkedCases)");
-    }
-
-    private void doBuildCaseFlagTab(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         configBuilder.tab("caseFlags", "Case Flags")
             .forRoles(AC_CASE_FLAGS_VIEWER, SUPER_USER,
                     ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER, ST_CIC_HEARING_CENTRE_ADMIN,
@@ -139,13 +105,16 @@ public class CaseTypeTab implements CCDConfig<CaseData, State, UserRole> {
             .field(CaseData::getRepresentativeFlags, COND_ALWAYS_HIDE_STAY_REASON);
     }
 
-    private void buildCaseFileViewTab(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
-        if (caseFileViewEnabled) {
-            doBuildCaseFileViewTab(configBuilder);
-        }
+    private void buildCaseLinkTab(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
+        configBuilder.tab("caseLinks", "Linked cases")
+            .forRoles(ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER, ST_CIC_HEARING_CENTRE_ADMIN,
+                ST_CIC_HEARING_CENTRE_TEAM_LEADER, ST_CIC_SENIOR_JUDGE, ST_CIC_JUDGE, ST_CIC_RESPONDENT, SUPER_USER)
+            .field(CaseData::getLinkedCasesComponentLauncher, null, "#ARGUMENT(LinkedCases)")
+            .field(CaseData::getCaseNameHmctsInternal, COND_ALWAYS_HIDE_STAY_REASON, null)
+            .field(CaseData::getCaseLinks, "LinkedCasesComponentLauncher!=\"\"", "#ARGUMENT(LinkedCases)");
     }
 
-    private void doBuildCaseFileViewTab(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
+    private void buildCaseFileViewTab(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         configBuilder.tab("caseFileView", "Case file view")
             .forRoles(ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER, ST_CIC_HEARING_CENTRE_ADMIN,
                 ST_CIC_HEARING_CENTRE_TEAM_LEADER, ST_CIC_SENIOR_JUDGE, ST_CIC_JUDGE, ST_CIC_RESPONDENT, SUPER_USER)
@@ -197,12 +166,6 @@ public class CaseTypeTab implements CCDConfig<CaseData, State, UserRole> {
     }
 
     private void buildBundlesTab(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
-        if (bundlingEnabled) {
-            doBuildBundlesTab(configBuilder);
-        }
-    }
-
-    private void doBuildBundlesTab(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         configBuilder.tab("bundles", "Bundles")
             .forRoles(ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER, ST_CIC_HEARING_CENTRE_ADMIN,
                 ST_CIC_HEARING_CENTRE_TEAM_LEADER, ST_CIC_SENIOR_JUDGE, ST_CIC_JUDGE, ST_CIC_RESPONDENT, SUPER_USER)

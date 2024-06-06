@@ -34,24 +34,11 @@ class SystemMigrateCaseLinksTest {
     void shouldAddConfigurationToConfigBuilderWithToggleOn() {
         final ConfigBuilderImpl<CaseData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
 
-        systemMigrateCaseLinks.setCaseLinksMigrationEnabled(true);
         systemMigrateCaseLinks.configure(configBuilder);
 
         assertThat(getEventsFrom(configBuilder).values())
             .extracting(Event::getId)
             .contains(SYSTEM_MIGRATE_CASE_LINKS);
-    }
-
-    @Test
-    void shoulNotdAddConfigurationToConfigBuilderWithToggleOff() {
-        final ConfigBuilderImpl<CaseData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
-
-        systemMigrateCaseLinks.setCaseLinksMigrationEnabled(false);
-        systemMigrateCaseLinks.configure(configBuilder);
-
-        assertThat(getEventsFrom(configBuilder).values())
-            .extracting(Event::getId)
-            .doesNotContain(SYSTEM_MIGRATE_CASE_LINKS);
     }
 
     @Test

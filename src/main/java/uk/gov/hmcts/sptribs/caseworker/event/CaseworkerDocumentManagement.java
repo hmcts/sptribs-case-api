@@ -2,7 +2,6 @@ package uk.gov.hmcts.sptribs.caseworker.event;
 
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
@@ -48,18 +47,9 @@ import static uk.gov.hmcts.sptribs.document.DocumentUtil.uploadDocument;
 @Setter
 public class CaseworkerDocumentManagement implements CCDConfig<CaseData, State, UserRole> {
 
-    @Value("${feature.document-management.enabled}")
-    private boolean documentManagementEnabled;
-
     private final UploadCaseDocuments uploadCaseDocuments = new UploadCaseDocuments();
 
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
-        if (documentManagementEnabled) {
-            doConfigure(configBuilder);
-        }
-    }
-
-    private void doConfigure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         PageBuilder pageBuilder = new PageBuilder(configBuilder
             .event(CASEWORKER_DOCUMENT_MANAGEMENT)
             .forStates(Withdrawn,

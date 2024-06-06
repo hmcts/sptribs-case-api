@@ -102,36 +102,11 @@ court:
 
 SERVICE_AUTH_MICROSERVICE: sptribs_case_api
 
-toggle:
-  enable_entitlement_email: ${ENABLE_ENTITLEMENT_EMAIL:true}
-
 feature:
-  contact-parties:
-    enabled: ${CONTACT_PARTIES_FEATURE:true}
-  link-case:
-    enabled: ${LINK_CASE_FEATURE:true}
-  case-flags:
-    enabled: ${CASE_FLAGS_FEATURE:true}
-  migration:
-    enabled: ${MIGRATION_ENABLED:true}
-  case-file-view:
-    enabled: ${CASE_FILE_VIEW_FEATURE:true}
-  document-management:
-    enabled: ${DOCUMENT_MANAGEMENT_FEATURE:true}
-  bundling-create:
-    enabled: ${CREATE_BUNDLING_FEATURE:true}
-  bundling-edit:
-    enabled: ${EDIT_BUNDLING_FEATURE:true}
-  bundling-clone:
-    enabled: ${CLONE_BUNDLING_FEATURE:true}
-  bundling-stitch:
-    enabled: ${STITCH_BUNDLING_FEATURE:true}
   security-classification:
     enabled: ${SECURITY_CLASSIFICATION:false}
   access-profiles:
     enabled: ${ACCESS_PROFILES_ENABLED:true}
-  update-case:
-    enabled: ${DSS_UPDATE_CASE_ENABLED:true}
   wa:
     enabled: ${WA_FEATURE_ENABLED:false}
 
