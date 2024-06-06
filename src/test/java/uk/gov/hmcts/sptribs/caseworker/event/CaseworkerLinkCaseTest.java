@@ -44,7 +44,6 @@ class CaseworkerLinkCaseTest {
     @Test
     void shouldAddConfigurationToConfigBuilder() {
         //Given
-        caseWorkerLinkCase.setLinkCaseEnabled(true);
         final ConfigBuilderImpl<CaseData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
         //When
         caseWorkerLinkCase.configure(configBuilder);

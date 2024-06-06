@@ -3,7 +3,6 @@ package uk.gov.hmcts.sptribs.caseworker.event;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
@@ -39,9 +38,6 @@ public class CaseworkerLinkCase implements CCDConfig<CaseData, State, UserRole> 
 
     private static final String ALWAYS_HIDE = "LinkedCasesComponentLauncher = \"DONOTSHOW\"";
 
-    @Value("${feature.link-case.enabled}")
-    private boolean linkCaseEnabled;
-
     private final CaseLinkedNotification caseLinkedNotification;
 
     @Autowired
@@ -51,7 +47,6 @@ public class CaseworkerLinkCase implements CCDConfig<CaseData, State, UserRole> 
 
     @Override
     public void configure(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
-        if (linkCaseEnabled) {
             new PageBuilder(configBuilder
                 .event(CASEWORKER_LINK_CASE)
                 .forStates(Submitted, CaseManagement, AwaitingHearing, AwaitingOutcome, ReadyToList)
@@ -69,7 +64,6 @@ public class CaseworkerLinkCase implements CCDConfig<CaseData, State, UserRole> 
                 .optional(CaseData::getCaseLinks, ALWAYS_HIDE, null, true)
                 .optional(CaseData::getLinkedCasesComponentLauncher,
                     null, null, null, null, "#ARGUMENT(CREATE,LinkedCases)");
-        }
     }
 
     public SubmittedCallbackResponse submitted(CaseDetails<CaseData, State> details,

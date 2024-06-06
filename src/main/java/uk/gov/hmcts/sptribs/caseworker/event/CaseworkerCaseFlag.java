@@ -3,7 +3,6 @@ package uk.gov.hmcts.sptribs.caseworker.event;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
@@ -38,24 +37,13 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 @Setter
 public class CaseworkerCaseFlag implements CCDConfig<CaseData, State, UserRole> {
 
-
     private static final String ALWAYS_HIDE = "flagLauncher = \"ALWAYS_HIDE\"";
-
-    @Value("${feature.case-flags.enabled}")
-    private boolean caseFlagsEnabled;
 
     @Autowired
     private CcdSupplementaryDataService coreCaseApiService;
 
-
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
-        if (caseFlagsEnabled) {
-            doConfigure(configBuilder);
-        }
-    }
-
-    public void doConfigure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         new PageBuilder(configBuilder
             .event(CASEWORKER_CASE_FLAG)
             .forStates(Submitted, CaseManagement, AwaitingHearing, AwaitingOutcome, ReadyToList)
@@ -65,8 +53,8 @@ public class CaseworkerCaseFlag implements CCDConfig<CaseData, State, UserRole> 
             .aboutToSubmitCallback(this::aboutToSubmit)
             .submittedCallback(this::flagCreated)
             .grant(CREATE_READ_UPDATE, AC_CASE_FLAGS_ADMIN, SUPER_USER,
-                    ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER, ST_CIC_HEARING_CENTRE_ADMIN,
-                    ST_CIC_HEARING_CENTRE_TEAM_LEADER)
+                ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER, ST_CIC_HEARING_CENTRE_ADMIN,
+                ST_CIC_HEARING_CENTRE_TEAM_LEADER)
             .grantHistoryOnly(
                 ST_CIC_CASEWORKER,
                 ST_CIC_SENIOR_CASEWORKER,
@@ -84,7 +72,6 @@ public class CaseworkerCaseFlag implements CCDConfig<CaseData, State, UserRole> 
             .optional(CaseData::getFlagLauncher,
                 null, null, null, null, "#ARGUMENT(CREATE)");
     }
-
 
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(
         final CaseDetails<CaseData, State> details,

@@ -44,7 +44,6 @@ class CaseworkerMaintainLinkCaseTest {
     @Test
     void shouldAddConfigurationToConfigBuilder() {
         //Given
-        caseWorkerMaintainLinkCase.setLinkCaseEnabled(true);
         final ConfigBuilderImpl<CaseData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
         //When
         caseWorkerMaintainLinkCase.configure(configBuilder);
@@ -52,18 +51,6 @@ class CaseworkerMaintainLinkCaseTest {
         assertThat(getEventsFrom(configBuilder).values())
             .extracting(Event::getId)
             .contains(CASEWORKER_MAINTAIN_LINK_CASE);
-    }
-
-    @Test
-    void shouldNotConfigureMaintainLinkCaseIfFeatureFlagFalse() {
-        //Given
-        final ConfigBuilderImpl<CaseData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
-        //When
-        caseWorkerMaintainLinkCase.configure(configBuilder);
-        //Then
-        assertThat(getEventsFrom(configBuilder).values())
-            .extracting(Event::getId)
-            .doesNotContain(CASEWORKER_MAINTAIN_LINK_CASE);
     }
 
     @Test
