@@ -1,6 +1,9 @@
 package uk.gov.hmcts.sptribs.caseworker.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import uk.gov.hmcts.ccd.sdk.type.DynamicList;
@@ -24,8 +27,10 @@ import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.SPACE;
 @Slf4j
 public class HearingService {
 
-    final DateTimeFormatter dateFormatter = ofPattern("dd MMM yyyy", UK);
+    @Autowired
+    private ObjectMapper objectMapper;
 
+    final DateTimeFormatter dateFormatter = ofPattern("dd MMM yyyy", UK);
 
     public DynamicList getListedHearingDynamicList(final CaseData data) {
 
@@ -114,21 +119,31 @@ public class HearingService {
         }
     }
 
+    @SneakyThrows
     public void updateHearingList(CaseData caseData) {
         for (ListValue<Listing> listingListValue : caseData.getHearingList()) {
             String hearingName = caseData.getCicCase().getHearingList().getValue().getLabel();
+            System.out.println("updateHearingList hearing name HERE: " + hearingName);
             if (isMatchingHearing(listingListValue, hearingName)) {
-                listingListValue.setValue(caseData.getListing());
+                // deep copy of listing needed in order to clear rec file
+                Listing listingDeepCopy = objectMapper
+                    .readValue(objectMapper.writeValueAsString(caseData.getListing()), Listing.class);
+                listingListValue.setValue(listingDeepCopy);
                 break;
             }
         }
     }
 
+    @SneakyThrows
     public void updateHearingSummaryList(CaseData caseData) {
         for (ListValue<Listing> listingListValue : caseData.getHearingList()) {
             String hearingName = caseData.getCicCase().getHearingSummaryList().getValue().getLabel();
+            System.out.println("updateHearingSummaryList hearing name HERE: " + hearingName);
             if (isMatchingHearing(listingListValue, hearingName)) {
-                listingListValue.setValue(caseData.getListing());
+                // deep copy of listing needed in order to clear rec file
+                Listing listingDeepCopy = objectMapper
+                    .readValue(objectMapper.writeValueAsString(caseData.getListing()), Listing.class);
+                listingListValue.setValue(listingDeepCopy);
                 break;
             }
         }

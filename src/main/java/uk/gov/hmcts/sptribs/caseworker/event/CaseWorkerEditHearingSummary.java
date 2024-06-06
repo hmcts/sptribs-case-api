@@ -29,6 +29,7 @@ import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocumentUpload;
 import uk.gov.hmcts.sptribs.judicialrefdata.JudicialService;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_EDIT_HEARING_SUMMARY;
@@ -128,6 +129,7 @@ public class CaseWorkerEditHearingSummary implements CCDConfig<CaseData, State, 
 
         recordListHelper.saveSummary(details.getData());
         hearingService.updateHearingSummaryList(caseData);
+        caseData.getListing().getSummary().setRecFile(new ArrayList<>());
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
             .state(AwaitingOutcome)

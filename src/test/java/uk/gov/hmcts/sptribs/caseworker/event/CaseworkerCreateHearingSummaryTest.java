@@ -24,7 +24,6 @@ import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.SubjectCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocumentUpload;
-import uk.gov.hmcts.sptribs.document.model.DocumentType;
 import uk.gov.hmcts.sptribs.judicialrefdata.JudicialService;
 
 import java.util.List;
@@ -123,14 +122,7 @@ class CaseworkerCreateHearingSummaryTest {
         assertThat(response.getData().getListing().getSummary().getJudgeList())
             .isNull();
         assertThat(response.getData().getListing().getSummary().getRecFileUpload()).hasSize(0);
-        assertThat(response.getData().getListing().getSummary().getRecFile()).hasSize(1);
-        assertThat(response.getData().getListing().getSummary().getRecFile().get(0).getValue().getDocumentCategory())
-            .isEqualTo(DocumentType.LINKED_DOCS);
-        assertThat(response.getData().getListing().getSummary().getRecFile().get(0).getValue().getDocumentEmailContent())
-            .isEqualTo("some email content");
-        assertThat(response.getData().getListing().getSummary().getRecFile().get(0).getValue().getDocumentLink().getFilename())
-            .isEqualTo("file.pdf");
-        assertThat(response.getData().getListing().getSummary().getRecFile().get(0).getValue().getDate()).isNull();
+        assertThat(response.getData().getListing().getSummary().getRecFile()).hasSize(0);
     }
 
     @Test

@@ -26,6 +26,8 @@ import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.judicialrefdata.JudicialService;
 
+import java.util.ArrayList;
+
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_CREATE_HEARING_SUMMARY;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventUtil.getPanelMembers;
 import static uk.gov.hmcts.sptribs.ciccase.model.HearingState.Complete;
@@ -123,6 +125,7 @@ public class CaseWorkerCreateHearingSummary implements CCDConfig<CaseData, State
         uploadRecFile(caseData);
 
         hearingService.updateHearingList(caseData);
+        caseData.getListing().getSummary().setRecFile(new ArrayList<>());
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
             .state(AwaitingOutcome)

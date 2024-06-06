@@ -1,5 +1,7 @@
 package uk.gov.hmcts.sptribs.caseworker.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -23,6 +25,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getRecordListing;
 
@@ -40,6 +44,9 @@ class HearingServiceTest {
 
     @Mock
     private CaseData caseData;
+
+    @Mock
+    private ObjectMapper objectMapper;
 
     @InjectMocks
     private HearingService hearingService;
@@ -173,16 +180,16 @@ class HearingServiceTest {
     }
 
     @Test
-    void shouldUpdateHearingList() {
-        //Given
+    void shouldUpdateHearingList() throws JsonProcessingException {
         ListValue<Listing> listingListValue = new ListValue<>();
-        // A listed Listing
+
         listingListValue.setValue(getRecordListing());
         List<ListValue<Listing>> listValueList = new ArrayList<>();
         listValueList.add(listingListValue);
-        // A completed listing
+
         Listing completedListing = getRecordListing();
         completedListing.setHearingStatus(HearingState.Complete);
+        String completedListingString = "test string";
 
         when(cicCaseHearingLabel.getLabel()).thenReturn("1 - Final - 21 Apr 2023 10:00");
         when(cicCaseHearingList.getValue()).thenReturn(cicCaseHearingLabel);
@@ -191,13 +198,18 @@ class HearingServiceTest {
         when(caseData.getListing()).thenReturn(completedListing);
         when(caseData.getHearingList()).thenReturn(listValueList);
 
-        //When
+        doReturn(completedListingString)
+            .when(objectMapper)
+            .writeValueAsString(any(Listing.class));
+
+        doReturn(completedListing)
+            .when(objectMapper)
+            .readValue(completedListingString, Listing.class);
+
         hearingService.updateHearingList(caseData);
 
-        //Then
         // Have replaced listed Listing with completed Listing
         Assertions.assertEquals(listValueList.get(0).getValue(), completedListing);
-
     }
 
     @Test
@@ -228,7 +240,7 @@ class HearingServiceTest {
     }
 
     @Test
-    void shouldUpdateHearingSummaryList() {
+    void shouldUpdateHearingSummaryList() throws JsonProcessingException {
         //Given
         ListValue<Listing> listingListValue = new ListValue<>();
         // A listed Listing
@@ -238,6 +250,7 @@ class HearingServiceTest {
         // A completed listing
         Listing completedListing = getRecordListing();
         completedListing.setHearingStatus(HearingState.Complete);
+        String completedListingString = "test string";
 
         when(cicCaseHearingLabel.getLabel()).thenReturn("1 - Final - 21 Apr 2023 10:00");
         when(cicCaseHearingList.getValue()).thenReturn(cicCaseHearingLabel);
@@ -245,6 +258,14 @@ class HearingServiceTest {
         when(caseData.getCicCase()).thenReturn(cicCase);
         when(caseData.getListing()).thenReturn(completedListing);
         when(caseData.getHearingList()).thenReturn(listValueList);
+
+        doReturn(completedListingString)
+            .when(objectMapper)
+            .writeValueAsString(any(Listing.class));
+
+        doReturn(completedListing)
+            .when(objectMapper)
+            .readValue(completedListingString, Listing.class);
 
         //When
         hearingService.updateHearingSummaryList(caseData);
