@@ -2,7 +2,6 @@ package uk.gov.hmcts.sptribs.services.ccd;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.ccd.client.CoreCaseDataApi;
@@ -28,9 +27,6 @@ public class CaseApiService {
 
     @Autowired
     IdamService idamService;
-
-    @Value("${feature.dtsstci-861.enabled}")
-    private boolean dtsstci861Enabled;
 
     public CaseDetails createCase(String authorization, CaseData caseData,
                                   AppsConfig.AppsDetails appsDetails) {
@@ -115,13 +111,9 @@ public class CaseApiService {
     private CaseDataContent getCaseDataContent(String authorization, CaseData caseData, Event eventEnum,
                                                String userId, String caseId, AppsConfig.AppsDetails appsDetails) {
 
-        final CaseDataContent.CaseDataContentBuilder builder = CaseDataContent.builder();
-
-        if (dtsstci861Enabled) {
-            builder.data(convertDssCaseDataToRequest(caseData.getDssCaseData()));
-        } else {
-            builder.data(caseData);
-        }
+        final CaseDataContent.CaseDataContentBuilder builder =
+            CaseDataContent.builder()
+                .data(convertDssCaseDataToRequest(caseData.getDssCaseData()));
 
         if (eventEnum.getEventType().equalsIgnoreCase(Event.UPDATE.getEventType())) {
 

@@ -11,15 +11,18 @@ import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
+import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
+import uk.gov.hmcts.sptribs.common.service.CcdSupplementaryDataService;
 
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 
+import static java.lang.String.format;
 import static java.lang.System.getenv;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.Draft;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.CASEWORKER;
@@ -38,8 +41,14 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
     private static final String TEST_CREATE = "create-test-case";
     private static final String TEST_CASE_DATA_FILE = "classpath:data/st_cic_test_case.json";
 
-    @Autowired
     private ObjectMapper objectMapper;
+    private CcdSupplementaryDataService ccdSupplementaryDataService;
+
+    @Autowired
+    public CreateTestCase(ObjectMapper objectMapper, CcdSupplementaryDataService ccdSupplementaryDataService) {
+        this.objectMapper = objectMapper;
+        this.ccdSupplementaryDataService = ccdSupplementaryDataService;
+    }
 
     @Override
     public void configure(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
@@ -57,6 +66,7 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
             .initialState(Draft)
             .name("Create test case")
             .aboutToSubmitCallback(this::aboutToSubmit)
+            .submittedCallback(this::submitted)
             .grant(CREATE_READ_UPDATE, roles.toArray(UserRole[]::new))
             .grantHistoryOnly(SUPER_USER, CASEWORKER, SYSTEM_UPDATE, CITIZEN))
             .page("Create test case")
@@ -82,4 +92,18 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
             .state(details.getData().getCaseStatus())
             .build();
     }
+
+    public SubmittedCallbackResponse submitted(CaseDetails<CaseData, State> details,
+                                               CaseDetails<CaseData, State> beforeDetails) {
+
+        final CaseData caseData = details.getData();
+        final String caseReference = caseData.getHyphenatedCaseRef();
+
+        ccdSupplementaryDataService.submitSupplementaryDataToCcd(details.getId().toString());
+
+        return SubmittedCallbackResponse.builder()
+            .confirmationHeader(format("# Case Created %n## Case reference number: %n## %s", caseReference))
+            .build();
+    }
+
 }
