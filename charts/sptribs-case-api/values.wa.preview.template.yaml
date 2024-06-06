@@ -572,6 +572,11 @@ servicebus:
         requiresSession: true
 
 postgres:
+  enabled: true
+  flexibleserver: sptribs-preview
+#  setup:
+#    databases:
+
 
 wa:
   enabled: true
@@ -596,4 +601,4 @@ ccd-message-publisher:
       DATA_STORE_DB_USERNAME: hmcts
       DATA_STORE_DB_PASSWORD: ${POSTGRES_PASSWORD}
       DATA_STORE_DB_OPTIONS: "?stringtype=unspecified&reWriteBatchedInserts=true&sslmode=require"
-      CCD_CASE_EVENTS_DESTINATION: "${SERVICE_NAME}-servicebus-ccd-events"
+      CCD_CASE_EVENTS_DESTINATION: "${SERVICE_NAME}-servicebus-ccd-case-events"
