@@ -11,6 +11,7 @@ public final class EventConstants {
     public static final String SENT = "SENT";
     public static final String COURT_TYPE_ID = "14";
 
+    public static final String CASEWORKER_CREATE_CASE = "caseworker-create-case";
     public static final String CASEWORKER_CANCEL_HEARING = "caseworker-cancel-hearing";
     public static final String CASEWORKER_ADD_NOTE = "caseworker-add-note";
     public static final String CASEWORKER_CASE_BUILT = "caseworker-case-built";
