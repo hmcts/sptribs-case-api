@@ -6,7 +6,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.test.util.ReflectionTestUtils;
 import uk.gov.hmcts.ccd.sdk.ConfigBuilderImpl;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.Event;
@@ -59,8 +58,6 @@ class CicDssUpdateCaseEventTest {
 
     @Test
     void shouldAddConfigurationToConfigBuilder() {
-        ReflectionTestUtils.setField(cicDssUpdateCaseEvent, "dssUpdateCaseEnabled", true);
-
         final ConfigBuilderImpl<CaseData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
 
         cicDssUpdateCaseEvent.configure(configBuilder);
