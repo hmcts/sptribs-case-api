@@ -47,23 +47,23 @@ public class CaseworkerLinkCase implements CCDConfig<CaseData, State, UserRole> 
 
     @Override
     public void configure(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
-            new PageBuilder(configBuilder
-                .event(CASEWORKER_LINK_CASE)
-                .forStates(Submitted, CaseManagement, AwaitingHearing, AwaitingOutcome, ReadyToList)
-                .name("Link cases")
-                .description("To link related cases")
-                .submittedCallback(this::submitted)
-                .grant(CREATE_READ_UPDATE, SUPER_USER,
-                    ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER, ST_CIC_HEARING_CENTRE_ADMIN,
-                    ST_CIC_HEARING_CENTRE_TEAM_LEADER)
-                .grantHistoryOnly(
-                    ST_CIC_SENIOR_JUDGE,
-                    ST_CIC_JUDGE))
-                .page("createCaseLink")
-                .pageLabel("Case Link")
-                .optional(CaseData::getCaseLinks, ALWAYS_HIDE, null, true)
-                .optional(CaseData::getLinkedCasesComponentLauncher,
-                    null, null, null, null, "#ARGUMENT(CREATE,LinkedCases)");
+        new PageBuilder(configBuilder
+            .event(CASEWORKER_LINK_CASE)
+            .forStates(Submitted, CaseManagement, AwaitingHearing, AwaitingOutcome, ReadyToList)
+            .name("Link cases")
+            .description("To link related cases")
+            .submittedCallback(this::submitted)
+            .grant(CREATE_READ_UPDATE, SUPER_USER,
+                ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER, ST_CIC_HEARING_CENTRE_ADMIN,
+                ST_CIC_HEARING_CENTRE_TEAM_LEADER)
+            .grantHistoryOnly(
+                ST_CIC_SENIOR_JUDGE,
+                ST_CIC_JUDGE))
+            .page("createCaseLink")
+            .pageLabel("Case Link")
+            .optional(CaseData::getCaseLinks, ALWAYS_HIDE, null, true)
+            .optional(CaseData::getLinkedCasesComponentLauncher,
+                null, null, null, null, "#ARGUMENT(CREATE,LinkedCases)");
     }
 
     public SubmittedCallbackResponse submitted(CaseDetails<CaseData, State> details,

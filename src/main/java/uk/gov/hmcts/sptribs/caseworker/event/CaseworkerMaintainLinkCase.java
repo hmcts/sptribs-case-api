@@ -46,24 +46,24 @@ public class CaseworkerMaintainLinkCase implements CCDConfig<CaseData, State, Us
 
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
-            new PageBuilder(configBuilder
-                .event(CASEWORKER_MAINTAIN_LINK_CASE)
-                .forStates(Submitted, CaseManagement, AwaitingHearing, AwaitingOutcome)
-                .name("Manage case links")
-                .submittedCallback(this::submitted)
-                .description("To maintain linked cases")
-                .grant(CREATE_READ_UPDATE, SUPER_USER,
-                    ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER, ST_CIC_HEARING_CENTRE_ADMIN,
-                    ST_CIC_HEARING_CENTRE_TEAM_LEADER)
-                .grantHistoryOnly(
-                    ST_CIC_SENIOR_JUDGE,
-                    SUPER_USER,
-                    ST_CIC_JUDGE))
-                .page("maintainCaseLink")
-                .pageLabel("Maintain Case Link")
-                .optional(CaseData::getCaseLinks, ALWAYS_HIDE, null, true)
-                .optional(CaseData::getLinkedCasesComponentLauncher,
-                    null, null, null, null, "#ARGUMENT(UPDATE,LinkedCases)");
+        new PageBuilder(configBuilder
+            .event(CASEWORKER_MAINTAIN_LINK_CASE)
+            .forStates(Submitted, CaseManagement, AwaitingHearing, AwaitingOutcome)
+            .name("Manage case links")
+            .submittedCallback(this::submitted)
+            .description("To maintain linked cases")
+            .grant(CREATE_READ_UPDATE, SUPER_USER,
+                ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER, ST_CIC_HEARING_CENTRE_ADMIN,
+                ST_CIC_HEARING_CENTRE_TEAM_LEADER)
+            .grantHistoryOnly(
+                ST_CIC_SENIOR_JUDGE,
+                SUPER_USER,
+                ST_CIC_JUDGE))
+            .page("maintainCaseLink")
+            .pageLabel("Maintain Case Link")
+            .optional(CaseData::getCaseLinks, ALWAYS_HIDE, null, true)
+            .optional(CaseData::getLinkedCasesComponentLauncher,
+                null, null, null, null, "#ARGUMENT(UPDATE,LinkedCases)");
     }
 
     public SubmittedCallbackResponse submitted(CaseDetails<CaseData, State> details,
