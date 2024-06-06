@@ -11,15 +11,7 @@
         },
         {
           "code": "${json-unit.any-string}",
-          "label": "10-Northern Ireland"
-        },
-        {
-          "code": "${json-unit.any-string}",
           "label": "11-Scotland"
-        },
-        {
-          "code": "${json-unit.any-string}",
-          "label": "12-National"
         },
         {
           "code": "${json-unit.any-string}",
