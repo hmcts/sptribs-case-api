@@ -36,6 +36,9 @@ public class LocationService {
     @Autowired
     private LocationClient locationClient;
 
+    private static final String NORTHERN_IRELAND = "Northern Ireland";
+    private static final String NATIONAL = "National";
+
     public DynamicList getHearingVenuesByRegion(String regionId) {
         final HearingVenue[] hearingVenues = getCourtVenues(regionId);
         HearingVenue[] filteredHearingVenues = Arrays.stream(hearingVenues)
@@ -95,15 +98,14 @@ public class LocationService {
     }
 
     private DynamicList populateRegionDynamicList(Region... regions) {
-        List<String> regionList = Objects.nonNull(regions)
-            ? Arrays.stream(regions).map(v -> v.getRegionId() + HYPHEN + v.getDescription()).toList()
+        List<DynamicListElement> regionDynamicList = Objects.nonNull(regions)
+            ? Arrays.stream(regions)
+                .filter(region -> !NORTHERN_IRELAND.equals(region.getDescription()) && !NATIONAL.equals(region.getDescription()))
+                .map(region -> region.getRegionId() + HYPHEN + region.getDescription())
+                .sorted()
+                .map(region -> DynamicListElement.builder().label(region).code(UUID.randomUUID()).build())
+                .toList()
             : new ArrayList<>();
-
-        List<DynamicListElement> regionDynamicList = regionList
-            .stream()
-            .sorted()
-            .map(region -> DynamicListElement.builder().label(region).code(UUID.randomUUID()).build())
-            .toList();
 
         return DynamicList
             .builder()
