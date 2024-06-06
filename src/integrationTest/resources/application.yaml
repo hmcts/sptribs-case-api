@@ -105,8 +105,10 @@ SERVICE_AUTH_MICROSERVICE: sptribs_case_api
 feature:
   security-classification:
     enabled: ${SECURITY_CLASSIFICATION:false}
-  dtsstci-861:
-    enabled: ${DTSSTCI_861_ENABLED:true}
+  access-profiles:
+    enabled: ${ACCESS_PROFILES_ENABLED:true}
+  update-case:
+    enabled: ${DSS_UPDATE_CASE_ENABLED:true}
 
 caseinfo:
   apps:

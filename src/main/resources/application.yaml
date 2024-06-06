@@ -199,8 +199,6 @@ feature:
     enabled: ${SECURITY_CLASSIFICATION:true}
   update-case:
     enabled: ${DSS_UPDATE_CASE_ENABLED:true}
-  dtsstci-861:
-    enabled: ${DTSSTCI_861_ENABLED:true}
 
 caseinfo:
   apps:

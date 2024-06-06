@@ -39,6 +39,7 @@ import java.util.List;
 
 import static java.lang.String.format;
 import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
+import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_CREATE_CASE;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.Draft;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_CASEWORKER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_HEARING_CENTRE_ADMIN;
@@ -51,9 +52,6 @@ import static uk.gov.hmcts.sptribs.document.DocumentUtil.updateUploadedDocumentC
 @Slf4j
 @Component
 public class CreateCase implements CCDConfig<CaseData, State, UserRole> {
-
-    private static final String ENVIRONMENT_PROD = "prod";
-    public static final String TEST_CREATE = "caseworker-create-case";
 
     private static final CcdPageConfiguration categorisationDetails = new CaseCategorisationDetails();
     private static final CcdPageConfiguration dateOfReceipt = new DateOfReceipt();
@@ -77,7 +75,7 @@ public class CreateCase implements CCDConfig<CaseData, State, UserRole> {
     @Override
     public void configure(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         PageBuilder pageBuilder = new PageBuilder(configBuilder
-            .event(TEST_CREATE)
+            .event(CASEWORKER_CREATE_CASE)
             .initialState(Draft)
             .name("Create Case")
             .showSummary()
