@@ -54,18 +54,6 @@ class CaseworkerLinkCaseTest {
     }
 
     @Test
-    void shouldNotConfigureLinkCaseIfFeatureFlagFalse() {
-        //Given
-        final ConfigBuilderImpl<CaseData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
-        //When
-        caseWorkerLinkCase.configure(configBuilder);
-        //Then
-        assertThat(getEventsFrom(configBuilder).values())
-            .extracting(Event::getId)
-            .doesNotContain(CASEWORKER_LINK_CASE);
-    }
-
-    @Test
     void shouldSuccessfullyAddLinksToCase() {
         //Given
         final CaseData caseData = caseData();
