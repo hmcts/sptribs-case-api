@@ -2,7 +2,6 @@ package uk.gov.hmcts.sptribs.systemupdate.event;
 
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
@@ -22,20 +21,15 @@ public class SystemMigrateCaseLinks implements CCDConfig<CaseData, State, UserRo
 
     public static final String SYSTEM_MIGRATE_CASE_LINKS = "system-migrate-case-links";
 
-    @Value("${feature.migration.enabled}")
-    private boolean caseLinksMigrationEnabled;
-
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
-        if (caseLinksMigrationEnabled) {
-            configBuilder
-                .event(SYSTEM_MIGRATE_CASE_LINKS)
-                .forAllStates()
-                .aboutToSubmitCallback(this::aboutToSubmit)
-                .name("Migrate case links")
-                .description("Migrate case links for old cases")
-                .grant(CREATE_READ_UPDATE_DELETE, SYSTEM_UPDATE);
-        }
+        configBuilder
+            .event(SYSTEM_MIGRATE_CASE_LINKS)
+            .forAllStates()
+            .aboutToSubmitCallback(this::aboutToSubmit)
+            .name("Migrate case links")
+            .description("Migrate case links for old cases")
+            .grant(CREATE_READ_UPDATE_DELETE, SYSTEM_UPDATE);
     }
 
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(final CaseDetails<CaseData, State> details,

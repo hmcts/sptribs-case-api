@@ -53,9 +53,6 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 @Setter
 public class CaseWorkerContactParties implements CCDConfig<CaseData, State, UserRole> {
 
-    @Value("${feature.contact-parties.enabled}")
-    private boolean contactPartiesEnabled;
-
     @Value("${case-api.url}")
     private String baseUrl;
 
@@ -67,12 +64,6 @@ public class CaseWorkerContactParties implements CCDConfig<CaseData, State, User
 
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
-        if (contactPartiesEnabled) {
-            doConfigure(configBuilder);
-        }
-    }
-
-    private void doConfigure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         PageBuilder pageBuilder = new PageBuilder(
             configBuilder
                 .event(CASEWORKER_CONTACT_PARTIES)
