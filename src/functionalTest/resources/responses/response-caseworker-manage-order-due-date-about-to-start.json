@@ -1,0 +1,12 @@
+{
+  "data": {
+    "cicCaseOrderDynamicList": {
+      "list_items": [
+        {
+          "code": "${json-unit.any-string}",
+          "label": "1-CIC3_RULE_27"
+        }
+      ]
+    }
+  }
+}

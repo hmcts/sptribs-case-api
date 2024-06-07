@@ -47,6 +47,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.sptribs.caseworker.model.YesNo.NO;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigBuilder;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.getEventsFrom;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID;
@@ -129,6 +130,7 @@ class CaseworkerRecordListingTest {
         assertThat(responseListing.getRecordListingChangeReason()).isNull();
         assertThat(responseListing.getHearingCancellationReason()).isNull();
         assertThat(responseListing.getCancelHearingAdditionalDetail()).isNull();
+        assertThat(response.getData().getStitchHearingBundleTask()).isEqualTo(NO);
 
         HearingSummary summary = responseListing.getSummary();
         assertThat(summary.getJudge()).isNull();

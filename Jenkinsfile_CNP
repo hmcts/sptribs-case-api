@@ -212,7 +212,6 @@ withPipeline(type, product, component) {
       env.SERVICE_AUTH_PROVIDER_URL = "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
       env.TEST_E2E_URL = "https://xui-sptribs-case-api-pr-${CHANGE_ID}.preview.platform.hmcts.net"
       setCommonEnvVariables()
-      setFeatureFlags(env.ENVIRONMENT)
 
       enablePactAs([AppPipelineDsl.PactRoles.CONSUMER])
     }
@@ -226,7 +225,6 @@ withPipeline(type, product, component) {
       env.SERVICE_AUTH_MICROSERVICE = "sptribs_case_api"
       env.SERVICE_AUTH_PROVIDER_URL = "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
       setCommonEnvVariables()
-      setFeatureFlags(env.ENVIRONMENT)
 
       enablePactAs([AppPipelineDsl.PactRoles.CONSUMER])
     }
@@ -244,7 +242,6 @@ withPipeline(type, product, component) {
         env.IDAM_API_URL_BASE = "https://idam-api.platform.hmcts.net"
         env.S2S_URL_BASE = "http://rpe-service-auth-provider-prod.service.core-compute-prod.internal"
         env.BEFTA_S2S_CLIENT_ID = "ccd_data"
-        setFeatureFlags(env.ENVIRONMENT)
 
         builder.gradle('generateCCDConfig --rerun-tasks')
 
@@ -277,7 +274,6 @@ withPipeline(type, product, component) {
       env.CCD_DEF_NAME = "demo"
       env.IDAM_API_URL_BASE = "https://idam-api.demo.platform.hmcts.net"
       env.S2S_URL_BASE = "http://rpe-service-auth-provider-demo.service.core-compute-demo.internal"
-      setFeatureFlags(env.ENVIRONMENT)
     }
 
     onPerftest {
@@ -287,7 +283,6 @@ withPipeline(type, product, component) {
       env.IDAM_API_URL_BASE = "https://idam-api.perftest.platform.hmcts.net"
       env.S2S_URL_BASE = "http://rpe-service-auth-provider-perftest.service.core-compute-perftest.internal"
       env.FEE_API_URL = "http://fees-register-api-demo.service.core-compute-demo.internal"
-      setFeatureFlags(env.ENVIRONMENT)
     }
 
   onIthc {
@@ -297,7 +292,6 @@ withPipeline(type, product, component) {
     env.IDAM_API_URL_BASE = "https://idam-api.ithc.platform.hmcts.net"
     env.S2S_URL_BASE = "http://rpe-service-auth-provider-ithc.service.core-compute-ithc.internal"
     env.FEE_API_URL = "http://fees-register-api-demo.service.core-compute-ithc.internal"
-    setFeatureFlags(env.ENVIRONMENT)
   }
 
     before('functionalTest:preview') {
@@ -329,51 +323,5 @@ def generateDefinitions() {
   }
   dir("${WORKSPACE}") {
     steps.archiveArtifacts artifacts: "build/ccd-config/*.xlsx"
-  }
-}
-
-def setFeatureFlags(environment) {
-  if (environment =~ /preview|demo|perftest/) {
-    env.CONTACT_PARTIES_FEATURE = true
-    env.LINK_CASE_FEATURE = true
-    env.CASE_FLAGS_FEATURE = true
-    env.CASE_FILE_VIEW = true
-    env.DOCUMENT_MANAGEMENT_FEATURE = true
-    env.CREATE_BUNDLING_FEATURE = true
-    env.EDIT_BUNDLING_FEATURE = true
-    env.CLONE_BUNDLING_FEATURE = true
-    env.STITCH_BUNDLING_FEATURE = true
-    env.SECURITY_CLASSIFICATION = true
-    env.MIGRATION_ENABLED = true
-    env.ACCESS_PROFILES_ENABLED = true
-    env.DSS_UPDATE_CASE_ENABLED = true
-  } else if (environment =~ /aat/) {
-    env.CONTACT_PARTIES_FEATURE = true
-    env.LINK_CASE_FEATURE = true
-    env.CASE_FLAGS_FEATURE = true
-    env.CASE_FILE_VIEW = true
-    env.DOCUMENT_MANAGEMENT_FEATURE = true
-    env.CREATE_BUNDLING_FEATURE = true
-    env.EDIT_BUNDLING_FEATURE = true
-    env.CLONE_BUNDLING_FEATURE = true
-    env.STITCH_BUNDLING_FEATURE = true
-    env.SECURITY_CLASSIFICATION = true
-    env.MIGRATION_ENABLED = true
-    env.ACCESS_PROFILES_ENABLED = true
-    env.DSS_UPDATE_CASE_ENABLED = true
-  } else if (environment =~ /prod/) {
-    env.CONTACT_PARTIES_FEATURE = true
-    env.CASE_FILE_VIEW = false
-    env.DOCUMENT_MANAGEMENT_FEATURE = true
-    env.LINK_CASE_FEATURE = true
-    env.CASE_FLAGS_FEATURE = true
-    env.CREATE_BUNDLING_FEATURE = true
-    env.EDIT_BUNDLING_FEATURE = true
-    env.CLONE_BUNDLING_FEATURE = true
-    env.STITCH_BUNDLING_FEATURE = true
-    env.SECURITY_CLASSIFICATION = false
-    env.MIGRATION_ENABLED = true
-    env.ACCESS_PROFILES_ENABLED = true
-    env.DSS_UPDATE_CASE_ENABLED = true
   }
 }
