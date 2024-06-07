@@ -574,24 +574,28 @@ servicebus:
 postgres:
   enabled: true
   flexibleserver: sptribs-preview
-#  setup:
-#    databases:
-#      - name: "pr-${CHANGE_ID}-sptribs-case-api"
-#      - name: "pr-${CHANGE_ID}-data-store"
-#      - name: "pr-${CHANGE_ID}-definition-store"
-#      - name: "pr-${CHANGE_ID}-role-assignment"
-#      - name: "pr-${CHANGE_ID}-user-profile"
-#      - name: "pr-${CHANGE_ID}-emstitch"
-#
-#      #these for wa?
-#      - name: "pr-${CHANGE_ID}-camunda"
+  setup:
+    databases:
+      - name: "pr-${CHANGE_ID}-sptribs-case-api"
+      - name: "pr-${CHANGE_ID}-data-store"
+      - name: "pr-${CHANGE_ID}-definition-store"
+      - name: "pr-${CHANGE_ID}-role-assignment"
+      - name: "pr-${CHANGE_ID}-user-profile"
+      - name: "pr-${CHANGE_ID}-emstitch"
+
+      - name: "pr-${CHANGE_ID}-camunda"
+      - name: "pr-${CHANGE_ID}-cft_task_db"
 #      - name: "pr-${CHANGE_ID}-wa-task-management-api"
 #      - name: "pr-${CHANGE_ID}-wa-case-event-handler"
 #      - name: "pr-${CHANGE_ID}-wa_workflow_api"
-#      - name: "pr-${CHANGE_ID}-cft_task_db"
 
 wa:
   enabled: true
+  global:
+    postgresUsername: hmcts
+    postgresSecret: postgres
+    postgresHost: sptribs-preview.postgres.database.azure.com
+    databaseNamePrefix: "pr-${CHANGE_ID}-"
   wa-case-event-handler:
     java:
       secrets:
