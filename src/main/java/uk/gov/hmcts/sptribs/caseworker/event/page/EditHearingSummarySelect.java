@@ -1,13 +1,11 @@
 package uk.gov.hmcts.sptribs.caseworker.event.page;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.sptribs.caseworker.model.Listing;
-import uk.gov.hmcts.sptribs.caseworker.service.HearingService;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
@@ -18,14 +16,12 @@ import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocumentUpload;
 
 import java.util.List;
 
+import static uk.gov.hmcts.sptribs.caseworker.service.HearingService.isMatchingHearing;
 import static uk.gov.hmcts.sptribs.document.DocumentUtil.convertToCaseworkerCICDocument;
 
 @Slf4j
 @Component
 public class EditHearingSummarySelect implements CcdPageConfiguration {
-
-    @Autowired
-    private HearingService hearingService;
 
     @Override
     public void addTo(PageBuilder pageBuilder) {
@@ -44,7 +40,7 @@ public class EditHearingSummarySelect implements CcdPageConfiguration {
         String hearingName = caseData.getCicCase().getHearingSummaryList().getValue().getLabel();
 
         for (ListValue<Listing> listingListValue : caseData.getHearingList()) {
-            if (hearingService.isMatchingHearing(listingListValue, hearingName)) {
+            if (isMatchingHearing(listingListValue, hearingName)) {
                 List<ListValue<CaseworkerCICDocument>> documents = listingListValue.getValue().getSummary().getRecFile();
                 List<ListValue<CaseworkerCICDocumentUpload>> uploadedDocuments = convertToCaseworkerCICDocument(documents);
                 caseData.getListing().getSummary().setRecFileUpload(uploadedDocuments);

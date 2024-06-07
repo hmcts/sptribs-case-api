@@ -3,7 +3,6 @@ package uk.gov.hmcts.sptribs.caseworker.event.page;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
@@ -12,7 +11,6 @@ import uk.gov.hmcts.ccd.sdk.type.DynamicListElement;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.sptribs.caseworker.model.HearingSummary;
 import uk.gov.hmcts.sptribs.caseworker.model.Listing;
-import uk.gov.hmcts.sptribs.caseworker.service.HearingService;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
@@ -22,16 +20,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getCaseworkerCICDocumentList;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getRecordListing;
 
 @ExtendWith(MockitoExtension.class)
 public class EditHearingSummarySelectTest {
-
-    @Mock
-    private HearingService hearingService;
 
     @InjectMocks
     private EditHearingSummarySelect editHearingSummarySelect;
@@ -50,7 +43,7 @@ public class EditHearingSummarySelectTest {
                 DynamicList.builder()
                     .value(
                         DynamicListElement.builder()
-                            .label("1 - Final - 21 Apr 2021 10:00")
+                            .label("1 - Final - 21 Apr 2023 10:00")
                             .build()
                     ).build()
             ).build();
@@ -62,9 +55,6 @@ public class EditHearingSummarySelectTest {
 
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
         updatedCaseDetails.setData(caseData);
-
-        when(hearingService.isMatchingHearing(eq(listingListValue), eq("1 - Final - 21 Apr 2021 10:00")))
-            .thenReturn(true);
 
         final AboutToStartOrSubmitResponse<CaseData, State> response =
             editHearingSummarySelect.midEvent(updatedCaseDetails, updatedCaseDetails);
@@ -105,8 +95,31 @@ public class EditHearingSummarySelectTest {
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
         updatedCaseDetails.setData(caseData);
 
-        when(hearingService.isMatchingHearing(eq(listingListValue), eq("1 - Final - 21 Apr 2021 10:10")))
-            .thenReturn(false);
+        final AboutToStartOrSubmitResponse<CaseData, State> response =
+            editHearingSummarySelect.midEvent(updatedCaseDetails, updatedCaseDetails);
+
+        assertThat(response.getData().getListing().getSummary().getRecFileUpload()).isNull();
+    }
+
+    @Test
+    void midEventShouldNotPopulateRecFileUploadAfterHearingChosenIfHearingListEmpty() {
+        final CicCase cicCase = CicCase.builder()
+            .hearingSummaryList(
+                DynamicList.builder()
+                    .value(
+                        DynamicListElement.builder()
+                            .label("1 - Final - 21 Apr 2021 10:10")
+                            .build()
+                    ).build()
+            ).build();
+
+        final CaseData caseData = CaseData.builder()
+            .hearingList(new ArrayList<>())
+            .cicCase(cicCase)
+            .build();
+
+        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
+        updatedCaseDetails.setData(caseData);
 
         final AboutToStartOrSubmitResponse<CaseData, State> response =
             editHearingSummarySelect.midEvent(updatedCaseDetails, updatedCaseDetails);

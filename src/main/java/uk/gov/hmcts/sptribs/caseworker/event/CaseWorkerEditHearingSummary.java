@@ -51,7 +51,7 @@ public class CaseWorkerEditHearingSummary implements CCDConfig<CaseData, State, 
     private static final CcdPageConfiguration HearingOutcome = new HearingOutcomePage();
     private static final CcdPageConfiguration editHearingLoadingPage = new EditHearingLoadingPage();
     private static final CcdPageConfiguration hearingRecordingUploadPage = new HearingRecordingUploadPage();
-    private static final EditHearingSummarySelect hearingSummarySelect = new EditHearingSummarySelect();
+    private static final CcdPageConfiguration hearingSummarySelect = new EditHearingSummarySelect();
 
     @Autowired
     private HearingService hearingService;

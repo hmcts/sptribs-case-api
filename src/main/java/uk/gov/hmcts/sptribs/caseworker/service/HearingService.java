@@ -30,7 +30,7 @@ public class HearingService {
     @Autowired
     private ObjectMapper objectMapper;
 
-    final DateTimeFormatter dateFormatter = ofPattern("dd MMM yyyy", UK);
+    private static final DateTimeFormatter dateFormatter = ofPattern("dd MMM yyyy", UK);
 
     public DynamicList getListedHearingDynamicList(final CaseData data) {
 
@@ -147,7 +147,7 @@ public class HearingService {
         }
     }
 
-    public boolean isMatchingHearing(ListValue<Listing> listingListValue, String hearingName) {
+    public static boolean isMatchingHearing(ListValue<Listing> listingListValue, String hearingName) {
         return hearingName.contains(listingListValue.getValue().getHearingTime())
             && hearingName.contains(listingListValue.getValue().getHearingType().getLabel())
             && hearingName.contains(listingListValue.getValue().getDate().format(dateFormatter));
