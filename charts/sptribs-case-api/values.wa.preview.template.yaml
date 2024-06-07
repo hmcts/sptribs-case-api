@@ -618,14 +618,11 @@ ccd-message-publisher:
   java:
     ingressHost: ccd-message-publisher-${SERVICE_FQDN}
     releaseNameOverride: ${SERVICE_NAME}-ccd-message-publisher
-    secrets:
-      SERVICE_BUS_CONNECTION_STRING:
-        secretRef: sptribs-sb-preview
-        key: connectionString
-      DATA_STORE_DB_PASSWORD:
-        secretRef: postgres
-        key: PASSWORD
-        disabled: false
+    keyVaults:
+      ccd:
+        secrets:
+          - name: AppInsightsInstrumentationKey
+            alias: azure.application-insights.instrumentation-key
     environment:
       DATA_STORE_DB_HOST: sptribs-preview.postgres.database.azure.com
       DATA_STORE_DB_NAME: "pr-${CHANGE_ID}-data-store"
@@ -633,3 +630,7 @@ ccd-message-publisher:
       DATA_STORE_DB_PASSWORD: ${POSTGRES_PASSWORD}
       DATA_STORE_DB_OPTIONS: "?stringtype=unspecified&reWriteBatchedInserts=true&sslmode=require"
       CCD_CASE_EVENTS_DESTINATION: "${SERVICE_NAME}-asb-ccd-case-events"
+    secrets:
+      SERVICE_BUS_CONNECTION_STRING:
+        secretRef: sptribs-sb-preview
+        key: connectionString
