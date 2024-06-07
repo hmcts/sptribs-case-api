@@ -11,7 +11,7 @@ dependencies:
     version: 5.2.1
     repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
   - name: ccd
-    version: 9.1.1-alpha
+    version: 9.2.0-alpha
     repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
     tags:
       - ccd-idam-pr
