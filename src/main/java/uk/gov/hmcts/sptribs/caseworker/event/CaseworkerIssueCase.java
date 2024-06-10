@@ -95,17 +95,24 @@ public class CaseworkerIssueCase implements CCDConfig<CaseData, State, UserRole>
         final CicCase cicCase = data.getCicCase();
         String caseNumber = data.getHyphenatedCaseRef();
 
-        if (!isEmpty(cicCase.getNotifyPartySubject())) {
-            caseIssuedNotification.sendToSubject(details.getData(), caseNumber);
-        }
-        if (!isEmpty(cicCase.getNotifyPartyApplicant())) {
-            caseIssuedNotification.sendToApplicant(details.getData(), caseNumber);
-        }
-        if (!isEmpty(cicCase.getNotifyPartyRepresentative())) {
-            caseIssuedNotification.sendToRepresentative(details.getData(), caseNumber);
-        }
-        if (!isEmpty(cicCase.getNotifyPartyRespondent())) {
-            caseIssuedNotification.sendToRespondent(details.getData(), caseNumber);
+        try {
+            if (!isEmpty(cicCase.getNotifyPartySubject())) {
+                caseIssuedNotification.sendToSubject(details.getData(), caseNumber);
+            }
+            if (!isEmpty(cicCase.getNotifyPartyApplicant())) {
+                caseIssuedNotification.sendToApplicant(details.getData(), caseNumber);
+            }
+            if (!isEmpty(cicCase.getNotifyPartyRepresentative())) {
+                caseIssuedNotification.sendToRepresentative(details.getData(), caseNumber);
+            }
+            if (!isEmpty(cicCase.getNotifyPartyRespondent())) {
+                caseIssuedNotification.sendToRespondent(details.getData(), caseNumber);
+            }
+        } catch (Exception notificationException) {
+            log.error("Issue to respondent notification failed with exception : {}", notificationException.getMessage());
+            return SubmittedCallbackResponse.builder()
+                .confirmationHeader(format("# Issue to respondent notification failed %n## Please resend the notification"))
+                .build();
         }
 
         return SubmittedCallbackResponse.builder()
