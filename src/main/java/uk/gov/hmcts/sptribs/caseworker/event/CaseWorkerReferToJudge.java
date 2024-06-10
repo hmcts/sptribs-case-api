@@ -61,7 +61,6 @@ public class CaseWorkerReferToJudge implements CCDConfig<CaseData, State, UserRo
                 ST_CIC_HEARING_CENTRE_ADMIN, ST_CIC_HEARING_CENTRE_TEAM_LEADER,
                 ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER)
             .grantHistoryOnly(
-                ST_CIC_CASEWORKER,
                 ST_CIC_SENIOR_JUDGE,
                 ST_CIC_JUDGE));
 
