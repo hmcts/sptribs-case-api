@@ -90,10 +90,11 @@ public class CaseworkerIssueCase implements CCDConfig<CaseData, State, UserRole>
     }
 
     public SubmittedCallbackResponse submitted(CaseDetails<CaseData, State> details,
-                                            CaseDetails<CaseData, State> beforeDetails) {
+                                               CaseDetails<CaseData, State> beforeDetails) {
+
         final CaseData data = details.getData();
         final CicCase cicCase = data.getCicCase();
-        String caseNumber = data.getHyphenatedCaseRef();
+        final String caseNumber = data.getHyphenatedCaseRef();
 
         try {
             if (!isEmpty(cicCase.getNotifyPartySubject())) {
