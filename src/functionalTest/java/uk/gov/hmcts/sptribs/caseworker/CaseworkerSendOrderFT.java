@@ -16,17 +16,23 @@ import static org.springframework.http.HttpStatus.OK;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_SEND_ORDER;
 import static uk.gov.hmcts.sptribs.testutil.CaseDataUtil.caseData;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.ABOUT_TO_SUBMIT_URL;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.SUBMITTED_URL;
 import static uk.gov.hmcts.sptribs.testutil.TestResourceUtil.expectedResponse;
 
 @SpringBootTest
 public class CaseworkerSendOrderFT extends FunctionalTestSuite {
 
-    private static final String REQUEST = "classpath:request/casedata/ccd-callback-casedata-send-order-about-to-submit.json";
+    private static final String CALLBACK_REQUEST = "classpath:request/casedata/ccd-callback-casedata-send-order-callback-request.json";
+    private static final String REQUEST_UNHAPPY_ABOUT_TO_SUBMIT =
+        "classpath:request/casedata/ccd-callback-casedata-send-order-unhappy-about-to-submit.json";
+
     private static final String RESPONSE = "classpath:responses/response-caseworker-send-order-about-to-submit.json";
+
+    private static final String CONFIRMATION_HEADER = "$.confirmation_header";
 
     @Test
     public void shouldRetainSelectedOrderDataWhenAboutToSubmitCallbackIsTriggered() throws Exception {
-        final Map<String, Object> caseData = caseData(REQUEST);
+        final Map<String, Object> caseData = caseData(CALLBACK_REQUEST);
 
         final Response response = triggerCallback(caseData, CASEWORKER_SEND_ORDER, ABOUT_TO_SUBMIT_URL);
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
@@ -35,5 +41,31 @@ public class CaseworkerSendOrderFT extends FunctionalTestSuite {
             .when(IGNORING_EXTRA_FIELDS)
             .when(IGNORING_ARRAY_ORDER)
             .isEqualTo(json(expectedResponse(RESPONSE)));
+    }
+
+    @Test
+    public void shouldReturnHappyResponseWhenValidSubmittedCallbackIsInvoked() throws Exception {
+        final Map<String, Object> caseData = caseData(CALLBACK_REQUEST);
+
+        final Response response = triggerCallback(caseData, CASEWORKER_SEND_ORDER, SUBMITTED_URL);
+
+        assertThat(response.getStatusCode()).isEqualTo(OK.value());
+        assertThatJson(response.asString())
+            .inPath(CONFIRMATION_HEADER)
+            .isString()
+            .contains("# Order sent \n## A notification has been sent to: Representative");
+    }
+
+    @Test
+    public void shouldReturnUnhappyResponseWhenInvalidSubmittedCallbackIsInvoked() throws Exception {
+        final Map<String, Object> caseData = caseData(REQUEST_UNHAPPY_ABOUT_TO_SUBMIT);
+
+        final Response response = triggerCallback(caseData, CASEWORKER_SEND_ORDER, SUBMITTED_URL);
+
+        assertThat(response.getStatusCode()).isEqualTo(OK.value());
+        assertThatJson(response.asString())
+            .inPath(CONFIRMATION_HEADER)
+            .isString()
+            .contains("# Send order notification failed \n## Please resend the order");
     }
 }
