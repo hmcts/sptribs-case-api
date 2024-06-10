@@ -62,20 +62,13 @@ public class CaseWorkerManageOrderDueDate implements CCDConfig<CaseData, State, 
                 .showSummary()
                 .aboutToStartCallback(this::aboutToStart)
                 .aboutToSubmitCallback(this::aboutToSubmit)
-                .submittedCallback(this::orderDatesManaged)
+                .submittedCallback(this::submitted)
                 .grant(CREATE_READ_UPDATE, SUPER_USER,
                     ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER, ST_CIC_HEARING_CENTRE_ADMIN,
                     ST_CIC_HEARING_CENTRE_TEAM_LEADER, ST_CIC_SENIOR_JUDGE)
                 .grantHistoryOnly(
-                    ST_CIC_CASEWORKER,
-                    ST_CIC_SENIOR_CASEWORKER,
-                    ST_CIC_HEARING_CENTRE_ADMIN,
-                    ST_CIC_HEARING_CENTRE_TEAM_LEADER,
-                    ST_CIC_SENIOR_JUDGE,
-                    SUPER_USER,
                     ST_CIC_JUDGE)
                 );
-
         manageSelectOrderTemplates.addTo(pageBuilder);
         amendOrderDueDates.addTo(pageBuilder);
     }
@@ -84,7 +77,6 @@ public class CaseWorkerManageOrderDueDate implements CCDConfig<CaseData, State, 
         final CaseData caseData = details.getData();
         DynamicList orderDynamicList = orderService.getOrderDynamicList(details);
         caseData.getCicCase().setOrderDynamicList(orderDynamicList);
-
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
             .build();
@@ -92,13 +84,11 @@ public class CaseWorkerManageOrderDueDate implements CCDConfig<CaseData, State, 
 
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(final CaseDetails<CaseData, State> details,
                                                                        final CaseDetails<CaseData, State> beforeDetails) {
-
         final CaseData caseData = details.getData();
         final CicCase cicCase = caseData.getCicCase();
         final String selectedOrder = caseData.getCicCase().getOrderDynamicList().getValue().getLabel();
         final String id = getId(selectedOrder);
         final List<ListValue<Order>> orderList = caseData.getCicCase().getOrderList();
-
         for (ListValue<Order> orderListValue : orderList) {
             if (null != id && id.equals(orderListValue.getId())) {
                 Order order = orderListValue.getValue();
@@ -107,20 +97,16 @@ public class CaseWorkerManageOrderDueDate implements CCDConfig<CaseData, State, 
                 break;
             }
         }
-
         caseData.getCicCase().setOrderList(orderList);
         cicCase.setOrderDueDates(new ArrayList<>());
-
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .state(details.getState())
             .data(caseData)
             .build();
-
     }
 
-    public SubmittedCallbackResponse orderDatesManaged(CaseDetails<CaseData, State> details,
+    public SubmittedCallbackResponse submitted(CaseDetails<CaseData, State> details,
                                                        CaseDetails<CaseData, State> beforeDetails) {
-
         return SubmittedCallbackResponse.builder()
             .confirmationHeader("# Due dates amended.")
             .build();
