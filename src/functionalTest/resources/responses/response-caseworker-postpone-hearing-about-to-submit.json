@@ -31,7 +31,7 @@
     "cicCaseFirstDueDate": "",
     "stayIsCaseStayed": "No",
     "hearingStatus": "Postponed",
-    "postponeDate": "2024-06-06",
+    "postponeDate": "${json-unit.any-string}",
     "postponeReason": "Appellant is out of country",
     "hearingList": [],
     "closedDayCount": "",
