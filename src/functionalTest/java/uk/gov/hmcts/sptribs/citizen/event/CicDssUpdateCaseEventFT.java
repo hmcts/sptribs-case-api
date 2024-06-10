@@ -1,7 +1,6 @@
 package uk.gov.hmcts.sptribs.citizen.event;
 
 import io.restassured.response.Response;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import uk.gov.hmcts.sptribs.testutil.FunctionalTestSuite;
@@ -21,7 +20,6 @@ import static uk.gov.hmcts.sptribs.testutil.TestConstants.SUBMITTED_URL;
 import static uk.gov.hmcts.sptribs.testutil.TestResourceUtil.expectedResponse;
 
 @SpringBootTest
-@Disabled("Disabled until after testing completed in AAT")
 public class CicDssUpdateCaseEventFT extends FunctionalTestSuite {
 
     private static final String REQUEST =

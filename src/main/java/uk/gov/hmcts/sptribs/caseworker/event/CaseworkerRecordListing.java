@@ -32,6 +32,7 @@ import java.util.Set;
 
 import static java.lang.String.format;
 import static java.util.Objects.isNull;
+import static uk.gov.hmcts.sptribs.caseworker.model.YesNo.NO;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_RECORD_LISTING;
 import static uk.gov.hmcts.sptribs.ciccase.model.HearingState.Listed;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
@@ -137,6 +138,7 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
         caseData.setCurrentEvent("");
         caseData.getListing().setHearingCreatedDate(LocalDate.now());
         caseData.getListing().setHearingStatus(Listed);
+        caseData.setStitchHearingBundleTask(NO);
         hearingService.addListing(caseData, caseData.getListing());
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)

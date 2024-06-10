@@ -31,8 +31,6 @@ public class CaseTypeTabTest {
     @Test
     void shouldConfigureCaseTypeTab() {
         //Given
-        caseTypeTab.setCaseFileViewEnabled(true);
-        caseTypeTab.setBundlingEnabled(true);
         final Tab.TabBuilder<CaseData, UserRole> summaryTabBuilder = Tab.TabBuilder.builder(CaseData.class, utils);
         final Tab.TabBuilder<CaseData, UserRole> stateTabBuilder = Tab.TabBuilder.builder(CaseData.class, utils);
         final Tab.TabBuilder<CaseData, UserRole> notesTabBuilder = Tab.TabBuilder.builder(CaseData.class, utils);
@@ -46,6 +44,8 @@ public class CaseTypeTabTest {
         final Tab.TabBuilder<CaseData, UserRole> bundlingTabBuilder = Tab.TabBuilder.builder(CaseData.class, utils);
         final Tab.TabBuilder<CaseData, UserRole> messagesTabBuilder = Tab.TabBuilder.builder(CaseData.class, utils);
         final Tab.TabBuilder<CaseData, UserRole> caseReferralTabBuilder = Tab.TabBuilder.builder(CaseData.class, utils);
+        final Tab.TabBuilder<CaseData, UserRole> caseFlagTabBuilder = Tab.TabBuilder.builder(CaseData.class, utils);
+        final Tab.TabBuilder<CaseData, UserRole> caseLinkTabBuilder = Tab.TabBuilder.builder(CaseData.class, utils);
 
         when(configBuilder.tab("summary", "Summary")).thenReturn(summaryTabBuilder);
         when(configBuilder.tab("state", "State")).thenReturn(stateTabBuilder);
@@ -60,6 +60,8 @@ public class CaseTypeTabTest {
         when(configBuilder.tab("bundles", "Bundles")).thenReturn(bundlingTabBuilder);
         when(configBuilder.tab("messages", "Messages")).thenReturn(messagesTabBuilder);
         when(configBuilder.tab("caseReferrals", "Case Referrals")).thenReturn(caseReferralTabBuilder);
+        when(configBuilder.tab("caseFlags", "Case Flags")).thenReturn(caseFlagTabBuilder);
+        when(configBuilder.tab("caseLinks", "Linked cases")).thenReturn(caseLinkTabBuilder);
 
         //When
         caseTypeTab.configure(configBuilder);
@@ -74,6 +76,8 @@ public class CaseTypeTabTest {
         final Tab<CaseData, UserRole> messages = messagesTabBuilder.build();
         final Tab<CaseData, UserRole> bundlingTab = bundlingTabBuilder.build();
         final Tab<CaseData, UserRole> caseReferralTab = caseReferralTabBuilder.build();
+        final Tab<CaseData, UserRole> caseFlagsTab = caseFlagTabBuilder.build();
+        final Tab<CaseData, UserRole> caseLinkTab = caseLinkTabBuilder.build();
 
         //Then
         assertThat(summaryTab.getFields()).extracting(TabField::getId).contains("cicCaseFullName");
