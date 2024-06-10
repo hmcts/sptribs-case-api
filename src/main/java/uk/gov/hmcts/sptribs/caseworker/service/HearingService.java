@@ -60,16 +60,6 @@ public class HearingService {
         }
     }
 
-    private String getHearingDate(String id, Listing listing) {
-        return id
-                + SPACE + HYPHEN + SPACE
-                + listing.getHearingType().getLabel()
-                + SPACE + HYPHEN + SPACE
-                + listing.getDate().format(dateFormatter)
-                + SPACE
-                + listing.getHearingTime();
-    }
-
     public DynamicList getCompletedHearingDynamicList(final CaseData data) {
 
         List<String> hearingDateList = new ArrayList<>();
@@ -120,22 +110,7 @@ public class HearingService {
     }
 
     @SneakyThrows
-    public void updateHearingList(CaseData caseData) {
-        String hearingName = caseData.getCicCase().getHearingList().getValue().getLabel();
-        for (ListValue<Listing> listingListValue : caseData.getHearingList()) {
-            if (isMatchingHearing(listingListValue, hearingName)) {
-                // deep copy of listing needed in order to clear rec file
-                Listing listingDeepCopy = objectMapper
-                    .readValue(objectMapper.writeValueAsString(caseData.getListing()), Listing.class);
-                listingListValue.setValue(listingDeepCopy);
-                break;
-            }
-        }
-    }
-
-    @SneakyThrows
-    public void updateHearingSummaryList(CaseData caseData) {
-        String hearingName = caseData.getCicCase().getHearingSummaryList().getValue().getLabel();
+    public void updateHearingList(CaseData caseData, String hearingName) {
         for (ListValue<Listing> listingListValue : caseData.getHearingList()) {
             if (isMatchingHearing(listingListValue, hearingName)) {
                 // deep copy of listing needed in order to clear rec file
@@ -151,5 +126,15 @@ public class HearingService {
         return hearingName.contains(listingListValue.getValue().getHearingTime())
             && hearingName.contains(listingListValue.getValue().getHearingType().getLabel())
             && hearingName.contains(listingListValue.getValue().getDate().format(dateFormatter));
+    }
+
+    private String getHearingDate(String id, Listing listing) {
+        return id
+            + SPACE + HYPHEN + SPACE
+            + listing.getHearingType().getLabel()
+            + SPACE + HYPHEN + SPACE
+            + listing.getDate().format(dateFormatter)
+            + SPACE
+            + listing.getHearingTime();
     }
 }

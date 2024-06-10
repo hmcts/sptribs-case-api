@@ -119,7 +119,11 @@ public class CaseworkerCancelHearing implements CCDConfig<CaseData, State, UserR
         }
         caseData.getListing().setHearingStatus(Cancelled);
         caseData.getListing().setCancelledDate(LocalDate.now());
-        hearingService.updateHearingList(caseData);
+
+        final String hearingName = caseData.getCicCase().getHearingList().getValue().getLabel();
+
+        hearingService.updateHearingList(caseData, hearingName);
+
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
             .state(state)

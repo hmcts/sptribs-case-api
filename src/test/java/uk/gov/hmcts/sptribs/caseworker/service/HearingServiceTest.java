@@ -2,7 +2,6 @@ package uk.gov.hmcts.sptribs.caseworker.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -25,9 +24,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getRecordListing;
 
 @ExtendWith(MockitoExtension.class)
@@ -41,9 +41,6 @@ class HearingServiceTest {
 
     @Mock
     private DynamicListElement cicCaseHearingLabel;
-
-    @Mock
-    private CaseData caseData;
 
     @Mock
     private ObjectMapper objectMapper;
@@ -61,11 +58,9 @@ class HearingServiceTest {
         listValueList.add(listingListValue);
         final CaseData caseData = CaseData.builder().hearingList(listValueList).build();
         details.setData(caseData);
-        //When
 
         DynamicList hearingList = hearingService.getListedHearingDynamicList(caseData);
 
-        //Then
         assertThat(hearingList).isNotNull();
     }
 
@@ -78,10 +73,8 @@ class HearingServiceTest {
             .build();
         details.setData(caseData);
 
-        //When
         hearingService.addListingIfExists(caseData);
 
-        //Then
         assertThat(caseData.getHearingList()).isNotEmpty();
     }
 
@@ -93,10 +86,8 @@ class HearingServiceTest {
             .build();
         details.setData(caseData);
 
-        //When
         hearingService.addListingIfExists(caseData);
 
-        //Then
         assertThat(caseData.getHearingList()).isEmpty();
     }
 
@@ -113,10 +104,8 @@ class HearingServiceTest {
             .build();
         details.setData(caseData);
 
-        //When
         hearingService.addListingIfExists(caseData);
 
-        //Then
         assertThat(caseData.getHearingList()).isNotEmpty();
         assertThat(caseData.getHearingList().get(0).getValue()).isNotNull();
         assertThat(caseData.getHearingList().get(0).getValue().getHearingCancellationReason().getReason()).isEqualTo("Case Rejected");
@@ -136,10 +125,8 @@ class HearingServiceTest {
             .build();
         details.setData(caseData);
 
-        //When
         hearingService.addListingIfExists(caseData);
 
-        //Then
         assertThat(caseData.getHearingList()).isNotEmpty();
         assertThat(caseData.getHearingList().get(0).getValue()).isNotNull();
         assertThat(caseData.getHearingList().get(0).getValue().getPostponeReason().getReason()).isEqualTo("Bereavement");
@@ -158,45 +145,36 @@ class HearingServiceTest {
         listValueList.add(listingListValue);
         final CaseData caseData = CaseData.builder().hearingList(listValueList).build();
         details.setData(caseData);
-        //When
+
         DynamicList hearingList = hearingService.getCompletedHearingDynamicList(caseData);
 
-        //Then
         assertThat(hearingList).isNotNull();
     }
 
     @Test
     void shouldAddListingToCaseData() {
-        //Given
         CaseData caseData = CaseData.builder().build();
         Listing listing = getRecordListing();
         assertThat(caseData.getHearingList()).isEmpty();
 
-        //When
         hearingService.addListing(caseData, listing);
 
-        //Then
         assertThat(caseData.getHearingList()).isNotEmpty();
     }
 
     @Test
     void shouldUpdateHearingList() throws JsonProcessingException {
-        ListValue<Listing> listingListValue = new ListValue<>();
+        final Listing listing = getRecordListing();
 
-        listingListValue.setValue(getRecordListing());
-        List<ListValue<Listing>> listValueList = new ArrayList<>();
-        listValueList.add(listingListValue);
+        final CaseData caseData = CaseData.builder()
+            .hearingList(List.of(ListValue.<Listing>builder().value(listing).build()))
+            .build();
 
-        Listing completedListing = getRecordListing();
+        final String completedListingString = "test string";
+        final String hearingName = "1 - Final - 21 Apr 2023 10:00";
+
+        final Listing completedListing = getRecordListing();
         completedListing.setHearingStatus(HearingState.Complete);
-        String completedListingString = "test string";
-
-        when(cicCaseHearingLabel.getLabel()).thenReturn("1 - Final - 21 Apr 2023 10:00");
-        when(cicCaseHearingList.getValue()).thenReturn(cicCaseHearingLabel);
-        when(cicCase.getHearingList()).thenReturn(cicCaseHearingList);
-        when(caseData.getCicCase()).thenReturn(cicCase);
-        when(caseData.getListing()).thenReturn(completedListing);
-        when(caseData.getHearingList()).thenReturn(listValueList);
 
         doReturn(completedListingString)
             .when(objectMapper)
@@ -206,100 +184,27 @@ class HearingServiceTest {
             .when(objectMapper)
             .readValue(completedListingString, Listing.class);
 
-        hearingService.updateHearingList(caseData);
+        hearingService.updateHearingList(caseData, hearingName);
 
-        // Have replaced listed Listing with completed Listing
-        Assertions.assertEquals(listValueList.get(0).getValue(), completedListing);
+        assertEquals(caseData.getHearingList().get(0).getValue(), completedListing);
     }
 
     @Test
     void shouldNotUpdateHearingList() {
-        //Given
-        ListValue<Listing> listingListValue = new ListValue<>();
-        // A listed Listing
+        final ListValue<Listing> listingListValue = new ListValue<>();
         listingListValue.setValue(getRecordListing());
-        List<ListValue<Listing>> listValueList = new ArrayList<>();
-        listValueList.add(listingListValue);
-        // A completed listing
-        Listing completedListing = getRecordListing();
+
+        final Listing completedListing = getRecordListing();
         completedListing.setHearingStatus(HearingState.Complete);
 
-        when(cicCaseHearingLabel.getLabel()).thenReturn("1 - Interlocutory - 21 Apr 2023 10:00");
-        when(cicCaseHearingList.getValue()).thenReturn(cicCaseHearingLabel);
-        when(cicCase.getHearingList()).thenReturn(cicCaseHearingList);
-        when(caseData.getCicCase()).thenReturn(cicCase);
-        when(caseData.getHearingList()).thenReturn(listValueList);
+        final CaseData caseData = CaseData.builder()
+            .hearingList(List.of(listingListValue))
+            .build();
 
-        //When
-        hearingService.updateHearingList(caseData);
+        final String hearingName = "1 - Interlocutory - 21 Apr 2023 10:00";
 
-        //Then
-        // Have replaced listed Listing with completed Listing
-        Assertions.assertNotEquals(listValueList.get(0).getValue(), completedListing);
+        hearingService.updateHearingList(caseData, hearingName);
 
-    }
-
-    @Test
-    void shouldUpdateHearingSummaryList() throws JsonProcessingException {
-        //Given
-        ListValue<Listing> listingListValue = new ListValue<>();
-        // A listed Listing
-        listingListValue.setValue(getRecordListing());
-        List<ListValue<Listing>> listValueList = new ArrayList<>();
-        listValueList.add(listingListValue);
-        // A completed listing
-        Listing completedListing = getRecordListing();
-        completedListing.setHearingStatus(HearingState.Complete);
-        String completedListingString = "test string";
-
-        when(cicCaseHearingLabel.getLabel()).thenReturn("1 - Final - 21 Apr 2023 10:00");
-        when(cicCaseHearingList.getValue()).thenReturn(cicCaseHearingLabel);
-        when(cicCase.getHearingSummaryList()).thenReturn(cicCaseHearingList);
-        when(caseData.getCicCase()).thenReturn(cicCase);
-        when(caseData.getListing()).thenReturn(completedListing);
-        when(caseData.getHearingList()).thenReturn(listValueList);
-
-        doReturn(completedListingString)
-            .when(objectMapper)
-            .writeValueAsString(any(Listing.class));
-
-        doReturn(completedListing)
-            .when(objectMapper)
-            .readValue(completedListingString, Listing.class);
-
-        //When
-        hearingService.updateHearingSummaryList(caseData);
-
-        //Then
-        // Have replaced listed Listing with completed Listing
-        Assertions.assertEquals(listValueList.get(0).getValue(), completedListing);
-
-    }
-
-    @Test
-    void shouldNotUpdateHearingSummaryList() {
-        //Given
-        ListValue<Listing> listingListValue = new ListValue<>();
-        // A listed Listing
-        listingListValue.setValue(getRecordListing());
-        List<ListValue<Listing>> listValueList = new ArrayList<>();
-        listValueList.add(listingListValue);
-        // A completed listing
-        Listing completedListing = getRecordListing();
-        completedListing.setHearingStatus(HearingState.Complete);
-
-        when(cicCaseHearingLabel.getLabel()).thenReturn("1 - Final - 21 Apr 2023 11:00");
-        when(cicCaseHearingList.getValue()).thenReturn(cicCaseHearingLabel);
-        when(cicCase.getHearingSummaryList()).thenReturn(cicCaseHearingList);
-        when(caseData.getCicCase()).thenReturn(cicCase);
-        when(caseData.getHearingList()).thenReturn(listValueList);
-
-        //When
-        hearingService.updateHearingSummaryList(caseData);
-
-        //Then
-        // Have replaced listed Listing with completed Listing
-        Assertions.assertNotEquals(listValueList.get(0).getValue(), completedListing);
-
+        assertNotEquals(caseData.getHearingList().get(0).getValue(), completedListing);
     }
 }

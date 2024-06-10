@@ -124,7 +124,9 @@ public class CaseWorkerCreateHearingSummary implements CCDConfig<CaseData, State
         caseData.setCurrentEvent("");
         uploadRecFile(caseData);
 
-        hearingService.updateHearingList(caseData);
+        final String hearingName = caseData.getCicCase().getHearingList().getValue().getLabel();
+
+        hearingService.updateHearingList(caseData, hearingName);
         caseData.getListing().getSummary().setRecFile(new ArrayList<>());
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
