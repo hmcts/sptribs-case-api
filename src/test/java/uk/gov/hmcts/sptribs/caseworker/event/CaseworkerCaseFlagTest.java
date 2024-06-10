@@ -42,7 +42,6 @@ class CaseworkerCaseFlagTest {
     @Test
     void shouldAddConfigurationToConfigBuilder() {
         //Given
-        caseworkerCaseFlag.setCaseFlagsEnabled(true);
         final ConfigBuilderImpl<CaseData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
 
         //When
@@ -52,20 +51,6 @@ class CaseworkerCaseFlagTest {
         assertThat(getEventsFrom(configBuilder).values())
             .extracting(Event::getId)
             .contains(CASEWORKER_CASE_FLAG);
-    }
-
-    @Test
-    void shouldNotConfigureCaseFlagIfFeatureFlagFalse() {
-        //Given
-        final ConfigBuilderImpl<CaseData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
-
-        //When
-        caseworkerCaseFlag.configure(configBuilder);
-
-        //Then
-        assertThat(getEventsFrom(configBuilder).values())
-            .extracting(Event::getId)
-            .doesNotContain(CASEWORKER_CASE_FLAG);
     }
 
     @Test
