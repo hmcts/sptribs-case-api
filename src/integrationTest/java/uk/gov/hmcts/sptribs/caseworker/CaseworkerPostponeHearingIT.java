@@ -15,6 +15,8 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
+import uk.gov.hmcts.ccd.sdk.type.DynamicList;
+import uk.gov.hmcts.ccd.sdk.type.DynamicListElement;
 import uk.gov.hmcts.sptribs.caseworker.model.Listing;
 import uk.gov.hmcts.sptribs.caseworker.model.PostponeReason;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
@@ -89,7 +91,16 @@ public class CaseworkerPostponeHearingIT {
             .notifyPartyRespondent(Set.of(RespondentCIC.RESPONDENT))
             .notifyPartySubject(Set.of(SubjectCIC.SUBJECT))
             .hearingNotificationParties(parties)
+            .hearingList(
+                DynamicList.builder()
+                    .value(
+                        DynamicListElement.builder()
+                            .label("1 - Final - 21 Apr 2021 10:00")
+                            .build()
+                    ).build()
+            )
             .build();
+        caseData.setCicCase(cicCase);
 
         final Listing listing = Listing.builder()
             .regionList(getMockedRegionData())

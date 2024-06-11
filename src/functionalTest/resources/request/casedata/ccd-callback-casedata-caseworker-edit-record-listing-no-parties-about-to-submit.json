@@ -1,4 +1,16 @@
 {
+  "cicCaseHearingList": {
+    "value": {
+      "code": "18b88d33-9da8-4ee0-946d-de71d33e4d6f",
+      "label":"Case management - 10 May 2024 09:00"
+    },
+    "list_items": [
+      {
+        "code": "18b88d33-9da8-4ee0-946d-de71d33e4d6f",
+        "label":"Case management - 10 May 2024 09:00"
+      }
+    ]
+  },
   "hearingType": "CaseManagement",
   "hearingFormat": "Face to Face",
   "hearingSummaryExists": null,
