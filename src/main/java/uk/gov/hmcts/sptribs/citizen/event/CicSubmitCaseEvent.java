@@ -211,7 +211,6 @@ public class CicSubmitCaseEvent implements CCDConfig<CaseData, State, UserRole> 
         }
 
         List<CaseworkerCICDocument> docList = new ArrayList<>();
-        List<ListValue<DssMessage>> messagesList = new ArrayList<>();
 
         if (isNotEmpty(dssCaseData.getOtherInfoDocuments())) {
             for (ListValue<EdgeCaseDocument> documentListValue : dssCaseData.getOtherInfoDocuments()) {
@@ -243,6 +242,7 @@ public class CicSubmitCaseEvent implements CCDConfig<CaseData, State, UserRole> 
                 .id(UUID.randomUUID().toString())
                 .value(message)
                 .build();
+            List<ListValue<DssMessage>> messagesList = new ArrayList<>();
             messagesList.add(listValue);
             caseData.setMessages(messagesList);
         }
