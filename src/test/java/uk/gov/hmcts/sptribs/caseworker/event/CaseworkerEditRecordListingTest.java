@@ -100,6 +100,10 @@ class CaseworkerEditRecordListingTest {
         final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
         CicCase cicCase = getMockCicCase();
         cicCase.setHearingNotificationParties(hearingNotificationPartiesSet);
+        cicCase.setHearingList(DynamicList.builder()
+                .value(DynamicListElement.builder().label("1 - Final - 21 Apr 2023 10:00").build())
+                .build()
+        );
         caseData.setListing(listing);
         caseData.setCicCase(cicCase);
         updatedCaseDetails.setData(caseData);
@@ -298,6 +302,10 @@ class CaseworkerEditRecordListingTest {
         final CaseData caseData = caseData();
 
         caseData.getCicCase().setNotifyPartySubject(Set.of(SubjectCIC.SUBJECT));
+        caseData.getCicCase().setHearingList(DynamicList.builder()
+            .value(DynamicListElement.builder().label("1 - Final - 21 Apr 2023 10:00").build())
+            .build()
+        );
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
         final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
 
@@ -374,6 +382,10 @@ class CaseworkerEditRecordListingTest {
     @Test
     void shouldReturnErrorsIfCaseDataIsNull() {
         final CaseData caseData = CaseData.builder().build();
+        caseData.getCicCase().setHearingList(DynamicList.builder()
+            .value(DynamicListElement.builder().label("1 - Final - 21 Apr 2023 10:00").build())
+            .build()
+        );
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
         final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
 
@@ -394,6 +406,11 @@ class CaseworkerEditRecordListingTest {
             .notifyPartyRepresentative(Set.of(RepresentativeCIC.REPRESENTATIVE))
             .notifyPartyRespondent(Set.of(RespondentCIC.RESPONDENT))
             .notifyPartySubject(Set.of(SubjectCIC.SUBJECT))
+            .hearingList(
+                DynamicList.builder()
+                    .value(DynamicListElement.builder().label("1 - Final - 21 Apr 2023 10:00").build())
+                    .build()
+            )
             .build();
         final CaseData caseData = CaseData.builder()
             .cicCase(cicCase)
