@@ -13,7 +13,6 @@ import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.event.page.IssueCaseNotifyParties;
 import uk.gov.hmcts.sptribs.caseworker.event.page.IssueCaseSelectDocument;
 import uk.gov.hmcts.sptribs.caseworker.util.DocumentListUtil;
-import uk.gov.hmcts.sptribs.caseworker.util.MessageUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
@@ -22,9 +21,14 @@ import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.common.notification.CaseIssuedNotification;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static java.lang.String.format;
 import static org.springframework.util.CollectionUtils.isEmpty;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_ISSUE_CASE;
+import static uk.gov.hmcts.sptribs.caseworker.util.MessageUtil.generateSimpleErrorMessage;
+import static uk.gov.hmcts.sptribs.caseworker.util.MessageUtil.generateSimpleMessage;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_CASEWORKER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_HEARING_CENTRE_ADMIN;
@@ -95,30 +99,49 @@ public class CaseworkerIssueCase implements CCDConfig<CaseData, State, UserRole>
         final CaseData data = details.getData();
         final CicCase cicCase = data.getCicCase();
         final String caseNumber = data.getHyphenatedCaseRef();
+        final List<String> errors = new ArrayList<>();
 
-        try {
-            if (!isEmpty(cicCase.getNotifyPartySubject())) {
+        if (!isEmpty(cicCase.getNotifyPartySubject())) {
+            try {
                 caseIssuedNotification.sendToSubject(details.getData(), caseNumber);
+            } catch (Exception notificationException) {
+                errors.add("Subject");
             }
-            if (!isEmpty(cicCase.getNotifyPartyApplicant())) {
+        }
+        if (!isEmpty(cicCase.getNotifyPartyApplicant())) {
+            try {
                 caseIssuedNotification.sendToApplicant(details.getData(), caseNumber);
+            } catch (Exception notificationException) {
+                errors.add("Applicant");
             }
-            if (!isEmpty(cicCase.getNotifyPartyRepresentative())) {
+        }
+        if (!isEmpty(cicCase.getNotifyPartyRepresentative())) {
+            try {
                 caseIssuedNotification.sendToRepresentative(details.getData(), caseNumber);
+            } catch (Exception notificationException) {
+                errors.add("Representative");
             }
-            if (!isEmpty(cicCase.getNotifyPartyRespondent())) {
+        }
+        if (!isEmpty(cicCase.getNotifyPartyRespondent())) {
+            try {
                 caseIssuedNotification.sendToRespondent(details.getData(), caseNumber);
+            } catch (Exception notificationException) {
+                errors.add("Respondent");
             }
-        } catch (Exception notificationException) {
-            log.error("Issue to respondent notification failed with exception : {}", notificationException.getMessage());
-            return SubmittedCallbackResponse.builder()
-                .confirmationHeader(format("# Issue to respondent notification failed %n## Please resend the notification"))
-                .build();
         }
 
-        return SubmittedCallbackResponse.builder()
-            .confirmationHeader(format("# Case issued %n##  This case has now been issued. %n## %s",
-                MessageUtil.generateSimpleMessage(details.getData().getCicCase())))
-            .build();
+        if (isEmpty(errors)) {
+            return SubmittedCallbackResponse.builder()
+                .confirmationHeader(format("# Case issued %n##  This case has now been issued. %n## %s",
+                    generateSimpleMessage(details.getData().getCicCase())))
+                .build();
+        } else {
+            return SubmittedCallbackResponse.builder()
+                .confirmationHeader(
+                    format("# Issue to respondent notification failed %n## %s %n## Please resend the notification.",
+                        generateSimpleErrorMessage(errors))
+                )
+                .build();
+        }
     }
 }

@@ -34,6 +34,9 @@ import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.doThrow;
+import static uk.gov.hmcts.sptribs.ciccase.model.ApplicantCIC.APPLICANT_CIC;
+import static uk.gov.hmcts.sptribs.ciccase.model.RepresentativeCIC.REPRESENTATIVE;
+import static uk.gov.hmcts.sptribs.ciccase.model.RespondentCIC.RESPONDENT;
 import static uk.gov.hmcts.sptribs.ciccase.model.SubjectCIC.SUBJECT;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigBuilder;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.getEventsFrom;
@@ -81,10 +84,10 @@ class CaseworkerIssueCaseTest {
             .applicantEmailAddress(TEST_APPLICANT_EMAIL)
             .representativeFullName(TEST_SOLICITOR_NAME)
             .representativeAddress(SOLICITOR_ADDRESS)
-            .notifyPartyRepresentative(Set.of(RepresentativeCIC.REPRESENTATIVE))
-            .notifyPartyApplicant(Set.of(ApplicantCIC.APPLICANT_CIC))
+            .notifyPartyRepresentative(Set.of(REPRESENTATIVE))
+            .notifyPartyApplicant(Set.of(APPLICANT_CIC))
             .notifyPartySubject(Set.of(SUBJECT))
-            .notifyPartyRespondent(Set.of(RespondentCIC.RESPONDENT)).build();
+            .notifyPartyRespondent(Set.of(RESPONDENT)).build();
         caseData.setCicCase(cicCase);
 
         final CaseIssue caseIssue = new CaseIssue();
@@ -120,6 +123,9 @@ class CaseworkerIssueCaseTest {
         final String hyphenatedCaseRef = caseData.formatCaseRef(TEST_CASE_ID);
         caseData.setHyphenatedCaseRef(hyphenatedCaseRef);
         caseData.getCicCase().setNotifyPartySubject(Set.of(SUBJECT));
+        caseData.getCicCase().setNotifyPartyApplicant(Set.of(APPLICANT_CIC));
+        caseData.getCicCase().setNotifyPartyRepresentative(Set.of(REPRESENTATIVE));
+        caseData.getCicCase().setNotifyPartyRespondent(Set.of(RESPONDENT));
 
         final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
         caseDetails.setData(caseData);
@@ -127,11 +133,23 @@ class CaseworkerIssueCaseTest {
         doThrow(NotificationException.class)
             .when(caseIssuedNotification)
             .sendToSubject(caseData, hyphenatedCaseRef);
+        doThrow(NotificationException.class)
+            .when(caseIssuedNotification)
+            .sendToApplicant(caseData, hyphenatedCaseRef);
+        doThrow(NotificationException.class)
+            .when(caseIssuedNotification)
+            .sendToRepresentative(caseData, hyphenatedCaseRef);
+        doThrow(NotificationException.class)
+            .when(caseIssuedNotification)
+            .sendToRespondent(caseData, hyphenatedCaseRef);
 
         SubmittedCallbackResponse submittedResponse = caseworkerIssueCase.submitted(caseDetails, caseDetails);
 
         assertThat(submittedResponse.getConfirmationHeader())
-            .contains("# Issue to respondent notification failed \n## Please resend the notification");
+            .isEqualTo("""
+                # Issue to respondent notification failed\s
+                ## A notification could not be sent to: Subject, Applicant, Representative, Respondent\s
+                ## Please resend the notification.""");
     }
 
     @Test
@@ -143,10 +161,10 @@ class CaseworkerIssueCaseTest {
             .applicantEmailAddress(TEST_APPLICANT_EMAIL)
             .representativeFullName(TEST_SOLICITOR_NAME)
             .representativeAddress(SOLICITOR_ADDRESS)
-            .notifyPartyRepresentative(Set.of(RepresentativeCIC.REPRESENTATIVE))
-            .notifyPartyApplicant(Set.of(ApplicantCIC.APPLICANT_CIC))
+            .notifyPartyRepresentative(Set.of(REPRESENTATIVE))
+            .notifyPartyApplicant(Set.of(APPLICANT_CIC))
             .notifyPartySubject(Set.of(SUBJECT))
-            .notifyPartyRespondent(Set.of(RespondentCIC.RESPONDENT)).build();
+            .notifyPartyRespondent(Set.of(RESPONDENT)).build();
         caseData.setCicCase(cicCase);
 
         final CaseIssue caseIssue = new CaseIssue();
@@ -187,10 +205,10 @@ class CaseworkerIssueCaseTest {
             .applicantEmailAddress(TEST_APPLICANT_EMAIL)
             .representativeFullName(TEST_SOLICITOR_NAME)
             .representativeAddress(SOLICITOR_ADDRESS)
-            .notifyPartyRepresentative(Set.of(RepresentativeCIC.REPRESENTATIVE))
-            .notifyPartyApplicant(Set.of(ApplicantCIC.APPLICANT_CIC))
+            .notifyPartyRepresentative(Set.of(REPRESENTATIVE))
+            .notifyPartyApplicant(Set.of(APPLICANT_CIC))
             .notifyPartySubject(Set.of(SUBJECT))
-            .notifyPartyRespondent(Set.of(RespondentCIC.RESPONDENT)).build();
+            .notifyPartyRespondent(Set.of(RESPONDENT)).build();
         caseData.setCicCase(cicCase);
 
         caseData.setHyphenatedCaseRef("1234-5678-3456");

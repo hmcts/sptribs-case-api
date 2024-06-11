@@ -87,6 +87,9 @@ public class CaseworkerIssueCaseFT extends FunctionalTestSuite {
         assertThatJson(response.asString())
             .inPath(CONFIRMATION_HEADER)
             .isString()
-            .contains("# Issue to respondent notification failed \n## Please resend the notification");
+            .isEqualTo("""
+                # Issue to respondent notification failed\s
+                ## A notification could not be sent to: Subject\s
+                ## Please resend the notification.""");
     }
 }
