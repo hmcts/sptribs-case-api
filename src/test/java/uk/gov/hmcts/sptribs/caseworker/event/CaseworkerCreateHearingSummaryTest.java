@@ -9,6 +9,8 @@ import uk.gov.hmcts.ccd.sdk.ConfigBuilderImpl;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.Event;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
+import uk.gov.hmcts.ccd.sdk.type.DynamicList;
+import uk.gov.hmcts.ccd.sdk.type.DynamicListElement;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.helper.RecordListHelper;
@@ -24,7 +26,6 @@ import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.SubjectCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocumentUpload;
-import uk.gov.hmcts.sptribs.document.model.DocumentType;
 import uk.gov.hmcts.sptribs.judicialrefdata.JudicialService;
 
 import java.util.List;
@@ -92,6 +93,11 @@ class CaseworkerCreateHearingSummaryTest {
             .notifyPartyRepresentative(Set.of(RepresentativeCIC.REPRESENTATIVE))
             .notifyPartyRespondent(Set.of(RespondentCIC.RESPONDENT))
             .notifyPartySubject(Set.of(SubjectCIC.SUBJECT))
+            .hearingList(
+                DynamicList.builder()
+                    .value(DynamicListElement.builder().label("1 - Final - 21 Apr 2023 10:00").build())
+                    .build()
+            )
             .build();
         final CaseData caseData = CaseData.builder()
             .cicCase(cicCase)
@@ -123,14 +129,7 @@ class CaseworkerCreateHearingSummaryTest {
         assertThat(response.getData().getListing().getSummary().getJudgeList())
             .isNull();
         assertThat(response.getData().getListing().getSummary().getRecFileUpload()).hasSize(0);
-        assertThat(response.getData().getListing().getSummary().getRecFile()).hasSize(1);
-        assertThat(response.getData().getListing().getSummary().getRecFile().get(0).getValue().getDocumentCategory())
-            .isEqualTo(DocumentType.LINKED_DOCS);
-        assertThat(response.getData().getListing().getSummary().getRecFile().get(0).getValue().getDocumentEmailContent())
-            .isEqualTo("some email content");
-        assertThat(response.getData().getListing().getSummary().getRecFile().get(0).getValue().getDocumentLink().getFilename())
-            .isEqualTo("file.pdf");
-        assertThat(response.getData().getListing().getSummary().getRecFile().get(0).getValue().getDate()).isNull();
+        assertThat(response.getData().getListing().getSummary().getRecFile()).hasSize(0);
     }
 
     @Test

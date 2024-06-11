@@ -159,7 +159,11 @@ public class CaseworkerEditRecordListing implements CCDConfig<CaseData, State, U
         recordListHelper.getNotificationParties(caseData);
         caseData.setListing(recordListHelper.checkAndUpdateVenueInformation(caseData.getListing()));
         caseData.setCurrentEvent("");
-        hearingService.updateHearingList(caseData);
+
+        final String hearingName = caseData.getCicCase().getHearingList().getValue().getLabel();
+
+        hearingService.updateHearingList(caseData, hearingName);
+
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
             .state(AwaitingHearing)
