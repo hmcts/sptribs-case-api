@@ -88,7 +88,7 @@ public class CaseworkerIssueCaseFT extends FunctionalTestSuite {
             .inPath(CONFIRMATION_HEADER)
             .isString()
             .isEqualTo("""
-                # Issue to respondent notification failed\s
+                # Issue case notification failed\s
                 ## A notification could not be sent to: Subject\s
                 ## Please resend the notification.""");
     }

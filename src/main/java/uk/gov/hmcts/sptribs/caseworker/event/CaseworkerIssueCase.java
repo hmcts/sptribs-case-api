@@ -29,6 +29,10 @@ import static org.springframework.util.CollectionUtils.isEmpty;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_ISSUE_CASE;
 import static uk.gov.hmcts.sptribs.caseworker.util.MessageUtil.generateSimpleErrorMessage;
 import static uk.gov.hmcts.sptribs.caseworker.util.MessageUtil.generateSimpleMessage;
+import static uk.gov.hmcts.sptribs.ciccase.model.NotificationParties.APPLICANT;
+import static uk.gov.hmcts.sptribs.ciccase.model.NotificationParties.REPRESENTATIVE;
+import static uk.gov.hmcts.sptribs.ciccase.model.NotificationParties.RESPONDENT;
+import static uk.gov.hmcts.sptribs.ciccase.model.NotificationParties.SUBJECT;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_CASEWORKER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_HEARING_CENTRE_ADMIN;
@@ -105,28 +109,28 @@ public class CaseworkerIssueCase implements CCDConfig<CaseData, State, UserRole>
             try {
                 caseIssuedNotification.sendToSubject(details.getData(), caseNumber);
             } catch (Exception notificationException) {
-                errors.add("Subject");
+                errors.add(SUBJECT.getLabel());
             }
         }
         if (!isEmpty(cicCase.getNotifyPartyApplicant())) {
             try {
                 caseIssuedNotification.sendToApplicant(details.getData(), caseNumber);
             } catch (Exception notificationException) {
-                errors.add("Applicant");
+                errors.add(APPLICANT.getLabel());
             }
         }
         if (!isEmpty(cicCase.getNotifyPartyRepresentative())) {
             try {
                 caseIssuedNotification.sendToRepresentative(details.getData(), caseNumber);
             } catch (Exception notificationException) {
-                errors.add("Representative");
+                errors.add(REPRESENTATIVE.getLabel());
             }
         }
         if (!isEmpty(cicCase.getNotifyPartyRespondent())) {
             try {
                 caseIssuedNotification.sendToRespondent(details.getData(), caseNumber);
             } catch (Exception notificationException) {
-                errors.add("Respondent");
+                errors.add(RESPONDENT.getLabel());
             }
         }
 
@@ -138,7 +142,7 @@ public class CaseworkerIssueCase implements CCDConfig<CaseData, State, UserRole>
         } else {
             return SubmittedCallbackResponse.builder()
                 .confirmationHeader(
-                    format("# Issue to respondent notification failed %n## %s %n## Please resend the notification.",
+                    format("# Issue case notification failed %n## %s %n## Please resend the notification.",
                         generateSimpleErrorMessage(errors))
                 )
                 .build();

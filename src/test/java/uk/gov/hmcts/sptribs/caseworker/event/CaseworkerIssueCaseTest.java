@@ -144,7 +144,7 @@ class CaseworkerIssueCaseTest {
 
         assertThat(submittedResponse.getConfirmationHeader())
             .isEqualTo("""
-                # Issue to respondent notification failed\s
+                # Issue case notification failed\s
                 ## A notification could not be sent to: Subject, Applicant, Representative, Respondent\s
                 ## Please resend the notification.""");
     }
