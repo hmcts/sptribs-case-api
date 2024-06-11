@@ -571,7 +571,7 @@ servicebus:
         subscriptionNeeded: yes
         requiresSession: true
 
-postgres:
+postgresql:
   enabled: true
   flexibleserver: sptribs-preview
   setup:
