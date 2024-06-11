@@ -7,7 +7,6 @@ import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
-import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.event.page.EditHearingLoadingPage;
 import uk.gov.hmcts.sptribs.caseworker.event.page.EditHearingSummarySelect;
@@ -25,11 +24,9 @@ import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
-import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
-import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocumentUpload;
 import uk.gov.hmcts.sptribs.judicialrefdata.JudicialService;
 
-import java.util.List;
+import java.util.ArrayList;
 
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_EDIT_HEARING_SUMMARY;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingOutcome;
@@ -41,7 +38,6 @@ import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_CASEWORK
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_JUDGE;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE;
-import static uk.gov.hmcts.sptribs.document.DocumentUtil.convertToCaseworkerCICDocument;
 import static uk.gov.hmcts.sptribs.document.DocumentUtil.uploadRecFile;
 
 @Component
@@ -55,7 +51,7 @@ public class CaseWorkerEditHearingSummary implements CCDConfig<CaseData, State, 
     private static final CcdPageConfiguration HearingOutcome = new HearingOutcomePage();
     private static final CcdPageConfiguration editHearingLoadingPage = new EditHearingLoadingPage();
     private static final CcdPageConfiguration hearingRecordingUploadPage = new HearingRecordingUploadPage();
-    private static final EditHearingSummarySelect hearingSummarySelect = new EditHearingSummarySelect();
+    private static final CcdPageConfiguration hearingSummarySelect = new EditHearingSummarySelect();
 
     @Autowired
     private HearingService hearingService;
@@ -96,7 +92,6 @@ public class CaseWorkerEditHearingSummary implements CCDConfig<CaseData, State, 
         hearingAttendeesRole.addTo(pageBuilder);
         HearingOutcome.addTo(pageBuilder);
         hearingRecordingUploadPage.addTo(pageBuilder);
-
     }
 
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToStart(CaseDetails<CaseData, State> details) {
@@ -104,9 +99,6 @@ public class CaseWorkerEditHearingSummary implements CCDConfig<CaseData, State, 
         caseData.setCurrentEvent(CASEWORKER_EDIT_HEARING_SUMMARY);
         if (caseData.getListing().getSummary() != null && caseData.getListing().getHearingFormat() != null) {
             caseData.getListing().setHearingSummaryExists("YES");
-            List<ListValue<CaseworkerCICDocument>> documents = caseData.getListing().getSummary().getRecFile();
-            List<ListValue<CaseworkerCICDocumentUpload>> uploadedDocuments = convertToCaseworkerCICDocument(documents);
-            caseData.getListing().getSummary().setRecFileUpload(uploadedDocuments);
         } else {
             caseData.getListing().setHearingSummaryExists("There are no Completed Hearings to edit");
         }
@@ -126,8 +118,13 @@ public class CaseWorkerEditHearingSummary implements CCDConfig<CaseData, State, 
         caseData.getListing().getSummary().setJudgeList(null);
         uploadRecFile(caseData);
 
+        final String hearingName = caseData.getCicCase().getHearingSummaryList().getValue().getLabel();
+
         recordListHelper.saveSummary(details.getData());
-        hearingService.updateHearingSummaryList(caseData);
+        hearingService.updateHearingList(caseData, hearingName);
+
+        caseData.getListing().getSummary().setRecFile(new ArrayList<>());
+
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
             .state(AwaitingOutcome)
