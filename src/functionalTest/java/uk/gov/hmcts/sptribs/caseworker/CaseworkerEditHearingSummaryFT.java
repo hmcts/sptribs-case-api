@@ -21,6 +21,10 @@ import static uk.gov.hmcts.sptribs.testutil.TestResourceUtil.expectedResponse;
 
 @SpringBootTest
 public class CaseworkerEditHearingSummaryFT extends FunctionalTestSuite {
+
+    public static final String EDIT_HEARING_SUMMARY_SELECT_MID_EVENT_URL
+        = "/callbacks/mid-event?page=editHearingSummarySelect";
+
     public static final String HEARING_RECORDING_UPLOAD_DOCUMENTS_MID_EVENT_URL
         = "/callbacks/mid-event?page=hearingRecordingUploadPage";
 
@@ -39,8 +43,13 @@ public class CaseworkerEditHearingSummaryFT extends FunctionalTestSuite {
     private static final String HEARING_RECORDING_UPLOAD_MID_EVENT_RESPONSE =
         "classpath:responses/response-caseworker-create-hearing-summary-hearing-recording-upload-mid-event.json";
 
+    private static final String EDIT_HEARING_SUMMARY_SELECT_MID_EVENT_REQUEST =
+        "classpath:request/casedata/ccd-callback-casedata-edit-hearing-summary-select-mid-event.json";
+    private static final String EDIT_HEARING_SUMMARY_SELECT_MID_EVENT_RESPONSE =
+        "classpath:responses/response-caseworker-edit-hearing-summary-select-mid-event.json";
+
     private static final String ABOUT_TO_SUBMIT_REQUEST =
-        "classpath:request/casedata/ccd-callback-casedata-caseworker-create-hearing-summary-about-to-submit.json";
+        "classpath:request/casedata/ccd-callback-casedata-caseworker-edit-hearing-summary-about-to-submit.json";
     private static final String ABOUT_TO_SUBMIT_RESPONSE =
         "classpath:responses/response-caseworker-edit-hearing-summary-about-to-submit.json";
 
@@ -110,6 +119,22 @@ public class CaseworkerEditHearingSummaryFT extends FunctionalTestSuite {
             .inPath("$.errors")
             .isArray()
             .isEmpty();
+    }
+
+    @Test
+    public void shouldPopulateHearingRecFileUploadAfterHearingSelected() throws Exception {
+        final Map<String, Object> caseData = caseData(EDIT_HEARING_SUMMARY_SELECT_MID_EVENT_REQUEST);
+
+        final Response response = triggerCallback(
+            caseData,
+            CASEWORKER_EDIT_HEARING_SUMMARY,
+            EDIT_HEARING_SUMMARY_SELECT_MID_EVENT_URL
+        );
+
+        assertThat(response.getStatusCode()).isEqualTo(OK.value());
+        assertThatJson(response.asString())
+            .when(IGNORING_EXTRA_FIELDS)
+            .isEqualTo(json(expectedResponse(EDIT_HEARING_SUMMARY_SELECT_MID_EVENT_RESPONSE)));
     }
 
     @Test
