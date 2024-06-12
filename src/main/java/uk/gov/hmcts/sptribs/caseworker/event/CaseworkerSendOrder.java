@@ -87,7 +87,7 @@ public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole>
             .description("Orders: Send order")
             .showSummary()
             .aboutToSubmitCallback(this::aboutToSubmit)
-            .submittedCallback(this::sent)
+            .submittedCallback(this::submitted)
             .grant(CREATE_READ_UPDATE,
                 ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER, ST_CIC_HEARING_CENTRE_ADMIN,
                 ST_CIC_HEARING_CENTRE_TEAM_LEADER, ST_CIC_SENIOR_JUDGE, ST_CIC_JUDGE));
@@ -171,7 +171,7 @@ public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole>
             .build();
     }
 
-    public SubmittedCallbackResponse sent(CaseDetails<CaseData, State> details,
+    public SubmittedCallbackResponse submitted(CaseDetails<CaseData, State> details,
                                           CaseDetails<CaseData, State> beforeDetails) {
         try {
             sendOrderNotification(details.getData().getHyphenatedCaseRef(), details.getData());
