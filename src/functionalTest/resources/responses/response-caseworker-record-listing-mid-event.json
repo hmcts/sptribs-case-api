@@ -1,0 +1,16 @@
+{
+  "data": {
+    "hearingVenues": {
+      "list_items": [
+        {
+          "code": "${json-unit.any-string}",
+          "label": "East London Tribunal Hearing Centre-2 Clove Crescent, East India Dock London"
+        },
+        {
+          "code": "${json-unit.any-string}",
+          "label": "Fox Court - London (Central) SSCS Tribunal-4th Floor, Fox Court, 30 Brooke Street, London"
+        }
+      ]
+    }
+  }
+}
