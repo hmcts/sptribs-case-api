@@ -2,6 +2,7 @@ package uk.gov.hmcts.sptribs.citizen.event;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -32,10 +33,14 @@ import uk.gov.hmcts.sptribs.common.service.CcdSupplementaryDataService;
 import uk.gov.hmcts.sptribs.constants.CommonConstants;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
 import uk.gov.hmcts.sptribs.document.model.EdgeCaseDocument;
+import uk.gov.hmcts.sptribs.idam.IdamService;
 import uk.gov.hmcts.sptribs.notification.exception.NotificationException;
+import uk.gov.hmcts.sptribs.testutil.TestDataHelper;
 import uk.gov.hmcts.sptribs.util.AppsUtil;
 
 import java.io.IOException;
+import java.time.Clock;
+import java.time.LocalDate;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -44,11 +49,13 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.Submitted;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigBuilder;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.getEventsFrom;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.CASE_DATA_CIC_ID;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.CASE_DATA_FILE_CIC;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_AUTHORIZATION_TOKEN;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_FIRST_NAME;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_SOLICITOR_EMAIL;
@@ -76,6 +83,12 @@ class CicSubmitCaseEventTest {
 
     @Mock
     private AppsConfig.AppsDetails cicAppDetail;
+
+    @Mock
+    private HttpServletRequest request;
+
+    @Mock
+    private IdamService idamService;
 
     @Mock
     private CcdSupplementaryDataService ccdSupplementaryDataService;
@@ -113,9 +126,11 @@ class CicSubmitCaseEventTest {
                 .getSubmitEvent());
     }
 
+
     @Test
-    void shouldGetDocumentRelevanceFromCaseData() {
+    void shouldGetDocumentRelevanceAndAdditionalInformationFromCaseData() {
         final Document genericTestDocument = Document.builder().build();
+        final String genericAdditionalInformation = "this is some additional information about the case";
         final String genericTestDocumentRelevance1 = "this document is relevant because it is important to the case";
         final String genericTestDocumentRelevance2 = "this document is also relevant because it is also important to the case";
 
@@ -151,6 +166,7 @@ class CicSubmitCaseEventTest {
             .representationQualified(YesOrNo.YES)
             .representativeEmailAddress(TEST_SOLICITOR_EMAIL)
             .representativeFullName(TEST_SOLICITOR_NAME)
+            .additionalInformation(genericAdditionalInformation)
             .build();
 
         final CicCase cicCase = CicCase.builder().build();
@@ -163,6 +179,9 @@ class CicSubmitCaseEventTest {
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
         updatedCaseDetails.setData(caseData);
 
+        when(request.getHeader(AUTHORIZATION)).thenReturn(TEST_AUTHORIZATION_TOKEN);
+        when(idamService.retrieveUser(TEST_AUTHORIZATION_TOKEN)).thenReturn(TestDataHelper.getUser());
+
         final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
 
         final AboutToStartOrSubmitResponse<CaseData, State> response =
@@ -172,6 +191,11 @@ class CicSubmitCaseEventTest {
             .isEqualTo(genericTestDocumentRelevance1);
         assertThat(response.getData().getCicCase().getApplicantDocumentsUploaded().get(1).getValue().getDocumentEmailContent())
             .isEqualTo(genericTestDocumentRelevance2);
+        assertThat(response.getData().getMessages().get(0).getValue().getMessage()).isEqualTo(genericAdditionalInformation);
+        assertThat(response.getData().getMessages().get(0).getValue().getDateReceived())
+            .isEqualTo(LocalDate.now(Clock.systemDefaultZone()));
+        assertThat(response.getData().getMessages().get(0).getValue().getReceivedFrom())
+            .isEqualTo(TestDataHelper.getUser().getUserDetails().getFullName());
     }
 
     @Test
