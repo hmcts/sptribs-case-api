@@ -68,6 +68,10 @@ wa:
           secrets:
             - name: app-insights-connection-string
               alias: app-insights-connection-string
+            - name: workflow-api-POSTGRES-PASS-V15
+              alias: POSTGRES_PASSWORD
+            - name: workflow-api-POSTGRES-USER-V15
+              alias: POSTGRES_USERNAME
 
   camunda-bpm:
     java:
