@@ -139,10 +139,10 @@ class CaseworkerSendOrderTest {
         //When
         final AboutToStartOrSubmitResponse<CaseData, State> response =
             caseworkerSendOrder.aboutToSubmit(updatedCaseDetails, beforeDetails);
-        final SubmittedCallbackResponse sent = caseworkerSendOrder.sent(updatedCaseDetails, beforeDetails);
+        final SubmittedCallbackResponse submitted = caseworkerSendOrder.submitted(updatedCaseDetails, beforeDetails);
 
         //Then
-        assertThat(sent).isNotNull();
+        assertThat(submitted).isNotNull();
         assertThat(response).isNotNull();
         final Order order = response.getData().getCicCase().getOrderList().get(0).getValue();
         assertThat(order.getDueDateList().get(0).getValue().getDueDate()).isNotNull();
@@ -203,7 +203,7 @@ class CaseworkerSendOrderTest {
         //When
         final AboutToStartOrSubmitResponse<CaseData, State> response =
             caseworkerSendOrder.aboutToSubmit(updatedCaseDetails, beforeDetails);
-        final SubmittedCallbackResponse sent = caseworkerSendOrder.sent(updatedCaseDetails, beforeDetails);
+        final SubmittedCallbackResponse submitted = caseworkerSendOrder.submitted(updatedCaseDetails, beforeDetails);
 
         //Then
         final Order order = response.getData().getCicCase().getOrderList().get(0).getValue();
@@ -211,7 +211,7 @@ class CaseworkerSendOrderTest {
             .isNotNull();
         assertThat(order.getDraftOrder().getTemplateGeneratedDocument().getFilename())
             .isEqualTo(SENT + COLON + "aa--bb--cc");
-        assertThat(sent.getConfirmationHeader()).contains("Order sent");
+        assertThat(submitted.getConfirmationHeader()).contains("Order sent");
     }
 
     @Test
@@ -268,7 +268,7 @@ class CaseworkerSendOrderTest {
         //When
         final AboutToStartOrSubmitResponse<CaseData, State> response =
             caseworkerSendOrder.aboutToSubmit(updatedCaseDetails, beforeDetails);
-        final SubmittedCallbackResponse sent = caseworkerSendOrder.sent(updatedCaseDetails, beforeDetails);
+        final SubmittedCallbackResponse submitted = caseworkerSendOrder.submitted(updatedCaseDetails, beforeDetails);
 
         //Then
         Order order = response.getData().getCicCase().getOrderList().get(0).getValue();
@@ -276,7 +276,7 @@ class CaseworkerSendOrderTest {
             .isNotNull();
         assertThat(order.getDraftOrder().getTemplateGeneratedDocument().getFilename())
             .isEqualTo(SENT + COLON + "aa--bb--cc");
-        assertThat(sent.getConfirmationHeader()).contains("Order sent");
+        assertThat(submitted.getConfirmationHeader()).contains("Order sent");
     }
 
     @Test
@@ -325,10 +325,10 @@ class CaseworkerSendOrderTest {
         //When
         final AboutToStartOrSubmitResponse<CaseData, State> response =
             caseworkerSendOrder.aboutToSubmit(updatedCaseDetails, beforeDetails);
-        final SubmittedCallbackResponse sent = caseworkerSendOrder.sent(updatedCaseDetails, beforeDetails);
+        final SubmittedCallbackResponse submitted = caseworkerSendOrder.submitted(updatedCaseDetails, beforeDetails);
 
         //Then
-        assertThat(sent.getConfirmationHeader()).contains("Order sent");
+        assertThat(submitted.getConfirmationHeader()).contains("Order sent");
         assertThat(response).isNotNull();
         Order order = response.getData().getCicCase().getOrderList().get(0).getValue();
         assertThat(order.getDueDateList().get(0).getValue().getDueDate()).isNotNull();
@@ -380,10 +380,10 @@ class CaseworkerSendOrderTest {
         //When
         final AboutToStartOrSubmitResponse<CaseData, State> response =
             caseworkerSendOrder.aboutToSubmit(updatedCaseDetails, beforeDetails);
-        final SubmittedCallbackResponse sent = caseworkerSendOrder.sent(updatedCaseDetails, beforeDetails);
+        final SubmittedCallbackResponse submitted = caseworkerSendOrder.submitted(updatedCaseDetails, beforeDetails);
 
         //Then
-        assertThat(sent.getConfirmationHeader()).contains("Order sent");
+        assertThat(submitted.getConfirmationHeader()).contains("Order sent");
         assertThat(response).isNotNull();
         Order order = response.getData().getCicCase().getOrderList().get(0).getValue();
         assertThat(order.getDueDateList().get(0).getValue().getDueDate()).isNotNull();
@@ -446,13 +446,13 @@ class CaseworkerSendOrderTest {
         //When
         final AboutToStartOrSubmitResponse<CaseData, State> response =
             caseworkerSendOrder.aboutToSubmit(updatedCaseDetails, beforeDetails);
-        final SubmittedCallbackResponse sent = caseworkerSendOrder.sent(updatedCaseDetails, beforeDetails);
+        final SubmittedCallbackResponse submitted = caseworkerSendOrder.submitted(updatedCaseDetails, beforeDetails);
         updatedCaseDetails.setData(caseData);
         final AboutToStartOrSubmitResponse<CaseData, State> response2 =
             caseworkerSendOrder.aboutToSubmit(updatedCaseDetails, beforeDetails);
 
         //Then
-        assertThat(sent.getConfirmationHeader()).contains("Order sent");
+        assertThat(submitted.getConfirmationHeader()).contains("Order sent");
         assertThat(response).isNotNull();
         assertThat(response2.getData().getCicCase().getOrderList()).hasSize(2);
     }
@@ -517,7 +517,7 @@ class CaseworkerSendOrderTest {
         caseDetails.setData(caseData);
 
         // When
-        caseworkerSendOrder.sent(caseDetails, beforeDetails);
+        caseworkerSendOrder.submitted(caseDetails, beforeDetails);
         final SubmittedCallbackResponse s = SubmittedCallbackResponse.builder()
             .confirmationHeader(format("# Order sent %n## %s",
                 MessageUtil.generateSimpleMessage(cicCase)))

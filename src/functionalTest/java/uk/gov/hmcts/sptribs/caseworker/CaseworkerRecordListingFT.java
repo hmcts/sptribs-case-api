@@ -17,31 +17,37 @@ import static uk.gov.hmcts.sptribs.testutil.CaseDataUtil.caseData;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.ABOUT_TO_START_URL;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.ABOUT_TO_SUBMIT_URL;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.SUBMITTED_URL;
-import static uk.gov.hmcts.sptribs.testutil.TestEventConstants.CASEWORKER_POSTPONE_HEARING;
+import static uk.gov.hmcts.sptribs.testutil.TestEventConstants.CASEWORKER_RECORD_LISTING;
 import static uk.gov.hmcts.sptribs.testutil.TestResourceUtil.expectedResponse;
 
 @SpringBootTest
-public class CaseworkerPostponeHearingFT extends FunctionalTestSuite {
+public class CaseworkerRecordListingFT extends FunctionalTestSuite {
+
+    private static final String MID_EVENT_URL = "/callbacks/mid-event?page=regionInfo";
 
     private static final String REQUEST_ABOUT_TO_START =
-        "classpath:request/casedata/ccd-callback-casedata-caseworker-postpone-hearing-about-to-start.json";
+        "classpath:request/casedata/ccd-callback-casedata-caseworker-record-listing-about-to-start.json";
+    private static final String REQUEST_MID_EVENT =
+        "classpath:request/casedata/ccd-callback-casedata-caseworker-record-listing-mid-event.json";
     private static final String CALLBACK_REQUEST =
-        "classpath:request/casedata/ccd-callback-casedata-caseworker-postpone-hearing-callback-request.json";
-    private static final String REQUEST_SUBMITTED =
-        "classpath:request/casedata/ccd-callback-casedata-caseworker-postpone-hearing-submitted.json";
+        "classpath:request/casedata/ccd-callback-casedata-caseworker-record-listing-callback-request.json";
+    private static final String REQUEST_HAPPY_SUBMITTED =
+        "classpath:request/casedata/ccd-callback-casedata-caseworker-record-listing-happy-submitted.json";
 
     private static final String RESPONSE_ABOUT_TO_START =
-        "classpath:responses/response-caseworker-postpone-hearing-about-to-start.json";
+        "classpath:responses/response-caseworker-record-listing-about-to-start.json";
+    private static final String RESPONSE_MID_EVENT =
+        "classpath:responses/response-caseworker-record-listing-mid-event.json";
     private static final String RESPONSE_ABOUT_TO_SUBMIT =
-        "classpath:responses/response-caseworker-postpone-hearing-about-to-submit.json";
+        "classpath:responses/response-caseworker-record-listing-mid-event.json";
 
     private static final String CONFIRMATION_HEADER = "$.confirmation_header";
 
     @Test
-    public void shouldInitialiseDynamicHearingListAndSetCurrentEventWhenAboutToStartCallbackIsInvoked() throws Exception {
+    public void shouldSetListingPopulateRegionDataAndSetCurrentEventWhenAboutToStartCallbackIsInvoked() throws Exception {
         final Map<String, Object> caseData = caseData(REQUEST_ABOUT_TO_START);
 
-        final Response response = triggerCallback(caseData, CASEWORKER_POSTPONE_HEARING, ABOUT_TO_START_URL);
+        final Response response = triggerCallback(caseData, CASEWORKER_RECORD_LISTING, ABOUT_TO_START_URL);
 
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
         assertThatJson(response.asString())
@@ -51,10 +57,23 @@ public class CaseworkerPostponeHearingFT extends FunctionalTestSuite {
     }
 
     @Test
-    public void shouldSuccessfullySetHearingStatusCurrentEventAndPostponeDateWhenABoutToSubmitCallbackIsInvoked() throws Exception {
+    public void shouldVenuesDataWhenMidEventCallbackIsInvoked() throws Exception {
+        final Map<String, Object> caseData = caseData(REQUEST_MID_EVENT);
+
+        final Response response = triggerCallback(caseData, CASEWORKER_RECORD_LISTING, MID_EVENT_URL);
+
+        assertThat(response.getStatusCode()).isEqualTo(OK.value());
+        assertThatJson(response.asString())
+            .when(IGNORING_EXTRA_FIELDS)
+            .when(IGNORING_ARRAY_ORDER)
+            .isEqualTo(json(expectedResponse(RESPONSE_MID_EVENT)));
+    }
+
+    @Test
+    public void shouldSetCurrentEventAndUpdateDataWhenAboutToSubmitCallbackIsInvoked() throws Exception {
         final Map<String, Object> caseData = caseData(CALLBACK_REQUEST);
 
-        final Response response = triggerCallback(caseData, CASEWORKER_POSTPONE_HEARING, ABOUT_TO_SUBMIT_URL);
+        final Response response = triggerCallback(caseData, CASEWORKER_RECORD_LISTING, ABOUT_TO_SUBMIT_URL);
 
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
         assertThatJson(response.asString())
@@ -67,27 +86,23 @@ public class CaseworkerPostponeHearingFT extends FunctionalTestSuite {
     public void shouldBeUnsuccessfulWhenBadSubmittedCallbackIsInvoked() throws Exception {
         final Map<String, Object> caseData = caseData(CALLBACK_REQUEST);
 
-        final Response response = triggerCallback(caseData, CASEWORKER_POSTPONE_HEARING, SUBMITTED_URL);
+        final Response response = triggerCallback(caseData, CASEWORKER_RECORD_LISTING, SUBMITTED_URL);
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
         assertThatJson(response.asString())
             .inPath(CONFIRMATION_HEADER)
             .isString()
-            .contains("# Postpone hearing notification failed \n## Please resend the notification");
+            .contains("# Create listing notification failed \n## Please resend the notification");
     }
 
     @Test
-    public void shouldBeSuccessfulWhenGoodSubmittedCallbackIsInvoked() throws Exception {
-        final Map<String, Object> caseData = caseData(REQUEST_SUBMITTED);
+    public void shouldBeSuccessfulWhenHappySubmittedCallbackIsInvoked() throws Exception {
+        final Map<String, Object> caseData = caseData(REQUEST_HAPPY_SUBMITTED);
 
-        final Response response = triggerCallback(caseData, CASEWORKER_POSTPONE_HEARING, SUBMITTED_URL);
+        final Response response = triggerCallback(caseData, CASEWORKER_RECORD_LISTING, SUBMITTED_URL);
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
         assertThatJson(response.asString())
             .inPath(CONFIRMATION_HEADER)
             .isString()
-            .contains("""
-                # Hearing Postponed\s
-                ## The hearing has been postponed, the case has been updated \
-
-                ## A notification has been sent to: Subject""");
+            .contains("# Listing record created \n## A notification has been sent to: Subject");
     }
 }
