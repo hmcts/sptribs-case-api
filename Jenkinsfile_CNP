@@ -280,6 +280,7 @@ withPipeline(type, product, component) {
             println """After akschartsinstall Using CASE_DATA_STORE_BASEURL: ${env.CASE_DATA_STORE_BASEURL}""".stripIndent()
             sh """
                 set -e
+                chmod +x ./bin/*
                 ./bin/pull-latest-camunda-dmn-files.sh ${dmnBranch}
                 ./bin/pull-latest-camunda-bpmn-files.sh ${bpmnBranch}
             """
