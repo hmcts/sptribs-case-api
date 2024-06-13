@@ -455,6 +455,7 @@ xui-webapp:
       NODE_OPTIONS: --max-old-space-size=900
       HEALTH_ROLE_ASSIGNMENT_API: http://sptribs-case-api-pr-${CHANGE_ID}-am-role-assignment-service
       SERVICES_ROLE_ASSIGNMENT_API: http://sptribs-case-api-pr-${CHANGE_ID}-am-role-assignment-service
+      GLOBAL_SEARCH_SERVICES: IA,CIVIL,PRIVATELAW,PUBLICLAW,SSCS,ST_CIC,EMPLOYMENT
 
 xui-mo-webapp:
   enabled: true

@@ -10,7 +10,10 @@ import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
+import uk.gov.hmcts.ccd.sdk.type.CaseLocation;
 import uk.gov.hmcts.ccd.sdk.type.Document;
+import uk.gov.hmcts.ccd.sdk.type.DynamicList;
+import uk.gov.hmcts.ccd.sdk.type.DynamicListElement;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.reform.idam.client.models.User;
@@ -59,6 +62,9 @@ import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SYSTEM_UPDATE;
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE;
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE_DELETE;
+import static uk.gov.hmcts.sptribs.constants.CommonConstants.ST_CIC_WA_CASE_BASE_LOCATION;
+import static uk.gov.hmcts.sptribs.constants.CommonConstants.ST_CIC_WA_CASE_MANAGEMENT_CATEGORY;
+import static uk.gov.hmcts.sptribs.constants.CommonConstants.ST_CIC_WA_CASE_REGION;
 
 @Component
 @Slf4j
@@ -113,6 +119,7 @@ public class CicSubmitCaseEvent implements CCDConfig<CaseData, State, UserRole> 
         final DssCaseData dssData = details.getData().getDssCaseData();
         final CaseData caseData = getCaseData(data, dssData);
         setDssMetaData(data);
+        setDefaultCaseDetails(data);
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
@@ -180,6 +187,19 @@ public class CicSubmitCaseEvent implements CCDConfig<CaseData, State, UserRole> 
         if (dssCaseData.getNotificationParties().contains(NotificationParties.REPRESENTATIVE)) {
             dssApplicationReceivedNotification.sendToRepresentative(dssCaseData, caseNumber);
         }
+    }
+
+    private void setDefaultCaseDetails(CaseData data) {
+        CaseLocation caseLocation = new CaseLocation(ST_CIC_WA_CASE_BASE_LOCATION, ST_CIC_WA_CASE_REGION);
+        data.setCaseManagementLocation(caseLocation);
+        data.setCaseManagementCategory(
+            DynamicList
+                .builder()
+                .listItems(List.of(
+                    new DynamicListElement(
+                        UUID.randomUUID(), ST_CIC_WA_CASE_MANAGEMENT_CATEGORY)))
+                .build()
+        );
     }
 
     private CaseData getCaseData(final CaseData caseData, final DssCaseData dssCaseData) {
