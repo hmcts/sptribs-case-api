@@ -1,0 +1,109 @@
+{
+  "hearingType": "CaseManagement",
+  "hearingFormat": "Face to Face",
+  "hearingSummaryExists": null,
+  "regionsMessage": null,
+  "regionList": {
+    "value": {
+      "code": "1af50f2d-ea7b-48b9-b86d-567c9aa8421b",
+      "label": "1-London"
+    },
+    "list_items": [
+      {
+        "code": "1af50f2d-ea7b-48b9-b86d-567c9aa8421b",
+        "label": "1-London"
+      },
+      {
+        "code": "8e202f60-81b3-4cbb-b187-d8f7f5bbdedf",
+        "label": "11-Scotland"
+      },
+      {
+        "code": "c000ab87-93b5-45ce-b6df-f382ebb3f661",
+        "label": "2-Midlands"
+      },
+      {
+        "code": "b36d5a06-f020-4e25-b969-30a72060a071",
+        "label": "3-North East"
+      },
+      {
+        "code": "8f29d5ff-de4d-4a71-8bf7-dd6867f9665c",
+        "label": "4-North West"
+      },
+      {
+        "code": "d6c1e803-7f4d-4cb1-bc84-f30240588cc0",
+        "label": "5-South East"
+      },
+      {
+        "code": "61f0a567-044c-4357-9df1-94da6e9d8f2e",
+        "label": "6-South West"
+      },
+      {
+        "code": "0ba96b5d-9acf-46c6-8c2b-e39ec889b1f0",
+        "label": "7-Wales"
+      }
+    ],
+    "valueCode": "1af50f2d-ea7b-48b9-b86d-567c9aa8421b",
+    "valueLabel": "1-London"
+  },
+  "currentEvent": "caseworker-record-listing",
+  "hearingVenuesMessage": null,
+  "hearingVenues": {
+    "value": {
+      "code": "ac5f063d-59fc-4b50-8fed-ee7fb0f44d1e",
+      "label": "East London Tribunal Hearing Centre-2 Clove Crescent, East India Dock London"
+    },
+    "list_items": [
+      {
+        "code": "ac5f063d-59fc-4b50-8fed-ee7fb0f44d1e",
+        "label": "East London Tribunal Hearing Centre-2 Clove Crescent, East India Dock London"
+      },
+      {
+        "code": "60455174-0a51-4bda-99fd-3989768227e3",
+        "label": "Fox Court - London (Central) SSCS Tribunal-4th Floor, Fox Court, 30 Brooke Street, London"
+      }
+    ],
+    "valueCode": "ac5f063d-59fc-4b50-8fed-ee7fb0f44d1e",
+    "valueLabel": "East London Tribunal Hearing Centre-2 Clove Crescent, East India Dock London"
+  },
+  "readOnlyHearingVenueName": null,
+  "roomAtVenue": null,
+  "addlInstr": null,
+  "date": "2000-01-01",
+  "session": "morning",
+  "hearingTime": "09:00",
+  "numberOfDays": "No",
+  "hearingStatus": null,
+  "videoCallLink": null,
+  "conferenceCallNumber": null,
+  "venueNotListedOption": [],
+  "importantInfoDetails": null,
+  "hearingCreatedDate": null,
+  "postponeReason": null,
+  "postponeDate": null,
+  "postponeAdditionalInformation": null,
+  "recordListingChangeReason": null,
+  "hearingCancellationReason": null,
+  "cancelledDate": null,
+  "cancelHearingAdditionalDetail": null,
+  "judge": null,
+  "isFullPanel": null,
+  "memberList": [],
+  "outcome": null,
+  "adjournmentReasons": null,
+  "others": null,
+  "otherDetailsOfAdjournment": null,
+  "recFile": [],
+  "recDesc": null,
+  "roles": null,
+  "subjectName": null,
+  "cicCaseFullName": "Testing subject",
+  "cicCaseNotifyPartySubject": [
+    "SubjectCIC"
+  ],
+  "cicCaseRepresentativeFullName": null,
+  "cicCaseRespondentName": "Appeals team",
+  "cicCaseNotifyPartyRespondent": [
+    "RespondentCIC"
+  ],
+  "cicCaseApplicantFullName": null
+}

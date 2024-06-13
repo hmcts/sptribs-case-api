@@ -120,6 +120,18 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
             .build();
     }
 
+    public AboutToStartOrSubmitResponse<CaseData, State> midEvent(CaseDetails<CaseData, State> details,
+                                                                  CaseDetails<CaseData, State> detailsBefore) {
+        final CaseData caseData = details.getData();
+
+        if (isNull(caseData.getListing().getHearingVenues())) {
+            recordListHelper.populateVenuesData(caseData);
+        }
+
+        return AboutToStartOrSubmitResponse.<CaseData, State>builder()
+            .data(caseData)
+            .build();
+    }
 
     @SneakyThrows
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(CaseDetails<CaseData, State> details,
@@ -178,18 +190,6 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
             .build();
     }
 
-    public AboutToStartOrSubmitResponse<CaseData, State> midEvent(CaseDetails<CaseData, State> details,
-                                                                  CaseDetails<CaseData, State> detailsBefore) {
-        final CaseData caseData = details.getData();
-
-        if (isNull(caseData.getListing().getHearingVenues())) {
-            recordListHelper.populateVenuesData(caseData);
-        }
-
-        return AboutToStartOrSubmitResponse.<CaseData, State>builder()
-            .data(caseData)
-            .build();
-    }
 
     private void addRegionInfo(PageBuilder pageBuilder) {
         pageBuilder.page("regionInfo", this::midEvent)
