@@ -105,6 +105,7 @@ ccd:
     postgresUsername: ${CCD_GLOBAL_POSTGRES_USERNAME_PREVIEW}
     postgresPassword: ${CCD_GLOBAL_POSTGRES_PASSWORD_PREVIEW}
     s2sUrl: http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
+    databaseNamePrefix: ""
 
   ccd-api-gateway-web:
     nodejs:
