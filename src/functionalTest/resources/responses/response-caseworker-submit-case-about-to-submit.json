@@ -33,7 +33,8 @@
           "documentCategory": "DSS Other information documents",
           "documentLink": {
             "category_id": "DSS"
-          }
+          },
+          "date": "${json-unit.any-string}"
         }
       },
       {
@@ -42,7 +43,8 @@
           "documentCategory": "DSS Supporting uploaded documents",
           "documentLink": {
             "category_id": "DSS"
-          }
+          },
+          "date": "${json-unit.any-string}"
         }
       },
       {
@@ -51,7 +53,8 @@
           "documentCategory": "DSS Tribunal form uploaded documents",
           "documentLink": {
             "category_id": "DSS"
-          }
+          },
+          "date": "${json-unit.any-string}"
         }
       }
     ],
