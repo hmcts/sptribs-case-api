@@ -80,16 +80,17 @@ java:
       password: ${SPTRIBS_POSTGRES_PASSWORD_PREVIEW}
 
 ccd:
-  definitionImporter:
-    enabled: false
-  apiGatewayWeb:
-    enabled: true
-  postgresql:
-    enabled: false
-  s2s:
-    enabled: false
-  elastic:
-    enabled: true
+  ccd:
+    definitionImporter:
+      enabled: false
+    apiGatewayWeb:
+      enabled: true
+    postgresql:
+      enabled: false
+    s2s:
+      enabled: false
+    elastic:
+      enabled: true
 
   ingressHost: ${SERVICE_FQDN}
   ingressIP: ${INGRESS_IP}
