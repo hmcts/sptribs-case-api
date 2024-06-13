@@ -1,0 +1,27 @@
+{
+  "cicCaseHearingList": {
+    "value": {
+      "code": "c03c79c6-5d53-4176-88f9-edbe154074cb",
+      "label": "1 - Case management - 01 Jan 2027 09:00"
+    },
+    "list_items": [
+      {
+        "code": "c03c79c6-5d53-4176-88f9-edbe154074cb",
+        "label": "1 - Case management - 01 Jan 2027 09:00"
+      }
+    ],
+    "valueCode": "c03c79c6-5d53-4176-88f9-edbe154074cb",
+    "valueLabel": "1 - Case management - 01 Jan 2027 09:00"
+  },
+  "postponeReason": "Appellant is out of country",
+  "postponeAdditionalInformation": null,
+  "cicCaseFullName": "Testing subject",
+  "cicCaseNotifyPartySubject": [
+    "SubjectCIC"
+  ],
+  "cicCaseRepresentativeFullName": null,
+  "cicCaseRespondentName": "Appeals team",
+  "cicCaseNotifyPartyRespondent": [
+    "RespondentCIC"
+  ]
+}

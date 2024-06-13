@@ -1,6 +1,13 @@
 {
   "data": {
-    "hyphenatedCaseRef": "1714-0484-2347-8720",
+    "cicCaseHearingList": {
+      "list_items": [
+        {
+          "code": "${json-unit.any-string}",
+          "label": "${json-unit.any-string}"
+        }
+      ]
+    },
     "currentEvent": "caseworker-postpone-hearing"
   }
 }
