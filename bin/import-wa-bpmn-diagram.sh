@@ -4,7 +4,7 @@ set -eu
 workspace=${1}
 
 serviceToken=$($(realpath $workspace)/bin/utils/idam-lease-service-token.sh sptribs_case_api \
-  $(docker run --rm toolbelt/oathtool --totp -b ${ST_CASE_API_S2S_KEY:-AABBCCDDEEFFGGHH}))
+  $(docker run --rm toolbelt/oathtool --totp -b ${SPRTIBS_CASE_API_S2S_KEY:-AABBCCDDEEFFGGHH}))
 
 filepath="$(realpath $workspace)/resources"
 
