@@ -3,6 +3,7 @@
 branchName=$1
 
 #Checkout specific branch camunda bpmn definition
+echo "Pull wa-standalone-task-bpmn"
 git clone https://github.com/hmcts/wa-standalone-task-bpmn.git
 cd wa-standalone-task-bpmn
 

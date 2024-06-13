@@ -2,7 +2,7 @@
 
 branchName=$1
 
-#Checkout specific branch pf  camunda bpmn definition
+#Checkout specific branch of  camunda bpmn definition
 git clone https://github.com/hmcts/st-wa-task-configuration.git
 cd st-wa-task-configuration
 
