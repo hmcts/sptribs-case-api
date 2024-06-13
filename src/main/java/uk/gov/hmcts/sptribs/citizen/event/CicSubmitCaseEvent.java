@@ -222,6 +222,7 @@ public class CicSubmitCaseEvent implements CCDConfig<CaseData, State, UserRole> 
                 CaseworkerCICDocument caseworkerCICDocument = CaseworkerCICDocument.builder()
                     .documentLink(doc)
                     .documentCategory(DocumentType.DSS_OTHER)
+                    .date(LocalDate.now())
                     .build();
 
                 if (!docList.contains(caseworkerCICDocument)) {
@@ -255,6 +256,7 @@ public class CicSubmitCaseEvent implements CCDConfig<CaseData, State, UserRole> 
                 CaseworkerCICDocument caseworkerCICDocument = CaseworkerCICDocument.builder()
                     .documentLink(doc)
                     .documentCategory(DocumentType.DSS_SUPPORTING)
+                    .date(LocalDate.now())
                     .build();
                 if (!docList.contains(caseworkerCICDocument)) {
                     docList.add(caseworkerCICDocument);
@@ -269,6 +271,7 @@ public class CicSubmitCaseEvent implements CCDConfig<CaseData, State, UserRole> 
                 CaseworkerCICDocument caseworkerCICDocument = CaseworkerCICDocument.builder()
                     .documentLink(doc)
                     .documentCategory(DocumentType.DSS_TRIBUNAL_FORM)
+                    .date(LocalDate.now())
                     .build();
                 if (!docList.contains(caseworkerCICDocument)) {
                     docList.add(caseworkerCICDocument);
