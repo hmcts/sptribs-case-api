@@ -80,13 +80,13 @@ java:
       password: ${SPTRIBS_POSTGRES_PASSWORD_PREVIEW}
 
 ccd:
+  postgresql:
+    enabled: false
   ccd:
     definitionImporter:
       enabled: false
     apiGatewayWeb:
       enabled: true
-    postgresql:
-      enabled: false
     s2s:
       enabled: false
     elastic:
