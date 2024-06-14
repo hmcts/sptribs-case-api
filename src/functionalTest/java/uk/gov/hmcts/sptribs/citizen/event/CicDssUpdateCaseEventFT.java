@@ -46,7 +46,6 @@ public class CicDssUpdateCaseEventFT extends FunctionalTestSuite {
 
         final Response response = triggerCallback(caseData, CITIZEN_DSS_UPDATE_CASE_SUBMISSION, ABOUT_TO_SUBMIT_URL);
 
-        System.out.println(response.asString());
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
         assertThatJson(response.asString())
             .when(IGNORING_EXTRA_FIELDS)
