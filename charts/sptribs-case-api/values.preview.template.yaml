@@ -172,7 +172,6 @@ ccd:
       imagePullPolicy: Always
       enviroment:
         USER_PROFILE_DB_HOST: '{{ tpl .Values.global.postgresHostname $}}'
-      keyVaults: [ ]
       ingressHost: ccd-user-profile-api-${SERVICE_FQDN}
 
   ccd-admin-web:
