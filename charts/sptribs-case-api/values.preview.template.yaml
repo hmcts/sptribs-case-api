@@ -63,6 +63,9 @@ ccd:
     dmStoreUrl: http://dm-store-aat.service.core-compute-aat.internal
     ccdAdminWebIngress: admin-web-${SERVICE_FQDN}
     ccdApiGatewayIngress: gateway-${SERVICE_FQDN}
+    ccdDataStoreUrl: http://${SERVICE_NAME}-ccd-data-store-api
+    ccdDefinitionStoreUrl: http://${SERVICE_NAME}-ccd-definition-store
+    ccdUserProfileUrl: http://${SERVICE_NAME}-ccd-user-profile-api
     postgresUsername: hmcts
     postgresHostname: "sptribs-preview.postgres.database.azure.com"
     postgresSecret: postgres
@@ -184,20 +187,19 @@ ccd:
         IDAM_ADMIN_WEB_SERVICE_KEY: ${ADMIN_S2S_KEY}
         IDAM_OAUTH2_AW_CLIENT_SECRET: ${ADMIN_WEB_IDAM_SECRET}
 
-  importer:
-    userprofile:
-      enabled: true
-      jurisdictions:
-        - ST_CIC
-      users:
-        - st_caseworker@mailinator.com|ST_CIC|CIC|Submitted
-        - st_solicitor@mailinator.com|ST_CIC|CIC|Submitted
-        - st_super@mailinator.com|ST_CIC|CIC|Submitted
-      userProfileDatabaseHost: '{{ tpl .Values.global.postgresHostname $}}'
-      userProfileDatabasePort: 5432
-      userProfileDatabaseUser: hmcts
-      userProfileDatabasePassword: hmcts
-      userProfileDatabaseName: "pr-${CHANGE_ID}-user-profile"
+  ccd-user-profile-importer:
+    enabled: true
+    jurisdictions:
+      - ST_CIC
+    users:
+      - st_caseworker@mailinator.com|ST_CIC|CIC|Submitted
+      - st_solicitor@mailinator.com|ST_CIC|CIC|Submitted
+      - st_super@mailinator.com|ST_CIC|CIC|Submitted
+    userProfileDatabaseHost: '{{ tpl .Values.global.postgresHostname $}}'
+    userProfileDatabasePort: 5432
+    userProfileDatabaseUser: hmcts
+    userProfileDatabasePassword: hmcts
+    userProfileDatabaseName: "pr-${CHANGE_ID}-user-profile"
   
   elasticsearch:
     nameOverride: ${SERVICE_NAME}-es
