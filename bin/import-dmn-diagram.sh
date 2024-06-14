@@ -5,10 +5,10 @@ workspace=${1}
 tenant_id=${2}
 product=${3}
 
-s2sSecret=${SPRTIBS_CASE_API_S2S_KEY:-AABBCCDDEEFFGGHH}
+s2sSecret=${S2S_SECRET:-AABBCCDDEEFFGGHH}
 
 #if [[ "${env}" == 'prod' ]]; then
-#  s2sSecret=${SPRTIBS_CASE_API_S2S_KEY}
+#  s2sSecret=${S2S_SECRET}
 #fi
 
 serviceToken=$($(realpath $workspace)/bin/utils/idam-lease-service-token.sh sptribs_case_api \

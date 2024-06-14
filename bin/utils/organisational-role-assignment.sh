@@ -20,7 +20,7 @@ BASEDIR=$(dirname "$0")
 USER_TOKEN=$($BASEDIR/idam-user-token.sh $USERNAME $PASSWORD)
 USER_ID=$($BASEDIR/idam-user-id.sh $USER_TOKEN)
 SERVICE_TOKEN=$($BASEDIR/idam-lease-service-token.sh sptribs_case_api \
-  $(docker run --rm toolbelt/oathtool --totp -b ${SPRTIBS_CASE_API_S2S_KEY:-AABBCCDDEEFFGGHH}))
+  $(docker run --rm toolbelt/oathtool --totp -b ${S2S_SECRET:-AABBCCDDEEFFGGHH}))
 
 echo "\n\nCreating role assignment: \n User: ${USER_ID}\n Role name: ${ROLE_NAME}\n ROLE_CLASSIFICATION: ${ROLE_CLASSIFICATION}\n"
 
