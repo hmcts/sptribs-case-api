@@ -34,6 +34,10 @@ java:
           alias: IDAM_SYSTEM_UPDATE_PASSWORD
         - name: launchdarkly-sdk-key
           alias: LAUNCH_DARKLY_SDK_KEY
+        - name: ccd-user-profile-db-username-preview
+          alias: CCD_USER_PROFILE_DB_USERNAME_PREVIEW
+        - name: ccd-user-profile-db-password-preview
+          alias: CCD_USER_PROFILE_DB_PASSWORD_PREVIEW
   secrets:
     POSTGRES_PASSWORD:
       secretRef: postgres
