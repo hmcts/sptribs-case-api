@@ -39,7 +39,6 @@ import uk.gov.hmcts.sptribs.testutil.TestDataHelper;
 import uk.gov.hmcts.sptribs.util.AppsUtil;
 
 import java.io.IOException;
-import java.time.Clock;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -193,7 +192,7 @@ class CicSubmitCaseEventTest {
             .isEqualTo(genericTestDocumentRelevance2);
         assertThat(response.getData().getMessages().get(0).getValue().getMessage()).isEqualTo(genericAdditionalInformation);
         assertThat(response.getData().getMessages().get(0).getValue().getDateReceived())
-            .isEqualTo(LocalDate.now(Clock.systemDefaultZone()));
+            .isEqualTo(LocalDate.now());
         assertThat(response.getData().getMessages().get(0).getValue().getReceivedFrom())
             .isEqualTo(TestDataHelper.getUser().getUserDetails().getFullName());
     }
