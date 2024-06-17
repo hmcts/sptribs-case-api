@@ -82,15 +82,6 @@ java:
 ccd:
   postgresql:
     enabled: false
-  testStubsService:
-    enabled: false
-  definitionImporter:
-    enabled: false
-  userProfileImporter:
-    enabled: true
-  ras:
-    enabled: false
-
   ccd:
     definitionImporter:
       enabled: false
@@ -100,6 +91,13 @@ ccd:
       enabled: false
     elastic:
       enabled: false
+    testStubsService:
+      enabled: false
+    userProfileImporter:
+      enabled: true
+    ras:
+      enabled: false
+
 
   ingressHost: ${SERVICE_FQDN}
   ingressIP: ${INGRESS_IP}
