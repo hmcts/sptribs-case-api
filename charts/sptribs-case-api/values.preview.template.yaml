@@ -121,7 +121,7 @@ ccd:
     postgresPassword: ${CCD_GLOBAL_POSTGRES_PASSWORD_PREVIEW}
     s2sUrl: http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
     postgresHostname: ${SERVICE_NAME}-postgresql
-    databaseNamePrefix: "chart-test-"
+    databaseNamePrefix: ""
     postgresSecret: "postgres"
 
   ccd-api-gateway-web:
