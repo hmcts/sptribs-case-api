@@ -162,6 +162,7 @@ ccd:
         IDAM_DATA_STORE_SYSTEM_USER_USERNAME: ${IDAM_DATA_STORE_SYSTEM_USER_USERNAME}
         IDAM_DATA_STORE_SYSTEM_USER_PASSWORD: ${IDAM_DATA_STORE_SYSTEM_USER_PASSWORD}
         ROLE_ASSIGNMENT_URL: http://sptribs-case-api-pr-${CHANGE_ID}-am-role-assignment-service
+        DATA_STORE_DB_OPTIONS: "?stringtype=unspecified"
       secrets:
         DATA_STORE_DB_PASSWORD:
           secretRef: "{{ .Values.global.postgresSecret }}"
