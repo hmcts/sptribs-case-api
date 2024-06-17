@@ -115,14 +115,21 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
     }
 
     private void setDefaultCaseDetails(CaseData data) {
-        CaseLocation caseLocation = new CaseLocation(ST_CIC_WA_CASE_BASE_LOCATION, ST_CIC_WA_CASE_REGION);
-        data.setCaseManagementLocation(caseLocation);
+        data.setCaseManagementLocation(
+            CaseLocation
+                .builder()
+                .baseLocation(ST_CIC_WA_CASE_BASE_LOCATION)
+                .region(ST_CIC_WA_CASE_REGION)
+                .build()
+        );
+
+        DynamicListElement caseManagementCategory = new DynamicListElement(
+            UUID.randomUUID(), ST_CIC_WA_CASE_MANAGEMENT_CATEGORY);
         data.setCaseManagementCategory(
             DynamicList
                 .builder()
-                .listItems(List.of(
-                    new DynamicListElement(
-                        UUID.randomUUID(), ST_CIC_WA_CASE_MANAGEMENT_CATEGORY)))
+                .listItems(List.of(caseManagementCategory))
+                .value(caseManagementCategory)
                 .build()
         );
     }

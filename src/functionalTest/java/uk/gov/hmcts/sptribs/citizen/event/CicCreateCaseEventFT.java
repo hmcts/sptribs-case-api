@@ -15,6 +15,7 @@ import static org.springframework.http.HttpStatus.OK;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CITIZEN_CIC_CREATE_CASE;
 import static uk.gov.hmcts.sptribs.testutil.CaseDataUtil.caseData;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.ABOUT_TO_SUBMIT_URL;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.SUBMITTED_URL;
 import static uk.gov.hmcts.sptribs.testutil.TestResourceUtil.expectedResponse;
 
 @SpringBootTest
@@ -24,6 +25,7 @@ public class CicCreateCaseEventFT extends FunctionalTestSuite {
         "classpath:request/casedata/ccd-callback-casedata-citizen-cic-create-case-about-to-submit.json";
     private static final String RESPONSE =
         "classpath:responses/response-citizen-cic-create-case-about-to-submit.json";
+    private static final String CONFIRMATION_HEADER = "$.confirmation_header";
 
     @Test
     public void shouldCreateCaseSuccessfullyInAboutToSubmitCallback() throws Exception {
@@ -36,4 +38,16 @@ public class CicCreateCaseEventFT extends FunctionalTestSuite {
             .when(IGNORING_EXTRA_FIELDS)
             .isEqualTo(json(expectedResponse(RESPONSE)));
     }
+
+    @Test
+    public void shouldReceiveNotificationWhenSubmittedCallbackIsInvoked() throws Exception {
+        final Map<String, Object> caseData = caseData(REQUEST);
+        final Response response = triggerCallback(caseData, CITIZEN_CIC_CREATE_CASE, SUBMITTED_URL);
+
+        assertThat(response.getStatusCode()).isEqualTo(OK.value());
+        assertThatJson(response.asString())
+            .inPath(CONFIRMATION_HEADER)
+            .isEqualTo("# Application Created \\n##");
+    }
+
 }
