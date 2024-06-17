@@ -122,6 +122,7 @@ ccd:
     s2sUrl: http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
     postgresHostname: ${SERVICE_NAME}-postgresql
     databaseNamePrefix: "chart-test-"
+    postgresSecret: "postgres"
 
   ccd-api-gateway-web:
     nodejs:
