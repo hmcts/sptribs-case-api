@@ -1,0 +1,39 @@
+{
+  "data": {
+    "cicCaseHearingList": {
+      "value": {
+        "code": "18b88d33-9da8-4ee0-946d-de71d33e4d6f",
+        "label": "1 - Case management - 21 Apr 2023 09:00"
+      },
+      "list_items": [
+        {
+          "code": "18b88d33-9da8-4ee0-946d-de71d33e4d6f",
+          "label": "1 - Case management - 21 Apr 2023 09:00"
+        }
+      ],
+      "valueLabel": "1 - Case management - 21 Apr 2023 09:00",
+      "valueCode": "18b88d33-9da8-4ee0-946d-de71d33e4d6f"
+    },
+    "cicCaseRespondentName": "Appeals team",
+    "cicCaseRespondentOrganisation": "CICA",
+    "cicCaseRespondentEmail": "appeals.team@cica.gov.uk",
+    "stayIsCaseStayed": "No",
+    "hearingStatus": "Postponed",
+    "hearingType": "CaseManagement",
+    "date": "2023-04-21",
+    "hearingTime": "09:00",
+    "postponeAdditionalInformation": "test",
+    "hearingList": [
+      {
+        "id": "1",
+        "value": {
+          "hearingStatus": "Postponed",
+          "hearingType": "CaseManagement",
+          "date": "2023-04-21",
+          "hearingTime": "09:00"
+        }
+      }
+    ],
+    "hyphenatedCaseRef": "1234-5678-9012-3456"
+  }
+}

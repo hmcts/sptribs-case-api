@@ -1,0 +1,64 @@
+{
+  "data": {
+    "cicCaseRespondentName": "Appeals team",
+    "cicCaseRespondentOrganisation": "CICA",
+    "cicCaseRespondentEmail": "appeals.team@cica.gov.uk",
+    "cicCaseApplicantDocumentsUploaded": [
+      {
+        "id": "${json-unit.any-string}",
+        "value": {
+          "documentCategory": "DSS Tribunal form uploaded documents",
+          "documentLink": {
+            "document_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/4ee1bc04-47a9-48da-9370-9f6b9c54ccaa",
+            "document_filename": "mockFile.pdf",
+            "document_binary_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/4ee1bc04-47a9-48da-9370-9f6b9c54ccaa/binary",
+            "category_id": "DSS"
+          }
+        }
+      },
+      {
+        "id": "${json-unit.any-string}",
+        "value": {
+          "documentCategory": "DSS Supporting uploaded documents",
+          "documentLink": {
+            "document_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/9d046706-8fa5-4c24-968d-f0aa30a9ceb8",
+            "document_filename": "mockFile.txt",
+            "document_binary_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/9d046706-8fa5-4c24-968d-f0aa30a9ceb8/binary",
+            "category_id": "DSS"
+          }
+        }
+      },
+      {
+        "id": "${json-unit.any-string}",
+        "value": {
+          "documentCategory": "DSS Other information documents",
+          "documentEmailContent": "a relevant doc",
+          "documentLink": {
+            "document_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/328c674f-59c3-418a-b76b-78f2cc52d21a",
+            "document_filename": "mockFileUpdated.pdf",
+            "document_binary_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/328c674f-59c3-418a-b76b-78f2cc52d21a/binary",
+            "category_id": "DSS"
+          }
+        }
+      }
+    ],
+    "messages": [
+      {
+        "id": "${json-unit.any-string}",
+        "value": {
+          "dateReceived": "${json-unit.any-string}",
+          "receivedFrom": "User Test"
+        }
+      },
+      {
+        "id": "${json-unit.any-string}",
+        "value": {
+          "message": "some documents relevant to the case",
+          "dateReceived": "${json-unit.any-string}",
+          "receivedFrom": "User Test"
+        }
+      }
+    ],
+    "dssCaseDataOtherInfoDocuments": []
+  }
+}

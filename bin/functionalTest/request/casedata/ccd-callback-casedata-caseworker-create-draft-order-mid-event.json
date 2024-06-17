@@ -1,0 +1,69 @@
+{
+  "cicCaseFullName": "Subject Name",
+  "orderContentOrderTemplate": "CIC3_Rule_27",
+  "orderContentOrderSignature": "Order Signatory",
+  "orderContentMainContent": "Order Main Content",
+  "hearingList": [
+    {
+      "id": "1",
+      "value": {
+        "code": "18b88d33-9da8-4ee0-946d-de71d33e4d6f",
+        "label": "1 - Case management - 21 Apr 2023 09:00",
+        "hearingType": "CaseManagement",
+        "hearingVenueNameAndAddress": "",
+        "date": "2023-04-21",
+        "hearingTime": "09:00",
+        "memberList": [
+          {
+            "id": "1",
+            "value": {
+              "name": {
+                "value": {
+                  "code": "fc65ee31-7e4b-47e3-ab40-1fead37bac5a",
+                  "label": "panel member 1"
+                },
+                "list_items": [
+                  {
+                    "code": "fc65ee31-7e4b-47e3-ab40-1fead37bac5a",
+                    "label": "panel member 1"
+                  },
+                  {
+                    "code": "684df3d2-8218-4093-acbb-f84fe6032fb1",
+                    "label": "panel member 2"
+                  }
+                ],
+                "valueLabel": "panel member 1",
+                "valueCode": "fc65ee31-7e4b-47e3-ab40-1fead37bac5a"
+              },
+              "role": "fullMember"
+            }
+          },
+          {
+            "id": "2",
+            "value": {
+              "name": {
+                "value": {
+                  "code": "684df3d2-8218-4093-acbb-f84fe6032fb1",
+                  "label": "panel member 2"
+                },
+                "list_items": [
+                  {
+                    "code": "fc65ee31-7e4b-47e3-ab40-1fead37bac5a",
+                    "label": "panel member 1"
+                  },
+                  {
+                    "code": "684df3d2-8218-4093-acbb-f84fe6032fb1",
+                    "label": "panel member 2"
+                  }
+                ],
+                "valueLabel": "panel member 2",
+                "valueCode": "684df3d2-8218-4093-acbb-f84fe6032fb1"
+              },
+              "role": "observer"
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

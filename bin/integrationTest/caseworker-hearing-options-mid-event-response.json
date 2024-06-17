@@ -1,0 +1,36 @@
+{
+  "data": {
+    "allCaseworkerCICDocument": [],
+    "newCaseworkerCICDocument": [],
+    "editCicaCaseDetails": {},
+    "contactParties": {},
+    "caseBundles": [],
+    "cicCaseRespondentName": "Appeals team",
+    "cicCaseRespondentOrganisation": "CICA",
+    "cicCaseRespondentEmail": "appeals.team@cica.gov.uk",
+    "cicCaseFirstDueDate": "",
+    "stayIsCaseStayed": "No",
+    "hearingVenues": {
+      "list_items": [
+        {
+          "code": "${json-unit.any-string}",
+          "label": "London Court-1 Court Street"
+        },
+        {
+          "code": "${json-unit.any-string}",
+          "label": "Manchester Court-1 Court Avenue"
+        }
+      ]
+    },
+    "regionList": {
+      "value": {
+        "label": "1-London"
+      },
+      "valueLabel": "1-London"
+    },
+    "hearingList": [],
+    "closedDayCount": "",
+    "firstHearingDate": "",
+    "dataVersion": 0
+  }
+}

@@ -1,0 +1,29 @@
+title: CIC Bundle
+filename: cic_bundle.pdf
+coverpageTemplate: ST_CIC_CoverPage.docx
+hasTableOfContents: true
+hasCoversheets: true
+hasFolderCoversheets: false
+pageNumberFormat: numberOfPages
+documentNameValue: /documentFileName
+folders:
+  - name: Application Documents
+    documents:
+      - type: documentSet
+        property: /caseDocuments
+        filters:
+          - property: /documentType
+              value: A
+  - name: Further additions
+    documents:
+      - type: documentSet
+        property: /caseDocuments
+        filters:
+          - property: /documentType
+              value: TD
+              value: B
+              value: C
+              value: D
+              value: E
+              value: L
+              value: TG

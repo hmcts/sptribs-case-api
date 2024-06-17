@@ -1,0 +1,98 @@
+{
+  "caseNameHmctsInternal": "Testing subject",
+  "caseFlags": {
+    "details": []
+  },
+  "subjectFlags": {
+    "partyName": "Testing subject",
+    "roleOnCase": "subject",
+    "details": []
+  },
+  "representativeFlags": {
+    "partyName": "Testing representative",
+    "roleOnCase": "Representative",
+    "details": []
+  },
+  "applicantFlags": {
+    "partyName": "Testing applicant",
+    "roleOnCase": "applicant",
+    "details": []
+  },
+  "cicCaseCaseCategory": "Assessment",
+  "cicCaseCaseSubcategory": "other",
+  "cicCaseCaseReceivedDate": "2000-01-01",
+  "cicCasePartiesCIC": [
+    "SubjectCIC",
+    "RepresentativeCIC",
+    "ApplicantCIC"
+  ],
+  "cicCaseSubjectCIC": [
+    "SubjectCIC"
+  ],
+  "cicCaseApplicantCIC": [
+    "ApplicantCIC"
+  ],
+  "cicCaseRepresentativeCIC": [
+    "RepresentativeCIC"
+  ],
+  "cicCaseRespondentName": "Appeals team",
+  "cicCaseRespondentOrganisation": "CICA",
+  "cicCaseFullName": "Testing subject",
+  "cicCaseAddress": {
+    "AddressLine1": "Buckingham Palace",
+    "AddressLine2": "",
+    "AddressLine3": "",
+    "PostTown": "London",
+    "County": "",
+    "PostCode": "SW1A 1AA",
+    "Country": "United Kingdom"
+  },
+  "cicCasePhoneNumber": "",
+  "cicCaseDateOfBirth": "2000-01-01",
+  "cicCaseContactPreferenceType": "Email",
+  "cicCaseSchemeCic": "Year2012",
+  "cicCaseRegionCIC": "London",
+  "cicCaseApplicantFullName": "Testing applicant",
+  "cicCaseApplicantPhoneNumber": "01234567892",
+  "cicCaseApplicantContactDetailsPreference": "Email",
+  "cicCaseRepresentativeFullName": "Testing representative",
+  "cicCaseRepresentativePhoneNumber": "01234567893",
+  "cicCaseRepresentativeContactDetailsPreference": "Email",
+  "cicCaseIsRepresentativeQualified": "No",
+  "cicCaseFormReceivedInTime": "Yes",
+  "cicCaseClaimLinkedToCic": "No",
+  "cicCaseNotifyPartySubject": ["SubjectCIC"],
+  "cicCaseCompensationClaimLinkCIC": "No",
+  "cicCaseIsRepresentativePresent": "Yes",
+  "cicCaseApplicantDocumentsUploaded": [
+    {
+      "id": "bbf81d3c-969e-4a27-8745-e7b3c1a7eeba",
+      "value": {
+        "documentCategory": "ApplicationForm",
+        "documentEmailContent": "Application form",
+        "documentLink": {
+          "document_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/f3335647-6277-40af-ba66-c09365c0776e",
+          "document_filename": "pdf.pdf",
+          "document_binary_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/f3335647-6277-40af-ba66-c09365c0776e/binary",
+          "category_id": "A"
+        }
+      }
+    }
+  ],
+  "cicCaseFirstDueDate": "",
+  "stayIsCaseStayed": "No",
+  "hearingList": [],
+  "hyphenatedCaseRef": "1715-6075-4062-2293",
+  "closedDayCount": "",
+  "issueCaseDocumentList": {
+    "value": [],
+    "list_items": [
+      {
+        "code": "334ff89d-33af-4442-b767-ada611ad0d15",
+        "label": "[pdf.pdf A - Application Form](http://manage-case.demo.platform.hmcts.net/documents/f3335647-6277-40af-ba66-c09365c0776e/binary)"
+      }
+    ]
+  },
+  "firstHearingDate": "",
+  "dataVersion": 0
+}

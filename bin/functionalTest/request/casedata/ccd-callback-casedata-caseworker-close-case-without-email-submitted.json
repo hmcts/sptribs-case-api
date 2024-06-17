@@ -1,0 +1,9 @@
+{
+  "hyphenatedCaseRef": "1234-5678-9012-3456",
+  "cicCaseNotifyPartySubject": ["SubjectCIC"],
+  "cicCaseContactPreferenceType": "Email",
+  "cicCaseApplicantFullName": "Testing applicant",
+  "cicCaseApplicantPhoneNumber": "01234567892",
+  "closeCloseCaseReason": "caseRejected",
+  "cicCaseFullName": "User Name"
+}

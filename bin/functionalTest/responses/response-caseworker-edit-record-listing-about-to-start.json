@@ -1,0 +1,47 @@
+{
+  "data": {
+    "cicCaseHearingList": {
+      "list_items": []
+    },
+    "regionList": {
+      "list_items": [
+        {
+          "code": "${json-unit.any-string}",
+          "label": "1-London"
+        },
+        {
+          "code": "${json-unit.any-string}",
+          "label": "11-Scotland"
+        },
+        {
+          "code": "${json-unit.any-string}",
+          "label": "2-Midlands"
+        },
+        {
+          "code": "${json-unit.any-string}",
+          "label": "3-North East"
+        },
+        {
+          "code": "${json-unit.any-string}",
+          "label": "4-North West"
+        },
+        {
+          "code": "${json-unit.any-string}",
+          "label": "5-South East"
+        },
+        {
+          "code": "${json-unit.any-string}",
+          "label": "6-South West"
+        },
+        {
+          "code": "${json-unit.any-string}",
+          "label": "7-Wales"
+        }
+      ]
+    },
+    "hearingList": [],
+    "hyphenatedCaseRef": "1714-0484-2347-8720",
+    "currentEvent": "caseworker-edit-record-listing"
+  },
+  "state": "CaseManagement"
+}
