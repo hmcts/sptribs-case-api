@@ -13,6 +13,7 @@ import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.event.page.IssueCaseNotifyParties;
 import uk.gov.hmcts.sptribs.caseworker.event.page.IssueCaseSelectDocument;
 import uk.gov.hmcts.sptribs.caseworker.util.DocumentListUtil;
+import uk.gov.hmcts.sptribs.caseworker.util.MessageUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
@@ -21,18 +22,9 @@ import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.common.notification.CaseIssuedNotification;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import static java.lang.String.format;
 import static org.springframework.util.CollectionUtils.isEmpty;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_ISSUE_CASE;
-import static uk.gov.hmcts.sptribs.caseworker.util.MessageUtil.generateSimpleErrorMessage;
-import static uk.gov.hmcts.sptribs.caseworker.util.MessageUtil.generateSimpleMessage;
-import static uk.gov.hmcts.sptribs.ciccase.model.NotificationParties.APPLICANT;
-import static uk.gov.hmcts.sptribs.ciccase.model.NotificationParties.REPRESENTATIVE;
-import static uk.gov.hmcts.sptribs.ciccase.model.NotificationParties.RESPONDENT;
-import static uk.gov.hmcts.sptribs.ciccase.model.NotificationParties.SUBJECT;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_CASEWORKER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_HEARING_CENTRE_ADMIN;
@@ -98,54 +90,27 @@ public class CaseworkerIssueCase implements CCDConfig<CaseData, State, UserRole>
     }
 
     public SubmittedCallbackResponse submitted(CaseDetails<CaseData, State> details,
-                                               CaseDetails<CaseData, State> beforeDetails) {
-
+                                            CaseDetails<CaseData, State> beforeDetails) {
         final CaseData data = details.getData();
         final CicCase cicCase = data.getCicCase();
-        final String caseNumber = data.getHyphenatedCaseRef();
-        final List<String> errors = new ArrayList<>();
+        String caseNumber = data.getHyphenatedCaseRef();
 
         if (!isEmpty(cicCase.getNotifyPartySubject())) {
-            try {
-                caseIssuedNotification.sendToSubject(details.getData(), caseNumber);
-            } catch (Exception notificationException) {
-                errors.add(SUBJECT.getLabel());
-            }
+            caseIssuedNotification.sendToSubject(details.getData(), caseNumber);
         }
         if (!isEmpty(cicCase.getNotifyPartyApplicant())) {
-            try {
-                caseIssuedNotification.sendToApplicant(details.getData(), caseNumber);
-            } catch (Exception notificationException) {
-                errors.add(APPLICANT.getLabel());
-            }
+            caseIssuedNotification.sendToApplicant(details.getData(), caseNumber);
         }
         if (!isEmpty(cicCase.getNotifyPartyRepresentative())) {
-            try {
-                caseIssuedNotification.sendToRepresentative(details.getData(), caseNumber);
-            } catch (Exception notificationException) {
-                errors.add(REPRESENTATIVE.getLabel());
-            }
+            caseIssuedNotification.sendToRepresentative(details.getData(), caseNumber);
         }
         if (!isEmpty(cicCase.getNotifyPartyRespondent())) {
-            try {
-                caseIssuedNotification.sendToRespondent(details.getData(), caseNumber);
-            } catch (Exception notificationException) {
-                errors.add(RESPONDENT.getLabel());
-            }
+            caseIssuedNotification.sendToRespondent(details.getData(), caseNumber);
         }
 
-        if (isEmpty(errors)) {
-            return SubmittedCallbackResponse.builder()
-                .confirmationHeader(format("# Case issued %n##  This case has now been issued. %n## %s",
-                    generateSimpleMessage(details.getData().getCicCase())))
-                .build();
-        } else {
-            return SubmittedCallbackResponse.builder()
-                .confirmationHeader(
-                    format("# Issue case notification failed %n## %s %n## Please resend the notification.",
-                        generateSimpleErrorMessage(errors))
-                )
-                .build();
-        }
+        return SubmittedCallbackResponse.builder()
+            .confirmationHeader(format("# Case issued %n##  This case has now been issued. %n## %s",
+                MessageUtil.generateSimpleMessage(details.getData().getCicCase())))
+            .build();
     }
 }

@@ -33,9 +33,6 @@ public class CaseworkerIssueCaseFT extends FunctionalTestSuite {
     private static final String ABOUT_TO_SUBMIT_RESPONSE =
         "classpath:responses/response-caseworker-issue-case-about-to-submit.json";
 
-    private static final String SUBMITTED_FAILURE_REQUEST =
-        "classpath:request/casedata/ccd-callback-casedata-caseworker-issue-case-submitted.json";
-
     private static final String CONFIRMATION_HEADER = "$.confirmation_header";
 
     @Test
@@ -75,21 +72,5 @@ public class CaseworkerIssueCaseFT extends FunctionalTestSuite {
             .inPath(CONFIRMATION_HEADER)
             .isString()
             .contains("# Case issued \n##  This case has now been issued. \n## A notification has been sent to");
-    }
-
-    @Test
-    public void shouldReturnFailureMessageWhenEmailCouldNotSendWhenSubmittedCallbackIsInvoked() throws Exception {
-        final Map<String, Object> caseData = caseData(SUBMITTED_FAILURE_REQUEST);
-
-        final Response response = triggerCallback(caseData, CASEWORKER_ISSUE_CASE, SUBMITTED_URL);
-
-        assertThat(response.getStatusCode()).isEqualTo(OK.value());
-        assertThatJson(response.asString())
-            .inPath(CONFIRMATION_HEADER)
-            .isString()
-            .isEqualTo("""
-                # Issue case notification failed\s
-                ## A notification could not be sent to: Subject\s
-                ## Please resend the notification.""");
     }
 }

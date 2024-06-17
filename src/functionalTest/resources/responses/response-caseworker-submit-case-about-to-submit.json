@@ -37,8 +37,7 @@
             "document_filename": "mockFileUpdated.pdf",
             "document_binary_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/328c674f-59c3-418a-b76b-78f2cc52d21a/binary"
           },
-          "documentEmailContent": "a relevant doc",
-          "date": "${json-unit.any-string}"
+          "documentEmailContent": "a relevant doc"
         }
       },
       {
@@ -47,8 +46,7 @@
           "documentCategory": "DSS Supporting uploaded documents",
           "documentLink": {
             "category_id": "DSS"
-          },
-          "date": "${json-unit.any-string}"
+          }
         }
       },
       {
@@ -57,8 +55,7 @@
           "documentCategory": "DSS Tribunal form uploaded documents",
           "documentLink": {
             "category_id": "DSS"
-          },
-          "date": "${json-unit.any-string}"
+          }
         }
       }
     ],
