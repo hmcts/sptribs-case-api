@@ -86,7 +86,7 @@ ccd:
     definitionImporter:
       enabled: false
     apiGatewayWeb:
-      enabled: true
+      enabled: false
     s2s:
       enabled: false
     elastic:
@@ -94,8 +94,16 @@ ccd:
     testStubsService:
       enabled: false
     userProfileImporter:
-      enabled: true
+      enabled: false
     ras:
+      enabled: false
+    userProfile:
+      enabled: false
+    definitionStore:
+      enabled: false
+    dataStore:
+      enabled: false
+    adminWeb:
       enabled: false
 
 
