@@ -102,7 +102,7 @@ ccd:
     definitionStore:
       enabled: false
     dataStore:
-      enabled: false
+      enabled: true
     adminWeb:
       enabled: true
 
