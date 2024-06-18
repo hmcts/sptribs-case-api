@@ -266,7 +266,6 @@ withPipeline(type, product, component) {
     }
   }
 
-
   onDemo {
       env.ENVIRONMENT="demo"
       env.CASE_API_URL = "http://sptribs-case-api-demo.service.core-compute-demo.internal"

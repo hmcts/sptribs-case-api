@@ -559,3 +559,14 @@ em-stitching:
       FLYWAY_POSTGRESQL_TRANSACTIONAL_LOCK: false
       LOGGING_LEVEL_UK_GOV_HMCTS_REFORM_EM: DEBUG
 
+postgresql:
+  enabled: true
+  flexibleserver: sptribs-preview
+  setup:
+    databases:
+      - name: "pr-${CHANGE_ID}-sptribs-case-api"
+      - name: "pr-${CHANGE_ID}-data-store"
+      - name: "pr-${CHANGE_ID}-definition-store"
+      - name: "pr-${CHANGE_ID}-user-profile"
+      - name: "pr-${CHANGE_ID}-role-assignment"
+      - name: "pr-${CHANGE_ID}-emstitch"
