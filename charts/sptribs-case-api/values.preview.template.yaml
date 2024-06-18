@@ -10,7 +10,7 @@ java:
     CASE_DOCUMENT_AM_BASEURL: http://${SERVICE_NAME}-ccd-case-document-am-api
     BUNDLING_API_URL: https://em-ccdorc-${SERVICE_FQDN}
     CITIZEN_UPDATE_CASE_STATE_ENABLED: true
-    POSTGRES_HOST: ${SERVICE_NAME}-postgresql
+    POSTGRES_HOST: sptribs-preview.postgres.database.azure.com
     POSTGRES_NAME: sptribs-case-api
     POSTGRES_USERNAME: ${SPTRIBS_POSTGRES_USERNAME_PREVIEW}
     POSTGRES_PASSWORD: ${SPTRIBS_POSTGRES_PASSWORD_PREVIEW}
@@ -56,28 +56,28 @@ java:
         - name: em-spring-datasource-password-preview
           alias: EM_SPRING_DATASOURCE_PASSWORD_PREVIEW
 
-  postgresql:
-    enabled: true
-    image:
-      tag: '11.6.0'
-    primary:
-      persistence:
-        enabled: false
-      resources:
-        requests:
-          cpu: 25m
-      initdb:
-        scripts:
-          init.sql: |
-            CREATE DATABASE "sptribs-case-api" WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
-            CREATE DATABASE "data-store" WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
-            CREATE DATABASE "definition-store" WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
-            CREATE DATABASE "role_assignment" WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
-            CREATE DATABASE "user-profile" WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
-            CREATE DATABASE "emstitch" WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
-    auth:
-      username: ${SPTRIBS_POSTGRES_USERNAME_PREVIEW}
-      password: ${SPTRIBS_POSTGRES_PASSWORD_PREVIEW}
+#  postgresql:
+#    enabled: true
+#    image:
+#      tag: '11.6.0'
+#    primary:
+#      persistence:
+#        enabled: false
+#      resources:
+#        requests:
+#          cpu: 25m
+#      initdb:
+#        scripts:
+#          init.sql: |
+#            CREATE DATABASE "sptribs-case-api" WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
+#            CREATE DATABASE "data-store" WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
+#            CREATE DATABASE "definition-store" WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
+#            CREATE DATABASE "role_assignment" WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
+#            CREATE DATABASE "user-profile" WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
+#            CREATE DATABASE "emstitch" WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
+#    auth:
+#      username: ${SPTRIBS_POSTGRES_USERNAME_PREVIEW}
+#      password: ${SPTRIBS_POSTGRES_PASSWORD_PREVIEW}
 
 ccd:
   ccd:
