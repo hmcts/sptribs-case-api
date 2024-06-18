@@ -164,6 +164,7 @@ ccd:
           secretRef: postgres
           key: PASSWORD
           disabled: false
+      keyVaults: [ ]
 
   ccd-definition-store-api:
     java:
@@ -176,11 +177,13 @@ ccd:
         ELASTIC_SEARCH_ENABLED: true
         ELASTIC_SEARCH_HOST: ${SERVICE_NAME}-es-master
         DEFINITION_STORE_DB_USERNAME: hmcts
+        DEFINITION_STORE_DB_NAME: "pr-${CHANGE_ID}-definition-store"
       secrets:
         DEFINITION_STORE_DB_PASSWORD:
           secretRef: postgres
           key: PASSWORD
           disabled: false
+      keyVaults: [ ]
       ingressHost: ccd-definition-store-${SERVICE_FQDN}
       autoscaling:
         enabled: false
@@ -192,7 +195,7 @@ ccd:
     java:
       disableKeyVaults: true
       imagePullPolicy: Always
-      enviroment:
+      environment:
         USER_PROFILE_DB_HOST: '{{ tpl .Values.global.postgresHostname $}}'
         USER_PROFILE_DB_NAME: "pr-${CHANGE_ID}-user-profile"
         USER_PROFILE_DB_USERNAME: hmcts
@@ -228,7 +231,7 @@ ccd:
 #      userProfileDatabaseUser: ${CCD_USER_PROFILE_DB_USERNAME_PREVIEW}
 #      userProfileDatabasePassword: ${CCD_USER_PROFILE_DB_PASSWORD_PREVIEW}
       userProfileDatabaseName: "pr-${CHANGE_ID}-user-profile"
-      secret:
+      secrets:
         userProfileDatabasePassword:
           secretRef: postgres
           key: PASSWORD
