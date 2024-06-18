@@ -193,11 +193,11 @@ ccd:
       enviroment:
         USER_PROFILE_DB_HOST: '{{ tpl .Values.global.postgresHostname $}}'
       ingressHost: ccd-user-profile-api-${SERVICE_FQDN}
-      keyVaults:
-        ccd:
-          secrets:
-            - name: app-insights-connection-string
-              alias: app-insights-connection-string
+#      keyVaults:
+#        ccd:
+#          secrets:
+#            - name: app-insights-connection-string
+#              alias: app-insights-connection-string
 
   ccd-admin-web:
     nodejs:
