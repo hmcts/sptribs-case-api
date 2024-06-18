@@ -220,8 +220,10 @@ ccd:
         - st_super@mailinator.com|ST_CIC|CIC|Submitted
       userProfileDatabaseHost: '{{ tpl .Values.global.postgresHostname $}}'
       userProfileDatabasePort: 5432
-      userProfileDatabaseUser: ${CCD_USER_PROFILE_DB_USERNAME_PREVIEW}
-      userProfileDatabasePassword: ${CCD_USER_PROFILE_DB_PASSWORD_PREVIEW}
+      userProfileDatabaseUser: hmcts
+      userProfileDatabasePassword: hmcts
+#      userProfileDatabaseUser: ${CCD_USER_PROFILE_DB_USERNAME_PREVIEW}
+#      userProfileDatabasePassword: ${CCD_USER_PROFILE_DB_PASSWORD_PREVIEW}
       userProfileDatabaseName: "pr-${CHANGE_ID}-user-profile"
 
 #  ccd-user-profile-importer:
