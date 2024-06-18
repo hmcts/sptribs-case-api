@@ -11,10 +11,10 @@ import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
-import uk.gov.hmcts.ccd.sdk.type.CaseLocation;
 import uk.gov.hmcts.ccd.sdk.type.DynamicList;
 import uk.gov.hmcts.ccd.sdk.type.DynamicListElement;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
+import uk.gov.hmcts.sptribs.caseworker.model.CaseManagementLocation;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
@@ -115,13 +115,23 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
     }
 
     private void setDefaultCaseDetails(CaseData data) {
+        CaseManagementLocation caseManagementLocation = new CaseManagementLocation(ST_CIC_WA_CASE_BASE_LOCATION, ST_CIC_WA_CASE_REGION);
+        log.info("Case Management base location {}, region {}",
+            caseManagementLocation.getBaseLocation(), caseManagementLocation.getRegion());
+
+        CaseManagementLocation caseManagementLocation1 = CaseManagementLocation
+            .builder()
+            .baseLocation(ST_CIC_WA_CASE_BASE_LOCATION)
+            .region(ST_CIC_WA_CASE_REGION)
+            .build();
+        log.info("Case Management (builder) base location {}, region {}",
+            caseManagementLocation1.getBaseLocation(), caseManagementLocation1.getRegion());
+
         data.setCaseManagementLocation(
-            CaseLocation
-                .builder()
-                .baseLocation(ST_CIC_WA_CASE_BASE_LOCATION)
-                .region(ST_CIC_WA_CASE_REGION)
-                .build()
+            caseManagementLocation
         );
+        log.info("Case Management (data) base location {}, region {}",
+            data.getCaseManagementLocation().getBaseLocation(), data.getCaseManagementLocation().getRegion());
 
         DynamicListElement caseManagementCategory = new DynamicListElement(
             UUID.randomUUID(), ST_CIC_WA_CASE_MANAGEMENT_CATEGORY);
