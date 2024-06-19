@@ -95,7 +95,7 @@ ccd:
 #        DATA_STORE_DB_USERNAME: ${CCD_DATA_STORE_DB_USERNAME_PREVIEW}
 #        DATA_STORE_DB_PASSWORD: ${CCD_DATA_STORE_DB_PASSWORD_PREVIEW}
         DATA_STORE_DB_HOST: '{{ tpl .Values.global.postgresHostname $}}'
-        DATA_STORE_DB_NAME: " {{ .Values.global.databaseNamePrefix }}data-store"
+        DATA_STORE_DB_NAME: "{{ .Values.global.databaseNamePrefix }}data-store"
         DATA_STORE_DB_USERNAME: hmcts
         DATA_STORE_IDAM_KEY: ${DATA_STORE_S2S_KEY}
         DATA_STORE_DEFAULT_LOG_LEVEL: info
@@ -156,7 +156,7 @@ ccd:
         CCD_DATA_STORE_URL: http://{{ .Release.Name }}-ccd-data-store-api
         RUN_LD_ON_STARTUP: false
         ROLE_ASSIGNMENT_DB_HOST: '{{ tpl .Values.global.postgresHostname $}}'
-        ROLE_ASSIGNMENT_DB_NAME: " {{ .Values.global.databaseNamePrefix }}role-assignment"
+        ROLE_ASSIGNMENT_DB_NAME: "{{ .Values.global.databaseNamePrefix }}role-assignment"
         ROLE_ASSIGNMENT_DB_OPTIONS: "?stringtype=unspecified&ssl=disable&gssEncMode=disable"
         ROLE_ASSIGNMENT_DB_USERNAME: ${SPTRIBS_POSTGRES_USERNAME_PREVIEW}
       secrets:
@@ -247,7 +247,7 @@ ccd:
 #    userProfileDatabasePort: 5432
 #    userProfileDatabaseUser: hmcts
 #    userProfileDatabasePassword: hmcts
-#    userProfileDatabaseName: " {{ .Values.global.databaseNamePrefix }}user-profile"
+#    userProfileDatabaseName: "{{ .Values.global.databaseNamePrefix }}user-profile"
 
   elasticsearch:
     nameOverride: ${SERVICE_NAME}-es
@@ -574,7 +574,7 @@ em-stitching:
       DM_STORE_APP_URL: http://dm-store-aat.service.core-compute-aat.internal
       CDAM_URL: http://${SERVICE_NAME}-ccd-case-document-am-api
       SPRING_DATASOURCE_HOST: '{{ tpl .Values.global.postgresHostname $}}'
-      SPRING_DATASOURCE_NAME: " {{ .Values.global.databaseNamePrefix }}emstitch"
+      SPRING_DATASOURCE_NAME: "{{ .Values.global.databaseNamePrefix }}emstitch"
       SPRING_DATASOURCE_OPTIONS: "?ssl=disable"
       SPRING_DATASOURCE_PORT: 5432
       SPRING_DATASOURCE_USERNAME: hmcts
@@ -593,12 +593,12 @@ postgresql:
   flexibleserver: sptribs-preview
   setup:
     databases:
-      - name: " {{ .Values.global.databaseNamePrefix }}sptribs-case-api"
-      - name: " {{ .Values.global.databaseNamePrefix }}data-store"
-      - name: " {{ .Values.global.databaseNamePrefix }}definition-store"
-      - name: " {{ .Values.global.databaseNamePrefix }}user-profile"
-      - name: " {{ .Values.global.databaseNamePrefix }}role-assignment"
-      - name: " {{ .Values.global.databaseNamePrefix }}emstitch"
+      - name: "{{ .Values.global.databaseNamePrefix }}sptribs-case-api"
+      - name: "{{ .Values.global.databaseNamePrefix }}data-store"
+      - name: "{{ .Values.global.databaseNamePrefix }}definition-store"
+      - name: "{{ .Values.global.databaseNamePrefix }}user-profile"
+      - name: "{{ .Values.global.databaseNamePrefix }}role-assignment"
+      - name: "{{ .Values.global.databaseNamePrefix }}emstitch"
 
 servicebus:
   enabled: false
