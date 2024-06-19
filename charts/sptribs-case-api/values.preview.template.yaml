@@ -193,7 +193,7 @@ ccd:
         ROLE_ASSIGNMENT_DB_PASSWORD:
           secretRef: postgres
           key: PASSWORD
-          disabled: true
+          disabled: false
       keyVaults:
         am:
           secrets:
