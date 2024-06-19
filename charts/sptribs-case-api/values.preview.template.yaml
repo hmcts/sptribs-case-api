@@ -128,7 +128,7 @@ ccd:
       imagePullPolicy: Always
       environment:
         CASE_DOCUMENT_AM_API_ATTACH_DOCUMENT_ENABLED: true
-        DATA_STORE_DB_HOST: ${SERVICE_NAME}-postgresql
+        DATA_STORE_DB_HOST: '{{ tpl .Values.global.postgresHostname $}}'
         DATA_STORE_DB_USERNAME: ${CCD_DATA_STORE_DB_USERNAME_PREVIEW}
         DATA_STORE_DB_PASSWORD: ${CCD_DATA_STORE_DB_PASSWORD_PREVIEW}
         DATA_STORE_IDAM_KEY: ${DATA_STORE_S2S_KEY}
@@ -185,9 +185,9 @@ ccd:
         CCD_DATA_STORE_URL: http://{{ .Release.Name }}-ccd-data-store-api
         RUN_LD_ON_STARTUP: false
         ROLE_ASSIGNMENT_DB_HOST: '{{ tpl .Values.global.postgresHostname $}}'
-        ROLE_ASSIGNMENT_DB_NAME: "pr-${CHANGE_ID}-role-assignment"
+        ROLE_ASSIGNMENT_DB_NAME: "{{ .Values.global.databaseNamePrefix }}-role-assignment"
         ROLE_ASSIGNMENT_DB_OPTIONS: "?stringtype=unspecified&ssl=disable&gssEncMode=disable"
-        ROLE_ASSIGNMENT_DB_USERNAME: ${CCD_GLOBAL_POSTGRES_USERNAME_PREVIEW}
+        ROLE_ASSIGNMENT_DB_USERNAME: hmcts
 #        ROLE_ASSIGNMENT_DB_PASSWORD: ${CCD_GLOBAL_POSTGRES_PASSWORD_PREVIEW}
       secrets:
         ROLE_ASSIGNMENT_DB_PASSWORD:
@@ -205,7 +205,7 @@ ccd:
       disableKeyVaults: true
       imagePullPolicy: Always
       environment:
-        DEFINITION_STORE_DB_HOST: ${SERVICE_NAME}-postgresql
+        DEFINITION_STORE_DB_HOST: '{{ tpl .Values.global.postgresHostname $}}'
         DEFINITION_STORE_IDAM_KEY: ${DEFINITION_STORE_S2S_KEY}
         IDAM_USER_URL: https://idam-web-public.aat.platform.hmcts.net
         ELASTIC_SEARCH_ENABLED: true
@@ -221,8 +221,8 @@ ccd:
     java:
       disableKeyVaults: true
       imagePullPolicy: Always
-      enviroment:
-        USER_PROFILE_DB_HOST: ${SERVICE_NAME}-postgresql
+      environment:
+        USER_PROFILE_DB_HOST: '{{ tpl .Values.global.postgresHostname $}}'
       ingressHost: ccd-user-profile-api-${SERVICE_FQDN}
 
   ccd-admin-web:
@@ -231,7 +231,7 @@ ccd:
       image: hmctspublic.azurecr.io/ccd/admin-web:latest
       ingressHost: admin-web-${SERVICE_FQDN}
       environment:
-        USER_PROFILE_DB_HOST: ${SERVICE_NAME}-postgresql
+        USER_PROFILE_DB_HOST: '{{ tpl .Values.global.postgresHostname $}}'
         IDAM_ADMIN_WEB_SERVICE_KEY: ${ADMIN_S2S_KEY}
         IDAM_OAUTH2_AW_CLIENT_SECRET: ${ADMIN_WEB_IDAM_SECRET}
 
@@ -568,7 +568,7 @@ em-stitching:
       S2S_BASE_URI: http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
       DM_STORE_APP_URL: http://dm-store-aat.service.core-compute-aat.internal
       CDAM_URL: http://${SERVICE_NAME}-ccd-case-document-am-api
-      SPRING_DATASOURCE_HOST: ${SERVICE_NAME}-postgresql
+      SPRING_DATASOURCE_HOST: '{{ tpl .Values.global.postgresHostname $}}'
       SPRING_DATASOURCE_NAME: emstitch
       SPRING_DATASOURCE_OPTIONS: "?ssl=disable"
       SPRING_DATASOURCE_PORT: 5432
