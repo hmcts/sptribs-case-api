@@ -185,7 +185,7 @@ ccd:
         CCD_DATA_STORE_URL: http://{{ .Release.Name }}-ccd-data-store-api
         RUN_LD_ON_STARTUP: false
         ROLE_ASSIGNMENT_DB_HOST: '{{ tpl .Values.global.postgresHostname $}}'
-        ROLE_ASSIGNMENT_DB_NAME: "{{ .Values.global.databaseNamePrefix }}-role-assignment"
+        ROLE_ASSIGNMENT_DB_NAME: "{{ .Values.global.databaseNamePrefix }}role-assignment"
         ROLE_ASSIGNMENT_DB_OPTIONS: "?stringtype=unspecified&ssl=disable&gssEncMode=disable"
         ROLE_ASSIGNMENT_DB_USERNAME: hmcts
 #        ROLE_ASSIGNMENT_DB_PASSWORD: ${CCD_GLOBAL_POSTGRES_PASSWORD_PREVIEW}
