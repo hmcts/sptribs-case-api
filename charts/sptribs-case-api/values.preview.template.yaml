@@ -69,9 +69,8 @@ ccd:
 #    ccdDataStoreUrl: http://${SERVICE_NAME}-ccd-data-store-api
 #    ccdDefinitionStoreUrl: http://${SERVICE_NAME}-ccd-definition-store
 #    ccdUserProfileUrl: http://${SERVICE_NAME}-ccd-user-profile-api
-#    postgresUsername: ${CCD_GLOBAL_POSTGRES_USERNAME_PREVIEW}
+    postgresUsername: ${CCD_GLOBAL_POSTGRES_USERNAME_PREVIEW}
 #    postgresPassword: ${CCD_GLOBAL_POSTGRES_PASSWORD_PREVIEW}
-    postgresUsername: hmcts
     s2sUrl: http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
 
   ccd-api-gateway-web:
@@ -91,12 +90,9 @@ ccd:
       imagePullPolicy: Always
       environment:
         CASE_DOCUMENT_AM_API_ATTACH_DOCUMENT_ENABLED: true
-#        DATA_STORE_DB_HOST: ${SERVICE_NAME}-postgresql
-#        DATA_STORE_DB_USERNAME: ${CCD_DATA_STORE_DB_USERNAME_PREVIEW}
-#        DATA_STORE_DB_PASSWORD: ${CCD_DATA_STORE_DB_PASSWORD_PREVIEW}
         DATA_STORE_DB_HOST: '{{ tpl .Values.global.postgresHostname $}}'
         DATA_STORE_DB_NAME: "{{ .Values.global.databaseNamePrefix }}data-store"
-        DATA_STORE_DB_USERNAME: hmcts
+        DATA_STORE_DB_USERNAME: ${CCD_GLOBAL_POSTGRES_USERNAME_PREVIEW}
         DATA_STORE_IDAM_KEY: ${DATA_STORE_S2S_KEY}
         DATA_STORE_DEFAULT_LOG_LEVEL: info
         LOG_CALLBACK_DETAILS: "*"
@@ -123,10 +119,6 @@ ccd:
       keyVaults:
         ccd:
           secrets:
-#            - name: data-store-api-POSTGRES-USER-V15
-#              alias: DATA_STORE_DB_USERNAME
-#            - name: data-store-api-POSTGRES-PASS-V15
-#              alias: DATA_STORE_DB_PASSWORD
             - name: data-store-api-draft-key
               alias: CCD_DRAFT_ENCRYPTION_KEY
             - name: ccd-data-s2s-secret
@@ -158,7 +150,7 @@ ccd:
         ROLE_ASSIGNMENT_DB_HOST: '{{ tpl .Values.global.postgresHostname $}}'
         ROLE_ASSIGNMENT_DB_NAME: "{{ .Values.global.databaseNamePrefix }}role-assignment"
         ROLE_ASSIGNMENT_DB_OPTIONS: "?stringtype=unspecified&ssl=disable&gssEncMode=disable"
-        ROLE_ASSIGNMENT_DB_USERNAME: ${SPTRIBS_POSTGRES_USERNAME_PREVIEW}
+        ROLE_ASSIGNMENT_DB_USERNAME: ${CCD_GLOBAL_POSTGRES_USERNAME_PREVIEW}
       secrets:
         ROLE_ASSIGNMENT_DB_PASSWORD:
           secretRef: postgres
@@ -196,7 +188,7 @@ ccd:
       environment:
         USER_PROFILE_DB_HOST: '{{ tpl .Values.global.postgresHostname $}}'
         USER_PROFILE_DB_NAME: "{{ .Values.global.databaseNamePrefix }}user-profile"
-        USER_PROFILE_DB_USERNAME: hmcts
+        USER_PROFILE_DB_USERNAME: ${CCD_GLOBAL_POSTGRES_USERNAME_PREVIEW}
       ingressHost: ccd-user-profile-api-${SERVICE_FQDN}
       secrets:
         USER_PROFILE_DB_PASSWORD:
@@ -225,9 +217,7 @@ ccd:
         - st_super@mailinator.com|ST_CIC|CIC|Submitted
       userProfileDatabaseHost: '{{ tpl .Values.global.postgresHostname $}}'
       userProfileDatabasePort: 5432
-      userProfileDatabaseUser: hmcts
-#      userProfileDatabaseUser: ${CCD_USER_PROFILE_DB_USERNAME_PREVIEW}
-#      userProfileDatabasePassword: ${CCD_USER_PROFILE_DB_PASSWORD_PREVIEW}
+      userProfileDatabaseUser: ${CCD_GLOBAL_POSTGRES_USERNAME_PREVIEW}
       userProfileDatabaseName: "{{ .Values.global.databaseNamePrefix }}user-profile"
       secrets:
         userProfileDatabasePassword:
@@ -577,7 +567,7 @@ em-stitching:
       SPRING_DATASOURCE_NAME: "{{ .Values.global.databaseNamePrefix }}emstitch"
       SPRING_DATASOURCE_OPTIONS: "?ssl=disable"
       SPRING_DATASOURCE_PORT: 5432
-      SPRING_DATASOURCE_USERNAME: hmcts
+      SPRING_DATASOURCE_USERNAME: ${EM_SPRING_DATASOURCE_PASSWORD_PREVIEW}
       ENABLE_DB_MIGRATE: true
       RUN_DB_MIGRATION_ON_STARTUP: true
       FLYWAY_POSTGRESQL_TRANSACTIONAL_LOCK: false
