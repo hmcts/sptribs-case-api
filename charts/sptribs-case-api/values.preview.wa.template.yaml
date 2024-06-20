@@ -1,0 +1,106 @@
+servicebus:
+  enabled: true
+  releaseNameOverride: ${SERVICE_NAME}-asb
+  resourceGroup: sptribs-aso-preview-rg
+  sbNamespace: sptribs-servicebus-preview
+  setup:
+    topics:
+      - name: ccd-case-events
+        subscriptionNeeded: yes
+        requiresSession: true
+
+postgresql:
+  enabled: true
+  flexibleserver: sptribs-preview
+  setup:
+    databases:
+#      - name: "pr-${CHANGE_ID}-sptribs-case-api"
+#      - name: "pr-${CHANGE_ID}-data-store"
+#      - name: "pr-${CHANGE_ID}-definition-store"
+#      - name: "pr-${CHANGE_ID}-role-assignment"
+#      - name: "pr-${CHANGE_ID}-user-profile"
+#      - name: "pr-${CHANGE_ID}-emstitch"
+      - name: "pr-${CHANGE_ID}-camunda"
+      - name: "pr-${CHANGE_ID}-cft_task_db"
+      - name: "pr-${CHANGE_ID}-wa_workflow_api"
+      - name: "pr-${CHANGE_ID}-wa-case-event-handler"
+
+wa:
+  enabled: true
+  global:
+    postgresUsername: hmcts
+    postgresSecret: postgres
+    postgresHost: sptribs-preview.postgres.database.azure.com
+    databaseNamePrefix: "pr-${CHANGE_ID}-"
+
+  wa-case-event-handler:
+    java:
+      secrets:
+        AZURE_SERVICE_BUS_CONNECTION_STRING:
+          secretRef: sptribs-sb-preview
+          key: connectionString
+      environment:
+        CCD_URL: http://{{ .Release.Name }}-ccd-data-store-api
+        CCD_SEARCH_URL: http://{{ .Release.Name }}-ccd-data-store-api
+        ROLE_ASSIGNMENT_URL: http://{{ .Release.Name }}-am-role-assignment-service
+        AZURE_SERVICE_BUS_TOPIC_NAME: ${SERVICE_NAME}-asb-ccd-case-events
+        AZURE_SERVICE_BUS_SUBSCRIPTION_NAME: ${SERVICE_NAME}-asb-ccd-case-events
+        AZURE_SERVICE_BUS_CCD_CASE_EVENTS_SUBSCRIPTION_NAME: ${SERVICE_NAME}-asb-ccd-case-events
+      keyVaults:
+        wa:
+          secrets:
+            - name: app-insights-connection-string
+              alias: app-insights-connection-string
+
+  wa-task-management-api:
+    java:
+      keyVaults:
+        wa:
+          secrets:
+            - name: app-insights-connection-string
+              alias: app-insights-connection-string
+
+  wa-workflow-api:
+    java:
+      environment:
+        DB_READER_USERNAME: "hmcts"
+      keyVaults:
+        wa:
+          secrets:
+            - name: app-insights-connection-string
+              alias: app-insights-connection-string
+
+  camunda-bpm:
+    java:
+      keyVaults:
+        camunda:
+          secrets:
+            - name: app-insights-connection-string
+              alias: app-insights-connection-string
+
+  #disable wa db as we are using the postgres flexible server
+  wa:
+    postgresql:
+      enabled: false
+
+
+ccd-message-publisher:
+  java:
+    ingressHost: ccd-message-publisher-${SERVICE_FQDN}
+    releaseNameOverride: ${SERVICE_NAME}-ccd-message-publisher
+    keyVaults:
+      ccd:
+        secrets:
+          - name: AppInsightsInstrumentationKey
+            alias: azure.application-insights.instrumentation-key
+    environment:
+      DATA_STORE_DB_HOST: sptribs-preview.postgres.database.azure.com
+      DATA_STORE_DB_NAME: "pr-${CHANGE_ID}-data-store"
+      DATA_STORE_DB_USERNAME: hmcts
+      DATA_STORE_DB_PASSWORD: ${POSTGRES_PASSWORD}
+      DATA_STORE_DB_OPTIONS: "?stringtype=unspecified&reWriteBatchedInserts=true&sslmode=require"
+      CCD_CASE_EVENTS_DESTINATION: "${SERVICE_NAME}-asb-ccd-case-events"
+    secrets:
+      SERVICE_BUS_CONNECTION_STRING:
+        secretRef: sptribs-sb-preview
+        key: connectionString

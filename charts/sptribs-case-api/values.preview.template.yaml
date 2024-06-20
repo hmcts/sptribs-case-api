@@ -559,3 +559,8 @@ em-stitching:
       FLYWAY_POSTGRESQL_TRANSACTIONAL_LOCK: false
       LOGGING_LEVEL_UK_GOV_HMCTS_REFORM_EM: DEBUG
 
+servicebus:
+  enabled: false
+
+wa:
+  enabled: false
