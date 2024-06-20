@@ -39,6 +39,7 @@ import uk.gov.hmcts.sptribs.testutil.TestDataHelper;
 import uk.gov.hmcts.sptribs.util.AppsUtil;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -162,7 +163,14 @@ class CicSubmitCaseEventTest {
         assertThat(response.getData().getCicCase().getApplicantDocumentsUploaded()).hasSize(3);
         assertThat(response.getData().getCicCase().getRepresentativeContactDetailsPreference()).isEqualTo(ContactPreferenceType.EMAIL);
         assertThat(response.getData().getCicCase().getApplicantDocumentsUploaded().get(0).getValue().getDocumentCategory())
-            .isIn(DocumentType.DSS_OTHER, DocumentType.DSS_SUPPORTING, DocumentType.DSS_TRIBUNAL_FORM);
+            .isEqualTo(DocumentType.DSS_OTHER);
+        assertThat(response.getData().getCicCase().getApplicantDocumentsUploaded().get(0).getValue().getDate()).isEqualTo(LocalDate.now());
+        assertThat(response.getData().getCicCase().getApplicantDocumentsUploaded().get(1).getValue().getDocumentCategory())
+            .isEqualTo(DocumentType.DSS_SUPPORTING);
+        assertThat(response.getData().getCicCase().getApplicantDocumentsUploaded().get(1).getValue().getDate()).isEqualTo(LocalDate.now());
+        assertThat(response.getData().getCicCase().getApplicantDocumentsUploaded().get(2).getValue().getDocumentCategory())
+            .isEqualTo(DocumentType.DSS_TRIBUNAL_FORM);
+        assertThat(response.getData().getCicCase().getApplicantDocumentsUploaded().get(2).getValue().getDate()).isEqualTo(LocalDate.now());
     }
 
     @Test

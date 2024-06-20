@@ -26,6 +26,7 @@ import uk.gov.hmcts.sptribs.idam.IdamService;
 import uk.gov.hmcts.sptribs.notification.exception.NotificationException;
 import uk.gov.hmcts.sptribs.testutil.TestDataHelper;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -103,6 +104,10 @@ class CicDssUpdateCaseEventTest {
 
         assertThat(response.getData().getCicCase().getApplicantDocumentsUploaded()).isNotEmpty();
         assertThat(response.getData().getCicCase().getApplicantDocumentsUploaded()).hasSize(3);
+        assertThat(response.getData().getCicCase().getApplicantDocumentsUploaded().get(1).getValue().getDate())
+            .isEqualTo(LocalDate.now());
+        assertThat(response.getData().getCicCase().getApplicantDocumentsUploaded().get(2).getValue().getDate())
+            .isEqualTo(LocalDate.now());
         assertThat(response.getData().getMessages()).isNotEmpty();
         assertThat(response.getData().getMessages()).hasSize(2);
         assertThat(response.getData().getDssCaseData().getOtherInfoDocuments()).isEmpty();
@@ -143,6 +148,10 @@ class CicDssUpdateCaseEventTest {
 
         assertThat(response.getData().getCicCase().getApplicantDocumentsUploaded()).isNotEmpty();
         assertThat(response.getData().getCicCase().getApplicantDocumentsUploaded()).hasSize(3);
+        assertThat(response.getData().getCicCase().getApplicantDocumentsUploaded().get(1).getValue().getDate())
+            .isEqualTo(LocalDate.now());
+        assertThat(response.getData().getCicCase().getApplicantDocumentsUploaded().get(2).getValue().getDate())
+            .isEqualTo(LocalDate.now());
         assertThat(response.getData().getMessages()).isNotEmpty();
         assertThat(response.getData().getMessages()).hasSize(1);
         assertThat(response.getData().getDssCaseData().getOtherInfoDocuments()).isEmpty();
@@ -183,6 +192,10 @@ class CicDssUpdateCaseEventTest {
 
         assertThat(response.getData().getCicCase().getApplicantDocumentsUploaded()).isNotEmpty();
         assertThat(response.getData().getCicCase().getApplicantDocumentsUploaded()).hasSize(3);
+        assertThat(response.getData().getCicCase().getApplicantDocumentsUploaded().get(1).getValue().getDate())
+            .isEqualTo(LocalDate.now());
+        assertThat(response.getData().getCicCase().getApplicantDocumentsUploaded().get(2).getValue().getDate())
+            .isEqualTo(LocalDate.now());
         assertThat(response.getData().getMessages()).isNotEmpty();
         assertThat(response.getData().getMessages()).hasSize(1);
         assertThat(response.getData().getDssCaseData().getOtherInfoDocuments()).isEmpty();
@@ -212,6 +225,10 @@ class CicDssUpdateCaseEventTest {
 
         assertThat(response.getData().getCicCase().getApplicantDocumentsUploaded()).isNotEmpty();
         assertThat(response.getData().getCicCase().getApplicantDocumentsUploaded()).hasSize(2);
+        assertThat(response.getData().getCicCase().getApplicantDocumentsUploaded().get(0).getValue().getDate())
+            .isEqualTo(LocalDate.now());
+        assertThat(response.getData().getCicCase().getApplicantDocumentsUploaded().get(1).getValue().getDate())
+            .isEqualTo(LocalDate.now());
         assertThat(response.getData().getMessages()).isNotEmpty();
         assertThat(response.getData().getMessages()).hasSize(1);
         assertThat(response.getData().getDssCaseData().getOtherInfoDocuments()).isEmpty();
