@@ -12,6 +12,10 @@ def type = "java"
 def product = "sptribs"
 def component = "case-api"
 
+// branch names for WA
+def dmnBranch = "master"
+def bpmnBranch = "master"
+
 GradleBuilder builder = new GradleBuilder(this, product)
 
 static Map<String, Object> secret(String secretName, String envVariable) {
@@ -57,7 +61,8 @@ def secrets = [
                 secret('ccd-user-profile-db-username-preview', 'CCD_USER_PROFILE_DB_USERNAME_PREVIEW'),
                 secret('ccd-user-profile-db-password-preview', 'CCD_USER_PROFILE_DB_PASSWORD_PREVIEW'),
                 secret('em-spring-datasource-username-preview', 'EM_SPRING_DATASOURCE_USERNAME_PREVIEW'),
-                secret('em-spring-datasource-password-preview', 'EM_SPRING_DATASOURCE_PASSWORD_PREVIEW')
+                secret('em-spring-datasource-password-preview', 'EM_SPRING_DATASOURCE_PASSWORD_PREVIEW'),
+                secret('s2s-case-api-secret', 'S2S_SECRET')
         ],
         'civil-${env}'    :[
           secret('ccd-importer-username', 'DEFINITION_IMPORTER_USERNAME'),
@@ -266,6 +271,24 @@ withPipeline(type, product, component) {
     }
   }
 
+  afterSuccess('akschartsinstall') {
+    onPR {
+      for (label in githubApi.getLabelsbyPattern(env.BRANCH_NAME, "pr-values:wa") ) {
+        env.CASE_DATA_STORE_BASEURL = "https://ccd-data-store-api-sptribs-case-api-pr-${CHANGE_ID}.preview.platform.hmcts.net"
+        env.IDAM_API_URL = "https://idam-api.aat.platform.hmcts.net"
+        env.CAMUNDA_BASE_URL = "https://camunda-sptribs-case-api-pr-${CHANGE_ID}.preview.platform.hmcts.net"
+        env.SERVICE_AUTH_PROVIDER_API_BASE_URL = "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
+
+        println """After akschartsinstall Using CASE_DATA_STORE_BASEURL: ${env.CASE_DATA_STORE_BASEURL}""".stripIndent()
+        sh """
+            set -e
+            chmod -R +x ./bin/wa
+            ./bin/wa/pull-latest-sptribs-dmn-files.sh ${dmnBranch}
+            ./bin/wa/pull-latest-camunda-wa-files.sh ${bpmnBranch}
+            """
+      }
+    }
+  }
 
   onDemo {
       env.ENVIRONMENT="demo"
