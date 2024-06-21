@@ -11,7 +11,6 @@ import uk.gov.hmcts.sptribs.caseworker.model.ReinstateReason;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.ContactPreferenceType;
-import uk.gov.hmcts.sptribs.common.CommonConstants;
 import uk.gov.hmcts.sptribs.notification.NotificationHelper;
 import uk.gov.hmcts.sptribs.notification.NotificationServiceCIC;
 import uk.gov.hmcts.sptribs.notification.TemplateName;
@@ -27,7 +26,10 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.sptribs.caseworker.model.CloseReason.DeathOfAppellant;
 import static uk.gov.hmcts.sptribs.caseworker.model.CloseReason.Withdrawn;
+import static uk.gov.hmcts.sptribs.common.CommonConstants.CLOSURE_INFORMATION;
+import static uk.gov.hmcts.sptribs.common.CommonConstants.CLOSURE_REASON;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.DEATH_OF_APPELLANT_EMAIL_CONTENT;
+import static uk.gov.hmcts.sptribs.common.CommonConstants.NONE_PROVIDED;
 
 @ExtendWith(MockitoExtension.class)
 public class CaseWithdrawnNotificationTest {
@@ -57,8 +59,8 @@ public class CaseWithdrawnNotificationTest {
         verify(notificationHelper).buildEmailNotificationRequest(
             data.getCicCase().getEmail(),
             Map.of(
-                CommonConstants.CLOSURE_INFORMATION, CommonConstants.NONE_PROVIDED,
-                CommonConstants.CLOSURE_REASON, DEATH_OF_APPELLANT_EMAIL_CONTENT),
+                CLOSURE_INFORMATION, NONE_PROVIDED,
+                CLOSURE_REASON, DEATH_OF_APPELLANT_EMAIL_CONTENT),
             TemplateName.CASE_WITHDRAWN_EMAIL);
     }
 
@@ -78,8 +80,8 @@ public class CaseWithdrawnNotificationTest {
         verify(notificationHelper).buildEmailNotificationRequest(
             data.getCicCase().getEmail(),
             Map.of(
-                CommonConstants.CLOSURE_INFORMATION, CommonConstants.NONE_PROVIDED,
-                CommonConstants.CLOSURE_REASON, data.getCloseCase().getCloseCaseReason()),
+                CLOSURE_INFORMATION, NONE_PROVIDED,
+                CLOSURE_REASON, data.getCloseCase().getCloseCaseReason()),
             TemplateName.CASE_WITHDRAWN_EMAIL);
     }
 
@@ -98,8 +100,8 @@ public class CaseWithdrawnNotificationTest {
         verify(notificationService).sendLetter(any(NotificationRequest.class));
         verify(notificationHelper).buildLetterNotificationRequest(
             Map.of(
-                CommonConstants.CLOSURE_INFORMATION, data.getCloseCase().getAdditionalDetail(),
-                CommonConstants.CLOSURE_REASON, data.getCloseCase().getCloseCaseReason()
+                CLOSURE_INFORMATION, data.getCloseCase().getAdditionalDetail(),
+                CLOSURE_REASON, data.getCloseCase().getCloseCaseReason()
             ),
             TemplateName.CASE_WITHDRAWN_POST);
     }
@@ -120,8 +122,8 @@ public class CaseWithdrawnNotificationTest {
         verify(notificationHelper).buildEmailNotificationRequest(
             data.getCicCase().getRespondentEmail(),
             Map.of(
-                CommonConstants.CLOSURE_INFORMATION, data.getCloseCase().getAdditionalDetail(),
-                CommonConstants.CLOSURE_REASON, data.getCloseCase().getCloseCaseReason()),
+                CLOSURE_INFORMATION, data.getCloseCase().getAdditionalDetail(),
+                CLOSURE_REASON, data.getCloseCase().getCloseCaseReason()),
             TemplateName.CASE_WITHDRAWN_EMAIL);
     }
 
@@ -141,8 +143,8 @@ public class CaseWithdrawnNotificationTest {
         verify(notificationHelper).buildEmailNotificationRequest(
             data.getCicCase().getRepresentativeEmailAddress(),
             Map.of(
-                CommonConstants.CLOSURE_INFORMATION, data.getCloseCase().getAdditionalDetail(),
-                CommonConstants.CLOSURE_REASON, data.getCloseCase().getCloseCaseReason()),
+                CLOSURE_INFORMATION, data.getCloseCase().getAdditionalDetail(),
+                CLOSURE_REASON, data.getCloseCase().getCloseCaseReason()),
             TemplateName.CASE_WITHDRAWN_EMAIL);
     }
 
@@ -162,8 +164,8 @@ public class CaseWithdrawnNotificationTest {
         verify(notificationService).sendLetter(any(NotificationRequest.class));
         verify(notificationHelper).buildLetterNotificationRequest(
             Map.of(
-                CommonConstants.CLOSURE_INFORMATION, data.getCloseCase().getAdditionalDetail(),
-                CommonConstants.CLOSURE_REASON, data.getCloseCase().getCloseCaseReason()),
+                CLOSURE_INFORMATION, data.getCloseCase().getAdditionalDetail(),
+                CLOSURE_REASON, data.getCloseCase().getCloseCaseReason()),
             TemplateName.CASE_WITHDRAWN_POST);
     }
 
@@ -182,8 +184,8 @@ public class CaseWithdrawnNotificationTest {
         verify(notificationHelper).buildEmailNotificationRequest(
             data.getCicCase().getApplicantEmailAddress(),
             Map.of(
-                CommonConstants.CLOSURE_INFORMATION, data.getCloseCase().getAdditionalDetail(),
-                CommonConstants.CLOSURE_REASON, data.getCloseCase().getCloseCaseReason()),
+                CLOSURE_INFORMATION, data.getCloseCase().getAdditionalDetail(),
+                CLOSURE_REASON, data.getCloseCase().getCloseCaseReason()),
             TemplateName.CASE_WITHDRAWN_EMAIL);
     }
 
@@ -202,8 +204,8 @@ public class CaseWithdrawnNotificationTest {
         verify(notificationService).sendLetter(any(NotificationRequest.class));
         verify(notificationHelper).buildLetterNotificationRequest(
             Map.of(
-                CommonConstants.CLOSURE_INFORMATION, data.getCloseCase().getAdditionalDetail(),
-                CommonConstants.CLOSURE_REASON, data.getCloseCase().getCloseCaseReason()),
+                CLOSURE_INFORMATION, data.getCloseCase().getAdditionalDetail(),
+                CLOSURE_REASON, data.getCloseCase().getCloseCaseReason()),
             TemplateName.CASE_WITHDRAWN_POST);
     }
 
