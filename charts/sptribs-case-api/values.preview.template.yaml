@@ -223,7 +223,7 @@ ccd:
     java:
       disableKeyVaults: true
       imagePullPolicy: Always
-      enviroment:
+      environment:
         USER_PROFILE_DB_HOST: ${SERVICE_NAME}-postgresql
         USER_PROFILE_DB_OPTIONS: "?stringtype=unspecified"
         USER_PROFILE_DB_PASSWORD: '{{ tpl .Values.global.postgresPassword $}}'
