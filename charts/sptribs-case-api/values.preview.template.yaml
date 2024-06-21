@@ -218,11 +218,11 @@ ccd:
       imagePullPolicy: Always
       enviroment:
         USER_PROFILE_DB_HOST: ${SERVICE_NAME}-postgresql
-    secrets:
-      USER_PROFILE_DB_PASSWORD:
-        secretRef: "{{ .Values.global.postgresSecret }}"
-        key: PASSWORD
-        disabled: true
+      secrets:
+        USER_PROFILE_DB_PASSWORD:
+          secretRef: "{{ .Values.global.postgresSecret }}"
+          key: PASSWORD
+          disabled: true
       ingressHost: ccd-user-profile-api-${SERVICE_FQDN}
 
   ccd-admin-web:
