@@ -187,7 +187,7 @@ ccd:
         RUN_LD_ON_STARTUP: false
         ROLE_ASSIGNMENT_DB_HOST: ${SERVICE_NAME}-postgresql
         ROLE_ASSIGNMENT_DB_PASSWORD: '{{ tpl .Values.global.postgresPassword $}}'
-        ROLE_ASSIGNMENT_DB_NAME: "role-assignment"
+        ROLE_ASSIGNMENT_DB_NAME: "role_assignment"
         ROLE_ASSIGNMENT_DB_OPTIONS: "?stringtype=unspecified"
       secrets:
         ROLE_ASSIGNMENT_DB_PASSWORD:
