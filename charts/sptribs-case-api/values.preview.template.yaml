@@ -144,6 +144,7 @@ ccd:
         IDAM_DATA_STORE_SYSTEM_USER_USERNAME: ${IDAM_DATA_STORE_SYSTEM_USER_USERNAME}
         IDAM_DATA_STORE_SYSTEM_USER_PASSWORD: ${IDAM_DATA_STORE_SYSTEM_USER_PASSWORD}
         ROLE_ASSIGNMENT_URL: http://sptribs-case-api-pr-${CHANGE_ID}-am-role-assignment-service
+        DATA_STORE_DB_OPTIONS: "?stringtype=unspecified"
       secrets:
         DATA_STORE_DB_PASSWORD:
           secretRef: "{{ .Values.global.postgresSecret }}"
@@ -184,6 +185,7 @@ ccd:
       environment:
         CCD_DATA_STORE_URL: http://{{ .Release.Name }}-ccd-data-store-api
         RUN_LD_ON_STARTUP: false
+        ROLE_ASSIGNMENT_DB_OPTIONS: "?stringtype=unspecified"
       secrets:
         ROLE_ASSIGNMENT_DB_PASSWORD:
           secretRef: "{{ .Values.global.postgresSecret }}"
@@ -196,6 +198,7 @@ ccd:
       imagePullPolicy: Always
       environment:
         DEFINITION_STORE_DB_HOST: ${SERVICE_NAME}-postgresql
+        DEFINITION_STORE_DB_OPTIONS: "?stringtype=unspecified"
         DEFINITION_STORE_IDAM_KEY: ${DEFINITION_STORE_S2S_KEY}
         IDAM_USER_URL: https://idam-web-public.aat.platform.hmcts.net
         ELASTIC_SEARCH_ENABLED: true
@@ -218,6 +221,7 @@ ccd:
       imagePullPolicy: Always
       enviroment:
         USER_PROFILE_DB_HOST: ${SERVICE_NAME}-postgresql
+        USER_PROFILE_DB_OPTIONS: "?stringtype=unspecified"
       secrets:
         USER_PROFILE_DB_PASSWORD:
           secretRef: "{{ .Values.global.postgresSecret }}"
