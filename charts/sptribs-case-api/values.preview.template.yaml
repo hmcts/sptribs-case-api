@@ -173,7 +173,7 @@ ccd:
     java:
       disableKeyVaults: true
       imagePullPolicy: Always
-      enviroment:
+      environment:
         USER_PROFILE_DB_HOST: '{{ tpl .Values.global.postgresHostname $}}'
       ingressHost: ccd-user-profile-api-${SERVICE_FQDN}
 
