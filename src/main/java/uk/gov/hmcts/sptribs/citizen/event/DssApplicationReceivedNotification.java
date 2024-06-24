@@ -62,6 +62,7 @@ public class DssApplicationReceivedNotification implements PartiesNotification {
     private NotificationResponse sendEmailNotification(final Map<String, Object> templateVars,
                                                        String toEmail,
                                                        LanguagePreference languagePreference) {
+        System.out.println("Language preference: " + languagePreference);
         TemplateName templateName = ENGLISH.equals(languagePreference) ? APPLICATION_RECEIVED : APPLICATION_RECEIVED_CY;
         NotificationRequest request =
             dssNotificationHelper.buildEmailNotificationRequest(toEmail, templateVars, templateName);
