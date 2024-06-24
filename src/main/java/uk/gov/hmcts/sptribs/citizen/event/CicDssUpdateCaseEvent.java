@@ -75,6 +75,7 @@ public class CicDssUpdateCaseEvent implements CCDConfig<CaseData, State, UserRol
             .forStates(DSS_UPDATE_CASE_AVAILABLE_STATES)
             .name("DSS Update Case Submission")
             .description("DSS Update Case Submission")
+            .publishToCamunda()
             .retries(120, 120)
             .grant(CREATE_READ_UPDATE_DELETE, CITIZEN, CREATOR)
             .grantHistoryOnly(

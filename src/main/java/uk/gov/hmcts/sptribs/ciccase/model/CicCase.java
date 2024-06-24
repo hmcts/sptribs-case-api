@@ -633,6 +633,11 @@ public class CicCase {
     )
     private String firstDueDate;
 
+    @CCD(
+            access = {DefaultAccess.class}
+    )
+    private String referralTypeForWA;
+
     private LocalDate findEarliestDate(List<ListValue<DateModel>> dueDateList, LocalDate compare) {
         LocalDate earliestDate = compare;
         for (ListValue<DateModel> dateModelListValue : dueDateList) {
