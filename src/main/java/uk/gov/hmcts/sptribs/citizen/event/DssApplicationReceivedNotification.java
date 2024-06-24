@@ -54,7 +54,7 @@ public class DssApplicationReceivedNotification implements PartiesNotification {
         NotificationResponse notificationResponse = sendEmailNotification(
             templateVarsRep,
             dssCaseData.getRepresentativeEmailAddress(),
-            dssCaseData.getLanguagePreference()
+            ENGLISH
         );
         dssCaseData.setRepNotificationResponse(notificationResponse);
     }
