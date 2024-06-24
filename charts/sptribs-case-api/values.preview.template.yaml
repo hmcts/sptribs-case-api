@@ -496,7 +496,6 @@ idam-pr:
 em-ccdorc:
   enabled: true
   java:
-    disableKeyVaults: true
     imagePullPolicy: Always
     releaseNameOverride: ${SERVICE_NAME}-em-ccdorc
     image: hmctspublic.azurecr.io/em/ccdorc:latest
