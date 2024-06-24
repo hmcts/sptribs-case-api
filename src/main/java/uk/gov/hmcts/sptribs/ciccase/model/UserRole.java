@@ -34,7 +34,7 @@ public enum UserRole implements HasRole {
     CITIZEN("citizen", "CRU"),
 
     //WA post-deployment task configuration user
-    ST_CIC_WA_CONFIG_USER("caseworker-wa-task-configuration", "R");;
+    ST_CIC_WA_CONFIG_USER("caseworker-wa-task-configuration", "R");
 
     @JsonValue
     private final String role;
