@@ -17,8 +17,10 @@ import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
 
 import java.util.Map;
 
+import static uk.gov.hmcts.sptribs.caseworker.model.CloseReason.DeathOfAppellant;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.CLOSURE_INFORMATION;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.CLOSURE_REASON;
+import static uk.gov.hmcts.sptribs.common.CommonConstants.DEATH_OF_APPELLANT_EMAIL_CONTENT;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.NONE_PROVIDED;
 
 @Component
@@ -117,7 +119,11 @@ public class CaseWithdrawnNotification implements PartiesNotification {
         final String additionalDetail = StringUtils.isNotEmpty(closeCase.getAdditionalDetail())
             ? closeCase.getAdditionalDetail() : NONE_PROVIDED;
 
-        templateVars.put(CLOSURE_REASON, closeCase.getCloseCaseReason());
+        if (DeathOfAppellant.equals(closeCase.getCloseCaseReason())) {
+            templateVars.put(CLOSURE_REASON, DEATH_OF_APPELLANT_EMAIL_CONTENT);
+        } else {
+            templateVars.put(CLOSURE_REASON, closeCase.getCloseCaseReason());
+        }
         templateVars.put(CLOSURE_INFORMATION, additionalDetail);
     }
 }
