@@ -104,11 +104,13 @@ ccd-message-publisher:
     environment:
       DATA_STORE_DB_HOST: sptribs-preview.postgres.database.azure.com
       DATA_STORE_DB_NAME: "pr-${CHANGE_ID}-data-store"
-      DATA_STORE_DB_USERNAME: hmcts
-      DATA_STORE_DB_PASSWORD: ${POSTGRES_PASSWORD}
+      DATA_STORE_DB_USERNAME: ${CCD_GLOBAL_POSTGRES_USERNAME_PREVIEW}
       DATA_STORE_DB_OPTIONS: "?stringtype=unspecified&reWriteBatchedInserts=true&sslmode=require"
       CCD_CASE_EVENTS_DESTINATION: "${SERVICE_NAME}-asb-ccd-case-events"
     secrets:
       SERVICE_BUS_CONNECTION_STRING:
         secretRef: sptribs-sb-preview
         key: connectionString
+      DATA_STORE_DB_PASSWORD:
+        secretRef: "{{ .Values.global.postgresSecret }}"
+        key: PASSWORD
