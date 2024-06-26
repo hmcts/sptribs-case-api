@@ -14,4 +14,4 @@ cd ..
 cp -r ./st-wa-task-configuration/src/main/resources .
 rm -rf ./st-wa-task-configuration
 
-./bin/import-dmn-diagram.sh . sptribs sptribs
+./bin/wa/import-dmn-diagram.sh . sptribs sptribs

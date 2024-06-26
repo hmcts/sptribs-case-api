@@ -282,8 +282,8 @@ withPipeline(type, product, component) {
             sh """
                 set -e
                 chmod -R +x ./bin
-                ./bin/pull-latest-sptribs-dmn-files.sh ${dmnBranch}
-                ./bin/pull-latest-camunda-wa-files.sh ${bpmnBranch}
+                ./bin/wa/pull-latest-sptribs-dmn-files.sh ${dmnBranch}
+                ./bin/wa/pull-latest-camunda-wa-files.sh ${bpmnBranch}
             """
         }
     }
