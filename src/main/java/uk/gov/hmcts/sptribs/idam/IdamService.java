@@ -1,5 +1,7 @@
 package uk.gov.hmcts.sptribs.idam;
 
+import com.github.benmanes.caffeine.cache.Cache;
+import com.github.benmanes.caffeine.cache.Caffeine;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -7,6 +9,8 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.idam.client.IdamClient;
 import uk.gov.hmcts.reform.idam.client.models.User;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
+
+import java.util.concurrent.TimeUnit;
 
 import static uk.gov.hmcts.sptribs.common.config.ControllerConstants.BEARER_PREFIX;
 
@@ -18,6 +22,8 @@ public class IdamService {
     private final String systemUpdatePassword;
 
     private final IdamClient idamClient;
+
+    private final Cache<String, String> cache = Caffeine.newBuilder().expireAfterWrite(2, TimeUnit.HOURS).build();
 
     @Autowired
     public IdamService(
@@ -37,11 +43,16 @@ public class IdamService {
     }
 
     public User retrieveSystemUpdateUserDetails() {
-        return retrieveUser(getIdamOauth2Token(systemUpdateUserName, systemUpdatePassword));
+        return retrieveUser(getCachedIdamOauth2Token(systemUpdateUserName, systemUpdatePassword));
     }
 
-    private String getIdamOauth2Token(String username, String password) {
-        return idamClient.getAccessToken(username, password);
+    private String getCachedIdamOauth2Token(String username, String password) {
+        String userToken = cache.getIfPresent(username);
+        if (userToken == null) {
+            userToken = idamClient.getAccessToken(username, password);
+            cache.put(username, userToken);
+        }
+        return userToken;
     }
 
     private String getBearerToken(String token) {
