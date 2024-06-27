@@ -81,7 +81,7 @@ ccd-message-publisher:
         secretRef: "{{ .Values.global.postgresSecret }}"
         key: PASSWORD
 
-am-role-mapping-service:
+am-org-role-mapping-service:
   enabled: true
   java:
     image: 'hmctspublic.azurecr.io/am/org-role-mapping-service:latest'
