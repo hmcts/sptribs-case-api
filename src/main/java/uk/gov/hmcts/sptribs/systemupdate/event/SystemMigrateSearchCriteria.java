@@ -15,7 +15,7 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 @Slf4j
 public class SystemMigrateSearchCriteria implements CCDConfig<CaseData, State, UserRole> {
 
-    public static final String SYSTEM_MIGRATE_SEARCH_CRITERIA = "system-trigger-complete-hearing-outcome";
+    public static final String SYSTEM_MIGRATE_SEARCH_CRITERIA = "system-migrate-search-criteria";
 
     @Override
     public void configure(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
