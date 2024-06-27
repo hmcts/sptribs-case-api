@@ -22,7 +22,6 @@ import static uk.gov.hmcts.sptribs.systemupdate.event.SystemMigrateCaseLinks.SYS
 
 @Component
 @Slf4j
-
 public class SystemMigrateCaseLinksTask implements Runnable {
 
     private final AuthTokenGenerator authTokenGenerator;
