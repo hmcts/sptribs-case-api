@@ -162,6 +162,7 @@ public enum State {
         CaseManagement,
         AwaitingHearing
     );
+
     private final String name;
 }
 
