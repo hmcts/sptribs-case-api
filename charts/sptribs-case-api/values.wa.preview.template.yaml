@@ -140,6 +140,8 @@ am-org-role-mapping-service:
       ORG_ROLE_MAPPING_DB_OPTIONS: "?stringtype=unspecified&reWriteBatchedInserts=true&sslmode=require"
       RUN_LD_ON_STARTUP: true
       TESTING_SUPPORT_ENABLED: true
+    postgresql:
+      enabled: false
 
 xui-webapp:
   nodejs:
