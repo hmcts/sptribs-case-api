@@ -100,6 +100,13 @@ public enum State {
     ConsentOrder("ConsentOrder"),
 
     @CCD(
+        label = "Death of Appellant",
+        hint = "### ${cicCaseFullName}\nCase number: ${hyphenatedCaseRef}",
+        access = {DefaultStateAccessExcludingCAA.class}
+    )
+    DeathOfAppellant("DeathOfAppellant"),
+
+    @CCD(
         label = "Draft",
         hint = "### ${cicCaseFullName}\nCase number: ${hyphenatedCaseRef}",
         access = {DefaultStateAccessExcludingCAA.class, SolicitorAccess.class, GlobalSearchAccess.class}
@@ -162,6 +169,7 @@ public enum State {
         CaseManagement,
         AwaitingHearing
     );
+
     private final String name;
 }
 
