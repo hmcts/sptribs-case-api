@@ -85,7 +85,6 @@ am-org-role-mapping-service:
   enabled: true
   java:
     image: 'hmctspublic.azurecr.io/am/org-role-mapping-service:latest'
-    imagePullPolicy: Always
     ingressHost: am-org-role-mapping-service-${SERVICE_FQDN}
     releaseNameOverride: ${SERVICE_NAME}-am-org-role-mapping-service
     secrets:
