@@ -25,13 +25,14 @@ postgresql:
       - name: "pr-${CHANGE_ID}-wa_workflow_api"
       - name: "pr-${CHANGE_ID}-wa-case-event-handler"
 
+global:
+  postgresUsername: hmcts
+  postgresSecret: postgres
+  postgresHost: sptribs-preview.postgres.database.azure.com
+  databaseNamePrefix: "pr-${CHANGE_ID}-"
+
 wa:
   enabled: true
-  global:
-    postgresUsername: hmcts
-    postgresSecret: postgres
-    postgresHost: sptribs-preview.postgres.database.azure.com
-    databaseNamePrefix: "pr-${CHANGE_ID}-"
 
   wa-case-event-handler:
     java:
@@ -46,46 +47,6 @@ wa:
         AZURE_SERVICE_BUS_TOPIC_NAME: ${SERVICE_NAME}-asb-ccd-case-events
         AZURE_SERVICE_BUS_SUBSCRIPTION_NAME: ${SERVICE_NAME}-asb-ccd-case-events
         AZURE_SERVICE_BUS_CCD_CASE_EVENTS_SUBSCRIPTION_NAME: ${SERVICE_NAME}-asb-ccd-case-events
-#      keyVaults:
-#        wa:
-#          secrets:
-#            - name: app-insights-connection-string
-#              alias: app-insights-connection-string
-
-#  wa-task-management-api:
-#    java:
-#      keyVaults:
-#        wa:
-#          secrets:
-#            - name: app-insights-connection-string
-#              alias: app-insights-connection-string
-
-  wa-workflow-api:
-    java:
-      environment:
-        DB_READER_USERNAME: "hmcts"
-#        POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-#        POSTGRES_CONNECTION_OPTIONS: "?stringtype=unspecified&reWriteBatchedInserts=true&sslmode=require"
-#        CAMUNDA_URL: https://camunda-${SERVICE_FQDN}/engine-rest/
-#      secrets:
-#        POSTGRES_PASSWORD:
-#          secretRef: "{{ .Values.global.postgresSecret }}"
-#          key: PASSWORD
-#          disabled: true
-#      keyVaults:
-#        wa:
-#          secrets:
-#            - name: app-insights-connection-string
-#              alias: app-insights-connection-string
-
-#  camunda-bpm:
-#    java:
-#      keyVaults:
-#        camunda:
-#          secrets:
-#            - name: app-insights-connection-string
-#              alias: app-insights-connection-string
-
   #disable wa db as we are using the postgres flexible server
   wa:
     postgresql:
