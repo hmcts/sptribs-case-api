@@ -1,0 +1,9 @@
+{
+  "data": {
+    "stayStayReason": "waitingOutcomeOfCivilCase",
+    "stayAdditionalDetail": "additional detail for stay",
+    "stayExpirationDate": "2024-06-06",
+    "stayFlagType": "flag type",
+    "stayIsCaseStayed": "No"
+  }
+}

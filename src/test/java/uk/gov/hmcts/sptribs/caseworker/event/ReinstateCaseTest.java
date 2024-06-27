@@ -108,7 +108,7 @@ class ReinstateCaseTest {
         AboutToStartOrSubmitResponse<CaseData, State> response =
             reinstateCase.aboutToSubmit(updatedCaseDetails, beforeDetails);
         SubmittedCallbackResponse responseReinstate =
-            reinstateCase.reinstated(updatedCaseDetails, beforeDetails);
+            reinstateCase.submitted(updatedCaseDetails, beforeDetails);
 
         assertThat(responseReinstate).isNotNull();
         assertThat(response.getData().getCicCase().getReinstateDocumentsUpload()).isEmpty();
@@ -168,7 +168,7 @@ class ReinstateCaseTest {
         AboutToStartOrSubmitResponse<CaseData, State> response =
             reinstateCase.aboutToSubmit(updatedCaseDetails, beforeDetails);
         SubmittedCallbackResponse responseReinstate =
-            reinstateCase.reinstated(updatedCaseDetails, beforeDetails);
+            reinstateCase.submitted(updatedCaseDetails, beforeDetails);
 
         assertThat(responseReinstate).isNotNull();
         assertThat(responseReinstate.getConfirmationHeader()).contains("# Case reinstated \n##  The case record will now be reopened");
