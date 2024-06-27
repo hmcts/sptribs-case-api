@@ -46,19 +46,19 @@ wa:
         AZURE_SERVICE_BUS_TOPIC_NAME: ${SERVICE_NAME}-asb-ccd-case-events
         AZURE_SERVICE_BUS_SUBSCRIPTION_NAME: ${SERVICE_NAME}-asb-ccd-case-events
         AZURE_SERVICE_BUS_CCD_CASE_EVENTS_SUBSCRIPTION_NAME: ${SERVICE_NAME}-asb-ccd-case-events
-      keyVaults:
-        wa:
-          secrets:
-            - name: app-insights-connection-string
-              alias: app-insights-connection-string
+#      keyVaults:
+#        wa:
+#          secrets:
+#            - name: app-insights-connection-string
+#              alias: app-insights-connection-string
 
-  wa-task-management-api:
-    java:
-      keyVaults:
-        wa:
-          secrets:
-            - name: app-insights-connection-string
-              alias: app-insights-connection-string
+#  wa-task-management-api:
+#    java:
+#      keyVaults:
+#        wa:
+#          secrets:
+#            - name: app-insights-connection-string
+#              alias: app-insights-connection-string
 
   wa-workflow-api:
     java:
@@ -72,19 +72,19 @@ wa:
 #          secretRef: "{{ .Values.global.postgresSecret }}"
 #          key: PASSWORD
 #          disabled: true
-      keyVaults:
-        wa:
-          secrets:
-            - name: app-insights-connection-string
-              alias: app-insights-connection-string
+#      keyVaults:
+#        wa:
+#          secrets:
+#            - name: app-insights-connection-string
+#              alias: app-insights-connection-string
 
-  camunda-bpm:
-    java:
-      keyVaults:
-        camunda:
-          secrets:
-            - name: app-insights-connection-string
-              alias: app-insights-connection-string
+#  camunda-bpm:
+#    java:
+#      keyVaults:
+#        camunda:
+#          secrets:
+#            - name: app-insights-connection-string
+#              alias: app-insights-connection-string
 
   #disable wa db as we are using the postgres flexible server
   wa:
