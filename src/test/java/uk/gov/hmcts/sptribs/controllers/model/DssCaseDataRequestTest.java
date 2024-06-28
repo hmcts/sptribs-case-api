@@ -12,6 +12,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static uk.gov.hmcts.ccd.sdk.type.YesOrNo.YES;
+import static uk.gov.hmcts.sptribs.ciccase.model.LanguagePreference.ENGLISH;
 import static uk.gov.hmcts.sptribs.controllers.model.DssCaseDataRequest.convertDssCaseDataToRequest;
 
 public class DssCaseDataRequestTest {
@@ -38,6 +39,7 @@ public class DssCaseDataRequestTest {
             .supportingDocuments(getDssCaseDataDocuments())
             .otherInfoDocuments(null)
             .isRepresentativePresent(YES)
+            .languagePreference(ENGLISH)
             .build();
 
         DssCaseDataRequest request = convertDssCaseDataToRequest(dssCaseData);
@@ -61,6 +63,7 @@ public class DssCaseDataRequestTest {
         assertEquals(request.getDssCaseDataSupportingDocuments(), dssCaseData.getSupportingDocuments());
         assertNull(request.getDssCaseDataOtherInfoDocuments());
         assertEquals(request.getDssCaseDataIsRepresentativePresent(), dssCaseData.getIsRepresentativePresent());
+        assertEquals(request.getDssCaseDataLanguagePreference(), dssCaseData.getLanguagePreference());
     }
 
     private List<ListValue<EdgeCaseDocument>> getDssCaseDataDocuments() {

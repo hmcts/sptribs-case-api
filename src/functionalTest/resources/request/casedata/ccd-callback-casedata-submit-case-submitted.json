@@ -5,6 +5,7 @@
   "dssCaseDataSubjectDateOfBirth": null,
   "dssCaseDataSubjectEmailAddress": "citizen@test.com",
   "dssCaseDataSubjectContactNumber": null,
+  "dssCaseDataSubjectLanguagePreference": "english",
   "dssCaseDataSubjectAgreeContact": null,
   "dssCaseDataRepresentation": "Yes",
   "dssCaseDataRepresentationQualified": "Yes",

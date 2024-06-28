@@ -26,6 +26,7 @@ import static uk.gov.hmcts.sptribs.ciccase.model.State.Submitted;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigBuilder;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.getEventsFrom;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID_HYPHENATED;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.caseData;
 
 @ExtendWith(MockitoExtension.class)
@@ -68,7 +69,7 @@ public class CreateTestCaseTest {
             createTestCase.aboutToSubmit(caseDetails, caseDetails);
 
         assertThat(response.getState()).isEqualTo(CaseManagement);
-        assertThat(response.getData().getHyphenatedCaseRef()).isEqualTo("1616-5914-0147-3378");
+        assertThat(response.getData().getHyphenatedCaseRef()).isEqualTo(TEST_CASE_ID_HYPHENATED);
     }
 
     @Test
