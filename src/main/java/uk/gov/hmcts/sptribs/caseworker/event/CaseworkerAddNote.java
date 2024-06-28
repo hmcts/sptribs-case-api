@@ -53,6 +53,7 @@ public class CaseworkerAddNote implements CCDConfig<CaseData, State, UserRole> {
             .forAllStates()
             .name("Case: Add note")
             .description("Case: Add note")
+            .publishToCamunda()
             .aboutToSubmitCallback(this::aboutToSubmit)
             .grant(CREATE_READ_UPDATE,
                 ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER, ST_CIC_HEARING_CENTRE_ADMIN,

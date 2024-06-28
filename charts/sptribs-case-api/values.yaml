@@ -30,6 +30,13 @@ em-ccdorc:
 em-stitching:
   enabled: false
 
+wa:
+  enabled: false
+am-org-role-mapping-service:
+  enabled: false
+servicebus:
+  enabled: false
+
 java:
   applicationPort: 4013
   image: 'hmctspublic.azurecr.io/sptribs/case-api:latest'

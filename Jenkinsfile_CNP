@@ -12,6 +12,10 @@ def type = "java"
 def product = "sptribs"
 def component = "case-api"
 
+// branch names for WA
+def dmnBranch = "master"
+def bpmnBranch = "master"
+
 GradleBuilder builder = new GradleBuilder(this, product)
 
 static Map<String, Object> secret(String secretName, String envVariable) {
@@ -57,7 +61,8 @@ def secrets = [
                 secret('ccd-user-profile-db-username-preview', 'CCD_USER_PROFILE_DB_USERNAME_PREVIEW'),
                 secret('ccd-user-profile-db-password-preview', 'CCD_USER_PROFILE_DB_PASSWORD_PREVIEW'),
                 secret('em-spring-datasource-username-preview', 'EM_SPRING_DATASOURCE_USERNAME_PREVIEW'),
-                secret('em-spring-datasource-password-preview', 'EM_SPRING_DATASOURCE_PASSWORD_PREVIEW')
+                secret('em-spring-datasource-password-preview', 'EM_SPRING_DATASOURCE_PASSWORD_PREVIEW'),
+                secret('s2s-case-api-secret', 'S2S_SECRET')
         ],
         'civil-${env}'    :[
           secret('ccd-importer-username', 'DEFINITION_IMPORTER_USERNAME'),
@@ -199,54 +204,53 @@ withPipeline(type, product, component) {
     generateDefinitions()
   }
 
-    onPR {
-      env.ENVIRONMENT="preview"
-      env.CASE_API_URL = "http://sptribs-case-api-pr-${CHANGE_ID}-java"
-      env.CCD_DEF_NAME = "preview"
-      env.DEFINITION_STORE_URL_BASE = "https://ccd-definition-store-sptribs-case-api-pr-${CHANGE_ID}.preview.platform.hmcts.net"
-      env.CASE_DATA_STORE_BASEURL = "https://ccd-data-store-api-sptribs-case-api-pr-${CHANGE_ID}.preview.platform.hmcts.net"
-      env.CASE_DOCUMENT_AM_BASEURL= "http://ccd-case-document-am-api-sptribs-case-api-pr-${CHANGE_ID}.preview.platform.hmcts.net"
-      env.TEST_S2S_URL = "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
-      env.CITIZEN_UPDATE_CASE_STATE_ENABLED=true
+  onPR {
+    env.ENVIRONMENT="preview"
+    env.CASE_API_URL = "http://sptribs-case-api-pr-${CHANGE_ID}-java"
+    env.CCD_DEF_NAME = "preview"
+    env.DEFINITION_STORE_URL_BASE = "https://ccd-definition-store-sptribs-case-api-pr-${CHANGE_ID}.preview.platform.hmcts.net"
+    env.CASE_DATA_STORE_BASEURL = "https://ccd-data-store-api-sptribs-case-api-pr-${CHANGE_ID}.preview.platform.hmcts.net"
+    env.CASE_DOCUMENT_AM_BASEURL= "http://ccd-case-document-am-api-sptribs-case-api-pr-${CHANGE_ID}.preview.platform.hmcts.net"
+    env.TEST_S2S_URL = "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
+    env.CITIZEN_UPDATE_CASE_STATE_ENABLED=true
+    env.SERVICE_AUTH_MICROSERVICE = "sptribs_case_api"
+    env.SERVICE_AUTH_PROVIDER_URL = "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
+    env.TEST_E2E_URL = "https://xui-sptribs-case-api-pr-${CHANGE_ID}.preview.platform.hmcts.net"
+    setCommonEnvVariables()
+
+    enablePactAs([AppPipelineDsl.PactRoles.CONSUMER])
+  }
+
+  onMaster {
+    env.ENVIRONMENT="aat"
+    env.CASE_API_URL="http://sptribs-case-api-aat.service.core-compute-aat.internal"
+    env.CCD_DEF_NAME="aat"
+    env.ELASTIC_SEARCH_ENABLED=true
+    env.CITIZEN_UPDATE_CASE_STATE_ENABLED=true
+    env.SERVICE_AUTH_MICROSERVICE = "sptribs_case_api"
+    env.SERVICE_AUTH_PROVIDER_URL = "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
+    setCommonEnvVariables()
+
+    enablePactAs([AppPipelineDsl.PactRoles.CONSUMER])
+  }
+
+  afterSuccess('functionalTest:aat') {
+      env.ENVIRONMENT="prod"
+      env.CASE_API_URL="http://sptribs-case-api-prod.service.core-compute-prod.internal"
+      env.CCD_DEF_NAME="prod"
+      env.DEFINITION_STORE_URL_BASE="http://ccd-definition-store-api-prod.service.core-compute-prod.internal"
+      env.CITIZEN_UPDATE_CASE_STATE_ENABLED=false
+      env.CASE_API_DOCUMENT_DOWNLOAD_URL = "http://manage-case.platform.hmcts.net/"
       env.SERVICE_AUTH_MICROSERVICE = "sptribs_case_api"
-      env.SERVICE_AUTH_PROVIDER_URL = "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
-      env.TEST_E2E_URL = "https://xui-sptribs-case-api-pr-${CHANGE_ID}.preview.platform.hmcts.net"
-      setCommonEnvVariables()
+      env.SERVICE_AUTH_PROVIDER_URL = "http://rpe-service-auth-provider-prod.service.core-compute-prod.internal"
+      env.IDAM_API_URL_BASE = "https://idam-api.platform.hmcts.net"
+      env.S2S_URL_BASE = "http://rpe-service-auth-provider-prod.service.core-compute-prod.internal"
+      env.BEFTA_S2S_CLIENT_ID = "ccd_data"
 
-      enablePactAs([AppPipelineDsl.PactRoles.CONSUMER])
-    }
+      builder.gradle('generateCCDConfig --rerun-tasks')
 
-    onMaster {
-      env.ENVIRONMENT="aat"
-      env.CASE_API_URL="http://sptribs-case-api-aat.service.core-compute-aat.internal"
-      env.CCD_DEF_NAME="aat"
-      env.ELASTIC_SEARCH_ENABLED=true
-      env.CITIZEN_UPDATE_CASE_STATE_ENABLED=true
-      env.SERVICE_AUTH_MICROSERVICE = "sptribs_case_api"
-      env.SERVICE_AUTH_PROVIDER_URL = "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
-      setCommonEnvVariables()
-
-      enablePactAs([AppPipelineDsl.PactRoles.CONSUMER])
-    }
-
-    afterSuccess('functionalTest:aat') {
-
-        env.ENVIRONMENT="prod"
-        env.CASE_API_URL="http://sptribs-case-api-prod.service.core-compute-prod.internal"
-        env.CCD_DEF_NAME="prod"
-        env.DEFINITION_STORE_URL_BASE="http://ccd-definition-store-api-prod.service.core-compute-prod.internal"
-        env.CITIZEN_UPDATE_CASE_STATE_ENABLED=false
-        env.CASE_API_DOCUMENT_DOWNLOAD_URL = "http://manage-case.platform.hmcts.net/"
-        env.SERVICE_AUTH_MICROSERVICE = "sptribs_case_api"
-        env.SERVICE_AUTH_PROVIDER_URL = "http://rpe-service-auth-provider-prod.service.core-compute-prod.internal"
-        env.IDAM_API_URL_BASE = "https://idam-api.platform.hmcts.net"
-        env.S2S_URL_BASE = "http://rpe-service-auth-provider-prod.service.core-compute-prod.internal"
-        env.BEFTA_S2S_CLIENT_ID = "ccd_data"
-
-        builder.gradle('generateCCDConfig --rerun-tasks')
-
-        generateDefinitions()
-    }
+      generateDefinitions()
+  }
 
   def githubApi = new GithubAPI(this) as Object
   if (githubApi.getLabelsbyPattern(env.BRANCH_NAME, "enable-e2e-tests")) {
@@ -266,6 +270,24 @@ withPipeline(type, product, component) {
     }
   }
 
+  afterSuccess('akschartsinstall') {
+    onPR {
+        for (label in githubApi.getLabelsbyPattern(env.BRANCH_NAME, "pr-values:wa") ) {
+            env.CASE_DATA_STORE_BASEURL = "https://ccd-data-store-api-sptribs-case-api-pr-${CHANGE_ID}.preview.platform.hmcts.net"
+            env.IDAM_API_URL = "https://idam-api.aat.platform.hmcts.net"
+            env.CAMUNDA_BASE_URL = "https://camunda-sptribs-case-api-pr-${CHANGE_ID}.preview.platform.hmcts.net"
+            env.SERVICE_AUTH_PROVIDER_API_BASE_URL = "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
+
+            println """After akschartsinstall Using CASE_DATA_STORE_BASEURL: ${env.CASE_DATA_STORE_BASEURL}""".stripIndent()
+            sh """
+                set -e
+                chmod -R +x ./bin
+                ./bin/wa/pull-latest-sptribs-dmn-files.sh ${dmnBranch}
+                ./bin/wa/pull-latest-camunda-wa-files.sh ${bpmnBranch}
+            """
+        }
+    }
+  }
 
   onDemo {
       env.ENVIRONMENT="demo"

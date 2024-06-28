@@ -71,6 +71,7 @@ public class CaseWorkerCreateHearingSummary implements CCDConfig<CaseData, State
                 .event(CASEWORKER_CREATE_HEARING_SUMMARY)
                 .forStates(AwaitingHearing)
                 .name("Hearings:Create summary")
+                .publishToCamunda()
                 .showSummary()
                 .aboutToStartCallback(this::aboutToStart)
                 .aboutToSubmitCallback(this::aboutToSubmit)

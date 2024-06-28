@@ -52,6 +52,7 @@ public class CaseWorkerReferToJudge implements CCDConfig<CaseData, State, UserRo
                 CaseClosed,
                 CaseStayed)
             .name("Refer case to judge")
+            .publishToCamunda()
             .showSummary()
             .showEventNotes()
             .aboutToStartCallback(this::aboutToStart)

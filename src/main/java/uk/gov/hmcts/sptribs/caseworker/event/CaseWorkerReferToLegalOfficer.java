@@ -46,6 +46,7 @@ public class CaseWorkerReferToLegalOfficer implements CCDConfig<CaseData, State,
             .event(CASEWORKER_REFER_TO_LEGAL_OFFICER)
             .forStates(CaseManagement, ReadyToList, AwaitingHearing, AwaitingOutcome, CaseClosed, CaseStayed)
             .name("Refer case to legal officer")
+            .publishToCamunda()
             .showSummary()
             .showEventNotes()
             .aboutToStartCallback(this::aboutToStart)
@@ -82,6 +83,10 @@ public class CaseWorkerReferToLegalOfficer implements CCDConfig<CaseData, State,
 
         CaseData caseData = details.getData();
         caseData.getReferToLegalOfficer().setReferralDate(LocalDate.now());
+
+        if (caseData.getReferToLegalOfficer() != null && caseData.getReferToLegalOfficer().getReferralReason() != null) {
+            caseData.getCicCase().setReferralTypeForWA(caseData.getReferToLegalOfficer().getReferralReason().getLabel());
+        }
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)

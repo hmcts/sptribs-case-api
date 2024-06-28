@@ -36,6 +36,7 @@ public class CaseworkerCaseBuilt implements CCDConfig<CaseData, State, UserRole>
             .event(CASEWORKER_CASE_BUILT)
             .forStates(Submitted)
             .name("Case: Build case")
+            .publishToCamunda()
             .aboutToSubmitCallback(this::aboutToSubmit)
             .submittedCallback(this::submitted)
             .grant(CREATE_READ_UPDATE, SUPER_USER,

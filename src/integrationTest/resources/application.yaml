@@ -107,6 +107,8 @@ feature:
     enabled: ${SECURITY_CLASSIFICATION:false}
   access-profiles:
     enabled: ${ACCESS_PROFILES_ENABLED:true}
+  wa:
+    enabled: ${WA_FEATURE_ENABLED:false}
 
 caseinfo:
   apps:
