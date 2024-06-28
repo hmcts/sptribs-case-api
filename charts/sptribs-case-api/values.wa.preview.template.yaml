@@ -82,7 +82,7 @@ ccd-message-publisher:
         key: PASSWORD
 
 am-org-role-mapping-service:
-  enabled: true
+  enabled: false
   java:
     image: 'hmctspublic.azurecr.io/am/org-role-mapping-service:latest'
     ingressHost: am-org-role-mapping-service-${SERVICE_FQDN}
