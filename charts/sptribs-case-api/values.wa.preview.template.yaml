@@ -125,7 +125,7 @@ am-org-role-mapping-service:
       S2S_URL: http://rpe-service-auth-provider-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal
       CASE_WORKER_REF_APP_URL: http://rd-caseworker-ref-api-aat.service.core-compute-aat.internal
       JUDICIAL_REF_APP_URL: http://rd-judicial-api-aat.service.core-compute-aat.internal
-      ROLE_ASSIGNMENT_APP_URL: https://am-role-assignment-${SERVICE_FQDN}
+      ROLE_ASSIGNMENT_APP_URL: http://sptribs-case-api-pr-${CHANGE_ID}-am-role-assignment-service
       JUDICIAL_BOOKING_APP_URL: http://am-judicial-booking-service-aat.service.core-compute-aat.internal
       LAUNCH_DARKLY_ENV: "{{ .Values.global.environment }}"
       AMQP_SHARED_ACCESS_KEY_NAME: RootManageSharedAccessKey
@@ -143,6 +143,7 @@ am-org-role-mapping-service:
       ORG_ROLE_MAPPING_DB_OPTIONS: "?stringtype=unspecified&reWriteBatchedInserts=true&sslmode=require"
       RUN_LD_ON_STARTUP: true
       TESTING_SUPPORT_ENABLED: true
+      REFRESH_BULK_ASSIGNMENT_INCLUDE_BOOKINGS: true
 
 xui-webapp:
   nodejs:
