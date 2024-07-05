@@ -29,13 +29,13 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.HttpStatus.GATEWAY_TIMEOUT;
-import static uk.gov.hmcts.sptribs.systemupdate.event.SystemMigrateSearchCriteria.SYSTEM_MIGRATE_SEARCH_CRITERIA;
+import static uk.gov.hmcts.sptribs.systemupdate.event.SystemMigrateGlobalSearchFields.SYSTEM_MIGRATE_GLOBAL_SEARCH_FIELDS;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.SERVICE_AUTHORIZATION;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.SYSTEM_UPDATE_AUTH_TOKEN;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID;
 
 @ExtendWith(MockitoExtension.class)
-public class SystemMigrateSearchCriteriaTaskTest {
+public class SystemMigrateGlobalSearchFieldsTaskTest {
 
     @Mock
     private IdamService idamService;
@@ -50,7 +50,7 @@ public class SystemMigrateSearchCriteriaTaskTest {
     private CcdUpdateService ccdUpdateService;
 
     @InjectMocks
-    private SystemMigrateSearchCriteriaTask task;
+    private SystemMigrateGlobalSearchTask task;
 
     private User user;
 
@@ -82,8 +82,8 @@ public class SystemMigrateSearchCriteriaTaskTest {
 
         task.run();
 
-        verify(ccdUpdateService).submitEvent(TEST_CASE_ID, SYSTEM_MIGRATE_SEARCH_CRITERIA, user, SERVICE_AUTHORIZATION);
-        verify(ccdUpdateService).submitEvent(2L, SYSTEM_MIGRATE_SEARCH_CRITERIA, user, SERVICE_AUTHORIZATION);
+        verify(ccdUpdateService).submitEvent(TEST_CASE_ID, SYSTEM_MIGRATE_GLOBAL_SEARCH_FIELDS, user, SERVICE_AUTHORIZATION);
+        verify(ccdUpdateService).submitEvent(2L, SYSTEM_MIGRATE_GLOBAL_SEARCH_FIELDS, user, SERVICE_AUTHORIZATION);
     }
 
     @Test
@@ -99,12 +99,12 @@ public class SystemMigrateSearchCriteriaTaskTest {
         when(ccdSearchService.searchForAllCasesWithQuery(query, user, SERVICE_AUTHORIZATION))
             .thenReturn(caseDetailsList);
         doThrow(new CcdManagementException(GATEWAY_TIMEOUT.value(), "Failed processing of case", mock(FeignException.class)))
-            .when(ccdUpdateService).submitEvent(TEST_CASE_ID, SYSTEM_MIGRATE_SEARCH_CRITERIA, user, SERVICE_AUTHORIZATION);
+            .when(ccdUpdateService).submitEvent(TEST_CASE_ID, SYSTEM_MIGRATE_GLOBAL_SEARCH_FIELDS, user, SERVICE_AUTHORIZATION);
 
         task.run();
 
-        verify(ccdUpdateService).submitEvent(TEST_CASE_ID, SYSTEM_MIGRATE_SEARCH_CRITERIA, user, SERVICE_AUTHORIZATION);
-        verify(ccdUpdateService).submitEvent(2L, SYSTEM_MIGRATE_SEARCH_CRITERIA, user, SERVICE_AUTHORIZATION);
+        verify(ccdUpdateService).submitEvent(TEST_CASE_ID, SYSTEM_MIGRATE_GLOBAL_SEARCH_FIELDS, user, SERVICE_AUTHORIZATION);
+        verify(ccdUpdateService).submitEvent(2L, SYSTEM_MIGRATE_GLOBAL_SEARCH_FIELDS, user, SERVICE_AUTHORIZATION);
     }
 
     @Test
@@ -120,12 +120,12 @@ public class SystemMigrateSearchCriteriaTaskTest {
         when(ccdSearchService.searchForAllCasesWithQuery(query, user, SERVICE_AUTHORIZATION))
             .thenReturn(caseDetailsList);
         doThrow(new IllegalArgumentException())
-            .when(ccdUpdateService).submitEvent(TEST_CASE_ID, SYSTEM_MIGRATE_SEARCH_CRITERIA, user, SERVICE_AUTHORIZATION);
+            .when(ccdUpdateService).submitEvent(TEST_CASE_ID, SYSTEM_MIGRATE_GLOBAL_SEARCH_FIELDS, user, SERVICE_AUTHORIZATION);
 
         task.run();
 
-        verify(ccdUpdateService).submitEvent(TEST_CASE_ID, SYSTEM_MIGRATE_SEARCH_CRITERIA, user, SERVICE_AUTHORIZATION);
-        verify(ccdUpdateService).submitEvent(2L, SYSTEM_MIGRATE_SEARCH_CRITERIA, user, SERVICE_AUTHORIZATION);
+        verify(ccdUpdateService).submitEvent(TEST_CASE_ID, SYSTEM_MIGRATE_GLOBAL_SEARCH_FIELDS, user, SERVICE_AUTHORIZATION);
+        verify(ccdUpdateService).submitEvent(2L, SYSTEM_MIGRATE_GLOBAL_SEARCH_FIELDS, user, SERVICE_AUTHORIZATION);
     }
 
     @Test
@@ -135,7 +135,7 @@ public class SystemMigrateSearchCriteriaTaskTest {
 
         task.run();
 
-        verify(ccdUpdateService, never()).submitEvent(TEST_CASE_ID, SYSTEM_MIGRATE_SEARCH_CRITERIA, user, SERVICE_AUTHORIZATION);
+        verify(ccdUpdateService, never()).submitEvent(TEST_CASE_ID, SYSTEM_MIGRATE_GLOBAL_SEARCH_FIELDS, user, SERVICE_AUTHORIZATION);
     }
 
     @Test
@@ -145,6 +145,6 @@ public class SystemMigrateSearchCriteriaTaskTest {
 
         task.run();
 
-        verify(ccdUpdateService, never()).submitEvent(TEST_CASE_ID, SYSTEM_MIGRATE_SEARCH_CRITERIA, user, SERVICE_AUTHORIZATION);
+        verify(ccdUpdateService, never()).submitEvent(TEST_CASE_ID, SYSTEM_MIGRATE_GLOBAL_SEARCH_FIELDS, user, SERVICE_AUTHORIZATION);
     }
 }

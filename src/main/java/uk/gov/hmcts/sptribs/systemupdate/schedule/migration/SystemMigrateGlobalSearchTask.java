@@ -18,11 +18,11 @@ import java.util.List;
 
 import static org.elasticsearch.index.query.QueryBuilders.boolQuery;
 import static org.elasticsearch.index.query.QueryBuilders.existsQuery;
-import static uk.gov.hmcts.sptribs.systemupdate.event.SystemMigrateSearchCriteria.SYSTEM_MIGRATE_SEARCH_CRITERIA;
+import static uk.gov.hmcts.sptribs.systemupdate.event.SystemMigrateGlobalSearchFields.SYSTEM_MIGRATE_GLOBAL_SEARCH_FIELDS;
 
 @Component
 @Slf4j
-public class SystemMigrateSearchCriteriaTask implements Runnable {
+public class SystemMigrateGlobalSearchTask implements Runnable {
 
     private final AuthTokenGenerator authTokenGenerator;
 
@@ -33,8 +33,8 @@ public class SystemMigrateSearchCriteriaTask implements Runnable {
     private final IdamService idamService;
 
     @Autowired
-    public SystemMigrateSearchCriteriaTask(AuthTokenGenerator authTokenGenerator, CcdSearchService ccdSearchService,
-                                           CcdUpdateService ccdUpdateService, IdamService idamService) {
+    public SystemMigrateGlobalSearchTask(AuthTokenGenerator authTokenGenerator, CcdSearchService ccdSearchService,
+                                         CcdUpdateService ccdUpdateService, IdamService idamService) {
         this.authTokenGenerator = authTokenGenerator;
         this.ccdSearchService = ccdSearchService;
         this.ccdUpdateService = ccdUpdateService;
@@ -74,7 +74,7 @@ public class SystemMigrateSearchCriteriaTask implements Runnable {
     private void triggerSystemMigrateSearchCriteriaTask(User user, String serviceAuth, CaseDetails caseDetails) {
         try {
             log.info("Submitting System Migrate Search Criteria Event for Case {}", caseDetails.getId());
-            ccdUpdateService.submitEvent(caseDetails.getId(), SYSTEM_MIGRATE_SEARCH_CRITERIA, user, serviceAuth);
+            ccdUpdateService.submitEvent(caseDetails.getId(), SYSTEM_MIGRATE_GLOBAL_SEARCH_FIELDS, user, serviceAuth);
         } catch (final CcdManagementException e) {
             log.error("Submit event failed for case id: {}, continuing to next case", caseDetails.getId());
         } catch (final IllegalArgumentException e) {
