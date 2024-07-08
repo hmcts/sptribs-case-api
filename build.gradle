@@ -537,7 +537,7 @@ dependencies {
   functionalTestImplementation group: 'com.github.hmcts', name: 'document-management-client', version: '7.0.1'
   functionalTestImplementation group: 'com.github.hmcts', name: 'service-auth-provider-java-client', version: '5.1.2'
 
-  contractTestImplementation group: 'au.com.dius.pact.consumer', name: 'junit5', version: '4.1.41'
+  contractTestImplementation group: 'au.com.dius.pact.consumer', name: 'junit5', version: '4.6.11'
   contractTestImplementation group: 'au.com.dius.pact.consumer', name: 'java8', version: '4.1.42'
   contractTestImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: '5.10.2'
   contractTestRuntimeOnly group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: '5.10.2'
