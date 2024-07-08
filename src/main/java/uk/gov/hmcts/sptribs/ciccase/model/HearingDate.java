@@ -12,6 +12,8 @@ import uk.gov.hmcts.sptribs.ciccase.model.access.DefaultAccess;
 
 import java.time.LocalDate;
 
+import static uk.gov.hmcts.ccd.sdk.type.FieldType.FixedList;
+
 @Data
 @NoArgsConstructor
 @Builder
@@ -26,6 +28,8 @@ public class HearingDate {
 
     @CCD(
         label = "Session",
+        typeOverride = FixedList,
+        typeParameterOverride = "HearingSession",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private HearingSession hearingVenueSession;
