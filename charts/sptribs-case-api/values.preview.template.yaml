@@ -72,9 +72,6 @@ ccd:
     ccdDefinitionStoreUrl: http://${SERVICE_NAME}-ccd-definition-store
     ccdUserProfileUrl: http://${SERVICE_NAME}-ccd-user-profile-api
     postgresUsername: ${CCD_GLOBAL_POSTGRES_USERNAME_PREVIEW}
-    postgresHostname: "sptribs-preview.postgres.database.azure.com"
-    postgresSecret: postgres
-    databaseNamePrefix: "pr-${CHANGE_ID}-"
     s2sUrl: http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
 
   ccd-api-gateway-web:
