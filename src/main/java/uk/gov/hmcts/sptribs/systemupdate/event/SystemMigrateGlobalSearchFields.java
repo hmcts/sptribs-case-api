@@ -38,11 +38,16 @@ public class SystemMigrateGlobalSearchFields implements CCDConfig<CaseData, Stat
 
     public static final String SYSTEM_MIGRATE_GLOBAL_SEARCH_FIELDS = "system-migrate-global-search-fields";
 
-    @Autowired
-    private CcdSupplementaryDataService ccdSupplementaryDataService;
+    private final CcdSupplementaryDataService ccdSupplementaryDataService;
+
+    private final ExtendedCaseDataService extendedCaseDataService;
 
     @Autowired
-    private ExtendedCaseDataService extendedCaseDataService;
+    public SystemMigrateGlobalSearchFields(CcdSupplementaryDataService ccdSupplementaryDataService,
+                                           ExtendedCaseDataService extendedCaseDataService) {
+        this.ccdSupplementaryDataService = ccdSupplementaryDataService;
+        this.extendedCaseDataService = extendedCaseDataService;
+    }
 
     @Override
     public void configure(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
@@ -50,14 +55,13 @@ public class SystemMigrateGlobalSearchFields implements CCDConfig<CaseData, Stat
             .event(SYSTEM_MIGRATE_GLOBAL_SEARCH_FIELDS)
             .forAllStates()
             .aboutToSubmitCallback(this::aboutToSubmit)
-            .name("System Migrate Global Search Fields")
-            .description("System Migrate Global Search Fields")
+            .name("System Migration")
+            .description("Migrate global search, case management category and case location fields for legacy cases")
             .grant(CREATE_READ_UPDATE_DELETE, SYSTEM_UPDATE);
     }
 
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(final CaseDetails<CaseData, State> details,
                                                                        final CaseDetails<CaseData, State> beforeDetails) {
-
         final Long caseId = details.getId();
         final CaseData caseData = details.getData();
         final Map<String, Object> dataClassification = setDataClassification(caseId);
