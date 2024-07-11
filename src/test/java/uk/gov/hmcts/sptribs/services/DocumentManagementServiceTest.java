@@ -41,9 +41,6 @@ import static uk.gov.hmcts.sptribs.testutil.TestFileUtil.loadJson;
 
 
 @ExtendWith(SpringExtension.class)
-@SpringBootTest
-@TestPropertySource("classpath:application.yaml")
-@ActiveProfiles("test")
 class DocumentManagementServiceTest {
     @InjectMocks
     private DocumentManagementService documentManagementService;
