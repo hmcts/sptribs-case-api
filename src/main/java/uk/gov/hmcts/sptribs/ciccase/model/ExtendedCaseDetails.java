@@ -17,7 +17,7 @@ public class ExtendedCaseDetails {
 
     private Long id;
 
-    @JsonProperty("data_classification")
+    @JsonProperty("dataClassification")
     private Map<String, Object> dataClassification;
 }
 

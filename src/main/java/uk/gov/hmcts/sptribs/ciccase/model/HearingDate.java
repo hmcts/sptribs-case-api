@@ -43,8 +43,8 @@ public class HearingDate {
 
     @JsonCreator
     public HearingDate(@JsonProperty("hearingVenueDate") LocalDate hearingVenueDate,
-                       @JsonProperty("session") HearingSession hearingVenueSession,
-                       @JsonProperty("hearingTime") String hearingVenueTime) {
+                       @JsonProperty("hearingVenueSession") HearingSession hearingVenueSession,
+                       @JsonProperty("hearingVenueTime") String hearingVenueTime) {
         this.hearingVenueDate = hearingVenueDate;
         this.hearingVenueSession = hearingVenueSession;
         this.hearingVenueTime = hearingVenueTime;
