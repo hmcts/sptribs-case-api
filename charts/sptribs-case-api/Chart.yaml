@@ -3,15 +3,15 @@ appVersion: "1.0"
 description: A Helm chart for sptribs-case-api App
 name: sptribs-case-api
 home: https://github.com/hmcts/sptribs-case-api
-version: 0.0.94
+version: 0.0.95
 maintainers:
   - name: HMCTS sptribs team
 dependencies:
   - name: java
-    version: 5.0.0
+    version: 5.2.1
     repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
   - name: ccd
-    version: 8.0.29
+    version: 9.2.0
     repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
     tags:
       - ccd-idam-pr
@@ -36,10 +36,14 @@ dependencies:
     repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
     condition: ccd-case-document-am-api.enabled
   - name: em-ccdorc
-    version: 2.0.10
+    version: 2.0.25
     repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
     condition: em-ccdorc.enabled
   - name: em-stitching
     version: 1.0.55
     repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
     condition: em-stitching.enabled
+  - name: postgresql
+    version: 1.0.2
+    repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
+    condition: postgresql.enabled
