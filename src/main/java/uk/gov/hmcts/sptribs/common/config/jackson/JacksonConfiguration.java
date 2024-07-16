@@ -38,6 +38,7 @@ public class JacksonConfiguration {
         datetime.addSerializer(INSTANCE);
         mapper.registerModule(datetime);
         mapper.registerModule(new ParameterNamesModule(PROPERTIES));
+        mapper.enable(INCLUDE_SOURCE_IN_LOCATION);
 
         return mapper;
     }

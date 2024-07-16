@@ -39,7 +39,6 @@ public enum UserRolesForAccessProfiles implements HasRole {
     AC_CASEFLAGS_VIEWER("caseflags-viewer", "R"),
     GS_PROFILE("GS_profile", "R"),
 
-    // Below are the RAS Roles
     RAS_HMCTS_STAFF("hmcts-staff", "R"),
     RAS_HMCTS_CTSC("hmcts-ctsc", "CRU"),
     RAS_HMCTS_LEGAL_OPERATIONS("hmcts-legal-operations", "CRU"),
