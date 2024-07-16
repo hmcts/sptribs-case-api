@@ -522,7 +522,7 @@ dependencies {
   testImplementation group: 'io.github.openfeign', name: 'feign-jackson', version: '13.1'
   testImplementation group: 'io.rest-assured', name: 'rest-assured'
   testImplementation group: 'org.apache.pdfbox', name: 'pdfbox', version: '3.0.2'
-  testImplementation group: 'com.microsoft.playwright', name: 'playwright', version: '1.40.0'
+  testImplementation group: 'com.microsoft.playwright', name: 'playwright', version: '1.45.0'
 
   testAnnotationProcessor group: 'org.projectlombok', name: 'lombok', version: versions.lombok
   integrationTestImplementation sourceSets.main.runtimeClasspath
@@ -551,7 +551,7 @@ dependencies {
 
   // Provides fast-reload of just the sptribs service.
   cftlibImplementation 'org.springframework.boot:spring-boot-devtools'
-  cftlibTestImplementation 'com.microsoft.playwright:playwright:1.40.0'
+  cftlibTestImplementation 'com.microsoft.playwright:playwright:1.45.0'
   cftlibTestImplementation 'org.junit-pioneer:junit-pioneer:2.2.0'
   cftlibTestImplementation 'io.github.artsok:rerunner-jupiter:2.1.6'
 }
