@@ -175,4 +175,10 @@ public class DssCaseData implements MappableObject {
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class, CitizenAccess.class}
     )
     private YesOrNo isRepresentativePresent;
+
+    @CCD(
+        label = "Language preference",
+        access = {DefaultAccess.class, CitizenAccess.class}
+    )
+    private LanguagePreference languagePreference;
 }
