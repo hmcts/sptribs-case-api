@@ -1,11 +1,15 @@
 package uk.gov.hmcts.sptribs.testutil;
 
+import com.github.benmanes.caffeine.cache.Cache;
+import com.github.benmanes.caffeine.cache.Caffeine;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.test.context.TestPropertySource;
 import uk.gov.hmcts.reform.idam.client.IdamClient;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
+
+import java.util.concurrent.TimeUnit;
 
 @TestPropertySource("classpath:application.yaml")
 @Service
@@ -38,24 +42,51 @@ public class IdamTokenGenerator {
     @Autowired
     private IdamClient idamClient;
 
+    private final Cache<String, String> cache = Caffeine.newBuilder().expireAfterWrite(2, TimeUnit.HOURS).build();
+
     public String generateIdamTokenForSolicitor() {
-        return idamClient.getAccessToken(solicitorUsername, solicitorPassword);
+        String solicitorUserToken = cache.getIfPresent(solicitorUsername);
+        if (solicitorUserToken == null) {
+            solicitorUserToken = idamClient.getAccessToken(solicitorUsername, solicitorPassword);
+            cache.put(solicitorUsername, solicitorUserToken);
+        }
+        return solicitorUserToken;
     }
 
     public String generateIdamTokenForCaseworker() {
-        return idamClient.getAccessToken(caseworkerUsername, caseworkerPassword);
+        String caseworkerUserToken = cache.getIfPresent(caseworkerUsername);
+        if (caseworkerUserToken == null) {
+            caseworkerUserToken = idamClient.getAccessToken(caseworkerUsername, caseworkerPassword);
+            cache.put(caseworkerUsername, caseworkerUserToken);
+        }
+        return caseworkerUserToken;
     }
 
-    public String generateIdamTokenForSystem() {
-        return idamClient.getAccessToken(systemUpdateUsername, systemUpdatePassword);
-    }
-
-    public String generateIdamTokenForUser(String username, String password) {
-        return idamClient.getAccessToken(username, password);
+    public String generateIdamTokenForSystemUser() {
+        String systemUserToken = cache.getIfPresent(systemUpdateUsername);
+        if (systemUserToken == null) {
+            systemUserToken = idamClient.getAccessToken(systemUpdateUsername, systemUpdatePassword);
+            cache.put(systemUpdateUsername, systemUserToken);
+        }
+        return systemUserToken;
     }
 
     public String generateIdamTokenForCitizen() {
-        return idamClient.getAccessToken(citizenUsername, citizenPassword);
+        String citizenUserToken = cache.getIfPresent(citizenUsername);
+        if (citizenUserToken == null) {
+            citizenUserToken = idamClient.getAccessToken(citizenUsername, citizenPassword);
+            cache.put(citizenUsername, citizenUserToken);
+        }
+        return citizenUserToken;
+    }
+
+    public String generateIdamTokenForUser(String username, String password) {
+        String userToken = cache.getIfPresent(username);
+        if (userToken == null) {
+            userToken = idamClient.getAccessToken(username, password);
+            cache.put(username, userToken);
+        }
+        return userToken;
     }
 
     public UserDetails getUserDetailsFor(final String token) {

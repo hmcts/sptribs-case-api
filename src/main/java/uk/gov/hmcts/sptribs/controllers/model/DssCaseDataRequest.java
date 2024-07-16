@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 import uk.gov.hmcts.sptribs.ciccase.model.DssCaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.LanguagePreference;
 import uk.gov.hmcts.sptribs.document.model.EdgeCaseDocument;
 
 import java.time.LocalDate;
@@ -58,6 +59,8 @@ public class DssCaseDataRequest {
 
     private YesOrNo dssCaseDataIsRepresentativePresent;
 
+    private LanguagePreference dssCaseDataLanguagePreference;
+
     public static DssCaseDataRequest convertDssCaseDataToRequest(DssCaseData dssCaseData) {
         return DssCaseDataRequest.builder()
             .dssCaseDataCaseTypeOfApplication(dssCaseData.getCaseTypeOfApplication())
@@ -79,6 +82,7 @@ public class DssCaseDataRequest {
             .dssCaseDataSupportingDocuments(dssCaseData.getSupportingDocuments())
             .dssCaseDataOtherInfoDocuments(dssCaseData.getOtherInfoDocuments())
             .dssCaseDataIsRepresentativePresent(dssCaseData.getIsRepresentativePresent())
+            .dssCaseDataLanguagePreference(dssCaseData.getLanguagePreference())
             .build();
     }
 }

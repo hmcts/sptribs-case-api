@@ -20,9 +20,13 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.sptribs.ciccase.model.LanguagePreference.ENGLISH;
+import static uk.gov.hmcts.sptribs.ciccase.model.LanguagePreference.WELSH;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.CIC_CASE_REPRESENTATIVE_NAME;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.CIC_CASE_SUBJECT_NAME;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.CONTACT_PARTY_INFO;
+import static uk.gov.hmcts.sptribs.notification.TemplateName.APPLICATION_RECEIVED;
+import static uk.gov.hmcts.sptribs.notification.TemplateName.APPLICATION_RECEIVED_CY;
 
 @ExtendWith(MockitoExtension.class)
 class DssApplicationReceivedNotificationTest {
@@ -42,6 +46,7 @@ class DssApplicationReceivedNotificationTest {
     void shouldNotifySubjectOfApplicationReceivedWithEmail() {
         final DssCaseData dssCaseData = getMockDssCaseData();
         dssCaseData.setSubjectEmailAddress("subject@outlook.com");
+        dssCaseData.setLanguagePreference(ENGLISH);
         final NotificationResponse notificationResponse = getMockNotificationResponse();
 
         Map<String, Object> templateVars = new HashMap<>();
@@ -59,7 +64,33 @@ class DssApplicationReceivedNotificationTest {
         verify(dssNotificationHelper).buildEmailNotificationRequest(
             dssCaseData.getSubjectEmailAddress(),
             templateVars,
-            TemplateName.APPLICATION_RECEIVED);
+            APPLICATION_RECEIVED);
+        assertThat(dssCaseData.getSubjectNotificationResponse().getStatus()).isEqualTo(notificationResponse.getStatus());
+    }
+
+    @Test
+    void shouldNotifySubjectOfApplicationReceivedWithWelshEmail() {
+        final DssCaseData dssCaseData = getMockDssCaseData();
+        dssCaseData.setSubjectEmailAddress("subject@outlook.com");
+        dssCaseData.setLanguagePreference(WELSH);
+        final NotificationResponse notificationResponse = getMockNotificationResponse();
+
+        Map<String, Object> templateVars = new HashMap<>();
+        templateVars.put(CIC_CASE_SUBJECT_NAME, dssCaseData.getSubjectFullName());
+        templateVars.put(CONTACT_PARTY_INFO, dssCaseData.getNotifyPartyMessage());
+
+        when(dssNotificationHelper.buildEmailNotificationRequest(any(), anyMap(), any(TemplateName.class)))
+            .thenReturn(NotificationRequest.builder().build());
+        when(dssNotificationHelper.getSubjectCommonVars(any(), any(DssCaseData.class))).thenReturn(templateVars);
+        when(notificationService.sendEmail(any(NotificationRequest.class))).thenReturn(notificationResponse);
+
+        dssApplicationReceivedNotification.sendToSubject(dssCaseData, CASE_NUMBER);
+
+        verify(notificationService).sendEmail(any(NotificationRequest.class));
+        verify(dssNotificationHelper).buildEmailNotificationRequest(
+            dssCaseData.getSubjectEmailAddress(),
+            templateVars,
+            APPLICATION_RECEIVED_CY);
         assertThat(dssCaseData.getSubjectNotificationResponse().getStatus()).isEqualTo(notificationResponse.getStatus());
     }
 
@@ -85,7 +116,7 @@ class DssApplicationReceivedNotificationTest {
         verify(dssNotificationHelper).buildEmailNotificationRequest(
             dssCaseData.getRepresentativeEmailAddress(),
             templateVars,
-            TemplateName.APPLICATION_RECEIVED);
+            APPLICATION_RECEIVED);
         assertThat(dssCaseData.getRepNotificationResponse().getStatus()).isEqualTo(notificationResponse.getStatus());
     }
 
@@ -101,5 +132,4 @@ class DssApplicationReceivedNotificationTest {
             .status("Success")
             .build();
     }
-
 }
