@@ -346,7 +346,7 @@ class CamundaTaskWaPermissionTest extends DmnDecisionTableBaseUnitTest {
             Arguments.of(
                 REVIEW_SPECIFIC_ACCESS_REQ_CTSC_TASK,
                 DUMMY_CASE_DATA,
-                defaultSpecificAccessRequestCTSCPermissions()
+                defaultSpecificAccessRequestCtscPermissions()
             ),
             Arguments.of(
                 FOLLOW_UP_NONCOMPLIANCE_OF_DIR_TASK,
@@ -460,7 +460,7 @@ class CamundaTaskWaPermissionTest extends DmnDecisionTableBaseUnitTest {
         );
     }
 
-    private static List<Map<String, Object>> defaultSpecificAccessRequestCTSCPermissions() {
+    private static List<Map<String, Object>> defaultSpecificAccessRequestCtscPermissions() {
         return List.of(
             taskSupervisorPermissions(),
             ctscTeamLeaderPermissions()
