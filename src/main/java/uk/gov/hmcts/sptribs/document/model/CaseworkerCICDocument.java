@@ -74,6 +74,6 @@ public class CaseworkerCICDocument {
 
     @JsonIgnore
     public boolean isValidBundleDocument() {
-        return isValidDocument(this.documentLink.getFilename(),"pdf,txt,xlsx,docx,doc,xls");
+        return isValidDocument(this.documentLink.getFilename(),"pdf,txt,xlsx,docx,doc,xls,jpg,jpeg");
     }
 }

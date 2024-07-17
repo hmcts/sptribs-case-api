@@ -56,6 +56,8 @@ class CaseworkerCICDocumentTest {
         "test.docx",
         "test.doc",
         "test.xls",
+        "test.jpeg",
+        "test.jpg",
     })
     void shouldCheckIsValidBundleDocument(String filename) {
         CaseworkerCICDocument document = CaseworkerCICDocument.builder()
