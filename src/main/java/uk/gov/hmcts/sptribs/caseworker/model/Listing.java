@@ -27,7 +27,6 @@ import java.util.List;
 import java.util.Set;
 
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.Collection;
-import static uk.gov.hmcts.ccd.sdk.type.FieldType.FixedList;
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.FixedRadioList;
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.MultiSelectList;
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.TextArea;
@@ -182,8 +181,6 @@ public class Listing {
 
     @CCD(
         label = "Session",
-        typeOverride = FixedList,
-        typeParameterOverride = "HearingSession",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private HearingSession session;
