@@ -1,0 +1,571 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="https://www.omg.org/spec/DMN/20191111/MODEL/" xmlns:dmndi="https://www.omg.org/spec/DMN/20191111/DMNDI/" xmlns:dc="http://www.omg.org/spec/DMN/20180521/DC/" xmlns:biodi="http://bpmn.io/schema/dmn/biodi/2.0" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_1kep5qz" name="DRD" namespace="http://camunda.org/schema/1.0/dmn" exporter="Camunda Modeler" exporterVersion="5.21.0" modeler:executionPlatform="Camunda Cloud" modeler:executionPlatformVersion="8.0.0">
+  <decision id="wa-task-types-st_cic-criminalinjuriescompensation" name="Task Types DMN">
+    <decisionTable id="DecisionTable_17knzal" hitPolicy="COLLECT">
+      <input id="Input_1">
+        <inputExpression id="InputExpression_1" typeRef="string">
+          <text></text>
+        </inputExpression>
+      </input>
+      <output id="Output_1" name="taskTypeId" typeRef="string" biodi:width="359" />
+      <output id="OutputClause_0aeuwfu" name="taskTypeName" typeRef="string" biodi:width="489" />
+      <rule id="DecisionRule_1s0e55i">
+        <inputEntry id="UnaryTests_159d5fs">
+          <text></text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_0yaqmpz">
+          <text>"processCaseWithdrawalDirections"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_06kvqyk">
+          <text>"Process Case Withdrawal Directions"</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_1yu04xb">
+        <inputEntry id="UnaryTests_0yw3ts9">
+          <text></text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_00uephk">
+          <text>"processRule27Decision"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_08cjdso">
+          <text>"Process Rule 27 decision"</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_058e0ch">
+        <inputEntry id="UnaryTests_13r5qvi">
+          <text></text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_1i8vy9w">
+          <text>"processListingDirections"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_0ibp43l">
+          <text>"Process listing directions"</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_0s8x9ui">
+        <inputEntry id="UnaryTests_1k3d7na">
+          <text></text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_1o9i2fb">
+          <text>"processDirectionsReListedCase"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_1w1yxl8">
+          <text>"Process directions re. listed case"</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_1wbpz3c">
+        <inputEntry id="UnaryTests_1o2evz5">
+          <text></text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_172iuee">
+          <text>"processDirectionsReListedCaseWithin5Days"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_1gviy53">
+          <text>"Process directions re. listed case (within 5 days)"</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_12irqga">
+        <inputEntry id="UnaryTests_1f6p49m">
+          <text></text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_0e3ocxo">
+          <text>"processSetAsideDirections"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_0e577zz">
+          <text>"Process Set Aside directions"</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_1kex1c3">
+        <inputEntry id="UnaryTests_01pfudd">
+          <text></text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_0l1nfl0">
+          <text>"processCorrections"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_1vmxr1d">
+          <text>"Process corrections"</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_0nrzci3">
+        <inputEntry id="UnaryTests_0k0r8p9">
+          <text></text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_1bddu0m">
+          <text>"processDirectionsReturned"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_1gebmme">
+          <text>"Process directions returned"</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_1t7x5do">
+        <inputEntry id="UnaryTests_1gqt9bf">
+          <text></text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_0afbyu4">
+          <text>"processPostponementDirections"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_0w6xmwg">
+          <text>"Process postponement directions"</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_15zchor">
+        <inputEntry id="UnaryTests_02f88ee">
+          <text></text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_0nai4m0">
+          <text>"processTimeExtensionDirectionsReturned"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_0xiqq1d">
+          <text>"Process time extension directions returned"</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_1u26wne">
+        <inputEntry id="UnaryTests_1wnygpl">
+          <text></text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_1p61b1s">
+          <text>"processReinstatementDecisionNotice"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_1inww4t">
+          <text>"Process Reinstatement decision notice"</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_1re9lf7">
+        <inputEntry id="UnaryTests_0ywuznd">
+          <text></text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_123ub1h">
+          <text>"processOtherDirectionsReturned"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_0pavip6">
+          <text>"Process other directions reurned"</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_133ls60">
+        <inputEntry id="UnaryTests_19qwiof">
+          <text></text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_07jr1q4">
+          <text>"processWrittenReasons"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_0i1nixh">
+          <text>"Process Written Reasons"</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_0erlpji">
+        <inputEntry id="UnaryTests_0oomfkb">
+          <text></text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_1qps7dp">
+          <text>"processStrikeOutDirectionsReturned"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_0rcmv42">
+          <text>"Process strike out directions returned"</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_0tvio76">
+        <inputEntry id="UnaryTests_1svg78j">
+          <text></text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_0tu522u">
+          <text>"processStayDirections"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_0uv4avi">
+          <text>"Process stay directions"</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_14h1b34">
+        <inputEntry id="UnaryTests_1f6clop">
+          <text></text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_0z0mb8y">
+          <text>"issueDecisionNotice"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_08whror">
+          <text>"Issue Decision Notice"</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_1iojlhw">
+        <inputEntry id="UnaryTests_1owaxdi">
+          <text></text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_12buw6v">
+          <text>"completeHearingOutcome"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_0oa99hv">
+          <text>"Complete Hearing Outcome"</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_1vfacuf">
+        <inputEntry id="UnaryTests_0v3u6i6">
+          <text></text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_0uclk0v">
+          <text>"issueCaseToRespondent"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_05jr52z">
+          <text>"Issue Case To Respondent"</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_0p51yg5">
+        <inputEntry id="UnaryTests_1b7ywvn">
+          <text></text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_18nw7i6">
+          <text>"vetNewCaseDocuments"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_1lqrrbv">
+          <text>"Vet New Case Documents"</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_1firnvw">
+        <inputEntry id="UnaryTests_0kw0ojm">
+          <text></text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_032xyzr">
+          <text>"reviewNewCaseAndProvideDirectionsLO"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_0vaq44i">
+          <text>"Review new case and provide directions - Legal Officer"</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_1mh5v24">
+        <inputEntry id="UnaryTests_1cvygye">
+          <text></text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_0lfakxp">
+          <text>"reviewTimeExtensionRequestLO"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_1djhpqv">
+          <text>"Review Time extension request - Legal Officer"</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_0bqa0vy">
+        <inputEntry id="UnaryTests_1qbgcsh">
+          <text></text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_0mo7l7r">
+          <text>"reviewStrikeOutRequestLO"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_0r4t0d7">
+          <text>"Review Strike out request - Legal Officer"</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_03n1os6">
+        <inputEntry id="UnaryTests_17fzq9u">
+          <text></text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_1oeclab">
+          <text>"reviewStayRequestLO"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_1y1pora">
+          <text>"Review stay request - Legal Officer"</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_1mwb11x">
+        <inputEntry id="UnaryTests_0v29bmz">
+          <text></text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_1c57xm2">
+          <text>"reviewListingDirectionsLO"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_06izo5o">
+          <text>"Review listing directions - Legal Officer"</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_044w3wb">
+        <inputEntry id="UnaryTests_18lverr">
+          <text></text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_02uikjw">
+          <text>"reviewWithdrawalRequestLO"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_1vuyf0a">
+          <text>"Review withdrawal request - Legal Officer"</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_0ipn5kc">
+        <inputEntry id="UnaryTests_0gema8k">
+          <text></text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_0zcqy2a">
+          <text>"reviewRule27RequestLO"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_0iylx57">
+          <text>"Review Rule 27 request - Legal Officer"</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_0sq973a">
+        <inputEntry id="UnaryTests_13p3d4o">
+          <text></text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_0qkohke">
+          <text>"reviewListCaseLO"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_0l76b8k">
+          <text>"Review List Case - Legal Officer"</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_0fjf92a">
+        <inputEntry id="UnaryTests_1nwxere">
+          <text></text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_10smgtr">
+          <text>"reviewOtherRequestLO"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_0nl2v45">
+          <text>"Review Reinstatement request - Legal Officer"</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_0b4gdx0">
+        <inputEntry id="UnaryTests_0xmxzb6">
+          <text></text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_0fkegik">
+          <text>"reviewListCaseWithin5DaysLO"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_0e7rzhf">
+          <text>"Review list case (within 5 days) - Legal Officer"</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_15epzli">
+        <inputEntry id="UnaryTests_0oupgsl">
+          <text></text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_1vqmg61">
+          <text>"reviewPostponementRequestLO"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_06c9a4i">
+          <text>"Review Postponement request - Legal Officer"</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_0gilz14">
+        <inputEntry id="UnaryTests_1xcph8z">
+          <text></text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_0o84erv">
+          <text>"reviewReinstatementRequestLO"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_0hvxupu">
+          <text>"Review Reinstatement request - Legal Officer"</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_0n4zkrb">
+        <inputEntry id="UnaryTests_1g04gkc">
+          <text></text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_1tc2vgq">
+          <text>"reviewListCaseWithin5DaysJudge"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_0i51l81">
+          <text>"Review list case (within 5 days) - Judge"</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_1r916vk">
+        <inputEntry id="UnaryTests_0at08bb">
+          <text></text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_0orwgz6">
+          <text>"reviewPostponementRequestJudge"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_0dbeoo2">
+          <text>"Review Postponement request - Judge"</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_0s8v4s4">
+        <inputEntry id="UnaryTests_1atkojn">
+          <text></text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_13ecqvq">
+          <text>"reviewCorrectionsRequest"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_1i5sbz7">
+          <text>"Review Corrections request"</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_1ilb1r0">
+        <inputEntry id="UnaryTests_12z1oma">
+          <text></text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_0vek6q9">
+          <text>"reviewWrittenReasonsRequest"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_00ik7ca">
+          <text>"Review Written Reasons request"</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_1osj0wi">
+        <inputEntry id="UnaryTests_1sq9joi">
+          <text></text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_1iy8pj2">
+          <text>"reviewReinstatementRequestJudge"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_1c6abml">
+          <text>"Review Reinstatement request - Judge"</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_13m3opm">
+        <inputEntry id="UnaryTests_16zqtnz">
+          <text></text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_1i5m50n">
+          <text>"reviewSetAsideRequest"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_07yfmo0">
+          <text>"Review Set Aside request"</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_1kw2b5o">
+        <inputEntry id="UnaryTests_024dnct">
+          <text></text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_1ifs4ns">
+          <text>"reviewStayRequestJudge"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_1ceu71t">
+          <text>"Review stay request - Judge"</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_0mfjdpj">
+        <inputEntry id="UnaryTests_1n72wsz">
+          <text></text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_1hffz0a">
+          <text>"reviewNewCaseAndProvideDirectionsJudge"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_0hh3bsv">
+          <text>"Review new case and provide directions - Judge"</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_1b2c1ey">
+        <inputEntry id="UnaryTests_0c5f7it">
+          <text></text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_0i51rs2">
+          <text>"reviewOtherRequestJudge"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_0lzeb6u">
+          <text>"Review other request - Judge"</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_0gth1pi">
+        <inputEntry id="UnaryTests_0yi11l1">
+          <text></text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_0iixfs6">
+          <text>"reviewWithdrawalRequestJudge"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_16oac65">
+          <text>"Review withdrawal request - Judge"</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_0o3b30h">
+        <inputEntry id="UnaryTests_0ahztzp">
+          <text></text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_0pstno8">
+          <text>"reviewRule27RequestJudge"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_096byel">
+          <text>"Review Rule 27 request - Judge"</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_1eu5ume">
+        <inputEntry id="UnaryTests_1julym3">
+          <text></text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_0bsu86p">
+          <text>"reviewListingDirectionsJudge"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_0xsdj7o">
+          <text>"Review listing directions - Judge"</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_06d0ozi">
+        <inputEntry id="UnaryTests_1m0eq91">
+          <text></text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_0h2frq1">
+          <text>"reviewListCaseJudge"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_04qqktc">
+          <text>"Review List Case - Judge"</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_1a4ejwh">
+        <inputEntry id="UnaryTests_0y7tpwo">
+          <text></text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_12sn7xy">
+          <text>"reviewStrikeOutRequestJudge"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_0zhgplk">
+          <text>"Review Strike out request - Judge"</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_0uy3ied">
+        <inputEntry id="UnaryTests_0ilp3dg">
+          <text></text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_1f4h3b5">
+          <text>"reviewTimeExtensionRequestJudge"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_0cf9tjz">
+          <text>"Review Time extention request - Judge"</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_1gsra97">
+        <inputEntry id="UnaryTests_0vjf57h">
+          <text></text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_0z0wtim">
+          <text>"followUpNoncomplianceOfDirections"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_13qvqcq">
+          <text>"Follow up noncompliance of directions"</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_1av9qds">
+        <inputEntry id="UnaryTests_0otopvj">
+          <text></text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_00mp2y5">
+          <text>"registerNewCase"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_1rwdkyo">
+          <text>"Register New Case"</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_1wejwy4">
+        <inputEntry id="UnaryTests_1jy6mth">
+          <text></text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_0m6z7f8">
+          <text>"processFurtherEvidence"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_1f8xtb7">
+          <text>"Process Further Evidence"</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_04206dj">
+        <inputEntry id="UnaryTests_01fa2xh">
+          <text></text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_04g14ry">
+          <text>"stitchCollateHearingBundle"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_13c3bm3">
+          <text>"Stitch/collate hearing bundle"</text>
+        </outputEntry>
+      </rule>
+    </decisionTable>
+  </decision>
+  <dmndi:DMNDI>
+    <dmndi:DMNDiagram id="DMNDiagram_0j0r28f">
+      <dmndi:DMNShape id="DMNShape_0524hsr" dmnElementRef="wa-task-types-st_cic-criminalinjuriescompensation">
+        <dc:Bounds height="80" width="180" x="150" y="80" />
+      </dmndi:DMNShape>
+    </dmndi:DMNDiagram>
+  </dmndi:DMNDI>
+</definitions>
