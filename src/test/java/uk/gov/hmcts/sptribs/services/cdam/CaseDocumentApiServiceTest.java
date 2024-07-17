@@ -6,7 +6,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.web.multipart.MultipartFile;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
@@ -37,6 +39,8 @@ import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_URL;
 import static uk.gov.hmcts.sptribs.testutil.TestFileUtil.loadJson;
 
 @ExtendWith(SpringExtension.class)
+@SpringBootTest
+@ActiveProfiles("test")
 class CaseDocumentApiServiceTest {
 
     @InjectMocks
@@ -55,6 +59,7 @@ class CaseDocumentApiServiceTest {
 
     @Test
     void shouldUploadDocuments() throws Exception {
+
         final String caseDataJson = loadJson(CASE_DATA_FILE_CIC);
 
         final MockMultipartFile multipartFile = new MockMultipartFile(
@@ -127,6 +132,7 @@ class CaseDocumentApiServiceTest {
 
     @Test
     void shouldDeleteDocument() {
+
         final DocumentInfo documentInfo = DocumentInfo.builder()
             .documentId(UUID.randomUUID().toString())
             .url(TEST_URL)
