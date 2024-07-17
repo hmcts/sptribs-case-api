@@ -8,6 +8,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.ccd.client.CoreCaseDataApi;
@@ -19,11 +23,9 @@ import uk.gov.hmcts.reform.idam.client.models.User;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.common.config.AppsConfig;
-import uk.gov.hmcts.sptribs.constants.CommonConstants;
 import uk.gov.hmcts.sptribs.idam.IdamService;
 
 import java.io.IOException;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -31,10 +33,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CITIZEN_CIC_CREATE_CASE;
-import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CITIZEN_CIC_SUBMIT_CASE;
-import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CITIZEN_CIC_UPDATE_CASE;
-import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CITIZEN_DSS_UPDATE_CASE_SUBMISSION;
 import static uk.gov.hmcts.sptribs.constants.CommonConstants.ST_CIC_CASE_TYPE;
 import static uk.gov.hmcts.sptribs.constants.CommonConstants.ST_CIC_JURISDICTION;
 import static uk.gov.hmcts.sptribs.controllers.model.DssCaseDataRequest.convertDssCaseDataToRequest;
@@ -46,12 +44,17 @@ import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_AUTHORIZATION_TOK
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_USER;
 import static uk.gov.hmcts.sptribs.testutil.TestFileUtil.loadJson;
+import static uk.gov.hmcts.sptribs.util.AppsUtil.getExactAppsDetailsByCaseType;
+
 
 @ExtendWith(SpringExtension.class)
+@SpringBootTest
+@TestPropertySource("classpath:application.yaml")
+@ActiveProfiles("test")
 class CaseApiServiceTest {
-
     private final ObjectMapper mapper = new ObjectMapper().registerModule(new JavaTimeModule());
     private static final String TEST_CASE_REFERENCE = "123";
+    private AppsConfig.AppsDetails cicAppDetails;
 
     @InjectMocks
     private CaseApiService caseApiService;
@@ -71,8 +74,8 @@ class CaseApiServiceTest {
     @Mock
     IdamService idamService;
 
-    @Mock
-    private AppsConfig.AppsDetails cicAppDetails;
+    @Autowired
+    AppsConfig appsConfig;
 
     @Mock
     CoreCaseDataApi coreCaseDataApi;
@@ -80,22 +83,12 @@ class CaseApiServiceTest {
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.openMocks(this);
-
-        cicAppDetails = new AppsConfig.AppsDetails();
-        cicAppDetails.setCaseType(CommonConstants.ST_CIC_CASE_TYPE);
-        cicAppDetails.setJurisdiction(CommonConstants.ST_CIC_JURISDICTION);
-        cicAppDetails.setCaseTypeOfApplication(List.of(CASE_DATA_CIC_ID));
-
-        final AppsConfig.EventsConfig eventsConfig = new AppsConfig.EventsConfig();
-        eventsConfig.setCreateEvent(CITIZEN_CIC_CREATE_CASE);
-        eventsConfig.setSubmitEvent(CITIZEN_CIC_SUBMIT_CASE);
-        eventsConfig.setUpdateEvent(CITIZEN_CIC_UPDATE_CASE);
-        eventsConfig.setUpdateCaseEvent(CITIZEN_DSS_UPDATE_CASE_SUBMISSION);
-        cicAppDetails.setEventIds(eventsConfig);
+        cicAppDetails = appsConfig.getApps().stream().filter(eachApps -> eachApps.getCaseTypeOfApplication().contains(
+            CASE_DATA_CIC_ID)).findAny().orElse(null);
     }
 
     @Test
-    void shouldCreateCaseData() throws Exception {
+    void shouldfgmCreateCaseData() throws Exception {
         final String caseDataJson = loadJson(CASE_DATA_FILE_CIC);
         final CaseData caseData = mapper.readValue(caseDataJson, CaseData.class);
 
@@ -109,7 +102,7 @@ class CaseApiServiceTest {
             .build();
 
         eventRes = StartEventResponse.builder()
-            .eventId(CITIZEN_CIC_SUBMIT_CASE)
+            .eventId(getExactAppsDetailsByCaseType(appsConfig, ST_CIC_CASE_TYPE).getEventIds().getSubmitEvent())
             .caseDetails(caseDetail)
             .token(TEST_AUTHORIZATION_TOKEN)
             .build();
@@ -128,12 +121,15 @@ class CaseApiServiceTest {
             TEST_USER,
             ST_CIC_JURISDICTION,
             ST_CIC_CASE_TYPE,
-            CITIZEN_CIC_CREATE_CASE
+            getExactAppsDetailsByCaseType(appsConfig, ST_CIC_CASE_TYPE).getEventIds().getCreateEvent()
         )).thenReturn(eventRes);
 
         final CaseDataContent caseDataContent = CaseDataContent.builder()
             .data(caseData)
-            .event(Event.builder().id(CITIZEN_CIC_CREATE_CASE).build())
+            .event(Event.builder().id(getExactAppsDetailsByCaseType(
+                appsConfig,
+                ST_CIC_CASE_TYPE
+            ).getEventIds().getCreateEvent()).build())
             .eventToken(TEST_AUTHORIZATION_TOKEN)
             .build();
 
@@ -158,6 +154,7 @@ class CaseApiServiceTest {
 
     @Test
     void shouldUpdateCaseData() throws IOException {
+
         final String caseDataJson = loadJson(CASE_DATA_FILE_CIC);
         final CaseData caseData = mapper.readValue(caseDataJson, CaseData.class);
 
@@ -171,7 +168,7 @@ class CaseApiServiceTest {
             .build();
 
         eventRes = StartEventResponse.builder()
-            .eventId(CITIZEN_CIC_UPDATE_CASE)
+            .eventId(getExactAppsDetailsByCaseType(appsConfig, ST_CIC_CASE_TYPE).getEventIds().getUpdateEvent())
             .caseDetails(caseDetail)
             .token(TEST_AUTHORIZATION_TOKEN)
             .build();
@@ -191,12 +188,15 @@ class CaseApiServiceTest {
             ST_CIC_JURISDICTION,
             ST_CIC_CASE_TYPE,
             TEST_CASE_ID.toString(),
-            CITIZEN_CIC_UPDATE_CASE
+            getExactAppsDetailsByCaseType(appsConfig, ST_CIC_CASE_TYPE).getEventIds().getUpdateEvent()
         )).thenReturn(eventRes);
 
         final CaseDataContent caseDataContent = CaseDataContent.builder()
             .data(convertDssCaseDataToRequest(caseData.getDssCaseData()))
-            .event(Event.builder().id(CITIZEN_CIC_UPDATE_CASE).build())
+            .event(Event.builder().id(getExactAppsDetailsByCaseType(
+                appsConfig,
+                ST_CIC_CASE_TYPE
+            ).getEventIds().getUpdateEvent()).build())
             .eventToken(TEST_AUTHORIZATION_TOKEN)
             .build();
 
@@ -227,6 +227,7 @@ class CaseApiServiceTest {
 
     @Test
     void shouldGetEventToken() throws IOException {
+
         final String caseDataJson = loadJson(CASE_DATA_FILE_CIC);
         final CaseData caseData = mapper.readValue(caseDataJson, CaseData.class);
 
@@ -240,7 +241,7 @@ class CaseApiServiceTest {
             .build();
 
         eventRes = StartEventResponse.builder()
-            .eventId(CITIZEN_CIC_CREATE_CASE)
+            .eventId(getExactAppsDetailsByCaseType(appsConfig, ST_CIC_CASE_TYPE).getEventIds().getCreateEvent())
             .caseDetails(caseDetail)
             .token(TEST_AUTHORIZATION_TOKEN)
             .build();
@@ -251,7 +252,7 @@ class CaseApiServiceTest {
             TEST_USER,
             ST_CIC_JURISDICTION,
             ST_CIC_CASE_TYPE,
-            CITIZEN_CIC_CREATE_CASE
+            getExactAppsDetailsByCaseType(appsConfig, ST_CIC_CASE_TYPE).getEventIds().getCreateEvent()
         )).thenReturn(eventRes);
 
         final String result = caseApiService.getEventToken(
@@ -269,6 +270,7 @@ class CaseApiServiceTest {
 
     @Test
     void shouldGetEventTokenForUpdate() throws IOException {
+
         final String caseDataJson = loadJson(CASE_DATA_FILE_CIC);
         final CaseData caseData = mapper.readValue(caseDataJson, CaseData.class);
 
@@ -282,7 +284,7 @@ class CaseApiServiceTest {
             .build();
 
         eventRes = StartEventResponse.builder()
-            .eventId(CITIZEN_CIC_UPDATE_CASE)
+            .eventId(getExactAppsDetailsByCaseType(appsConfig, ST_CIC_CASE_TYPE).getEventIds().getUpdateEvent())
             .caseDetails(caseDetail)
             .token(TEST_AUTHORIZATION_TOKEN)
             .build();
@@ -294,7 +296,7 @@ class CaseApiServiceTest {
             ST_CIC_JURISDICTION,
             ST_CIC_CASE_TYPE,
             TEST_CASE_ID.toString(),
-            CITIZEN_CIC_UPDATE_CASE
+            getExactAppsDetailsByCaseType(appsConfig, ST_CIC_CASE_TYPE).getEventIds().getUpdateEvent()
         )).thenReturn(eventRes);
 
         final String result = caseApiService.getEventTokenForUpdate(
@@ -311,6 +313,7 @@ class CaseApiServiceTest {
 
     @Test
     void shouldUpdateCaseDataWithSubmitEvent() throws IOException {
+
         final String caseDataJson = loadJson(CASE_DATA_FILE_CIC);
         final CaseData caseData = mapper.readValue(caseDataJson, CaseData.class);
 
@@ -324,7 +327,7 @@ class CaseApiServiceTest {
             .build();
 
         eventRes = StartEventResponse.builder()
-            .eventId(CITIZEN_CIC_SUBMIT_CASE)
+            .eventId(getExactAppsDetailsByCaseType(appsConfig, ST_CIC_CASE_TYPE).getEventIds().getSubmitEvent())
             .caseDetails(caseDetail)
             .token(TEST_AUTHORIZATION_TOKEN)
             .build();
@@ -344,12 +347,15 @@ class CaseApiServiceTest {
             ST_CIC_JURISDICTION,
             ST_CIC_CASE_TYPE,
             TEST_CASE_ID.toString(),
-            CITIZEN_CIC_SUBMIT_CASE
+            getExactAppsDetailsByCaseType(appsConfig, ST_CIC_CASE_TYPE).getEventIds().getSubmitEvent()
         )).thenReturn(eventRes);
 
         final CaseDataContent caseDataContent = CaseDataContent.builder()
             .data(convertDssCaseDataToRequest(caseData.getDssCaseData()))
-            .event(Event.builder().id(CITIZEN_CIC_SUBMIT_CASE).build())
+            .event(Event.builder().id(getExactAppsDetailsByCaseType(
+                appsConfig,
+                ST_CIC_CASE_TYPE
+            ).getEventIds().getSubmitEvent()).build())
             .eventToken(TEST_AUTHORIZATION_TOKEN)
             .build();
 
@@ -425,21 +431,21 @@ class CaseApiServiceTest {
 
         StartEventResponse startEventResponse = StartEventResponse.builder()
             .caseDetails(caseDetail)
-            .eventId(CITIZEN_CIC_UPDATE_CASE)
-            .token(TEST_AUTHORIZATION_TOKEN)
+            .eventId("citizen-cic-dss-update-case")
+            .token("event token")
             .build();
 
         when(idamService.retrieveUser(CASE_TEST_AUTHORIZATION)).thenReturn(user);
         when(user.getUserDetails()).thenReturn(userDetails);
         when(userDetails.getId()).thenReturn(TEST_USER);
         when(coreCaseDataApi.startEventForCitizen(
-            CASE_TEST_AUTHORIZATION,
+            "testAuth",
             authTokenGenerator.generate(),
-            TEST_USER,
-            ST_CIC_JURISDICTION,
-            ST_CIC_CASE_TYPE,
+            "TestUser",
+            "ST_CIC",
+            "CriminalInjuriesCompensation",
             TEST_CASE_ID.toString(),
-            CITIZEN_DSS_UPDATE_CASE_SUBMISSION)
+            "citizen-cic-dss-update-case")
         ).thenReturn(startEventResponse);
 
         caseApiService.updateCase(
@@ -451,13 +457,13 @@ class CaseApiServiceTest {
         );
 
         verify(coreCaseDataApi).startEventForCitizen(
-            CASE_TEST_AUTHORIZATION,
+            "testAuth",
             authTokenGenerator.generate(),
-            TEST_USER,
-            ST_CIC_JURISDICTION,
-            ST_CIC_CASE_TYPE,
+            "TestUser",
+            "ST_CIC",
+            "CriminalInjuriesCompensation",
             TEST_CASE_ID.toString(),
-            CITIZEN_DSS_UPDATE_CASE_SUBMISSION
+            "citizen-cic-dss-update-case"
         );
     }
 }

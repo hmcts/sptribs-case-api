@@ -6,7 +6,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.sptribs.controllers.DocumentManagementController;
 import uk.gov.hmcts.sptribs.model.DocumentInfo;
@@ -28,7 +30,10 @@ import static uk.gov.hmcts.sptribs.testutil.TestConstants.JSON_FILE_TYPE;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_URL;
 import static uk.gov.hmcts.sptribs.testutil.TestFileUtil.loadJson;
 
+
 @ExtendWith(SpringExtension.class)
+@SpringBootTest
+@ActiveProfiles("test")
 class DocumentUploadOrDeleteExceptionTest {
 
     private DocumentInfo documentInfo;
@@ -42,6 +47,7 @@ class DocumentUploadOrDeleteExceptionTest {
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.openMocks(this);
+
     }
 
     @Test
@@ -72,6 +78,7 @@ class DocumentUploadOrDeleteExceptionTest {
 
     @Test
     void updateDocumentUploadOrDeleteException() throws IOException {
+
         final String caseDataJson = loadJson(CASE_DATA_FILE_CIC);
 
         documentInfo = DocumentInfo.builder()

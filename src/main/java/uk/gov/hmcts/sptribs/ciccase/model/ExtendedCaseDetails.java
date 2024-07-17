@@ -8,6 +8,7 @@ import lombok.extern.jackson.Jacksonized;
 
 import java.util.Map;
 
+
 @Data
 @Builder(toBuilder = true)
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -16,6 +17,7 @@ public class ExtendedCaseDetails {
 
     private Long id;
 
-    @JsonProperty("dataClassification")
+    @JsonProperty("data_classification")
     private Map<String, Object> dataClassification;
 }
+

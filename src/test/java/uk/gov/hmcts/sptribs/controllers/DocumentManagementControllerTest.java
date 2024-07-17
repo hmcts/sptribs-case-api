@@ -7,9 +7,12 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.sptribs.exception.DocumentUploadOrDeleteException;
 import uk.gov.hmcts.sptribs.model.DocumentInfo;
@@ -37,7 +40,11 @@ import static uk.gov.hmcts.sptribs.testutil.TestConstants.RESPONSE_STATUS_SUCCES
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_URL;
 import static uk.gov.hmcts.sptribs.testutil.TestFileUtil.loadJson;
 
+
 @ExtendWith(SpringExtension.class)
+@SpringBootTest
+@TestPropertySource("classpath:application.yaml")
+@ActiveProfiles("test")
 class DocumentManagementControllerTest {
 
     @InjectMocks
