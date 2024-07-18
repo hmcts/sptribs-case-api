@@ -8,21 +8,21 @@ public enum DmnDecisionTable {
                                        "wa-task-allowed-days-wa-wacasetype.dmn"),
     WA_TASK_COMPLETION_ST_CIC_CRIMINALINJURIESCOMPENSATION(
         "wa-task-completion-st_cic-criminalinjuriescompensation",
-        "wa-task-completion-st_cic-criminalinjuriescompensation.dmn"),
+        "dmn/wa-task-completion-st_cic-criminalinjuriescompensation.dmn"),
     WA_TASK_TYPES_ST_CIC_CRIMINALINJURIESCOMPENSATION("wa-task-types-st_cic-criminalinjuriescompensation",
-                                                      "wa-task-types-st_cic-criminalinjuriescompensation.dmn"),
+        "dmn/wa-task-types-st_cic-criminalinjuriescompensation.dmn"),
     WA_TASK_CANCELLATION_ST_CIC_CRIMINALINJURIESCOMPENSATION(
         "wa-task-cancellation-st_cic-criminalinjuriescompensation",
-        "wa-task-cancellation-st_cic-criminalinjuriescompensation.dmn"),
+        "dmn/wa-task-cancellation-st_cic-criminalinjuriescompensation.dmn"),
     WA_TASK_CONFIGURATION_ST_CIC_CRIMINALINJURIESCOMPENSATION(
         "wa-task-configuration-st_cic-criminalinjuriescompensation",
-        "wa-task-configuration-st_cic-criminalinjuriescompensation.dmn"),
+        "dmn/wa-task-configuration-st_cic-criminalinjuriescompensation.dmn"),
     WA_TASK_INITIATION_ST_CIC_CRIMINALINJURIESCOMPENSATION(
         "wa-task-initiation-st_cic-criminalinjuriescompensation",
-        "wa-task-initiation-st_cic-criminalinjuriescompensation.dmn"),
+        "dmn/wa-task-initiation-st_cic-criminalinjuriescompensation.dmn"),
     WA_TASK_PERMISSIONS_ST_CIC_CRIMINALINJURIESCOMPENSATION(
         "wa-task-permissions-st_cic-criminalinjuriescompensation",
-        "wa-task-permissions-st_cic-criminalinjuriescompensation.dmn");
+        "dmn/wa-task-permissions-st_cic-criminalinjuriescompensation.dmn");
 
     @JsonValue
     private final String key;
