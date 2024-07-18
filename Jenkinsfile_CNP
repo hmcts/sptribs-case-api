@@ -347,7 +347,7 @@ def uploadDmnDiagrams() {
     product = "st_cic"
     sh """
         set -e
-        chmod -R +x ./bin/import-dmn-diagram.sh
+        chmod -R +x ./bin
         ./import-dmn-diagram.sh ${WORKSPACE} ${env} ${tenantId} ${product}
        """
   }
