@@ -345,6 +345,10 @@ def uploadDmnDiagrams() {
   dir("${WORKSPACE}/bin") {
     tenantId = "st_cic"
     product = "st_cic"
-    sh "./import-dmn-diagram.sh ${WORKSPACE} ${env} ${tenantId} ${product}"
+    sh """
+        set -e
+        chmod -R +x ./bin/import-dmn-diagram.sh
+        ./import-dmn-diagram.sh ${WORKSPACE} ${env} ${tenantId} ${product}
+       """
   }
 }
