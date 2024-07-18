@@ -75,6 +75,16 @@ withPipeline(type, product, component) {
     disableLegacyDeployment()
     loadVaultSecrets(secrets)
     syncBranchesWithMaster(['demo', 'perftest', 'ithc'])
+    afterSuccess('checkout') {
+      def subscription = 'nonprod'
+      if (env.ENVIRONMENT == 'ithc' || env.ENVIRONMENT == 'demo' || env.ENVIRONMENT == 'perftest') {
+        withSubscription(subscription) {
+          withTeamSecrets(pipelineConf, env.ENVIRONMENT) {
+            uploadDmnDiagrams()
+          }
+        }
+      }
+    }
     enableSlackNotifications('#special-tribunals-builds')
     MetricsPublisher metricsPublisher = new MetricsPublisher(this, currentBuild, product, component)
     approvedEnvironmentRepository(params.environment, metricsPublisher) {
@@ -295,9 +305,14 @@ withPipeline(type, product, component) {
   }
 
     before('functionalTest:preview') {
+      uploadDmnDiagrams()
       // Only for preview upload the definitions via script as high level data set up relies on an existing environment
       uploadCoreCaseDataDefinitions()
     }
+
+  before('functionalTest:aat') {
+    uploadDmnDiagrams()
+  }
 }
 
 def setCommonEnvVariables() {
@@ -323,5 +338,13 @@ def generateDefinitions() {
   }
   dir("${WORKSPACE}") {
     steps.archiveArtifacts artifacts: "build/ccd-config/*.xlsx"
+  }
+}
+
+def uploadDmnDiagrams() {
+  dir("${WORKSPACE}/bin") {
+    tenantId = "st_cic"
+    product = "st_cic"
+    sh "./import-dmn-diagram.sh ${WORKSPACE} ${env} ${tenantId} ${product}"
   }
 }
