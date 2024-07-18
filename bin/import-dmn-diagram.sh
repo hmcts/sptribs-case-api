@@ -6,12 +6,19 @@ env=${2}
 tenant_id=${3}
 product=${4}
 
+microservice=sptribs_case_api
 s2sSecret=${S2S_SECRET:-AABBCCDDEEFFGGHH}
+oneTimePassword=$(docker run --rm hmctspublic.azurecr.io/imported/toolbelt/oathtool --totp -b ${s2sSecret})
 
-serviceToken=$($(realpath $workspace)/bin/utils/idam-lease-service-token.sh sptribs_case_api \
-  $(docker run --rm hmctspublic.azurecr.io/imported/toolbelt/oathtool --totp -b ${s2sSecret}))
+serviceToken=$(curl --insecure --fail --show-error --silent -X POST \
+  ${S2S_URL_BASE:-http://rpe-service-auth-provider-aat.service.core-compute-aat.internal}/testing-support/lease \
+  -H "Content-Type: application/json" \
+  -d '{
+    "microservice": "'${microservice}'",
+    "oneTimePassword": "'${oneTimePassword}'"
+  }')
 
-dmnFilepath="$(realpath $workspace)/src/main/resources"
+dmnFilepath="$(realpath $workspace)/src/main/resources/dmn"
 
 for file in $(find ${dmnFilepath} -name '*.dmn')
 do
