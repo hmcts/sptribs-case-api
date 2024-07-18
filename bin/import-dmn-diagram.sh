@@ -23,7 +23,7 @@ dmnFilepath="$(realpath $workspace)/src/main/resources/dmn"
 for file in $(find ${dmnFilepath} -name '*.dmn')
 do
   uploadResponse=$(curl --insecure -v --silent -w "\n%{http_code}" --show-error -X POST \
-    ${CAMUNDA_BASE_URL:-http://localhost:9404}/engine-rest/deployment/create \
+    ${CAMUNDA_BASE_URL:-http://camunda-api-aat.service.core-compute-aat.internal}/engine-rest/deployment/create \
     -H "Accept: application/json" \
     -H "ServiceAuthorization: Bearer ${serviceToken}" \
     -F "deployment-name=$(basename ${file})" \
