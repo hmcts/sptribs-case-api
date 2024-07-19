@@ -96,6 +96,7 @@
       "partyName": "The Solicitor",
       "roleOnCase": "Representative",
       "details": []
-    }
+    },
+    "caseNameHmctsInternal": "test_first_name"
   }
 }

@@ -178,6 +178,7 @@ class CicSubmitCaseEventTest {
         assertThat(response.getData().getRepresentativeFlags()).isNotNull();
         assertThat(response.getData().getRepresentativeFlags().getPartyName()).isEqualTo(TEST_SOLICITOR_NAME);
         assertThat(response.getData().getRepresentativeFlags().getRoleOnCase()).isEqualTo("Representative");
+        assertThat(response.getData().getCaseNameHmctsInternal()).isEqualTo(TEST_FIRST_NAME);
     }
 
     @Test

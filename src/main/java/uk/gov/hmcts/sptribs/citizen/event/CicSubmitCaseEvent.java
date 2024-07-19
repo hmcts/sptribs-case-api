@@ -189,6 +189,7 @@ public class CicSubmitCaseEvent implements CCDConfig<CaseData, State, UserRole> 
         caseData.getCicCase().setDateOfBirth(dssCaseData.getSubjectDateOfBirth());
         caseData.getCicCase().setEmail(dssCaseData.getSubjectEmailAddress());
         caseData.getCicCase().setPhoneNumber(dssCaseData.getSubjectContactNumber());
+        caseData.setCaseNameHmctsInternal(dssCaseData.getSubjectFullName());
         caseData.setCaseFlags(Flags.builder()
             .details(new ArrayList<>())
             .partyName(null)
