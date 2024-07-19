@@ -86,6 +86,16 @@
     "dssAnswer2": "case_data.dssCaseDataSubjectDateOfBirth",
     "dssHeaderDetails": "Subject of this case",
     "firstHearingDate": "",
-    "dataVersion": 0
+    "dataVersion": 0,
+    "subjectFlags": {
+      "partyName": "test_first_name",
+      "roleOnCase": "subject",
+      "details": []
+    },
+    "representativeFlags": {
+      "partyName": "The Solicitor",
+      "roleOnCase": "Representative",
+      "details": []
+    }
   }
 }

@@ -171,6 +171,13 @@ class CicSubmitCaseEventTest {
         assertThat(response.getData().getCicCase().getApplicantDocumentsUploaded().get(2).getValue().getDocumentCategory())
             .isEqualTo(DocumentType.DSS_TRIBUNAL_FORM);
         assertThat(response.getData().getCicCase().getApplicantDocumentsUploaded().get(2).getValue().getDate()).isEqualTo(LocalDate.now());
+        assertThat(response.getData().getCaseFlags()).isNotNull();
+        assertThat(response.getData().getSubjectFlags()).isNotNull();
+        assertThat(response.getData().getSubjectFlags().getPartyName()).isEqualTo(TEST_FIRST_NAME);
+        assertThat(response.getData().getSubjectFlags().getRoleOnCase()).isEqualTo("subject");
+        assertThat(response.getData().getRepresentativeFlags()).isNotNull();
+        assertThat(response.getData().getRepresentativeFlags().getPartyName()).isEqualTo(TEST_SOLICITOR_NAME);
+        assertThat(response.getData().getRepresentativeFlags().getRoleOnCase()).isEqualTo("Representative");
     }
 
     @Test
