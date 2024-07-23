@@ -16,4 +16,4 @@ cp -r ./wa-standalone-task-bpmn/src/main/resources/ .
 rm -rf ./wa-standalone-task-bpmn
 
 #upload bpmn files to environment
-./bin/wa/import-wa-bpmn-diagram.sh .
+./wa/import-wa-bpmn-diagram.sh .
