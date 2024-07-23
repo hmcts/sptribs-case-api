@@ -286,13 +286,12 @@ withPipeline(type, product, component) {
             env.CASE_DATA_STORE_BASEURL = "https://ccd-data-store-api-sptribs-case-api-pr-${CHANGE_ID}.preview.platform.hmcts.net"
             env.IDAM_API_URL = "https://idam-api.aat.platform.hmcts.net"
             env.CAMUNDA_BASE_URL = "https://camunda-sptribs-case-api-pr-${CHANGE_ID}.preview.platform.hmcts.net"
-            env.SERVICE_AUTH_PROVIDER_API_BASE_URL = "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
 
             println """After akschartsinstall Using CASE_DATA_STORE_BASEURL: ${env.CASE_DATA_STORE_BASEURL}""".stripIndent()
             sh """
                 set -e
                 chmod -R +x ./bin
-                ./bin/import-dmn-diagram.sh . ${env.ENVIRONMENT} st_cic st_cic
+                ./bin/wa/import-dmn-diagram.sh . ${env.ENVIRONMENT} st_cic st_cic
                 ./bin/wa/pull-latest-camunda-wa-files.sh ${bpmnBranch}
             """
         }

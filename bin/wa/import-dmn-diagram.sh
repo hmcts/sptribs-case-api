@@ -2,26 +2,23 @@
 
 set -eu
 workspace=${1}
-tenant_id=${2}
-product=${3}
+env=${2}
+tenant_id=${3}
+product=${4}
 
+microservice=sptribs_case_api
 s2sSecret=${S2S_SECRET:-AABBCCDDEEFFGGHH}
+oneTimePassword=$(docker run --rm hmctspublic.azurecr.io/imported/toolbelt/oathtool --totp -b ${s2sSecret})
 
-#if [[ "${env}" == 'prod' ]]; then
-#  s2sSecret=${S2S_SECRET}
-#fi
+serviceToken=$($(realpath $workspace)/bin/utils/idam-lease-service-token.sh ${microservice} ${oneTimePassword})
 
-serviceToken=$($(realpath $workspace)/bin/utils/idam-lease-service-token.sh sptribs_case_api \
-  $(docker run --rm toolbelt/oathtool --totp -b ${s2sSecret}))
 
-dmnFilepath="$(realpath $workspace)/resources"
-
-echo "${CAMUNDA_BASE_URL} import-dmn-diagram.sh line 19"
+dmnFilepath="$(realpath $workspace)/src/main/resources/dmn"
 
 for file in $(find ${dmnFilepath} -name '*.dmn')
 do
   uploadResponse=$(curl --insecure -v --silent -w "\n%{http_code}" --show-error -X POST \
-    ${CAMUNDA_BASE_URL:-http://localhost:9404}/engine-rest/deployment/create \
+    ${CAMUNDA_BASE_URL:-http://camunda-api-aat.service.core-compute-aat.internal}/engine-rest/deployment/create \
     -H "Accept: application/json" \
     -H "ServiceAuthorization: Bearer ${serviceToken}" \
     -F "deployment-name=$(basename ${file})" \
@@ -42,32 +39,3 @@ echo "$(basename ${file}) upload failed with http code ${upload_http_code} and r
 continue;
 
 done
-
-bpmnFilepath="$(realpath $workspace)/camunda"
-if [ -d ${bpmnFilepath} ]
-then
-  for file in $(find ${bpmnFilepath} -name '*.bpmn')
-  do
-    uploadResponse=$(curl --insecure -v --silent -w "\n%{http_code}" --show-error -X POST \
-      ${CAMUNDA_BASE_URL:-http://localhost:9404}/engine-rest/deployment/create \
-      -H "Accept: application/json" \
-      -H "ServiceAuthorization: Bearer ${serviceToken}" \
-      -F "deployment-name=$(basename ${file})" \
-      -F "deploy-changed-only=true" \
-      -F "file=@${bpmnFilepath}/$(basename ${file})")
-
-  upload_http_code=$(echo "$uploadResponse" | tail -n1)
-  upload_response_content=$(echo "$uploadResponse" | sed '$d')
-
-  if [[ "${upload_http_code}" == '200' ]]; then
-    echo "$(basename ${file}) diagram uploaded successfully (${upload_response_content})"
-    continue;
-  fi
-
-  echo "$(basename ${file}) upload failed with http code ${upload_http_code} and response (${upload_response_content})"
-  continue;
-
-  done
-  exit 0;
-fi
-
