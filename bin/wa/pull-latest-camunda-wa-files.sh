@@ -14,6 +14,3 @@ cd ..
 #Copy camunda folder which contains bpmn files
 cp -r ./wa-standalone-task-bpmn/src/main/resources/ .
 rm -rf ./wa-standalone-task-bpmn
-
-#upload bpmn files to environment
-$(realpath $workspace)/bin/wa/import-wa-bpmn-diagram.sh .

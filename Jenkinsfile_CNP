@@ -366,6 +366,9 @@ def uploadDmnDiagrams() {
 def uploadBpmnDiagram() {
   dir("${WORKSPACE}/bin") {
     bpmnBranch = "master"
-    sh "./wa/pull-latest-camunda-wa-files.sh ${bpmnBranch}"
+    sh """
+      ./wa/pull-latest-camunda-wa-files.sh ${bpmnBranch}"
+      ./wa/import-wa-bpmn-diagram.sh .
+    """
   }
 }
