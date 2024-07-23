@@ -75,6 +75,16 @@ withPipeline(type, product, component) {
     disableLegacyDeployment()
     loadVaultSecrets(secrets)
     syncBranchesWithMaster(['demo', 'perftest', 'ithc'])
+    afterSuccess('checkout') {
+      def subscription = 'nonprod'
+      if (env.ENVIRONMENT == 'ithc' || env.ENVIRONMENT == 'demo' || env.ENVIRONMENT == 'perftest') {
+        withSubscription(subscription) {
+          withTeamSecrets(pipelineConf, env.ENVIRONMENT) {
+            uploadDmnDiagrams()
+          }
+        }
+      }
+    }
     enableSlackNotifications('#special-tribunals-builds')
     MetricsPublisher metricsPublisher = new MetricsPublisher(this, currentBuild, product, component)
     approvedEnvironmentRepository(params.environment, metricsPublisher) {
@@ -266,24 +276,25 @@ withPipeline(type, product, component) {
     }
   }
 
-
   onDemo {
-      env.ENVIRONMENT="demo"
-      env.CASE_API_URL = "http://sptribs-case-api-demo.service.core-compute-demo.internal"
-      env.CASE_API_DOCUMENT_DOWNLOAD_URL = "http://manage-case.demo.platform.hmcts.net/"
-      env.CCD_DEF_NAME = "demo"
-      env.IDAM_API_URL_BASE = "https://idam-api.demo.platform.hmcts.net"
-      env.S2S_URL_BASE = "http://rpe-service-auth-provider-demo.service.core-compute-demo.internal"
-    }
+    env.ENVIRONMENT="demo"
+    env.CASE_API_URL = "http://sptribs-case-api-demo.service.core-compute-demo.internal"
+    env.CASE_API_DOCUMENT_DOWNLOAD_URL = "http://manage-case.demo.platform.hmcts.net/"
+    env.CCD_DEF_NAME = "demo"
+    env.IDAM_API_URL_BASE = "https://idam-api.demo.platform.hmcts.net"
+    env.S2S_URL_BASE = "http://rpe-service-auth-provider-demo.service.core-compute-demo.internal"
+    env.CAMUNDA_BASE_URL = "http://camunda-api-demo.service.core-compute-demo.internal"
+  }
 
-    onPerftest {
-      env.ENVIRONMENT="perftest"
-      env.CASE_API_URL = "http://sptribs-case-api-perftest.service.core-compute-perftest.internal"
-      env.CCD_DEF_NAME = "perftest"
-      env.IDAM_API_URL_BASE = "https://idam-api.perftest.platform.hmcts.net"
-      env.S2S_URL_BASE = "http://rpe-service-auth-provider-perftest.service.core-compute-perftest.internal"
-      env.FEE_API_URL = "http://fees-register-api-demo.service.core-compute-demo.internal"
-    }
+  onPerftest {
+    env.ENVIRONMENT="perftest"
+    env.CASE_API_URL = "http://sptribs-case-api-perftest.service.core-compute-perftest.internal"
+    env.CCD_DEF_NAME = "perftest"
+    env.IDAM_API_URL_BASE = "https://idam-api.perftest.platform.hmcts.net"
+    env.S2S_URL_BASE = "http://rpe-service-auth-provider-perftest.service.core-compute-perftest.internal"
+    env.FEE_API_URL = "http://fees-register-api-demo.service.core-compute-demo.internal"
+    env.CAMUNDA_BASE_URL = "http://camunda-api-perftest.service.core-compute-perftest.internal"
+  }
 
   onIthc {
     env.ENVIRONMENT="ithc"
@@ -292,12 +303,18 @@ withPipeline(type, product, component) {
     env.IDAM_API_URL_BASE = "https://idam-api.ithc.platform.hmcts.net"
     env.S2S_URL_BASE = "http://rpe-service-auth-provider-ithc.service.core-compute-ithc.internal"
     env.FEE_API_URL = "http://fees-register-api-demo.service.core-compute-ithc.internal"
+    env.CAMUNDA_BASE_URL = "http://camunda-api-ithc.service.core-compute-ithc.internal"
   }
 
-    before('functionalTest:preview') {
-      // Only for preview upload the definitions via script as high level data set up relies on an existing environment
-      uploadCoreCaseDataDefinitions()
-    }
+  before('functionalTest:preview') {
+    uploadDmnDiagrams()
+    // Only for preview upload the definitions via script as high level data set up relies on an existing environment
+    uploadCoreCaseDataDefinitions()
+  }
+
+  before('functionalTest:aat') {
+    uploadDmnDiagrams()
+  }
 }
 
 def setCommonEnvVariables() {
@@ -323,5 +340,13 @@ def generateDefinitions() {
   }
   dir("${WORKSPACE}") {
     steps.archiveArtifacts artifacts: "build/ccd-config/*.xlsx"
+  }
+}
+
+def uploadDmnDiagrams() {
+  dir("${WORKSPACE}/bin") {
+    tenantId = "st_cic"
+    product = "st_cic"
+    sh "./import-dmn-diagram.sh ${WORKSPACE} ${env} ${tenantId} ${product}"
   }
 }
