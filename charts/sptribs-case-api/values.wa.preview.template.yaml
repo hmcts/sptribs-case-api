@@ -62,6 +62,14 @@ wa:
     job:
       schedule: "*/1 * * * *"
 
+  wa-reconfiguration-batch:
+    job:
+      schedule: "*/1 * * * *"
+
+  wa-termination-batch:
+    job:
+      schedule: "*/1 * * * *"
+
   #disable wa db as we are using the postgres flexible server
   wa:
     postgresql:
