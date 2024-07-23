@@ -59,8 +59,8 @@ public class SystemMigrateGlobalSearchFieldsTaskTest {
     private static final BoolQueryBuilder query = boolQuery()
         .must(boolQuery()
             .mustNot(existsQuery("data.SearchCriteria"))
-            .must(matchQuery("reference", TEST_CASE_ID))
-        );
+        )
+        .must(matchQuery("reference", TEST_CASE_ID));
 
     @BeforeEach
     void setUp() {

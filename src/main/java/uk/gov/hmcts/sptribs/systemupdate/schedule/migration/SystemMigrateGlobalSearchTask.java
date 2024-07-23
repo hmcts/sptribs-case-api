@@ -60,8 +60,11 @@ public class SystemMigrateGlobalSearchTask implements Runnable {
                     boolQuery()
                         .must(boolQuery()
                             .mustNot(existsQuery("data.SearchCriteria"))
-                            .must(matchQuery("reference", Long.parseLong(globalSearchTestCaseReference)))
                         );
+
+                if (globalSearchTestCaseReference != null) {
+                    query.must(matchQuery("reference", Long.parseLong(globalSearchTestCaseReference)));
+                }
 
                 final List<CaseDetails> casesToMigrateSearchCriteria =
                     ccdSearchService.searchForAllCasesWithQuery(query, user, serviceAuth);
