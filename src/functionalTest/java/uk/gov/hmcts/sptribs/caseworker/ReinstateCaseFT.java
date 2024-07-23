@@ -14,6 +14,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.HttpStatus.OK;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_REINSTATE_CASE;
 import static uk.gov.hmcts.sptribs.testutil.CaseDataUtil.caseData;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.ABOUT_TO_START_URL;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.ABOUT_TO_SUBMIT_URL;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.SUBMITTED_URL;
 import static uk.gov.hmcts.sptribs.testutil.TestResourceUtil.expectedResponse;
@@ -28,6 +29,11 @@ public class ReinstateCaseFT extends FunctionalTestSuite {
         "classpath:request/casedata/ccd-callback-casedata-reinstate-case-mid-event.json";
     private static final String MID_EVENT_RESPONSE =
         "classpath:responses/response-caseworker-reinstate-case-mid-event.json";
+
+    private static final String ABOUT_TO_START_REQUEST =
+        "classpath:request/casedata/ccd-callback-casedata-reinstate-case-about-to-start.json";
+    private static final String ABOUT_TO_START_RESPONSE =
+        "classpath:responses/response-caseworker-reinstate-case-about-to-start.json";
 
     private static final String ABOUT_TO_SUBMIT_REQUEST =
         "classpath:request/casedata/ccd-callback-casedata-reinstate-case-about-to-submit.json";
@@ -71,6 +77,18 @@ public class ReinstateCaseFT extends FunctionalTestSuite {
             .inPath("$.errors")
             .isArray()
             .isEmpty();
+    }
+
+    @Test
+    public void shouldPopulateReinstateDocumentsUploadAboutToStart() throws Exception {
+        final Map<String, Object> caseData = caseData(ABOUT_TO_START_REQUEST);
+
+        final Response response = triggerCallback(caseData, CASEWORKER_REINSTATE_CASE, ABOUT_TO_START_URL);
+
+        assertThat(response.getStatusCode()).isEqualTo(OK.value());
+        assertThatJson(response.asString())
+            .when(IGNORING_EXTRA_FIELDS)
+            .isEqualTo(json(expectedResponse(ABOUT_TO_START_RESPONSE)));
     }
 
     @Test
