@@ -8,6 +8,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.test.util.ReflectionTestUtils;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.idam.client.models.User;
@@ -23,6 +24,7 @@ import java.util.List;
 
 import static org.elasticsearch.index.query.QueryBuilders.boolQuery;
 import static org.elasticsearch.index.query.QueryBuilders.existsQuery;
+import static org.elasticsearch.index.query.QueryBuilders.matchQuery;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -57,6 +59,7 @@ public class SystemMigrateGlobalSearchFieldsTaskTest {
     private static final BoolQueryBuilder query = boolQuery()
         .must(boolQuery()
             .mustNot(existsQuery("data.SearchCriteria"))
+            .must(matchQuery("reference", TEST_CASE_ID))
         );
 
     @BeforeEach
@@ -64,6 +67,9 @@ public class SystemMigrateGlobalSearchFieldsTaskTest {
         user = new User(SYSTEM_UPDATE_AUTH_TOKEN, UserDetails.builder().build());
         when(idamService.retrieveSystemUpdateUserDetails()).thenReturn(user);
         when(authTokenGenerator.generate()).thenReturn(SERVICE_AUTHORIZATION);
+
+        ReflectionTestUtils.setField(task, "globalSearchMigrationEnabled", true);
+        ReflectionTestUtils.setField(task, "globalSearchTestCaseReference", TEST_CASE_ID.toString());
     }
 
     @Test
