@@ -192,8 +192,6 @@ public class CicSubmitCaseEvent implements CCDConfig<CaseData, State, UserRole> 
         caseData.setCaseNameHmctsInternal(dssCaseData.getSubjectFullName());
         caseData.setCaseFlags(Flags.builder()
             .details(new ArrayList<>())
-            .partyName(null)
-            .roleOnCase(null)
             .build());
         caseData.setSubjectFlags(Flags.builder()
             .details(new ArrayList<>())
