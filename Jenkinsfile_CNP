@@ -12,8 +12,7 @@ def type = "java"
 def product = "sptribs"
 def component = "case-api"
 
-// branch names for WA
-def dmnBranch = "master"
+// branch name for WA bpmn
 def bpmnBranch = "master"
 
 GradleBuilder builder = new GradleBuilder(this, product)
@@ -282,19 +281,12 @@ withPipeline(type, product, component) {
 
   afterSuccess('akschartsinstall') {
     onPR {
-        for (label in githubApi.getLabelsbyPattern(env.BRANCH_NAME, "pr-values:wa") ) {
-            env.CASE_DATA_STORE_BASEURL = "https://ccd-data-store-api-sptribs-case-api-pr-${CHANGE_ID}.preview.platform.hmcts.net"
-            env.IDAM_API_URL = "https://idam-api.aat.platform.hmcts.net"
-            env.CAMUNDA_BASE_URL = "https://camunda-sptribs-case-api-pr-${CHANGE_ID}.preview.platform.hmcts.net"
-
-            println """After akschartsinstall Using CASE_DATA_STORE_BASEURL: ${env.CASE_DATA_STORE_BASEURL}""".stripIndent()
-            sh """
-                set -e
-                chmod -R +x ./bin
-                ./bin/wa/import-dmn-diagram.sh . ${env.ENVIRONMENT} st_cic st_cic
-                ./bin/wa/pull-latest-camunda-wa-files.sh ${bpmnBranch}
-            """
-        }
+      for (label in githubApi.getLabelsbyPattern(env.BRANCH_NAME, "pr-values:wa") ) {
+        env.CAMUNDA_BASE_URL = "https://camunda-sptribs-case-api-pr-${CHANGE_ID}.preview.platform.hmcts.net"
+        println """After akschartsinstall upload DNM and BPMN diagrams""".stripIndent()
+        uploadDmnDiagrams()
+        uploadBpmnDiagram()
+      }
     }
   }
 
@@ -369,6 +361,14 @@ def uploadDmnDiagrams() {
   dir("${WORKSPACE}/bin") {
     tenantId = "st_cic"
     product = "st_cic"
-    sh "./import-dmn-diagram.sh ${WORKSPACE} ${env} ${tenantId} ${product}"
+    sh "./wa/import-dmn-diagram.sh ${WORKSPACE} ${env} ${tenantId} ${product}"
+  }
+}
+
+def uploadBpmnDiagram() {
+  dir("${WORKSPACE}/bin") {
+    tenantId = "st_cic"
+    product = "st_cic"
+    sh "./wa/pull-latest-camunda-wa-files.sh ${bpmnBranch}"
   }
 }
