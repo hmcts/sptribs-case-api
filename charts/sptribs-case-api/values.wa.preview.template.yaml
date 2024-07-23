@@ -58,11 +58,13 @@ wa:
       environment:
         DB_READER_USERNAME: "hmcts"
 
+  wa-message-cron-service:
+    job:
+      schedule: "*/1 * * * *"
+
   wa-initiation-batch:
     job:
-      schedule: "* * * * *"
-    job-2:
-      schedule: "* * * * * (sleep 30)"
+      schedule: "*/1 * * * *"
 
   wa-reconfiguration-batch:
     job:
