@@ -12,9 +12,6 @@ def type = "java"
 def product = "sptribs"
 def component = "case-api"
 
-// branch name for WA bpmn
-def bpmnBranch = "master"
-
 GradleBuilder builder = new GradleBuilder(this, product)
 
 static Map<String, Object> secret(String secretName, String envVariable) {
@@ -368,8 +365,7 @@ def uploadDmnDiagrams() {
 
 def uploadBpmnDiagram() {
   dir("${WORKSPACE}/bin") {
-    tenantId = "st_cic"
-    product = "st_cic"
+    bpmnBranch = "master"
     sh "./wa/pull-latest-camunda-wa-files.sh ${bpmnBranch}"
   }
 }
