@@ -72,18 +72,12 @@ public class ReinstateCase implements CCDConfig<CaseData, State, UserRole> {
             .description("Case: Reinstate case")
             .aboutToSubmitCallback(this::aboutToSubmit)
             .aboutToStartCallback(this::aboutToStart)
-            .submittedCallback(this::reinstated)
+            .submittedCallback(this::submitted)
             .showSummary()
             .grant(CREATE_READ_UPDATE,
                 ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER, ST_CIC_HEARING_CENTRE_ADMIN,
                 ST_CIC_HEARING_CENTRE_TEAM_LEADER, ST_CIC_SENIOR_JUDGE)
-            .grantHistoryOnly(
-                ST_CIC_CASEWORKER,
-                ST_CIC_SENIOR_CASEWORKER,
-                ST_CIC_HEARING_CENTRE_ADMIN,
-                ST_CIC_HEARING_CENTRE_TEAM_LEADER,
-                ST_CIC_SENIOR_JUDGE,
-                ST_CIC_JUDGE)
+            .grantHistoryOnly(ST_CIC_JUDGE)
         );
     }
 
@@ -115,8 +109,8 @@ public class ReinstateCase implements CCDConfig<CaseData, State, UserRole> {
             .build();
     }
 
-    public SubmittedCallbackResponse reinstated(CaseDetails<CaseData, State> details,
-                                                CaseDetails<CaseData, State> beforeDetails) {
+    public SubmittedCallbackResponse submitted(CaseDetails<CaseData, State> details,
+                                               CaseDetails<CaseData, State> beforeDetails) {
         try {
             sendCaseReinstatedNotification(details.getData().getHyphenatedCaseRef(), details.getData());
         } catch (Exception notificationException) {
