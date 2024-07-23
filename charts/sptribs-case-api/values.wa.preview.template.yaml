@@ -60,7 +60,9 @@ wa:
 
   wa-initiation-batch:
     job:
-      schedule: "*/1 * * * *"
+      schedule: "* * * * *"
+    job-2:
+      schedule: "* * * * * (sleep 30)"
 
   wa-reconfiguration-batch:
     job:
