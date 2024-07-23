@@ -85,7 +85,7 @@
     "cicCaseSchemeCic": "Preference",
     "cicCaseApplicantDocumentsUploaded": [
       {
-        "id": "150dc5ce-cc10-4edf-9a0b-7dbc456f7ced",
+        "id": "${json-unit.any-string}",
         "value": {
           "documentCategory": "ApplicationForm",
           "documentEmailContent": "Lorem ipsum",
