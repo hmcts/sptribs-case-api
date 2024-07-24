@@ -203,7 +203,8 @@ class CaseWorkerCreateDraftOrderTest {
         existingDraftOrderCICList.add(existingDraftOrderCICListValue);
         caseData.getCicCase().setDraftOrderCICList(existingDraftOrderCICList);
 
-        final String existingLabel = OrderTemplate.CIC6_GENERAL_DIRECTIONS.getLabel() + DOUBLE_HYPHEN + "02-01-2002 09:10:10.pdf" + DOUBLE_HYPHEN + "draft.pdf";
+        final String existingLabel =
+                OrderTemplate.CIC6_GENERAL_DIRECTIONS.getLabel() + DOUBLE_HYPHEN + "02-01-2002 09:10:10.pdf" + DOUBLE_HYPHEN + "draft.pdf";
         final DynamicListElement existingOrder = DynamicListElement.builder().label(existingLabel).code(UUID.randomUUID()).build();
         final List<DynamicListElement> existingOrderDynamicList = new ArrayList<>();
         existingOrderDynamicList.add(existingOrder);
@@ -216,8 +217,10 @@ class CaseWorkerCreateDraftOrderTest {
         assertThat(response.getData()).isNotNull();
         assertThat(response.getData().getCicCase().getDraftOrderCICList().size()).isEqualTo(2);
         assertThat(response.getData().getCicCase().getDraftOrderDynamicList().getListItems()).contains(existingOrder);
-        assertThat(response.getData().getCicCase().getDraftOrderCICList().get(0).getValue().getDraftOrderContentCIC()).isEqualTo(orderContentCIC);
-        assertThat(response.getData().getCicCase().getDraftOrderCICList().get(1).getValue().getDraftOrderContentCIC()).isEqualTo(existingDraftOrderCIC.getDraftOrderContentCIC());
+        assertThat(response.getData().getCicCase().getDraftOrderCICList().get(0).getValue().getDraftOrderContentCIC())
+                .isEqualTo(orderContentCIC);
+        assertThat(response.getData().getCicCase().getDraftOrderCICList().get(1).getValue().getDraftOrderContentCIC())
+                .isEqualTo(existingDraftOrderCIC.getDraftOrderContentCIC());
     }
 }
 
