@@ -215,7 +215,7 @@ class CaseWorkerCreateDraftOrderTest {
 
         assertThat(response).isNotNull();
         assertThat(response.getData()).isNotNull();
-        assertThat(response.getData().getCicCase().getDraftOrderCICList().size()).isEqualTo(2);
+        assertThat(response.getData().getCicCase().getDraftOrderCICList()).hasSize(2);
         assertThat(response.getData().getCicCase().getDraftOrderDynamicList().getListItems()).contains(existingOrder);
         assertThat(response.getData().getCicCase().getDraftOrderCICList().get(0).getValue().getDraftOrderContentCIC())
                 .isEqualTo(orderContentCIC);
