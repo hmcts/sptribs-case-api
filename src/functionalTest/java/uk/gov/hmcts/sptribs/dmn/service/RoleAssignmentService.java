@@ -23,8 +23,8 @@ import static java.time.format.DateTimeFormatter.ofPattern;
 import static java.util.stream.Collectors.toList;
 import static uk.gov.hmcts.sptribs.dmn.service.AuthorizationHeadersProvider.AUTHORIZATION;
 import static uk.gov.hmcts.sptribs.dmn.service.AuthorizationHeadersProvider.SERVICE_AUTHORIZATION;
-import static uk.gov.hmcts.sptribs.dmn.service.MapValueExtractor.extractOrDefault;
-import static uk.gov.hmcts.sptribs.dmn.service.MapValueExtractor.extractOrThrow;
+import static uk.gov.hmcts.sptribs.testutil.MapValueExtractor.extractOrDefault;
+import static uk.gov.hmcts.sptribs.testutil.MapValueExtractor.extractOrThrow;
 import static uk.gov.hmcts.sptribs.testutil.JsonUtil.toJsonString;
 
 @Component

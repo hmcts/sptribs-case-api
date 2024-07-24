@@ -1,4 +1,4 @@
-package uk.gov.hmcts.sptribs.dmn.service;
+package uk.gov.hmcts.sptribs.testutil;
 
 import java.util.Map;
 
