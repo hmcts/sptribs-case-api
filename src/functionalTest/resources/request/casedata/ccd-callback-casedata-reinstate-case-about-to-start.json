@@ -1,0 +1,17 @@
+{
+  "cicCaseReinstateDocuments": [
+    {
+      "id": "bbf81d3c-969e-4a27-8745-e7b3c1a7eeba",
+      "value": {
+        "documentCategory": "ApplicationForm",
+        "documentEmailContent": "Application form",
+        "documentLink": {
+          "document_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/f3335647-6277-40af-ba66-c09365c0776e",
+          "document_filename": "pdf.pdf",
+          "document_binary_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/f3335647-6277-40af-ba66-c09365c0776e/binary",
+          "category_id": "A"
+        }
+      }
+    }
+  ]
+}
