@@ -1,15 +1,12 @@
 package uk.gov.hmcts.sptribs.dmn;
 
-import lombok.Getter;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-@Component
-@Getter
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
+
 public class Scenario {
 
     private final Map<String, Object> scenarioMapValues;
@@ -26,7 +23,6 @@ public class Scenario {
     private final Map<String, String> caseIdMap;
     private final Set<Map<String, Object>> searchMap;
 
-    @Autowired
     public Scenario(Map<String, Object> scenarioMapValues,
                     String scenarioSource, Map<String, Object> beforeClauseValues,
                     List<Map<String, Object>> testClauseValues,
@@ -51,5 +47,66 @@ public class Scenario {
         this.assigneeId = assigneeId;
         this.caseIdMap = caseIdMap;
         this.searchMap = searchMap;
+    }
+
+    public void addAssignedCaseId(String key, String caseId) {
+        caseIdMap.put(key, caseId);
+    }
+
+    public String getAssignedCaseId(String key) {
+        return caseIdMap.get(key);
+    }
+
+    public Map<String, String> getAssignedCaseIdMap() {
+        return caseIdMap;
+    }
+
+    public String getCaseType() {
+        return caseType;
+    }
+
+    public Map<String, Object> getBeforeClauseValues() {
+        return beforeClauseValues;
+    }
+
+    public List<Map<String, Object>> getTestClauseValues() {
+        return testClauseValues;
+    }
+
+    public String getJurisdiction() {
+        return jurisdiction;
+    }
+
+    public Map<String, Object> getPostRoleAssignmentClauseValues() {
+        return postRoleAssignmentClauseValues;
+    }
+
+    public void addSearchMap(Map<String, Object> map) {
+        searchMap.add(map);
+    }
+
+    public Set<Map<String, Object>> getSearchMap() {
+        return searchMap;
+    }
+
+    public Map<String, Object> getUpdateCaseClauseValues() {
+        return updateCaseClauseValues;
+    }
+
+    public void addTaskId(String taskId) {
+        assertNotNull(taskId);
+        taskIds.add(taskId);
+    }
+
+    public List<String> getTaskIds() {
+        return taskIds;
+    }
+
+    public String getAssigneeId() {
+        return assigneeId;
+    }
+
+    public void setAssigneeId(String assigneeId) {
+        this.assigneeId = assigneeId;
     }
 }

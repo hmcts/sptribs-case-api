@@ -1,0 +1,27 @@
+package uk.gov.hmcts.sptribs.dmn.service;
+
+import java.util.Map;
+
+public class MapMerger {
+    public static void merge(
+        Map<String, Object> targetMap,
+        Map<String, Object> sourceMap
+    ) {
+        for (Map.Entry<String, Object> difference : sourceMap.entrySet()) {
+
+            String key = difference.getKey();
+            Object value = difference.getValue();
+
+            if ((targetMap.get(key) instanceof Map) && (value instanceof Map)) {
+
+                merge(
+                    (Map<String, Object>) targetMap.get(key),
+                    (Map<String, Object>) value
+                );
+
+            } else {
+                targetMap.put(key, value);
+            }
+        }
+    }
+}
