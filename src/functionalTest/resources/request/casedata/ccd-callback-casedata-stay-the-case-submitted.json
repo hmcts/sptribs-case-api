@@ -1,0 +1,26 @@
+{
+  "hyphenatedCaseRef": "1234-5678-9012-3456",
+  "cicCaseSubjectCIC": [
+    "SubjectCIC"
+  ],
+  "cicCaseApplicantCIC": [
+    "ApplicantCIC"
+  ],
+  "cicCaseRepresentativeCIC": [
+    "RepresentativeCIC"
+  ],
+  "cicCaseFullName": "test name",
+  "stayStayReason": "waitingOutcomeOfCivilCase",
+  "stayAdditionalDetail": "additional detail for stay",
+  "stayExpirationDate": "2024-06-06",
+  "stayFlagType": "flag type",
+  "stayIsCaseStayed": "No",
+  "cicCaseContactPreferenceType": "Email",
+  "cicCaseEmail": "AutoTestSubject@mail.com",
+  "cicCaseApplicantFullName": "Testing applicant",
+  "cicCaseApplicantContactDetailsPreference": "Email",
+  "cicCaseApplicantEmailAddress": "AutoTestApplicant@mail.com",
+  "cicCaseRepresentativeFullName": "Testing representative",
+  "cicCaseRepresentativeEmailAddress": "AutoTestRepresentative@mail.com",
+  "cicCaseRepresentativeContactDetailsPreference": "Email"
+}
