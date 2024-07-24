@@ -159,12 +159,6 @@ public class CaseWorkerCreateDraftOrder implements CCDConfig<CaseData, State, Us
 
         caseData.getCicCase().setOrderTemplateIssued(null);
 
-        if (caseData.getReferToJudge() != null && caseData.getReferToJudge().getReferralReason() != null) {
-            caseData.getCicCase().setReferralTypeForWA(caseData.getReferToJudge().getReferralReason().getLabel());
-        } else if (caseData.getReferToLegalOfficer() != null && caseData.getReferToLegalOfficer().getReferralReason() != null) {
-            caseData.getCicCase().setReferralTypeForWA(caseData.getReferToLegalOfficer().getReferralReason().getLabel());
-        }
-
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .state(details.getState())
             .data(caseData)
