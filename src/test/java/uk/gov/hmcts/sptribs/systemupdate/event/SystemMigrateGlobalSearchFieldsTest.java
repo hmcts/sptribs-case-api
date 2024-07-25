@@ -59,7 +59,7 @@ public class SystemMigrateGlobalSearchFieldsTest {
     }
 
     @Test
-    void shouldPopulateAllGlobalSearchFields() {
+    void shouldPopulateAllGlobalSearchFieldsInAboutToSubmitCallback() {
         final CaseData caseData = new CaseData();
         final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
         caseDetails.setData(caseData);
@@ -70,8 +70,8 @@ public class SystemMigrateGlobalSearchFieldsTest {
         when(extendedCaseDataService.getDataClassification(TEST_CASE_ID.toString()))
             .thenReturn(dataClassificationMap);
 
-        final AboutToStartOrSubmitResponse<CaseData, State> response = systemMigrateGlobalSearchFields
-            .aboutToSubmit(caseDetails, caseDetails);
+        final AboutToStartOrSubmitResponse<CaseData, State> response =
+            systemMigrateGlobalSearchFields.aboutToSubmit(caseDetails, caseDetails);
 
         assertTrue(response.getDataClassification().containsKey(CASE_MANAGEMENT_CATEGORY));
         assertThat(response.getDataClassification().get(CASE_MANAGEMENT_CATEGORY)).isEqualTo(PUBLIC_DATA_CLASSIFICATION);
@@ -82,6 +82,15 @@ public class SystemMigrateGlobalSearchFieldsTest {
         assertThat(response.getData().getCaseManagementLocation().getRegion()).isEqualTo(ST_CIC_WA_CASE_REGION);
         assertThat(response.getData().getCaseManagementCategory().getValueLabel()).isEqualTo(ST_CIC_WA_CASE_MANAGEMENT_CATEGORY);
         assertThat(response.getData().getCaseManagementCategory().getListItems()).hasSize(1);
+
+    }
+
+    @Test
+    void shouldCallSupplementaryDataEndpointInSubmittedCallback() {
+        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+        caseDetails.setId(TEST_CASE_ID);
+
+        systemMigrateGlobalSearchFields.submitted(caseDetails, caseDetails);
 
         verify(ccdSupplementaryDataService).submitSupplementaryDataToCcd(TEST_CASE_ID.toString());
     }

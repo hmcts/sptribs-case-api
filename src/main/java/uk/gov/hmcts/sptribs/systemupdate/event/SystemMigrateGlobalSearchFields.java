@@ -9,6 +9,7 @@ import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.ccd.sdk.type.DynamicList;
 import uk.gov.hmcts.ccd.sdk.type.DynamicListElement;
+import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseManagementLocation;
 import uk.gov.hmcts.sptribs.caseworker.service.ExtendedCaseDataService;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
@@ -55,6 +56,7 @@ public class SystemMigrateGlobalSearchFields implements CCDConfig<CaseData, Stat
             .event(SYSTEM_MIGRATE_GLOBAL_SEARCH_FIELDS)
             .forAllStates()
             .aboutToSubmitCallback(this::aboutToSubmit)
+            .submittedCallback(this::submitted)
             .name("System Migration")
             .description("Migrate global search, case management category and case location fields for legacy cases")
             .grant(CREATE_READ_UPDATE_DELETE, SYSTEM_UPDATE);
@@ -67,12 +69,25 @@ public class SystemMigrateGlobalSearchFields implements CCDConfig<CaseData, Stat
         final Map<String, Object> dataClassification = setDataClassification(caseId);
         caseData.setCaseManagementCategory(setCaseManagementCategory());
         caseData.setCaseManagementLocation(setCaseManagementLocation());
-        setSupplementaryData(caseId);
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
             .dataClassification(dataClassification)
             .build();
+    }
+
+    public SubmittedCallbackResponse submitted(CaseDetails<CaseData, State> details,
+                                               CaseDetails<CaseData, State> beforeDetails) {
+
+        final Long caseId = details.getId();
+
+        try {
+            ccdSupplementaryDataService.submitSupplementaryDataToCcd(caseId.toString());
+        } catch (Exception exception) {
+            log.error("Unable to set Supplementary data with exception : {}", exception.getMessage());
+        }
+
+        return SubmittedCallbackResponse.builder().build();
     }
 
     private Map<String, Object> setDataClassification(Long caseId) {
@@ -107,13 +122,5 @@ public class SystemMigrateGlobalSearchFields implements CCDConfig<CaseData, Stat
             .baseLocation(ST_CIC_WA_CASE_BASE_LOCATION)
             .region(ST_CIC_WA_CASE_REGION)
             .build();
-    }
-
-    private void setSupplementaryData(Long caseId) {
-        try {
-            ccdSupplementaryDataService.submitSupplementaryDataToCcd(caseId.toString());
-        } catch (Exception exception) {
-            log.error("Unable to set Supplementary data with exception : {}", exception.getMessage());
-        }
     }
 }
