@@ -82,6 +82,7 @@ public class CaseworkerEditCase implements CCDConfig<CaseData, State, UserRole> 
             .forStates(DSS_Submitted, Submitted, CaseManagement, ReadyToList, AwaitingHearing, AwaitingOutcome)
             .name("Case: Edit case")
             .description("Case: Edit case")
+            .publishToCamunda()
             .showSummary()
             .grant(CREATE_READ_UPDATE, SUPER_USER,
                 ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER, ST_CIC_HEARING_CENTRE_ADMIN,
