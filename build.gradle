@@ -562,7 +562,6 @@ dependencies {
   cftlibTestImplementation 'com.microsoft.playwright:playwright:1.45.0'
   cftlibTestImplementation 'org.junit-pioneer:junit-pioneer:2.2.0'
   cftlibTestImplementation 'io.github.artsok:rerunner-jupiter:2.1.6'
-//  cftlibAnnotationProcessor group: 'org.projectlombok', name: 'lombok', version: versions.lombok
 }
 
 mainClassName = 'uk.gov.hmcts.sptribs.CaseApiApplication'
