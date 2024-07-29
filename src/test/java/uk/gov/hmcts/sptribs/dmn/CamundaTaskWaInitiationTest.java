@@ -321,7 +321,7 @@ class CamundaTaskWaInitiationTest extends DmnDecisionTableBaseUnitTest {
             ),
             Arguments.of(
                 "create-hearing-summary",
-                "AwaitingHearing",
+                "AwaitingOutcome",
                 null,
                 List.of(
                     Map.of(
