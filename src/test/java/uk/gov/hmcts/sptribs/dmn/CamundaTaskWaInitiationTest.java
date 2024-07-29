@@ -799,7 +799,7 @@ class CamundaTaskWaInitiationTest extends DmnDecisionTableBaseUnitTest {
             Arguments.of(
                 "refer-to-judge",
                 "CaseManagement",
-                Map.of("Data", Map.of("cicCaseReferralTypeForWA", "Time Extension request")),
+                Map.of("Data", Map.of("cicCaseReferralTypeForWA", "Time extension request")),
                 List.of(
                     Map.of(
                         "taskId", REVIEW_TIME_EXT_REQ_JUDGE_TASK,

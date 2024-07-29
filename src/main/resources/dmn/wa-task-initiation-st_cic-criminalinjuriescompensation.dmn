@@ -1476,7 +1476,7 @@
           <text>"CaseManagement"</text>
         </inputEntry>
         <inputEntry id="UnaryTests_00qdyl2">
-          <text>"Time Extension request"</text>
+          <text>"Time extension request"</text>
         </inputEntry>
         <outputEntry id="LiteralExpression_1vlz5c0">
           <text>"reviewTimeExtensionRequestJudge"</text>
