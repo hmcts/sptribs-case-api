@@ -6,10 +6,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.sptribs.common.config.AppsConfig;
 import uk.gov.hmcts.sptribs.constants.CommonConstants;
@@ -39,12 +36,9 @@ import static uk.gov.hmcts.sptribs.testutil.TestConstants.RESPONSE_STATUS_SUCCES
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_URL;
 import static uk.gov.hmcts.sptribs.testutil.TestFileUtil.loadJson;
 
-
 @ExtendWith(SpringExtension.class)
-@SpringBootTest
-@TestPropertySource("classpath:application.yaml")
-@ActiveProfiles("test")
 class DocumentManagementServiceTest {
+
     @InjectMocks
     private DocumentManagementService documentManagementService;
 
@@ -60,7 +54,6 @@ class DocumentManagementServiceTest {
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.openMocks(this);
-
     }
 
     @Test
@@ -118,7 +111,6 @@ class DocumentManagementServiceTest {
 
     @Test
     void shouldUploadFgmDocumentFailedWithException() throws Exception {
-
         final String caseDataJson = loadJson(CASE_DATA_FILE_CIC);
 
         final MockMultipartFile multipartFile = new MockMultipartFile(
@@ -167,7 +159,6 @@ class DocumentManagementServiceTest {
 
         verify(caseDocumentApiService, times(1))
             .deleteDocument(CASE_TEST_AUTHORIZATION, documentInfo.getDocumentId());
-
     }
 
     @Test
@@ -195,6 +186,5 @@ class DocumentManagementServiceTest {
         assertNotNull(documentUploadOrDeleteException.getCause());
         assertTrue(documentUploadOrDeleteException.getCause() instanceof RuntimeException);
         assertTrue(documentUploadOrDeleteException.getMessage().contains(DOCUMENT_DELETE_FAILURE_MSG));
-
     }
 }

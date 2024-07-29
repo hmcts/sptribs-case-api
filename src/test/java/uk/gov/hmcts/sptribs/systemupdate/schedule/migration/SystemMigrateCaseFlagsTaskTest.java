@@ -23,6 +23,7 @@ import java.util.List;
 
 import static org.elasticsearch.index.query.QueryBuilders.boolQuery;
 import static org.elasticsearch.index.query.QueryBuilders.existsQuery;
+import static org.elasticsearch.index.query.QueryBuilders.matchQuery;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -55,9 +56,8 @@ class SystemMigrateCaseFlagsTaskTest {
     private User user;
 
     private static final BoolQueryBuilder query = boolQuery()
-        .must(boolQuery()
-            .mustNot(existsQuery("data.subjectFlags"))
-        );
+        .mustNot(existsQuery("data.subjectFlags"))
+        .mustNot(matchQuery("state", "DSS_Draft"));
 
     @BeforeEach
     void setUp() {

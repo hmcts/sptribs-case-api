@@ -6,9 +6,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.ccd.sdk.ConfigBuilderImpl;
 import uk.gov.hmcts.ccd.sdk.api.Event;
@@ -28,9 +25,6 @@ import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.getEventsFrom;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.CASE_DATA_CIC_ID;
 
 @ExtendWith(SpringExtension.class)
-@SpringBootTest
-@TestPropertySource("classpath:application.yaml")
-@ActiveProfiles("test")
 class CicUpdateCaseEventTest {
     @InjectMocks
     private CicUpdateCaseEvent cicUpdateCaseEvent;

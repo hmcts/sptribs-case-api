@@ -4,10 +4,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.web.multipart.MultipartFile;
 import uk.gov.hmcts.reform.ccd.document.am.model.Classification;
@@ -34,9 +31,6 @@ import static uk.gov.hmcts.sptribs.testutil.TestConstants.SERVICE_AUTHORIZATION;
 import static uk.gov.hmcts.sptribs.testutil.TestFileUtil.loadJson;
 
 @ExtendWith(SpringExtension.class)
-@SpringBootTest
-@TestPropertySource("classpath:application.yaml")
-@ActiveProfiles("test")
 public class DssCaseDocumentClientTest {
 
     @InjectMocks
@@ -47,23 +41,19 @@ public class DssCaseDocumentClientTest {
 
     @Test
     public void shouldUploadDocuments() {
-        // Given
         final UploadResponse response = new UploadResponse();
         when(caseDocumentClientApi.uploadDocuments(eq("authorisation"), eq("serviceAuthorisation"),
             any(DocumentUploadRequest.class))).thenReturn(response);
 
-        // When
         final UploadResponse uploadResponse = caseDocumentClient.uploadDocuments("authorisation", "serviceAuthorisation",
             "CriminalInjuriesCompensation", "ST_CIC", new ArrayList<>());
 
-        // Then
         assertEquals(response, uploadResponse);
         assertEquals(response.getDocuments(), uploadResponse.getDocuments());
     }
 
     @Test
     void shouldUploadDocumentsWithClassification() throws IOException {
-
         final String caseDataJson = loadJson(CASE_DATA_FILE_CIC);
 
         final MockMultipartFile multipartFile = new MockMultipartFile(
@@ -97,13 +87,10 @@ public class DssCaseDocumentClientTest {
 
     @Test
     public void shouldDeleteDocument() {
-        // Given
         final UUID docUUID = UUID.randomUUID();
 
-        // When
         caseDocumentClient.deleteDocument("authorisation", "serviceAuthorisation", docUUID, true);
 
-        // Then
         verify(caseDocumentClientApi).deleteDocument(eq("authorisation"), eq("serviceAuthorisation"),
             eq(docUUID), eq(true));
     }

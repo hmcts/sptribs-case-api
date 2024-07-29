@@ -8,8 +8,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.DssCaseData;
@@ -32,8 +30,6 @@ import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.sptribs.testutil.TestFileUtil.loadJson;
 
 @ExtendWith(SpringExtension.class)
-@SpringBootTest
-@ActiveProfiles("test")
 class CaseCreateOrUpdateExceptionTest {
 
     private final ObjectMapper mapper = new ObjectMapper().registerModule(new JavaTimeModule());
@@ -51,7 +47,6 @@ class CaseCreateOrUpdateExceptionTest {
 
     @Test
     void createCaseDataCaseCreateUpdateException() throws IOException {
-
         final String createCaseTestAuth = CASE_TEST_AUTHORIZATION;
         final String caseDataJson = loadJson(CASE_DATA_FILE_CIC);
         final DssCaseData dssCaseData = mapper.readValue(caseDataJson, DssCaseData.class);
@@ -69,7 +64,6 @@ class CaseCreateOrUpdateExceptionTest {
 
     @Test
     void updateCaseDataCaseCreateUpdateException() throws IOException {
-
         final String updateCaseTestAuth = CASE_TEST_AUTHORIZATION;
         final String caseDataJson = loadJson(CASE_DATA_FILE_CIC);
         final CaseData caseData = mapper.readValue(caseDataJson, CaseData.class);
@@ -87,7 +81,6 @@ class CaseCreateOrUpdateExceptionTest {
 
     @Test
     void fetchCaseDataCaseCreateUpdateException() {
-
         final String fetchCaseTestAuth = CASE_TEST_AUTHORIZATION;
 
         when(caseManagementService.fetchCaseDetails(fetchCaseTestAuth,TEST_CASE_ID))
