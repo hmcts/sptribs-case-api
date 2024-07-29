@@ -21,6 +21,7 @@ import java.util.List;
 
 import static org.elasticsearch.index.query.QueryBuilders.boolQuery;
 import static org.elasticsearch.index.query.QueryBuilders.existsQuery;
+import static org.elasticsearch.index.query.QueryBuilders.matchQuery;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -52,9 +53,8 @@ class SystemMigrateCaseLinksTaskTest {
     private User user;
 
     private static final BoolQueryBuilder query = boolQuery()
-        .must(boolQuery()
-            .mustNot(existsQuery("data.caseNameHmctsInternal"))
-        );
+        .mustNot(existsQuery("data.caseNameHmctsInternal"))
+        .mustNot(matchQuery("state", "DSS_Draft"));
 
     @BeforeEach
     void setUp() {
