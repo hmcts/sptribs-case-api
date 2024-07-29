@@ -1,7 +1,12 @@
 package uk.gov.hmcts.sptribs.dmn;
 
 import io.restassured.http.Headers;
+import org.springframework.beans.factory.annotation.Autowired;
 import uk.gov.hmcts.sptribs.dmn.domain.entities.idam.CredentialRequest;
+import uk.gov.hmcts.sptribs.dmn.domain.entities.task.EventCaseData;
+import uk.gov.hmcts.sptribs.dmn.domain.entities.task.TestScenario;
+import uk.gov.hmcts.sptribs.dmn.service.AuthorizationHeadersProvider;
+import uk.gov.hmcts.sptribs.dmn.service.CcdCaseCreator;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -10,18 +15,21 @@ import java.util.Map;
 import java.util.Objects;
 
 public class ScenarioRunner {
+    @Autowired
+    protected AuthorizationHeadersProvider authorizationHeadersProvider;
 
-    public void processScenario(Scenario scenario) {
+    @Autowired
+    private CcdCaseCreator ccdCaseCreator;
 
-    }
+//    public void processScenario(Scenario scenario) {
+//
+//    }
 
-    private void createBaseCcdCase(Scenario scenario) throws IOException {
-        Map<String, Object> scenarioValues = scenario.getScenarioMapValues();
-        CredentialRequest credentialRequest = extractCredentialRequest(scenarioValues, "required.credentials");
+    private void createBaseCcdCase(TestScenario scenario) throws IOException {
+        CredentialRequest credentialRequest = new CredentialRequest(scenario.getRequiredCredentials(), false);
         Headers requestAuthorizationHeaders = authorizationHeadersProvider.getWaUserAuthorization(credentialRequest);
 
-        List<Map<String, Object>> ccdCaseToCreate = new ArrayList<>(Objects.requireNonNull(
-            MapValueExtractor.extract(scenarioValues, "required.ccd")));
+        List<EventCaseData> ccdCaseToCreate = scenario.getRequiredCaseData();
 
 
 
@@ -38,12 +46,5 @@ public class ScenarioRunner {
                 e.printStackTrace();
             }
         });
-    }
-
-    private CredentialRequest extractCredentialRequest(Map<String, Object> map, String path) {
-        String credentialsKey = extractOrThrow(map, path + ".key");
-        boolean granularPermission = extractOrDefault(map, path + ".granularPermission", false);
-
-        return new CredentialRequest(credentialsKey, granularPermission);
     }
 }

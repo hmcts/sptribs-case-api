@@ -1,6 +1,6 @@
 package uk.gov.hmcts.sptribs.dmn.domain.entities.task;
 
-import java.util.ArrayList;
+import java.util.List;
 
 public class Expectation {
 
@@ -8,9 +8,9 @@ public class Expectation {
     private final Integer status;
     private final Integer numberOfTasksAvailable;
     private final Task taskData;
-    private final ArrayList<RoleData> roleData;
+    private final List<RoleData> roleData;
 
-    public Expectation(Integer status, Integer numberOfTasksAvailable, Task taskData, ArrayList<RoleData> roleData) {
+    public Expectation(Integer status, Integer numberOfTasksAvailable, Task taskData, List<RoleData> roleData) {
         this.status = status;
         this.numberOfTasksAvailable = numberOfTasksAvailable;
         this.taskData = taskData;

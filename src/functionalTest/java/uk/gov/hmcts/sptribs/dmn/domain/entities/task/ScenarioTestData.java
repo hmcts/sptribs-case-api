@@ -1,18 +1,18 @@
 package uk.gov.hmcts.sptribs.dmn.domain.entities.task;
 
-import java.util.ArrayList;
+import java.util.List;
 
 public class ScenarioTestData {
 
     private final String credentials;
-    private final ArrayList<EventMessage> eventMessages;
+    private final List<EventMessage> eventMessages;
 
-    private final ArrayList<Expectation> expectations;
+    private final List<Expectation> expectations;
 
     public ScenarioTestData(
         String credentials,
-        ArrayList<EventMessage> eventMessages,
-        ArrayList<Expectation> expectations
+        List<EventMessage> eventMessages,
+        List<Expectation> expectations
     ) {
         this.credentials = credentials;
         this.eventMessages = eventMessages;

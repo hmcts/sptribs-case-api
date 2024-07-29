@@ -1,17 +1,17 @@
 package uk.gov.hmcts.sptribs.dmn.domain.entities.task;
 
-import java.util.ArrayList;
+import java.util.List;
 
 public class Role {
     private final String roleCategory;
 
     private final String roleName;
 
-    private final ArrayList<String> permissions;
+    private final List<String> permissions;
 
-    private final ArrayList<String> authorisations;
+    private final List<String> authorisations;
 
-    public Role(String roleCategory, String roleName, ArrayList<String> permissions, ArrayList<String> authorisations) {
+    public Role(String roleCategory, String roleName, List<String> permissions, List<String> authorisations) {
         this.roleCategory = roleCategory;
         this.roleName = roleName;
         this.permissions = permissions;

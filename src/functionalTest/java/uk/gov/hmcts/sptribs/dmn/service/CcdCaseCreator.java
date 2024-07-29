@@ -9,6 +9,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.client.model.Event;
 import uk.gov.hmcts.reform.ccd.client.model.StartEventResponse;
 import uk.gov.hmcts.sptribs.dmn.domain.entities.idam.UserInfo;
+import uk.gov.hmcts.sptribs.dmn.domain.entities.task.EventCaseData;
 import uk.gov.hmcts.sptribs.testutil.MapMerger;
 import uk.gov.hmcts.sptribs.testutil.MapSerializer;
 import uk.gov.hmcts.sptribs.testutil.MapValueExpander;
@@ -34,7 +35,7 @@ public class CcdCaseCreator {
     @Autowired
     private MapValueExpander mapValueExpander;
 
-    public String createCase(Map<String, Object> scenario,
+    public String createCase(EventCaseData eventCaseData,
                              String jurisdiction,
                              String caseType,
                              Headers authorizationHeaders) throws IOException {
@@ -44,9 +45,9 @@ public class CcdCaseCreator {
                 "/templates/" + jurisdiction.toLowerCase(Locale.ENGLISH) + "/ccd/*.json"
             );
 
-        Map<String, Object> caseData = getCaseData(scenario, ccdTemplatesByFilename);
+        Map<String, Object> caseData = getCaseData(eventCaseData, ccdTemplatesByFilename);
 
-        String eventId = MapValueExtractor.extractOrThrow(scenario, "eventId");
+        String eventId = eventCaseData.getEventId();
 
         String caseId = createInitialStartEventAndSubmit(
             eventId,
@@ -61,29 +62,28 @@ public class CcdCaseCreator {
     }
 
     private Map<String, Object> getCaseData(
-        Map<String, Object> input,
+        EventCaseData input,
         Map<String, String> templatesByFilename
     ) throws IOException {
 
         Map<String, Object> caseData = buildCaseData(
-            MapValueExtractor.extract(input, "caseData"),
+            input.getTemplate(),
+            input.getReplacements(), // TODO - work out how to do replacements
             templatesByFilename
         );
 
         return caseData;
     }
 
+    // TODO - add replacements parameter
     private Map<String, Object> buildCaseData(
-        Map<String, Object> caseDataInput,
+        String templateFilename,
         Map<String, String> templatesByFilename
     ) throws IOException {
 
-        String templateFilename = MapValueExtractor.extract(caseDataInput, "template");
-
         String template = templatesByFilename.get(templateFilename);
-
         Map<String, Object> caseData = deserializeWithExpandedValues(template);
-        Map<String, Object> caseDataReplacements = MapValueExtractor.extract(caseDataInput, "replacements");
+        Map<String, Object> caseDataReplacements = MapValueExtractor.extract(caseDataInput, "replacements"); // TODO - replace with parameter
         if (caseDataReplacements != null) {
             MapMerger.merge(caseData, caseDataReplacements);
         }
