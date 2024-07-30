@@ -13,21 +13,23 @@
       }
     }
   ],
-  "subjectContactParties": [
-    "SubjectCIC"
-  ],
-  "respondent": [
-    "RespondentCIC"
-  ],
-  "representativeContactParties": [
-    "RepresentativeCIC"
-  ],
-  "applicantContactParties": [
-    "ApplicantCIC"
-  ],
-  "tribunal": [
-    "TribunalCIC"
-  ],
-  "message": "a message",
+  "contactParties": {
+    "subjectContactParties": [
+      "SubjectCIC"
+    ],
+    "respondent": [
+      "RespondentCIC"
+    ],
+    "representativeContactParties": [
+      "RepresentativeCIC"
+    ],
+    "applicantContactParties": [
+      "ApplicantCIC"
+    ],
+    "tribunal": [
+      "TribunalCIC"
+    ],
+    "message": "a message"
+  },
   "cicCaseNotifyPartyMessage": "a cic case notify party message"
 }

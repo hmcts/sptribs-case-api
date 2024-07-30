@@ -1,7 +1,9 @@
 {
-  "subjectContactParties": [
-    "SubjectCIC"
-  ],
+  "contactParties": {
+    "subjectContactParties": [
+      "SubjectCIC"
+    ]
+  },
   "cicCaseNotifyPartyMessage": "Party message",
   "cicCaseRespondentName": "Appeals team",
   "cicCaseRespondentOrganisation": "CICA",
