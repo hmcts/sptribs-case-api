@@ -4,7 +4,6 @@
     "allCaseworkerCICDocument": [],
     "newCaseworkerCICDocument": [],
     "editCicaCaseDetails": {},
-    "contactParties": {},
     "caseBundles": [],
     "cicCaseCaseReceivedDate": "${json-unit.any-string}",
     "cicCasePartiesCIC": [

@@ -140,7 +140,7 @@ public class CaseData {
     )
     private DraftOrderContentCIC draftOrderContentCIC = new DraftOrderContentCIC();
 
-
+    @JsonUnwrapped
     @Builder.Default
     @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
     private ContactParties contactParties = new ContactParties();

@@ -1,0 +1,28 @@
+{
+  "data": {
+    "cicCaseNotifyPartyMessage": "",
+    "cicCaseApplicantDocumentsUploaded": [
+      {
+        "id": "1",
+        "value": {
+          "documentCategory": "DSS Other information documents",
+          "documentLink": {
+            "document_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/328c674f-59c3-418a-b76b-78f2cc52d21a",
+            "document_filename": "mockFileUpdated.pdf",
+            "document_binary_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/328c674f-59c3-418a-b76b-78f2cc52d21a/binary",
+            "category_id": "DSS"
+          }
+        }
+      }
+    ],
+    "contactPartiesDocumentsDocumentList": {
+      "value": [],
+      "list_items": [
+        {
+          "code": "${json-unit.any-string}",
+          "label": "[mockFileUpdated.pdf DSS Other information documents](http://localhost:4455documents/328c674f-59c3-418a-b76b-78f2cc52d21a/binary)"
+        }
+      ]
+    }
+  }
+}
