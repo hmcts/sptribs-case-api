@@ -11,6 +11,7 @@ import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.ccd.sdk.type.Document;
+import uk.gov.hmcts.ccd.sdk.type.Flags;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.reform.idam.client.models.User;
@@ -188,6 +189,16 @@ public class CicSubmitCaseEvent implements CCDConfig<CaseData, State, UserRole> 
         caseData.getCicCase().setDateOfBirth(dssCaseData.getSubjectDateOfBirth());
         caseData.getCicCase().setEmail(dssCaseData.getSubjectEmailAddress());
         caseData.getCicCase().setPhoneNumber(dssCaseData.getSubjectContactNumber());
+        caseData.setCaseNameHmctsInternal(dssCaseData.getSubjectFullName());
+        caseData.setCaseFlags(Flags.builder()
+            .details(new ArrayList<>())
+            .build());
+        caseData.setSubjectFlags(Flags.builder()
+            .details(new ArrayList<>())
+            .partyName(dssCaseData.getSubjectFullName())
+            .roleOnCase("subject")
+            .build()
+        );
 
         final Set<PartiesCIC> setParty = new HashSet<>();
         setParty.add(PartiesCIC.SUBJECT);
@@ -209,6 +220,12 @@ public class CicSubmitCaseEvent implements CCDConfig<CaseData, State, UserRole> 
             setRep.add(RepresentativeCIC.REPRESENTATIVE);
             caseData.getCicCase().setRepresentativeCIC(setRep);
             caseData.getCicCase().setRepresentativeContactDetailsPreference(ContactPreferenceType.EMAIL);
+            caseData.setRepresentativeFlags(Flags.builder()
+                .details(new ArrayList<>())
+                .partyName(dssCaseData.getRepresentativeFullName())
+                .roleOnCase("Representative")
+                .build()
+            );
         }
 
         List<CaseworkerCICDocument> docList = new ArrayList<>();
