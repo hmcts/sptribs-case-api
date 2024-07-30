@@ -36,7 +36,7 @@ public class ContactPartiesSelectDocument implements CcdPageConfiguration {
         final List<String> errors = new ArrayList<>();
 
         DynamicMultiSelectList list = data.getContactPartiesDocuments().getDocumentList();
-        if (list != null && list.getValue().size() > MAX_DOCUMENT_COUNT) {
+        if (list != null && list.getValue() != null && list.getValue().size() > MAX_DOCUMENT_COUNT) {
             errors.add("Select up to 10 documents");
         }
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
