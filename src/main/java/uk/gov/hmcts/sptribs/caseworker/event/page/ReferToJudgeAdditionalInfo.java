@@ -8,7 +8,7 @@ import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 
 public class ReferToJudgeAdditionalInfo implements CcdPageConfiguration {
 
-    private static final String NEVER_SHOW = "cicCaseReferralTypeForWA=\"NEVER_SHOW\"";
+    private static final String NEVER_SHOW = "referToJudgeAdditionalInformation=\"NEVER_SHOW\"";
 
     @Override
     public void addTo(PageBuilder pageBuilder) {

@@ -13,7 +13,7 @@ import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 
 public class CreateDraftOrder implements CcdPageConfiguration {
 
-    private static final String NEVER_SHOW = "cicCaseReferralTypeForWA=\"NEVER_SHOW\"";
+    private static final String NEVER_SHOW = "orderContentOrderTemplate=\"NEVER_SHOW\"";
 
     @Override
     public void addTo(PageBuilder pageBuilder) {
