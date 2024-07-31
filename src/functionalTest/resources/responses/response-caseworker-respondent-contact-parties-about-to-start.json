@@ -20,7 +20,7 @@
       "list_items": [
         {
           "code": "${json-unit.any-string}",
-          "label": "[mockFileUpdated.pdf DSS Other information documents](http://localhost:4455documents/328c674f-59c3-418a-b76b-78f2cc52d21a/binary)"
+          "label": "${json-unit.any-string}"
         }
       ]
     },
