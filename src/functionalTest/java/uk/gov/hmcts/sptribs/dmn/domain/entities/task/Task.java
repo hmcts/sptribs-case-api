@@ -1,6 +1,8 @@
 package uk.gov.hmcts.sptribs.dmn.domain.entities.task;
 
 public class Task {
+
+    private final String template;
     private final String type;
     private final String name;
     private final String roleCategory;
@@ -11,13 +13,17 @@ public class Task {
     private final String metaDataValue;
 
     public Task(
-        String type,
-        String name,
-        String roleCategory,
-        String description,
-        Integer minorPriority,
-        Integer majorPriority,
-        String metaDataKey, String metaDataValue) {
+            String template,
+            String type,
+            String name,
+            String roleCategory,
+            String description,
+            Integer minorPriority,
+            Integer majorPriority,
+            String metaDataKey,
+            String metaDataValue
+    ) {
+        this.template = template;
         this.type = type;
         this.name = name;
         this.roleCategory = roleCategory;
