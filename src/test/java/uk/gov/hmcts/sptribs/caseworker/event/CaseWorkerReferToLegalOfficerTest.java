@@ -6,6 +6,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.test.util.ReflectionTestUtils;
 import uk.gov.hmcts.ccd.sdk.ConfigBuilderImpl;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.Event;
@@ -35,16 +36,30 @@ class CaseWorkerReferToLegalOfficerTest {
 
     @Test
     void shouldAddConfigurationToConfigBuilder() {
-        //Given
         final ConfigBuilderImpl<CaseData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
 
-        //When
         caseWorkerReferToLegalOfficer.configure(configBuilder);
 
-        //Then
         assertThat(getEventsFrom(configBuilder).values())
             .extracting(Event::getId)
             .contains(CASEWORKER_REFER_TO_LEGAL_OFFICER);
+
+        assertThat(getEventsFrom(configBuilder).values())
+                .extracting(Event::isPublishToCamunda)
+                .contains(false);
+    }
+
+    @Test
+    void shouldAddPublishToCamundaWhenWAIsEnabled() {
+        ReflectionTestUtils.setField(caseWorkerReferToLegalOfficer, "isWorkAllocationEnabled", true);
+
+        final ConfigBuilderImpl<CaseData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
+
+        caseWorkerReferToLegalOfficer.configure(configBuilder);
+
+        assertThat(getEventsFrom(configBuilder).values())
+                .extracting(Event::isPublishToCamunda)
+                .contains(true);
     }
 
     @Test

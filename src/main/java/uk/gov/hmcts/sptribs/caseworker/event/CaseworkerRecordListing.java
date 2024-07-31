@@ -3,10 +3,12 @@ package uk.gov.hmcts.sptribs.caseworker.event;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
+import uk.gov.hmcts.ccd.sdk.api.Event;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
@@ -63,6 +65,9 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
 
     private final ListingCreatedNotification listingCreatedNotification;
 
+    @Value("${feature.wa.enabled}")
+    private boolean isWorkAllocationEnabled;
+
     @Autowired
     public CaseworkerRecordListing(HearingService hearingService,
                                    RecordListHelper recordListHelper,
@@ -74,28 +79,33 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
 
     @Override
     public void configure(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
-        PageBuilder pageBuilder = new PageBuilder(configBuilder
-            .event(CASEWORKER_RECORD_LISTING)
-            .forStates(CaseManagement, ReadyToList)
-            .name("Hearings: Create listing")
-            .description("Hearings: Create listing")
-            .publishToCamunda()
-            .showSummary()
-            .aboutToStartCallback(this::aboutToStart)
-            .aboutToSubmitCallback(this::aboutToSubmit)
-            .submittedCallback(this::submitted)
-            .grant(CREATE_READ_UPDATE, SUPER_USER,
-                ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER, ST_CIC_HEARING_CENTRE_ADMIN,
-                ST_CIC_HEARING_CENTRE_TEAM_LEADER, ST_CIC_SENIOR_JUDGE)
-            .grantHistoryOnly(
-                ST_CIC_CASEWORKER,
-                ST_CIC_SENIOR_CASEWORKER,
-                ST_CIC_HEARING_CENTRE_ADMIN,
-                ST_CIC_HEARING_CENTRE_TEAM_LEADER,
-                ST_CIC_SENIOR_JUDGE,
-                SUPER_USER,
-                ST_CIC_JUDGE));
+        Event.EventBuilder<CaseData, UserRole, State> eventBuilder =
+            configBuilder
+                .event(CASEWORKER_RECORD_LISTING)
+                .forStates(CaseManagement, ReadyToList)
+                .name("Hearings: Create listing")
+                .description("Hearings: Create listing")
+                .showSummary()
+                .aboutToStartCallback(this::aboutToStart)
+                .aboutToSubmitCallback(this::aboutToSubmit)
+                .submittedCallback(this::submitted)
+                .grant(CREATE_READ_UPDATE, SUPER_USER,
+                    ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER, ST_CIC_HEARING_CENTRE_ADMIN,
+                    ST_CIC_HEARING_CENTRE_TEAM_LEADER, ST_CIC_SENIOR_JUDGE)
+                .grantHistoryOnly(
+                    ST_CIC_CASEWORKER,
+                    ST_CIC_SENIOR_CASEWORKER,
+                    ST_CIC_HEARING_CENTRE_ADMIN,
+                    ST_CIC_HEARING_CENTRE_TEAM_LEADER,
+                    ST_CIC_SENIOR_JUDGE,
+                    SUPER_USER,
+                    ST_CIC_JUDGE);
 
+        if (isWorkAllocationEnabled) {
+            eventBuilder.publishToCamunda();
+        }
+
+        PageBuilder pageBuilder = new PageBuilder(eventBuilder);
         hearingTypeAndFormat.addTo(pageBuilder);
         addRegionInfo(pageBuilder);
         hearingVenues.addTo(pageBuilder);

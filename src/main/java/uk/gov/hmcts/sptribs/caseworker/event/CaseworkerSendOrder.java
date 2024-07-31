@@ -2,11 +2,13 @@ package uk.gov.hmcts.sptribs.caseworker.event;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
+import uk.gov.hmcts.ccd.sdk.api.Event;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.ccd.sdk.type.DynamicList;
 import uk.gov.hmcts.ccd.sdk.type.DynamicListElement;
@@ -68,6 +70,9 @@ public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole>
     @Autowired
     private NewOrderIssuedNotification newOrderIssuedNotification;
 
+    @Value("${feature.wa.enabled}")
+    private boolean isWorkAllocationEnabled;
+
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         final PageBuilder pageBuilder = send(configBuilder);
@@ -80,18 +85,24 @@ public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole>
     }
 
     public PageBuilder send(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
-        return new PageBuilder(configBuilder
-            .event(CASEWORKER_SEND_ORDER)
-            .forStates(CaseManagement, ReadyToList, AwaitingHearing, CaseClosed, CaseStayed)
-            .name("Orders: Send order")
-            .description("Orders: Send order")
-            .publishToCamunda()
-            .showSummary()
-            .aboutToSubmitCallback(this::aboutToSubmit)
-            .submittedCallback(this::submitted)
-            .grant(CREATE_READ_UPDATE,
-                ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER, ST_CIC_HEARING_CENTRE_ADMIN,
-                ST_CIC_HEARING_CENTRE_TEAM_LEADER, ST_CIC_SENIOR_JUDGE, ST_CIC_JUDGE));
+        Event.EventBuilder<CaseData, UserRole, State> eventBuilder =
+                configBuilder
+                    .event(CASEWORKER_SEND_ORDER)
+                    .forStates(CaseManagement, ReadyToList, AwaitingHearing, CaseClosed, CaseStayed)
+                    .name("Orders: Send order")
+                    .description("Orders: Send order")
+                    .showSummary()
+                    .aboutToSubmitCallback(this::aboutToSubmit)
+                    .submittedCallback(this::submitted)
+                    .grant(CREATE_READ_UPDATE,
+                        ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER, ST_CIC_HEARING_CENTRE_ADMIN,
+                        ST_CIC_HEARING_CENTRE_TEAM_LEADER, ST_CIC_SENIOR_JUDGE, ST_CIC_JUDGE);
+
+        if (isWorkAllocationEnabled) {
+            eventBuilder.publishToCamunda();
+        }
+
+        return new PageBuilder(eventBuilder);
     }
 
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(final CaseDetails<CaseData, State> details,

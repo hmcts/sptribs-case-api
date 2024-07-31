@@ -3,10 +3,12 @@ package uk.gov.hmcts.sptribs.citizen.event;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
+import uk.gov.hmcts.ccd.sdk.api.Event;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
@@ -68,28 +70,35 @@ public class CicDssUpdateCaseEvent implements CCDConfig<CaseData, State, UserRol
     @Autowired
     private Clock clock;
 
+    @Value("${feature.wa.enabled}")
+    private boolean isWorkAllocationEnabled;
+
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
-        configBuilder
-            .event(CITIZEN_DSS_UPDATE_CASE_SUBMISSION)
-            .forStates(DSS_UPDATE_CASE_AVAILABLE_STATES)
-            .name("DSS Update Case Submission")
-            .description("DSS Update Case Submission")
-            .publishToCamunda()
-            .retries(120, 120)
-            .grant(CREATE_READ_UPDATE_DELETE, CITIZEN, CREATOR)
-            .grantHistoryOnly(
-                ST_CIC_CASEWORKER,
-                ST_CIC_SENIOR_CASEWORKER,
-                ST_CIC_HEARING_CENTRE_ADMIN,
-                ST_CIC_HEARING_CENTRE_TEAM_LEADER,
-                ST_CIC_SENIOR_JUDGE,
-                SUPER_USER,
-                ST_CIC_JUDGE,
-                SYSTEM_UPDATE
-            )
-            .aboutToSubmitCallback(this::aboutToSubmit)
-            .submittedCallback(this::submitted);
+        Event.EventBuilder<CaseData, UserRole, State> eventBuilder =
+            configBuilder
+                .event(CITIZEN_DSS_UPDATE_CASE_SUBMISSION)
+                .forStates(DSS_UPDATE_CASE_AVAILABLE_STATES)
+                .name("DSS Update Case Submission")
+                .description("DSS Update Case Submission")
+                .retries(120, 120)
+                .grant(CREATE_READ_UPDATE_DELETE, CITIZEN, CREATOR)
+                .grantHistoryOnly(
+                    ST_CIC_CASEWORKER,
+                    ST_CIC_SENIOR_CASEWORKER,
+                    ST_CIC_HEARING_CENTRE_ADMIN,
+                    ST_CIC_HEARING_CENTRE_TEAM_LEADER,
+                    ST_CIC_SENIOR_JUDGE,
+                    SUPER_USER,
+                    ST_CIC_JUDGE,
+                    SYSTEM_UPDATE
+                )
+                .aboutToSubmitCallback(this::aboutToSubmit)
+                .submittedCallback(this::submitted);
+
+        if (isWorkAllocationEnabled) {
+            eventBuilder.publishToCamunda();
+        }
     }
 
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(CaseDetails<CaseData, State> details,

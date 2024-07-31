@@ -3,10 +3,12 @@ package uk.gov.hmcts.sptribs.caseworker.event;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
+import uk.gov.hmcts.ccd.sdk.api.Event;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.reform.idam.client.models.User;
@@ -46,19 +48,27 @@ public class CaseworkerAddNote implements CCDConfig<CaseData, State, UserRole> {
     @Autowired
     private Clock clock;
 
+    @Value("${feature.wa.enabled}")
+    private boolean isWorkAllocationEnabled;
+
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
-        new PageBuilder(configBuilder
-            .event(CASEWORKER_ADD_NOTE)
-            .forAllStates()
-            .name("Case: Add note")
-            .description("Case: Add note")
-            .publishToCamunda()
-            .aboutToSubmitCallback(this::aboutToSubmit)
-            .grant(CREATE_READ_UPDATE,
-                ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER, ST_CIC_HEARING_CENTRE_ADMIN,
-                ST_CIC_HEARING_CENTRE_TEAM_LEADER, ST_CIC_SENIOR_JUDGE)
-            )
+        Event.EventBuilder<CaseData, UserRole, State> eventBuilder =
+            configBuilder
+                .event(CASEWORKER_ADD_NOTE)
+                .forAllStates()
+                .name("Case: Add note")
+                .description("Case: Add note")
+                .aboutToSubmitCallback(this::aboutToSubmit)
+                .grant(CREATE_READ_UPDATE,
+                    ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER, ST_CIC_HEARING_CENTRE_ADMIN,
+                    ST_CIC_HEARING_CENTRE_TEAM_LEADER, ST_CIC_SENIOR_JUDGE);
+
+        if (isWorkAllocationEnabled) {
+            eventBuilder.publishToCamunda();
+        }
+
+        new PageBuilder(eventBuilder)
             .page("addCaseNotes")
             .pageLabel("Add case notes")
             .optional(CaseData::getNote);

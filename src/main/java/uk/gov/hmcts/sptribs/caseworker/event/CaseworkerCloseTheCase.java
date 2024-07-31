@@ -2,11 +2,13 @@ package uk.gov.hmcts.sptribs.caseworker.event;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
+import uk.gov.hmcts.ccd.sdk.api.Event;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.ccd.sdk.type.DynamicList;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
@@ -72,6 +74,9 @@ public class CaseworkerCloseTheCase implements CCDConfig<CaseData, State, UserRo
     @Autowired
     private CaseWithdrawnNotification caseWithdrawnNotification;
 
+    @Value("${feature.wa.enabled}")
+    private boolean isWorkAllocationEnabled;
+
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
 
@@ -89,19 +94,24 @@ public class CaseworkerCloseTheCase implements CCDConfig<CaseData, State, UserRo
     }
 
     public PageBuilder closeCase(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
-        return new PageBuilder(configBuilder
-            .event(CASEWORKER_CLOSE_THE_CASE)
-            .forStates(CaseManagement, ReadyToList)
-            .name("Case: Close case")
-            .description("Close the case")
-            .publishToCamunda()
-            .showSummary()
-            .aboutToStartCallback(this::aboutToStart)
-            .aboutToSubmitCallback(this::aboutToSubmit)
-            .submittedCallback(this::submitted)
-            .grant(CREATE_READ_UPDATE, SUPER_USER, ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER,
-                ST_CIC_HEARING_CENTRE_ADMIN, ST_CIC_HEARING_CENTRE_TEAM_LEADER, ST_CIC_SENIOR_JUDGE)
-            .grantHistoryOnly(ST_CIC_JUDGE));
+        Event.EventBuilder<CaseData, UserRole, State> eventBuilder =
+            configBuilder.event(CASEWORKER_CLOSE_THE_CASE)
+                .forStates(CaseManagement, ReadyToList)
+                .name("Case: Close case")
+                .description("Close the case")
+                .showSummary()
+                .aboutToStartCallback(this::aboutToStart)
+                .aboutToSubmitCallback(this::aboutToSubmit)
+                .submittedCallback(this::submitted)
+                .grant(CREATE_READ_UPDATE, SUPER_USER, ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER,
+                    ST_CIC_HEARING_CENTRE_ADMIN, ST_CIC_HEARING_CENTRE_TEAM_LEADER, ST_CIC_SENIOR_JUDGE)
+                .grantHistoryOnly(ST_CIC_JUDGE);
+
+        if (isWorkAllocationEnabled) {
+            eventBuilder.publishToCamunda();
+        }
+
+        return new PageBuilder(eventBuilder);
     }
 
     private void uploadDocuments(PageBuilder pageBuilder) {

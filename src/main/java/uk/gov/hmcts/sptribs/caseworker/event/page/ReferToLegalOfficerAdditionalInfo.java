@@ -8,6 +8,8 @@ import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 
 public class ReferToLegalOfficerAdditionalInfo implements CcdPageConfiguration {
 
+    private static final String NEVER_SHOW = "cicCaseReferralTypeForWA=\"NEVER_SHOW\"";
+
     @Override
     public void addTo(PageBuilder pageBuilder) {
         pageBuilder.page("referToLegalOfficerAdditionalInfo")
@@ -16,6 +18,6 @@ public class ReferToLegalOfficerAdditionalInfo implements CcdPageConfiguration {
             .optional(ReferToLegalOfficer::getAdditionalInformation)
             .done()
             .complex(CaseData::getCicCase)
-            .readonly(CicCase::getReferralTypeForWA);
+            .readonly(CicCase::getReferralTypeForWA, NEVER_SHOW);
     }
 }

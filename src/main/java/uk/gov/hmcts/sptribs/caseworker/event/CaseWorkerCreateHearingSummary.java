@@ -2,10 +2,12 @@ package uk.gov.hmcts.sptribs.caseworker.event;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
+import uk.gov.hmcts.ccd.sdk.api.Event;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.ccd.sdk.type.DynamicList;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
@@ -64,14 +66,16 @@ public class CaseWorkerCreateHearingSummary implements CCDConfig<CaseData, State
     @Autowired
     private JudicialService judicialService;
 
+    @Value("${feature.wa.enabled}")
+    private boolean isWorkAllocationEnabled;
+
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
-        PageBuilder pageBuilder = new PageBuilder(
+        Event.EventBuilder<CaseData, UserRole, State> eventBuilder =
             configBuilder
                 .event(CASEWORKER_CREATE_HEARING_SUMMARY)
                 .forStates(AwaitingHearing)
                 .name("Hearings:Create summary")
-                .publishToCamunda()
                 .showSummary()
                 .aboutToStartCallback(this::aboutToStart)
                 .aboutToSubmitCallback(this::aboutToSubmit)
@@ -86,7 +90,13 @@ public class CaseWorkerCreateHearingSummary implements CCDConfig<CaseData, State
                     ST_CIC_HEARING_CENTRE_TEAM_LEADER,
                     ST_CIC_SENIOR_JUDGE,
                     SUPER_USER,
-                    ST_CIC_JUDGE));
+                    ST_CIC_JUDGE);
+
+        if (isWorkAllocationEnabled) {
+            eventBuilder.publishToCamunda();
+        }
+
+        PageBuilder pageBuilder = new PageBuilder(eventBuilder);
         createHearingSummary.addTo(pageBuilder);
         hearingTypeAndFormat.addTo(pageBuilder);
         hearingVenues.addTo(pageBuilder);

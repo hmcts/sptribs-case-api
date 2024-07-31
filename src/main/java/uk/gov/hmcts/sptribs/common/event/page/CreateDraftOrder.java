@@ -13,6 +13,8 @@ import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 
 public class CreateDraftOrder implements CcdPageConfiguration {
 
+    private static final String NEVER_SHOW = "cicCaseReferralTypeForWA=\"NEVER_SHOW\"";
+
     @Override
     public void addTo(PageBuilder pageBuilder) {
         pageBuilder
@@ -24,7 +26,7 @@ public class CreateDraftOrder implements CcdPageConfiguration {
             .mandatory(DraftOrderContentCIC::getOrderTemplate)
             .done()
             .complex(CaseData::getCicCase)
-            .readonly(CicCase::getReferralTypeForWA);
+            .readonly(CicCase::getReferralTypeForWA, NEVER_SHOW);
     }
 
 
