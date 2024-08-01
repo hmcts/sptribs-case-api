@@ -5,12 +5,12 @@ import io.restassured.http.Headers;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.sptribs.dmn.Scenario;
 import uk.gov.hmcts.sptribs.dmn.client.RoleAssignmentServiceApiClient;
 import uk.gov.hmcts.sptribs.dmn.domain.entities.idam.UserInfo;
 import uk.gov.hmcts.sptribs.dmn.domain.entities.role.RoleAssignment;
 import uk.gov.hmcts.sptribs.dmn.domain.entities.role.RoleAssignmentResource;
 import uk.gov.hmcts.sptribs.dmn.domain.entities.role.enums.RoleType;
+import uk.gov.hmcts.sptribs.dmn.domain.entities.task.TestScenario;
 
 import java.io.IOException;
 import java.time.ZonedDateTime;
@@ -52,60 +52,60 @@ public class RoleAssignmentService {
         this.roleAssignmentServiceApi = roleAssignmentServiceApi;
     }
 
-    public void processRoleAssignments(Scenario scenario,
-                                       Map<String, Object> postRoleAssignmentValues,
-                                       String userToken,
-                                       String serviceToken,
-                                       UserInfo userInfo) throws IOException {
-
-        String caseId = scenario.getAssignedCaseId("defaultCaseId");
-
-        Map<String, Object> roleDataValues = extractOrThrow(postRoleAssignmentValues, "roleData");
-        Map<String, Object> replacementsValues = extractOrThrow(roleDataValues, "replacements");
-
-        String jurisdiction = extractOrThrow(replacementsValues, "jurisdiction");
-        Map<String, String> templatesByFilename =
-            StringResourceLoader.load(
-                "/templates/" + jurisdiction.toLowerCase(Locale.ENGLISH) + "/roleAssignment/*.json"
-            );
-        String templateFilename = extractOrThrow(roleDataValues, "template");
-        String template = templatesByFilename.get(templateFilename);
-
-        String roleName = extractOrThrow(replacementsValues, "roleName");
-        String caseType = extractOrThrow(replacementsValues, "caseType");
-        String grantType = extractOrDefault(replacementsValues, "grantType", "STANDARD");
-        String roleType = extractOrThrow(replacementsValues, "roleType");
-        String classification = extractOrDefault(replacementsValues, "classification", "PUBLIC");
-        String roleCategory = extractOrDefault(replacementsValues, "roleCategory", "LEGAL_OPERATIONS");
-
-        postRoleAssignment(
-            caseId,
-            userToken,
-            serviceToken,
-            userInfo.getUid(),
-            roleName,
-            toJsonString(Map.of(
-                "caseId", caseId,
-                "caseType", caseType,
-                "jurisdiction", jurisdiction,
-                "substantive", "Y"
-            )),
-            template,
-            grantType,
-            roleCategory,
-            toJsonString(List.of()),
-            roleType,
-            classification,
-            "staff-organisational-role-mapping",
-            userInfo.getUid(),
-            false,
-            false,
-            null,
-            "2020-01-01T00:00:00Z",
-            null,
-            userInfo.getUid()
-        );
-    }
+//    public void processRoleAssignments(TestScenario scenario,
+//                                       Map<String, Object> postRoleAssignmentValues,
+//                                       String userToken,
+//                                       String serviceToken,
+//                                       UserInfo userInfo) throws IOException {
+//
+//        String caseId = scenario.getAssignedCaseId("defaultCaseId");
+//
+//        Map<String, Object> roleDataValues = extractOrThrow(postRoleAssignmentValues, "roleData");
+//        Map<String, Object> replacementsValues = extractOrThrow(roleDataValues, "replacements");
+//
+//        String jurisdiction = extractOrThrow(replacementsValues, "jurisdiction");
+//        Map<String, String> templatesByFilename =
+//            StringResourceLoader.load(
+//                "/templates/" + jurisdiction.toLowerCase(Locale.ENGLISH) + "/roleAssignment/*.json"
+//            );
+//        String templateFilename = extractOrThrow(roleDataValues, "template");
+//        String template = templatesByFilename.get(templateFilename);
+//
+//        String roleName = extractOrThrow(replacementsValues, "roleName");
+//        String caseType = extractOrThrow(replacementsValues, "caseType");
+//        String grantType = extractOrDefault(replacementsValues, "grantType", "STANDARD");
+//        String roleType = extractOrThrow(replacementsValues, "roleType");
+//        String classification = extractOrDefault(replacementsValues, "classification", "PUBLIC");
+//        String roleCategory = extractOrDefault(replacementsValues, "roleCategory", "LEGAL_OPERATIONS");
+//
+//        postRoleAssignment(
+//            caseId,
+//            userToken,
+//            serviceToken,
+//            userInfo.getUid(),
+//            roleName,
+//            toJsonString(Map.of(
+//                "caseId", caseId,
+//                "caseType", caseType,
+//                "jurisdiction", jurisdiction,
+//                "substantive", "Y"
+//            )),
+//            template,
+//            grantType,
+//            roleCategory,
+//            toJsonString(List.of()),
+//            roleType,
+//            classification,
+//            "staff-organisational-role-mapping",
+//            userInfo.getUid(),
+//            false,
+//            false,
+//            null,
+//            "2020-01-01T00:00:00Z",
+//            null,
+//            userInfo.getUid()
+//        );
+//    }
 
     public void setupRoleAssignment(Headers headers, UserInfo userInfo, String roleName) {
         postRoleAssignment(

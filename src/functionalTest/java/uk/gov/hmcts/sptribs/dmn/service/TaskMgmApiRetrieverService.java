@@ -227,7 +227,7 @@ public class TaskMgmApiRetrieverService implements TaskRetrieverService {
 
                         } catch (Exception e) {
                             isTestPassed.set(false);
-                            Logger.say(SCENARIO_FAILED, scenario.getDescription());
+                            log.error("Scenario failed for {}", scenario.getDescription());
                             throw new RuntimeException(e);
                         }
 
@@ -238,7 +238,7 @@ public class TaskMgmApiRetrieverService implements TaskRetrieverService {
                 });
 
         if (!isTestPassed.get()) {
-            Logger.say(SCENARIO_FAILED, scenario.getDescription());
+            log.error("Scenario failed for {}", scenario.getDescription());
         }
     }
 
