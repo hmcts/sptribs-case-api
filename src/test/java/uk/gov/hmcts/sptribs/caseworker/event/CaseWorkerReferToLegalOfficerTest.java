@@ -12,6 +12,7 @@ import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.Event;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
+import uk.gov.hmcts.sptribs.caseworker.model.ReferToJudge;
 import uk.gov.hmcts.sptribs.caseworker.model.ReferToLegalOfficer;
 import uk.gov.hmcts.sptribs.caseworker.model.ReferralReason;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
@@ -101,6 +102,7 @@ class CaseWorkerReferToLegalOfficerTest {
     @ParameterizedTest
     @EnumSource(ReferralReason.class)
     void shouldSetReferralTypeForWA(ReferralReason referralReason) {
+        ReflectionTestUtils.setField(caseWorkerReferToLegalOfficer, "isWorkAllocationEnabled", true);
         final CaseDetails<CaseData, State> updatedCaseDetails = getCaseDetails();
         final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
         final ReferToLegalOfficer referToLegalOfficer = ReferToLegalOfficer.builder()
@@ -112,6 +114,22 @@ class CaseWorkerReferToLegalOfficerTest {
 
         assertThat(response1).isNotNull();
         assertThat(response1.getData().getCicCase().getReferralTypeForWA()).isEqualTo(referralReason.getLabel());
+    }
+
+    @ParameterizedTest
+    @EnumSource(ReferralReason.class)
+    void shouldNotSetReferralTypeForWAWhenWAIsNotEnabled(ReferralReason referralReason) {
+        final CaseDetails<CaseData, State> updatedCaseDetails = getCaseDetails();
+        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        final ReferToJudge referToJudge = ReferToJudge.builder()
+                .referralReason(referralReason).build();
+        updatedCaseDetails.getData().setReferToJudge(referToJudge);
+
+        final AboutToStartOrSubmitResponse<CaseData, State> response1 =
+                caseWorkerReferToLegalOfficer.aboutToSubmit(updatedCaseDetails, beforeDetails);
+
+        assertThat(response1).isNotNull();
+        assertThat(response1.getData().getCicCase().getReferralTypeForWA()).isNull();
     }
 
     private CaseDetails<CaseData, State> getCaseDetails() {

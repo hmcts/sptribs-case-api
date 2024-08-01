@@ -93,9 +93,10 @@ public class CaseWorkerReferToLegalOfficer implements CCDConfig<CaseData, State,
 
         CaseData caseData = details.getData();
         caseData.getReferToLegalOfficer().setReferralDate(LocalDate.now());
-
-        if (caseData.getReferToLegalOfficer() != null && caseData.getReferToLegalOfficer().getReferralReason() != null) {
-            caseData.getCicCase().setReferralTypeForWA(caseData.getReferToLegalOfficer().getReferralReason().getLabel());
+        if (isWorkAllocationEnabled) {
+            if (caseData.getReferToLegalOfficer() != null && caseData.getReferToLegalOfficer().getReferralReason() != null) {
+                caseData.getCicCase().setReferralTypeForWA(caseData.getReferToLegalOfficer().getReferralReason().getLabel());
+            }
         }
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()

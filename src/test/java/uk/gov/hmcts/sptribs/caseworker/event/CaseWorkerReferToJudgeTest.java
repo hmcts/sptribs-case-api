@@ -99,6 +99,7 @@ public class CaseWorkerReferToJudgeTest {
     @ParameterizedTest
     @EnumSource(ReferralReason.class)
     void shouldSetReferralTypeForWA(ReferralReason referralReason) {
+        ReflectionTestUtils.setField(caseWorkerReferToJudge, "isWorkAllocationEnabled", true);
         final CaseDetails<CaseData, State> updatedCaseDetails = getCaseDetails();
         final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
         final ReferToJudge referToJudge = ReferToJudge.builder()
@@ -110,6 +111,22 @@ public class CaseWorkerReferToJudgeTest {
 
         assertThat(response1).isNotNull();
         assertThat(response1.getData().getCicCase().getReferralTypeForWA()).isEqualTo(referralReason.getLabel());
+    }
+
+    @ParameterizedTest
+    @EnumSource(ReferralReason.class)
+    void shouldNotSetReferralTypeForWAWhenWAIsNotEnabled(ReferralReason referralReason) {
+        final CaseDetails<CaseData, State> updatedCaseDetails = getCaseDetails();
+        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        final ReferToJudge referToJudge = ReferToJudge.builder()
+                .referralReason(referralReason).build();
+        updatedCaseDetails.getData().setReferToJudge(referToJudge);
+
+        final AboutToStartOrSubmitResponse<CaseData, State> response1 =
+                caseWorkerReferToJudge.aboutToSubmit(updatedCaseDetails, beforeDetails);
+
+        assertThat(response1).isNotNull();
+        assertThat(response1.getData().getCicCase().getReferralTypeForWA()).isNull();
     }
 
     private CaseDetails<CaseData, State> getCaseDetails() {
