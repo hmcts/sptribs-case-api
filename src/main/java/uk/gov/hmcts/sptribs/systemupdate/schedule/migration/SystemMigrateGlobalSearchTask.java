@@ -19,6 +19,7 @@ import java.util.List;
 
 import static org.elasticsearch.index.query.QueryBuilders.boolQuery;
 import static org.elasticsearch.index.query.QueryBuilders.existsQuery;
+import static org.elasticsearch.index.query.QueryBuilders.matchQuery;
 import static uk.gov.hmcts.sptribs.systemupdate.event.SystemMigrateGlobalSearchFields.SYSTEM_MIGRATE_GLOBAL_SEARCH_FIELDS;
 
 @Component
@@ -35,6 +36,9 @@ public class SystemMigrateGlobalSearchTask implements Runnable {
 
     @Value("${feature.migrate-global-search-task.enabled}")
     private boolean globalSearchMigrationEnabled;
+
+    @Value("${feature.migrate-global-search-task.caseReference}")
+    private String globalSearchTestCaseReference;
 
     @Autowired
     public SystemMigrateGlobalSearchTask(AuthTokenGenerator authTokenGenerator, CcdSearchService ccdSearchService,
@@ -57,6 +61,10 @@ public class SystemMigrateGlobalSearchTask implements Runnable {
                         .must(boolQuery()
                             .mustNot(existsQuery("data.SearchCriteria"))
                         );
+
+                if (globalSearchTestCaseReference != null) {
+                    query.must(matchQuery("reference", Long.parseLong(globalSearchTestCaseReference)));
+                }
 
                 final List<CaseDetails> casesToMigrateSearchCriteria =
                     ccdSearchService.searchForAllCasesWithQuery(query, user, serviceAuth);

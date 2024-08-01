@@ -24,6 +24,7 @@ import java.util.List;
 
 import static org.elasticsearch.index.query.QueryBuilders.boolQuery;
 import static org.elasticsearch.index.query.QueryBuilders.existsQuery;
+import static org.elasticsearch.index.query.QueryBuilders.matchQuery;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -58,7 +59,8 @@ public class SystemMigrateGlobalSearchFieldsTaskTest {
     private static final BoolQueryBuilder query = boolQuery()
         .must(boolQuery()
             .mustNot(existsQuery("data.SearchCriteria"))
-        );
+        )
+        .must(matchQuery("reference", TEST_CASE_ID));
 
     @BeforeEach
     void setUp() {
@@ -66,6 +68,7 @@ public class SystemMigrateGlobalSearchFieldsTaskTest {
         when(idamService.retrieveSystemUpdateUserDetails()).thenReturn(user);
         when(authTokenGenerator.generate()).thenReturn(SERVICE_AUTHORIZATION);
         ReflectionTestUtils.setField(task, "globalSearchMigrationEnabled", true);
+        ReflectionTestUtils.setField(task, "globalSearchTestCaseReference", TEST_CASE_ID.toString());
     }
 
     @Test

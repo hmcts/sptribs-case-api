@@ -200,6 +200,8 @@ feature:
     enabled: ${SECURITY_CLASSIFICATION:true}
   migrate-global-search-task:
     enabled: ${GLOBAL_SEARCH_MIGRATION_ENABLED:false}
+    caseReference: ${GLOBAL_SEARCH_MIGRATION_TEST_CASE_REF:}
+
 
 caseinfo:
   apps:
