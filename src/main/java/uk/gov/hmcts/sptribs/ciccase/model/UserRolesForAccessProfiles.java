@@ -39,8 +39,8 @@ public enum UserRolesForAccessProfiles implements HasRole {
     AC_CASEFLAGS_VIEWER("caseflags-viewer", "R"),
 
     // Read access user for WA post deployment
-    ST_CIC_WA_CONFIG_USER("idam:caseworker-wa-task-configuration", "R"),
-    AC_ST_CIC_WA_CONFIG_USER("caseworker-wa-task-configuration", "R");
+    ST_CIC_WA_CONFIG_USER("idam:caseworker-wa-task-configuration", "CRU"),
+    AC_ST_CIC_WA_CONFIG_USER("caseworker-wa-task-configuration", "CRU");
 
     @JsonValue
     private final String role;
