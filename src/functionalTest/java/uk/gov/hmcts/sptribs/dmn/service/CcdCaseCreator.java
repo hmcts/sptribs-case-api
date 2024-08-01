@@ -12,7 +12,6 @@ import uk.gov.hmcts.sptribs.dmn.domain.entities.idam.UserInfo;
 import uk.gov.hmcts.sptribs.dmn.domain.entities.task.EventCaseData;
 import uk.gov.hmcts.sptribs.testutil.MapMerger;
 import uk.gov.hmcts.sptribs.testutil.MapSerializer;
-import uk.gov.hmcts.sptribs.testutil.MapValueExpander;
 import uk.gov.hmcts.sptribs.testutil.MapValueExtractor;
 
 import java.io.IOException;
@@ -31,9 +30,6 @@ public class CcdCaseCreator {
 
     @Autowired
     protected AuthorizationHeadersProvider authorizationHeadersProvider;
-
-    @Autowired
-    private MapValueExpander mapValueExpander;
 
     public String createCase(EventCaseData eventCaseData,
                              String jurisdiction,

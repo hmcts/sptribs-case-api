@@ -120,21 +120,28 @@ public class ScenarioRunner {
                     authorizationHeadersProvider.getWaUserAuthorization(credentialRequest);
 
             // TODO - camunda api call necessary?
-            if (TaskRetrieverEnum.CAMUNDA_API.getId().equals(taskRetrieverOption)) {
-                camundaTaskRetrievableService.retrieveTask(
-                        expectationValue,
-                        scenario,
-                        expectationCaseIds.get(0),
-                        expectationAuthorizationHeaders
-                );
-            } else {
-                taskMgmApiRetrievableService.retrieveTask(
-                        expectation,
-                        scenario,
-                        expectationCaseIds,
-                        expectationAuthorizationHeaders
-                );
-            }
+//            if (TaskRetrieverEnum.CAMUNDA_API.getId().equals(taskRetrieverOption)) {
+//                camundaTaskRetrievableService.retrieveTask(
+//                        expectationValue,
+//                        scenario,
+//                        expectationCaseIds.get(0),
+//                        expectationAuthorizationHeaders
+//                );
+//            } else {
+//                taskMgmApiRetrievableService.retrieveTask(
+//                        expectation,
+//                        scenario,
+//                        expectationCaseIds,
+//                        expectationAuthorizationHeaders
+//                );
+//            }
+
+            taskMgmApiRetrievableService.retrieveTask(
+                    expectation,
+                    scenario,
+                    expectationCaseIds,
+                    expectationAuthorizationHeaders
+            );
         }
     }
 

@@ -11,6 +11,8 @@ import uk.gov.hmcts.sptribs.dmn.domain.entities.task.Task;
 import uk.gov.hmcts.sptribs.dmn.domain.entities.task.TestScenario;
 import uk.gov.hmcts.sptribs.testutil.DeserializeValuesUtil;
 import uk.gov.hmcts.sptribs.testutil.MapSerializer;
+import uk.gov.hmcts.sptribs.testutil.MapValueExtractor;
+import uk.gov.hmcts.sptribs.testutil.TaskDataVerifier;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -36,11 +38,11 @@ public class TaskMgmApiRetrieverService implements TaskRetrieverService {
 
     private final TaskManagementService taskManagementService;
     private final DeserializeValuesUtil deserializeValuesUtil;
-    private final List<Verifier> verifiers;
+    private final List<TaskDataVerifier> verifiers;
 
     public TaskMgmApiRetrieverService(TaskManagementService taskManagementService,
                                       DeserializeValuesUtil deserializeValuesUtil,
-                                      List<Verifier> verifiers) {
+                                      List<TaskDataVerifier> verifiers) {
         this.taskManagementService = taskManagementService;
         this.deserializeValuesUtil = deserializeValuesUtil;
         this.verifiers = verifiers;
@@ -78,6 +80,7 @@ public class TaskMgmApiRetrieverService implements TaskRetrieverService {
             additionalValues.put("assigneeId", scenario.getAssigneeId());
         }
 
+        // TODO - work out how this should be handled
         Map<String, Object> deserializedClauseValues =
             deserializeValuesUtil.expandMapValues(clauseValues, additionalValues);
 
@@ -98,7 +101,7 @@ public class TaskMgmApiRetrieverService implements TaskRetrieverService {
                         authorizationHeaders
                     );
 
-                    // TODO - fix this
+                    // TODO - fix this method
                     String expectedResponseBody = buildTaskExpectationResponseBody(
                         expectation,
                         taskTemplatesByFilename,
@@ -111,6 +114,7 @@ public class TaskMgmApiRetrieverService implements TaskRetrieverService {
                         return false;
                     }
 
+                    // TODO - make sure this is correct
                     Map<String, Object> actualResponse = MapSerializer.deserialize(
                         MapSerializer.sortCollectionElement(
                             searchByCaseIdResponseBody,
@@ -121,7 +125,7 @@ public class TaskMgmApiRetrieverService implements TaskRetrieverService {
 
                     verifiers.forEach(verifier ->
                         verifier.verify(
-                            clauseValues,
+                            scenario,
                             expectedResponse,
                             actualResponse
                         )
@@ -184,12 +188,7 @@ public class TaskMgmApiRetrieverService implements TaskRetrieverService {
                                 return;
                             }
 
-                            int expectedStatus = MapValueExtractor.extractOrDefault(
-                                clauseValues, "status", 200);
-
-
-                            Map<String, Object> scenarioValues = scenario.getScenarioMapValues();
-
+                            int expectedStatus = expectation.getStatus();
 
                             String retrieveTaskRolePermissionsResponseBody =
                                 taskManagementService.retrieveTaskRolePermissions(
@@ -218,7 +217,7 @@ public class TaskMgmApiRetrieverService implements TaskRetrieverService {
 
                             verifiers.forEach(verifier ->
                                 verifier.verify(
-                                    clauseValues,
+                                    scenario,
                                     expectedRoleResponse.get(),
                                     actualRoleResponse.get()
                                 )
@@ -228,7 +227,7 @@ public class TaskMgmApiRetrieverService implements TaskRetrieverService {
 
                         } catch (Exception e) {
                             isTestPassed.set(false);
-                            Logger.say(SCENARIO_FAILED, scenario.getScenarioMapValues().get("description"));
+                            Logger.say(SCENARIO_FAILED, scenario.getDescription());
                             throw new RuntimeException(e);
                         }
 
@@ -239,7 +238,7 @@ public class TaskMgmApiRetrieverService implements TaskRetrieverService {
                 });
 
         if (!isTestPassed.get()) {
-            Logger.say(SCENARIO_FAILED, scenario.getScenarioMapValues().get("description"));
+            Logger.say(SCENARIO_FAILED, scenario.getDescription());
         }
     }
 

@@ -16,7 +16,6 @@ public class HolidayService {
     }
 
     public boolean isHoliday(LocalDate localDate) {
-        boolean res = holidays.contains(localDate);
         return holidays.contains(localDate);
     }
 }

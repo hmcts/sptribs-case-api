@@ -1,7 +1,10 @@
 package uk.gov.hmcts.sptribs.dmn.domain.entities.task;
 
+import lombok.Getter;
+
 import java.util.List;
 
+@Getter
 public class RoleData {
     private final String key;
 

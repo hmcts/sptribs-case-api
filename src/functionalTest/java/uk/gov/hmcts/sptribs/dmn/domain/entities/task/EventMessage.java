@@ -1,5 +1,8 @@
 package uk.gov.hmcts.sptribs.dmn.domain.entities.task;
 
+import lombok.Getter;
+
+@Getter
 public class EventMessage {
 
     private final String eventMessage;
