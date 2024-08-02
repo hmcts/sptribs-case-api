@@ -2,6 +2,7 @@ package uk.gov.hmcts.sptribs.ciccase.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonUnwrapped;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.AllArgsConstructor;
@@ -150,12 +151,14 @@ public class CicCase {
     )
     private DynamicList amendDocumentList;
 
+    @JsonUnwrapped(prefix = "selectedDocument")
+    @Builder.Default
     @CCD(
         label = "Documents",
         typeParameterOverride = "CaseworkerCICDocument",
         access = {DefaultAccess.class}
     )
-    private CaseworkerCICDocument selectedDocument;
+    private CaseworkerCICDocument selectedDocument = new CaseworkerCICDocument();
 
     @CCD(
         label = "Notified Parties",
