@@ -62,7 +62,7 @@ public class SystemMigrateGlobalSearchTask implements Runnable {
                             .mustNot(existsQuery("data.SearchCriteria"))
                         );
 
-                if (globalSearchTestCaseReference != null) {
+                if (globalSearchTestCaseReference != null && !globalSearchTestCaseReference.trim().equals("")) {
                     query.must(matchQuery("reference", Long.parseLong(globalSearchTestCaseReference)));
                 }
 
