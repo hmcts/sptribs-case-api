@@ -95,8 +95,7 @@ public class CaseworkerDocumentManagementAmend implements CCDConfig<CaseData, St
                 .submittedCallback(this::submitted);
 
         if (isWorkAllocationEnabled) {
-            eventBuilder.publishToCamunda()
-                        .grant(CREATE_READ_UPDATE, ST_CIC_WA_CONFIG_USER);
+            eventBuilder.grant(CREATE_READ_UPDATE, ST_CIC_WA_CONFIG_USER);
         }
 
         PageBuilder pageBuilder = new PageBuilder(eventBuilder);
