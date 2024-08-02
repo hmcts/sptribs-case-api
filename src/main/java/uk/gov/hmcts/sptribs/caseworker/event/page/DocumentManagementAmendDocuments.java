@@ -23,7 +23,7 @@ public class DocumentManagementAmendDocuments implements CcdPageConfiguration {
             .complex(CicCase::getSelectedDocument)
             .mandatory(CaseworkerCICDocument::getDocumentCategory)
             .mandatory(CaseworkerCICDocument::getDocumentEmailContent)
+            .done()
             .done();
     }
-
 }

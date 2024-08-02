@@ -63,9 +63,9 @@ class CaseworkerDocumentManagementAmendTest {
             .extracting(Event::getId)
             .contains(CASEWORKER_DOCUMENT_MANAGEMENT_AMEND);
 
-        //        assertThat(getEventsFrom(configBuilder).values())
-        //                .extracting(Event::isPublishToCamunda)
-        //                .contains(false);
+        assertThat(getEventsFrom(configBuilder).values())
+                .extracting(Event::isPublishToCamunda)
+                .contains(false);
 
         assertThat(getEventsFrom(configBuilder).values())
                 .extracting(Event::getGrants)
@@ -81,9 +81,9 @@ class CaseworkerDocumentManagementAmendTest {
 
         caseworkerDocumentManagementAmend.configure(configBuilder);
 
-        //        assertThat(getEventsFrom(configBuilder).values())
-        //                .extracting(Event::isPublishToCamunda)
-        //                .contains(true);
+        assertThat(getEventsFrom(configBuilder).values())
+                .extracting(Event::isPublishToCamunda)
+                .contains(true);
 
         assertThat(getEventsFrom(configBuilder).values())
                 .extracting(Event::getGrants)
