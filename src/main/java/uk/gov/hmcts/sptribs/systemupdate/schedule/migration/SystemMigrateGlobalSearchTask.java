@@ -55,6 +55,9 @@ public class SystemMigrateGlobalSearchTask implements Runnable {
             final User user = idamService.retrieveSystemUpdateUserDetails();
             final String serviceAuth = authTokenGenerator.generate();
 
+            log.info("User name: " + user.getUserDetails().getEmail());
+            log.info("User roles: " + String.join(",", user.getUserDetails().getRoles()));
+
             try {
                 final BoolQueryBuilder query =
                     boolQuery()
