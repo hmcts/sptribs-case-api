@@ -3,10 +3,12 @@ package uk.gov.hmcts.sptribs.caseworker.event;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
+import uk.gov.hmcts.ccd.sdk.api.Event;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.ccd.sdk.type.DynamicList;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
@@ -36,6 +38,7 @@ import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_HEARING_CENTRE_
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_JUDGE;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_CASEWORKER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_JUDGE;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_WA_CONFIG_USER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE;
 
@@ -53,6 +56,9 @@ public class CaseworkerPostponeHearing implements CCDConfig<CaseData, State, Use
 
     private final HearingPostponedNotification hearingPostponedNotification;
 
+    @Value("${feature.wa.enabled}")
+    private boolean isWorkAllocationEnabled;
+
     @Autowired
     public CaseworkerPostponeHearing(HearingService hearingService,
                                      RecordListHelper recordListHelper,
@@ -64,7 +70,7 @@ public class CaseworkerPostponeHearing implements CCDConfig<CaseData, State, Use
 
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
-        PageBuilder pageBuilder = new PageBuilder(
+        Event.EventBuilder<CaseData, UserRole, State> eventBuilder =
             configBuilder
                 .event(CASEWORKER_POSTPONE_HEARING)
                 .forStates(AwaitingHearing)
@@ -83,7 +89,13 @@ public class CaseworkerPostponeHearing implements CCDConfig<CaseData, State, Use
                     ST_CIC_HEARING_CENTRE_TEAM_LEADER,
                     ST_CIC_SENIOR_JUDGE,
                     SUPER_USER,
-                    ST_CIC_JUDGE));
+                    ST_CIC_JUDGE);
+
+        if (isWorkAllocationEnabled) {
+            eventBuilder.publishToCamunda()
+                        .grant(CREATE_READ_UPDATE, ST_CIC_WA_CONFIG_USER);
+        }
+        PageBuilder pageBuilder = new PageBuilder(eventBuilder);
         selectHearing.addTo(pageBuilder);
         selectReason.addTo(pageBuilder);
         notifyParties.addTo(pageBuilder);
