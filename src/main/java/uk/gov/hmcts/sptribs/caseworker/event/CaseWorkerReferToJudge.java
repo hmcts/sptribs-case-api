@@ -96,10 +96,10 @@ public class CaseWorkerReferToJudge implements CCDConfig<CaseData, State, UserRo
 
         CaseData caseData = details.getData();
         caseData.getReferToJudge().setReferralDate(LocalDate.now());
-        if (isWorkAllocationEnabled) {
-            if (caseData.getReferToJudge() != null && caseData.getReferToJudge().getReferralReason() != null) {
-                caseData.getCicCase().setReferralTypeForWA(caseData.getReferToJudge().getReferralReason().getLabel());
-            }
+        if (isWorkAllocationEnabled
+                && caseData.getReferToJudge() != null
+                && caseData.getReferToJudge().getReferralReason() != null) {
+            caseData.getCicCase().setReferralTypeForWA(caseData.getReferToJudge().getReferralReason().getLabel());
         }
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
