@@ -2,7 +2,6 @@ package uk.gov.hmcts.sptribs.ciccase.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonUnwrapped;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.AllArgsConstructor;
@@ -30,7 +29,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.access.DefaultAccess;
 import uk.gov.hmcts.sptribs.document.model.CICDocument;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocumentUpload;
-import uk.gov.hmcts.sptribs.document.model.CaseworkerSelectedCICDocument;
+import uk.gov.hmcts.sptribs.document.model.DocumentType;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -152,14 +151,26 @@ public class CicCase {
     )
     private DynamicList amendDocumentList;
 
-    @JsonUnwrapped(prefix = "selectedDocumentToAmend")
-    @Builder.Default
     @CCD(
-        label = "Documents",
-        typeParameterOverride = "CaseworkerCICDocument",
-        access = {DefaultAccess.class}
+        label = "Document Category",
+        typeOverride = FixedList,
+        typeParameterOverride = "DocumentType",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
-    private CaseworkerSelectedCICDocument selectedDocumentToAmend = new CaseworkerSelectedCICDocument();
+    private DocumentType selectedDocumentCategory;
+
+    @CCD(
+        label = "Description",
+        typeOverride = TextArea,
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private String selectedDocumentEmailContent;
+
+    @CCD(
+        label = "File",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private Document selectedDocumentLink;
 
     @CCD(
         label = "Notified Parties",

@@ -9,6 +9,7 @@ import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.Event;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
+import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.ccd.sdk.type.DynamicList;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.event.page.DocumentManagementAmendDocuments;
@@ -20,7 +21,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
-import uk.gov.hmcts.sptribs.document.model.CaseworkerSelectedCICDocument;
+import uk.gov.hmcts.sptribs.document.model.DocumentType;
 
 import static uk.gov.hmcts.sptribs.caseworker.util.CaseDocumentListUtil.updateCaseDocumentList;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_DOCUMENT_MANAGEMENT_AMEND;
@@ -124,29 +125,58 @@ public class CaseworkerDocumentManagementAmend implements CCDConfig<CaseData, St
         final CaseData data = details.getData();
         final CicCase cicCase = data.getCicCase();
 
-        CaseworkerSelectedCICDocument selectedDocument = cicCase.getSelectedDocumentToAmend();
-        String selectedDocumentType = cicCase.getSelectedDocumentType();
+        final DocumentType selectedDocumentCategory = cicCase.getSelectedDocumentCategory();
+        final String selectedDocumentEmailContent = cicCase.getSelectedDocumentEmailContent();
+        final Document selectedDocumentLink = cicCase.getSelectedDocumentLink();
+        final String selectedDocumentType = cicCase.getSelectedDocumentType();
 
         switch (selectedDocumentType) {
             case CASE_TYPE:
-                updateCaseDocumentList(cicCase.getApplicantDocumentsUploaded(), selectedDocument);
+                updateCaseDocumentList(
+                    cicCase.getApplicantDocumentsUploaded(),
+                    selectedDocumentCategory,
+                    selectedDocumentEmailContent,
+                    selectedDocumentLink
+                );
                 break;
             case REINSTATE_TYPE:
-                updateCaseDocumentList(cicCase.getReinstateDocuments(), selectedDocument);
+                updateCaseDocumentList(
+                    cicCase.getReinstateDocuments(),
+                    selectedDocumentCategory,
+                    selectedDocumentEmailContent,
+                    selectedDocumentLink
+                );
                 break;
             case DOC_MGMT_TYPE:
-                updateCaseDocumentList(data.getAllDocManagement().getCaseworkerCICDocument(), selectedDocument);
+                updateCaseDocumentList(
+                    data.getAllDocManagement().getCaseworkerCICDocument(),
+                    selectedDocumentCategory,
+                    selectedDocumentEmailContent,
+                    selectedDocumentLink
+                );
                 break;
             case CLOSE_CASE_TYPE:
-                updateCaseDocumentList(data.getCloseCase().getDocuments(), selectedDocument);
+                updateCaseDocumentList(
+                    data.getCloseCase().getDocuments(),
+                    selectedDocumentCategory,
+                    selectedDocumentEmailContent,
+                    selectedDocumentLink
+                );
                 break;
             case HEARING_SUMMARY_TYPE:
-                updateCaseDocumentList(data.getLatestCompletedHearing().getSummary().getRecFile(), selectedDocument);
+                updateCaseDocumentList(
+                    data.getLatestCompletedHearing().getSummary().getRecFile(),
+                    selectedDocumentCategory,
+                    selectedDocumentEmailContent,
+                    selectedDocumentLink
+                );
                 break;
             default:
                 break;
         }
-        cicCase.setSelectedDocumentToAmend(null);
+        cicCase.setSelectedDocumentCategory(null);
+        cicCase.setSelectedDocumentEmailContent(null);
+        cicCase.setSelectedDocumentLink(null);
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(data)
             .build();

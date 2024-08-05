@@ -25,7 +25,6 @@ import uk.gov.hmcts.sptribs.ciccase.model.access.Permissions;
 import uk.gov.hmcts.sptribs.document.DocumentConstants;
 import uk.gov.hmcts.sptribs.document.model.CICDocument;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
-import uk.gov.hmcts.sptribs.document.model.CaseworkerSelectedCICDocument;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
 
 import java.util.List;
@@ -54,6 +53,8 @@ class CaseworkerDocumentManagementAmendTest {
 
     @InjectMocks
     private DocumentManagementAmendDocuments amendCaseDocuments;
+
+    private static final String UPDATED_EMAIL_CONTENT = "updated email content";
 
     @Test
     void shouldAddConfigurationToConfigBuilder() {
@@ -124,12 +125,9 @@ class CaseworkerDocumentManagementAmendTest {
         AboutToStartOrSubmitResponse<CaseData, State> midResponse =
             selectCaseDocuments.midEvent(updatedCaseDetails, beforeDetails);
 
-        assertThat(midResponse.getData().getCicCase().getSelectedDocumentToAmend()).isNotNull();
-        assertThat(midResponse.getData().getCicCase().getSelectedDocumentToAmend().getDocumentLink()).isNotNull();
-        assertThat(midResponse.getData().getCicCase().getSelectedDocumentToAmend().getDocumentCategory())
-            .isEqualTo(APPLICATION_FORM);
-        assertThat(midResponse.getData().getCicCase().getSelectedDocumentToAmend().getDocumentEmailContent())
-            .isEqualTo("updated email content");
+        assertThat(midResponse.getData().getCicCase().getSelectedDocumentLink()).isNotNull();
+        assertThat(midResponse.getData().getCicCase().getSelectedDocumentCategory()).isEqualTo(APPLICATION_FORM);
+        assertThat(midResponse.getData().getCicCase().getSelectedDocumentEmailContent()).isEqualTo("updated email content");
 
         AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmitResponse =
             caseworkerDocumentManagementAmend.aboutToSubmit(updatedCaseDetails, beforeDetails);
@@ -163,7 +161,9 @@ class CaseworkerDocumentManagementAmendTest {
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
 
-        cicCase.setSelectedDocumentToAmend(getCaseworkerSelectedCICDocument());
+        cicCase.setSelectedDocumentCategory(APPLICATION_FORM);
+        cicCase.setSelectedDocumentEmailContent(UPDATED_EMAIL_CONTENT);
+        cicCase.setSelectedDocumentLink(getDocumentData());
         cicCase.setSelectedDocumentType(DocumentConstants.REINSTATE_TYPE);
 
         //When
@@ -195,7 +195,9 @@ class CaseworkerDocumentManagementAmendTest {
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
 
-        cicCase.setSelectedDocumentToAmend(getCaseworkerSelectedCICDocument());
+        cicCase.setSelectedDocumentCategory(APPLICATION_FORM);
+        cicCase.setSelectedDocumentEmailContent(UPDATED_EMAIL_CONTENT);
+        cicCase.setSelectedDocumentLink(getDocumentData());
         cicCase.setSelectedDocumentType(DocumentConstants.DOC_MGMT_TYPE);
 
         //When
@@ -227,7 +229,9 @@ class CaseworkerDocumentManagementAmendTest {
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
 
-        cicCase.setSelectedDocumentToAmend(getCaseworkerSelectedCICDocument());
+        cicCase.setSelectedDocumentCategory(APPLICATION_FORM);
+        cicCase.setSelectedDocumentEmailContent(UPDATED_EMAIL_CONTENT);
+        cicCase.setSelectedDocumentLink(getDocumentData());
         cicCase.setSelectedDocumentType(DocumentConstants.CLOSE_CASE_TYPE);
 
         //When
@@ -259,7 +263,9 @@ class CaseworkerDocumentManagementAmendTest {
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
 
-        cicCase.setSelectedDocumentToAmend(getCaseworkerSelectedCICDocument());
+        cicCase.setSelectedDocumentCategory(APPLICATION_FORM);
+        cicCase.setSelectedDocumentEmailContent(UPDATED_EMAIL_CONTENT);
+        cicCase.setSelectedDocumentLink(getDocumentData());
         cicCase.setSelectedDocumentType(DocumentConstants.HEARING_SUMMARY_TYPE);
 
         //When
@@ -309,14 +315,6 @@ class CaseworkerDocumentManagementAmendTest {
 
     private CaseworkerCICDocument getCaseworkerCICDocument() {
         return CaseworkerCICDocument.builder()
-            .documentLink(getDocumentData())
-            .documentCategory(APPLICATION_FORM)
-            .documentEmailContent("updated email content")
-            .build();
-    }
-
-    private CaseworkerSelectedCICDocument getCaseworkerSelectedCICDocument() {
-        return CaseworkerSelectedCICDocument.builder()
             .documentLink(getDocumentData())
             .documentCategory(APPLICATION_FORM)
             .documentEmailContent("updated email content")

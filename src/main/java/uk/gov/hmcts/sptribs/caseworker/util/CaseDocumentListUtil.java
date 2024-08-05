@@ -1,9 +1,10 @@
 package uk.gov.hmcts.sptribs.caseworker.util;
 
 import org.springframework.util.CollectionUtils;
+import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
-import uk.gov.hmcts.sptribs.document.model.CaseworkerSelectedCICDocument;
+import uk.gov.hmcts.sptribs.document.model.DocumentType;
 
 import java.util.List;
 
@@ -12,14 +13,16 @@ public final class CaseDocumentListUtil {
     }
 
     public static void updateCaseDocumentList(List<ListValue<CaseworkerCICDocument>> documents,
-                                              CaseworkerSelectedCICDocument selectedDocument) {
+                                              DocumentType selectedDocumentCategory,
+                                              String selectedDocumentEmailContent,
+                                              Document selectedDocumentLink) {
 
         if (!CollectionUtils.isEmpty(documents)) {
             for (ListValue<CaseworkerCICDocument> document : documents) {
-                if (selectedDocument.getDocumentLink().getUrl().equals(document.getValue().getDocumentLink().getUrl())) {
-                    document.getValue().setDocumentCategory(selectedDocument.getDocumentCategory());
-                    document.getValue().getDocumentLink().setCategoryId(selectedDocument.getDocumentCategory().getCategory());
-                    document.getValue().setDocumentEmailContent(selectedDocument.getDocumentEmailContent());
+                if (selectedDocumentLink.getUrl().equals(document.getValue().getDocumentLink().getUrl())) {
+                    document.getValue().setDocumentCategory(selectedDocumentCategory);
+                    document.getValue().getDocumentLink().setCategoryId(selectedDocumentLink.getCategoryId());
+                    document.getValue().setDocumentEmailContent(selectedDocumentEmailContent);
                 }
             }
         }
