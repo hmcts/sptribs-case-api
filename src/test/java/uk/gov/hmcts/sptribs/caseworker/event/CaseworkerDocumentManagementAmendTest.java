@@ -33,6 +33,7 @@ import java.util.UUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_DOCUMENT_MANAGEMENT_AMEND;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_WA_CONFIG_USER;
+import static uk.gov.hmcts.sptribs.document.model.DocumentType.APPLICATION_FORM;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigBuilder;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.getEventsFrom;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID;
@@ -101,7 +102,7 @@ class CaseworkerDocumentManagementAmendTest {
         //Given
         final CaseData caseData = caseData();
         final CicCase cicCase = CicCase.builder()
-            .applicantDocumentsUploaded(getCaseworkerCICDocumentList("test.pdf", DocumentType.APPLICATION_FORM))
+            .applicantDocumentsUploaded(getCaseworkerCICDocumentList("test.pdf", APPLICATION_FORM))
             .build();
         caseData.setCicCase(cicCase);
 
@@ -123,6 +124,9 @@ class CaseworkerDocumentManagementAmendTest {
             selectCaseDocuments.midEvent(updatedCaseDetails, beforeDetails);
 
         assertThat(midResponse.getData().getCicCase().getSelectedDocument()).isNotNull();
+        assertThat(midResponse.getData().getCicCase().getSelectedDocument().getDocumentCategory()).isEqualTo(APPLICATION_FORM);
+        assertThat(midResponse.getData().getCicCase().getSelectedDocument().getDocumentEmailContent()).isEqualTo("updated email content");
+        assertThat(midResponse.getData().getCicCase().getSelectedDocument().getDocumentLink()).isNotNull();
 
         AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmitResponse =
             caseworkerDocumentManagementAmend.aboutToSubmit(updatedCaseDetails, beforeDetails);
@@ -135,7 +139,7 @@ class CaseworkerDocumentManagementAmendTest {
         assertThat(aboutToSubmitResponse.getData().getCicCase().getApplicantDocumentsUploaded().get(0).getValue()).isNotNull();
         assertThat(aboutToSubmitResponse.getData().getCicCase()
             .getApplicantDocumentsUploaded().get(0)
-            .getValue().getDocumentCategory()).isEqualTo(DocumentType.APPLICATION_FORM);
+            .getValue().getDocumentCategory()).isEqualTo(APPLICATION_FORM);
         assertThat(documentMgmtResponse).isNotNull();
     }
 
@@ -168,7 +172,7 @@ class CaseworkerDocumentManagementAmendTest {
         assertThat(aboutToSubmitResponse.getData().getCicCase().getReinstateDocuments().get(0).getValue()).isNotNull();
         assertThat(aboutToSubmitResponse.getData().getCicCase().getReinstateDocuments().get(0)
             .getValue().getDocumentCategory())
-            .isEqualTo(DocumentType.APPLICATION_FORM);
+            .isEqualTo(APPLICATION_FORM);
         assertThat(documentMgmtResponse).isNotNull();
     }
 
@@ -200,7 +204,7 @@ class CaseworkerDocumentManagementAmendTest {
         assertThat(aboutToSubmitResponse.getData().getAllDocManagement().getCaseworkerCICDocument().get(0).getValue()).isNotNull();
         assertThat(aboutToSubmitResponse.getData().getAllDocManagement().getCaseworkerCICDocument().get(0)
             .getValue().getDocumentCategory())
-            .isEqualTo(DocumentType.APPLICATION_FORM);
+            .isEqualTo(APPLICATION_FORM);
         assertThat(documentMgmtResponse).isNotNull();
     }
 
@@ -232,7 +236,7 @@ class CaseworkerDocumentManagementAmendTest {
         assertThat(aboutToSubmitResponse.getData().getCloseCase().getDocuments().get(0).getValue()).isNotNull();
         assertThat(aboutToSubmitResponse.getData().getCloseCase().getDocuments().get(0)
             .getValue().getDocumentCategory())
-            .isEqualTo(DocumentType.APPLICATION_FORM);
+            .isEqualTo(APPLICATION_FORM);
         assertThat(documentMgmtResponse).isNotNull();
     }
 
@@ -303,7 +307,7 @@ class CaseworkerDocumentManagementAmendTest {
     private CaseworkerCICDocument getCaseworkerCICDocument() {
         return CaseworkerCICDocument.builder()
             .documentLink(getDocumentData())
-            .documentCategory(DocumentType.APPLICATION_FORM)
+            .documentCategory(APPLICATION_FORM)
             .documentEmailContent("updated email content")
             .build();
     }

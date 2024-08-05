@@ -66,9 +66,13 @@ public class DocumentManagementSelectDocuments implements CcdPageConfiguration {
                 }
             }
 
-            cicCase.setSelectedDocument(selectedDocument);
-            cicCase.setSelectedDocumentType(selectedDocumentType);
+            if (selectedDocument != null) {
+                cicCase.getSelectedDocument().setDocumentCategory(selectedDocument.getDocumentCategory());
+                cicCase.getSelectedDocument().setDocumentEmailContent(selectedDocument.getDocumentEmailContent());
+                cicCase.getSelectedDocument().setDocumentLink(selectedDocument.getDocumentLink());
+                cicCase.getSelectedDocument().setDate(selectedDocument.getDate());
+                cicCase.setSelectedDocumentType(selectedDocumentType);
+            }
         }
     }
-
 }
