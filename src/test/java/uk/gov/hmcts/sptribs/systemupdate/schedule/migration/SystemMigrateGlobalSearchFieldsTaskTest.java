@@ -35,6 +35,7 @@ import static uk.gov.hmcts.sptribs.systemupdate.event.SystemMigrateGlobalSearchF
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.SERVICE_AUTHORIZATION;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.SYSTEM_UPDATE_AUTH_TOKEN;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_SYSTEM_UPDATE_USER_EMAIL;
 
 @ExtendWith(MockitoExtension.class)
 public class SystemMigrateGlobalSearchFieldsTaskTest {
@@ -64,7 +65,8 @@ public class SystemMigrateGlobalSearchFieldsTaskTest {
 
     @BeforeEach
     void setUp() {
-        user = new User(SYSTEM_UPDATE_AUTH_TOKEN, UserDetails.builder().build());
+        user = new User(SYSTEM_UPDATE_AUTH_TOKEN,
+            UserDetails.builder().email(TEST_SYSTEM_UPDATE_USER_EMAIL).roles(List.of("caseworker")).build());
         when(idamService.retrieveSystemUpdateUserDetails()).thenReturn(user);
         when(authTokenGenerator.generate()).thenReturn(SERVICE_AUTHORIZATION);
         ReflectionTestUtils.setField(task, "globalSearchMigrationEnabled", true);
