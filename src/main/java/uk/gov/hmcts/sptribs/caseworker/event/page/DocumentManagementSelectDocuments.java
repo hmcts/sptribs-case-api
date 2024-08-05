@@ -13,6 +13,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
+import uk.gov.hmcts.sptribs.document.model.CaseworkerSelectedCICDocument;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -50,7 +51,7 @@ public class DocumentManagementSelectDocuments implements CcdPageConfiguration {
         var cicCase = data.getCicCase();
         DynamicList documentList = cicCase.getAmendDocumentList();
         List<ListValue<CaseworkerCICDocument>> allCaseDocuments = DocumentListUtil.getAllCaseDocuments(data);
-        CaseworkerCICDocument selectedDocument = null;
+        CaseworkerSelectedCICDocument selectedDocument = null;
         String selectedDocumentType = null;
 
         if (!ObjectUtils.isEmpty(documentList.getValue())) {
@@ -61,18 +62,18 @@ public class DocumentManagementSelectDocuments implements CcdPageConfiguration {
                 String documentTypeLabel = documentListValue.getValue().getDocumentCategory().getLabel();
                 String filename = documentListValue.getValue().getDocumentLink().getFilename();
                 if (ArrayUtils.isNotEmpty(labels) && labels[1].equals(filename) && labels[2].equals(documentTypeLabel)) {
-                    selectedDocument = documentListValue.getValue();
+                    selectedDocument = CaseworkerSelectedCICDocument.builder()
+                        .documentCategory(documentListValue.getValue().getDocumentCategory())
+                        .documentEmailContent(documentListValue.getValue().getDocumentEmailContent())
+                        .documentLink(documentListValue.getValue().getDocumentLink())
+                        .date(documentListValue.getValue().getDate())
+                        .build();
                     selectedDocumentType = labels[0];
                 }
             }
 
-            if (selectedDocument != null) {
-                cicCase.getSelectedDocument().setDocumentCategory(selectedDocument.getDocumentCategory());
-                cicCase.getSelectedDocument().setDocumentEmailContent(selectedDocument.getDocumentEmailContent());
-                cicCase.getSelectedDocument().setDocumentLink(selectedDocument.getDocumentLink());
-                cicCase.getSelectedDocument().setDate(selectedDocument.getDate());
-                cicCase.setSelectedDocumentType(selectedDocumentType);
-            }
+            cicCase.setSelectedDocumentToAmend(selectedDocument);
+            cicCase.setSelectedDocumentType(selectedDocumentType);
         }
     }
 }

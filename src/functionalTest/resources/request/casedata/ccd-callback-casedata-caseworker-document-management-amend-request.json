@@ -15,9 +15,9 @@
   },
   "cicCaseSelectedDocumentType": "CASE",
   "cicCaseIsDocumentCreatedFromTemplate": null,
-  "cicCaseSelectedDocumentDocumentCategory": "ApplicationForm",
-  "cicCaseSelectedDocumentDocumentEmailContent": "Lorem ipsum text A - Application Form",
-  "cicCaseSelectedDocumentDocumentLink": {
+  "cicCaseSelectedDocumentToAmendDocumentCategory": "ApplicationForm",
+  "cicCaseSelectedDocumentToAmendDocumentEmailContent": "Lorem ipsum text A - Application Form",
+  "cicCaseSelectedDocumentToAmendDocumentLink": {
     "document_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/467d1fd1-75bd-4760-b993-51be259daebe",
     "document_binary_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/467d1fd1-75bd-4760-b993-51be259daebe/binary",
     "document_filename": "mockFile.pdf"

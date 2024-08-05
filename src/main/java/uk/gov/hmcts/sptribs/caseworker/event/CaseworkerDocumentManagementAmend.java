@@ -20,7 +20,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
-import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
+import uk.gov.hmcts.sptribs.document.model.CaseworkerSelectedCICDocument;
 
 import static uk.gov.hmcts.sptribs.caseworker.util.CaseDocumentListUtil.updateCaseDocumentList;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_DOCUMENT_MANAGEMENT_AMEND;
@@ -124,7 +124,7 @@ public class CaseworkerDocumentManagementAmend implements CCDConfig<CaseData, St
         final CaseData data = details.getData();
         final CicCase cicCase = data.getCicCase();
 
-        CaseworkerCICDocument selectedDocument = cicCase.getSelectedDocument();
+        CaseworkerSelectedCICDocument selectedDocument = cicCase.getSelectedDocumentToAmend();
         String selectedDocumentType = cicCase.getSelectedDocumentType();
 
         switch (selectedDocumentType) {
@@ -146,7 +146,7 @@ public class CaseworkerDocumentManagementAmend implements CCDConfig<CaseData, St
             default:
                 break;
         }
-        cicCase.setSelectedDocument(null);
+        cicCase.setSelectedDocumentToAmend(null);
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(data)
             .build();

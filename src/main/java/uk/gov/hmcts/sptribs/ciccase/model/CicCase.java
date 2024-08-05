@@ -30,6 +30,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.access.DefaultAccess;
 import uk.gov.hmcts.sptribs.document.model.CICDocument;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocumentUpload;
+import uk.gov.hmcts.sptribs.document.model.CaseworkerSelectedCICDocument;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -151,14 +152,14 @@ public class CicCase {
     )
     private DynamicList amendDocumentList;
 
-    @JsonUnwrapped(prefix = "selectedDocument")
+    @JsonUnwrapped(prefix = "selectedDocumentToAmend")
     @Builder.Default
     @CCD(
         label = "Documents",
         typeParameterOverride = "CaseworkerCICDocument",
         access = {DefaultAccess.class}
     )
-    private CaseworkerCICDocument selectedDocument = new CaseworkerCICDocument();
+    private CaseworkerSelectedCICDocument selectedDocumentToAmend = new CaseworkerSelectedCICDocument();
 
     @CCD(
         label = "Notified Parties",
