@@ -18,6 +18,7 @@ public class DocumentManagementAmendDocuments implements CcdPageConfiguration {
             .label("LabelAmendCaseDocumentsMessage", "Amend the document details below")
             .complex(CaseData::getCicCase)
             .readonly(CicCase::getSelectedDocumentType, ALWAYS_HIDE)
+            .readonly(CicCase::getSelectedDocumentLink, ALWAYS_HIDE)
             .readonly(CicCase::getIsDocumentCreatedFromTemplate, ALWAYS_HIDE)
             .mandatory(CicCase::getSelectedDocumentCategory)
             .mandatory(CicCase::getSelectedDocumentEmailContent)
