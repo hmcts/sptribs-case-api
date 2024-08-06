@@ -60,7 +60,7 @@ wa:
   wa-task-management-api:
     java:
       environment:
-        ALLOWED_CASE_TYPES: wacasetype,st_cic
+        ALLOWED_CASE_TYPES: wacasetype,criminalinjuriescompensation
         ALLOWED_JURISDICTIONS: wa, st_cic
 
   wa-workflow-api:
