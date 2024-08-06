@@ -63,14 +63,7 @@ public class CaseworkerCreateBundle implements CCDConfig<CaseData, State, UserRo
                 .grant(CREATE_READ_UPDATE, SUPER_USER,
                     ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER, ST_CIC_HEARING_CENTRE_ADMIN,
                     ST_CIC_HEARING_CENTRE_TEAM_LEADER)
-                .grantHistoryOnly(
-                    ST_CIC_CASEWORKER,
-                    ST_CIC_SENIOR_CASEWORKER,
-                    ST_CIC_HEARING_CENTRE_ADMIN,
-                    ST_CIC_HEARING_CENTRE_TEAM_LEADER,
-                    ST_CIC_SENIOR_JUDGE,
-                    SUPER_USER,
-                    ST_CIC_JUDGE);
+                .grantHistoryOnly(ST_CIC_SENIOR_JUDGE, ST_CIC_JUDGE);
 
         if (isWorkAllocationEnabled) {
             eventBuilder.publishToCamunda()

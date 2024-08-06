@@ -108,9 +108,7 @@ public class CicSubmitCaseEvent implements CCDConfig<CaseData, State, UserRole> 
                     ST_CIC_HEARING_CENTRE_TEAM_LEADER,
                     ST_CIC_SENIOR_JUDGE,
                     SUPER_USER,
-                    ST_CIC_JUDGE,
-                    CITIZEN,
-                    CREATOR)
+                    ST_CIC_JUDGE)
                 .aboutToSubmitCallback(this::aboutToSubmit)
                 .submittedCallback(this::submitted);
 
