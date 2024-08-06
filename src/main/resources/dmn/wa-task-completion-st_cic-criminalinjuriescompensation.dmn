@@ -105,7 +105,7 @@
           <text>"processPostponementDirections"</text>
         </outputEntry>
         <outputEntry id="LiteralExpression_1miizqj">
-          <text>"defaultNone"</text>
+          <text>"Auto"</text>
         </outputEntry>
       </rule>
       <rule id="DecisionRule_0jr6r4h">
@@ -204,7 +204,7 @@
           <text>"issueCaseToRespondent"</text>
         </outputEntry>
         <outputEntry id="LiteralExpression_1qsg79g">
-          <text>"defaultNone"</text>
+          <text>"Auto"</text>
         </outputEntry>
       </rule>
       <rule id="DecisionRule_0e39jsv">
@@ -226,7 +226,7 @@
           <text>"reviewNewCaseAndProvideDirectionsLO"</text>
         </outputEntry>
         <outputEntry id="LiteralExpression_09hfb7l">
-          <text>"defaultNone"</text>
+          <text>"Auto"</text>
         </outputEntry>
       </rule>
       <rule id="DecisionRule_0bgbti6">
@@ -237,7 +237,7 @@
           <text>"reviewTimeExtensionRequestLO"</text>
         </outputEntry>
         <outputEntry id="LiteralExpression_1qwxeze">
-          <text>"defaultNone"</text>
+          <text>"Auto"</text>
         </outputEntry>
       </rule>
       <rule id="DecisionRule_0hqa39e">
@@ -248,7 +248,7 @@
           <text>"reviewStrikeOutRequestLO"</text>
         </outputEntry>
         <outputEntry id="LiteralExpression_1tm2s2h">
-          <text>"defaultNone"</text>
+          <text>"Auto"</text>
         </outputEntry>
       </rule>
       <rule id="DecisionRule_1xgkcsd">
@@ -259,7 +259,7 @@
           <text>"reviewStayRequestLO"</text>
         </outputEntry>
         <outputEntry id="LiteralExpression_18scphp">
-          <text>"defaultNone"</text>
+          <text>"Auto"</text>
         </outputEntry>
       </rule>
       <rule id="DecisionRule_05yenh6">
@@ -270,7 +270,7 @@
           <text>"reviewListingDirectionsLO"</text>
         </outputEntry>
         <outputEntry id="LiteralExpression_1ccpyxh">
-          <text>"defaultNone"</text>
+          <text>"Auto"</text>
         </outputEntry>
       </rule>
       <rule id="DecisionRule_1fc3kyh">
@@ -281,7 +281,7 @@
           <text>"reviewWithdrawalRequestLO"</text>
         </outputEntry>
         <outputEntry id="LiteralExpression_12gihrw">
-          <text>"defaultNone"</text>
+          <text>"Auto"</text>
         </outputEntry>
       </rule>
       <rule id="DecisionRule_1k6kwf1">
@@ -292,7 +292,7 @@
           <text>"reviewRule27RequestLO"</text>
         </outputEntry>
         <outputEntry id="LiteralExpression_1j7h6vd">
-          <text>"defaultNone"</text>
+          <text>"Auto"</text>
         </outputEntry>
       </rule>
       <rule id="DecisionRule_1qy1a8t">
@@ -303,7 +303,7 @@
           <text>"reviewListCaseLO"</text>
         </outputEntry>
         <outputEntry id="LiteralExpression_1wu9ywt">
-          <text>"defaultNone"</text>
+          <text>"Auto"</text>
         </outputEntry>
       </rule>
       <rule id="DecisionRule_18vtgln">
@@ -314,7 +314,7 @@
           <text>"reviewOtherRequestLO"</text>
         </outputEntry>
         <outputEntry id="LiteralExpression_0w80kal">
-          <text>"defaultNone"</text>
+          <text>"Auto"</text>
         </outputEntry>
       </rule>
       <rule id="DecisionRule_07ir3qi">
@@ -325,7 +325,7 @@
           <text>"reviewListCaseWithin5DaysLO"</text>
         </outputEntry>
         <outputEntry id="LiteralExpression_09oeh1s">
-          <text>"defaultNone"</text>
+          <text>"Auto"</text>
         </outputEntry>
       </rule>
       <rule id="DecisionRule_1a6c6ar">
@@ -336,7 +336,7 @@
           <text>"reviewPostponementRequestLO"</text>
         </outputEntry>
         <outputEntry id="LiteralExpression_1ts2t4s">
-          <text>"defaultNone"</text>
+          <text>"Auto"</text>
         </outputEntry>
       </rule>
       <rule id="DecisionRule_1wewn6c">
@@ -347,7 +347,7 @@
           <text>"reviewReinstatementRequestLO"</text>
         </outputEntry>
         <outputEntry id="LiteralExpression_0gr503e">
-          <text>"defaultNone"</text>
+          <text>"Auto"</text>
         </outputEntry>
       </rule>
       <rule id="DecisionRule_1ciyt3w">
@@ -358,7 +358,7 @@
           <text>"reviewListCaseWithin5DaysJudge"</text>
         </outputEntry>
         <outputEntry id="LiteralExpression_07df4si">
-          <text>"defaultNone"</text>
+          <text>"Auto"</text>
         </outputEntry>
       </rule>
       <rule id="DecisionRule_0475t9q">
@@ -369,7 +369,7 @@
           <text>"reviewPostponementRequestJudge"</text>
         </outputEntry>
         <outputEntry id="LiteralExpression_0fu3o96">
-          <text>"defaultNone"</text>
+          <text>"Auto"</text>
         </outputEntry>
       </rule>
       <rule id="DecisionRule_082k4tr">
@@ -380,7 +380,7 @@
           <text>"reviewCorrectionsRequest"</text>
         </outputEntry>
         <outputEntry id="LiteralExpression_1k39wae">
-          <text>"defaultNone"</text>
+          <text>"Auto"</text>
         </outputEntry>
       </rule>
       <rule id="DecisionRule_0rwip77">
@@ -391,7 +391,7 @@
           <text>"reviewWrittenReasonsRequest"</text>
         </outputEntry>
         <outputEntry id="LiteralExpression_18hlepe">
-          <text>"defaultNone"</text>
+          <text>"Auto"</text>
         </outputEntry>
       </rule>
       <rule id="DecisionRule_17dycow">
@@ -402,7 +402,7 @@
           <text>"reviewReinstatementRequestJudge"</text>
         </outputEntry>
         <outputEntry id="LiteralExpression_06012gb">
-          <text>"defaultNone"</text>
+          <text>"Auto"</text>
         </outputEntry>
       </rule>
       <rule id="DecisionRule_1blb98n">
@@ -413,7 +413,7 @@
           <text>"reviewSetAsideRequest"</text>
         </outputEntry>
         <outputEntry id="LiteralExpression_140k87x">
-          <text>"defaultNone"</text>
+          <text>"Auto"</text>
         </outputEntry>
       </rule>
       <rule id="DecisionRule_09owts0">
@@ -424,7 +424,7 @@
           <text>"reviewStayRequestJudge"</text>
         </outputEntry>
         <outputEntry id="LiteralExpression_1uylxjr">
-          <text>"defaultNone"</text>
+          <text>"Auto"</text>
         </outputEntry>
       </rule>
       <rule id="DecisionRule_15k3kyb">
@@ -435,7 +435,7 @@
           <text>"reviewNewCaseAndProvideDirectionsJudge"</text>
         </outputEntry>
         <outputEntry id="LiteralExpression_0e0c735">
-          <text>"defaultNone"</text>
+          <text>"Auto"</text>
         </outputEntry>
       </rule>
       <rule id="DecisionRule_07j14rh">
@@ -446,7 +446,7 @@
           <text>"reviewOtherRequestJudge"</text>
         </outputEntry>
         <outputEntry id="LiteralExpression_1hme6ln">
-          <text>"defaultNone"</text>
+          <text>"Auto"</text>
         </outputEntry>
       </rule>
       <rule id="DecisionRule_18wdvfy">
@@ -457,7 +457,7 @@
           <text>"reviewWithdrawalRequestJudge"</text>
         </outputEntry>
         <outputEntry id="LiteralExpression_1sxi2i4">
-          <text>"defaultNone"</text>
+          <text>"Auto"</text>
         </outputEntry>
       </rule>
       <rule id="DecisionRule_0lt4hhb">
@@ -468,7 +468,7 @@
           <text>"reviewRule27RequestJudge"</text>
         </outputEntry>
         <outputEntry id="LiteralExpression_18zc1w7">
-          <text>"defaultNone"</text>
+          <text>"Auto"</text>
         </outputEntry>
       </rule>
       <rule id="DecisionRule_1gyzsoq">
@@ -479,7 +479,7 @@
           <text>"reviewListingDirectionsJudge"</text>
         </outputEntry>
         <outputEntry id="LiteralExpression_1p2yiuz">
-          <text>"defaultNone"</text>
+          <text>"Auto"</text>
         </outputEntry>
       </rule>
       <rule id="DecisionRule_0jwt2zi">
@@ -490,7 +490,7 @@
           <text>"reviewListCaseJudge"</text>
         </outputEntry>
         <outputEntry id="LiteralExpression_00772uh">
-          <text>"defaultNone"</text>
+          <text>"Auto"</text>
         </outputEntry>
       </rule>
       <rule id="DecisionRule_1ao2ywx">
@@ -501,7 +501,7 @@
           <text>"reviewStrikeOutRequestJudge"</text>
         </outputEntry>
         <outputEntry id="LiteralExpression_1grgoo1">
-          <text>"defaultNone"</text>
+          <text>"Auto"</text>
         </outputEntry>
       </rule>
       <rule id="DecisionRule_1bavd66">
@@ -512,7 +512,7 @@
           <text>"reviewTimeExtensionRequestJudge"</text>
         </outputEntry>
         <outputEntry id="LiteralExpression_0nekn3w">
-          <text>"defaultNone"</text>
+          <text>"Auto"</text>
         </outputEntry>
       </rule>
       <rule id="DecisionRule_151s4ne">
@@ -523,7 +523,7 @@
           <text>"followUpNoncomplianceOfDirections"</text>
         </outputEntry>
         <outputEntry id="LiteralExpression_16wg8ds">
-          <text>"defaultNone"</text>
+          <text>"Auto"</text>
         </outputEntry>
       </rule>
       <rule id="DecisionRule_00tt6xd">
@@ -545,7 +545,7 @@
           <text>"processFurtherEvidence"</text>
         </outputEntry>
         <outputEntry id="LiteralExpression_0at6wii">
-          <text>"defaultNone"</text>
+          <text>"Auto"</text>
         </outputEntry>
       </rule>
       <rule id="DecisionRule_03sbg2k">
@@ -557,6 +557,17 @@
         </outputEntry>
         <outputEntry id="LiteralExpression_1ydpczi">
           <text>"Auto"</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_117z5bo">
+        <inputEntry id="UnaryTests_1krjzhf">
+          <text>"edit-case","caseworker-case-built","refer-to-judge","refer-to-legal-officer"</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_1ahaic3">
+          <text></text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_0ukordp">
+          <text></text>
         </outputEntry>
       </rule>
     </decisionTable>
