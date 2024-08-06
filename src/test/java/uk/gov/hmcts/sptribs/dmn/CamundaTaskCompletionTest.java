@@ -170,7 +170,8 @@ class CamundaTaskCompletionTest extends DmnDecisionTableBaseUnitTest {
                     Map.of(
                         "taskType", COMPLETE_HEARING_OUTCOME_TASK,
                         "completionMode", AUTO_COMPLETE_MODE
-                    )
+                    ),
+                    Collections.emptyMap()
                 )
             ),
             Arguments.of(
@@ -353,7 +354,8 @@ class CamundaTaskCompletionTest extends DmnDecisionTableBaseUnitTest {
                     Map.of(
                         "taskType", PROCESS_FURTHER_EVIDENCE_TASK,
                         "completionMode", AUTO_COMPLETE_MODE
-                    )
+                    ),
+                    Collections.emptyMap()
                 )
             ),
             Arguments.of(
@@ -381,10 +383,11 @@ class CamundaTaskCompletionTest extends DmnDecisionTableBaseUnitTest {
             Arguments.of(
                 "caseworker-document-management",
                 List.of(
-                    Map.of(
+                Map.of(
                         "taskType", FOLLOW_UP_NONCOMPLIANCE_OF_DIR_TASK,
                         "completionMode", AUTO_COMPLETE_MODE
-                    )
+                    ),
+                    Collections.emptyMap()
                 )
             ),
             Arguments.of(
