@@ -156,7 +156,7 @@ else 5000</text>
           <text>"dueDateNonWorkingCalendar"</text>
         </outputEntry>
         <outputEntry id="LiteralExpression_1atq5od">
-          <text>"https://www.gov.uk/bank-holidays/england-and-wales.json"</text>
+          <text>"https://www.gov.uk/bank-holidays/scotland.json"</text>
         </outputEntry>
         <outputEntry id="LiteralExpression_08asnrh">
           <text>true</text>
