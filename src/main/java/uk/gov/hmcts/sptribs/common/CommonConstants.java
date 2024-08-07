@@ -63,6 +63,9 @@ public final class CommonConstants {
     public static final String BUNDLE_DESCRIPTION_FIELD_LENGTH_ERROR_MSG = "Bundle Description should not contain "
         + "more than 255 Chars";
 
+    public static final String DEATH_OF_APPELLANT_EMAIL_CONTENT =
+        "Please refer to the Tribunal’s recent directions for further details";
+
     public static final String TRIBUNAL_NAME_VALUE = "First-tier Tribunal (CIC)";
     public static final String TRIBUNAL_EMAIL_VALUE = "CIC.enquiries@justice.gov.uk";
 

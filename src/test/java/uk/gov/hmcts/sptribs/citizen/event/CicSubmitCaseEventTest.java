@@ -11,9 +11,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.TestPropertySource;
 import uk.gov.hmcts.ccd.sdk.ConfigBuilderImpl;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.Event;
@@ -65,9 +62,6 @@ import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.caseData;
 import static uk.gov.hmcts.sptribs.testutil.TestFileUtil.loadJson;
 
 @ExtendWith({MockitoExtension.class})
-@SpringBootTest
-@TestPropertySource("classpath:application.yaml")
-@ActiveProfiles("test")
 class CicSubmitCaseEventTest {
     final ConfigBuilderImpl<CaseData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
 
@@ -241,6 +235,14 @@ class CicSubmitCaseEventTest {
         assertThat(response.getData().getCicCase().getApplicantDocumentsUploaded().get(2).getValue().getDocumentCategory())
             .isEqualTo(DocumentType.DSS_TRIBUNAL_FORM);
         assertThat(response.getData().getCicCase().getApplicantDocumentsUploaded().get(2).getValue().getDate()).isEqualTo(LocalDate.now());
+        assertThat(response.getData().getCaseFlags()).isNotNull();
+        assertThat(response.getData().getSubjectFlags()).isNotNull();
+        assertThat(response.getData().getSubjectFlags().getPartyName()).isEqualTo(TEST_FIRST_NAME);
+        assertThat(response.getData().getSubjectFlags().getRoleOnCase()).isEqualTo("subject");
+        assertThat(response.getData().getRepresentativeFlags()).isNotNull();
+        assertThat(response.getData().getRepresentativeFlags().getPartyName()).isEqualTo(TEST_SOLICITOR_NAME);
+        assertThat(response.getData().getRepresentativeFlags().getRoleOnCase()).isEqualTo("Representative");
+        assertThat(response.getData().getCaseNameHmctsInternal()).isEqualTo(TEST_FIRST_NAME);
     }
 
     @Test
