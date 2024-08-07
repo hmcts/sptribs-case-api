@@ -1,7 +1,5 @@
-
 package uk.gov.hmcts.sptribs.caseworker.event;
 
-import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -23,9 +21,6 @@ import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.common.notification.ContactPartiesNotification;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import static java.lang.String.format;
 import static org.apache.commons.collections4.CollectionUtils.isEmpty;
@@ -53,7 +48,6 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 
 @Component
 @Slf4j
-@Setter
 public class RespondentContactParties implements CCDConfig<CaseData, State, UserRole> {
 
     private static final CcdPageConfiguration resPartiesToContact = new RespondentPartiesToContact();
@@ -83,9 +77,8 @@ public class RespondentContactParties implements CCDConfig<CaseData, State, User
                     CaseStayed)
                 .name("Case: CICA Contact parties")
                 .showSummary()
-                .aboutToSubmitCallback(this::aboutToSubmit)
                 .aboutToStartCallback(this::aboutToStart)
-                .submittedCallback(this::partiesContacted)
+                .submittedCallback(this::submitted)
                 .grant(CREATE_READ_UPDATE, SUPER_USER, ST_CIC_RESPONDENT)
                 .grantHistoryOnly(
                     ST_CIC_CASEWORKER,
@@ -111,19 +104,8 @@ public class RespondentContactParties implements CCDConfig<CaseData, State, User
             .build();
     }
 
-    public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(CaseDetails<CaseData, State> details,
-                                                                       CaseDetails<CaseData, State> detailsBefore) {
-        final CaseData data = details.getData();
-        final List<String> errors = new ArrayList<>();
-
-        return AboutToStartOrSubmitResponse.<CaseData, State>builder()
-            .data(data)
-            .errors(errors)
-            .build();
-    }
-
-    public SubmittedCallbackResponse partiesContacted(CaseDetails<CaseData, State> details,
-                                                      CaseDetails<CaseData, State> beforeDetails) {
+    public SubmittedCallbackResponse submitted(CaseDetails<CaseData, State> details,
+                                               CaseDetails<CaseData, State> beforeDetails) {
         final CaseData data = details.getData();
         final String caseNumber = data.getHyphenatedCaseRef();
 
@@ -162,6 +144,5 @@ public class RespondentContactParties implements CCDConfig<CaseData, State, User
             }
         }
     }
-
 }
 
