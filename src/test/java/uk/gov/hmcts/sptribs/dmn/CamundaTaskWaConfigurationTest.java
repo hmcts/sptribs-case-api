@@ -461,7 +461,7 @@ class CamundaTaskWaConfigurationTest extends DmnDecisionTableBaseUnitTest {
                     .expectedValue(
                         DESCRIPTION,
                         "[Case: Issue to respondent](/cases/case-details/${[CASE_REFERENCE]}/trigger"
-                            + "/caseworker-issue-case",
+                            + "/caseworker-issue-case)",
                         true
                     )
                     .build()
