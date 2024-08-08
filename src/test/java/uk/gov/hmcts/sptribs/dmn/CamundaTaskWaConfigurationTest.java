@@ -1071,7 +1071,7 @@ class CamundaTaskWaConfigurationTest extends DmnDecisionTableBaseUnitTest {
                     .expectedValue(DUE_DATE_INTERVAL_DAYS, "5", true)
                     .expectedValue(
                         DESCRIPTION,
-                        "New Case Received",
+                        "[Case: Edit Case](/cases/case-details/${[CASE_REFERENCE]}/trigger/edit-case)",
                         true
                     )
                     .build()
