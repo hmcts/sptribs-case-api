@@ -127,7 +127,7 @@ public final class DocumentListUtil {
         List<CaseworkerCICDocument> docList = prepareList(data);
 
 
-        String apiUrl = baseUrl + "documents/%s/binary";
+        String apiUrl = baseUrl + "/documents/%s/binary";
         List<DynamicListElement> dynamicListElements = new ArrayList<>();
         for (CaseworkerCICDocument doc : docList) {
             String fileName = doc.getDocumentLink().getFilename();
