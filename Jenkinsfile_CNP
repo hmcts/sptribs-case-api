@@ -70,11 +70,15 @@ pipelineConf.vaultSecrets = secrets
 
 env.PACT_BROKER_FULL_URL = 'https://pact-broker.platform.hmcts.net'
 
+// DISABLE_SYNC_WITH_MASTER to be set to false if 'demo', 'perftest', 'ithc' are to be synced with master
+env.DISABLE_SYNC_WITH_MASTER = true
+def branchesToSync = env.DISABLE_SYNC_WITH_MASTER ? [] : ['demo', 'perftest', 'ithc']
+
 withPipeline(type, product, component) {
     enableAksStagingDeployment()
     disableLegacyDeployment()
     loadVaultSecrets(secrets)
-    syncBranchesWithMaster(['demo', 'perftest', 'ithc'])
+    syncBranchesWithMaster(branchesToSync)
     afterSuccess('checkout') {
       def subscription = 'nonprod'
       if (env.ENVIRONMENT == 'ithc' || env.ENVIRONMENT == 'demo' || env.ENVIRONMENT == 'perftest') {
