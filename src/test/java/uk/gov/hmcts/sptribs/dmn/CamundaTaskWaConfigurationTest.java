@@ -130,8 +130,7 @@ class CamundaTaskWaConfigurationTest extends DmnDecisionTableBaseUnitTest {
                     .expectedValue(ROLE_CATEGORY, ROLE_CATEGORY_ADMIN, true)
                     .expectedValue(DUE_DATE_INTERVAL_DAYS, "10", true)
                     .expectedValue(DESCRIPTION, "[Orders: Send order](/cases/case-details"
-                        + "/${[CASE_REFERENCE]}/trigger/caseworker-send-order/"
-                        + "caseworker-send-ordercaseworkerSendOrderSelectOrderIssuingType)", true)
+                        + "/${[CASE_REFERENCE]}/trigger/caseworker-send-order)", true)
                     .expectedValue(DUE_DATE_ORIGIN, ZonedDateTime.now(), false)
                     .build()
             ),
@@ -152,8 +151,7 @@ class CamundaTaskWaConfigurationTest extends DmnDecisionTableBaseUnitTest {
                     .expectedValue(
                         DESCRIPTION,
                         "[Orders: Send order](/cases/case-details/${[CASE_REFERENCE]}/trigger"
-                            + "/caseworker-send-order/"
-                            + "caseworker-send-ordercaseworkerSendOrderSelectOrderIssuingType)",
+                            + "/caseworker-send-order)",
                         true
                     )
                     .build()
@@ -170,8 +168,7 @@ class CamundaTaskWaConfigurationTest extends DmnDecisionTableBaseUnitTest {
                     .expectedValue(
                         DESCRIPTION,
                         "[Orders: Send order](/cases/case-details/${[CASE_REFERENCE]}/trigger"
-                            + "/caseworker-send-order/"
-                            + "caseworker-send-ordercaseworkerSendOrderSelectOrderIssuingType)",
+                            + "/caseworker-send-order)",
                         true
                     )
                     .build()
@@ -188,8 +185,7 @@ class CamundaTaskWaConfigurationTest extends DmnDecisionTableBaseUnitTest {
                     .expectedValue(
                         DESCRIPTION,
                         "[Orders: Send order](/cases/case-details/${[CASE_REFERENCE]}/trigger"
-                            + "/caseworker-send-order/"
-                            + "caseworker-send-ordercaseworkerSendOrderSelectOrderIssuingType)",
+                            + "/caseworker-send-order)",
                         true
                     )
                     .build()
@@ -206,8 +202,7 @@ class CamundaTaskWaConfigurationTest extends DmnDecisionTableBaseUnitTest {
                     .expectedValue(
                         DESCRIPTION,
                         "[Orders: Send order](/cases/case-details/${[CASE_REFERENCE]}/trigger"
-                            + "/caseworker-send-order/"
-                            + "caseworker-send-ordercaseworkerSendOrderSelectOrderIssuingType)",
+                            + "/caseworker-send-order)",
                         true
                     )
                     .build()
@@ -229,8 +224,7 @@ class CamundaTaskWaConfigurationTest extends DmnDecisionTableBaseUnitTest {
                     .expectedValue(
                         DESCRIPTION,
                         "[Orders: Send order](/cases/case-details/${[CASE_REFERENCE]}/trigger"
-                            + "/caseworker-send-order/"
-                            + "caseworker-send-ordercaseworkerSendOrderSelectOrderIssuingType)",
+                            + "/caseworker-send-order)",
                         true
                     )
                     .build()
@@ -249,8 +243,7 @@ class CamundaTaskWaConfigurationTest extends DmnDecisionTableBaseUnitTest {
                     .expectedValue(
                         DESCRIPTION,
                         "[Orders: Send order](/cases/case-details/${[CASE_REFERENCE]}/trigger"
-                            + "/caseworker-send-order/"
-                            + "caseworker-send-ordercaseworkerSendOrderSelectOrderIssuingType)",
+                            + "/caseworker-send-order)",
                         true
                     )
                     .build()
@@ -267,8 +260,7 @@ class CamundaTaskWaConfigurationTest extends DmnDecisionTableBaseUnitTest {
                     .expectedValue(
                         DESCRIPTION,
                         "[Orders: Send order](/cases/case-details/${[CASE_REFERENCE]}/trigger"
-                            + "/caseworker-send-order/"
-                            + "caseworker-send-ordercaseworkerSendOrderSelectOrderIssuingType)",
+                            + "/caseworker-send-order)",
                         true
                     )
                     .build()
@@ -285,8 +277,7 @@ class CamundaTaskWaConfigurationTest extends DmnDecisionTableBaseUnitTest {
                     .expectedValue(
                         DESCRIPTION,
                         "[Orders: Send order](/cases/case-details/${[CASE_REFERENCE]}/trigger"
-                            + "/caseworker-send-order/"
-                            + "caseworker-send-ordercaseworkerSendOrderSelectOrderIssuingType)",
+                            + "/caseworker-send-order)",
                         true
                     )
                     .build()
@@ -303,8 +294,7 @@ class CamundaTaskWaConfigurationTest extends DmnDecisionTableBaseUnitTest {
                     .expectedValue(
                         DESCRIPTION,
                         "[Orders: Send order](/cases/case-details/${[CASE_REFERENCE]}/trigger"
-                            + "/caseworker-send-order/"
-                            + "caseworker-send-ordercaseworkerSendOrderSelectOrderIssuingType)",
+                            + "/caseworker-send-order)",
                         true
                     )
                     .build()
@@ -326,8 +316,7 @@ class CamundaTaskWaConfigurationTest extends DmnDecisionTableBaseUnitTest {
                     .expectedValue(
                         DESCRIPTION,
                         "[Orders: Send order](/cases/case-details/${[CASE_REFERENCE]}/trigger"
-                            + "/caseworker-send-order/"
-                            + "caseworker-send-ordercaseworkerSendOrderSelectOrderIssuingType)",
+                            + "/caseworker-send-order)",
                         true
                     )
                     .build()
@@ -344,8 +333,7 @@ class CamundaTaskWaConfigurationTest extends DmnDecisionTableBaseUnitTest {
                     .expectedValue(
                         DESCRIPTION,
                         "[Orders: Send order](/cases/case-details/${[CASE_REFERENCE]}/trigger"
-                            + "/caseworker-send-order/"
-                            + "caseworker-send-ordercaseworkerSendOrderSelectOrderIssuingType)",
+                            + "/caseworker-send-order)",
                         true
                     )
                     .build()
@@ -364,8 +352,7 @@ class CamundaTaskWaConfigurationTest extends DmnDecisionTableBaseUnitTest {
                     .expectedValue(
                         DESCRIPTION,
                         "[Orders: Send order](/cases/case-details/${[CASE_REFERENCE]}/trigger"
-                            + "/caseworker-send-order/"
-                            + "caseworker-send-ordercaseworkerSendOrderSelectOrderIssuingType)",
+                            + "/caseworker-send-order)",
                         true
                     )
                     .build()
@@ -382,8 +369,7 @@ class CamundaTaskWaConfigurationTest extends DmnDecisionTableBaseUnitTest {
                     .expectedValue(
                         DESCRIPTION,
                         "[Orders: Send order](/cases/case-details/${[CASE_REFERENCE]}/trigger"
-                            + "/caseworker-send-order/"
-                            + "caseworker-send-ordercaseworkerSendOrderSelectOrderIssuingType)",
+                            + "/caseworker-send-order)",
                         true
                     )
                     .build()
@@ -400,8 +386,7 @@ class CamundaTaskWaConfigurationTest extends DmnDecisionTableBaseUnitTest {
                     .expectedValue(
                         DESCRIPTION,
                         "[Orders: Send order](/cases/case-details/${[CASE_REFERENCE]}/trigger"
-                            + "/caseworker-send-order/"
-                            + "caseworker-send-ordercaseworkerSendOrderSelectOrderIssuingType)",
+                            + "/caseworker-send-order)",
                         true
                     )
                     .build()
@@ -1088,8 +1073,7 @@ class CamundaTaskWaConfigurationTest extends DmnDecisionTableBaseUnitTest {
                     .expectedValue(
                         DESCRIPTION,
                         "[Orders: Send order](/cases/case-details/${[CASE_REFERENCE]}/trigger"
-                            + "/caseworker-send-order/"
-                            + "caseworker-send-ordercaseworkerSendOrderSelectOrderIssuingType)",
+                            + "/caseworker-send-order)",
                         true
                     )
                     .build()
