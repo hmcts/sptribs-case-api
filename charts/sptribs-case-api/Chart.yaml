@@ -3,7 +3,7 @@ appVersion: "1.0"
 description: A Helm chart for sptribs-case-api App
 name: sptribs-case-api
 home: https://github.com/hmcts/sptribs-case-api
-version: 0.0.96
+version: 0.0.97
 maintainers:
   - name: HMCTS sptribs team
 dependencies:
@@ -43,7 +43,24 @@ dependencies:
     version: 1.0.55
     repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
     condition: em-stitching.enabled
+#    Work Allocation
+  - name: wa
+    version: ~1.0.5
+    repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
+    condition: wa.enabled
+  - name: ccd-message-publisher
+    version: ~0.1.7
+    repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
+    condition: wa.enabled
+  - name: servicebus
+    version: ~1.0.6
+    repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
+    condition: servicebus.enabled
   - name: postgresql
-    version: 1.0.2
+    version: ~1.0.2
     repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
     condition: postgresql.enabled
+  - name: am-org-role-mapping-service
+    version: ~0.0.66
+    repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
+    condition: am-org-role-mapping-service.enabled

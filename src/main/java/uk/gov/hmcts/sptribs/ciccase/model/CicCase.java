@@ -29,6 +29,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.access.DefaultAccess;
 import uk.gov.hmcts.sptribs.document.model.CICDocument;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocumentUpload;
+import uk.gov.hmcts.sptribs.document.model.DocumentType;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -50,6 +51,10 @@ import static uk.gov.hmcts.ccd.sdk.type.FieldType.TextArea;
 @Builder(toBuilder = true)
 @JsonNaming(PropertyNamingStrategies.UpperCamelCaseStrategy.class)
 public class CicCase {
+    @CCD(
+        access = {DefaultAccess.class}
+    )
+    private String referralTypeForWA;
 
     @CCD(
         label = "Preview order",
@@ -147,11 +152,25 @@ public class CicCase {
     private DynamicList amendDocumentList;
 
     @CCD(
-        label = "Documents",
-        typeParameterOverride = "CaseworkerCICDocument",
-        access = {DefaultAccess.class}
+        label = "Document Category",
+        typeOverride = FixedList,
+        typeParameterOverride = "DocumentType",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
-    private CaseworkerCICDocument selectedDocument;
+    private DocumentType selectedDocumentCategory;
+
+    @CCD(
+        label = "Description",
+        typeOverride = TextArea,
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private String selectedDocumentEmailContent;
+
+    @CCD(
+        label = "File",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private Document selectedDocumentLink;
 
     @CCD(
         label = "Notified Parties",
