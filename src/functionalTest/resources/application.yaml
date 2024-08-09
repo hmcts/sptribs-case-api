@@ -116,3 +116,7 @@ caseinfo:
       caseTypeOfApplication:
         - CIC
 
+wa_task_monitor_api:
+  url: http://wa-task-monitor-aat.service.core-compute-aat.internal
+wa_task_management_api:
+  url: http://wa-task-management-api-aat.service.core-compute-aat.internal
