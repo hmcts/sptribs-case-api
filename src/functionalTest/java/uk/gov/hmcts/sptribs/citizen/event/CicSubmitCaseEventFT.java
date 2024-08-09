@@ -47,7 +47,6 @@ public class CicSubmitCaseEventFT extends FunctionalTestSuite {
             .isEqualTo(json(expectedResponse(RESPONSE)));
     }
 
-    @Disabled ("Skipped to unblock WA - New case needs to be created before updating supplementary data")
     @Test
     public void shouldReceiveNotificationWhenSubmittedCallbackIsInvoked() throws Exception {
         final Map<String, Object> caseData = caseData(REQUEST_SUBMITTED);
@@ -59,7 +58,6 @@ public class CicSubmitCaseEventFT extends FunctionalTestSuite {
             .isEqualTo("# Application Received \\n## A notification has been sent to: Subject, Representative");
     }
 
-    @Disabled ("Skipped to unblock WA - New case needs to be created before updating supplementary data")
     @Test
     public void shouldReceiveWelshNotificationWhenSubmittedCallbackIsInvoked() throws Exception {
         final Map<String, Object> caseData = caseData(REQUEST_SUBMITTED);
@@ -72,7 +70,7 @@ public class CicSubmitCaseEventFT extends FunctionalTestSuite {
             .isEqualTo("# Application Received \\n## A notification has been sent to: Subject, Representative");
     }
 
-    @Disabled ("Skipped to unblock WA - New case needs to be created before updating supplementary data")
+    @Disabled("Skipped to unblock WA - New case needs to be created before updating supplementary data")
     @Test
     public void shouldNotSendApplicationReceivedNotificationWhenNotifyPartiesNotFound() throws Exception {
         final Map<String, Object> caseData = caseData(REQUEST_MISSING_PARTIES);
@@ -84,7 +82,6 @@ public class CicSubmitCaseEventFT extends FunctionalTestSuite {
             .isEqualTo("# Application Received %n##");
     }
 
-    @Disabled ("Skipped to unblock WA - New case needs to be created before updating supplementary data")
     @Test
     public void shouldRaiseErrorWhenNotificationExceptionFound() throws Exception {
         final Map<String, Object> caseData = caseData(REQUEST_MISSING_CASE_NUMBER);

@@ -8,6 +8,7 @@ import uk.gov.hmcts.befta.dse.ccd.CcdRoleConfig;
 import uk.gov.hmcts.befta.dse.ccd.DataLoaderToDefinitionStore;
 import uk.gov.hmcts.befta.exception.ImportException;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
@@ -33,7 +34,8 @@ public class HighLevelDataSetupApp extends DataLoaderToDefinitionStore {
         new CcdRoleConfig("caseflags-admin", "PUBLIC"),
         new CcdRoleConfig("caseflags-viewer", "PUBLIC"),
         new CcdRoleConfig("citizen", "PUBLIC"),
-        new CcdRoleConfig("caseworker-st-cic", "PUBLIC")
+        new CcdRoleConfig("caseworker-st-cic", "PUBLIC"),
+        new CcdRoleConfig("GS_profile", "PUBLIC")
     };
 
     private final CcdEnvironment environment;
@@ -78,8 +80,13 @@ public class HighLevelDataSetupApp extends DataLoaderToDefinitionStore {
     @Override
     protected List<String> getAllDefinitionFilesToLoadAt(String definitionsPath) {
         String environmentName = environment.name().toLowerCase(Locale.UK);
-        return List.of(
-            "build/ccd-config/ccd-" + CcdServiceCode.ST_CIC.getCaseType().getCaseTypeName() + "-" + environmentName + ".xlsx"
-        );
+
+        if (!environmentName.equalsIgnoreCase(CcdEnvironment.DEMO.name())) {
+            return List.of(
+                "build/ccd-config/ccd-" + CcdServiceCode.ST_CIC.getCaseType().getCaseTypeName() + "-" + environmentName + ".xlsx"
+            );
+        }
+
+        return new ArrayList<>();
     }
 }

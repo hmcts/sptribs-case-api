@@ -29,7 +29,6 @@ import uk.gov.hmcts.sptribs.ciccase.model.SubjectCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.CcdCaseType;
 import uk.gov.hmcts.sptribs.common.config.AppsConfig;
-import uk.gov.hmcts.sptribs.common.service.CcdSupplementaryDataService;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
 import uk.gov.hmcts.sptribs.document.model.EdgeCaseDocument;
@@ -70,17 +69,14 @@ public class CicSubmitCaseEvent implements CCDConfig<CaseData, State, UserRole> 
     private IdamService idamService;
     private AppsConfig appsConfig;
     private DssApplicationReceivedNotification dssApplicationReceivedNotification;
-    private CcdSupplementaryDataService ccdSupplementaryDataService;
 
     @Autowired
     public CicSubmitCaseEvent(HttpServletRequest request, IdamService idamService, AppsConfig appsConfig,
-                              DssApplicationReceivedNotification dssApplicationReceivedNotification,
-                              CcdSupplementaryDataService ccdSupplementaryDataService) {
+                              DssApplicationReceivedNotification dssApplicationReceivedNotification) {
         this.request = request;
         this.idamService = idamService;
         this.appsConfig = appsConfig;
         this.dssApplicationReceivedNotification = dssApplicationReceivedNotification;
-        this.ccdSupplementaryDataService = ccdSupplementaryDataService;
     }
 
     @Override
@@ -128,7 +124,6 @@ public class CicSubmitCaseEvent implements CCDConfig<CaseData, State, UserRole> 
         generateNotifyParties(dssCaseData);
 
         final String caseNumber = data.getHyphenatedCaseRef();
-        ccdSupplementaryDataService.submitSupplementaryDataRequestToCcd(details.getId().toString());
 
         try {
             sendApplicationReceivedNotification(caseNumber, dssCaseData);

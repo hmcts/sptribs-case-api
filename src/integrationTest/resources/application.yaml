@@ -107,6 +107,9 @@ feature:
     enabled: ${SECURITY_CLASSIFICATION:false}
   access-profiles:
     enabled: ${ACCESS_PROFILES_ENABLED:true}
+  migrate-global-search-task:
+    enabled: ${GLOBAL_SEARCH_MIGRATION_ENABLED:false}
+    caseReference: ${GLOBAL_SEARCH_MIGRATION_TEST_CASE_REF:}
 
 caseinfo:
   apps:
