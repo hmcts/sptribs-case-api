@@ -120,6 +120,13 @@ public enum State {
     DSS_Draft("DSS-Draft"),
 
     @CCD(
+        label = "DSS-Expired",
+        hint = "### ${cicCaseFullName}\nCase number: ${hyphenatedCaseRef}",
+        access = {DefaultStateAccessExcludingCAA.class}
+    )
+    DSS_Expired("DSS-Expired"),
+
+    @CCD(
         label = "DSS-Submitted",
         hint = "### ${cicCaseFullName}\nCase number: ${hyphenatedCaseRef}",
         access = {DefaultStateAccessExcludingCAA.class}

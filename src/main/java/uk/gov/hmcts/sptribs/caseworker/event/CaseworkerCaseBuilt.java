@@ -34,7 +34,7 @@ public class CaseworkerCaseBuilt implements CCDConfig<CaseData, State, UserRole>
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         new PageBuilder(configBuilder
             .event(CASEWORKER_CASE_BUILT)
-            .forStates(Submitted)
+            .forStates(Submitted, CaseManagement)
             .name("Case: Build case")
             .aboutToSubmitCallback(this::aboutToSubmit)
             .submittedCallback(this::submitted)
