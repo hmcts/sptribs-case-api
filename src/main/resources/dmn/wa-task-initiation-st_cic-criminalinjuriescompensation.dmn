@@ -1566,7 +1566,7 @@
       </rule>
       <rule id="DecisionRule_1981u5t">
         <inputEntry id="UnaryTests_1o9zfup">
-          <text>"citizen-cic-update-dss-application","caseworker-document-management"</text>
+          <text>"citizen-cic-dss-update-case","caseworker-document-management"</text>
         </inputEntry>
         <inputEntry id="UnaryTests_1cb1pqu">
           <text>"CaseManagement"</text>
