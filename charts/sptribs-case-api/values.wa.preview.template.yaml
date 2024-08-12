@@ -187,4 +187,4 @@ ccd:
   ccd-data-store-api:
     java:
       environment:
-        DATA_STORE_S2S_AUTHORISED_SERVICES: ccd_gw,ccd_gateway,ccd_data,aac_manage_case_assignment,xui_webapp,ccd_case_document_am_api,sptribs_frontend,sptribs_case_api,em_ccd_orchestrator,wa_task_management_api,wa_task_monitor,wa_case_event_handler,wa_workflow_api
+        DATA_STORE_S2S_AUTHORISED_SERVICES: ccd_gw,ccd_gateway,ccd_data,aac_manage_case_assignment,xui_webapp,ccd_case_document_am_api,sptribs_frontend,sptribs_case_api,sptribs_dss_update_case_web,em_ccd_orchestrator,wa_task_management_api,wa_task_monitor,wa_case_event_handler,wa_workflow_api

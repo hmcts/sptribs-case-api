@@ -649,7 +649,7 @@ else 5000</text>
           <text>"description"</text>
         </outputEntry>
         <outputEntry id="LiteralExpression_1tfrrr2">
-          <text>"New Case Received"</text>
+          <text>"[Case: Edit Case](/cases/case-details/${[CASE_REFERENCE]}/trigger/edit-case)"</text>
         </outputEntry>
         <outputEntry id="LiteralExpression_1nneo2x">
           <text>true</text>
