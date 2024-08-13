@@ -80,6 +80,7 @@ withPipeline(type, product, component) {
       def subscription = 'nonprod'
       if (env.ENVIRONMENT == 'ithc' || env.ENVIRONMENT == 'demo' || env.ENVIRONMENT == 'perftest') {
         withSubscription(subscription) {
+            addPermissionsForWAScripts()
             uploadDmnDiagrams()
             uploadBpmnDiagram()
         }
@@ -281,7 +282,7 @@ withPipeline(type, product, component) {
       for (label in githubApi.getLabelsbyPattern(env.BRANCH_NAME, "pr-values:wa") ) {
         env.CAMUNDA_BASE_URL = "https://camunda-sptribs-case-api-pr-${CHANGE_ID}.preview.platform.hmcts.net"
         println """After akschartsinstall upload DNM and BPMN diagrams""".stripIndent()
-        sh 'chmod -R +x ./bin'
+        addPermissionsForWAScripts()
         uploadDmnDiagrams()
         uploadBpmnDiagram()
       }
@@ -325,6 +326,7 @@ withPipeline(type, product, component) {
 
 // TODO Enable on aat once Demo testing complete
 //  before('functionalTest:aat') {
+//    addPermissionsForWAScripts()
 //    uploadDmnDiagrams()
 //    uploadBpmnDiagram()
 //  }
@@ -372,4 +374,13 @@ def uploadBpmnDiagram() {
       ./wa/import-wa-bpmn-diagram.sh .
     """
   }
+}
+
+def addPermissionsForWAScripts() {
+    dir("${WORKSPACE}/bin") {
+    sh """
+        chmod -R +x ./utils/idam-lease-service-token.sh
+        chmod -R +x ./wa
+    """
+    }
 }
