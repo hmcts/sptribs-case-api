@@ -460,10 +460,8 @@ class CamundaTaskWaConfigurationTest extends DmnDecisionTableBaseUnitTest {
                     .expectedValue(DUE_DATE_INTERVAL_DAYS, "2", true)
                     .expectedValue(
                         DESCRIPTION,
-                        "[Refer case to judge](/cases/case-details/${[CASE_REFERENCE]}/trigger"
-                            + "/refer-to-judge/refer-to-judgereferToJudgeReason)<br/>"
-                            + "[Refer case to legal officer](/cases/case-details/${[CASE_REFERENCE]}"
-                            + "/trigger/refer-to-legal-officer/refer-to-legal-officerreferToLegalOfficer)",
+                        "[Case: Issue to respondent](/cases/case-details/${[CASE_REFERENCE]}/trigger"
+                            + "/caseworker-issue-case)",
                         true
                     )
                     .build()
@@ -479,10 +477,8 @@ class CamundaTaskWaConfigurationTest extends DmnDecisionTableBaseUnitTest {
                     .expectedValue(DUE_DATE_INTERVAL_DAYS, "5", true)
                     .expectedValue(
                         DESCRIPTION,
-                        "[Edit case details](/cases/case-details/${[CASE_REFERENCE]}/trigger"
-                            + "/edit-case/edit-casecaseCategorisationDetails)<br/>"
-                            + "[Case: Build case](/cases/case-details/${[CASE_REFERENCE]}/trigger"
-                            + "/caseworker-case-built/caseworker-case-builtcaseBuilt)",
+                        "[Case: Build case](/cases/case-details/${[CASE_REFERENCE]}/trigger"
+                            + "/caseworker-case-built)",
                         true
                     )
                     .build()
@@ -1071,7 +1067,7 @@ class CamundaTaskWaConfigurationTest extends DmnDecisionTableBaseUnitTest {
                     .expectedValue(DUE_DATE_INTERVAL_DAYS, "5", true)
                     .expectedValue(
                         DESCRIPTION,
-                        "New Case Received",
+                        "[Case: Edit Case](/cases/case-details/${[CASE_REFERENCE]}/trigger/edit-case)",
                         true
                     )
                     .build()

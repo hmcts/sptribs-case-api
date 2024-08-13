@@ -4,7 +4,6 @@ import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
-import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 
 public class DocumentManagementAmendDocuments implements CcdPageConfiguration {
 
@@ -19,11 +18,10 @@ public class DocumentManagementAmendDocuments implements CcdPageConfiguration {
             .label("LabelAmendCaseDocumentsMessage", "Amend the document details below")
             .complex(CaseData::getCicCase)
             .readonly(CicCase::getSelectedDocumentType, ALWAYS_HIDE)
+            .readonly(CicCase::getSelectedDocumentLink, ALWAYS_HIDE)
             .readonly(CicCase::getIsDocumentCreatedFromTemplate, ALWAYS_HIDE)
-            .complex(CicCase::getSelectedDocument)
-            .mandatory(CaseworkerCICDocument::getDocumentCategory)
-            .mandatory(CaseworkerCICDocument::getDocumentEmailContent)
+            .mandatory(CicCase::getSelectedDocumentCategory)
+            .mandatory(CicCase::getSelectedDocumentEmailContent)
             .done();
     }
-
 }
