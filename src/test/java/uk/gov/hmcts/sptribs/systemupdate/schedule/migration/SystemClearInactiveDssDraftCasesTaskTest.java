@@ -55,6 +55,9 @@ public class SystemClearInactiveDssDraftCasesTaskTest {
     private CcdUpdateService ccdUpdateService;
 
     private User user;
+    private CaseDetails caseDetails1;
+    private CaseDetails caseDetails2;
+    private List<CaseDetails> caseDetailsList;
 
     private static final BoolQueryBuilder query = boolQuery()
         .must(matchQuery("state", "DSS_Draft"))
@@ -63,16 +66,16 @@ public class SystemClearInactiveDssDraftCasesTaskTest {
     @BeforeEach
     void setUp() {
         user = new User(SYSTEM_UPDATE_AUTH_TOKEN, UserDetails.builder().build());
+        caseDetails1 = mock(CaseDetails.class);
+        caseDetails2 = mock(CaseDetails.class);
+        caseDetailsList = List.of(caseDetails1, caseDetails2);
+
         when(idamService.retrieveSystemUpdateUserDetails()).thenReturn(user);
         when(authTokenGenerator.generate()).thenReturn(SERVICE_AUTHORIZATION);
     }
 
     @Test
     void shouldTriggerSystemTriggerCompleteHearingOutcome() {
-        final CaseDetails caseDetails1 = mock(CaseDetails.class);
-        final CaseDetails caseDetails2 = mock(CaseDetails.class);
-        final List<CaseDetails> caseDetailsList = List.of(caseDetails1, caseDetails2);
-
         when(caseDetails1.getId()).thenReturn(TEST_CASE_ID);
         when(caseDetails2.getId()).thenReturn(2L);
         when(ccdSearchService.searchForAllCasesWithQuery(query, user, SERVICE_AUTHORIZATION))
@@ -86,10 +89,6 @@ public class SystemClearInactiveDssDraftCasesTaskTest {
 
     @Test
     void shouldHandleCcdManagementExceptionWhenTriggerSystemTriggerCompleteHearingOutcomeFails() {
-        final CaseDetails caseDetails1 = mock(CaseDetails.class);
-        final CaseDetails caseDetails2 = mock(CaseDetails.class);
-        final List<CaseDetails> caseDetailsList = List.of(caseDetails1, caseDetails2);
-
         when(caseDetails1.getId()).thenReturn(TEST_CASE_ID);
         when(caseDetails2.getId()).thenReturn(2L);
         when(ccdSearchService.searchForAllCasesWithQuery(query, user, SERVICE_AUTHORIZATION))
@@ -105,10 +104,6 @@ public class SystemClearInactiveDssDraftCasesTaskTest {
 
     @Test
     void shouldHandleIllegalArgumentExceptionWhenTriggerSystemTriggerCompleteHearingOutcomeFails() {
-        final CaseDetails caseDetails1 = mock(CaseDetails.class);
-        final CaseDetails caseDetails2 = mock(CaseDetails.class);
-        final List<CaseDetails> caseDetailsList = List.of(caseDetails1, caseDetails2);
-
         when(caseDetails1.getId()).thenReturn(TEST_CASE_ID);
         when(caseDetails2.getId()).thenReturn(2L);
         when(ccdSearchService.searchForAllCasesWithQuery(query, user, SERVICE_AUTHORIZATION))
