@@ -18,6 +18,7 @@ import uk.gov.hmcts.sptribs.caseworker.model.PostponeReason;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerWithCAAAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.DefaultAccess;
 import uk.gov.hmcts.sptribs.document.bundling.model.Bundle;
+import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 
 import java.util.List;
 import java.util.Map;
@@ -151,6 +152,13 @@ public class RetiredFields {
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private State cicCaseTestState;
+
+    @CCD(
+        label = "Retired field for cicCaseSelectedDocument",
+        typeParameterOverride = "CaseworkerCICDocument",
+        access = {DefaultAccess.class}
+    )
+    private CaseworkerCICDocument cicCaseSelectedDocument = new CaseworkerCICDocument();
 
     @JsonIgnore
     private static final TriConsumer<Map<String, Object>, String, Object> DO_NOTHING = (data, key, val) -> {
