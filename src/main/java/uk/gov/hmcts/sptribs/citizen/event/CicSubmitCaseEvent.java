@@ -4,11 +4,13 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ObjectUtils;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
+import uk.gov.hmcts.ccd.sdk.api.Event;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.ccd.sdk.type.Flags;
@@ -55,6 +57,7 @@ import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_HEARING_CENTRE_
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_JUDGE;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_CASEWORKER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_JUDGE;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_WA_CONFIG_USER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SYSTEM_UPDATE;
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE;
@@ -70,6 +73,9 @@ public class CicSubmitCaseEvent implements CCDConfig<CaseData, State, UserRole> 
     private AppsConfig appsConfig;
     private DssApplicationReceivedNotification dssApplicationReceivedNotification;
 
+    @Value("${feature.wa.enabled}")
+    private boolean isWorkAllocationEnabled;
+
     @Autowired
     public CicSubmitCaseEvent(HttpServletRequest request, IdamService idamService, AppsConfig appsConfig,
                               DssApplicationReceivedNotification dssApplicationReceivedNotification) {
@@ -81,27 +87,31 @@ public class CicSubmitCaseEvent implements CCDConfig<CaseData, State, UserRole> 
 
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
-        configBuilder
-            .event(AppsUtil.getExactAppsDetailsByCaseType(appsConfig, CcdCaseType.CIC.getCaseTypeName()).getEventIds()
-                .getSubmitEvent())
-            .forStateTransition(DSS_Draft, DSS_Submitted)
-            .name("Submit case (cic)")
-            .description("Application submit (cic)")
-            .retries(120, 120)
-            .grant(CREATE_READ_UPDATE_DELETE, CITIZEN)
-            .grant(CREATE_READ_UPDATE, SYSTEM_UPDATE, CREATOR)
-            .grantHistoryOnly(
-                ST_CIC_CASEWORKER,
-                ST_CIC_SENIOR_CASEWORKER,
-                ST_CIC_HEARING_CENTRE_ADMIN,
-                ST_CIC_HEARING_CENTRE_TEAM_LEADER,
-                ST_CIC_SENIOR_JUDGE,
-                SUPER_USER,
-                ST_CIC_JUDGE,
-                CITIZEN,
-                CREATOR)
-            .aboutToSubmitCallback(this::aboutToSubmit)
-            .submittedCallback(this::submitted);
+        Event.EventBuilder<CaseData, UserRole, State> eventBuilder =
+            configBuilder
+                .event(AppsUtil.getExactAppsDetailsByCaseType(appsConfig, CcdCaseType.CIC.getCaseTypeName()).getEventIds()
+                    .getSubmitEvent())
+                .forStateTransition(DSS_Draft, DSS_Submitted)
+                .name("Submit case (cic)")
+                .description("Application submit (cic)")
+                .retries(120, 120)
+                .grant(CREATE_READ_UPDATE_DELETE, CITIZEN)
+                .grant(CREATE_READ_UPDATE, SYSTEM_UPDATE, CREATOR)
+                .grantHistoryOnly(
+                    ST_CIC_CASEWORKER,
+                    ST_CIC_SENIOR_CASEWORKER,
+                    ST_CIC_HEARING_CENTRE_ADMIN,
+                    ST_CIC_HEARING_CENTRE_TEAM_LEADER,
+                    ST_CIC_SENIOR_JUDGE,
+                    SUPER_USER,
+                    ST_CIC_JUDGE)
+                .aboutToSubmitCallback(this::aboutToSubmit)
+                .submittedCallback(this::submitted);
+
+        if (isWorkAllocationEnabled) {
+            eventBuilder.publishToCamunda()
+                        .grant(CREATE_READ_UPDATE, ST_CIC_WA_CONFIG_USER);
+        }
     }
 
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(CaseDetails<CaseData, State> details,

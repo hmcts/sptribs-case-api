@@ -39,6 +39,10 @@ public enum UserRolesForAccessProfiles implements HasRole {
     AC_CASEFLAGS_VIEWER("caseflags-viewer", "R"),
     GS_PROFILE("GS_profile", "R"),
 
+    // Read access user for WA post deployment
+    ST_CIC_WA_CONFIG_USER("idam:caseworker-wa-task-configuration", "CRU"),
+    AC_ST_CIC_WA_CONFIG_USER("caseworker-wa-task-configuration", "CRU"),
+
     RAS_HMCTS_STAFF("hmcts-staff", "R"),
     RAS_HMCTS_CTSC("hmcts-ctsc", "CRU"),
     RAS_HMCTS_LEGAL_OPERATIONS("hmcts-legal-operations", "CRU"),

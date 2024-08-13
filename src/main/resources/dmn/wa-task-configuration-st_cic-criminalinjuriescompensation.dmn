@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<definitions xmlns="https://www.omg.org/spec/DMN/20191111/MODEL/" xmlns:dmndi="https://www.omg.org/spec/DMN/20191111/DMNDI/" xmlns:dc="http://www.omg.org/spec/DMN/20180521/DC/" xmlns:biodi="http://bpmn.io/schema/dmn/biodi/2.0" xmlns:camunda="http://camunda.org/schema/1.0/dmn" id="wa-configuration-definition" name="DRD" namespace="http://camunda.org/schema/1.0/dmn" exporter="Camunda Modeler" exporterVersion="5.21.0">
+<definitions xmlns="https://www.omg.org/spec/DMN/20191111/MODEL/" xmlns:dmndi="https://www.omg.org/spec/DMN/20191111/DMNDI/" xmlns:dc="http://www.omg.org/spec/DMN/20180521/DC/" xmlns:biodi="http://bpmn.io/schema/dmn/biodi/2.0" xmlns:camunda="http://camunda.org/schema/1.0/dmn" id="wa-configuration-definition" name="DRD" namespace="http://camunda.org/schema/1.0/dmn" exporter="Camunda Modeler" exporterVersion="5.25.0">
   <decision id="wa-task-configuration-st_cic-criminalinjuriescompensation" name="Task configuration DMN" camunda:historyTimeToLive="P90D">
     <decisionTable id="DecisionTable_14cx079" hitPolicy="RULE ORDER">
       <input id="InputClause_1gxyo7f" label="CCD Case Data" camunda:inputVariable="caseData">
@@ -513,7 +513,7 @@ else 5000</text>
           <text>"description"</text>
         </outputEntry>
         <outputEntry id="LiteralExpression_1dfdlvv">
-          <text>"[Refer case to judge](/cases/case-details/${[CASE_REFERENCE]}/trigger/refer-to-judge/refer-to-judgereferToJudgeReason)&lt;br/&gt;" +"[Refer case to legal officer](/cases/case-details/${[CASE_REFERENCE]}/trigger/refer-to-legal-officer/refer-to-legal-officerreferToLegalOfficer)"</text>
+          <text>"[Case: Issue to respondent](/cases/case-details/${[CASE_REFERENCE]}/trigger/caseworker-issue-case)"</text>
         </outputEntry>
         <outputEntry id="LiteralExpression_1777gea">
           <text>true</text>
@@ -530,7 +530,7 @@ else 5000</text>
           <text>"description"</text>
         </outputEntry>
         <outputEntry id="LiteralExpression_0mcxu2i">
-          <text>"[Edit case details](/cases/case-details/${[CASE_REFERENCE]}/trigger/edit-case/edit-casecaseCategorisationDetails)&lt;br/&gt;" +"[Case: Build case](/cases/case-details/${[CASE_REFERENCE]}/trigger/caseworker-case-built/caseworker-case-builtcaseBuilt)"</text>
+          <text>"[Case: Build case](/cases/case-details/${[CASE_REFERENCE]}/trigger/caseworker-case-built)"</text>
         </outputEntry>
         <outputEntry id="LiteralExpression_14akn1n">
           <text>true</text>
@@ -649,7 +649,7 @@ else 5000</text>
           <text>"description"</text>
         </outputEntry>
         <outputEntry id="LiteralExpression_1tfrrr2">
-          <text>"New Case Received"</text>
+          <text>"[Case: Edit Case](/cases/case-details/${[CASE_REFERENCE]}/trigger/edit-case)"</text>
         </outputEntry>
         <outputEntry id="LiteralExpression_1nneo2x">
           <text>true</text>

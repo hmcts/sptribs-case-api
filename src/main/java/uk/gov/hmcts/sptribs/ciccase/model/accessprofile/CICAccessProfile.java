@@ -195,5 +195,8 @@ public class CICAccessProfile implements CCDConfig<CriminalInjuriesCompensationD
             .accessProfiles(UserRolesForAccessProfiles.CIC_JUDGE.getRole(),
                 UserRolesForAccessProfiles.AC_CASEFLAGS_VIEWER.getRole())
             .build();
+        configBuilder.caseRoleToAccessProfile(UserRolesForAccessProfiles.ST_CIC_WA_CONFIG_USER)
+            .accessProfiles(UserRolesForAccessProfiles.AC_ST_CIC_WA_CONFIG_USER.getRole())
+            .build();
     }
 }
