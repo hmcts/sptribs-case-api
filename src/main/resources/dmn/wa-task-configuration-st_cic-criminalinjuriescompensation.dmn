@@ -513,7 +513,7 @@ else 5000</text>
           <text>"description"</text>
         </outputEntry>
         <outputEntry id="LiteralExpression_1dfdlvv">
-          <text>"[Refer case to judge](/cases/case-details/${[CASE_REFERENCE]}/trigger/refer-to-judge/refer-to-judgereferToJudgeReason)&lt;br/&gt;" +"[Refer case to legal officer](/cases/case-details/${[CASE_REFERENCE]}/trigger/refer-to-legal-officer/refer-to-legal-officerreferToLegalOfficer)"</text>
+          <text>"[Case: Issue to respondent](/cases/case-details/${[CASE_REFERENCE]}/trigger/caseworker-issue-case)"</text>
         </outputEntry>
         <outputEntry id="LiteralExpression_1777gea">
           <text>true</text>
@@ -530,7 +530,7 @@ else 5000</text>
           <text>"description"</text>
         </outputEntry>
         <outputEntry id="LiteralExpression_0mcxu2i">
-          <text>"[Edit case details](/cases/case-details/${[CASE_REFERENCE]}/trigger/edit-case/edit-casecaseCategorisationDetails)&lt;br/&gt;" +"[Case: Build case](/cases/case-details/${[CASE_REFERENCE]}/trigger/caseworker-case-built/caseworker-case-builtcaseBuilt)"</text>
+          <text>"[Case: Build case](/cases/case-details/${[CASE_REFERENCE]}/trigger/caseworker-case-built)"</text>
         </outputEntry>
         <outputEntry id="LiteralExpression_14akn1n">
           <text>true</text>
@@ -649,7 +649,7 @@ else 5000</text>
           <text>"description"</text>
         </outputEntry>
         <outputEntry id="LiteralExpression_1tfrrr2">
-          <text>"New Case Received"</text>
+          <text>"[Case: Edit Case](/cases/case-details/${[CASE_REFERENCE]}/trigger/edit-case)"</text>
         </outputEntry>
         <outputEntry id="LiteralExpression_1nneo2x">
           <text>true</text>

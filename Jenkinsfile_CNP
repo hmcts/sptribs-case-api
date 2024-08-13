@@ -80,7 +80,8 @@ withPipeline(type, product, component) {
       def subscription = 'nonprod'
       if (env.ENVIRONMENT == 'ithc' || env.ENVIRONMENT == 'demo' || env.ENVIRONMENT == 'perftest') {
         withSubscription(subscription) {
-          uploadDmnDiagrams()
+            uploadDmnDiagrams()
+            uploadBpmnDiagram()
         }
       }
     }
@@ -318,14 +319,15 @@ withPipeline(type, product, component) {
   }
 
   before('functionalTest:preview') {
-    uploadDmnDiagrams()
     // Only for preview upload the definitions via script as high level data set up relies on an existing environment
     uploadCoreCaseDataDefinitions()
   }
 
-  before('functionalTest:aat') {
-    uploadDmnDiagrams()
-  }
+// Enable on aat once Demo testing complete
+//  before('functionalTest:aat') {
+//    uploadDmnDiagrams()
+//    uploadBpmnDiagram()
+//  }
 }
 
 def setCommonEnvVariables() {
