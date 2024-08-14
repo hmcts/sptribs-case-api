@@ -75,7 +75,7 @@ public class SystemClearInactiveDssDraftCasesTaskTest {
     }
 
     @Test
-    void shouldTriggerSystemTriggerCompleteHearingOutcome() {
+    void shouldTriggerSystemClearInactiveDssDraftCases() {
         when(caseDetails1.getId()).thenReturn(TEST_CASE_ID);
         when(caseDetails2.getId()).thenReturn(2L);
         when(ccdSearchService.searchForAllCasesWithQuery(query, user, SERVICE_AUTHORIZATION))
@@ -88,7 +88,7 @@ public class SystemClearInactiveDssDraftCasesTaskTest {
     }
 
     @Test
-    void shouldHandleCcdManagementExceptionWhenTriggerSystemTriggerCompleteHearingOutcomeFails() {
+    void shouldHandleCcdManagementExceptionWhenSystemClearInactiveDssDraftCasesFails() {
         when(caseDetails1.getId()).thenReturn(TEST_CASE_ID);
         when(caseDetails2.getId()).thenReturn(2L);
         when(ccdSearchService.searchForAllCasesWithQuery(query, user, SERVICE_AUTHORIZATION))
@@ -103,7 +103,7 @@ public class SystemClearInactiveDssDraftCasesTaskTest {
     }
 
     @Test
-    void shouldHandleIllegalArgumentExceptionWhenTriggerSystemTriggerCompleteHearingOutcomeFails() {
+    void shouldHandleIllegalArgumentExceptionWhenTriggerSystemClearInactiveDssDraftCasesFails() {
         when(caseDetails1.getId()).thenReturn(TEST_CASE_ID);
         when(caseDetails2.getId()).thenReturn(2L);
         when(ccdSearchService.searchForAllCasesWithQuery(query, user, SERVICE_AUTHORIZATION))
