@@ -29,17 +29,12 @@ public class WATaskRegisterNewCaseFT extends FunctionalTestSuite {
     private TaskManagementService taskManagementService;
 
     private static final String TASK_ID = "issueCaseToRespondent";
-
-    private static final String REQUEST = "classpath:request/casedata/ccd-callback-casedata-caseworker-submit-case.json";
-
-    public static final int DEFAULT_TIMEOUT_SECONDS = 300;
-    public static final int DEFAULT_POLL_INTERVAL_SECONDS = 4;
+    private static final int DEFAULT_TIMEOUT_SECONDS = 300;
+    private static final int DEFAULT_POLL_INTERVAL_SECONDS = 4;
 
     @Test
     @EnabledIfEnvironmentVariable(named = "", matches = "") //TODO: enable/disable based on whether WA PR
     public void should() throws IOException {
-        final Map<String, Object> caseData = caseData(REQUEST);
-
         // TODO: get user which is set up in AAT with Role assignments? Senior tribunal caseworker perhaps?
 
         String newCaseId = String.valueOf(createAndSubmitTestCaseAndGetCaseReference());
