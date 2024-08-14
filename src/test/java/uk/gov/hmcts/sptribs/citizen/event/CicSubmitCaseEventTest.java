@@ -155,6 +155,78 @@ class CicSubmitCaseEventTest {
                 .contains(Permissions.CREATE_READ_UPDATE);
     }
 
+
+    @Test
+    void shouldGetDocumentRelevanceAndAdditionalInformationFromCaseData() {
+        final Document genericTestDocument = Document.builder().build();
+        final String genericAdditionalInformation = "this is some additional information about the case";
+        final String genericTestDocumentRelevance1 = "this document is relevant because it is important to the case";
+        final String genericTestDocumentRelevance2 = "this document is also relevant because it is also important to the case";
+
+        final EdgeCaseDocument dssTribunalForm = new EdgeCaseDocument();
+        dssTribunalForm.setDocumentLink(genericTestDocument);
+        final ListValue<EdgeCaseDocument> tribunalFormDocListValue = new ListValue<>();
+        tribunalFormDocListValue.setValue(dssTribunalForm);
+
+        final EdgeCaseDocument dssSupportingDoc = new EdgeCaseDocument();
+        dssSupportingDoc.setDocumentLink(genericTestDocument);
+        final ListValue<EdgeCaseDocument> supportingDocListValue = new ListValue<>();
+        supportingDocListValue.setValue(dssSupportingDoc);
+
+        final EdgeCaseDocument dssOtherInfoDoc1 = new EdgeCaseDocument();
+        dssOtherInfoDoc1.setDocumentLink(genericTestDocument);
+        dssOtherInfoDoc1.setComment(genericTestDocumentRelevance1);
+        final ListValue<EdgeCaseDocument> otherInfoDocListValue1 = new ListValue<>();
+        otherInfoDocListValue1.setValue(dssOtherInfoDoc1);
+
+        final EdgeCaseDocument dssOtherInfoDoc2 = new EdgeCaseDocument();
+        dssOtherInfoDoc2.setDocumentLink(genericTestDocument);
+        dssOtherInfoDoc2.setComment(genericTestDocumentRelevance2);
+        final ListValue<EdgeCaseDocument> otherInfoDocListValue2 = new ListValue<>();
+        otherInfoDocListValue2.setValue(dssOtherInfoDoc2);
+
+        final DssCaseData dssCaseData = DssCaseData.builder()
+            .caseTypeOfApplication(CASE_DATA_CIC_ID)
+            .otherInfoDocuments(List.of(otherInfoDocListValue1, otherInfoDocListValue2))
+            .supportingDocuments(List.of(supportingDocListValue))
+            .tribunalFormDocuments(List.of(tribunalFormDocListValue))
+            .subjectFullName(TEST_FIRST_NAME)
+            .representation(YesOrNo.YES)
+            .representationQualified(YesOrNo.YES)
+            .representativeEmailAddress(TEST_SOLICITOR_EMAIL)
+            .representativeFullName(TEST_SOLICITOR_NAME)
+            .additionalInformation(genericAdditionalInformation)
+            .build();
+
+        final CicCase cicCase = CicCase.builder().build();
+        final CaseData caseData = caseData();
+        caseData.setCicCase(cicCase);
+        caseData.setDssCaseData(dssCaseData);
+
+        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
+        updatedCaseDetails.setId(TEST_CASE_ID);
+        updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
+        updatedCaseDetails.setData(caseData);
+
+        when(request.getHeader(AUTHORIZATION)).thenReturn(TEST_AUTHORIZATION_TOKEN);
+        when(idamService.retrieveUser(TEST_AUTHORIZATION_TOKEN)).thenReturn(TestDataHelper.getUser());
+
+        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+
+        final AboutToStartOrSubmitResponse<CaseData, State> response =
+            cicSubmitCaseEvent.aboutToSubmit(updatedCaseDetails, beforeDetails);
+
+        assertThat(response.getData().getCicCase().getApplicantDocumentsUploaded().get(0).getValue().getDocumentEmailContent())
+            .isEqualTo(genericTestDocumentRelevance1);
+        assertThat(response.getData().getCicCase().getApplicantDocumentsUploaded().get(1).getValue().getDocumentEmailContent())
+            .isEqualTo(genericTestDocumentRelevance2);
+        assertThat(response.getData().getMessages().get(0).getValue().getMessage()).isEqualTo(genericAdditionalInformation);
+        assertThat(response.getData().getMessages().get(0).getValue().getDateReceived())
+            .isEqualTo(LocalDate.now());
+        assertThat(response.getData().getMessages().get(0).getValue().getReceivedFrom())
+            .isEqualTo(TestDataHelper.getUser().getUserDetails().getFullName());
+    }
+
     @Test
     void shouldUpdateCaseDetails() {
         final EdgeCaseDocument dssDoc = new EdgeCaseDocument();
@@ -182,8 +254,6 @@ class CicSubmitCaseEventTest {
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
         updatedCaseDetails.setData(caseData);
-        when(request.getHeader(AUTHORIZATION)).thenReturn(TEST_AUTHORIZATION_TOKEN);
-        when(idamService.retrieveUser(TEST_AUTHORIZATION_TOKEN)).thenReturn(TestDataHelper.getUser());
 
         final AboutToStartOrSubmitResponse<CaseData, State> response =
             cicSubmitCaseEvent.aboutToSubmit(updatedCaseDetails, beforeDetails);
