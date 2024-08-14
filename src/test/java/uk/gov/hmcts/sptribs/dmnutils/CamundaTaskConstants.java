@@ -99,7 +99,7 @@ public class CamundaTaskConstants {
     public static final String REVIEW_SPECIFIC_ACCESS_REQ_ADMIN_TASK = "reviewSpecificAccessRequestAdmin";
     public static final String REVIEW_SPECIFIC_ACCESS_REQ_CTSC_TASK = "reviewSpecificAccessRequestCTSC";
 
-    public static final String AUTO_COMPLETE_MODE = "auto";
+    public static final String AUTO_COMPLETE_MODE = "Auto";
     public static final String DEFAULT_NONE_COMPLETE_MODE = "defaultNone";
 
     public static final String PROCESS_CATEGORY_PROCESSING = "Processing";

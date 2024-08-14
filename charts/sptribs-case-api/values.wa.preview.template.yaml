@@ -1,0 +1,190 @@
+java:
+  environment:
+    WA_FEATURE_ENABLED: true
+
+servicebus:
+  enabled: true
+  releaseNameOverride: ${SERVICE_NAME}-asb
+  resourceGroup: sptribs-aso-preview-rg
+  sbNamespace: sptribs-servicebus-preview
+  setup:
+    topics:
+      - name: crd-topic
+        subscriptionNeeded: yes
+      - name: jrd-topic
+        subscriptionNeeded: yes
+      - name: ccd-case-events
+        subscriptionNeeded: yes
+        requiresSession: true
+
+postgresql:
+  enabled: true
+  flexibleserver: sptribs-preview
+  setup:
+    databases:
+      - name: "pr-${CHANGE_ID}-sptribs-case-api"
+      - name: "pr-${CHANGE_ID}-data-store"
+      - name: "pr-${CHANGE_ID}-definition-store"
+      - name: "pr-${CHANGE_ID}-role_assignment"
+      - name: "pr-${CHANGE_ID}-user-profile"
+      - name: "pr-${CHANGE_ID}-emstitch"
+      - name: "pr-${CHANGE_ID}-camunda"
+      - name: "pr-${CHANGE_ID}-cft_task_db"
+      - name: "pr-${CHANGE_ID}-wa_workflow_api"
+      - name: "pr-${CHANGE_ID}-wa-case-event-handler"
+      - name: "pr-${CHANGE_ID}-org-role-mapping"
+
+global:
+  postgresUsername: hmcts
+  postgresSecret: postgres
+  postgresHost: sptribs-preview.postgres.database.azure.com
+  databaseNamePrefix: "pr-${CHANGE_ID}-"
+
+wa:
+  enabled: true
+
+  wa-case-event-handler:
+    java:
+      secrets:
+        AZURE_SERVICE_BUS_CONNECTION_STRING:
+          secretRef: sptribs-sb-preview
+          key: connectionString
+      environment:
+        CCD_URL: http://{{ .Release.Name }}-ccd-data-store-api
+        CCD_SEARCH_URL: http://{{ .Release.Name }}-ccd-data-store-api
+        ROLE_ASSIGNMENT_URL: http://{{ .Release.Name }}-am-role-assignment-service
+        AZURE_SERVICE_BUS_TOPIC_NAME: ${SERVICE_NAME}-asb-ccd-case-events
+        AZURE_SERVICE_BUS_SUBSCRIPTION_NAME: ${SERVICE_NAME}-asb-ccd-case-events
+        AZURE_SERVICE_BUS_CCD_CASE_EVENTS_SUBSCRIPTION_NAME: ${SERVICE_NAME}-asb-ccd-case-events
+
+  wa-task-management-api:
+    java:
+      environment:
+        ALLOWED_CASE_TYPES: wacasetype,criminalinjuriescompensation
+        ALLOWED_JURISDICTIONS: wa, st_cic
+
+  wa-workflow-api:
+    java:
+      environment:
+        DB_READER_USERNAME: "hmcts"
+
+  wa-message-cron-service:
+    job:
+      schedule: "*/1 * * * *"
+
+  wa-initiation-batch:
+    job:
+      schedule: "*/1 * * * *"
+
+  wa-reconfiguration-batch:
+    job:
+      schedule: "*/1 * * * *"
+
+  wa-termination-batch:
+    job:
+      schedule: "*/1 * * * *"
+
+  #disable wa db as we are using the postgres flexible server
+  wa:
+    postgresql:
+      enabled: false
+
+ccd-message-publisher:
+  java:
+    ingressHost: ccd-message-publisher-${SERVICE_FQDN}
+    releaseNameOverride: ${SERVICE_NAME}-ccd-message-publisher
+    keyVaults:
+      ccd:
+        secrets:
+          - name: AppInsightsInstrumentationKey
+            alias: azure.application-insights.instrumentation-key
+    environment:
+      DATA_STORE_DB_HOST: sptribs-preview.postgres.database.azure.com
+      DATA_STORE_DB_NAME: "pr-${CHANGE_ID}-data-store"
+      DATA_STORE_DB_USERNAME: ${CCD_GLOBAL_POSTGRES_USERNAME_PREVIEW}
+      DATA_STORE_DB_OPTIONS: "?stringtype=unspecified&reWriteBatchedInserts=true&sslmode=require"
+      CCD_CASE_EVENTS_DESTINATION: "${SERVICE_NAME}-asb-ccd-case-events"
+    secrets:
+      SERVICE_BUS_CONNECTION_STRING:
+        secretRef: sptribs-sb-preview
+        key: connectionString
+      DATA_STORE_DB_PASSWORD:
+        secretRef: "{{ .Values.global.postgresSecret }}"
+        key: PASSWORD
+
+am-org-role-mapping-service:
+  enabled: true
+  java:
+    image: 'hmctspublic.azurecr.io/am/org-role-mapping-service:latest'
+    ingressHost: am-org-role-mapping-service-${SERVICE_FQDN}
+    releaseNameOverride: ${SERVICE_NAME}-am-org-role-mapping-service
+    secrets:
+      SB_ACCESS_KEY:
+        secretRef: sptribs-sb-preview
+        key: primaryKey
+      SB_CONNECTION_STRING:
+        secretRef: sptribs-sb-preview
+        key: connectionString
+      ORG_ROLE_MAPPING_DB_PASSWORD:
+        secretRef: "{{ .Values.global.postgresSecret }}"
+        key: PASSWORD
+        disabled: false
+    keyVaults:
+      am:
+        secrets:
+          - name: app-insights-connection-string
+            alias: app-insights-connection-string
+          - name: am-org-role-mapping-service-s2s-secret
+            alias: AM_ORG_ROLE_MAPPING_SERVICE_SECRET
+          - name: role-assignment-service-LD-SDK-KEY
+            alias: LD_SDK_KEY
+          - name: orm-IDAM-CLIENT-ID
+            alias: ORM_IDAM_CLIENT_ID
+          - name: orm-IDAM-CLIENT-SECRET
+            alias: ORG_ROLE_MAPPING_IDAM_CLIENT_SECRET
+          - name: orm-IDAM-ADMIN-SECRET
+            alias: ORG_ROLE_MAPPING_IDAM_ADMIN_PASSWORD
+    devcpuRequests: 500m
+    devmemoryRequests: 1Gi
+    devcpuLimits: 1
+    devmemoryLimits: 4Gi
+    environment:
+      IDAM_S2S_URL: http://rpe-service-auth-provider-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal
+      S2S_URL: http://rpe-service-auth-provider-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal
+      CASE_WORKER_REF_APP_URL: http://rd-caseworker-ref-api-aat.service.core-compute-aat.internal
+      JUDICIAL_REF_APP_URL: http://rd-judicial-api-aat.service.core-compute-aat.internal
+      ROLE_ASSIGNMENT_APP_URL: http://sptribs-case-api-pr-${CHANGE_ID}-am-role-assignment-service
+      JUDICIAL_BOOKING_APP_URL: http://am-judicial-booking-service-aat.service.core-compute-aat.internal
+      LAUNCH_DARKLY_ENV: "{{ .Values.global.environment }}"
+      AMQP_SHARED_ACCESS_KEY_NAME: RootManageSharedAccessKey
+      AMQP_HOST: "sptribs-sb-preview.servicebus.windows.net"
+      CRD_SUBSCRIPTION_NAME: "{{ .Release.Name}}-asb-crd-topic"
+      JRD_SUBSCRIPTION_NAME: "{{ .Release.Name}}-asb-jrd-topic"
+      CRD_TOPIC_NAME: "{{ .Release.Name}}-asb-crd-topic"
+      JRD_TOPIC_NAME: "{{ .Release.Name}}-asb-jrd-topic"
+      AMQP_CRD_SHARED_ACCESS_KEY_VALUE: "$(SB_ACCESS_KEY)"
+      AMQP_JRD_SHARED_ACCESS_KEY_VALUE: "$(SB_ACCESS_KEY)"
+      ORG_ROLE_MAPPING_DB_HOST: '{{ tpl .Values.global.postgresHostname $}}'
+      ORG_ROLE_MAPPING_DB_NAME: "pr-${CHANGE_ID}-org-role-mapping"
+      ORG_ROLE_MAPPING_DB_USERNAME: hmcts
+      ORG_ROLE_MAPPING_DB_PORT: 5432
+      ORG_ROLE_MAPPING_DB_OPTIONS: "?stringtype=unspecified&reWriteBatchedInserts=true&sslmode=require"
+      RUN_LD_ON_STARTUP: true
+      TESTING_SUPPORT_ENABLED: true
+      REFRESH_BULK_ASSIGNMENT_INCLUDE_BOOKINGS: true
+      DB_FEATURE_FLAG_ENABLE: st_cic_wa_1_0
+
+xui-webapp:
+  nodejs:
+    environment:
+      SERVICES_WA_WORKFLOW_API_URL: http://{{ .Release.Name }}-wa-workflow-api
+      HEALTH_WORK_ALLOCATION_TASK_API: http://{{ .Release.Name }}-wa-task-management-api/health
+      SERVICES_WORK_ALLOCATION_TASK_API: http://{{ .Release.Name }}-wa-task-management-api
+      SERVICES_ROLE_ASSIGNMENT_MAPPING_API: http://{{ .Release.Name }}-am-org-role-mapping-service
+      WA_SUPPORTED_JURISDICTIONS: ST_CIC
+
+ccd:
+  ccd-data-store-api:
+    java:
+      environment:
+        DATA_STORE_S2S_AUTHORISED_SERVICES: ccd_gw,ccd_gateway,ccd_data,aac_manage_case_assignment,xui_webapp,ccd_case_document_am_api,sptribs_frontend,sptribs_case_api,sptribs_dss_update_case_web,em_ccd_orchestrator,wa_task_management_api,wa_task_monitor,wa_case_event_handler,wa_workflow_api

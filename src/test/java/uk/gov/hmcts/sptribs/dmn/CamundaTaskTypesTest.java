@@ -125,7 +125,7 @@ class CamundaTaskTypesTest extends DmnDecisionTableBaseUnitTest {
             ),
             Map.of(
                 "taskTypeId", PROCESS_OTHER_DIR_RETURNED_TASK,
-                "taskTypeName", "Process other directions reurned"
+                "taskTypeName", "Process other directions returned"
             ),
             Map.of(
                 "taskTypeId", PROCESS_WRITTEN_REASONS_TASK,
