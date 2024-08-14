@@ -96,7 +96,7 @@ public class CreateCaseIT {
     }
 
     @Test
-    void shouldClearPreviouslyPopulatedHearingOptionsOnAboutToSubmit() throws Exception {
+    void shouldCreateCaseOnAboutToSubmit() throws Exception {
         final CaseData caseData = caseData();
         final CicCase cicCase = CicCase.builder()
             .fullName("Test Name")
