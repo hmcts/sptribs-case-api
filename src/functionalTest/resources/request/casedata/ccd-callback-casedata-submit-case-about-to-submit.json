@@ -12,7 +12,7 @@
   "dssCaseDataRepresentativeContactNumber": null,
   "dssCaseDataRepresentativeEmailAddress": "solicitor@test.com",
   "dssCaseDataDocumentRelevance": null,
-  "dssCaseDataAdditionalInformation": null,
+  "dssCaseDataAdditionalInformation": "This is additional information about the case.",
   "dssCaseDataPcqId": null,
   "dssCaseDataTribunalFormDocuments": [
     {
@@ -42,14 +42,15 @@
   ],
   "dssCaseDataOtherInfoDocuments": [
     {
-      "id": null,
+      "id": "1",
       "value": {
         "documentLink": {
-          "document_url": null,
-          "document_filename": null,
-          "document_binary_url": null,
-          "category_id": null
-        }
+          "category_id": "DSS",
+          "document_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/328c674f-59c3-418a-b76b-78f2cc52d21a",
+          "document_filename": "mockFileUpdated.pdf",
+          "document_binary_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/328c674f-59c3-418a-b76b-78f2cc52d21a/binary"
+        },
+        "comment": "a relevant doc"
       }
     }
   ]
