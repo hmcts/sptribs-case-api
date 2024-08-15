@@ -46,6 +46,7 @@ import java.util.UUID;
 
 import static java.lang.String.format;
 import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
+import static org.apache.commons.lang.StringUtils.isNotBlank;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.DSS_Draft;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.DSS_Submitted;
@@ -234,42 +235,42 @@ public class CicSubmitCaseEvent implements CCDConfig<CaseData, State, UserRole> 
         }
 
         List<CaseworkerCICDocument> docList = new ArrayList<>();
-        List<ListValue<DssMessage>> listValues = new ArrayList<>();
 
         if (isNotEmpty(dssCaseData.getOtherInfoDocuments())) {
-            //For showing additional information page data on tab
             for (ListValue<EdgeCaseDocument> documentListValue : dssCaseData.getOtherInfoDocuments()) {
                 Document doc = documentListValue.getValue().getDocumentLink();
+                String documentComment = documentListValue.getValue().getComment();
                 doc.setCategoryId(DocumentType.DSS_OTHER.getCategory());
                 CaseworkerCICDocument caseworkerCICDocument = CaseworkerCICDocument.builder()
                     .documentLink(doc)
                     .documentCategory(DocumentType.DSS_OTHER)
+                    .documentEmailContent(documentComment)
                     .date(LocalDate.now())
                     .build();
 
                 if (!docList.contains(caseworkerCICDocument)) {
                     docList.add(caseworkerCICDocument);
                 }
-
-                final User caseworkerUser = idamService.retrieveUser(request.getHeader(AUTHORIZATION));
-
-                final DssMessage message = DssMessage.builder()
-                    .message(dssCaseData.getAdditionalInformation())
-                    .dateReceived(LocalDate.now())
-                    .receivedFrom(caseworkerUser.getUserDetails().getFullName())
-                    .documentRelevance(dssCaseData.getDocumentRelevance())
-                    .build();
-
-                final ListValue<DssMessage> listValue = ListValue
-                    .<DssMessage>builder()
-                    .id(UUID.randomUUID().toString())
-                    .value(message)
-                    .build();
-
-                listValues.add(listValue);
             }
         }
-        caseData.setMessages(listValues);
+
+        if (isNotBlank(dssCaseData.getAdditionalInformation())) {
+            final User caseworkerUser = idamService.retrieveUser(request.getHeader(AUTHORIZATION));
+            final DssMessage message = DssMessage.builder()
+                .message(dssCaseData.getAdditionalInformation())
+                .dateReceived(LocalDate.now())
+                .receivedFrom(caseworkerUser.getUserDetails().getFullName())
+                .build();
+
+            final ListValue<DssMessage> listValue = ListValue
+                .<DssMessage>builder()
+                .id(UUID.randomUUID().toString())
+                .value(message)
+                .build();
+            List<ListValue<DssMessage>> messagesList = new ArrayList<>();
+            messagesList.add(listValue);
+            caseData.setMessages(messagesList);
+        }
 
         if (isNotEmpty(dssCaseData.getSupportingDocuments())) {
             for (ListValue<EdgeCaseDocument> documentListValue : dssCaseData.getSupportingDocuments()) {
