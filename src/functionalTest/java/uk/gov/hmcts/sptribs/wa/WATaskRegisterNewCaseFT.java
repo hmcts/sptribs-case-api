@@ -2,7 +2,6 @@ package uk.gov.hmcts.sptribs.wa;
 
 import io.restassured.response.Response;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.condition.EnabledIfEnvironmentVariable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import uk.gov.hmcts.sptribs.testutil.CcdCaseCreator;
@@ -17,7 +16,6 @@ import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static uk.gov.hmcts.sptribs.testutil.CaseDataUtil.caseData;
 
 @SpringBootTest
 public class WATaskRegisterNewCaseFT extends FunctionalTestSuite {
