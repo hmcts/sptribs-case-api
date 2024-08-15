@@ -36,7 +36,8 @@ public class HighLevelDataSetupApp extends DataLoaderToDefinitionStore {
         new CcdRoleConfig("citizen", "PUBLIC"),
         new CcdRoleConfig("caseworker-st-cic", "PUBLIC"),
         new CcdRoleConfig("caseworker-wa-task-configuration", "PUBLIC"),
-        new CcdRoleConfig("GS_profile", "PUBLIC")
+        new CcdRoleConfig("GS_profile", "PUBLIC"),
+        new CcdRoleConfig("caseworker-ras-validation", "PUBLIC")
     };
 
     private final CcdEnvironment environment;
