@@ -61,7 +61,7 @@ wa:
     java:
       environment:
         ALLOWED_CASE_TYPES: wacasetype,criminalinjuriescompensation
-        ALLOWED_JURISDICTIONS: wa, st_cic
+        ALLOWED_JURISDICTIONS: wa,st_cic
 
   wa-workflow-api:
     java:

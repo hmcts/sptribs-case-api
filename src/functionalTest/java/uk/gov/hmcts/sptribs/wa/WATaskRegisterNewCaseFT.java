@@ -33,7 +33,6 @@ public class WATaskRegisterNewCaseFT extends FunctionalTestSuite {
     private static final int DEFAULT_POLL_INTERVAL_SECONDS = 4;
 
     @Test
-    @EnabledIfEnvironmentVariable(named = "", matches = "") //TODO: enable/disable based on whether WA PR
     public void should() throws IOException {
         // TODO: get user which is set up in AAT with Role assignments? Senior tribunal caseworker perhaps?
 
@@ -48,6 +47,8 @@ public class WATaskRegisterNewCaseFT extends FunctionalTestSuite {
                 () -> {
                     Response searchByCaseIdResponseBody =
                         taskManagementService.search(newCaseId, List.of("issueCaseToRespondent"), 1, 200);
+
+                    System.out.println(searchByCaseIdResponseBody.asString());
 
                     if (searchByCaseIdResponseBody.asString().isBlank()) {
                         return false;
@@ -65,6 +66,7 @@ public class WATaskRegisterNewCaseFT extends FunctionalTestSuite {
                     // TODO: do we need a AM refresh to ensure we can fetch task role permissions?
                     String retrieveTaskRolePermissionsResponseBody =
                         taskManagementService.retrieveTaskRolePermissions(taskId, 4, 200);
+                    System.out.println(retrieveTaskRolePermissionsResponseBody);
                     // TODO: verify roles returned against JSON
                     return true;
                 });
