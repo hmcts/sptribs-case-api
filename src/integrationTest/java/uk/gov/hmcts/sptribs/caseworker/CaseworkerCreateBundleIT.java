@@ -90,7 +90,7 @@ public class CaseworkerCreateBundleIT {
     }
 
     @Test
-    void should() throws Exception {
+    void shouldMakeCallToEvidenceManagementToCreateBundleInAboutToSubmit() throws Exception {
         final CaseData caseData = caseData();
         populateCaseDocuments(caseData);
         final BundleResponse bundleResponse = mock(BundleResponse.class);
