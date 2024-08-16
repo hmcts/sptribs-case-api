@@ -176,7 +176,7 @@ public class CaseworkerChangeSecurityClassificationIT {
                 .builder()
                 .dataClassification(dataClassification)
                 .build()
-            );
+        );
 
         String response = mockMvc.perform(post(ABOUT_TO_SUBMIT_URL)
             .contentType(APPLICATION_JSON)
