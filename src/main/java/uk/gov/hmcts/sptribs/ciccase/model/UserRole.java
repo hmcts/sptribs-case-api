@@ -32,6 +32,7 @@ public enum UserRole implements HasRole {
     AC_CASE_FLAGS_VIEWER("caseflags-viewer", "R"),
 
     CITIZEN("citizen", "CRU"),
+    GS_PROFILE("GS_profile", "R"),
 
     //WA post-deployment task configuration user
     ST_CIC_WA_CONFIG_USER("caseworker-wa-task-configuration", "CRU");
