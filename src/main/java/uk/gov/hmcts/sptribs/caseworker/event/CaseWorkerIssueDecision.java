@@ -99,7 +99,7 @@ public class CaseWorkerIssueDecision implements CCDConfig<CaseData, State, UserR
                         .grant(CREATE_READ_UPDATE, ST_CIC_WA_CONFIG_USER);
         }
 
-        PageBuilder pageBuilder = new PageBuilder(eventBuilder);
+        final PageBuilder pageBuilder = new PageBuilder(eventBuilder);
         issueDecisionNotice.addTo(pageBuilder);
         issueDecisionSelectTemplate.addTo(pageBuilder);
         issueDecisionMainContent.addTo(pageBuilder);

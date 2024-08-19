@@ -1,9 +1,9 @@
-package uk.gov.hmcts.sptribs.caseworker.event;
+package uk.gov.hmcts.sptribs.systemupdate.event;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.ccd.sdk.ConfigBuilderImpl;
 import uk.gov.hmcts.ccd.sdk.api.Event;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
@@ -11,24 +11,24 @@ import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static uk.gov.hmcts.sptribs.systemupdate.event.SystemClearInactiveDssDraftCase.SYSTEM_CLEAR_INACTIVE_DSS_DRAFT_CASE;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigBuilder;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.getEventsFrom;
-import static uk.gov.hmcts.sptribs.testutil.TestEventConstants.ASYNC_STITCH_COMPLETE;
 
-@ExtendWith(MockitoExtension.class)
-class CaseworkerBundleStitchCompleteTest {
+@ExtendWith(SpringExtension.class)
+public class SystemClearInactiveDssDraftCaseTest {
 
     @InjectMocks
-    private CaseworkerBundleStitchComplete caseworkerBundleStitchComplete;
+    private SystemClearInactiveDssDraftCase systemClearInactiveDssDraftCase;
 
     @Test
-    void shouldAddConfigurationToConfigBuilder() throws Exception {
+    void shouldAddConfigurationToConfigBuilder() {
         final ConfigBuilderImpl<CaseData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
 
-        caseworkerBundleStitchComplete.configure(configBuilder);
+        systemClearInactiveDssDraftCase.configure(configBuilder);
 
         assertThat(getEventsFrom(configBuilder).values())
             .extracting(Event::getId)
-            .contains(ASYNC_STITCH_COMPLETE);
+            .contains(SYSTEM_CLEAR_INACTIVE_DSS_DRAFT_CASE);
     }
 }
