@@ -216,7 +216,7 @@ class CamundaTaskWaInitiationTest extends DmnDecisionTableBaseUnitTest {
             ),
             Arguments.of(
                 "create-draft-order",
-                "CaseManagement",
+                "AwaitingHearing",
                 Map.of("Data", Map.of("cicCaseReferralTypeForWA", "Postponement request")),
                 List.of(
                     Map.of(
@@ -321,7 +321,7 @@ class CamundaTaskWaInitiationTest extends DmnDecisionTableBaseUnitTest {
             ),
             Arguments.of(
                 "create-hearing-summary",
-                "AwaitingHearing",
+                "AwaitingOutcome",
                 null,
                 List.of(
                     Map.of(
@@ -394,7 +394,7 @@ class CamundaTaskWaInitiationTest extends DmnDecisionTableBaseUnitTest {
             ),
             Arguments.of(
                 "citizen-cic-submit-dss-application",
-                "Dss_Submitted",
+                "DSS_Submitted",
                 null,
                 List.of(
                     Map.of(
@@ -799,7 +799,7 @@ class CamundaTaskWaInitiationTest extends DmnDecisionTableBaseUnitTest {
             Arguments.of(
                 "refer-to-judge",
                 "CaseManagement",
-                Map.of("Data", Map.of("cicCaseReferralTypeForWA", "Time Extension request")),
+                Map.of("Data", Map.of("cicCaseReferralTypeForWA", "Time extension request")),
                 List.of(
                     Map.of(
                         "taskId", REVIEW_TIME_EXT_REQ_JUDGE_TASK,
@@ -827,7 +827,7 @@ class CamundaTaskWaInitiationTest extends DmnDecisionTableBaseUnitTest {
                 )
             ),
             Arguments.of(
-                "citizen-cic-update-dss-application",
+                "citizen-cic-dss-update-case",
                 "CaseManagement",
                 null,
                 List.of(

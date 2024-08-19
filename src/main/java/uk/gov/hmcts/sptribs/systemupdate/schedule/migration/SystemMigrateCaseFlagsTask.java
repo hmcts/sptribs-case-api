@@ -18,6 +18,7 @@ import java.util.List;
 
 import static org.elasticsearch.index.query.QueryBuilders.boolQuery;
 import static org.elasticsearch.index.query.QueryBuilders.existsQuery;
+import static org.elasticsearch.index.query.QueryBuilders.matchQuery;
 import static uk.gov.hmcts.sptribs.systemupdate.event.SystemMigrateCaseFlags.SYSTEM_MIGRATE_CASE_FLAGS;
 
 @Component
@@ -50,11 +51,9 @@ public class SystemMigrateCaseFlagsTask implements Runnable {
         final String serviceAuth = authTokenGenerator.generate();
 
         try {
-            final BoolQueryBuilder query =
-                boolQuery()
-                    .must(boolQuery()
-                        .mustNot(existsQuery("data.subjectFlags"))
-                    );
+            final BoolQueryBuilder query = boolQuery()
+                .mustNot(existsQuery("data.subjectFlags"))
+                .mustNot(matchQuery("state", "DSS_Draft"));
 
             final List<CaseDetails> casesNeedsCaseFlagsMigration =
                 ccdSearchService.searchForAllCasesWithQuery(query, user, serviceAuth);

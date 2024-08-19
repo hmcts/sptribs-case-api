@@ -62,7 +62,7 @@ public class CaseworkerChangeSecurityClassification implements CCDConfig<CaseDat
     }
 
     private void doConfigure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
-        PageBuilder pageBuilder = new PageBuilder(configBuilder
+        new PageBuilder(configBuilder
             .event(CHANGE_SECURITY_CLASS)
             .forAllStates()
             .name("Case: Security classification")
@@ -79,17 +79,20 @@ public class CaseworkerChangeSecurityClassification implements CCDConfig<CaseDat
                 ST_CIC_HEARING_CENTRE_TEAM_LEADER,
                 ST_CIC_SENIOR_JUDGE,
                 SUPER_USER,
-                ST_CIC_JUDGE));
-        changeSecurityClass(pageBuilder);
+                ST_CIC_JUDGE))
+            .page("changeSecurityClass", this::midEvent)
+            .pageLabel("Security classification selection")
+            .mandatory(CaseData::getSecurityClass);
     }
 
-    public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(
-        final CaseDetails<CaseData, State> details,
-        final CaseDetails<CaseData, State> beforeDetails
-    ) {
+    public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(final CaseDetails<CaseData, State> details,
+                                                                       final CaseDetails<CaseData, State> beforeDetails) {
+
         final CaseData caseData = details.getData();
+
         String securityClassification = caseData.getSecurityClass().getLabel();
         Map<String, Object> dataClassification = caseDataService.getDataClassification(details.getId().toString());
+
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
             .dataClassification(dataClassification)
@@ -99,21 +102,14 @@ public class CaseworkerChangeSecurityClassification implements CCDConfig<CaseDat
 
     public SubmittedCallbackResponse submitted(CaseDetails<CaseData, State> details,
                                                CaseDetails<CaseData, State> beforeDetails) {
+
         return SubmittedCallbackResponse.builder()
             .confirmationHeader("# Security classification changed")
             .build();
     }
 
-    private void changeSecurityClass(PageBuilder pageBuilder) {
-        pageBuilder.page("changeSecurityClass", this::midEvent)
-            .pageLabel("Security classification selection")
-            .mandatory(CaseData::getSecurityClass);
-    }
-
-    public AboutToStartOrSubmitResponse<CaseData, State> midEvent(
-        CaseDetails<CaseData, State> details,
-        CaseDetails<CaseData, State> detailsBefore
-    ) {
+    public AboutToStartOrSubmitResponse<CaseData, State> midEvent(CaseDetails<CaseData, State> details,
+                                                                  CaseDetails<CaseData, State> detailsBefore) {
 
         final List<String> errors = new ArrayList<>();
         final CaseData caseData = details.getData();

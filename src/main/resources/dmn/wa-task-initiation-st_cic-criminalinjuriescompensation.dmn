@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<definitions xmlns="https://www.omg.org/spec/DMN/20191111/MODEL/" xmlns:camunda="http://camunda.org/schema/1.0/dmn" xmlns:biodi="http://bpmn.io/schema/dmn/biodi/2.0" xmlns:dmndi="https://www.omg.org/spec/DMN/20191111/DMNDI/" xmlns:dc="http://www.omg.org/spec/DMN/20180521/DC/" id="wa-initiation-definition" name="DRD" namespace="http://camunda.org/schema/1.0/dmn" exporter="Camunda Modeler" exporterVersion="5.23.0">
+<definitions xmlns="https://www.omg.org/spec/DMN/20191111/MODEL/" xmlns:camunda="http://camunda.org/schema/1.0/dmn" xmlns:biodi="http://bpmn.io/schema/dmn/biodi/2.0" xmlns:dmndi="https://www.omg.org/spec/DMN/20191111/DMNDI/" xmlns:dc="http://www.omg.org/spec/DMN/20180521/DC/" id="wa-initiation-definition" name="DRD" namespace="http://camunda.org/schema/1.0/dmn" exporter="Camunda Modeler" exporterVersion="5.25.0">
   <decision id="wa-task-initiation-st_cic-criminalinjuriescompensation" name="Task initiation DMN" camunda:historyTimeToLive="P90D">
     <decisionTable id="DecisionTable_0jtevuc" hitPolicy="COLLECT">
       <input id="Input_1" label="Event Id" camunda:inputVariable="eventId">
@@ -289,7 +289,7 @@
           <text>"create-draft-order"</text>
         </inputEntry>
         <inputEntry id="UnaryTests_0mae0de">
-          <text>"CaseManagement"</text>
+          <text>"AwaitingHearing"</text>
         </inputEntry>
         <inputEntry id="UnaryTests_1cho3hw">
           <text>"Postponement request"</text>
@@ -513,7 +513,7 @@
           <text>"create-hearing-summary"</text>
         </inputEntry>
         <inputEntry id="UnaryTests_0ok3nm3">
-          <text>"AwaitingHearing"</text>
+          <text>"AwaitingOutcome"</text>
         </inputEntry>
         <inputEntry id="UnaryTests_1rqnyzf">
           <text></text>
@@ -1476,7 +1476,7 @@
           <text>"CaseManagement"</text>
         </inputEntry>
         <inputEntry id="UnaryTests_00qdyl2">
-          <text>"Time Extension request"</text>
+          <text>"Time extension request"</text>
         </inputEntry>
         <outputEntry id="LiteralExpression_1vlz5c0">
           <text>"reviewTimeExtensionRequestJudge"</text>
@@ -1537,7 +1537,7 @@
           <text>"citizen-cic-submit-dss-application"</text>
         </inputEntry>
         <inputEntry id="UnaryTests_0ajeufa">
-          <text>"Dss_Submitted"</text>
+          <text>"DSS_Submitted"</text>
         </inputEntry>
         <inputEntry id="UnaryTests_0ddb6if">
           <text></text>
@@ -1566,7 +1566,7 @@
       </rule>
       <rule id="DecisionRule_1981u5t">
         <inputEntry id="UnaryTests_1o9zfup">
-          <text>"citizen-cic-update-dss-application","caseworker-document-management"</text>
+          <text>"citizen-cic-dss-update-case","caseworker-document-management"</text>
         </inputEntry>
         <inputEntry id="UnaryTests_1cb1pqu">
           <text>"CaseManagement"</text>

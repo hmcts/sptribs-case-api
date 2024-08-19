@@ -1,0 +1,64 @@
+{
+  "data": {
+    "cicCaseOrderList": [
+      {
+        "value": {
+          "uploadedFile": [
+            {
+              "value": {
+                "documentEmailContent": "some email content",
+                "documentLink": {
+                  "document_filename": "test.pdf"
+                }
+              }
+            }
+          ]
+        }
+      }
+    ],
+    "cicCaseApplicantDocumentsUploaded": [
+      {
+        "value": {
+          "documentCategory": "Linked docs",
+          "documentEmailContent": "some email content",
+          "documentLink": {
+            "document_filename": "file1.pdf"
+          }
+        }
+      },
+      {
+        "value": {
+          "documentCategory": "Linked docs",
+          "documentEmailContent": "some email content",
+          "documentLink": {
+            "document_filename": "test.pdf"
+          }
+        }
+      },
+      {
+        "value": {
+          "documentCategory": "Linked docs",
+          "documentEmailContent": "some email content",
+          "documentLink": {
+            "document_filename": "evidence.pdf"
+          }
+        }
+      }
+    ],
+    "cicCaseReinstateDocuments": [
+      {
+        "value": {
+          "documentCategory": "Linked docs",
+          "documentEmailContent": "some email content",
+          "documentLink": {
+            "document_filename": "reinstate_doc.pdf"
+          }
+        }
+      }
+    ],
+    "caseNumber": "1616591401473378",
+    "bundleConfiguration": {
+      "value": "st_cic_bundle_all_case.yaml"
+    }
+  }
+}
