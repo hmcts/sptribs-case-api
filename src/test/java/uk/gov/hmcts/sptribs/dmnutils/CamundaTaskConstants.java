@@ -41,7 +41,7 @@ public class CamundaTaskConstants {
     public static final String DEFAULT_LOCATION = "336559";
     public static final String DEFAULT_LOCATION_NAME = "Glasgow Tribunals Centre";
     public static final String DEFAULT_DUE_DATE_NON_WORKING_CALENDAR
-        = "https://www.gov.uk/bank-holidays/england-and-wales.json";
+        = "https://www.gov.uk/bank-holidays/scotland.json";
     public static final String DEFAULT_DUE_DATE_WORKING_DAYS_OF_WEEK = "SATURDAY,SUNDAY";
 
     public static final String REGISTER_NEW_CASE_TASK = "registerNewCase";
@@ -99,7 +99,7 @@ public class CamundaTaskConstants {
     public static final String REVIEW_SPECIFIC_ACCESS_REQ_ADMIN_TASK = "reviewSpecificAccessRequestAdmin";
     public static final String REVIEW_SPECIFIC_ACCESS_REQ_CTSC_TASK = "reviewSpecificAccessRequestCTSC";
 
-    public static final String AUTO_COMPLETE_MODE = "auto";
+    public static final String AUTO_COMPLETE_MODE = "Auto";
     public static final String DEFAULT_NONE_COMPLETE_MODE = "defaultNone";
 
     public static final String PROCESS_CATEGORY_PROCESSING = "Processing";

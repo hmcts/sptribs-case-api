@@ -35,7 +35,6 @@ public class ApplicationReceivedNotification implements PartiesNotification {
         final Map<String, Object> templateVars = notificationHelper.getSubjectCommonVars(caseNumber, cicCase);
 
         if (cicCase.getContactPreferenceType() == ContactPreferenceType.EMAIL) {
-            // Send Email
             NotificationResponse notificationResponse = sendEmailNotification(cicCase.getEmail(), templateVars);
             cicCase.setSubjectNotifyList(notificationResponse);
         }
@@ -47,7 +46,6 @@ public class ApplicationReceivedNotification implements PartiesNotification {
         final Map<String, Object> templateVars = notificationHelper.getApplicantCommonVars(caseNumber, cicCase);
 
         if (cicCase.getApplicantContactDetailsPreference() == ContactPreferenceType.EMAIL) {
-            // Send Email
             NotificationResponse notificationResponse = sendEmailNotification(cicCase.getApplicantEmailAddress(), templateVars);
             cicCase.setAppNotificationResponse(notificationResponse);
         }
@@ -59,7 +57,6 @@ public class ApplicationReceivedNotification implements PartiesNotification {
         final Map<String, Object> templateVars = notificationHelper.getRepresentativeCommonVars(caseNumber, cicCase);
 
         if (cicCase.getRepresentativeContactDetailsPreference() == ContactPreferenceType.EMAIL) {
-            // Send Email
             NotificationResponse notificationResponse = sendEmailNotification(cicCase.getRepresentativeEmailAddress(), templateVars);
             cicCase.setRepNotificationResponse(notificationResponse);
         }
