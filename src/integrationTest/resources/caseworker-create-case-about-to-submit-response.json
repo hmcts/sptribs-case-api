@@ -1,0 +1,45 @@
+{
+  "data": {
+    "caseNameHmctsInternal": "Test Name",
+    "caseFlags": {
+      "details": []
+    },
+    "subjectFlags": {
+      "partyName": "Test Name",
+      "roleOnCase": "subject",
+      "details": []
+    },
+    "representativeFlags": {
+      "partyName": "Rep Name",
+      "roleOnCase": "Representative",
+      "details": []
+    },
+    "applicantFlags": {
+      "partyName": "Applicant Name",
+      "roleOnCase": "applicant",
+      "details": []
+    },
+    "securityClass": "PUBLIC",
+    "cicCaseRespondentName": "Respondent Name",
+    "cicCaseRespondentOrganisation": "CICA",
+    "cicCaseRespondentEmail": "appeals.team@cica.gov.uk",
+    "cicCaseFullName": "Test Name",
+    "cicCaseApplicantFullName": "Applicant Name",
+    "cicCaseRepresentativeFullName": "Rep Name",
+    "cicCaseIsRepresentativePresent": "Yes",
+    "cicCaseApplicantDocumentsUploaded": [
+      {
+        "value": {
+          "documentCategory": "Linked docs",
+          "documentEmailContent": "some email content",
+          "documentLink": {
+            "document_filename": "file.pdf",
+            "category_id": "L"
+          }
+        }
+      }
+    ],
+    "hyphenatedCaseRef": "1616-5914-0147-3378"
+  },
+  "state": "Submitted"
+}
