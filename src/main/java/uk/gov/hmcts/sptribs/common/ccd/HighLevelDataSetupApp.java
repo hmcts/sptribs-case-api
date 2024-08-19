@@ -85,7 +85,5 @@ public class HighLevelDataSetupApp extends DataLoaderToDefinitionStore {
         return List.of(
             "build/ccd-config/ccd-" + CcdServiceCode.ST_CIC.getCaseType().getCaseTypeName() + "-" + environmentName + ".xlsx"
         );
-
-        return new ArrayList<>();
     }
 }
