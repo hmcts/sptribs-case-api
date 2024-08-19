@@ -109,6 +109,9 @@ feature:
     enabled: ${ACCESS_PROFILES_ENABLED:true}
   wa:
     enabled: ${WA_FEATURE_ENABLED:false}
+  migrate-global-search-task:
+    enabled: ${GLOBAL_SEARCH_MIGRATION_ENABLED:false}
+    caseReference: ${GLOBAL_SEARCH_MIGRATION_TEST_CASE_REF:}
 
 caseinfo:
   apps:
