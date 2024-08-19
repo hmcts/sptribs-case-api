@@ -251,7 +251,7 @@ public class CaseworkerCancelHearingIT {
 
     private List<ListValue<Listing>> getHearingList() {
         final Listing listing1 = Listing.builder()
-            .date(LocalDate.now())
+            .date(LocalDate.of(2024, 8, 14))
             .hearingType(FINAL)
             .hearingTime("10:00")
             .regionList(getMockedRegionData())
@@ -264,7 +264,7 @@ public class CaseworkerCancelHearingIT {
             .hearingStatus(Listed)
             .build();
         final Listing listing2 = Listing.builder()
-            .date(LocalDate.now())
+            .date(LocalDate.of(2024, 8, 14))
             .hearingType(INTERLOCUTORY)
             .hearingTime("14:00")
             .regionList(getMockedRegionData())
