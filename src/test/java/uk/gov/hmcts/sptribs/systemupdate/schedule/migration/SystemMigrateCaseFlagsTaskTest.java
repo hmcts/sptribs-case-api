@@ -91,7 +91,6 @@ class SystemMigrateCaseFlagsTaskTest {
         final CaseDetails caseDetails1 = mock(CaseDetails.class);
         final CaseDetails caseDetails2 = mock(CaseDetails.class);
 
-
         final List<CaseDetails> caseDetailsList = List.of(caseDetails1, caseDetails2);
 
         when(caseDetails1.getId()).thenReturn(TEST_CASE_ID);
@@ -101,7 +100,6 @@ class SystemMigrateCaseFlagsTaskTest {
             .thenReturn(caseDetailsList);
         doThrow(new CcdManagementException(GATEWAY_TIMEOUT.value(), "Failed processing of case", mock(FeignException.class)))
             .when(ccdUpdateService).submitEvent(TEST_CASE_ID, SYSTEM_MIGRATE_CASE_FLAGS, user, SERVICE_AUTHORIZATION);
-
 
         task.run();
 
@@ -113,7 +111,6 @@ class SystemMigrateCaseFlagsTaskTest {
     void shouldThrowIllegalArgumentExceptionIWhenTriggerSystemMigrateCaseFlags() {
         final CaseDetails caseDetails1 = mock(CaseDetails.class);
         final CaseDetails caseDetails2 = mock(CaseDetails.class);
-
 
         final List<CaseDetails> caseDetailsList = List.of(caseDetails1, caseDetails2);
 
@@ -133,7 +130,6 @@ class SystemMigrateCaseFlagsTaskTest {
 
     @Test
     void shouldThrowCcdSearchCaseExceptionIWhenTriggerSystemMigrateCaseFlags() {
-
         when(ccdSearchService.searchForAllCasesWithQuery(query, user, SERVICE_AUTHORIZATION))
             .thenThrow(CcdSearchCaseException.class);
 
@@ -144,7 +140,6 @@ class SystemMigrateCaseFlagsTaskTest {
 
     @Test
     void shouldThrowCcdConflictExceptionIWhenTriggerSystemMigrateCaseFlags() {
-
         when(ccdSearchService.searchForAllCasesWithQuery(query, user, SERVICE_AUTHORIZATION))
             .thenThrow(CcdConflictException.class);
 

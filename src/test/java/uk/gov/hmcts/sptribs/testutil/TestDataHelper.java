@@ -21,6 +21,7 @@ import uk.gov.hmcts.sptribs.caseworker.model.CloseReason;
 import uk.gov.hmcts.sptribs.caseworker.model.HearingSummary;
 import uk.gov.hmcts.sptribs.caseworker.model.Listing;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.DssCaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.HearingDate;
 import uk.gov.hmcts.sptribs.ciccase.model.HearingFormat;
 import uk.gov.hmcts.sptribs.ciccase.model.HearingState;
@@ -32,6 +33,7 @@ import uk.gov.hmcts.sptribs.document.model.CICDocument;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocumentUpload;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
+import uk.gov.hmcts.sptribs.document.model.EdgeCaseDocument;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -545,6 +547,36 @@ public class TestDataHelper {
             .builder()
             .value(listItem)
             .listItems(List.of(listItem))
+            .build();
+    }
+
+    public static DssCaseData getDssCaseData() {
+        EdgeCaseDocument doc1 = new EdgeCaseDocument();
+        doc1.setDocumentLink(
+            Document.builder()
+                .filename("doc1.pdf")
+                .binaryUrl("doc1.pdf/binary")
+                .categoryId("test category")
+                .build()
+        );
+        doc1.setComment("this doc is relevant to the case");
+        EdgeCaseDocument doc2 = new EdgeCaseDocument();
+        doc2.setDocumentLink(
+            Document.builder()
+                .filename("doc2.pdf")
+                .binaryUrl("doc2.pdf/binary")
+                .categoryId("test category")
+                .build()
+        );
+        doc2.setComment("this doc is also relevant to the case");
+        final List<ListValue<EdgeCaseDocument>> dssCaseDataOtherInfoDocuments = List.of(
+            new ListValue<>("1", doc1),
+            new ListValue<>("2", doc2)
+        );
+
+        return DssCaseData.builder()
+            .additionalInformation("some additional info")
+            .otherInfoDocuments(dssCaseDataOtherInfoDocuments)
             .build();
     }
 }

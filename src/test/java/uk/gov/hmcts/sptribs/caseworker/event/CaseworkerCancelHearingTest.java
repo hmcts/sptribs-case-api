@@ -154,7 +154,7 @@ class CaseworkerCancelHearingTest {
         //When
         AboutToStartOrSubmitResponse<CaseData, State> response =
             caseworkerCancelHearing.aboutToSubmit(updatedCaseDetails, beforeDetails);
-        SubmittedCallbackResponse cancelled = caseworkerCancelHearing.hearingCancelled(updatedCaseDetails, beforeDetails);
+        SubmittedCallbackResponse cancelled = caseworkerCancelHearing.submitted(updatedCaseDetails, beforeDetails);
 
         //Then
         assertThat(cancelled).isNotNull();
@@ -192,7 +192,7 @@ class CaseworkerCancelHearingTest {
         //When
         AboutToStartOrSubmitResponse<CaseData, State> response =
             caseworkerCancelHearing.aboutToSubmit(updatedCaseDetails, beforeDetails);
-        SubmittedCallbackResponse cancelled = caseworkerCancelHearing.hearingCancelled(updatedCaseDetails, beforeDetails);
+        SubmittedCallbackResponse cancelled = caseworkerCancelHearing.submitted(updatedCaseDetails, beforeDetails);
 
         //Then
         assertThat(cancelled).isNotNull();
@@ -231,7 +231,7 @@ class CaseworkerCancelHearingTest {
         //When
         AboutToStartOrSubmitResponse<CaseData, State> response =
             caseworkerCancelHearing.aboutToSubmit(updatedCaseDetails, beforeDetails);
-        SubmittedCallbackResponse cancelled = caseworkerCancelHearing.hearingCancelled(updatedCaseDetails, beforeDetails);
+        SubmittedCallbackResponse cancelled = caseworkerCancelHearing.submitted(updatedCaseDetails, beforeDetails);
 
         //Then
         assertThat(cancelled.getConfirmationHeader()).contains(NotificationParties.SUBJECT.getLabel());
