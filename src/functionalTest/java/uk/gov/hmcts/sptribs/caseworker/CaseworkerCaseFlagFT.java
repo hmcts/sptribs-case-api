@@ -1,6 +1,7 @@
 package uk.gov.hmcts.sptribs.caseworker;
 
 import io.restassured.response.Response;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import uk.gov.hmcts.sptribs.caseworker.util.EventConstants;
@@ -20,6 +21,7 @@ public class CaseworkerCaseFlagFT extends FunctionalTestSuite {
     private static final String CONFIRMATION_HEADER = "$.confirmation_header";
 
     @Test
+    @Disabled("New case needs to be created before updating supplementary data")
     public void shouldTriggerSuccessfulResponseIfSubmitCallbackIsInvoked() throws Exception {
         final Map<String, Object> caseData = caseData(REQUEST_SUBMITTED);
 
