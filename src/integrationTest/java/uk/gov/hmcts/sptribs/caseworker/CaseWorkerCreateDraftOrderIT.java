@@ -170,7 +170,7 @@ public class CaseWorkerCreateDraftOrderIT {
     }
 
     @Test
-    void shouldOnAboutToSubmit() throws Exception {
+    void shouldUpdateDraftOrderListOnAboutToSubmit() throws Exception {
         final CaseData caseData = CaseData.builder()
             .cicCase(CicCase.builder()
                 .fullName("Test Name")
