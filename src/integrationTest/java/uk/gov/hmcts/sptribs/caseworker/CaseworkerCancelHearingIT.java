@@ -61,6 +61,7 @@ import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_AUTHORIZATION_TOK
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID_HYPHENATED;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.callbackRequest;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.caseData;
+import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getHearingList;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getMockedHearingVenueData;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getMockedRegionData;
 import static uk.gov.hmcts.sptribs.testutil.TestResourceUtil.expectedResponse;
@@ -247,40 +248,5 @@ public class CaseworkerCancelHearingIT {
             .contains("# Cancel hearing notification failed \n## Please resend the notification");
 
         verifyNoInteractions(notificationServiceCIC);
-    }
-
-    private List<ListValue<Listing>> getHearingList() {
-        final Listing listing1 = Listing.builder()
-            .date(LocalDate.of(2024, 8, 14))
-            .hearingType(FINAL)
-            .hearingTime("10:00")
-            .regionList(getMockedRegionData())
-            .hearingVenues(getMockedHearingVenueData())
-            .venueNotListedOption(emptySet())
-            .roomAtVenue("G.01")
-            .addlInstr("Ground floor")
-            .hearingFormat(FACE_TO_FACE)
-            .shortNotice(YES)
-            .hearingStatus(Listed)
-            .build();
-        final Listing listing2 = Listing.builder()
-            .date(LocalDate.of(2024, 8, 14))
-            .hearingType(INTERLOCUTORY)
-            .hearingTime("14:00")
-            .regionList(getMockedRegionData())
-            .hearingVenues(getMockedHearingVenueData())
-            .venueNotListedOption(emptySet())
-            .roomAtVenue("G.01")
-            .addlInstr("Ground floor")
-            .hearingFormat(FACE_TO_FACE)
-            .shortNotice(YES)
-            .hearingStatus(Listed)
-            .build();
-
-        final List<ListValue<Listing>> hearingList = new ArrayList<>();
-        hearingList.add(new ListValue<>("1", listing1));
-        hearingList.add(new ListValue<>("2", listing2));
-
-        return hearingList;
     }
 }
