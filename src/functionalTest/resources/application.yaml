@@ -34,6 +34,7 @@ idam:
     url: ${TEST_S2S_URL:http://rpe-service-auth-provider-aat.service.core-compute-aat.internal}
     secret: ${S2S_SECRET:dummy}
     microservice: sptribs_case_api
+    taskmanagementsecret: ${S2S_SECRET_TASK_MANAGEMENT_API:dummy}
   solicitor:
     username: ${IDAM_SOLICITOR_USERNAME:dummysolicitor@test.com}
     password: ${IDAM_SOLICITOR_PASSWORD:dummy}
