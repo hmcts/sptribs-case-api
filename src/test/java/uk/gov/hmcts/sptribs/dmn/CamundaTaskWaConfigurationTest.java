@@ -1106,7 +1106,7 @@ class CamundaTaskWaConfigurationTest extends DmnDecisionTableBaseUnitTest {
                     .expectedValue(DUE_DATE_INTERVAL_DAYS, "1", true)
                     .expectedValue(
                         DESCRIPTION,
-                        "Prepare Hearing Bundle",
+                        "[Bundle: Create a bundle](/cases/case-details/${[CASE_REFERENCE]}/trigger/createBundle)",
                         true
                     )
                     .build()
