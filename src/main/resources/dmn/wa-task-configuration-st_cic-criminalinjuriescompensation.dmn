@@ -666,7 +666,7 @@ else 5000</text>
           <text>"description"</text>
         </outputEntry>
         <outputEntry id="LiteralExpression_0e3rlfp">
-          <text>"Prepare Hearing Bundle"</text>
+          <text>"[Bundle: Create a bundle](/cases/case-details/${[CASE_REFERENCE]}/trigger/createBundle)"</text>
         </outputEntry>
         <outputEntry id="LiteralExpression_1td2ttz">
           <text>true</text>

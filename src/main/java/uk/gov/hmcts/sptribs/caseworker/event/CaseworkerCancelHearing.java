@@ -69,13 +69,6 @@ public class CaseworkerCancelHearing implements CCDConfig<CaseData, State, UserR
 
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
-        final PageBuilder pageBuilder = cancelStart(configBuilder);
-        hearingDateSelect.addTo(pageBuilder);
-        reasonSelect.addTo(pageBuilder);
-        recordNotifyParties.addTo(pageBuilder);
-    }
-
-    public PageBuilder cancelStart(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         Event.EventBuilder<CaseData, UserRole, State> eventBuilder =
             configBuilder
                 .event(CASEWORKER_CANCEL_HEARING)
@@ -85,7 +78,7 @@ public class CaseworkerCancelHearing implements CCDConfig<CaseData, State, UserR
                 .showSummary()
                 .aboutToStartCallback(this::aboutToStart)
                 .aboutToSubmitCallback(this::aboutToSubmit)
-                .submittedCallback(this::hearingCancelled)
+                .submittedCallback(this::submitted)
                 .grant(CREATE_READ_UPDATE, SUPER_USER,
                     ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER, ST_CIC_HEARING_CENTRE_ADMIN,
                     ST_CIC_HEARING_CENTRE_TEAM_LEADER, ST_CIC_SENIOR_JUDGE)
@@ -93,10 +86,12 @@ public class CaseworkerCancelHearing implements CCDConfig<CaseData, State, UserR
 
         if (isWorkAllocationEnabled) {
             eventBuilder.publishToCamunda()
-                        .grant(CREATE_READ_UPDATE, ST_CIC_WA_CONFIG_USER);
+                .grant(CREATE_READ_UPDATE, ST_CIC_WA_CONFIG_USER);
         }
-
-        return new PageBuilder(eventBuilder);
+        final PageBuilder pageBuilder = new PageBuilder(eventBuilder);
+        hearingDateSelect.addTo(pageBuilder);
+        reasonSelect.addTo(pageBuilder);
+        recordNotifyParties.addTo(pageBuilder);
     }
 
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToStart(CaseDetails<CaseData, State> details) {
@@ -119,7 +114,7 @@ public class CaseworkerCancelHearing implements CCDConfig<CaseData, State, UserR
 
         DynamicListElement selectedHearing = caseData.getCicCase().getHearingList().getValue();
 
-        if (null != selectedHearing) {
+        if (selectedHearing != null) {
             state = CaseManagement;
         }
         caseData.getListing().setHearingStatus(Cancelled);
@@ -135,8 +130,8 @@ public class CaseworkerCancelHearing implements CCDConfig<CaseData, State, UserR
             .build();
     }
 
-    public SubmittedCallbackResponse hearingCancelled(CaseDetails<CaseData, State> details,
-                                                      CaseDetails<CaseData, State> beforeDetails) {
+    public SubmittedCallbackResponse submitted(CaseDetails<CaseData, State> details,
+                                               CaseDetails<CaseData, State> beforeDetails) {
         try {
             sendHearingCancelledNotification(details.getData().getHyphenatedCaseRef(), details.getData());
         } catch (Exception notificationException) {
