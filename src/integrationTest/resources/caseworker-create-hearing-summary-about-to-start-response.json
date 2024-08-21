@@ -1,0 +1,136 @@
+{
+  "data": {
+    "cicCaseHearingList": {
+      "list_items": [
+        {
+          "label": "1 - Final - 14 Aug 2024 10:00"
+        },
+        {
+          "label": "2 - Interlocutory - 14 Aug 2024 14:00"
+        }
+      ]
+    },
+    "cicCaseRespondentName": "Appeals team",
+    "cicCaseRespondentOrganisation": "CICA",
+    "cicCaseRespondentEmail": "appeals.team@cica.gov.uk",
+    "judge": {
+      "list_items": [
+        {
+          "label": "John Doe"
+        },
+        {
+          "label": "John Smith"
+        }
+      ]
+    },
+    "judgeList": [
+      {
+        "id": "1",
+        "value": {
+          "judgeFullName": "John Smith",
+          "personalCode": "12345"
+        }
+      },
+      {
+        "id": "2",
+        "value": {
+          "judgeFullName": "John Doe",
+          "personalCode": "98765"
+        }
+      }
+    ],
+    "memberList": [
+      {
+        "id": "1",
+        "value": {
+          "name": {
+            "list_items": [
+              {
+                "label": "John Doe"
+              },
+              {
+                "label": "John Smith"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "hearingList": [
+      {
+        "id": "1",
+        "value": {
+          "hearingStatus": "Listed",
+          "hearingType": "Final",
+          "hearingFormat": "Face to Face",
+          "shortNotice": "Yes",
+          "hearingVenues": {
+            "value": {
+              "label": "courtname-courtAddress"
+            },
+            "list_items": [
+              {
+                "label": "courtname-courtAddress"
+              }
+            ],
+            "valueLabel": "courtname-courtAddress"
+          },
+          "regionList": {
+            "value": {
+              "label": "1-region"
+            },
+            "list_items": [
+              {
+                "label": "1-region"
+              }
+            ],
+            "valueLabel": "1-region"
+          },
+          "venueNotListedOption": [],
+          "roomAtVenue": "G.01",
+          "addlInstr": "Ground floor",
+          "date": "2024-08-14",
+          "hearingTime": "10:00"
+        }
+      },
+      {
+        "id": "2",
+        "value": {
+          "hearingStatus": "Listed",
+          "hearingType": "Interlocutory",
+          "hearingFormat": "Face to Face",
+          "shortNotice": "Yes",
+          "hearingVenues": {
+            "value": {
+              "label": "courtname-courtAddress"
+            },
+            "list_items": [
+              {
+                "label": "courtname-courtAddress"
+              }
+            ],
+            "valueLabel": "courtname-courtAddress"
+          },
+          "regionList": {
+            "value": {
+              "label": "1-region"
+            },
+            "list_items": [
+              {
+                "label": "1-region"
+              }
+            ],
+            "valueLabel": "1-region"
+          },
+          "venueNotListedOption": [],
+          "roomAtVenue": "G.01",
+          "addlInstr": "Ground floor",
+          "date": "2024-08-14",
+          "hearingTime": "14:00"
+        }
+      }
+    ],
+    "currentEvent": "create-hearing-summary",
+    "firstHearingDate": "14 Aug 2024"
+  }
+}
