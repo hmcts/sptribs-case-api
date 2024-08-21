@@ -61,7 +61,7 @@ public class SystemClearInactiveDssDraftCasesTaskTest {
 
     private static final BoolQueryBuilder query = boolQuery()
         .must(matchQuery("state", "DSS_Draft"))
-        .filter(rangeQuery("last_modified").gte(LocalDate.now().minusDays(30)));
+        .filter(rangeQuery("last_modified").lte(LocalDate.now().minusDays(30)));
 
     @BeforeEach
     void setUp() {
