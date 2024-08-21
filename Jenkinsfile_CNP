@@ -289,6 +289,7 @@ withPipeline(type, product, component) {
   }
 
   onDemo {
+    env.WA_FEATURE_ENABLED = true
     env.ENVIRONMENT="demo"
     env.CASE_API_URL = "http://sptribs-case-api-demo.service.core-compute-demo.internal"
     env.CASE_API_DOCUMENT_DOWNLOAD_URL = "http://manage-case.demo.platform.hmcts.net/"
