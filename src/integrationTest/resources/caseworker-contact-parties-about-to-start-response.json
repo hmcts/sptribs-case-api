@@ -1,0 +1,25 @@
+{
+  "data": {
+    "cicCaseApplicantDocumentsUploaded": [
+      {
+        "value": {
+          "documentCategory": "Linked docs",
+          "documentEmailContent": "some email content",
+          "documentLink": {
+            "document_url": "http://url/",
+            "document_filename": "test.pdf",
+            "document_binary_url": "http://url/"
+          }
+        }
+      }
+    ],
+    "contactPartiesDocumentsDocumentList": {
+      "value": [],
+      "list_items": [
+        {
+          "label": "[test.pdf L - Linked docs](http://manage-case.demo.platform.hmcts.net//documents//binary)"
+        }
+      ]
+    }
+  }
+}
