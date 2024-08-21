@@ -120,6 +120,6 @@ caseinfo:
         - CIC
 
 wa_task_monitor_api:
-  url: http://sptribs-case-api-pr-1869-wa-task-monitor
+  url: http://sptribs-case-api-pr-1869-wa-task-monitor.preview.platform.hmcts.net
 wa_task_management_api:
-  url: http://sptribs-case-api-pr-1869-wa-task-management-api
+  url: http://sptribs-case-api-pr-1869-wa-task-management-api.preview.platform.hmcts.net
