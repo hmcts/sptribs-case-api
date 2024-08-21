@@ -120,6 +120,6 @@ caseinfo:
         - CIC
 
 wa_task_monitor_api:
-  url: http://wa-task-monitor-aat.service.core-compute-aat.internal
+  url: http://sptribs-case-api-pr-1869-wa-task-monitor
 wa_task_management_api:
-  url: http://wa-task-management-api-aat.service.core-compute-aat.internal
+  url: http://sptribs-case-api-pr-1869-wa-task-management-api
