@@ -17,7 +17,7 @@
       "value": [],
       "list_items": [
         {
-          "label": "[test.pdf L - Linked docs](http://manage-case.demo.platform.hmcts.net//documents//binary)"
+          "label": "${json-unit.any-string}"
         }
       ]
     }
