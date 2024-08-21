@@ -58,6 +58,10 @@ import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.REVIEW_REINSTAT
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.REVIEW_RULE27_REQ_JUDGE_TASK;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.REVIEW_RULE27_REQ_LO_TASK;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.REVIEW_SET_ASIDE_REQ_TASK;
+import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.REVIEW_SPECIFIC_ACCESS_REQ_ADMIN_TASK;
+import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.REVIEW_SPECIFIC_ACCESS_REQ_CTSC_TASK;
+import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.REVIEW_SPECIFIC_ACCESS_REQ_LO_TASK;
+import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.REVIEW_SPECIFIC_ACCESS_REQ_JUDICIARY_TASK;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.REVIEW_STAY_REQ_JUDGE_TASK;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.REVIEW_STAY_REQ_LO_TASK;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.REVIEW_STRIKE_OUT_REQ_JUDGE_TASK;
@@ -278,6 +282,22 @@ class CamundaTaskTypesTest extends DmnDecisionTableBaseUnitTest {
             Map.of(
                 "taskTypeId", STITCH_COLLATE_HEARING_BUNDLE_TASK,
                 "taskTypeName", "Stitch/collate hearing bundle"
+            ),
+            Map.of(
+                "taskTypeId", REVIEW_SPECIFIC_ACCESS_REQ_JUDICIARY_TASK,
+                "taskTypeName", "Review Specific Access Request Judiciary"
+            ),
+            Map.of(
+                "taskTypeId", REVIEW_SPECIFIC_ACCESS_REQ_LO_TASK,
+                "taskTypeName", "Review Specific Access Request Legal Ops"
+            ),
+            Map.of(
+                "taskTypeId", REVIEW_SPECIFIC_ACCESS_REQ_ADMIN_TASK,
+                "taskTypeName", "Review Specific Access Request Admin"
+            ),
+            Map.of(
+                "taskTypeId", REVIEW_SPECIFIC_ACCESS_REQ_CTSC_TASK,
+                    "taskTypeName", "Review Specific Access Request CTSC"
             )
         );
         return Stream.of(
@@ -293,7 +313,7 @@ class CamundaTaskTypesTest extends DmnDecisionTableBaseUnitTest {
         DmnDecisionTableImpl logic = (DmnDecisionTableImpl) decision.getDecisionLogic();
         assertThat(logic.getInputs().size(), is(1));
         assertThat(logic.getOutputs().size(), is(2));
-        assertThat(logic.getRules().size(), is(50));
+        assertThat(logic.getRules().size(), is(54));
     }
 
     @ParameterizedTest(name = "retrieve all task type data")

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<definitions xmlns="https://www.omg.org/spec/DMN/20191111/MODEL/" xmlns:dmndi="https://www.omg.org/spec/DMN/20191111/DMNDI/" xmlns:dc="http://www.omg.org/spec/DMN/20180521/DC/" xmlns:biodi="http://bpmn.io/schema/dmn/biodi/2.0" xmlns:camunda="http://camunda.org/schema/1.0/dmn" id="wa-configuration-definition" name="DRD" namespace="http://camunda.org/schema/1.0/dmn" exporter="Camunda Modeler" exporterVersion="5.25.0">
+<definitions xmlns="https://www.omg.org/spec/DMN/20191111/MODEL/" xmlns:dmndi="https://www.omg.org/spec/DMN/20191111/DMNDI/" xmlns:dc="http://www.omg.org/spec/DMN/20180521/DC/" xmlns:biodi="http://bpmn.io/schema/dmn/biodi/2.0" xmlns:camunda="http://camunda.org/schema/1.0/dmn" id="wa-configuration-definition" name="DRD" namespace="http://camunda.org/schema/1.0/dmn" exporter="Camunda Modeler" exporterVersion="5.19.0">
   <decision id="wa-task-configuration-st_cic-criminalinjuriescompensation" name="Task configuration DMN" camunda:historyTimeToLive="P90D">
     <decisionTable id="DecisionTable_14cx079" hitPolicy="RULE ORDER">
       <input id="InputClause_1gxyo7f" label="CCD Case Data" camunda:inputVariable="caseData">
@@ -550,74 +550,6 @@ else 5000</text>
           <text>"[Orders: Create draft](/cases/case-details/${[CASE_REFERENCE]}/trigger/create-draft-order)"</text>
         </outputEntry>
         <outputEntry id="LiteralExpression_0yjve17">
-          <text>true</text>
-        </outputEntry>
-      </rule>
-      <rule id="DecisionRule_10xaa3f">
-        <inputEntry id="UnaryTests_0hq9dmh">
-          <text></text>
-        </inputEntry>
-        <inputEntry id="UnaryTests_19lmqau">
-          <text>"reviewSpecificAccessRequestJudiciary"</text>
-        </inputEntry>
-        <outputEntry id="LiteralExpression_1y0bvxz">
-          <text>"description"</text>
-        </outputEntry>
-        <outputEntry id="LiteralExpression_1e3cjs1">
-          <text>"[Review Access Request](/cases/case-details/${[CASE_REFERENCE]}/trigger/reviewSpecificAccessRequestJudiciary)"</text>
-        </outputEntry>
-        <outputEntry id="LiteralExpression_19vemud">
-          <text>true</text>
-        </outputEntry>
-      </rule>
-      <rule id="DecisionRule_0vwzq30">
-        <inputEntry id="UnaryTests_0u71gtb">
-          <text></text>
-        </inputEntry>
-        <inputEntry id="UnaryTests_0753eww">
-          <text>"reviewSpecificAccessRequestLegalOps"</text>
-        </inputEntry>
-        <outputEntry id="LiteralExpression_145g9u0">
-          <text>"description"</text>
-        </outputEntry>
-        <outputEntry id="LiteralExpression_12jzpzq">
-          <text>"[Review Access Request](/cases/case-details/${[CASE_REFERENCE]}/trigger/reviewSpecificAccessRequestLegalOps)"</text>
-        </outputEntry>
-        <outputEntry id="LiteralExpression_1lhtqb6">
-          <text>true</text>
-        </outputEntry>
-      </rule>
-      <rule id="DecisionRule_0lpqwhj">
-        <inputEntry id="UnaryTests_08jzvgn">
-          <text></text>
-        </inputEntry>
-        <inputEntry id="UnaryTests_1609clx">
-          <text>"reviewSpecificAccessRequestAdmin"</text>
-        </inputEntry>
-        <outputEntry id="LiteralExpression_0mv5xrm">
-          <text>"description"</text>
-        </outputEntry>
-        <outputEntry id="LiteralExpression_142i77j">
-          <text>"[Review Access Request](/cases/case-details/${[CASE_REFERENCE]}/trigger/reviewSpecificAccessRequestAdmin)"</text>
-        </outputEntry>
-        <outputEntry id="LiteralExpression_1xj0l50">
-          <text>true</text>
-        </outputEntry>
-      </rule>
-      <rule id="DecisionRule_1vnrolb">
-        <inputEntry id="UnaryTests_0saxwba">
-          <text></text>
-        </inputEntry>
-        <inputEntry id="UnaryTests_0bxlgxj">
-          <text>"reviewSpecificAccessRequestCTSC"</text>
-        </inputEntry>
-        <outputEntry id="LiteralExpression_0o45z3n">
-          <text>"description"</text>
-        </outputEntry>
-        <outputEntry id="LiteralExpression_0wqraae">
-          <text>"[Review Access Request](/cases/case-details/${[CASE_REFERENCE]}/trigger/reviewSpecificAccessRequestCTSC)"</text>
-        </outputEntry>
-        <outputEntry id="LiteralExpression_1h6zozq">
           <text>true</text>
         </outputEntry>
       </rule>
