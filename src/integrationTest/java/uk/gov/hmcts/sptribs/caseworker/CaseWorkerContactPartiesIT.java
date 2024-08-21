@@ -13,14 +13,20 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
+import uk.gov.hmcts.ccd.sdk.type.DynamicListElement;
+import uk.gov.hmcts.ccd.sdk.type.DynamicMultiSelectList;
 import uk.gov.hmcts.sptribs.caseworker.model.CloseCase;
+import uk.gov.hmcts.sptribs.caseworker.model.ContactPartiesDocuments;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.common.config.WebMvcConfig;
 import uk.gov.hmcts.sptribs.notification.NotificationServiceCIC;
 import uk.gov.hmcts.sptribs.testutil.IdamWireMock;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 
 import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
 import static net.javacrumbs.jsonunit.assertj.JsonAssertions.json;
@@ -40,6 +46,7 @@ import static uk.gov.hmcts.sptribs.ciccase.model.ContactPreferenceType.EMAIL;
 import static uk.gov.hmcts.sptribs.ciccase.model.RepresentativeCIC.REPRESENTATIVE;
 import static uk.gov.hmcts.sptribs.ciccase.model.RespondentCIC.RESPONDENT;
 import static uk.gov.hmcts.sptribs.ciccase.model.SubjectCIC.SUBJECT;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.ABOUT_TO_START_URL;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.ABOUT_TO_SUBMIT_URL;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.AUTHORIZATION;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.SERVICE_AUTHORIZATION;
@@ -47,6 +54,7 @@ import static uk.gov.hmcts.sptribs.testutil.TestConstants.SUBMITTED_URL;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_AUTHORIZATION_TOKEN;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.callbackRequest;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.caseData;
+import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getDynamicMultiSelectDocumentListWithXElements;
 import static uk.gov.hmcts.sptribs.testutil.TestResourceUtil.expectedResponse;
 
 @ExtendWith(SpringExtension.class)
@@ -70,8 +78,6 @@ public class CaseWorkerContactPartiesIT {
 
     private static final String CASEWORKER_CONTACT_PARTIES_ABOUT_TO_START_RESPONSE =
         "classpath:caseworker-contact-parties-about-to-start-response.json";
-    private static final String CASEWORKER_CONTACT_PARTIES_ABOUT_TO_SUBMIT_RESPONSE =
-        "classpath:caseworker-contact-parties-about-to-submit-response.json";
 
     private static final String CONFIRMATION_HEADER = "$.confirmation_header";
 
@@ -86,10 +92,10 @@ public class CaseWorkerContactPartiesIT {
     }
 
     @Test
-    void shouldOnAboutToSubmit() throws Exception {
+    void shouldClearContactPartiesAndPrepareContactPartiesDocumentsOnAboutToStart() throws Exception {
         final CaseData caseData = caseData();
 
-        String response = mockMvc.perform(post(ABOUT_TO_SUBMIT_URL)
+        String response = mockMvc.perform(post(ABOUT_TO_START_URL)
             .contentType(APPLICATION_JSON)
             .header(SERVICE_AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
             .header(AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
@@ -106,11 +112,24 @@ public class CaseWorkerContactPartiesIT {
 
         assertThatJson(response)
             .when(IGNORING_EXTRA_FIELDS)
-            .isEqualTo(json(expectedResponse(CASEWORKER_CONTACT_PARTIES_ABOUT_TO_SUBMIT_RESPONSE)));
+            .isEqualTo(json(expectedResponse(CASEWORKER_CONTACT_PARTIES_ABOUT_TO_START_RESPONSE)));
     }
 
     @Test
     void shouldReturnConfirmationMessageIfNotificationsDispatchedOnSubmitted() throws Exception {
+        final ContactPartiesDocuments contactPartiesDocuments = new ContactPartiesDocuments();
+        List<DynamicListElement> elements = new ArrayList<>();
+        final DynamicListElement listItem = DynamicListElement
+            .builder()
+            .label("[pdf.pdf A - Application Form](http://manage-case.demo.platform.hmcts.net/documents/null/binary)")
+            .code(UUID.randomUUID())
+            .build();
+        elements.add(listItem);
+        contactPartiesDocuments.setDocumentList(DynamicMultiSelectList
+            .builder()
+            .value(elements)
+            .listItems(elements)
+            .build());
         final CaseData caseData = CaseData.builder()
             .cicCase(CicCase.builder()
                 .notifyPartySubject(Set.of(SUBJECT))
@@ -130,9 +149,8 @@ public class CaseWorkerContactPartiesIT {
                 .applicantEmailAddress("applicant@test.com")
                 .build()
             )
+            .contactPartiesDocuments(contactPartiesDocuments)
             .build();
-
-        //TODO: populate documents in case data
 
         String response = mockMvc.perform(post(SUBMITTED_URL)
             .contentType(APPLICATION_JSON)
