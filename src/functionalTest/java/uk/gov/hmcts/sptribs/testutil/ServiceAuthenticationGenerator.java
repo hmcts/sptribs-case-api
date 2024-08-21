@@ -19,11 +19,18 @@ public class ServiceAuthenticationGenerator {
     @Value("${s2s.name}")
     private String s2sName;
 
+    @Value("${s2s.task_management_name}")
+    private String s2sTMName;
+
     @Value("${idam.s2s-auth.url}")
     private String s2sUrl;
 
     public String generate() {
         return generate(this.s2sName);
+    }
+
+    public String generateTaskManagement() {
+        return generate(this.s2sTMName);
     }
 
     public String generate(final String s2sName) {

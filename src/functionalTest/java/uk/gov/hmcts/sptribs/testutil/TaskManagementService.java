@@ -55,7 +55,7 @@ public class TaskManagementService {
 
         Map<String, Set<Map<String, Object>>> requestBody = Map.of("search_parameters", Set.of(searchParameter, searchParameter2));
         Response result = given()
-            .header(SERVICE_AUTHORIZATION, serviceAuthenticationGenerator.generate())
+            .header(SERVICE_AUTHORIZATION, serviceAuthenticationGenerator.generateTaskManagement())
             .header(AUTHORIZATION, idamTokenGenerator.generateIdamTokenForSystemUser())
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .body(requestBody)
