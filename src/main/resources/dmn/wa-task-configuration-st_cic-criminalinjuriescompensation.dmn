@@ -632,7 +632,7 @@ else 5000</text>
           <text>"description"</text>
         </outputEntry>
         <outputEntry id="LiteralExpression_08d4eii">
-          <text>"[Application DSS Update (cic)](/cases/case-details/${[CASE_REFERENCE]}/trigger/caseworker-update-dss-application)"</text>
+          <text>"[Document management: Upload](/cases/case-details/${[CASE_REFERENCE]}/trigger/caseworker-document-management)&lt;br/&gt;" + "[Orders: Manage due date](/cases/case-details/${[CASE_REFERENCE]}/trigger/caseworker-amend-due-date)&lt;br/&gt;" + "[Refer case to judge](/cases/case-details/${[CASE_REFERENCE]}/trigger/refer-to-judge)&lt;br/&gt;" + "[Refer case to legal officer](/cases/case-details/${[CASE_REFERENCE]}/trigger/refer-to-legal-officer)&lt;br/&gt;" + "[Case: Contact parties](/cases/case-details/${[CASE_REFERENCE]}/trigger/contact-parties)"</text>
         </outputEntry>
         <outputEntry id="LiteralExpression_0cbvgxl">
           <text>true</text>
