@@ -408,11 +408,9 @@ class CamundaTaskWaConfigurationTest extends DmnDecisionTableBaseUnitTest {
                     .expectedValue(
                         DESCRIPTION,
                         "[Decision: Issue a decision](/cases/case-details/${[CASE_REFERENCE]}/trigger"
-                            + "/caseworker-issue-decision/"
-                            + "caseworker-issue-decisionSelectIssueNoticeOption<br/>"
+                            + "/caseworker-issue-decision)<br/>"
                             + "[Decision: Issue final decision](/cases/case-details/${[CASE_REFERENCE]}"
-                            + "/trigger/caseworker-issue-final-decision/"
-                            + "caseworker-issue-final-decisionselectIssueNoticeOption)",
+                            + "/trigger/caseworker-issue-final-decision)",
                         true
                     )
                     .build()
