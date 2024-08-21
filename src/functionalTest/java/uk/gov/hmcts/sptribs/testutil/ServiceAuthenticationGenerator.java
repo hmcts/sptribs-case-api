@@ -25,12 +25,12 @@ public class ServiceAuthenticationGenerator {
     @Value("${idam.s2s-auth.url}")
     private String s2sUrl;
 
-    public String generate() {
-        return generate(this.s2sName);
-    }
-
     public String generateTaskManagement() {
         return generate(this.s2sTMName);
+    }
+
+    public String generate() {
+        return generate(this.s2sName);
     }
 
     public String generate(final String s2sName) {
