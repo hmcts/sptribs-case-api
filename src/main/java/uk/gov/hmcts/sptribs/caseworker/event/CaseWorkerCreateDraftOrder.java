@@ -112,10 +112,8 @@ public class CaseWorkerCreateDraftOrder implements CCDConfig<CaseData, State, Us
             .done();
     }
 
-    public AboutToStartOrSubmitResponse<CaseData, State> midEvent(
-        CaseDetails<CaseData, State> details,
-        CaseDetails<CaseData, State> detailsBefore
-    ) {
+    public AboutToStartOrSubmitResponse<CaseData, State> midEvent(CaseDetails<CaseData, State> details,
+                                                                  CaseDetails<CaseData, State> detailsBefore) {
 
         Calendar cal = Calendar.getInstance();
         String date = simpleDateFormat.format(cal.getTime());

@@ -46,7 +46,13 @@ import java.util.UUID;
 
 import static feign.Request.HttpMethod.GET;
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static java.util.Collections.emptySet;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
+import static uk.gov.hmcts.ccd.sdk.type.YesOrNo.YES;
+import static uk.gov.hmcts.sptribs.ciccase.model.HearingFormat.FACE_TO_FACE;
+import static uk.gov.hmcts.sptribs.ciccase.model.HearingState.Listed;
+import static uk.gov.hmcts.sptribs.ciccase.model.HearingType.FINAL;
+import static uk.gov.hmcts.sptribs.ciccase.model.HearingType.INTERLOCUTORY;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.HEARING_DATE_1;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.HEARING_DATE_2;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.HEARING_TIME;
@@ -578,5 +584,40 @@ public class TestDataHelper {
             .additionalInformation("some additional info")
             .otherInfoDocuments(dssCaseDataOtherInfoDocuments)
             .build();
+    }
+
+    public static List<ListValue<Listing>> getHearingList() {
+        final Listing listing1 = Listing.builder()
+            .date(LocalDate.of(2024, 8, 14))
+            .hearingType(FINAL)
+            .hearingTime("10:00")
+            .regionList(getMockedRegionData())
+            .hearingVenues(getMockedHearingVenueData())
+            .venueNotListedOption(emptySet())
+            .roomAtVenue("G.01")
+            .addlInstr("Ground floor")
+            .hearingFormat(FACE_TO_FACE)
+            .shortNotice(YES)
+            .hearingStatus(Listed)
+            .build();
+        final Listing listing2 = Listing.builder()
+            .date(LocalDate.of(2024, 8, 14))
+            .hearingType(INTERLOCUTORY)
+            .hearingTime("14:00")
+            .regionList(getMockedRegionData())
+            .hearingVenues(getMockedHearingVenueData())
+            .venueNotListedOption(emptySet())
+            .roomAtVenue("G.01")
+            .addlInstr("Ground floor")
+            .hearingFormat(FACE_TO_FACE)
+            .shortNotice(YES)
+            .hearingStatus(Listed)
+            .build();
+
+        final List<ListValue<Listing>> hearingList = new ArrayList<>();
+        hearingList.add(new ListValue<>("1", listing1));
+        hearingList.add(new ListValue<>("2", listing2));
+
+        return hearingList;
     }
 }
