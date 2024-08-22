@@ -1,4 +1,4 @@
-package uk.gov.hmcts.sptribs.caseworker;
+package uk.gov.hmcts.sptribs.caseworker.event;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.json.JSONObject;
@@ -59,7 +59,7 @@ import static uk.gov.hmcts.sptribs.testutil.TestResourceUtil.expectedResponse;
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class CaseworkerPostponeHearingIT {
     private static final String CASEWORKER_POSTPONE_HEARING_RESPONSE =
-        "classpath:caseworker-postpone-hearing-response.json";
+        "classpath:responses/caseworker-postpone-hearing-response.json";
 
     @Autowired
     private MockMvc mockMvc;
