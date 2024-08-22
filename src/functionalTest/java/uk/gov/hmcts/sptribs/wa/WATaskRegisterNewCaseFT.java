@@ -44,7 +44,7 @@ public class WATaskRegisterNewCaseFT extends FunctionalTestSuite {
             .until(
                 () -> {
                     Response searchByCaseIdResponseBody =
-                        taskManagementService.search(newCaseId, List.of("issueCaseToRespondent"), 1, 200);
+                        taskManagementService.search(newCaseId, List.of("registerNewCase"), 1, 200);
 
                     System.out.println(searchByCaseIdResponseBody.asString());
 
