@@ -1,0 +1,17 @@
+{
+  "data": {
+    "allCaseworkerCICDocument": [
+      {
+        "value": {
+          "documentCategory": "Linked docs",
+          "documentEmailContent": "some email content",
+          "documentLink": {
+            "document_filename": "file.pdf",
+            "category_id": "L"
+          },
+          "date": "${json-unit.any-string}"
+        }
+      }
+    ]
+  }
+}
