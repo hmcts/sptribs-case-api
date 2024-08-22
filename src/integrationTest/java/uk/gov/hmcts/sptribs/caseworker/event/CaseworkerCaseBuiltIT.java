@@ -1,4 +1,4 @@
-package uk.gov.hmcts.sptribs.caseworker;
+package uk.gov.hmcts.sptribs.caseworker.event;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.AfterAll;
@@ -14,20 +14,17 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.hmcts.sptribs.common.config.WebMvcConfig;
-import uk.gov.hmcts.sptribs.common.service.CcdSupplementaryDataService;
 import uk.gov.hmcts.sptribs.testutil.IdamWireMock;
 
 import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
-import static org.mockito.Mockito.verify;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_CASE_FLAG;
+import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_CASE_BUILT;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.AUTHORIZATION;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.SERVICE_AUTHORIZATION;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.SUBMITTED_URL;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_AUTHORIZATION_TOKEN;
-import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.callbackRequest;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.caseData;
 
@@ -36,7 +33,7 @@ import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.caseData;
 @AutoConfigureMockMvc
 @ContextConfiguration(initializers = {IdamWireMock.PropertiesInitializer.class})
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-public class CaseworkerCaseFlagIT {
+public class CaseworkerCaseBuiltIT {
 
     @Autowired
     private MockMvc mockMvc;
@@ -46,9 +43,6 @@ public class CaseworkerCaseFlagIT {
 
     @MockBean
     private WebMvcConfig webMvcConfig;
-
-    @MockBean
-    private CcdSupplementaryDataService coreCaseApiService;
 
     private static final String CONFIRMATION_HEADER = "$.confirmation_header";
 
@@ -71,7 +65,7 @@ public class CaseworkerCaseFlagIT {
             .content(objectMapper.writeValueAsString(
                 callbackRequest(
                     caseData(),
-                    CASEWORKER_CASE_FLAG)))
+                    CASEWORKER_CASE_BUILT)))
             .accept(APPLICATION_JSON))
             .andExpect(
                 status().isOk())
@@ -82,8 +76,6 @@ public class CaseworkerCaseFlagIT {
         assertThatJson(response)
             .inPath(CONFIRMATION_HEADER)
             .isString()
-            .contains("# Flag created \n## This Flag has been added to case");
-
-        verify(coreCaseApiService).submitSupplementaryDataToCcd(TEST_CASE_ID.toString());
+            .contains("# Case built successful");
     }
 }
