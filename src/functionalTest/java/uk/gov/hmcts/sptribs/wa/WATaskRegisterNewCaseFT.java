@@ -31,10 +31,13 @@ public class WATaskRegisterNewCaseFT extends FunctionalTestSuite {
     private static final int DEFAULT_POLL_INTERVAL_SECONDS = 4;
 
     @Test
-    public void should() throws IOException {
+    public void should() throws IOException, InterruptedException {
         // TODO: get user which is set up in AAT with Role assignments? Senior tribunal caseworker perhaps?
 
         String newCaseId = String.valueOf(createAndSubmitTestCaseAndGetCaseReference());
+
+        // Sleep for 30s after creating case
+        Thread.sleep(10000);
 
         System.out.println(newCaseId);
 
