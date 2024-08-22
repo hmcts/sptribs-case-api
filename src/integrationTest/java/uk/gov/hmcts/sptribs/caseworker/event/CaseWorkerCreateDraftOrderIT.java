@@ -1,4 +1,4 @@
-package uk.gov.hmcts.sptribs.caseworker;
+package uk.gov.hmcts.sptribs.caseworker.event;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.AfterAll;
@@ -13,41 +13,47 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
-import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
+import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.reform.idam.client.models.User;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
-import uk.gov.hmcts.sptribs.caseworker.service.ExtendedCaseDataApi;
+import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderContentCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
-import uk.gov.hmcts.sptribs.ciccase.model.ExtendedCaseDetails;
+import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.common.config.WebMvcConfig;
+import uk.gov.hmcts.sptribs.document.DocAssemblyService;
+import uk.gov.hmcts.sptribs.document.model.DocumentInfo;
 import uk.gov.hmcts.sptribs.idam.IdamService;
 import uk.gov.hmcts.sptribs.testutil.IdamWireMock;
 
 import java.util.List;
-import java.util.Map;
 
 import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
 import static net.javacrumbs.jsonunit.assertj.JsonAssertions.json;
 import static net.javacrumbs.jsonunit.core.Option.IGNORING_EXTRA_FIELDS;
+import static org.mockito.ArgumentMatchers.anyMap;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static uk.gov.hmcts.sptribs.caseworker.model.SecurityClass.PRIVATE;
-import static uk.gov.hmcts.sptribs.caseworker.model.SecurityClass.PUBLIC;
-import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CHANGE_SECURITY_CLASS;
+import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_CREATE_DRAFT_ORDER;
+import static uk.gov.hmcts.sptribs.ciccase.model.LanguagePreference.ENGLISH;
+import static uk.gov.hmcts.sptribs.ciccase.model.OrderTemplate.CIC3_RULE_27;
+import static uk.gov.hmcts.sptribs.ciccase.model.SchemeCic.Year2012;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.ABOUT_TO_SUBMIT_URL;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.AUTHORIZATION;
-import static uk.gov.hmcts.sptribs.testutil.TestConstants.CHANGE_SECURITY_CLASSIFICATION_MID_EVENT_URL;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.CASE_DATA_CIC_ID;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.CASE_DATA_FILE_CIC;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.SERVICE_AUTHORIZATION;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.SUBMITTED_URL;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_AUTHORIZATION_TOKEN;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_URL;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.callbackRequest;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.caseData;
+import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getHearingList;
 import static uk.gov.hmcts.sptribs.testutil.TestResourceUtil.expectedResponse;
 
 @ExtendWith(SpringExtension.class)
@@ -55,10 +61,7 @@ import static uk.gov.hmcts.sptribs.testutil.TestResourceUtil.expectedResponse;
 @AutoConfigureMockMvc
 @ContextConfiguration(initializers = {IdamWireMock.PropertiesInitializer.class})
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-public class CaseworkerChangeSecurityClassificationIT {
-
-    private static final String CASEWORKER_CHANGE_SECURITY_CLASSIFICATION_ABOUT_TO_SUBMIT_RESPONSE =
-        "classpath:caseworker-change-security-classification-about-to-submit-response.json";
+public class CaseWorkerCreateDraftOrderIT {
 
     @Autowired
     private MockMvc mockMvc;
@@ -73,14 +76,16 @@ public class CaseworkerChangeSecurityClassificationIT {
     private IdamService idamService;
 
     @MockBean
-    private AuthTokenGenerator authTokenGenerator;
+    private DocAssemblyService docAssemblyService;
 
-    @MockBean
-    private ExtendedCaseDataApi caseDataApi;
+    private static final String CASEWORKER_CREATE_DRAFT_ORDER_MID_EVENT_RESPONSE =
+        "classpath:responses/caseworker-create-draft-order-mid-event-response.json";
+    private static final String CASEWORKER_CREATE_DRAFT_ORDER_ABOUT_TO_SUBMIT_RESPONSE =
+        "classpath:responses/caseworker-create-draft-order-about-to-submit-response.json";
 
+    public static final String CREATE_DRAFT_ORDER_ADD_FOOTER_MID_EVENT_URL =
+        "/callbacks/mid-event?page=createDraftOrderAddDocumentFooter";
     private static final String CONFIRMATION_HEADER = "$.confirmation_header";
-    private static final String EXPECTED_ERROR_MESSAGE =
-        "You do not have permission to change the case to the selected Security Classification";
 
     @BeforeAll
     static void setUp() {
@@ -93,43 +98,22 @@ public class CaseworkerChangeSecurityClassificationIT {
     }
 
     @Test
-    void shouldNotReturnErrorsInMidEventIfUserHasPermittedRoles() throws Exception {
-        final CaseData caseData = caseData();
-        caseData.setSecurityClass(PRIVATE);
-        final User user = new User(
-            TEST_AUTHORIZATION_TOKEN,
-            UserDetails.builder()
-                .roles(List.of("caseworker-st_cic", "caseworker-st_cic-senior-judge"))
+    void shouldGenerateOrderFileOnMidEvent() throws Exception {
+        final CaseData caseData = CaseData.builder()
+            .cicCase(CicCase.builder()
+                .fullName("Test Name")
+                .schemeCic(Year2012)
                 .build()
-        );
+            )
+            .hearingList(getHearingList())
+            .draftOrderContentCIC(DraftOrderContentCIC.builder()
+                .orderTemplate(CIC3_RULE_27)
+                .orderSignature("Mr Judge")
+                .mainContent("Draft Order Content")
+                .build()
+            )
+            .build();
 
-        when(idamService.retrieveUser(eq(TEST_AUTHORIZATION_TOKEN)))
-            .thenReturn(user);
-
-        String response = mockMvc.perform(post(CHANGE_SECURITY_CLASSIFICATION_MID_EVENT_URL)
-            .contentType(APPLICATION_JSON)
-            .header(SERVICE_AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
-            .header(AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
-            .content(objectMapper.writeValueAsString(
-                callbackRequest(caseData,
-                    CHANGE_SECURITY_CLASS)))
-            .accept(APPLICATION_JSON))
-            .andExpect(
-                status().isOk())
-            .andReturn()
-            .getResponse()
-            .getContentAsString();
-
-        assertThatJson(response)
-            .inPath("$.errors")
-            .isArray()
-            .isEmpty();
-    }
-
-    @Test
-    void shouldReturnErrorsInMidEventIfUserDoesNotHavePermittedRoles() throws Exception {
-        final CaseData caseData = caseData();
-        caseData.setSecurityClass(PRIVATE);
         final User user = new User(
             TEST_AUTHORIZATION_TOKEN,
             UserDetails.builder()
@@ -137,54 +121,33 @@ public class CaseworkerChangeSecurityClassificationIT {
                 .build()
         );
 
-        when(idamService.retrieveUser(eq(TEST_AUTHORIZATION_TOKEN)))
-            .thenReturn(user);
-
-        mockMvc.perform(post(CHANGE_SECURITY_CLASSIFICATION_MID_EVENT_URL)
-            .contentType(APPLICATION_JSON)
-            .header(SERVICE_AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
-            .header(AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
-            .content(objectMapper.writeValueAsString(
-                callbackRequest(caseData,
-                    CHANGE_SECURITY_CLASS)))
-            .accept(APPLICATION_JSON))
-            .andExpect(
-                status().isOk())
-            .andExpect(jsonPath("$.errors").value(EXPECTED_ERROR_MESSAGE));
-    }
-
-    @Test
-    void shouldSetDataAndSecurityClassificationsOnAboutToSubmit() throws Exception {
-        final CaseData caseData = caseData();
-        caseData.setSecurityClass(PUBLIC);
-        final User user = new User(
-            TEST_AUTHORIZATION_TOKEN,
-            UserDetails.builder()
-                .roles(List.of("caseworker-st_cic"))
-                .build()
+        final DocumentInfo documentInfo = new DocumentInfo(
+            TEST_URL,
+            CASE_DATA_FILE_CIC,
+            CASE_DATA_FILE_CIC,
+            CASE_DATA_CIC_ID
         );
-        final Map<String, Object> dataClassification = Map.of("cicCaseFullName", "PUBLIC");
 
         when(idamService.retrieveUser(eq(TEST_AUTHORIZATION_TOKEN)))
             .thenReturn(user);
-        when(authTokenGenerator.generate()).thenReturn(SERVICE_AUTHORIZATION);
-        when(caseDataApi.getExtendedCaseDetails(
+
+        when(docAssemblyService.renderDocument(
+            anyMap(),
+            eq(TEST_CASE_ID),
             eq(TEST_AUTHORIZATION_TOKEN),
-            eq(SERVICE_AUTHORIZATION),
-            eq(TEST_CASE_ID.toString())
-        )).thenReturn(ExtendedCaseDetails
-                .builder()
-                .dataClassification(dataClassification)
-                .build()
-        );
+            eq(CIC3_RULE_27.getId()),
+            eq(ENGLISH),
+            anyString()
+        )).thenReturn(documentInfo);
 
-        String response = mockMvc.perform(post(ABOUT_TO_SUBMIT_URL)
+        String response = mockMvc.perform(post(CREATE_DRAFT_ORDER_ADD_FOOTER_MID_EVENT_URL)
             .contentType(APPLICATION_JSON)
             .header(SERVICE_AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
             .header(AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
             .content(objectMapper.writeValueAsString(
-                callbackRequest(caseData,
-                    CHANGE_SECURITY_CLASS)))
+                callbackRequest(
+                    caseData,
+                    CASEWORKER_CREATE_DRAFT_ORDER)))
             .accept(APPLICATION_JSON))
             .andExpect(
                 status().isOk())
@@ -194,14 +157,59 @@ public class CaseworkerChangeSecurityClassificationIT {
 
         assertThatJson(response)
             .when(IGNORING_EXTRA_FIELDS)
-            .isEqualTo(
-                json(expectedResponse(CASEWORKER_CHANGE_SECURITY_CLASSIFICATION_ABOUT_TO_SUBMIT_RESPONSE)));
+            .isEqualTo(json(expectedResponse(CASEWORKER_CREATE_DRAFT_ORDER_MID_EVENT_RESPONSE)));
 
-        verify(caseDataApi).getExtendedCaseDetails(
-            TEST_AUTHORIZATION_TOKEN,
-            SERVICE_AUTHORIZATION,
-            TEST_CASE_ID.toString()
+        verify(docAssemblyService).renderDocument(
+            anyMap(),
+            eq(TEST_CASE_ID),
+            eq(TEST_AUTHORIZATION_TOKEN),
+            eq(CIC3_RULE_27.getId()),
+            eq(ENGLISH),
+            anyString()
         );
+    }
+
+    @Test
+    void shouldUpdateDraftOrderListOnAboutToSubmit() throws Exception {
+        final CaseData caseData = CaseData.builder()
+            .cicCase(CicCase.builder()
+                .fullName("Test Name")
+                .schemeCic(Year2012)
+                .orderTemplateIssued(Document.builder()
+                    .categoryId("CIC")
+                    .binaryUrl("TestUrl/binary")
+                    .filename("SENT :Order--[Subject AutoTesting]--29-05-2024 13:36:27.pdf")
+                    .url("TestUrl")
+                    .build())
+                .build()
+            )
+            .hearingList(getHearingList())
+            .draftOrderContentCIC(DraftOrderContentCIC.builder()
+                .orderTemplate(CIC3_RULE_27)
+                .orderSignature("Mr Judge")
+                .mainContent("Draft Order Content")
+                .build()
+            )
+            .build();
+
+        String response = mockMvc.perform(post(ABOUT_TO_SUBMIT_URL)
+            .contentType(APPLICATION_JSON)
+            .header(SERVICE_AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
+            .header(AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
+            .content(objectMapper.writeValueAsString(
+                callbackRequest(
+                    caseData,
+                    CASEWORKER_CREATE_DRAFT_ORDER)))
+            .accept(APPLICATION_JSON))
+            .andExpect(
+                status().isOk())
+            .andReturn()
+            .getResponse()
+            .getContentAsString();
+
+        assertThatJson(response)
+            .when(IGNORING_EXTRA_FIELDS)
+            .isEqualTo(json(expectedResponse(CASEWORKER_CREATE_DRAFT_ORDER_ABOUT_TO_SUBMIT_RESPONSE)));
     }
 
     @Test
@@ -213,7 +221,7 @@ public class CaseworkerChangeSecurityClassificationIT {
             .content(objectMapper.writeValueAsString(
                 callbackRequest(
                     caseData(),
-                    CHANGE_SECURITY_CLASS)))
+                    CASEWORKER_CREATE_DRAFT_ORDER)))
             .accept(APPLICATION_JSON))
             .andExpect(
                 status().isOk())
@@ -224,6 +232,6 @@ public class CaseworkerChangeSecurityClassificationIT {
         assertThatJson(response)
             .inPath(CONFIRMATION_HEADER)
             .isString()
-            .contains("# Security classification changed");
+            .contains("# Draft order created.");
     }
 }
