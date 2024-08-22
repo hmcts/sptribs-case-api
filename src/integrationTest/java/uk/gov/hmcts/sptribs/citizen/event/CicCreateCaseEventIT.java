@@ -39,7 +39,7 @@ import static uk.gov.hmcts.sptribs.testutil.TestResourceUtil.expectedResponse;
 public class CicCreateCaseEventIT {
 
     private static final String CITIZEN_CREATE_CASE_ABOUT_TO_SUBMIT_RESPONSE =
-        "classpath:citizen-create-case-about-to-submit-response.json";
+        "classpath:responses/citizen-create-case-about-to-submit-response.json";
 
     @Autowired
     private MockMvc mockMvc;

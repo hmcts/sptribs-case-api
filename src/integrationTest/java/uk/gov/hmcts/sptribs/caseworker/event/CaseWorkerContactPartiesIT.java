@@ -1,4 +1,4 @@
-package uk.gov.hmcts.sptribs.caseworker;
+package uk.gov.hmcts.sptribs.caseworker.event;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.AfterAll;
@@ -74,7 +74,7 @@ public class CaseWorkerContactPartiesIT {
     private NotificationServiceCIC notificationServiceCIC;
 
     private static final String CASEWORKER_CONTACT_PARTIES_ABOUT_TO_START_RESPONSE =
-        "classpath:caseworker-contact-parties-about-to-start-response.json";
+        "classpath:responses/caseworker-contact-parties-about-to-start-response.json";
 
     private static final String CONFIRMATION_HEADER = "$.confirmation_header";
 
