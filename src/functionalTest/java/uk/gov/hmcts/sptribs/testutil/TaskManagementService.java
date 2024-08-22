@@ -35,7 +35,7 @@ public class TaskManagementService {
     public Response search(String caseId,
                          List<String> expectedTaskList,
                          int expectedTasks,
-                         int expectedStatus) {
+                         int expectedStatus) throws InterruptedException {
 
         Map<String, Object> searchParameter = Map.of(
             "key", "caseId",
@@ -52,6 +52,9 @@ public class TaskManagementService {
         //Also trigger (CRON) Jobs programmatically
         taskMonitorService.triggerInitiationJob();
         taskMonitorService.triggerTerminationJob();
+
+        // Sleep for 30s after creating case
+        Thread.sleep(30000);
 
         Map<String, Set<Map<String, Object>>> requestBody = Map.of("search_parameters", Set.of(searchParameter, searchParameter2));
         Response result = given()
