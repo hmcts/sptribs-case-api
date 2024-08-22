@@ -1,4 +1,4 @@
-package uk.gov.hmcts.sptribs.caseworker;
+package uk.gov.hmcts.sptribs.caseworker.event;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -67,10 +67,10 @@ import static uk.gov.hmcts.sptribs.testutil.TestResourceUtil.expectedResponse;
 public class CaseworkerHearingOptionsIT {
 
     private static final String CASEWORKER_HEARING_OPTIONS_ABOUT_TO_START_RESPONSE =
-        "classpath:caseworker-hearing-options-about-to-start-response.json";
+        "classpath:responses/caseworker-hearing-options-about-to-start-response.json";
 
     private static final String CASEWORKER_HEARING_OPTIONS_MID_EVENT_RESPONSE =
-        "classpath:caseworker-hearing-options-mid-event-response.json";
+        "classpath:responses/caseworker-hearing-options-mid-event-response.json";
 
     @Autowired
     private MockMvc mockMvc;

@@ -1,4 +1,4 @@
-package uk.gov.hmcts.sptribs.caseworker;
+package uk.gov.hmcts.sptribs.caseworker.event;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.AfterAll;
@@ -74,9 +74,9 @@ public class CaseworkerCancelHearingIT {
     private NotificationServiceCIC notificationServiceCIC;
 
     private static final String CASEWORKER_CANCEL_HEARING_ABOUT_TO_START_RESPONSE =
-        "classpath:caseworker-cancel-hearing-about-to-start-response.json";
+        "classpath:responses/caseworker-cancel-hearing-about-to-start-response.json";
     private static final String CASEWORKER_CANCEL_HEARING_ABOUT_TO_SUBMIT_RESPONSE =
-        "classpath:caseworker-cancel-hearing-about-to-submit-response.json";
+        "classpath:responses/caseworker-cancel-hearing-about-to-submit-response.json";
 
     private static final String CONFIRMATION_HEADER = "$.confirmation_header";
 

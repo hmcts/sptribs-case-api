@@ -1,4 +1,4 @@
-package uk.gov.hmcts.sptribs.caseworker;
+package uk.gov.hmcts.sptribs.caseworker.event;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.AfterAll;
@@ -52,7 +52,7 @@ import static uk.gov.hmcts.sptribs.testutil.TestResourceUtil.expectedResponse;
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class CaseworkerEditHearingSummaryIT {
     private static final String CASEWORKER_EDIT_HEARING_SUMMARY_RESPONSE =
-        "classpath:caseworker-edit-hearing-summary-response.json";
+        "classpath:responses/caseworker-edit-hearing-summary-response.json";
 
     @BeforeAll
     static void setUp() {

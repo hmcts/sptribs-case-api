@@ -53,7 +53,7 @@ import static uk.gov.hmcts.sptribs.testutil.TestResourceUtil.expectedResponse;
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class DocumentManagementControllerIT {
 
-    private static final String DOCUMENT_UPLOAD_RESPONSE = "classpath:citizen-document-upload-response.json";
+    private static final String DOCUMENT_UPLOAD_RESPONSE = "classpath:responses/citizen-document-upload-response.json";
 
     private static final String AUTH_TOKEN = "test-auth";
     private static final String S2S_TOKEN = "s2s-token";
