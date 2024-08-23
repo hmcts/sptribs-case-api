@@ -36,9 +36,6 @@ public class WATaskRegisterNewCaseFT extends FunctionalTestSuite {
 
         String newCaseId = String.valueOf(createAndSubmitTestCaseAndGetCaseReference());
 
-        // Sleep for 30s after creating case
-        // Thread.sleep(30000);
-
         System.out.println(newCaseId);
 
         await()
