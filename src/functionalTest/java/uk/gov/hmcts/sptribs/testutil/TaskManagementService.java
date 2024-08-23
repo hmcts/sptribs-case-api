@@ -38,7 +38,7 @@ public class TaskManagementService {
                          int expectedStatus) {
 
         Map<String, Object> searchParameter = Map.of(
-            "key", "caseId",
+            "key", "case_id",
             "operator", "IN",
             "values", singletonList(caseId)
         );
