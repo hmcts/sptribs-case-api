@@ -57,6 +57,12 @@ public class TaskManagementService {
             .when()
             .post(taskManagementUrl + "/task/extended-search");
 
+        String actualResponseBody = result.then()
+            .extract()
+            .body().asString();
+
+        System.out.println("Response body: " + actualResponseBody);
+
         result.then().assertThat()
             .statusCode(expectedStatus)
             .contentType(APPLICATION_JSON_VALUE)
