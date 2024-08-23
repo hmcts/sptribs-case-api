@@ -43,17 +43,18 @@ public class TaskManagementService {
             "values", singletonList(caseId)
         );
 
-        Map<String, Object> searchParameter2 = Map.of(
-            "key", "task_type",
-            "operator", "IN",
-            "values", expectedTaskList
-        );
+//        Map<String, Object> searchParameter2 = Map.of(
+//            "key", "task_type",
+//            "operator", "IN",
+//            "values", expectedTaskList
+//        );
 
         //Also trigger (CRON) Jobs programmatically
         taskMonitorService.triggerInitiationJob();
         taskMonitorService.triggerTerminationJob();
+        taskMonitorService.triggerReconfigurationJob();
 
-        Map<String, Set<Map<String, Object>>> requestBody = Map.of("search_parameters", Set.of(searchParameter, searchParameter2));
+        Map<String, Set<Map<String, Object>>> requestBody = Map.of("search_parameters", Set.of(searchParameter));
         Response result = given()
             .header(SERVICE_AUTHORIZATION, serviceAuthenticationGenerator.generateTaskManagement())
             .header(AUTHORIZATION, idamTokenGenerator.generateIdamTokenForSystemUser())

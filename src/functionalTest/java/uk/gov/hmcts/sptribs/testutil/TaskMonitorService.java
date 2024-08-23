@@ -42,6 +42,11 @@ public class TaskMonitorService {
         initiateJob(requestBody);
     }
 
+    public void triggerReconfigurationJob() {
+        Map<String, Map<String, String>> requestBody = Map.of("job_details", Map.of("name", "RECONFIGURATION"));
+        initiateJob(requestBody);
+    }
+
     private void initiateJob(Map<String, Map<String, String>> requestBody) {
         await()
             .ignoreException(AssertionError.class)
