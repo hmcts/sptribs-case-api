@@ -43,12 +43,6 @@ public class TaskManagementService {
             "values", singletonList(caseId)
         );
 
-//        Map<String, Object> searchParameter2 = Map.of(
-//            "key", "task_type",
-//            "operator", "IN",
-//            "values", expectedTaskList
-//        );
-
         //Also trigger (CRON) Jobs programmatically
         taskMonitorService.triggerInitiationJob();
         taskMonitorService.triggerTerminationJob();
