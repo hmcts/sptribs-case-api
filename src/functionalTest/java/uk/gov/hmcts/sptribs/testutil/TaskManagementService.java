@@ -76,7 +76,7 @@ public class TaskManagementService {
                                               int expectedStatus) {
 
         Response result = given()
-            .header(SERVICE_AUTHORIZATION, serviceAuthenticationGenerator.generate())
+            .header(SERVICE_AUTHORIZATION, serviceAuthenticationGenerator.generateTaskManagement())
             .header(AUTHORIZATION, idamTokenGenerator.generateIdamTokenForWASeniorCaseworker())
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .when()
