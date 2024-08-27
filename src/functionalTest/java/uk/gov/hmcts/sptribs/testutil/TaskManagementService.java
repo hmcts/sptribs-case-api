@@ -38,9 +38,9 @@ public class TaskManagementService {
                          int expectedStatus) {
 
         Map<String, Object> searchParameter = Map.of(
-            "key", "caseId",
+            "key", "task_type",
             "operator", "IN",
-            "values", singletonList(caseId)
+            "values", expectedTaskList
         );
 
         //Also trigger (CRON) Jobs programmatically
