@@ -61,6 +61,7 @@ public class TaskManagementService {
             .extract()
             .body().asString();
 
+        System.out.println("Base url: " + taskMonitorService);
         System.out.println("Response body: " + actualResponseBody);
 
         result.then().assertThat()
