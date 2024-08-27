@@ -87,5 +87,4 @@ class CaseworkerIssueCaseIT {
                 content().json(expectedResponse(CASEWORKER_ISSUE_CASE_RESPONSE))
             );
     }
-
 }
