@@ -259,23 +259,6 @@ withPipeline(type, product, component) {
   }
 
   def githubApi = new GithubAPI(this) as Object
-  if (githubApi.getLabelsbyPattern(env.BRANCH_NAME, "enable-e2e-tests")) {
-    afterSuccess('functionalTest:preview') {
-      try {
-        builder.gradle('e2eTests')
-      } finally {
-        publishHTML target: [
-          allowMissing         : true,
-          alwaysLinkToLastBuild: true,
-          keepAll              : true,
-          reportDir            : "build/reports/tests/e2eTests",
-          reportFiles          : "index.html",
-          reportName           : "E2E Tests Report"
-        ]
-      }
-    }
-  }
-
   afterSuccess('akschartsinstall') {
     onPR {
       for (label in githubApi.getLabelsbyPattern(env.BRANCH_NAME, "pr-values:wa") ) {
