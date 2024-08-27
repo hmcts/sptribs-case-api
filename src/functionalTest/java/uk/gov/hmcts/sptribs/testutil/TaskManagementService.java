@@ -76,8 +76,8 @@ public class TaskManagementService {
                                               int expectedStatus) {
 
         Response result = given()
-            .header(SERVICE_AUTHORIZATION, serviceAuthenticationGenerator.generateTaskManagement())
-            .header(AUTHORIZATION, idamTokenGenerator.generateIdamTokenForWASeniorCaseworker())
+            .header(SERVICE_AUTHORIZATION, serviceAuthenticationGenerator.generate())
+            .header(AUTHORIZATION, idamTokenGenerator.generateIdamTokenForSystemUser())
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .when()
             .get(taskManagementUrl + "/task/" + taskId + "/roles");
