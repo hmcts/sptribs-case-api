@@ -11,7 +11,7 @@ import java.util.Map;
 import java.util.Set;
 
 import static io.restassured.RestAssured.given;
-//import static java.util.Collections.singletonList;
+import static java.util.Collections.singletonList;
 import static org.hamcrest.CoreMatchers.is;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
@@ -38,6 +38,12 @@ public class TaskManagementService {
                          int expectedStatus) {
 
         Map<String, Object> searchParameter = Map.of(
+            "key", "caseId",
+            "operator", "IN",
+            "values", singletonList(caseId)
+        );
+
+        Map<String, Object> searchParameter2 = Map.of(
             "key", "task_type",
             "operator", "IN",
             "values", expectedTaskList
@@ -48,7 +54,7 @@ public class TaskManagementService {
         taskMonitorService.triggerTerminationJob();
         taskMonitorService.triggerReconfigurationJob();
 
-        Map<String, Set<Map<String, Object>>> requestBody = Map.of("search_parameters", Set.of(searchParameter));
+        Map<String, Set<Map<String, Object>>> requestBody = Map.of("search_parameters", Set.of(searchParameter, searchParameter2));
         Response result = given()
             .header(SERVICE_AUTHORIZATION, serviceAuthenticationGenerator.generateTaskManagement())
             .header(AUTHORIZATION, idamTokenGenerator.generateIdamTokenForWASeniorCaseworker())
