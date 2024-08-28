@@ -55,7 +55,7 @@ public class TaskManagementService {
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .body(requestBody)
             .when()
-            .post(taskManagementUrl + "/task");
+            .post(taskManagementUrl + "/task/extended-search");
 
         String actualResponseBody = result.then()
             .extract()

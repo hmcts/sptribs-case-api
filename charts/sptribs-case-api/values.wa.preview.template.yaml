@@ -1,8 +1,6 @@
 java:
   environment:
     WA_FEATURE_ENABLED: true
-    TASK_MANAGEMENT_API_URL: http://{{ .Release.Name }}-wa-task-management-api
-    TASK_MONITOR_API_URL: http://{{ .Release.Name }}-wa-task-monitor
 
 servicebus:
   enabled: true
