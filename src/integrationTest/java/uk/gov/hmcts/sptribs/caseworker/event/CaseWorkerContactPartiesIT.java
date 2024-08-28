@@ -1,4 +1,4 @@
-package uk.gov.hmcts.sptribs.common.event;
+package uk.gov.hmcts.sptribs.caseworker.event;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.AfterAll;
@@ -13,23 +13,25 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
+import uk.gov.hmcts.ccd.sdk.type.DynamicListElement;
+import uk.gov.hmcts.ccd.sdk.type.DynamicMultiSelectList;
+import uk.gov.hmcts.sptribs.caseworker.model.ContactParties;
+import uk.gov.hmcts.sptribs.caseworker.model.ContactPartiesDocuments;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.common.config.WebMvcConfig;
-import uk.gov.hmcts.sptribs.common.service.CcdSupplementaryDataService;
-import uk.gov.hmcts.sptribs.notification.NotificationHelper;
 import uk.gov.hmcts.sptribs.notification.NotificationServiceCIC;
-import uk.gov.hmcts.sptribs.notification.exception.NotificationException;
 import uk.gov.hmcts.sptribs.testutil.IdamWireMock;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 
 import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
 import static net.javacrumbs.jsonunit.assertj.JsonAssertions.json;
 import static net.javacrumbs.jsonunit.core.Option.IGNORING_EXTRA_FIELDS;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -37,22 +39,19 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static uk.gov.hmcts.ccd.sdk.type.YesOrNo.YES;
-import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_CREATE_CASE;
+import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_CONTACT_PARTIES;
 import static uk.gov.hmcts.sptribs.ciccase.model.ApplicantCIC.APPLICANT_CIC;
 import static uk.gov.hmcts.sptribs.ciccase.model.ContactPreferenceType.EMAIL;
 import static uk.gov.hmcts.sptribs.ciccase.model.RepresentativeCIC.REPRESENTATIVE;
+import static uk.gov.hmcts.sptribs.ciccase.model.RespondentCIC.RESPONDENT;
 import static uk.gov.hmcts.sptribs.ciccase.model.SubjectCIC.SUBJECT;
-import static uk.gov.hmcts.sptribs.testutil.TestConstants.ABOUT_TO_SUBMIT_URL;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.ABOUT_TO_START_URL;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.AUTHORIZATION;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.SERVICE_AUTHORIZATION;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.SUBMITTED_URL;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_AUTHORIZATION_TOKEN;
-import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID;
-import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID_HYPHENATED;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.callbackRequest;
-import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.caseData;
-import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getCaseworkerCICDocumentUploadList;
+import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getCaseworkerCICDocumentList;
 import static uk.gov.hmcts.sptribs.testutil.TestResourceUtil.expectedResponse;
 
 @ExtendWith(SpringExtension.class)
@@ -60,10 +59,7 @@ import static uk.gov.hmcts.sptribs.testutil.TestResourceUtil.expectedResponse;
 @AutoConfigureMockMvc
 @ContextConfiguration(initializers = {IdamWireMock.PropertiesInitializer.class})
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-public class CreateCaseIT {
-
-    private static final String CASEWORKER_CREATE_CASE_ABOUT_TO_SUBMIT_RESPONSE =
-        "classpath:responses/caseworker-create-case-about-to-submit-response.json";
+public class CaseWorkerContactPartiesIT {
 
     @Autowired
     private MockMvc mockMvc;
@@ -77,11 +73,8 @@ public class CreateCaseIT {
     @MockBean
     private NotificationServiceCIC notificationServiceCIC;
 
-    @MockBean
-    private NotificationHelper notificationHelper;
-
-    @MockBean
-    private CcdSupplementaryDataService coreCaseApiService;
+    private static final String CASEWORKER_CONTACT_PARTIES_ABOUT_TO_START_RESPONSE =
+        "classpath:responses/caseworker-contact-parties-about-to-start-response.json";
 
     private static final String CONFIRMATION_HEADER = "$.confirmation_header";
 
@@ -96,26 +89,26 @@ public class CreateCaseIT {
     }
 
     @Test
-    void shouldCreateCaseOnAboutToSubmit() throws Exception {
-        final CaseData caseData = caseData();
-        final CicCase cicCase = CicCase.builder()
-            .fullName("Test Name")
-            .representativeFullName("Rep Name")
-            .respondentName("Respondent Name")
-            .applicantFullName("Applicant Name")
-            .isRepresentativePresent(YES)
-            .caseDocumentsUpload(getCaseworkerCICDocumentUploadList("file.pdf"))
-            .build();
-        caseData.setCicCase(cicCase);
+    void shouldClearContactPartiesAndPrepareContactPartiesDocumentsOnAboutToStart() throws Exception {
+        final CaseData caseData = CaseData.builder()
+            .cicCase(CicCase.builder()
+                .applicantDocumentsUploaded(getCaseworkerCICDocumentList())
+                .build()
+            )
+            .contactParties(ContactParties.builder()
+                .message("A contact parties message")
+                .applicantContactParties(Set.of(APPLICANT_CIC))
+                .build()
+            ).build();
 
-        String response = mockMvc.perform(post(ABOUT_TO_SUBMIT_URL)
+        String response = mockMvc.perform(post(ABOUT_TO_START_URL)
             .contentType(APPLICATION_JSON)
             .header(SERVICE_AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
             .header(AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
             .content(objectMapper.writeValueAsString(
                 callbackRequest(
                     caseData,
-                    CASEWORKER_CREATE_CASE)))
+                    CASEWORKER_CONTACT_PARTIES)))
             .accept(APPLICATION_JSON))
             .andExpect(
                 status().isOk())
@@ -125,21 +118,33 @@ public class CreateCaseIT {
 
         assertThatJson(response)
             .when(IGNORING_EXTRA_FIELDS)
-            .isEqualTo(json(expectedResponse(CASEWORKER_CREATE_CASE_ABOUT_TO_SUBMIT_RESPONSE)));
+            .isEqualTo(json(expectedResponse(CASEWORKER_CONTACT_PARTIES_ABOUT_TO_START_RESPONSE)));
     }
 
     @Test
-    void shouldSuccessfullyDispatchNotificationsOnSubmitted() throws Exception {
-        final CaseData caseData = caseData();
-        caseData.setHyphenatedCaseRef(TEST_CASE_ID_HYPHENATED);
-        caseData.setCicCase(
-            CicCase.builder()
-                .subjectCIC(Set.of(SUBJECT))
-                .applicantCIC(Set.of(APPLICANT_CIC))
-                .representativeCIC(Set.of(REPRESENTATIVE))
+    void shouldReturnConfirmationMessageIfNotificationsDispatchedOnSubmitted() throws Exception {
+        final ContactPartiesDocuments contactPartiesDocuments = new ContactPartiesDocuments();
+        List<DynamicListElement> elements = new ArrayList<>();
+        final DynamicListElement listItem = DynamicListElement
+            .builder()
+            .label("[pdf.pdf A - Application Form](http://manage-case.demo.platform.hmcts.net/documents/null/binary)")
+            .code(UUID.randomUUID())
+            .build();
+        elements.add(listItem);
+        contactPartiesDocuments.setDocumentList(DynamicMultiSelectList
+            .builder()
+            .value(elements)
+            .listItems(elements)
+            .build());
+        final CaseData caseData = CaseData.builder()
+            .cicCase(CicCase.builder()
+                .notifyPartySubject(Set.of(SUBJECT))
+                .notifyPartyRespondent(Set.of(RESPONDENT))
+                .notifyPartyRepresentative(Set.of(REPRESENTATIVE))
+                .notifyPartyApplicant(Set.of(APPLICANT_CIC))
                 .contactPreferenceType(EMAIL)
-                .applicantContactDetailsPreference(EMAIL)
                 .representativeContactDetailsPreference(EMAIL)
+                .applicantContactDetailsPreference(EMAIL)
                 .fullName("Test Name")
                 .email("test@test.com")
                 .representativeFullName("Rep Name")
@@ -149,7 +154,9 @@ public class CreateCaseIT {
                 .applicantFullName("Applicant Name")
                 .applicantEmailAddress("applicant@test.com")
                 .build()
-        );
+            )
+            .contactPartiesDocuments(contactPartiesDocuments)
+            .build();
 
         String response = mockMvc.perform(post(SUBMITTED_URL)
             .contentType(APPLICATION_JSON)
@@ -158,7 +165,7 @@ public class CreateCaseIT {
             .content(objectMapper.writeValueAsString(
                 callbackRequest(
                     caseData,
-                    CASEWORKER_CREATE_CASE)))
+                    CASEWORKER_CONTACT_PARTIES)))
             .accept(APPLICATION_JSON))
             .andExpect(
                 status().isOk())
@@ -169,38 +176,23 @@ public class CreateCaseIT {
         assertThatJson(response)
             .inPath(CONFIRMATION_HEADER)
             .isString()
-            .contains("# Case Created \n## Case reference number: \n## " + TEST_CASE_ID_HYPHENATED);
+            .contains("# Message sent \n## A notification has been sent to: Subject, Respondent, Representative, Applicant");
 
-        verify(coreCaseApiService).submitSupplementaryDataToCcd(TEST_CASE_ID.toString());
-        verify(notificationServiceCIC, times(3)).sendEmail(any());
+        verify(notificationServiceCIC, times(4)).sendEmail(any());
         verifyNoMoreInteractions(notificationServiceCIC);
     }
 
     @Test
     void shouldReturnErrorMessageIfNotificationsFailOnSubmitted() throws Exception {
-        final CaseData caseData = caseData();
-        caseData.setHyphenatedCaseRef(TEST_CASE_ID_HYPHENATED);
-        caseData.setCicCase(
-            CicCase.builder()
-                .subjectCIC(Set.of(SUBJECT))
-                .applicantCIC(Set.of(APPLICANT_CIC))
-                .representativeCIC(Set.of(REPRESENTATIVE))
-                .contactPreferenceType(EMAIL)
-                .applicantContactDetailsPreference(EMAIL)
-                .representativeContactDetailsPreference(EMAIL)
-                .fullName("Test Name")
-                .email("test@test.com")
-                .representativeFullName("Rep Name")
-                .representativeEmailAddress("representative@test.com")
-                .respondentName("Respondent Name")
-                .respondentEmail("respondent@test.com")
-                .applicantFullName("Applicant Name")
-                .applicantEmailAddress("applicant@test.com")
+        final CaseData caseData = CaseData.builder()
+            .cicCase(CicCase.builder()
+                .notifyPartySubject(Set.of(SUBJECT))
+                .notifyPartyRespondent(Set.of(RESPONDENT))
+                .notifyPartyRepresentative(Set.of(REPRESENTATIVE))
+                .notifyPartyApplicant(Set.of(APPLICANT_CIC))
                 .build()
-        );
-
-        doThrow(NotificationException.class)
-            .when(notificationHelper).getSubjectCommonVars(eq(TEST_CASE_ID_HYPHENATED), eq(caseData.getCicCase()));
+            )
+            .build();
 
         String response = mockMvc.perform(post(SUBMITTED_URL)
             .contentType(APPLICATION_JSON)
@@ -209,7 +201,7 @@ public class CreateCaseIT {
             .content(objectMapper.writeValueAsString(
                 callbackRequest(
                     caseData,
-                    CASEWORKER_CREATE_CASE)))
+                    CASEWORKER_CONTACT_PARTIES)))
             .accept(APPLICATION_JSON))
             .andExpect(
                 status().isOk())
@@ -220,7 +212,7 @@ public class CreateCaseIT {
         assertThatJson(response)
             .inPath(CONFIRMATION_HEADER)
             .isString()
-            .contains("# Create case notification failed \n## Please resend the notification");
+            .contains("# Contact Parties notification failed \n## Please resend the notification");
 
         verifyNoInteractions(notificationServiceCIC);
     }

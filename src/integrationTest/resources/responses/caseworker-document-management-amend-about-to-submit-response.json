@@ -1,0 +1,18 @@
+{
+  "data": {
+    "cicCaseSelectedDocumentType": "CASE",
+    "cicCaseApplicantDocumentsUploaded": [
+      {
+        "value": {
+          "documentCategory": "Witness Statement",
+          "documentEmailContent": "some amended email content",
+          "documentLink": {
+            "document_url": "http://url/",
+            "document_filename": "test.pdf",
+            "document_binary_url": "http://url/"
+          }
+        }
+      }
+    ]
+  }
+}
