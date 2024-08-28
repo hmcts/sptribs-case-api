@@ -1,0 +1,40 @@
+{
+  "data": {
+    "cicCaseAmendDocumentList": {
+      "list_items": [
+        {
+          "code": "${json-unit.any-string}",
+          "label": "CASE--evidence.pdf--A - Application Form"
+        },
+        {
+          "code": "${json-unit.any-string}",
+          "label": "CLOSE-CASE--test.pdf--L - Linked docs"
+        }
+      ]
+    },
+    "cicCaseApplicantDocumentsUploaded": [
+      {
+        "value": {
+          "documentCategory": "ApplicationForm",
+          "documentEmailContent": "some email content",
+          "documentLink": {
+            "document_filename": "evidence.pdf"
+          }
+        }
+      }
+    ],
+    "closeDocuments": [
+      {
+        "value": {
+          "documentCategory": "Linked docs",
+          "documentEmailContent": "some email content",
+          "documentLink": {
+            "document_url": "http://url/",
+            "document_filename": "test.pdf",
+            "document_binary_url": "http://url/"
+          }
+        }
+      }
+    ]
+  }
+}

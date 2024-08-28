@@ -1,0 +1,70 @@
+{
+  "data": {
+    "cicCaseOrderList": [
+      {
+        "value": {
+          "uploadedFile": [
+            {
+              "value": {
+                "documentEmailContent": "some email content",
+                "documentLink": {
+                  "document_filename": "test.pdf"
+                }
+              }
+            }
+          ]
+        }
+      }
+    ],
+    "cicCaseAmendDocumentList": {
+      "list_items": [
+        {
+          "code": "${json-unit.any-string}",
+          "label": "CASE--evidence.pdf--A - Application Form"
+        },
+        {
+          "code": "${json-unit.any-string}",
+          "label": "CLOSE-CASE--test.pdf--L - Linked docs"
+        }
+      ]
+    },
+    "cicCaseApplicantDocumentsUploaded": [
+      {
+        "value": {
+          "documentCategory": "ApplicationForm",
+          "documentEmailContent": "some email content",
+          "documentLink": {
+            "document_filename": "evidence.pdf"
+          }
+        }
+      }
+    ],
+    "caseIssueDecisionDecisionDocument": {
+      "documentLink": {
+        "document_url": "url1",
+        "document_filename": "name1",
+        "document_binary_url": "url1"
+      }
+    },
+    "caseIssueFinalDecisionDocument": {
+      "documentLink": {
+        "document_url": "url1",
+        "document_filename": "name1",
+        "document_binary_url": "url1"
+      }
+    },
+    "closeDocuments": [
+      {
+        "value": {
+          "documentCategory": "Linked docs",
+          "documentEmailContent": "some email content",
+          "documentLink": {
+            "document_url": "http://url/",
+            "document_filename": "test.pdf",
+            "document_binary_url": "http://url/"
+          }
+        }
+      }
+    ]
+  }
+}
