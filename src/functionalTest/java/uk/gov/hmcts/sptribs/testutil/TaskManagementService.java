@@ -35,7 +35,7 @@ public class TaskManagementService {
     public Response search(String caseId,
                          List<String> expectedTaskList,
                          int expectedTasks,
-                         int expectedStatus) {
+                         int expectedStatus) throws InterruptedException {
 
         Map<String, Object> searchParameter = Map.of(
             "key", "caseId",
@@ -54,6 +54,9 @@ public class TaskManagementService {
         taskMonitorService.triggerTerminationJob();
         taskMonitorService.triggerReconfigurationJob();
 
+        // Wait 30 seconds time for task to be created in database
+        Thread.sleep(30000);
+
         Map<String, Set<Map<String, Object>>> requestBody = Map.of("search_parameters", Set.of(searchParameter, searchParameter2));
         Response result = given()
             .header(SERVICE_AUTHORIZATION, serviceAuthenticationGenerator.generateTaskManagement())
@@ -67,7 +70,6 @@ public class TaskManagementService {
             .extract()
             .body().asString();
 
-        System.out.println("Base url: " + taskManagementUrl);
         System.out.println("Response body: " + actualResponseBody);
 
         result.then().assertThat()
