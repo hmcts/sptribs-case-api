@@ -496,7 +496,7 @@ else 5000</text>
           <text>"description"</text>
         </outputEntry>
         <outputEntry id="LiteralExpression_0n1yxlg">
-          <text>"[Hearings: Create listing](/cases/case-details/${[CASE_REFERENCE]}/trigger/create-hearing-summary/create-hearing-summarycreateHearingSummary)"</text>
+          <text>"[Hearings:Create summary](/cases/case-details/${[CASE_REFERENCE]}/trigger/create-hearing-summary)"</text>
         </outputEntry>
         <outputEntry id="LiteralExpression_1cvv017">
           <text>true</text>
