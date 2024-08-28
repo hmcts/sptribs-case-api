@@ -32,8 +32,6 @@ public class WATaskRegisterNewCaseFT extends FunctionalTestSuite {
 
     @Test
     public void should() throws IOException, InterruptedException {
-        // TODO: get user which is set up in AAT with Role assignments? Senior tribunal caseworker perhaps?
-
         String newCaseId = String.valueOf(createAndSubmitTestCaseAndGetCaseReference());
 
         System.out.println(newCaseId);
