@@ -1,0 +1,67 @@
+{
+  "data": {
+    "judgeList": [
+      {
+        "id": "1",
+        "value": {
+          "judgeFullName": "John Smith",
+          "personalCode": "12345"
+        }
+      },
+      {
+        "id": "2",
+        "value": {
+          "judgeFullName": "John Doe",
+          "personalCode": "98765"
+        }
+      }
+    ],
+    "currentEvent": "caseworker-close-the-case",
+    "closeRejectionName": {
+      "list_items": [
+        {
+          "label": "John Doe"
+        },
+        {
+          "label": "John Smith"
+        }
+      ]
+    },
+    "closeStrikeOutName": {
+      "list_items": [
+        {
+          "label": "John Doe"
+        },
+        {
+          "label": "John Smith"
+        }
+      ]
+    },
+    "closeDocuments": [
+      {
+        "value": {
+          "documentCategory": "Linked docs",
+          "documentEmailContent": "some email content",
+          "documentLink": {
+            "document_url": "http://url/",
+            "document_filename": "test.pdf",
+            "document_binary_url": "http://url/"
+          }
+        }
+      }
+    ],
+    "closeDocumentsUpload": [
+      {
+        "value": {
+          "documentCategory": "Linked docs",
+          "documentEmailContent": "some email content",
+          "documentLink": {
+            "document_url": "http://url/",
+            "document_filename": "test.pdf",
+            "document_binary_url": "http://url/"
+          }
+        }
+      }
+    ]
+  }
+}

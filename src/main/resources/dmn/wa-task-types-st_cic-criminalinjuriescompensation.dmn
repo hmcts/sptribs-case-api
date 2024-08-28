@@ -559,6 +559,50 @@
           <text>"Stitch/collate hearing bundle"</text>
         </outputEntry>
       </rule>
+      <rule id="DecisionRule_0ok3jpa">
+        <inputEntry id="UnaryTests_0ecpynz">
+          <text></text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_1vmoaex">
+          <text>"reviewSpecificAccessRequestJudiciary"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_05jv7tv">
+          <text>"Review Specific Access Request Judiciary"</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_13m6xax">
+        <inputEntry id="UnaryTests_16zeuig">
+          <text></text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_0puao76">
+          <text>"reviewSpecificAccessRequestLegalOps"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_0ai88w4">
+          <text>"Review Specific Access Request Legal Ops"</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_02qhmrw">
+        <inputEntry id="UnaryTests_0aycbbp">
+          <text></text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_0zm1c7y">
+          <text>"reviewSpecificAccessRequestAdmin"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_17ua66u">
+          <text>"Review Specific Access Request Admin"</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_1i2rm3v">
+        <inputEntry id="UnaryTests_0su3cdd">
+          <text></text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_1ry48dv">
+          <text>"reviewSpecificAccessRequestCTSC"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_16xp6lc">
+          <text>"Review Specific Access Request CTSC"</text>
+        </outputEntry>
+      </rule>
     </decisionTable>
   </decision>
   <dmndi:DMNDI>
