@@ -26,7 +26,7 @@ public class WATaskRegisterNewCaseFT extends FunctionalTestSuite {
     @Autowired
     private TaskManagementService taskManagementService;
 
-    private static final String TASK_ID = "issueCaseToRespondent";
+    private static final String TASK_ID = "registerNewCase";
     private static final int DEFAULT_TIMEOUT_SECONDS = 300;
     private static final int DEFAULT_POLL_INTERVAL_SECONDS = 4;
 
@@ -42,7 +42,7 @@ public class WATaskRegisterNewCaseFT extends FunctionalTestSuite {
             .until(
                 () -> {
                     Response searchByCaseIdResponseBody =
-                        taskManagementService.search(newCaseId, List.of("registerNewCase"), 1, 200);
+                        taskManagementService.search(newCaseId, List.of(TASK_ID), 1, 200);
 
                     System.out.println(searchByCaseIdResponseBody.asString());
 
@@ -50,16 +50,13 @@ public class WATaskRegisterNewCaseFT extends FunctionalTestSuite {
                         return false;
                     }
 
-                    // TODO: verify tasks returned against JSON
-                    //  get "tasks" out of response body and compare it to expected
                     final List<Map<String, Object>> tasks = searchByCaseIdResponseBody.getBody().path("tasks");
-                    final String taskId = searchByCaseIdResponseBody.getBody().path("tasks[0].id");
+                    final String taskId = searchByCaseIdResponseBody.getBody().path("tasks[0].type");
 
                     assertNotNull(tasks);
                     assertThat(tasks).isNotEmpty();
                     assertThat(taskId).isEqualTo(TASK_ID);
 
-                    // TODO: do we need a AM refresh to ensure we can fetch task role permissions?
                     String retrieveTaskRolePermissionsResponseBody =
                         taskManagementService.retrieveTaskRolePermissions(taskId, 4, 200);
                     System.out.println(retrieveTaskRolePermissionsResponseBody);

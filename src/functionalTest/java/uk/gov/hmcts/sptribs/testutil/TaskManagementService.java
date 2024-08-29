@@ -83,7 +83,7 @@ public class TaskManagementService {
 
         Response result = given()
             .header(SERVICE_AUTHORIZATION, serviceAuthenticationGenerator.generate())
-            .header(AUTHORIZATION, idamTokenGenerator.generateIdamTokenForSystemUser())
+            .header(AUTHORIZATION, idamTokenGenerator.generateIdamTokenForWASeniorCaseworker())
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .when()
             .get(taskManagementUrl + "/task/" + taskId + "/roles");
