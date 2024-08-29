@@ -9,6 +9,7 @@ import uk.gov.hmcts.sptribs.testutil.FunctionalTestSuite;
 import uk.gov.hmcts.sptribs.testutil.TaskManagementService;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -27,6 +28,7 @@ public class WATaskRegisterNewCaseFT extends FunctionalTestSuite {
     private TaskManagementService taskManagementService;
 
     private static final String TASK_TYPE = "registerNewCase";
+    private static final List<String> TASK_ROLES = Arrays.asList("regional-centre-admin", "regional-centre-team-leader", "task-supervisor");
     private static final int DEFAULT_TIMEOUT_SECONDS = 300;
     private static final int DEFAULT_POLL_INTERVAL_SECONDS = 4;
 
@@ -44,8 +46,6 @@ public class WATaskRegisterNewCaseFT extends FunctionalTestSuite {
                     Response searchByCaseIdResponseBody =
                         taskManagementService.search(newCaseId, List.of(TASK_TYPE), 1, 200);
 
-                    System.out.println(searchByCaseIdResponseBody.asString());
-
                     if (searchByCaseIdResponseBody.asString().isBlank()) {
                         return false;
                     }
@@ -60,17 +60,21 @@ public class WATaskRegisterNewCaseFT extends FunctionalTestSuite {
 
                     Response retrieveTaskRolePermissionsResponseBody =
                         taskManagementService.retrieveTaskRolePermissions(taskId, 3, 200);
-                    System.out.println(retrieveTaskRolePermissionsResponseBody);
 
                     if (retrieveTaskRolePermissionsResponseBody.asString().isBlank()) {
                         return false;
                     }
 
                     final List<Map<String, Object>> roles = retrieveTaskRolePermissionsResponseBody.getBody().path("roles");
-                    System.out.println(retrieveTaskRolePermissionsResponseBody.asString());
+
                     assertNotNull(roles);
-                    System.out.println(retrieveTaskRolePermissionsResponseBody.asString());
-                    assertThat(roles).isEmpty();
+                    assertThat(roles).isNotEmpty();
+
+                    for (Map<String, Object> role : roles) {
+                        String roleName = role.get("role_name").toString();
+                        assertThat(roleName).isIn(TASK_ROLES);
+                    }
+
                     return true;
                 });
     }
