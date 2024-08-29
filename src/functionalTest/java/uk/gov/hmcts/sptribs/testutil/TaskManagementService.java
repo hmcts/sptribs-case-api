@@ -42,7 +42,7 @@ public class TaskManagementService {
         taskMonitorService.triggerTerminationJob();
         taskMonitorService.triggerReconfigurationJob();
 
-        // Wait 60 seconds time for task to be created in database
+        // Wait 60 seconds to allow time for task to be created in database
         Thread.sleep(60000);
 
         Map<String, Object> searchParameter = Map.of(
@@ -66,12 +66,6 @@ public class TaskManagementService {
             .when()
             .post(taskManagementUrl + "/task/extended-search");
 
-        String actualResponseBody = result.then()
-            .extract()
-            .body().asString();
-
-        System.out.println("Response body: " + actualResponseBody);
-
         result.then().assertThat()
             .statusCode(expectedStatus)
             .contentType(APPLICATION_JSON_VALUE)
@@ -80,7 +74,7 @@ public class TaskManagementService {
         return result;
     }
 
-    public String retrieveTaskRolePermissions(String taskId,
+    public Response retrieveTaskRolePermissions(String taskId,
                                               int expectedNumberOfRoles,
                                               int expectedStatus) {
 
@@ -96,8 +90,6 @@ public class TaskManagementService {
             .contentType(APPLICATION_JSON_VALUE)
             .body("roles.size()", is(expectedNumberOfRoles));
 
-        return result.then()
-            .extract()
-            .body().asString();
+        return result;
     }
 }

@@ -58,10 +58,19 @@ public class WATaskRegisterNewCaseFT extends FunctionalTestSuite {
                     assertThat(tasks).isNotEmpty();
                     assertThat(taskType).isEqualTo(TASK_TYPE);
 
-                    String retrieveTaskRolePermissionsResponseBody =
-                        taskManagementService.retrieveTaskRolePermissions(taskId, 2, 200);
+                    Response retrieveTaskRolePermissionsResponseBody =
+                        taskManagementService.retrieveTaskRolePermissions(taskId, 3, 200);
                     System.out.println(retrieveTaskRolePermissionsResponseBody);
-                    // TODO: verify roles returned against JSON
+
+                    if (retrieveTaskRolePermissionsResponseBody.asString().isBlank()) {
+                        return false;
+                    }
+
+                    final List<Map<String, Object>> roles = retrieveTaskRolePermissionsResponseBody.getBody().path("roles");
+                    System.out.println(retrieveTaskRolePermissionsResponseBody.asString());
+                    assertNotNull(roles);
+                    System.out.println(retrieveTaskRolePermissionsResponseBody.asString());
+                    assertThat(roles).isEmpty();
                     return true;
                 });
     }
