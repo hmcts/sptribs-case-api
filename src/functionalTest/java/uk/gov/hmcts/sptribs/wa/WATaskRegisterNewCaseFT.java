@@ -26,7 +26,7 @@ public class WATaskRegisterNewCaseFT extends FunctionalTestSuite {
     @Autowired
     private TaskManagementService taskManagementService;
 
-    private static final String TASK_ID = "registerNewCase";
+    private static final String TASK_TYPE = "registerNewCase";
     private static final int DEFAULT_TIMEOUT_SECONDS = 300;
     private static final int DEFAULT_POLL_INTERVAL_SECONDS = 4;
 
@@ -42,7 +42,7 @@ public class WATaskRegisterNewCaseFT extends FunctionalTestSuite {
             .until(
                 () -> {
                     Response searchByCaseIdResponseBody =
-                        taskManagementService.search(newCaseId, List.of(TASK_ID), 1, 200);
+                        taskManagementService.search(newCaseId, List.of(TASK_TYPE), 1, 200);
 
                     System.out.println(searchByCaseIdResponseBody.asString());
 
@@ -51,11 +51,12 @@ public class WATaskRegisterNewCaseFT extends FunctionalTestSuite {
                     }
 
                     final List<Map<String, Object>> tasks = searchByCaseIdResponseBody.getBody().path("tasks");
-                    final String taskId = searchByCaseIdResponseBody.getBody().path("tasks[0].type");
+                    final String taskId = searchByCaseIdResponseBody.getBody().path("tasks[0].id");
+                    final String taskType = searchByCaseIdResponseBody.getBody().path("tasks[0].type");
 
                     assertNotNull(tasks);
                     assertThat(tasks).isNotEmpty();
-                    assertThat(taskId).isEqualTo(TASK_ID);
+                    assertThat(taskType).isEqualTo(TASK_TYPE);
 
                     String retrieveTaskRolePermissionsResponseBody =
                         taskManagementService.retrieveTaskRolePermissions(taskId, 4, 200);
