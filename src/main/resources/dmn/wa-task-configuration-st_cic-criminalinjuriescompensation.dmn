@@ -462,7 +462,7 @@ else 5000</text>
           <text>"description"</text>
         </outputEntry>
         <outputEntry id="LiteralExpression_1nzw62x">
-          <text>"[Orders: Send order](/cases/case-details/${[CASE_REFERENCE]}/trigger/caseworker-send-order/caseworker-send-ordercaseworkerSendOrderSelectOrderIssuingType)"</text>
+          <text>"[Orders: Send order](/cases/case-details/${[CASE_REFERENCE]}/trigger/caseworker-send-order)"</text>
         </outputEntry>
         <outputEntry id="LiteralExpression_07pv3yt">
           <text>true</text>
@@ -496,7 +496,7 @@ else 5000</text>
           <text>"description"</text>
         </outputEntry>
         <outputEntry id="LiteralExpression_0n1yxlg">
-          <text>"[Hearings: Create listing](/cases/case-details/${[CASE_REFERENCE]}/trigger/create-hearing-summary/create-hearing-summarycreateHearingSummary)"</text>
+          <text>"[Hearings:Create summary](/cases/case-details/${[CASE_REFERENCE]}/trigger/create-hearing-summary)"</text>
         </outputEntry>
         <outputEntry id="LiteralExpression_1cvv017">
           <text>true</text>
@@ -547,77 +547,9 @@ else 5000</text>
           <text>"description"</text>
         </outputEntry>
         <outputEntry id="LiteralExpression_0r3qzf3">
-          <text>"[Orders: Create draft](/cases/case-details/${[CASE_REFERENCE]}/trigger/create-draft-order/create-draft-ordercreateDraftOrder)"</text>
+          <text>"[Orders: Create draft](/cases/case-details/${[CASE_REFERENCE]}/trigger/create-draft-order)"</text>
         </outputEntry>
         <outputEntry id="LiteralExpression_0yjve17">
-          <text>true</text>
-        </outputEntry>
-      </rule>
-      <rule id="DecisionRule_10xaa3f">
-        <inputEntry id="UnaryTests_0hq9dmh">
-          <text></text>
-        </inputEntry>
-        <inputEntry id="UnaryTests_19lmqau">
-          <text>"reviewSpecificAccessRequestJudiciary"</text>
-        </inputEntry>
-        <outputEntry id="LiteralExpression_1y0bvxz">
-          <text>"description"</text>
-        </outputEntry>
-        <outputEntry id="LiteralExpression_1e3cjs1">
-          <text>"[Review Access Request](/cases/case-details/${[CASE_REFERENCE]}/trigger/reviewSpecificAccessRequestJudiciary)"</text>
-        </outputEntry>
-        <outputEntry id="LiteralExpression_19vemud">
-          <text>true</text>
-        </outputEntry>
-      </rule>
-      <rule id="DecisionRule_0vwzq30">
-        <inputEntry id="UnaryTests_0u71gtb">
-          <text></text>
-        </inputEntry>
-        <inputEntry id="UnaryTests_0753eww">
-          <text>"reviewSpecificAccessRequestLegalOps"</text>
-        </inputEntry>
-        <outputEntry id="LiteralExpression_145g9u0">
-          <text>"description"</text>
-        </outputEntry>
-        <outputEntry id="LiteralExpression_12jzpzq">
-          <text>"[Review Access Request](/cases/case-details/${[CASE_REFERENCE]}/trigger/reviewSpecificAccessRequestLegalOps)"</text>
-        </outputEntry>
-        <outputEntry id="LiteralExpression_1lhtqb6">
-          <text>true</text>
-        </outputEntry>
-      </rule>
-      <rule id="DecisionRule_0lpqwhj">
-        <inputEntry id="UnaryTests_08jzvgn">
-          <text></text>
-        </inputEntry>
-        <inputEntry id="UnaryTests_1609clx">
-          <text>"reviewSpecificAccessRequestAdmin"</text>
-        </inputEntry>
-        <outputEntry id="LiteralExpression_0mv5xrm">
-          <text>"description"</text>
-        </outputEntry>
-        <outputEntry id="LiteralExpression_142i77j">
-          <text>"[Review Access Request](/cases/case-details/${[CASE_REFERENCE]}/trigger/reviewSpecificAccessRequestAdmin)"</text>
-        </outputEntry>
-        <outputEntry id="LiteralExpression_1xj0l50">
-          <text>true</text>
-        </outputEntry>
-      </rule>
-      <rule id="DecisionRule_1vnrolb">
-        <inputEntry id="UnaryTests_0saxwba">
-          <text></text>
-        </inputEntry>
-        <inputEntry id="UnaryTests_0bxlgxj">
-          <text>"reviewSpecificAccessRequestCTSC"</text>
-        </inputEntry>
-        <outputEntry id="LiteralExpression_0o45z3n">
-          <text>"description"</text>
-        </outputEntry>
-        <outputEntry id="LiteralExpression_0wqraae">
-          <text>"[Review Access Request](/cases/case-details/${[CASE_REFERENCE]}/trigger/reviewSpecificAccessRequestCTSC)"</text>
-        </outputEntry>
-        <outputEntry id="LiteralExpression_1h6zozq">
           <text>true</text>
         </outputEntry>
       </rule>
@@ -666,7 +598,7 @@ else 5000</text>
           <text>"description"</text>
         </outputEntry>
         <outputEntry id="LiteralExpression_0e3rlfp">
-          <text>"Prepare Hearing Bundle"</text>
+          <text>"[Bundle: Create a bundle](/cases/case-details/${[CASE_REFERENCE]}/trigger/createBundle)"</text>
         </outputEntry>
         <outputEntry id="LiteralExpression_1td2ttz">
           <text>true</text>

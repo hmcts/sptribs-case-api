@@ -264,23 +264,6 @@ withPipeline(type, product, component) {
   }
 
   def githubApi = new GithubAPI(this) as Object
-  if (githubApi.getLabelsbyPattern(env.BRANCH_NAME, "enable-e2e-tests")) {
-    afterSuccess('functionalTest:preview') {
-      try {
-        builder.gradle('e2eTests')
-      } finally {
-        publishHTML target: [
-          allowMissing         : true,
-          alwaysLinkToLastBuild: true,
-          keepAll              : true,
-          reportDir            : "build/reports/tests/e2eTests",
-          reportFiles          : "index.html",
-          reportName           : "E2E Tests Report"
-        ]
-      }
-    }
-  }
-
   afterSuccess('akschartsinstall') {
     onPR {
       for (label in githubApi.getLabelsbyPattern(env.BRANCH_NAME, "pr-values:wa") ) {
@@ -294,6 +277,7 @@ withPipeline(type, product, component) {
   }
 
   onDemo {
+    env.WA_FEATURE_ENABLED = true
     env.ENVIRONMENT="demo"
     env.CASE_API_URL = "http://sptribs-case-api-demo.service.core-compute-demo.internal"
     env.CASE_API_DOCUMENT_DOWNLOAD_URL = "http://manage-case.demo.platform.hmcts.net/"

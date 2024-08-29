@@ -21,6 +21,7 @@ import uk.gov.hmcts.sptribs.caseworker.model.CloseReason;
 import uk.gov.hmcts.sptribs.caseworker.model.HearingSummary;
 import uk.gov.hmcts.sptribs.caseworker.model.Listing;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.DssCaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.HearingDate;
 import uk.gov.hmcts.sptribs.ciccase.model.HearingFormat;
 import uk.gov.hmcts.sptribs.ciccase.model.HearingState;
@@ -32,6 +33,7 @@ import uk.gov.hmcts.sptribs.document.model.CICDocument;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocumentUpload;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
+import uk.gov.hmcts.sptribs.document.model.EdgeCaseDocument;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -44,7 +46,13 @@ import java.util.UUID;
 
 import static feign.Request.HttpMethod.GET;
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static java.util.Collections.emptySet;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
+import static uk.gov.hmcts.ccd.sdk.type.YesOrNo.YES;
+import static uk.gov.hmcts.sptribs.ciccase.model.HearingFormat.FACE_TO_FACE;
+import static uk.gov.hmcts.sptribs.ciccase.model.HearingState.Listed;
+import static uk.gov.hmcts.sptribs.ciccase.model.HearingType.FINAL;
+import static uk.gov.hmcts.sptribs.ciccase.model.HearingType.INTERLOCUTORY;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.HEARING_DATE_1;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.HEARING_DATE_2;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.HEARING_TIME;
@@ -546,5 +554,70 @@ public class TestDataHelper {
             .value(listItem)
             .listItems(List.of(listItem))
             .build();
+    }
+
+    public static DssCaseData getDssCaseData() {
+        EdgeCaseDocument doc1 = new EdgeCaseDocument();
+        doc1.setDocumentLink(
+            Document.builder()
+                .filename("doc1.pdf")
+                .binaryUrl("doc1.pdf/binary")
+                .categoryId("test category")
+                .build()
+        );
+        doc1.setComment("this doc is relevant to the case");
+        EdgeCaseDocument doc2 = new EdgeCaseDocument();
+        doc2.setDocumentLink(
+            Document.builder()
+                .filename("doc2.pdf")
+                .binaryUrl("doc2.pdf/binary")
+                .categoryId("test category")
+                .build()
+        );
+        doc2.setComment("this doc is also relevant to the case");
+        final List<ListValue<EdgeCaseDocument>> dssCaseDataOtherInfoDocuments = List.of(
+            new ListValue<>("1", doc1),
+            new ListValue<>("2", doc2)
+        );
+
+        return DssCaseData.builder()
+            .additionalInformation("some additional info")
+            .otherInfoDocuments(dssCaseDataOtherInfoDocuments)
+            .build();
+    }
+
+    public static List<ListValue<Listing>> getHearingList() {
+        final Listing listing1 = Listing.builder()
+            .date(LocalDate.of(2024, 8, 14))
+            .hearingType(FINAL)
+            .hearingTime("10:00")
+            .regionList(getMockedRegionData())
+            .hearingVenues(getMockedHearingVenueData())
+            .venueNotListedOption(emptySet())
+            .roomAtVenue("G.01")
+            .addlInstr("Ground floor")
+            .hearingFormat(FACE_TO_FACE)
+            .shortNotice(YES)
+            .hearingStatus(Listed)
+            .build();
+        final Listing listing2 = Listing.builder()
+            .date(LocalDate.of(2024, 8, 14))
+            .hearingType(INTERLOCUTORY)
+            .hearingTime("14:00")
+            .regionList(getMockedRegionData())
+            .hearingVenues(getMockedHearingVenueData())
+            .venueNotListedOption(emptySet())
+            .roomAtVenue("G.01")
+            .addlInstr("Ground floor")
+            .hearingFormat(FACE_TO_FACE)
+            .shortNotice(YES)
+            .hearingStatus(Listed)
+            .build();
+
+        final List<ListValue<Listing>> hearingList = new ArrayList<>();
+        hearingList.add(new ListValue<>("1", listing1));
+        hearingList.add(new ListValue<>("2", listing2));
+
+        return hearingList;
     }
 }
