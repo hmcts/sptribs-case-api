@@ -121,7 +121,6 @@ public class CaseWorkerIssueDecisionIT {
             .getResponse()
             .getContentAsString();
 
-        System.out.println(response);
         assertThatJson(response)
             .inPath("$.data.decisionSignature")
             .isString()
