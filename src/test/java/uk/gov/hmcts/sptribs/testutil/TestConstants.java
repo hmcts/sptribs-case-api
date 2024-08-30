@@ -27,6 +27,8 @@ public final class TestConstants {
     public static final String EDIT_RECORD_LISTING_MID_EVENT_URL = "callbacks/mid-event?page=regionInfo";
     public static final String CHANGE_SECURITY_CLASSIFICATION_MID_EVENT_URL = "/callbacks/mid-event?page=changeSecurityClass";
 
+    public static final String ISSUE_DECISION_MID_EVENT_URL = "/callbacks/mid-event?page=issueDecisionAddDocumentFooter";
+
     public static final String AUTH_HEADER_VALUE = "auth-header-value";
     public static final String INVALID_AUTH_TOKEN = "invalid_token";
     public static final String SERVICE_AUTHORIZATION = "ServiceAuthorization";

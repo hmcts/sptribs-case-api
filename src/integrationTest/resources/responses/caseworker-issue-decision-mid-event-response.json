@@ -1,0 +1,11 @@
+{
+  "data": {
+    "caseIssueDecisionIssueDecisionTemplate": "CIC1 - Eligibility",
+    "caseIssueDecisionIssueDecisionDraft": {
+      "document_url": "url",
+      "document_filename": "filename",
+      "document_binary_url": "binary url",
+      "category_id": "category"
+    }
+  }
+}
