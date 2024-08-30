@@ -23,9 +23,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.DecisionTemplate;
 import uk.gov.hmcts.sptribs.ciccase.model.LanguagePreference;
 import uk.gov.hmcts.sptribs.common.config.WebMvcConfig;
 import uk.gov.hmcts.sptribs.document.CaseDataDocumentService;
-import uk.gov.hmcts.sptribs.document.DocAssemblyService;
 import uk.gov.hmcts.sptribs.document.model.CICDocument;
-import uk.gov.hmcts.sptribs.document.model.DocumentInfo;
 import uk.gov.hmcts.sptribs.idam.IdamService;
 import uk.gov.hmcts.sptribs.notification.NotificationServiceCIC;
 import uk.gov.hmcts.sptribs.testutil.IdamWireMock;
@@ -105,7 +103,7 @@ public class CaseWorkerIssueDecisionIT {
     }
 
     @Test
-    void shouldSetDecisionSignatureInAboutToStart() throws Exception{
+    void shouldSetDecisionSignatureInAboutToStart() throws Exception {
         final CaseData caseData = caseData();
 
         String response = mockMvc.perform(post(ABOUT_TO_START_URL)

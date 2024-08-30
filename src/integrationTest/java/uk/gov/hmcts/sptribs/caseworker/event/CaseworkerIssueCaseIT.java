@@ -13,19 +13,13 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
-import uk.gov.hmcts.ccd.sdk.type.Document;
-import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseIssue;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.common.config.WebMvcConfig;
-import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
-import uk.gov.hmcts.sptribs.document.model.DocumentType;
 import uk.gov.hmcts.sptribs.notification.NotificationServiceCIC;
 import uk.gov.hmcts.sptribs.testutil.IdamWireMock;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Set;
 
 import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
@@ -119,7 +113,7 @@ class CaseworkerIssueCaseIT {
     }
 
     @Test
-    void shouldCreateDocumentListInAboutToStart() throws Exception{
+    void shouldCreateDocumentListInAboutToStart() throws Exception {
         final CaseData caseData = CaseData.builder()
             .cicCase(CicCase.builder()
                 .applicantDocumentsUploaded(getDocument())
@@ -184,8 +178,8 @@ class CaseworkerIssueCaseIT {
         assertThatJson(response)
             .inPath(CONFIRMATION_HEADER)
             .isString()
-            .contains("# Case issued \n##  This case has now been issued. \n" +
-                "## A notification has been sent to: Subject, Respondent, Representative, Applicant");
+            .contains("# Case issued \n##  This case has now been issued. \n"
+                + "## A notification has been sent to: Subject, Respondent, Representative, Applicant");
 
         verify(notificationServiceCIC, times(4)).sendEmail(any());
         verifyNoMoreInteractions(notificationServiceCIC);
