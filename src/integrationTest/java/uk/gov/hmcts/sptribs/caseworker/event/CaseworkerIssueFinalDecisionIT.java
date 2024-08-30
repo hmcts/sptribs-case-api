@@ -323,7 +323,8 @@ public class CaseworkerIssueFinalDecisionIT {
         assertThatJson(response)
             .inPath(CONFIRMATION_HEADER)
             .isString()
-            .contains("# Final decision notice issued \n## A notification has been sent to: Subject, Respondent, Representative, Applicant");
+            .contains("# Final decision notice issued \n"
+                + "## A notification has been sent to: Subject, Respondent, Representative, Applicant");
 
         verify(notificationServiceCIC, times(4)).sendEmail(any());
         verifyNoMoreInteractions(notificationServiceCIC);
