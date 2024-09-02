@@ -107,7 +107,7 @@ public class CaseworkerIssueFinalDecisionIT {
     }
 
     @Test
-    void shouldSetDecisionSignatureInAboutToStart() throws Exception {
+    void shouldClearDecisionSignatureInAboutToStart() throws Exception {
         final CaseData caseData = caseData();
 
         String response = mockMvc.perform(MockMvcRequestBuilders.post(ABOUT_TO_START_URL)
