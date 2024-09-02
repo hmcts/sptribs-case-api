@@ -1,0 +1,37 @@
+{
+  "data": {
+    "cicCaseRespondentName": "Appeals team",
+    "cicCaseRespondentOrganisation": "CICA",
+    "cicCaseRespondentEmail": "appeals.team@cica.gov.uk",
+    "stayIsCaseStayed": "No",
+    "hearingFormat": "Face to Face",
+    "shortNotice": "Yes",
+    "hearingVenues": {
+      "value": {
+        "label": "courtname-courtAddress"
+      },
+      "list_items": [
+        {
+          "label": "courtname-courtAddress"
+        }
+      ],
+      "valueLabel": "courtname-courtAddress"
+    },
+    "regionList": {
+      "value": {
+        "label": "1-region"
+      },
+      "list_items": [
+        {
+          "label": "1-region"
+        }
+      ],
+      "valueLabel": "1-region"
+    },
+    "roomAtVenue": "G.01",
+    "addlInstr": "Ground floor",
+    "hearingSummaryExists": "YES",
+    "hearingList": [],
+    "currentEvent": "edit-hearing-summary"
+  }
+}
