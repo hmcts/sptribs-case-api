@@ -36,6 +36,9 @@ import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
 import static net.javacrumbs.jsonunit.assertj.JsonAssertions.json;
 import static net.javacrumbs.jsonunit.core.Option.IGNORING_EXTRA_FIELDS;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -227,6 +230,9 @@ public class CaseworkerRemoveStayIT {
             .inPath(CONFIRMATION_HEADER)
             .isString()
             .contains("# Stay Removed from Case \n## A notification has been sent to: Subject, Representative, Applicant");
+
+        verify(notificationServiceCIC, times(3)).sendEmail(any());
+        verifyNoMoreInteractions(notificationServiceCIC);
     }
 
     @Test
@@ -267,5 +273,8 @@ public class CaseworkerRemoveStayIT {
             .inPath(CONFIRMATION_HEADER)
             .isString()
             .contains("# Remove case stay notification failed \n## Please resend the notification");
+
+        verify(notificationServiceCIC, times(1)).sendEmail(any());
+        verifyNoMoreInteractions(notificationServiceCIC);
     }
 }
