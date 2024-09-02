@@ -101,7 +101,7 @@ public class CaseWorkerManageOrderDueDate implements CCDConfig<CaseData, State, 
         final String id = getId(selectedOrder);
         final List<ListValue<Order>> orderList = caseData.getCicCase().getOrderList();
         for (ListValue<Order> orderListValue : orderList) {
-            if (null != id && id.equals(orderListValue.getId())) {
+            if (id != null && id.equals(orderListValue.getId())) {
                 Order order = orderListValue.getValue();
                 order.setDueDateList(cicCase.getOrderDueDates());
                 orderListValue.setValue(order);
