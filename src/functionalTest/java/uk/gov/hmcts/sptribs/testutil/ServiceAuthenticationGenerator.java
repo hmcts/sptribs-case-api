@@ -25,7 +25,7 @@ public class ServiceAuthenticationGenerator {
     @Value("${idam.s2s-auth.url}")
     private String s2sUrl;
 
-    public String generateTaskManagement() {
+    public String generateTaskManagementToken() {
         return generate(this.s2sTMName);
     }
 

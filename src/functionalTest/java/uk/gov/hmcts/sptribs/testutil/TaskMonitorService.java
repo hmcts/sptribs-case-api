@@ -55,7 +55,7 @@ public class TaskMonitorService {
             .until(
                 () -> {
                     Response result = given()
-                        .header(SERVICE_AUTHORIZATION, serviceAuthenticationGenerator.generateTaskManagement())
+                        .header(SERVICE_AUTHORIZATION, serviceAuthenticationGenerator.generateTaskManagementToken())
                         .header(AUTHORIZATION, idamTokenGenerator.generateIdamTokenForSystemUser())
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .body(requestBody)
