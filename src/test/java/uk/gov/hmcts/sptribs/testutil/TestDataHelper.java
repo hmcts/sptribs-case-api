@@ -21,6 +21,7 @@ import uk.gov.hmcts.sptribs.caseworker.model.CloseReason;
 import uk.gov.hmcts.sptribs.caseworker.model.HearingSummary;
 import uk.gov.hmcts.sptribs.caseworker.model.Listing;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.DssCaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.HearingDate;
 import uk.gov.hmcts.sptribs.ciccase.model.HearingFormat;
@@ -72,6 +73,11 @@ public class TestDataHelper {
 
     public static CaseData caseData() {
         return CaseData.builder()
+            .build();
+    }
+
+    public static CicCase cicCase() {
+        return CicCase.builder()
             .build();
     }
 
