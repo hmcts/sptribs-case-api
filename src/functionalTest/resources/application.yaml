@@ -9,7 +9,7 @@ azure:
   application-insights:
     instrumentation-key: functional-test
 
-test-url: ${TEST_URL:http://localhost:4013}
+test-url: ${CASE_API_URL:http://localhost:4013}
 
 case-flags:
   supplementary-data:
