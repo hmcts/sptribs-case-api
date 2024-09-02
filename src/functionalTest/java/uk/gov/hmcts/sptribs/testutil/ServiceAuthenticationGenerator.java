@@ -20,13 +20,13 @@ public class ServiceAuthenticationGenerator {
     private String s2sName;
 
     @Value("${s2s.task_management_name}")
-    private String s2sTMName;
+    private String s2sTaskManagementName;
 
     @Value("${idam.s2s-auth.url}")
     private String s2sUrl;
 
     public String generateTaskManagementToken() {
-        return generate(this.s2sTMName);
+        return generate(this.s2sTaskManagementName);
     }
 
     public String generate() {
