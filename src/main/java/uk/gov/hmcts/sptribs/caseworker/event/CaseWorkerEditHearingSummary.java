@@ -72,7 +72,7 @@ public class CaseWorkerEditHearingSummary implements CCDConfig<CaseData, State, 
                 .showSummary()
                 .aboutToStartCallback(this::aboutToStart)
                 .aboutToSubmitCallback(this::aboutToSubmit)
-                .submittedCallback(this::summaryCreated)
+                .submittedCallback(this::submitted)
                 .grant(CREATE_READ_UPDATE, SUPER_USER,
                     ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER, ST_CIC_HEARING_CENTRE_ADMIN,
                     ST_CIC_HEARING_CENTRE_TEAM_LEADER, ST_CIC_SENIOR_JUDGE)
@@ -132,7 +132,7 @@ public class CaseWorkerEditHearingSummary implements CCDConfig<CaseData, State, 
 
     }
 
-    public SubmittedCallbackResponse summaryCreated(CaseDetails<CaseData, State> details,
+    public SubmittedCallbackResponse submitted(CaseDetails<CaseData, State> details,
                                                     CaseDetails<CaseData, State> beforeDetails) {
         return SubmittedCallbackResponse.builder()
             .confirmationHeader(MessageUtil.generateSimpleMessage(
