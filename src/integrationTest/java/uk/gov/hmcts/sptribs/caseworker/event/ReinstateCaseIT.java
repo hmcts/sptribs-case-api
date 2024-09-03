@@ -183,8 +183,6 @@ public class ReinstateCaseIT {
             .getResponse()
             .getContentAsString();
 
-        System.out.println(response);
-
         assertThatJson(response)
             .inPath(CONFIRMATION_HEADER)
             .isString()
