@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import uk.gov.hmcts.sptribs.testutil.CcdCaseCreator;
 import uk.gov.hmcts.sptribs.testutil.FunctionalTestSuite;
+import uk.gov.hmcts.sptribs.testutil.RoleAssignmentService;
 import uk.gov.hmcts.sptribs.testutil.TaskManagementService;
 
 import java.io.IOException;
@@ -27,6 +28,9 @@ public class WATaskRegisterNewCaseFT extends FunctionalTestSuite {
     @Autowired
     private TaskManagementService taskManagementService;
 
+    @Autowired
+    private RoleAssignmentService roleAssignmentService;
+
     private static final String TASK_TYPE = "registerNewCase";
     private static final List<String> TASK_ROLES = Arrays.asList("regional-centre-admin", "regional-centre-team-leader", "task-supervisor");
     private static final int DEFAULT_TIMEOUT_SECONDS = 300;
@@ -43,6 +47,8 @@ public class WATaskRegisterNewCaseFT extends FunctionalTestSuite {
             .atMost(DEFAULT_TIMEOUT_SECONDS, SECONDS)
             .until(
                 () -> {
+                    roleAssignmentService.createRoleAssignmentsForWaSeniorCaseworker();
+
                     Response searchByCaseIdResponseBody =
                         taskManagementService.search(newCaseId, List.of(TASK_TYPE), 1, 200);
 
