@@ -1,0 +1,26 @@
+{
+  "data": {
+    "cicCaseApplicantDocumentsUploaded": [
+      {
+        "value": {
+          "documentCategory": "Linked docs",
+          "documentEmailContent": "some email content",
+          "documentLink": {
+            "document_url": "http://url/",
+            "document_filename": "test.pdf",
+            "document_binary_url": "http://url/"
+          }
+        }
+      }
+    ],
+    "contactPartiesDocumentsDocumentList": {
+      "value": [],
+      "list_items": [
+        {
+          "code": "${json-unit.any-string}",
+          "label": "[test.pdf L - Linked docs](http://ccd-case-document-am-api-aat.service.core-compute-aat.internal/documents//binary)"
+        }
+      ]
+    }
+  }
+}
