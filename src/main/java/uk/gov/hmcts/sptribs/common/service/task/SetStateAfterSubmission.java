@@ -17,7 +17,6 @@ public class SetStateAfterSubmission implements CaseTask {
     public CaseDetails<CaseData, State> apply(final CaseDetails<CaseData, State> caseDetails) {
         if (caseDetails != null) {
             caseDetails.setState(Submitted);
-            log.debug("State set to {}, CaseID {}", caseDetails.getState(), caseDetails.getId());
         }
 
         return caseDetails;
