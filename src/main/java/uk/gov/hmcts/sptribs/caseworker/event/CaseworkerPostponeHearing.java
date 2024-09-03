@@ -19,6 +19,7 @@ import uk.gov.hmcts.sptribs.caseworker.helper.RecordListHelper;
 import uk.gov.hmcts.sptribs.caseworker.service.HearingService;
 import uk.gov.hmcts.sptribs.caseworker.util.MessageUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
@@ -144,16 +145,17 @@ public class CaseworkerPostponeHearing implements CCDConfig<CaseData, State, Use
     }
 
     private void sendHearingPostponedNotification(String caseNumber, CaseData caseData) {
+        CicCase cicCase = caseData.getCicCase();
 
-        if (CollectionUtils.isNotEmpty(caseData.getCicCase().getNotifyPartySubject())) {
+        if (CollectionUtils.isNotEmpty(cicCase.getNotifyPartySubject())) {
             hearingPostponedNotification.sendToSubject(caseData, caseNumber);
         }
 
-        if (CollectionUtils.isNotEmpty(caseData.getCicCase().getNotifyPartyRepresentative())) {
+        if (CollectionUtils.isNotEmpty(cicCase.getNotifyPartyRepresentative())) {
             hearingPostponedNotification.sendToRepresentative(caseData, caseNumber);
         }
 
-        if (CollectionUtils.isNotEmpty(caseData.getCicCase().getNotifyPartyRespondent())) {
+        if (CollectionUtils.isNotEmpty(cicCase.getNotifyPartyRespondent())) {
             hearingPostponedNotification.sendToRespondent(caseData, caseNumber);
         }
     }
