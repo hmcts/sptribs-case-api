@@ -153,7 +153,6 @@ public class CaseworkerEditRecordListing implements CCDConfig<CaseData, State, U
     @SneakyThrows
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(CaseDetails<CaseData, State> details,
                                                                        CaseDetails<CaseData, State> beforeDetails) {
-        log.info("Caseworker updated record listing callback invoked for Case Id: {}", details.getId());
 
         final CaseData caseData = details.getData();
         final List<String> errors = recordListHelper.getErrorMsg(details.getData().getCicCase());
