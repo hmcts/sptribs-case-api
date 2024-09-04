@@ -39,7 +39,7 @@ public class RoleAssignmentService {
         );
 
         Response result = given()
-            .header(SERVICE_AUTHORIZATION, serviceAuthenticationGenerator.generate())
+            .header(SERVICE_AUTHORIZATION, serviceAuthenticationGenerator.generateAccessManagementToken())
             .header(AUTHORIZATION, idamTokenGenerator.generateIdamTokenForSystemUser())
             .queryParam("userType", "CASEWORKER")
             .contentType(MediaType.APPLICATION_JSON_VALUE)

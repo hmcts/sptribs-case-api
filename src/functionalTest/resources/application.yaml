@@ -27,6 +27,7 @@ uk:
 s2s:
   name: ccd_data
   task_management_name: wa_task_management_api
+  access_management_name: am_role_assignment_service
 
 idam:
   api:
