@@ -43,7 +43,7 @@ import static uk.gov.hmcts.sptribs.testutil.TestResourceUtil.expectedResponse;
 @ContextConfiguration(initializers = {IdamWireMock.PropertiesInitializer.class})
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class HearingRecordingUploadPageIT {
-    private final String HEARING_RECORDING_UPLOAD_PAGE_RESPONSE =
+    private static final String HEARING_RECORDING_UPLOAD_PAGE_RESPONSE =
         "classpath:responses/hearing-recording-upload-page-mid-event-response.json";
 
     @Autowired
