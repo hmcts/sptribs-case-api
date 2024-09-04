@@ -18,7 +18,7 @@
       "list_items": [
         {
           "code": "${json-unit.any-string}",
-          "label": "[test.pdf L - Linked docs](http://ccd-case-document-am-api-aat.service.core-compute-aat.internal/documents//binary)"
+          "label": "${json-unit.any-string}"
         }
       ]
     }
