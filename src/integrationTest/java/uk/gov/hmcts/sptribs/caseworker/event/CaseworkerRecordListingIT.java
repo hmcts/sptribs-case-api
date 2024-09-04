@@ -22,7 +22,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.HearingFormat;
 import uk.gov.hmcts.sptribs.common.config.WebMvcConfig;
-import uk.gov.hmcts.sptribs.notification.NotificationServiceCIC;
+import uk.gov.hmcts.sptribs.common.notification.ListingCreatedNotification;
 import uk.gov.hmcts.sptribs.recordlisting.LocationService;
 import uk.gov.hmcts.sptribs.testutil.IdamWireMock;
 
@@ -85,7 +85,7 @@ public class CaseworkerRecordListingIT {
     private HearingService hearingService;
 
     @MockBean
-    private NotificationServiceCIC notificationServiceCIC;
+    private ListingCreatedNotification listingCreatedNotification;
 
     private static final String CASEWORKER_RECORD_LISTING_ABOUT_TO_START_RESPONSE =
         "classpath:responses/caseworker-record-listing-about-to-start-response.json";
@@ -251,34 +251,24 @@ public class CaseworkerRecordListingIT {
         assertThatJson(response)
             .inPath(CONFIRMATION_HEADER)
             .isString()
-            .contains("# Listing record created \n## Subject, Respondent, Representative, Applicant");
+            .contains("# Listing record created \n## A notification has been sent to: Subject, Respondent, Representative, Applicant");
 
-        verify(notificationServiceCIC, times(4)).sendEmail(any());
-        verifyNoMoreInteractions(notificationServiceCIC);
+        verify(listingCreatedNotification, times(1)).sendToSubject((CaseData) any(), anyString());
+        verify(listingCreatedNotification, times(1)).sendToRespondent(any(), anyString());
+        verify(listingCreatedNotification, times(1)).sendToRepresentative((CaseData) any(), anyString());
+        verify(listingCreatedNotification, times(1)).sendToApplicant(any(), anyString());
+        verifyNoMoreInteractions(listingCreatedNotification);
     }
 
     @Test
     void shouldReturnErrorMessageIfNotificationsFailOnSubmitted() throws Exception {
-        final CaseData caseData = caseData();
-        caseData.setHyphenatedCaseRef(TEST_CASE_ID_HYPHENATED);
-        caseData.setCicCase(
-            CicCase.builder()
-                .fullName("Test Name")
-                .representativeFullName("Rep Name")
-                .respondentName("Respondent Name")
-                .applicantFullName("Applicant Name")
-                .hearingNotificationParties(
-                    Set.of(SUBJECT, REPRESENTATIVE, APPLICANT, RESPONDENT))
-                .build()
-        );
-
         String response = mockMvc.perform(post(SUBMITTED_URL)
             .contentType(APPLICATION_JSON)
             .header(SERVICE_AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
             .header(AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
             .content(objectMapper.writeValueAsString(
                 callbackRequest(
-                    caseData,
+                    caseData(),
                     CASEWORKER_RECORD_LISTING)))
             .accept(APPLICATION_JSON))
             .andExpect(
@@ -292,7 +282,7 @@ public class CaseworkerRecordListingIT {
             .isString()
             .contains("# Create listing notification failed \n## Please resend the notification");
 
-        verifyNoInteractions(notificationServiceCIC);
+        verifyNoInteractions(listingCreatedNotification);
     }
 
     private DynamicList getRegionDynamicList() {

@@ -27,9 +27,10 @@ import uk.gov.hmcts.sptribs.ciccase.model.RepresentativeCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.RespondentCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.SubjectCIC;
 import uk.gov.hmcts.sptribs.common.config.WebMvcConfig;
-import uk.gov.hmcts.sptribs.notification.NotificationServiceCIC;
+import uk.gov.hmcts.sptribs.common.notification.HearingPostponedNotification;
 import uk.gov.hmcts.sptribs.testutil.IdamWireMock;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -38,6 +39,7 @@ import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
 import static net.javacrumbs.jsonunit.assertj.JsonAssertions.json;
 import static net.javacrumbs.jsonunit.core.Option.IGNORING_EXTRA_FIELDS;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -54,10 +56,10 @@ import static uk.gov.hmcts.sptribs.ciccase.model.NotificationParties.RESPONDENT;
 import static uk.gov.hmcts.sptribs.ciccase.model.NotificationParties.SUBJECT;
 import static uk.gov.hmcts.sptribs.testutil.IdamWireMock.ST_CIC_CASEWORKER;
 import static uk.gov.hmcts.sptribs.testutil.IdamWireMock.stubForIdamDetails;
-import static uk.gov.hmcts.sptribs.testutil.TestConstants.CASEWORKER_USER_ID;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.ABOUT_TO_START_URL;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.ABOUT_TO_SUBMIT_URL;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.AUTHORIZATION;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.CASEWORKER_USER_ID;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.SERVICE_AUTHORIZATION;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.SUBMITTED_URL;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_AUTHORIZATION_TOKEN;
@@ -94,7 +96,7 @@ public class CaseworkerPostponeHearingIT {
     private WebMvcConfig webMvcConfig;
 
     @MockBean
-    private NotificationServiceCIC notificationServiceCIC;
+    private HearingPostponedNotification hearingPostponedNotification;
 
     @BeforeAll
     static void setUp() {
@@ -206,6 +208,9 @@ public class CaseworkerPostponeHearingIT {
                 .representativeEmailAddress("representative@test.com")
                 .respondentName("Respondent Name")
                 .respondentEmail("respondent@test.com")
+                .notifyPartySubject(Collections.singleton(SubjectCIC.SUBJECT))
+                .notifyPartyRepresentative(Collections.singleton(RepresentativeCIC.REPRESENTATIVE))
+                .notifyPartyRespondent(Collections.singleton(RespondentCIC.RESPONDENT))
                 .hearingNotificationParties(
                     Set.of(SUBJECT, REPRESENTATIVE, RESPONDENT))
                 .build()
@@ -234,31 +239,21 @@ public class CaseworkerPostponeHearingIT {
                 ## The hearing has been postponed, the case has been updated\s
                 ## A notification has been sent to: Subject, Respondent, Representative""");
 
-        verify(notificationServiceCIC, times(3)).sendEmail(any());
-        verifyNoMoreInteractions(notificationServiceCIC);
+        verify(hearingPostponedNotification, times(1)).sendToSubject((CaseData) any(), anyString());
+        verify(hearingPostponedNotification, times(1)).sendToRespondent(any(), anyString());
+        verify(hearingPostponedNotification, times(1)).sendToRepresentative((CaseData) any(), anyString());
+        verifyNoMoreInteractions(hearingPostponedNotification);
     }
 
     @Test
     void shouldReturnErrorMessageIfNotificationsFailOnSubmitted() throws Exception {
-        final CaseData caseData = caseData();
-        caseData.setHyphenatedCaseRef(TEST_CASE_ID_HYPHENATED);
-        caseData.setCicCase(
-            CicCase.builder()
-                .fullName("Test Name")
-                .representativeFullName("Rep Name")
-                .respondentName("Respondent Name")
-                .hearingNotificationParties(
-                    Set.of(SUBJECT, REPRESENTATIVE, RESPONDENT))
-                .build()
-        );
-
         String response = mockMvc.perform(post(SUBMITTED_URL)
                 .contentType(APPLICATION_JSON)
                 .header(SERVICE_AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
                 .header(AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
                 .content(objectMapper.writeValueAsString(
                     callbackRequest(
-                        caseData,
+                        null,
                         CASEWORKER_POSTPONE_HEARING)))
                 .accept(APPLICATION_JSON))
             .andExpect(
@@ -272,6 +267,6 @@ public class CaseworkerPostponeHearingIT {
             .isString()
             .contains("# Postpone hearing notification failed \n## Please resend the notification");
 
-        verifyNoInteractions(notificationServiceCIC);
+        verifyNoInteractions(hearingPostponedNotification);
     }
 }
