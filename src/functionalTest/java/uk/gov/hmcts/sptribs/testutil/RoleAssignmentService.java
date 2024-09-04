@@ -34,11 +34,8 @@ public class RoleAssignmentService {
 
     public void createRoleAssignments(String userId) {
         Map<String, Object> requestBody = Map.of(
-            "key", "userIds",
-            "values", singletonList(userId)
+            "userIds", singletonList(userId)
         );
-
-        System.out.println(requestBody.toString());
 
         Response result = given()
             .header(SERVICE_AUTHORIZATION, serviceAuthenticationGenerator.generateAccessManagementToken())
