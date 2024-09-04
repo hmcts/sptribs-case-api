@@ -154,7 +154,7 @@ public class CaseWorkerIssueDecision implements CCDConfig<CaseData, State, UserR
         final CaseData caseData = details.getData();
         final CICDocument decisionDocument = caseData.getCaseIssueDecision().getDecisionDocument();
 
-        if (null != decisionDocument && null != decisionDocument.getDocumentLink()) {
+        if (decisionDocument != null && decisionDocument.getDocumentLink() != null) {
             decisionDocument.getDocumentLink().setCategoryId("TD");
         }
 
