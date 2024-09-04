@@ -123,8 +123,8 @@ public class RecordListHelper {
     }
 
     public Listing checkAndUpdateVenueInformation(Listing listing) {
-        if (listing.getVenueNotListedOption() == null
-            || !listing.getVenueNotListedOption().contains(VenueNotListed.VENUE_NOT_LISTED)) {
+        if (listing.getVenueNotListedOption() != null
+            && !listing.getVenueNotListedOption().contains(VenueNotListed.VENUE_NOT_LISTED)) {
             String selectedVenue = listing.getSelectedVenue();
             listing.setHearingVenueNameAndAddress(selectedVenue);
             listing.setReadOnlyHearingVenueName(parseHyphen(selectedVenue, 0));
