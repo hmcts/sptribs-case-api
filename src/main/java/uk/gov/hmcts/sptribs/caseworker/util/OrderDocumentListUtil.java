@@ -26,8 +26,8 @@ public final class OrderDocumentListUtil {
         List<CaseworkerCICDocument> orderList = new ArrayList<>();
         if (!CollectionUtils.isEmpty(cicCase.getOrderList())) {
             for (ListValue<Order> orderListValue : cicCase.getOrderList()) {
-                if (null != orderListValue.getValue().getDraftOrder()
-                    && null != orderListValue.getValue().getDraftOrder().getTemplateGeneratedDocument()
+                if (orderListValue.getValue().getDraftOrder() != null
+                    && orderListValue.getValue().getDraftOrder().getTemplateGeneratedDocument() != null
                     && !ObjectUtils.isEmpty(orderListValue.getValue().getDraftOrder().getTemplateGeneratedDocument().getFilename())) {
                     Document templateGeneratedDoc = orderListValue.getValue().getDraftOrder().getTemplateGeneratedDocument();
                     CaseworkerCICDocument doc = CaseworkerCICDocument.builder()
@@ -47,7 +47,7 @@ public final class OrderDocumentListUtil {
     private static List<CaseworkerCICDocument> checkUploadedFile(ListValue<Order> orderListValue) {
         List<CaseworkerCICDocument> orderUploadList = new ArrayList<>();
         for (ListValue<CICDocument> document : orderListValue.getValue().getUploadedFile()) {
-            if (null != document.getValue().getDocumentLink()) {
+            if (document.getValue().getDocumentLink() != null) {
                 CaseworkerCICDocument doc = CaseworkerCICDocument.builder()
                     .documentLink(document.getValue().getDocumentLink())
                     .documentEmailContent(document.getValue().getDocumentEmailContent())
@@ -67,7 +67,7 @@ public final class OrderDocumentListUtil {
             for (ListValue<CaseworkerCICDocument> cicDocumentListValue : wholeOrderDocList) {
                 if (!cicCase.getOrderDocumentList().contains(cicDocumentListValue)) {
                     for (ListValue<Order> orderListValue : cicCase.getOrderList()) {
-                        if (null != orderListValue.getValue().getDraftOrder()
+                        if (orderListValue.getValue().getDraftOrder() != null
                             && cicDocumentListValue.getValue().getDocumentLink()
                             .equals(orderListValue.getValue().getDraftOrder().getTemplateGeneratedDocument())) {
                             orderListValue.getValue().getDraftOrder().setTemplateGeneratedDocument(null);
@@ -86,7 +86,7 @@ public final class OrderDocumentListUtil {
         if (!CollectionUtils.isEmpty(orderListValue.getValue().getUploadedFile())) {
             for (int i = 0; i < orderListValue.getValue().getUploadedFile().size(); i++) {
                 ListValue<CICDocument> file = orderListValue.getValue().getUploadedFile().get(i);
-                if (null != file.getValue().getDocumentLink() && file.getValue().getDocumentLink()
+                if (file.getValue().getDocumentLink() != null && file.getValue().getDocumentLink()
                     .equals(cicDocumentListValue.getValue().getDocumentLink())) {
                     orderListValue.getValue().getUploadedFile().get(i).setValue(EMPTY_DOCUMENT);
 
