@@ -1,0 +1,52 @@
+{
+  "data": {
+    "cicCaseOrderTemplateIssued": {
+      "document_url": "TestUrl",
+      "document_filename": "SENT :Order--[Subject AutoTesting]--29-05-2024 13:36:27.pdf",
+      "document_binary_url": "TestUrl/binary",
+      "category_id": "CIC"
+    },
+    "cicCaseOrderDueDates": [],
+    "cicCaseOrderList": [
+      {
+        "id": "1",
+        "value": {
+          "dueDateList": [
+            {
+              "value": {
+                "dueDate": "2024-09-04",
+                "information": "due date for test"
+              }
+            }
+          ],
+          "uploadedFile": [
+            {
+              "value": {
+                "documentEmailContent": "some email content",
+                "documentLink": {
+                  "document_filename": "order.pdf",
+                  "category_id": "TD"
+                }
+              }
+            }
+          ],
+          "reminderDay": "7 days",
+          "parties": "Subject, Respondent, Representative, Applicant",
+          "orderSentDate": "2024-09-04"
+        }
+      }
+    ],
+    "cicCaseNotifyPartyApplicant": [
+      "ApplicantCIC"
+    ],
+    "cicCaseNotifyPartySubject": [
+      "SubjectCIC"
+    ],
+    "cicCaseNotifyPartyRepresentative": [
+      "RepresentativeCIC"
+    ],
+    "cicCaseNotifyPartyRespondent": [
+      "RespondentCIC"
+    ]
+  }
+}

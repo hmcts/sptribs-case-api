@@ -143,7 +143,6 @@ public class CaseworkerStayTheCaseIT {
 
         verify(notificationServiceCIC, times(3)).sendEmail(any());
         verifyNoMoreInteractions(notificationServiceCIC);
-
     }
 
     @Test
