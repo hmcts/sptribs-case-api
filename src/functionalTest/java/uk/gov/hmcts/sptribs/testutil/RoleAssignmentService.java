@@ -34,7 +34,7 @@ public class RoleAssignmentService {
 
     public void createRoleAssignments(String userId) {
         Map<String, Object> requestBody = Map.of(
-            "key", "caseId",
+            "key", "userIds",
             "values", singletonList(userId)
         );
 
