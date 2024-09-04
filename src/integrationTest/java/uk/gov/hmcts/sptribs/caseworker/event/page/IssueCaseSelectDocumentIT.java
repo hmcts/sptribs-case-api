@@ -39,7 +39,7 @@ import static uk.gov.hmcts.sptribs.testutil.TestResourceUtil.expectedResponse;
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class IssueCaseSelectDocumentIT {
 
-    private static String ISSUE_CASE_SELECT_DOCUMENT_RESPONSE =
+    private static final String ISSUE_CASE_SELECT_DOCUMENT_RESPONSE =
         "classpath:responses/issue-case-select-document-mid-event-response.json";
 
     @Autowired
