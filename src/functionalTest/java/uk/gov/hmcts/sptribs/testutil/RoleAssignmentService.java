@@ -41,7 +41,7 @@ public class RoleAssignmentService {
         Response result = given()
             .header(SERVICE_AUTHORIZATION, serviceAuthenticationGenerator.generate())
             .header(AUTHORIZATION, idamTokenGenerator.generateIdamTokenForSystemUser())
-            .param("userType", "CASEWORKER")
+            .queryParam("userType", "CASEWORKER")
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .body(requestBody)
             .when()
