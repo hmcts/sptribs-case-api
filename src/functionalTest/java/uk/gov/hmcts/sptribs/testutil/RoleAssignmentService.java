@@ -45,7 +45,7 @@ public class RoleAssignmentService {
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .body(requestBody)
             .when()
-            .post(roleAssignmentUrl + "/am/testing-support/jobs");
+            .post(roleAssignmentUrl + "/am/testing-support/createOrgMapping");
 
         result.then().assertThat()
             .statusCode(200);
