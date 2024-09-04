@@ -38,6 +38,8 @@ public class RoleAssignmentService {
             "values", singletonList(userId)
         );
 
+        System.out.println(requestBody.toString());
+
         Response result = given()
             .header(SERVICE_AUTHORIZATION, serviceAuthenticationGenerator.generateAccessManagementToken())
             .header(AUTHORIZATION, idamTokenGenerator.generateIdamTokenForSystemUser())
