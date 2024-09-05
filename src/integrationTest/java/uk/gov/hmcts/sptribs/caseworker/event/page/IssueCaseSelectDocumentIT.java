@@ -65,12 +65,10 @@ public class IssueCaseSelectDocumentIT {
     void shouldValidateThatDocumentIsSelectedInMidEvent() throws Exception {
         DynamicMultiSelectList list = getDynamicMultiSelectDocumentList();
 
-        CaseIssue caseIssue = CaseIssue.builder()
-            .documentList(list)
-            .build();
-
         CaseData caseData = CaseData.builder()
-            .caseIssue(caseIssue)
+            .caseIssue(CaseIssue.builder()
+                .documentList(list)
+                .build())
             .build();
 
         mockMvc.perform(post(ISSUE_CASE_SELECT_DOCUMENT_MID_EVENT_URL)

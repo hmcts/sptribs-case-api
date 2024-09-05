@@ -42,7 +42,7 @@ import static uk.gov.hmcts.sptribs.testutil.TestResourceUtil.expectedResponse;
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class HearingVenuesIT {
 
-    public static final String HEARING_VENUES_RESPONSE =
+    private static final String HEARING_VENUES_RESPONSE =
         "classpath:responses/hearing-venues-mid-event-response.json";
 
     @Autowired
