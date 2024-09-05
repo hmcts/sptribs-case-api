@@ -65,13 +65,11 @@ public class RecordNotifyPartiesIT {
 
     @Test
     void shouldCheckRecipientInMidEvent() throws Exception {
-        CicCase cicCase = CicCase.builder()
-            .caseSubcategory(CaseSubcategory.MEDICAL_REOPENING)
-            .notifyPartySubject(Set.of(SubjectCIC.SUBJECT))
-            .build();
-
         CaseData caseData = CaseData.builder()
-            .cicCase(cicCase)
+            .cicCase(CicCase.builder()
+                .caseSubcategory(CaseSubcategory.MEDICAL_REOPENING)
+                .notifyPartySubject(Set.of(SubjectCIC.SUBJECT))
+                .build())
             .build();
 
         mockMvc.perform(post(RECORD_NOTIFY_PARTIES_MID_EVENT_URL)

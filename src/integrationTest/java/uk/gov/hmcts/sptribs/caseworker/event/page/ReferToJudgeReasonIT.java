@@ -16,6 +16,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.hmcts.sptribs.caseworker.model.ReferToJudge;
 import uk.gov.hmcts.sptribs.caseworker.model.ReferralReason;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.common.config.WebMvcConfig;
 import uk.gov.hmcts.sptribs.testutil.IdamWireMock;
 
@@ -76,7 +77,7 @@ public class ReferToJudgeReasonIT {
                     callbackRequest(
                         caseData,
                         CASEWORKER_REFER_TO_JUDGE,
-                        "CaseClosed")))
+                        State.CaseClosed.toString())))
                 .accept(APPLICATION_JSON))
             .andExpect(
                 status().isOk())
