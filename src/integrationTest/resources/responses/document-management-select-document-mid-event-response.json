@@ -1,0 +1,29 @@
+{
+  "data": {
+    "cicCaseAmendDocumentList": {
+      "value": {
+        "code": "${json-unit.any-string}",
+        "label": "CASE--test.pdf--A - Application Form"
+      },
+      "valueCode": "${json-unit.any-string}",
+      "valueLabel": "CASE--test.pdf--A - Application Form"
+    },
+    "cicCaseSelectedDocumentCategory": "ApplicationForm",
+    "cicCaseSelectedDocumentEmailContent": "some email content",
+    "cicCaseSelectedDocumentLink": {
+      "document_filename": "test.pdf"
+    },
+    "cicCaseSelectedDocumentType": "CASE",
+    "cicCaseApplicantDocumentsUploaded": [
+      {
+        "value": {
+          "documentCategory": "ApplicationForm",
+          "documentEmailContent": "some email content",
+          "documentLink": {
+            "document_filename": "test.pdf"
+          }
+        }
+      }
+    ]
+  }
+}
