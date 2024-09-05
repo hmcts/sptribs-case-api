@@ -1,0 +1,22 @@
+{
+  "data": {
+    "hearingList": [
+      {
+        "value": {
+          "recFileUpload": [
+            {
+              "value": {
+                "documentCategory": "Linked docs",
+                "documentEmailContent": "some email content",
+                "documentLink": {
+                  "document_filename": "test.mp3"
+                }
+              }
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "errors": []
+}
