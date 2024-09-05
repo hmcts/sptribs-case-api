@@ -1,0 +1,26 @@
+{
+  "data": {
+    "cicCaseApplicantDocumentsUploaded": [
+      {
+        "value": {
+          "documentCategory": "Linked docs",
+          "documentEmailContent": "some email content",
+          "documentLink": {
+            "document_url": "http://url/",
+            "document_filename": "test.pdf",
+            "document_binary_url": "http://url/"
+          }
+        }
+      }
+    ],
+    "contactPartiesDocumentsDocumentList": {
+      "value": [],
+      "list_items": [
+        {
+          "code": "${json-unit.any-string}",
+          "label": "${json-unit.any-string}"
+        }
+      ]
+    }
+  }
+}
