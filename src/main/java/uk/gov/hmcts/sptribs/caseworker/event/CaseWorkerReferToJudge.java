@@ -92,7 +92,6 @@ public class CaseWorkerReferToJudge implements CCDConfig<CaseData, State, UserRo
 
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(CaseDetails<CaseData, State> details,
                                                                        CaseDetails<CaseData, State> beforeDetails) {
-        log.info("Caseworker refer case to judge for Case Id: {}", details.getId());
 
         CaseData caseData = details.getData();
         caseData.getReferToJudge().setReferralDate(LocalDate.now());
