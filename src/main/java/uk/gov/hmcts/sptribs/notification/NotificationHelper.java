@@ -1,10 +1,9 @@
 package uk.gov.hmcts.sptribs.notification;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.ObjectUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.type.AddressGlobalUK;
 import uk.gov.hmcts.ccd.sdk.type.DynamicListElement;
@@ -45,9 +44,8 @@ import static uk.gov.hmcts.sptribs.common.CommonConstants.YES;
 import static uk.gov.hmcts.sptribs.common.ccd.CcdCaseType.CIC;
 
 @Component
+@Slf4j
 public class NotificationHelper {
-
-    private static final Logger LOG = LoggerFactory.getLogger(NotificationHelper.class);
 
     public void addAddressTemplateVars(AddressGlobalUK address, Map<String, Object> templateVars) {
         templateVars.put(ADDRESS_LINE_1, address.getAddressLine1());
@@ -186,7 +184,7 @@ public class NotificationHelper {
                 uploadedDocuments.put(CASE_DOCUMENT + count,
                     StringUtils.substringAfterLast(labels[1].substring(1, labels[1].length() - 8),
                         "/"));
-                LOG.info("Document when Available: {}, {} with value {}", count, uploadedDocuments.get(DOC_AVAILABLE + count),
+                log.debug("Document when Available: {}, {} with value {}", count, uploadedDocuments.get(DOC_AVAILABLE + count),
                     uploadedDocuments.get(CASE_DOCUMENT + count));
             }
         }
@@ -194,7 +192,7 @@ public class NotificationHelper {
             count++;
             uploadedDocuments.put(DOC_AVAILABLE + count, NO);
             uploadedDocuments.put(CASE_DOCUMENT + count, EMPTY_PLACEHOLDER);
-            LOG.info("Document not Available: {}, {} with value {}", count, uploadedDocuments.get(DOC_AVAILABLE + count),
+            log.debug("Document not Available: {}, {} with value {}", count, uploadedDocuments.get(DOC_AVAILABLE + count),
                 uploadedDocuments.get(CASE_DOCUMENT + count));
         }
 

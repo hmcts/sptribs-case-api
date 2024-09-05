@@ -56,12 +56,11 @@ public class CcdSearchService {
             }
         } catch (final FeignException e) {
             final String message = String.format("Failed to complete search for Cases with state of %s", Arrays.toString(states));
-            log.info(message, e);
+            log.error(message, e);
             throw new CcdSearchCaseException(message, e);
         }
         return allCaseDetails;
     }
-
 
     public List<CaseDetails> searchForCasesWithVersionLessThan(int latestVersion, User user, String serviceAuth) {
 
@@ -74,16 +73,13 @@ public class CcdSearchService {
             )
             .from(0)
             .size(500);
-        log.info("Query:" + sourceBuilder);
-        log.info("CaseTypeName:" + CcdCaseType.CIC.getCaseTypeName());
-        final List<CaseDetails> cases = coreCaseDataApi.searchCases(
+
+        return coreCaseDataApi.searchCases(
             user.getAuthToken(),
             serviceAuth,
             CcdCaseType.CIC.getCaseTypeName(),
             sourceBuilder.toString()
         ).getCases();
-        log.info("Cases:" + cases.size());
-        return cases;
     }
 
     public List<CaseDetails> searchForCases(

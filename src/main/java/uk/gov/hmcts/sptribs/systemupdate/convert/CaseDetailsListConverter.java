@@ -29,7 +29,7 @@ public class CaseDetailsListConverter {
                 try {
                     return caseDetailsConverter.convertToCaseDetailsFromReformModel(caseDetails);
                 } catch (final IllegalArgumentException e) {
-                    log.info(
+                    log.error(
                         "Case failed to deserialize, removing from search results. Case ID: {}",
                         caseDetails.getId());
                     return null;
