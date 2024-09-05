@@ -26,6 +26,12 @@ public final class TestConstants {
     public static final String EDIT_DRAFT_ORDER_MID_EVENT_URL = "callbacks/mid-event?page=editDraftOrderAddDocumentFooter";
     public static final String EDIT_RECORD_LISTING_MID_EVENT_URL = "callbacks/mid-event?page=regionInfo";
     public static final String CHANGE_SECURITY_CLASSIFICATION_MID_EVENT_URL = "/callbacks/mid-event?page=changeSecurityClass";
+    public static final String SEND_ORDER_NOTIFY_PARTIES_MID_EVENT_URL
+        = "/callbacks/mid-event?page=caseWorkerSendOrderNotifyParties";
+    public static final String ISSUE_FINAL_DECISION_SELECT_RECIPIENTS_MID_EVENT_URL
+        = "/callbacks/mid-event?page=issueFinalDecisionSelectRecipients";
+    public static final String SELECT_HEARING_MID_EVENT_URL
+        = "/callbacks/mid-event?page=selectHearing";
     public static final String CONTACT_PARTIES_SELECT_DOCUMENT_MID_EVENT_URL
         = "/callbacks/mid-event?page=contactPartiesSelectDocument";
     public static final String EDIT_HEARING_SUMMARY_SELECT_MID_EVENT_URL
@@ -88,6 +94,8 @@ public final class TestConstants {
     public static final String TEST_URL = "TestUrl";
     public static final String TEST_USER = "TestUser";
     public static final UUID TEST_CASE_DATA_FILE_UUID = UUID.randomUUID();
+
+    public static final String ERRORS = "$.errors";
 
     public static final AddressGlobalUK APPLICANT_ADDRESS = AddressGlobalUK.builder()
         .addressLine1("line1")
