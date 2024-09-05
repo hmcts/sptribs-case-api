@@ -1,0 +1,9 @@
+{
+  "data": {
+    "stayStayReason": "Other",
+    "stayAdditionalDetail": "additional detail",
+    "stayExpirationDate": "2022-12-06",
+    "stayIsCaseStayed": "No"
+  },
+  "state": "CaseManagement"
+}
