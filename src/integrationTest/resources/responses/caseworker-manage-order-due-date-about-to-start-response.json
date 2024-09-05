@@ -1,0 +1,27 @@
+{
+  "data": {
+    "cicCaseOrderDynamicList": {
+      "list_items": [
+        {
+          "label": "null-filename"
+        }
+      ]
+    },
+    "cicCaseOrderList": [
+      {
+        "value": {
+          "uploadedFile": [
+            {
+              "value": {
+                "documentEmailContent": "some email content",
+                "documentLink": {
+                  "document_filename": "filename"
+                }
+              }
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

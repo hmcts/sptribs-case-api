@@ -1,0 +1,15 @@
+{
+  "data": {
+    "readOnlyHearingVenueName": "London Centre - London",
+    "hearingList": [
+      {
+        "value": {
+          "venueNotListedOption": [],
+          "hearingVenueNameAndAddress": "London Centre - London",
+          "readOnlyHearingVenueName": "London Centre - London"
+        }
+      }
+    ]
+  },
+  "errors": []
+}
