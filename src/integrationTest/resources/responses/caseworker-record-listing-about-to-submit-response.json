@@ -23,7 +23,7 @@
     "cicCaseRepresentativeContactDetailsPreference": "Email",
     "cicCaseFirstDueDate": "",
     "stayIsCaseStayed": "No",
-    "hearingCreatedDate": "2024-09-04",
+    "hearingCreatedDate": "${json-unit.any-string}",
     "hearingStatus": "Listed",
     "hearingFormat": "Face to Face",
     "regionList": {
