@@ -24,6 +24,8 @@ public final class TestConstants {
 
     public static final String ISSUE_DECISION_SELECT_RECIPIENTS_MID_EVENT_URL = "/callbacks/mid-event?page=issueDecisionSelectRecipients";
 
+    public static final String ISSUE_DECISION_SELECT_TEMPLATE_MID_EVENT_URL = "/callbacks/mid-event?page=issueDecisionSelectTemplate";
+
     public static final String RECORD_NOTIFY_PARTIES_MID_EVENT_URL = "/callbacks/mid-event?page=recordListingNotifyPage";
     public static final String HEARING_OPTIONS_REGION_DATA_MID_EVENT_URL = "/callbacks/mid-event?page=hearingOptionsRegionData";
     public static final String EDIT_DRAFT_ORDER_MID_EVENT_URL = "callbacks/mid-event?page=editDraftOrderAddDocumentFooter";
