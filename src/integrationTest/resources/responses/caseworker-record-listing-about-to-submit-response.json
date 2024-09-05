@@ -1,0 +1,53 @@
+{
+  "data": {
+    "caseLinks": [],
+    "allCaseworkerCICDocument": [],
+    "allCaseworkerCICDocumentUpload": [],
+    "newCaseworkerCICDocument": [],
+    "newCaseworkerCICDocumentUpload": [],
+    "editCicaCaseDetails": {},
+    "contactParties": {},
+    "caseBundles": [],
+    "cicCaseHearingNotificationParties": [],
+    "cicCaseRespondentName": "Respondent Name",
+    "cicCaseRespondentOrganisation": "CICA",
+    "cicCaseRespondentEmail": "respondent@test.com",
+    "cicCaseFullName": "Test Name",
+    "cicCaseEmail": "test@test.com",
+    "cicCaseContactPreferenceType": "Email",
+    "cicCaseApplicantFullName": "Applicant Name",
+    "cicCaseApplicantEmailAddress": "applicant@test.com",
+    "cicCaseApplicantContactDetailsPreference": "Email",
+    "cicCaseRepresentativeFullName": "Rep Name",
+    "cicCaseRepresentativeEmailAddress": "representative@test.com",
+    "cicCaseRepresentativeContactDetailsPreference": "Email",
+    "cicCaseFirstDueDate": "",
+    "stayIsCaseStayed": "No",
+    "hearingCreatedDate": "${json-unit.any-string}",
+    "hearingStatus": "Listed",
+    "hearingFormat": "Face to Face",
+    "regionList": {
+      "value": {
+        "code": "${json-unit.any-string}",
+        "label": "1-region"
+      },
+      "list_items": [
+        {
+          "code": "${json-unit.any-string}",
+          "label": "1-region"
+        }
+      ],
+      "valueLabel": "1-region",
+      "valueCode": "${json-unit.any-string}"
+    },
+    "numberOfDays": "No",
+    "hearingList": [],
+    "closedDayCount": "",
+    "currentEvent": "",
+    "firstHearingDate": "",
+    "stitchHearingBundleTask": "No",
+    "dataVersion": 0,
+    "cicCaseSelectedDocument": {}
+  },
+  "state": "AwaitingHearing"
+}
