@@ -333,14 +333,14 @@ public class TestDataHelper {
             .build();
     }
 
-    public static  List<ListValue<CaseworkerCICDocument>> getDocument() {
+    public static List<ListValue<CaseworkerCICDocument>> getDocument() {
         List<ListValue<CaseworkerCICDocument>> listValueList = get2Document();
         ListValue<CaseworkerCICDocument> last = listValueList.get(1);
         listValueList.remove(last);
         return listValueList;
     }
 
-    public static  List<ListValue<CaseworkerCICDocument>> get2Document() {
+    public static List<ListValue<CaseworkerCICDocument>> get2Document() {
         List<ListValue<CaseworkerCICDocument>> listValueList = new ArrayList<>();
         CaseworkerCICDocument doc = CaseworkerCICDocument.builder()
             .documentCategory(DocumentType.LINKED_DOCS)
@@ -359,7 +359,7 @@ public class TestDataHelper {
         return listValueList;
     }
 
-    public static  List<ListValue<CICDocument>> get2DocumentCiC() {
+    public static List<ListValue<CICDocument>> get2DocumentCiC() {
         List<ListValue<CICDocument>> listValueList = new ArrayList<>();
         CICDocument doc = CICDocument.builder()
             .documentLink(Document.builder().url("url1").binaryUrl("url1").filename("name1").build())

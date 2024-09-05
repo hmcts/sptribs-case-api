@@ -16,7 +16,6 @@ import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.DOUBLE_HYPHEN;
@@ -38,13 +37,11 @@ public class DocumentManagementSelectDocuments implements CcdPageConfiguration {
     public AboutToStartOrSubmitResponse<CaseData, State> midEvent(CaseDetails<CaseData, State> details,
                                                                   CaseDetails<CaseData, State> detailsBefore) {
         final CaseData data = details.getData();
-        final List<String> errors = new ArrayList<>();
 
         setSelectedDocuments(data);
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(data)
-            .errors(errors)
             .build();
     }
 

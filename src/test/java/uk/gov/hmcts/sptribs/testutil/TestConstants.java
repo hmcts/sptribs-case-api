@@ -27,8 +27,20 @@ public final class TestConstants {
     public static final String EDIT_RECORD_LISTING_MID_EVENT_URL = "callbacks/mid-event?page=regionInfo";
     public static final String RECORD_LISTING_MID_EVENT_URL = "/callbacks/mid-event?page=regionInfo";
     public static final String CHANGE_SECURITY_CLASSIFICATION_MID_EVENT_URL = "/callbacks/mid-event?page=changeSecurityClass";
+    public static final String CONTACT_PARTIES_SELECT_DOCUMENT_MID_EVENT_URL
+        = "/callbacks/mid-event?page=contactPartiesSelectDocument";
+    public static final String EDIT_HEARING_SUMMARY_SELECT_MID_EVENT_URL
+        = "/callbacks/mid-event?page=editHearingSummarySelect";
+    public static final String DOCUMENT_MANAGEMENT_SELECT_DOCUMENT_MID_EVENT_URL
+        = "/callbacks/mid-event?page=selectCaseDocuments";
 
     public static final String ISSUE_DECISION_MID_EVENT_URL = "/callbacks/mid-event?page=issueDecisionAddDocumentFooter";
+
+    public static final String HEARING_RECORDINGS_UPLOAD_MID_EVENT_URL = "/callbacks/mid-event?page=hearingRecordingUploadPage";
+
+    public static final String ISSUE_CASE_SELECT_DOCUMENT_MID_EVENT_URL = "/callbacks/mid-event?page=issueCaseSelectDocument";
+
+    public static final String HEARING_VENUES_MID_EVENT_URL = "/callbacks/mid-event?page=listingDetails";
 
     public static final String AUTH_HEADER_VALUE = "auth-header-value";
     public static final String INVALID_AUTH_TOKEN = "invalid_token";
