@@ -1,0 +1,72 @@
+{
+  "data": {
+    "caseLinks": [],
+    "allCaseworkerCICDocument": [],
+    "allCaseworkerCICDocumentUpload": [],
+    "newCaseworkerCICDocument": [],
+    "newCaseworkerCICDocumentUpload": [],
+    "editCicaCaseDetails": {},
+    "contactParties": {},
+    "caseBundles": [],
+    "cicCaseHearingList": {
+      "list_items": [
+        {
+          "code": "${json-unit.any-string}",
+          "label": "1 - Final - 14 Aug 2024 10:00"
+        },
+        {
+          "code": "${json-unit.any-string}",
+          "label": "2 - Interlocutory - 14 Aug 2024 14:00"
+        }
+      ]
+    },
+    "cicCaseRespondentName": "Appeals team",
+    "cicCaseRespondentOrganisation": "CICA",
+    "cicCaseRespondentEmail": "appeals.team@cica.gov.uk",
+    "cicCaseFirstDueDate": "",
+    "stayIsCaseStayed": "No",
+    "hearingList": [
+      {
+        "id": "1",
+        "value": {
+          "hearingStatus": "Listed",
+          "hearingType": "Final",
+          "hearingFormat": "Face to Face",
+          "shortNotice": "Yes",
+          "hearingVenues": {
+          },
+          "regionList": {
+          },
+          "venueNotListedOption": [],
+          "roomAtVenue": "G.01",
+          "addlInstr": "Ground floor",
+          "date": "2024-08-14",
+          "hearingTime": "10:00"
+        }
+      },
+      {
+        "id": "2",
+        "value": {
+          "hearingStatus": "Listed",
+          "hearingType": "Interlocutory",
+          "hearingFormat": "Face to Face",
+          "shortNotice": "Yes",
+          "hearingVenues": {
+          },
+          "regionList": {
+          },
+          "venueNotListedOption": [],
+          "roomAtVenue": "G.01",
+          "addlInstr": "Ground floor",
+          "date": "2024-08-14",
+          "hearingTime": "14:00"
+        }
+      }
+    ],
+    "closedDayCount": "",
+    "currentEvent": "caseworker-postpone-hearing",
+    "firstHearingDate": "14 Aug 2024",
+    "dataVersion": 0,
+    "cicCaseSelectedDocument": {}
+  }
+}
