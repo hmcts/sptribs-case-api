@@ -32,6 +32,7 @@ import static uk.gov.hmcts.sptribs.ciccase.model.RepresentativeCIC.REPRESENTATIV
 import static uk.gov.hmcts.sptribs.ciccase.model.RespondentCIC.RESPONDENT;
 import static uk.gov.hmcts.sptribs.ciccase.model.SubjectCIC.SUBJECT;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.AUTHORIZATION;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.ERRORS;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.REINSTATE_NOTIFY_PARTIES_MID_EVENT_URL;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.SERVICE_AUTHORIZATION;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_AUTHORIZATION_TOKEN;
@@ -53,8 +54,6 @@ public class ReinstateNotifyPartiesIT {
 
     @MockBean
     private WebMvcConfig webMvcConfig;
-
-    private static final String ERRORS = "$.errors";
 
     @BeforeAll
     static void setUp() {

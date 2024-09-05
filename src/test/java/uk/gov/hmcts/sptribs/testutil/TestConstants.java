@@ -95,6 +95,8 @@ public final class TestConstants {
     public static final String TEST_USER = "TestUser";
     public static final UUID TEST_CASE_DATA_FILE_UUID = UUID.randomUUID();
 
+    public static final String ERRORS = "$.errors";
+
     public static final AddressGlobalUK APPLICANT_ADDRESS = AddressGlobalUK.builder()
         .addressLine1("line1")
         .addressLine2("line2")

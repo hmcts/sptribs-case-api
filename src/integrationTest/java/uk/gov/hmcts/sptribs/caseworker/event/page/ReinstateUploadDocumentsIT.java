@@ -32,6 +32,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_REINSTATE_CASE;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.AUTHORIZATION;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.ERRORS;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.REINSTATE_UPLOAD_DOCUMENTS_MID_EVENT_URL;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.SERVICE_AUTHORIZATION;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_AUTHORIZATION_TOKEN;
@@ -52,8 +53,6 @@ public class ReinstateUploadDocumentsIT {
 
     @MockBean
     private WebMvcConfig webMvcConfig;
-
-    private static final String ERRORS = "$.errors";
 
     @BeforeAll
     static void setUp() {

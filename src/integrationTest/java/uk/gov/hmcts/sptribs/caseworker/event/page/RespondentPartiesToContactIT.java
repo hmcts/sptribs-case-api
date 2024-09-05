@@ -37,6 +37,7 @@ import static uk.gov.hmcts.sptribs.ciccase.model.SubjectCIC.SUBJECT;
 import static uk.gov.hmcts.sptribs.ciccase.model.TribunalCIC.TRIBUNAL;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.AUTHORIZATION;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.CONTACT_PARTIES_TO_CONTACT_MID_EVENT_URL;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.ERRORS;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.SERVICE_AUTHORIZATION;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_AUTHORIZATION_TOKEN;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.callbackRequest;
@@ -60,8 +61,6 @@ public class RespondentPartiesToContactIT {
 
     @MockBean
     private WebMvcConfig webMvcConfig;
-
-    private static final String ERRORS = "$.errors";
 
     @BeforeAll
     static void setUp() {
