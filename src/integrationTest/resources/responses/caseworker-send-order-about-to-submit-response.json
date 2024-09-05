@@ -14,7 +14,7 @@
           "dueDateList": [
             {
               "value": {
-                "dueDate": "2024-09-04",
+                "dueDate": "${json-unit.any-string}",
                 "information": "due date for test"
               }
             }
@@ -32,7 +32,7 @@
           ],
           "reminderDay": "7 days",
           "parties": "Subject, Respondent, Representative, Applicant",
-          "orderSentDate": "2024-09-04"
+          "orderSentDate": "${json-unit.any-string}"
         }
       }
     ],
