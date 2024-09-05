@@ -33,6 +33,8 @@ public final class TestConstants {
     public static final String DOCUMENT_MANAGEMENT_SELECT_DOCUMENT_MID_EVENT_URL
         = "/callbacks/mid-event?page=selectCaseDocuments";
 
+    public static final String REFER_TO_JUDGE_REASON_MID_EVENT_URL = "/callbacks/mid-event?page=referToJudgeReason";
+
     public static final String ISSUE_DECISION_MID_EVENT_URL = "/callbacks/mid-event?page=issueDecisionAddDocumentFooter";
 
     public static final String AUTH_HEADER_VALUE = "auth-header-value";
