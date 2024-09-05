@@ -26,6 +26,12 @@ public final class TestConstants {
     public static final String EDIT_DRAFT_ORDER_MID_EVENT_URL = "callbacks/mid-event?page=editDraftOrderAddDocumentFooter";
     public static final String EDIT_RECORD_LISTING_MID_EVENT_URL = "callbacks/mid-event?page=regionInfo";
     public static final String CHANGE_SECURITY_CLASSIFICATION_MID_EVENT_URL = "/callbacks/mid-event?page=changeSecurityClass";
+    public static final String REINSTATE_NOTIFY_PARTIES_MID_EVENT_URL
+        = "/callbacks/mid-event?page=reinstateCaseNotifyParties";
+    public static final String CONTACT_PARTIES_TO_CONTACT_MID_EVENT_URL
+        = "/callbacks/mid-event?page=partiesToContact";
+    public static final String REINSTATE_UPLOAD_DOCUMENTS_MID_EVENT_URL
+        = "/callbacks/mid-event?page=reinstateUploadDocument";
     public static final String CONTACT_PARTIES_SELECT_DOCUMENT_MID_EVENT_URL
         = "/callbacks/mid-event?page=contactPartiesSelectDocument";
     public static final String EDIT_HEARING_SUMMARY_SELECT_MID_EVENT_URL
