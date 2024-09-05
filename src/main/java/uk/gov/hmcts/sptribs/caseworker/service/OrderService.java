@@ -44,7 +44,7 @@ public class OrderService {
         List<String> orders = new ArrayList<>();
         if (CollectionUtils.isNotEmpty(orderList)) {
             for (ListValue<Order> order : orderList) {
-                if (null != order.getValue().getDraftOrder()) {
+                if (order.getValue().getDraftOrder() != null) {
                     String item = order.getId() + EventConstants.HYPHEN
                         + order.getValue().getDraftOrder().getDraftOrderContentCIC().getOrderTemplate();
                     orders.add(item);

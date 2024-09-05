@@ -1,0 +1,42 @@
+{
+  "data": {
+    "cicCaseOrderDynamicList": {
+      "value": {
+        "label": "testId"
+      },
+      "list_items": [
+        {
+          "label": "testId"
+        }
+      ],
+      "valueLabel": "testId"
+    },
+    "cicCaseOrderDueDates": [],
+    "cicCaseOrderList": [
+      {
+        "id": "testId",
+        "value": {
+          "dueDateList": [
+            {
+              "value": {
+                "dueDate": "2024-05-11",
+                "information": "information"
+              }
+            }
+          ],
+          "uploadedFile": [
+            {
+              "value": {
+                "documentEmailContent": "some email content",
+                "documentLink": {
+                  "document_filename": "filename"
+                }
+              }
+            }
+          ]
+        }
+      }
+    ],
+    "cicCaseFirstDueDate": "11 May 2024"
+  }
+}
