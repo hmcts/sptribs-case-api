@@ -31,6 +31,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_CONTACT_PARTIES;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.AUTHORIZATION;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.CONTACT_PARTIES_SELECT_DOCUMENT_MID_EVENT_URL;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.SERVICE_AUTHORIZATION;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_AUTHORIZATION_TOKEN;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.callbackRequest;
@@ -42,9 +43,6 @@ import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.caseData;
 @ContextConfiguration(initializers = {IdamWireMock.PropertiesInitializer.class})
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class ContactPartiesSelectDocumentIT {
-
-    public static final String CONTACT_PARTIES_SELECT_DOCUMENT_MID_EVENT_URL
-        = "/callbacks/mid-event?page=contactPartiesSelectDocument";
 
     @Autowired
     private MockMvc mockMvc;

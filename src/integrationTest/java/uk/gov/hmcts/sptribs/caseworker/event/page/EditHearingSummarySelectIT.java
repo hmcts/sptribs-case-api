@@ -34,6 +34,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_EDIT_HEARING_SUMMARY;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.AUTHORIZATION;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.EDIT_HEARING_SUMMARY_SELECT_MID_EVENT_URL;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.SERVICE_AUTHORIZATION;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_AUTHORIZATION_TOKEN;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.callbackRequest;
@@ -59,9 +60,6 @@ public class EditHearingSummarySelectIT {
 
     @MockBean
     private WebMvcConfig webMvcConfig;
-
-    public static final String EDIT_HEARING_SUMMARY_SELECT_MID_EVENT_URL
-        = "/callbacks/mid-event?page=editHearingSummarySelect";
 
     @BeforeAll
     static void setUp() {

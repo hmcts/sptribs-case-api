@@ -31,6 +31,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_DOCUMENT_MANAGEMENT_AMEND;
 import static uk.gov.hmcts.sptribs.document.model.DocumentType.APPLICATION_FORM;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.AUTHORIZATION;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.DOCUMENT_MANAGEMENT_SELECT_DOCUMENT_MID_EVENT_URL;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.SERVICE_AUTHORIZATION;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_AUTHORIZATION_TOKEN;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.callbackRequest;
@@ -46,9 +47,6 @@ public class DocumentManagementSelectDocumentsIT {
 
     private static final String DOCUMENT_MANAGEMENT_SELECT_DOCUMENT_MID_EVENT_RESPONSE =
         "classpath:responses/document-management-select-document-mid-event-response.json";
-
-    public static final String DOCUMENT_MANAGEMENT_SELECT_DOCUMENT_MID_EVENT_URL
-        = "/callbacks/mid-event?page=selectCaseDocuments";
 
     @Autowired
     private MockMvc mockMvc;
