@@ -25,6 +25,7 @@ public class DocumentManagementService {
         try {
             final DocumentInfo document = caseDocumentApiService.uploadDocument(authorization, file, AppsUtil
                 .getExactAppsDetails(appsConfig, caseTypeOfApplication));
+            log.debug("Stored Doc Detail: " + document.toString());
             return DocumentResponse.builder().status("Success").document(document).build();
 
         } catch (Exception e) {
@@ -37,6 +38,7 @@ public class DocumentManagementService {
     public DocumentResponse deleteDocument(String authorization, String documentId) {
         try {
             caseDocumentApiService.deleteDocument(authorization, documentId);
+            log.debug("document deleted successfully for Id: " + documentId);
             return DocumentResponse.builder().status("Success").build();
 
         } catch (Exception e) {
