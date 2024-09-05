@@ -1,0 +1,18 @@
+{
+  "data": {
+    "cicCaseReinstateDocuments": [
+      {
+        "value": {
+          "documentCategory": "Linked docs",
+          "documentEmailContent": "some email content",
+          "documentLink": {
+            "document_filename": "test.pdf",
+            "category_id": "L"
+          }
+        }
+      }
+    ],
+    "cicCaseReinstateDocumentsUpload": []
+  },
+  "state": "CaseManagement"
+}
