@@ -83,7 +83,6 @@ public class CaseWorkerReferToLegalOfficer implements CCDConfig<CaseData, State,
 
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(CaseDetails<CaseData, State> details,
                                                                        CaseDetails<CaseData, State> beforeDetails) {
-        log.info("Caseworker refer case to legal officer for Case Id: {}", details.getId());
 
         CaseData caseData = details.getData();
         caseData.getReferToLegalOfficer().setReferralDate(LocalDate.now());
