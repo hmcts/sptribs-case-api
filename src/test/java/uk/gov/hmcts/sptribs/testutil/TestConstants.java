@@ -41,6 +41,8 @@ public final class TestConstants {
 
     public static final String HEARING_VENUES_MID_EVENT_URL = "/callbacks/mid-event?page=listingDetails";
 
+    public static final String ISSUE_CASE_NOTIFY_PARTIES = "/callbacks/mid-event?page=issueCaseNotifyParties";
+
     public static final String AUTH_HEADER_VALUE = "auth-header-value";
     public static final String INVALID_AUTH_TOKEN = "invalid_token";
     public static final String SERVICE_AUTHORIZATION = "ServiceAuthorization";
@@ -88,6 +90,8 @@ public final class TestConstants {
     public static final String TEST_URL = "TestUrl";
     public static final String TEST_USER = "TestUser";
     public static final UUID TEST_CASE_DATA_FILE_UUID = UUID.randomUUID();
+
+    public static final String ERRORS = "$.errors";
 
     public static final AddressGlobalUK APPLICANT_ADDRESS = AddressGlobalUK.builder()
         .addressLine1("line1")
