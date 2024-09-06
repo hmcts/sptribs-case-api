@@ -51,13 +51,6 @@ public class ApplicationReceivedNotificationIT {
                 .build())
             .build();
 
-        Map<String, Object> expectedTemplateVars = Map.of(
-            TRIBUNAL_NAME, CIC,
-            CIC_CASE_NUMBER, TEST_CASE_ID.toString(),
-            CIC_CASE_SUBJECT_NAME, "Test Name",
-            CONTACT_NAME, "Test Name"
-        );
-
         applicationReceivedNotification.sendToSubject(data, TEST_CASE_ID.toString());
 
         verify(notificationServiceCIC).sendEmail(notificationRequestCaptor.capture());
@@ -69,7 +62,12 @@ public class ApplicationReceivedNotificationIT {
         assertThat(notificationRequest.getTemplate())
             .isEqualTo(APPLICATION_RECEIVED);
         assertThat(notificationRequest.getTemplateVars())
-            .containsAllEntriesOf(expectedTemplateVars);
+            .containsAllEntriesOf(Map.of(
+                TRIBUNAL_NAME, CIC,
+                CIC_CASE_NUMBER, TEST_CASE_ID.toString(),
+                CIC_CASE_SUBJECT_NAME, "Test Name",
+                CONTACT_NAME, "Test Name"
+            ));
     }
 
     @Test
@@ -83,13 +81,6 @@ public class ApplicationReceivedNotificationIT {
                 .build())
             .build();
 
-        Map<String, Object> expectedTemplateVars = Map.of(
-            TRIBUNAL_NAME, CIC,
-            CIC_CASE_NUMBER, TEST_CASE_ID.toString(),
-            CIC_CASE_SUBJECT_NAME, "Test Name",
-            CONTACT_NAME, "Applicant Name"
-        );
-
         applicationReceivedNotification.sendToApplicant(data, TEST_CASE_ID.toString());
 
         verify(notificationServiceCIC).sendEmail(notificationRequestCaptor.capture());
@@ -101,7 +92,12 @@ public class ApplicationReceivedNotificationIT {
         assertThat(notificationRequest.getTemplate())
             .isEqualTo(APPLICATION_RECEIVED);
         assertThat(notificationRequest.getTemplateVars())
-            .containsAllEntriesOf(expectedTemplateVars);
+            .containsAllEntriesOf(Map.of(
+                TRIBUNAL_NAME, CIC,
+                CIC_CASE_NUMBER, TEST_CASE_ID.toString(),
+                CIC_CASE_SUBJECT_NAME, "Test Name",
+                CONTACT_NAME, "Applicant Name"
+            ));
     }
 
     @Test
@@ -115,13 +111,6 @@ public class ApplicationReceivedNotificationIT {
                 .build())
             .build();
 
-        Map<String, Object> expectedTemplateVars = Map.of(
-            TRIBUNAL_NAME, CIC,
-            CIC_CASE_NUMBER, TEST_CASE_ID.toString(),
-            CIC_CASE_SUBJECT_NAME, "Test Name",
-            CONTACT_NAME, "Representative Name"
-        );
-
         applicationReceivedNotification.sendToRepresentative(data, TEST_CASE_ID.toString());
 
         verify(notificationServiceCIC).sendEmail(notificationRequestCaptor.capture());
@@ -133,6 +122,11 @@ public class ApplicationReceivedNotificationIT {
         assertThat(notificationRequest.getTemplate())
             .isEqualTo(APPLICATION_RECEIVED);
         assertThat(notificationRequest.getTemplateVars())
-            .containsAllEntriesOf(expectedTemplateVars);
+            .containsAllEntriesOf(Map.of(
+                TRIBUNAL_NAME, CIC,
+                CIC_CASE_NUMBER, TEST_CASE_ID.toString(),
+                CIC_CASE_SUBJECT_NAME, "Test Name",
+                CONTACT_NAME, "Representative Name"
+            ));
     }
 }

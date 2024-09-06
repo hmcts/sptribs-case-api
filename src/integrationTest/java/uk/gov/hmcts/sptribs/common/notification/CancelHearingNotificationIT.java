@@ -68,15 +68,6 @@ public class CancelHearingNotificationIT {
                 .build())
             .build();
 
-        Map<String, Object> expectedTemplateVars = Map.of(
-            TRIBUNAL_NAME, CIC,
-            CIC_CASE_NUMBER, TEST_CASE_ID.toString(),
-            CIC_CASE_SUBJECT_NAME, "Subject Name",
-            CONTACT_NAME, "Subject Name",
-            HEARING_DATE, "21 Apr 2021",
-            HEARING_TIME, "10:00"
-        );
-
         cancelHearingNotification.sendToSubject(data, TEST_CASE_ID.toString());
 
         verify(notificationServiceCIC).sendEmail(notificationRequestCaptor.capture());
@@ -88,7 +79,14 @@ public class CancelHearingNotificationIT {
         assertThat(notificationRequest.getTemplate())
             .isEqualTo(CASE_CANCEL_HEARING_EMAIL);
         assertThat(notificationRequest.getTemplateVars())
-            .containsAllEntriesOf(expectedTemplateVars);
+            .containsAllEntriesOf(Map.of(
+                TRIBUNAL_NAME, CIC,
+                CIC_CASE_NUMBER, TEST_CASE_ID.toString(),
+                CIC_CASE_SUBJECT_NAME, "Subject Name",
+                CONTACT_NAME, "Subject Name",
+                HEARING_DATE, "21 Apr 2021",
+                HEARING_TIME, "10:00"
+            ));
     }
 
     @Test
@@ -113,17 +111,6 @@ public class CancelHearingNotificationIT {
                 .build())
             .build();
 
-        Map<String, Object> expectedTemplateVars = Map.of(
-            TRIBUNAL_NAME, CIC,
-            CIC_CASE_NUMBER, TEST_CASE_ID.toString(),
-            CIC_CASE_SUBJECT_NAME, "Subject Name",
-            CONTACT_NAME, "Subject Name",
-            HEARING_DATE, "21 Apr 2021",
-            HEARING_TIME, "10:00",
-            ADDRESS_LINE_1, "10 Buckingham Palace",
-            ADDRESS_LINE_7, "W1 1BW"
-        );
-
         cancelHearingNotification.sendToSubject(data, TEST_CASE_ID.toString());
 
         verify(notificationServiceCIC).sendLetter(notificationRequestCaptor.capture());
@@ -133,7 +120,16 @@ public class CancelHearingNotificationIT {
         assertThat(notificationRequest.getTemplate())
             .isEqualTo(CASE_CANCEL_HEARING_POST);
         assertThat(notificationRequest.getTemplateVars())
-            .containsAllEntriesOf(expectedTemplateVars);
+            .containsAllEntriesOf(Map.of(
+                TRIBUNAL_NAME, CIC,
+                CIC_CASE_NUMBER, TEST_CASE_ID.toString(),
+                CIC_CASE_SUBJECT_NAME, "Subject Name",
+                CONTACT_NAME, "Subject Name",
+                HEARING_DATE, "21 Apr 2021",
+                HEARING_TIME, "10:00",
+                ADDRESS_LINE_1, "10 Buckingham Palace",
+                ADDRESS_LINE_7, "W1 1BW"
+            ));
     }
 
     @Test
@@ -155,15 +151,6 @@ public class CancelHearingNotificationIT {
                 .build())
             .build();
 
-        Map<String, Object> expectedTemplateVars = Map.of(
-            TRIBUNAL_NAME, CIC,
-            CIC_CASE_NUMBER, TEST_CASE_ID.toString(),
-            CIC_CASE_SUBJECT_NAME, "Subject Name",
-            CONTACT_NAME, "Representative Name",
-            HEARING_DATE, "21 Apr 2021",
-            HEARING_TIME, "10:00"
-        );
-
         cancelHearingNotification.sendToRepresentative(data, TEST_CASE_ID.toString());
 
         verify(notificationServiceCIC).sendEmail(notificationRequestCaptor.capture());
@@ -175,7 +162,14 @@ public class CancelHearingNotificationIT {
         assertThat(notificationRequest.getTemplate())
             .isEqualTo(CASE_CANCEL_HEARING_EMAIL);
         assertThat(notificationRequest.getTemplateVars())
-            .containsAllEntriesOf(expectedTemplateVars);
+            .containsAllEntriesOf(Map.of(
+                TRIBUNAL_NAME, CIC,
+                CIC_CASE_NUMBER, TEST_CASE_ID.toString(),
+                CIC_CASE_SUBJECT_NAME, "Subject Name",
+                CONTACT_NAME, "Representative Name",
+                HEARING_DATE, "21 Apr 2021",
+                HEARING_TIME, "10:00"
+            ));
     }
 
     @Test
@@ -202,17 +196,6 @@ public class CancelHearingNotificationIT {
                 .build())
             .build();
 
-        Map<String, Object> expectedTemplateVars = Map.of(
-            TRIBUNAL_NAME, CIC,
-            CIC_CASE_NUMBER, TEST_CASE_ID.toString(),
-            CIC_CASE_SUBJECT_NAME, "Subject Name",
-            CONTACT_NAME, "Representative Name",
-            HEARING_DATE, "21 Apr 2021",
-            HEARING_TIME, "10:00",
-            ADDRESS_LINE_1, "10 Buckingham Palace",
-            ADDRESS_LINE_7, "W1 1BW"
-        );
-
         cancelHearingNotification.sendToRepresentative(data, TEST_CASE_ID.toString());
 
         verify(notificationServiceCIC).sendLetter(notificationRequestCaptor.capture());
@@ -222,7 +205,16 @@ public class CancelHearingNotificationIT {
         assertThat(notificationRequest.getTemplate())
             .isEqualTo(CASE_CANCEL_HEARING_POST);
         assertThat(notificationRequest.getTemplateVars())
-            .containsAllEntriesOf(expectedTemplateVars);
+            .containsAllEntriesOf(Map.of(
+                TRIBUNAL_NAME, CIC,
+                CIC_CASE_NUMBER, TEST_CASE_ID.toString(),
+                CIC_CASE_SUBJECT_NAME, "Subject Name",
+                CONTACT_NAME, "Representative Name",
+                HEARING_DATE, "21 Apr 2021",
+                HEARING_TIME, "10:00",
+                ADDRESS_LINE_1, "10 Buckingham Palace",
+                ADDRESS_LINE_7, "W1 1BW"
+            ));
     }
 
     @Test
@@ -243,15 +235,6 @@ public class CancelHearingNotificationIT {
                 .build())
             .build();
 
-        Map<String, Object> expectedTemplateVars = Map.of(
-            TRIBUNAL_NAME, CIC,
-            CIC_CASE_NUMBER, TEST_CASE_ID.toString(),
-            CIC_CASE_SUBJECT_NAME, "Subject Name",
-            CONTACT_NAME, "Respondent Name",
-            HEARING_DATE, "21 Apr 2021",
-            HEARING_TIME, "10:00"
-        );
-
         cancelHearingNotification.sendToRespondent(data, TEST_CASE_ID.toString());
 
         verify(notificationServiceCIC).sendEmail(notificationRequestCaptor.capture());
@@ -263,7 +246,14 @@ public class CancelHearingNotificationIT {
         assertThat(notificationRequest.getTemplate())
             .isEqualTo(CASE_CANCEL_HEARING_EMAIL);
         assertThat(notificationRequest.getTemplateVars())
-            .containsAllEntriesOf(expectedTemplateVars);
+            .containsAllEntriesOf(Map.of(
+                TRIBUNAL_NAME, CIC,
+                CIC_CASE_NUMBER, TEST_CASE_ID.toString(),
+                CIC_CASE_SUBJECT_NAME, "Subject Name",
+                CONTACT_NAME, "Respondent Name",
+                HEARING_DATE, "21 Apr 2021",
+                HEARING_TIME, "10:00"
+            ));
     }
 
     @Test
@@ -285,15 +275,6 @@ public class CancelHearingNotificationIT {
                 .build())
             .build();
 
-        Map<String, Object> expectedTemplateVars = Map.of(
-            TRIBUNAL_NAME, CIC,
-            CIC_CASE_NUMBER, TEST_CASE_ID.toString(),
-            CIC_CASE_SUBJECT_NAME, "Subject Name",
-            CONTACT_NAME, "Applicant Name",
-            HEARING_DATE, "21 Apr 2021",
-            HEARING_TIME, "10:00"
-        );
-
         cancelHearingNotification.sendToApplicant(data, TEST_CASE_ID.toString());
 
         verify(notificationServiceCIC).sendEmail(notificationRequestCaptor.capture());
@@ -305,7 +286,14 @@ public class CancelHearingNotificationIT {
         assertThat(notificationRequest.getTemplate())
             .isEqualTo(CASE_CANCEL_HEARING_EMAIL);
         assertThat(notificationRequest.getTemplateVars())
-            .containsAllEntriesOf(expectedTemplateVars);
+            .containsAllEntriesOf(Map.of(
+                TRIBUNAL_NAME, CIC,
+                CIC_CASE_NUMBER, TEST_CASE_ID.toString(),
+                CIC_CASE_SUBJECT_NAME, "Subject Name",
+                CONTACT_NAME, "Applicant Name",
+                HEARING_DATE, "21 Apr 2021",
+                HEARING_TIME, "10:00")
+            );
     }
 
     @Test
@@ -332,17 +320,6 @@ public class CancelHearingNotificationIT {
                 .build())
             .build();
 
-        Map<String, Object> expectedTemplateVars = Map.of(
-            TRIBUNAL_NAME, CIC,
-            CIC_CASE_NUMBER, TEST_CASE_ID.toString(),
-            CIC_CASE_SUBJECT_NAME, "Subject Name",
-            CONTACT_NAME, "Applicant Name",
-            HEARING_DATE, "21 Apr 2021",
-            HEARING_TIME, "10:00",
-            ADDRESS_LINE_1, "10 Buckingham Palace",
-            ADDRESS_LINE_7, "W1 1BW"
-        );
-
         cancelHearingNotification.sendToApplicant(data, TEST_CASE_ID.toString());
 
         verify(notificationServiceCIC).sendLetter(notificationRequestCaptor.capture());
@@ -352,6 +329,15 @@ public class CancelHearingNotificationIT {
         assertThat(notificationRequest.getTemplate())
             .isEqualTo(CASE_CANCEL_HEARING_POST);
         assertThat(notificationRequest.getTemplateVars())
-            .containsAllEntriesOf(expectedTemplateVars);
+            .containsAllEntriesOf(Map.of(
+                TRIBUNAL_NAME, CIC,
+                CIC_CASE_NUMBER, TEST_CASE_ID.toString(),
+                CIC_CASE_SUBJECT_NAME, "Subject Name",
+                CONTACT_NAME, "Applicant Name",
+                HEARING_DATE, "21 Apr 2021",
+                HEARING_TIME, "10:00",
+                ADDRESS_LINE_1, "10 Buckingham Palace",
+                ADDRESS_LINE_7, "W1 1BW"
+            ));
     }
 }

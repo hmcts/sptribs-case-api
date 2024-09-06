@@ -81,18 +81,6 @@ public class CaseFinalDecisionIssuedNotificationIT {
             )
             .build();
 
-        Map<String, Object> expectedTemplateVars = Map.of(
-            TRIBUNAL_NAME, CIC,
-            CIC_CASE_NUMBER, TEST_CASE_ID.toString(),
-            CIC_CASE_SUBJECT_NAME, "Subject Name",
-            CONTACT_NAME, "Subject Name"
-        );
-
-        Map<String, Object> expectedUploadedDocuments = Map.of(
-            FINAL_DECISION_NOTICE, "0ebad3a7-223e-4185-b8ce-ccb50a87e982",
-            FINAL_DECISION_GUIDANCE, "b7377096-880b-4dab-b9f9-97bd62f14589"
-        );
-
         caseFinalDecisionIssuedNotification.sendToSubject(data, TEST_CASE_ID.toString());
 
         verify(notificationServiceCIC).sendEmail(notificationRequestCaptor.capture());
@@ -105,9 +93,17 @@ public class CaseFinalDecisionIssuedNotificationIT {
         assertThat(notificationRequest.getTemplate())
             .isEqualTo(CASE_FINAL_DECISION_ISSUED_EMAIL);
         assertThat(notificationRequest.getTemplateVars())
-            .containsAllEntriesOf(expectedTemplateVars);
+            .containsAllEntriesOf(Map.of(
+                TRIBUNAL_NAME, CIC,
+                CIC_CASE_NUMBER, TEST_CASE_ID.toString(),
+                CIC_CASE_SUBJECT_NAME, "Subject Name",
+                CONTACT_NAME, "Subject Name"
+            ));
         assertThat(notificationRequest.getUploadedDocuments())
-            .isEqualTo(expectedUploadedDocuments);
+            .isEqualTo(Map.of(
+                FINAL_DECISION_NOTICE, "0ebad3a7-223e-4185-b8ce-ccb50a87e982",
+                FINAL_DECISION_GUIDANCE, "b7377096-880b-4dab-b9f9-97bd62f14589"
+            ));
     }
 
     @Test
@@ -132,15 +128,6 @@ public class CaseFinalDecisionIssuedNotificationIT {
                 .build())
             .build();
 
-        Map<String, Object> expectedTemplateVars = Map.of(
-            TRIBUNAL_NAME, CIC,
-            CIC_CASE_NUMBER, TEST_CASE_ID.toString(),
-            CIC_CASE_SUBJECT_NAME, "Subject Name",
-            CONTACT_NAME, "Subject Name",
-            ADDRESS_LINE_1, "10 Buckingham Palace",
-            ADDRESS_LINE_7, "W1 1BW"
-        );
-
         caseFinalDecisionIssuedNotification.sendToSubject(data, TEST_CASE_ID.toString());
 
         verify(notificationServiceCIC).sendLetter(notificationRequestCaptor.capture());
@@ -150,7 +137,14 @@ public class CaseFinalDecisionIssuedNotificationIT {
         assertThat(notificationRequest.getTemplate())
             .isEqualTo(CASE_FINAL_DECISION_ISSUED_POST);
         assertThat(notificationRequest.getTemplateVars())
-            .containsAllEntriesOf(expectedTemplateVars);
+            .containsAllEntriesOf(Map.of(
+                TRIBUNAL_NAME, CIC,
+                CIC_CASE_NUMBER, TEST_CASE_ID.toString(),
+                CIC_CASE_SUBJECT_NAME, "Subject Name",
+                CONTACT_NAME, "Subject Name",
+                ADDRESS_LINE_1, "10 Buckingham Palace",
+                ADDRESS_LINE_7, "W1 1BW"
+            ));
     }
 
     @Test
@@ -190,18 +184,6 @@ public class CaseFinalDecisionIssuedNotificationIT {
             )
             .build();
 
-        Map<String, Object> expectedTemplateVars = Map.of(
-            TRIBUNAL_NAME, CIC,
-            CIC_CASE_NUMBER, TEST_CASE_ID.toString(),
-            CIC_CASE_SUBJECT_NAME, "Subject Name",
-            CONTACT_NAME, "Representative Name"
-        );
-
-        Map<String, Object> expectedUploadedDocuments = Map.of(
-            FINAL_DECISION_NOTICE, "0ebad3a7-223e-4185-b8ce-ccb50a87e982",
-            FINAL_DECISION_GUIDANCE, "b7377096-880b-4dab-b9f9-97bd62f14589"
-        );
-
         caseFinalDecisionIssuedNotification.sendToRepresentative(data, TEST_CASE_ID.toString());
 
         verify(notificationServiceCIC).sendEmail(notificationRequestCaptor.capture());
@@ -214,9 +196,17 @@ public class CaseFinalDecisionIssuedNotificationIT {
         assertThat(notificationRequest.getTemplate())
             .isEqualTo(CASE_FINAL_DECISION_ISSUED_EMAIL);
         assertThat(notificationRequest.getTemplateVars())
-            .containsAllEntriesOf(expectedTemplateVars);
+            .containsAllEntriesOf(Map.of(
+                TRIBUNAL_NAME, CIC,
+                CIC_CASE_NUMBER, TEST_CASE_ID.toString(),
+                CIC_CASE_SUBJECT_NAME, "Subject Name",
+                CONTACT_NAME, "Representative Name"
+            ));
         assertThat(notificationRequest.getUploadedDocuments())
-            .isEqualTo(expectedUploadedDocuments);
+            .isEqualTo(Map.of(
+                FINAL_DECISION_NOTICE, "0ebad3a7-223e-4185-b8ce-ccb50a87e982",
+                FINAL_DECISION_GUIDANCE, "b7377096-880b-4dab-b9f9-97bd62f14589"
+            ));
     }
 
     @Test
@@ -243,15 +233,6 @@ public class CaseFinalDecisionIssuedNotificationIT {
                 .build())
             .build();
 
-        Map<String, Object> expectedTemplateVars = Map.of(
-            TRIBUNAL_NAME, CIC,
-            CIC_CASE_NUMBER, TEST_CASE_ID.toString(),
-            CIC_CASE_SUBJECT_NAME, "Subject Name",
-            CONTACT_NAME, "Representative Name",
-            ADDRESS_LINE_1, "10 Buckingham Palace",
-            ADDRESS_LINE_7, "W1 1BW"
-        );
-
         caseFinalDecisionIssuedNotification.sendToRepresentative(data, TEST_CASE_ID.toString());
 
         verify(notificationServiceCIC).sendLetter(notificationRequestCaptor.capture());
@@ -261,7 +242,14 @@ public class CaseFinalDecisionIssuedNotificationIT {
         assertThat(notificationRequest.getTemplate())
             .isEqualTo(CASE_FINAL_DECISION_ISSUED_POST);
         assertThat(notificationRequest.getTemplateVars())
-            .containsAllEntriesOf(expectedTemplateVars);
+            .containsAllEntriesOf(Map.of(
+                TRIBUNAL_NAME, CIC,
+                CIC_CASE_NUMBER, TEST_CASE_ID.toString(),
+                CIC_CASE_SUBJECT_NAME, "Subject Name",
+                CONTACT_NAME, "Representative Name",
+                ADDRESS_LINE_1, "10 Buckingham Palace",
+                ADDRESS_LINE_7, "W1 1BW"
+            ));
     }
 
     @Test
@@ -299,18 +287,6 @@ public class CaseFinalDecisionIssuedNotificationIT {
             )
             .build();
 
-        Map<String, Object> expectedTemplateVars = Map.of(
-            TRIBUNAL_NAME, CIC,
-            CIC_CASE_NUMBER, TEST_CASE_ID.toString(),
-            CIC_CASE_SUBJECT_NAME, "Subject Name",
-            CONTACT_NAME, "Respondent Name"
-        );
-
-        Map<String, Object> expectedUploadedDocuments = Map.of(
-            FINAL_DECISION_NOTICE, "0ebad3a7-223e-4185-b8ce-ccb50a87e982",
-            FINAL_DECISION_GUIDANCE, "b7377096-880b-4dab-b9f9-97bd62f14589"
-        );
-
         caseFinalDecisionIssuedNotification.sendToRespondent(data, TEST_CASE_ID.toString());
 
         verify(notificationServiceCIC).sendEmail(notificationRequestCaptor.capture());
@@ -323,9 +299,17 @@ public class CaseFinalDecisionIssuedNotificationIT {
         assertThat(notificationRequest.getTemplate())
             .isEqualTo(CASE_FINAL_DECISION_ISSUED_EMAIL);
         assertThat(notificationRequest.getTemplateVars())
-            .containsAllEntriesOf(expectedTemplateVars);
+            .containsAllEntriesOf(Map.of(
+                TRIBUNAL_NAME, CIC,
+                CIC_CASE_NUMBER, TEST_CASE_ID.toString(),
+                CIC_CASE_SUBJECT_NAME, "Subject Name",
+                CONTACT_NAME, "Respondent Name"
+            ));
         assertThat(notificationRequest.getUploadedDocuments())
-            .isEqualTo(expectedUploadedDocuments);
+            .isEqualTo(Map.of(
+                FINAL_DECISION_NOTICE, "0ebad3a7-223e-4185-b8ce-ccb50a87e982",
+                FINAL_DECISION_GUIDANCE, "b7377096-880b-4dab-b9f9-97bd62f14589"
+            ));
     }
 
     @Test
@@ -364,18 +348,6 @@ public class CaseFinalDecisionIssuedNotificationIT {
             )
             .build();
 
-        Map<String, Object> expectedTemplateVars = Map.of(
-            TRIBUNAL_NAME, CIC,
-            CIC_CASE_NUMBER, TEST_CASE_ID.toString(),
-            CIC_CASE_SUBJECT_NAME, "Subject Name",
-            CONTACT_NAME, "Applicant Name"
-        );
-
-        Map<String, Object> expectedUploadedDocuments = Map.of(
-            FINAL_DECISION_NOTICE, "0ebad3a7-223e-4185-b8ce-ccb50a87e982",
-            FINAL_DECISION_GUIDANCE, "b7377096-880b-4dab-b9f9-97bd62f14589"
-        );
-
         caseFinalDecisionIssuedNotification.sendToApplicant(data, TEST_CASE_ID.toString());
 
         verify(notificationServiceCIC).sendEmail(notificationRequestCaptor.capture());
@@ -388,9 +360,17 @@ public class CaseFinalDecisionIssuedNotificationIT {
         assertThat(notificationRequest.getTemplate())
             .isEqualTo(CASE_FINAL_DECISION_ISSUED_EMAIL);
         assertThat(notificationRequest.getTemplateVars())
-            .containsAllEntriesOf(expectedTemplateVars);
+            .containsAllEntriesOf(Map.of(
+                TRIBUNAL_NAME, CIC,
+                CIC_CASE_NUMBER, TEST_CASE_ID.toString(),
+                CIC_CASE_SUBJECT_NAME, "Subject Name",
+                CONTACT_NAME, "Applicant Name"
+            ));
         assertThat(notificationRequest.getUploadedDocuments())
-            .isEqualTo(expectedUploadedDocuments);
+            .isEqualTo(Map.of(
+                FINAL_DECISION_NOTICE, "0ebad3a7-223e-4185-b8ce-ccb50a87e982",
+                FINAL_DECISION_GUIDANCE, "b7377096-880b-4dab-b9f9-97bd62f14589"
+            ));
     }
 
     @Test
@@ -416,15 +396,6 @@ public class CaseFinalDecisionIssuedNotificationIT {
                 .build())
             .build();
 
-        Map<String, Object> expectedTemplateVars = Map.of(
-            TRIBUNAL_NAME, CIC,
-            CIC_CASE_NUMBER, TEST_CASE_ID.toString(),
-            CIC_CASE_SUBJECT_NAME, "Subject Name",
-            CONTACT_NAME, "Applicant Name",
-            ADDRESS_LINE_1, "10 Buckingham Palace",
-            ADDRESS_LINE_7, "W1 1BW"
-        );
-
         caseFinalDecisionIssuedNotification.sendToApplicant(data, TEST_CASE_ID.toString());
 
         verify(notificationServiceCIC).sendLetter(notificationRequestCaptor.capture());
@@ -434,6 +405,13 @@ public class CaseFinalDecisionIssuedNotificationIT {
         assertThat(notificationRequest.getTemplate())
             .isEqualTo(CASE_FINAL_DECISION_ISSUED_POST);
         assertThat(notificationRequest.getTemplateVars())
-            .containsAllEntriesOf(expectedTemplateVars);
+            .containsAllEntriesOf(Map.of(
+                TRIBUNAL_NAME, CIC,
+                CIC_CASE_NUMBER, TEST_CASE_ID.toString(),
+                CIC_CASE_SUBJECT_NAME, "Subject Name",
+                CONTACT_NAME, "Applicant Name",
+                ADDRESS_LINE_1, "10 Buckingham Palace",
+                ADDRESS_LINE_7, "W1 1BW"
+            ));
     }
 }
