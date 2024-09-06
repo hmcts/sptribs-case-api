@@ -45,6 +45,8 @@ public final class TestConstants {
 
     public static final String SEND_ORDER_UPLOAD_ORDER_MID_EVENT_URL = "/callbacks/mid-event?page=caseworkerSendOrderUploadOrder";
 
+    public static final String SHOW_CASE_DOCUMENTS_MID_EVENT_URL = "/callbacks/mid-event?page=showCaseDocuments";
+
     public static final String AUTH_HEADER_VALUE = "auth-header-value";
     public static final String INVALID_AUTH_TOKEN = "invalid_token";
     public static final String SERVICE_AUTHORIZATION = "ServiceAuthorization";
