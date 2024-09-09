@@ -479,7 +479,7 @@ else 5000</text>
           <text>"description"</text>
         </outputEntry>
         <outputEntry id="LiteralExpression_0mulsbp">
-          <text>"[Decision: Issue a decision](/cases/case-details/${[CASE_REFERENCE]}/trigger/caseworker-issue-decision/caseworker-issue-decisionSelectIssueNoticeOption&lt;br/&gt;" + "[Decision: Issue final decision](/cases/case-details/${[CASE_REFERENCE]}/trigger/caseworker-issue-final-decision/caseworker-issue-final-decisionselectIssueNoticeOption)"</text>
+          <text>"[Decision: Issue a decision](/cases/case-details/${[CASE_REFERENCE]}/trigger/caseworker-issue-decision)&lt;br/&gt;" + "[Decision: Issue final decision](/cases/case-details/${[CASE_REFERENCE]}/trigger/caseworker-issue-final-decision)"</text>
         </outputEntry>
         <outputEntry id="LiteralExpression_0smzs7n">
           <text>true</text>
