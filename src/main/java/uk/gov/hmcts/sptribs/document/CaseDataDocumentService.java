@@ -32,8 +32,6 @@ public class CaseDataDocumentService {
                                    final String filename,
                                    final HttpServletRequest request) {
 
-        log.info("Rendering document request for templateId : {} ", templateId);
-
         final User caseworkerUser = idamService.retrieveUser(request.getHeader(AUTHORIZATION));
         final String authorisation = caseworkerUser.getAuthToken();
 

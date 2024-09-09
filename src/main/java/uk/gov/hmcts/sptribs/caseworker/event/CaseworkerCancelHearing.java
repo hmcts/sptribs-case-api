@@ -107,7 +107,6 @@ public class CaseworkerCancelHearing implements CCDConfig<CaseData, State, UserR
     @SneakyThrows
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(CaseDetails<CaseData, State> details,
                                                                        CaseDetails<CaseData, State> beforeDetails) {
-        log.info("Caseworker case cancel hearing callback invoked for Case Id: {}", details.getId());
 
         final CaseData caseData = details.getData();
         State state = details.getState();
