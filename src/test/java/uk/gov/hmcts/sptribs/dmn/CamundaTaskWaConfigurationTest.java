@@ -959,8 +959,16 @@ class CamundaTaskWaConfigurationTest extends DmnDecisionTableBaseUnitTest {
                     .expectedValue(DUE_DATE_INTERVAL_DAYS, "1", true)
                     .expectedValue(
                         DESCRIPTION,
-                        "[Application DSS Update (cic)](/cases/case-details/${[CASE_REFERENCE]}/trigger"
-                            + "/caseworker-update-dss-application)",
+                        "[Document management: Upload](/cases/case-details/${[CASE_REFERENCE]}/trigger"
+                            + "/caseworker-document-management)<br/>"
+                            + "[Orders: Manage due date](/cases/case-details/${[CASE_REFERENCE]}/trigger"
+                            + "/caseworker-amend-due-date)<br/>"
+                            + "[Refer case to judge](/cases/case-details/${[CASE_REFERENCE]}/trigger"
+                            + "/refer-to-judge)<br/>"
+                            + "[Refer case to legal officer](/cases/case-details/${[CASE_REFERENCE]}/trigger"
+                            + "/refer-to-legal-officer)<br/>"
+                            + "[Case: Contact parties](/cases/case-details/${[CASE_REFERENCE]}/trigger"
+                            + "/contact-parties)",
                         true
                     )
                     .build()
