@@ -64,7 +64,7 @@ public class CaseIssuedNotificationIT {
                 .build())
             .build();
 
-        Map<String, Object> expectedTemplateVars = Map.of(
+        final Map<String, Object> expectedTemplateVars = Map.of(
             TRIBUNAL_NAME, CIC,
             CIC_CASE_NUMBER, TEST_CASE_ID.toString(),
             CIC_CASE_SUBJECT_NAME, "Subject Name",
@@ -99,7 +99,7 @@ public class CaseIssuedNotificationIT {
                 .build())
             .build();
 
-        Map<String, Object> expectedTemplateVars = Map.of(
+        final Map<String, Object> expectedTemplateVars = Map.of(
             TRIBUNAL_NAME, CIC,
             CIC_CASE_NUMBER, TEST_CASE_ID.toString(),
             CIC_CASE_SUBJECT_NAME, "Subject Name",
@@ -131,7 +131,7 @@ public class CaseIssuedNotificationIT {
                 .build())
             .build();
 
-        Map<String, Object> expectedTemplateVars = Map.of(
+        final Map<String, Object> expectedTemplateVars = Map.of(
             TRIBUNAL_NAME, CIC,
             CIC_CASE_NUMBER, TEST_CASE_ID.toString(),
             CIC_CASE_SUBJECT_NAME, "Subject Name",
@@ -167,7 +167,7 @@ public class CaseIssuedNotificationIT {
                 .build())
             .build();
 
-        Map<String, Object> expectedTemplateVars = Map.of(
+        final Map<String, Object> expectedTemplateVars = Map.of(
             TRIBUNAL_NAME, CIC,
             CIC_CASE_NUMBER, TEST_CASE_ID.toString(),
             CIC_CASE_SUBJECT_NAME, "Subject Name",
@@ -199,7 +199,7 @@ public class CaseIssuedNotificationIT {
                 .build())
             .build();
 
-        Map<String, Object> expectedTemplateVars = Map.of(
+        final Map<String, Object> expectedTemplateVars = Map.of(
             TRIBUNAL_NAME, CIC,
             CIC_CASE_NUMBER, TEST_CASE_ID.toString(),
             CIC_CASE_SUBJECT_NAME, "Subject Name",
@@ -235,7 +235,7 @@ public class CaseIssuedNotificationIT {
                 .build())
             .build();
 
-        Map<String, Object> expectedTemplateVars = Map.of(
+        final Map<String, Object> expectedTemplateVars = Map.of(
             TRIBUNAL_NAME, CIC,
             CIC_CASE_NUMBER, TEST_CASE_ID.toString(),
             CIC_CASE_SUBJECT_NAME, "Subject Name",
@@ -266,7 +266,7 @@ public class CaseIssuedNotificationIT {
                 .build())
             .build();
 
-        Map<String, Object> expectedTemplateVars = Map.of(
+        final Map<String, Object> expectedTemplateVars = Map.of(
             TRIBUNAL_NAME, CIC,
             CIC_CASE_NUMBER, TEST_CASE_ID.toString(),
             CIC_CASE_SUBJECT_NAME, "Subject Name",
@@ -318,7 +318,7 @@ public class CaseIssuedNotificationIT {
                 .build())
             .build();
 
-        Map<String, Object> expectedTemplateVars = Map.of(
+        final Map<String, Object> expectedTemplateVars = Map.of(
             TRIBUNAL_NAME, CIC,
             CIC_CASE_NUMBER, TEST_CASE_ID.toString(),
             CIC_CASE_SUBJECT_NAME, "Subject Name",
