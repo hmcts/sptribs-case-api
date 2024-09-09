@@ -422,8 +422,8 @@ class CamundaTaskWaConfigurationTest extends DmnDecisionTableBaseUnitTest {
                     .expectedValue(DUE_DATE_INTERVAL_DAYS, "5", true)
                     .expectedValue(
                         DESCRIPTION,
-                        "[Hearings: Create listing](/cases/case-details/${[CASE_REFERENCE]}/trigger"
-                            + "/create-hearing-summary/create-hearing-summarycreateHearingSummary)",
+                        "[Hearings:Create summary](/cases/case-details/${[CASE_REFERENCE]}/trigger"
+                            + "/create-hearing-summary)",
                         true
                     )
                     .build()
@@ -986,7 +986,7 @@ class CamundaTaskWaConfigurationTest extends DmnDecisionTableBaseUnitTest {
                     .expectedValue(DUE_DATE_INTERVAL_DAYS, "5", true)
                     .expectedValue(
                         DESCRIPTION,
-                        "[Case: Edit Case](/cases/case-details/${[CASE_REFERENCE]}/trigger/edit-case)",
+                        "[Case: Edit case](/cases/case-details/${[CASE_REFERENCE]}/trigger/edit-case)",
                         true
                     )
                     .build()
