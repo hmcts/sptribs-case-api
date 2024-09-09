@@ -21,10 +21,16 @@ public final class TestConstants {
     public static final String ABOUT_TO_START_URL = "/callbacks/about-to-start";
     public static final String ABOUT_TO_SUBMIT_URL = "/callbacks/about-to-submit";
     public static final String SUBMITTED_URL = "/callbacks/submitted";
+
+    public static final String ISSUE_FINAL_DECISION_MID_EVENT_URL = "/callbacks/mid-event?page=issueFinalDecisionAddDocumentFooter";
+
+    public static final String ISSUE_FINAL_DECISION_UPLOAD_MID_EVENT_URL = "/callbacks/mid-event?page=issueFinalDecisionUpload";
+
     public static final String RECORD_NOTIFY_PARTIES_MID_EVENT_URL = "/callbacks/mid-event?page=recordListingNotifyPage";
     public static final String HEARING_OPTIONS_REGION_DATA_MID_EVENT_URL = "/callbacks/mid-event?page=hearingOptionsRegionData";
     public static final String EDIT_DRAFT_ORDER_MID_EVENT_URL = "callbacks/mid-event?page=editDraftOrderAddDocumentFooter";
     public static final String EDIT_RECORD_LISTING_MID_EVENT_URL = "callbacks/mid-event?page=regionInfo";
+    public static final String RECORD_LISTING_MID_EVENT_URL = "/callbacks/mid-event?page=regionInfo";
     public static final String CHANGE_SECURITY_CLASSIFICATION_MID_EVENT_URL = "/callbacks/mid-event?page=changeSecurityClass";
     public static final String CONTACT_PARTIES_SELECT_DOCUMENT_MID_EVENT_URL
         = "/callbacks/mid-event?page=contactPartiesSelectDocument";
