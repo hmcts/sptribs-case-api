@@ -496,7 +496,7 @@ else 5000</text>
           <text>"description"</text>
         </outputEntry>
         <outputEntry id="LiteralExpression_0n1yxlg">
-          <text>"[Hearings: Create listing](/cases/case-details/${[CASE_REFERENCE]}/trigger/create-hearing-summary/create-hearing-summarycreateHearingSummary)"</text>
+          <text>"[Hearings:Create summary](/cases/case-details/${[CASE_REFERENCE]}/trigger/create-hearing-summary)"</text>
         </outputEntry>
         <outputEntry id="LiteralExpression_1cvv017">
           <text>true</text>
@@ -581,7 +581,7 @@ else 5000</text>
           <text>"description"</text>
         </outputEntry>
         <outputEntry id="LiteralExpression_1tfrrr2">
-          <text>"[Case: Edit Case](/cases/case-details/${[CASE_REFERENCE]}/trigger/edit-case)"</text>
+          <text>"[Case: Edit case](/cases/case-details/${[CASE_REFERENCE]}/trigger/edit-case)"</text>
         </outputEntry>
         <outputEntry id="LiteralExpression_1nneo2x">
           <text>true</text>

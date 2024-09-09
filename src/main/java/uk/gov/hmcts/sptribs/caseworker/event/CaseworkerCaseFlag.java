@@ -68,8 +68,6 @@ public class CaseworkerCaseFlag implements CCDConfig<CaseData, State, UserRole> 
     public SubmittedCallbackResponse submitted(CaseDetails<CaseData, State> details,
                                                CaseDetails<CaseData, State> beforeDetails) {
 
-        log.info("Create Case flags event submitting Supplementary Data To Ccd for Case Id: {}", details.getId());
-
         coreCaseApiService.submitSupplementaryDataToCcd(details.getId().toString());
 
         return SubmittedCallbackResponse.builder()

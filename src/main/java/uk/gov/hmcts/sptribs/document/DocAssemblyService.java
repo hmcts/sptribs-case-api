@@ -54,15 +54,13 @@ public class DocAssemblyService {
                 .formPayload(objectMapper.valueToTree(templateContent))
                 .build();
 
-        log.info("Sending document request for template : {} case id: {}", templateName, caseId);
-
         final DocAssemblyResponse docAssemblyResponse = docAssemblyClient.generateAndStoreDraftApplication(
             authorisation,
             authTokenGenerator.generate(),
             docAssemblyRequest
         );
 
-        log.info("Document successfully generated and stored for case Id {} with document location {}",
+        log.debug("Document successfully generated and stored for case Id {} with document location {}",
             caseId,
             docAssemblyResponse.getRenditionOutputLocation()
         );

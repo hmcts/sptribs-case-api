@@ -97,24 +97,8 @@ public class CaseWorkerCreateDraftOrder implements CCDConfig<CaseData, State, Us
 
     }
 
-    private void createDraftOrderAddDocumentFooter(PageBuilder pageBuilder) {
-        pageBuilder.page("createDraftOrderAddDocumentFooter", this::midEvent)
-            .pageLabel("Document footer")
-            .label("draftOrderDocFooter",
-                """
-
-                    Order Signature
-
-                    Confirm the Role and Surname of the person who made this order - this will be added to the bottom of the generated \
-                    order notice. E.g. 'Tribunal Judge Farrelly'""")
-            .complex(CaseData::getDraftOrderContentCIC)
-            .mandatory(DraftOrderContentCIC::getOrderSignature)
-            .done();
-    }
-
     public AboutToStartOrSubmitResponse<CaseData, State> midEvent(CaseDetails<CaseData, State> details,
                                                                   CaseDetails<CaseData, State> detailsBefore) {
-
         Calendar cal = Calendar.getInstance();
         String date = simpleDateFormat.format(cal.getTime());
         final CaseData caseData = orderService.generateOrderFile(details.getData(), details.getId(), date);
@@ -126,7 +110,6 @@ public class CaseWorkerCreateDraftOrder implements CCDConfig<CaseData, State, Us
 
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(final CaseDetails<CaseData, State> details,
                                                                        final CaseDetails<CaseData, State> beforeDetails) {
-
         final CaseData caseData = details.getData();
         final OrderTemplate orderTemplate = caseData.getDraftOrderContentCIC().getOrderTemplate();
 
@@ -174,6 +157,28 @@ public class CaseWorkerCreateDraftOrder implements CCDConfig<CaseData, State, Us
             .build();
     }
 
+    public SubmittedCallbackResponse submitted(CaseDetails<CaseData, State> details,
+                                               CaseDetails<CaseData, State> beforeDetails) {
+        return SubmittedCallbackResponse.builder()
+            .confirmationHeader("# Draft order created.")
+            .build();
+    }
+
+    private void createDraftOrderAddDocumentFooter(PageBuilder pageBuilder) {
+        pageBuilder.page("createDraftOrderAddDocumentFooter", this::midEvent)
+            .pageLabel("Document footer")
+            .label("draftOrderDocFooter",
+                """
+
+                    Order Signature
+
+                    Confirm the Role and Surname of the person who made this order - this will be added to the bottom of the generated \
+                    order notice. E.g. 'Tribunal Judge Farrelly'""")
+            .complex(CaseData::getDraftOrderContentCIC)
+            .mandatory(DraftOrderContentCIC::getOrderSignature)
+            .done();
+    }
+
     private void addToDraftOrderTemplatesDynamicList(final OrderTemplate orderTemplate, CicCase cicCase, String date) {
         DynamicList orderTemplateDynamicList = cicCase.getDraftOrderDynamicList();
         if (orderTemplateDynamicList == null) {
@@ -185,12 +190,5 @@ public class CaseWorkerCreateDraftOrder implements CCDConfig<CaseData, State, Us
 
         DynamicListElement element = DynamicListElement.builder().label(templateNamePlusCurrentDate).code(UUID.randomUUID()).build();
         orderTemplateDynamicList.getListItems().add(element);
-    }
-
-    public SubmittedCallbackResponse submitted(CaseDetails<CaseData, State> details,
-                                               CaseDetails<CaseData, State> beforeDetails) {
-        return SubmittedCallbackResponse.builder()
-            .confirmationHeader("# Draft order created.")
-            .build();
     }
 }
