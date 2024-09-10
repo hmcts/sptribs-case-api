@@ -18,6 +18,7 @@ import uk.gov.hmcts.reform.idam.client.models.User;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 import uk.gov.hmcts.sptribs.caseworker.model.CloseCase;
 import uk.gov.hmcts.sptribs.caseworker.model.CloseReason;
+import uk.gov.hmcts.sptribs.caseworker.model.DateModel;
 import uk.gov.hmcts.sptribs.caseworker.model.HearingSummary;
 import uk.gov.hmcts.sptribs.caseworker.model.Listing;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
@@ -43,6 +44,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 import static feign.Request.HttpMethod.GET;
@@ -50,6 +52,7 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Collections.emptySet;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static uk.gov.hmcts.ccd.sdk.type.YesOrNo.YES;
+import static uk.gov.hmcts.sptribs.ciccase.model.GetAmendDateAsCompleted.MARKASCOMPLETED;
 import static uk.gov.hmcts.sptribs.ciccase.model.HearingFormat.FACE_TO_FACE;
 import static uk.gov.hmcts.sptribs.ciccase.model.HearingState.Listed;
 import static uk.gov.hmcts.sptribs.ciccase.model.HearingType.FINAL;
@@ -264,6 +267,18 @@ public class TestDataHelper {
         HearingDate date1 = HearingDate.builder().hearingVenueDate(HEARING_DATE_1).hearingVenueTime(HEARING_TIME).build();
         List<ListValue<HearingDate>> list = new ArrayList<>();
         ListValue<HearingDate> listValue1 = ListValue.<HearingDate>builder().value(date1).id("0").build();
+        list.add(listValue1);
+        return list;
+    }
+
+    public static List<ListValue<DateModel>> getDueDateList() {
+        DateModel date = DateModel.builder()
+            .dueDate(LocalDate.of(2024, 9, 5))
+            .information(HEARING_TIME)
+            .orderMarkAsCompleted(Set.of(MARKASCOMPLETED))
+            .build();
+        List<ListValue<DateModel>> list = new ArrayList<>();
+        ListValue<DateModel> listValue1 = ListValue.<DateModel>builder().value(date).id("0").build();
         list.add(listValue1);
         return list;
     }
