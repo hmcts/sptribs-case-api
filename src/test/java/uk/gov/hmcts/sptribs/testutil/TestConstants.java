@@ -40,6 +40,12 @@ public final class TestConstants {
         = "/callbacks/mid-event?page=issueFinalDecisionSelectRecipients";
     public static final String SELECT_HEARING_MID_EVENT_URL
         = "/callbacks/mid-event?page=selectHearing";
+    public static final String REINSTATE_NOTIFY_PARTIES_MID_EVENT_URL
+        = "/callbacks/mid-event?page=reinstateCaseNotifyParties";
+    public static final String CONTACT_PARTIES_TO_CONTACT_MID_EVENT_URL
+        = "/callbacks/mid-event?page=partiesToContact";
+    public static final String REINSTATE_UPLOAD_DOCUMENTS_MID_EVENT_URL
+        = "/callbacks/mid-event?page=reinstateUploadDocument";
     public static final String CONTACT_PARTIES_SELECT_DOCUMENT_MID_EVENT_URL
         = "/callbacks/mid-event?page=contactPartiesSelectDocument";
     public static final String EDIT_HEARING_SUMMARY_SELECT_MID_EVENT_URL
