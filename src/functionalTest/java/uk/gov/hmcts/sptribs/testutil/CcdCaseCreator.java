@@ -1,5 +1,6 @@
 package uk.gov.hmcts.sptribs.testutil;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.ccd.client.CoreCaseDataApi;
@@ -12,6 +13,7 @@ import uk.gov.hmcts.sptribs.idam.IdamService;
 import java.util.Map;
 
 @Service
+@Slf4j
 public class CcdCaseCreator {
 
     @Autowired
@@ -66,7 +68,7 @@ public class CcdCaseCreator {
             caseDataContent
         );
 
-        System.out.println("Created case [" + caseDetails.getId() + "]");
+        log.debug("Created case [" + caseDetails.getId() + "]");
 
         return caseDetails.getId().toString();
     }
