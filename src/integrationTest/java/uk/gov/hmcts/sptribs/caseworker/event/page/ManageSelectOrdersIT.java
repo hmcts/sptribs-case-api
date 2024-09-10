@@ -59,7 +59,7 @@ public class ManageSelectOrdersIT {
 
     private static final String ERRORS = "$.errors";
     private static final String MANAGE_SELECT_ORDER_MID_EVENT_RESPONSE =
-        "classpath:responses/caseworker-manage=select-order-mid-event-response.json";
+        "classpath:responses/caseworker-manage-select-order-mid-event-response.json";
 
     @BeforeAll
     static void setUp() {
