@@ -27,7 +27,6 @@ import static uk.gov.hmcts.sptribs.ciccase.model.ContactPreferenceType.POST;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.ADDRESS_LINE_1;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.ADDRESS_LINE_7;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.CIC_CASE_NUMBER;
-import static uk.gov.hmcts.sptribs.common.CommonConstants.CIC_CASE_RESPONDENT_NAME;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.CIC_CASE_SUBJECT_NAME;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.CONTACT_NAME;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.STAY_ADDITIONAL_DETAIL;
