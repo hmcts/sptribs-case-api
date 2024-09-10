@@ -18,9 +18,18 @@ public final class TestConstants {
 
     public static final String APPLICANT_FIRST_NAME = "applicant_2_first_name";
 
+    public static final String CONFIRMATION_HEADER = "$.confirmation_header";
+
     public static final String ABOUT_TO_START_URL = "/callbacks/about-to-start";
     public static final String ABOUT_TO_SUBMIT_URL = "/callbacks/about-to-submit";
     public static final String SUBMITTED_URL = "/callbacks/submitted";
+
+    public static final String ISSUE_DECISION_SELECT_RECIPIENTS_MID_EVENT_URL = "/callbacks/mid-event?page=issueDecisionSelectRecipients";
+
+    public static final String ISSUE_DECISION_SELECT_TEMPLATE_MID_EVENT_URL = "/callbacks/mid-event?page=issueDecisionSelectTemplate";
+
+    public static final String ISSUE_DECISION_UPLOAD_NOTICE_MID_EVENT_URL = "/callbacks/mid-event?page=issueDecisionUploadNotice";
+
 
     public static final String ISSUE_FINAL_DECISION_MID_EVENT_URL = "/callbacks/mid-event?page=issueFinalDecisionAddDocumentFooter";
 
@@ -32,12 +41,22 @@ public final class TestConstants {
     public static final String EDIT_RECORD_LISTING_MID_EVENT_URL = "callbacks/mid-event?page=regionInfo";
     public static final String RECORD_LISTING_MID_EVENT_URL = "/callbacks/mid-event?page=regionInfo";
     public static final String CHANGE_SECURITY_CLASSIFICATION_MID_EVENT_URL = "/callbacks/mid-event?page=changeSecurityClass";
+    public static final String REINSTATE_NOTIFY_PARTIES_MID_EVENT_URL
+        = "/callbacks/mid-event?page=reinstateCaseNotifyParties";
+    public static final String CONTACT_PARTIES_TO_CONTACT_MID_EVENT_URL
+        = "/callbacks/mid-event?page=partiesToContact";
+    public static final String REINSTATE_UPLOAD_DOCUMENTS_MID_EVENT_URL
+        = "/callbacks/mid-event?page=reinstateUploadDocument";
     public static final String CONTACT_PARTIES_SELECT_DOCUMENT_MID_EVENT_URL
         = "/callbacks/mid-event?page=contactPartiesSelectDocument";
     public static final String EDIT_HEARING_SUMMARY_SELECT_MID_EVENT_URL
         = "/callbacks/mid-event?page=editHearingSummarySelect";
     public static final String DOCUMENT_MANAGEMENT_SELECT_DOCUMENT_MID_EVENT_URL
         = "/callbacks/mid-event?page=selectCaseDocuments";
+
+    public static final String REFER_TO_JUDGE_REASON_MID_EVENT_URL = "/callbacks/mid-event?page=referToJudgeReason";
+
+    public static final String REFER_TO_LEGAL_OFFICER_REASON_MID_EVENT_URL = "/callbacks/mid-event?page=referToLegalOfficer";
 
     public static final String ISSUE_DECISION_MID_EVENT_URL = "/callbacks/mid-event?page=issueDecisionAddDocumentFooter";
 
@@ -94,6 +113,8 @@ public final class TestConstants {
     public static final String TEST_URL = "TestUrl";
     public static final String TEST_USER = "TestUser";
     public static final UUID TEST_CASE_DATA_FILE_UUID = UUID.randomUUID();
+
+    public static final String ERRORS = "$.errors";
 
     public static final AddressGlobalUK APPLICANT_ADDRESS = AddressGlobalUK.builder()
         .addressLine1("line1")

@@ -17,6 +17,7 @@ import static uk.gov.hmcts.sptribs.caseworker.util.ErrorConstants.SELECT_AT_LEAS
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.RESPONDENT_CONTACT_PARTIES;
 import static uk.gov.hmcts.sptribs.testutil.CaseDataUtil.caseData;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.ABOUT_TO_START_URL;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.ERRORS;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.SUBMITTED_URL;
 import static uk.gov.hmcts.sptribs.testutil.TestResourceUtil.expectedResponse;
 
@@ -51,7 +52,6 @@ public class RespondentContactPartiesFT extends FunctionalTestSuite {
         "classpath:request/casedata/ccd-callback-casedata-respondent-contact-parties-submitted-error.json";
 
     private static final String CONFIRMATION_HEADER = "$.confirmation_header";
-    private static final String ERRORS = "$.errors";
 
     @Test
     public void shouldNotReturnAnyErrorsInMidEventCallback() throws Exception {
