@@ -1,0 +1,52 @@
+{
+  "data": {
+    "cicCaseOrderDynamicList": {
+      "value": {
+        "label": "0-Draft"
+      },
+      "valueLabel": "0-Draft"
+    },
+    "cicCaseOrderDueDates": [
+      {
+        "id": "0",
+        "value": {
+          "dueDate": "2024-09-05",
+          "information": "11:00",
+          "orderMarkAsCompleted": [
+            "Mark as completed"
+          ]
+        }
+      }
+    ],
+    "cicCaseOrderList": [
+      {
+        "id": "0",
+        "value": {
+          "dueDateList": [
+            {
+              "id": "0",
+              "value": {
+                "dueDate": "2024-09-05",
+                "information": "11:00",
+                "orderMarkAsCompleted": [
+                  "Mark as completed"
+                ]
+              }
+            }
+          ],
+          "uploadedFile": [
+            {
+              "value": {
+                "documentEmailContent": "some email content",
+                "documentLink": {
+                  "document_filename": "test.pdf"
+                }
+              }
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "errors": []
+}
