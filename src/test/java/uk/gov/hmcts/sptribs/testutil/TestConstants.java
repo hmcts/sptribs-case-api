@@ -59,6 +59,12 @@ public final class TestConstants {
         = "/callbacks/mid-event?page=editHearingSummarySelect";
     public static final String DOCUMENT_MANAGEMENT_SELECT_DOCUMENT_MID_EVENT_URL
         = "/callbacks/mid-event?page=selectCaseDocuments";
+    public static final String POSTPONE_HEARING_NOTIFY_PARTIES_MID_EVENT_URL =
+        "/callbacks/mid-event?page=caseworkerPostponeHearingNotifyParties";
+    public static final String ISSUE_FINAL_DECISION_SELECT_TEMPLATE_MID_EVENT_URL =
+        "/callbacks/mid-event?page=issueFinalDecisionSelectTemplate";
+    public static final String AMEND_DUE_DATA_SELECT_ORDER_MID_EVENT_URL =
+        "/callbacks/mid-event?page=caseworkerAmendDueDateSelectOrder";
 
     public static final String REFER_TO_JUDGE_REASON_MID_EVENT_URL = "/callbacks/mid-event?page=referToJudgeReason";
 
