@@ -19,7 +19,6 @@ public class PostponeHearingNotifyParties implements CcdPageConfiguration {
     private static final String RECIPIENT_LABEL = "Postpone information recipient";
 
     @Override
-
     public void addTo(PageBuilder pageBuilder) {
 
         pageBuilder.page("caseworkerPostponeHearingNotifyParties", this::midEvent)
@@ -52,7 +51,4 @@ public class PostponeHearingNotifyParties implements CcdPageConfiguration {
             .errors(errors)
             .build();
     }
-
-
 }
-
