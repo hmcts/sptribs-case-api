@@ -41,6 +41,10 @@ public final class TestConstants {
     public static final String DOCUMENT_MANAGEMENT_SELECT_DOCUMENT_MID_EVENT_URL
         = "/callbacks/mid-event?page=selectCaseDocuments";
 
+    public static final String REFER_TO_JUDGE_REASON_MID_EVENT_URL = "/callbacks/mid-event?page=referToJudgeReason";
+
+    public static final String REFER_TO_LEGAL_OFFICER_REASON_MID_EVENT_URL = "/callbacks/mid-event?page=referToLegalOfficer";
+
     public static final String ISSUE_DECISION_MID_EVENT_URL = "/callbacks/mid-event?page=issueDecisionAddDocumentFooter";
 
     public static final String HEARING_RECORDINGS_UPLOAD_MID_EVENT_URL = "/callbacks/mid-event?page=hearingRecordingUploadPage";
