@@ -18,6 +18,8 @@ public final class TestConstants {
 
     public static final String APPLICANT_FIRST_NAME = "applicant_2_first_name";
 
+    public static final String CONFIRMATION_HEADER = "$.confirmation_header";
+
     public static final String ABOUT_TO_START_URL = "/callbacks/about-to-start";
     public static final String ABOUT_TO_SUBMIT_URL = "/callbacks/about-to-submit";
     public static final String SUBMITTED_URL = "/callbacks/submitted";
@@ -45,6 +47,10 @@ public final class TestConstants {
         = "/callbacks/mid-event?page=editHearingSummarySelect";
     public static final String DOCUMENT_MANAGEMENT_SELECT_DOCUMENT_MID_EVENT_URL
         = "/callbacks/mid-event?page=selectCaseDocuments";
+
+    public static final String REFER_TO_JUDGE_REASON_MID_EVENT_URL = "/callbacks/mid-event?page=referToJudgeReason";
+
+    public static final String REFER_TO_LEGAL_OFFICER_REASON_MID_EVENT_URL = "/callbacks/mid-event?page=referToLegalOfficer";
 
     public static final String ISSUE_DECISION_MID_EVENT_URL = "/callbacks/mid-event?page=issueDecisionAddDocumentFooter";
 
