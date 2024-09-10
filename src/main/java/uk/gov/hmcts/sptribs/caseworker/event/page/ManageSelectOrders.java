@@ -56,5 +56,4 @@ public class ManageSelectOrders implements CcdPageConfiguration {
             .errors(errors)
             .build();
     }
-
 }
