@@ -63,6 +63,7 @@ import static uk.gov.hmcts.sptribs.testutil.TestConstants.ABOUT_TO_START_URL;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.ABOUT_TO_SUBMIT_URL;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.AUTHORIZATION;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.CASEWORKER_USER_ID;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.ERRORS;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.SERVICE_AUTHORIZATION;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.SUBMITTED_URL;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_AUTHORIZATION_TOKEN;
@@ -107,7 +108,6 @@ public class CaseworkerCloseTheCaseIT {
     public static final String CLOSE_CASE_UPLOAD_DOCS_MID_EVENT_URL =
         "/callbacks/mid-event?page=closeCaseUploadDocuments";
     private static final String CONFIRMATION_HEADER = "$.confirmation_header";
-    private static final String ERRORS = "$.errors";
 
     @BeforeAll
     static void setUp() {

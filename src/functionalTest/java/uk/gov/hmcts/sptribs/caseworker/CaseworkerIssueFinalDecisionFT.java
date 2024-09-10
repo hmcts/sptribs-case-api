@@ -16,6 +16,7 @@ import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_ISS
 import static uk.gov.hmcts.sptribs.testutil.CaseDataUtil.caseData;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.ABOUT_TO_START_URL;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.ABOUT_TO_SUBMIT_URL;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.ERRORS;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.SUBMITTED_URL;
 import static uk.gov.hmcts.sptribs.testutil.TestResourceUtil.expectedResponse;
 
@@ -35,7 +36,6 @@ public class CaseworkerIssueFinalDecisionFT extends FunctionalTestSuite {
     private static final String RESPONSE_MID_EVENT = "classpath:responses/response-caseworker-issue-final-decision-mid-event.json";
 
     private static final String DECISION_SIGNATURE = "$.data.decisionSignature";
-    private static final String ERRORS = "$.errors";
     private static final String STATE = "$.state";
     private static final String CONFIRMATION_HEADER = "$.confirmation_header";
 
