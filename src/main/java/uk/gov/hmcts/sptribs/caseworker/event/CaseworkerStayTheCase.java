@@ -91,8 +91,6 @@ public class CaseworkerStayTheCase implements CCDConfig<CaseData, State, UserRol
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(final CaseDetails<CaseData, State> details,
                                                                        final CaseDetails<CaseData, State> beforeDetails) {
 
-        log.info("Caseworker stay the case callback invoked for Case Id: {}", details.getId());
-
         final CaseData caseData = details.getData();
         caseData.getCaseStay().setIsCaseStayed(YesOrNo.YES);
 
