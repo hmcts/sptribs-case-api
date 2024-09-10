@@ -18,6 +18,8 @@ public final class TestConstants {
 
     public static final String APPLICANT_FIRST_NAME = "applicant_2_first_name";
 
+    public static final String CONFIRMATION_HEADER = "$.confirmation_header";
+
     public static final String ABOUT_TO_START_URL = "/callbacks/about-to-start";
     public static final String ABOUT_TO_SUBMIT_URL = "/callbacks/about-to-submit";
     public static final String SUBMITTED_URL = "/callbacks/submitted";
