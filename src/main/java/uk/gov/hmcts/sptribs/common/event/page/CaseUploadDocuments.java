@@ -1,7 +1,5 @@
 package uk.gov.hmcts.sptribs.common.event.page;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
@@ -17,8 +15,6 @@ import java.util.List;
 import static uk.gov.hmcts.sptribs.document.DocumentUtil.validateUploadedDocuments;
 
 public class CaseUploadDocuments implements CcdPageConfiguration {
-
-    private static final Logger LOG = LoggerFactory.getLogger(CaseUploadDocuments.class);
 
     @Override
     public void addTo(PageBuilder pageBuilder) {
