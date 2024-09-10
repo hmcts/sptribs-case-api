@@ -54,6 +54,7 @@ public class RespondentPartiesToContact implements CcdPageConfiguration {
 
     public AboutToStartOrSubmitResponse<CaseData, State> midEvent(CaseDetails<CaseData, State> details,
                                                                   CaseDetails<CaseData, State> detailsBefore) {
+
         final CaseData data = details.getData();
         final CicCase cicCase = data.getCicCase();
         final ContactParties contactParties = data.getContactParties();
@@ -77,6 +78,4 @@ public class RespondentPartiesToContact implements CcdPageConfiguration {
             .errors(errors)
             .build();
     }
-
 }
-
