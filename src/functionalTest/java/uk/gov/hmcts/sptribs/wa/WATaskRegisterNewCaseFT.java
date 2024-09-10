@@ -1,6 +1,7 @@
 package uk.gov.hmcts.sptribs.wa;
 
 import io.restassured.response.Response;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -20,6 +21,7 @@ import static org.awaitility.Awaitility.await;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @SpringBootTest
+@Slf4j
 public class WATaskRegisterNewCaseFT extends FunctionalTestSuite {
 
     @Autowired
@@ -40,7 +42,7 @@ public class WATaskRegisterNewCaseFT extends FunctionalTestSuite {
     public void should() throws IOException, InterruptedException {
         String newCaseId = String.valueOf(createAndSubmitTestCaseAndGetCaseReference());
 
-        System.out.println(newCaseId);
+        log.debug(newCaseId);
 
         await()
             .pollInterval(DEFAULT_POLL_INTERVAL_SECONDS, SECONDS)
