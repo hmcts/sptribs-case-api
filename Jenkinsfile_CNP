@@ -241,7 +241,6 @@ withPipeline(type, product, component) {
     env.CITIZEN_UPDATE_CASE_STATE_ENABLED=true
     env.SERVICE_AUTH_MICROSERVICE = "sptribs_case_api"
     env.SERVICE_AUTH_PROVIDER_URL = "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
-    env.WA_FEATURE_ENABLED = true
     setCommonEnvVariables()
 
     enablePactAs([AppPipelineDsl.PactRoles.CONSUMER])
