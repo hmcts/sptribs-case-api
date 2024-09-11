@@ -1,0 +1,11 @@
+{
+  "data": {
+    "caseIssueDecisionDecisionDocument": {
+      "documentEmailContent": "some email content",
+      "documentLink": {
+        "document_filename": "test.pdf"
+      }
+    }
+  },
+  "errors": []
+}
