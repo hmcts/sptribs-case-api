@@ -27,6 +27,12 @@ public class IdamTokenGenerator {
     @Value("${idam.caseworker.password}")
     private String caseworkerPassword;
 
+    @Value("${idam.waseniorcaseworker.username}")
+    private String waSeniorCaseworkerUsername;
+
+    @Value("${idam.waseniorcaseworker.password}")
+    private String waSeniorCaseworkerPassword;
+
     @Value("${idam.systemupdate.username}")
     private String systemUpdateUsername;
 
@@ -58,6 +64,15 @@ public class IdamTokenGenerator {
         if (caseworkerUserToken == null) {
             caseworkerUserToken = idamClient.getAccessToken(caseworkerUsername, caseworkerPassword);
             cache.put(caseworkerUsername, caseworkerUserToken);
+        }
+        return caseworkerUserToken;
+    }
+
+    public String generateIdamTokenForWASeniorCaseworker() {
+        String caseworkerUserToken = cache.getIfPresent(waSeniorCaseworkerUsername);
+        if (caseworkerUserToken == null) {
+            caseworkerUserToken = idamClient.getAccessToken(waSeniorCaseworkerUsername, waSeniorCaseworkerPassword);
+            cache.put(waSeniorCaseworkerUsername, caseworkerUserToken);
         }
         return caseworkerUserToken;
     }

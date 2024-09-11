@@ -59,9 +59,14 @@ wa:
 
   wa-task-management-api:
     java:
+      ingressHost: wa-task-management-api-${SERVICE_FQDN}
       environment:
         ALLOWED_CASE_TYPES: wacasetype,criminalinjuriescompensation
-        ALLOWED_JURISDICTIONS: wa, st_cic
+        ALLOWED_JURISDICTIONS: wa,st_cic
+
+  wa-task-monitor:
+    java:
+      ingressHost: wa-task-monitor-${SERVICE_FQDN}
 
   wa-workflow-api:
     java:
