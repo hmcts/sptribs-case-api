@@ -4,6 +4,7 @@ import io.restassured.response.Response;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.DisabledIfEnvironmentVariable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import uk.gov.hmcts.sptribs.testutil.CcdCaseCreator;
@@ -40,7 +41,7 @@ public class WATaskRegisterNewCaseFT extends FunctionalTestSuite {
     private static final int DEFAULT_POLL_INTERVAL_SECONDS = 4;
 
     @Test
-    @Disabled
+    @DisabledIfEnvironmentVariable(named = "WA_FEATURE_ENABLED", matches = "true")
     public void shouldInitiateRegisterNewCaseTask() throws IOException, InterruptedException {
         String newCaseId = String.valueOf(createAndSubmitTestCaseAndGetCaseReference());
 
