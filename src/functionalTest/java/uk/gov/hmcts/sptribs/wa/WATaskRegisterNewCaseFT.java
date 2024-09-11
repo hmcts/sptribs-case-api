@@ -39,10 +39,10 @@ public class WATaskRegisterNewCaseFT extends FunctionalTestSuite {
     private static final int DEFAULT_POLL_INTERVAL_SECONDS = 4;
 
     @Test
-    public void should() throws IOException, InterruptedException {
+    public void shouldInitiateRegisterNewCaseTask() throws IOException, InterruptedException {
         String newCaseId = String.valueOf(createAndSubmitTestCaseAndGetCaseReference());
 
-        log.debug(newCaseId);
+        log.debug("New case created: " + newCaseId);
 
         await()
             .pollInterval(DEFAULT_POLL_INTERVAL_SECONDS, SECONDS)
