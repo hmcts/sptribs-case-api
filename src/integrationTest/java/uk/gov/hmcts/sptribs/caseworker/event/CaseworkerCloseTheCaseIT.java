@@ -120,7 +120,7 @@ public class CaseworkerCloseTheCaseIT {
     }
 
     @Test
-    void shouldOnMidEvent() throws Exception {
+    void shouldNotReturnErrorsOnMidEvent() throws Exception {
         final CaseData caseData = CaseData.builder()
             .closeCase(CloseCase.builder()
                 .documentsUpload(getCaseworkerCICDocumentUploadList("test.pdf"))
