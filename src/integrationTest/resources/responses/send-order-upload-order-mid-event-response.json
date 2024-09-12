@@ -1,0 +1,15 @@
+{
+  "data": {
+    "cicCaseOrderFile": [
+      {
+        "value": {
+          "documentEmailContent": "some email content",
+          "documentLink": {
+            "document_filename": "file.pdf"
+          }
+        }
+      }
+    ]
+  },
+  "errors": []
+}

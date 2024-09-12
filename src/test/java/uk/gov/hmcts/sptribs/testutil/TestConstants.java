@@ -78,6 +78,14 @@ public final class TestConstants {
 
     public static final String HEARING_VENUES_MID_EVENT_URL = "/callbacks/mid-event?page=listingDetails";
 
+    public static final String ISSUE_CASE_NOTIFY_PARTIES = "/callbacks/mid-event?page=issueCaseNotifyParties";
+
+    public static final String SEND_ORDER_UPLOAD_ORDER_MID_EVENT_URL = "/callbacks/mid-event?page=caseworkerSendOrderUploadOrder";
+
+    public static final String SHOW_CASE_DOCUMENTS_MID_EVENT_URL = "/callbacks/mid-event?page=showCaseDocuments";
+
+    public static final String UPLOAD_CASE_DOCUMENTS_MID_EVENT_URL = "/callbacks/mid-event?page=uploadCaseDocuments";
+
     public static final String AUTH_HEADER_VALUE = "auth-header-value";
     public static final String INVALID_AUTH_TOKEN = "invalid_token";
     public static final String SERVICE_AUTHORIZATION = "ServiceAuthorization";
