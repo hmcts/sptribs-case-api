@@ -270,6 +270,7 @@ withPipeline(type, product, component) {
         env.CAMUNDA_BASE_URL = "https://camunda-sptribs-case-api-pr-${CHANGE_ID}.preview.platform.hmcts.net"
         println """After akschartsinstall upload DNM and BPMN diagrams""".stripIndent()
         sh 'chmod -R +x ./bin'
+        env.WA_FEATURE_ENABLED = true
         uploadDmnDiagrams()
         uploadBpmnDiagram()
       }
