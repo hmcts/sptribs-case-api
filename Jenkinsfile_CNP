@@ -269,7 +269,6 @@ withPipeline(type, product, component) {
     onPR {
       for (label in githubApi.getLabelsbyPattern(env.BRANCH_NAME, "pr-values:wa") ) {
         env.CAMUNDA_BASE_URL = "https://camunda-sptribs-case-api-pr-${CHANGE_ID}.preview.platform.hmcts.net"
-        env.WA_FEATURE_ENABLED = true
         println """After akschartsinstall upload DNM and BPMN diagrams""".stripIndent()
         sh 'chmod -R +x ./bin'
         uploadDmnDiagrams()
