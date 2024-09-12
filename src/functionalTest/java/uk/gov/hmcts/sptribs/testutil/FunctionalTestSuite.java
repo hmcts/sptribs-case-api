@@ -14,6 +14,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.client.model.Event;
 import uk.gov.hmcts.reform.ccd.client.model.StartEventResponse;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.DssCaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.common.ccd.CcdJurisdiction;
 import uk.gov.hmcts.sptribs.common.ccd.CcdServiceCode;
@@ -21,6 +22,7 @@ import uk.gov.hmcts.sptribs.idam.IdamService;
 import uk.gov.hmcts.sptribs.systemupdate.service.CcdSearchService;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
@@ -56,6 +58,11 @@ public abstract class FunctionalTestSuite {
 
     @Autowired
     protected ObjectMapper objectMapper;
+
+    protected static final String EVENT_PARAM = "event";
+    protected static final String UPDATE = "UPDATE";
+    protected static final String UPDATE_CASE = "UPDATE_CASE";
+    protected static final String SUBMIT = "SUBMIT";
 
     protected CaseDetails createCaseInCcd() {
         String caseworkerToken = idamTokenGenerator.generateIdamTokenForCaseworker();
@@ -128,6 +135,32 @@ public abstract class FunctionalTestSuite {
         return triggerCallback(request, url);
     }
 
+    protected Response triggerCallback(Map<String, Object> caseData, String eventId, String url, Long caseId) throws IOException {
+        CallbackRequest request = CallbackRequest
+            .builder()
+            .eventId(eventId)
+            .caseDetailsBefore(
+                CaseDetails
+                    .builder()
+                    .id(caseId)
+                    .data(caseData)
+                    .createdDate(LOCAL_DATE_TIME)
+                    .caseTypeId(CcdServiceCode.ST_CIC.getCaseType().getCaseTypeName())
+                    .build())
+            .caseDetails(
+                CaseDetails
+                    .builder()
+                    .id(caseId)
+                    .data(caseData)
+                    .createdDate(LOCAL_DATE_TIME)
+                    .caseTypeId(CcdServiceCode.ST_CIC.getCaseType().getCaseTypeName())
+                    .build()
+            )
+            .build();
+
+        return triggerCallback(request, url);
+    }
+
     protected Response triggerCallback(Map<String, Object> caseData, String eventId, String url, State state) throws IOException {
         CallbackRequest request = CallbackRequest
             .builder()
@@ -181,5 +214,54 @@ public abstract class FunctionalTestSuite {
 
     protected CaseData getCaseData(Map<String, Object> data) {
         return objectMapper.convertValue(data, CaseData.class);
+    }
+
+    protected long createTestCaseAndGetCaseReference() {
+        return RestAssured
+            .given()
+            .relaxedHTTPSValidation()
+            .baseUri(testUrl)
+            .header(CONTENT_TYPE, APPLICATION_JSON_VALUE)
+            .header(SERVICE_AUTHORIZATION, serviceAuthenticationGenerator.generate())
+            .header(AUTHORIZATION, idamTokenGenerator.generateIdamTokenForCitizen())
+            .body(getDssCaseData())
+            .when()
+            .post("/case/dss-orchestration/create")
+            .getBody()
+            .path("id");
+    }
+
+    protected long createAndSubmitTestCaseAndGetCaseReference() {
+        final long caseReference = createTestCaseAndGetCaseReference();
+        return RestAssured
+            .given()
+            .relaxedHTTPSValidation()
+            .baseUri(testUrl)
+            .header(CONTENT_TYPE, APPLICATION_JSON_VALUE)
+            .header(SERVICE_AUTHORIZATION, serviceAuthenticationGenerator.generate())
+            .header(AUTHORIZATION, idamTokenGenerator.generateIdamTokenForCitizen())
+            .param(EVENT_PARAM, SUBMIT)
+            .body(getDssCaseData())
+            .when()
+            .put("/case/dss-orchestration/" + caseReference +  "/update")
+            .getBody()
+            .path("id");
+    }
+
+    protected DssCaseData getDssCaseData() {
+        return DssCaseData.builder()
+            .subjectFullName("Test Name")
+            .subjectDateOfBirth(LocalDate.of(1990, 1, 1))
+            .subjectEmailAddress("test@email.com")
+            .subjectContactNumber("07123412345")
+            .caseTypeOfApplication("CIC")
+            .build();
+    }
+
+    protected DssCaseData getDssCaseDataUpdated() {
+        return DssCaseData.builder()
+            .caseTypeOfApplication("CIC")
+            .additionalInformation("some additional info")
+            .build();
     }
 }

@@ -26,6 +26,8 @@ uk:
 
 s2s:
   name: ccd_data
+  task_management_name: wa_task_management_api
+  access_management_name: am_role_assignment_service
 
 idam:
   api:
@@ -40,6 +42,10 @@ idam:
   caseworker:
     username: ${IDAM_CASEWORKER_USERNAME:dummycaseworker@test.com}
     password: ${IDAM_CASEWORKER_PASSWORD:dummy}
+  waseniorcaseworker:
+    username: ${IDAM_WA_SENIOR_CASEWORKER_USERNAME:dummywaseniorcaseworker@test.com}
+    password: ${IDAM_WA_SENIOR_CASEWORKER_PASSWORD:dummy}
+    uid: ${WA_SENIOR_CASEWORKER_UID:dummy}
   systemupdate:
     username: ${IDAM_SYSTEM_UPDATE_USERNAME:dummysystemupdate@test.com}
     password: ${IDAM_SYSTEM_UPDATE_PASSWORD:dummy}
@@ -121,3 +127,9 @@ caseinfo:
       caseTypeOfApplication:
         - CIC
 
+wa_task_monitor_api:
+  url: ${TASK_MONITOR_API_URL:http://wa-task-monitor-aat.service.core-compute-aat.internal}
+wa_task_management_api:
+  url: ${TASK_MANAGEMENT_API_URL:http://wa-task-management-api-aat.service.core-compute-aat.internal}
+role_assignment_mapping_api:
+  url: ${ROLE_ASSIGNMENT_API_URL:http://am-org-role-mapping-service-aat.service.core-compute-aat.internal}
