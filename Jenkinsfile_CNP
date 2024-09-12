@@ -227,11 +227,6 @@ withPipeline(type, product, component) {
     env.TASK_MONITOR_API_URL = "https://wa-task-monitor-sptribs-case-api-pr-${CHANGE_ID}.preview.platform.hmcts.net"
     env.TASK_MANAGEMENT_API_URL = "https://wa-task-management-api-sptribs-case-api-pr-${CHANGE_ID}.preview.platform.hmcts.net"
     env.ROLE_ASSIGNMENT_API_URL = "https://am-org-role-mapping-service-sptribs-case-api-pr-${CHANGE_ID}.preview.platform.hmcts.net"
-
-    for (label in githubApi.getLabelsbyPattern(env.BRANCH_NAME, "pr-values:wa") ) {
-      env.WA_FEATURE_ENABLED = true
-    }
-
     setCommonEnvVariables()
 
     enablePactAs([AppPipelineDsl.PactRoles.CONSUMER])
