@@ -42,7 +42,7 @@ public class ApplicationReceivedNotificationIT {
     ArgumentCaptor<NotificationRequest> notificationRequestCaptor;
 
     @Test
-    void shouldSendEmailToSubject() throws Exception {
+    void shouldSendEmailToSubject() {
         final CaseData data = CaseData.builder()
             .cicCase(CicCase.builder()
                 .contactPreferenceType(EMAIL)
