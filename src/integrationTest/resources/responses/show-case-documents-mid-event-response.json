@@ -1,0 +1,19 @@
+{
+  "data": {
+    "cicCaseRemovedDocumentList": [
+      {
+        "id": "1",
+        "value": {
+          "documentCategory": "Linked docs",
+          "documentEmailContent": "some email content",
+          "documentLink": {
+            "document_url": "http://url/",
+            "document_filename": "test.pdf",
+            "document_binary_url": "http://url/"
+          }
+        }
+      }
+    ]
+  },
+  "errors": []
+}
