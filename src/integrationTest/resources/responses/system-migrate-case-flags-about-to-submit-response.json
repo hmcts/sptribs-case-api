@@ -1,0 +1,26 @@
+{
+  "data": {
+    "caseFlags": {
+      "details": []
+    },
+    "subjectFlags": {
+      "partyName": "Test Name",
+      "roleOnCase": "subject",
+      "details": []
+    },
+    "representativeFlags": {
+      "partyName": "Representative Name",
+      "roleOnCase": "Representative",
+      "details": []
+    },
+    "applicantFlags": {
+      "partyName": "Applicant Name",
+      "roleOnCase": "applicant",
+      "details": []
+    },
+    "cicCaseFullName": "Test Name",
+    "cicCaseApplicantFullName": "Applicant Name",
+    "cicCaseRepresentativeFullName": "Representative Name",
+    "stayIsCaseStayed": "No"
+  }
+}
