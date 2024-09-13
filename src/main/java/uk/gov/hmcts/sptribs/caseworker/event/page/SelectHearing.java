@@ -12,7 +12,6 @@ import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import static uk.gov.hmcts.sptribs.caseworker.util.EventUtil.getId;
@@ -20,7 +19,6 @@ import static uk.gov.hmcts.sptribs.caseworker.util.EventUtil.getId;
 @Slf4j
 @Component
 public class SelectHearing implements CcdPageConfiguration {
-
 
     @Override
     public void addTo(PageBuilder pageBuilder) {
@@ -32,13 +30,10 @@ public class SelectHearing implements CcdPageConfiguration {
             .done();
     }
 
-
     public AboutToStartOrSubmitResponse<CaseData, State> midEvent(CaseDetails<CaseData, State> details,
                                                                   CaseDetails<CaseData, State> detailsBefore) {
 
         final CaseData data = details.getData();
-        final List<String> errors = new ArrayList<>();
-
         final String selectedHearing = data.getCicCase().getHearingList().getValue().getLabel();
         final String id = getId(selectedHearing);
         final List<ListValue<Listing>> hearingList = data.getHearingList();
@@ -52,8 +47,6 @@ public class SelectHearing implements CcdPageConfiguration {
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(data)
-            .errors(errors)
             .build();
     }
-
 }
