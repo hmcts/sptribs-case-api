@@ -227,6 +227,13 @@ withPipeline(type, product, component) {
     env.TASK_MONITOR_API_URL = "https://wa-task-monitor-sptribs-case-api-pr-${CHANGE_ID}.preview.platform.hmcts.net"
     env.TASK_MANAGEMENT_API_URL = "https://wa-task-management-api-sptribs-case-api-pr-${CHANGE_ID}.preview.platform.hmcts.net"
     env.ROLE_ASSIGNMENT_API_URL = "https://am-org-role-mapping-service-sptribs-case-api-pr-${CHANGE_ID}.preview.platform.hmcts.net"
+
+    def githubApi = new GithubAPI(this) as Object
+
+    for (label in githubApi.getLabelsbyPattern(env.BRANCH_NAME, "pr-values:wa") ) {
+      env.WA_FEATURE_ENABLED = true
+    }
+
     setCommonEnvVariables()
 
     enablePactAs([AppPipelineDsl.PactRoles.CONSUMER])
@@ -270,7 +277,6 @@ withPipeline(type, product, component) {
         env.CAMUNDA_BASE_URL = "https://camunda-sptribs-case-api-pr-${CHANGE_ID}.preview.platform.hmcts.net"
         println """After akschartsinstall upload DNM and BPMN diagrams""".stripIndent()
         sh 'chmod -R +x ./bin'
-        env.WA_FEATURE_ENABLED = true
         uploadDmnDiagrams()
         uploadBpmnDiagram()
       }
