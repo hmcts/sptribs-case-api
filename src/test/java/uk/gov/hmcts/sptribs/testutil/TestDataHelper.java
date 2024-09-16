@@ -156,6 +156,24 @@ public class TestDataHelper {
             .build();
     }
 
+    public static CallbackRequest callbackRequest(final CaseData caseData, final CaseData caseDataBefore, final String eventId) {
+        OBJECT_MAPPER.registerModule(new JavaTimeModule());
+        return CallbackRequest
+            .builder()
+            .eventId(eventId)
+            .caseDetailsBefore(caseDetailsBefore(caseDataBefore))
+            .caseDetails(
+                CaseDetails
+                    .builder()
+                    .data(OBJECT_MAPPER.convertValue(caseData, TYPE_REFERENCE))
+                    .id(TEST_CASE_ID)
+                    .createdDate(LOCAL_DATE_TIME)
+                    .caseTypeId(CcdCaseType.CIC.getCaseTypeName())
+                    .build()
+            )
+            .build();
+    }
+
     public static FeignException feignException(int status, String reason) {
         byte[] emptyBody = {};
         Request request = Request.create(GET, EMPTY, Map.of(), emptyBody, UTF_8, null);
