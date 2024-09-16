@@ -15,6 +15,9 @@ import uk.gov.hmcts.sptribs.ciccase.task.CaseTask;
 
 import java.time.LocalDate;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID;
+
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
@@ -33,10 +36,16 @@ public class CaseDetailsUpdaterIT {
         final StartEventResponse startEventResponse = StartEventResponse.builder()
             .caseDetails(CaseDetails.builder()
                 .data(new HashedMap<>())
+                .caseTypeId("CIC")
+                .id(TEST_CASE_ID)
                 .build())
             .build();
 
         uk.gov.hmcts.ccd.sdk.api.CaseDetails<CaseData, State> caseDetails = caseDetailsUpdater.updateCaseData(caseTask, startEventResponse);
 
+        assertThat(caseDetails.getCaseTypeId()).isEqualTo("CIC");
+        assertThat(caseDetails.getId()).isEqualTo(TEST_CASE_ID);
+        assertThat(caseDetails.getData()).isNotNull();
+        assertThat(caseDetails.getData().getDueDate()).isEqualTo(LocalDate.of(2023, 1, 2));
     }
 }
