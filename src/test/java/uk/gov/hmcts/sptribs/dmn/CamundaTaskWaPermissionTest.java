@@ -470,7 +470,7 @@ class CamundaTaskWaPermissionTest extends DmnDecisionTableBaseUnitTest {
     private static Map<String, Object> taskSupervisorPermissions() {
         return Map.of(
             "name", "task-supervisor",
-            "value", "Read,Own,Claim,Unclaim,Manage,Assign,Unassign,Complete,Cancel",
+            "value", "Read,Claim,Unclaim,Manage,Assign,Unassign,Complete,Cancel",
             "autoAssignable", false
         );
     }
