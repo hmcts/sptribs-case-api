@@ -19,6 +19,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.common.ccd.CcdJurisdiction;
 import uk.gov.hmcts.sptribs.common.ccd.CcdServiceCode;
 import uk.gov.hmcts.sptribs.idam.IdamService;
+import uk.gov.hmcts.sptribs.model.CaseResponse;
 import uk.gov.hmcts.sptribs.systemupdate.service.CcdSearchService;
 
 import java.io.IOException;
@@ -246,6 +247,23 @@ public abstract class FunctionalTestSuite {
             .put("/case/dss-orchestration/" + caseReference +  "/update")
             .getBody()
             .path("id");
+    }
+
+    protected CaseResponse createAndSubmitTestCaseAndGetCaseData() {
+        final long caseReference = createTestCaseAndGetCaseReference();
+        return RestAssured
+            .given()
+            .relaxedHTTPSValidation()
+            .baseUri(testUrl)
+            .header(CONTENT_TYPE, APPLICATION_JSON_VALUE)
+            .header(SERVICE_AUTHORIZATION, serviceAuthenticationGenerator.generate())
+            .header(AUTHORIZATION, idamTokenGenerator.generateIdamTokenForCitizen())
+            .param(EVENT_PARAM, SUBMIT)
+            .body(getDssCaseData())
+            .when()
+            .put("/case/dss-orchestration/" + caseReference +  "/update")
+            .getBody()
+            .path("/");
     }
 
     protected DssCaseData getDssCaseData() {

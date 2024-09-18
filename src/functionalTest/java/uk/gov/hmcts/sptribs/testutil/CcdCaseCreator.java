@@ -28,7 +28,7 @@ public class CcdCaseCreator {
     @Autowired
     protected ServiceAuthenticationGenerator serviceAuthenticationGenerator;
 
-    public String createInitialStartEventAndSubmit(String eventId,
+    public CaseDetails createInitialStartEventAndSubmit(String eventId,
                                                    String jurisdiction,
                                                    String caseType,
                                                    Map<String, Object> caseData) {
@@ -70,6 +70,6 @@ public class CcdCaseCreator {
 
         log.debug("Created case [" + caseDetails.getId() + "]");
 
-        return caseDetails.getId().toString();
+        return caseDetails;
     }
 }
