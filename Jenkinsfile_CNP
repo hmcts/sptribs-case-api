@@ -294,6 +294,7 @@ withPipeline(type, product, component) {
   }
 
   onPerftest {
+    env.WA_FEATURE_ENABLED = true
     env.ENVIRONMENT="perftest"
     env.CASE_API_URL = "http://sptribs-case-api-perftest.service.core-compute-perftest.internal"
     env.CCD_DEF_NAME = "perftest"
@@ -304,6 +305,7 @@ withPipeline(type, product, component) {
   }
 
   onIthc {
+    env.WA_FEATURE_ENABLED = true
     env.ENVIRONMENT="ithc"
     env.CASE_API_URL = "http://sptribs-case-api-ithc.service.core-compute-ithc.internal"
     env.CCD_DEF_NAME = "ithc"
