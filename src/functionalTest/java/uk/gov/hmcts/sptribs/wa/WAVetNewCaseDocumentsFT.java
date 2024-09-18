@@ -87,8 +87,6 @@ public class WAVetNewCaseDocumentsFT extends FunctionalTestSuite {
                     assertNotNull(roles);
                     assertThat(roles).isNotEmpty();
 
-                    System.out.println(roles);
-
                     for (Map<String, Object> role : roles) {
                         String roleName = role.get("role_name").toString();
                         assertThat(roleName).isIn(TASK_ROLES);
