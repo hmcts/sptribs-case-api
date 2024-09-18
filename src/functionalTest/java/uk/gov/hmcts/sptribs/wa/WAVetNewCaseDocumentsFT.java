@@ -46,8 +46,9 @@ public class WAVetNewCaseDocumentsFT extends FunctionalTestSuite {
     @EnabledIfEnvironmentVariable(named = "WA_FEATURE_ENABLED", matches = "true")
     void shouldInitiateVetNewCaseDocumentsTask() {
         final Response response = createAndSubmitTestCaseAndGetResponse();
-        System.out.println("Response: " + response.toString());
-        final String newCaseId = String.valueOf(response.getBody().path("id"));
+        System.out.println("Response: " + response.getBody().toString());
+        final long id = response.getBody().path("id");
+        final String newCaseId = String.valueOf(id);
         final Map<String, Object> caseData = response.getBody().path("caseData");
 
         System.out.println("New case created: " + newCaseId);
