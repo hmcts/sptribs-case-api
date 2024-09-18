@@ -31,6 +31,7 @@ public class CcdCaseCreator {
     public CaseDetails createInitialStartEventAndSubmit(String eventId,
                                                    String jurisdiction,
                                                    String caseType,
+                                                   String caseId,
                                                    Map<String, Object> caseData) {
 
         final String userToken = idamTokenGenerator.generateIdamTokenForWASeniorCaseworker();
@@ -38,12 +39,13 @@ public class CcdCaseCreator {
         final String userId = idamService.retrieveUser(userToken).getUserDetails().getId();
 
         //Fire start event
-        final StartEventResponse startCase = coreCaseDataApi.startForCaseworker(
+        final StartEventResponse startCase = coreCaseDataApi.startEventForCaseWorker(
             userToken,
             serviceToken,
             userId,
             jurisdiction,
             caseType,
+            caseId,
             eventId
         );
 
@@ -58,12 +60,13 @@ public class CcdCaseCreator {
             .build();
 
         //Fire submit event
-        final CaseDetails caseDetails = coreCaseDataApi.submitForCaseworker(
+        final CaseDetails caseDetails = coreCaseDataApi.submitEventForCaseWorker(
             userToken,
             serviceToken,
             userId,
             jurisdiction,
             caseType,
+            caseId,
             true,
             caseDataContent
         );

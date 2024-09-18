@@ -55,7 +55,7 @@ public class WAVetNewCaseDocumentsFT extends FunctionalTestSuite {
 
         // EDIT CASE
         CaseDetails caseDetails = ccdCaseCreator.createInitialStartEventAndSubmit(
-            CASEWORKER_EDIT_CASE, ST_CIC_JURISDICTION, ST_CIC_CASE_TYPE, caseData);
+            CASEWORKER_EDIT_CASE, ST_CIC_JURISDICTION, ST_CIC_CASE_TYPE, newCaseId, caseData);
 
         System.out.println("Edit case event submitted");
 
