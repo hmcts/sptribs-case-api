@@ -22,7 +22,7 @@ import static org.awaitility.Awaitility.await;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.ST_CIC_CASE_TYPE;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.ST_CIC_JURISDICTION;
-import static uk.gov.hmcts.sptribs.testutil.TestEventConstants.CASEWORKER_EDIT_CICA_CASE_DETAILS;
+import static uk.gov.hmcts.sptribs.testutil.TestEventConstants.CASEWORKER_EDIT_CASE;
 
 @SpringBootTest
 @Slf4j
@@ -55,7 +55,7 @@ public class WAVetNewCaseDocumentsFT extends FunctionalTestSuite {
 
         // EDIT CASE
         CaseDetails caseDetails = ccdCaseCreator.createInitialStartEventAndSubmit(
-            CASEWORKER_EDIT_CICA_CASE_DETAILS, ST_CIC_JURISDICTION, ST_CIC_CASE_TYPE, caseData);
+            CASEWORKER_EDIT_CASE, ST_CIC_JURISDICTION, ST_CIC_CASE_TYPE, caseData);
 
         System.out.println("Edit case event submitted");
 
