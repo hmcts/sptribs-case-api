@@ -7,7 +7,6 @@ import org.junit.jupiter.api.condition.EnabledIfEnvironmentVariable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.sptribs.model.CaseResponse;
 import uk.gov.hmcts.sptribs.testutil.CcdCaseCreator;
 import uk.gov.hmcts.sptribs.testutil.FunctionalTestSuite;
 import uk.gov.hmcts.sptribs.testutil.RoleAssignmentService;
@@ -46,9 +45,10 @@ public class WAVetNewCaseDocumentsFT extends FunctionalTestSuite {
     @Test
     @EnabledIfEnvironmentVariable(named = "WA_FEATURE_ENABLED", matches = "true")
     void shouldInitiateVetNewCaseDocumentsTask() {
-        final CaseResponse caseResponse = createAndSubmitTestCaseAndGetCaseData();
-        final String newCaseId = String.valueOf(caseResponse.getId());
-        final Map<String, Object> caseData = caseResponse.getCaseData();
+        final Response response = createAndSubmitTestCaseAndGetResponse();
+        System.out.println("Response: " + response.toString());
+        final String newCaseId = String.valueOf(response.getBody().path("id"));
+        final Map<String, Object> caseData = response.getBody().path("caseData");
 
         System.out.println("New case created: " + newCaseId);
 
