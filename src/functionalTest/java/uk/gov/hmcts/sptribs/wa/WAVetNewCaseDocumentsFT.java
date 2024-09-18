@@ -6,7 +6,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledIfEnvironmentVariable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.sptribs.testutil.CcdCaseCreator;
 import uk.gov.hmcts.sptribs.testutil.FunctionalTestSuite;
 import uk.gov.hmcts.sptribs.testutil.RoleAssignmentService;
@@ -46,18 +45,13 @@ public class WAVetNewCaseDocumentsFT extends FunctionalTestSuite {
     @EnabledIfEnvironmentVariable(named = "WA_FEATURE_ENABLED", matches = "true")
     void shouldInitiateVetNewCaseDocumentsTask() {
         final Response response = createAndSubmitTestCaseAndGetResponse();
-        System.out.println("Response: " + response.getBody().toString());
         final long id = response.getBody().path("id");
         final String newCaseId = String.valueOf(id);
         final Map<String, Object> caseData = response.getBody().path("caseData");
 
-        System.out.println("New case created: " + newCaseId);
+        log.debug("New case created: " + newCaseId);
 
-        // EDIT CASE
-        CaseDetails caseDetails = ccdCaseCreator.createInitialStartEventAndSubmit(
-            CASEWORKER_EDIT_CASE, ST_CIC_JURISDICTION, ST_CIC_CASE_TYPE, newCaseId, caseData);
-
-        System.out.println("Edit case event submitted");
+        ccdCaseCreator.createInitialStartEventAndSubmit(CASEWORKER_EDIT_CASE, ST_CIC_JURISDICTION, ST_CIC_CASE_TYPE, newCaseId, caseData);
 
         await()
             .pollInterval(DEFAULT_POLL_INTERVAL_SECONDS, SECONDS)
