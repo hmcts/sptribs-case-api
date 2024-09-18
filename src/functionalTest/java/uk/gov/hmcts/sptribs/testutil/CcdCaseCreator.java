@@ -33,7 +33,7 @@ public class CcdCaseCreator {
                                                    String caseType,
                                                    Map<String, Object> caseData) {
 
-        final String userToken = idamTokenGenerator.generateIdamTokenForCaseworker();
+        final String userToken = idamTokenGenerator.generateIdamTokenForWASeniorCaseworker();
         final String serviceToken = serviceAuthenticationGenerator.generate();
         final String userId = idamService.retrieveUser(userToken).getUserDetails().getId();
 
