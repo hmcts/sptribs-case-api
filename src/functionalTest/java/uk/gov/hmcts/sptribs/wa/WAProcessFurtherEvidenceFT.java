@@ -52,6 +52,7 @@ public class WAProcessFurtherEvidenceFT extends FunctionalTestSuite {
 
         log.debug("New case created: " + newCaseId);
 
+        ccdCaseCreator.createInitialStartEventAndSubmit(CASEWORKER_EDIT_CASE, ST_CIC_JURISDICTION, ST_CIC_CASE_TYPE, newCaseId, caseData);
         updateTestCaseAndGetResponse(id);
 
         await()
