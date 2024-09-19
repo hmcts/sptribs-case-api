@@ -53,12 +53,12 @@ public class NotificationServiceCIC {
     @Autowired
     private final DocumentClient caseDocumentClient;
 
-    public NotificationServiceCIC(
-        NotificationClient notificationClient,
-        EmailTemplatesConfigCIC emailTemplatesConfig,
-        IdamService idamService, HttpServletRequest request,
-        AuthTokenGenerator authTokenGenerator,
-        DocumentClient caseDocumentClient) {
+    public NotificationServiceCIC(NotificationClient notificationClient,
+                                  EmailTemplatesConfigCIC emailTemplatesConfig,
+                                  IdamService idamService, HttpServletRequest request,
+                                  AuthTokenGenerator authTokenGenerator,
+                                  DocumentClient caseDocumentClient) {
+
         this.notificationClient = notificationClient;
         this.emailTemplatesConfig = emailTemplatesConfig;
         this.idamService = idamService;
