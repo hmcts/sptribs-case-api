@@ -46,7 +46,7 @@ public class WACompleteHearingOutcomeFT extends FunctionalTestSuite {
     private static final int DEFAULT_TIMEOUT_SECONDS = 300;
     private static final int DEFAULT_POLL_INTERVAL_SECONDS = 4;
 
-    private static final String CASEWORKER_RECORD_LISTING_DATA = "caseworker-record-listing-submit-data.json";
+    private static final String CASEWORKER_RECORD_LISTING_DATA = "classpath:responses/caseworker-record-listing-submit-data.json";
 
     @Test
     @EnabledIfEnvironmentVariable(named = "WA_FEATURE_ENABLED", matches = "true")
