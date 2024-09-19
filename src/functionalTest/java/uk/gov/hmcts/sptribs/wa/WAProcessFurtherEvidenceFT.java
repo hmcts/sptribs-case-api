@@ -53,8 +53,7 @@ public class WAProcessFurtherEvidenceFT extends FunctionalTestSuite {
 
         log.debug("New case created: " + newCaseId);
 
-        ccdCaseCreator.createInitialStartEventAndSubmit(
-            CITIZEN_DSS_UPDATE_CASE_SUBMISSION, ST_CIC_JURISDICTION, ST_CIC_CASE_TYPE, newCaseId, caseData);
+        updateTestCaseAndGetResponse(id);
 
         await()
             .pollInterval(DEFAULT_POLL_INTERVAL_SECONDS, SECONDS)
