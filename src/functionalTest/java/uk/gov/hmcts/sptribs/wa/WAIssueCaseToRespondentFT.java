@@ -43,7 +43,7 @@ public class WAIssueCaseToRespondentFT extends FunctionalTestSuite {
 
     @Test
     @EnabledIfEnvironmentVariable(named = "WA_FEATURE_ENABLED", matches = "true")
-    void shouldInitiateVetNewCaseDocumentsTask() {
+    void shouldInitiateIssueCaseToRespondentTask() {
         final Response response = createAndSubmitTestCaseAndGetResponse();
         final long id = response.getBody().path("id");
         final String newCaseId = String.valueOf(id);
