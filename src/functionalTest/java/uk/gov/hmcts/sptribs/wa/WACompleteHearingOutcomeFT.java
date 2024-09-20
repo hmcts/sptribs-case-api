@@ -65,7 +65,7 @@ public class WACompleteHearingOutcomeFT extends FunctionalTestSuite {
         ccdCaseCreator.createInitialStartEventAndSubmit(
             CASEWORKER_RECORD_LISTING, ST_CIC_JURISDICTION, ST_CIC_CASE_TYPE, newCaseId, caseData);
 
-        ccdCaseCreator.createInitialStartEventAndSubmit(
+        ccdCaseCreator.createInitialStartEventAndSubmitSystemEvent(
             SYSTEM_TRIGGER_COMPLETE_HEARING_OUTCOME, ST_CIC_JURISDICTION, ST_CIC_CASE_TYPE, newCaseId, caseData);
 
         await()
