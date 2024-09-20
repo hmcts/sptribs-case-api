@@ -62,12 +62,12 @@ public class WAIssueDecisionNoticeFT extends FunctionalTestSuite {
         ccdCaseCreator.createInitialStartEventAndSubmit(CASEWORKER_CASE_BUILT, ST_CIC_JURISDICTION, ST_CIC_CASE_TYPE, newCaseId, caseData);
 
         caseData.putAll(caseData(CASEWORKER_RECORD_LISTING_DATA));
-        ccdCaseCreator.createInitialStartEventAndSubmit(
+        final Map<String, Object> hearingCaseData = ccdCaseCreator.createInitialStartEventAndSubmit(
             CASEWORKER_RECORD_LISTING, ST_CIC_JURISDICTION, ST_CIC_CASE_TYPE, newCaseId, caseData);
 
-        caseData.putAll(caseData(CASEWORKER_CREATE_HEARING_SUMMARY_DATA));
+        hearingCaseData.putAll(caseData(CASEWORKER_CREATE_HEARING_SUMMARY_DATA));
         ccdCaseCreator.createInitialStartEventAndSubmit(
-            CASEWORKER_CREATE_HEARING_SUMMARY, ST_CIC_JURISDICTION, ST_CIC_CASE_TYPE, newCaseId, caseData);
+            CASEWORKER_CREATE_HEARING_SUMMARY, ST_CIC_JURISDICTION, ST_CIC_CASE_TYPE, newCaseId, hearingCaseData);
 
         await()
             .pollInterval(DEFAULT_POLL_INTERVAL_SECONDS, SECONDS)
