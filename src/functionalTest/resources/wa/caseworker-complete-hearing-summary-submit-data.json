@@ -1,0 +1,119 @@
+{
+  "cicCaseHearingList": {
+    "value": {
+      "code": "18b88d33-9da8-4ee0-946d-de71d33e4d6f",
+      "label":"Case management - 10 May 2024 09:00"
+    },
+    "list_items": [
+      {
+        "code": "18b88d33-9da8-4ee0-946d-de71d33e4d6f",
+        "label":"Case management - 10 May 2024 09:00"
+      }
+    ]
+  },
+  "hearingList": [
+    {
+      "id": "1",
+      "value": {
+        "date": "2024-05-10",
+        "roles": [
+          "appellant"
+        ],
+        "outcome": "Allowed",
+        "recFile": [
+          {
+            "id": "1",
+            "value": {
+              "documentCategory": "DSS Tribunal form uploaded documents",
+              "documentEmailContent": "a relevant doc",
+              "documentLink": {
+                "document_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/4ee1bc04-47a9-48da-9370-9f6b9c54ccaa",
+                "document_filename": "mockFile.mp3",
+                "document_binary_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/4ee1bc04-47a9-48da-9370-9f6b9c54ccaa/binary",
+                "category_id": "DSS"
+              }
+            }
+          },
+          {
+            "id": "2",
+            "value": {
+              "documentCategory": "DSS Supporting uploaded documents",
+              "documentEmailContent": "a relevant doc",
+              "documentLink": {
+                "document_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/9d046706-8fa5-4c24-968d-f0aa30a9ceb8",
+                "document_filename": "mockFile.mp3",
+                "document_binary_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/9d046706-8fa5-4c24-968d-f0aa30a9ceb8/binary",
+                "category_id": "DSS"
+              }
+            }
+          },
+          {
+            "id": "3",
+            "value": {
+              "documentCategory": "DSS Other information documents",
+              "documentEmailContent": "a relevant doc",
+              "documentLink": {
+                "document_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/328c674f-59c3-418a-b76b-78f2cc52d21a",
+                "document_filename": "mockFileUpdated.mp3",
+                "document_binary_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/328c674f-59c3-418a-b76b-78f2cc52d21a/binary",
+                "category_id": "DSS"
+              }
+            }
+          }
+        ],
+        "session": "morning",
+        "memberList": [],
+        "hearingTime": "9:00",
+        "isFullPanel": "No. It was a 'sit alone' hearing",
+        "subjectName": "Test Name",
+        "numberOfDays": "No",
+        "hearingStatus": "Complete",
+        "hearingCreatedDate": "2024-05-10",
+        "venueNotListedOption": [],
+        "readOnlyHearingVenueName": "East London Tribunal Hearing Centre",
+        "hearingVenueNameAndAddress": "East London Tribunal Hearing Centre"
+      }
+    }
+  ],
+  "recFileUpload": [
+    {
+      "id": "1",
+      "value": {
+        "documentCategory": "DSS Tribunal form uploaded documents",
+        "documentEmailContent": "a relevant doc",
+        "documentLink": {
+          "document_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/4ee1bc04-47a9-48da-9370-9f6b9c54ccaa",
+          "document_filename": "mockFile.mp3",
+          "document_binary_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/4ee1bc04-47a9-48da-9370-9f6b9c54ccaa/binary",
+          "category_id": "DSS"
+        }
+      }
+    },
+    {
+      "id": "2",
+      "value": {
+        "documentCategory": "DSS Supporting uploaded documents",
+        "documentEmailContent": "a relevant doc",
+        "documentLink": {
+          "document_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/9d046706-8fa5-4c24-968d-f0aa30a9ceb8",
+          "document_filename": "mockFile.mp3",
+          "document_binary_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/9d046706-8fa5-4c24-968d-f0aa30a9ceb8/binary",
+          "category_id": "DSS"
+        }
+      }
+    },
+    {
+      "id": "3",
+      "value": {
+        "documentCategory": "DSS Other information documents",
+        "documentEmailContent": "a relevant doc updated by event",
+        "documentLink": {
+          "document_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/8509dc97-a8f9-4359-ad48-f9285f31d038",
+          "document_filename": "mockFileUpdatedByEvent.mp3",
+          "document_binary_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/8509dc97-a8f9-4359-ad48-f9285f31d038/binary",
+          "category_id": "DSS"
+        }
+      }
+    }
+  ]
+}
