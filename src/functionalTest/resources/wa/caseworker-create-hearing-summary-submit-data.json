@@ -1,4 +1,16 @@
 {
+  "cicCaseHearingList": {
+    "value": {
+      "code": "18b88d33-9da8-4ee0-946d-de71d33e4d6f",
+      "label":"Case management - 01 Jan 2000 09:00"
+    },
+    "list_items": [
+      {
+        "code": "18b88d33-9da8-4ee0-946d-de71d33e4d6f",
+        "label":"Case management - 01 Jan 2000 09:00"
+      }
+    ]
+  },
   "hearingList": [
     {
       "id": "1",
