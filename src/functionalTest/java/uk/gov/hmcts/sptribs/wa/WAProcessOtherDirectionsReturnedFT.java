@@ -29,7 +29,7 @@ import static uk.gov.hmcts.sptribs.testutil.TestEventConstants.CASEWORKER_EDIT_C
 
 @SpringBootTest
 @Slf4j
-public class WAProcessOtherDirectionsFT extends FunctionalTestSuite {
+public class WAProcessOtherDirectionsReturnedFT extends FunctionalTestSuite {
     @Autowired
     private CcdCaseCreator ccdCaseCreator;
 
@@ -39,7 +39,7 @@ public class WAProcessOtherDirectionsFT extends FunctionalTestSuite {
     @Autowired
     private RoleAssignmentService roleAssignmentService;
 
-    private static final String TASK_TYPE = "processOtherDirections";
+    private static final String TASK_TYPE = "processOtherDirectionsReturned";
     private static final List<String> TASK_ROLES = Arrays.asList("regional-centre-admin", "regional-centre-team-leader", "task-supervisor");
     private static final int DEFAULT_TIMEOUT_SECONDS = 300;
     private static final int DEFAULT_POLL_INTERVAL_SECONDS = 4;
@@ -48,7 +48,7 @@ public class WAProcessOtherDirectionsFT extends FunctionalTestSuite {
 
     @Test
     @EnabledIfEnvironmentVariable(named = "WA_FEATURE_ENABLED", matches = "true")
-    void shouldInitiateProcessOtherDirectionsTask() throws IOException {
+    void shouldInitiateProcessOtherDirectionsReturnedTask() throws IOException {
         final Response response = createAndSubmitTestCaseAndGetResponse();
         final long id = response.getBody().path("id");
         final String newCaseId = String.valueOf(id);
