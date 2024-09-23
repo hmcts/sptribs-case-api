@@ -7,6 +7,7 @@ import org.junit.jupiter.api.condition.EnabledIfEnvironmentVariable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import uk.gov.hmcts.sptribs.testutil.CcdCaseCreator;
+import uk.gov.hmcts.sptribs.testutil.FunctionalTestSuite;
 import uk.gov.hmcts.sptribs.testutil.RoleAssignmentService;
 import uk.gov.hmcts.sptribs.testutil.TaskManagementService;
 
@@ -28,7 +29,7 @@ import static uk.gov.hmcts.sptribs.testutil.TestEventConstants.CASEWORKER_EDIT_C
 
 @SpringBootTest
 @Slf4j
-public class WAProcessCaseWithdrawalDirectionsFT {
+public class WAProcessCaseWithdrawalDirectionsFT extends FunctionalTestSuite {
     @Autowired
     private CcdCaseCreator ccdCaseCreator;
 
