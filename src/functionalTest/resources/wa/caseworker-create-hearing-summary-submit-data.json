@@ -104,45 +104,5 @@
       }
     }
   ],
-  "recFileUpload": [
-    {
-      "id": "1",
-      "value": {
-        "documentCategory": "DSS Tribunal form uploaded documents",
-        "documentEmailContent": "a relevant doc",
-        "documentLink": {
-          "document_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/4ee1bc04-47a9-48da-9370-9f6b9c54ccaa",
-          "document_filename": "mockFile.mp3",
-          "document_binary_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/4ee1bc04-47a9-48da-9370-9f6b9c54ccaa/binary",
-          "category_id": "DSS"
-        }
-      }
-    },
-    {
-      "id": "2",
-      "value": {
-        "documentCategory": "DSS Supporting uploaded documents",
-        "documentEmailContent": "a relevant doc",
-        "documentLink": {
-          "document_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/9d046706-8fa5-4c24-968d-f0aa30a9ceb8",
-          "document_filename": "mockFile.mp3",
-          "document_binary_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/9d046706-8fa5-4c24-968d-f0aa30a9ceb8/binary",
-          "category_id": "DSS"
-        }
-      }
-    },
-    {
-      "id": "3",
-      "value": {
-        "documentCategory": "DSS Other information documents",
-        "documentEmailContent": "a relevant doc updated by event",
-        "documentLink": {
-          "document_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/8509dc97-a8f9-4359-ad48-f9285f31d038",
-          "document_filename": "mockFileUpdatedByEvent.mp3",
-          "document_binary_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/8509dc97-a8f9-4359-ad48-f9285f31d038/binary",
-          "category_id": "DSS"
-        }
-      }
-    }
-  ]
+  "recFileUpload": []
 }
