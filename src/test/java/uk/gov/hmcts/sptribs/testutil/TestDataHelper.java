@@ -238,7 +238,6 @@ public class TestDataHelper {
         listing.setHearingType(HearingType.FINAL);
         listing.setImportantInfoDetails("some details");
         listing.setVideoCallLink("");
-        listing.setDate(LocalDate.now());
         listing.setHearingTime("10:00");
         listing.setDate(LocalDate.of(2023, 4, 21));
         listing.setHearingStatus(HearingState.Listed);
