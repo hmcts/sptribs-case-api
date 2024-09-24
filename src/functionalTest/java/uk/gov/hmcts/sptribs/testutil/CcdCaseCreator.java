@@ -75,4 +75,50 @@ public class CcdCaseCreator {
 
         return caseDetails.getId().toString();
     }
+
+    public void createInitialStartEventAndSubmitSystemEvent(String eventId,
+                                                   String jurisdiction,
+                                                   String caseType,
+                                                   String caseId,
+                                                   Map<String, Object> caseData) {
+
+        final String userToken = idamTokenGenerator.generateIdamTokenForSystemUser();
+        final String serviceToken = serviceAuthenticationGenerator.generate();
+        final String userId = idamService.retrieveUser(userToken).getUserDetails().getId();
+
+        //Fire start event
+        final StartEventResponse startCase = coreCaseDataApi.startEventForCaseWorker(
+            userToken,
+            serviceToken,
+            userId,
+            jurisdiction,
+            caseType,
+            caseId,
+            eventId
+        );
+
+        final CaseDataContent caseDataContent = CaseDataContent.builder()
+            .eventToken(startCase.getToken())
+            .event(Event.builder()
+                .id(startCase.getEventId())
+                .summary("summary")
+                .description("description")
+                .build())
+            .data(caseData)
+            .build();
+
+        //Fire submit event
+        final CaseDetails caseDetails = coreCaseDataApi.submitEventForCaseWorker(
+            userToken,
+            serviceToken,
+            userId,
+            jurisdiction,
+            caseType,
+            caseId,
+            true,
+            caseDataContent
+        );
+
+        log.debug("System event " + eventId + " on case" + caseDetails.getId() + " complete");
+    }
 }
