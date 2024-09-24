@@ -19,7 +19,7 @@ public class SystemTriggerCompleteHearingOutcomeFT extends FunctionalTestSuite {
     private static final String REQUEST = "classpath:request/casedata/ccd-callback-casedata-general.json";
 
     @Test
-    public void shouldSetStitchHearingBundleTaskToYesInAboutToSubmit() throws Exception {
+    public void shouldSetCompleteHearingOutcomeTaskToYesInAboutToSubmit() throws Exception {
         final Map<String, Object> caseData = caseData(REQUEST);
         final Response response = triggerCallback(caseData, SYSTEM_TRIGGER_COMPLETE_HEARING_OUTCOME, ABOUT_TO_SUBMIT_URL);
 
