@@ -51,6 +51,7 @@ public class SystemTriggerCompleteHearingOutcomeTask implements Runnable {
         try {
             final BoolQueryBuilder query = boolQuery()
                 .must(matchQuery("state", "AwaitingHearing"))
+                .mustNot(matchQuery("data.completeHearingOutcomeTask", "Yes"))
                 .filter(rangeQuery("data.hearingList.value.date").to(LocalDate.now()).from(LocalDate.now()));
 
             final List<CaseDetails> casesNeedsStitchCollateHearingBundle =

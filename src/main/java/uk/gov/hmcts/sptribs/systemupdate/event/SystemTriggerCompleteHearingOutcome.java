@@ -3,8 +3,11 @@ package uk.gov.hmcts.sptribs.systemupdate.event;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
+import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.Event;
+import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
+import uk.gov.hmcts.sptribs.caseworker.model.YesNo;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
@@ -36,5 +39,15 @@ public class SystemTriggerCompleteHearingOutcome implements CCDConfig<CaseData, 
             eventBuilder.publishToCamunda()
                     .grant(CREATE_READ_UPDATE, ST_CIC_WA_CONFIG_USER);
         }
+    }
+
+    public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(CaseDetails<CaseData, State> caseDetails,
+                                                                       CaseDetails<CaseData, State> beforeDetails) {
+        final CaseData caseData = caseDetails.getData();
+        caseData.setCompleteHearingOutcomeTask(YesNo.YES);
+
+        return AboutToStartOrSubmitResponse.<CaseData, State>builder()
+                .data(caseData)
+                .build();
     }
 }
