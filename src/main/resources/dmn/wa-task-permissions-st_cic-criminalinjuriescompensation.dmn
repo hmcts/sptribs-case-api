@@ -38,7 +38,7 @@
           <text>"task-supervisor"</text>
         </outputEntry>
         <outputEntry id="LiteralExpression_0330rcb">
-          <text>"Read,Own,Claim,Unclaim,Manage,Assign,Unassign,Complete,Cancel"</text>
+          <text>"Read,Claim,Unclaim,Manage,Assign,Unassign,Complete,Cancel"</text>
         </outputEntry>
         <outputEntry id="LiteralExpression_0k4avs1">
           <text></text>
