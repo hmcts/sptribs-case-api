@@ -26,6 +26,7 @@ import static uk.gov.hmcts.sptribs.testutil.TestConstants.ST_CIC_JURISDICTION;
 import static uk.gov.hmcts.sptribs.testutil.TestEventConstants.CASEWORKER_CASE_BUILT;
 import static uk.gov.hmcts.sptribs.testutil.TestEventConstants.CASEWORKER_CREATE_DRAFT_ORDER;
 import static uk.gov.hmcts.sptribs.testutil.TestEventConstants.CASEWORKER_EDIT_CASE;
+import static uk.gov.hmcts.sptribs.testutil.TestEventConstants.CASEWORKER_RECORD_LISTING;
 
 @SpringBootTest
 @Slf4j
@@ -46,6 +47,8 @@ public class WAProcessDirectionsReListedCaseWithin5DaysFT extends FunctionalTest
 
     private static final String CASEWORKER_CREATE_DRAFT_ORDER_DATA = "classpath:wa/caseworker-create-draft-order-submit-data.json";
 
+    private static final String CASEWORKER_RECORD_LISTING_DATA = "classpath:wa/caseworker-record-listing-submit-data.json";
+
     @Test
     @EnabledIfEnvironmentVariable(named = "WA_FEATURE_ENABLED", matches = "true")
     void shouldInitiateProcessDirectionsReListedCaseWithin5DaysTask() throws IOException {
@@ -58,6 +61,10 @@ public class WAProcessDirectionsReListedCaseWithin5DaysFT extends FunctionalTest
 
         ccdCaseCreator.createInitialStartEventAndSubmit(CASEWORKER_EDIT_CASE, ST_CIC_JURISDICTION, ST_CIC_CASE_TYPE, newCaseId, caseData);
         ccdCaseCreator.createInitialStartEventAndSubmit(CASEWORKER_CASE_BUILT, ST_CIC_JURISDICTION, ST_CIC_CASE_TYPE, newCaseId, caseData);
+
+        caseData.putAll(caseData(CASEWORKER_RECORD_LISTING_DATA));
+        ccdCaseCreator.createInitialStartEventAndSubmit(
+            CASEWORKER_RECORD_LISTING, ST_CIC_JURISDICTION, ST_CIC_CASE_TYPE, newCaseId, caseData);
 
         caseData.put("cicCaseReferralTypeForWA", "Listed case (within 5 days)");
         caseData.putAll(caseData(CASEWORKER_CREATE_DRAFT_ORDER_DATA));
