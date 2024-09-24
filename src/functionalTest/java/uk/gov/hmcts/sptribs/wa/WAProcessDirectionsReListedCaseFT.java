@@ -67,7 +67,7 @@ public class WAProcessDirectionsReListedCaseFT extends FunctionalTestSuite {
             CASEWORKER_RECORD_LISTING, ST_CIC_JURISDICTION, ST_CIC_CASE_TYPE, newCaseId, caseData);
 
         hearingCaseData.put("cicCaseReferralTypeForWA", "Listed case");
-        caseData.putAll(caseData(CASEWORKER_CREATE_DRAFT_ORDER_DATA));
+        hearingCaseData.putAll(caseData(CASEWORKER_CREATE_DRAFT_ORDER_DATA));
         ccdCaseCreator.createInitialStartEventAndSubmit(
             CASEWORKER_CREATE_DRAFT_ORDER, ST_CIC_JURISDICTION, ST_CIC_CASE_TYPE, newCaseId, hearingCaseData);
 
