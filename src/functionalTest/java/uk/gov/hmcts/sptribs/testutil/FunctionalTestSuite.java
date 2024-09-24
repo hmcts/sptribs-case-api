@@ -263,6 +263,20 @@ public abstract class FunctionalTestSuite {
             .put("/case/dss-orchestration/" + caseReference +  "/update");
     }
 
+    protected void updateTestCaseAndGetResponse(long caseReference) {
+        RestAssured
+            .given()
+            .relaxedHTTPSValidation()
+            .baseUri(testUrl)
+            .header(CONTENT_TYPE, APPLICATION_JSON_VALUE)
+            .header(SERVICE_AUTHORIZATION, serviceAuthenticationGenerator.generate())
+            .header(AUTHORIZATION, idamTokenGenerator.generateIdamTokenForCitizen())
+            .param(EVENT_PARAM, SUBMIT)
+            .body(getDssCaseData())
+            .when()
+            .put("/case/dss-orchestration/" + caseReference + "/update?event=UPDATE_CASE");
+    }
+
     protected DssCaseData getDssCaseData() {
         return DssCaseData.builder()
             .subjectFullName("Test Name")
