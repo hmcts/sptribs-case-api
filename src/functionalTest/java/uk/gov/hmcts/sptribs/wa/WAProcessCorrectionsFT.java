@@ -49,7 +49,7 @@ public class WAProcessCorrectionsFT extends FunctionalTestSuite {
 
     @Test
     @EnabledIfEnvironmentVariable(named = "WA_FEATURE_ENABLED", matches = "true")
-    void shouldInitiateProcessOtherDirectionsReturnedTask() throws IOException {
+    void shouldInitiateProcessCorrectionsTask() throws IOException {
         final Response response = createAndSubmitTestCaseAndGetResponse();
         final long id = response.getBody().path("id");
         final String newCaseId = String.valueOf(id);
