@@ -26,7 +26,7 @@ public class SystemTriggerCompleteHearingOutcomeFT extends FunctionalTestSuite {
 
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
         assertThatJson(response.asString())
-            .inPath("$.data.completeHearingOutcome")
+            .inPath("$.data.completeHearingOutcomeTask")
             .isEqualTo("Yes");
     }
 }
