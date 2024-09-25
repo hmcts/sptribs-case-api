@@ -28,11 +28,11 @@ public class CcdCaseCreator {
     @Autowired
     protected ServiceAuthenticationGenerator serviceAuthenticationGenerator;
 
-    public String createInitialStartEventAndSubmit(String eventId,
-                                                   String jurisdiction,
-                                                   String caseType,
-                                                   String caseId,
-                                                   Map<String, Object> caseData) {
+    public Map<String, Object> createInitialStartEventAndSubmit(String eventId,
+                                                                String jurisdiction,
+                                                                String caseType,
+                                                                String caseId,
+                                                                Map<String, Object> caseData) {
 
         final String userToken = idamTokenGenerator.generateIdamTokenForWASeniorCaseworker();
         final String serviceToken = serviceAuthenticationGenerator.generate();
@@ -73,7 +73,7 @@ public class CcdCaseCreator {
 
         log.debug("Created case [" + caseDetails.getId() + "]");
 
-        return caseDetails.getId().toString();
+        return caseDetails.getData();
     }
 
     public void createInitialStartEventAndSubmitSystemEvent(String eventId,
