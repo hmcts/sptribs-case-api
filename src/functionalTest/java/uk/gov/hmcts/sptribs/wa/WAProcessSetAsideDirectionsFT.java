@@ -63,7 +63,6 @@ public class WAProcessSetAsideDirectionsFT extends FunctionalTestSuite {
             CASEWORKER_CLOSE_THE_CASE, ST_CIC_JURISDICTION, ST_CIC_CASE_TYPE, newCaseId, caseData);
 
         caseData.put("cicCaseReferralTypeForWA", "Set aside request");
-        caseData.put("state", "CaseClosed");
         caseData.putAll(caseData(CASEWORKER_CREATE_DRAFT_ORDER_DATA));
         ccdCaseCreator.createInitialStartEventAndSubmit(
             CASEWORKER_CREATE_DRAFT_ORDER, ST_CIC_JURISDICTION, ST_CIC_CASE_TYPE, newCaseId, caseData);
