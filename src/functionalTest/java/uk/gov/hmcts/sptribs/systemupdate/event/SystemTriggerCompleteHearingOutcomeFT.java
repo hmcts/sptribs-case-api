@@ -16,6 +16,7 @@ import static uk.gov.hmcts.sptribs.testutil.TestConstants.ABOUT_TO_SUBMIT_URL;
 
 @SpringBootTest
 public class SystemTriggerCompleteHearingOutcomeFT extends FunctionalTestSuite {
+
     private static final String REQUEST = "classpath:request/casedata/ccd-callback-casedata-general.json";
 
     @Test
