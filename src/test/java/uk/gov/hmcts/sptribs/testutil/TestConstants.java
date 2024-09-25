@@ -161,6 +161,9 @@ public final class TestConstants {
     public static final LocalDate HEARING_DATE_2 = LocalDate.now().minusDays(1);
     public static final String HEARING_TIME = "11:00";
 
+    public static final String ST_CIC_JURISDICTION = "ST_CIC";
+    public static final String ST_CIC_CASE_TYPE = "CriminalInjuriesCompensation";
+
     private TestConstants() {
     }
 }

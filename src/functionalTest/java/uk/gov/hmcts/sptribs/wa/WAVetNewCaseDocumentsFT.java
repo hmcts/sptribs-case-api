@@ -11,7 +11,6 @@ import uk.gov.hmcts.sptribs.testutil.FunctionalTestSuite;
 import uk.gov.hmcts.sptribs.testutil.RoleAssignmentService;
 import uk.gov.hmcts.sptribs.testutil.TaskManagementService;
 
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -20,10 +19,13 @@ import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.ST_CIC_CASE_TYPE;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.ST_CIC_JURISDICTION;
+import static uk.gov.hmcts.sptribs.testutil.TestEventConstants.CASEWORKER_EDIT_CASE;
 
 @SpringBootTest
 @Slf4j
-public class WATaskRegisterNewCaseFT extends FunctionalTestSuite {
+public class WAVetNewCaseDocumentsFT extends FunctionalTestSuite {
 
     @Autowired
     private CcdCaseCreator ccdCaseCreator;
@@ -34,17 +36,22 @@ public class WATaskRegisterNewCaseFT extends FunctionalTestSuite {
     @Autowired
     private RoleAssignmentService roleAssignmentService;
 
-    private static final String TASK_TYPE = "registerNewCase";
+    private static final String TASK_TYPE = "vetNewCaseDocuments";
     private static final List<String> TASK_ROLES = Arrays.asList("regional-centre-admin", "regional-centre-team-leader", "task-supervisor");
     private static final int DEFAULT_TIMEOUT_SECONDS = 300;
     private static final int DEFAULT_POLL_INTERVAL_SECONDS = 4;
 
     @Test
     @EnabledIfEnvironmentVariable(named = "WA_FEATURE_ENABLED", matches = "true")
-    public void shouldInitiateRegisterNewCaseTask() throws IOException, InterruptedException {
-        String newCaseId = String.valueOf(createAndSubmitTestCaseAndGetCaseReference());
+    void shouldInitiateVetNewCaseDocumentsTask() {
+        final Response response = createAndSubmitTestCaseAndGetResponse();
+        final long id = response.getBody().path("id");
+        final String newCaseId = String.valueOf(id);
+        final Map<String, Object> caseData = response.getBody().path("caseData");
 
         log.debug("New case created: " + newCaseId);
+
+        ccdCaseCreator.createInitialStartEventAndSubmit(CASEWORKER_EDIT_CASE, ST_CIC_JURISDICTION, ST_CIC_CASE_TYPE, newCaseId, caseData);
 
         await()
             .pollInterval(DEFAULT_POLL_INTERVAL_SECONDS, SECONDS)
