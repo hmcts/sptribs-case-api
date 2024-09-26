@@ -49,6 +49,8 @@ public class WACompleteHearingOutcomeFT extends FunctionalTestSuite {
     private static final int DEFAULT_POLL_INTERVAL_SECONDS = 4;
 
     private static final String CASEWORKER_RECORD_LISTING_DATA = "classpath:wa/caseworker-record-listing-submit-data.json";
+    private static final String CASEWORKER_CANCEL_HEARING_DATA = "classpath:wa/caseworker-cancel-hearing-submit-data.json";
+    private static final String CASEWORKER_POSTPONE_HEARING_DATA = "classpath:wa/caseworker-postpone-hearing-submit-data.json";
 
     @Test
     @EnabledIfEnvironmentVariable(named = "WA_FEATURE_ENABLED", matches = "true")
@@ -154,6 +156,7 @@ public class WACompleteHearingOutcomeFT extends FunctionalTestSuite {
                     assertThat(tasks).isNotEmpty();
                     assertThat(taskType).isEqualTo(TASK_TYPE);
 
+                    caseData.putAll(caseData(CASEWORKER_POSTPONE_HEARING_DATA));
                     ccdCaseCreator.createInitialStartEventAndSubmit(
                         CASEWORKER_POSTPONE_HEARING, ST_CIC_JURISDICTION, ST_CIC_CASE_TYPE, newCaseId, caseData);
 
@@ -190,6 +193,7 @@ public class WACompleteHearingOutcomeFT extends FunctionalTestSuite {
         ccdCaseCreator.createInitialStartEventAndSubmit(
             CASEWORKER_RECORD_LISTING, ST_CIC_JURISDICTION, ST_CIC_CASE_TYPE, newCaseId, caseData);
 
+        caseData.putAll(caseData(CASEWORKER_CANCEL_HEARING_DATA));
         ccdCaseCreator.createInitialStartEventAndSubmitSystemEvent(
             SYSTEM_TRIGGER_COMPLETE_HEARING_OUTCOME, ST_CIC_JURISDICTION, ST_CIC_CASE_TYPE, newCaseId, caseData);
 
