@@ -133,7 +133,8 @@ public class WAIssueCaseToRespondentFT extends FunctionalTestSuite {
                     assertThat(tasks).isNotEmpty();
                     assertThat(taskType).isEqualTo(TASK_TYPE);
 
-                    ccdCaseCreator.createInitialStartEventAndSubmit(CASEWORKER_REFER_TO_JUDGE, ST_CIC_JURISDICTION, ST_CIC_CASE_TYPE, newCaseId, caseData);
+                    ccdCaseCreator.createInitialStartEventAndSubmit(
+                        CASEWORKER_REFER_TO_JUDGE, ST_CIC_JURISDICTION, ST_CIC_CASE_TYPE, newCaseId, caseData);
 
                     searchByCaseIdResponseBody =
                         taskManagementService.search(newCaseId, List.of(TASK_TYPE), 0, 200);
@@ -185,7 +186,8 @@ public class WAIssueCaseToRespondentFT extends FunctionalTestSuite {
                     assertThat(tasks).isNotEmpty();
                     assertThat(taskType).isEqualTo(TASK_TYPE);
 
-                    ccdCaseCreator.createInitialStartEventAndSubmit(CASEWORKER_REFER_TO_LEGAL_OFFICER, ST_CIC_JURISDICTION, ST_CIC_CASE_TYPE, newCaseId, caseData);
+                    ccdCaseCreator.createInitialStartEventAndSubmit(
+                        CASEWORKER_REFER_TO_LEGAL_OFFICER, ST_CIC_JURISDICTION, ST_CIC_CASE_TYPE, newCaseId, caseData);
 
                     searchByCaseIdResponseBody =
                         taskManagementService.search(newCaseId, List.of(TASK_TYPE), 0, 200);
