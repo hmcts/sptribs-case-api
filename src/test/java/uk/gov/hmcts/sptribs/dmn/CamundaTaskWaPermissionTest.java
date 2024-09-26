@@ -422,7 +422,7 @@ class CamundaTaskWaPermissionTest extends DmnDecisionTableBaseUnitTest {
             regionalCentreTeamLeaderPermissions(),
             hearingCentreAdminPermissions(),
             hearingCentreTeamLeaderPermissions(),
-            ctscAdminPermissions(),
+            ctscPermissions(),
             ctscTeamLeaderPermissions()
         );
     }
@@ -590,9 +590,9 @@ class CamundaTaskWaPermissionTest extends DmnDecisionTableBaseUnitTest {
         );
     }
 
-    private static Map<String, Object> ctscAdminPermissions() {
+    private static Map<String, Object> ctscPermissions() {
         return Map.of(
-            "name", "ctsc-admin",
+            "name", "ctsc",
             "value", "Read,Own,Claim,Unclaim,Manage,Complete",
             "roleCategory", ROLE_CATEGORY_CTSC,
             "assignmentPriority", 1,
