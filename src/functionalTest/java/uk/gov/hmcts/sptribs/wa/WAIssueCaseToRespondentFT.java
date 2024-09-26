@@ -23,6 +23,8 @@ import static uk.gov.hmcts.sptribs.testutil.TestConstants.ST_CIC_CASE_TYPE;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.ST_CIC_JURISDICTION;
 import static uk.gov.hmcts.sptribs.testutil.TestEventConstants.CASEWORKER_CASE_BUILT;
 import static uk.gov.hmcts.sptribs.testutil.TestEventConstants.CASEWORKER_EDIT_CASE;
+import static uk.gov.hmcts.sptribs.testutil.TestEventConstants.CASEWORKER_REFER_TO_JUDGE;
+import static uk.gov.hmcts.sptribs.testutil.TestEventConstants.CASEWORKER_REFER_TO_LEGAL_OFFICER;
 
 @SpringBootTest
 @Slf4j
@@ -92,6 +94,110 @@ public class WAIssueCaseToRespondentFT extends FunctionalTestSuite {
                         String roleName = role.get("role_name").toString();
                         assertThat(roleName).isIn(TASK_ROLES);
                     }
+
+                    return true;
+                });
+    }
+
+    @Test
+    @EnabledIfEnvironmentVariable(named = "WA_FEATURE_ENABLED", matches = "true")
+    void shouldCancelIssueCaseToRespondentTaskWithReferToJudge() {
+        final Response response = createAndSubmitTestCaseAndGetResponse();
+        final long id = response.getBody().path("id");
+        final String newCaseId = String.valueOf(id);
+        final Map<String, Object> caseData = response.getBody().path("caseData");
+
+        log.debug("New case created: " + newCaseId);
+
+        ccdCaseCreator.createInitialStartEventAndSubmit(CASEWORKER_EDIT_CASE, ST_CIC_JURISDICTION, ST_CIC_CASE_TYPE, newCaseId, caseData);
+        ccdCaseCreator.createInitialStartEventAndSubmit(CASEWORKER_CASE_BUILT, ST_CIC_JURISDICTION, ST_CIC_CASE_TYPE, newCaseId, caseData);
+
+        await()
+            .pollInterval(DEFAULT_POLL_INTERVAL_SECONDS, SECONDS)
+            .atMost(DEFAULT_TIMEOUT_SECONDS, SECONDS)
+            .until(
+                () -> {
+                    roleAssignmentService.createRoleAssignmentsForWaSeniorCaseworker();
+
+                    Response searchByCaseIdResponseBody =
+                        taskManagementService.search(newCaseId, List.of(TASK_TYPE), 1, 200);
+
+                    if (searchByCaseIdResponseBody.asString().isBlank()) {
+                        return false;
+                    }
+
+                    List<Map<String, Object>> tasks = searchByCaseIdResponseBody.getBody().path("tasks");
+                    String taskType = searchByCaseIdResponseBody.getBody().path("tasks[0].type");
+
+                    assertNotNull(tasks);
+                    assertThat(tasks).isNotEmpty();
+                    assertThat(taskType).isEqualTo(TASK_TYPE);
+
+                    ccdCaseCreator.createInitialStartEventAndSubmit(CASEWORKER_REFER_TO_JUDGE, ST_CIC_JURISDICTION, ST_CIC_CASE_TYPE, newCaseId, caseData);
+
+                    searchByCaseIdResponseBody =
+                        taskManagementService.search(newCaseId, List.of(TASK_TYPE), 0, 200);
+
+                    if (searchByCaseIdResponseBody.asString().isBlank()) {
+                        return false;
+                    }
+
+                    tasks = searchByCaseIdResponseBody.getBody().path("tasks");
+
+                    assertNotNull(tasks);
+                    assertThat(tasks).isEmpty();
+
+                    return true;
+                });
+    }
+
+    @Test
+    @EnabledIfEnvironmentVariable(named = "WA_FEATURE_ENABLED", matches = "true")
+    void shouldCancelIssueCaseToRespondentTaskWithReferToLegalOfficer() {
+        final Response response = createAndSubmitTestCaseAndGetResponse();
+        final long id = response.getBody().path("id");
+        final String newCaseId = String.valueOf(id);
+        final Map<String, Object> caseData = response.getBody().path("caseData");
+
+        log.debug("New case created: " + newCaseId);
+
+        ccdCaseCreator.createInitialStartEventAndSubmit(CASEWORKER_EDIT_CASE, ST_CIC_JURISDICTION, ST_CIC_CASE_TYPE, newCaseId, caseData);
+        ccdCaseCreator.createInitialStartEventAndSubmit(CASEWORKER_CASE_BUILT, ST_CIC_JURISDICTION, ST_CIC_CASE_TYPE, newCaseId, caseData);
+
+        await()
+            .pollInterval(DEFAULT_POLL_INTERVAL_SECONDS, SECONDS)
+            .atMost(DEFAULT_TIMEOUT_SECONDS, SECONDS)
+            .until(
+                () -> {
+                    roleAssignmentService.createRoleAssignmentsForWaSeniorCaseworker();
+
+                    Response searchByCaseIdResponseBody =
+                        taskManagementService.search(newCaseId, List.of(TASK_TYPE), 1, 200);
+
+                    if (searchByCaseIdResponseBody.asString().isBlank()) {
+                        return false;
+                    }
+
+                    List<Map<String, Object>> tasks = searchByCaseIdResponseBody.getBody().path("tasks");
+                    String taskType = searchByCaseIdResponseBody.getBody().path("tasks[0].type");
+
+                    assertNotNull(tasks);
+                    assertThat(tasks).isNotEmpty();
+                    assertThat(taskType).isEqualTo(TASK_TYPE);
+
+                    ccdCaseCreator.createInitialStartEventAndSubmit(CASEWORKER_REFER_TO_LEGAL_OFFICER, ST_CIC_JURISDICTION, ST_CIC_CASE_TYPE, newCaseId, caseData);
+
+                    searchByCaseIdResponseBody =
+                        taskManagementService.search(newCaseId, List.of(TASK_TYPE), 0, 200);
+
+                    if (searchByCaseIdResponseBody.asString().isBlank()) {
+                        return false;
+                    }
+
+                    tasks = searchByCaseIdResponseBody.getBody().path("tasks");
+
+                    assertNotNull(tasks);
+                    assertThat(tasks).isEmpty();
 
                     return true;
                 });
