@@ -48,7 +48,6 @@ public class TaskMonitorService {
     }
 
     private void initiateJob(Map<String, Map<String, String>> requestBody) {
-        System.out.println(taskMonitorUrl);
         await()
             .ignoreException(AssertionError.class)
             .pollInterval(DEFAULT_POLL_INTERVAL_SECONDS, SECONDS)
