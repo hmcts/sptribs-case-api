@@ -166,7 +166,6 @@ class CaseworkerCreateHearingSummaryTest {
             .isNull();
         assertThat(response.getData().getListing().getSummary().getRecFileUpload()).hasSize(0);
         assertThat(response.getData().getListing().getSummary().getRecFile()).hasSize(0);
-        assertThat(response.getData().getCompleteHearingOutcomeTask()).isEqualTo(YesNo.NO);
     }
 
     @Test

@@ -19,7 +19,6 @@ import uk.gov.hmcts.sptribs.caseworker.event.page.HearingTypeAndFormat;
 import uk.gov.hmcts.sptribs.caseworker.event.page.HearingVenues;
 import uk.gov.hmcts.sptribs.caseworker.event.page.SelectHearing;
 import uk.gov.hmcts.sptribs.caseworker.helper.RecordListHelper;
-import uk.gov.hmcts.sptribs.caseworker.model.YesNo;
 import uk.gov.hmcts.sptribs.caseworker.service.HearingService;
 import uk.gov.hmcts.sptribs.caseworker.util.MessageUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
@@ -142,7 +141,6 @@ public class CaseWorkerCreateHearingSummary implements CCDConfig<CaseData, State
 
         hearingService.updateHearingList(caseData, hearingName);
         caseData.getListing().getSummary().setRecFile(new ArrayList<>());
-        caseData.setCompleteHearingOutcomeTask(YesNo.NO);
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
             .state(AwaitingOutcome)

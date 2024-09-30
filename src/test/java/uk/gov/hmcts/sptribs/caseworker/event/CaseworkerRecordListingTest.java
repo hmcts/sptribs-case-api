@@ -166,6 +166,7 @@ class CaseworkerRecordListingTest {
         assertThat(responseListing.getHearingCancellationReason()).isNull();
         assertThat(responseListing.getCancelHearingAdditionalDetail()).isNull();
         assertThat(response.getData().getStitchHearingBundleTask()).isEqualTo(NO);
+        assertThat(response.getData().getCompleteHearingOutcomeTask()).isEqualTo(NO);
 
         HearingSummary summary = responseListing.getSummary();
         assertThat(summary.getJudge()).isNull();
