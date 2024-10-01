@@ -803,7 +803,7 @@ class CamundaTaskWaInitiationTest extends DmnDecisionTableBaseUnitTest {
                 List.of(
                     Map.of(
                         "taskId", REVIEW_TIME_EXT_REQ_JUDGE_TASK,
-                        "name", "Review Time extention request - Judge",
+                        "name", "Review Time extension request - Judge",
                         "workingDaysAllowed", 2,
                         "processCategories", PROCESS_CATEGORY_PROCESSING,
                         "workType", DECISION_WORK_TYPE,
