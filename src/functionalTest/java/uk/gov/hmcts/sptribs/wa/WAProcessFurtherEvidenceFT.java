@@ -39,7 +39,8 @@ public class WAProcessFurtherEvidenceFT extends FunctionalTestSuite {
     private RoleAssignmentService roleAssignmentService;
 
     private static final String TASK_TYPE = "processFurtherEvidence";
-    private static final List<String> TASK_ROLES = Arrays.asList("regional-centre-admin", "regional-centre-team-leader", "task-supervisor");
+    private static final List<String> TASK_ROLES = Arrays.asList("regional-centre-admin", "regional-centre-team-leader", "task-supervisor",
+        "hearing-centre-admin", "hearing-centre-admin-team-leader", "ctsc", "ctsc-team-leader");
     private static final int DEFAULT_TIMEOUT_SECONDS = 300;
     private static final int DEFAULT_POLL_INTERVAL_SECONDS = 4;
 
@@ -80,7 +81,7 @@ public class WAProcessFurtherEvidenceFT extends FunctionalTestSuite {
                     assertThat(taskType).isEqualTo(TASK_TYPE);
 
                     Response retrieveTaskRolePermissionsResponseBody =
-                        taskManagementService.retrieveTaskRolePermissions(taskId, 3, 200);
+                        taskManagementService.retrieveTaskRolePermissions(taskId, 7, 200);
 
                     if (retrieveTaskRolePermissionsResponseBody.asString().isBlank()) {
                         return false;
