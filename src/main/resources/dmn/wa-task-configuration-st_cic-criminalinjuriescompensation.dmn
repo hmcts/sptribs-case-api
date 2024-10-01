@@ -456,7 +456,7 @@ else 5000</text>
           <text></text>
         </inputEntry>
         <inputEntry id="UnaryTests_1cuepcw">
-          <text>"processCaseWithdrawalDirections","processRule27Decision","processListingDirections","processDirectionsReListedCase","processDirectionsReListedCaseWithin5Days","processSetAsideDirections","processCorrections","processDirectionsReturned","processPostponementDirections","processTimeExtensionDirectionsReturned","processReinstatementDecisionNotice","processOtherDirectionsReturned","processWrittenReasons","processStrikeOutDirectionsReturned","processStayDirections","processFurtherEvidence"</text>
+          <text>"processCaseWithdrawalDirections","processRule27Decision","processListingDirections","processDirectionsReListedCase","processDirectionsReListedCaseWithin5Days","processSetAsideDirections","processCorrections","processDirectionsReturned","processPostponementDirections","processTimeExtensionDirectionsReturned","processReinstatementDecisionNotice","processOtherDirectionsReturned","processWrittenReasons","processStrikeOutDirectionsReturned","processStayDirections"</text>
         </inputEntry>
         <outputEntry id="LiteralExpression_0em2bsa">
           <text>"description"</text>
@@ -601,6 +601,23 @@ else 5000</text>
           <text>"[Bundle: Create a bundle](/cases/case-details/${[CASE_REFERENCE]}/trigger/createBundle)"</text>
         </outputEntry>
         <outputEntry id="LiteralExpression_1td2ttz">
+          <text>true</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_0kqn35l">
+        <inputEntry id="UnaryTests_1407ezt">
+          <text></text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_1c1ppbv">
+          <text>"processFurtherEvidence"</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_0vwfaqi">
+          <text>"description"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_0iv9xrr">
+          <text>"[Document management: Amend](/cases/case-details/${[CASE_REFERENCE]}/trigger/caseworker-amend-document)&lt;br/&gt;" + "[Case: Edit case](/cases/case-details/${[CASE_REFERENCE]}/trigger/edit-case)&lt;br/&gt;" + "[Refer case to judge](/cases/case-details/${[CASE_REFERENCE]}/trigger/refer-to-judge)&lt;br/&gt;" + "[Refer case to legal officer](/cases/case-details/${[CASE_REFERENCE]}/trigger/refer-to-legal-officer)&lt;br/&gt;" + "[Case: Contact parties](/cases/case-details/${[CASE_REFERENCE]}/trigger/contact-parties)" </text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_1gcz22e">
           <text>true</text>
         </outputEntry>
       </rule>
