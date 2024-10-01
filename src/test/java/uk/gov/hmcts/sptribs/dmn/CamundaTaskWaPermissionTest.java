@@ -96,102 +96,102 @@ class CamundaTaskWaPermissionTest extends DmnDecisionTableBaseUnitTest {
             Arguments.of(
                 PROCESS_CASE_WITHDRAWAL_DIR_TASK,
                 DUMMY_CASE_DATA,
-                defaultRegionalAdminPermissions()
+                defaultAdminAndCtscTaskPermissions()
             ),
             Arguments.of(
                 PROCESS_RULE27_DECISION_TASK,
                 DUMMY_CASE_DATA,
-                defaultRegionalAdminPermissions()
+                defaultAdminAndCtscTaskPermissions()
             ),
             Arguments.of(
                 PROCESS_LISTING_DIR_TASK,
                 DUMMY_CASE_DATA,
-                defaultRegionalAdminPermissions()
+                defaultAdminAndCtscTaskPermissions()
             ),
             Arguments.of(
                 PROCESS_DIR_RELISTED_CASE_TASK,
                 DUMMY_CASE_DATA,
-                defaultRegionalAdminPermissions()
+                defaultAdminAndCtscTaskPermissions()
             ),
             Arguments.of(
                 PROCESS_DIR_RELISTED_CASE_WITHIN_5DAYS_TASK,
                 DUMMY_CASE_DATA,
-                defaultRegionalAdminPermissions()
+                defaultAdminAndCtscTaskPermissions()
             ),
             Arguments.of(
                 PROCESS_SET_ASIDE_DIR_TASK,
                 DUMMY_CASE_DATA,
-                defaultRegionalAdminPermissions()
+                defaultAdminAndCtscTaskPermissions()
             ),
             Arguments.of(
                 PROCESS_CORRECTIONS_TASK,
                 DUMMY_CASE_DATA,
-                defaultRegionalAdminPermissions()
+                defaultAdminAndCtscTaskPermissions()
             ),
             Arguments.of(
                 PROCESS_DIR_RETURNED_TASK,
                 DUMMY_CASE_DATA,
-                defaultRegionalAdminPermissions()
+                defaultAdminAndCtscTaskPermissions()
             ),
             Arguments.of(
                 PROCESS_POSTPONEMENT_DIR_TASK,
                 DUMMY_CASE_DATA,
-                defaultRegionalAdminPermissions()
+                defaultAdminAndCtscTaskPermissions()
             ),
             Arguments.of(
                 PROCESS_FURTHER_EVIDENCE_TASK,
                 DUMMY_CASE_DATA,
-                defaultRegionalAdminPermissions()
+                defaultAdminAndCtscTaskPermissions()
             ),
             Arguments.of(
                 PROCESS_TIME_EXT_DIR_RETURNED_TASK,
                 DUMMY_CASE_DATA,
-                defaultRegionalAdminPermissions()
+                defaultAdminAndCtscTaskPermissions()
             ),
             Arguments.of(
                 PROCESS_REINSTATEMENT_DECISION_NOTICE_TASK,
                 DUMMY_CASE_DATA,
-                defaultRegionalAdminPermissions()
+                defaultAdminAndCtscTaskPermissions()
             ),
             Arguments.of(
                 PROCESS_OTHER_DIR_RETURNED_TASK,
                 DUMMY_CASE_DATA,
-                defaultRegionalAdminPermissions()
+                defaultAdminAndCtscTaskPermissions()
             ),
             Arguments.of(
                 PROCESS_WRITTEN_REASONS_TASK,
                 DUMMY_CASE_DATA,
-                defaultRegionalAdminPermissions()
+                defaultAdminAndCtscTaskPermissions()
             ),
             Arguments.of(
                 PROCESS_STRIKE_OUT_DIR_RETURNED_TASK,
                 DUMMY_CASE_DATA,
-                defaultRegionalAdminPermissions()
+                defaultAdminAndCtscTaskPermissions()
             ),
             Arguments.of(
                 PROCESS_STAY_DIR_TASK,
                 DUMMY_CASE_DATA,
-                defaultRegionalAdminPermissions()
+                defaultAdminAndCtscTaskPermissions()
             ),
             Arguments.of(
                 ISSUE_DECISION_NOTICE_TASK,
                 DUMMY_CASE_DATA,
-                defaultRegionalAdminPermissions()
+                defaultAdminAndCtscTaskPermissions()
             ),
             Arguments.of(
                 COMPLETE_HEARING_OUTCOME_TASK,
                 DUMMY_CASE_DATA,
-                defaultRegionalAdminPermissions()
+                defaultAdminAndCtscTaskPermissions()
             ),
             Arguments.of(
                 ISSUE_CASE_TO_RESPONDENT_TASK,
                 DUMMY_CASE_DATA,
-                defaultRegionalAdminPermissions()
+                defaultAdminAndCtscTaskPermissions()
             ),
             Arguments.of(
                 VET_NEW_CASE_DOCUMENTS_TASK,
                 DUMMY_CASE_DATA,
-                defaultRegionalAdminPermissions()
+                defaultAdminAndCtscTaskPermissions()
             ),
             Arguments.of(
                 REVIEW_NEW_CASE_PROVIDE_DIR_LO_TASK,
@@ -351,17 +351,17 @@ class CamundaTaskWaPermissionTest extends DmnDecisionTableBaseUnitTest {
             Arguments.of(
                 FOLLOW_UP_NONCOMPLIANCE_OF_DIR_TASK,
                 DUMMY_CASE_DATA,
-                defaultRegionalAdminPermissions()
+                defaultAdminAndCtscTaskPermissions()
             ),
             Arguments.of(
                 REGISTER_NEW_CASE_TASK,
                 DUMMY_CASE_DATA,
-                defaultRegionalAdminPermissions()
+                defaultAdminAndCtscTaskPermissions()
             ),
             Arguments.of(
                 STITCH_COLLATE_HEARING_BUNDLE_TASK,
                 DUMMY_CASE_DATA,
-                defaultRegionalAdminPermissions()
+                defaultAdminAndCtscTaskPermissions()
             )
         );
     }
@@ -388,7 +388,7 @@ class CamundaTaskWaPermissionTest extends DmnDecisionTableBaseUnitTest {
         assertThat(logic.getOutputs().size(), is(7));
         assertThatOutputContainInOrder(outputColumnIds, logic.getOutputs());
         //Rules
-        assertThat(logic.getRules().size(), is(10));
+        assertThat(logic.getRules().size(), is(14));
     }
 
     @ParameterizedTest(name = "task type: {0} case data: {1}")
@@ -415,11 +415,15 @@ class CamundaTaskWaPermissionTest extends DmnDecisionTableBaseUnitTest {
             .forEach(i -> assertThat(output.get(i).getOutputName(), is(outputColumnIds.get(i))));
     }
 
-    private static List<Map<String, Object>> defaultRegionalAdminPermissions() {
+    private static List<Map<String, Object>> defaultAdminAndCtscTaskPermissions() {
         return List.of(
             taskSupervisorPermissions(),
             regionalCentreAdminPermissions(),
-            regionalCentreAdminLeaderPermissions()
+            regionalCentreTeamLeaderPermissions(),
+            hearingCentreAdminPermissions(),
+            hearingCentreTeamLeaderPermissions(),
+            ctscPermissions(),
+            ctscTeamLeaderPermissions()
         );
     }
 
@@ -456,14 +460,14 @@ class CamundaTaskWaPermissionTest extends DmnDecisionTableBaseUnitTest {
     private static List<Map<String, Object>> defaultSpecificAccessRequestAdminPermissions() {
         return List.of(
             taskSupervisorPermissions(),
-            hearingCentreTeamLeaderPermissions()
+            hearingCentreTeamLeaderSpecificAccessPermissions()
         );
     }
 
     private static List<Map<String, Object>> defaultSpecificAccessRequestCtscPermissions() {
         return List.of(
             taskSupervisorPermissions(),
-            ctscTeamLeaderPermissions()
+            ctscTeamLeaderSpecificAccessPermissions()
         );
     }
 
@@ -485,9 +489,29 @@ class CamundaTaskWaPermissionTest extends DmnDecisionTableBaseUnitTest {
         );
     }
 
-    private static Map<String, Object> regionalCentreAdminLeaderPermissions() {
+    private static Map<String, Object> regionalCentreTeamLeaderPermissions() {
         return Map.of(
             "name", "regional-centre-team-leader",
+            "value", "Read,Own,Claim,Unclaim,Manage,UnclaimAssign,Assign,Unassign,Cancel,Complete",
+            "roleCategory", ROLE_CATEGORY_ADMIN,
+            "assignmentPriority", 2,
+            "autoAssignable", false
+        );
+    }
+
+    private static Map<String, Object> hearingCentreAdminPermissions() {
+        return Map.of(
+            "name", "hearing-centre-admin",
+            "value", "Read,Own,Claim,Unclaim,Manage,Complete",
+            "roleCategory", ROLE_CATEGORY_ADMIN,
+            "assignmentPriority", 1,
+            "autoAssignable", false
+        );
+    }
+
+    private static Map<String, Object> hearingCentreTeamLeaderPermissions() {
+        return Map.of(
+            "name", "hearing-centre-team-leader",
             "value", "Read,Own,Claim,Unclaim,Manage,UnclaimAssign,Assign,Unassign,Cancel,Complete",
             "roleCategory", ROLE_CATEGORY_ADMIN,
             "assignmentPriority", 2,
@@ -548,7 +572,7 @@ class CamundaTaskWaPermissionTest extends DmnDecisionTableBaseUnitTest {
         );
     }
 
-    private static Map<String, Object> hearingCentreTeamLeaderPermissions() {
+    private static Map<String, Object> hearingCentreTeamLeaderSpecificAccessPermissions() {
         return Map.of(
             "name", "hearing-centre-team-leader",
             "value", "Read,Own,Claim,Manage,Assign,Unassign,Complete,Cancel",
@@ -557,11 +581,31 @@ class CamundaTaskWaPermissionTest extends DmnDecisionTableBaseUnitTest {
         );
     }
 
-    private static Map<String, Object> ctscTeamLeaderPermissions() {
+    private static Map<String, Object> ctscTeamLeaderSpecificAccessPermissions() {
         return Map.of(
             "name", "ctsc-team-leader",
             "value", "Read,Own,Claim,Manage,Assign,Unassign,Complete,Cancel",
             "roleCategory", ROLE_CATEGORY_CTSC,
+            "autoAssignable", false
+        );
+    }
+
+    private static Map<String, Object> ctscPermissions() {
+        return Map.of(
+            "name", "ctsc",
+            "value", "Read,Own,Claim,Unclaim,Manage,Complete",
+            "roleCategory", ROLE_CATEGORY_CTSC,
+            "assignmentPriority", 1,
+            "autoAssignable", false
+        );
+    }
+
+    private static Map<String, Object> ctscTeamLeaderPermissions() {
+        return Map.of(
+            "name", "ctsc-team-leader",
+            "value", "Read,Own,Claim,Unclaim,Manage,UnclaimAssign,Assign,Unassign,Cancel,Complete",
+            "roleCategory", ROLE_CATEGORY_CTSC,
+            "assignmentPriority", 2,
             "autoAssignable", false
         );
     }
