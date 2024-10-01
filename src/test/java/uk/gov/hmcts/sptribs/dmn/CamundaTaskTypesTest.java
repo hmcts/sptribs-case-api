@@ -265,7 +265,7 @@ class CamundaTaskTypesTest extends DmnDecisionTableBaseUnitTest {
             ),
             Map.of(
                 "taskTypeId", REVIEW_TIME_EXT_REQ_JUDGE_TASK,
-                "taskTypeName", "Review Time extention request - Judge"
+                "taskTypeName", "Review Time extension request - Judge"
             ),
             Map.of(
                 "taskTypeId", FOLLOW_UP_NONCOMPLIANCE_OF_DIR_TASK,
