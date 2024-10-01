@@ -41,7 +41,7 @@ public class WAProcessListingDirectionsFT extends FunctionalTestSuite {
 
     private static final String TASK_TYPE = "processListingDirections";
     private static final List<String> TASK_ROLES = Arrays.asList("regional-centre-admin", "regional-centre-team-leader", "task-supervisor",
-        "hearing-centre-admin", "hearing-centre-admin-team-leader", "ctsc", "ctsc-team-leader");
+        "hearing-centre-admin", "hearing-centre-team-leader", "ctsc", "ctsc-team-leader");
     private static final int DEFAULT_TIMEOUT_SECONDS = 300;
     private static final int DEFAULT_POLL_INTERVAL_SECONDS = 4;
 
