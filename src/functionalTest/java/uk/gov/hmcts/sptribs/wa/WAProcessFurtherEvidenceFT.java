@@ -81,7 +81,7 @@ public class WAProcessFurtherEvidenceFT extends FunctionalTestSuite {
                     assertThat(taskType).isEqualTo(TASK_TYPE);
 
                     Response retrieveTaskRolePermissionsResponseBody =
-                        taskManagementService.retrieveTaskRolePermissions(taskId, 3, 200);
+                        taskManagementService.retrieveTaskRolePermissions(taskId, 7, 200);
 
                     if (retrieveTaskRolePermissionsResponseBody.asString().isBlank()) {
                         return false;
