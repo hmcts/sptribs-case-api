@@ -111,6 +111,64 @@
           <text>false</text>
         </outputEntry>
       </rule>
+      <rule id="DecisionRule_04dj5hc">
+        <inputEntry id="UnaryTests_1pjz9br">
+          <text>"processCaseWithdrawalDirections","processRule27Decision","processListingDirections","processDirectionsReListedCase","processDirectionsReListedCaseWithin5Days","processSetAsideDirections","processCorrections","processDirectionsReturned","processTimeExtensionDirectionsReturned","processReinstatementDecisionNotice","processOtherDirectionsReturned","processWrittenReasons","processStrikeOutDirectionsReturned","processStayDirections","issueDecisionNotice","completeHearingOutcome","issueCaseToRespondent","vetNewCaseDocuments","followUpNoncomplianceOfDirections","registerNewCase","stitchCollateHearingBundle","processPostponementDirections","processFurtherEvidence"</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_1vdiphm">
+          <text></text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_1knt0p1">
+          <text></text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_0nz0mqa">
+          <text>"hearing-centre-admin"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_0sdl1jn">
+          <text>"Read,Own,Claim,Unclaim,Manage,Complete"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_06avnrv">
+          <text>"ADMIN"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_0k93mbx">
+          <text></text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_08qb8vp">
+          <text>1</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_0hssf3g">
+          <text>false</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_1wz5zeo">
+        <inputEntry id="UnaryTests_1u3s241">
+          <text>"processCaseWithdrawalDirections","processRule27Decision","processListingDirections","processDirectionsReListedCase","processDirectionsReListedCaseWithin5Days","processSetAsideDirections","processCorrections","processDirectionsReturned","processTimeExtensionDirectionsReturned","processReinstatementDecisionNotice","processOtherDirectionsReturned","processWrittenReasons","processStrikeOutDirectionsReturned","processStayDirections","issueDecisionNotice","completeHearingOutcome","issueCaseToRespondent","vetNewCaseDocuments","followUpNoncomplianceOfDirections","registerNewCase","stitchCollateHearingBundle","processPostponementDirections","processFurtherEvidence"</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_107l1t9">
+          <text></text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_1ybpcs7">
+          <text></text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_1a0e8nv">
+          <text>"hearing-centre-team-leader"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_0inozry">
+          <text>"Read,Own,Claim,Unclaim,Manage,UnclaimAssign,Assign,Unassign,Cancel,Complete"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_0d3p7eu">
+          <text>"ADMIN"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_058xhj9">
+          <text></text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_1ap4mwh">
+          <text>2</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_081vuva">
+          <text>false</text>
+        </outputEntry>
+      </rule>
       <rule id="DecisionRule_0i4p218">
         <inputEntry id="UnaryTests_1or4uu6">
           <text>"reviewNewCaseAndProvideDirectionsLO","reviewTimeExtensionRequestLO","reviewStrikeOutRequestLO","reviewStayRequestLO","reviewListingDirectionsLO","reviewWithdrawalRequestLO","reviewRule27RequestLO","reviewListCaseLO","reviewOtherRequestLO","reviewListCaseWithin5DaysLO","reviewPostponementRequestLO","reviewReinstatementRequestLO","reviewSpecificAccessRequestLegalOps"</text>
@@ -314,6 +372,64 @@
           <text></text>
         </outputEntry>
         <outputEntry id="LiteralExpression_0lvzdg7">
+          <text>false</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_1frfqlq">
+        <inputEntry id="UnaryTests_05pthd9">
+          <text>"processCaseWithdrawalDirections","processRule27Decision","processListingDirections","processDirectionsReListedCase","processDirectionsReListedCaseWithin5Days","processSetAsideDirections","processCorrections","processDirectionsReturned","processTimeExtensionDirectionsReturned","processReinstatementDecisionNotice","processOtherDirectionsReturned","processWrittenReasons","processStrikeOutDirectionsReturned","processStayDirections","issueDecisionNotice","completeHearingOutcome","issueCaseToRespondent","vetNewCaseDocuments","followUpNoncomplianceOfDirections","registerNewCase","stitchCollateHearingBundle","processPostponementDirections","processFurtherEvidence"</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_17eieud">
+          <text></text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_097cm1e">
+          <text></text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_1k6f07z">
+          <text>"ctsc"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_1elef4q">
+          <text>"Read,Own,Claim,Unclaim,Manage,Complete"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_0fkpvnr">
+          <text>"CTSC"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_12m7ht1">
+          <text></text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_11a4htv">
+          <text>1</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_06b7j1v">
+          <text>false</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_1ov7jw1">
+        <inputEntry id="UnaryTests_09d2p73">
+          <text>"processCaseWithdrawalDirections","processRule27Decision","processListingDirections","processDirectionsReListedCase","processDirectionsReListedCaseWithin5Days","processSetAsideDirections","processCorrections","processDirectionsReturned","processTimeExtensionDirectionsReturned","processReinstatementDecisionNotice","processOtherDirectionsReturned","processWrittenReasons","processStrikeOutDirectionsReturned","processStayDirections","issueDecisionNotice","completeHearingOutcome","issueCaseToRespondent","vetNewCaseDocuments","followUpNoncomplianceOfDirections","registerNewCase","stitchCollateHearingBundle","processPostponementDirections","processFurtherEvidence"</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_16wwnm0">
+          <text></text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_0l3lbb9">
+          <text></text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_10wylwg">
+          <text>"ctsc-team-leader"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_1tq5zrn">
+          <text>"Read,Own,Claim,Unclaim,Manage,UnclaimAssign,Assign,Unassign,Cancel,Complete"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_1mgty9f">
+          <text>"CTSC"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_1udyv2b">
+          <text></text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_078e67t">
+          <text>2</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_1jevbbf">
           <text>false</text>
         </outputEntry>
       </rule>
