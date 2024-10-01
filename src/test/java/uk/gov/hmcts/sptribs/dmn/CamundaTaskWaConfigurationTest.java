@@ -1082,8 +1082,8 @@ class CamundaTaskWaConfigurationTest extends DmnDecisionTableBaseUnitTest {
                 );
                 assertTrue(LocalDate.parse(expectation.get(index).get("value").toString()).isEqual(
                     LocalDate.parse(results.get(index).get("value").toString()))
-                               || LocalDate.parse(expectation.get(index).get("value").toString()).isAfter(
-                    LocalDate.parse(results.get(index).get("value").toString()))
+                        || LocalDate.parse(expectation.get(index).get("value").toString()).isAfter(
+                            LocalDate.parse(results.get(index).get("value").toString()))
                 );
 
             } else {
@@ -1099,4 +1099,3 @@ class CamundaTaskWaConfigurationTest extends DmnDecisionTableBaseUnitTest {
             && (now.isEqual(result) || now.isAfter(result));
     }
 }
-
