@@ -1000,8 +1000,16 @@ class CamundaTaskWaConfigurationTest extends DmnDecisionTableBaseUnitTest {
                     .expectedValue(DUE_DATE_INTERVAL_DAYS, "10", true)
                     .expectedValue(
                         DESCRIPTION,
-                        "[Orders: Send order](/cases/case-details/${[CASE_REFERENCE]}/trigger"
-                            + "/caseworker-send-order)",
+                        "[Document management: Amend](/cases/case-details/${[CASE_REFERENCE]}/trigger"
+                                + "/caseworker-amend-document)<br/>"
+                                + "[Case: Edit case](/cases/case-details/${[CASE_REFERENCE]}/trigger"
+                                + "/edit-case)<br/>"
+                                + "[Refer case to judge](/cases/case-details/${[CASE_REFERENCE]}/trigger"
+                                + "/refer-to-judge)<br/>"
+                                + "[Refer case to legal officer](/cases/case-details/${[CASE_REFERENCE]}/trigger"
+                                + "/refer-to-legal-officer)<br/>"
+                                + "[Case: Contact parties](/cases/case-details/${[CASE_REFERENCE]}/trigger"
+                                + "/contact-parties)",
                         true
                     )
                     .build()
@@ -1036,7 +1044,7 @@ class CamundaTaskWaConfigurationTest extends DmnDecisionTableBaseUnitTest {
         DmnDecisionTableImpl logic = (DmnDecisionTableImpl) decision.getDecisionLogic();
         assertThat(logic.getInputs().size(), is(2));
         assertThat(logic.getOutputs().size(), is(3));
-        assertEquals(36, logic.getRules().size());
+        assertEquals(37, logic.getRules().size());
     }
 
     @ParameterizedTest(name = "task type: {0} case data: {1}")
