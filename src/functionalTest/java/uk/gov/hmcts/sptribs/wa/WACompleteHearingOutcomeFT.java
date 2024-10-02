@@ -202,7 +202,6 @@ public class WACompleteHearingOutcomeFT extends FunctionalTestSuite {
         ccdCaseCreator.createInitialStartEventAndSubmit(
             CASEWORKER_RECORD_LISTING, ST_CIC_JURISDICTION, ST_CIC_CASE_TYPE, newCaseId, caseData);
 
-        caseData.putAll(caseData(CASEWORKER_CANCEL_HEARING_DATA));
         ccdCaseCreator.createInitialStartEventAndSubmitSystemEvent(
             SYSTEM_TRIGGER_COMPLETE_HEARING_OUTCOME, ST_CIC_JURISDICTION, ST_CIC_CASE_TYPE, newCaseId, caseData);
 
@@ -230,6 +229,7 @@ public class WACompleteHearingOutcomeFT extends FunctionalTestSuite {
                     String taskState = searchByCaseIdResponseBody.getBody().path("tasks[0].task_state");
                     assertThat(taskState).isEqualTo("unassigned");
 
+                    caseData.putAll(caseData(CASEWORKER_CANCEL_HEARING_DATA));
                     ccdCaseCreator.createInitialStartEventAndSubmit(
                         CASEWORKER_CANCEL_HEARING, ST_CIC_JURISDICTION, ST_CIC_CASE_TYPE, newCaseId, caseData);
 
