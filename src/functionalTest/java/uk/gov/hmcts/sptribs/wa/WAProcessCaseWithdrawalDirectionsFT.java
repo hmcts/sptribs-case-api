@@ -73,7 +73,7 @@ public class WAProcessCaseWithdrawalDirectionsFT extends FunctionalTestSuite {
                     roleAssignmentService.createRoleAssignmentsForWaSeniorCaseworker();
 
                     Response searchByCaseIdResponseBody =
-                        taskManagementService.search(newCaseId, List.of(TASK_TYPE), 1, 200);
+                        taskManagementService.search(newCaseId, List.of(TASK_TYPE), 1, 200, "UNASSIGNED");
 
                     if (searchByCaseIdResponseBody.asString().isBlank()) {
                         return false;
@@ -88,7 +88,7 @@ public class WAProcessCaseWithdrawalDirectionsFT extends FunctionalTestSuite {
                     assertThat(taskType).isEqualTo(TASK_TYPE);
 
                     Response retrieveTaskRolePermissionsResponseBody =
-                        taskManagementService.retrieveTaskRolePermissions(taskId, 7, 200, "UNASSIGNED");
+                        taskManagementService.retrieveTaskRolePermissions(taskId, 7, 200);
 
                     if (retrieveTaskRolePermissionsResponseBody.asString().isBlank()) {
                         return false;
