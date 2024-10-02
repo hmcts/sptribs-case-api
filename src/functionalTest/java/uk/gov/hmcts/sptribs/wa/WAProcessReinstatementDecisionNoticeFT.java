@@ -41,7 +41,8 @@ public class WAProcessReinstatementDecisionNoticeFT extends FunctionalTestSuite 
     private RoleAssignmentService roleAssignmentService;
 
     private static final String TASK_TYPE = "processReinstatementDecisionNotice";
-    private static final List<String> TASK_ROLES = Arrays.asList("regional-centre-admin", "regional-centre-team-leader", "task-supervisor");
+    private static final List<String> TASK_ROLES = Arrays.asList("regional-centre-admin", "regional-centre-team-leader", "task-supervisor",
+        "hearing-centre-admin", "hearing-centre-team-leader", "ctsc", "ctsc-team-leader");
     private static final int DEFAULT_TIMEOUT_SECONDS = 300;
     private static final int DEFAULT_POLL_INTERVAL_SECONDS = 4;
 
@@ -65,7 +66,7 @@ public class WAProcessReinstatementDecisionNoticeFT extends FunctionalTestSuite 
         caseData.put("cicCaseReferralTypeForWA", "Reinstatement request");
         caseData.putAll(caseData(CASEWORKER_CREATE_DRAFT_ORDER_DATA));
         ccdCaseCreator.createInitialStartEventAndSubmit(
-                CASEWORKER_CREATE_DRAFT_ORDER, ST_CIC_JURISDICTION, ST_CIC_CASE_TYPE, newCaseId, caseData);
+            CASEWORKER_CREATE_DRAFT_ORDER, ST_CIC_JURISDICTION, ST_CIC_CASE_TYPE, newCaseId, caseData);
 
         await()
             .pollInterval(DEFAULT_POLL_INTERVAL_SECONDS, SECONDS)
@@ -90,7 +91,7 @@ public class WAProcessReinstatementDecisionNoticeFT extends FunctionalTestSuite 
                     assertThat(taskType).isEqualTo(TASK_TYPE);
 
                     Response retrieveTaskRolePermissionsResponseBody =
-                        taskManagementService.retrieveTaskRolePermissions(taskId, 3, 200);
+                        taskManagementService.retrieveTaskRolePermissions(taskId, 7, 200);
 
                     if (retrieveTaskRolePermissionsResponseBody.asString().isBlank()) {
                         return false;
