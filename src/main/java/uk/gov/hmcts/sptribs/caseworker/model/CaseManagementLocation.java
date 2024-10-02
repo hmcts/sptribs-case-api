@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import uk.gov.hmcts.ccd.sdk.api.CCD;
+import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerRASValidationAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerWithCAAAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CitizenAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.DefaultAccess;
@@ -20,13 +21,15 @@ public class CaseManagementLocation {
 
     @CCD(
         label = "Base Location",
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class, CitizenAccess.class, GlobalSearchAccess.class}
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class, CitizenAccess.class,
+            GlobalSearchAccess.class, CaseworkerRASValidationAccess.class}
     )
     private String baseLocation;
 
     @CCD(
         label = "Region",
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class, CitizenAccess.class, GlobalSearchAccess.class}
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class, CitizenAccess.class,
+            GlobalSearchAccess.class, CaseworkerRASValidationAccess.class}
     )
     private String region;
 

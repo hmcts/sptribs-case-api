@@ -43,6 +43,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.access.CaseFlagsAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseLinksDefaultAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerAndSuperUserAccess;
+import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerRASValidationAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerWithCAAAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CitizenAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.DSSUpdateAccess;
@@ -109,7 +110,8 @@ public class CaseData {
 
     @CCD(
         label = "Case Location",
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class, CitizenAccess.class, GlobalSearchAccess.class}
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class, CitizenAccess.class,
+            GlobalSearchAccess.class, CaseworkerRASValidationAccess.class}
     )
     private CaseManagementLocation caseManagementLocation;
 
