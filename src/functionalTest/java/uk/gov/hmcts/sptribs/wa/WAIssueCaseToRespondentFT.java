@@ -108,7 +108,7 @@ public class WAIssueCaseToRespondentFT extends FunctionalTestSuite {
         final String newCaseId = String.valueOf(id);
         final Map<String, Object> caseData = response.getBody().path("caseData");
 
-        System.out.println("New case created: " + newCaseId);
+        log.debug("New case created: " + newCaseId);
 
         ccdCaseCreator.createInitialStartEventAndSubmit(CASEWORKER_EDIT_CASE, ST_CIC_JURISDICTION, ST_CIC_CASE_TYPE, newCaseId, caseData);
         ccdCaseCreator.createInitialStartEventAndSubmit(CASEWORKER_CASE_BUILT, ST_CIC_JURISDICTION, ST_CIC_CASE_TYPE, newCaseId, caseData);
@@ -134,6 +134,9 @@ public class WAIssueCaseToRespondentFT extends FunctionalTestSuite {
                     assertThat(tasks).isNotEmpty();
                     assertThat(taskType).isEqualTo(TASK_TYPE);
 
+                    String taskState = searchByCaseIdResponseBody.getBody().path("tasks[0].task_state");
+                    assertThat(taskState).isEqualTo("unassigned");
+
                     ccdCaseCreator.createInitialStartEventAndSubmit(
                         CASEWORKER_REFER_TO_JUDGE, ST_CIC_JURISDICTION, ST_CIC_CASE_TYPE, newCaseId, caseData);
 
@@ -145,9 +148,14 @@ public class WAIssueCaseToRespondentFT extends FunctionalTestSuite {
                     }
 
                     tasks = searchByCaseIdResponseBody.getBody().path("tasks");
+                    taskType = searchByCaseIdResponseBody.getBody().path("tasks[0].type");
 
                     assertNotNull(tasks);
-                    assertThat(tasks).isEmpty();
+                    assertThat(tasks).isNotEmpty();
+                    assertThat(taskType).isEqualTo(TASK_TYPE);
+
+                    taskState = searchByCaseIdResponseBody.getBody().path("tasks[0].task_state");
+                    assertThat(taskState).isEqualTo("terminated");
 
                     return true;
                 });
@@ -161,7 +169,7 @@ public class WAIssueCaseToRespondentFT extends FunctionalTestSuite {
         final String newCaseId = String.valueOf(id);
         final Map<String, Object> caseData = response.getBody().path("caseData");
 
-        System.out.println("New case created: " + newCaseId);
+        log.debug("New case created: " + newCaseId);
 
         ccdCaseCreator.createInitialStartEventAndSubmit(CASEWORKER_EDIT_CASE, ST_CIC_JURISDICTION, ST_CIC_CASE_TYPE, newCaseId, caseData);
         ccdCaseCreator.createInitialStartEventAndSubmit(CASEWORKER_CASE_BUILT, ST_CIC_JURISDICTION, ST_CIC_CASE_TYPE, newCaseId, caseData);
@@ -187,6 +195,9 @@ public class WAIssueCaseToRespondentFT extends FunctionalTestSuite {
                     assertThat(tasks).isNotEmpty();
                     assertThat(taskType).isEqualTo(TASK_TYPE);
 
+                    String taskState = searchByCaseIdResponseBody.getBody().path("tasks[0].task_state");
+                    assertThat(taskState).isEqualTo("unassigned");
+
                     ccdCaseCreator.createInitialStartEventAndSubmit(
                         CASEWORKER_REFER_TO_LEGAL_OFFICER, ST_CIC_JURISDICTION, ST_CIC_CASE_TYPE, newCaseId, caseData);
 
@@ -198,9 +209,14 @@ public class WAIssueCaseToRespondentFT extends FunctionalTestSuite {
                     }
 
                     tasks = searchByCaseIdResponseBody.getBody().path("tasks");
+                    taskType = searchByCaseIdResponseBody.getBody().path("tasks[0].type");
 
                     assertNotNull(tasks);
-                    assertThat(tasks).isEmpty();
+                    assertThat(tasks).isNotEmpty();
+                    assertThat(taskType).isEqualTo(TASK_TYPE);
+
+                    taskState = searchByCaseIdResponseBody.getBody().path("tasks[0].task_state");
+                    assertThat(taskState).isEqualTo("terminated");
 
                     return true;
                 });
