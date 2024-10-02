@@ -73,7 +73,7 @@ public class WAProcessListingDirectionsFT extends FunctionalTestSuite {
                     roleAssignmentService.createRoleAssignmentsForWaSeniorCaseworker();
 
                     Response searchByCaseIdResponseBody =
-                        taskManagementService.search(newCaseId, List.of(TASK_TYPE), 1, 200, "UNASSIGNED");
+                        taskManagementService.search(newCaseId, List.of(TASK_TYPE), 1, 200);
 
                     if (searchByCaseIdResponseBody.asString().isBlank()) {
                         return false;

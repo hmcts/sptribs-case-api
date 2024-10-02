@@ -35,8 +35,7 @@ public class TaskManagementService {
     public Response search(String caseId,
                          List<String> expectedTaskList,
                          int expectedTasks,
-                         int expectedStatus,
-                         String state) throws InterruptedException {
+                         int expectedStatus) throws InterruptedException {
 
         //Also trigger (CRON) Jobs programmatically
         taskMonitorService.triggerInitiationJob();
@@ -58,14 +57,7 @@ public class TaskManagementService {
             "values", expectedTaskList
         );
 
-        Map<String, Object> searchParameter3 = Map.of(
-            "key", "state",
-            "operator", "IN",
-            "values", singletonList(state)
-        );
-
-        Map<String, Set<Map<String, Object>>> requestBody =
-            Map.of("search_parameters", Set.of(searchParameter, searchParameter2, searchParameter3));
+        Map<String, Set<Map<String, Object>>> requestBody = Map.of("search_parameters", Set.of(searchParameter, searchParameter2));
         Response result = given()
             .header(SERVICE_AUTHORIZATION, serviceAuthenticationGenerator.generateTaskManagementToken())
             .header(AUTHORIZATION, idamTokenGenerator.generateIdamTokenForWASeniorCaseworker())
