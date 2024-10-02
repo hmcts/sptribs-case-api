@@ -128,25 +128,31 @@ public class WAIssueCaseToRespondentFT extends FunctionalTestSuite {
 
                     List<Map<String, Object>> tasks = searchByCaseIdResponseBody.getBody().path("tasks");
                     String taskType = searchByCaseIdResponseBody.getBody().path("tasks[0].type");
+                    String taskState = searchByCaseIdResponseBody.getBody().path("tasks[0].task_state");
 
                     assertNotNull(tasks);
                     assertThat(tasks).isNotEmpty();
                     assertThat(taskType).isEqualTo(TASK_TYPE);
+                    assertThat(taskState).isEqualTo("unassigned");
 
                     ccdCaseCreator.createInitialStartEventAndSubmit(
                         CASEWORKER_CLOSE_THE_CASE, ST_CIC_JURISDICTION, ST_CIC_CASE_TYPE, newCaseId, caseData);
 
                     searchByCaseIdResponseBody =
-                        taskManagementService.search(newCaseId, List.of(TASK_TYPE), 0, 200);
+                        taskManagementService.search(newCaseId, List.of(TASK_TYPE), 1, 200);
 
                     if (searchByCaseIdResponseBody.asString().isBlank()) {
                         return false;
                     }
 
                     tasks = searchByCaseIdResponseBody.getBody().path("tasks");
+                    taskType = searchByCaseIdResponseBody.getBody().path("tasks[0].type");
+                    taskState = searchByCaseIdResponseBody.getBody().path("tasks[0].task_state");
 
                     assertNotNull(tasks);
-                    assertThat(tasks).isEmpty();
+                    assertThat(tasks).isNotEmpty();
+                    assertThat(taskType).isEqualTo(TASK_TYPE);
+                    assertThat(taskState).isEqualTo("terminated");
 
                     return true;
                 });
