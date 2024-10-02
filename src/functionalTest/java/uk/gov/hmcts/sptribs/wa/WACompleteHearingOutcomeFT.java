@@ -157,6 +157,9 @@ public class WACompleteHearingOutcomeFT extends FunctionalTestSuite {
                     assertThat(tasks).isNotEmpty();
                     assertThat(taskType).isEqualTo(TASK_TYPE);
 
+                    String taskState = searchByCaseIdResponseBody.getBody().path("tasks[0].task_state");
+                    assertThat(taskState).isEqualTo("unassigned");
+
                     caseData.putAll(caseData(CASEWORKER_POSTPONE_HEARING_DATA));
                     ccdCaseCreator.createInitialStartEventAndSubmit(
                         CASEWORKER_POSTPONE_HEARING, ST_CIC_JURISDICTION, ST_CIC_CASE_TYPE, newCaseId, caseData);
@@ -169,9 +172,14 @@ public class WACompleteHearingOutcomeFT extends FunctionalTestSuite {
                     }
 
                     tasks = searchByCaseIdResponseBody.getBody().path("tasks");
+                    taskType = searchByCaseIdResponseBody.getBody().path("tasks[0].type");
 
                     assertNotNull(tasks);
-                    assertThat(tasks).isEmpty();
+                    assertThat(tasks).isNotEmpty();
+                    assertThat(taskType).isEqualTo(TASK_TYPE);
+
+                    taskState = searchByCaseIdResponseBody.getBody().path("tasks[0].task_state");
+                    assertThat(taskState).isEqualTo("terminated");
 
                     return true;
                 });
@@ -219,6 +227,9 @@ public class WACompleteHearingOutcomeFT extends FunctionalTestSuite {
                     assertThat(tasks).isNotEmpty();
                     assertThat(taskType).isEqualTo(TASK_TYPE);
 
+                    String taskState = searchByCaseIdResponseBody.getBody().path("tasks[0].task_state");
+                    assertThat(taskState).isEqualTo("unassigned");
+
                     ccdCaseCreator.createInitialStartEventAndSubmit(
                         CASEWORKER_CANCEL_HEARING, ST_CIC_JURISDICTION, ST_CIC_CASE_TYPE, newCaseId, caseData);
 
@@ -230,9 +241,14 @@ public class WACompleteHearingOutcomeFT extends FunctionalTestSuite {
                     }
 
                     tasks = searchByCaseIdResponseBody.getBody().path("tasks");
+                    taskType = searchByCaseIdResponseBody.getBody().path("tasks[0].type");
 
                     assertNotNull(tasks);
-                    assertThat(tasks).isEmpty();
+                    assertThat(tasks).isNotEmpty();
+                    assertThat(taskType).isEqualTo(TASK_TYPE);
+
+                    taskState = searchByCaseIdResponseBody.getBody().path("tasks[0].task_state");
+                    assertThat(taskState).isEqualTo("terminated");
 
                     return true;
                 });
