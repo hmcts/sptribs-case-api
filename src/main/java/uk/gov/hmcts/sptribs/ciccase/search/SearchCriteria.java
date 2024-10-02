@@ -25,5 +25,4 @@ public class SearchCriteria implements CCDConfig<CaseData, State, UserRole> {
             .fields(SEARCH_CRITERIA_LIST)
             .build();
     }
-
 }
