@@ -128,11 +128,12 @@ public class WAIssueCaseToRespondentFT extends FunctionalTestSuite {
 
                     List<Map<String, Object>> tasks = searchByCaseIdResponseBody.getBody().path("tasks");
                     String taskType = searchByCaseIdResponseBody.getBody().path("tasks[0].type");
-                    String taskState = searchByCaseIdResponseBody.getBody().path("tasks[0].task_state");
 
                     assertNotNull(tasks);
                     assertThat(tasks).isNotEmpty();
                     assertThat(taskType).isEqualTo(TASK_TYPE);
+
+                    String taskState = searchByCaseIdResponseBody.getBody().path("tasks[0].task_state");
                     assertThat(taskState).isEqualTo("unassigned");
 
                     ccdCaseCreator.createInitialStartEventAndSubmit(
@@ -147,11 +148,12 @@ public class WAIssueCaseToRespondentFT extends FunctionalTestSuite {
 
                     tasks = searchByCaseIdResponseBody.getBody().path("tasks");
                     taskType = searchByCaseIdResponseBody.getBody().path("tasks[0].type");
-                    taskState = searchByCaseIdResponseBody.getBody().path("tasks[0].task_state");
 
                     assertNotNull(tasks);
                     assertThat(tasks).isNotEmpty();
                     assertThat(taskType).isEqualTo(TASK_TYPE);
+
+                    taskState = searchByCaseIdResponseBody.getBody().path("tasks[0].task_state");
                     assertThat(taskState).isEqualTo("terminated");
 
                     return true;
