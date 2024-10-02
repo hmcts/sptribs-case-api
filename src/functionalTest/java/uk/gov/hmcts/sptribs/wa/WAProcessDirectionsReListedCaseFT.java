@@ -80,7 +80,7 @@ public class WAProcessDirectionsReListedCaseFT extends FunctionalTestSuite {
                     roleAssignmentService.createRoleAssignmentsForWaSeniorCaseworker();
 
                     Response searchByCaseIdResponseBody =
-                        taskManagementService.search(newCaseId, List.of(TASK_TYPE), 1, 200);
+                        taskManagementService.search(newCaseId, List.of(TASK_TYPE), 1, 200, "UNASSIGNED");
 
                     if (searchByCaseIdResponseBody.asString().isBlank()) {
                         return false;

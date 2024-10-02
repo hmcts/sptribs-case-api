@@ -64,7 +64,7 @@ public class WAIssueCaseToRespondentFT extends FunctionalTestSuite {
                     roleAssignmentService.createRoleAssignmentsForWaSeniorCaseworker();
 
                     Response searchByCaseIdResponseBody =
-                        taskManagementService.search(newCaseId, List.of(TASK_TYPE), 1, 200);
+                        taskManagementService.search(newCaseId, List.of(TASK_TYPE), 1, 200, "UNASSIGNED");
 
                     if (searchByCaseIdResponseBody.asString().isBlank()) {
                         return false;
@@ -120,7 +120,7 @@ public class WAIssueCaseToRespondentFT extends FunctionalTestSuite {
                     roleAssignmentService.createRoleAssignmentsForWaSeniorCaseworker();
 
                     Response searchByCaseIdResponseBody =
-                        taskManagementService.search(newCaseId, List.of(TASK_TYPE), 1, 200);
+                        taskManagementService.search(newCaseId, List.of(TASK_TYPE), 1, 200, "UNASSIGNED");
 
                     if (searchByCaseIdResponseBody.asString().isBlank()) {
                         return false;
@@ -137,7 +137,7 @@ public class WAIssueCaseToRespondentFT extends FunctionalTestSuite {
                         CASEWORKER_CLOSE_THE_CASE, ST_CIC_JURISDICTION, ST_CIC_CASE_TYPE, newCaseId, caseData);
 
                     searchByCaseIdResponseBody =
-                        taskManagementService.search(newCaseId, List.of(TASK_TYPE), 0, 200);
+                        taskManagementService.search(newCaseId, List.of(TASK_TYPE), 1, 200, "TERMINATED");
 
                     if (searchByCaseIdResponseBody.asString().isBlank()) {
                         return false;
