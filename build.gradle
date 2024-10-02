@@ -123,6 +123,7 @@ task functional(type: Test) {
   group = "Verification"
   testClassesDirs = sourceSets.functionalTest.output.classesDirs
   classpath = sourceSets.functionalTest.runtimeClasspath
+  maxParallelForks = Runtime.runtime.availableProcessors().intdiv(2) ?: 1
   jvmArgs = ['--add-opens=java.base/java.lang.reflect=ALL-UNNAMED','--add-opens=java.base/java.util=ALL-UNNAMED']
 }
 
