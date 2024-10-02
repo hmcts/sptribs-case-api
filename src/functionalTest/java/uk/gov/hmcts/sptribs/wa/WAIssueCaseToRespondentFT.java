@@ -141,7 +141,7 @@ public class WAIssueCaseToRespondentFT extends FunctionalTestSuite {
                         CASEWORKER_REFER_TO_JUDGE, ST_CIC_JURISDICTION, ST_CIC_CASE_TYPE, newCaseId, caseData);
 
                     searchByCaseIdResponseBody =
-                        taskManagementService.search(newCaseId, List.of(TASK_TYPE), 0, 200);
+                        taskManagementService.search(newCaseId, List.of(TASK_TYPE), 1, 200);
 
                     if (searchByCaseIdResponseBody.asString().isBlank()) {
                         return false;
@@ -202,7 +202,7 @@ public class WAIssueCaseToRespondentFT extends FunctionalTestSuite {
                         CASEWORKER_REFER_TO_LEGAL_OFFICER, ST_CIC_JURISDICTION, ST_CIC_CASE_TYPE, newCaseId, caseData);
 
                     searchByCaseIdResponseBody =
-                        taskManagementService.search(newCaseId, List.of(TASK_TYPE), 0, 200);
+                        taskManagementService.search(newCaseId, List.of(TASK_TYPE), 1, 200);
 
                     if (searchByCaseIdResponseBody.asString().isBlank()) {
                         return false;
