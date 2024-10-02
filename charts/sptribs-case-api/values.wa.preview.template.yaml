@@ -1,6 +1,7 @@
 java:
   environment:
     WA_FEATURE_ENABLED: true
+    WA_ENABLED_EVENTS: citizen-cic-submit-dss-application,edit-case,caseworker-case-built
 
 servicebus:
   enabled: true

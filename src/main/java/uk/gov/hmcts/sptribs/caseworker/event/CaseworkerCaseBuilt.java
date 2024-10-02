@@ -13,6 +13,9 @@ import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_CASE_BUILT;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.Submitted;
@@ -33,6 +36,9 @@ public class CaseworkerCaseBuilt implements CCDConfig<CaseData, State, UserRole>
     @Value("${feature.wa.enabled}")
     private boolean isWorkAllocationEnabled;
 
+    @Value("#{'${feature.wa.enabledEvents}'.split(',')}")
+    private List<String> enabledEvents = new ArrayList<>();
+
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         Event.EventBuilder<CaseData, UserRole, State> eventBuilder =
@@ -46,9 +52,9 @@ public class CaseworkerCaseBuilt implements CCDConfig<CaseData, State, UserRole>
                     ST_CIC_HEARING_CENTRE_TEAM_LEADER, ST_CIC_SENIOR_JUDGE)
                 .grantHistoryOnly(ST_CIC_JUDGE);
 
-        if (isWorkAllocationEnabled) {
+        if (enabledEvents.contains(CASEWORKER_CASE_BUILT) || isWorkAllocationEnabled) {
             eventBuilder.publishToCamunda()
-                        .grant(CREATE_READ_UPDATE, ST_CIC_WA_CONFIG_USER);
+                .grant(CREATE_READ_UPDATE, ST_CIC_WA_CONFIG_USER);
         }
 
         new PageBuilder(eventBuilder)

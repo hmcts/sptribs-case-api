@@ -2,6 +2,7 @@ package uk.gov.hmcts.sptribs.caseworker.event;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
@@ -27,6 +28,7 @@ import uk.gov.hmcts.sptribs.common.event.page.SubjectDetails;
 import uk.gov.hmcts.sptribs.common.service.SubmissionService;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_EDIT_CASE;
@@ -48,6 +50,7 @@ import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE;
 
 @Component
+@ConfigurationProperties
 public class CaseworkerEditCase implements CCDConfig<CaseData, State, UserRole> {
 
     private final CcdPageConfiguration editCaseCategorisationDetails = new CaseCategorisationDetails();
@@ -63,6 +66,9 @@ public class CaseworkerEditCase implements CCDConfig<CaseData, State, UserRole> 
 
     @Value("${feature.wa.enabled}")
     private boolean isWorkAllocationEnabled;
+
+    @Value("#{'${feature.wa.enabledEvents}'.split(',')}")
+    private List<String> enabledEvents = new ArrayList<>();
 
     @Autowired
     public CaseworkerEditCase(SubmissionService submissionService) {
@@ -133,7 +139,7 @@ public class CaseworkerEditCase implements CCDConfig<CaseData, State, UserRole> 
             .aboutToSubmitCallback(this::aboutToSubmit)
             .submittedCallback(this::submitted);
 
-        if (isWorkAllocationEnabled) {
+        if (enabledEvents.contains(CASEWORKER_EDIT_CASE) || isWorkAllocationEnabled) {
             eventBuilder.publishToCamunda()
                 .grant(CREATE_READ_UPDATE, ST_CIC_WA_CONFIG_USER);
         }

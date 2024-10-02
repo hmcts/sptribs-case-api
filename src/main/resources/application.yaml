@@ -200,6 +200,7 @@ feature:
     enabled: ${SECURITY_CLASSIFICATION:true}
   wa:
     enabled: ${WA_FEATURE_ENABLED:false}
+    enabledEvents: ${WA_ENABLED_EVENTS:citizen-cic-submit-dss-application,edit-case,caseworker-case-built}
   migrate-global-search-task:
     enabled: ${GLOBAL_SEARCH_MIGRATION_ENABLED:false}
     caseReference: ${GLOBAL_SEARCH_MIGRATION_TEST_CASE_REF:}
