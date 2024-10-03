@@ -152,6 +152,7 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
         caseData.getListing().setHearingCreatedDate(LocalDate.now());
         caseData.getListing().setHearingStatus(Listed);
         caseData.setStitchHearingBundleTask(NO);
+        caseData.setCompleteHearingOutcomeTask(NO);
         hearingService.addListing(caseData, caseData.getListing());
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
