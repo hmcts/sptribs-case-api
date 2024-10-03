@@ -231,6 +231,19 @@ public abstract class FunctionalTestSuite {
             .path("id");
     }
 
+    protected Response createTestCaseAndGetCaseResponse() {
+        return RestAssured
+            .given()
+            .relaxedHTTPSValidation()
+            .baseUri(testUrl)
+            .header(CONTENT_TYPE, APPLICATION_JSON_VALUE)
+            .header(SERVICE_AUTHORIZATION, serviceAuthenticationGenerator.generate())
+            .header(AUTHORIZATION, idamTokenGenerator.generateIdamTokenForCitizen())
+            .body(getDssCaseData())
+            .when()
+            .post("/case/dss-orchestration/create");
+    }
+
     protected long createAndSubmitTestCaseAndGetCaseReference() {
         final long caseReference = createTestCaseAndGetCaseReference();
         return RestAssured
