@@ -46,8 +46,6 @@ public class WARegisterNewCaseFT extends FunctionalTestSuite {
     private static final int DEFAULT_TIMEOUT_SECONDS = 300;
     private static final int DEFAULT_POLL_INTERVAL_SECONDS = 4;
 
-    private static final String CASEWORKER_CREATE_DRAFT_ORDER_DATA = "classpath:wa/ccd-callback-casedata-citizen-cic-create-case-about-to-submit.json";
-
     @Test
     @EnabledIfEnvironmentVariable(named = "WA_FEATURE_ENABLED", matches = "true")
     void shouldInitiateProcessCaseWithdrawalDirectionsTask() throws IOException {
