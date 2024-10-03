@@ -18,6 +18,7 @@ import java.time.LocalDate;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.stream.Stream;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -25,6 +26,8 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static uk.gov.hmcts.sptribs.DmnDecisionTable.WA_TASK_CONFIGURATION_ST_CIC_CRIMINALINJURIESCOMPENSATION;
+import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.ACCESS_WORK_TYPE;
+import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.ADDITIONAL_PROPERTIES_ROLE_ASSIGNMENT_ID;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.APPLICATION_WORK_TYPE;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.CASE_MANAGEMENT_CATEGORY;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.CASE_NAME;
@@ -81,6 +84,10 @@ import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.REVIEW_REINSTAT
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.REVIEW_RULE27_REQ_JUDGE_TASK;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.REVIEW_RULE27_REQ_LO_TASK;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.REVIEW_SET_ASIDE_REQ_TASK;
+import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.REVIEW_SPECIFIC_ACCESS_REQ_ADMIN_TASK;
+import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.REVIEW_SPECIFIC_ACCESS_REQ_CTSC_TASK;
+import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.REVIEW_SPECIFIC_ACCESS_REQ_JUDICIARY_TASK;
+import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.REVIEW_SPECIFIC_ACCESS_REQ_LO_TASK;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.REVIEW_STAY_REQ_JUDGE_TASK;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.REVIEW_STAY_REQ_LO_TASK;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.REVIEW_STRIKE_OUT_REQ_JUDGE_TASK;
@@ -92,6 +99,7 @@ import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.REVIEW_WITHDRAW
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.REVIEW_WRITTEN_REASONS_REQ_TASK;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.ROLE_CATEGORY;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.ROLE_CATEGORY_ADMIN;
+import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.ROLE_CATEGORY_CTSC;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.ROLE_CATEGORY_JUDICIAL;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.ROLE_CATEGORY_LO;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.ROUTINE_WORK_TYPE;
@@ -103,6 +111,8 @@ import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.WORK_TYPE;
 class CamundaTaskWaConfigurationTest extends DmnDecisionTableBaseUnitTest {
 
     private static final String REQUEST = "classpath:custom-case-data.json";
+    private static final String taskId = UUID.randomUUID().toString();
+    private static final String roleAssignmentId = UUID.randomUUID().toString();
 
     @BeforeAll
     public static void initialization() {
@@ -1034,6 +1044,74 @@ class CamundaTaskWaConfigurationTest extends DmnDecisionTableBaseUnitTest {
                         true
                     )
                     .build()
+            ),
+            Arguments.of(
+                REVIEW_SPECIFIC_ACCESS_REQ_JUDICIARY_TASK,
+                CaseDataBuilder.defaultCase().build(),
+                ConfigurationExpectationBuilder.defaultExpectations()
+                    .expectedValue(MINOR_PRIORITY, DEFAULT_MINOR_PRIORITY, true)
+                    .expectedValue(MAJOR_PRIORITY, DEFAULT_MAJOR_PRIORITY, true)
+                    .expectedValue(WORK_TYPE, ACCESS_WORK_TYPE, true)
+                    .expectedValue(ROLE_CATEGORY, ROLE_CATEGORY_JUDICIAL, true)
+                    .expectedValue(DUE_DATE_INTERVAL_DAYS, "2", true)
+                    .expectedValue(
+                        DESCRIPTION,
+                        "[Review Access Request](/role-access/" + taskId + "/assignment/" + roleAssignmentId + "/specific-access)",
+                        true
+                    )
+                    .expectedValue(ADDITIONAL_PROPERTIES_ROLE_ASSIGNMENT_ID, roleAssignmentId, false)
+                    .build()
+            ),
+            Arguments.of(
+                REVIEW_SPECIFIC_ACCESS_REQ_LO_TASK,
+                CaseDataBuilder.defaultCase().build(),
+                ConfigurationExpectationBuilder.defaultExpectations()
+                    .expectedValue(MINOR_PRIORITY, DEFAULT_MINOR_PRIORITY, true)
+                    .expectedValue(MAJOR_PRIORITY, DEFAULT_MAJOR_PRIORITY, true)
+                    .expectedValue(WORK_TYPE, ACCESS_WORK_TYPE, true)
+                    .expectedValue(ROLE_CATEGORY, ROLE_CATEGORY_LO, true)
+                    .expectedValue(DUE_DATE_INTERVAL_DAYS, "2", true)
+                    .expectedValue(
+                        DESCRIPTION,
+                        "[Review Access Request](/role-access/" + taskId + "/assignment/" + roleAssignmentId + "/specific-access)",
+                        true
+                    )
+                    .expectedValue(ADDITIONAL_PROPERTIES_ROLE_ASSIGNMENT_ID, roleAssignmentId, false)
+                    .build()
+            ),
+            Arguments.of(
+                REVIEW_SPECIFIC_ACCESS_REQ_ADMIN_TASK,
+                CaseDataBuilder.defaultCase().build(),
+                ConfigurationExpectationBuilder.defaultExpectations()
+                    .expectedValue(MINOR_PRIORITY, DEFAULT_MINOR_PRIORITY, true)
+                    .expectedValue(MAJOR_PRIORITY, DEFAULT_MAJOR_PRIORITY, true)
+                    .expectedValue(WORK_TYPE, ACCESS_WORK_TYPE, true)
+                    .expectedValue(ROLE_CATEGORY, ROLE_CATEGORY_ADMIN, true)
+                    .expectedValue(DUE_DATE_INTERVAL_DAYS, "2", true)
+                    .expectedValue(
+                        DESCRIPTION,
+                        "[Review Access Request](/role-access/" + taskId + "/assignment/" + roleAssignmentId + "/specific-access)",
+                        true
+                    )
+                    .expectedValue(ADDITIONAL_PROPERTIES_ROLE_ASSIGNMENT_ID, roleAssignmentId, false)
+                    .build()
+            ),
+            Arguments.of(
+                REVIEW_SPECIFIC_ACCESS_REQ_CTSC_TASK,
+                CaseDataBuilder.defaultCase().build(),
+                ConfigurationExpectationBuilder.defaultExpectations()
+                    .expectedValue(MINOR_PRIORITY, DEFAULT_MINOR_PRIORITY, true)
+                    .expectedValue(MAJOR_PRIORITY, DEFAULT_MAJOR_PRIORITY, true)
+                    .expectedValue(WORK_TYPE, ACCESS_WORK_TYPE, true)
+                    .expectedValue(ROLE_CATEGORY, ROLE_CATEGORY_CTSC, true)
+                    .expectedValue(DUE_DATE_INTERVAL_DAYS, "2", true)
+                    .expectedValue(
+                        DESCRIPTION,
+                        "[Review Access Request](/role-access/" + taskId + "/assignment/" + roleAssignmentId + "/specific-access)",
+                        true
+                    )
+                    .expectedValue(ADDITIONAL_PROPERTIES_ROLE_ASSIGNMENT_ID, roleAssignmentId, false)
+                    .build()
             )
         );
     }
@@ -1044,7 +1122,7 @@ class CamundaTaskWaConfigurationTest extends DmnDecisionTableBaseUnitTest {
         DmnDecisionTableImpl logic = (DmnDecisionTableImpl) decision.getDecisionLogic();
         assertThat(logic.getInputs().size(), is(2));
         assertThat(logic.getOutputs().size(), is(3));
-        assertEquals(37, logic.getRules().size());
+        assertEquals(42, logic.getRules().size());
     }
 
     @ParameterizedTest(name = "task type: {0} case data: {1}")
@@ -1053,6 +1131,13 @@ class CamundaTaskWaConfigurationTest extends DmnDecisionTableBaseUnitTest {
         String taskType, Map<String, Object> caseData,
         List<Map<String, Object>> expectation) {
         VariableMap inputVariables = new VariableMapImpl();
+
+        Map<String, String> taskAttributes = Map.of(
+            "taskType", taskType,
+            "roleAssignmentId", roleAssignmentId,
+            "taskId", taskId
+        );
+        inputVariables.putValue("taskAttributes", taskAttributes);
         inputVariables.putValue("taskType", taskType);
         inputVariables.putValue("caseData", caseData);
 
