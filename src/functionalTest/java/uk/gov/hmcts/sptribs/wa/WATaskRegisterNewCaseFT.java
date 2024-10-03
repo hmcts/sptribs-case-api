@@ -11,6 +11,7 @@ import uk.gov.hmcts.sptribs.testutil.FunctionalTestSuite;
 import uk.gov.hmcts.sptribs.testutil.RoleAssignmentService;
 import uk.gov.hmcts.sptribs.testutil.TaskManagementService;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -46,7 +47,7 @@ public class WATaskRegisterNewCaseFT extends FunctionalTestSuite {
 
     @Test
     @EnabledIfEnvironmentVariable(named = "WA_FEATURE_ENABLED", matches = "true")
-    public void shouldInitiateRegisterNewCaseTask() {
+    public void shouldInitiateRegisterNewCaseTask() throws IOException, InterruptedException {
         String newCaseId = String.valueOf(createAndSubmitTestCaseAndGetCaseReference());
 
         log.debug("New case created: {}", newCaseId);
@@ -95,7 +96,7 @@ public class WATaskRegisterNewCaseFT extends FunctionalTestSuite {
     }
 
     @Test
-    void shouldCompleteRegisterNewWithEditCase() {
+    void shouldCompleteRegisterNewCaseWithEditCase() {
         final Response response = createTestCaseAndGetCaseResponse();
         final long id = response.getBody().path("id");
         final String newCaseId = String.valueOf(id);
