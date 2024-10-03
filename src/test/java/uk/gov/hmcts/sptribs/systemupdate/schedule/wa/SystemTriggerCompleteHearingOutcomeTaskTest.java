@@ -58,6 +58,7 @@ class SystemTriggerCompleteHearingOutcomeTaskTest {
 
     private static final BoolQueryBuilder query = boolQuery()
         .must(matchQuery("state", "AwaitingHearing"))
+        .mustNot(matchQuery("data.completeHearingOutcomeTask", "Yes"))
         .filter(rangeQuery("data.hearingList.value.date").to(LocalDate.now()).from(LocalDate.now()));
 
     @BeforeEach

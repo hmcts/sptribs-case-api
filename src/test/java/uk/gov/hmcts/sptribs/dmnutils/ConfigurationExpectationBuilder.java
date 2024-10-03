@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.ADDITIONAL_PROPERTIES_ROLE_ASSIGNMENT_ID;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.CASE_MANAGEMENT_CATEGORY;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.CASE_NAME;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.DEFAULT_CASE_MANAGEMENT_CATEGORY;
@@ -39,7 +40,7 @@ public class ConfigurationExpectationBuilder {
     private static final List<String> EXPECTED_PROPERTIES = Arrays.asList(
         CASE_NAME, CASE_MANAGEMENT_CATEGORY, REGION, LOCATION, LOCATION_NAME, MAJOR_PRIORITY, MINOR_PRIORITY,
         DUE_DATE_NON_WORKING_CALENDAR, DUE_DATE_WORKING_DAYS_OF_WEEK, WORK_TYPE, ROLE_CATEGORY, DUE_DATE_INTERVAL_DAYS,
-        DESCRIPTION, PRIORITY_DATE_ORIGIN_REF, DUE_DATE_ORIGIN
+        ADDITIONAL_PROPERTIES_ROLE_ASSIGNMENT_ID, DESCRIPTION, PRIORITY_DATE_ORIGIN_REF, DUE_DATE_ORIGIN
     );
 
     private final Map<String,Map<String,Object>> expectations = new HashMap<>();
