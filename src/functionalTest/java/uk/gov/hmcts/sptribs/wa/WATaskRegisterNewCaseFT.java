@@ -101,7 +101,8 @@ public class WATaskRegisterNewCaseFT extends FunctionalTestSuite {
         final String newCaseId = String.valueOf(id);
         final Map<String, Object> caseData = response.getBody().path("caseData");
 
-        ccdCaseCreator.createInitialStartEventAndSubmit(CITIZEN_CIC_SUBMIT_CASE, ST_CIC_JURISDICTION, ST_CIC_CASE_TYPE, newCaseId, caseData);
+        ccdCaseCreator.createInitialStartEventAndSubmit(
+            CITIZEN_CIC_SUBMIT_CASE, ST_CIC_JURISDICTION, ST_CIC_CASE_TYPE, newCaseId, caseData);
 
         log.debug("New case created: {}", newCaseId);
 
