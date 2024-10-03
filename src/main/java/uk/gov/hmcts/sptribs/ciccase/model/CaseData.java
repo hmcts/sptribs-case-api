@@ -476,6 +476,9 @@ public class CaseData {
     @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
     private YesNo stitchHearingBundleTask;
 
+    @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
+    private YesNo completeHearingOutcomeTask;
+
     @CCD(access = {DefaultAccess.class})
     @JsonUnwrapped
     private RetiredFields retiredFields;
