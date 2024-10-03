@@ -11,7 +11,6 @@ import uk.gov.hmcts.sptribs.testutil.FunctionalTestSuite;
 import uk.gov.hmcts.sptribs.testutil.RoleAssignmentService;
 import uk.gov.hmcts.sptribs.testutil.TaskManagementService;
 
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -47,10 +46,10 @@ public class WATaskRegisterNewCaseFT extends FunctionalTestSuite {
 
     @Test
     @EnabledIfEnvironmentVariable(named = "WA_FEATURE_ENABLED", matches = "true")
-    public void shouldInitiateRegisterNewCaseTask() throws IOException, InterruptedException {
+    public void shouldInitiateRegisterNewCaseTask() {
         String newCaseId = String.valueOf(createAndSubmitTestCaseAndGetCaseReference());
 
-        log.debug("New case created: " + newCaseId);
+        log.debug("New case created: {}", newCaseId);
 
         await()
             .pollInterval(DEFAULT_POLL_INTERVAL_SECONDS, SECONDS)
@@ -104,7 +103,7 @@ public class WATaskRegisterNewCaseFT extends FunctionalTestSuite {
 
         ccdCaseCreator.createInitialStartEventAndSubmit(CITIZEN_CIC_SUBMIT_CASE, ST_CIC_JURISDICTION, ST_CIC_CASE_TYPE, newCaseId, caseData);
 
-        log.debug("New case created: " + newCaseId);
+        log.debug("New case created: {}", newCaseId);
 
         await()
             .pollInterval(DEFAULT_POLL_INTERVAL_SECONDS, SECONDS)
