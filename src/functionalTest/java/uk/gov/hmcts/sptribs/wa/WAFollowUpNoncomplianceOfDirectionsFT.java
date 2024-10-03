@@ -22,12 +22,12 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.ST_CIC_CASE_TYPE;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.ST_CIC_JURISDICTION;
 import static uk.gov.hmcts.sptribs.testutil.TestEventConstants.CASEWORKER_CASE_BUILT;
-import static uk.gov.hmcts.sptribs.testutil.TestEventConstants.CASEWORKER_CLOSE_THE_CASE;
 import static uk.gov.hmcts.sptribs.testutil.TestEventConstants.CASEWORKER_EDIT_CASE;
+import static uk.gov.hmcts.sptribs.testutil.TestEventConstants.CASEWORKER_SEND_ORDER;
 
 @SpringBootTest
 @Slf4j
-public class WAIssueCaseToRespondentFT extends FunctionalTestSuite {
+public class WAFollowUpNoncomplianceOfDirectionsFT extends FunctionalTestSuite {
     @Autowired
     private CcdCaseCreator ccdCaseCreator;
 
@@ -37,15 +37,14 @@ public class WAIssueCaseToRespondentFT extends FunctionalTestSuite {
     @Autowired
     private RoleAssignmentService roleAssignmentService;
 
-    private static final String TASK_TYPE = "issueCaseToRespondent";
-    private static final List<String> TASK_ROLES = Arrays.asList("regional-centre-admin", "regional-centre-team-leader", "task-supervisor",
-        "hearing-centre-admin", "hearing-centre-team-leader", "ctsc", "ctsc-team-leader");
+    private static final String TASK_TYPE = "followUpNoncomplianceOfDirections";
+    private static final List<String> TASK_ROLES = Arrays.asList("regional-centre-admin", "regional-centre-team-leader", "task-supervisor");
     private static final int DEFAULT_TIMEOUT_SECONDS = 300;
     private static final int DEFAULT_POLL_INTERVAL_SECONDS = 4;
 
     @Test
     @EnabledIfEnvironmentVariable(named = "WA_FEATURE_ENABLED", matches = "true")
-    void shouldInitiateIssueCaseToRespondentTask() {
+    void shouldInitiateFollowUpNoncomplianceOfDirectionsTask() {
         final Response response = createAndSubmitTestCaseAndGetResponse();
         final long id = response.getBody().path("id");
         final String newCaseId = String.valueOf(id);
@@ -55,6 +54,7 @@ public class WAIssueCaseToRespondentFT extends FunctionalTestSuite {
 
         ccdCaseCreator.createInitialStartEventAndSubmit(CASEWORKER_EDIT_CASE, ST_CIC_JURISDICTION, ST_CIC_CASE_TYPE, newCaseId, caseData);
         ccdCaseCreator.createInitialStartEventAndSubmit(CASEWORKER_CASE_BUILT, ST_CIC_JURISDICTION, ST_CIC_CASE_TYPE, newCaseId, caseData);
+        ccdCaseCreator.createInitialStartEventAndSubmit(CASEWORKER_SEND_ORDER, ST_CIC_JURISDICTION, ST_CIC_CASE_TYPE, newCaseId, caseData);
 
         await()
             .pollInterval(DEFAULT_POLL_INTERVAL_SECONDS, SECONDS)
@@ -79,7 +79,7 @@ public class WAIssueCaseToRespondentFT extends FunctionalTestSuite {
                     assertThat(taskType).isEqualTo(TASK_TYPE);
 
                     Response retrieveTaskRolePermissionsResponseBody =
-                        taskManagementService.retrieveTaskRolePermissions(taskId, 7, 200);
+                        taskManagementService.retrieveTaskRolePermissions(taskId, 3, 200);
 
                     if (retrieveTaskRolePermissionsResponseBody.asString().isBlank()) {
                         return false;
@@ -94,67 +94,6 @@ public class WAIssueCaseToRespondentFT extends FunctionalTestSuite {
                         String roleName = role.get("role_name").toString();
                         assertThat(roleName).isIn(TASK_ROLES);
                     }
-
-                    return true;
-                });
-    }
-
-    @Test
-    @EnabledIfEnvironmentVariable(named = "WA_FEATURE_ENABLED", matches = "true")
-    void shouldCancelIssueCaseToRespondentTask() {
-        final Response response = createAndSubmitTestCaseAndGetResponse();
-        final long id = response.getBody().path("id");
-        final String newCaseId = String.valueOf(id);
-        final Map<String, Object> caseData = response.getBody().path("caseData");
-
-        log.debug("New case created: " + newCaseId);
-
-        ccdCaseCreator.createInitialStartEventAndSubmit(CASEWORKER_EDIT_CASE, ST_CIC_JURISDICTION, ST_CIC_CASE_TYPE, newCaseId, caseData);
-        ccdCaseCreator.createInitialStartEventAndSubmit(CASEWORKER_CASE_BUILT, ST_CIC_JURISDICTION, ST_CIC_CASE_TYPE, newCaseId, caseData);
-
-        await()
-            .pollInterval(DEFAULT_POLL_INTERVAL_SECONDS, SECONDS)
-            .atMost(DEFAULT_TIMEOUT_SECONDS, SECONDS)
-            .until(
-                () -> {
-                    roleAssignmentService.createRoleAssignmentsForWaSeniorCaseworker();
-
-                    Response searchByCaseIdResponseBody =
-                        taskManagementService.search(newCaseId, List.of(TASK_TYPE), 1, 200);
-
-                    if (searchByCaseIdResponseBody.asString().isBlank()) {
-                        return false;
-                    }
-
-                    List<Map<String, Object>> tasks = searchByCaseIdResponseBody.getBody().path("tasks");
-                    String taskType = searchByCaseIdResponseBody.getBody().path("tasks[0].type");
-
-                    assertNotNull(tasks);
-                    assertThat(tasks).isNotEmpty();
-                    assertThat(taskType).isEqualTo(TASK_TYPE);
-
-                    String taskState = searchByCaseIdResponseBody.getBody().path("tasks[0].task_state");
-                    assertThat(taskState).isEqualTo("unassigned");
-
-                    ccdCaseCreator.createInitialStartEventAndSubmit(
-                        CASEWORKER_CLOSE_THE_CASE, ST_CIC_JURISDICTION, ST_CIC_CASE_TYPE, newCaseId, caseData);
-
-                    searchByCaseIdResponseBody =
-                        taskManagementService.search(newCaseId, List.of(TASK_TYPE), 1, 200);
-
-                    if (searchByCaseIdResponseBody.asString().isBlank()) {
-                        return false;
-                    }
-
-                    tasks = searchByCaseIdResponseBody.getBody().path("tasks");
-                    taskType = searchByCaseIdResponseBody.getBody().path("tasks[0].type");
-
-                    assertNotNull(tasks);
-                    assertThat(tasks).isNotEmpty();
-                    assertThat(taskType).isEqualTo(TASK_TYPE);
-
-                    taskState = searchByCaseIdResponseBody.getBody().path("tasks[0].task_state");
-                    assertThat(taskState).isEqualTo("terminated");
 
                     return true;
                 });
