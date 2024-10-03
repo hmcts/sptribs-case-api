@@ -37,14 +37,14 @@ public class WAReviewTimeExtensionRequestLOFT extends FunctionalTestSuite {
     @Autowired
     private RoleAssignmentService roleAssignmentService;
 
-    private static final String TASK_TYPE = "reviewTimeExtensionRequest";
+    private static final String TASK_TYPE = "reviewTimeExtensionRequestLO";
     private static final List<String> TASK_ROLES = Arrays.asList("tribunal-caseworker", "senior-tribunal-caseworker", "task-supervisor");
     private static final int DEFAULT_TIMEOUT_SECONDS = 300;
     private static final int DEFAULT_POLL_INTERVAL_SECONDS = 4;
 
     @Test
     @EnabledIfEnvironmentVariable(named = "WA_FEATURE_ENABLED", matches = "true")
-    void shouldInitiateReviewTimeExtensionRequestTask() {
+    void shouldInitiateReviewTimeExtensionRequestLOTask() {
         final Response response = createAndSubmitTestCaseAndGetResponse();
         final long id = response.getBody().path("id");
         final String newCaseId = String.valueOf(id);
