@@ -120,7 +120,7 @@ test {
 
 task functional(type: Test) {
   def waEnabled = System.getenv('WA_FEATURE_ENABLED')
-  if (waEnabled == 'true') {
+  if (waEnabled == 'false') {
     maxParallelForks = Runtime.runtime.availableProcessors().intdiv(2) ?: 1
   }
   description = "Runs functional tests"
