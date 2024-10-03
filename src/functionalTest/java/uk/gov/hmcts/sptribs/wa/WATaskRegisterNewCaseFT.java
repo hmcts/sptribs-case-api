@@ -20,6 +20,11 @@ import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.ST_CIC_CASE_TYPE;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.ST_CIC_JURISDICTION;
+import static uk.gov.hmcts.sptribs.testutil.TestEventConstants.CASEWORKER_EDIT_CASE;
+import static uk.gov.hmcts.sptribs.testutil.TestEventConstants.CITIZEN_CIC_SUBMIT_CASE;
+
 
 @SpringBootTest
 @Slf4j
@@ -85,6 +90,65 @@ public class WATaskRegisterNewCaseFT extends FunctionalTestSuite {
                         String roleName = role.get("role_name").toString();
                         assertThat(roleName).isIn(TASK_ROLES);
                     }
+
+                    return true;
+                });
+    }
+
+    @Test
+    void shouldCompleteRegisterNewWithEditCase() {
+        final Response response = createTestCaseAndGetCaseResponse();
+        final long id = response.getBody().path("id");
+        final String newCaseId = String.valueOf(id);
+        final Map<String, Object> caseData = response.getBody().path("caseData");
+
+        ccdCaseCreator.createInitialStartEventAndSubmit(CITIZEN_CIC_SUBMIT_CASE, ST_CIC_JURISDICTION, ST_CIC_CASE_TYPE, newCaseId, caseData);
+
+        log.debug("New case created: " + newCaseId);
+
+        await()
+            .pollInterval(DEFAULT_POLL_INTERVAL_SECONDS, SECONDS)
+            .atMost(DEFAULT_TIMEOUT_SECONDS, SECONDS)
+            .until(
+                () -> {
+                    roleAssignmentService.createRoleAssignmentsForWaSeniorCaseworker();
+
+                    Response searchByCaseIdResponseBody =
+                            taskManagementService.search(newCaseId, List.of(TASK_TYPE), 1, 200);
+
+                    if (searchByCaseIdResponseBody.asString().isBlank()) {
+                        return false;
+                    }
+
+                    List<Map<String, Object>> tasks = searchByCaseIdResponseBody.getBody().path("tasks");
+                    String taskType = searchByCaseIdResponseBody.getBody().path("tasks[0].type");
+
+                    assertNotNull(tasks);
+                    assertThat(tasks).isNotEmpty();
+                    assertThat(taskType).isEqualTo(TASK_TYPE);
+
+                    String taskState = searchByCaseIdResponseBody.getBody().path("tasks[0].task_state");
+                    assertThat(taskState).isEqualTo("unassigned");
+
+                    ccdCaseCreator.createInitialStartEventAndSubmit(
+                        CASEWORKER_EDIT_CASE, ST_CIC_JURISDICTION, ST_CIC_CASE_TYPE, newCaseId, caseData);
+
+                    searchByCaseIdResponseBody =
+                        taskManagementService.search(newCaseId, List.of(TASK_TYPE), 1, 200);
+
+                    if (searchByCaseIdResponseBody.asString().isBlank()) {
+                        return false;
+                    }
+
+                    tasks = searchByCaseIdResponseBody.getBody().path("tasks");
+                    taskType = searchByCaseIdResponseBody.getBody().path("tasks[0].type");
+
+                    assertNotNull(tasks);
+                    assertThat(tasks).isNotEmpty();
+                    assertThat(taskType).isEqualTo(TASK_TYPE);
+
+                    taskState = searchByCaseIdResponseBody.getBody().path("tasks[0].task_state");
+                    assertThat(taskState).isEqualTo("completed");
 
                     return true;
                 });
