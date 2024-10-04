@@ -562,6 +562,8 @@ tasks.cftlibTest.dependsOn(installChromium)
 // exclude the logback binding is coming in via cftlib
 configurations.testImplementation {
   exclude group: 'ch.qos.logback', module: 'logback-classic'
+  //workaround for jknack handlebars pom/directory issue https://github.com/jknack/handlebars.java/issues/672
+  exclude group: 'com.github.jknack.handlebars.java'
 }
 
 rootProject.tasks.named("processContractTestResources") {
