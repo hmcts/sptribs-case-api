@@ -132,7 +132,7 @@ class CamundaTaskWaConfigurationTest extends DmnDecisionTableBaseUnitTest {
                     .expectedValue(MAJOR_PRIORITY, URGENT_MAJOR_PRIORITY, true)
                     .expectedValue(WORK_TYPE, ROUTINE_WORK_TYPE, true)
                     .expectedValue(ROLE_CATEGORY, ROLE_CATEGORY_ADMIN, true)
-                    .expectedValue(DUE_DATE_INTERVAL_DAYS, "10", true)
+                    .expectedValue(DUE_DATE_INTERVAL_DAYS, "7", true)
                     .expectedValue(DESCRIPTION, "[Orders: Send order](/cases/case-details"
                         + "/${[CASE_REFERENCE]}/trigger/caseworker-send-order)", true)
                     .expectedValue(DUE_DATE_ORIGIN, ZonedDateTime.now(), false)
@@ -151,7 +151,7 @@ class CamundaTaskWaConfigurationTest extends DmnDecisionTableBaseUnitTest {
                     .expectedValue(MAJOR_PRIORITY, DEFAULT_MAJOR_PRIORITY, true)
                     .expectedValue(WORK_TYPE, ROUTINE_WORK_TYPE, true)
                     .expectedValue(ROLE_CATEGORY, ROLE_CATEGORY_ADMIN, true)
-                    .expectedValue(DUE_DATE_INTERVAL_DAYS, "5", true)
+                    .expectedValue(DUE_DATE_INTERVAL_DAYS, "7", true)
                     .expectedValue(
                         DESCRIPTION,
                         "[Orders: Send order](/cases/case-details/${[CASE_REFERENCE]}/trigger"
@@ -168,7 +168,7 @@ class CamundaTaskWaConfigurationTest extends DmnDecisionTableBaseUnitTest {
                     .expectedValue(MAJOR_PRIORITY, DEFAULT_MAJOR_PRIORITY, true)
                     .expectedValue(WORK_TYPE, ROUTINE_WORK_TYPE, true)
                     .expectedValue(ROLE_CATEGORY, ROLE_CATEGORY_ADMIN, true)
-                    .expectedValue(DUE_DATE_INTERVAL_DAYS, "1", true)
+                    .expectedValue(DUE_DATE_INTERVAL_DAYS, "3", true)
                     .expectedValue(
                         DESCRIPTION,
                         "[Orders: Send order](/cases/case-details/${[CASE_REFERENCE]}/trigger"
@@ -260,7 +260,7 @@ class CamundaTaskWaConfigurationTest extends DmnDecisionTableBaseUnitTest {
                     .expectedValue(MAJOR_PRIORITY, DEFAULT_MAJOR_PRIORITY, true)
                     .expectedValue(WORK_TYPE, ROUTINE_WORK_TYPE, true)
                     .expectedValue(ROLE_CATEGORY, ROLE_CATEGORY_ADMIN, true)
-                    .expectedValue(DUE_DATE_INTERVAL_DAYS, "10", true)
+                    .expectedValue(DUE_DATE_INTERVAL_DAYS, "7", true)
                     .expectedValue(
                         DESCRIPTION,
                         "[Orders: Send order](/cases/case-details/${[CASE_REFERENCE]}/trigger"
@@ -333,7 +333,7 @@ class CamundaTaskWaConfigurationTest extends DmnDecisionTableBaseUnitTest {
                     .expectedValue(MAJOR_PRIORITY, DEFAULT_MAJOR_PRIORITY, true)
                     .expectedValue(WORK_TYPE, DECISION_WORK_TYPE, true)
                     .expectedValue(ROLE_CATEGORY, ROLE_CATEGORY_ADMIN, true)
-                    .expectedValue(DUE_DATE_INTERVAL_DAYS, "10", true)
+                    .expectedValue(DUE_DATE_INTERVAL_DAYS, "7", true)
                     .expectedValue(
                         DESCRIPTION,
                         "[Orders: Send order](/cases/case-details/${[CASE_REFERENCE]}/trigger"
@@ -369,7 +369,7 @@ class CamundaTaskWaConfigurationTest extends DmnDecisionTableBaseUnitTest {
                     .expectedValue(MAJOR_PRIORITY, DEFAULT_MAJOR_PRIORITY, true)
                     .expectedValue(WORK_TYPE, ROUTINE_WORK_TYPE, true)
                     .expectedValue(ROLE_CATEGORY, ROLE_CATEGORY_ADMIN, true)
-                    .expectedValue(DUE_DATE_INTERVAL_DAYS, "10", true)
+                    .expectedValue(DUE_DATE_INTERVAL_DAYS, "7", true)
                     .expectedValue(
                         DESCRIPTION,
                         "[Orders: Send order](/cases/case-details/${[CASE_REFERENCE]}/trigger"
@@ -386,7 +386,7 @@ class CamundaTaskWaConfigurationTest extends DmnDecisionTableBaseUnitTest {
                     .expectedValue(MAJOR_PRIORITY, DEFAULT_MAJOR_PRIORITY, true)
                     .expectedValue(WORK_TYPE, ROUTINE_WORK_TYPE, true)
                     .expectedValue(ROLE_CATEGORY, ROLE_CATEGORY_ADMIN, true)
-                    .expectedValue(DUE_DATE_INTERVAL_DAYS, "10", true)
+                    .expectedValue(DUE_DATE_INTERVAL_DAYS, "7", true)
                     .expectedValue(
                         DESCRIPTION,
                         "[Orders: Send order](/cases/case-details/${[CASE_REFERENCE]}/trigger"
@@ -553,7 +553,7 @@ class CamundaTaskWaConfigurationTest extends DmnDecisionTableBaseUnitTest {
                     .expectedValue(MAJOR_PRIORITY, DEFAULT_MAJOR_PRIORITY, true)
                     .expectedValue(WORK_TYPE, DECISION_WORK_TYPE, true)
                     .expectedValue(ROLE_CATEGORY, ROLE_CATEGORY_LO, true)
-                    .expectedValue(DUE_DATE_INTERVAL_DAYS, "1", true)
+                    .expectedValue(DUE_DATE_INTERVAL_DAYS, "5", true)
                     .expectedValue(
                         DESCRIPTION,
                         "[Orders: Create draft](/cases/case-details/${[CASE_REFERENCE]}/trigger"
@@ -735,7 +735,7 @@ class CamundaTaskWaConfigurationTest extends DmnDecisionTableBaseUnitTest {
                     .expectedValue(MAJOR_PRIORITY, DEFAULT_MAJOR_PRIORITY, true)
                     .expectedValue(WORK_TYPE, DECISION_WORK_TYPE, true)
                     .expectedValue(ROLE_CATEGORY, ROLE_CATEGORY_JUDICIAL, true)
-                    .expectedValue(DUE_DATE_INTERVAL_DAYS, "1", true)
+                    .expectedValue(DUE_DATE_INTERVAL_DAYS, "5", true)
                     .expectedValue(
                         DESCRIPTION,
                         "[Orders: Create draft](/cases/case-details/${[CASE_REFERENCE]}/trigger"
@@ -769,7 +769,7 @@ class CamundaTaskWaConfigurationTest extends DmnDecisionTableBaseUnitTest {
                     .expectedValue(MAJOR_PRIORITY, DEFAULT_MAJOR_PRIORITY, true)
                     .expectedValue(WORK_TYPE, DECISION_WORK_TYPE, true)
                     .expectedValue(ROLE_CATEGORY, ROLE_CATEGORY_JUDICIAL, true)
-                    .expectedValue(DUE_DATE_INTERVAL_DAYS, "2", true)
+                    .expectedValue(DUE_DATE_INTERVAL_DAYS, "5", true)
                     .expectedValue(
                         DESCRIPTION,
                         "[Orders: Create draft](/cases/case-details/${[CASE_REFERENCE]}/trigger"
@@ -803,7 +803,7 @@ class CamundaTaskWaConfigurationTest extends DmnDecisionTableBaseUnitTest {
                     .expectedValue(MAJOR_PRIORITY, DEFAULT_MAJOR_PRIORITY, true)
                     .expectedValue(WORK_TYPE, DECISION_WORK_TYPE, true)
                     .expectedValue(ROLE_CATEGORY, ROLE_CATEGORY_JUDICIAL, true)
-                    .expectedValue(DUE_DATE_INTERVAL_DAYS, "2", true)
+                    .expectedValue(DUE_DATE_INTERVAL_DAYS, "5", true)
                     .expectedValue(
                         DESCRIPTION,
                         "[Orders: Create draft](/cases/case-details/${[CASE_REFERENCE]}/trigger"
@@ -820,7 +820,7 @@ class CamundaTaskWaConfigurationTest extends DmnDecisionTableBaseUnitTest {
                     .expectedValue(MAJOR_PRIORITY, DEFAULT_MAJOR_PRIORITY, true)
                     .expectedValue(WORK_TYPE, DECISION_WORK_TYPE, true)
                     .expectedValue(ROLE_CATEGORY, ROLE_CATEGORY_JUDICIAL, true)
-                    .expectedValue(DUE_DATE_INTERVAL_DAYS, "2", true)
+                    .expectedValue(DUE_DATE_INTERVAL_DAYS, "5", true)
                     .expectedValue(
                         DESCRIPTION,
                         "[Orders: Create draft](/cases/case-details/${[CASE_REFERENCE]}/trigger"
@@ -842,7 +842,7 @@ class CamundaTaskWaConfigurationTest extends DmnDecisionTableBaseUnitTest {
                     .expectedValue(MAJOR_PRIORITY, DEFAULT_MAJOR_PRIORITY, true)
                     .expectedValue(WORK_TYPE, DECISION_WORK_TYPE,true)
                     .expectedValue(ROLE_CATEGORY, ROLE_CATEGORY_JUDICIAL,true)
-                    .expectedValue(DUE_DATE_INTERVAL_DAYS, "2",true)
+                    .expectedValue(DUE_DATE_INTERVAL_DAYS, "5",true)
                     .expectedValue(
                         DESCRIPTION,
                         "[Orders: Create draft](/cases/case-details/${[CASE_REFERENCE]}/trigger"
@@ -859,7 +859,7 @@ class CamundaTaskWaConfigurationTest extends DmnDecisionTableBaseUnitTest {
                     .expectedValue(MAJOR_PRIORITY, DEFAULT_MAJOR_PRIORITY, true)
                     .expectedValue(WORK_TYPE, DECISION_WORK_TYPE, true)
                     .expectedValue(ROLE_CATEGORY, ROLE_CATEGORY_JUDICIAL, true)
-                    .expectedValue(DUE_DATE_INTERVAL_DAYS, "2", true)
+                    .expectedValue(DUE_DATE_INTERVAL_DAYS, "5", true)
                     .expectedValue(
                         DESCRIPTION,
                         "[Orders: Create draft](/cases/case-details/${[CASE_REFERENCE]}/trigger"
@@ -876,7 +876,7 @@ class CamundaTaskWaConfigurationTest extends DmnDecisionTableBaseUnitTest {
                     .expectedValue(MAJOR_PRIORITY, DEFAULT_MAJOR_PRIORITY, true)
                     .expectedValue(WORK_TYPE, DECISION_WORK_TYPE, true)
                     .expectedValue(ROLE_CATEGORY, ROLE_CATEGORY_JUDICIAL, true)
-                    .expectedValue(DUE_DATE_INTERVAL_DAYS, "2", true)
+                    .expectedValue(DUE_DATE_INTERVAL_DAYS, "5", true)
                     .expectedValue(
                         DESCRIPTION,
                         "[Orders: Create draft](/cases/case-details/${[CASE_REFERENCE]}/trigger"
@@ -898,7 +898,7 @@ class CamundaTaskWaConfigurationTest extends DmnDecisionTableBaseUnitTest {
                     .expectedValue(MAJOR_PRIORITY, DEFAULT_MAJOR_PRIORITY, true)
                     .expectedValue(WORK_TYPE, DECISION_WORK_TYPE, true)
                     .expectedValue(ROLE_CATEGORY, ROLE_CATEGORY_JUDICIAL, true)
-                    .expectedValue(DUE_DATE_INTERVAL_DAYS, "1", true)
+                    .expectedValue(DUE_DATE_INTERVAL_DAYS, "5", true)
                     .expectedValue(
                         DESCRIPTION,
                         "[Orders: Create draft](/cases/case-details/${[CASE_REFERENCE]}/trigger"
@@ -932,7 +932,7 @@ class CamundaTaskWaConfigurationTest extends DmnDecisionTableBaseUnitTest {
                     .expectedValue(MAJOR_PRIORITY, DEFAULT_MAJOR_PRIORITY, true)
                     .expectedValue(WORK_TYPE, DECISION_WORK_TYPE, true)
                     .expectedValue(ROLE_CATEGORY, ROLE_CATEGORY_JUDICIAL, true)
-                    .expectedValue(DUE_DATE_INTERVAL_DAYS, "2", true)
+                    .expectedValue(DUE_DATE_INTERVAL_DAYS, "5", true)
                     .expectedValue(
                         DESCRIPTION,
                         "[Orders: Create draft](/cases/case-details/${[CASE_REFERENCE]}/trigger"
@@ -1007,7 +1007,7 @@ class CamundaTaskWaConfigurationTest extends DmnDecisionTableBaseUnitTest {
                     .expectedValue(MAJOR_PRIORITY, DEFAULT_MAJOR_PRIORITY, true)
                     .expectedValue(WORK_TYPE, ROUTINE_WORK_TYPE, true)
                     .expectedValue(ROLE_CATEGORY, ROLE_CATEGORY_ADMIN, true)
-                    .expectedValue(DUE_DATE_INTERVAL_DAYS, "10", true)
+                    .expectedValue(DUE_DATE_INTERVAL_DAYS, "7", true)
                     .expectedValue(
                         DESCRIPTION,
                         "[Document management: Amend](/cases/case-details/${[CASE_REFERENCE]}/trigger"
