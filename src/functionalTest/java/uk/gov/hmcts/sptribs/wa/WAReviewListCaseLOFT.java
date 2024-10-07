@@ -61,12 +61,12 @@ public class WAReviewListCaseLOFT extends FunctionalTestSuite {
         ccdCaseCreator.createInitialStartEventAndSubmit(CASEWORKER_CASE_BUILT, ST_CIC_JURISDICTION, ST_CIC_CASE_TYPE, newCaseId, caseData);
 
         caseData.putAll(caseData(CASEWORKER_RECORD_LISTING_DATA));
-        ccdCaseCreator.createInitialStartEventAndSubmit(
+        final Map<String, Object> hearingCaseData = ccdCaseCreator.createInitialStartEventAndSubmit(
             CASEWORKER_RECORD_LISTING, ST_CIC_JURISDICTION, ST_CIC_CASE_TYPE, newCaseId, caseData);
 
-        caseData.put("cicCaseReferralTypeForWA", "Listed case");
+        hearingCaseData.put("cicCaseReferralTypeForWA", "Listed case");
         ccdCaseCreator.createInitialStartEventAndSubmit(
-            CASEWORKER_REFER_TO_LEGAL_OFFICER, ST_CIC_JURISDICTION, ST_CIC_CASE_TYPE, newCaseId, caseData);
+            CASEWORKER_REFER_TO_LEGAL_OFFICER, ST_CIC_JURISDICTION, ST_CIC_CASE_TYPE, newCaseId, hearingCaseData);
 
         await()
             .pollInterval(DEFAULT_POLL_INTERVAL_SECONDS, SECONDS)
