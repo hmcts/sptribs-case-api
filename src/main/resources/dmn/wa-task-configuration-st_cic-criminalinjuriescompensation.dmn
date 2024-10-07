@@ -354,7 +354,7 @@ else 5000</text>
           <text></text>
         </inputEntry>
         <inputEntry id="UnaryTests_043qnbi">
-          <text>"processListingDirections","processDirectionsReListedCase","processDirectionsReListedCaseWithin5Days","processSetAsideDirections","processPostponementDirections","processTimeExtensionDirectionsReturned","issueDecisionNotice","reviewTimeExtensionRequestLO","reviewListingDirectionsLO","reviewListCaseLO","reviewListCaseWithin5DaysLO","reviewPostponementRequestLO","reviewListCaseWithin5DaysJudge","reviewPostponementRequestJudge","reviewCorrectionsRequest","reviewListingDirectionsJudge","reviewListCaseJudge","followUpNoncomplianceOfDirections","stitchCollateHearingBundle"</text>
+          <text>"processDirectionsReListedCase","processDirectionsReListedCaseWithin5Days","processSetAsideDirections","processPostponementDirections","processTimeExtensionDirectionsReturned","issueDecisionNotice","reviewTimeExtensionRequestLO","reviewListCaseLO","reviewListCaseWithin5DaysLO","reviewPostponementRequestLO","reviewListCaseWithin5DaysJudge","reviewPostponementRequestJudge","reviewListCaseJudge","followUpNoncomplianceOfDirections","stitchCollateHearingBundle"</text>
         </inputEntry>
         <outputEntry id="LiteralExpression_1g03p5z">
           <text>"dueDateIntervalDays"</text>
@@ -371,7 +371,7 @@ else 5000</text>
           <text></text>
         </inputEntry>
         <inputEntry id="UnaryTests_046d7dy">
-          <text>"issueCaseToRespondent","reviewReinstatementRequestJudge","reviewSetAsideRequest","reviewStayRequestJudge","reviewNewCaseAndProvideDirectionsJudge","reviewOtherRequestJudge","reviewWithdrawalRequestJudge","reviewRule27RequestJudge","reviewStrikeOutRequestJudge","reviewTimeExtensionRequestJudge","reviewSpecificAccessRequestJudiciary","reviewSpecificAccessRequestLegalOps","reviewSpecificAccessRequestAdmin","reviewSpecificAccessRequestCTSC"</text>
+          <text>"issueCaseToRespondent","reviewSetAsideRequest","reviewTimeExtensionRequestJudge","reviewSpecificAccessRequestJudiciary","reviewSpecificAccessRequestLegalOps","reviewSpecificAccessRequestAdmin","reviewSpecificAccessRequestCTSC"</text>
         </inputEntry>
         <outputEntry id="LiteralExpression_1ni750t">
           <text>"dueDateIntervalDays"</text>
@@ -388,7 +388,7 @@ else 5000</text>
           <text></text>
         </inputEntry>
         <inputEntry id="UnaryTests_1r8x2hh">
-          <text>"processCorrections","processWrittenReasons"</text>
+          <text>"processCorrections","processWrittenReasons","processListingDirections"</text>
         </inputEntry>
         <outputEntry id="LiteralExpression_0sonhf1">
           <text>"dueDateIntervalDays"</text>
@@ -405,7 +405,7 @@ else 5000</text>
           <text></text>
         </inputEntry>
         <inputEntry id="UnaryTests_1dd4h23">
-          <text>"processRule27Decision","processReinstatementDecisionNotice","completeHearingOutcome","reviewNewCaseAndProvideDirectionsLO","reviewStrikeOutRequestLO","reviewStayRequestLO","reviewWithdrawalRequestLO","reviewRule27RequestLO","vetNewCaseDocuments","reviewOtherRequestLO","reviewReinstatementRequestLO","registerNewCase"</text>
+          <text>"processReinstatementDecisionNotice","completeHearingOutcome","reviewNewCaseAndProvideDirectionsLO","reviewStrikeOutRequestLO","reviewStayRequestLO","reviewWithdrawalRequestLO","reviewRule27RequestLO","vetNewCaseDocuments","reviewOtherRequestLO","reviewReinstatementRequestLO","registerNewCase","reviewNewCaseAndProvideDirectionsJudge","reviewStrikeOutRequestJudge","reviewWithdrawalRequestJudge","reviewRule27RequestJudge","reviewStayRequestJudge","reviewListingDirectionsJudge","reviewListingDirectionsLO","reviewCorrectionsRequest","reviewReinstatementRequestJudge","reviewOtherRequestJudge"</text>
         </inputEntry>
         <outputEntry id="LiteralExpression_1n8d760">
           <text>"dueDateIntervalDays"</text>
@@ -417,20 +417,20 @@ else 5000</text>
           <text>true</text>
         </outputEntry>
       </rule>
-      <rule id="DecisionRule_0es6jg9">
-        <inputEntry id="UnaryTests_08qxwag">
+      <rule id="DecisionRule_0gouvzo">
+        <inputEntry id="UnaryTests_0eiasly">
           <text></text>
         </inputEntry>
-        <inputEntry id="UnaryTests_07j2pu0">
-          <text>"processCaseWithdrawalDirections","processDirectionsReturned","processOtherDirectionsReturned","processStrikeOutDirectionsReturned","processStayDirections","processFurtherEvidence"</text>
+        <inputEntry id="UnaryTests_0zn4hkd">
+          <text>"processDirectionsReturned","processFurtherEvidence","processStrikeOutDirectionsReturned","processCaseWithdrawalDirections","processRule27Decision","processStayDirections","processOtherDirectionsReturned"</text>
         </inputEntry>
-        <outputEntry id="LiteralExpression_1s2u98t">
+        <outputEntry id="LiteralExpression_1uib7dc">
           <text>"dueDateIntervalDays"</text>
         </outputEntry>
-        <outputEntry id="LiteralExpression_168n0h4">
-          <text>10</text>
+        <outputEntry id="LiteralExpression_1r7aoni">
+          <text>7</text>
         </outputEntry>
-        <outputEntry id="LiteralExpression_1nvij8q">
+        <outputEntry id="LiteralExpression_19jl3ox">
           <text>true</text>
         </outputEntry>
       </rule>
