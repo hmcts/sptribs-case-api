@@ -64,7 +64,7 @@ public class WAReviewListCaseWithin5DaysLOFT extends FunctionalTestSuite {
         final Map<String, Object> hearingCaseData = ccdCaseCreator.createInitialStartEventAndSubmit(
             CASEWORKER_RECORD_LISTING, ST_CIC_JURISDICTION, ST_CIC_CASE_TYPE, newCaseId, caseData);
 
-        hearingCaseData.put("cicCaseReferralTypeForWA", "Listed case");
+        hearingCaseData.put("cicCaseReferralTypeForWA", "Listed case (within 5 days)");
         ccdCaseCreator.createInitialStartEventAndSubmit(
             CASEWORKER_REFER_TO_LEGAL_OFFICER, ST_CIC_JURISDICTION, ST_CIC_CASE_TYPE, newCaseId, hearingCaseData);
 
