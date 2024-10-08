@@ -120,7 +120,7 @@ test {
 
 task functional(type: Test) {
   if (System.getenv('WA_FEATURE_ENABLED') == 'true') {
-    maxParallelForks = Runtime.runtime.availableProcessors() ?: 1
+    maxParallelForks = Runtime.runtime.availableProcessors()
   }
   description = "Runs functional tests"
   group = "Verification"
