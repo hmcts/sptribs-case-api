@@ -66,7 +66,7 @@ public class WAReviewListCaseWithin5DaysJudgeFT extends FunctionalTestSuite {
 
         hearingCaseData.put("cicCaseReferralTypeForWA", "Listed case (within 5 days)");
         ccdCaseCreator.createInitialStartEventAndSubmit(
-            CASEWORKER_REFER_TO_JUDGE, ST_CIC_JURISDICTION, ST_CIC_CASE_TYPE, newCaseId, caseData);
+            CASEWORKER_REFER_TO_JUDGE, ST_CIC_JURISDICTION, ST_CIC_CASE_TYPE, newCaseId, hearingCaseData);
 
         await()
             .pollInterval(DEFAULT_POLL_INTERVAL_SECONDS, SECONDS)
