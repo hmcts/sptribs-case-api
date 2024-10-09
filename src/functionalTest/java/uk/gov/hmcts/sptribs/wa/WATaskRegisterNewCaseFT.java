@@ -23,7 +23,6 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.ST_CIC_CASE_TYPE;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.ST_CIC_JURISDICTION;
 import static uk.gov.hmcts.sptribs.testutil.TestEventConstants.CASEWORKER_EDIT_CASE;
-import static uk.gov.hmcts.sptribs.testutil.TestEventConstants.CITIZEN_CIC_SUBMIT_CASE;
 
 
 @SpringBootTest
@@ -97,13 +96,10 @@ public class WATaskRegisterNewCaseFT extends FunctionalTestSuite {
 
     @Test
     void shouldCompleteRegisterNewCaseWithEditCase() {
-        final Response response = createTestCaseAndGetCaseResponse();
+        final Response response = createAndSubmitTestCaseAndGetResponse();
         final long id = response.getBody().path("id");
         final String newCaseId = String.valueOf(id);
         final Map<String, Object> caseData = response.getBody().path("caseData");
-
-        ccdCaseCreator.createInitialStartEventAndSubmit(
-            CITIZEN_CIC_SUBMIT_CASE, ST_CIC_JURISDICTION, ST_CIC_CASE_TYPE, newCaseId, caseData);
 
         log.debug("New case created: {}", newCaseId);
 
@@ -115,7 +111,7 @@ public class WATaskRegisterNewCaseFT extends FunctionalTestSuite {
                     roleAssignmentService.createRoleAssignmentsForWaSeniorCaseworker();
 
                     Response searchByCaseIdResponseBody =
-                            taskManagementService.search(newCaseId, List.of(TASK_TYPE), 1, 200);
+                        taskManagementService.search(newCaseId, List.of(TASK_TYPE), 1, 200);
 
                     if (searchByCaseIdResponseBody.asString().isBlank()) {
                         return false;
@@ -143,12 +139,11 @@ public class WATaskRegisterNewCaseFT extends FunctionalTestSuite {
 
                     tasks = searchByCaseIdResponseBody.getBody().path("tasks");
                     taskType = searchByCaseIdResponseBody.getBody().path("tasks[0].type");
+                    taskState = searchByCaseIdResponseBody.getBody().path("tasks[0].task_state");
 
                     assertNotNull(tasks);
                     assertThat(tasks).isNotEmpty();
                     assertThat(taskType).isEqualTo(TASK_TYPE);
-
-                    taskState = searchByCaseIdResponseBody.getBody().path("tasks[0].task_state");
                     assertThat(taskState).isEqualTo("completed");
 
                     return true;
