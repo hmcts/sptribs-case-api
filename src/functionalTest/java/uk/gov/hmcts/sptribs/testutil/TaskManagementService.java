@@ -92,4 +92,20 @@ public class TaskManagementService {
 
         return result;
     }
+
+    public void assignTask(String taskId,
+                           int expectedTasks,
+                           int expectedStatus) {
+        Response result = given()
+            .header(SERVICE_AUTHORIZATION, serviceAuthenticationGenerator.generate())
+            .header(AUTHORIZATION, idamTokenGenerator.generateIdamTokenForWASeniorCaseworker())
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .post(taskManagementUrl + "/task/" + taskId + "/claim");
+
+        result.then().assertThat()
+            .statusCode(expectedStatus)
+            .contentType(APPLICATION_JSON_VALUE)
+            .body("tasks.size()", is(expectedTasks));
+    }
 }

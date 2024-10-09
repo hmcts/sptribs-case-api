@@ -108,7 +108,7 @@ public class WATaskRegisterNewCaseFT extends FunctionalTestSuite {
             .atMost(DEFAULT_TIMEOUT_SECONDS, SECONDS)
             .until(
                 () -> {
-                    roleAssignmentService.createRoleAssignmentsForWaSeniorCaseworker();
+                    roleAssignmentService.createRoleAssignmentsForWaRegionalHearingCentreTeamLead();
 
                     Response searchByCaseIdResponseBody =
                         taskManagementService.search(newCaseId, List.of(TASK_TYPE), 1, 200);
@@ -126,6 +126,26 @@ public class WATaskRegisterNewCaseFT extends FunctionalTestSuite {
 
                     String taskState = searchByCaseIdResponseBody.getBody().path("tasks[0].task_state");
                     assertThat(taskState).isEqualTo("unassigned");
+
+                    final String taskId = searchByCaseIdResponseBody.getBody().path("tasks[0].id");
+                    taskManagementService.assignTask(taskId, 1, 204);
+
+                    searchByCaseIdResponseBody =
+                            taskManagementService.search(newCaseId, List.of(TASK_TYPE), 1, 200);
+
+                    if (searchByCaseIdResponseBody.asString().isBlank()) {
+                        return false;
+                    }
+
+                    List<Map<String, Object>> assignedTasks = searchByCaseIdResponseBody.getBody().path("tasks");
+                    String assignedTaskType = searchByCaseIdResponseBody.getBody().path("tasks[0].type");
+
+                    assertNotNull(assignedTasks);
+                    assertThat(assignedTasks).isNotEmpty();
+                    assertThat(assignedTaskType).isEqualTo(TASK_TYPE);
+
+                    String assignedTaskState = searchByCaseIdResponseBody.getBody().path("tasks[0].task_state");
+                    assertThat(assignedTaskState).isEqualTo("unassigned");
 
                     ccdCaseCreator.createInitialStartEventAndSubmit(
                         CASEWORKER_EDIT_CASE, ST_CIC_JURISDICTION, ST_CIC_CASE_TYPE, newCaseId, caseData);
