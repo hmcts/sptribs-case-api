@@ -42,8 +42,8 @@ public class TaskManagementService {
         taskMonitorService.triggerTerminationJob();
         taskMonitorService.triggerReconfigurationJob();
 
-        // Wait 70 seconds to allow time for task to be created in database
-        Thread.sleep(70000);
+        // Wait 80 seconds to allow time for task to be created in database
+        Thread.sleep(80000);
 
         Map<String, Object> searchParameter = Map.of(
             "key", "caseId",
