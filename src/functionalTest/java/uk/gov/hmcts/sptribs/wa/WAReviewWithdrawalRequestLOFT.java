@@ -39,8 +39,7 @@ public class WAReviewWithdrawalRequestLOFT extends FunctionalTestSuite {
     private RoleAssignmentService roleAssignmentService;
 
     private static final String TASK_TYPE = "reviewWithdrawalRequestLO";
-    private static final List<String> TASK_ROLES = Arrays.asList("regional-centre-admin", "regional-centre-team-leader", "task-supervisor",
-            "hearing-centre-admin", "hearing-centre-team-leader", "ctsc", "ctsc-team-leader");
+    private static final List<String> TASK_ROLES = Arrays.asList("tribunal-caseworker", "senior-tribunal-caseworker", "task-supervisor");
     private static final int DEFAULT_TIMEOUT_SECONDS = 300;
     private static final int DEFAULT_POLL_INTERVAL_SECONDS = 4;
 
@@ -84,7 +83,7 @@ public class WAReviewWithdrawalRequestLOFT extends FunctionalTestSuite {
                     assertThat(taskType).isEqualTo(TASK_TYPE);
 
                     Response retrieveTaskRolePermissionsResponseBody =
-                        taskManagementService.retrieveTaskRolePermissions(taskId, 7, 200);
+                        taskManagementService.retrieveTaskRolePermissions(taskId, 3, 200);
 
                     if (retrieveTaskRolePermissionsResponseBody.asString().isBlank()) {
                         return false;
