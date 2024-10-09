@@ -145,7 +145,7 @@ public class WATaskRegisterNewCaseFT extends FunctionalTestSuite {
                     assertThat(assignedTaskType).isEqualTo(TASK_TYPE);
 
                     String assignedTaskState = searchByCaseIdResponseBody.getBody().path("tasks[0].task_state");
-                    assertThat(assignedTaskState).isEqualTo("unassigned");
+                    assertThat(assignedTaskState).isEqualTo("assigned");
 
                     ccdCaseCreator.createInitialStartEventAndSubmit(
                         CASEWORKER_EDIT_CASE, ST_CIC_JURISDICTION, ST_CIC_CASE_TYPE, newCaseId, caseData);
