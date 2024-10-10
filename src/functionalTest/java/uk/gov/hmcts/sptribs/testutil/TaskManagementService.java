@@ -3,6 +3,7 @@ package uk.gov.hmcts.sptribs.testutil;
 import io.restassured.response.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 
@@ -93,9 +94,7 @@ public class TaskManagementService {
         return result;
     }
 
-    public void assignTask(String taskId,
-                           int expectedTasks,
-                           int expectedStatus) {
+    public void assignTask(String taskId) {
         Response result = given()
             .header(SERVICE_AUTHORIZATION, serviceAuthenticationGenerator.generate())
             .header(AUTHORIZATION, idamTokenGenerator.generateIdamTokenForWARegionalHearingCentreTeamLead())
@@ -104,8 +103,6 @@ public class TaskManagementService {
             .post(taskManagementUrl + "/task/" + taskId + "/claim");
 
         result.then().assertThat()
-            .statusCode(expectedStatus)
-            .contentType(APPLICATION_JSON_VALUE)
-            .body("tasks.size()", is(expectedTasks));
+                .statusCode(HttpStatus.NO_CONTENT.value());
     }
 }

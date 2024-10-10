@@ -128,7 +128,7 @@ public class WATaskRegisterNewCaseFT extends FunctionalTestSuite {
                     assertThat(taskState).isEqualTo("unassigned");
 
                     final String taskId = searchByCaseIdResponseBody.getBody().path("tasks[0].id");
-                    taskManagementService.assignTask(taskId, 1, 204);
+                    taskManagementService.assignTask(taskId);
 
                     searchByCaseIdResponseBody =
                             taskManagementService.search(newCaseId, List.of(TASK_TYPE), 1, 200);
