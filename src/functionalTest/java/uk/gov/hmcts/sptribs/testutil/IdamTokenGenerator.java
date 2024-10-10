@@ -33,6 +33,12 @@ public class IdamTokenGenerator {
     @Value("${idam.waseniorcaseworker.password}")
     private String waSeniorCaseworkerPassword;
 
+    @Value("${idam.waregionalhearingcentreteamlead.username}")
+    private String waRegionalHearingCentreTeamLeadUsername;
+
+    @Value("${idam.waregionalhearingcentreteamlead.password}")
+    private String waRegionalHearingCentreTeamLeadPassword;
+
     @Value("${idam.systemupdate.username}")
     private String systemUpdateUsername;
 
@@ -75,6 +81,15 @@ public class IdamTokenGenerator {
             cache.put(waSeniorCaseworkerUsername, caseworkerUserToken);
         }
         return caseworkerUserToken;
+    }
+
+    public String generateIdamTokenForWARegionalHearingCentreTeamLead() {
+        String adminUserToken = cache.getIfPresent(waRegionalHearingCentreTeamLeadUsername);
+        if (adminUserToken == null) {
+            adminUserToken = idamClient.getAccessToken(waRegionalHearingCentreTeamLeadUsername, waRegionalHearingCentreTeamLeadPassword);
+            cache.put(waRegionalHearingCentreTeamLeadUsername, adminUserToken);
+        }
+        return adminUserToken;
     }
 
     public String generateIdamTokenForSystemUser() {
