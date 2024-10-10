@@ -48,6 +48,7 @@ import static java.lang.String.format;
 import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
 import static org.apache.commons.lang.StringUtils.isNotBlank;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
+import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CITIZEN_CIC_SUBMIT_CASE;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.DSS_Draft;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.DSS_Submitted;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.CITIZEN;
@@ -76,6 +77,9 @@ public class CicSubmitCaseEvent implements CCDConfig<CaseData, State, UserRole> 
 
     @Value("${feature.wa.enabled}")
     private boolean isWorkAllocationEnabled;
+
+    @Value("#{'${feature.wa.enabledEvents}'.split(',')}")
+    private List<String> enabledEvents = new ArrayList<>();
 
     @Autowired
     public CicSubmitCaseEvent(HttpServletRequest request, IdamService idamService, AppsConfig appsConfig,
@@ -109,7 +113,7 @@ public class CicSubmitCaseEvent implements CCDConfig<CaseData, State, UserRole> 
                 .aboutToSubmitCallback(this::aboutToSubmit)
                 .submittedCallback(this::submitted);
 
-        if (isWorkAllocationEnabled) {
+        if (enabledEvents.contains(CITIZEN_CIC_SUBMIT_CASE) || isWorkAllocationEnabled) {
             eventBuilder.publishToCamunda()
                         .grant(CREATE_READ_UPDATE, ST_CIC_WA_CONFIG_USER);
         }

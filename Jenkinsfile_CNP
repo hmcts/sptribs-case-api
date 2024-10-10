@@ -231,7 +231,8 @@ withPipeline(type, product, component) {
     env.ROLE_ASSIGNMENT_API_URL = "https://am-org-role-mapping-service-sptribs-case-api-pr-${CHANGE_ID}.preview.platform.hmcts.net"
 
     for (label in githubApi.getLabelsbyPattern(env.BRANCH_NAME, "pr-values:wa") ) {
-      env.WA_FEATURE_ENABLED = true
+      env.WA_FEATURE_ENABLED = false
+      env.WA_ENABLED_EVENTS = 'citizen-cic-submit-dss-application,edit-case,caseworker-case-built'
     }
 
     setCommonEnvVariables()
