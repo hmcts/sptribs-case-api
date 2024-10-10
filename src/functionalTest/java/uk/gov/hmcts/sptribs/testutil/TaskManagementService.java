@@ -98,7 +98,7 @@ public class TaskManagementService {
                            int expectedStatus) {
         Response result = given()
             .header(SERVICE_AUTHORIZATION, serviceAuthenticationGenerator.generate())
-            .header(AUTHORIZATION, idamTokenGenerator.generateIdamTokenForWASeniorCaseworker())
+            .header(AUTHORIZATION, idamTokenGenerator.generateIdamTokenForWARegionalHearingCentreTeamLead())
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .when()
             .post(taskManagementUrl + "/task/" + taskId + "/claim");
