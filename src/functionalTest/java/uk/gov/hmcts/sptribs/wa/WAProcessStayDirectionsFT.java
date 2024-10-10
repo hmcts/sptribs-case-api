@@ -26,11 +26,10 @@ import static uk.gov.hmcts.sptribs.testutil.TestConstants.ST_CIC_JURISDICTION;
 import static uk.gov.hmcts.sptribs.testutil.TestEventConstants.CASEWORKER_CASE_BUILT;
 import static uk.gov.hmcts.sptribs.testutil.TestEventConstants.CASEWORKER_CREATE_DRAFT_ORDER;
 import static uk.gov.hmcts.sptribs.testutil.TestEventConstants.CASEWORKER_EDIT_CASE;
-import static uk.gov.hmcts.sptribs.testutil.TestEventConstants.CASEWORKER_RECORD_LISTING;
 
 @SpringBootTest
 @Slf4j
-public class WAProcessPostponementDirectionsFT extends FunctionalTestSuite {
+public class WAProcessStayDirectionsFT extends FunctionalTestSuite {
     @Autowired
     private CcdCaseCreator ccdCaseCreator;
 
@@ -40,7 +39,7 @@ public class WAProcessPostponementDirectionsFT extends FunctionalTestSuite {
     @Autowired
     private RoleAssignmentService roleAssignmentService;
 
-    private static final String TASK_TYPE = "processPostponementDirections";
+    private static final String TASK_TYPE = "processStayDirections";
     private static final List<String> TASK_ROLES = Arrays.asList("regional-centre-admin", "regional-centre-team-leader", "task-supervisor",
         "hearing-centre-admin", "hearing-centre-team-leader", "ctsc", "ctsc-team-leader");
     private static final int DEFAULT_TIMEOUT_SECONDS = 300;
@@ -48,11 +47,9 @@ public class WAProcessPostponementDirectionsFT extends FunctionalTestSuite {
 
     private static final String CASEWORKER_CREATE_DRAFT_ORDER_DATA = "classpath:wa/caseworker-create-draft-order-submit-data.json";
 
-    private static final String CASEWORKER_RECORD_LISTING_DATA = "classpath:wa/caseworker-record-listing-submit-data.json";
-
     @Test
     @EnabledIfEnvironmentVariable(named = "WA_FEATURE_ENABLED", matches = "true")
-    void shouldInitiateProcessPostponementDirectionsTask() throws IOException {
+    void shouldInitiateProcessStayDirectionsTask() throws IOException {
         final Response response = createAndSubmitTestCaseAndGetResponse();
         final long id = response.getBody().path("id");
         final String newCaseId = String.valueOf(id);
@@ -63,14 +60,10 @@ public class WAProcessPostponementDirectionsFT extends FunctionalTestSuite {
         ccdCaseCreator.createInitialStartEventAndSubmit(CASEWORKER_EDIT_CASE, ST_CIC_JURISDICTION, ST_CIC_CASE_TYPE, newCaseId, caseData);
         ccdCaseCreator.createInitialStartEventAndSubmit(CASEWORKER_CASE_BUILT, ST_CIC_JURISDICTION, ST_CIC_CASE_TYPE, newCaseId, caseData);
 
-        caseData.putAll(caseData(CASEWORKER_RECORD_LISTING_DATA));
-        final Map<String, Object> hearingCaseData = ccdCaseCreator.createInitialStartEventAndSubmit(
-            CASEWORKER_RECORD_LISTING, ST_CIC_JURISDICTION, ST_CIC_CASE_TYPE, newCaseId, caseData);
-
-        hearingCaseData.put("cicCaseReferralTypeForWA", "Postponement request");
-        hearingCaseData.putAll(caseData(CASEWORKER_CREATE_DRAFT_ORDER_DATA));
+        caseData.put("cicCaseReferralTypeForWA", "Stay request");
+        caseData.putAll(caseData(CASEWORKER_CREATE_DRAFT_ORDER_DATA));
         ccdCaseCreator.createInitialStartEventAndSubmit(
-            CASEWORKER_CREATE_DRAFT_ORDER, ST_CIC_JURISDICTION, ST_CIC_CASE_TYPE, newCaseId, hearingCaseData);
+            CASEWORKER_CREATE_DRAFT_ORDER, ST_CIC_JURISDICTION, ST_CIC_CASE_TYPE, newCaseId, caseData);
 
         await()
             .pollInterval(DEFAULT_POLL_INTERVAL_SECONDS, SECONDS)

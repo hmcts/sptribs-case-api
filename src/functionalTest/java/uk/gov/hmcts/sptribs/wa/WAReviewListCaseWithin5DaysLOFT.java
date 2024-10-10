@@ -24,13 +24,13 @@ import static uk.gov.hmcts.sptribs.testutil.CaseDataUtil.caseData;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.ST_CIC_CASE_TYPE;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.ST_CIC_JURISDICTION;
 import static uk.gov.hmcts.sptribs.testutil.TestEventConstants.CASEWORKER_CASE_BUILT;
-import static uk.gov.hmcts.sptribs.testutil.TestEventConstants.CASEWORKER_CREATE_DRAFT_ORDER;
 import static uk.gov.hmcts.sptribs.testutil.TestEventConstants.CASEWORKER_EDIT_CASE;
 import static uk.gov.hmcts.sptribs.testutil.TestEventConstants.CASEWORKER_RECORD_LISTING;
+import static uk.gov.hmcts.sptribs.testutil.TestEventConstants.CASEWORKER_REFER_TO_LEGAL_OFFICER;
 
 @SpringBootTest
 @Slf4j
-public class WAProcessPostponementDirectionsFT extends FunctionalTestSuite {
+public class WAReviewListCaseWithin5DaysLOFT extends FunctionalTestSuite {
     @Autowired
     private CcdCaseCreator ccdCaseCreator;
 
@@ -40,19 +40,16 @@ public class WAProcessPostponementDirectionsFT extends FunctionalTestSuite {
     @Autowired
     private RoleAssignmentService roleAssignmentService;
 
-    private static final String TASK_TYPE = "processPostponementDirections";
-    private static final List<String> TASK_ROLES = Arrays.asList("regional-centre-admin", "regional-centre-team-leader", "task-supervisor",
-        "hearing-centre-admin", "hearing-centre-team-leader", "ctsc", "ctsc-team-leader");
+    private static final String TASK_TYPE = "reviewListCaseWithin5DaysLO";
+    private static final List<String> TASK_ROLES = Arrays.asList("tribunal-caseworker", "senior-tribunal-caseworker", "task-supervisor");
     private static final int DEFAULT_TIMEOUT_SECONDS = 300;
     private static final int DEFAULT_POLL_INTERVAL_SECONDS = 4;
-
-    private static final String CASEWORKER_CREATE_DRAFT_ORDER_DATA = "classpath:wa/caseworker-create-draft-order-submit-data.json";
 
     private static final String CASEWORKER_RECORD_LISTING_DATA = "classpath:wa/caseworker-record-listing-submit-data.json";
 
     @Test
     @EnabledIfEnvironmentVariable(named = "WA_FEATURE_ENABLED", matches = "true")
-    void shouldInitiateProcessPostponementDirectionsTask() throws IOException {
+    void shouldInitiateReviewListCaseWithin5DaysLOTask() throws IOException {
         final Response response = createAndSubmitTestCaseAndGetResponse();
         final long id = response.getBody().path("id");
         final String newCaseId = String.valueOf(id);
@@ -67,10 +64,9 @@ public class WAProcessPostponementDirectionsFT extends FunctionalTestSuite {
         final Map<String, Object> hearingCaseData = ccdCaseCreator.createInitialStartEventAndSubmit(
             CASEWORKER_RECORD_LISTING, ST_CIC_JURISDICTION, ST_CIC_CASE_TYPE, newCaseId, caseData);
 
-        hearingCaseData.put("cicCaseReferralTypeForWA", "Postponement request");
-        hearingCaseData.putAll(caseData(CASEWORKER_CREATE_DRAFT_ORDER_DATA));
+        hearingCaseData.put("cicCaseReferralTypeForWA", "Listed case (within 5 days)");
         ccdCaseCreator.createInitialStartEventAndSubmit(
-            CASEWORKER_CREATE_DRAFT_ORDER, ST_CIC_JURISDICTION, ST_CIC_CASE_TYPE, newCaseId, hearingCaseData);
+            CASEWORKER_REFER_TO_LEGAL_OFFICER, ST_CIC_JURISDICTION, ST_CIC_CASE_TYPE, newCaseId, hearingCaseData);
 
         await()
             .pollInterval(DEFAULT_POLL_INTERVAL_SECONDS, SECONDS)
@@ -95,7 +91,7 @@ public class WAProcessPostponementDirectionsFT extends FunctionalTestSuite {
                     assertThat(taskType).isEqualTo(TASK_TYPE);
 
                     Response retrieveTaskRolePermissionsResponseBody =
-                        taskManagementService.retrieveTaskRolePermissions(taskId, 7, 200);
+                        taskManagementService.retrieveTaskRolePermissions(taskId, 3, 200);
 
                     if (retrieveTaskRolePermissionsResponseBody.asString().isBlank()) {
                         return false;
