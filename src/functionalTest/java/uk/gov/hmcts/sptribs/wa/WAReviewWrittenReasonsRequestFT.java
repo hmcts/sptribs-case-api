@@ -1,9 +1,11 @@
 package uk.gov.hmcts.sptribs.wa;
 
 import io.restassured.response.Response;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledIfEnvironmentVariable;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 import uk.gov.hmcts.sptribs.testutil.CcdCaseCreator;
 import uk.gov.hmcts.sptribs.testutil.FunctionalTestSuite;
 import uk.gov.hmcts.sptribs.testutil.RoleAssignmentService;
@@ -24,6 +26,8 @@ import static uk.gov.hmcts.sptribs.testutil.TestEventConstants.CASEWORKER_CLOSE_
 import static uk.gov.hmcts.sptribs.testutil.TestEventConstants.CASEWORKER_EDIT_CASE;
 import static uk.gov.hmcts.sptribs.testutil.TestEventConstants.CASEWORKER_REFER_TO_JUDGE;
 
+@SpringBootTest
+@Slf4j
 public class WAReviewWrittenReasonsRequestFT extends FunctionalTestSuite {
     @Autowired
     private CcdCaseCreator ccdCaseCreator;
