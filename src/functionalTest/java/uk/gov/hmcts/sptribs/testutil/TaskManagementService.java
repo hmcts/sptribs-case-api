@@ -103,7 +103,7 @@ public class TaskManagementService {
             .post(taskManagementUrl + "/task/" + taskId + "/claim");
 
         result.then().assertThat()
-                .statusCode(HttpStatus.NO_CONTENT.value());
+            .statusCode(HttpStatus.NO_CONTENT.value());
     }
 
     public void completeTask(String taskId) {
