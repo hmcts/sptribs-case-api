@@ -78,16 +78,20 @@ public class CICAccessProfile implements CCDConfig<CriminalInjuriesCompensationD
             .accessProfiles(UserRolesForAccessProfiles.GS_PROFILE.getRole())
             .build();
         configBuilder.caseRoleToAccessProfile(UserRolesForAccessProfiles.RAS_ST_SPECIFIC_ACCESS_APPROVER_LEGAL_OPS)
-            .accessProfiles(UserRolesForAccessProfiles.GS_PROFILE.getRole())
+            .accessProfiles(UserRolesForAccessProfiles.GS_PROFILE.getRole(),
+                UserRolesForAccessProfiles.CIC_SENIOR_CASEWORKER.getRole())
             .build();
         configBuilder.caseRoleToAccessProfile(UserRolesForAccessProfiles.RAS_ST_SPECIFIC_ACCESS_APPROVER_CTSC)
-            .accessProfiles(UserRolesForAccessProfiles.GS_PROFILE.getRole())
+            .accessProfiles(UserRolesForAccessProfiles.GS_PROFILE.getRole(),
+                UserRolesForAccessProfiles.CIC_CENTRE_TEAM_LEADER.getRole())
             .build();
         configBuilder.caseRoleToAccessProfile(UserRolesForAccessProfiles.RAS_ST_SPECIFIC_ACCESS_APPROVER_ADMIN)
-            .accessProfiles(UserRolesForAccessProfiles.GS_PROFILE.getRole())
+            .accessProfiles(UserRolesForAccessProfiles.GS_PROFILE.getRole(),
+                UserRolesForAccessProfiles.CIC_CENTRE_TEAM_LEADER.getRole())
             .build();
         configBuilder.caseRoleToAccessProfile(UserRolesForAccessProfiles.RAS_ST_SPECIFIC_ACCESS_APPROVER_JUDICIARY)
-            .accessProfiles(UserRolesForAccessProfiles.GS_PROFILE.getRole())
+            .accessProfiles(UserRolesForAccessProfiles.GS_PROFILE.getRole(),
+                UserRolesForAccessProfiles.CIC_SENIOR_JUDGE.getRole())
             .build();
         configBuilder.caseRoleToAccessProfile(UserRolesForAccessProfiles.RAS_ST_TASK_SUPERVISOR)
             .accessProfiles(UserRolesForAccessProfiles.GS_PROFILE.getRole())
