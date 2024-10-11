@@ -105,4 +105,16 @@ public class TaskManagementService {
         result.then().assertThat()
                 .statusCode(HttpStatus.NO_CONTENT.value());
     }
+
+    public void completeTask(String taskId) {
+        Response result = given()
+            .header(SERVICE_AUTHORIZATION, serviceAuthenticationGenerator.generate())
+            .header(AUTHORIZATION, idamTokenGenerator.generateIdamTokenForWARegionalHearingCentreTeamLead())
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .post(taskManagementUrl + "/task/" + taskId + "/complete");
+
+        result.then().assertThat()
+            .statusCode(HttpStatus.NO_CONTENT.value());
+    }
 }

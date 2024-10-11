@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledIfEnvironmentVariable;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import uk.gov.hmcts.sptribs.testutil.CcdCaseCreator;
 import uk.gov.hmcts.sptribs.testutil.FunctionalTestSuite;
@@ -24,7 +25,6 @@ import static uk.gov.hmcts.sptribs.testutil.TestConstants.ST_CIC_CASE_TYPE;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.ST_CIC_JURISDICTION;
 import static uk.gov.hmcts.sptribs.testutil.TestEventConstants.CASEWORKER_EDIT_CASE;
 
-
 @SpringBootTest
 @Slf4j
 public class WATaskRegisterNewCaseFT extends FunctionalTestSuite {
@@ -37,6 +37,9 @@ public class WATaskRegisterNewCaseFT extends FunctionalTestSuite {
 
     @Autowired
     private RoleAssignmentService roleAssignmentService;
+
+    @Value("${idam.waregionalhearingcentreteamlead.uid}")
+    private String waRegionalHearingCentreTeamLeadUid;
 
     private static final String TASK_TYPE = "registerNewCase";
     private static final List<String> TASK_ROLES = Arrays.asList("regional-centre-admin", "regional-centre-team-leader", "task-supervisor",
@@ -131,7 +134,7 @@ public class WATaskRegisterNewCaseFT extends FunctionalTestSuite {
                     taskManagementService.assignTask(taskId);
 
                     searchByCaseIdResponseBody =
-                            taskManagementService.search(newCaseId, List.of(TASK_TYPE), 1, 200);
+                        taskManagementService.search(newCaseId, List.of(TASK_TYPE), 1, 200);
 
                     if (searchByCaseIdResponseBody.asString().isBlank()) {
                         return false;
@@ -145,10 +148,14 @@ public class WATaskRegisterNewCaseFT extends FunctionalTestSuite {
                     assertThat(assignedTaskType).isEqualTo(TASK_TYPE);
 
                     String assignedTaskState = searchByCaseIdResponseBody.getBody().path("tasks[0].task_state");
+                    String assignedTaskUid = searchByCaseIdResponseBody.getBody().path("tasks[0].assignee");
                     assertThat(assignedTaskState).isEqualTo("assigned");
+                    assertThat(assignedTaskUid).isEqualTo(waRegionalHearingCentreTeamLeadUid);
 
                     ccdCaseCreator.createInitialStartEventAndSubmitAdminEvent(
                         CASEWORKER_EDIT_CASE, ST_CIC_JURISDICTION, ST_CIC_CASE_TYPE, newCaseId, caseData);
+
+                    taskManagementService.completeTask(newCaseId);
 
                     searchByCaseIdResponseBody =
                         taskManagementService.search(newCaseId, List.of(TASK_TYPE), 1, 200);
@@ -160,11 +167,13 @@ public class WATaskRegisterNewCaseFT extends FunctionalTestSuite {
                     tasks = searchByCaseIdResponseBody.getBody().path("tasks");
                     taskType = searchByCaseIdResponseBody.getBody().path("tasks[0].type");
                     taskState = searchByCaseIdResponseBody.getBody().path("tasks[0].task_state");
+                    final String terminationReason = searchByCaseIdResponseBody.getBody().path("tasks[0].termination_reason");
 
                     assertNotNull(tasks);
                     assertThat(tasks).isNotEmpty();
                     assertThat(taskType).isEqualTo(TASK_TYPE);
                     assertThat(taskState).isEqualTo("completed");
+                    assertThat(terminationReason).isEqualTo("completed");
 
                     return true;
                 });
