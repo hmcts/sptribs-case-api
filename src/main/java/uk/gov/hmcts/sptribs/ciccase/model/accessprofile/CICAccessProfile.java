@@ -93,16 +93,16 @@ public class CICAccessProfile implements CCDConfig<CriminalInjuriesCompensationD
             .accessProfiles(UserRolesForAccessProfiles.GS_PROFILE.getRole(),
                 UserRolesForAccessProfiles.CIC_SENIOR_JUDGE.getRole())
             .build();
-        configBuilder.caseRoleToAccessProfile(UserRolesForAccessProfiles.RAS_ST_SPECIFIC_ACCESS_APPROVER_LEGAL_OPS)
+        configBuilder.caseRoleToAccessProfile(UserRolesForAccessProfiles.RAS_ST_SPECIFIC_ACCESS_LEGAL_OPS)
             .accessProfiles(UserRolesForAccessProfiles.CIC_SENIOR_CASEWORKER.getRole())
             .build();
-        configBuilder.caseRoleToAccessProfile(UserRolesForAccessProfiles.RAS_ST_SPECIFIC_ACCESS_APPROVER_CTSC)
+        configBuilder.caseRoleToAccessProfile(UserRolesForAccessProfiles.RAS_ST_SPECIFIC_ACCESS_CTSC)
             .accessProfiles(UserRolesForAccessProfiles.CIC_CENTRE_TEAM_LEADER.getRole())
             .build();
-        configBuilder.caseRoleToAccessProfile(UserRolesForAccessProfiles.RAS_ST_SPECIFIC_ACCESS_APPROVER_ADMIN)
+        configBuilder.caseRoleToAccessProfile(UserRolesForAccessProfiles.RAS_ST_SPECIFIC_ACCESS_ADMIN)
             .accessProfiles(UserRolesForAccessProfiles.CIC_CENTRE_TEAM_LEADER.getRole())
             .build();
-        configBuilder.caseRoleToAccessProfile(UserRolesForAccessProfiles.RAS_ST_SPECIFIC_ACCESS_APPROVER_JUDICIARY)
+        configBuilder.caseRoleToAccessProfile(UserRolesForAccessProfiles.RAS_ST_SPECIFIC_ACCESS_JUDICIARY)
             .accessProfiles(UserRolesForAccessProfiles.CIC_SENIOR_JUDGE.getRole())
             .build();
         configBuilder.caseRoleToAccessProfile(UserRolesForAccessProfiles.RAS_ST_TASK_SUPERVISOR)
