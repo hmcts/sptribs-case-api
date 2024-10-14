@@ -60,9 +60,16 @@ public enum UserRolesForAccessProfiles implements HasRole {
     RAS_ST_CTSC("ctsc", "CRU"),
     RAS_ST_CASE_ALLOCATOR("case-allocator", "CRU"),
     RAS_ST_TASK_SUPERVISOR("task-supervisor", "CRU"),
+
     RAS_ST_SPECIFIC_ACCESS_APPROVER_LEGAL_OPS("specific-access-approver-legal-ops", "CRU"),
     RAS_ST_SPECIFIC_ACCESS_APPROVER_ADMIN("specific-access-approver-admin", "CRU"),
     RAS_ST_SPECIFIC_ACCESS_APPROVER_CTSC("specific-access-approver-ctsc", "CRU"),
+    RAS_ST_SPECIFIC_ACCESS_APPROVER_JUDICIARY("specific-access-approver-judiciary", "CRU"),
+
+    RAS_ST_SPECIFIC_ACCESS_LEGAL_OPS("specific-access-legal-ops", "CRU"),
+    RAS_ST_SPECIFIC_ACCESS_ADMIN("specific-access-admin", "CRU"),
+    RAS_ST_SPECIFIC_ACCESS_CTSC("specific-access-ctsc", "CRU"),
+    RAS_ST_SPECIFIC_ACCESS_JUDICIARY("specific-access-judiciary", "CRU"),
 
     RAS_ST_JUDGE("judge", "CRU"),
     RAS_ST_SENIOR_JUDGE("senior-judge", "CRU"),
@@ -80,7 +87,6 @@ public enum UserRolesForAccessProfiles implements HasRole {
     RAS_ST_TRIBUNAL_MEMBER3("tribunal-member-3", "CRU"),
     RAS_ST_APPRAISER1("appraiser-1", "CRU"),
     RAS_ST_APPRAISER2("appraiser-2", "CRU"),
-    RAS_ST_SPECIFIC_ACCESS_APPROVER_JUDICIARY("specific-access-approver-judiciary", "CRU"),
 
     RAS_CASEWORKER_VALIDATION("caseworker-ras-validation", "R");
 
