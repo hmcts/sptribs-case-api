@@ -109,6 +109,7 @@ public class TaskManagementService {
     public void completeTask(String taskId) {
         Response result = given()
             .header(SERVICE_AUTHORIZATION, serviceAuthenticationGenerator.generate())
+            .header(AUTHORIZATION, idamTokenGenerator.generateIdamTokenForWARegionalHearingCentreTeamLead())
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .when()
             .post(taskManagementUrl + "/task/" + taskId + "/complete");
