@@ -98,6 +98,7 @@ public class WATaskRegisterNewCaseFT extends FunctionalTestSuite {
     }
 
     @Test
+    @EnabledIfEnvironmentVariable(named = "WA_FEATURE_ENABLED", matches = "true")
     void shouldCompleteRegisterNewCaseWithEditCase() {
         final Response response = createAndSubmitTestCaseAndGetResponse();
         final long id = response.getBody().path("id");
