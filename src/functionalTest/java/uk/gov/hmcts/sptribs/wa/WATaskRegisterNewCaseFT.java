@@ -155,6 +155,8 @@ public class WATaskRegisterNewCaseFT extends FunctionalTestSuite {
                     ccdCaseCreator.createInitialStartEventAndSubmitAdminEvent(
                         CASEWORKER_EDIT_CASE, ST_CIC_JURISDICTION, ST_CIC_CASE_TYPE, newCaseId, caseData);
 
+                    taskManagementService.completeTask(taskId);
+
                     searchByCaseIdResponseBody =
                         taskManagementService.search(newCaseId, List.of(TASK_TYPE), 1, 200);
 
