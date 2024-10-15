@@ -172,7 +172,7 @@ public class WATaskRegisterNewCaseFT extends FunctionalTestSuite {
                     assertNotNull(tasks);
                     assertThat(tasks).isNotEmpty();
                     assertThat(taskType).isEqualTo(TASK_TYPE);
-                    assertThat(taskState).isEqualTo("completed");
+                    assertThat(taskState).isEqualTo("terminated");
                     assertThat(terminationReason).isEqualTo("completed");
 
                     return true;
