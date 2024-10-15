@@ -165,6 +165,8 @@ public class WATaskRegisterNewCaseFT extends FunctionalTestSuite {
                     }
 
                     tasks = searchByCaseIdResponseBody.getBody().path("tasks");
+                    log.info(taskId);
+                    log.info(searchByCaseIdResponseBody.asPrettyString());
                     taskType = searchByCaseIdResponseBody.getBody().path("tasks[0].type");
                     taskState = searchByCaseIdResponseBody.getBody().path("tasks[0].task_state");
                     final String terminationReason = searchByCaseIdResponseBody.getBody().path("tasks[0].termination_reason");
