@@ -169,13 +169,12 @@ public class WATaskRegisterNewCaseFT extends FunctionalTestSuite {
                     log.info(searchByCaseIdResponseBody.asPrettyString());
                     taskType = searchByCaseIdResponseBody.getBody().path("tasks[0].type");
                     taskState = searchByCaseIdResponseBody.getBody().path("tasks[0].task_state");
-                    final String terminationReason = searchByCaseIdResponseBody.getBody().path("tasks[0].termination_reason");
 
                     assertNotNull(tasks);
                     assertThat(tasks).isNotEmpty();
                     assertThat(taskType).isEqualTo(TASK_TYPE);
+                    //Completed tasks are marked as "termintated" with a termination_reason "completed" but this field can't be retrieved
                     assertThat(taskState).isEqualTo("terminated");
-                    assertThat(terminationReason).isEqualTo("completed");
 
                     return true;
                 });
