@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledIfEnvironmentVariable;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import uk.gov.hmcts.sptribs.testutil.CcdCaseCreator;
 import uk.gov.hmcts.sptribs.testutil.FunctionalTestSuite;
@@ -20,6 +21,9 @@ import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.ST_CIC_CASE_TYPE;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.ST_CIC_JURISDICTION;
+import static uk.gov.hmcts.sptribs.testutil.TestEventConstants.CASEWORKER_EDIT_CASE;
 
 @SpringBootTest
 @Slf4j
@@ -34,6 +38,9 @@ public class WATaskRegisterNewCaseFT extends FunctionalTestSuite {
     @Autowired
     private RoleAssignmentService roleAssignmentService;
 
+    @Value("${idam.waregionalhearingcentreteamlead.uid}")
+    private String waRegionalHearingCentreTeamLeadUid;
+
     private static final String TASK_TYPE = "registerNewCase";
     private static final List<String> TASK_ROLES = Arrays.asList("regional-centre-admin", "regional-centre-team-leader", "task-supervisor",
         "hearing-centre-admin", "hearing-centre-team-leader", "ctsc", "ctsc-team-leader");
@@ -45,7 +52,7 @@ public class WATaskRegisterNewCaseFT extends FunctionalTestSuite {
     public void shouldInitiateRegisterNewCaseTask() throws IOException, InterruptedException {
         String newCaseId = String.valueOf(createAndSubmitTestCaseAndGetCaseReference());
 
-        log.debug("New case created: " + newCaseId);
+        log.debug("New case created: {}", newCaseId);
 
         await()
             .pollInterval(DEFAULT_POLL_INTERVAL_SECONDS, SECONDS)
@@ -85,6 +92,90 @@ public class WATaskRegisterNewCaseFT extends FunctionalTestSuite {
                         String roleName = role.get("role_name").toString();
                         assertThat(roleName).isIn(TASK_ROLES);
                     }
+
+                    return true;
+                });
+    }
+
+    @Test
+    @EnabledIfEnvironmentVariable(named = "WA_FEATURE_ENABLED", matches = "true")
+    void shouldCompleteRegisterNewCaseWithEditCase() {
+        final Response response = createAndSubmitTestCaseAndGetResponse();
+        final long id = response.getBody().path("id");
+        final String newCaseId = String.valueOf(id);
+        final Map<String, Object> caseData = response.getBody().path("caseData");
+
+        log.debug("New case created: {}", newCaseId);
+
+        await()
+            .pollInterval(DEFAULT_POLL_INTERVAL_SECONDS, SECONDS)
+            .atMost(DEFAULT_TIMEOUT_SECONDS, SECONDS)
+            .until(
+                () -> {
+                    roleAssignmentService.createRoleAssignmentsForWaRegionalHearingCentreTeamLead();
+
+                    Response searchByCaseIdResponseBody =
+                        taskManagementService.search(newCaseId, List.of(TASK_TYPE), 1, 200);
+
+                    if (searchByCaseIdResponseBody.asString().isBlank()) {
+                        return false;
+                    }
+
+                    List<Map<String, Object>> tasks = searchByCaseIdResponseBody.getBody().path("tasks");
+                    String taskType = searchByCaseIdResponseBody.getBody().path("tasks[0].type");
+
+                    assertNotNull(tasks);
+                    assertThat(tasks).isNotEmpty();
+                    assertThat(taskType).isEqualTo(TASK_TYPE);
+
+                    String taskState = searchByCaseIdResponseBody.getBody().path("tasks[0].task_state");
+                    assertThat(taskState).isEqualTo("unassigned");
+
+                    final String taskId = searchByCaseIdResponseBody.getBody().path("tasks[0].id");
+                    taskManagementService.assignTask(taskId);
+
+                    searchByCaseIdResponseBody =
+                        taskManagementService.search(newCaseId, List.of(TASK_TYPE), 1, 200);
+
+                    if (searchByCaseIdResponseBody.asString().isBlank()) {
+                        return false;
+                    }
+
+                    List<Map<String, Object>> assignedTasks = searchByCaseIdResponseBody.getBody().path("tasks");
+                    String assignedTaskType = searchByCaseIdResponseBody.getBody().path("tasks[0].type");
+
+                    assertNotNull(assignedTasks);
+                    assertThat(assignedTasks).isNotEmpty();
+                    assertThat(assignedTaskType).isEqualTo(TASK_TYPE);
+
+                    String assignedTaskState = searchByCaseIdResponseBody.getBody().path("tasks[0].task_state");
+                    String assignedTaskUid = searchByCaseIdResponseBody.getBody().path("tasks[0].assignee");
+                    assertThat(assignedTaskState).isEqualTo("assigned");
+                    assertThat(assignedTaskUid).isEqualTo(waRegionalHearingCentreTeamLeadUid);
+
+                    ccdCaseCreator.createInitialStartEventAndSubmitAdminEvent(
+                        CASEWORKER_EDIT_CASE, ST_CIC_JURISDICTION, ST_CIC_CASE_TYPE, newCaseId, caseData);
+
+                    taskManagementService.completeTask(taskId);
+
+                    searchByCaseIdResponseBody =
+                        taskManagementService.search(newCaseId, List.of(TASK_TYPE), 1, 200);
+
+                    if (searchByCaseIdResponseBody.asString().isBlank()) {
+                        return false;
+                    }
+
+                    tasks = searchByCaseIdResponseBody.getBody().path("tasks");
+                    log.info(taskId);
+                    log.info(searchByCaseIdResponseBody.asPrettyString());
+                    taskType = searchByCaseIdResponseBody.getBody().path("tasks[0].type");
+                    taskState = searchByCaseIdResponseBody.getBody().path("tasks[0].task_state");
+
+                    assertNotNull(tasks);
+                    assertThat(tasks).isNotEmpty();
+                    assertThat(taskType).isEqualTo(TASK_TYPE);
+                    //Completed tasks are marked as "termintated" with a termination_reason "completed" but this field can't be retrieved
+                    assertThat(taskState).isEqualTo("terminated");
 
                     return true;
                 });
