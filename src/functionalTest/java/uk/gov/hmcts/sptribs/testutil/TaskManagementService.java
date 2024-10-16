@@ -3,6 +3,7 @@ package uk.gov.hmcts.sptribs.testutil;
 import io.restassured.response.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 
@@ -91,5 +92,29 @@ public class TaskManagementService {
             .body("roles.size()", is(expectedNumberOfRoles));
 
         return result;
+    }
+
+    public void assignTask(String taskId) {
+        Response result = given()
+            .header(SERVICE_AUTHORIZATION, serviceAuthenticationGenerator.generate())
+            .header(AUTHORIZATION, idamTokenGenerator.generateIdamTokenForWARegionalHearingCentreTeamLead())
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .post(taskManagementUrl + "/task/" + taskId + "/claim");
+
+        result.then().assertThat()
+            .statusCode(HttpStatus.NO_CONTENT.value());
+    }
+
+    public void completeTask(String taskId) {
+        Response result = given()
+            .header(SERVICE_AUTHORIZATION, serviceAuthenticationGenerator.generate())
+            .header(AUTHORIZATION, idamTokenGenerator.generateIdamTokenForWARegionalHearingCentreTeamLead())
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .post(taskManagementUrl + "/task/" + taskId + "/complete");
+
+        result.then().assertThat()
+            .statusCode(HttpStatus.NO_CONTENT.value());
     }
 }

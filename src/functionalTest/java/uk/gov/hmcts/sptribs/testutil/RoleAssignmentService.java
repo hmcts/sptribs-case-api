@@ -28,8 +28,15 @@ public class RoleAssignmentService {
     @Value("${idam.waseniorcaseworker.uid}")
     private String waSeniorCaseworkerUid;
 
+    @Value("${idam.waregionalhearingcentreteamlead.uid}")
+    private String waRegionalHearingCentreTeamLeadUid;
+
     public void createRoleAssignmentsForWaSeniorCaseworker() {
         createRoleAssignments(this.waSeniorCaseworkerUid);
+    }
+
+    public void createRoleAssignmentsForWaRegionalHearingCentreTeamLead() {
+        createRoleAssignments(this.waRegionalHearingCentreTeamLeadUid);
     }
 
     public void createRoleAssignments(String userId) {
