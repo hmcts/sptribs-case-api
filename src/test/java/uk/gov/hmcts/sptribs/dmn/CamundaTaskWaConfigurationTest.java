@@ -331,7 +331,7 @@ class CamundaTaskWaConfigurationTest extends DmnDecisionTableBaseUnitTest {
                 ConfigurationExpectationBuilder.defaultExpectations()
                     .expectedValue(MINOR_PRIORITY, DEFAULT_MINOR_PRIORITY, true)
                     .expectedValue(MAJOR_PRIORITY, DEFAULT_MAJOR_PRIORITY, true)
-                    .expectedValue(WORK_TYPE, DECISION_WORK_TYPE, true)
+                    .expectedValue(WORK_TYPE, ROUTINE_WORK_TYPE, true)
                     .expectedValue(ROLE_CATEGORY, ROLE_CATEGORY_ADMIN, true)
                     .expectedValue(DUE_DATE_INTERVAL_DAYS, "7", true)
                     .expectedValue(
