@@ -388,7 +388,7 @@ class CamundaTaskWaPermissionTest extends DmnDecisionTableBaseUnitTest {
         assertThat(logic.getOutputs().size(), is(7));
         assertThatOutputContainInOrder(outputColumnIds, logic.getOutputs());
         //Rules
-        assertThat(logic.getRules().size(), is(14));
+        assertThat(logic.getRules().size(), is(15));
     }
 
     @ParameterizedTest(name = "task type: {0} case data: {1}")
@@ -460,7 +460,8 @@ class CamundaTaskWaPermissionTest extends DmnDecisionTableBaseUnitTest {
     private static List<Map<String, Object>> defaultSpecificAccessRequestAdminPermissions() {
         return List.of(
             taskSupervisorPermissions(),
-            hearingCentreTeamLeaderSpecificAccessPermissions()
+            hearingCentreTeamLeaderSpecificAccessPermissions(),
+            regionalHearingCentreTeamLeaderSpecificAccessPermissions()
         );
     }
 
@@ -575,6 +576,15 @@ class CamundaTaskWaPermissionTest extends DmnDecisionTableBaseUnitTest {
     private static Map<String, Object> hearingCentreTeamLeaderSpecificAccessPermissions() {
         return Map.of(
             "name", "hearing-centre-team-leader",
+            "value", "Read,Own,Claim,Manage,Assign,Unassign,Complete,Cancel",
+            "roleCategory", ROLE_CATEGORY_ADMIN,
+            "autoAssignable", false
+        );
+    }
+
+    private static Map<String, Object> regionalHearingCentreTeamLeaderSpecificAccessPermissions() {
+        return Map.of(
+            "name", "regional-centre-team-leader",
             "value", "Read,Own,Claim,Manage,Assign,Unassign,Complete,Cancel",
             "roleCategory", ROLE_CATEGORY_ADMIN,
             "autoAssignable", false
