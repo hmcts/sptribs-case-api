@@ -14,6 +14,8 @@ import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.ciccase.model.access.Permissions;
 
+import java.util.List;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_WA_CONFIG_USER;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigBuilder;
@@ -21,7 +23,7 @@ import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.getEventsFrom;
 import static uk.gov.hmcts.sptribs.testutil.TestEventConstants.CASEWORKER_CASE_BUILT;
 
 @ExtendWith(MockitoExtension.class)
-class CaseWorkerCaseBuiltTest {
+class CaseworkerCaseBuiltTest {
 
     @InjectMocks
     private CaseworkerCaseBuilt caseworkerCaseBuilt;
@@ -49,6 +51,29 @@ class CaseWorkerCaseBuiltTest {
     @Test
     void shouldAddPublishToCamundaWhenWAIsEnabled() {
         ReflectionTestUtils.setField(caseworkerCaseBuilt, "isWorkAllocationEnabled", true);
+
+        final ConfigBuilderImpl<CaseData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
+
+        caseworkerCaseBuilt.configure(configBuilder);
+
+        assertThat(getEventsFrom(configBuilder).values())
+                .extracting(Event::isPublishToCamunda)
+                .contains(true);
+
+        assertThat(getEventsFrom(configBuilder).values())
+                .extracting(Event::getGrants)
+                .extracting(map -> map.containsKey(ST_CIC_WA_CONFIG_USER))
+                .contains(true);
+
+        assertThat(getEventsFrom(configBuilder).values())
+                .extracting(Event::getGrants)
+                .extracting(map -> map.get(ST_CIC_WA_CONFIG_USER))
+                .contains(Permissions.CREATE_READ_UPDATE);
+    }
+
+    @Test
+    void shouldAddPublishToCamundaWithEnabledEvents() {
+        ReflectionTestUtils.setField(caseworkerCaseBuilt, "enabledEvents", List.of("caseworker-case-built"));
 
         final ConfigBuilderImpl<CaseData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
 
