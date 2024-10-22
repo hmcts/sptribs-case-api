@@ -150,6 +150,29 @@ class CicSubmitCaseEventTest {
                 .contains(Permissions.CREATE_READ_UPDATE);
     }
 
+    @Test
+    void shouldAddPublishToCamundaWithEnabledEvents() {
+        ReflectionTestUtils.setField(cicSubmitCaseEvent, "enabledEvents", List.of("citizen-cic-submit-dss-application"));
+        when(appsConfig.getApps()).thenReturn(List.of(cicAppDetail));
+
+        final ConfigBuilderImpl<CaseData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
+
+        cicSubmitCaseEvent.configure(configBuilder);
+
+        assertThat(getEventsFrom(configBuilder).values())
+                .extracting(Event::isPublishToCamunda)
+                .contains(true);
+
+        assertThat(getEventsFrom(configBuilder).values())
+                .extracting(Event::getGrants)
+                .extracting(map -> map.containsKey(ST_CIC_WA_CONFIG_USER))
+                .contains(true);
+
+        assertThat(getEventsFrom(configBuilder).values())
+                .extracting(Event::getGrants)
+                .extracting(map -> map.get(ST_CIC_WA_CONFIG_USER))
+                .contains(Permissions.CREATE_READ_UPDATE);
+    }
 
     @Test
     void shouldGetDocumentRelevanceAndAdditionalInformationFromCaseData() {
