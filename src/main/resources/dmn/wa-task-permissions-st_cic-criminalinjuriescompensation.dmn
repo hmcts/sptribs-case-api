@@ -345,6 +345,36 @@
           <text>false</text>
         </outputEntry>
       </rule>
+      <rule id="DecisionRule_18sw2h1">
+        <description>"Access Request for Regional Hearing Centre Team Leader"</description>
+        <inputEntry id="UnaryTests_0ltxmzm">
+          <text>"reviewSpecificAccessRequestAdmin"</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_0xodl7j">
+          <text></text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_1ma91ax">
+          <text></text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_16hht8n">
+          <text>"regional-centre-team-leader"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_0j6cbxw">
+          <text>"Read,Own,Claim,Manage,Assign,Unassign,Complete,Cancel"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_0cui9bf">
+          <text>"ADMIN"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_1nqfqtt">
+          <text></text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_1pyoxnd">
+          <text></text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_1mvcz8u">
+          <text>false</text>
+        </outputEntry>
+      </rule>
       <rule id="DecisionRule_0bfqnpv">
         <description>"Access Request for CTSC"</description>
         <inputEntry id="UnaryTests_1oh8q3g">
