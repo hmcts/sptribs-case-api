@@ -19,6 +19,7 @@ public class CamundaTaskConstants {
     public static final String DESCRIPTION = "description";
     public static final String DUE_DATE_INTERVAL_DAYS = "dueDateIntervalDays";
     public static final String DUE_DATE_ORIGIN = "dueDateOrigin";
+    public static final String DUE_DATE_TIME = "dueDateTime";
     public static final String PRIORITY_DATE_ORIGIN_REF = "priorityDateOriginRef";
     public static final String ADDITIONAL_PROPERTIES_ROLE_ASSIGNMENT_ID = "additionalProperties_roleAssignmentId";
 
