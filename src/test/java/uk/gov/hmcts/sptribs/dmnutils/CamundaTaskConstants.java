@@ -42,7 +42,7 @@ public class CamundaTaskConstants {
     public static final String DEFAULT_LOCATION = "336559";
     public static final String DEFAULT_LOCATION_NAME = "Glasgow Tribunals Centre";
     public static final String DEFAULT_DUE_DATE_NON_WORKING_CALENDAR
-        = "https://www.gov.uk/bank-holidays/scotland.json";
+        = "https://www.gov.uk/bank-holidays/scotland.json, https://raw.githubusercontent.com/hmcts/sptribs-case-api/master/src/main/resources/dmn/privilege-calendar.json";
     public static final String DEFAULT_DUE_DATE_WORKING_DAYS_OF_WEEK = "SATURDAY,SUNDAY";
 
     public static final String REGISTER_NEW_CASE_TASK = "registerNewCase";
