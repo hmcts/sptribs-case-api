@@ -754,7 +754,7 @@ else 5000</text>
           <text>time("17:00")</text>
         </outputEntry>
         <outputEntry id="LiteralExpression_1t9vr9a">
-          <text></text>
+          <text>false</text>
         </outputEntry>
       </rule>
     </decisionTable>
