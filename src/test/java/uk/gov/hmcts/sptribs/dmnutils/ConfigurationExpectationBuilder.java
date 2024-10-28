@@ -63,7 +63,7 @@ public class ConfigurationExpectationBuilder {
         builder.expectedValue(DESCRIPTION, "[Orders: Send order]", true);
         builder.expectedValue(PRIORITY_DATE_ORIGIN_REF, LocalDate.now(), true);
         builder.expectedValue(DUE_DATE_ORIGIN, ZonedDateTime.now(), false);
-        builder.expectedValue(DUE_DATE_TIME, LocalTime.of(17, 0), false);
+        builder.expectedValue(DUE_DATE_TIME, "17:00", false);
         return builder;
     }
 
