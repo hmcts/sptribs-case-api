@@ -828,7 +828,7 @@ class CamundaTaskWaInitiationTest extends DmnDecisionTableBaseUnitTest {
             ),
             Arguments.of(
                 "citizen-cic-dss-update-case",
-                "CaseManagement",
+                "*",
                 null,
                 List.of(
                     Map.of(
@@ -843,7 +843,22 @@ class CamundaTaskWaInitiationTest extends DmnDecisionTableBaseUnitTest {
             ),
             Arguments.of(
                 "caseworker-document-management",
-                "CaseManagement",
+                "*",
+                null,
+                List.of(
+                    Map.of(
+                        "taskId", PROCESS_FURTHER_EVIDENCE_TASK,
+                        "name", "Process further evidence",
+                        "workingDaysAllowed", 7,
+                        "processCategories", PROCESS_CATEGORY_PROCESSING,
+                        "workType", ROUTINE_WORK_TYPE,
+                        "roleCategory", ROLE_CATEGORY_ADMIN
+                    )
+                )
+            ),
+            Arguments.of(
+                "respondent-document-management",
+                "*",
                 null,
                 List.of(
                     Map.of(
