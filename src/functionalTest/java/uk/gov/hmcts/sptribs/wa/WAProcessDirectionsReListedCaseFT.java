@@ -51,7 +51,7 @@ public class WAProcessDirectionsReListedCaseFT extends FunctionalTestSuite {
     private static final String CASEWORKER_RECORD_LISTING_DATA = "classpath:wa/caseworker-record-listing-submit-data.json";
 
     @Test
-    @EnabledIfEnvironmentVariable(named = "WA_FEATURE_ENABLED", matches = "true")
+    @EnabledIfEnvironmentVariable(named = "WA_FUNCTIONAL_TESTS_ENABLED", matches = "true")
     void shouldInitiateProcessDirectionsReListedCaseTask() throws IOException {
         final Response response = createAndSubmitTestCaseAndGetResponse();
         final long id = response.getBody().path("id");

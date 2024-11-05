@@ -234,7 +234,7 @@ withPipeline(type, product, component) {
     env.ROLE_ASSIGNMENT_API_URL = "https://am-org-role-mapping-service-sptribs-case-api-pr-${CHANGE_ID}.preview.platform.hmcts.net"
 
     for (label in githubApi.getLabelsbyPattern(env.BRANCH_NAME, "pr-values:wa") ) {
-      env.WA_FEATURE_ENABLED = true
+      env.WA_FUNCTIONAL_TESTS_ENABLED = true
     }
 
     setCommonEnvVariables()
@@ -248,6 +248,7 @@ withPipeline(type, product, component) {
     env.CCD_DEF_NAME="aat"
     env.ELASTIC_SEARCH_ENABLED=true
     env.CITIZEN_UPDATE_CASE_STATE_ENABLED=true
+    env.WA_FEATURE_ENABLED = true
     env.SERVICE_AUTH_MICROSERVICE = "sptribs_case_api"
     env.SERVICE_AUTH_PROVIDER_URL = "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
     setCommonEnvVariables()
@@ -267,10 +268,15 @@ withPipeline(type, product, component) {
       env.IDAM_API_URL_BASE = "https://idam-api.platform.hmcts.net"
       env.S2S_URL_BASE = "http://rpe-service-auth-provider-prod.service.core-compute-prod.internal"
       env.BEFTA_S2S_CLIENT_ID = "ccd_data"
+      env.WA_FEATURE_ENABLED = true
+      env.CAMUNDA_BASE_URL = "http://camunda-api-prod.service.core-compute-prod.internal"
 
       builder.gradle('generateCCDConfig --rerun-tasks')
 
       generateDefinitions()
+
+      uploadDmnDiagrams()
+      uploadBpmnDiagram()
   }
 
   afterSuccess('akschartsinstall') {
@@ -323,11 +329,10 @@ withPipeline(type, product, component) {
     uploadCoreCaseDataDefinitions()
   }
 
-// TODO Enable on aat once Demo testing complete
-//  before('functionalTest:aat') {
-//    uploadDmnDiagrams()
-//    uploadBpmnDiagram()
-//  }
+  before('functionalTest:aat') {
+    uploadDmnDiagrams()
+    uploadBpmnDiagram()
+  }
 }
 
 def setCommonEnvVariables() {
