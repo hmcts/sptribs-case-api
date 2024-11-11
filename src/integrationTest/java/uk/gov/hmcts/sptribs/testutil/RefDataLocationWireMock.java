@@ -23,12 +23,12 @@ import static uk.gov.hmcts.sptribs.testutil.TestConstants.SERVICE_AUTHORIZATION;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_AUTHORIZATION_TOKEN;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_SERVICE_AUTH_TOKEN;
 
-public final class PrdLocationWireMock {
+public final class RefDataLocationWireMock {
 
     private static final WireMockServer PRD_LOCATION_SERVER = new WireMockServer(wireMockConfig().dynamicPort());
     private static final String IS_HEARING_LOCATION_VALUE = "Y";
 
-    private PrdLocationWireMock() {
+    private RefDataLocationWireMock() {
     }
 
     public static void start() {

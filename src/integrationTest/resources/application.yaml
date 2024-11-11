@@ -82,10 +82,6 @@ document_management:
 case_document_am:
   url: ${CASE_DOCUMENT_AM_BASEURL:http://ccd-case-document-am-api-aat.service.core-compute-aat.internal}
 
-prd:
-  api:
-    url: ${PRD_API_BASEURL:http://rd-professional-api-aat.service.core-compute-aat.internal}
-
 send-letter:
   url: ${SEND_LETTER_SERVICE_BASEURL:http://rpe-send-letter-service-aat.service.core-compute-aat.internal}
 
