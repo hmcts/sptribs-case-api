@@ -740,6 +740,23 @@ else 5000</text>
           <text>false</text>
         </outputEntry>
       </rule>
+      <rule id="DecisionRule_0nk33fy">
+        <inputEntry id="UnaryTests_0ok8nis">
+          <text></text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_0wc90n1">
+          <text></text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_11y0j8a">
+          <text>"dueDateTime"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_0z828nf">
+          <text>time("17:00")</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_1t9vr9a">
+          <text>false</text>
+        </outputEntry>
+      </rule>
     </decisionTable>
   </decision>
   <dmndi:DMNDI>
