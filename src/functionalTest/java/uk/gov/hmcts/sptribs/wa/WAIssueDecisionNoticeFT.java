@@ -50,7 +50,7 @@ public class WAIssueDecisionNoticeFT extends FunctionalTestSuite {
     private static final String CASEWORKER_CREATE_HEARING_SUMMARY_DATA = "classpath:wa/caseworker-create-hearing-summary-submit-data.json";
 
     @Test
-    @EnabledIfEnvironmentVariable(named = "WA_FEATURE_ENABLED", matches = "true")
+    @EnabledIfEnvironmentVariable(named = "WA_FUNCTIONAL_TESTS_ENABLED", matches = "true")
     void shouldInitiateIssueDecisionNoticeTask() throws IOException {
         final Response response = createAndSubmitTestCaseAndGetResponse();
         final long id = response.getBody().path("id");

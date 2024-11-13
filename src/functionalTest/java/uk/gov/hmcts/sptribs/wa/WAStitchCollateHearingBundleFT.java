@@ -53,7 +53,7 @@ public class WAStitchCollateHearingBundleFT extends FunctionalTestSuite {
     private static final String CASEWORKER_POSTPONE_HEARING_DATA = "classpath:wa/caseworker-postpone-hearing-submit-data.json";
 
     @Test
-    @EnabledIfEnvironmentVariable(named = "WA_FEATURE_ENABLED", matches = "true")
+    @EnabledIfEnvironmentVariable(named = "WA_FUNCTIONAL_TESTS_ENABLED", matches = "true")
     void shouldInitiateStitchCollateHearingBundleTask() throws IOException {
         final Response response = createAndSubmitTestCaseAndGetResponse();
         final long id = response.getBody().path("id");
@@ -116,7 +116,7 @@ public class WAStitchCollateHearingBundleFT extends FunctionalTestSuite {
     }
 
     @Test
-    @EnabledIfEnvironmentVariable(named = "WA_FEATURE_ENABLED", matches = "true")
+    @EnabledIfEnvironmentVariable(named = "WA_FUNCTIONAL_TESTS_ENABLED", matches = "true")
     void shouldCancelStitchCollateHearingBundleWithCaseworkerPostponeHearing() throws IOException {
         final Response response = createAndSubmitTestCaseAndGetResponse();
         final long id = response.getBody().path("id");
@@ -185,7 +185,7 @@ public class WAStitchCollateHearingBundleFT extends FunctionalTestSuite {
     }
 
     @Test
-    @EnabledIfEnvironmentVariable(named = "WA_FEATURE_ENABLED", matches = "true")
+    @EnabledIfEnvironmentVariable(named = "WA_FUNCTIONAL_TESTS_ENABLED", matches = "true")
     void shouldCancelStitchCollateHearingBundleWithCaseworkerCancelHearing() throws IOException {
         final Response response = createAndSubmitTestCaseAndGetResponse();
         final long id = response.getBody().path("id");

@@ -45,7 +45,7 @@ public class WAProcessFurtherEvidenceFT extends FunctionalTestSuite {
     private static final int DEFAULT_POLL_INTERVAL_SECONDS = 4;
 
     @Test
-    @EnabledIfEnvironmentVariable(named = "WA_FEATURE_ENABLED", matches = "true")
+    @EnabledIfEnvironmentVariable(named = "WA_FUNCTIONAL_TESTS_ENABLED", matches = "true")
     void shouldInitiateProcessFurtherEvidenceTaskOnCitizenUpdateCaseEvent() {
         final Response response = createAndSubmitTestCaseAndGetResponse();
         final long id = response.getBody().path("id");
@@ -102,7 +102,7 @@ public class WAProcessFurtherEvidenceFT extends FunctionalTestSuite {
     }
 
     @Test
-    @EnabledIfEnvironmentVariable(named = "WA_FEATURE_ENABLED", matches = "true")
+    @EnabledIfEnvironmentVariable(named = "WA_FUNCTIONAL_TESTS_ENABLED", matches = "true")
     void shouldInitiateProcessFurtherEvidenceTaskOnCaseworkerDocumentManagementEvent() {
         final Response response = createAndSubmitTestCaseAndGetResponse();
         final long id = response.getBody().path("id");

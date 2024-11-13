@@ -46,7 +46,7 @@ public class WAIssueCaseToRespondentFT extends FunctionalTestSuite {
     private static final int DEFAULT_POLL_INTERVAL_SECONDS = 4;
 
     @Test
-    @EnabledIfEnvironmentVariable(named = "WA_FEATURE_ENABLED", matches = "true")
+    @EnabledIfEnvironmentVariable(named = "WA_FUNCTIONAL_TESTS_ENABLED", matches = "true")
     void shouldInitiateIssueCaseToRespondentTask() {
         final Response response = createAndSubmitTestCaseAndGetResponse();
         final long id = response.getBody().path("id");
@@ -102,7 +102,7 @@ public class WAIssueCaseToRespondentFT extends FunctionalTestSuite {
     }
 
     @Test
-    @EnabledIfEnvironmentVariable(named = "WA_FEATURE_ENABLED", matches = "true")
+    @EnabledIfEnvironmentVariable(named = "WA_FUNCTIONAL_TESTS_ENABLED", matches = "true")
     void shouldCancelIssueCaseToRespondentTaskWithReferToJudge() {
         final Response response = createAndSubmitTestCaseAndGetResponse();
         final long id = response.getBody().path("id");
@@ -163,7 +163,7 @@ public class WAIssueCaseToRespondentFT extends FunctionalTestSuite {
     }
 
     @Test
-    @EnabledIfEnvironmentVariable(named = "WA_FEATURE_ENABLED", matches = "true")
+    @EnabledIfEnvironmentVariable(named = "WA_FUNCTIONAL_TESTS_ENABLED", matches = "true")
     void shouldCancelIssueCaseToRespondentTaskWithReferToLegalOfficer() {
         final Response response = createAndSubmitTestCaseAndGetResponse();
         final long id = response.getBody().path("id");
@@ -224,7 +224,7 @@ public class WAIssueCaseToRespondentFT extends FunctionalTestSuite {
     }
 
     @Test
-    @EnabledIfEnvironmentVariable(named = "WA_FEATURE_ENABLED", matches = "true")
+    @EnabledIfEnvironmentVariable(named = "WA_FUNCTIONAL_TESTS_ENABLED", matches = "true")
     void shouldCancelIssueCaseToRespondentTaskWithCaseworkerCloseCase() {
         final Response response = createAndSubmitTestCaseAndGetResponse();
         final long id = response.getBody().path("id");
