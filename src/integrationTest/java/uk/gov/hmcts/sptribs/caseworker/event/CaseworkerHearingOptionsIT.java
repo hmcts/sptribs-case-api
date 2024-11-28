@@ -23,7 +23,7 @@ import uk.gov.hmcts.sptribs.common.config.WebMvcConfig;
 import uk.gov.hmcts.sptribs.recordlisting.model.HearingVenue;
 import uk.gov.hmcts.sptribs.recordlisting.model.Region;
 import uk.gov.hmcts.sptribs.testutil.IdamWireMock;
-import uk.gov.hmcts.sptribs.testutil.PrdLocationWireMock;
+import uk.gov.hmcts.sptribs.testutil.RefDataLocationWireMock;
 
 import java.util.List;
 import java.util.Set;
@@ -40,10 +40,10 @@ import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_HEA
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.COURT_TYPE_ID;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.ReadyToList;
-import static uk.gov.hmcts.sptribs.testutil.PrdLocationWireMock.stubGetHearingVenues;
-import static uk.gov.hmcts.sptribs.testutil.PrdLocationWireMock.stubGetHearingVenuesForFailure;
-import static uk.gov.hmcts.sptribs.testutil.PrdLocationWireMock.stubGetRegions;
-import static uk.gov.hmcts.sptribs.testutil.PrdLocationWireMock.stubGetRegionsForFailure;
+import static uk.gov.hmcts.sptribs.testutil.RefDataLocationWireMock.stubGetHearingVenues;
+import static uk.gov.hmcts.sptribs.testutil.RefDataLocationWireMock.stubGetHearingVenuesForFailure;
+import static uk.gov.hmcts.sptribs.testutil.RefDataLocationWireMock.stubGetRegions;
+import static uk.gov.hmcts.sptribs.testutil.RefDataLocationWireMock.stubGetRegionsForFailure;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.ABOUT_TO_START_URL;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.ABOUT_TO_SUBMIT_URL;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.AUTHORIZATION;
@@ -61,7 +61,7 @@ import static uk.gov.hmcts.sptribs.testutil.TestResourceUtil.expectedResponse;
 @AutoConfigureMockMvc
 @ContextConfiguration(initializers = {
     IdamWireMock.PropertiesInitializer.class,
-    PrdLocationWireMock.PropertiesInitializer.class
+    RefDataLocationWireMock.PropertiesInitializer.class
 })
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class CaseworkerHearingOptionsIT {
@@ -87,13 +87,13 @@ public class CaseworkerHearingOptionsIT {
     @BeforeAll
     static void setUp() {
         IdamWireMock.start();
-        PrdLocationWireMock.start();
+        RefDataLocationWireMock.start();
     }
 
     @AfterAll
     static void tearDown() {
         IdamWireMock.stopAndReset();
-        PrdLocationWireMock.stopAndReset();
+        RefDataLocationWireMock.stopAndReset();
     }
 
     @Test
