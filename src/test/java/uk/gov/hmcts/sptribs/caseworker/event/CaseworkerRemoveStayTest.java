@@ -19,7 +19,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.RepresentativeCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.SubjectCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
-import uk.gov.hmcts.sptribs.common.notification.CaseUnstayedNotification;
+import uk.gov.hmcts.sptribs.notification.dispatcher.CaseUnstayedNotification;
 
 import java.util.Collections;
 import java.util.Set;
