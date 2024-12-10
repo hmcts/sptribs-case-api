@@ -6,12 +6,13 @@ env=${2}
 tenant_id=${3}
 product=${4}
 
-microservice=sptribs_case_api
 s2sSecret=${S2S_SECRET:-AABBCCDDEEFFGGHH}
-oneTimePassword=$(docker run --rm hmctspublic.azurecr.io/imported/toolbelt/oathtool --totp -b ${s2sSecret})
 
-serviceToken=$($(realpath $workspace)/bin/utils/idam-lease-service-token.sh ${microservice} ${oneTimePassword})
+echo $S2S_SECRET
+echo $S2S_URL_BASE
 
+serviceToken=$($(realpath $workspace)/bin/utils/idam-lease-service-token.sh sptribs_case_api \
+  $(docker run --rm toolbelt/oathtool --totp -b ${s2sSecret}))
 
 dmnFilepath="$(realpath $workspace)/src/main/resources/dmn"
 
