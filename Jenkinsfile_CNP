@@ -276,8 +276,8 @@ withPipeline(type, product, component) {
 
       generateDefinitions()
 
-      uploadDmnDiagrams()
-      uploadBpmnDiagram()
+//      uploadDmnDiagrams()
+//      uploadBpmnDiagram()
   }
 
   afterSuccess('akschartsinstall') {
