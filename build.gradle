@@ -401,7 +401,7 @@ dependencies {
   functionalTestImplementation group: 'org.projectlombok', name: 'lombok', version: versions.lombok
   functionalTestAnnotationProcessor group: 'org.projectlombok', name: 'lombok', version: versions.lombok
 
-  contractTestImplementation group: 'au.com.dius.pact.consumer', name: 'junit5', version: '4.6.11'
+  contractTestImplementation group: 'au.com.dius.pact.consumer', name: 'junit5', version: '4.6.16'
   contractTestImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: '5.10.3'
   contractTestRuntimeOnly group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: '5.10.3'
   contractTestImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: '5.10.3'
