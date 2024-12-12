@@ -236,7 +236,7 @@ withPipeline(type, product, component) {
     env.TASK_MANAGEMENT_API_URL = "https://wa-task-management-api-sptribs-case-api-pr-${CHANGE_ID}.preview.platform.hmcts.net"
     env.ROLE_ASSIGNMENT_API_URL = "https://am-org-role-mapping-service-sptribs-case-api-pr-${CHANGE_ID}.preview.platform.hmcts.net"
 
-    for (label in githubApi.getLabelsbyPattern(env.BRANCH_NAME, "pr-values:wa") ) {
+    for (label in githubApi.getLabelsbyPattern(env.BRANCH_NAME, "pr-values:wa-ft-tests") ) {
       env.WA_FUNCTIONAL_TESTS_ENABLED = true
     }
 
