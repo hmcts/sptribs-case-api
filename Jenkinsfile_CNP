@@ -71,6 +71,9 @@ def secrets = [
         'civil-${env}'    :[
           secret('ccd-importer-username', 'DEFINITION_IMPORTER_USERNAME'),
           secret('ccd-importer-password', 'DEFINITION_IMPORTER_PASSWORD')
+        ],
+        'sptribs-prod'    :[
+          secret('s2s-case-api-secret', 'S2S_SECRET_PROD')
         ]
 ]
 
@@ -233,7 +236,7 @@ withPipeline(type, product, component) {
     env.TASK_MANAGEMENT_API_URL = "https://wa-task-management-api-sptribs-case-api-pr-${CHANGE_ID}.preview.platform.hmcts.net"
     env.ROLE_ASSIGNMENT_API_URL = "https://am-org-role-mapping-service-sptribs-case-api-pr-${CHANGE_ID}.preview.platform.hmcts.net"
 
-    for (label in githubApi.getLabelsbyPattern(env.BRANCH_NAME, "pr-values:wa") ) {
+    for (label in githubApi.getLabelsbyPattern(env.BRANCH_NAME, "pr-values:wa-ft-tests") ) {
       env.WA_FUNCTIONAL_TESTS_ENABLED = true
     }
 
@@ -269,12 +272,15 @@ withPipeline(type, product, component) {
       env.IDAM_API_URL_BASE = "https://idam-api.platform.hmcts.net"
       env.S2S_URL_BASE = "http://rpe-service-auth-provider-prod.service.core-compute-prod.internal"
       env.BEFTA_S2S_CLIENT_ID = "ccd_data"
-      env.WA_FEATURE_ENABLED = false
+      env.WA_FEATURE_ENABLED = true
       env.CAMUNDA_BASE_URL = "http://camunda-api-prod.service.core-compute-prod.internal"
 
       builder.gradle('generateCCDConfig --rerun-tasks')
 
       generateDefinitions()
+
+      uploadDmnDiagrams()
+      uploadBpmnDiagram()
   }
 
   afterSuccess('akschartsinstall') {

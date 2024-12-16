@@ -3,8 +3,14 @@
 set -eu
 workspace=${1}
 
+s2sSecret=${S2S_SECRET:-AABBCCDDEEFFGGHH}
+
+if [[ "${ENVIRONMENT}" == 'prod' ]]; then
+  s2sSecret=${S2S_SECRET_PROD}
+fi
+
 serviceToken=$($(realpath $workspace)/utils/idam-lease-service-token.sh sptribs_case_api \
-  $(docker run --rm toolbelt/oathtool --totp -b ${S2S_SECRET:-AABBCCDDEEFFGGHH}))
+  $(docker run --rm toolbelt/oathtool --totp -b ${s2sSecret}))
 
 filepath="$(realpath $workspace)/resources"
 
