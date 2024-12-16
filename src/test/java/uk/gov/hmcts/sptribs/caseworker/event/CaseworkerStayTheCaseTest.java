@@ -20,7 +20,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.RepresentativeCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.SubjectCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
-import uk.gov.hmcts.sptribs.common.notification.CaseStayedNotification;
+import uk.gov.hmcts.sptribs.notification.dispatcher.CaseStayedNotification;
 
 import java.time.LocalDate;
 import java.util.Set;
