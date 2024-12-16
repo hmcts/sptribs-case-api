@@ -34,8 +34,8 @@ idam:
   api:
     url: http://localhost:5000
   systemupdate:
-    username: dummy@test.com
-    password: dummy
+    username: ${IDAM_SYSTEM_UPDATE_USERNAME:dummy@test.com}
+    password: ${IDAM_SYSTEM_UPDATE_PASSWORD:dummy}
 
 s2s-authorised:
   services: ccd_data,sptribs_frontend
