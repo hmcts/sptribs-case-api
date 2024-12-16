@@ -156,7 +156,7 @@ else 5000</text>
           <text>"dueDateNonWorkingCalendar"</text>
         </outputEntry>
         <outputEntry id="LiteralExpression_1atq5od">
-          <text>"https://www.gov.uk/bank-holidays/scotland.json"</text>
+          <text>"https://www.gov.uk/bank-holidays/scotland.json, https://raw.githubusercontent.com/hmcts/sptribs-case-api/master/src/main/resources/dmn/privilege-calendar.json"</text>
         </outputEntry>
         <outputEntry id="LiteralExpression_08asnrh">
           <text>true</text>
@@ -184,7 +184,7 @@ else 5000</text>
           <text></text>
         </inputEntry>
         <inputEntry id="UnaryTests_0t4gfyx">
-          <text>"processRule27Decision","processCaseWithdrawalDirections","processListingDirections","processDirectionsReListedCase","processStrikeOutDirectionsReturned","processStayDirections","issueCaseToRespondent","followUpNoncomplianceOfDirections","processFurtherEvidence","processSetAsideDirections","processDirectionsReturned","processPostponementDirections","processTimeExtensionDirectionsReturned","processReinstatementDecisionNotice","processWrittenReasons"</text>
+          <text>"processOtherDirectionsReturned","processRule27Decision","processCaseWithdrawalDirections","processListingDirections","processDirectionsReListedCase","processStrikeOutDirectionsReturned","processStayDirections","issueCaseToRespondent","followUpNoncomplianceOfDirections","processFurtherEvidence","processSetAsideDirections","processDirectionsReturned","processPostponementDirections","processTimeExtensionDirectionsReturned","processReinstatementDecisionNotice","processWrittenReasons"</text>
         </inputEntry>
         <outputEntry id="LiteralExpression_15pmpia">
           <text>"workType"</text>
@@ -218,7 +218,7 @@ else 5000</text>
           <text></text>
         </inputEntry>
         <inputEntry id="UnaryTests_0v6pdjr">
-          <text>"processOtherDirectionsReturned","reviewNewCaseAndProvideDirectionsLO","reviewTimeExtensionRequestLO","reviewStrikeOutRequestLO","reviewStayRequestLO","reviewListingDirectionsLO","reviewWithdrawalRequestLO","reviewRule27RequestLO","reviewListCaseLO","reviewOtherRequestLO","reviewListCaseWithin5DaysLO","reviewPostponementRequestLO","reviewReinstatementRequestLO","reviewListCaseWithin5DaysJudge","reviewPostponementRequestJudge","reviewCorrectionsRequest","reviewWrittenReasonsRequest","reviewReinstatementRequestJudge","reviewSetAsideRequest","reviewStayRequestJudge","reviewNewCaseAndProvideDirectionsJudge","reviewOtherRequestJudge","reviewWithdrawalRequestJudge","reviewRule27RequestJudge","reviewListingDirectionsJudge","reviewListCaseJudge","reviewStrikeOutRequestJudge","reviewTimeExtensionRequestJudge"</text>
+          <text>"reviewNewCaseAndProvideDirectionsLO","reviewTimeExtensionRequestLO","reviewStrikeOutRequestLO","reviewStayRequestLO","reviewListingDirectionsLO","reviewWithdrawalRequestLO","reviewRule27RequestLO","reviewListCaseLO","reviewOtherRequestLO","reviewListCaseWithin5DaysLO","reviewPostponementRequestLO","reviewReinstatementRequestLO","reviewListCaseWithin5DaysJudge","reviewPostponementRequestJudge","reviewCorrectionsRequest","reviewWrittenReasonsRequest","reviewReinstatementRequestJudge","reviewSetAsideRequest","reviewStayRequestJudge","reviewNewCaseAndProvideDirectionsJudge","reviewOtherRequestJudge","reviewWithdrawalRequestJudge","reviewRule27RequestJudge","reviewListingDirectionsJudge","reviewListCaseJudge","reviewStrikeOutRequestJudge","reviewTimeExtensionRequestJudge"</text>
         </inputEntry>
         <outputEntry id="LiteralExpression_1p8y8wb">
           <text>"workType"</text>
@@ -354,7 +354,7 @@ else 5000</text>
           <text></text>
         </inputEntry>
         <inputEntry id="UnaryTests_043qnbi">
-          <text>"processListingDirections","processDirectionsReListedCase","processDirectionsReListedCaseWithin5Days","processSetAsideDirections","processPostponementDirections","processTimeExtensionDirectionsReturned","issueDecisionNotice","reviewTimeExtensionRequestLO","reviewListingDirectionsLO","reviewListCaseLO","reviewListCaseWithin5DaysLO","reviewPostponementRequestLO","reviewListCaseWithin5DaysJudge","reviewPostponementRequestJudge","reviewCorrectionsRequest","reviewListingDirectionsJudge","reviewListCaseJudge","followUpNoncomplianceOfDirections","stitchCollateHearingBundle"</text>
+          <text>"processDirectionsReListedCase","processDirectionsReListedCaseWithin5Days","processSetAsideDirections","processPostponementDirections","processTimeExtensionDirectionsReturned","issueDecisionNotice","reviewTimeExtensionRequestLO","reviewListCaseLO","reviewListCaseWithin5DaysLO","reviewPostponementRequestLO","reviewListCaseWithin5DaysJudge","reviewPostponementRequestJudge","reviewListCaseJudge","followUpNoncomplianceOfDirections","stitchCollateHearingBundle"</text>
         </inputEntry>
         <outputEntry id="LiteralExpression_1g03p5z">
           <text>"dueDateIntervalDays"</text>
@@ -371,7 +371,7 @@ else 5000</text>
           <text></text>
         </inputEntry>
         <inputEntry id="UnaryTests_046d7dy">
-          <text>"issueCaseToRespondent","reviewReinstatementRequestJudge","reviewSetAsideRequest","reviewStayRequestJudge","reviewNewCaseAndProvideDirectionsJudge","reviewOtherRequestJudge","reviewWithdrawalRequestJudge","reviewRule27RequestJudge","reviewStrikeOutRequestJudge","reviewTimeExtensionRequestJudge","reviewSpecificAccessRequestJudiciary","reviewSpecificAccessRequestLegalOps","reviewSpecificAccessRequestAdmin","reviewSpecificAccessRequestCTSC"</text>
+          <text>"issueCaseToRespondent","reviewSetAsideRequest","reviewTimeExtensionRequestJudge","reviewSpecificAccessRequestJudiciary","reviewSpecificAccessRequestLegalOps","reviewSpecificAccessRequestAdmin","reviewSpecificAccessRequestCTSC"</text>
         </inputEntry>
         <outputEntry id="LiteralExpression_1ni750t">
           <text>"dueDateIntervalDays"</text>
@@ -388,7 +388,7 @@ else 5000</text>
           <text></text>
         </inputEntry>
         <inputEntry id="UnaryTests_1r8x2hh">
-          <text>"processCorrections","processWrittenReasons"</text>
+          <text>"processCorrections","processWrittenReasons","processListingDirections"</text>
         </inputEntry>
         <outputEntry id="LiteralExpression_0sonhf1">
           <text>"dueDateIntervalDays"</text>
@@ -405,7 +405,7 @@ else 5000</text>
           <text></text>
         </inputEntry>
         <inputEntry id="UnaryTests_1dd4h23">
-          <text>"processRule27Decision","processReinstatementDecisionNotice","completeHearingOutcome","reviewNewCaseAndProvideDirectionsLO","reviewStrikeOutRequestLO","reviewStayRequestLO","reviewWithdrawalRequestLO","reviewRule27RequestLO","vetNewCaseDocuments","reviewOtherRequestLO","reviewReinstatementRequestLO","registerNewCase"</text>
+          <text>"processReinstatementDecisionNotice","completeHearingOutcome","reviewNewCaseAndProvideDirectionsLO","reviewStrikeOutRequestLO","reviewStayRequestLO","reviewWithdrawalRequestLO","reviewRule27RequestLO","vetNewCaseDocuments","reviewOtherRequestLO","reviewReinstatementRequestLO","registerNewCase","reviewNewCaseAndProvideDirectionsJudge","reviewStrikeOutRequestJudge","reviewWithdrawalRequestJudge","reviewRule27RequestJudge","reviewStayRequestJudge","reviewListingDirectionsJudge","reviewListingDirectionsLO","reviewCorrectionsRequest","reviewReinstatementRequestJudge","reviewOtherRequestJudge"</text>
         </inputEntry>
         <outputEntry id="LiteralExpression_1n8d760">
           <text>"dueDateIntervalDays"</text>
@@ -417,20 +417,20 @@ else 5000</text>
           <text>true</text>
         </outputEntry>
       </rule>
-      <rule id="DecisionRule_0es6jg9">
-        <inputEntry id="UnaryTests_08qxwag">
+      <rule id="DecisionRule_0gouvzo">
+        <inputEntry id="UnaryTests_0eiasly">
           <text></text>
         </inputEntry>
-        <inputEntry id="UnaryTests_07j2pu0">
-          <text>"processCaseWithdrawalDirections","processDirectionsReturned","processOtherDirectionsReturned","processStrikeOutDirectionsReturned","processStayDirections","processFurtherEvidence"</text>
+        <inputEntry id="UnaryTests_0zn4hkd">
+          <text>"processDirectionsReturned","processFurtherEvidence","processStrikeOutDirectionsReturned","processCaseWithdrawalDirections","processRule27Decision","processStayDirections","processOtherDirectionsReturned"</text>
         </inputEntry>
-        <outputEntry id="LiteralExpression_1s2u98t">
+        <outputEntry id="LiteralExpression_1uib7dc">
           <text>"dueDateIntervalDays"</text>
         </outputEntry>
-        <outputEntry id="LiteralExpression_168n0h4">
-          <text>10</text>
+        <outputEntry id="LiteralExpression_1r7aoni">
+          <text>7</text>
         </outputEntry>
-        <outputEntry id="LiteralExpression_1nvij8q">
+        <outputEntry id="LiteralExpression_19jl3ox">
           <text>true</text>
         </outputEntry>
       </rule>
@@ -456,13 +456,13 @@ else 5000</text>
           <text></text>
         </inputEntry>
         <inputEntry id="UnaryTests_1cuepcw">
-          <text>"processCaseWithdrawalDirections","processRule27Decision","processListingDirections","processDirectionsReListedCase","processDirectionsReListedCaseWithin5Days","processSetAsideDirections","processCorrections","processDirectionsReturned","processPostponementDirections","processTimeExtensionDirectionsReturned","processReinstatementDecisionNotice","processOtherDirectionsReturned","processWrittenReasons","processStrikeOutDirectionsReturned","processStayDirections","processFurtherEvidence"</text>
+          <text>"processCaseWithdrawalDirections","processRule27Decision","processListingDirections","processDirectionsReListedCase","processDirectionsReListedCaseWithin5Days","processSetAsideDirections","processCorrections","processDirectionsReturned","processPostponementDirections","processTimeExtensionDirectionsReturned","processReinstatementDecisionNotice","processOtherDirectionsReturned","processWrittenReasons","processStrikeOutDirectionsReturned","processStayDirections"</text>
         </inputEntry>
         <outputEntry id="LiteralExpression_0em2bsa">
           <text>"description"</text>
         </outputEntry>
         <outputEntry id="LiteralExpression_1nzw62x">
-          <text>"[Orders: Send order](/cases/case-details/${[CASE_REFERENCE]}/trigger/caseworker-send-order/caseworker-send-ordercaseworkerSendOrderSelectOrderIssuingType)"</text>
+          <text>"[Orders: Send order](/cases/case-details/${[CASE_REFERENCE]}/trigger/caseworker-send-order)"</text>
         </outputEntry>
         <outputEntry id="LiteralExpression_07pv3yt">
           <text>true</text>
@@ -479,7 +479,7 @@ else 5000</text>
           <text>"description"</text>
         </outputEntry>
         <outputEntry id="LiteralExpression_0mulsbp">
-          <text>"[Decision: Issue a decision](/cases/case-details/${[CASE_REFERENCE]}/trigger/caseworker-issue-decision/caseworker-issue-decisionSelectIssueNoticeOption&lt;br/&gt;" + "[Decision: Issue final decision](/cases/case-details/${[CASE_REFERENCE]}/trigger/caseworker-issue-final-decision/caseworker-issue-final-decisionselectIssueNoticeOption)"</text>
+          <text>"[Decision: Issue a decision](/cases/case-details/${[CASE_REFERENCE]}/trigger/caseworker-issue-decision)&lt;br/&gt;" + "[Decision: Issue final decision](/cases/case-details/${[CASE_REFERENCE]}/trigger/caseworker-issue-final-decision)"</text>
         </outputEntry>
         <outputEntry id="LiteralExpression_0smzs7n">
           <text>true</text>
@@ -496,7 +496,7 @@ else 5000</text>
           <text>"description"</text>
         </outputEntry>
         <outputEntry id="LiteralExpression_0n1yxlg">
-          <text>"[Hearings: Create listing](/cases/case-details/${[CASE_REFERENCE]}/trigger/create-hearing-summary/create-hearing-summarycreateHearingSummary)"</text>
+          <text>"[Hearings:Create summary](/cases/case-details/${[CASE_REFERENCE]}/trigger/create-hearing-summary)"</text>
         </outputEntry>
         <outputEntry id="LiteralExpression_1cvv017">
           <text>true</text>
@@ -547,77 +547,9 @@ else 5000</text>
           <text>"description"</text>
         </outputEntry>
         <outputEntry id="LiteralExpression_0r3qzf3">
-          <text>"[Orders: Create draft](/cases/case-details/${[CASE_REFERENCE]}/trigger/create-draft-order/create-draft-ordercreateDraftOrder)"</text>
+          <text>"[Orders: Create draft](/cases/case-details/${[CASE_REFERENCE]}/trigger/create-draft-order)"</text>
         </outputEntry>
         <outputEntry id="LiteralExpression_0yjve17">
-          <text>true</text>
-        </outputEntry>
-      </rule>
-      <rule id="DecisionRule_10xaa3f">
-        <inputEntry id="UnaryTests_0hq9dmh">
-          <text></text>
-        </inputEntry>
-        <inputEntry id="UnaryTests_19lmqau">
-          <text>"reviewSpecificAccessRequestJudiciary"</text>
-        </inputEntry>
-        <outputEntry id="LiteralExpression_1y0bvxz">
-          <text>"description"</text>
-        </outputEntry>
-        <outputEntry id="LiteralExpression_1e3cjs1">
-          <text>"[Review Access Request](/cases/case-details/${[CASE_REFERENCE]}/trigger/reviewSpecificAccessRequestJudiciary)"</text>
-        </outputEntry>
-        <outputEntry id="LiteralExpression_19vemud">
-          <text>true</text>
-        </outputEntry>
-      </rule>
-      <rule id="DecisionRule_0vwzq30">
-        <inputEntry id="UnaryTests_0u71gtb">
-          <text></text>
-        </inputEntry>
-        <inputEntry id="UnaryTests_0753eww">
-          <text>"reviewSpecificAccessRequestLegalOps"</text>
-        </inputEntry>
-        <outputEntry id="LiteralExpression_145g9u0">
-          <text>"description"</text>
-        </outputEntry>
-        <outputEntry id="LiteralExpression_12jzpzq">
-          <text>"[Review Access Request](/cases/case-details/${[CASE_REFERENCE]}/trigger/reviewSpecificAccessRequestLegalOps)"</text>
-        </outputEntry>
-        <outputEntry id="LiteralExpression_1lhtqb6">
-          <text>true</text>
-        </outputEntry>
-      </rule>
-      <rule id="DecisionRule_0lpqwhj">
-        <inputEntry id="UnaryTests_08jzvgn">
-          <text></text>
-        </inputEntry>
-        <inputEntry id="UnaryTests_1609clx">
-          <text>"reviewSpecificAccessRequestAdmin"</text>
-        </inputEntry>
-        <outputEntry id="LiteralExpression_0mv5xrm">
-          <text>"description"</text>
-        </outputEntry>
-        <outputEntry id="LiteralExpression_142i77j">
-          <text>"[Review Access Request](/cases/case-details/${[CASE_REFERENCE]}/trigger/reviewSpecificAccessRequestAdmin)"</text>
-        </outputEntry>
-        <outputEntry id="LiteralExpression_1xj0l50">
-          <text>true</text>
-        </outputEntry>
-      </rule>
-      <rule id="DecisionRule_1vnrolb">
-        <inputEntry id="UnaryTests_0saxwba">
-          <text></text>
-        </inputEntry>
-        <inputEntry id="UnaryTests_0bxlgxj">
-          <text>"reviewSpecificAccessRequestCTSC"</text>
-        </inputEntry>
-        <outputEntry id="LiteralExpression_0o45z3n">
-          <text>"description"</text>
-        </outputEntry>
-        <outputEntry id="LiteralExpression_0wqraae">
-          <text>"[Review Access Request](/cases/case-details/${[CASE_REFERENCE]}/trigger/reviewSpecificAccessRequestCTSC)"</text>
-        </outputEntry>
-        <outputEntry id="LiteralExpression_1h6zozq">
           <text>true</text>
         </outputEntry>
       </rule>
@@ -632,7 +564,7 @@ else 5000</text>
           <text>"description"</text>
         </outputEntry>
         <outputEntry id="LiteralExpression_08d4eii">
-          <text>"[Application DSS Update (cic)](/cases/case-details/${[CASE_REFERENCE]}/trigger/caseworker-update-dss-application)"</text>
+          <text>"[Document management: Upload](/cases/case-details/${[CASE_REFERENCE]}/trigger/caseworker-document-management)&lt;br/&gt;" + "[Orders: Manage due date](/cases/case-details/${[CASE_REFERENCE]}/trigger/caseworker-amend-due-date)&lt;br/&gt;" + "[Refer case to judge](/cases/case-details/${[CASE_REFERENCE]}/trigger/refer-to-judge)&lt;br/&gt;" + "[Refer case to legal officer](/cases/case-details/${[CASE_REFERENCE]}/trigger/refer-to-legal-officer)&lt;br/&gt;" + "[Case: Contact parties](/cases/case-details/${[CASE_REFERENCE]}/trigger/contact-parties)"</text>
         </outputEntry>
         <outputEntry id="LiteralExpression_0cbvgxl">
           <text>true</text>
@@ -649,7 +581,7 @@ else 5000</text>
           <text>"description"</text>
         </outputEntry>
         <outputEntry id="LiteralExpression_1tfrrr2">
-          <text>"[Case: Edit Case](/cases/case-details/${[CASE_REFERENCE]}/trigger/edit-case)"</text>
+          <text>"[Case: Edit case](/cases/case-details/${[CASE_REFERENCE]}/trigger/edit-case)"</text>
         </outputEntry>
         <outputEntry id="LiteralExpression_1nneo2x">
           <text>true</text>
@@ -666,9 +598,111 @@ else 5000</text>
           <text>"description"</text>
         </outputEntry>
         <outputEntry id="LiteralExpression_0e3rlfp">
-          <text>"Prepare Hearing Bundle"</text>
+          <text>"[Bundle: Create a bundle](/cases/case-details/${[CASE_REFERENCE]}/trigger/createBundle)"</text>
         </outputEntry>
         <outputEntry id="LiteralExpression_1td2ttz">
+          <text>true</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_0kqn35l">
+        <inputEntry id="UnaryTests_1407ezt">
+          <text></text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_1c1ppbv">
+          <text>"processFurtherEvidence"</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_0vwfaqi">
+          <text>"description"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_0iv9xrr">
+          <text>"[Document management: Amend](/cases/case-details/${[CASE_REFERENCE]}/trigger/caseworker-amend-document)&lt;br/&gt;" + "[Case: Edit case](/cases/case-details/${[CASE_REFERENCE]}/trigger/edit-case)&lt;br/&gt;" + "[Refer case to judge](/cases/case-details/${[CASE_REFERENCE]}/trigger/refer-to-judge)&lt;br/&gt;" + "[Refer case to legal officer](/cases/case-details/${[CASE_REFERENCE]}/trigger/refer-to-legal-officer)&lt;br/&gt;" + "[Case: Contact parties](/cases/case-details/${[CASE_REFERENCE]}/trigger/contact-parties)" </text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_1gcz22e">
+          <text>true</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_1cvbobx">
+        <inputEntry id="UnaryTests_1l1953e">
+          <text></text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_1eegkxv">
+          <text>"reviewSpecificAccessRequestJudiciary","reviewSpecificAccessRequestLegalOps","reviewSpecificAccessRequestAdmin","reviewSpecificAccessRequestCTSC"</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_1bskx2t">
+          <text>"additionalProperties_roleAssignmentId" </text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_0mqhab9">
+          <text>if (taskAttributes !=null and taskAttributes.roleAssignmentId != null) then taskAttributes.roleAssignmentId else "1234"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_0gyn3pb">
+          <text>false</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_163olgq">
+        <inputEntry id="UnaryTests_1j03091">
+          <text></text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_0ytaf5i">
+          <text>"reviewSpecificAccessRequestAdmin"</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_0k7g1ve">
+          <text>"description"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_11n18c9">
+          <text>if (taskAttributes != null and taskAttributes.taskId != null and taskAttributes.roleAssignmentId != null) then "[Review Access Request](/role-access/" + taskAttributes.taskId + "/assignment/" + taskAttributes.roleAssignmentId + "/specific-access)" else ""</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_17m0g1j">
+          <text>true</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_0he1bh8">
+        <inputEntry id="UnaryTests_1g260wa">
+          <text></text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_0b7u01b">
+          <text>"reviewSpecificAccessRequestLegalOps"</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_1wniyl2">
+          <text>"description"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_0v2m01v">
+          <text>if (taskAttributes != null and taskAttributes.taskId != null and taskAttributes.roleAssignmentId != null) then "[Review Access Request](/role-access/" + taskAttributes.taskId + "/assignment/" + taskAttributes.roleAssignmentId + "/specific-access)" else ""</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_0twxycq">
+          <text>true</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_1gogx03">
+        <inputEntry id="UnaryTests_0eas9b6">
+          <text></text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_0z646k2">
+          <text>"reviewSpecificAccessRequestJudiciary"</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_1ktoz2g">
+          <text>"description"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_1mde5b3">
+          <text>if (taskAttributes != null and taskAttributes.taskId != null and taskAttributes.roleAssignmentId != null) then "[Review Access Request](/role-access/" + taskAttributes.taskId + "/assignment/" + taskAttributes.roleAssignmentId + "/specific-access)" else ""</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_0tqr25x">
+          <text>true</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_0qsy0oc">
+        <inputEntry id="UnaryTests_1siq6q6">
+          <text></text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_10bwbts">
+          <text>"reviewSpecificAccessRequestCTSC"</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_1ogaji1">
+          <text>"description"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_18hjl3z">
+          <text>if (taskAttributes != null and taskAttributes.taskId != null and taskAttributes.roleAssignmentId != null) then "[Review Access Request](/role-access/" + taskAttributes.taskId + "/assignment/" + taskAttributes.roleAssignmentId + "/specific-access)" else ""</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_1dtyjr9">
           <text>true</text>
         </outputEntry>
       </rule>
@@ -703,6 +737,23 @@ else 5000</text>
           <text>now()</text>
         </outputEntry>
         <outputEntry id="LiteralExpression_1c4v3cu">
+          <text>false</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_0nk33fy">
+        <inputEntry id="UnaryTests_0ok8nis">
+          <text></text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_0wc90n1">
+          <text></text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_11y0j8a">
+          <text>"dueDateTime"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_0z828nf">
+          <text>time("17:00")</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_1t9vr9a">
           <text>false</text>
         </outputEntry>
       </rule>

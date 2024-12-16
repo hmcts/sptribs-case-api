@@ -1,0 +1,47 @@
+{
+  "data": {
+    "cicCaseHearingSummaryList": {
+      "value": {
+        "label": "1 - Final - 21 Apr 2023 10:00"
+      },
+      "valueLabel": "1 - Final - 21 Apr 2023 10:00"
+    },
+    "recFileUpload": [
+      {
+        "value": {
+          "documentCategory": "Linked docs",
+          "documentEmailContent": "some email content",
+          "documentLink": {
+            "document_filename": "file.mp3"
+          }
+        }
+      }
+    ],
+    "hearingList": [
+      {
+        "value": {
+          "hearingStatus": "Listed",
+          "hearingType": "Final",
+          "hearingFormat": "Face to Face",
+          "date": "2023-04-21",
+          "hearingTime": "10:00",
+          "numberOfDays": "No",
+          "videoCallLink": "",
+          "conferenceCallNumber": "",
+          "importantInfoDetails": "some details",
+          "recFile": [
+            {
+              "value": {
+                "documentCategory": "Linked docs",
+                "documentEmailContent": "some email content",
+                "documentLink": {
+                  "document_filename": "file.mp3"
+                }
+              }
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

@@ -12,25 +12,15 @@ import java.util.Map;
 public class Document {
 
     public Classification classification;
-
     public long size;
-
     public String mimeType;
-
     public String originalDocumentName;
-
     public Date createdOn;
-
     public Date modifiedOn;
-
     public String createdBy;
-
     public String lastModifiedBy;
-
     public Date ttl;
-
     public String hashToken;
-
     public Map<String, String> metadata;
 
     @JsonProperty("_links")

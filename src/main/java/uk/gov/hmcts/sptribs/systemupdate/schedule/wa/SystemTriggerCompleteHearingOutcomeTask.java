@@ -51,12 +51,13 @@ public class SystemTriggerCompleteHearingOutcomeTask implements Runnable {
         try {
             final BoolQueryBuilder query = boolQuery()
                 .must(matchQuery("state", "AwaitingHearing"))
+                .mustNot(matchQuery("data.completeHearingOutcomeTask", "Yes"))
                 .filter(rangeQuery("data.hearingList.value.date").to(LocalDate.now()).from(LocalDate.now()));
 
-            final List<CaseDetails> casesNeedsStitchCollateHearingBundle =
+            final List<CaseDetails> casesNeedsCompleteHearingBundleTask =
                 ccdSearchService.searchForAllCasesWithQuery(query, user, serviceAuth);
-            log.info("Cases:" + casesNeedsStitchCollateHearingBundle.size());
-            for (final CaseDetails caseDetails : casesNeedsStitchCollateHearingBundle) {
+            log.info("Cases:" + casesNeedsCompleteHearingBundleTask.size());
+            for (final CaseDetails caseDetails : casesNeedsCompleteHearingBundleTask) {
                 triggerSystemTriggerCompleteHearingOutcomeTask(user, serviceAuth, caseDetails);
             }
 

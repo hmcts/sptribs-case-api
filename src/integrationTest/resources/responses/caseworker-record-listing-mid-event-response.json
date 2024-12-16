@@ -1,0 +1,55 @@
+{
+  "data": {
+    "caseLinks": [],
+    "allCaseworkerCICDocument": [],
+    "allCaseworkerCICDocumentUpload": [],
+    "newCaseworkerCICDocument": [],
+    "newCaseworkerCICDocumentUpload": [],
+    "editCicaCaseDetails": {},
+    "contactParties": {},
+    "caseBundles": [],
+    "cicCaseRespondentName": "Appeals team",
+    "cicCaseRespondentOrganisation": "CICA",
+    "cicCaseRespondentEmail": "appeals.team@cica.gov.uk",
+    "cicCaseFirstDueDate": "",
+    "stayIsCaseStayed": "No",
+    "hearingFormat": "Face to Face",
+    "hearingVenues": {
+      "value": {
+        "code": "${json-unit.any-string}",
+        "label": "Glasgow"
+      },
+      "list_items": [
+        {
+          "code": "${json-unit.any-string}",
+          "label": "London"
+        },
+        {
+          "code": "${json-unit.any-string}",
+          "label": "Glasgow"
+        }
+      ],
+      "valueLabel": "Glasgow",
+      "valueCode": "${json-unit.any-string}"
+    },
+    "regionList": {
+      "value": {
+        "code": "${json-unit.any-string}",
+        "label": "1-region"
+      },
+      "list_items": [
+        {
+          "code": "${json-unit.any-string}",
+          "label": "1-region"
+        }
+      ],
+      "valueLabel": "1-region",
+      "valueCode": "${json-unit.any-string}"
+    },
+    "hearingList": [],
+    "closedDayCount": "",
+    "firstHearingDate": "",
+    "dataVersion": 0,
+    "cicCaseSelectedDocument": {}
+  }
+}

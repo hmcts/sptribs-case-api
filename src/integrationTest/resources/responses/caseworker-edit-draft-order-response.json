@@ -1,0 +1,24 @@
+{
+  "data": {
+    "cicCaseDraftOrderDynamicList": {
+      "list_items": [
+        {
+          "label": "CIC3 - Rule 27--09-05-2024 15:11:08--draft.pdf"
+        }
+      ]
+    },
+    "cicCaseDraftOrderCICList": [
+      {
+        "value": {
+          "templateGeneratedDocument": {
+            "document_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/0ebad3a7-223e-4185-b8ce-ccb50a87e982",
+            "document_filename": "DRAFT :Order--[null]--09-05-2024 15:11:08.pdf",
+            "document_binary_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/0ebad3a7-223e-4185-b8ce-ccb50a87e982/binary",
+            "category_id": "TD"
+          },
+          "orderContentOrderTemplate": "CIC3_Rule_27"
+        }
+      }
+    ]
+  }
+}

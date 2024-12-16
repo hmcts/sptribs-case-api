@@ -30,7 +30,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.SubjectCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.ciccase.model.access.Permissions;
-import uk.gov.hmcts.sptribs.common.notification.ListingCreatedNotification;
+import uk.gov.hmcts.sptribs.notification.dispatcher.ListingCreatedNotification;
 import uk.gov.hmcts.sptribs.notification.exception.NotificationException;
 
 import java.time.LocalDate;
@@ -166,6 +166,7 @@ class CaseworkerRecordListingTest {
         assertThat(responseListing.getHearingCancellationReason()).isNull();
         assertThat(responseListing.getCancelHearingAdditionalDetail()).isNull();
         assertThat(response.getData().getStitchHearingBundleTask()).isEqualTo(NO);
+        assertThat(response.getData().getCompleteHearingOutcomeTask()).isEqualTo(NO);
 
         HearingSummary summary = responseListing.getSummary();
         assertThat(summary.getJudge()).isNull();

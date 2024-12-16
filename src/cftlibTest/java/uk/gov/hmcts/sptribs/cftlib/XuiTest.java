@@ -16,9 +16,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import uk.gov.hmcts.rse.ccd.lib.test.CftlibTest;
 import uk.gov.hmcts.sptribs.cftlib.util.Wiremock;
-import uk.gov.hmcts.sptribs.common.notification.ApplicationReceivedNotification;
-import uk.gov.hmcts.sptribs.common.notification.CaseStayedNotification;
-import uk.gov.hmcts.sptribs.common.notification.CaseWithdrawnNotification;
+import uk.gov.hmcts.sptribs.notification.dispatcher.ApplicationReceivedNotification;
+import uk.gov.hmcts.sptribs.notification.dispatcher.CaseStayedNotification;
+import uk.gov.hmcts.sptribs.notification.dispatcher.CaseWithdrawnNotification;
 
 import static java.lang.System.getenv;
 
@@ -67,7 +67,6 @@ public class XuiTest extends CftlibTest {
         Wiremock.stopAndReset();
     }
 
-
     @BeforeEach
     void createContextAndPage() {
         context = browser.newContext();
@@ -80,6 +79,5 @@ public class XuiTest extends CftlibTest {
     void closeContext() {
         context.close();
     }
-
 }
 

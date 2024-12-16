@@ -146,7 +146,7 @@ class CaseworkerEditHearingSummaryTest {
         final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
 
         SubmittedCallbackResponse response =
-            caseWorkerEditHearingSummary.summaryCreated(updatedCaseDetails, beforeDetails);
+            caseWorkerEditHearingSummary.submitted(updatedCaseDetails, beforeDetails);
 
         assertThat(response).isNotNull();
         assertThat(response.getConfirmationHeader()).contains("Hearing summary edited");

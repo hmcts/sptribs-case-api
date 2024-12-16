@@ -11,7 +11,10 @@ import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
+import uk.gov.hmcts.ccd.sdk.type.DynamicList;
+import uk.gov.hmcts.ccd.sdk.type.DynamicListElement;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
+import uk.gov.hmcts.sptribs.caseworker.model.CaseManagementLocation;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
@@ -21,6 +24,7 @@ import uk.gov.hmcts.sptribs.common.service.CcdSupplementaryDataService;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import static java.lang.String.format;
 import static java.lang.System.getenv;
@@ -32,6 +36,9 @@ import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_CASEWORK
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SYSTEM_UPDATE;
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE;
+import static uk.gov.hmcts.sptribs.constants.CommonConstants.ST_CIC_WA_CASE_BASE_LOCATION;
+import static uk.gov.hmcts.sptribs.constants.CommonConstants.ST_CIC_WA_CASE_MANAGEMENT_CATEGORY;
+import static uk.gov.hmcts.sptribs.constants.CommonConstants.ST_CIC_WA_CASE_REGION;
 
 @Slf4j
 @Component
@@ -41,8 +48,8 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
     private static final String TEST_CREATE = "create-test-case";
     private static final String TEST_CASE_DATA_FILE = "classpath:data/st_cic_test_case.json";
 
-    private ObjectMapper objectMapper;
-    private CcdSupplementaryDataService ccdSupplementaryDataService;
+    private final ObjectMapper objectMapper;
+    private final CcdSupplementaryDataService ccdSupplementaryDataService;
 
     @Autowired
     public CreateTestCase(ObjectMapper objectMapper, CcdSupplementaryDataService ccdSupplementaryDataService) {
@@ -86,6 +93,7 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
         final CaseData caseData = objectMapper.readValue(json, CaseData.class);
 
         caseData.setHyphenatedCaseRef(caseData.formatCaseRef(details.getId()));
+        setDefaultCaseDetails(caseData);
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
@@ -104,6 +112,36 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
         return SubmittedCallbackResponse.builder()
             .confirmationHeader(format("# Case Created %n## Case reference number: %n## %s", caseReference))
             .build();
+    }
+
+    private void setDefaultCaseDetails(CaseData data) {
+        CaseManagementLocation caseManagementLocation = new CaseManagementLocation(ST_CIC_WA_CASE_BASE_LOCATION, ST_CIC_WA_CASE_REGION);
+        log.info("Case Management base location {}, region {}",
+            caseManagementLocation.getBaseLocation(), caseManagementLocation.getRegion());
+
+        CaseManagementLocation caseManagementLocation1 = CaseManagementLocation
+            .builder()
+            .baseLocation(ST_CIC_WA_CASE_BASE_LOCATION)
+            .region(ST_CIC_WA_CASE_REGION)
+            .build();
+        log.info("Case Management (builder) base location {}, region {}",
+            caseManagementLocation1.getBaseLocation(), caseManagementLocation1.getRegion());
+
+        data.setCaseManagementLocation(
+            caseManagementLocation
+        );
+        log.info("Case Management (data) base location {}, region {}",
+            data.getCaseManagementLocation().getBaseLocation(), data.getCaseManagementLocation().getRegion());
+
+        DynamicListElement caseManagementCategory = new DynamicListElement(
+            UUID.randomUUID(), ST_CIC_WA_CASE_MANAGEMENT_CATEGORY);
+        data.setCaseManagementCategory(
+            DynamicList
+                .builder()
+                .listItems(List.of(caseManagementCategory))
+                .value(caseManagementCategory)
+                .build()
+        );
     }
 
 }
