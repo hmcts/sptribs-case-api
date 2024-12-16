@@ -309,5 +309,4 @@ public class CicSubmitCaseEvent implements CCDConfig<CaseData, State, UserRole> 
         caseData.setDssCaseData(dssCaseData);
         return caseData;
     }
-
 }
