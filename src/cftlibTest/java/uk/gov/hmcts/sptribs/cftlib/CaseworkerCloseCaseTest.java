@@ -56,6 +56,4 @@ public class CaseworkerCloseCaseTest extends XuiTest {
             .hasText("History", textOptionsWithTimeout(60000));
         Assertions.assertEquals("Case closed", newCase.getCaseStatus());
     }
-
-
 }
