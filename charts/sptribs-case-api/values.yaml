@@ -76,7 +76,6 @@ java:
     DOCUMENT_MANAGEMENT_URL: http://dm-store-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal
 
     CASE_API_DOCUMENT_DOWNLOAD_URL: http://manage-case.{{ .Values.global.environment }}.platform.hmcts.net/
-    PRD_API_BASEURL : "http://rd-professional-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal"
     SEND_LETTER_SERVICE_BASEURL: "http://rpe-send-letter-service-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal"
     CITIZEN_UPDATE_CASE_STATE_ENABLED: false
     SERVICE_AUTH_MICROSERVICE: sptribs_case_api

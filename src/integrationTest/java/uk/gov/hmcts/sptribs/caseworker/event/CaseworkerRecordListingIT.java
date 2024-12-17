@@ -22,7 +22,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.HearingFormat;
 import uk.gov.hmcts.sptribs.common.config.WebMvcConfig;
-import uk.gov.hmcts.sptribs.common.notification.ListingCreatedNotification;
+import uk.gov.hmcts.sptribs.notification.dispatcher.ListingCreatedNotification;
 import uk.gov.hmcts.sptribs.recordlisting.LocationService;
 import uk.gov.hmcts.sptribs.testutil.IdamWireMock;
 

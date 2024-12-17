@@ -14,7 +14,6 @@ public class WorkBasketResultFields implements CCDConfig<CaseData, State, UserRo
 
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
-
         configBuilder
             .workBasketResultFields()
             .fields(SEARCH_RESULT_FIELD_LIST);
