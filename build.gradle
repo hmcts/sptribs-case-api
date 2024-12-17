@@ -26,7 +26,7 @@ plugins {
   id 'io.spring.dependency-management' version '1.1.5'
   id 'org.springframework.boot' version '3.2.5'
   id 'com.github.ben-manes.versions' version '0.50.0'
-  id 'hmcts.ccd.sdk'  version '5.5.10'
+  id 'hmcts.ccd.sdk' version '5.5.10'
   id "au.com.dius.pact" version "4.3.10"
   id 'com.github.hmcts.rse-cft-lib' version '0.19.1307'
 }
@@ -64,13 +64,6 @@ sourceSets {
     }
     resources.srcDir file('src/contractTest/resources')
   }
-  e2eTests {
-    java {
-      compileClasspath += main.output
-      runtimeClasspath += main.output
-      srcDir file('src/e2eTests/java')
-    }
- }
 }
 
 ext{
@@ -99,8 +92,6 @@ configurations {
   integrationTestRuntime.extendsFrom testRuntime
   cftlibTestImplementation.extendsFrom testImplementation
   cftlibTestRuntime.extendsFrom testRuntime
-  e2eTestsImplementation.extendsFrom testImplementation
-  e2eTestsRuntime.extendsFrom testRuntime
 }
 
 
@@ -128,6 +119,9 @@ test {
 }
 
 task functional(type: Test) {
+  if (System.getenv('WA_FUNCTIONAL_TESTS_ENABLED') == 'true') {
+    maxParallelForks = Runtime.runtime.availableProcessors()
+  }
   description = "Runs functional tests"
   group = "Verification"
   testClassesDirs = sourceSets.functionalTest.output.classesDirs
@@ -141,145 +135,6 @@ task integration(type: Test) {
   testClassesDirs = sourceSets.integrationTest.output.classesDirs
   classpath = sourceSets.integrationTest.runtimeClasspath
   failFast = true
-}
-
-task e2eTestInPrev(type: Test) {
-  description = "Runs e2e tests in Preview Environment"
-  group = "Verification"
-  testClassesDirs = sourceSets.e2eTests.output.classesDirs
-  classpath = sourceSets.e2eTests.runtimeClasspath
-  failFast = false
-  systemProperties([
-    // Configuration parameters to execute top-level classes in parallel but methods in same thread
-    'junit.jupiter.execution.parallel.enabled': 'true',
-    'junit.jupiter.execution.parallel.mode.default': 'same_thread',
-    'junit.jupiter.execution.parallel.config.fixed.parallelism': '3'
-  ])
-  environment 'PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD', '0'
-  environment 'CASE_API_BASE_URL', System.env.TEST_E2E_URL
-  environment 'DSS_BASE_URL', 'https://sptribs-frontend-pr-345.preview.platform.hmcts.net'
-  environment 'BROWSER', 'chromium'
-  environment 'CI', 'true'
-  environment 'LEGAL_OFFICER', 'st-test1@mailinator.com '
-  environment 'SENIOR_LEGAL_OFFICER', 'st-senior-caseworker@mailinator.com'
-  environment 'JUDGE', 'st-judge2@mailinator.com'
-  environment 'SENIOR_JUDGE', 'st-senior-judge@mailinator.com'
-  environment 'HEARING_CENTRAL_ADMIN', 'st-hc-team-leader@mailinator.com'
-  environment 'HEARING_CENTRAL_TEAM_LEAD', 'st-hearingcentretl@mailinator.com'
-  environment 'RESPONDENT', 'st-respondent5@mailinator.com'
-  environment 'SUPER_USER', 'st-super@mailinator.com'
-  environment 'DSS_CITIZEN_USER', 'st-citizen1@mailinator.com'
-}
-
-task e2eTestInDemo(type: Test) {
-  description = "Runs e2e tests in Demo Environment"
-  group = "Verification"
-  testClassesDirs = sourceSets.e2eTests.output.classesDirs
-  classpath = sourceSets.e2eTests.runtimeClasspath
-  failFast = false
-  systemProperties([
-    // Configuration parameters to execute top-level classes in parallel but methods in same thread
-    'junit.jupiter.execution.parallel.enabled': 'true',
-    'junit.jupiter.execution.parallel.mode.default': 'same_thread',
-    'junit.jupiter.execution.parallel.config.fixed.parallelism': '3'
-  ])
-  environment 'PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD', '0'
-  environment 'CASE_API_BASE_URL', 'https://manage-case.demo.platform.hmcts.net'
-  environment 'DSS_BASE_URL', 'https://sptribs-frontend.demo.platform.hmcts.net'
-  environment 'BROWSER', 'chromium'
-  environment 'CI', 'true'
-  environment 'LEGAL_OFFICER', 'st-ciclegal-officer@mailinator.com'
-  environment 'SENIOR_LEGAL_OFFICER', 'st-cicsenior-legal-officer@mailinator.com'
-  environment 'JUDGE', 'st-cicjudge@mailinator.com'
-  environment 'SENIOR_JUDGE', 'st-cicseniorjudge@mailinator.com'
-  environment 'HEARING_CENTRAL_ADMIN', 'cic-hearing-centreadmin@mailinator.com'
-  environment 'HEARING_CENTRAL_TEAM_LEAD', 'cic-hearing-centre-leader@mailinator.com'
-  environment 'RESPONDENT', 'st-cicrespondent@mailinator.com'
-  environment 'DSS_CITIZEN_USER', 'st-citizen1@mailinator.com'
-}
-
-task e2eTests(type: Test) {
-  description = "Runs e2e tests in AAT environment"
-  group = "Verification"
-  testClassesDirs = sourceSets.e2eTests.output.classesDirs
-  classpath = sourceSets.e2eTests.runtimeClasspath
-  failFast = false
-  systemProperties([
-    // Configuration parameters to execute top-level classes in parallel but methods in same thread
-    'junit.jupiter.execution.parallel.enabled': 'true',
-    'junit.jupiter.execution.parallel.mode.default': 'same_thread',
-    'junit.jupiter.execution.parallel.config.fixed.parallelism': '3'
-  ])
-  environment 'PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD', '1'
-  environment 'CASE_API_BASE_URL', 'https://manage-case.aat.platform.hmcts.net'
-  environment 'DSS_BASE_URL', 'https://sptribs-frontend.aat.platform.hmcts.net'
-  environment 'BROWSER', 'chromium'
-  environment 'CI', 'true'
-  environment 'LEGAL_OFFICER', 'st-test1@mailinator.com '
-  environment 'SENIOR_LEGAL_OFFICER', 'st-senior-caseworker@mailinator.com'
-  environment 'JUDGE', 'st-judge2@mailinator.com'
-  environment 'SENIOR_JUDGE', 'st-senior-judge@mailinator.com'
-  environment 'HEARING_CENTRAL_ADMIN', 'st-hc-team-leader@mailinator.com'
-  environment 'HEARING_CENTRAL_TEAM_LEAD', 'st-hearingcentretl@mailinator.com'
-  environment 'RESPONDENT', 'st-respondent5@mailinator.com'
-  environment 'SUPER_USER', 'st-super@mailinator.com'
-  environment 'DSS_CITIZEN_USER', 'st-citizen1@mailinator.com'
-}
-
-task e2eTestsNightlyFirefox(type: Test) {
-  description = "Runs e2e tests nightly using firefox"
-  group = "Verification"
-  testClassesDirs = sourceSets.e2eTests.output.classesDirs
-  classpath = sourceSets.e2eTests.runtimeClasspath
-  failFast = false
-  systemProperties([
-    // Configuration parameters to execute top-level classes in parallel but methods in same thread
-    'junit.jupiter.execution.parallel.enabled': 'true',
-    'junit.jupiter.execution.parallel.mode.default': 'same_thread',
-    'junit.jupiter.execution.parallel.config.fixed.parallelism': '3'
-  ])
-  environment 'PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD', '1'
-  environment 'CASE_API_BASE_URL', 'https://manage-case.aat.platform.hmcts.net'
-  environment 'DSS_BASE_URL', 'https://sptribs-frontend.aat.platform.hmcts.net'
-  environment 'BROWSER', 'firefox'
-  environment 'CI', 'true'
-  environment 'LEGAL_OFFICER', 'st-test1@mailinator.com '
-  environment 'SENIOR_LEGAL_OFFICER', 'st-senior-caseworker@mailinator.com'
-  environment 'JUDGE', 'st-judge2@mailinator.com'
-  environment 'SENIOR_JUDGE', 'st-senior-judge@mailinator.com'
-  environment 'HEARING_CENTRAL_ADMIN', 'st-hc-team-leader@mailinator.com'
-  environment 'HEARING_CENTRAL_TEAM_LEAD', 'st-hearingcentretl@mailinator.com'
-  environment 'RESPONDENT', 'st-respondent5@mailinator.com'
-  environment 'SUPER_USER', 'st-super@mailinator.com'
-  environment 'DSS_CITIZEN_USER', 'st-citizen1@mailinator.com'
-}
-
-task e2eTestsNightlyMsEdge(type: Test) {
-  description = "Runs e2e tests nightly using MS Edge"
-  group = "Verification"
-  testClassesDirs = sourceSets.e2eTests.output.classesDirs
-  classpath = sourceSets.e2eTests.runtimeClasspath
-  failFast = false
-  systemProperties([
-    // Configuration parameters to execute top-level classes in parallel but methods in same thread
-    'junit.jupiter.execution.parallel.enabled': 'true',
-    'junit.jupiter.execution.parallel.mode.default': 'same_thread',
-    'junit.jupiter.execution.parallel.config.fixed.parallelism': '3'
-  ])
-  environment 'PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD', 1
-  environment 'CASE_API_BASE_URL', 'https://manage-case.aat.platform.hmcts.net'
-  environment 'DSS_BASE_URL', 'https://sptribs-frontend.aat.platform.hmcts.net'
-  environment 'BROWSER', 'msedge'
-  environment 'CI', 'true'
-  environment 'LEGAL_OFFICER', 'st-test1@mailinator.com '
-  environment 'SENIOR_LEGAL_OFFICER', 'st-senior-caseworker@mailinator.com'
-  environment 'JUDGE', 'st-judge2@mailinator.com'
-  environment 'SENIOR_JUDGE', 'st-senior-judge@mailinator.com'
-  environment 'HEARING_CENTRAL_ADMIN', 'st-hc-team-leader@mailinator.com'
-  environment 'HEARING_CENTRAL_TEAM_LEAD', 'st-hearingcentretl@mailinator.com'
-  environment 'RESPONDENT', 'st-respondent5@mailinator.com'
-  environment 'SUPER_USER', 'st-super@mailinator.com'
-  environment 'DSS_CITIZEN_USER', 'st-citizen1@mailinator.com'
 }
 
 // Invoked from CftLibConfig when booting with CCD.
@@ -496,7 +351,7 @@ dependencies {
   implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-bootstrap', version: '4.1.2'
   implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-openfeign', version: '4.1.1'
   implementation group: 'uk.gov.service.notify', name: 'notifications-java-client', version: '4.1.1-RELEASE'
-  implementation group: 'com.launchdarkly', name: 'launchdarkly-java-server-sdk', version: '7.1.1'
+  implementation group: 'com.launchdarkly', name: 'launchdarkly-java-server-sdk', version: '7.5.0'
   implementation group: 'org.apache.commons', name: 'commons-collections4', version: '4.4'
   implementation group: 'org.json', name: 'json', version: '20231013'
   implementation group: 'jakarta.enterprise', name: 'jakarta.enterprise.cdi-api', version: '4.1.0'
@@ -540,13 +395,11 @@ dependencies {
   functionalTestImplementation sourceSets.main.runtimeClasspath
   functionalTestImplementation sourceSets.test.runtimeClasspath
 
-  e2eTestsImplementation sourceSets.main.runtimeClasspath
-  e2eTestsImplementation sourceSets.test.runtimeClasspath
-
-  e2eTestsImplementation 'io.github.artsok:rerunner-jupiter:2.1.6'
-
   functionalTestImplementation group: 'com.github.hmcts', name: 'document-management-client', version: '7.0.1'
   functionalTestImplementation group: 'com.github.hmcts', name: 'service-auth-provider-java-client', version: '5.1.2'
+
+  functionalTestImplementation group: 'org.projectlombok', name: 'lombok', version: versions.lombok
+  functionalTestAnnotationProcessor group: 'org.projectlombok', name: 'lombok', version: versions.lombok
 
   contractTestImplementation group: 'au.com.dius.pact.consumer', name: 'junit5', version: '4.6.11'
   contractTestImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: '5.10.3'
@@ -680,7 +533,6 @@ cftlibTest {
   environment 'XUI_JURISDICTIONS', 'ST_CIC'
   environment 'PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD', '1'
   environment 'RD_PROFESSIONAL_API_URL', 'http://host.docker.internal:8765'
-  environment 'PRD_API_BASEURL', 'http://localhost:8765'
   environment 'DOC_ASSEMBLY_URL', 'http://localhost:8765'
   environment 'FEE_API_URL', 'http://localhost:8765'
   environment 'CCD_DOCUMENT_URL_PATTERN', '.*'
@@ -706,35 +558,6 @@ task installChromium(type: JavaExec) {
 }
 
 tasks.cftlibTest.dependsOn(installChromium)
-
-task installBrowser(type: JavaExec) {
-  classpath = sourceSets.e2eTests.runtimeClasspath
-  mainClass.set('com.microsoft.playwright.CLI')
-  args = ['install', 'chromium']
-}
-
-task installFirefox(type: JavaExec) {
-  classpath = sourceSets.e2eTests.runtimeClasspath
-  mainClass.set('com.microsoft.playwright.CLI')
-  args = ['install', 'firefox']
-}
-
-task installMsEdge(type: JavaExec) {
-  classpath = sourceSets.e2eTests.runtimeClasspath
-  mainClass.set('com.microsoft.playwright.CLI')
-  args = ['install', '--force', 'msedge']
-}
-
-tasks.e2eTests.dependsOn(installBrowser)
-tasks.e2eTestsNightlyFirefox.dependsOn(installFirefox)
-tasks.e2eTestsNightlyMsEdge.dependsOn(installMsEdge)
-
-def E2E_MAX_PARALLEL_FORKS = 3
-def MAX_PARALLEL_FORKS = Math.min(Runtime.runtime.availableProcessors().intdiv(2), 4) ?: 1
-
-tasks.withType(Test).configureEach {
-  maxParallelForks = name.contains("e2eTests") ? E2E_MAX_PARALLEL_FORKS : MAX_PARALLEL_FORKS
-}
 
 // exclude the logback binding is coming in via cftlib
 configurations.testImplementation {

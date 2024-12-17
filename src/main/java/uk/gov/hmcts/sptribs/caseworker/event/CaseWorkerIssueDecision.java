@@ -27,10 +27,10 @@ import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
-import uk.gov.hmcts.sptribs.common.notification.DecisionIssuedNotification;
 import uk.gov.hmcts.sptribs.document.CaseDataDocumentService;
 import uk.gov.hmcts.sptribs.document.content.DecisionTemplateContent;
 import uk.gov.hmcts.sptribs.document.model.CICDocument;
+import uk.gov.hmcts.sptribs.notification.dispatcher.DecisionIssuedNotification;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -99,7 +99,7 @@ public class CaseWorkerIssueDecision implements CCDConfig<CaseData, State, UserR
                         .grant(CREATE_READ_UPDATE, ST_CIC_WA_CONFIG_USER);
         }
 
-        PageBuilder pageBuilder = new PageBuilder(eventBuilder);
+        final PageBuilder pageBuilder = new PageBuilder(eventBuilder);
         issueDecisionNotice.addTo(pageBuilder);
         issueDecisionSelectTemplate.addTo(pageBuilder);
         issueDecisionMainContent.addTo(pageBuilder);
@@ -154,7 +154,7 @@ public class CaseWorkerIssueDecision implements CCDConfig<CaseData, State, UserR
         final CaseData caseData = details.getData();
         final CICDocument decisionDocument = caseData.getCaseIssueDecision().getDecisionDocument();
 
-        if (null != decisionDocument && null != decisionDocument.getDocumentLink()) {
+        if (decisionDocument != null && decisionDocument.getDocumentLink() != null) {
             decisionDocument.getDocumentLink().setCategoryId("TD");
         }
 

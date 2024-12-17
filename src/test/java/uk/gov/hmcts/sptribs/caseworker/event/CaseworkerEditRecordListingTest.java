@@ -27,7 +27,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.SubjectCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.ciccase.model.access.Permissions;
-import uk.gov.hmcts.sptribs.common.notification.ListingUpdatedNotification;
+import uk.gov.hmcts.sptribs.notification.dispatcher.ListingUpdatedNotification;
 
 import java.util.HashSet;
 import java.util.List;

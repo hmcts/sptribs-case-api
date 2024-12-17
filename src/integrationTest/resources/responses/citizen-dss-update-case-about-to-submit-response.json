@@ -1,0 +1,37 @@
+{
+  "data": {
+    "cicCaseApplicantDocumentsUploaded": [
+      {
+        "value": {
+          "documentCategory": "DSS Other information documents",
+          "documentEmailContent": "this doc is relevant to the case",
+          "documentLink": {
+            "document_filename": "doc1.pdf",
+            "document_binary_url": "doc1.pdf/binary",
+            "category_id": "DSS"
+          }
+        }
+      },
+      {
+        "value": {
+          "documentCategory": "DSS Other information documents",
+          "documentEmailContent": "this doc is also relevant to the case",
+          "documentLink": {
+            "document_filename": "doc2.pdf",
+            "document_binary_url": "doc2.pdf/binary",
+            "category_id": "DSS"
+          }
+        }
+      }
+    ],
+    "messages": [
+      {
+        "value": {
+          "receivedFrom": "Test User",
+          "message": "Additional information added in DDS Update Case"
+        }
+      }
+    ],
+    "dssCaseDataOtherInfoDocuments": []
+  }
+}

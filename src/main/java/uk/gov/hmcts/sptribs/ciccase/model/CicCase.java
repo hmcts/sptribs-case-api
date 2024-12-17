@@ -60,7 +60,6 @@ public class CicCase {
         label = "Preview order",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
         categoryID = "TD"
-
     )
     private Document orderTemplateIssued;
 
@@ -71,7 +70,6 @@ public class CicCase {
     private DynamicList draftOrderDynamicList;
 
     @CCD(
-        label = "",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private DynamicList flagDynamicList;
@@ -486,7 +484,6 @@ public class CicCase {
     @CCD(
         label = "Is the representative legally qualified?",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
-
     )
     private YesOrNo isRepresentativeQualified;
 
@@ -495,12 +492,12 @@ public class CicCase {
     )
     private YesOrNo representativeDetailsObjects;
 
-
     @CCD(
         label = "Have the tribunal forms been received in time?",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private YesOrNo formReceivedInTime;
+
     @CCD(
         label = "Has the applicant explained why they missed the deadline?",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
@@ -510,14 +507,12 @@ public class CicCase {
     @CCD(
         label = "Have any claims linked to this case been lodged with CICA? ",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
-
     )
     private YesOrNo claimLinkedToCic;
 
     @CCD(
         label = "Are there any ongoing compensation claims linked to this case?",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
-
     )
     private YesOrNo compensationClaimLinkCIC;
 
@@ -533,7 +528,6 @@ public class CicCase {
     )
     private YesOrNo isRepresentativePresent;
 
-    //new
     @CCD(
         label = "Case Documents",
         typeOverride = Collection,
@@ -578,7 +572,6 @@ public class CicCase {
         access = {CaseworkerAndSuperUserAccess.class}
     )
     private List<ListValue<CaseworkerCICDocument>> finalDecisionDocumentList;
-
 
     @CCD(
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
@@ -655,26 +648,26 @@ public class CicCase {
     private LocalDate findEarliestDate(List<ListValue<DateModel>> dueDateList, LocalDate compare) {
         LocalDate earliestDate = compare;
         for (ListValue<DateModel> dateModelListValue : dueDateList) {
-            if ((null == dateModelListValue.getValue().getOrderMarkAsCompleted()
+            if ((dateModelListValue.getValue().getOrderMarkAsCompleted() == null
                 || !dateModelListValue.getValue().getOrderMarkAsCompleted().contains(GetAmendDateAsCompleted.MARKASCOMPLETED))
                 && dateModelListValue.getValue().getDueDate().isBefore(compare)) {
                 earliestDate = dateModelListValue.getValue().getDueDate();
             }
         }
         return earliestDate;
-
     }
 
     public String getFirstDueDate() {
-
         DateTimeFormatter dateFormatter = ofPattern("dd MMM yyyy", UK);
         LocalDate compare = LocalDate.MAX;
+
         if (!CollectionUtils.isEmpty(orderList)) {
             for (ListValue<Order> orderListValue : orderList) {
                 if (!CollectionUtils.isEmpty(orderListValue.getValue().getDueDateList())) {
                     compare = findEarliestDate(orderListValue.getValue().getDueDateList(), compare);
                 }
             }
+
             if (compare.isBefore(LocalDate.MAX)) {
                 return dateFormatter.format(compare);
             }
@@ -688,16 +681,17 @@ public class CicCase {
     }
 
     public void removeRepresentative() {
-        if (null != representativeCIC) {
+        if (representativeCIC != null) {
             representativeCIC = new HashSet<>();
         }
-        if (null != notifyPartyRepresentative) {
+        if (notifyPartyRepresentative != null) {
             notifyPartyRepresentative = new HashSet<>();
         }
-        if (null != hearingNotificationParties) {
+        if (hearingNotificationParties != null) {
             hearingNotificationParties.remove(NotificationParties.REPRESENTATIVE);
         }
-        if (null != contactPartiesCIC) {
+
+        if (contactPartiesCIC != null) {
             Set<ContactPartiesCIC> temp = new HashSet<>();
             for (ContactPartiesCIC partyCIC : contactPartiesCIC) {
                 if (partyCIC != ContactPartiesCIC.REPRESENTATIVETOCONTACT) {
@@ -706,6 +700,7 @@ public class CicCase {
             }
             contactPartiesCIC = temp;
         }
+
         representativeFullName = "";
         representativeOrgName = "";
         representativeReference = "";
@@ -715,15 +710,16 @@ public class CicCase {
     }
 
     public void removeApplicant() {
-        if (null != applicantCIC) {
+        if (applicantCIC != null) {
             applicantCIC = new HashSet<>();
         }
-        if (null != notifyPartyApplicant) {
+        if (notifyPartyApplicant != null) {
             notifyPartyApplicant = new HashSet<>();
         }
-        if (null != hearingNotificationParties) {
+        if (hearingNotificationParties != null) {
             hearingNotificationParties.remove(NotificationParties.APPLICANT);
         }
+
         applicantFullName = "";
         applicantAddress = new AddressGlobalUK();
         applicantPhoneNumber = "";

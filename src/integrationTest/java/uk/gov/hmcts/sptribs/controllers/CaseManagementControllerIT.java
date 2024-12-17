@@ -59,7 +59,7 @@ import static uk.gov.hmcts.sptribs.testutil.TestResourceUtil.expectedResponse;
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class CaseManagementControllerIT {
 
-    private static final String CCD_CASE_RESPONSE = "classpath:citizen-create-case-response.json";
+    private static final String CCD_CASE_RESPONSE = "classpath:responses/citizen-create-case-response.json";
 
     private static final String CREATE_URL = "/case/dss-orchestration/create";
     private static final String UPDATE_URL = "/case/dss-orchestration/1616591401473378/update";

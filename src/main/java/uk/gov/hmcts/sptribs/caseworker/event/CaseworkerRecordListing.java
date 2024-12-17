@@ -27,7 +27,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
-import uk.gov.hmcts.sptribs.common.notification.ListingCreatedNotification;
+import uk.gov.hmcts.sptribs.notification.dispatcher.ListingCreatedNotification;
 
 import java.time.LocalDate;
 import java.util.Set;
@@ -110,16 +110,12 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
     }
 
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToStart(CaseDetails<CaseData, State> details) {
-
         final CaseData caseData = details.getData();
-
-        log.info("AboutToStart input event:{}, data: {}", CASEWORKER_RECORD_LISTING, caseData);
 
         caseData.setListing(new Listing());
         recordListHelper.regionData(caseData);
         caseData.setCurrentEvent(CASEWORKER_RECORD_LISTING);
 
-        log.info("AboutToStart output event:{}, data: {}", CASEWORKER_RECORD_LISTING, caseData);
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
             .build();
@@ -141,7 +137,6 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
     @SneakyThrows
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(CaseDetails<CaseData, State> details,
                                                                        CaseDetails<CaseData, State> beforeDetails) {
-        log.info("Caseworker record listing callback invoked for Case Id: {}", details.getId());
 
         final CaseData caseData = details.getData();
         if (caseData.getListing() != null
@@ -157,6 +152,7 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
         caseData.getListing().setHearingCreatedDate(LocalDate.now());
         caseData.getListing().setHearingStatus(Listed);
         caseData.setStitchHearingBundleTask(NO);
+        caseData.setCompleteHearingOutcomeTask(NO);
         hearingService.addListing(caseData, caseData.getListing());
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)

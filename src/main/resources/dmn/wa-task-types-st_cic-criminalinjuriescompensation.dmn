@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<definitions xmlns="https://www.omg.org/spec/DMN/20191111/MODEL/" xmlns:dmndi="https://www.omg.org/spec/DMN/20191111/DMNDI/" xmlns:dc="http://www.omg.org/spec/DMN/20180521/DC/" xmlns:biodi="http://bpmn.io/schema/dmn/biodi/2.0" xmlns:modeler="http://camunda.org/schema/modeler/1.0" xmlns:camunda="http://camunda.org/schema/1.0/dmn" id="Definitions_1kep5qz" name="DRD" namespace="http://camunda.org/schema/1.0/dmn" exporter="Camunda Modeler" exporterVersion="5.19.0" modeler:executionPlatform="Camunda Cloud" modeler:executionPlatformVersion="8.0.0">
+<definitions xmlns="https://www.omg.org/spec/DMN/20191111/MODEL/" xmlns:dmndi="https://www.omg.org/spec/DMN/20191111/DMNDI/" xmlns:dc="http://www.omg.org/spec/DMN/20180521/DC/" xmlns:biodi="http://bpmn.io/schema/dmn/biodi/2.0" xmlns:modeler="http://camunda.org/schema/modeler/1.0" xmlns:camunda="http://camunda.org/schema/1.0/dmn" id="Definitions_1kep5qz" name="DRD" namespace="http://camunda.org/schema/1.0/dmn" exporter="Camunda Modeler" exporterVersion="5.25.0" modeler:executionPlatform="Camunda Cloud" modeler:executionPlatformVersion="8.0.0">
   <decision id="wa-task-types-st_cic-criminalinjuriescompensation" name="Task Types DMN" camunda:historyTimeToLive="P90D">
     <decisionTable id="DecisionTable_17knzal" hitPolicy="COLLECT">
       <input id="Input_1">
@@ -17,7 +17,7 @@
           <text>"processCaseWithdrawalDirections"</text>
         </outputEntry>
         <outputEntry id="LiteralExpression_06kvqyk">
-          <text>"Process Case Withdrawal Directions"</text>
+          <text>"Process case withdrawal directions"</text>
         </outputEntry>
       </rule>
       <rule id="DecisionRule_1yu04xb">
@@ -72,7 +72,7 @@
           <text>"processSetAsideDirections"</text>
         </outputEntry>
         <outputEntry id="LiteralExpression_0e577zz">
-          <text>"Process Set Aside directions"</text>
+          <text>"Process set aside directions"</text>
         </outputEntry>
       </rule>
       <rule id="DecisionRule_1kex1c3">
@@ -127,7 +127,7 @@
           <text>"processReinstatementDecisionNotice"</text>
         </outputEntry>
         <outputEntry id="LiteralExpression_1inww4t">
-          <text>"Process Reinstatement decision notice"</text>
+          <text>"Process reinstatement decision notice"</text>
         </outputEntry>
       </rule>
       <rule id="DecisionRule_1re9lf7">
@@ -149,7 +149,7 @@
           <text>"processWrittenReasons"</text>
         </outputEntry>
         <outputEntry id="LiteralExpression_0i1nixh">
-          <text>"Process Written Reasons"</text>
+          <text>"Process written reasons"</text>
         </outputEntry>
       </rule>
       <rule id="DecisionRule_0erlpji">
@@ -182,7 +182,7 @@
           <text>"issueDecisionNotice"</text>
         </outputEntry>
         <outputEntry id="LiteralExpression_08whror">
-          <text>"Issue Decision Notice"</text>
+          <text>"Issue decision notice"</text>
         </outputEntry>
       </rule>
       <rule id="DecisionRule_1iojlhw">
@@ -193,7 +193,7 @@
           <text>"completeHearingOutcome"</text>
         </outputEntry>
         <outputEntry id="LiteralExpression_0oa99hv">
-          <text>"Complete Hearing Outcome"</text>
+          <text>"Complete hearing outcome"</text>
         </outputEntry>
       </rule>
       <rule id="DecisionRule_1vfacuf">
@@ -204,7 +204,7 @@
           <text>"issueCaseToRespondent"</text>
         </outputEntry>
         <outputEntry id="LiteralExpression_05jr52z">
-          <text>"Issue Case To Respondent"</text>
+          <text>"Issue case to respondent"</text>
         </outputEntry>
       </rule>
       <rule id="DecisionRule_0p51yg5">
@@ -215,7 +215,7 @@
           <text>"vetNewCaseDocuments"</text>
         </outputEntry>
         <outputEntry id="LiteralExpression_1lqrrbv">
-          <text>"Vet New Case Documents"</text>
+          <text>"Vet new case documents"</text>
         </outputEntry>
       </rule>
       <rule id="DecisionRule_1firnvw">
@@ -237,7 +237,7 @@
           <text>"reviewTimeExtensionRequestLO"</text>
         </outputEntry>
         <outputEntry id="LiteralExpression_1djhpqv">
-          <text>"Review Time extension request - Legal Officer"</text>
+          <text>"Review time extension request - Legal Officer"</text>
         </outputEntry>
       </rule>
       <rule id="DecisionRule_0bqa0vy">
@@ -248,7 +248,7 @@
           <text>"reviewStrikeOutRequestLO"</text>
         </outputEntry>
         <outputEntry id="LiteralExpression_0r4t0d7">
-          <text>"Review Strike out request - Legal Officer"</text>
+          <text>"Review strike out request - Legal Officer"</text>
         </outputEntry>
       </rule>
       <rule id="DecisionRule_03n1os6">
@@ -303,7 +303,7 @@
           <text>"reviewListCaseLO"</text>
         </outputEntry>
         <outputEntry id="LiteralExpression_0l76b8k">
-          <text>"Review List Case - Legal Officer"</text>
+          <text>"Review list case - Legal Officer"</text>
         </outputEntry>
       </rule>
       <rule id="DecisionRule_0fjf92a">
@@ -314,7 +314,7 @@
           <text>"reviewOtherRequestLO"</text>
         </outputEntry>
         <outputEntry id="LiteralExpression_0nl2v45">
-          <text>"Review Reinstatement request - Legal Officer"</text>
+          <text>"Review reinstatement request - Legal Officer"</text>
         </outputEntry>
       </rule>
       <rule id="DecisionRule_0b4gdx0">
@@ -336,7 +336,7 @@
           <text>"reviewPostponementRequestLO"</text>
         </outputEntry>
         <outputEntry id="LiteralExpression_06c9a4i">
-          <text>"Review Postponement request - Legal Officer"</text>
+          <text>"Review postponement request - Legal Officer"</text>
         </outputEntry>
       </rule>
       <rule id="DecisionRule_0gilz14">
@@ -347,7 +347,7 @@
           <text>"reviewReinstatementRequestLO"</text>
         </outputEntry>
         <outputEntry id="LiteralExpression_0hvxupu">
-          <text>"Review Reinstatement request - Legal Officer"</text>
+          <text>"Review reinstatement request - Legal Officer"</text>
         </outputEntry>
       </rule>
       <rule id="DecisionRule_0n4zkrb">
@@ -369,7 +369,7 @@
           <text>"reviewPostponementRequestJudge"</text>
         </outputEntry>
         <outputEntry id="LiteralExpression_0dbeoo2">
-          <text>"Review Postponement request - Judge"</text>
+          <text>"Review postponement request - Judge"</text>
         </outputEntry>
       </rule>
       <rule id="DecisionRule_0s8v4s4">
@@ -380,7 +380,7 @@
           <text>"reviewCorrectionsRequest"</text>
         </outputEntry>
         <outputEntry id="LiteralExpression_1i5sbz7">
-          <text>"Review Corrections request"</text>
+          <text>"Review corrections request"</text>
         </outputEntry>
       </rule>
       <rule id="DecisionRule_1ilb1r0">
@@ -391,7 +391,7 @@
           <text>"reviewWrittenReasonsRequest"</text>
         </outputEntry>
         <outputEntry id="LiteralExpression_00ik7ca">
-          <text>"Review Written Reasons request"</text>
+          <text>"Review written reasons request"</text>
         </outputEntry>
       </rule>
       <rule id="DecisionRule_1osj0wi">
@@ -402,7 +402,7 @@
           <text>"reviewReinstatementRequestJudge"</text>
         </outputEntry>
         <outputEntry id="LiteralExpression_1c6abml">
-          <text>"Review Reinstatement request - Judge"</text>
+          <text>"Review reinstatement request - Judge"</text>
         </outputEntry>
       </rule>
       <rule id="DecisionRule_13m3opm">
@@ -413,7 +413,7 @@
           <text>"reviewSetAsideRequest"</text>
         </outputEntry>
         <outputEntry id="LiteralExpression_07yfmo0">
-          <text>"Review Set Aside request"</text>
+          <text>"Review set aside request"</text>
         </outputEntry>
       </rule>
       <rule id="DecisionRule_1kw2b5o">
@@ -490,7 +490,7 @@
           <text>"reviewListCaseJudge"</text>
         </outputEntry>
         <outputEntry id="LiteralExpression_04qqktc">
-          <text>"Review List Case - Judge"</text>
+          <text>"Review list case - Judge"</text>
         </outputEntry>
       </rule>
       <rule id="DecisionRule_1a4ejwh">
@@ -501,7 +501,7 @@
           <text>"reviewStrikeOutRequestJudge"</text>
         </outputEntry>
         <outputEntry id="LiteralExpression_0zhgplk">
-          <text>"Review Strike out request - Judge"</text>
+          <text>"Review strike out request - Judge"</text>
         </outputEntry>
       </rule>
       <rule id="DecisionRule_0uy3ied">
@@ -512,7 +512,7 @@
           <text>"reviewTimeExtensionRequestJudge"</text>
         </outputEntry>
         <outputEntry id="LiteralExpression_0cf9tjz">
-          <text>"Review Time extention request - Judge"</text>
+          <text>"Review time extension request - Judge"</text>
         </outputEntry>
       </rule>
       <rule id="DecisionRule_1gsra97">
@@ -534,7 +534,7 @@
           <text>"registerNewCase"</text>
         </outputEntry>
         <outputEntry id="LiteralExpression_1rwdkyo">
-          <text>"Register New Case"</text>
+          <text>"Register new case"</text>
         </outputEntry>
       </rule>
       <rule id="DecisionRule_1wejwy4">
@@ -545,7 +545,7 @@
           <text>"processFurtherEvidence"</text>
         </outputEntry>
         <outputEntry id="LiteralExpression_1f8xtb7">
-          <text>"Process Further Evidence"</text>
+          <text>"Process further evidence"</text>
         </outputEntry>
       </rule>
       <rule id="DecisionRule_04206dj">
@@ -557,6 +557,50 @@
         </outputEntry>
         <outputEntry id="LiteralExpression_13c3bm3">
           <text>"Stitch/collate hearing bundle"</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_0ok3jpa">
+        <inputEntry id="UnaryTests_0ecpynz">
+          <text></text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_1vmoaex">
+          <text>"reviewSpecificAccessRequestJudiciary"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_05jv7tv">
+          <text>"Review Specific Access Request Judiciary"</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_13m6xax">
+        <inputEntry id="UnaryTests_16zeuig">
+          <text></text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_0puao76">
+          <text>"reviewSpecificAccessRequestLegalOps"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_0ai88w4">
+          <text>"Review Specific Access Request Legal Ops"</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_02qhmrw">
+        <inputEntry id="UnaryTests_0aycbbp">
+          <text></text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_0zm1c7y">
+          <text>"reviewSpecificAccessRequestAdmin"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_17ua66u">
+          <text>"Review Specific Access Request Admin"</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_1i2rm3v">
+        <inputEntry id="UnaryTests_0su3cdd">
+          <text></text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_1ry48dv">
+          <text>"reviewSpecificAccessRequestCTSC"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_16xp6lc">
+          <text>"Review Specific Access Request CTSC"</text>
         </outputEntry>
       </rule>
     </decisionTable>

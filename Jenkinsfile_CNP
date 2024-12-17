@@ -22,6 +22,8 @@ static Map<String, Object> secret(String secretName, String envVariable) {
   ]
 }
 
+def githubApi = new GithubAPI(this) as Object
+
 def secrets = [
         's2s-${env}'      : [
                 secret('microservicekey-ccd-data', 'DATA_STORE_S2S_KEY'),
@@ -46,6 +48,12 @@ def secrets = [
                 secret('idam-solicitor-password', 'IDAM_SOLICITOR_PASSWORD'),
                 secret('idam-systemupdate-username', 'IDAM_SYSTEM_UPDATE_USERNAME'),
                 secret('idam-systemupdate-password', 'IDAM_SYSTEM_UPDATE_PASSWORD'),
+                secret('wa-seniorCaseworker-username', 'IDAM_WA_SENIOR_CASEWORKER_USERNAME'),
+                secret('wa-seniorCaseworker-password', 'IDAM_WA_SENIOR_CASEWORKER_PASSWORD'),
+                secret('wa-seniorCaseworker-uid', 'WA_SENIOR_CASEWORKER_UID'),
+                secret('wa-regionalHearingCentreTeamLead-username', 'IDAM_WA_REGIONAL_HEARING_CENTRE_TEAM_LEAD_USERNAME'),
+                secret('wa-regionalHearingCentreTeamLead-password', 'IDAM_WA_REGIONAL_HEARING_CENTRE_TEAM_LEAD_PASSWORD'),
+                secret('wa-regionalHearingCentreTeamLead-uid', 'IDAM_WA_REGIONAL_HEARING_CENTRE_TEAM_LEAD_UID'),
                 secret('citizen-user', 'IDAM_CITIZEN_USERNAME'),
                 secret('citizen-password', 'IDAM_CITIZEN_PASSWORD'),
                 secret('sptribs-postgres-username-preview', 'SPTRIBS_POSTGRES_USERNAME_PREVIEW'),
@@ -63,6 +71,9 @@ def secrets = [
         'civil-${env}'    :[
           secret('ccd-importer-username', 'DEFINITION_IMPORTER_USERNAME'),
           secret('ccd-importer-password', 'DEFINITION_IMPORTER_PASSWORD')
+        ],
+        'sptribs-prod'    :[
+          secret('s2s-case-api-secret', 'S2S_SECRET_PROD')
         ]
 ]
 
@@ -221,7 +232,14 @@ withPipeline(type, product, component) {
     env.SERVICE_AUTH_MICROSERVICE = "sptribs_case_api"
     env.SERVICE_AUTH_PROVIDER_URL = "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
     env.TEST_E2E_URL = "https://xui-sptribs-case-api-pr-${CHANGE_ID}.preview.platform.hmcts.net"
-    env.WA_FEATURE_ENABLED = true
+    env.TASK_MONITOR_API_URL = "https://wa-task-monitor-sptribs-case-api-pr-${CHANGE_ID}.preview.platform.hmcts.net"
+    env.TASK_MANAGEMENT_API_URL = "https://wa-task-management-api-sptribs-case-api-pr-${CHANGE_ID}.preview.platform.hmcts.net"
+    env.ROLE_ASSIGNMENT_API_URL = "https://am-org-role-mapping-service-sptribs-case-api-pr-${CHANGE_ID}.preview.platform.hmcts.net"
+
+    for (label in githubApi.getLabelsbyPattern(env.BRANCH_NAME, "pr-values:wa-ft-tests") ) {
+      env.WA_FUNCTIONAL_TESTS_ENABLED = true
+    }
+
     setCommonEnvVariables()
 
     enablePactAs([AppPipelineDsl.PactRoles.CONSUMER])
@@ -235,6 +253,8 @@ withPipeline(type, product, component) {
     env.CITIZEN_UPDATE_CASE_STATE_ENABLED=true
     env.SERVICE_AUTH_MICROSERVICE = "sptribs_case_api"
     env.SERVICE_AUTH_PROVIDER_URL = "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
+    env.WA_FEATURE_ENABLED = true
+    env.CAMUNDA_BASE_URL = "http://camunda-api-aat.service.core-compute-aat.internal"
     setCommonEnvVariables()
 
     enablePactAs([AppPipelineDsl.PactRoles.CONSUMER])
@@ -252,28 +272,15 @@ withPipeline(type, product, component) {
       env.IDAM_API_URL_BASE = "https://idam-api.platform.hmcts.net"
       env.S2S_URL_BASE = "http://rpe-service-auth-provider-prod.service.core-compute-prod.internal"
       env.BEFTA_S2S_CLIENT_ID = "ccd_data"
+      env.WA_FEATURE_ENABLED = true
+      env.CAMUNDA_BASE_URL = "http://camunda-api-prod.service.core-compute-prod.internal"
 
       builder.gradle('generateCCDConfig --rerun-tasks')
 
       generateDefinitions()
-  }
 
-  def githubApi = new GithubAPI(this) as Object
-  if (githubApi.getLabelsbyPattern(env.BRANCH_NAME, "enable-e2e-tests")) {
-    afterSuccess('functionalTest:preview') {
-      try {
-        builder.gradle('e2eTests')
-      } finally {
-        publishHTML target: [
-          allowMissing         : true,
-          alwaysLinkToLastBuild: true,
-          keepAll              : true,
-          reportDir            : "build/reports/tests/e2eTests",
-          reportFiles          : "index.html",
-          reportName           : "E2E Tests Report"
-        ]
-      }
-    }
+      uploadDmnDiagrams()
+      uploadBpmnDiagram()
   }
 
   afterSuccess('akschartsinstall') {
@@ -289,6 +296,7 @@ withPipeline(type, product, component) {
   }
 
   onDemo {
+    env.WA_FEATURE_ENABLED = true
     env.ENVIRONMENT="demo"
     env.CASE_API_URL = "http://sptribs-case-api-demo.service.core-compute-demo.internal"
     env.CASE_API_DOCUMENT_DOWNLOAD_URL = "http://manage-case.demo.platform.hmcts.net/"
@@ -299,6 +307,7 @@ withPipeline(type, product, component) {
   }
 
   onPerftest {
+    env.WA_FEATURE_ENABLED = true
     env.ENVIRONMENT="perftest"
     env.CASE_API_URL = "http://sptribs-case-api-perftest.service.core-compute-perftest.internal"
     env.CCD_DEF_NAME = "perftest"
@@ -309,6 +318,7 @@ withPipeline(type, product, component) {
   }
 
   onIthc {
+    env.WA_FEATURE_ENABLED = true
     env.ENVIRONMENT="ithc"
     env.CASE_API_URL = "http://sptribs-case-api-ithc.service.core-compute-ithc.internal"
     env.CCD_DEF_NAME = "ithc"
@@ -323,11 +333,10 @@ withPipeline(type, product, component) {
     uploadCoreCaseDataDefinitions()
   }
 
-// TODO Enable on aat once Demo testing complete
-//  before('functionalTest:aat') {
-//    uploadDmnDiagrams()
-//    uploadBpmnDiagram()
-//  }
+  before('functionalTest:aat') {
+    uploadDmnDiagrams()
+    uploadBpmnDiagram()
+  }
 }
 
 def setCommonEnvVariables() {
