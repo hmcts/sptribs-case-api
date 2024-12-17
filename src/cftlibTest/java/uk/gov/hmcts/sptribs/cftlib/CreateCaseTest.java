@@ -18,5 +18,4 @@ public class CreateCaseTest extends XuiTest {
         Case newCase = new Case(page);
         newCase.createCase();
     }
-
 }

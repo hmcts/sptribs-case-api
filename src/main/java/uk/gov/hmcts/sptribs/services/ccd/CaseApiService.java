@@ -10,8 +10,8 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.client.model.StartEventResponse;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.common.config.AppsConfig;
-import uk.gov.hmcts.sptribs.edgecase.event.Event;
 import uk.gov.hmcts.sptribs.idam.IdamService;
+import uk.gov.hmcts.sptribs.services.model.Event;
 
 import static uk.gov.hmcts.sptribs.controllers.model.DssCaseDataRequest.convertDssCaseDataToRequest;
 
@@ -64,6 +64,7 @@ public class CaseApiService {
 
     public String getEventToken(String authorization, String userId, String eventId,
                                 AppsConfig.AppsDetails appsDetails) {
+
         final StartEventResponse res = coreCaseDataApi.startForCitizen(
             authorization,
             authTokenGenerator.generate(),
@@ -78,6 +79,7 @@ public class CaseApiService {
 
     public String getEventTokenForUpdate(String authorization, String userId, String eventId, String caseId,
                                          AppsConfig.AppsDetails appsDetails) {
+
         final StartEventResponse res = coreCaseDataApi.startEventForCitizen(
             authorization,
             authTokenGenerator.generate(),
@@ -92,7 +94,6 @@ public class CaseApiService {
     }
 
     public CaseDetails getCaseDetails(String authorization, Long caseId) {
-
         return coreCaseDataApi.getCase(
             authorization,
             authTokenGenerator.generate(),

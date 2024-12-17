@@ -24,7 +24,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
-import uk.gov.hmcts.sptribs.common.notification.HearingPostponedNotification;
+import uk.gov.hmcts.sptribs.notification.dispatcher.HearingPostponedNotification;
 
 import java.time.LocalDate;
 
