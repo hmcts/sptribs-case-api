@@ -1,0 +1,24 @@
+{
+  "data": {
+    "cicCaseApplicantDocumentsUploaded": [
+      {
+        "value": {
+          "documentCategory": "Linked docs",
+          "documentLink": {
+            "document_url": "url1",
+            "document_filename": "name1",
+            "document_binary_url": "url1"
+          }
+        }
+      }
+    ],
+    "issueCaseDocumentList": {
+      "value": [],
+      "list_items": [
+        {
+          "label": "[name1 L - Linked docs](http://manage-case.demo.platform.hmcts.net/documents//binary)"
+        }
+      ]
+    }
+  }
+}

@@ -18,9 +18,12 @@ import uk.gov.hmcts.reform.idam.client.models.User;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 import uk.gov.hmcts.sptribs.caseworker.model.CloseCase;
 import uk.gov.hmcts.sptribs.caseworker.model.CloseReason;
+import uk.gov.hmcts.sptribs.caseworker.model.DateModel;
 import uk.gov.hmcts.sptribs.caseworker.model.HearingSummary;
 import uk.gov.hmcts.sptribs.caseworker.model.Listing;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
+import uk.gov.hmcts.sptribs.ciccase.model.DssCaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.HearingDate;
 import uk.gov.hmcts.sptribs.ciccase.model.HearingFormat;
 import uk.gov.hmcts.sptribs.ciccase.model.HearingState;
@@ -32,6 +35,7 @@ import uk.gov.hmcts.sptribs.document.model.CICDocument;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocumentUpload;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
+import uk.gov.hmcts.sptribs.document.model.EdgeCaseDocument;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -40,11 +44,19 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 import static feign.Request.HttpMethod.GET;
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static java.util.Collections.emptySet;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
+import static uk.gov.hmcts.ccd.sdk.type.YesOrNo.YES;
+import static uk.gov.hmcts.sptribs.ciccase.model.GetAmendDateAsCompleted.MARKASCOMPLETED;
+import static uk.gov.hmcts.sptribs.ciccase.model.HearingFormat.FACE_TO_FACE;
+import static uk.gov.hmcts.sptribs.ciccase.model.HearingState.Listed;
+import static uk.gov.hmcts.sptribs.ciccase.model.HearingType.FINAL;
+import static uk.gov.hmcts.sptribs.ciccase.model.HearingType.INTERLOCUTORY;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.HEARING_DATE_1;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.HEARING_DATE_2;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.HEARING_TIME;
@@ -64,6 +76,11 @@ public class TestDataHelper {
 
     public static CaseData caseData() {
         return CaseData.builder()
+            .build();
+    }
+
+    public static CicCase cicCase() {
+        return CicCase.builder()
             .build();
     }
 
@@ -139,6 +156,24 @@ public class TestDataHelper {
             .build();
     }
 
+    public static CallbackRequest callbackRequest(final CaseData caseData, final CaseData caseDataBefore, final String eventId) {
+        OBJECT_MAPPER.registerModule(new JavaTimeModule());
+        return CallbackRequest
+            .builder()
+            .eventId(eventId)
+            .caseDetailsBefore(caseDetailsBefore(caseDataBefore))
+            .caseDetails(
+                CaseDetails
+                    .builder()
+                    .data(OBJECT_MAPPER.convertValue(caseData, TYPE_REFERENCE))
+                    .id(TEST_CASE_ID)
+                    .createdDate(LOCAL_DATE_TIME)
+                    .caseTypeId(CcdCaseType.CIC.getCaseTypeName())
+                    .build()
+            )
+            .build();
+    }
+
     public static FeignException feignException(int status, String reason) {
         byte[] emptyBody = {};
         Request request = Request.create(GET, EMPTY, Map.of(), emptyBody, UTF_8, null);
@@ -203,7 +238,6 @@ public class TestDataHelper {
         listing.setHearingType(HearingType.FINAL);
         listing.setImportantInfoDetails("some details");
         listing.setVideoCallLink("");
-        listing.setDate(LocalDate.now());
         listing.setHearingTime("10:00");
         listing.setDate(LocalDate.of(2023, 4, 21));
         listing.setHearingStatus(HearingState.Listed);
@@ -232,6 +266,18 @@ public class TestDataHelper {
         HearingDate date1 = HearingDate.builder().hearingVenueDate(HEARING_DATE_1).hearingVenueTime(HEARING_TIME).build();
         List<ListValue<HearingDate>> list = new ArrayList<>();
         ListValue<HearingDate> listValue1 = ListValue.<HearingDate>builder().value(date1).id("0").build();
+        list.add(listValue1);
+        return list;
+    }
+
+    public static List<ListValue<DateModel>> getDueDateList() {
+        DateModel date = DateModel.builder()
+            .dueDate(LocalDate.of(2024, 9, 5))
+            .information(HEARING_TIME)
+            .orderMarkAsCompleted(Set.of(MARKASCOMPLETED))
+            .build();
+        List<ListValue<DateModel>> list = new ArrayList<>();
+        ListValue<DateModel> listValue1 = ListValue.<DateModel>builder().value(date).id("0").build();
         list.add(listValue1);
         return list;
     }
@@ -319,14 +365,14 @@ public class TestDataHelper {
             .build();
     }
 
-    public static  List<ListValue<CaseworkerCICDocument>> getDocument() {
+    public static List<ListValue<CaseworkerCICDocument>> getDocument() {
         List<ListValue<CaseworkerCICDocument>> listValueList = get2Document();
         ListValue<CaseworkerCICDocument> last = listValueList.get(1);
         listValueList.remove(last);
         return listValueList;
     }
 
-    public static  List<ListValue<CaseworkerCICDocument>> get2Document() {
+    public static List<ListValue<CaseworkerCICDocument>> get2Document() {
         List<ListValue<CaseworkerCICDocument>> listValueList = new ArrayList<>();
         CaseworkerCICDocument doc = CaseworkerCICDocument.builder()
             .documentCategory(DocumentType.LINKED_DOCS)
@@ -345,7 +391,7 @@ public class TestDataHelper {
         return listValueList;
     }
 
-    public static  List<ListValue<CICDocument>> get2DocumentCiC() {
+    public static List<ListValue<CICDocument>> get2DocumentCiC() {
         List<ListValue<CICDocument>> listValueList = new ArrayList<>();
         CICDocument doc = CICDocument.builder()
             .documentLink(Document.builder().url("url1").binaryUrl("url1").filename("name1").build())
@@ -546,5 +592,70 @@ public class TestDataHelper {
             .value(listItem)
             .listItems(List.of(listItem))
             .build();
+    }
+
+    public static DssCaseData getDssCaseData() {
+        EdgeCaseDocument doc1 = new EdgeCaseDocument();
+        doc1.setDocumentLink(
+            Document.builder()
+                .filename("doc1.pdf")
+                .binaryUrl("doc1.pdf/binary")
+                .categoryId("test category")
+                .build()
+        );
+        doc1.setComment("this doc is relevant to the case");
+        EdgeCaseDocument doc2 = new EdgeCaseDocument();
+        doc2.setDocumentLink(
+            Document.builder()
+                .filename("doc2.pdf")
+                .binaryUrl("doc2.pdf/binary")
+                .categoryId("test category")
+                .build()
+        );
+        doc2.setComment("this doc is also relevant to the case");
+        final List<ListValue<EdgeCaseDocument>> dssCaseDataOtherInfoDocuments = List.of(
+            new ListValue<>("1", doc1),
+            new ListValue<>("2", doc2)
+        );
+
+        return DssCaseData.builder()
+            .additionalInformation("some additional info")
+            .otherInfoDocuments(dssCaseDataOtherInfoDocuments)
+            .build();
+    }
+
+    public static List<ListValue<Listing>> getHearingList() {
+        final Listing listing1 = Listing.builder()
+            .date(LocalDate.of(2024, 8, 14))
+            .hearingType(FINAL)
+            .hearingTime("10:00")
+            .regionList(getMockedRegionData())
+            .hearingVenues(getMockedHearingVenueData())
+            .venueNotListedOption(emptySet())
+            .roomAtVenue("G.01")
+            .addlInstr("Ground floor")
+            .hearingFormat(FACE_TO_FACE)
+            .shortNotice(YES)
+            .hearingStatus(Listed)
+            .build();
+        final Listing listing2 = Listing.builder()
+            .date(LocalDate.of(2024, 8, 14))
+            .hearingType(INTERLOCUTORY)
+            .hearingTime("14:00")
+            .regionList(getMockedRegionData())
+            .hearingVenues(getMockedHearingVenueData())
+            .venueNotListedOption(emptySet())
+            .roomAtVenue("G.01")
+            .addlInstr("Ground floor")
+            .hearingFormat(FACE_TO_FACE)
+            .shortNotice(YES)
+            .hearingStatus(Listed)
+            .build();
+
+        final List<ListValue<Listing>> hearingList = new ArrayList<>();
+        hearingList.add(new ListValue<>("1", listing1));
+        hearingList.add(new ListValue<>("2", listing2));
+
+        return hearingList;
     }
 }

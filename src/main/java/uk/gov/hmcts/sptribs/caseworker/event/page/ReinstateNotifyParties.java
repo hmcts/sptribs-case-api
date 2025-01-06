@@ -14,12 +14,10 @@ import java.util.List;
 public class ReinstateNotifyParties implements CcdPageConfiguration {
 
     private static final String ALWAYS_HIDE = "cicCaseReinstateReason=\"NEVER_SHOW\"";
-
     private static final String RECIPIENT_LABEL = "Reinstate information recipient";
 
     @Override
     public void addTo(PageBuilder pageBuilder) {
-
         pageBuilder.page("reinstateCaseNotifyParties", this::midEvent)
             .pageLabel("Contact parties")
             .label("LabelReinstateCaseNotifyParties", "")
@@ -42,6 +40,7 @@ public class ReinstateNotifyParties implements CcdPageConfiguration {
 
     public AboutToStartOrSubmitResponse<CaseData, State> midEvent(CaseDetails<CaseData, State> details,
                                                                   CaseDetails<CaseData, State> detailsBefore) {
+
         final CaseData data = details.getData();
         final List<String> errors = EventUtil.checkRecipient(data);
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
@@ -49,7 +48,4 @@ public class ReinstateNotifyParties implements CcdPageConfiguration {
             .errors(errors)
             .build();
     }
-
-
 }
-

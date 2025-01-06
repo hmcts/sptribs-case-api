@@ -1,0 +1,16 @@
+{
+  "data": {
+    "cicCaseHearingList": {
+      "list_items": [
+        {
+          "code": "${json-unit.any-string}",
+          "label": "1 - Final - 14 Aug 2024 10:00"
+        },
+        {
+          "code": "${json-unit.any-string}",
+          "label": "2 - Interlocutory - 14 Aug 2024 14:00"
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,91 @@
+{
+  "data": {
+    "hearingType": "CaseManagement",
+    "hearingList": [
+      {
+        "id": "1",
+        "value": {
+          "hearingStatus": "Listed",
+          "hearingType": "Final",
+          "hearingFormat": "Face to Face",
+          "shortNotice": "Yes",
+          "hearingVenues": {
+            "value": {
+              "code": "${json-unit.any-string}",
+              "label": "courtname-courtAddress"
+            },
+            "list_items": [
+              {
+                "code": "${json-unit.any-string}",
+                "label": "courtname-courtAddress"
+              }
+            ],
+            "valueCode": "${json-unit.any-string}",
+            "valueLabel": "courtname-courtAddress"
+          },
+          "regionList": {
+            "value": {
+              "code": "${json-unit.any-string}",
+              "label": "1-region"
+            },
+            "list_items": [
+              {
+                "code": "${json-unit.any-string}",
+                "label": "1-region"
+              }
+            ],
+            "valueCode": "${json-unit.any-string}",
+            "valueLabel": "1-region"
+          },
+          "venueNotListedOption": [],
+          "roomAtVenue": "G.01",
+          "addlInstr": "Ground floor",
+          "date": "2024-08-14",
+          "hearingTime": "10:00"
+        }
+      },
+      {
+        "id": "2",
+        "value": {
+          "hearingStatus": "Listed",
+          "hearingType": "Interlocutory",
+          "hearingFormat": "Face to Face",
+          "shortNotice": "Yes",
+          "hearingVenues": {
+            "value": {
+              "code": "${json-unit.any-string}",
+              "label": "courtname-courtAddress"
+            },
+            "list_items": [
+              {
+                "code": "${json-unit.any-string}",
+                "label": "courtname-courtAddress"
+              }
+            ],
+            "valueCode": "${json-unit.any-string}",
+            "valueLabel": "courtname-courtAddress"
+          },
+          "regionList": {
+            "value": {
+              "code": "${json-unit.any-string}",
+              "label": "1-region"
+            },
+            "list_items": [
+              {
+                "code": "${json-unit.any-string}",
+                "label": "1-region"
+              }
+            ],
+            "valueCode": "${json-unit.any-string}",
+            "valueLabel": "1-region"
+          },
+          "venueNotListedOption": [],
+          "roomAtVenue": "G.01",
+          "addlInstr": "Ground floor",
+          "date": "2024-08-14",
+          "hearingTime": "14:00"
+        }
+      }
+    ]
+  }
+}

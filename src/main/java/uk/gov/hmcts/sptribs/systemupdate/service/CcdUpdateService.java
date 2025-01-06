@@ -46,15 +46,12 @@ public class CcdUpdateService {
         final String userId = user.getUserDetails().getId();
         final String authorization = user.getAuthToken();
 
-        log.info("Submit event for Case ID: {}, Event ID: {}", caseId, eventId);
-
         try {
             startAndSubmitEventForCaseworkers(eventId, serviceAuth, caseId.toString(), userId, authorization);
         } catch (final FeignException e) {
 
             final String message = format("Submit Event Failed for Case ID: %s, Event ID: %s", caseId, eventId);
-            log.info(message, e);
-            log.info(e.contentUTF8());
+            log.error(message, e);
 
             if (e.status() == CONFLICT.value()) {
                 throw new CcdConflictException(message, e);
@@ -70,8 +67,6 @@ public class CcdUpdateService {
                                      final CaseTask caseTask,
                                      final User user,
                                      final String serviceAuth) {
-
-        log.info("Submit event with retry for Case ID: {}, Event ID: {}", caseId, eventId);
 
         final String userId = user.getUserDetails().getId();
         final String authorization = user.getAuthToken();
@@ -103,8 +98,7 @@ public class CcdUpdateService {
                     caseDataContent);
         } catch (FeignException e) {
             final String message = format("Submit Event Failed for Case ID: %s, Event ID: %s", caseId, eventId);
-            log.info(message, e);
-            log.info(e.contentUTF8());
+            log.error(message, e);
 
             throw new CcdManagementException(message, e);
         }

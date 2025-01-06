@@ -19,7 +19,6 @@ public class StayCaseTest extends XuiTest {
         Case newCase = new Case(page);
         newCase.createCase();
         newCase.buildCase();
-
         newCase.addStayToCase();
     }
 }

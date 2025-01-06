@@ -1,0 +1,76 @@
+{
+  "data": {
+    "cicCaseHearingList": {
+      "value": {
+        "code": "${json-unit.any-string}",
+        "label": "2 - Interlocutory - 14 Aug 2024 14:00"
+      },
+      "list_items": [
+        {
+          "code": "${json-unit.any-string}",
+          "label": "1 - Final - 14 Aug 2024 10:00"
+        },
+        {
+          "code": "${json-unit.any-string}",
+          "label": "2 - Interlocutory - 14 Aug 2024 14:00"
+        }
+      ],
+      "valueCode": "${json-unit.any-string}",
+      "valueLabel": "2 - Interlocutory - 14 Aug 2024 14:00"
+    },
+    "hearingStatus": "Cancelled",
+    "cancelledDate": "${json-unit.any-string}",
+    "hearingList": [
+      {
+        "id": "1",
+        "value": {
+          "hearingStatus": "Listed",
+          "hearingType": "Final",
+          "hearingFormat": "Face to Face",
+          "shortNotice": "Yes",
+          "hearingVenues": {
+            "value": {
+              "code": "${json-unit.any-string}",
+              "label": "courtname-courtAddress"
+            },
+            "list_items": [
+              {
+                "code": "${json-unit.any-string}",
+                "label": "courtname-courtAddress"
+              }
+            ],
+            "valueCode": "${json-unit.any-string}",
+            "valueLabel": "courtname-courtAddress"
+          },
+          "regionList": {
+            "value": {
+              "code": "${json-unit.any-string}",
+              "label": "1-region"
+            },
+            "list_items": [
+              {
+                "code": "${json-unit.any-string}",
+                "label": "1-region"
+              }
+            ],
+            "valueCode": "${json-unit.any-string}",
+            "valueLabel": "1-region"
+          },
+          "venueNotListedOption": [],
+          "roomAtVenue": "G.01",
+          "addlInstr": "Ground floor",
+          "date": "${json-unit.any-string}",
+          "hearingTime": "10:00"
+        }
+      },
+      {
+        "id": "2",
+        "value": {
+          "hearingStatus": "Cancelled",
+          "cancelledDate": "${json-unit.any-string}"
+        }
+      }
+    ]
+  },
+  "state": "CaseManagement"
+}

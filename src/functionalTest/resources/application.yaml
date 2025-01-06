@@ -26,6 +26,8 @@ uk:
 
 s2s:
   name: ccd_data
+  task_management_name: wa_task_management_api
+  access_management_name: am_role_assignment_service
 
 idam:
   api:
@@ -40,6 +42,14 @@ idam:
   caseworker:
     username: ${IDAM_CASEWORKER_USERNAME:dummycaseworker@test.com}
     password: ${IDAM_CASEWORKER_PASSWORD:dummy}
+  waseniorcaseworker:
+    username: ${IDAM_WA_SENIOR_CASEWORKER_USERNAME:dummywaseniorcaseworker@test.com}
+    password: ${IDAM_WA_SENIOR_CASEWORKER_PASSWORD:dummy}
+    uid: ${WA_SENIOR_CASEWORKER_UID:dummy}
+  waregionalhearingcentreteamlead:
+    username: ${IDAM_WA_REGIONAL_HEARING_CENTRE_TEAM_LEAD_USERNAME:dummywaregionalhearingcentreteamlead@test.com}
+    password: ${IDAM_WA_REGIONAL_HEARING_CENTRE_TEAM_LEAD_PASSWORD:dummy}
+    uid: ${IDAM_WA_REGIONAL_HEARING_CENTRE_TEAM_LEAD_UID:dummy}
   systemupdate:
     username: ${IDAM_SYSTEM_UPDATE_USERNAME:dummysystemupdate@test.com}
     password: ${IDAM_SYSTEM_UPDATE_PASSWORD:dummy}
@@ -88,10 +98,6 @@ document_management:
 case_document_am:
   url: ${CASE_DOCUMENT_AM_BASEURL:http://ccd-case-document-am-api-aat.service.core-compute-aat.internal}
 
-prd:
-  api:
-    url: ${PRD_API_BASEURL:http://rd-professional-api-aat.service.core-compute-aat.internal}
-
 send-letter:
   url: ${SEND_LETTER_SERVICE_BASEURL:http://rpe-send-letter-service-aat.service.core-compute-aat.internal}
 
@@ -105,6 +111,10 @@ feature:
     enabled: ${ACCESS_PROFILES_ENABLED:true}
   wa:
     enabled: ${WA_FEATURE_ENABLED:false}
+    functional-tests-enabled: ${WA_FUNCTIONAL_TESTS_ENABLED:false}
+  migrate-global-search-task:
+    enabled: ${GLOBAL_SEARCH_MIGRATION_ENABLED:false}
+    caseReference: ${GLOBAL_SEARCH_MIGRATION_TEST_CASE_REF:}
 
 caseinfo:
   apps:
@@ -118,3 +128,9 @@ caseinfo:
       caseTypeOfApplication:
         - CIC
 
+wa_task_monitor_api:
+  url: ${TASK_MONITOR_API_URL:http://wa-task-monitor-aat.service.core-compute-aat.internal}
+wa_task_management_api:
+  url: ${TASK_MANAGEMENT_API_URL:http://wa-task-management-api-aat.service.core-compute-aat.internal}
+role_assignment_mapping_api:
+  url: ${ROLE_ASSIGNMENT_API_URL:http://am-org-role-mapping-service-aat.service.core-compute-aat.internal}

@@ -33,7 +33,7 @@ public final class GetAllTemplatesFromNotify {
 
             final  TemplateList templates = client.getAllTemplates(notificationType);
 
-            log.info("Found " + templates.getTemplates().size() + " templates in total");
+            log.debug("Found " + templates.getTemplates().size() + " templates in total");
 
             // Uncomment if searching template values.
             searchTemplateValues(templates);
@@ -59,10 +59,10 @@ public final class GetAllTemplatesFromNotify {
             final Map<String, Object> personalisation = template.getPersonalisation().orElse(new HashMap<>());
 
             if (personalisation.containsKey(searchCriteria)) {
-                log.info("************************************************************");
+                log.debug("************************************************************");
 
                 if (isRetiredTemplate(template.getName())) {
-                    log.info("Excluding retired template: " + template.getName());
+                    log.debug("Excluding retired template: " + template.getName());
                     continue;
                 }
                 printFoundTemplate(template);
@@ -70,7 +70,7 @@ public final class GetAllTemplatesFromNotify {
             }
         }
 
-        log.info("\nThere were " + count + " templates found with key " + searchCriteria);
+        log.debug("\nThere were " + count + " templates found with key " + searchCriteria);
     }
 
     private static void searchTemplateBody(TemplateList templates) {
@@ -82,10 +82,10 @@ public final class GetAllTemplatesFromNotify {
             final String body = template.getBody();
 
             if (body.contains(searchCriteria)) {
-                log.info("************************************************************");
+                log.debug("************************************************************");
 
                 if (isRetiredTemplate(template.getName())) {
-                    log.info("Excluding retired template: " + template.getName());
+                    log.debug("Excluding retired template: " + template.getName());
                     continue;
                 }
                 printFoundTemplate(template);
@@ -93,14 +93,14 @@ public final class GetAllTemplatesFromNotify {
             }
         }
 
-        log.info("\nThere were " + count + " templates found with text '" + searchCriteria + "'");
+        log.debug("\nThere were " + count + " templates found with text '" + searchCriteria + "'");
     }
 
     private static void printFoundTemplate(Template template) {
 
-        log.info("Name: " + template.getName());
-        log.info("ID: " + template.getId());
-        log.info("Type: " + template.getTemplateType());
+        log.debug("Name: " + template.getName());
+        log.debug("ID: " + template.getId());
+        log.debug("Type: " + template.getTemplateType());
     }
 
     private static boolean isRetiredTemplate(String str) {

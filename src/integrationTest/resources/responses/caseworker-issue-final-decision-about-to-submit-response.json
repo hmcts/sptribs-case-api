@@ -1,0 +1,13 @@
+{
+  "data": {
+    "caseIssueFinalDecisionDocument": {
+      "documentLink": {
+        "document_url": "url",
+        "document_filename": "filename.pdf",
+        "document_binary_url": "binary",
+        "category_id": "TD"
+      }
+    }
+  },
+  "state": "CaseClosed"
+}
