@@ -18,7 +18,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
-import uk.gov.hmcts.sptribs.common.notification.CaseUnstayedNotification;
+import uk.gov.hmcts.sptribs.notification.dispatcher.CaseUnstayedNotification;
 
 import static java.lang.String.format;
 import static org.apache.commons.collections4.CollectionUtils.isEmpty;
@@ -81,8 +81,6 @@ public class CaseworkerRemoveStay implements CCDConfig<CaseData, State, UserRole
 
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(final CaseDetails<CaseData, State> details,
                                                                        final CaseDetails<CaseData, State> beforeDetails) {
-
-        log.info("Caseworker stay the case callback invoked for Case Id: {}", details.getId());
 
         final CaseData caseData = details.getData();
         caseData.getCaseStay().setIsCaseStayed(YesOrNo.NO);

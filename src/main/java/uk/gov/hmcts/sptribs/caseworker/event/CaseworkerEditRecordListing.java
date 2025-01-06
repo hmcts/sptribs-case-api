@@ -30,7 +30,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
-import uk.gov.hmcts.sptribs.common.notification.ListingUpdatedNotification;
+import uk.gov.hmcts.sptribs.notification.dispatcher.ListingUpdatedNotification;
 
 import java.util.List;
 import java.util.Set;
@@ -153,7 +153,6 @@ public class CaseworkerEditRecordListing implements CCDConfig<CaseData, State, U
     @SneakyThrows
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(CaseDetails<CaseData, State> details,
                                                                        CaseDetails<CaseData, State> beforeDetails) {
-        log.info("Caseworker updated record listing callback invoked for Case Id: {}", details.getId());
 
         final CaseData caseData = details.getData();
         final List<String> errors = recordListHelper.getErrorMsg(details.getData().getCicCase());

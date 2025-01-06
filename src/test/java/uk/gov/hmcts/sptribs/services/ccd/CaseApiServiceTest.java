@@ -38,7 +38,7 @@ import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CITIZEN_DSS_UP
 import static uk.gov.hmcts.sptribs.constants.CommonConstants.ST_CIC_CASE_TYPE;
 import static uk.gov.hmcts.sptribs.constants.CommonConstants.ST_CIC_JURISDICTION;
 import static uk.gov.hmcts.sptribs.controllers.model.DssCaseDataRequest.convertDssCaseDataToRequest;
-import static uk.gov.hmcts.sptribs.edgecase.event.Event.UPDATE_CASE;
+import static uk.gov.hmcts.sptribs.services.model.Event.UPDATE_CASE;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.CASE_DATA_CIC_ID;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.CASE_DATA_FILE_CIC;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.CASE_TEST_AUTHORIZATION;
@@ -213,7 +213,7 @@ class CaseApiServiceTest {
 
         final CaseDetails updateCaseDetails = caseApiService.updateCase(
             CASE_TEST_AUTHORIZATION,
-            uk.gov.hmcts.sptribs.edgecase.event.Event.UPDATE,
+            uk.gov.hmcts.sptribs.services.model.Event.UPDATE,
             TEST_CASE_ID,
             caseData,
             cicAppDetails);
@@ -366,7 +366,7 @@ class CaseApiServiceTest {
 
         final CaseDetails updateCaseDetails = caseApiService.updateCase(
             CASE_TEST_AUTHORIZATION,
-            uk.gov.hmcts.sptribs.edgecase.event.Event.SUBMIT,
+            uk.gov.hmcts.sptribs.services.model.Event.SUBMIT,
             TEST_CASE_ID,
             caseData,
             cicAppDetails);

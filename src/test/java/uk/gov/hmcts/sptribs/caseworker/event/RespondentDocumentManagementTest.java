@@ -33,7 +33,6 @@ class RespondentDocumentManagementTest {
     @InjectMocks
     private RespondentDocumentManagement respondentDocumentManagement;
 
-
     @Test
     void shouldAddConfigurationToConfigBuilder() {
         final ConfigBuilderImpl<CaseData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
@@ -117,5 +116,4 @@ class RespondentDocumentManagementTest {
         SubmittedCallbackResponse response = respondentDocumentManagement.submitted(updatedCaseDetails, beforeDetails);
         assertThat(response.getConfirmationHeader()).isEqualTo("# Case Updated");
     }
-
 }

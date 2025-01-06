@@ -1,0 +1,14 @@
+{
+  "id": "bf524bab-eacf-4ad0-accd-781e614e2586",
+  "reference": "ST_CIC email reference",
+  "content": {
+    "body": "dear sir, info.",
+    "from_email": "CIC.enquiries@justice.gov.uk",
+    "subject": "test@email.com"
+  },
+  "template": {
+    "id": "5385bfc6-eb33-41f6-ad2b-590a4f427606",
+    "version": "1",
+    "uri": "/test-uri"
+  }
+}

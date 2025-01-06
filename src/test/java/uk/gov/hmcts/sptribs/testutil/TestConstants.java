@@ -18,14 +18,73 @@ public final class TestConstants {
 
     public static final String APPLICANT_FIRST_NAME = "applicant_2_first_name";
 
+    public static final String CONFIRMATION_HEADER = "$.confirmation_header";
+
     public static final String ABOUT_TO_START_URL = "/callbacks/about-to-start";
     public static final String ABOUT_TO_SUBMIT_URL = "/callbacks/about-to-submit";
     public static final String SUBMITTED_URL = "/callbacks/submitted";
+
+    public static final String ISSUE_DECISION_SELECT_RECIPIENTS_MID_EVENT_URL = "/callbacks/mid-event?page=issueDecisionSelectRecipients";
+
+    public static final String ISSUE_DECISION_SELECT_TEMPLATE_MID_EVENT_URL = "/callbacks/mid-event?page=issueDecisionSelectTemplate";
+
+    public static final String ISSUE_DECISION_UPLOAD_NOTICE_MID_EVENT_URL = "/callbacks/mid-event?page=issueDecisionUploadNotice";
+
+
+    public static final String ISSUE_FINAL_DECISION_MID_EVENT_URL = "/callbacks/mid-event?page=issueFinalDecisionAddDocumentFooter";
+
+    public static final String ISSUE_FINAL_DECISION_UPLOAD_MID_EVENT_URL = "/callbacks/mid-event?page=issueFinalDecisionUpload";
+
     public static final String RECORD_NOTIFY_PARTIES_MID_EVENT_URL = "/callbacks/mid-event?page=recordListingNotifyPage";
     public static final String HEARING_OPTIONS_REGION_DATA_MID_EVENT_URL = "/callbacks/mid-event?page=hearingOptionsRegionData";
     public static final String EDIT_DRAFT_ORDER_MID_EVENT_URL = "callbacks/mid-event?page=editDraftOrderAddDocumentFooter";
     public static final String EDIT_RECORD_LISTING_MID_EVENT_URL = "callbacks/mid-event?page=regionInfo";
+    public static final String RECORD_LISTING_MID_EVENT_URL = "/callbacks/mid-event?page=regionInfo";
     public static final String CHANGE_SECURITY_CLASSIFICATION_MID_EVENT_URL = "/callbacks/mid-event?page=changeSecurityClass";
+    public static final String SEND_ORDER_NOTIFY_PARTIES_MID_EVENT_URL
+        = "/callbacks/mid-event?page=caseWorkerSendOrderNotifyParties";
+    public static final String ISSUE_FINAL_DECISION_SELECT_RECIPIENTS_MID_EVENT_URL
+        = "/callbacks/mid-event?page=issueFinalDecisionSelectRecipients";
+    public static final String SELECT_HEARING_MID_EVENT_URL
+        = "/callbacks/mid-event?page=selectHearing";
+    public static final String REINSTATE_NOTIFY_PARTIES_MID_EVENT_URL
+        = "/callbacks/mid-event?page=reinstateCaseNotifyParties";
+    public static final String CONTACT_PARTIES_TO_CONTACT_MID_EVENT_URL
+        = "/callbacks/mid-event?page=partiesToContact";
+    public static final String REINSTATE_UPLOAD_DOCUMENTS_MID_EVENT_URL
+        = "/callbacks/mid-event?page=reinstateUploadDocument";
+    public static final String CONTACT_PARTIES_SELECT_DOCUMENT_MID_EVENT_URL
+        = "/callbacks/mid-event?page=contactPartiesSelectDocument";
+    public static final String EDIT_HEARING_SUMMARY_SELECT_MID_EVENT_URL
+        = "/callbacks/mid-event?page=editHearingSummarySelect";
+    public static final String DOCUMENT_MANAGEMENT_SELECT_DOCUMENT_MID_EVENT_URL
+        = "/callbacks/mid-event?page=selectCaseDocuments";
+    public static final String POSTPONE_HEARING_NOTIFY_PARTIES_MID_EVENT_URL =
+        "/callbacks/mid-event?page=caseworkerPostponeHearingNotifyParties";
+    public static final String ISSUE_FINAL_DECISION_SELECT_TEMPLATE_MID_EVENT_URL =
+        "/callbacks/mid-event?page=issueFinalDecisionSelectTemplate";
+    public static final String AMEND_DUE_DATA_SELECT_ORDER_MID_EVENT_URL =
+        "/callbacks/mid-event?page=caseworkerAmendDueDateSelectOrder";
+
+    public static final String REFER_TO_JUDGE_REASON_MID_EVENT_URL = "/callbacks/mid-event?page=referToJudgeReason";
+
+    public static final String REFER_TO_LEGAL_OFFICER_REASON_MID_EVENT_URL = "/callbacks/mid-event?page=referToLegalOfficer";
+
+    public static final String ISSUE_DECISION_MID_EVENT_URL = "/callbacks/mid-event?page=issueDecisionAddDocumentFooter";
+
+    public static final String HEARING_RECORDINGS_UPLOAD_MID_EVENT_URL = "/callbacks/mid-event?page=hearingRecordingUploadPage";
+
+    public static final String ISSUE_CASE_SELECT_DOCUMENT_MID_EVENT_URL = "/callbacks/mid-event?page=issueCaseSelectDocument";
+
+    public static final String HEARING_VENUES_MID_EVENT_URL = "/callbacks/mid-event?page=listingDetails";
+
+    public static final String ISSUE_CASE_NOTIFY_PARTIES = "/callbacks/mid-event?page=issueCaseNotifyParties";
+
+    public static final String SEND_ORDER_UPLOAD_ORDER_MID_EVENT_URL = "/callbacks/mid-event?page=caseworkerSendOrderUploadOrder";
+
+    public static final String SHOW_CASE_DOCUMENTS_MID_EVENT_URL = "/callbacks/mid-event?page=showCaseDocuments";
+
+    public static final String UPLOAD_CASE_DOCUMENTS_MID_EVENT_URL = "/callbacks/mid-event?page=uploadCaseDocuments";
 
     public static final String AUTH_HEADER_VALUE = "auth-header-value";
     public static final String INVALID_AUTH_TOKEN = "invalid_token";
@@ -75,6 +134,8 @@ public final class TestConstants {
     public static final String TEST_USER = "TestUser";
     public static final UUID TEST_CASE_DATA_FILE_UUID = UUID.randomUUID();
 
+    public static final String ERRORS = "$.errors";
+
     public static final AddressGlobalUK APPLICANT_ADDRESS = AddressGlobalUK.builder()
         .addressLine1("line1")
         .addressLine2("line2")
@@ -99,6 +160,9 @@ public final class TestConstants {
     public static final LocalDate HEARING_DATE_1 = LocalDate.now();
     public static final LocalDate HEARING_DATE_2 = LocalDate.now().minusDays(1);
     public static final String HEARING_TIME = "11:00";
+
+    public static final String ST_CIC_JURISDICTION = "ST_CIC";
+    public static final String ST_CIC_CASE_TYPE = "CriminalInjuriesCompensation";
 
     private TestConstants() {
     }

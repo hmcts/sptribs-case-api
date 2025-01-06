@@ -63,7 +63,7 @@ import static uk.gov.hmcts.sptribs.testutil.TestResourceUtil.expectedResponse;
 public class CreateCaseIT {
 
     private static final String CASEWORKER_CREATE_CASE_ABOUT_TO_SUBMIT_RESPONSE =
-        "classpath:caseworker-create-case-about-to-submit-response.json";
+        "classpath:responses/caseworker-create-case-about-to-submit-response.json";
 
     @Autowired
     private MockMvc mockMvc;

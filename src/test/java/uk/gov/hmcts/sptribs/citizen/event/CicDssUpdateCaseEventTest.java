@@ -16,15 +16,13 @@ import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
-import uk.gov.hmcts.sptribs.ciccase.model.DssCaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.DssMessage;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.ciccase.model.access.Permissions;
-import uk.gov.hmcts.sptribs.common.notification.DssUpdateCaseSubmissionNotification;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
-import uk.gov.hmcts.sptribs.document.model.EdgeCaseDocument;
 import uk.gov.hmcts.sptribs.idam.IdamService;
+import uk.gov.hmcts.sptribs.notification.dispatcher.DssUpdateCaseSubmissionNotification;
 import uk.gov.hmcts.sptribs.notification.exception.NotificationException;
 import uk.gov.hmcts.sptribs.testutil.TestDataHelper;
 
@@ -44,6 +42,7 @@ import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigB
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.getEventsFrom;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_AUTHORIZATION_TOKEN;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID;
+import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getDssCaseData;
 
 @ExtendWith(MockitoExtension.class)
 class CicDssUpdateCaseEventTest {
@@ -307,35 +306,5 @@ class CicDssUpdateCaseEventTest {
 
         assertThat(response.getConfirmationHeader())
             .contains("# CIC Dss Update Case Event Email notification failed %n## Please resend the notification");
-    }
-
-    private DssCaseData getDssCaseData() {
-        EdgeCaseDocument doc1 = new EdgeCaseDocument();
-        doc1.setDocumentLink(
-            Document.builder()
-                .filename("doc1.pdf")
-                .binaryUrl("doc1.pdf/binary")
-                .categoryId("test category")
-                .build()
-        );
-        doc1.setComment("this doc is relevant to the case");
-        EdgeCaseDocument doc2 = new EdgeCaseDocument();
-        doc2.setDocumentLink(
-            Document.builder()
-                .filename("doc2.pdf")
-                .binaryUrl("doc2.pdf/binary")
-                .categoryId("test category")
-                .build()
-        );
-        doc2.setComment("this doc is also relevant to the case");
-        final List<ListValue<EdgeCaseDocument>> dssCaseDataOtherInfoDocuments = List.of(
-            new ListValue<>("1", doc1),
-            new ListValue<>("2", doc2)
-        );
-
-        return DssCaseData.builder()
-            .additionalInformation("some additional info")
-            .otherInfoDocuments(dssCaseDataOtherInfoDocuments)
-            .build();
     }
 }

@@ -79,7 +79,6 @@ public class CaseworkerCreateBundle implements CCDConfig<CaseData, State, UserRo
     @SneakyThrows
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(CaseDetails<CaseData, State> details,
                                                                        CaseDetails<CaseData, State> beforeDetails) {
-        log.info("Caseworker create bundle callback invoked for Case Id: {}", details.getId());
 
         final CaseData caseData = details.getData();
         final List<ListValue<CaseworkerCICDocument>> documentListValues = DocumentListUtil.getAllCaseDocuments(caseData);
