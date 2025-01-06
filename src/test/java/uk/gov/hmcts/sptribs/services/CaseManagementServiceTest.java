@@ -15,10 +15,10 @@ import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.DssCaseData;
 import uk.gov.hmcts.sptribs.common.config.AppsConfig;
 import uk.gov.hmcts.sptribs.constants.CommonConstants;
-import uk.gov.hmcts.sptribs.edgecase.event.Event;
 import uk.gov.hmcts.sptribs.exception.CaseCreateOrUpdateException;
 import uk.gov.hmcts.sptribs.model.CaseResponse;
 import uk.gov.hmcts.sptribs.services.ccd.CaseApiService;
+import uk.gov.hmcts.sptribs.services.model.Event;
 import uk.gov.hmcts.sptribs.util.AppsUtil;
 
 import java.util.List;

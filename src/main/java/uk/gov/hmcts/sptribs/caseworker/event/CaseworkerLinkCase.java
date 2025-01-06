@@ -13,7 +13,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
-import uk.gov.hmcts.sptribs.common.notification.CaseLinkedNotification;
+import uk.gov.hmcts.sptribs.notification.dispatcher.CaseLinkedNotification;
 
 import static java.lang.String.format;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_LINK_CASE;

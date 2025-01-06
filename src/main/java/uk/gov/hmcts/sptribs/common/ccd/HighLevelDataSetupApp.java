@@ -1,7 +1,6 @@
 package uk.gov.hmcts.sptribs.common.ccd;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import uk.gov.hmcts.befta.dse.ccd.CcdEnvironment;
 import uk.gov.hmcts.befta.dse.ccd.CcdRoleConfig;
@@ -11,10 +10,8 @@ import uk.gov.hmcts.befta.exception.ImportException;
 import java.util.List;
 import java.util.Locale;
 
-
+@Slf4j
 public class HighLevelDataSetupApp extends DataLoaderToDefinitionStore {
-
-    private static final Logger logger = LoggerFactory.getLogger(HighLevelDataSetupApp.class);
 
     private static final CcdRoleConfig[] CCD_ROLES_NEEDED_FOR_ST_CIC = {
         new CcdRoleConfig("caseworker-sptribs-superuser", "PUBLIC"),
@@ -33,7 +30,10 @@ public class HighLevelDataSetupApp extends DataLoaderToDefinitionStore {
         new CcdRoleConfig("caseflags-admin", "PUBLIC"),
         new CcdRoleConfig("caseflags-viewer", "PUBLIC"),
         new CcdRoleConfig("citizen", "PUBLIC"),
-        new CcdRoleConfig("caseworker-st-cic", "PUBLIC")
+        new CcdRoleConfig("caseworker-st-cic", "PUBLIC"),
+        new CcdRoleConfig("caseworker-wa-task-configuration", "PUBLIC"),
+        new CcdRoleConfig("GS_profile", "PUBLIC"),
+        new CcdRoleConfig("caseworker-ras-validation", "PUBLIC")
     };
 
     private final CcdEnvironment environment;
@@ -63,11 +63,11 @@ public class HighLevelDataSetupApp extends DataLoaderToDefinitionStore {
     public void addCcdRoles() {
         for (CcdRoleConfig roleConfig : CCD_ROLES_NEEDED_FOR_ST_CIC) {
             try {
-                logger.info("\n\nAdding CCD Role {}.", roleConfig);
+                log.info("\n\nAdding CCD Role {}.", roleConfig);
                 addCcdRole(roleConfig);
-                logger.info("\n\nAdded CCD Role {}.", roleConfig);
+                log.info("\n\nAdded CCD Role {}.", roleConfig);
             } catch (Exception e) {
-                logger.error("\n\nCouldn't add CCD Role {} - Exception: {}.\n\n", roleConfig, e);
+                log.error("\n\nCouldn't add CCD Role {} - Exception: {}.\n\n", roleConfig, e);
                 if (!shouldTolerateDataSetupFailure(e)) {
                     throw e;
                 }

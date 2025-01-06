@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
+import uk.gov.hmcts.ccd.sdk.api.Event;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.ccd.sdk.type.DynamicMultiSelectList;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
@@ -23,7 +24,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.common.event.page.PartiesToContact;
-import uk.gov.hmcts.sptribs.common.notification.ContactPartiesNotification;
+import uk.gov.hmcts.sptribs.notification.dispatcher.ContactPartiesNotification;
 
 import static java.lang.String.format;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_CONTACT_PARTIES;
@@ -44,6 +45,7 @@ import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_HEARING_CENTRE_
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_JUDGE;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_CASEWORKER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_JUDGE;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_WA_CONFIG_USER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE;
 
@@ -62,9 +64,12 @@ public class CaseWorkerContactParties implements CCDConfig<CaseData, State, User
     @Autowired
     private ContactPartiesNotification contactPartiesNotification;
 
+    @Value("${feature.wa.enabled}")
+    private boolean isWorkAllocationEnabled;
+
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
-        PageBuilder pageBuilder = new PageBuilder(
+        Event.EventBuilder<CaseData, UserRole, State> eventBuilder =
             configBuilder
                 .event(CASEWORKER_CONTACT_PARTIES)
                 .forStates(Draft,
@@ -92,7 +97,14 @@ public class CaseWorkerContactParties implements CCDConfig<CaseData, State, User
                     ST_CIC_HEARING_CENTRE_TEAM_LEADER,
                     ST_CIC_SENIOR_JUDGE,
                     SUPER_USER,
-                    ST_CIC_JUDGE));
+                    ST_CIC_JUDGE);
+
+        if (isWorkAllocationEnabled) {
+            eventBuilder.publishToCamunda()
+                        .grant(CREATE_READ_UPDATE, ST_CIC_WA_CONFIG_USER);
+        }
+
+        PageBuilder pageBuilder = new PageBuilder(eventBuilder);
         contactPartiesSelectDocument.addTo(pageBuilder);
         partiesToContact.addTo(pageBuilder);
     }

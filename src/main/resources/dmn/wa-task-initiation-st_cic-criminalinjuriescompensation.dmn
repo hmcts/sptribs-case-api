@@ -42,7 +42,7 @@
           <text>"processCaseWithdrawalDirections"</text>
         </outputEntry>
         <outputEntry id="LiteralExpression_11crul1">
-          <text>"Process Case Withdrawal Directions"</text>
+          <text>"Process case withdrawal directions"</text>
         </outputEntry>
         <outputEntry id="LiteralExpression_0j4vwvw">
           <text></text>
@@ -202,7 +202,7 @@
           <text>"processSetAsideDirections"</text>
         </outputEntry>
         <outputEntry id="LiteralExpression_17qyga5">
-          <text>"Process Set Aside directions"</text>
+          <text>"Process set aside directions"</text>
         </outputEntry>
         <outputEntry id="LiteralExpression_0t4y80m">
           <text></text>
@@ -362,7 +362,7 @@
           <text>"processReinstatementDecisionNotice"</text>
         </outputEntry>
         <outputEntry id="LiteralExpression_1kf4gxm">
-          <text>"Process Reinstatement decision notice"</text>
+          <text>"Process reinstatement decision notice"</text>
         </outputEntry>
         <outputEntry id="LiteralExpression_1plfunt">
           <text></text>
@@ -426,7 +426,7 @@
           <text>"processWrittenReasons"</text>
         </outputEntry>
         <outputEntry id="LiteralExpression_1tg48rd">
-          <text>"Process Written Reasons"</text>
+          <text>"Process written reasons"</text>
         </outputEntry>
         <outputEntry id="LiteralExpression_1nrz9fi">
           <text></text>
@@ -522,7 +522,7 @@
           <text>"issueDecisionNotice"</text>
         </outputEntry>
         <outputEntry id="LiteralExpression_1up3qa4">
-          <text>"Issue Decision Notice"</text>
+          <text>"Issue decision notice"</text>
         </outputEntry>
         <outputEntry id="LiteralExpression_0l69wwz">
           <text></text>
@@ -554,7 +554,7 @@
           <text>"completeHearingOutcome"</text>
         </outputEntry>
         <outputEntry id="LiteralExpression_1ckerve">
-          <text>"Complete Hearing Outcome"</text>
+          <text>"Complete hearing outcome"</text>
         </outputEntry>
         <outputEntry id="LiteralExpression_1o7zepy">
           <text></text>
@@ -586,7 +586,7 @@
           <text>"issueCaseToRespondent"</text>
         </outputEntry>
         <outputEntry id="LiteralExpression_07ebo1n">
-          <text>"Issue Case To Respondent"</text>
+          <text>"Issue case to respondent"</text>
         </outputEntry>
         <outputEntry id="LiteralExpression_1eeiveh">
           <text></text>
@@ -618,7 +618,7 @@
           <text>"vetNewCaseDocuments"</text>
         </outputEntry>
         <outputEntry id="LiteralExpression_1f1w78f">
-          <text>"Vet New Case Documents"</text>
+          <text>"Vet new case documents"</text>
         </outputEntry>
         <outputEntry id="LiteralExpression_1c7nl6j">
           <text></text>
@@ -682,7 +682,7 @@
           <text>"reviewTimeExtensionRequestLO"</text>
         </outputEntry>
         <outputEntry id="LiteralExpression_07raps6">
-          <text>"Review Time extension request - Legal Officer"</text>
+          <text>"Review time extension request - Legal Officer"</text>
         </outputEntry>
         <outputEntry id="LiteralExpression_07f0rsn">
           <text></text>
@@ -714,7 +714,7 @@
           <text>"reviewStrikeOutRequestLO"</text>
         </outputEntry>
         <outputEntry id="LiteralExpression_1k6q9x9">
-          <text>"Review Strike out request - Legal Officer"</text>
+          <text>"Review strike out request - Legal Officer"</text>
         </outputEntry>
         <outputEntry id="LiteralExpression_12gwj1f">
           <text></text>
@@ -874,7 +874,7 @@
           <text>"reviewListCaseLO"</text>
         </outputEntry>
         <outputEntry id="LiteralExpression_16mnnop">
-          <text>"Review List Case - Legal Officer"</text>
+          <text>"Review list case - Legal Officer"</text>
         </outputEntry>
         <outputEntry id="LiteralExpression_0wozmfc">
           <text></text>
@@ -938,7 +938,7 @@
           <text>"reviewPostponementRequestLO"</text>
         </outputEntry>
         <outputEntry id="LiteralExpression_0at563g">
-          <text>"Review Postponement request - Legal Officer"</text>
+          <text>"Review postponement request - Legal Officer"</text>
         </outputEntry>
         <outputEntry id="LiteralExpression_0cyui1j">
           <text></text>
@@ -970,7 +970,7 @@
           <text>"reviewReinstatementRequestLO"</text>
         </outputEntry>
         <outputEntry id="LiteralExpression_0n35jks">
-          <text>"Review Reinstatement request - Legal Officer"</text>
+          <text>"Review reinstatement request - Legal Officer"</text>
         </outputEntry>
         <outputEntry id="LiteralExpression_0eu5fch">
           <text></text>
@@ -1066,7 +1066,7 @@
           <text>"reviewPostponementRequestJudge"</text>
         </outputEntry>
         <outputEntry id="LiteralExpression_0my29sz">
-          <text>"Review Postponement request - Judge"</text>
+          <text>"Review postponement request - Judge"</text>
         </outputEntry>
         <outputEntry id="LiteralExpression_14g86iu">
           <text></text>
@@ -1098,7 +1098,7 @@
           <text>"reviewCorrectionsRequest"</text>
         </outputEntry>
         <outputEntry id="LiteralExpression_02ute8j">
-          <text>"Review Corrections request"</text>
+          <text>"Review corrections request"</text>
         </outputEntry>
         <outputEntry id="LiteralExpression_0ki8mhk">
           <text></text>
@@ -1130,7 +1130,7 @@
           <text>"reviewWrittenReasonsRequest"</text>
         </outputEntry>
         <outputEntry id="LiteralExpression_16h2yu6">
-          <text>"Review Written Reasons request"</text>
+          <text>"Review written reasons request"</text>
         </outputEntry>
         <outputEntry id="LiteralExpression_0qjondq">
           <text></text>
@@ -1162,7 +1162,7 @@
           <text>"reviewReinstatementRequestJudge"</text>
         </outputEntry>
         <outputEntry id="LiteralExpression_1cw9ijz">
-          <text>"Review Reinstatement request - Judge"</text>
+          <text>"Review reinstatement request - Judge"</text>
         </outputEntry>
         <outputEntry id="LiteralExpression_1xyl4es">
           <text></text>
@@ -1194,7 +1194,7 @@
           <text>"reviewSetAsideRequest"</text>
         </outputEntry>
         <outputEntry id="LiteralExpression_0mbb9jd">
-          <text>"Review Set Aside request"</text>
+          <text>"Review set aside request"</text>
         </outputEntry>
         <outputEntry id="LiteralExpression_1b6i62m">
           <text></text>
@@ -1418,7 +1418,7 @@
           <text>"reviewListCaseJudge"</text>
         </outputEntry>
         <outputEntry id="LiteralExpression_0daomee">
-          <text>"Review List Case - Judge"</text>
+          <text>"Review list case - Judge"</text>
         </outputEntry>
         <outputEntry id="LiteralExpression_1ew3xae">
           <text></text>
@@ -1450,7 +1450,7 @@
           <text>"reviewStrikeOutRequestJudge"</text>
         </outputEntry>
         <outputEntry id="LiteralExpression_1bthpor">
-          <text>"Review Strike out request - Judge"</text>
+          <text>"Review strike out request - Judge"</text>
         </outputEntry>
         <outputEntry id="LiteralExpression_0fmbvuv">
           <text></text>
@@ -1482,7 +1482,7 @@
           <text>"reviewTimeExtensionRequestJudge"</text>
         </outputEntry>
         <outputEntry id="LiteralExpression_17w1xa7">
-          <text>"Review Time extention request - Judge"</text>
+          <text>"Review time extension request - Judge"</text>
         </outputEntry>
         <outputEntry id="LiteralExpression_1d3ljtg">
           <text></text>
@@ -1537,7 +1537,7 @@
           <text>"citizen-cic-submit-dss-application"</text>
         </inputEntry>
         <inputEntry id="UnaryTests_0ajeufa">
-          <text>"Dss_Submitted"</text>
+          <text>"DSS_Submitted"</text>
         </inputEntry>
         <inputEntry id="UnaryTests_0ddb6if">
           <text></text>
@@ -1546,7 +1546,7 @@
           <text>"registerNewCase"</text>
         </outputEntry>
         <outputEntry id="LiteralExpression_1ockpyo">
-          <text>"Register New Case"</text>
+          <text>"Register new case"</text>
         </outputEntry>
         <outputEntry id="LiteralExpression_1ydla13">
           <text></text>
@@ -1566,10 +1566,10 @@
       </rule>
       <rule id="DecisionRule_1981u5t">
         <inputEntry id="UnaryTests_1o9zfup">
-          <text>"citizen-cic-update-dss-application","caseworker-document-management"</text>
+          <text>"citizen-cic-dss-update-case","caseworker-document-management","respondent-document-management"</text>
         </inputEntry>
         <inputEntry id="UnaryTests_1cb1pqu">
-          <text>"CaseManagement"</text>
+          <text></text>
         </inputEntry>
         <inputEntry id="UnaryTests_1j500nm">
           <text></text>

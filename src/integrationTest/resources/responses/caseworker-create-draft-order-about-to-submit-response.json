@@ -1,0 +1,104 @@
+{
+  "data": {
+    "cicCaseDraftOrderDynamicList": {
+      "list_items": [
+        {
+          "label": "CIC3 - Rule 27--29-05-2024 13:36:27.pdf--draft.pdf"
+        }
+      ]
+    },
+    "cicCaseDraftOrderCICList": [
+      {
+        "id": "1",
+        "value": {
+          "templateGeneratedDocument": {
+            "document_url": "TestUrl",
+            "document_filename": "SENT :Order--[Subject AutoTesting]--29-05-2024 13:36:27.pdf",
+            "document_binary_url": "TestUrl/binary",
+            "category_id": "CIC"
+          },
+          "orderContentOrderTemplate": "CIC3_Rule_27",
+          "orderContentMainContent": "Draft Order Content",
+          "orderContentOrderSignature": "Mr Judge"
+        }
+      }
+    ],
+    "cicCaseFullName": "Test Name",
+    "cicCaseSchemeCic": "Year2012",
+    "hearingList": [
+      {
+        "id": "1",
+        "value": {
+          "hearingStatus": "Listed",
+          "hearingType": "Final",
+          "hearingFormat": "Face to Face",
+          "shortNotice": "Yes",
+          "hearingVenues": {
+            "value": {
+              "label": "courtname-courtAddress"
+            },
+            "list_items": [
+              {
+                "label": "courtname-courtAddress"
+              }
+            ],
+            "valueLabel": "courtname-courtAddress"
+          },
+          "regionList": {
+            "value": {
+              "label": "1-region"
+            },
+            "list_items": [
+              {
+                "label": "1-region"
+              }
+            ],
+            "valueLabel": "1-region"
+          },
+          "venueNotListedOption": [],
+          "roomAtVenue": "G.01",
+          "addlInstr": "Ground floor",
+          "date": "2024-08-14",
+          "hearingTime": "10:00"
+        }
+      },
+      {
+        "id": "2",
+        "value": {
+          "hearingStatus": "Listed",
+          "hearingType": "Interlocutory",
+          "hearingFormat": "Face to Face",
+          "shortNotice": "Yes",
+          "hearingVenues": {
+            "value": {
+              "label": "courtname-courtAddress"
+            },
+            "list_items": [
+              {
+                "label": "courtname-courtAddress"
+              }
+            ],
+            "valueLabel": "courtname-courtAddress"
+          },
+          "regionList": {
+            "value": {
+              "label": "1-region"
+            },
+            "list_items": [
+              {
+                "label": "1-region"
+              }
+            ],
+            "valueLabel": "1-region"
+          },
+          "venueNotListedOption": [],
+          "roomAtVenue": "G.01",
+          "addlInstr": "Ground floor",
+          "date": "2024-08-14",
+          "hearingTime": "14:00"
+        }
+      }
+    ],
+    "firstHearingDate": "14 Aug 2024"
+  }
+}

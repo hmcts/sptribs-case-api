@@ -19,7 +19,9 @@ public class CamundaTaskConstants {
     public static final String DESCRIPTION = "description";
     public static final String DUE_DATE_INTERVAL_DAYS = "dueDateIntervalDays";
     public static final String DUE_DATE_ORIGIN = "dueDateOrigin";
+    public static final String DUE_DATE_TIME = "dueDateTime";
     public static final String PRIORITY_DATE_ORIGIN_REF = "priorityDateOriginRef";
+    public static final String ADDITIONAL_PROPERTIES_ROLE_ASSIGNMENT_ID = "additionalProperties_roleAssignmentId";
 
     public static final String DECISION_WORK_TYPE = "decision_making_work";
     public static final String ROUTINE_WORK_TYPE = "routine_work";
@@ -41,7 +43,7 @@ public class CamundaTaskConstants {
     public static final String DEFAULT_LOCATION = "336559";
     public static final String DEFAULT_LOCATION_NAME = "Glasgow Tribunals Centre";
     public static final String DEFAULT_DUE_DATE_NON_WORKING_CALENDAR
-        = "https://www.gov.uk/bank-holidays/england-and-wales.json";
+        = "https://www.gov.uk/bank-holidays/scotland.json, https://raw.githubusercontent.com/hmcts/sptribs-case-api/master/src/main/resources/dmn/privilege-calendar.json";
     public static final String DEFAULT_DUE_DATE_WORKING_DAYS_OF_WEEK = "SATURDAY,SUNDAY";
 
     public static final String REGISTER_NEW_CASE_TASK = "registerNewCase";
@@ -99,7 +101,7 @@ public class CamundaTaskConstants {
     public static final String REVIEW_SPECIFIC_ACCESS_REQ_ADMIN_TASK = "reviewSpecificAccessRequestAdmin";
     public static final String REVIEW_SPECIFIC_ACCESS_REQ_CTSC_TASK = "reviewSpecificAccessRequestCTSC";
 
-    public static final String AUTO_COMPLETE_MODE = "auto";
+    public static final String AUTO_COMPLETE_MODE = "Auto";
     public static final String DEFAULT_NONE_COMPLETE_MODE = "defaultNone";
 
     public static final String PROCESS_CATEGORY_PROCESSING = "Processing";

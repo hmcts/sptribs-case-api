@@ -21,7 +21,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.SubjectCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.TribunalCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
-import uk.gov.hmcts.sptribs.common.notification.ContactPartiesNotification;
+import uk.gov.hmcts.sptribs.notification.dispatcher.ContactPartiesNotification;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -84,18 +84,7 @@ class RespondentContactPartiesTest {
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
 
         //When
-        AboutToStartOrSubmitResponse<CaseData, State> response =
-            respondentContactParties.aboutToSubmit(updatedCaseDetails, beforeDetails);
-
-        //Then
-        assertThat(caseData.getContactParties().getSubjectContactParties()).hasSize(1);
-        assertThat(caseData.getContactParties().getApplicantContactParties()).hasSize(1);
-        assertThat(caseData.getContactParties().getRepresentativeContactParties()).hasSize(1);
-        assertThat(caseData.getContactParties().getTribunal()).hasSize(1);
-        assertThat(response).isNotNull();
-
-        //When
-        SubmittedCallbackResponse resContactPartiesResponse = respondentContactParties.partiesContacted(updatedCaseDetails, beforeDetails);
+        SubmittedCallbackResponse resContactPartiesResponse = respondentContactParties.submitted(updatedCaseDetails, beforeDetails);
 
         //Then
         assertThat(resContactPartiesResponse).isNotNull();
@@ -159,7 +148,7 @@ class RespondentContactPartiesTest {
         assertThat(response.getErrors()).contains(SELECT_AT_LEAST_ONE_CONTACT_PARTY);
 
         //When
-        SubmittedCallbackResponse contactPartiesResponse = respondentContactParties.partiesContacted(updatedCaseDetails, beforeDetails);
+        SubmittedCallbackResponse contactPartiesResponse = respondentContactParties.submitted(updatedCaseDetails, beforeDetails);
 
         //Then
         assertThat(contactPartiesResponse).isNotNull();
@@ -197,7 +186,7 @@ class RespondentContactPartiesTest {
 
         //When
         SubmittedCallbackResponse response =
-            respondentContactParties.partiesContacted(updatedCaseDetails, beforeDetails);
+            respondentContactParties.submitted(updatedCaseDetails, beforeDetails);
 
         //Then
         assertThat(caseData.getContactParties().getSubjectContactParties()).hasSize(1);
@@ -207,7 +196,7 @@ class RespondentContactPartiesTest {
         assertThat(response).isNotNull();
 
         //When
-        SubmittedCallbackResponse resContactPartiesResponse = respondentContactParties.partiesContacted(updatedCaseDetails, beforeDetails);
+        SubmittedCallbackResponse resContactPartiesResponse = respondentContactParties.submitted(updatedCaseDetails, beforeDetails);
 
         //Then
         assertThat(resContactPartiesResponse).isNotNull();

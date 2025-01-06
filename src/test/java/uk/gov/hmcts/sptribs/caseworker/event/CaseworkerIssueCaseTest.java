@@ -6,6 +6,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.test.util.ReflectionTestUtils;
 import uk.gov.hmcts.ccd.sdk.ConfigBuilderImpl;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.Event;
@@ -20,9 +21,10 @@ import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
-import uk.gov.hmcts.sptribs.common.notification.CaseIssuedNotification;
+import uk.gov.hmcts.sptribs.ciccase.model.access.Permissions;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
+import uk.gov.hmcts.sptribs.notification.dispatcher.CaseIssuedNotification;
 import uk.gov.hmcts.sptribs.notification.exception.NotificationException;
 
 import java.util.ArrayList;
@@ -35,6 +37,7 @@ import static uk.gov.hmcts.sptribs.ciccase.model.ApplicantCIC.APPLICANT_CIC;
 import static uk.gov.hmcts.sptribs.ciccase.model.RepresentativeCIC.REPRESENTATIVE;
 import static uk.gov.hmcts.sptribs.ciccase.model.RespondentCIC.RESPONDENT;
 import static uk.gov.hmcts.sptribs.ciccase.model.SubjectCIC.SUBJECT;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_WA_CONFIG_USER;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigBuilder;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.getEventsFrom;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.SOLICITOR_ADDRESS;
@@ -70,6 +73,38 @@ class CaseworkerIssueCaseTest {
         assertThat(getEventsFrom(configBuilder).values())
             .extracting(Event::getId)
             .contains(CASEWORKER_ISSUE_CASE);
+
+        assertThat(getEventsFrom(configBuilder).values())
+                .extracting(Event::isPublishToCamunda)
+                .contains(false);
+
+        assertThat(getEventsFrom(configBuilder).values())
+                .extracting(Event::getGrants)
+                .extracting(map -> map.containsKey(ST_CIC_WA_CONFIG_USER))
+                .contains(false);
+    }
+
+    @Test
+    void shouldAddPublishToCamundaWhenWAIsEnabled() {
+        ReflectionTestUtils.setField(caseworkerIssueCase, "isWorkAllocationEnabled", true);
+
+        final ConfigBuilderImpl<CaseData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
+
+        caseworkerIssueCase.configure(configBuilder);
+
+        assertThat(getEventsFrom(configBuilder).values())
+                .extracting(Event::isPublishToCamunda)
+                .contains(true);
+
+        assertThat(getEventsFrom(configBuilder).values())
+                .extracting(Event::getGrants)
+                .extracting(map -> map.containsKey(ST_CIC_WA_CONFIG_USER))
+                .contains(true);
+
+        assertThat(getEventsFrom(configBuilder).values())
+                .extracting(Event::getGrants)
+                .extracting(map -> map.get(ST_CIC_WA_CONFIG_USER))
+                .contains(Permissions.CREATE_READ_UPDATE);
     }
 
     @Test

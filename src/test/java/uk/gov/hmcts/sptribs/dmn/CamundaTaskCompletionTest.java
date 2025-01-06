@@ -12,6 +12,7 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import uk.gov.hmcts.sptribs.DmnDecisionTableBaseUnitTest;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
@@ -21,7 +22,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static uk.gov.hmcts.sptribs.DmnDecisionTable.WA_TASK_COMPLETION_ST_CIC_CRIMINALINJURIESCOMPENSATION;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.AUTO_COMPLETE_MODE;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.COMPLETE_HEARING_OUTCOME_TASK;
-import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.DEFAULT_NONE_COMPLETE_MODE;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.FOLLOW_UP_NONCOMPLIANCE_OF_DIR_TASK;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.ISSUE_CASE_TO_RESPONDENT_TASK;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.ISSUE_DECISION_NOTICE_TASK;
@@ -118,7 +118,7 @@ class CamundaTaskCompletionTest extends DmnDecisionTableBaseUnitTest {
                     ),
                     Map.of(
                         "taskType", PROCESS_POSTPONEMENT_DIR_TASK,
-                        "completionMode", DEFAULT_NONE_COMPLETE_MODE
+                        "completionMode", AUTO_COMPLETE_MODE
                     ),
                     Map.of(
                         "taskType", PROCESS_TIME_EXT_DIR_RETURNED_TASK,
@@ -170,7 +170,8 @@ class CamundaTaskCompletionTest extends DmnDecisionTableBaseUnitTest {
                     Map.of(
                         "taskType", COMPLETE_HEARING_OUTCOME_TASK,
                         "completionMode", AUTO_COMPLETE_MODE
-                    )
+                    ),
+                    Collections.emptyMap()
                 )
             ),
             Arguments.of(
@@ -178,12 +179,13 @@ class CamundaTaskCompletionTest extends DmnDecisionTableBaseUnitTest {
                 List.of(
                     Map.of(
                         "taskType", FOLLOW_UP_NONCOMPLIANCE_OF_DIR_TASK,
-                        "completionMode", DEFAULT_NONE_COMPLETE_MODE
+                        "completionMode", AUTO_COMPLETE_MODE
                     ),
                     Map.of(
                         "taskType", PROCESS_FURTHER_EVIDENCE_TASK,
-                        "completionMode", DEFAULT_NONE_COMPLETE_MODE
-                    )
+                        "completionMode", AUTO_COMPLETE_MODE
+                    ),
+                    Collections.emptyMap()
                 )
             ),
             Arguments.of(
@@ -191,12 +193,13 @@ class CamundaTaskCompletionTest extends DmnDecisionTableBaseUnitTest {
                 List.of(
                     Map.of(
                         "taskType", FOLLOW_UP_NONCOMPLIANCE_OF_DIR_TASK,
-                        "completionMode", DEFAULT_NONE_COMPLETE_MODE
+                        "completionMode", AUTO_COMPLETE_MODE
                     ),
                     Map.of(
                         "taskType", PROCESS_FURTHER_EVIDENCE_TASK,
-                        "completionMode", DEFAULT_NONE_COMPLETE_MODE
-                    )
+                        "completionMode", AUTO_COMPLETE_MODE
+                    ),
+                    Collections.emptyMap()
                 )
             ),
             Arguments.of(
@@ -214,7 +217,8 @@ class CamundaTaskCompletionTest extends DmnDecisionTableBaseUnitTest {
                     Map.of(
                         "taskType", VET_NEW_CASE_DOCUMENTS_TASK,
                         "completionMode", AUTO_COMPLETE_MODE
-                    )
+                    ),
+                    Collections.emptyMap()
                 )
             ),
             Arguments.of(
@@ -222,112 +226,113 @@ class CamundaTaskCompletionTest extends DmnDecisionTableBaseUnitTest {
                 List.of(
                     Map.of(
                         "taskType", REVIEW_NEW_CASE_PROVIDE_DIR_LO_TASK,
-                        "completionMode", DEFAULT_NONE_COMPLETE_MODE
+                        "completionMode", AUTO_COMPLETE_MODE
                     ),
                     Map.of(
                         "taskType", REVIEW_TIME_EXT_REQ_LO_TASK,
-                        "completionMode", DEFAULT_NONE_COMPLETE_MODE
+                        "completionMode", AUTO_COMPLETE_MODE
                     ),
                     Map.of(
                         "taskType", REVIEW_STRIKE_OUT_REQ_LO_TASK,
-                        "completionMode", DEFAULT_NONE_COMPLETE_MODE
+                        "completionMode", AUTO_COMPLETE_MODE
                     ),
                     Map.of(
                         "taskType", REVIEW_STAY_REQ_LO_TASK,
-                        "completionMode", DEFAULT_NONE_COMPLETE_MODE
+                        "completionMode", AUTO_COMPLETE_MODE
                     ),
                     Map.of(
                         "taskType", REVIEW_LISTING_DIR_LO_TASK,
-                        "completionMode", DEFAULT_NONE_COMPLETE_MODE
+                        "completionMode", AUTO_COMPLETE_MODE
                     ),
                     Map.of(
                         "taskType", REVIEW_WITHDRAWAL_REQ_LO_TASK,
-                        "completionMode", DEFAULT_NONE_COMPLETE_MODE
+                        "completionMode", AUTO_COMPLETE_MODE
                     ),
                     Map.of(
                         "taskType", REVIEW_RULE27_REQ_LO_TASK,
-                        "completionMode", DEFAULT_NONE_COMPLETE_MODE
+                        "completionMode", AUTO_COMPLETE_MODE
                     ),
                     Map.of(
                         "taskType", REVIEW_LIST_CASE_LO_TASK,
-                        "completionMode", DEFAULT_NONE_COMPLETE_MODE
+                        "completionMode", AUTO_COMPLETE_MODE
                     ),
                     Map.of(
                         "taskType", REVIEW_OTHER_REQ_LO_TASK,
-                        "completionMode", DEFAULT_NONE_COMPLETE_MODE
+                        "completionMode", AUTO_COMPLETE_MODE
                     ),
                     Map.of(
                         "taskType", REVIEW_LIST_CASE_WITHIN_5DAYS_LO_TASK,
-                        "completionMode", DEFAULT_NONE_COMPLETE_MODE
+                        "completionMode", AUTO_COMPLETE_MODE
                     ),
                     Map.of(
                         "taskType", REVIEW_POSTPONEMENT_REQ_LO_TASK,
-                        "completionMode", DEFAULT_NONE_COMPLETE_MODE
+                        "completionMode", AUTO_COMPLETE_MODE
                     ),
                     Map.of(
                         "taskType", REVIEW_REINSTATEMENT_REQ_LO_TASK,
-                        "completionMode", DEFAULT_NONE_COMPLETE_MODE
+                        "completionMode", AUTO_COMPLETE_MODE
                     ),
                     Map.of(
                         "taskType", REVIEW_LIST_CASE_WITHIN_5DAYS_JUDGE_TASK,
-                        "completionMode", DEFAULT_NONE_COMPLETE_MODE
+                        "completionMode", AUTO_COMPLETE_MODE
                     ),
                     Map.of(
                         "taskType", REVIEW_POSTPONEMENT_REQ_JUDGE_TASK,
-                        "completionMode", DEFAULT_NONE_COMPLETE_MODE
+                        "completionMode", AUTO_COMPLETE_MODE
                     ),
                     Map.of(
                         "taskType", REVIEW_CORRECTIONS_REQ_TASK,
-                        "completionMode", DEFAULT_NONE_COMPLETE_MODE
+                        "completionMode", AUTO_COMPLETE_MODE
                     ),
                     Map.of(
                         "taskType", REVIEW_WRITTEN_REASONS_REQ_TASK,
-                        "completionMode", DEFAULT_NONE_COMPLETE_MODE
+                        "completionMode", AUTO_COMPLETE_MODE
                     ),
                     Map.of(
                         "taskType", REVIEW_REINSTATEMENT_REQ_JUDGE_TASK,
-                        "completionMode", DEFAULT_NONE_COMPLETE_MODE
+                        "completionMode", AUTO_COMPLETE_MODE
                     ),
                     Map.of(
                         "taskType", REVIEW_SET_ASIDE_REQ_TASK,
-                        "completionMode", DEFAULT_NONE_COMPLETE_MODE
+                        "completionMode", AUTO_COMPLETE_MODE
                     ),
                     Map.of(
                         "taskType", REVIEW_STAY_REQ_JUDGE_TASK,
-                        "completionMode", DEFAULT_NONE_COMPLETE_MODE
+                        "completionMode", AUTO_COMPLETE_MODE
                     ),
                     Map.of(
                         "taskType", REVIEW_NEW_CASE_PROVIDE_DIR_JUDGE_TASK,
-                        "completionMode", DEFAULT_NONE_COMPLETE_MODE
+                        "completionMode", AUTO_COMPLETE_MODE
                     ),
                     Map.of(
                         "taskType", REVIEW_OTHER_REQ_JUDGE_TASK,
-                        "completionMode", DEFAULT_NONE_COMPLETE_MODE
+                        "completionMode", AUTO_COMPLETE_MODE
                     ),
                     Map.of(
                         "taskType", REVIEW_WITHDRAWAL_REQ_JUDGE_TASK,
-                        "completionMode", DEFAULT_NONE_COMPLETE_MODE
+                        "completionMode", AUTO_COMPLETE_MODE
                     ),
                     Map.of(
                         "taskType", REVIEW_RULE27_REQ_JUDGE_TASK,
-                        "completionMode", DEFAULT_NONE_COMPLETE_MODE
+                        "completionMode", AUTO_COMPLETE_MODE
                     ),
                     Map.of(
                         "taskType", REVIEW_LISTING_DIR_JUDGE_TASK,
-                        "completionMode", DEFAULT_NONE_COMPLETE_MODE
+                        "completionMode", AUTO_COMPLETE_MODE
                     ),
                     Map.of(
                         "taskType", REVIEW_LIST_CASE_JUDGE_TASK,
-                        "completionMode", DEFAULT_NONE_COMPLETE_MODE
+                        "completionMode", AUTO_COMPLETE_MODE
                     ),
                     Map.of(
                         "taskType", REVIEW_STRIKE_OUT_REQ_JUDGE_TASK,
-                        "completionMode", DEFAULT_NONE_COMPLETE_MODE
+                        "completionMode", AUTO_COMPLETE_MODE
                     ),
                     Map.of(
                         "taskType", REVIEW_TIME_EXT_REQ_JUDGE_TASK,
-                        "completionMode", DEFAULT_NONE_COMPLETE_MODE
-                    )
+                        "completionMode", AUTO_COMPLETE_MODE
+                    ),
+                    Collections.emptyMap()
                 )
             ),
             Arguments.of(
@@ -339,8 +344,9 @@ class CamundaTaskCompletionTest extends DmnDecisionTableBaseUnitTest {
                     ),
                     Map.of(
                         "taskType", PROCESS_FURTHER_EVIDENCE_TASK,
-                        "completionMode", DEFAULT_NONE_COMPLETE_MODE
-                    )
+                        "completionMode", AUTO_COMPLETE_MODE
+                    ),
+                    Collections.emptyMap()
                 )
             ),
             Arguments.of(
@@ -348,8 +354,9 @@ class CamundaTaskCompletionTest extends DmnDecisionTableBaseUnitTest {
                 List.of(
                     Map.of(
                         "taskType", PROCESS_FURTHER_EVIDENCE_TASK,
-                        "completionMode", DEFAULT_NONE_COMPLETE_MODE
-                    )
+                        "completionMode", AUTO_COMPLETE_MODE
+                    ),
+                    Collections.emptyMap()
                 )
             ),
             Arguments.of(
@@ -357,12 +364,13 @@ class CamundaTaskCompletionTest extends DmnDecisionTableBaseUnitTest {
                 List.of(
                     Map.of(
                         "taskType", FOLLOW_UP_NONCOMPLIANCE_OF_DIR_TASK,
-                        "completionMode", DEFAULT_NONE_COMPLETE_MODE
+                        "completionMode", AUTO_COMPLETE_MODE
                     ),
                     Map.of(
                         "taskType", PROCESS_FURTHER_EVIDENCE_TASK,
-                        "completionMode", DEFAULT_NONE_COMPLETE_MODE
-                    )
+                        "completionMode", AUTO_COMPLETE_MODE
+                    ),
+                    Collections.emptyMap()
                 )
             ),
             Arguments.of(
@@ -371,16 +379,18 @@ class CamundaTaskCompletionTest extends DmnDecisionTableBaseUnitTest {
                     Map.of(
                         "taskType", STITCH_COLLATE_HEARING_BUNDLE_TASK,
                         "completionMode", AUTO_COMPLETE_MODE
-                    )
+                    ),
+                    Collections.emptyMap()
                 )
             ),
             Arguments.of(
                 "caseworker-document-management",
                 List.of(
-                    Map.of(
+                Map.of(
                         "taskType", FOLLOW_UP_NONCOMPLIANCE_OF_DIR_TASK,
-                        "completionMode", DEFAULT_NONE_COMPLETE_MODE
-                    )
+                        "completionMode", AUTO_COMPLETE_MODE
+                    ),
+                    Collections.emptyMap()
                 )
             ),
             Arguments.of(
@@ -388,8 +398,9 @@ class CamundaTaskCompletionTest extends DmnDecisionTableBaseUnitTest {
                 List.of(
                     Map.of(
                         "taskType", FOLLOW_UP_NONCOMPLIANCE_OF_DIR_TASK,
-                        "completionMode", DEFAULT_NONE_COMPLETE_MODE
-                    )
+                        "completionMode", AUTO_COMPLETE_MODE
+                    ),
+                    Collections.emptyMap()
                 )
             )
         );
@@ -401,7 +412,7 @@ class CamundaTaskCompletionTest extends DmnDecisionTableBaseUnitTest {
         DmnDecisionTableImpl logic = (DmnDecisionTableImpl) decision.getDecisionLogic();
         assertThat(logic.getInputs().size(), is(1));
         assertThat(logic.getOutputs().size(), is(2));
-        assertThat(logic.getRules().size(), is(50));
+        assertThat(logic.getRules().size(), is(51));
     }
 
     @ParameterizedTest(name = "event id: {0}")

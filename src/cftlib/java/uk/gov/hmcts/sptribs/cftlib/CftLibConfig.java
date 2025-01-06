@@ -69,7 +69,10 @@ public class CftLibConfig implements CFTLibConfigurer {
             "caseworker-st_cic-respondent",
             "caseflags-admin",
             "caseflags-viewer",
-            "citizen"
+            "citizen",
+            "caseworker-wa-task-configuration",
+            "GS_profile",
+            "caseworker-ras-validation"
         );
 
         ResourceLoader resourceLoader = new DefaultResourceLoader();

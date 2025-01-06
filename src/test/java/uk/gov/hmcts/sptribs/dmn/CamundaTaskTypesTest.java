@@ -58,6 +58,10 @@ import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.REVIEW_REINSTAT
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.REVIEW_RULE27_REQ_JUDGE_TASK;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.REVIEW_RULE27_REQ_LO_TASK;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.REVIEW_SET_ASIDE_REQ_TASK;
+import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.REVIEW_SPECIFIC_ACCESS_REQ_ADMIN_TASK;
+import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.REVIEW_SPECIFIC_ACCESS_REQ_CTSC_TASK;
+import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.REVIEW_SPECIFIC_ACCESS_REQ_JUDICIARY_TASK;
+import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.REVIEW_SPECIFIC_ACCESS_REQ_LO_TASK;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.REVIEW_STAY_REQ_JUDGE_TASK;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.REVIEW_STAY_REQ_LO_TASK;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.REVIEW_STRIKE_OUT_REQ_JUDGE_TASK;
@@ -81,7 +85,7 @@ class CamundaTaskTypesTest extends DmnDecisionTableBaseUnitTest {
         List<Map<String, String>> taskTypes = List.of(
             Map.of(
                 "taskTypeId", PROCESS_CASE_WITHDRAWAL_DIR_TASK,
-                "taskTypeName", "Process Case Withdrawal Directions"
+                "taskTypeName", "Process case withdrawal directions"
             ),
             Map.of(
                 "taskTypeId", PROCESS_RULE27_DECISION_TASK,
@@ -101,7 +105,7 @@ class CamundaTaskTypesTest extends DmnDecisionTableBaseUnitTest {
             ),
             Map.of(
                 "taskTypeId", PROCESS_SET_ASIDE_DIR_TASK,
-                "taskTypeName", "Process Set Aside directions"
+                "taskTypeName", "Process set aside directions"
             ),
             Map.of(
                 "taskTypeId", PROCESS_CORRECTIONS_TASK,
@@ -121,15 +125,15 @@ class CamundaTaskTypesTest extends DmnDecisionTableBaseUnitTest {
             ),
             Map.of(
                 "taskTypeId", PROCESS_REINSTATEMENT_DECISION_NOTICE_TASK,
-                "taskTypeName", "Process Reinstatement decision notice"
+                "taskTypeName", "Process reinstatement decision notice"
             ),
             Map.of(
                 "taskTypeId", PROCESS_OTHER_DIR_RETURNED_TASK,
-                "taskTypeName", "Process other directions reurned"
+                "taskTypeName", "Process other directions returned"
             ),
             Map.of(
                 "taskTypeId", PROCESS_WRITTEN_REASONS_TASK,
-                "taskTypeName", "Process Written Reasons"
+                "taskTypeName", "Process written reasons"
             ),
             Map.of(
                 "taskTypeId", PROCESS_STRIKE_OUT_DIR_RETURNED_TASK,
@@ -141,19 +145,19 @@ class CamundaTaskTypesTest extends DmnDecisionTableBaseUnitTest {
             ),
             Map.of(
                 "taskTypeId", ISSUE_DECISION_NOTICE_TASK,
-                "taskTypeName", "Issue Decision Notice"
+                "taskTypeName", "Issue decision notice"
             ),
             Map.of(
                 "taskTypeId", COMPLETE_HEARING_OUTCOME_TASK,
-                "taskTypeName", "Complete Hearing Outcome"
+                "taskTypeName", "Complete hearing outcome"
             ),
             Map.of(
                 "taskTypeId", ISSUE_CASE_TO_RESPONDENT_TASK,
-                "taskTypeName", "Issue Case To Respondent"
+                "taskTypeName", "Issue case to respondent"
             ),
             Map.of(
                 "taskTypeId", VET_NEW_CASE_DOCUMENTS_TASK,
-                "taskTypeName", "Vet New Case Documents"
+                "taskTypeName", "Vet new case documents"
             ),
             Map.of(
                 "taskTypeId", REVIEW_NEW_CASE_PROVIDE_DIR_LO_TASK,
@@ -161,11 +165,11 @@ class CamundaTaskTypesTest extends DmnDecisionTableBaseUnitTest {
             ),
             Map.of(
                 "taskTypeId", REVIEW_TIME_EXT_REQ_LO_TASK,
-                "taskTypeName", "Review Time extension request - Legal Officer"
+                "taskTypeName", "Review time extension request - Legal Officer"
             ),
             Map.of(
                 "taskTypeId", REVIEW_STRIKE_OUT_REQ_LO_TASK,
-                "taskTypeName", "Review Strike out request - Legal Officer"
+                "taskTypeName", "Review strike out request - Legal Officer"
             ),
             Map.of(
                 "taskTypeId", REVIEW_STAY_REQ_LO_TASK,
@@ -185,11 +189,11 @@ class CamundaTaskTypesTest extends DmnDecisionTableBaseUnitTest {
             ),
             Map.of(
                 "taskTypeId", REVIEW_LIST_CASE_LO_TASK,
-                "taskTypeName", "Review List Case - Legal Officer"
+                "taskTypeName", "Review list case - Legal Officer"
             ),
             Map.of(
                 "taskTypeId", REVIEW_OTHER_REQ_LO_TASK,
-                "taskTypeName", "Review Reinstatement request - Legal Officer"
+                "taskTypeName", "Review reinstatement request - Legal Officer"
             ),
             Map.of(
                 "taskTypeId", REVIEW_LIST_CASE_WITHIN_5DAYS_LO_TASK,
@@ -197,11 +201,11 @@ class CamundaTaskTypesTest extends DmnDecisionTableBaseUnitTest {
             ),
             Map.of(
                 "taskTypeId", REVIEW_POSTPONEMENT_REQ_LO_TASK,
-                "taskTypeName", "Review Postponement request - Legal Officer"
+                "taskTypeName", "Review postponement request - Legal Officer"
             ),
             Map.of(
                 "taskTypeId", REVIEW_REINSTATEMENT_REQ_LO_TASK,
-                "taskTypeName", "Review Reinstatement request - Legal Officer"
+                "taskTypeName", "Review reinstatement request - Legal Officer"
             ),
             Map.of(
                 "taskTypeId", REVIEW_LIST_CASE_WITHIN_5DAYS_JUDGE_TASK,
@@ -209,23 +213,23 @@ class CamundaTaskTypesTest extends DmnDecisionTableBaseUnitTest {
             ),
             Map.of(
                 "taskTypeId", REVIEW_POSTPONEMENT_REQ_JUDGE_TASK,
-                "taskTypeName", "Review Postponement request - Judge"
+                "taskTypeName", "Review postponement request - Judge"
             ),
             Map.of(
                 "taskTypeId", REVIEW_CORRECTIONS_REQ_TASK,
-                "taskTypeName", "Review Corrections request"
+                "taskTypeName", "Review corrections request"
             ),
             Map.of(
                 "taskTypeId", REVIEW_WRITTEN_REASONS_REQ_TASK,
-                "taskTypeName", "Review Written Reasons request"
+                "taskTypeName", "Review written reasons request"
             ),
             Map.of(
                 "taskTypeId", REVIEW_REINSTATEMENT_REQ_JUDGE_TASK,
-                "taskTypeName", "Review Reinstatement request - Judge"
+                "taskTypeName", "Review reinstatement request - Judge"
             ),
             Map.of(
                 "taskTypeId", REVIEW_SET_ASIDE_REQ_TASK,
-                "taskTypeName", "Review Set Aside request"
+                "taskTypeName", "Review set aside request"
             ),
             Map.of(
                 "taskTypeId", REVIEW_STAY_REQ_JUDGE_TASK,
@@ -253,15 +257,15 @@ class CamundaTaskTypesTest extends DmnDecisionTableBaseUnitTest {
             ),
             Map.of(
                 "taskTypeId", REVIEW_LIST_CASE_JUDGE_TASK,
-                "taskTypeName", "Review List Case - Judge"
+                "taskTypeName", "Review list case - Judge"
             ),
             Map.of(
                 "taskTypeId", REVIEW_STRIKE_OUT_REQ_JUDGE_TASK,
-                "taskTypeName", "Review Strike out request - Judge"
+                "taskTypeName", "Review strike out request - Judge"
             ),
             Map.of(
                 "taskTypeId", REVIEW_TIME_EXT_REQ_JUDGE_TASK,
-                "taskTypeName", "Review Time extention request - Judge"
+                "taskTypeName", "Review time extension request - Judge"
             ),
             Map.of(
                 "taskTypeId", FOLLOW_UP_NONCOMPLIANCE_OF_DIR_TASK,
@@ -269,15 +273,31 @@ class CamundaTaskTypesTest extends DmnDecisionTableBaseUnitTest {
             ),
             Map.of(
                 "taskTypeId", REGISTER_NEW_CASE_TASK,
-                "taskTypeName", "Register New Case"
+                "taskTypeName", "Register new case"
             ),
             Map.of(
                 "taskTypeId", PROCESS_FURTHER_EVIDENCE_TASK,
-                "taskTypeName", "Process Further Evidence"
+                "taskTypeName", "Process further evidence"
             ),
             Map.of(
                 "taskTypeId", STITCH_COLLATE_HEARING_BUNDLE_TASK,
                 "taskTypeName", "Stitch/collate hearing bundle"
+            ),
+            Map.of(
+                "taskTypeId", REVIEW_SPECIFIC_ACCESS_REQ_JUDICIARY_TASK,
+                "taskTypeName", "Review Specific Access Request Judiciary"
+            ),
+            Map.of(
+                "taskTypeId", REVIEW_SPECIFIC_ACCESS_REQ_LO_TASK,
+                "taskTypeName", "Review Specific Access Request Legal Ops"
+            ),
+            Map.of(
+                "taskTypeId", REVIEW_SPECIFIC_ACCESS_REQ_ADMIN_TASK,
+                "taskTypeName", "Review Specific Access Request Admin"
+            ),
+            Map.of(
+                "taskTypeId", REVIEW_SPECIFIC_ACCESS_REQ_CTSC_TASK,
+                    "taskTypeName", "Review Specific Access Request CTSC"
             )
         );
         return Stream.of(
@@ -293,7 +313,7 @@ class CamundaTaskTypesTest extends DmnDecisionTableBaseUnitTest {
         DmnDecisionTableImpl logic = (DmnDecisionTableImpl) decision.getDecisionLogic();
         assertThat(logic.getInputs().size(), is(1));
         assertThat(logic.getOutputs().size(), is(2));
-        assertThat(logic.getRules().size(), is(50));
+        assertThat(logic.getRules().size(), is(54));
     }
 
     @ParameterizedTest(name = "retrieve all task type data")

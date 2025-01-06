@@ -6,6 +6,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.test.util.ReflectionTestUtils;
 import uk.gov.hmcts.ccd.sdk.ConfigBuilderImpl;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.Event;
@@ -15,14 +16,13 @@ import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
-import uk.gov.hmcts.sptribs.ciccase.model.DssCaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.DssMessage;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
-import uk.gov.hmcts.sptribs.common.notification.DssUpdateCaseSubmissionNotification;
+import uk.gov.hmcts.sptribs.ciccase.model.access.Permissions;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
-import uk.gov.hmcts.sptribs.document.model.EdgeCaseDocument;
 import uk.gov.hmcts.sptribs.idam.IdamService;
+import uk.gov.hmcts.sptribs.notification.dispatcher.DssUpdateCaseSubmissionNotification;
 import uk.gov.hmcts.sptribs.notification.exception.NotificationException;
 import uk.gov.hmcts.sptribs.testutil.TestDataHelper;
 
@@ -36,11 +36,13 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CITIZEN_DSS_UPDATE_CASE_SUBMISSION;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_WA_CONFIG_USER;
 import static uk.gov.hmcts.sptribs.document.model.DocumentType.DSS_TRIBUNAL_FORM;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigBuilder;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.getEventsFrom;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_AUTHORIZATION_TOKEN;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID;
+import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getDssCaseData;
 
 @ExtendWith(MockitoExtension.class)
 class CicDssUpdateCaseEventTest {
@@ -66,6 +68,38 @@ class CicDssUpdateCaseEventTest {
         assertThat(getEventsFrom(configBuilder).values())
             .extracting(Event::getId)
             .contains(CITIZEN_DSS_UPDATE_CASE_SUBMISSION);
+
+        assertThat(getEventsFrom(configBuilder).values())
+                .extracting(Event::isPublishToCamunda)
+                .contains(false);
+
+        assertThat(getEventsFrom(configBuilder).values())
+                .extracting(Event::getGrants)
+                .extracting(map -> map.containsKey(ST_CIC_WA_CONFIG_USER))
+                .contains(false);
+    }
+
+    @Test
+    void shouldAddPublishToCamundaWhenWAIsEnabled() {
+        ReflectionTestUtils.setField(cicDssUpdateCaseEvent, "isWorkAllocationEnabled", true);
+
+        final ConfigBuilderImpl<CaseData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
+
+        cicDssUpdateCaseEvent.configure(configBuilder);
+
+        assertThat(getEventsFrom(configBuilder).values())
+                .extracting(Event::isPublishToCamunda)
+                .contains(true);
+
+        assertThat(getEventsFrom(configBuilder).values())
+                .extracting(Event::getGrants)
+                .extracting(map -> map.containsKey(ST_CIC_WA_CONFIG_USER))
+                .contains(true);
+
+        assertThat(getEventsFrom(configBuilder).values())
+                .extracting(Event::getGrants)
+                .extracting(map -> map.get(ST_CIC_WA_CONFIG_USER))
+                .contains(Permissions.CREATE_READ_UPDATE);
     }
 
     @Test
@@ -272,35 +306,5 @@ class CicDssUpdateCaseEventTest {
 
         assertThat(response.getConfirmationHeader())
             .contains("# CIC Dss Update Case Event Email notification failed %n## Please resend the notification");
-    }
-
-    private DssCaseData getDssCaseData() {
-        EdgeCaseDocument doc1 = new EdgeCaseDocument();
-        doc1.setDocumentLink(
-            Document.builder()
-                .filename("doc1.pdf")
-                .binaryUrl("doc1.pdf/binary")
-                .categoryId("test category")
-                .build()
-        );
-        doc1.setComment("this doc is relevant to the case");
-        EdgeCaseDocument doc2 = new EdgeCaseDocument();
-        doc2.setDocumentLink(
-            Document.builder()
-                .filename("doc2.pdf")
-                .binaryUrl("doc2.pdf/binary")
-                .categoryId("test category")
-                .build()
-        );
-        doc2.setComment("this doc is also relevant to the case");
-        final List<ListValue<EdgeCaseDocument>> dssCaseDataOtherInfoDocuments = List.of(
-            new ListValue<>("1", doc1),
-            new ListValue<>("2", doc2)
-        );
-
-        return DssCaseData.builder()
-            .additionalInformation("some additional info")
-            .otherInfoDocuments(dssCaseDataOtherInfoDocuments)
-            .build();
     }
 }

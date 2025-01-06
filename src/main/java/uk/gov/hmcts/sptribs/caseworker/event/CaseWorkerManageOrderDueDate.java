@@ -2,10 +2,12 @@ package uk.gov.hmcts.sptribs.caseworker.event;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
+import uk.gov.hmcts.ccd.sdk.api.Event;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.ccd.sdk.type.DynamicList;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
@@ -37,6 +39,7 @@ import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_HEARING_CENTRE_
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_JUDGE;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_CASEWORKER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_JUDGE;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_WA_CONFIG_USER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE;
 
@@ -51,9 +54,12 @@ public class CaseWorkerManageOrderDueDate implements CCDConfig<CaseData, State, 
     @Autowired
     private OrderService orderService;
 
+    @Value("${feature.wa.enabled}")
+    private boolean isWorkAllocationEnabled;
+
     @Override
     public void configure(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
-        PageBuilder pageBuilder = new PageBuilder(
+        Event.EventBuilder<CaseData, UserRole, State> eventBuilder =
             configBuilder
                 .event(CASEWORKER_AMEND_DUE_DATE)
                 .forStates(CaseManagement, ReadyToList, AwaitingHearing, CaseClosed, CaseStayed)
@@ -66,9 +72,14 @@ public class CaseWorkerManageOrderDueDate implements CCDConfig<CaseData, State, 
                 .grant(CREATE_READ_UPDATE, SUPER_USER,
                     ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER, ST_CIC_HEARING_CENTRE_ADMIN,
                     ST_CIC_HEARING_CENTRE_TEAM_LEADER, ST_CIC_SENIOR_JUDGE)
-                .grantHistoryOnly(
-                    ST_CIC_JUDGE)
-                );
+                .grantHistoryOnly(ST_CIC_JUDGE);
+
+        if (isWorkAllocationEnabled) {
+            eventBuilder.publishToCamunda()
+                        .grant(CREATE_READ_UPDATE, ST_CIC_WA_CONFIG_USER);
+        }
+
+        PageBuilder pageBuilder = new PageBuilder(eventBuilder);
         manageSelectOrderTemplates.addTo(pageBuilder);
         amendOrderDueDates.addTo(pageBuilder);
     }
@@ -90,7 +101,7 @@ public class CaseWorkerManageOrderDueDate implements CCDConfig<CaseData, State, 
         final String id = getId(selectedOrder);
         final List<ListValue<Order>> orderList = caseData.getCicCase().getOrderList();
         for (ListValue<Order> orderListValue : orderList) {
-            if (null != id && id.equals(orderListValue.getId())) {
+            if (id != null && id.equals(orderListValue.getId())) {
                 Order order = orderListValue.getValue();
                 order.setDueDateList(cicCase.getOrderDueDates());
                 orderListValue.setValue(order);

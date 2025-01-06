@@ -1,0 +1,130 @@
+{
+  "data": {
+    "cicCaseHearingList": {
+      "value": {
+        "label": "1 - Final - 21 Apr 2021 10:00"
+      },
+      "valueLabel": "1 - Final - 21 Apr 2021 10:00"
+    },
+    "hearingVenues": {
+      "value": {
+        "code": "${json-unit.any-string}",
+        "label": "courtname-courtAddress"
+      },
+      "list_items": [
+        {
+          "code": "${json-unit.any-string}",
+          "label": "courtname-courtAddress"
+        }
+      ],
+      "valueLabel": "courtname-courtAddress",
+      "valueCode": "${json-unit.any-string}"
+    },
+    "regionList": {
+      "value": {
+        "code": "${json-unit.any-string}",
+        "label": "1-region"
+      },
+      "list_items": [
+        {
+          "code": "${json-unit.any-string}",
+          "label": "1-region"
+        }
+      ],
+      "valueLabel": "1-region",
+      "valueCode": "${json-unit.any-string}"
+    },
+    "venueNotListedOption": [],
+    "roomAtVenue": "G.01",
+    "addlInstr": "Ground floor",
+    "date": "2024-08-14",
+    "hearingTime": "10:00",
+    "hearingList": [
+      {
+        "id": "1",
+        "value": {
+          "hearingStatus": "Listed",
+          "hearingType": "Final",
+          "hearingFormat": "Face to Face",
+          "shortNotice": "Yes",
+          "hearingVenues": {
+            "value": {
+              "code": "${json-unit.any-string}",
+              "label": "courtname-courtAddress"
+            },
+            "list_items": [
+              {
+                "code": "${json-unit.any-string}",
+                "label": "courtname-courtAddress"
+              }
+            ],
+            "valueLabel": "courtname-courtAddress",
+            "valueCode": "${json-unit.any-string}"
+          },
+          "regionList": {
+            "value": {
+              "code": "${json-unit.any-string}",
+              "label": "1-region"
+            },
+            "list_items": [
+              {
+                "code": "${json-unit.any-string}",
+                "label": "1-region"
+              }
+            ],
+            "valueLabel": "1-region",
+            "valueCode": "${json-unit.any-string}"
+          },
+          "venueNotListedOption": [],
+          "roomAtVenue": "G.01",
+          "addlInstr": "Ground floor",
+          "date": "2024-08-14",
+          "hearingTime": "10:00"
+        }
+      },
+      {
+        "id": "2",
+        "value": {
+          "hearingStatus": "Listed",
+          "hearingType": "Interlocutory",
+          "hearingFormat": "Face to Face",
+          "shortNotice": "Yes",
+          "hearingVenues": {
+            "value": {
+              "code": "${json-unit.any-string}",
+              "label": "courtname-courtAddress"
+            },
+            "list_items": [
+              {
+                "code": "${json-unit.any-string}",
+                "label": "courtname-courtAddress"
+              }
+            ],
+            "valueLabel": "courtname-courtAddress",
+            "valueCode": "${json-unit.any-string}"
+          },
+          "regionList": {
+            "value": {
+              "code": "${json-unit.any-string}",
+              "label": "1-region"
+            },
+            "list_items": [
+              {
+                "code": "${json-unit.any-string}",
+                "label": "1-region"
+              }
+            ],
+            "valueLabel": "1-region",
+            "valueCode": "${json-unit.any-string}"
+          },
+          "venueNotListedOption": [],
+          "roomAtVenue": "G.01",
+          "addlInstr": "Ground floor",
+          "date": "2024-08-14",
+          "hearingTime": "14:00"
+        }
+      }
+    ],
+    "firstHearingDate": "14 Aug 2024"
+  }
+}

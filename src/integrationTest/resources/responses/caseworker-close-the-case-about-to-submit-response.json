@@ -1,0 +1,29 @@
+{
+  "data": {
+    "closeDocuments": [
+      {
+        "value": {
+          "documentCategory": "Linked docs",
+          "documentEmailContent": "some email content",
+          "documentLink": {
+            "document_filename": "test.pdf",
+            "category_id": "L"
+          }
+        }
+      }
+    ],
+    "closeDocumentsUpload": [
+      {
+        "value": {
+          "documentCategory": "Linked docs",
+          "documentEmailContent": "some email content",
+          "documentLink": {
+            "document_filename": "test.pdf",
+            "category_id": "L"
+          }
+        }
+      }
+    ]
+  },
+  "state": "CaseClosed"
+}

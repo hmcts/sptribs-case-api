@@ -2,11 +2,13 @@ package uk.gov.hmcts.sptribs.caseworker.event;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
+import uk.gov.hmcts.ccd.sdk.api.Event;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.ccd.sdk.type.DynamicList;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
@@ -28,10 +30,10 @@ import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
-import uk.gov.hmcts.sptribs.common.notification.CaseWithdrawnNotification;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocumentUpload;
 import uk.gov.hmcts.sptribs.judicialrefdata.JudicialService;
+import uk.gov.hmcts.sptribs.notification.dispatcher.CaseWithdrawnNotification;
 
 import java.util.List;
 
@@ -46,6 +48,7 @@ import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_HEARING_CENTRE_
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_JUDGE;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_CASEWORKER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_JUDGE;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_WA_CONFIG_USER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE;
 import static uk.gov.hmcts.sptribs.document.DocumentUtil.convertToCaseworkerCICDocument;
@@ -72,6 +75,9 @@ public class CaseworkerCloseTheCase implements CCDConfig<CaseData, State, UserRo
     @Autowired
     private CaseWithdrawnNotification caseWithdrawnNotification;
 
+    @Value("${feature.wa.enabled}")
+    private boolean isWorkAllocationEnabled;
+
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
 
@@ -89,18 +95,25 @@ public class CaseworkerCloseTheCase implements CCDConfig<CaseData, State, UserRo
     }
 
     public PageBuilder closeCase(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
-        return new PageBuilder(configBuilder
-            .event(CASEWORKER_CLOSE_THE_CASE)
-            .forStates(CaseManagement, ReadyToList)
-            .name("Case: Close case")
-            .description("Close the case")
-            .showSummary()
-            .aboutToStartCallback(this::aboutToStart)
-            .aboutToSubmitCallback(this::aboutToSubmit)
-            .submittedCallback(this::submitted)
-            .grant(CREATE_READ_UPDATE, SUPER_USER, ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER,
-                ST_CIC_HEARING_CENTRE_ADMIN, ST_CIC_HEARING_CENTRE_TEAM_LEADER, ST_CIC_SENIOR_JUDGE)
-            .grantHistoryOnly(ST_CIC_JUDGE));
+        Event.EventBuilder<CaseData, UserRole, State> eventBuilder =
+            configBuilder.event(CASEWORKER_CLOSE_THE_CASE)
+                .forStates(CaseManagement, ReadyToList)
+                .name("Case: Close case")
+                .description("Close the case")
+                .showSummary()
+                .aboutToStartCallback(this::aboutToStart)
+                .aboutToSubmitCallback(this::aboutToSubmit)
+                .submittedCallback(this::submitted)
+                .grant(CREATE_READ_UPDATE, SUPER_USER, ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER,
+                    ST_CIC_HEARING_CENTRE_ADMIN, ST_CIC_HEARING_CENTRE_TEAM_LEADER, ST_CIC_SENIOR_JUDGE)
+                .grantHistoryOnly(ST_CIC_JUDGE);
+
+        if (isWorkAllocationEnabled) {
+            eventBuilder.publishToCamunda()
+                        .grant(CREATE_READ_UPDATE, ST_CIC_WA_CONFIG_USER);
+        }
+
+        return new PageBuilder(eventBuilder);
     }
 
     private void uploadDocuments(PageBuilder pageBuilder) {
@@ -159,8 +172,6 @@ public class CaseworkerCloseTheCase implements CCDConfig<CaseData, State, UserRo
 
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(CaseDetails<CaseData, State> details,
                                                                        CaseDetails<CaseData, State> beforeDetails) {
-
-        log.info("Caseworker close the case callback invoked for Case Id: {}", details.getId());
 
         final CaseData caseData = details.getData();
         List<ListValue<CaseworkerCICDocumentUpload>> uploadedDocuments = caseData.getCloseCase().getDocumentsUpload();
