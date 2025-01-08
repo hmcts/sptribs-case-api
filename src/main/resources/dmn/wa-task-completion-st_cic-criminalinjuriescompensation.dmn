@@ -561,7 +561,7 @@
       </rule>
       <rule id="DecisionRule_117z5bo">
         <inputEntry id="UnaryTests_1krjzhf">
-          <text>"edit-case","caseworker-case-built","refer-to-judge","refer-to-legal-officer","caseworker-document-management","caseworker-amend-document","create-hearing-summary","contact-parties","createBundle","caseworker-amend-due-date","create-draft-order"</text>
+          <text>"edit-case","caseworker-case-built","refer-to-judge","refer-to-legal-officer","caseworker-document-management","caseworker-amend-document","create-hearing-summary","contact-parties","createBundle","caseworker-amend-due-date","create-draft-order","caseworker-issue-final-decision"</text>
         </inputEntry>
         <outputEntry id="LiteralExpression_1ahaic3">
           <text></text>
