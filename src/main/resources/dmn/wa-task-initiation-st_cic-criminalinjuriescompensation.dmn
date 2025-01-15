@@ -1244,6 +1244,38 @@
           <text>"JUDICIAL"</text>
         </outputEntry>
       </rule>
+      <rule id="DecisionRule_0pwr9wc">
+        <inputEntry id="UnaryTests_0ildysh">
+          <text>"refer-to-judge"</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_1vz6ml8">
+          <text>"AwaitingHearing"</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_1vm78dm">
+          <text>"Stay request"</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_030upw9">
+          <text>"reviewStayRequestCaseListedJudge"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_09sz28z">
+          <text>"Review stay request case listed - Judge"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_130greo">
+          <text></text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_1y73rrm">
+          <text>5</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_0vb6fcj">
+          <text>"Processing"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_02pa8en">
+          <text>"decision_making_work"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_0o9mrtg">
+          <text>"JUDICIAL"</text>
+        </outputEntry>
+      </rule>
       <rule id="DecisionRule_1sj6gcp">
         <inputEntry id="UnaryTests_0w2rv1i">
           <text>"refer-to-judge"</text>
