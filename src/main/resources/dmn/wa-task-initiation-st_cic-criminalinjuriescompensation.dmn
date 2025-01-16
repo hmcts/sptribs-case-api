@@ -1372,6 +1372,38 @@
           <text>"JUDICIAL"</text>
         </outputEntry>
       </rule>
+      <rule id="DecisionRule_0fodt3x">
+        <inputEntry id="UnaryTests_1sqymmg">
+          <text>"refer-to-judge"</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_11okal1">
+          <text>"AwaitingHearing"</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_11ca1oh">
+          <text>"Rule 27 request"</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_0j8x1c1">
+          <text>"reviewRule27RequestCaseListedJudge"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_0hj4d97">
+          <text>"Review Rule 27 request case listed - Judge"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_085s5s5">
+          <text></text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_0yjg3fe">
+          <text>5</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_1c3ndbj">
+          <text>"Processing"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_17w5a4o">
+          <text>"decision_making_work"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_1w1xjhz">
+          <text>"JUDICIAL"</text>
+        </outputEntry>
+      </rule>
       <rule id="DecisionRule_03g8it9">
         <inputEntry id="UnaryTests_1kle717">
           <text>"refer-to-judge"</text>

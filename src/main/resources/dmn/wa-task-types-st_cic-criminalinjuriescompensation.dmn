@@ -471,6 +471,17 @@
           <text>"Review Rule 27 request - Judge"</text>
         </outputEntry>
       </rule>
+      <rule id="DecisionRule_1juh9kv">
+        <inputEntry id="UnaryTests_1aghcgl">
+          <text></text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_1okcih1">
+          <text>"reviewRule27RequestCaseListedJudge"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_0tb1r0r">
+          <text>"Review Rule 27 request case listed - Judge"</text>
+        </outputEntry>
+      </rule>
       <rule id="DecisionRule_1eu5ume">
         <inputEntry id="UnaryTests_1julym3">
           <text></text>
