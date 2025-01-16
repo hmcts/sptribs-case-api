@@ -31,6 +31,17 @@
           <text>"Auto"</text>
         </outputEntry>
       </rule>
+      <rule id="DecisionRule_13xp7lx">
+        <inputEntry id="UnaryTests_0xl18ke">
+          <text>"caseworker-send-order"</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_0pm021w">
+          <text>"processRule27DecisionListed"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_1k6rirk">
+          <text>"Auto"</text>
+        </outputEntry>
+      </rule>
       <rule id="DecisionRule_1g7g5cc">
         <inputEntry id="UnaryTests_1wk222b">
           <text>"caseworker-send-order"</text>

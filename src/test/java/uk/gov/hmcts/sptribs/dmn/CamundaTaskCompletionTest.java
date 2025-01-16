@@ -35,6 +35,7 @@ import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.PROCESS_LISTING
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.PROCESS_OTHER_DIR_RETURNED_TASK;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.PROCESS_POSTPONEMENT_DIR_TASK;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.PROCESS_REINSTATEMENT_DECISION_NOTICE_TASK;
+import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.PROCESS_RULE27_DECISION_LISTED_TASK;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.PROCESS_RULE27_DECISION_TASK;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.PROCESS_SET_ASIDE_DIR_TASK;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.PROCESS_STAY_DIR_TASK;
@@ -90,6 +91,10 @@ class CamundaTaskCompletionTest extends DmnDecisionTableBaseUnitTest {
                     ),
                     Map.of(
                         "taskType", PROCESS_RULE27_DECISION_TASK,
+                        "completionMode", AUTO_COMPLETE_MODE
+                    ),
+                    Map.of(
+                        "taskType", PROCESS_RULE27_DECISION_LISTED_TASK,
                         "completionMode", AUTO_COMPLETE_MODE
                     ),
                     Map.of(
@@ -414,7 +419,7 @@ class CamundaTaskCompletionTest extends DmnDecisionTableBaseUnitTest {
         DmnDecisionTableImpl logic = (DmnDecisionTableImpl) decision.getDecisionLogic();
         assertThat(logic.getInputs().size(), is(1));
         assertThat(logic.getOutputs().size(), is(2));
-        assertThat(logic.getRules().size(), is(51));
+        assertThat(logic.getRules().size(), is(52));
     }
 
     @ParameterizedTest(name = "event id: {0}")
