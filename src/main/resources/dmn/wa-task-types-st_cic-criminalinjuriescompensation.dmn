@@ -460,6 +460,17 @@
           <text>"Review withdrawal request - Judge"</text>
         </outputEntry>
       </rule>
+      <rule id="DecisionRule_1qojyav">
+        <inputEntry id="UnaryTests_0lrtbfz">
+          <text></text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_0f0tdso">
+          <text>"reviewWithdrawalRequestCaseListedJudge"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_153hhkr">
+          <text>"Review withdrawal request case listed - Judge"</text>
+        </outputEntry>
+      </rule>
       <rule id="DecisionRule_0o3b30h">
         <inputEntry id="UnaryTests_0ahztzp">
           <text></text>

@@ -460,6 +460,17 @@
           <text>"Auto"</text>
         </outputEntry>
       </rule>
+      <rule id="DecisionRule_19pxvlc">
+        <inputEntry id="UnaryTests_1jyl7j3">
+          <text>"create-draft-order"</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_0vwaqss">
+          <text>"reviewWithdrawalRequestCaseListedJudge"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_11b5yr0">
+          <text>"Auto"</text>
+        </outputEntry>
+      </rule>
       <rule id="DecisionRule_0lt4hhb">
         <inputEntry id="UnaryTests_0p7a9f9">
           <text>"create-draft-order"</text>
