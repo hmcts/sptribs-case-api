@@ -427,6 +427,17 @@
           <text>"Review stay request - Judge"</text>
         </outputEntry>
       </rule>
+      <rule id="DecisionRule_1vdbn5k">
+        <inputEntry id="UnaryTests_05a0utj">
+          <text></text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_1skbq6u">
+          <text>"reviewStayRequestCaseListedJudge"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_0hwcmak">
+          <text>"Review stay request case listed - Judge"</text>
+        </outputEntry>
+      </rule>
       <rule id="DecisionRule_0mfjdpj">
         <inputEntry id="UnaryTests_1n72wsz">
           <text></text>
