@@ -75,6 +75,7 @@ import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.REVIEW_STRIKE_O
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.REVIEW_STRIKE_OUT_REQ_LO_TASK;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.REVIEW_TIME_EXT_REQ_JUDGE_TASK;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.REVIEW_TIME_EXT_REQ_LO_TASK;
+import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.REVIEW_WITHDRAWAL_REQ_CASE_LISTED_LO_TASK;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.REVIEW_WITHDRAWAL_REQ_JUDGE_TASK;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.REVIEW_WITHDRAWAL_REQ_LO_TASK;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.REVIEW_WRITTEN_REASONS_REQ_TASK;
@@ -498,6 +499,21 @@ class CamundaTaskWaInitiationTest extends DmnDecisionTableBaseUnitTest {
             ),
             Arguments.of(
                 "refer-to-legal-officer",
+                "AwaitingHearing",
+                Map.of("Data", Map.of("cicCaseReferralTypeForWA", "Withdrawal request")),
+                List.of(
+                    Map.of(
+                        "taskId", REVIEW_WITHDRAWAL_REQ_CASE_LISTED_LO_TASK,
+                        "name", "Review withdrawal request case listed - Legal Officer",
+                        "workingDaysAllowed", 5,
+                        "processCategories", PROCESS_CATEGORY_PROCESSING,
+                        "workType", DECISION_WORK_TYPE,
+                        "roleCategory", ROLE_CATEGORY_LO
+                    )
+                )
+            ),
+            Arguments.of(
+                "refer-to-legal-officer",
                 "CaseManagement",
                 Map.of("Data", Map.of("cicCaseReferralTypeForWA", "Rule 27 request")),
                 List.of(
@@ -880,7 +896,7 @@ class CamundaTaskWaInitiationTest extends DmnDecisionTableBaseUnitTest {
         DmnDecisionTableImpl logic = (DmnDecisionTableImpl) decision.getDecisionLogic();
         assertThat(logic.getInputs().size(), is(3));
         assertThat(logic.getOutputs().size(), is(7));
-        assertThat(logic.getRules().size(), is(50));
+        assertThat(logic.getRules().size(), is(51));
     }
 
     @ParameterizedTest(name = "event id: {0} post event state: {1} appeal type: {2}")

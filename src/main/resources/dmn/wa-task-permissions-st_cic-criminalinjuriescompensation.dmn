@@ -171,7 +171,7 @@
       </rule>
       <rule id="DecisionRule_0i4p218">
         <inputEntry id="UnaryTests_1or4uu6">
-          <text>"reviewNewCaseAndProvideDirectionsLO","reviewTimeExtensionRequestLO","reviewStrikeOutRequestLO","reviewStayRequestLO","reviewListingDirectionsLO","reviewWithdrawalRequestLO","reviewRule27RequestLO","reviewListCaseLO","reviewOtherRequestLO","reviewListCaseWithin5DaysLO","reviewPostponementRequestLO","reviewReinstatementRequestLO","reviewSpecificAccessRequestLegalOps"</text>
+          <text>"reviewNewCaseAndProvideDirectionsLO","reviewTimeExtensionRequestLO","reviewStrikeOutRequestLO","reviewStayRequestLO","reviewListingDirectionsLO","reviewWithdrawalRequestLO","reviewRule27RequestLO","reviewListCaseLO","reviewOtherRequestLO","reviewListCaseWithin5DaysLO","reviewPostponementRequestLO","reviewReinstatementRequestLO","reviewSpecificAccessRequestLegalOps","reviewWithdrawalRequestCaseListedLO"</text>
         </inputEntry>
         <inputEntry id="UnaryTests_1fryqbq">
           <text></text>
@@ -200,7 +200,7 @@
       </rule>
       <rule id="DecisionRule_09z41h1">
         <inputEntry id="UnaryTests_17z8qfe">
-          <text>"reviewNewCaseAndProvideDirectionsLO","reviewTimeExtensionRequestLO","reviewStrikeOutRequestLO","reviewStayRequestLO","reviewListingDirectionsLO","reviewWithdrawalRequestLO","reviewRule27RequestLO","reviewListCaseLO","reviewOtherRequestLO","reviewListCaseWithin5DaysLO","reviewPostponementRequestLO","reviewReinstatementRequestLO"</text>
+          <text>"reviewNewCaseAndProvideDirectionsLO","reviewTimeExtensionRequestLO","reviewStrikeOutRequestLO","reviewStayRequestLO","reviewListingDirectionsLO","reviewWithdrawalRequestLO","reviewRule27RequestLO","reviewListCaseLO","reviewOtherRequestLO","reviewListCaseWithin5DaysLO","reviewPostponementRequestLO","reviewReinstatementRequestLO","reviewWithdrawalRequestCaseListedLO"</text>
         </inputEntry>
         <inputEntry id="UnaryTests_1jr85bn">
           <text></text>

@@ -94,6 +94,7 @@ import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.REVIEW_STRIKE_O
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.REVIEW_STRIKE_OUT_REQ_LO_TASK;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.REVIEW_TIME_EXT_REQ_JUDGE_TASK;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.REVIEW_TIME_EXT_REQ_LO_TASK;
+import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.REVIEW_WITHDRAWAL_REQ_CASE_LISTED_LO_TASK;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.REVIEW_WITHDRAWAL_REQ_JUDGE_TASK;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.REVIEW_WITHDRAWAL_REQ_LO_TASK;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.REVIEW_WRITTEN_REASONS_REQ_TASK;
@@ -564,6 +565,23 @@ class CamundaTaskWaConfigurationTest extends DmnDecisionTableBaseUnitTest {
             ),
             Arguments.of(
                 REVIEW_WITHDRAWAL_REQ_LO_TASK,
+                CaseDataBuilder.defaultCase().build(),
+                ConfigurationExpectationBuilder.defaultExpectations()
+                    .expectedValue(MINOR_PRIORITY, DEFAULT_MINOR_PRIORITY, true)
+                    .expectedValue(MAJOR_PRIORITY, DEFAULT_MAJOR_PRIORITY, true)
+                    .expectedValue(WORK_TYPE, DECISION_WORK_TYPE, true)
+                    .expectedValue(ROLE_CATEGORY, ROLE_CATEGORY_LO, true)
+                    .expectedValue(DUE_DATE_INTERVAL_DAYS, "5", true)
+                    .expectedValue(
+                        DESCRIPTION,
+                        "[Orders: Create draft](/cases/case-details/${[CASE_REFERENCE]}/trigger"
+                            + "/create-draft-order)",
+                        true
+                    )
+                    .build()
+            ),
+            Arguments.of(
+                REVIEW_WITHDRAWAL_REQ_CASE_LISTED_LO_TASK,
                 CaseDataBuilder.defaultCase().build(),
                 ConfigurationExpectationBuilder.defaultExpectations()
                     .expectedValue(MINOR_PRIORITY, DEFAULT_MINOR_PRIORITY, true)

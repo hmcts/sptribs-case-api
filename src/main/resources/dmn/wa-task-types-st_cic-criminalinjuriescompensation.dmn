@@ -284,6 +284,17 @@
           <text>"Review withdrawal request - Legal Officer"</text>
         </outputEntry>
       </rule>
+      <rule id="DecisionRule_047t52f">
+        <inputEntry id="UnaryTests_0ltclwn">
+          <text></text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_01l183b">
+          <text>"reviewWithdrawalRequestCaseListedLO"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_1koatu5">
+          <text>"Review withdrawal request case listed - Legal Officer"</text>
+        </outputEntry>
+      </rule>
       <rule id="DecisionRule_0ipn5kc">
         <inputEntry id="UnaryTests_0gema8k">
           <text></text>

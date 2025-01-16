@@ -828,6 +828,38 @@
           <text>"LEGAL_OPERATIONS"</text>
         </outputEntry>
       </rule>
+      <rule id="DecisionRule_0we854l">
+        <inputEntry id="UnaryTests_1fwtyl9">
+          <text>"refer-to-legal-officer"</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_0nap5zb">
+          <text>"AwaitingHearing"</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_1fr4r4q">
+          <text>"Withdrawal request"</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_062i2u7">
+          <text>"reviewWithdrawalRequestCaseListedLO"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_0mxz2v5">
+          <text>"Review withdrawal request case listed - Legal Officer"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_132k709">
+          <text></text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_1dr2bpj">
+          <text>5</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_0mxlorc">
+          <text>"Processing"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_1bcqpwe">
+          <text>"decision_making_work"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_0e8jgz5">
+          <text>"LEGAL_OPERATIONS"</text>
+        </outputEntry>
+      </rule>
       <rule id="DecisionRule_0t1ufu3">
         <inputEntry id="UnaryTests_071mpnf">
           <text>"refer-to-legal-officer"</text>
