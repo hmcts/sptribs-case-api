@@ -29,6 +29,7 @@ import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.FOLLOW_UP_NONCO
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.ISSUE_CASE_TO_RESPONDENT_TASK;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.ISSUE_DECISION_NOTICE_TASK;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.ISSUE_DUE_DATE;
+import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.PROCESS_CASE_WITHDRAWAL_DIR_LISTED_TASK;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.PROCESS_CASE_WITHDRAWAL_DIR_TASK;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.PROCESS_CORRECTIONS_TASK;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.PROCESS_DIR_RELISTED_CASE_TASK;
@@ -100,6 +101,14 @@ class CamundaTaskWaPermissionTest extends DmnDecisionTableBaseUnitTest {
                 PROCESS_CASE_WITHDRAWAL_DIR_TASK,
                 DUMMY_CASE_DATA,
                 defaultAdminAndCtscTaskPermissions()
+            ),
+            Arguments.of(
+                PROCESS_CASE_WITHDRAWAL_DIR_LISTED_TASK,
+                DUMMY_CASE_DATA,
+                List.of(
+                    taskSupervisorPermissions(),
+                    regionalCentreAdminPermissions()
+                )
             ),
             Arguments.of(
                 PROCESS_RULE27_DECISION_TASK,
