@@ -72,6 +72,7 @@ public class CamundaTaskConstants {
     public static final String REVIEW_LISTING_DIR_JUDGE_TASK = "reviewListingDirectionsJudge";
     public static final String REVIEW_LISTING_DIR_LO_TASK = "reviewListingDirectionsLO";
     public static final String PROCESS_LISTING_DIR_TASK = "processListingDirections";
+    public static final String PROCESS_LISTING_DIR_LISTED_TASK = "processListingDirectionsListed";
     public static final String STITCH_COLLATE_HEARING_BUNDLE_TASK = "stitchCollateHearingBundle";
     public static final String REVIEW_LIST_CASE_JUDGE_TASK = "reviewListCaseJudge";
     public static final String REVIEW_LIST_CASE_LO_TASK = "reviewListCaseLO";

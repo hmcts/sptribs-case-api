@@ -124,6 +124,38 @@
           <text>"ADMIN"</text>
         </outputEntry>
       </rule>
+      <rule id="DecisionRule_1it7fdq">
+        <inputEntry id="UnaryTests_0bfybkc">
+          <text>"create-draft-order"</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_0n9usem">
+          <text>"AwaitingHearing"</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_06w6zxg">
+          <text>"Listing directions"</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_1seu3uk">
+          <text>"processListingDirectionsListed"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_1r4shwz">
+          <text>"Process listing directions listed"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_0c1rk0p">
+          <text></text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_0zr1nkn">
+          <text>3</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_1vc8955">
+          <text>"Processing"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_12xpe94">
+          <text>"routine_work"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_0dwstgm">
+          <text>"ADMIN"</text>
+        </outputEntry>
+      </rule>
       <rule id="DecisionRule_1rinmce">
         <inputEntry id="UnaryTests_04qbxxh">
           <text>"create-draft-order"</text>
