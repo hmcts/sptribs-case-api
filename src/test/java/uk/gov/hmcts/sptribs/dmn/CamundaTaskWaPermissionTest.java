@@ -39,6 +39,7 @@ import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.PROCESS_POSTPON
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.PROCESS_REINSTATEMENT_DECISION_NOTICE_TASK;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.PROCESS_RULE27_DECISION_TASK;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.PROCESS_SET_ASIDE_DIR_TASK;
+import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.PROCESS_STAY_DIR_LISTED_TASK;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.PROCESS_STAY_DIR_TASK;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.PROCESS_STRIKE_OUT_DIR_RETURNED_TASK;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.PROCESS_TIME_EXT_DIR_RETURNED_TASK;
@@ -172,6 +173,14 @@ class CamundaTaskWaPermissionTest extends DmnDecisionTableBaseUnitTest {
                 PROCESS_STAY_DIR_TASK,
                 DUMMY_CASE_DATA,
                 defaultAdminAndCtscTaskPermissions()
+            ),
+            Arguments.of(
+                PROCESS_STAY_DIR_LISTED_TASK,
+                DUMMY_CASE_DATA,
+                List.of(
+                    taskSupervisorPermissions(),
+                    regionalCentreAdminPermissions()
+                )
             ),
             Arguments.of(
                 ISSUE_DECISION_NOTICE_TASK,
