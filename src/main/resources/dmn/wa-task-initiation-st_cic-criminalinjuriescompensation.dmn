@@ -1340,6 +1340,38 @@
           <text>"JUDICIAL"</text>
         </outputEntry>
       </rule>
+      <rule id="DecisionRule_1b29di2">
+        <inputEntry id="UnaryTests_1cojwc5">
+          <text>"refer-to-judge"</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_1jxowg6">
+          <text>"AwaitingHearing"</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_032knus">
+          <text>"Withdrawal request"</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_053ultn">
+          <text>"reviewWithdrawalRequestCaseListedJudge"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_0okst20">
+          <text>"Review withdrawal request case listed - Judge"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_1gr99t1">
+          <text></text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_0gjx0p8">
+          <text>5</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_13592jp">
+          <text>"Processing"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_13e3bmb">
+          <text>"decision_making_work"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_1bxuoxd">
+          <text>"JUDICIAL"</text>
+        </outputEntry>
+      </rule>
       <rule id="DecisionRule_13gbmss">
         <inputEntry id="UnaryTests_0dpddha">
           <text>"refer-to-judge"</text>
