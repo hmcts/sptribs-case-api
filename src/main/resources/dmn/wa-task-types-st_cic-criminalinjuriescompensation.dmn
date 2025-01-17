@@ -295,6 +295,17 @@
           <text>"Review Rule 27 request - Legal Officer"</text>
         </outputEntry>
       </rule>
+      <rule id="DecisionRule_0atpuvt">
+        <inputEntry id="UnaryTests_0423dxg">
+          <text></text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_1c5mbil">
+          <text>"reviewRule27RequestCaseListedLO"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_1e9rk4h">
+          <text>"Review Rule 27 request case listed - Legal Officer"</text>
+        </outputEntry>
+      </rule>
       <rule id="DecisionRule_0sq973a">
         <inputEntry id="UnaryTests_13p3d4o">
           <text></text>
