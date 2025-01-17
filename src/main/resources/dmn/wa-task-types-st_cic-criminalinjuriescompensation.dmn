@@ -174,6 +174,17 @@
           <text>"Process stay directions"</text>
         </outputEntry>
       </rule>
+      <rule id="DecisionRule_1auayyo">
+        <inputEntry id="UnaryTests_0hx0akc">
+          <text></text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_1pwqxar">
+          <text>"processStayDirectionsListed"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_0228sxr">
+          <text>"Process stay directions listed"</text>
+        </outputEntry>
+      </rule>
       <rule id="DecisionRule_14h1b34">
         <inputEntry id="UnaryTests_1f6clop">
           <text></text>
