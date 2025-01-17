@@ -482,6 +482,17 @@
           <text>"Review listing directions - Judge"</text>
         </outputEntry>
       </rule>
+      <rule id="DecisionRule_0kyqsiu">
+        <inputEntry id="UnaryTests_1f2tz91">
+          <text></text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_0rhabq7">
+          <text>"reviewListingDirectionsCaseListedJudge"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_1spwhwo">
+          <text>"Review listing directions case listed - Judge"</text>
+        </outputEntry>
+      </rule>
       <rule id="DecisionRule_06d0ozi">
         <inputEntry id="UnaryTests_1m0eq91">
           <text></text>
