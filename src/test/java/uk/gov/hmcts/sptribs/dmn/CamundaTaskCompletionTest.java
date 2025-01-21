@@ -153,7 +153,8 @@ class CamundaTaskCompletionTest extends DmnDecisionTableBaseUnitTest {
                     Map.of(
                         "taskType", ISSUE_DECISION_NOTICE_TASK,
                         "completionMode", AUTO_COMPLETE_MODE
-                    )
+                    ),
+                    Collections.emptyMap()
                 )
             ),
             Arguments.of(
@@ -162,7 +163,8 @@ class CamundaTaskCompletionTest extends DmnDecisionTableBaseUnitTest {
                     Map.of(
                         "taskType", ISSUE_DECISION_NOTICE_TASK,
                         "completionMode", AUTO_COMPLETE_MODE
-                    )
+                    ),
+                    Collections.emptyMap()
                 )
             ),
             Arguments.of(

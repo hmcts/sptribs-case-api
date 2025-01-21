@@ -38,6 +38,7 @@ import static uk.gov.hmcts.sptribs.caseworker.model.YesNo.NO;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_RECORD_LISTING;
 import static uk.gov.hmcts.sptribs.ciccase.model.HearingState.Listed;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
+import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingOutcome;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.ReadyToList;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_CASEWORKER;
@@ -83,7 +84,7 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
         Event.EventBuilder<CaseData, UserRole, State> eventBuilder =
             configBuilder
                 .event(CASEWORKER_RECORD_LISTING)
-                .forStates(CaseManagement, ReadyToList)
+                .forStates(CaseManagement, ReadyToList, AwaitingOutcome)
                 .name("Hearings: Create listing")
                 .description("Hearings: Create listing")
                 .showSummary()
