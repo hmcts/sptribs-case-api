@@ -240,7 +240,7 @@ withPipeline(type, product, component) {
     if (waPRLabels.contains("pr-values:wa")) {
       env.WA_FEATURE_ENABLED  = true
     }
-    if (waPRLabels.contains"pr-values:wa-ft-tests") {
+    if (waPRLabels.contains("pr-values:wa-ft-tests")) {
       env.WA_FUNCTIONAL_TESTS_ENABLED = true
     }
 
