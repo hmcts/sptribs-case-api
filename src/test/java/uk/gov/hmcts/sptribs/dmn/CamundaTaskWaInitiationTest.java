@@ -446,7 +446,7 @@ class CamundaTaskWaInitiationTest extends DmnDecisionTableBaseUnitTest {
                     Map.of(
                         "taskId", REVIEW_TIME_EXT_REQ_LO_TASK,
                         "name", "Review time extension request - Legal Officer",
-                        "workingDaysAllowed", 1,
+                        "workingDaysAllowed", 5,
                         "processCategories", PROCESS_CATEGORY_PROCESSING,
                         "workType", DECISION_WORK_TYPE,
                         "roleCategory", ROLE_CATEGORY_LO
@@ -821,7 +821,7 @@ class CamundaTaskWaInitiationTest extends DmnDecisionTableBaseUnitTest {
                     Map.of(
                         "taskId", REVIEW_TIME_EXT_REQ_JUDGE_TASK,
                         "name", "Review time extension request - Judge",
-                        "workingDaysAllowed", 2,
+                        "workingDaysAllowed", 5,
                         "processCategories", PROCESS_CATEGORY_PROCESSING,
                         "workType", DECISION_WORK_TYPE,
                         "roleCategory", ROLE_CATEGORY_JUDICIAL
