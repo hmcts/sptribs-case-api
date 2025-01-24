@@ -240,6 +240,11 @@ withPipeline(type, product, component) {
       env.WA_FUNCTIONAL_TESTS_ENABLED = true
     }
 
+    def waPRLabels = githubApi.getLabelsbyPattern(env.BRANCH_NAME, "pr-values:wa")
+    if (waPRLabels.contains("pr-values:wa")) {
+      env.WA_FEATURE_ENABLED  = true
+    }
+
     setCommonEnvVariables()
 
     enablePactAs([AppPipelineDsl.PactRoles.CONSUMER])
