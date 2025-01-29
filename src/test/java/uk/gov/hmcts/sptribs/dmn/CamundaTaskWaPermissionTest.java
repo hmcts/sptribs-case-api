@@ -371,7 +371,11 @@ class CamundaTaskWaPermissionTest extends DmnDecisionTableBaseUnitTest {
                 List.of(
                     taskSupervisorPermissions(),
                     regionalCentreAdminPermissions(),
-                    ctscPermissions()
+                    regionalCentreTeamLeaderPermissions(),
+                    hearingCentreAdminPermissions(),
+                    hearingCentreTeamLeaderPermissions(),
+                    ctscPermissions(),
+                    ctscTeamLeaderPermissions()
                 )
             ),
             Arguments.of(
