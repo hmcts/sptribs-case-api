@@ -43,7 +43,7 @@ global:
 wa:
   enabled: true
 
-  camunda:
+  camunda-bpm:
     java:
       image: hmctsprivatetemp.azurecr.io/camunda/bpm:latest
 
