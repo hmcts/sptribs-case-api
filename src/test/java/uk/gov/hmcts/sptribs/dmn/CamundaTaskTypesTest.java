@@ -307,7 +307,7 @@ class CamundaTaskTypesTest extends DmnDecisionTableBaseUnitTest {
             ),
             Map.of(
                 "taskTypeId", ISSUE_DUE_DATE,
-                "taskTypeName", "Issue Due Date"
+                "taskTypeName", "Issue due date"
             )
         );
         return Stream.of(

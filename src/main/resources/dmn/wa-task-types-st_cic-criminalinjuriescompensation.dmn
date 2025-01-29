@@ -622,7 +622,7 @@
           <text>"issueDueDate"</text>
         </outputEntry>
         <outputEntry id="LiteralExpression_1l8hs0x">
-          <text>"Issue Due Date"</text>
+          <text>"Issue due date"</text>
         </outputEntry>
       </rule>
     </decisionTable>
