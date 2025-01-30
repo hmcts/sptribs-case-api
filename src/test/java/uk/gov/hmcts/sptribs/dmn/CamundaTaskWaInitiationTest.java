@@ -328,7 +328,7 @@ class CamundaTaskWaInitiationTest extends DmnDecisionTableBaseUnitTest {
                 List.of(
                     Map.of(
                         "taskId", ISSUE_DUE_DATE,
-                        "name", "Issue Due Date",
+                        "name", "Issue due date",
                         "workingDaysAllowed", 2,
                         "processCategories", PROCESS_CATEGORY_ISSUE_CASE,
                         "workType", ROUTINE_WORK_TYPE,
