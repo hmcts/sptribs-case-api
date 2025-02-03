@@ -28,6 +28,7 @@ import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.CREATE_DUE_DATE
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.FOLLOW_UP_NONCOMPLIANCE_OF_DIR_TASK;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.ISSUE_CASE_TO_RESPONDENT_TASK;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.ISSUE_DECISION_NOTICE_TASK;
+import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.ISSUE_DUE_DATE;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.PROCESS_CASE_WITHDRAWAL_DIR_TASK;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.PROCESS_CORRECTIONS_TASK;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.PROCESS_DIR_RELISTED_CASE_TASK;
@@ -366,6 +367,19 @@ class CamundaTaskWaPermissionTest extends DmnDecisionTableBaseUnitTest {
             ),
             Arguments.of(
                 CREATE_DUE_DATE,
+                DUMMY_CASE_DATA,
+                List.of(
+                    taskSupervisorPermissions(),
+                    regionalCentreAdminPermissions(),
+                    regionalCentreTeamLeaderPermissions(),
+                    hearingCentreAdminPermissions(),
+                    hearingCentreTeamLeaderPermissions(),
+                    ctscPermissions(),
+                    ctscTeamLeaderPermissions()
+                )
+            ),
+            Arguments.of(
+                ISSUE_DUE_DATE,
                 DUMMY_CASE_DATA,
                 List.of(
                     taskSupervisorPermissions(),

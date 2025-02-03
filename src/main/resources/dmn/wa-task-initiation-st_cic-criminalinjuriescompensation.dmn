@@ -508,6 +508,38 @@
           <text>"ADMIN"</text>
         </outputEntry>
       </rule>
+      <rule id="DecisionRule_05au4w9">
+        <inputEntry id="UnaryTests_0bybmxu">
+          <text>"create-draft-order"</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_1ddlt26">
+          <text>"CaseManagement"</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_0j06fqd">
+          <text>""</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_1n1s9xl">
+          <text>"issueDueDate"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_03quogp">
+          <text>"Issue due date"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_0us0p6d">
+          <text></text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_19dtiiy">
+          <text>2</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_1fe04yz">
+          <text>"IssueCase"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_0pakxtc">
+          <text>"routine_work"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_1m2ss75">
+          <text>"ADMIN"</text>
+        </outputEntry>
+      </rule>
       <rule id="DecisionRule_16achsh">
         <inputEntry id="UnaryTests_1l0e0bp">
           <text>"create-hearing-summary"</text>
