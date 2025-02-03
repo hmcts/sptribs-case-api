@@ -1628,6 +1628,38 @@
           <text>"ADMIN"</text>
         </outputEntry>
       </rule>
+      <rule id="DecisionRule_0sz3371">
+        <inputEntry id="UnaryTests_063s1jg">
+          <text>"caseworker-issue-case"</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_0qe4e79">
+          <text>"CaseManagement"</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_19ouxqr">
+          <text></text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_1hlurb8">
+          <text>"createDueDate"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_0tvk3xj">
+          <text>"Create due date"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_0xakui6">
+          <text></text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_1k82nco">
+          <text>2</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_177l35x">
+          <text>"IssueCase"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_1kwykux">
+          <text>"routine_work"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_0dktjgd">
+          <text>"ADMIN"</text>
+        </outputEntry>
+      </rule>
     </decisionTable>
   </decision>
   <dmndi:DMNDI>
