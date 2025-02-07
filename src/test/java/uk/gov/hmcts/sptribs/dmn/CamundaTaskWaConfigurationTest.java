@@ -32,6 +32,7 @@ import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.APPLICATION_WOR
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.CASE_MANAGEMENT_CATEGORY;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.CASE_NAME;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.COMPLETE_HEARING_OUTCOME_TASK;
+import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.CREATE_DUE_DATE;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.DECISION_WORK_TYPE;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.DEFAULT_MAJOR_PRIORITY;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.DEFAULT_MINOR_PRIORITY;
@@ -42,6 +43,7 @@ import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.FOLLOW_UP_NONCO
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.HEARING_WORK_TYPE;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.ISSUE_CASE_TO_RESPONDENT_TASK;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.ISSUE_DECISION_NOTICE_TASK;
+import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.ISSUE_DUE_DATE;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.LOCATION;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.LOCATION_NAME;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.MAJOR_PRIORITY;
@@ -1128,6 +1130,36 @@ class CamundaTaskWaConfigurationTest extends DmnDecisionTableBaseUnitTest {
                         true
                     )
                     .expectedValue(ADDITIONAL_PROPERTIES_ROLE_ASSIGNMENT_ID, roleAssignmentId, false)
+                    .build()
+            ),
+            Arguments.of(
+                CREATE_DUE_DATE,
+                CaseDataBuilder.defaultCase().build(),
+                ConfigurationExpectationBuilder.defaultExpectations()
+                    .expectedValue(MINOR_PRIORITY, DEFAULT_MINOR_PRIORITY, true)
+                    .expectedValue(MAJOR_PRIORITY, DEFAULT_MAJOR_PRIORITY, true)
+                    .expectedValue(WORK_TYPE, ROUTINE_WORK_TYPE, true)
+                    .expectedValue(ROLE_CATEGORY, ROLE_CATEGORY_ADMIN, true)
+                    .expectedValue(DUE_DATE_INTERVAL_DAYS, "2", true)
+                    .expectedValue(
+                        DESCRIPTION,
+                        "[Orders: Create draft](/cases/case-details/${[CASE_REFERENCE]}/trigger"
+                            + "/create-draft-order)",
+                        true
+                    )
+                    .build()
+            ),
+            Arguments.of(
+                ISSUE_DUE_DATE,
+                CaseDataBuilder.defaultCase().build(),
+                ConfigurationExpectationBuilder.defaultExpectations()
+                    .expectedValue(MINOR_PRIORITY, DEFAULT_MINOR_PRIORITY, true)
+                    .expectedValue(MAJOR_PRIORITY, DEFAULT_MAJOR_PRIORITY, true)
+                    .expectedValue(WORK_TYPE, ROUTINE_WORK_TYPE, true)
+                    .expectedValue(ROLE_CATEGORY, ROLE_CATEGORY_ADMIN, true)
+                    .expectedValue(DUE_DATE_INTERVAL_DAYS, "2", true)
+                    .expectedValue(DESCRIPTION, "[Orders: Send order](/cases/case-details"
+                        + "/${[CASE_REFERENCE]}/trigger/caseworker-send-order)", true)
                     .build()
             )
         );

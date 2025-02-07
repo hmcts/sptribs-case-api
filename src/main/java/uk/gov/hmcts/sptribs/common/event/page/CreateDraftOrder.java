@@ -11,6 +11,8 @@ import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 
+import static net.logstash.logback.util.StringUtils.isEmpty;
+
 public class CreateDraftOrder implements CcdPageConfiguration {
 
     private static final String NEVER_SHOW = "orderContentOrderTemplate=\"NEVER_SHOW\"";
@@ -30,13 +32,16 @@ public class CreateDraftOrder implements CcdPageConfiguration {
     }
 
 
-    public AboutToStartOrSubmitResponse<CaseData, State> midEvent(
-        CaseDetails<CaseData, State> details,
-        CaseDetails<CaseData, State> detailsBefore
-    ) {
-        CaseData caseData = details.getData();
-        OrderTemplate order = caseData.getDraftOrderContentCIC().getOrderTemplate();
+    public AboutToStartOrSubmitResponse<CaseData, State> midEvent(CaseDetails<CaseData, State> details,
+                                                                  CaseDetails<CaseData, State> detailsBefore) {
+
+        final CaseData caseData = details.getData();
+        final OrderTemplate order = caseData.getDraftOrderContentCIC().getOrderTemplate();
         caseData.getDraftOrderContentCIC().setMainContent(EventUtil.getOrderMainContent(order));
+
+        if (isEmpty(caseData.getCicCase().getReferralTypeForWA())) {
+            caseData.getCicCase().setReferralTypeForWA("");
+        }
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)

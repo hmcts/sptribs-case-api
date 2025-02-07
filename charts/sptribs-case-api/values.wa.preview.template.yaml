@@ -43,6 +43,10 @@ global:
 wa:
   enabled: true
 
+  camunda-bpm:
+    java:
+      image: hmctsprivatetemp.azurecr.io/camunda/bpm:latest
+
   wa-case-event-handler:
     java:
       secrets:
