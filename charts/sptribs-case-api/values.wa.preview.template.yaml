@@ -1,6 +1,7 @@
 java:
   environment:
     WA_FEATURE_ENABLED: true
+    DUMMY: false
 
 servicebus:
   enabled: true
