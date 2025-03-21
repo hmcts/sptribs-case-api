@@ -540,6 +540,38 @@
           <text>"ADMIN"</text>
         </outputEntry>
       </rule>
+      <rule id="DecisionRule_05au4w9">
+        <inputEntry id="UnaryTests_0bybmxu">
+          <text>"create-draft-order"</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_1ddlt26">
+          <text>"CaseManagement"</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_0j06fqd">
+          <text>""</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_1n1s9xl">
+          <text>"issueDueDate"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_03quogp">
+          <text>"Issue due date"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_0us0p6d">
+          <text></text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_19dtiiy">
+          <text>2</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_1fe04yz">
+          <text>"IssueCase"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_0pakxtc">
+          <text>"routine_work"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_1m2ss75">
+          <text>"ADMIN"</text>
+        </outputEntry>
+      </rule>
       <rule id="DecisionRule_16achsh">
         <inputEntry id="UnaryTests_1l0e0bp">
           <text>"create-hearing-summary"</text>
@@ -1657,6 +1689,38 @@
           <text>"hearing_work"</text>
         </outputEntry>
         <outputEntry id="LiteralExpression_06qtwt1">
+          <text>"ADMIN"</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_0sz3371">
+        <inputEntry id="UnaryTests_063s1jg">
+          <text>"caseworker-issue-case"</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_0qe4e79">
+          <text>"CaseManagement"</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_19ouxqr">
+          <text></text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_1hlurb8">
+          <text>"createDueDate"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_0tvk3xj">
+          <text>"Create due date"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_0xakui6">
+          <text></text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_1k82nco">
+          <text>2</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_177l35x">
+          <text>"IssueCase"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_1kwykux">
+          <text>"routine_work"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_0dktjgd">
           <text>"ADMIN"</text>
         </outputEntry>
       </rule>
