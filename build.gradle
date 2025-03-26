@@ -323,7 +323,7 @@ dependencies {
     exclude group: 'org.apache.poi', module: 'poi'
   }
 
-  implementation 'io.swagger:swagger-annotations:1.6.14'
+  implementation 'io.swagger:swagger-annotations:1.6.15'
   implementation group: 'com.google.code.findbugs', name: 'jsr305', version: '3.0.2'
   implementation group: 'org.apache.groovy', name: 'groovy', version: '4.0.24'
   implementation group: 'ch.qos.logback', name: 'logback-classic', version: '1.5.6'
@@ -338,7 +338,7 @@ dependencies {
   implementation group: 'org.apache.logging.log4j', name: 'log4j-to-slf4j', version: '2.22.0'
   implementation group: 'org.apache.tomcat.embed', name: 'tomcat-embed-core', version: '10.1.34'
   implementation group: 'org.apache.tomcat.embed', name: 'tomcat-embed-websocket', version: '10.1.34'
-  implementation group: 'org.elasticsearch', name: 'elasticsearch' , version: '7.17.26'
+  implementation group: 'org.elasticsearch', name: 'elasticsearch' , version: '7.17.27'
   implementation group: 'org.projectlombok', name: 'lombok', version: versions.lombok
   implementation group: 'org.springdoc', name: 'springdoc-openapi-starter-webmvc-ui', version: '2.3.0'
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-web'
