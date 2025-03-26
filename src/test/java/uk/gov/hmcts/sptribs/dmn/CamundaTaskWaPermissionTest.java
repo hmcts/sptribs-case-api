@@ -180,10 +180,7 @@ class CamundaTaskWaPermissionTest extends DmnDecisionTableBaseUnitTest {
             Arguments.of(
                 PROCESS_STAY_DIR_LISTED_TASK,
                 DUMMY_CASE_DATA,
-                List.of(
-                    taskSupervisorPermissions(),
-                    regionalCentreAdminPermissions()
-                )
+                defaultAdminAndCtscTaskPermissions()
             ),
             Arguments.of(
                 ISSUE_DECISION_NOTICE_TASK,
@@ -383,28 +380,12 @@ class CamundaTaskWaPermissionTest extends DmnDecisionTableBaseUnitTest {
             Arguments.of(
                 CREATE_DUE_DATE,
                 DUMMY_CASE_DATA,
-                List.of(
-                    taskSupervisorPermissions(),
-                    regionalCentreAdminPermissions(),
-                    regionalCentreTeamLeaderPermissions(),
-                    hearingCentreAdminPermissions(),
-                    hearingCentreTeamLeaderPermissions(),
-                    ctscPermissions(),
-                    ctscTeamLeaderPermissions()
-                )
+                defaultAdminAndCtscTaskPermissions()
             ),
             Arguments.of(
                 ISSUE_DUE_DATE,
                 DUMMY_CASE_DATA,
-                List.of(
-                    taskSupervisorPermissions(),
-                    regionalCentreAdminPermissions(),
-                    regionalCentreTeamLeaderPermissions(),
-                    hearingCentreAdminPermissions(),
-                    hearingCentreTeamLeaderPermissions(),
-                    ctscPermissions(),
-                    ctscTeamLeaderPermissions()
-                )
+                defaultAdminAndCtscTaskPermissions()
             )
         );
     }
