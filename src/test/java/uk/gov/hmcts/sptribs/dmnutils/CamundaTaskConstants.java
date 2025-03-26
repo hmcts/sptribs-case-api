@@ -102,6 +102,9 @@ public class CamundaTaskConstants {
     public static final String REVIEW_SPECIFIC_ACCESS_REQ_ADMIN_TASK = "reviewSpecificAccessRequestAdmin";
     public static final String REVIEW_SPECIFIC_ACCESS_REQ_CTSC_TASK = "reviewSpecificAccessRequestCTSC";
 
+    public static final String CREATE_DUE_DATE = "createDueDate";
+    public static final String ISSUE_DUE_DATE = "issueDueDate";
+
     public static final String AUTO_COMPLETE_MODE = "Auto";
     public static final String DEFAULT_NONE_COMPLETE_MODE = "defaultNone";
 
