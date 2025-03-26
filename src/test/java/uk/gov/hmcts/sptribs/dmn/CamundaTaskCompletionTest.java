@@ -149,11 +149,11 @@ class CamundaTaskCompletionTest extends DmnDecisionTableBaseUnitTest {
                         "completionMode", AUTO_COMPLETE_MODE
                     ),
                     Map.of(
-                        "taskType", ISSUE_DUE_DATE,
+                        "taskType", PROCESS_STAY_DIR_LISTED_TASK,
                         "completionMode", AUTO_COMPLETE_MODE
                     ),
                     Map.of(
-                        "taskType", PROCESS_STAY_DIR_LISTED_TASK,
+                        "taskType", ISSUE_DUE_DATE,
                         "completionMode", AUTO_COMPLETE_MODE
                     )
                 )
