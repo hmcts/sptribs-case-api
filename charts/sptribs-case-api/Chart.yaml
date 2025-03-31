@@ -32,7 +32,7 @@ dependencies:
     repository: 'oci://hmctspublic.azurecr.io/helm'
     condition: idam-pr.enabled
   - name: ccd-case-document-am-api
-    version: 1.7.14
+    version: 1.7.16
     repository: 'oci://hmctspublic.azurecr.io'
     condition: ccd-case-document-am-api.enabled
   - name: em-ccdorc
