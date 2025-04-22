@@ -215,10 +215,10 @@ withPipeline(type, product, component) {
     ]
   }
 
-  afterAlways('checkout') {
-    builder.gradle('generateCCDConfig')
-    generateDefinitions()
-  }
+  // afterAlways('checkout') {
+  //  builder.gradle('generateCCDConfig')
+  //  generateDefinitions()
+ // }
 
   onPR {
     env.ENVIRONMENT="preview"
