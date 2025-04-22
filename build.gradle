@@ -83,7 +83,7 @@ idea {
   }
 }
 
-ext['elasticsearch.version'] = '7.17.27'
+ext['elasticsearch.version'] = '7.16.3'
 
 configurations {
   functionalTestImplementation.extendsFrom testImplementation
