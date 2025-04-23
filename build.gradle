@@ -83,10 +83,6 @@ idea {
   }
 }
 
-bootJar {
- duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-}
-
 ext['elasticsearch.version'] = '7.16.3'
 
 configurations {
@@ -459,6 +455,7 @@ bootRun {
 }
 
 bootJar {
+  duplicatesStrategy = DuplicatesStrategy.EXCLUDE
   getArchiveFileName().set(provider {
     'sptribs-case-api.jar'
   })
