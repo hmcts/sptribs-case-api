@@ -94,11 +94,11 @@ configurations {
   cftlibTestRuntime.extendsFrom testRuntime
 }
 
-tasks.withWith(Jar) {
+tasks.withType(Jar) {
   duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }
 
-tasks.withWith(Tar) {
+tasks.withType(Tar) {
   duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }
 
