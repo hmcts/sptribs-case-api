@@ -83,6 +83,10 @@ idea {
   }
 }
 
+bootJar {
+ duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}
+
 ext['elasticsearch.version'] = '7.16.3'
 
 configurations {
