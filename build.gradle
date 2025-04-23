@@ -94,6 +94,13 @@ configurations {
   cftlibTestRuntime.extendsFrom testRuntime
 }
 
+tasks.withWith(Jar) {
+  duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}
+
+tasks.withWith(Tar) {
+  duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}
 
 tasks.withType(JavaCompile) {
   options.compilerArgs << "-Xlint:unchecked" << "-Werror"
@@ -455,7 +462,6 @@ bootRun {
 }
 
 bootJar {
-  duplicatesStrategy = DuplicatesStrategy.EXCLUDE
   getArchiveFileName().set(provider {
     'sptribs-case-api.jar'
   })
