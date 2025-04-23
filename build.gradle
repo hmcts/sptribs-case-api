@@ -95,7 +95,7 @@ configurations {
 }
 
 tasks.withType(AbstractArchiveTask).configureEach {
-  duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+  duplicatesStrategy = DuplicatesStrategy.INCLUDE
 }
 
 tasks.withType(JavaCompile) {
