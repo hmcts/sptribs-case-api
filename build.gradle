@@ -102,6 +102,10 @@ tasks.withType(Tar) {
   duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }
 
+tasks.withType(Zip) {
+  duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}
+
 tasks.withType(JavaCompile) {
   options.compilerArgs << "-Xlint:unchecked" << "-Werror"
 }
