@@ -94,10 +94,6 @@ configurations {
   cftlibTestRuntime.extendsFrom testRuntime
 }
 
-/*tasks.withType(AbstractArchiveTask).configureEach {
-  duplicatesStrategy = DuplicatesStrategy.INCLUDE
-}*/
-
 tasks.withType(JavaCompile) {
   options.compilerArgs << "-Xlint:unchecked" << "-Werror"
 }
