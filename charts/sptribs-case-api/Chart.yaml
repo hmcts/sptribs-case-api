@@ -3,7 +3,7 @@ appVersion: "1.0"
 description: A Helm chart for sptribs-case-api App
 name: sptribs-case-api
 home: https://github.com/hmcts/sptribs-case-api
-version: 0.0.101
+version: 0.0.103
 maintainers:
   - name: HMCTS sptribs team
 dependencies:
@@ -53,7 +53,7 @@ dependencies:
     repository: 'oci://hmctspublic.azurecr.io/helm'
     condition: wa.enabled
   - name: servicebus
-    version: ~1.2.0
+    version: ~1.2.1
     repository: 'oci://hmctspublic.azurecr.io/helm'
     condition: servicebus.enabled
   - name: postgresql
