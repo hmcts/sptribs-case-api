@@ -35,6 +35,7 @@ import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.PROCESS_DIR_REL
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.PROCESS_DIR_RELISTED_CASE_WITHIN_5DAYS_TASK;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.PROCESS_DIR_RETURNED_TASK;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.PROCESS_FURTHER_EVIDENCE_TASK;
+import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.PROCESS_LISTING_DIR_LISTED_TASK;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.PROCESS_LISTING_DIR_TASK;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.PROCESS_OTHER_DIR_RETURNED_TASK;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.PROCESS_POSTPONEMENT_DIR_TASK;
@@ -108,6 +109,11 @@ class CamundaTaskWaPermissionTest extends DmnDecisionTableBaseUnitTest {
             ),
             Arguments.of(
                 PROCESS_LISTING_DIR_TASK,
+                DUMMY_CASE_DATA,
+                defaultAdminAndCtscTaskPermissions()
+            ),
+            Arguments.of(
+                PROCESS_LISTING_DIR_LISTED_TASK,
                 DUMMY_CASE_DATA,
                 defaultAdminAndCtscTaskPermissions()
             ),
@@ -374,28 +380,12 @@ class CamundaTaskWaPermissionTest extends DmnDecisionTableBaseUnitTest {
             Arguments.of(
                 CREATE_DUE_DATE,
                 DUMMY_CASE_DATA,
-                List.of(
-                    taskSupervisorPermissions(),
-                    regionalCentreAdminPermissions(),
-                    regionalCentreTeamLeaderPermissions(),
-                    hearingCentreAdminPermissions(),
-                    hearingCentreTeamLeaderPermissions(),
-                    ctscPermissions(),
-                    ctscTeamLeaderPermissions()
-                )
+                defaultAdminAndCtscTaskPermissions()
             ),
             Arguments.of(
                 ISSUE_DUE_DATE,
                 DUMMY_CASE_DATA,
-                List.of(
-                    taskSupervisorPermissions(),
-                    regionalCentreAdminPermissions(),
-                    regionalCentreTeamLeaderPermissions(),
-                    hearingCentreAdminPermissions(),
-                    hearingCentreTeamLeaderPermissions(),
-                    ctscPermissions(),
-                    ctscTeamLeaderPermissions()
-                )
+                defaultAdminAndCtscTaskPermissions()
             )
         );
     }

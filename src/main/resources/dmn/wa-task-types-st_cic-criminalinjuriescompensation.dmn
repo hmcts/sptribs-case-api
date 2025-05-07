@@ -42,6 +42,17 @@
           <text>"Process listing directions"</text>
         </outputEntry>
       </rule>
+      <rule id="DecisionRule_1qe089o">
+        <inputEntry id="UnaryTests_1ifnmnp">
+          <text></text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_1c40mlf">
+          <text>"processListingDirectionsListed"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_12uq76f">
+          <text>"Process listing directions listed"</text>
+        </outputEntry>
+      </rule>
       <rule id="DecisionRule_0s8x9ui">
         <inputEntry id="UnaryTests_1k3d7na">
           <text></text>
