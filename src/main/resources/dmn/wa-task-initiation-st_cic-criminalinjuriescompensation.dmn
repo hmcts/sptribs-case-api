@@ -92,6 +92,38 @@
           <text>"ADMIN"</text>
         </outputEntry>
       </rule>
+      <rule id="DecisionRule_0r2aa7f">
+        <inputEntry id="UnaryTests_0ehve9e">
+          <text>"create-draft-order"</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_050zz8c">
+          <text>"AwaitingHearing"</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_1svbhoj">
+          <text>"Rule 27 request"</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_00m0rhz">
+          <text>"processRule27DecisionListed"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_0srt58o">
+          <text>"Process Rule 27 decision listed"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_1hth4vv">
+          <text></text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_1a5lwxc">
+          <text>7</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_0052jyl">
+          <text>"Processing"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_1px01lw">
+          <text>"routine_work"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_0fo8qfy">
+          <text>"ADMIN"</text>
+        </outputEntry>
+      </rule>
       <rule id="DecisionRule_1ijq5gk">
         <inputEntry id="UnaryTests_1s5ovbr">
           <text>"create-draft-order"</text>

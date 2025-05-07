@@ -31,6 +31,17 @@
           <text>"Process Rule 27 decision"</text>
         </outputEntry>
       </rule>
+      <rule id="DecisionRule_18htvgo">
+        <inputEntry id="UnaryTests_1u1uybr">
+          <text></text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_0jkufht">
+          <text>"processRule27DecisionListed"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_143mfr6">
+          <text>"Process Rule 27 decision listed"</text>
+        </outputEntry>
+      </rule>
       <rule id="DecisionRule_058e0ch">
         <inputEntry id="UnaryTests_13r5qvi">
           <text></text>
