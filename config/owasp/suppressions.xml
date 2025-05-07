@@ -8,8 +8,4 @@
     <cve>CVE-2024-45772</cve>
     <cpe>cpe:2.3:a:apache:lucene:8.11.3:*:*:*:*:*:*:*</cpe>
   </suppress>
-   <suppress>
-    <cve>CVE-2025-24813</cve>
-    <cpe>cpe:2.3:a:apache_tomcat:apache_tomcat:10.1.34:*:*:*:*:*:*:*</cpe>
-  </suppress>
 </suppressions>
