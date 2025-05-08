@@ -94,9 +94,11 @@ public class CaseworkerDocumentManagementRemove implements CCDConfig<CaseData, S
         final CaseDetails<CaseData, State> details,
         final CaseDetails<CaseData, State> beforeDetails
     ) {
+        log.debug("Remove case documents - about to submit");
         var caseData = details.getData();
         List<ListValue<CaseworkerCICDocument>> listValues = new ArrayList<>();
         caseData.getCicCase().setRemovedDocumentList(listValues);
+        log.debug("Number of removed documents: {}", listValues.size());
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
             .state(details.getState())
