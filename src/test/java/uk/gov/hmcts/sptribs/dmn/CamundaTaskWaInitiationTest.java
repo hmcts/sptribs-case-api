@@ -68,6 +68,7 @@ import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.REVIEW_POSTPONE
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.REVIEW_POSTPONEMENT_REQ_LO_TASK;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.REVIEW_REINSTATEMENT_REQ_JUDGE_TASK;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.REVIEW_REINSTATEMENT_REQ_LO_TASK;
+import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.REVIEW_RULE27_REQ_CASE_LISTED_JUDGE_TASK;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.REVIEW_RULE27_REQ_JUDGE_TASK;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.REVIEW_RULE27_REQ_LO_TASK;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.REVIEW_SET_ASIDE_REQ_TASK;
@@ -770,6 +771,21 @@ class CamundaTaskWaInitiationTest extends DmnDecisionTableBaseUnitTest {
             ),
             Arguments.of(
                 "refer-to-judge",
+                "AwaitingHearing",
+                Map.of("Data", Map.of("cicCaseReferralTypeForWA", "Rule 27 request")),
+                List.of(
+                    Map.of(
+                        "taskId", REVIEW_RULE27_REQ_CASE_LISTED_JUDGE_TASK,
+                        "name", "Review Rule 27 request case listed - Judge",
+                        "workingDaysAllowed", 5,
+                        "processCategories", PROCESS_CATEGORY_PROCESSING,
+                        "workType", DECISION_WORK_TYPE,
+                        "roleCategory", ROLE_CATEGORY_JUDICIAL
+                    )
+                )
+            ),
+            Arguments.of(
+                "refer-to-judge",
                 "CaseManagement",
                 Map.of("Data", Map.of("cicCaseReferralTypeForWA", "Listing directions")),
                 List.of(
@@ -912,7 +928,7 @@ class CamundaTaskWaInitiationTest extends DmnDecisionTableBaseUnitTest {
         DmnDecisionTableImpl logic = (DmnDecisionTableImpl) decision.getDecisionLogic();
         assertThat(logic.getInputs().size(), is(3));
         assertThat(logic.getOutputs().size(), is(7));
-        assertThat(logic.getRules().size(), is(52));
+        assertThat(logic.getRules().size(), is(53));
     }
 
     @ParameterizedTest(name = "event id: {0} post event state: {1} appeal type: {2}")
