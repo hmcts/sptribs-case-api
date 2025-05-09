@@ -8,4 +8,8 @@
     <cve>CVE-2024-45772</cve>
     <cpe>cpe:2.3:a:apache:lucene:8.11.3:*:*:*:*:*:*:*</cpe>
   </suppress>
+  <suppress>
+  <cve>CVE-2023-51775</cve>
+    <cpe>cpe:2.3:a:jose4j_project:jose4j:*:*:*:*:*:*:*:*</cpe>
+  </suppress>
 </suppressions>
