@@ -5,6 +5,8 @@ import org.springframework.util.ObjectUtils;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
+import uk.gov.hmcts.sptribs.caseworker.model.CaseIssueDecision;
+import uk.gov.hmcts.sptribs.caseworker.model.CaseIssueFinalDecision;
 import uk.gov.hmcts.sptribs.caseworker.model.CloseCase;
 import uk.gov.hmcts.sptribs.caseworker.model.DocumentManagement;
 import uk.gov.hmcts.sptribs.caseworker.model.HearingSummary;
@@ -36,16 +38,18 @@ public class ShowCaseDocuments implements CcdPageConfiguration {
             .complex(CaseData::getCloseCase)
             .readonly(CloseCase::getDocuments)
             .done()
+            .complex(CaseData::getCaseIssueFinalDecision)
+            .readonly(CaseIssueFinalDecision::getFinalDecisionDraft)
+            .done()
+            .complex(CaseData::getCaseIssueDecision)
+            .readonly(CaseIssueDecision::getIssueDecisionDraft)
+            .done()
             .complex(CaseData::getCicCase)
             .readonly(CicCase::getReinstateDocuments)
             .readonly(CicCase::getApplicantDocumentsUploaded)
             .readonly(CicCase::getOrderDocumentList)
             .readonly(CicCase::getFinalDecisionDocumentList)
             .readonly(CicCase::getDecisionDocumentList)
-            .done()
-            .complex(CaseData::getCaseIssueDecision)
-            .done()
-            .complex(CaseData::getCaseIssueFinalDecision)
             .done()
             .complex(CaseData::getLatestCompletedHearing)
             .complex(Listing::getSummary)
