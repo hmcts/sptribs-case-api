@@ -3,8 +3,8 @@ set -eu
 
 # LOCALLY:
 #CHANGE_ID=4357
-#IDAM_SYSTEM_UPDATE_USERNAME=$(az keyvault secret show --vault-name ccd-aat -o tsv --query value --name idam-data-store-system-user-username)
-#IDAM_SYSTEM_UPDATE_PASSWORD=$(az keyvault secret show --vault-name ccd-aat -o tsv --query value --name idam-data-store-system-user-password)
+#IDAM_DATA_STORE_SYSTEM_USER_USERNAME=$(az keyvault secret show --vault-name ccd-aat -o tsv --query value --name idam-data-store-system-user-username)
+#IDAM_DATA_STORE_SYSTEM_USER_PASSWORD=$(az keyvault secret show --vault-name ccd-aat -o tsv --query value --name idam-data-store-system-user-password)
 #export CCD_API_GATEWAY_IDAM_CLIENT_SECRET=$(az keyvault secret show --vault-name ccd-aat -o tsv --query value --name ccd-api-gateway-oauth2-client-secret)
 
 BASEDIR=$(dirname "$0")
@@ -12,7 +12,7 @@ S2S_TOKEN=$(${BASEDIR}/../s2s-token.sh "am_org_role_mapping_service")
 
 export IDAM_API_BASE_URL=https://idam-api.aat.platform.hmcts.net
 
-IDAM_TOKEN=$(${BASEDIR}/../idam-user-token.sh $IDAM_SYSTEM_UPDATE_USERNAME $IDAM_SYSTEM_UPDATE_PASSWORD)
+IDAM_TOKEN=$(${BASEDIR}/../idam-user-token.sh $IDAM_DATA_STORE_SYSTEM_USER_USERNAME $IDAM_DATA_STORE_SYSTEM_USER_PASSWORD)
 
 echo "S2S_TOKEN: ${S2S_TOKEN}"
 echo "IDAM_TOKEN: ${IDAM_TOKEN}"
