@@ -14,6 +14,9 @@ export IDAM_API_BASE_URL=https://idam-api.aat.platform.hmcts.net
 
 IDAM_TOKEN=$(${BASEDIR}/../idam-user-token.sh $IDAM_SYSTEM_UPDATE_USERNAME $IDAM_SYSTEM_UPDATE_PASSWORD)
 
+echo "S2S_TOKEN: ${S2S_TOKEN}"
+echo "IDAM_TOKEN: ${IDAM_TOKEN}"
+
 function send_curl_request() {
   local json_file=$1
   local user_type=$2
