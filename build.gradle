@@ -360,7 +360,7 @@ dependencies {
   implementation 'org.camunda.bpm:camunda-external-task-client:7.21.0'
 
   annotationProcessor group: 'org.projectlombok', name: 'lombok', version: versions.lombok
-  testImplementation 'com.github.hmcts:fortify-client:1.4.6:all'
+  testImplementation 'com.github.hmcts:fortify-client:1.4.8:all'
 
   testImplementation libraries.junit5
   testImplementation group: 'org.springframework.boot', name: 'spring-boot-starter-test', {
