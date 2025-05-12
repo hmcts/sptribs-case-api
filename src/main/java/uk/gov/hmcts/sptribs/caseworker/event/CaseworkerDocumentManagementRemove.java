@@ -22,6 +22,7 @@ import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import java.util.ArrayList;
 import java.util.List;
 
+import static uk.gov.hmcts.sptribs.caseworker.util.DocumentRemoveListUtil.removeEvaluatedListDoc;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_DOCUMENT_MANAGEMENT_REMOVE;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingOutcome;
@@ -96,6 +97,7 @@ public class CaseworkerDocumentManagementRemove implements CCDConfig<CaseData, S
     ) {
         log.debug("Remove case documents - about to submit");
         var caseData = details.getData();
+        removeEvaluatedListDoc(details.getData(), beforeDetails.getData());
         List<ListValue<CaseworkerCICDocument>> listValues = new ArrayList<>();
         caseData.getCicCase().setRemovedDocumentList(listValues);
         log.debug("Number of removed documents: {}", listValues.size());
