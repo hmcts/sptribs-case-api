@@ -70,6 +70,7 @@ public class CamundaTaskConstants {
     public static final String REVIEW_STAY_REQ_CASE_LISTED_JUDGE_TASK = "reviewStayRequestCaseListedJudge";
     public static final String REVIEW_STAY_REQ_LO_TASK = "reviewStayRequestLO";
     public static final String PROCESS_STAY_DIR_TASK = "processStayDirections";
+    public static final String PROCESS_STAY_DIR_LISTED_TASK = "processStayDirectionsListed";
     public static final String REVIEW_LISTING_DIR_JUDGE_TASK = "reviewListingDirectionsJudge";
     public static final String REVIEW_LISTING_DIR_LO_TASK = "reviewListingDirectionsLO";
     public static final String PROCESS_LISTING_DIR_TASK = "processListingDirections";
