@@ -295,6 +295,7 @@ withPipeline(type, product, component) {
         sh 'chmod -R +x ./bin'
         uploadDmnDiagrams()
         uploadBpmnDiagram()
+        setupRoleAssignments()
       }
     }
   }
@@ -384,5 +385,11 @@ def uploadBpmnDiagram() {
       ./wa/pull-latest-camunda-wa-files.sh ${bpmnBranch}
       ./wa/import-wa-bpmn-diagram.sh .
     """
+  }
+}
+
+def setupRoleAssignments() {
+  dir("${WORKSPACE}/bin") {
+    sh "./wa/setup-role-assignments.sh"
   }
 }
