@@ -97,6 +97,7 @@ public class CaseworkerDocumentManagementRemove implements CCDConfig<CaseData, S
     ) {
         log.debug("Remove case documents - about to submit");
         var caseData = details.getData();
+        //        removeCaseDocuments(caseData.getCicCase().getRemovedDocumentList());
         removeEvaluatedListDoc(details.getData(), beforeDetails.getData());
         List<ListValue<CaseworkerCICDocument>> listValues = new ArrayList<>();
         caseData.getCicCase().setRemovedDocumentList(listValues);
@@ -113,5 +114,13 @@ public class CaseworkerDocumentManagementRemove implements CCDConfig<CaseData, S
             .confirmationHeader("# Case Updated")
             .build();
     }
+
+    //    private void removeCaseDocuments(List<ListValue<CaseworkerCICDocument>> removedDocumentList) {
+    //        removedDocumentList.stream().map(ListValue::getValue).forEach(v -> {
+    //            Document document = v.getDocumentLink();
+    //            DecisionDocumentListUtil.
+    //        });
+    //
+    //    }
 
 }

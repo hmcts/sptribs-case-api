@@ -6,7 +6,6 @@ import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseIssueDecision;
-import uk.gov.hmcts.sptribs.caseworker.model.CaseIssueFinalDecision;
 import uk.gov.hmcts.sptribs.caseworker.model.CloseCase;
 import uk.gov.hmcts.sptribs.caseworker.model.DocumentManagement;
 import uk.gov.hmcts.sptribs.caseworker.model.HearingSummary;
@@ -37,9 +36,6 @@ public class ShowCaseDocuments implements CcdPageConfiguration {
             .done()
             .complex(CaseData::getCloseCase)
             .readonly(CloseCase::getDocuments)
-            .done()
-            .complex(CaseData::getCaseIssueFinalDecision)
-            .readonly(CaseIssueFinalDecision::getFinalDecisionDraft)
             .done()
             .complex(CaseData::getCaseIssueDecision)
             .readonly(CaseIssueDecision::getIssueDecisionDraft)
