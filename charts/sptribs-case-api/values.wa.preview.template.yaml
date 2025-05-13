@@ -54,9 +54,6 @@ wa:
           secretRef: sptribs-sb-preview
           key: connectionString
       environment:
-        CCD_URL: http://{{ .Release.Name }}-ccd-data-store-api
-        CCD_SEARCH_URL: http://{{ .Release.Name }}-ccd-data-store-api
-        ROLE_ASSIGNMENT_URL: http://{{ .Release.Name }}-am-role-assignment-service
         AZURE_SERVICE_BUS_TOPIC_NAME: ${SERVICE_NAME}-asb-ccd-case-events
         AZURE_SERVICE_BUS_SUBSCRIPTION_NAME: ${SERVICE_NAME}-asb-ccd-case-events
         AZURE_SERVICE_BUS_CCD_CASE_EVENTS_SUBSCRIPTION_NAME: ${SERVICE_NAME}-asb-ccd-case-events
@@ -145,8 +142,6 @@ am-org-role-mapping-service:
             alias: app-insights-connection-string
           - name: am-org-role-mapping-service-s2s-secret
             alias: AM_ORG_ROLE_MAPPING_SERVICE_SECRET
-          - name: role-assignment-service-LD-SDK-KEY
-            alias: LD_SDK_KEY
           - name: orm-IDAM-CLIENT-ID
             alias: ORM_IDAM_CLIENT_ID
           - name: orm-IDAM-CLIENT-SECRET
@@ -158,13 +153,7 @@ am-org-role-mapping-service:
     devcpuLimits: 1
     devmemoryLimits: 4Gi
     environment:
-      IDAM_S2S_URL: http://rpe-service-auth-provider-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal
-      S2S_URL: http://rpe-service-auth-provider-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal
-      CASE_WORKER_REF_APP_URL: http://rd-caseworker-ref-api-aat.service.core-compute-aat.internal
-      JUDICIAL_REF_APP_URL: http://rd-judicial-api-aat.service.core-compute-aat.internal
       ROLE_ASSIGNMENT_APP_URL: http://sptribs-case-api-pr-${CHANGE_ID}-am-role-assignment-service
-      JUDICIAL_BOOKING_APP_URL: http://am-judicial-booking-service-aat.service.core-compute-aat.internal
-      LAUNCH_DARKLY_ENV: "{{ .Values.global.environment }}"
       AMQP_SHARED_ACCESS_KEY_NAME: RootManageSharedAccessKey
       AMQP_HOST: "sptribs-sb-preview.servicebus.windows.net"
       CRD_SUBSCRIPTION_NAME: "{{ .Release.Name}}-asb-crd-topic"
@@ -178,10 +167,10 @@ am-org-role-mapping-service:
       ORG_ROLE_MAPPING_DB_USERNAME: hmcts
       ORG_ROLE_MAPPING_DB_PORT: 5432
       ORG_ROLE_MAPPING_DB_OPTIONS: "?stringtype=unspecified&reWriteBatchedInserts=true&sslmode=require"
-      RUN_LD_ON_STARTUP: true
       TESTING_SUPPORT_ENABLED: true
       REFRESH_BULK_ASSIGNMENT_INCLUDE_BOOKINGS: true
       DB_FEATURE_FLAG_ENABLE: st_cic_wa_1_0
+      ORM_ENV: pr
 
 xui-webapp:
   nodejs:
@@ -192,8 +181,3 @@ xui-webapp:
       SERVICES_ROLE_ASSIGNMENT_MAPPING_API: http://{{ .Release.Name }}-am-org-role-mapping-service
       WA_SUPPORTED_JURISDICTIONS: ST_CIC
 
-ccd:
-  ccd-data-store-api:
-    java:
-      environment:
-        DATA_STORE_S2S_AUTHORISED_SERVICES: ccd_gw,ccd_gateway,ccd_data,aac_manage_case_assignment,xui_webapp,ccd_case_document_am_api,sptribs_frontend,sptribs_case_api,sptribs_dss_update_case_web,em_ccd_orchestrator,wa_task_management_api,wa_task_monitor,wa_case_event_handler,wa_workflow_api
