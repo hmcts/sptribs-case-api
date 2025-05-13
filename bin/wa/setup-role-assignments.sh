@@ -10,9 +10,6 @@ set -eu
 BASEDIR=$(dirname "$0")
 S2S_TOKEN=$(${BASEDIR}/../s2s-token.sh "am_org_role_mapping_service")
 
-export IDAM_API_BASE_URL=https://idam-api.aat.platform.hmcts.net
-
-echo "${IDAM_DATA_STORE_SYSTEM_USER_USERNAME} ${IDAM_DATA_STORE_SYSTEM_USER_PASSWORD}"
 IDAM_TOKEN=$(${BASEDIR}/../idam-user-token.sh $IDAM_DATA_STORE_SYSTEM_USER_USERNAME $IDAM_DATA_STORE_SYSTEM_USER_PASSWORD)
 
 echo "S2S_TOKEN: ${S2S_TOKEN}"
