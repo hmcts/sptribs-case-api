@@ -54,9 +54,6 @@ wa:
           secretRef: sptribs-sb-preview
           key: connectionString
       environment:
-        CCD_URL: http://{{ .Release.Name }}-ccd-data-store-api
-        CCD_SEARCH_URL: http://{{ .Release.Name }}-ccd-data-store-api
-        ROLE_ASSIGNMENT_URL: http://{{ .Release.Name }}-am-role-assignment-service
         AZURE_SERVICE_BUS_TOPIC_NAME: ${SERVICE_NAME}-asb-ccd-case-events
         AZURE_SERVICE_BUS_SUBSCRIPTION_NAME: ${SERVICE_NAME}-asb-ccd-case-events
         AZURE_SERVICE_BUS_CCD_CASE_EVENTS_SUBSCRIPTION_NAME: ${SERVICE_NAME}-asb-ccd-case-events
@@ -156,12 +153,7 @@ am-org-role-mapping-service:
     devcpuLimits: 1
     devmemoryLimits: 4Gi
     environment:
-      IDAM_S2S_URL: http://rpe-service-auth-provider-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal
-      S2S_URL: http://rpe-service-auth-provider-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal
-      CASE_WORKER_REF_APP_URL: http://rd-caseworker-ref-api-aat.service.core-compute-aat.internal
-      JUDICIAL_REF_APP_URL: http://rd-judicial-api-aat.service.core-compute-aat.internal
       ROLE_ASSIGNMENT_APP_URL: http://sptribs-case-api-pr-${CHANGE_ID}-am-role-assignment-service
-      JUDICIAL_BOOKING_APP_URL: http://am-judicial-booking-service-aat.service.core-compute-aat.internal
       AMQP_SHARED_ACCESS_KEY_NAME: RootManageSharedAccessKey
       AMQP_HOST: "sptribs-sb-preview.servicebus.windows.net"
       CRD_SUBSCRIPTION_NAME: "{{ .Release.Name}}-asb-crd-topic"
