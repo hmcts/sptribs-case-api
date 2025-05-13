@@ -242,7 +242,7 @@ dependencyUpdates {
 
 dependencyManagement {
   dependencies {
-    dependencySet(group: 'com.google.guava', version: '33.4.0-jre') {
+    dependencySet(group: 'com.google.guava', version: '33.4.8-jre') {
       entry 'guava'
     }
 
