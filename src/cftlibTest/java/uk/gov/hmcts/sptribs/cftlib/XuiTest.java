@@ -13,7 +13,7 @@ import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import uk.gov.hmcts.rse.ccd.lib.test.CftlibTest;
 import uk.gov.hmcts.sptribs.cftlib.util.Wiremock;
 import uk.gov.hmcts.sptribs.notification.dispatcher.ApplicationReceivedNotification;
@@ -33,11 +33,11 @@ public class XuiTest extends CftlibTest {
     BrowserContext context;
     Page page;
 
-    @MockBean
+    @MockitoBean
     public ApplicationReceivedNotification applicationReceivedNotification;
-    @MockBean
+    @MockitoBean
     public CaseWithdrawnNotification caseWithdrawnNotification;
-    @MockBean
+    @MockitoBean
     public CaseStayedNotification caseStayedNotification;
 
     static final String BASE_URL = "http://localhost:3000";
