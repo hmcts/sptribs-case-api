@@ -20,6 +20,17 @@
           <text>"Process case withdrawal directions"</text>
         </outputEntry>
       </rule>
+      <rule id="DecisionRule_1mbc6kw">
+        <inputEntry id="UnaryTests_0f8peco">
+          <text></text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_1lx4z40">
+          <text>"processCaseWithdrawalDirectionsListed"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_155jus8">
+          <text>"Process case withdrawal directions listed"</text>
+        </outputEntry>
+      </rule>
       <rule id="DecisionRule_1yu04xb">
         <inputEntry id="UnaryTests_0yw3ts9">
           <text></text>
