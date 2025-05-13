@@ -24,6 +24,4 @@ else
   code=stubbed-value
 fi
 
-echo "${username} ${password} ${IDAM_URL}"
-
 curl --insecure --fail --show-error --silent -X POST -H "Content-Type: application/x-www-form-urlencoded" --user "sptribs:${clientSecret}" "${IDAM_URL}/oauth2/token?code=${code}&redirect_uri=${redirectUri}&grant_type=authorization_code" -d "" | docker run --rm --interactive ghcr.io/jqlang/jq -r .access_token

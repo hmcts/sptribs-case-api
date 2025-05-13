@@ -8,10 +8,8 @@ set -eu
 #export CCD_API_GATEWAY_IDAM_CLIENT_SECRET=$(az keyvault secret show --vault-name ccd-aat -o tsv --query value --name ccd-api-gateway-oauth2-client-secret)
 
 BASEDIR=$(dirname "$0")
+IDAM_TOKEN=$(${BASEDIR}/../utils/idam-lease-user-token.sh $IDAM_DATA_STORE_SYSTEM_USER_USERNAME $IDAM_DATA_STORE_SYSTEM_USER_PASSWORD)
 S2S_TOKEN=$(${BASEDIR}/../s2s-token.sh "am_org_role_mapping_service")
-
-# IDAM_TOKEN=$(${BASEDIR}/../idam-user-token.sh $IDAM_DATA_STORE_SYSTEM_USER_USERNAME $IDAM_DATA_STORE_SYSTEM_USER_PASSWORD)
-IDAM_TOKEN=$(${BASEDIR}/../idam-user-token.sh ${DEFINITION_IMPORTER_USERNAME:-ccd.docker.default@hmcts.net} ${DEFINITION_IMPORTER_PASSWORD:-Password12!})
 
 [ -z "$S2S_TOKEN" ] && >&2 echo "No service token" && exit
 [ -z "$IDAM_TOKEN" ] && >&2 echo "No user token" && exit
