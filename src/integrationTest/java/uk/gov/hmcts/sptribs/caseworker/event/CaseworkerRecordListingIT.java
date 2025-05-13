@@ -8,9 +8,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.hmcts.ccd.sdk.type.DynamicList;
@@ -75,16 +75,16 @@ public class CaseworkerRecordListingIT {
     @Autowired
     private ObjectMapper objectMapper;
 
-    @MockBean
+    @MockitoBean
     private WebMvcConfig webMvcConfig;
 
-    @MockBean
+    @MockitoBean
     private LocationService locationService;
 
-    @MockBean
+    @MockitoBean
     private HearingService hearingService;
 
-    @MockBean
+    @MockitoBean
     private ListingCreatedNotification listingCreatedNotification;
 
     private static final String CASEWORKER_RECORD_LISTING_ABOUT_TO_START_RESPONSE =

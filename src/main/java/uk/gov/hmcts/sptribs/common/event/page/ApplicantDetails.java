@@ -1,6 +1,6 @@
 package uk.gov.hmcts.sptribs.common.event.page;
 
-import org.apache.groovy.parser.antlr4.util.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
