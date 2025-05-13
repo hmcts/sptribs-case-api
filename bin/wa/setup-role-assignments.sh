@@ -10,10 +10,11 @@ set -eu
 BASEDIR=$(dirname "$0")
 S2S_TOKEN=$(${BASEDIR}/../s2s-token.sh "am_org_role_mapping_service")
 
-IDAM_TOKEN=$(${BASEDIR}/../idam-user-token.sh $IDAM_DATA_STORE_SYSTEM_USER_USERNAME $IDAM_DATA_STORE_SYSTEM_USER_PASSWORD)
+# IDAM_TOKEN=$(${BASEDIR}/../idam-user-token.sh $IDAM_DATA_STORE_SYSTEM_USER_USERNAME $IDAM_DATA_STORE_SYSTEM_USER_PASSWORD)
+IDAM_TOKEN=$(${BASEDIR}/../idam-user-token.sh ${DEFINITION_IMPORTER_USERNAME:-ccd.docker.default@hmcts.net} ${DEFINITION_IMPORTER_PASSWORD:-Password12!})
 
-echo "S2S_TOKEN: ${S2S_TOKEN}"
-echo "IDAM_TOKEN: ${IDAM_TOKEN}"
+[ -z "$S2S_TOKEN" ] && >&2 echo "No service token" && exit
+[ -z "$IDAM_TOKEN" ] && >&2 echo "No user token" && exit
 
 function send_curl_request() {
   local json_file=$1
