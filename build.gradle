@@ -379,7 +379,7 @@ dependencies {
   testImplementation group: 'org.camunda.bpm.dmn', name: 'camunda-engine-dmn', version: "${versions.camunda}"
   testImplementation group: 'org.camunda.bpm', name: 'camunda-engine-plugin-spin', version: "${versions.camunda}"
   testImplementation group: 'org.camunda.bpm.assert', name: 'camunda-bpm-assert', version: '15.0.0'
-  testImplementation group: 'org.camunda.bpm', name: 'camunda-engine', version: '7.21.0'
+  testImplementation group: 'org.camunda.bpm', name: 'camunda-engine', version: '7.23.0'
 
   testAnnotationProcessor group: 'org.projectlombok', name: 'lombok', version: versions.lombok
   integrationTestImplementation sourceSets.main.runtimeClasspath
