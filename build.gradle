@@ -406,7 +406,7 @@ dependencies {
   // Provides fast-reload of just the sptribs service.
   cftlibImplementation 'org.springframework.boot:spring-boot-devtools'
   cftlibTestImplementation 'com.microsoft.playwright:playwright:1.52.0'
-  cftlibTestImplementation 'org.junit-pioneer:junit-pioneer:2.2.0'
+  cftlibTestImplementation 'org.junit-pioneer:junit-pioneer:2.3.0'
   cftlibTestImplementation 'io.github.artsok:rerunner-jupiter:2.1.6'
 }
 
