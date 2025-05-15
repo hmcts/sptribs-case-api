@@ -95,9 +95,9 @@ public  final class DecisionDocumentListUtil {
     }
 
     public static void removeFinalDecisionDraftAndCICDocument(CaseData caseData, ListValue<CaseworkerCICDocument> cicDocumentListValue) {
-        if (!ObjectUtils.isEmpty(caseData.getCaseIssueFinalDecision())
-            && (!ObjectUtils.isEmpty(caseData.getCaseIssueFinalDecision().getFinalDecisionDraft())
-                || !ObjectUtils.isEmpty(caseData.getCaseIssueFinalDecision().getDocument()))) {
+        if (caseData.getCaseIssueFinalDecision() != null
+            && (caseData.getCaseIssueFinalDecision().getFinalDecisionDraft() != null
+                || caseData.getCaseIssueFinalDecision().getDocument() != null)) {
             if (cicDocumentListValue.getValue().getDocumentLink()
                 .equals(caseData.getCaseIssueFinalDecision().getFinalDecisionDraft())) {
                 caseData.getCaseIssueFinalDecision().setFinalDecisionDraft(null);
@@ -109,9 +109,9 @@ public  final class DecisionDocumentListUtil {
     }
 
     public static void removeDecisionDraftAndCICDocument(CaseData caseData, ListValue<CaseworkerCICDocument> cioDocumentListValue) {
-        if (!ObjectUtils.isEmpty(caseData.getCaseIssueDecision())
-             && (!ObjectUtils.isEmpty(caseData.getCaseIssueDecision().getIssueDecisionDraft())
-                || !ObjectUtils.isEmpty(caseData.getCaseIssueDecision().getDecisionDocument()))) {
+        if (caseData.getCaseIssueDecision() != null
+             && (caseData.getCaseIssueDecision().getIssueDecisionDraft() != null
+                || caseData.getCaseIssueDecision().getDecisionDocument() != null)) {
             if (cioDocumentListValue.getValue().getDocumentLink()
                 .equals(caseData.getCaseIssueDecision().getIssueDecisionDraft())) {
                 caseData.getCaseIssueDecision().setIssueDecisionDraft(null);
