@@ -322,7 +322,7 @@ dependencies {
     exclude group: 'org.apache.poi', module: 'poi'
   }
 
-  implementation 'io.swagger:swagger-annotations:1.6.15'
+  implementation 'io.swagger:swagger-annotations:1.6.16'
   implementation group: 'ch.qos.logback', name: 'logback-classic', version: '1.5.18'
   implementation group: 'ch.qos.logback', name: 'logback-core', version: '1.5.18'
   implementation group: 'com.github.hmcts', name: 'ccd-client', version: '4.9.5-SPRING2'
