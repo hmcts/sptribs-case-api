@@ -26,7 +26,7 @@ plugins {
   id 'io.spring.dependency-management' version '1.1.7'
   id 'org.springframework.boot' version '3.4.5'
   id 'com.github.ben-manes.versions' version '0.50.0'
-  id 'hmcts.ccd.sdk' version '5.5.20'
+  id 'hmcts.ccd.sdk' version '5.5.21'
   id "au.com.dius.pact" version "4.3.10"
   id 'com.github.hmcts.rse-cft-lib' version '0.19.1701'
 }
@@ -272,7 +272,7 @@ dependencyManagement {
 
     //Override spring-security-rsa version and update org.bouncycastle:bcpkix-jdk18on for CVE-2023-33202
     dependency group:'org.springframework.security', name: 'spring-security-rsa', version: '1.1.5'
-    dependency group: 'org.bouncycastle', name: 'bcpkix-jdk18on', version: '1.77'
+    dependency group: 'org.bouncycastle', name: 'bcpkix-jdk18on', version: '1.80'
     dependency group: 'org.camunda.connect', name: 'camunda-connect-connectors-all', version: '1.6.0'
 
     dependencySet(group: 'commons-fileupload', version: '1.5') {
@@ -322,9 +322,9 @@ dependencies {
     exclude group: 'org.apache.poi', module: 'poi'
   }
 
-  implementation 'io.swagger:swagger-annotations:1.6.15'
-  implementation group: 'ch.qos.logback', name: 'logback-classic', version: '1.5.6'
-  implementation group: 'ch.qos.logback', name: 'logback-core', version: '1.5.6'
+  implementation 'io.swagger:swagger-annotations:1.6.16'
+  implementation group: 'ch.qos.logback', name: 'logback-classic', version: '1.5.18'
+  implementation group: 'ch.qos.logback', name: 'logback-core', version: '1.5.18'
   implementation group: 'com.github.hmcts', name: 'ccd-client', version: '4.9.5-SPRING2'
   implementation group: 'com.github.hmcts', name:'ccd-case-document-am-client', version: '1.59.2'
   implementation group: 'com.github.hmcts', name: 'idam-java-client', version: '3.0.4'
@@ -333,15 +333,15 @@ dependencies {
   implementation group: 'net.logstash.logback', name: 'logstash-logback-encoder', version: '7.4'
   implementation group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.22.0'
   implementation group: 'org.apache.logging.log4j', name: 'log4j-to-slf4j', version: '2.22.0'
-  implementation group: 'org.elasticsearch', name: 'elasticsearch' , version: '7.17.27'
+  implementation group: 'org.elasticsearch', name: 'elasticsearch' , version: '7.17.28'
   implementation group: 'org.projectlombok', name: 'lombok', version: versions.lombok
-  implementation group: 'org.springdoc', name: 'springdoc-openapi-starter-webmvc-ui', version: '2.8.6'
+  implementation group: 'org.springdoc', name: 'springdoc-openapi-starter-webmvc-ui', version: '2.8.8'
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-web'
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-actuator'
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-aop'
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-json'
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-validation', version: versions.springBoot
-  implementation group: 'org.springframework.retry', name: 'spring-retry', version: '2.0.11'
+  implementation group: 'org.springframework.retry', name: 'spring-retry', version: '2.0.12'
   implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-netflix-hystrix', version: '2.2.10.RELEASE'
   implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-bootstrap', version: '4.2.1'
   implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-openfeign', version: '4.2.1'
@@ -350,7 +350,7 @@ dependencies {
   implementation group: 'org.apache.commons', name: 'commons-collections4', version: '4.5.0'
   implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.17.0'
   implementation group: 'com.github.ben-manes.caffeine', name: 'caffeine', version: '3.2.0'
-  implementation 'org.camunda.bpm:camunda-external-task-client:7.21.0'
+  implementation 'org.camunda.bpm:camunda-external-task-client:7.23.0'
 
   annotationProcessor group: 'org.projectlombok', name: 'lombok', version: versions.lombok
   testImplementation 'com.github.hmcts:fortify-client:1.4.8:all'
@@ -366,8 +366,8 @@ dependencies {
 
   testImplementation group: 'com.jayway.awaitility', name: 'awaitility', version: '1.7.0'
   testImplementation group: 'com.github.stefanbirkner', name: 'system-lambda', version: '1.2.1'
-  testImplementation group: 'org.assertj', name: 'assertj-core', version: '3.24.2'
-  testImplementation group: 'org.assertj', name: 'assertj-guava', version: '3.24.2'
+  testImplementation group: 'org.assertj', name: 'assertj-core', version: '3.27.3'
+  testImplementation group: 'org.assertj', name: 'assertj-guava', version: '3.27.3'
   testImplementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-contract-stub-runner', version: '4.2.1'
   testImplementation group: 'org.projectlombok', name: 'lombok', version: versions.lombok
   testImplementation group: 'org.mockito', name: 'mockito-inline', version: '5.2.0'
@@ -379,7 +379,7 @@ dependencies {
   testImplementation group: 'org.camunda.bpm.dmn', name: 'camunda-engine-dmn', version: "${versions.camunda}"
   testImplementation group: 'org.camunda.bpm', name: 'camunda-engine-plugin-spin', version: "${versions.camunda}"
   testImplementation group: 'org.camunda.bpm.assert', name: 'camunda-bpm-assert', version: '15.0.0'
-  testImplementation group: 'org.camunda.bpm', name: 'camunda-engine', version: '7.21.0'
+  testImplementation group: 'org.camunda.bpm', name: 'camunda-engine', version: '7.23.0'
 
   testAnnotationProcessor group: 'org.projectlombok', name: 'lombok', version: versions.lombok
   integrationTestImplementation sourceSets.main.runtimeClasspath
@@ -406,7 +406,7 @@ dependencies {
   // Provides fast-reload of just the sptribs service.
   cftlibImplementation 'org.springframework.boot:spring-boot-devtools'
   cftlibTestImplementation 'com.microsoft.playwright:playwright:1.52.0'
-  cftlibTestImplementation 'org.junit-pioneer:junit-pioneer:2.2.0'
+  cftlibTestImplementation 'org.junit-pioneer:junit-pioneer:2.3.0'
   cftlibTestImplementation 'io.github.artsok:rerunner-jupiter:2.1.6'
 }
 
