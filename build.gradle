@@ -482,6 +482,11 @@ generateTypeScript {
   mapEnum = 'asEnum'
   mapDate = 'asString'
   group = 'ccd tasks'
+  excludeClasses = [
+    'uk.gov.hmcts.sptribs.caseworker.model.ComponentLauncher',
+    'uk.gov.hmcts.ccd.sdk.type.Document',
+    'uk.gov.hmcts.reform.ccd.client.model.Classification'
+  ]
 
   doLast {
     exec {
