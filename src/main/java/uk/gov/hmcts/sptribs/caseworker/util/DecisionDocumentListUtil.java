@@ -109,4 +109,31 @@ public  final class DecisionDocumentListUtil {
 
     }
 
+    public static void removeDecisionDraftAndCICDocument(CaseData caseData, CaseworkerCICDocument cicDocument) {
+        if (caseData.getCaseIssueDecision() != null
+                && (caseData.getCaseIssueDecision().getIssueDecisionDraft() != null
+                || caseData.getCaseIssueDecision().getDecisionDocument() != null)) {
+            if (cicDocument.getDocumentLink()
+                    .equals(caseData.getCaseIssueDecision().getIssueDecisionDraft())) {
+                caseData.getCaseIssueDecision().setIssueDecisionDraft(null);
+            } else if (cicDocument.getDocumentLink()
+                    .equals(caseData.getCaseIssueDecision().getDecisionDocument().getDocumentLink())) {
+                caseData.getCaseIssueDecision().setDecisionDocument(EMPTY_DOCUMENT);
+            }
+        }
+    }
+
+    public static void removeFinalDecisionDraftAndCICDocument(CaseData caseData, CaseworkerCICDocument cicDocument) {
+        if (caseData.getCaseIssueFinalDecision() != null
+                && (caseData.getCaseIssueFinalDecision().getFinalDecisionDraft() != null
+                || caseData.getCaseIssueFinalDecision().getDocument() != null)) {
+            if (cicDocument.getDocumentLink()
+                    .equals(caseData.getCaseIssueFinalDecision().getFinalDecisionDraft())) {
+                caseData.getCaseIssueFinalDecision().setFinalDecisionDraft(null);
+            } else if (cicDocument.getDocumentLink()
+                    .equals(caseData.getCaseIssueFinalDecision().getDocument().getDocumentLink())) {
+                caseData.getCaseIssueFinalDecision().setDocument(EMPTY_DOCUMENT);
+            }
+        }
+    }
 }

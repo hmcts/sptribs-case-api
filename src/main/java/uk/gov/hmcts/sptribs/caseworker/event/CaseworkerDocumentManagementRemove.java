@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.event.page.ShowCaseDocuments;
 import uk.gov.hmcts.sptribs.caseworker.event.page.ShowRemovedCaseDocuments;
 import uk.gov.hmcts.sptribs.caseworker.util.DocumentListUtil;
+import uk.gov.hmcts.sptribs.caseworker.util.DocumentRemoveListUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
@@ -66,13 +67,13 @@ public class CaseworkerDocumentManagementRemove implements CCDConfig<CaseData, S
                 CaseStayed)
             .name("Document management: Remove")
             .description("Document management: Remove")
-            .grant(CREATE_READ_UPDATE_DELETE, SUPER_USER, ST_CIC_SENIOR_JUDGE, ST_CIC_SENIOR_CASEWORKER, ST_CIC_HEARING_CENTRE_TEAM_LEADER)
-            .grantHistoryOnly(ST_CIC_CASEWORKER, ST_CIC_HEARING_CENTRE_ADMIN, ST_CIC_JUDGE)
+            .grant(CREATE_READ_UPDATE_DELETE, SUPER_USER, ST_CIC_CASEWORKER, ST_CIC_SENIOR_JUDGE, ST_CIC_SENIOR_CASEWORKER, ST_CIC_HEARING_CENTRE_TEAM_LEADER)
+            .grantHistoryOnly(ST_CIC_HEARING_CENTRE_ADMIN, ST_CIC_JUDGE)
             .aboutToStartCallback(this::aboutToStart)
             .aboutToSubmitCallback(this::aboutToSubmit)
             .submittedCallback(this::submitted));
 
-        showCaseDocuments.addTo(pageBuilder);
+//        showCaseDocuments.addTo(pageBuilder);
         showRemovedCaseDocuments.addTo(pageBuilder);
     }
 
@@ -83,6 +84,7 @@ public class CaseworkerDocumentManagementRemove implements CCDConfig<CaseData, S
         cicCase.setFinalDecisionDocumentList(DocumentListUtil.getAllFinalDecisionDocuments(caseData));
         cicCase.setDecisionDocumentList(DocumentListUtil.getAllDecisionDocuments(caseData));
         cicCase.setOrderDocumentList(DocumentListUtil.getAllOrderDocuments(caseData.getCicCase()));
+        cicCase.setSelectRemoveDocumentList(DocumentListUtil.prepareDocumentList(caseData));
         caseData.setCicCase(cicCase);
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
@@ -95,6 +97,8 @@ public class CaseworkerDocumentManagementRemove implements CCDConfig<CaseData, S
         final CaseDetails<CaseData, State> beforeDetails
     ) {
         var caseData = details.getData();
+        //remove document
+        DocumentRemoveListUtil.removeDocuments(caseData);
         List<ListValue<CaseworkerCICDocument>> listValues = new ArrayList<>();
         caseData.getCicCase().setRemovedDocumentList(listValues);
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
