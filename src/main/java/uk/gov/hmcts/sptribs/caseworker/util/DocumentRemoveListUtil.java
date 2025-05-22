@@ -1,8 +1,13 @@
 package uk.gov.hmcts.sptribs.caseworker.util;
 
 import org.springframework.util.CollectionUtils;
+import uk.gov.hmcts.ccd.sdk.type.DynamicListElement;
+import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
+import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
+
+import java.util.List;
 
 import static uk.gov.hmcts.sptribs.caseworker.util.DecisionDocumentListUtil.addDecisionDocumentsForRemoval;
 import static uk.gov.hmcts.sptribs.caseworker.util.DecisionDocumentListUtil.addFinalDecisionDocumentsForRemoval;
@@ -53,6 +58,26 @@ public final class DocumentRemoveListUtil {
         }
 
         return caseData;
+    }
+
+    public static void removeDocuments(CaseData caseData) {
+        List<String> documentNamesToRemove = caseData.getCicCase().getSelectRemoveDocumentList().getValue().stream().map(DynamicListElement::getLabel).toList();
+        List<ListValue<CaseworkerCICDocument>> allDocuments = DocumentListUtil.getAllCaseDocuments(caseData);
+        List<CaseworkerCICDocument> documentsToRemove = allDocuments.stream().map(ListValue::getValue).filter(document -> {
+            String documentLabel = document.getDocumentCategory().getLabel() + "--" + document.getDocumentLink().getFilename();
+            return documentNamesToRemove.contains(documentLabel);
+
+        }).toList();
+        if (!documentsToRemove.isEmpty()) {
+            removeDecisionDocuments(caseData, documentsToRemove);
+        }
+    }
+
+    private static void removeDecisionDocuments(CaseData data, List<CaseworkerCICDocument> removeList) {
+        for (CaseworkerCICDocument document : removeList) {
+            DecisionDocumentListUtil.removeDecisionDraftAndCICDocument(data, document);
+            DecisionDocumentListUtil.removeFinalDecisionDraftAndCICDocument(data, document);
+        }
     }
 
 }

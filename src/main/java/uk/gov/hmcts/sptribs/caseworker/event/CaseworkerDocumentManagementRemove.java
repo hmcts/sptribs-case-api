@@ -14,6 +14,7 @@ import uk.gov.hmcts.sptribs.caseworker.event.page.ShowCaseDocuments;
 import uk.gov.hmcts.sptribs.caseworker.event.page.ShowRemovedCaseDocuments;
 import uk.gov.hmcts.sptribs.caseworker.util.DecisionDocumentListUtil;
 import uk.gov.hmcts.sptribs.caseworker.util.DocumentListUtil;
+import uk.gov.hmcts.sptribs.caseworker.util.DocumentRemoveListUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
@@ -74,7 +75,7 @@ public class CaseworkerDocumentManagementRemove implements CCDConfig<CaseData, S
             .aboutToSubmitCallback(this::aboutToSubmit)
             .submittedCallback(this::submitted));
 
-        showCaseDocuments.addTo(pageBuilder);
+//        showCaseDocuments.addTo(pageBuilder);
         showRemovedCaseDocuments.addTo(pageBuilder);
     }
 
@@ -85,6 +86,7 @@ public class CaseworkerDocumentManagementRemove implements CCDConfig<CaseData, S
         cicCase.setFinalDecisionDocumentList(DocumentListUtil.getAllFinalDecisionDocuments(caseData));
         cicCase.setDecisionDocumentList(DocumentListUtil.getAllDecisionDocuments(caseData));
         cicCase.setOrderDocumentList(DocumentListUtil.getAllOrderDocuments(caseData.getCicCase()));
+        cicCase.setSelectRemoveDocumentList(DocumentListUtil.prepareDocumentList(caseData));
         caseData.setCicCase(cicCase);
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
@@ -94,11 +96,14 @@ public class CaseworkerDocumentManagementRemove implements CCDConfig<CaseData, S
 
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(
         final CaseDetails<CaseData, State> details,
-        final CaseDetails<CaseData, State> beforeDetails) {
+        final CaseDetails<CaseData, State> beforeDetails
+    ) {
         var caseData = details.getData();
         if (!ObjectUtils.isEmpty(caseData.getCicCase().getRemovedDocumentList())) {
             removeCaseDocuments(caseData);
         }
+        //remove document
+        DocumentRemoveListUtil.removeDocuments(caseData);
         List<ListValue<CaseworkerCICDocument>> listValues = new ArrayList<>();
         caseData.getCicCase().setRemovedDocumentList(listValues);
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
