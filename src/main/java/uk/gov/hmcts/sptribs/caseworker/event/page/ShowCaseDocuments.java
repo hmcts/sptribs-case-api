@@ -19,7 +19,7 @@ import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import java.util.ArrayList;
 import java.util.List;
 
-import static uk.gov.hmcts.sptribs.caseworker.util.DocumentRemoveListUtil.removeEvaluatedListDoc;
+import static uk.gov.hmcts.sptribs.caseworker.util.DocumentRemoveListUtil.setDocumentsListForRemoval;
 
 public class ShowCaseDocuments implements CcdPageConfiguration {
 
@@ -57,7 +57,7 @@ public class ShowCaseDocuments implements CcdPageConfiguration {
             List<ListValue<CaseworkerCICDocument>> removedDocumentList = new ArrayList<>();
             data.getCicCase().setRemovedDocumentList(removedDocumentList);
         }
-        final CaseData newCaseData = removeEvaluatedListDoc(data, oldData);
+        final CaseData newCaseData = setDocumentsListForRemoval(data, oldData);
         final List<String> errors = new ArrayList<>();
         if (CollectionUtils.isEmpty(newCaseData.getCicCase().getRemovedDocumentList())) {
             errors.add("Please remove at least one document to continue");

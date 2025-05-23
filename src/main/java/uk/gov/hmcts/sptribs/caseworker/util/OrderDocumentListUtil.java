@@ -5,6 +5,7 @@ import org.springframework.util.ObjectUtils;
 import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.sptribs.caseworker.model.Order;
+import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.document.model.CICDocument;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
@@ -90,6 +91,31 @@ public final class OrderDocumentListUtil {
                     .equals(cicDocumentListValue.getValue().getDocumentLink())) {
                     orderListValue.getValue().getUploadedFile().get(i).setValue(EMPTY_DOCUMENT);
 
+                }
+            }
+        }
+    }
+
+    public static void removeOrderDraftAndCICDocument(CaseData caseData, CaseworkerCICDocument cicDocument) {
+        if (!CollectionUtils.isEmpty(caseData.getCicCase().getOrderDocumentList())) {
+            CicCase cicCase = caseData.getCicCase();
+            List<CaseworkerCICDocument> orderDocumentList = cicCase.getOrderDocumentList().stream().map(ListValue::getValue).toList();
+            if (orderDocumentList.contains(cicDocument)) {
+                for (ListValue<Order> orderListValue : cicCase.getOrderList()) {
+                    if (orderListValue.getValue().getDraftOrder() != null
+                        && cicDocument.getDocumentLink().equals(orderListValue.getValue().getDraftOrder().getTemplateGeneratedDocument())) {
+                        orderListValue.getValue().getDraftOrder().setTemplateGeneratedDocument(null);
+                    } else {
+                        if (!CollectionUtils.isEmpty(orderListValue.getValue().getUploadedFile())) {
+                            for (int i = 0; i < orderListValue.getValue().getUploadedFile().size(); i++) {
+                                ListValue<CICDocument> file = orderListValue.getValue().getUploadedFile().get(i);
+                                if (file.getValue().getDocumentLink() != null
+                                    && file.getValue().getDocumentLink().equals(cicDocument.getDocumentLink())) {
+                                    orderListValue.getValue().getUploadedFile().get(i).setValue(EMPTY_DOCUMENT);
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }

@@ -9,9 +9,9 @@ import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
-import uk.gov.hmcts.sptribs.caseworker.event.page.ShowCaseDocuments;
 import uk.gov.hmcts.sptribs.caseworker.event.page.ShowRemovedCaseDocuments;
 import uk.gov.hmcts.sptribs.caseworker.util.DocumentListUtil;
+import uk.gov.hmcts.sptribs.caseworker.util.DocumentRemoveListUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
@@ -47,7 +47,7 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 @Setter
 public class CaseworkerDocumentManagementRemove implements CCDConfig<CaseData, State, UserRole> {
 
-    private final ShowCaseDocuments showCaseDocuments = new ShowCaseDocuments();
+//    private final ShowCaseDocuments showCaseDocuments = new ShowCaseDocuments();
     private final ShowRemovedCaseDocuments showRemovedCaseDocuments = new ShowRemovedCaseDocuments();
 
     @Override
@@ -72,7 +72,7 @@ public class CaseworkerDocumentManagementRemove implements CCDConfig<CaseData, S
             .aboutToSubmitCallback(this::aboutToSubmit)
             .submittedCallback(this::submitted));
 
-        showCaseDocuments.addTo(pageBuilder);
+//        showCaseDocuments.addTo(pageBuilder);
         showRemovedCaseDocuments.addTo(pageBuilder);
     }
 
@@ -83,6 +83,7 @@ public class CaseworkerDocumentManagementRemove implements CCDConfig<CaseData, S
         cicCase.setFinalDecisionDocumentList(DocumentListUtil.getAllFinalDecisionDocuments(caseData));
         cicCase.setDecisionDocumentList(DocumentListUtil.getAllDecisionDocuments(caseData));
         cicCase.setOrderDocumentList(DocumentListUtil.getAllOrderDocuments(caseData.getCicCase()));
+        cicCase.setSelectRemoveDocumentList(DocumentListUtil.prepareDocumentList(caseData));
         caseData.setCicCase(cicCase);
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
@@ -95,6 +96,11 @@ public class CaseworkerDocumentManagementRemove implements CCDConfig<CaseData, S
         final CaseDetails<CaseData, State> beforeDetails
     ) {
         var caseData = details.getData();
+//        if (!ObjectUtils.isEmpty(caseData.getCicCase().getRemovedDocumentList())) {
+//            removeCaseDocuments(caseData);
+//        }
+        //remove document
+        DocumentRemoveListUtil.removeDocuments(caseData);
         List<ListValue<CaseworkerCICDocument>> listValues = new ArrayList<>();
         caseData.getCicCase().setRemovedDocumentList(listValues);
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
@@ -109,5 +115,13 @@ public class CaseworkerDocumentManagementRemove implements CCDConfig<CaseData, S
             .confirmationHeader("# Case Updated")
             .build();
     }
+
+//    private void removeCaseDocuments(CaseData data) {
+//        List<ListValue<CaseworkerCICDocument>> removedDocumentList = data.getCicCase().getRemovedDocumentList();
+//        removedDocumentList.forEach(v -> {
+//            DecisionDocumentListUtil.removeFinalDecisionDraftAndCICDocument(data, v);
+//            DecisionDocumentListUtil.removeDecisionDraftAndCICDocument(data, v);
+//        });
+//    }
 
 }
