@@ -218,7 +218,7 @@ else 5000</text>
           <text></text>
         </inputEntry>
         <inputEntry id="UnaryTests_0v6pdjr">
-          <text>"reviewNewCaseAndProvideDirectionsLO","reviewTimeExtensionRequestLO","reviewStrikeOutRequestLO","reviewStayRequestLO","reviewListingDirectionsLO","reviewWithdrawalRequestLO","reviewRule27RequestLO","reviewListCaseLO","reviewOtherRequestLO","reviewListCaseWithin5DaysLO","reviewPostponementRequestLO","reviewReinstatementRequestLO","reviewListCaseWithin5DaysJudge","reviewPostponementRequestJudge","reviewCorrectionsRequest","reviewWrittenReasonsRequest","reviewReinstatementRequestJudge","reviewSetAsideRequest","reviewStayRequestJudge","reviewNewCaseAndProvideDirectionsJudge","reviewOtherRequestJudge","reviewWithdrawalRequestJudge","reviewRule27RequestJudge","reviewListingDirectionsJudge","reviewListCaseJudge","reviewStrikeOutRequestJudge","reviewTimeExtensionRequestJudge"</text>
+          <text>"reviewNewCaseAndProvideDirectionsLO","reviewTimeExtensionRequestLO","reviewStrikeOutRequestLO","reviewStayRequestLO","reviewListingDirectionsLO","reviewWithdrawalRequestLO","reviewRule27RequestLO","reviewListCaseLO","reviewOtherRequestLO","reviewListCaseWithin5DaysLO","reviewPostponementRequestLO","reviewReinstatementRequestLO","reviewListCaseWithin5DaysJudge","reviewPostponementRequestJudge","reviewCorrectionsRequest","reviewWrittenReasonsRequest","reviewReinstatementRequestJudge","reviewSetAsideRequest","reviewStayRequestJudge","reviewNewCaseAndProvideDirectionsJudge","reviewOtherRequestJudge","reviewWithdrawalRequestJudge","reviewRule27RequestJudge","reviewListingDirectionsJudge","reviewListCaseJudge","reviewStrikeOutRequestJudge","reviewTimeExtensionRequestJudge","issueDecisionNotice"</text>
         </inputEntry>
         <outputEntry id="LiteralExpression_1p8y8wb">
           <text>"workType"</text>
@@ -235,7 +235,7 @@ else 5000</text>
           <text></text>
         </inputEntry>
         <inputEntry id="UnaryTests_1cycnc0">
-          <text>"issueDecisionNotice","completeHearingOutcome","stitchCollateHearingBundle","processCorrections"</text>
+          <text>"completeHearingOutcome","stitchCollateHearingBundle","processCorrections"</text>
         </inputEntry>
         <outputEntry id="LiteralExpression_0haeofx">
           <text>"workType"</text>
@@ -286,7 +286,7 @@ else 5000</text>
           <text></text>
         </inputEntry>
         <inputEntry id="UnaryTests_055g5ba">
-          <text>"processRule27Decision","processCaseWithdrawalDirections","processListingDirections","processDirectionsReListedCase","processDirectionsReListedCaseWithin5Days","processSetAsideDirections","processCorrections","processDirectionsReturned","processPostponementDirections","processTimeExtensionDirectionsReturned","processReinstatementDecisionNotice","processOtherDirectionsReturned","processWrittenReasons","processStrikeOutDirectionsReturned","processStayDirections","issueDecisionNotice","completeHearingOutcome","issueCaseToRespondent","vetNewCaseDocuments","reviewSpecificAccessRequestAdmin","followUpNoncomplianceOfDirections","registerNewCase","processFurtherEvidence","stitchCollateHearingBundle","createDueDate","issueDueDate"</text>
+          <text>"processRule27Decision","processCaseWithdrawalDirections","processListingDirections","processDirectionsReListedCase","processDirectionsReListedCaseWithin5Days","processSetAsideDirections","processCorrections","processDirectionsReturned","processPostponementDirections","processTimeExtensionDirectionsReturned","processReinstatementDecisionNotice","processOtherDirectionsReturned","processWrittenReasons","processStrikeOutDirectionsReturned","processStayDirections","completeHearingOutcome","issueCaseToRespondent","vetNewCaseDocuments","reviewSpecificAccessRequestAdmin","followUpNoncomplianceOfDirections","registerNewCase","processFurtherEvidence","stitchCollateHearingBundle","createDueDate","issueDueDate"</text>
         </inputEntry>
         <outputEntry id="LiteralExpression_1ubz0s5">
           <text>"roleCategory"</text>
@@ -320,7 +320,7 @@ else 5000</text>
           <text></text>
         </inputEntry>
         <inputEntry id="UnaryTests_1cg0won">
-          <text>"reviewListCaseWithin5DaysJudge","reviewPostponementRequestJudge","reviewCorrectionsRequest","reviewWrittenReasonsRequest","reviewReinstatementRequestJudge","reviewSetAsideRequest","reviewStayRequestJudge","reviewNewCaseAndProvideDirectionsJudge","reviewOtherRequestJudge","reviewWithdrawalRequestJudge","reviewRule27RequestJudge","reviewListingDirectionsJudge","reviewListCaseJudge","reviewStrikeOutRequestJudge","reviewTimeExtensionRequestJudge","reviewSpecificAccessRequestJudiciary"</text>
+          <text>"reviewListCaseWithin5DaysJudge","reviewPostponementRequestJudge","reviewCorrectionsRequest","reviewWrittenReasonsRequest","reviewReinstatementRequestJudge","reviewSetAsideRequest","reviewStayRequestJudge","reviewNewCaseAndProvideDirectionsJudge","reviewOtherRequestJudge","reviewWithdrawalRequestJudge","reviewRule27RequestJudge","reviewListingDirectionsJudge","reviewListCaseJudge","reviewStrikeOutRequestJudge","reviewTimeExtensionRequestJudge","reviewSpecificAccessRequestJudiciary","issueDecisionNotice"</text>
         </inputEntry>
         <outputEntry id="LiteralExpression_0n22qdj">
           <text>"roleCategory"</text>
