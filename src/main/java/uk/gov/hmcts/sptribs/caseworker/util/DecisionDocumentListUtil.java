@@ -94,28 +94,28 @@ public  final class DecisionDocumentListUtil {
         }
     }
 
-    public static void removeFinalDecisionDraftAndCICDocument(CaseData caseData, ListValue<CaseworkerCICDocument> cicDocumentListValue) {
+    public static void removeFinalDecisionDraftAndCICDocument(CaseData caseData, CaseworkerCICDocument cicDocument) {
         if (caseData.getCaseIssueFinalDecision() != null
             && (caseData.getCaseIssueFinalDecision().getFinalDecisionDraft() != null
                 || caseData.getCaseIssueFinalDecision().getDocument() != null)) {
-            if (cicDocumentListValue.getValue().getDocumentLink()
+            if (cicDocument.getDocumentLink()
                 .equals(caseData.getCaseIssueFinalDecision().getFinalDecisionDraft())) {
                 caseData.getCaseIssueFinalDecision().setFinalDecisionDraft(null);
-            } else if (cicDocumentListValue.getValue().getDocumentLink()
+            } else if (cicDocument.getDocumentLink()
                 .equals(caseData.getCaseIssueFinalDecision().getDocument().getDocumentLink())) {
                 caseData.getCaseIssueFinalDecision().setDocument(EMPTY_DOCUMENT);
             }
         }
     }
 
-    public static void removeDecisionDraftAndCICDocument(CaseData caseData, ListValue<CaseworkerCICDocument> cioDocumentListValue) {
+    public static void removeDecisionDraftAndCICDocument(CaseData caseData, CaseworkerCICDocument cicDocument) {
         if (caseData.getCaseIssueDecision() != null
              && (caseData.getCaseIssueDecision().getIssueDecisionDraft() != null
                 || caseData.getCaseIssueDecision().getDecisionDocument() != null)) {
-            if (cioDocumentListValue.getValue().getDocumentLink()
+            if (cicDocument.getDocumentLink()
                 .equals(caseData.getCaseIssueDecision().getIssueDecisionDraft())) {
                 caseData.getCaseIssueDecision().setIssueDecisionDraft(null);
-            } else if (cioDocumentListValue.getValue().getDocumentLink()
+            } else if (cicDocument.getDocumentLink()
                 .equals(caseData.getCaseIssueDecision().getDecisionDocument().getDocumentLink())) {
                 caseData.getCaseIssueDecision().setDecisionDocument(EMPTY_DOCUMENT);
             }

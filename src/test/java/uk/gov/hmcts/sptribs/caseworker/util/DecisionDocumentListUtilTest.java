@@ -203,7 +203,7 @@ public class DecisionDocumentListUtilTest {
         caseData.setCicCase(cicCase);
 
         //When
-        DecisionDocumentListUtil.removeFinalDecisionDraftAndCICDocument(caseData, caseworkerCICDocumentListValue);
+        DecisionDocumentListUtil.removeFinalDecisionDraftAndCICDocument(caseData, caseworkerCICDocument);
 
         //Then
         assertThat(caseData.getCaseIssueFinalDecision().getFinalDecisionDraft()).isNull();
@@ -229,7 +229,7 @@ public class DecisionDocumentListUtilTest {
         caseData.setCicCase(cicCase);
 
         //When
-        DecisionDocumentListUtil.removeFinalDecisionDraftAndCICDocument(caseData, caseworkerCICDocumentListValue);
+        DecisionDocumentListUtil.removeFinalDecisionDraftAndCICDocument(caseData, caseworkerCICDocument);
 
         //Then
         assertThat(caseData.getCaseIssueFinalDecision().getDocument()).isEqualTo(EMPTY_DOCUMENT);
@@ -317,7 +317,7 @@ public class DecisionDocumentListUtilTest {
         caseData.setCicCase(cicCase);
 
         //When
-        DecisionDocumentListUtil.removeDecisionDraftAndCICDocument(caseData, caseworkerCICDocumentListValue);
+        DecisionDocumentListUtil.removeDecisionDraftAndCICDocument(caseData, caseworkerCICDocument);
 
         //Then
         assertThat(caseData.getCaseIssueDecision().getIssueDecisionDraft()).isNull();
@@ -343,7 +343,7 @@ public class DecisionDocumentListUtilTest {
         caseData.setCicCase(cicCase);
 
         //When
-        DecisionDocumentListUtil.removeDecisionDraftAndCICDocument(caseData, caseworkerCICDocumentListValue);
+        DecisionDocumentListUtil.removeDecisionDraftAndCICDocument(caseData, caseworkerCICDocument);
 
         //Then
         assertThat(caseData.getCaseIssueDecision().getDecisionDocument()).isEqualTo(EMPTY_DOCUMENT);
