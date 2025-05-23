@@ -4,7 +4,6 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.SearchField;
-import uk.gov.hmcts.ccd.sdk.api.SortOrder;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
@@ -33,7 +32,7 @@ public class SearchResultFields implements CCDConfig<CaseData, State, UserRole> 
         SearchField.<UserRole>builder().id(CASE_REGION).label("Case Region").build(),
         SearchField.<UserRole>builder().id(HEARING_DATE).label("Hearing Date").build(),
         SearchField.<UserRole>builder().id(APPLICANT_NAME).label("Applicant Name").build(),
-        SearchField.<UserRole>builder().id(DUE_DATE).label("Due Date").order(FIRST.ASCENDING).build(),
+        SearchField.<UserRole>builder().id(DUE_DATE).label("Due Date").build(),
         SearchField.<UserRole>builder().id(LAST_MODIFIED_DATE).label("Last modified date").build(),
         SearchField.<UserRole>builder().id(LAST_STATE_MODIFIED_DATE).label("Last state modified date").order(FIRST.ASCENDING).build()
     );
