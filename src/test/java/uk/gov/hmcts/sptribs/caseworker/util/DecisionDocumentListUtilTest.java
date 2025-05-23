@@ -4,158 +4,348 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.ccd.sdk.type.Document;
+import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseIssueDecision;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseIssueFinalDecision;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.document.model.CICDocument;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
+import uk.gov.hmcts.sptribs.document.model.DocumentType;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static uk.gov.hmcts.sptribs.caseworker.util.DocumentManagementUtil.EMPTY_DOCUMENT;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.caseData;
-import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.get2Document;
-import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getDocument;
 
 @ExtendWith(MockitoExtension.class)
 public class DecisionDocumentListUtilTest {
 
     @Test
-    void shouldGenerateFinalDecisionDocTemp() {
+    void shouldGenerateFinalDecisionDocFromDraft() {
         //Given
-        CaseIssueFinalDecision decision = CaseIssueFinalDecision.builder()
-            .finalDecisionDraft(Document.builder().filename("name").binaryUrl("d").build())
+        final Document document = Document.builder().filename("name").binaryUrl("d").build();
+        final CaseIssueFinalDecision decision = CaseIssueFinalDecision.builder()
+            .finalDecisionDraft(document)
             .build();
 
         final CaseData caseData = CaseData.builder().build();
         caseData.setCaseIssueFinalDecision(decision);
 
         //When
-        List<CaseworkerCICDocument> result = DecisionDocumentListUtil.getFinalDecisionDocs(caseData);
+        final List<CaseworkerCICDocument> result = DecisionDocumentListUtil.getFinalDecisionDocs(caseData);
 
         //Then
-        assertThat(result).isNotNull();
+        final CaseworkerCICDocument expectedCaseworkerCICDocument = CaseworkerCICDocument.builder()
+            .documentLink(document)
+            .documentCategory(DocumentType.TRIBUNAL_DIRECTION)
+            .build();
+        assertThat(result).hasSize(1).contains(expectedCaseworkerCICDocument);
     }
 
     @Test
-    void shouldGenerateFinalDecisionDoc() {
+    void shouldGenerateFinalDecisionDocFromCICDocument() {
         //Given
-        CaseIssueFinalDecision decision = CaseIssueFinalDecision.builder()
-            .document(CICDocument.builder().documentLink(Document.builder().filename("name").binaryUrl("d").build()).build())
+        final Document document = Document.builder().filename("name").binaryUrl("d").build();
+        final CICDocument cicDocument = CICDocument.builder()
+            .documentLink(document)
+            .documentEmailContent("Test content")
+            .build();
+        final CaseIssueFinalDecision decision = CaseIssueFinalDecision.builder()
+            .document(cicDocument)
             .build();
 
         final CaseData caseData = CaseData.builder().build();
         caseData.setCaseIssueFinalDecision(decision);
 
         //When
-        List<CaseworkerCICDocument> result = DecisionDocumentListUtil.getFinalDecisionDocs(caseData);
+        final List<CaseworkerCICDocument> result = DecisionDocumentListUtil.getFinalDecisionDocs(caseData);
 
         //Then
-        assertThat(result).isNotNull();
+        final CaseworkerCICDocument expectedCaseworkerCICDocument = CaseworkerCICDocument.builder()
+            .documentEmailContent("Test content")
+            .documentLink(document)
+            .documentCategory(DocumentType.TRIBUNAL_DIRECTION)
+            .build();
+        assertThat(result).hasSize(1).contains(expectedCaseworkerCICDocument);
     }
 
     @Test
-    void shouldGenerateDecisionDoc() {
+    void shouldGenerateDecisionDocFromCICDocument() {
         //Given
-        CaseIssueDecision decision = CaseIssueDecision.builder()
-            .decisionDocument(CICDocument.builder().documentLink(Document.builder().filename("name").binaryUrl("d").build()).build())
+        final Document document = Document.builder().filename("name").binaryUrl("d").build();
+        final CICDocument cicDocument = CICDocument.builder()
+            .documentLink(document)
+            .documentEmailContent("Test content")
+            .build();
+        final CaseIssueDecision decision = CaseIssueDecision.builder()
+            .decisionDocument(cicDocument)
             .build();
 
         final CaseData caseData = CaseData.builder().build();
         caseData.setCaseIssueDecision(decision);
 
         //When
-        List<CaseworkerCICDocument> result = DecisionDocumentListUtil.getDecisionDocs(caseData);
+        final List<CaseworkerCICDocument> result = DecisionDocumentListUtil.getDecisionDocs(caseData);
 
         //Then
-        assertThat(result).isNotNull();
+        final CaseworkerCICDocument expectedCaseworkerCICDocument = CaseworkerCICDocument.builder()
+            .documentEmailContent("Test content")
+            .documentLink(document)
+            .documentCategory(DocumentType.TRIBUNAL_DIRECTION)
+            .build();
+        assertThat(result).hasSize(1).contains(expectedCaseworkerCICDocument);
     }
 
     @Test
-    void shouldGenerateDecisionDocTemp() {
+    void shouldGenerateDecisionDocFromDraft() {
         //Given
-        CaseIssueDecision decision = CaseIssueDecision.builder()
-            .issueDecisionDraft(Document.builder().filename("name").binaryUrl("d").build())
+        final Document document = Document.builder().filename("name").binaryUrl("d").build();
+        final CaseIssueDecision decision = CaseIssueDecision.builder()
+            .issueDecisionDraft(document)
             .build();
 
         final CaseData caseData = CaseData.builder().build();
         caseData.setCaseIssueDecision(decision);
 
         //When
-        List<CaseworkerCICDocument> result = DecisionDocumentListUtil.getDecisionDocs(caseData);
+        final List<CaseworkerCICDocument> result = DecisionDocumentListUtil.getDecisionDocs(caseData);
 
         //Then
-        assertThat(result).isNotNull();
+        final CaseworkerCICDocument expectedCaseworkerCICDocument = CaseworkerCICDocument.builder()
+            .documentLink(document)
+            .documentCategory(DocumentType.TRIBUNAL_DIRECTION)
+            .build();
+        assertThat(result).hasSize(1).contains(expectedCaseworkerCICDocument);
     }
 
     @Test
-    void shouldRemoveFinalDecision() {
+    void shouldSetFinalDecisionDocumentsForRemovalDraftDocument() {
         //Given
         final CaseData caseData = caseData();
-        CICDocument doc = CICDocument.builder()
-            .documentLink(Document.builder().url("url1").binaryUrl("url1").filename("name1").build()).build();
-        caseData.setCaseIssueFinalDecision(CaseIssueFinalDecision.builder().document(doc).build());
 
-        CicCase cicCase = CicCase.builder()
-            .orderDocumentList(getDocument())
-            .decisionDocumentList(new ArrayList<>())
+        final CicCase cicCase = CicCase.builder()
             .finalDecisionDocumentList(new ArrayList<>())
-            .applicantDocumentsUploaded(getDocument())
             .build();
         caseData.setCicCase(cicCase);
 
-        final CaseData oldData = caseData();
 
-        CICDocument docOld = CICDocument.builder()
-            .documentLink(Document.builder().url("url1").binaryUrl("url1").filename("name1").build()).build();
-        oldData.setCaseIssueFinalDecision(CaseIssueFinalDecision.builder().document(docOld).build());
-        CicCase cicCaseOld = CicCase.builder()
-            .decisionDocumentList(get2Document())
-            .finalDecisionDocumentList(get2Document())
-            .applicantDocumentsUploaded(get2Document())
-            .reinstateDocuments(get2Document())
-            .build();
+        final CaseData oldData = caseData();
+        final Document document = Document.builder().url("url1").binaryUrl("url1").filename("name1").build();
+        oldData.setCaseIssueFinalDecision(CaseIssueFinalDecision.builder().finalDecisionDraft(document).build());
+
+        final CicCase cicCaseOld = CicCase.builder().build();
         oldData.setCicCase(cicCaseOld);
 
         //When
-        DecisionDocumentListUtil.removeDecisionDoc(caseData, oldData);
+        DecisionDocumentListUtil.addFinalDecisionDocumentsForRemoval(caseData, oldData);
 
+        //Then
+        final CaseworkerCICDocument caseworkerCICDocument = CaseworkerCICDocument.builder()
+                .documentCategory(DocumentType.TRIBUNAL_DIRECTION)
+                .documentLink(document).build();
+        final ListValue<CaseworkerCICDocument> caseworkerCICDocumentListValue = new ListValue<>();
+        caseworkerCICDocumentListValue.setId("1");
+        caseworkerCICDocumentListValue.setValue(caseworkerCICDocument);
+        assertThat(caseData.getCicCase().getRemovedDocumentList()).hasSize(1).contains(caseworkerCICDocumentListValue);
     }
 
     @Test
-    void shouldRemoveDecisionDoc() {
+    void shouldSetFinalDecisionDocumentsForRemovalCICDocument() {
         //Given
         final CaseData caseData = caseData();
-        CICDocument doc = CICDocument.builder()
-            .documentLink(Document.builder().url("url1").binaryUrl("url1").filename("name1").build()).build();
-        caseData.setCaseIssueDecision(CaseIssueDecision.builder().decisionDocument(doc).build());
 
-        CicCase cicCase = CicCase.builder()
-            .orderDocumentList(getDocument())
-            .decisionDocumentList(new ArrayList<>())
-            .finalDecisionDocumentList(new ArrayList<>())
-            .applicantDocumentsUploaded(getDocument())
-            .build();
+        final CicCase cicCase = CicCase.builder()
+                .finalDecisionDocumentList(new ArrayList<>())
+                .build();
         caseData.setCicCase(cicCase);
 
-        final CaseData oldData = caseData();
 
-        CICDocument docOld = CICDocument.builder()
-            .documentLink(Document.builder().url("url1").binaryUrl("url1").filename("name1").build()).build();
+        final CaseData oldData = caseData();
+        final Document document = Document.builder().url("url1").binaryUrl("url1").filename("name1").build();
+        final CICDocument docOld = CICDocument.builder().documentLink(document).build();
+        oldData.setCaseIssueFinalDecision(CaseIssueFinalDecision.builder().document(docOld).build());
+
+        final CicCase cicCaseOld = CicCase.builder().build();
+        oldData.setCicCase(cicCaseOld);
+
+        //When
+        DecisionDocumentListUtil.addFinalDecisionDocumentsForRemoval(caseData, oldData);
+
+        //Then
+        final CaseworkerCICDocument caseworkerCICDocument = CaseworkerCICDocument.builder()
+                .documentCategory(DocumentType.TRIBUNAL_DIRECTION)
+                .documentLink(document).build();
+        final ListValue<CaseworkerCICDocument> caseworkerCICDocumentListValue = new ListValue<>();
+        caseworkerCICDocumentListValue.setId("1");
+        caseworkerCICDocumentListValue.setValue(caseworkerCICDocument);
+        assertThat(caseData.getCicCase().getRemovedDocumentList()).hasSize(1).contains(caseworkerCICDocumentListValue);
+    }
+
+    @Test
+    void shouldRemoveFinalDecisionDraft() {
+        //Given
+        final Document document = Document.builder().url("url1").binaryUrl("url1").filename("name1").build();
+        final CaseworkerCICDocument caseworkerCICDocument = CaseworkerCICDocument.builder()
+                .documentCategory(DocumentType.TRIBUNAL_DIRECTION)
+                .documentLink(document).build();
+        final ListValue<CaseworkerCICDocument> caseworkerCICDocumentListValue = new ListValue<>();
+        caseworkerCICDocumentListValue.setId("1");
+        caseworkerCICDocumentListValue.setValue(caseworkerCICDocument);
+
+        final CaseData caseData = caseData();
+        caseData.getCaseIssueFinalDecision().setFinalDecisionDraft(document);
+        final CicCase cicCase = CicCase.builder()
+                .removedDocumentList(List.of(caseworkerCICDocumentListValue))
+                .build();
+        caseData.setCicCase(cicCase);
+
+        //When
+        DecisionDocumentListUtil.removeFinalDecisionDraftAndCICDocument(caseData, caseworkerCICDocumentListValue);
+
+        //Then
+        assertThat(caseData.getCaseIssueFinalDecision().getFinalDecisionDraft()).isNull();
+    }
+
+    @Test
+    void shouldRemoveFinalDecisionCICDocument() {
+        //Given
+        final Document document = Document.builder().url("url1").binaryUrl("url1").filename("name1").build();
+        final CaseworkerCICDocument caseworkerCICDocument = CaseworkerCICDocument.builder()
+                .documentCategory(DocumentType.TRIBUNAL_DIRECTION)
+                .documentLink(document).build();
+        final ListValue<CaseworkerCICDocument> caseworkerCICDocumentListValue = new ListValue<>();
+        caseworkerCICDocumentListValue.setId("1");
+        caseworkerCICDocumentListValue.setValue(caseworkerCICDocument);
+
+        final CICDocument cicDocument = CICDocument.builder().documentLink(document).build();
+        final CaseData caseData = caseData();
+        caseData.getCaseIssueFinalDecision().setDocument(cicDocument);
+        final CicCase cicCase = CicCase.builder()
+                .removedDocumentList(List.of(caseworkerCICDocumentListValue))
+                .build();
+        caseData.setCicCase(cicCase);
+
+        //When
+        DecisionDocumentListUtil.removeFinalDecisionDraftAndCICDocument(caseData, caseworkerCICDocumentListValue);
+
+        //Then
+        assertThat(caseData.getCaseIssueFinalDecision().getDocument()).isEqualTo(EMPTY_DOCUMENT);
+    }
+
+    @Test
+    void shouldSetDecisionDocumentsForRemovalDraftDocument() {
+        //Given
+        final CaseData caseData = caseData();
+
+        final CicCase cicCase = CicCase.builder()
+                .decisionDocumentList(new ArrayList<>())
+                .build();
+        caseData.setCicCase(cicCase);
+
+
+        final CaseData oldData = caseData();
+        final Document document = Document.builder().url("url1").binaryUrl("url1").filename("name1").build();
+        oldData.setCaseIssueDecision(CaseIssueDecision.builder().issueDecisionDraft(document).build());
+
+        final CicCase cicCaseOld = CicCase.builder().build();
+        oldData.setCicCase(cicCaseOld);
+
+        //When
+        DecisionDocumentListUtil.addDecisionDocumentsForRemoval(caseData, oldData);
+
+        //Then
+        final CaseworkerCICDocument caseworkerCICDocument = CaseworkerCICDocument.builder()
+                .documentCategory(DocumentType.TRIBUNAL_DIRECTION)
+                .documentLink(document).build();
+        final ListValue<CaseworkerCICDocument> caseworkerCICDocumentListValue = new ListValue<>();
+        caseworkerCICDocumentListValue.setId("1");
+        caseworkerCICDocumentListValue.setValue(caseworkerCICDocument);
+        assertThat(caseData.getCicCase().getRemovedDocumentList()).hasSize(1).contains(caseworkerCICDocumentListValue);
+    }
+
+    @Test
+    void shouldSetDecisionDocumentsForRemovalCICDocument() {
+        //Given
+        final CaseData caseData = caseData();
+
+        final CicCase cicCase = CicCase.builder()
+                .decisionDocumentList(new ArrayList<>())
+                .build();
+        caseData.setCicCase(cicCase);
+
+
+        final CaseData oldData = caseData();
+        final Document document = Document.builder().url("url1").binaryUrl("url1").filename("name1").build();
+        final CICDocument docOld = CICDocument.builder().documentLink(document).build();
         oldData.setCaseIssueDecision(CaseIssueDecision.builder().decisionDocument(docOld).build());
 
-        CicCase cicCaseOld = CicCase.builder()
-            .decisionDocumentList(get2Document())
-            .finalDecisionDocumentList(get2Document())
-            .applicantDocumentsUploaded(get2Document())
-            .reinstateDocuments(get2Document())
-            .build();
+        final CicCase cicCaseOld = CicCase.builder().build();
         oldData.setCicCase(cicCaseOld);
 
         //When
-        DecisionDocumentListUtil.removeDecisionDoc(caseData, oldData);
+        DecisionDocumentListUtil.addDecisionDocumentsForRemoval(caseData, oldData);
 
+        //Then
+        final CaseworkerCICDocument caseworkerCICDocument = CaseworkerCICDocument.builder()
+                .documentCategory(DocumentType.TRIBUNAL_DIRECTION)
+                .documentLink(document).build();
+        final ListValue<CaseworkerCICDocument> caseworkerCICDocumentListValue = new ListValue<>();
+        caseworkerCICDocumentListValue.setId("1");
+        caseworkerCICDocumentListValue.setValue(caseworkerCICDocument);
+        assertThat(caseData.getCicCase().getRemovedDocumentList()).hasSize(1).contains(caseworkerCICDocumentListValue);
+    }
+
+    @Test
+    void shouldRemoveDecisionDraft() {
+        //Given
+        final Document document = Document.builder().url("url1").binaryUrl("url1").filename("name1").build();
+        final CaseworkerCICDocument caseworkerCICDocument = CaseworkerCICDocument.builder()
+                .documentCategory(DocumentType.TRIBUNAL_DIRECTION)
+                .documentLink(document).build();
+        final ListValue<CaseworkerCICDocument> caseworkerCICDocumentListValue = new ListValue<>();
+        caseworkerCICDocumentListValue.setId("1");
+        caseworkerCICDocumentListValue.setValue(caseworkerCICDocument);
+
+        final CaseData caseData = caseData();
+        caseData.getCaseIssueDecision().setIssueDecisionDraft(document);
+        final CicCase cicCase = CicCase.builder()
+                .removedDocumentList(List.of(caseworkerCICDocumentListValue))
+                .build();
+        caseData.setCicCase(cicCase);
+
+        //When
+        DecisionDocumentListUtil.removeDecisionDraftAndCICDocument(caseData, caseworkerCICDocumentListValue);
+
+        //Then
+        assertThat(caseData.getCaseIssueDecision().getIssueDecisionDraft()).isNull();
+    }
+
+    @Test
+    void shouldRemoveDecisionCICDocument() {
+        //Given
+        final Document document = Document.builder().url("url1").binaryUrl("url1").filename("name1").build();
+        final CaseworkerCICDocument caseworkerCICDocument = CaseworkerCICDocument.builder()
+                .documentCategory(DocumentType.TRIBUNAL_DIRECTION)
+                .documentLink(document).build();
+        final ListValue<CaseworkerCICDocument> caseworkerCICDocumentListValue = new ListValue<>();
+        caseworkerCICDocumentListValue.setId("1");
+        caseworkerCICDocumentListValue.setValue(caseworkerCICDocument);
+
+        final CICDocument cicDocument = CICDocument.builder().documentLink(document).build();
+        final CaseData caseData = caseData();
+        caseData.getCaseIssueDecision().setDecisionDocument(cicDocument);
+        final CicCase cicCase = CicCase.builder()
+                .removedDocumentList(List.of(caseworkerCICDocumentListValue))
+                .build();
+        caseData.setCicCase(cicCase);
+
+        //When
+        DecisionDocumentListUtil.removeDecisionDraftAndCICDocument(caseData, caseworkerCICDocumentListValue);
+
+        //Then
+        assertThat(caseData.getCaseIssueDecision().getDecisionDocument()).isEqualTo(EMPTY_DOCUMENT);
     }
 }
