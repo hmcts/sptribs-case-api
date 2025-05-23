@@ -16,9 +16,8 @@ public class ShowRemovedCaseDocuments implements CcdPageConfiguration {
             .label("LabelShowRemovedCaseDocuments", "")
             .label("LabelShowRemovedCaseDocumentsWarning", "Below documents will be removed")
             .complex(CaseData::getCicCase)
-            .readonly(CicCase::getRemovedDocumentList)
+            .mandatory(CicCase::getRemovedDocumentList)
             .done();
-
     }
 
 
