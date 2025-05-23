@@ -2,7 +2,6 @@ package uk.gov.hmcts.sptribs.caseworker.event;
 
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
@@ -10,9 +9,7 @@ import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
-import uk.gov.hmcts.sptribs.caseworker.event.page.ShowCaseDocuments;
 import uk.gov.hmcts.sptribs.caseworker.event.page.ShowRemovedCaseDocuments;
-import uk.gov.hmcts.sptribs.caseworker.util.DecisionDocumentListUtil;
 import uk.gov.hmcts.sptribs.caseworker.util.DocumentListUtil;
 import uk.gov.hmcts.sptribs.caseworker.util.DocumentRemoveListUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
@@ -50,7 +47,7 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 @Setter
 public class CaseworkerDocumentManagementRemove implements CCDConfig<CaseData, State, UserRole> {
 
-    private final ShowCaseDocuments showCaseDocuments = new ShowCaseDocuments();
+//    private final ShowCaseDocuments showCaseDocuments = new ShowCaseDocuments();
     private final ShowRemovedCaseDocuments showRemovedCaseDocuments = new ShowRemovedCaseDocuments();
 
     @Override
@@ -99,9 +96,9 @@ public class CaseworkerDocumentManagementRemove implements CCDConfig<CaseData, S
         final CaseDetails<CaseData, State> beforeDetails
     ) {
         var caseData = details.getData();
-        if (!ObjectUtils.isEmpty(caseData.getCicCase().getRemovedDocumentList())) {
-            removeCaseDocuments(caseData);
-        }
+//        if (!ObjectUtils.isEmpty(caseData.getCicCase().getRemovedDocumentList())) {
+//            removeCaseDocuments(caseData);
+//        }
         //remove document
         DocumentRemoveListUtil.removeDocuments(caseData);
         List<ListValue<CaseworkerCICDocument>> listValues = new ArrayList<>();
@@ -119,12 +116,12 @@ public class CaseworkerDocumentManagementRemove implements CCDConfig<CaseData, S
             .build();
     }
 
-    private void removeCaseDocuments(CaseData data) {
-        List<ListValue<CaseworkerCICDocument>> removedDocumentList = data.getCicCase().getRemovedDocumentList();
-        removedDocumentList.forEach(v -> {
-            DecisionDocumentListUtil.removeFinalDecisionDraftAndCICDocument(data, v);
-            DecisionDocumentListUtil.removeDecisionDraftAndCICDocument(data, v);
-        });
-    }
+//    private void removeCaseDocuments(CaseData data) {
+//        List<ListValue<CaseworkerCICDocument>> removedDocumentList = data.getCicCase().getRemovedDocumentList();
+//        removedDocumentList.forEach(v -> {
+//            DecisionDocumentListUtil.removeFinalDecisionDraftAndCICDocument(data, v);
+//            DecisionDocumentListUtil.removeDecisionDraftAndCICDocument(data, v);
+//        });
+//    }
 
 }
