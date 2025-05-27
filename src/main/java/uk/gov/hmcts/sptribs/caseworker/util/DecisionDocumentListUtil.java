@@ -121,18 +121,4 @@ public  final class DecisionDocumentListUtil {
             }
         }
     }
-
-    public static void removeFinalDecisionDraftAndCICDocument(CaseData caseData, CaseworkerCICDocument cicDocument) {
-        if (caseData.getCaseIssueFinalDecision() != null
-                && (caseData.getCaseIssueFinalDecision().getFinalDecisionDraft() != null
-                || caseData.getCaseIssueFinalDecision().getDocument() != null)) {
-            if (cicDocument.getDocumentLink()
-                    .equals(caseData.getCaseIssueFinalDecision().getFinalDecisionDraft())) {
-                caseData.getCaseIssueFinalDecision().setFinalDecisionDraft(null);
-            } else if (cicDocument.getDocumentLink()
-                    .equals(caseData.getCaseIssueFinalDecision().getDocument().getDocumentLink())) {
-                caseData.getCaseIssueFinalDecision().setDocument(EMPTY_DOCUMENT);
-            }
-        }
-    }
 }
