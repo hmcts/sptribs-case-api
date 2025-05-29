@@ -1,8 +1,14 @@
 package uk.gov.hmcts.sptribs.caseworker.util;
 
 import org.springframework.util.CollectionUtils;
+import uk.gov.hmcts.ccd.sdk.type.DynamicListElement;
+import uk.gov.hmcts.ccd.sdk.type.ListValue;
+import uk.gov.hmcts.sptribs.caseworker.model.Listing;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
+import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
+
+import java.util.List;
 
 import static uk.gov.hmcts.sptribs.caseworker.util.DecisionDocumentListUtil.addDecisionDocumentsForRemoval;
 import static uk.gov.hmcts.sptribs.caseworker.util.DecisionDocumentListUtil.addFinalDecisionDocumentsForRemoval;
@@ -55,4 +61,49 @@ public final class DocumentRemoveListUtil {
         return caseData;
     }
 
+    public static void removeDocuments(CaseData caseData) {
+        List<String> documentNamesToRemove = caseData.getCicCase().getSelectRemoveDocumentList().getValue().stream().map(DynamicListElement::getLabel).toList();
+        List<ListValue<CaseworkerCICDocument>> allDocuments = DocumentListUtil.getAllCaseDocuments(caseData);
+        List<CaseworkerCICDocument> documentsToRemove = allDocuments.stream().map(ListValue::getValue).filter(document -> {
+            String documentLabel = document.getDocumentCategory().getLabel() + "--" + document.getDocumentLink().getFilename();
+            return documentNamesToRemove.contains(documentLabel);
+
+        }).toList();
+
+        List<ListValue<CaseworkerCICDocument>> hearingRecordsList = caseData.getHearingList()
+            .stream()
+            .map(ListValue::getValue)
+            .filter(hearing ->(hearing.getSummary() != null) && !CollectionUtils.isEmpty(hearing.getSummary().getRecFile()))
+            .map(Listing::getSummary)
+            .flatMap(hearingSummary -> hearingSummary.getRecFile().stream())
+            .toList();
+
+        if (!documentsToRemove.isEmpty()) {
+            for (CaseworkerCICDocument cicDocument : documentsToRemove) {
+                DecisionDocumentListUtil.removeDecisionDraftAndCICDocument(caseData, cicDocument);
+                DecisionDocumentListUtil.removeFinalDecisionDraftAndCICDocument(caseData, cicDocument);
+                OrderDocumentListUtil.removeOrderDraftAndCICDocument(caseData, cicDocument);
+
+                removeFromLists(cicDocument,
+                    caseData.getCicCase().getRemovedDocumentList(),
+                    caseData.getCicCase().getApplicantDocumentsUploaded(),
+                    caseData.getAllDocManagement().getCaseworkerCICDocument(),
+                    caseData.getCloseCase().getDocuments(),
+                    hearingRecordsList
+                );
+            }
+        }
+    }
+
+    @SafeVarargs
+    private static void removeFromLists(
+            CaseworkerCICDocument target,
+            List<ListValue<CaseworkerCICDocument>>... lists
+    ) {
+        for (List<ListValue<CaseworkerCICDocument>> list : lists) {
+        if (!CollectionUtils.isEmpty(list)) {
+                list.removeIf(entry -> entry.getValue().equals(target));
+            }
+        }
+    }
 }

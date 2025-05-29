@@ -2,6 +2,7 @@ package uk.gov.hmcts.sptribs.ciccase.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.AllArgsConstructor;
@@ -40,6 +41,7 @@ import java.util.Set;
 import static java.time.format.DateTimeFormatter.ofPattern;
 import static java.util.Locale.UK;
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.Collection;
+import static uk.gov.hmcts.ccd.sdk.type.FieldType.DynamicMultiSelectList;
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.Email;
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.FixedList;
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.MultiSelectList;
@@ -566,6 +568,13 @@ public class CicCase {
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class, CaseworkerAndSuperUserAccess.class}
     )
     private List<ListValue<CaseworkerCICDocument>> removedDocumentList;
+
+    @CCD(typeOverride = DynamicMultiSelectList,
+            typeParameterOverride = "DynamicList",
+            access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    private uk.gov.hmcts.ccd.sdk.type.DynamicMultiSelectList selectRemoveDocumentList;
 
     @CCD(
         label = "Final Decision Documents",
