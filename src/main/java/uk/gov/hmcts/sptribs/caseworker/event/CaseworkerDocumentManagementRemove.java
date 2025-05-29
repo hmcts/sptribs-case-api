@@ -2,6 +2,7 @@ package uk.gov.hmcts.sptribs.caseworker.event;
 
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
@@ -11,6 +12,7 @@ import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.event.page.ShowCaseDocuments;
 import uk.gov.hmcts.sptribs.caseworker.event.page.ShowRemovedCaseDocuments;
+import uk.gov.hmcts.sptribs.caseworker.util.DecisionDocumentListUtil;
 import uk.gov.hmcts.sptribs.caseworker.util.DocumentListUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
@@ -92,9 +94,11 @@ public class CaseworkerDocumentManagementRemove implements CCDConfig<CaseData, S
 
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(
         final CaseDetails<CaseData, State> details,
-        final CaseDetails<CaseData, State> beforeDetails
-    ) {
+        final CaseDetails<CaseData, State> beforeDetails) {
         var caseData = details.getData();
+        if (!ObjectUtils.isEmpty(caseData.getCicCase().getRemovedDocumentList())) {
+            removeCaseDocuments(caseData);
+        }
         List<ListValue<CaseworkerCICDocument>> listValues = new ArrayList<>();
         caseData.getCicCase().setRemovedDocumentList(listValues);
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
@@ -108,6 +112,14 @@ public class CaseworkerDocumentManagementRemove implements CCDConfig<CaseData, S
         return SubmittedCallbackResponse.builder()
             .confirmationHeader("# Case Updated")
             .build();
+    }
+
+    private void removeCaseDocuments(CaseData data) {
+        List<ListValue<CaseworkerCICDocument>> removedDocumentList = data.getCicCase().getRemovedDocumentList();
+        removedDocumentList.forEach(v -> {
+            DecisionDocumentListUtil.removeFinalDecisionDraftAndCICDocument(data, v);
+            DecisionDocumentListUtil.removeDecisionDraftAndCICDocument(data, v);
+        });
     }
 
 }
