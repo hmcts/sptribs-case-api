@@ -4,8 +4,8 @@ import org.springframework.util.CollectionUtils;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 
-import static uk.gov.hmcts.sptribs.caseworker.util.DecisionDocumentListUtil.removeDecisionDoc;
-import static uk.gov.hmcts.sptribs.caseworker.util.DecisionDocumentListUtil.removeFinalDecisionDoc;
+import static uk.gov.hmcts.sptribs.caseworker.util.DecisionDocumentListUtil.addDecisionDocumentsForRemoval;
+import static uk.gov.hmcts.sptribs.caseworker.util.DecisionDocumentListUtil.addFinalDecisionDocumentsForRemoval;
 import static uk.gov.hmcts.sptribs.caseworker.util.DocumentManagementUtil.checkLists;
 import static uk.gov.hmcts.sptribs.caseworker.util.OrderDocumentListUtil.removeOrderDoc;
 
@@ -16,9 +16,9 @@ public final class DocumentRemoveListUtil {
 
     }
 
-    public static CaseData removeEvaluatedListDoc(CaseData caseData, CaseData oldData) {
-        removeDecisionDoc(caseData, oldData);
-        removeFinalDecisionDoc(caseData, oldData);
+    public static CaseData setDocumentsListForRemoval(CaseData caseData, CaseData oldData) {
+        addDecisionDocumentsForRemoval(caseData, oldData);
+        addFinalDecisionDocumentsForRemoval(caseData, oldData);
         final CicCase cic = caseData.getCicCase();
         removeOrderDoc(cic, oldData.getCicCase());
         if (!CollectionUtils.isEmpty(oldData.getAllDocManagement().getCaseworkerCICDocument())
@@ -51,7 +51,6 @@ public final class DocumentRemoveListUtil {
             checkLists(caseData, oldData.getLatestCompletedHearing().getSummary().getRecFile(),
                 caseData.getLatestCompletedHearing().getSummary().getRecFile());
         }
-
 
         return caseData;
     }
