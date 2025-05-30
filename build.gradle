@@ -394,7 +394,7 @@ dependencies {
   functionalTestImplementation group: 'org.projectlombok', name: 'lombok', version: versions.lombok
   functionalTestAnnotationProcessor group: 'org.projectlombok', name: 'lombok', version: versions.lombok
 
-  contractTestImplementation group: 'au.com.dius.pact.consumer', name: 'junit5', version: '4.6.17'
+  contractTestImplementation group: 'au.com.dius.pact.consumer', name: 'junit5', version: versions.pact
   contractTestImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: '5.10.3'
   contractTestRuntimeOnly group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: '5.10.3'
   contractTestImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: '5.10.3'
@@ -579,13 +579,14 @@ pact {
   }
 }
 
-task runAndPublishConsumerPactTests(type: Test){
+tasks.register('runAndPublishConsumerPactTests', Test) {
   logger.lifecycle("Runs consumer pact tests")
   systemProperty 'pact.rootDir', "pacts"
   useJUnitPlatform()
   testClassesDirs = sourceSets.contractTest.output.classesDirs
   classpath = sourceSets.contractTest.runtimeClasspath
 }
+
 
 static def getCheckedOutGitCommitHash() {
   'git rev-parse --verify --short HEAD'.execute().text.trim()
