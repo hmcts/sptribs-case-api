@@ -26,6 +26,8 @@ import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.judicialrefdata.JudicialService;
 
+import java.util.ArrayList;
+
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_EDIT_HEARING_SUMMARY;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingOutcome;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_CASEWORKER;
@@ -36,6 +38,7 @@ import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_CASEWORK
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_JUDGE;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE;
+import static uk.gov.hmcts.sptribs.document.DocumentUtil.uploadRecFile;
 
 @Component
 @Slf4j
@@ -48,7 +51,7 @@ public class CaseWorkerEditHearingSummary implements CCDConfig<CaseData, State, 
     private static final CcdPageConfiguration HearingOutcome = new HearingOutcomePage();
     private static final CcdPageConfiguration editHearingLoadingPage = new EditHearingLoadingPage();
     private static final CcdPageConfiguration hearingRecordingUploadPage = new HearingRecordingUploadPage();
-    private static final EditHearingSummarySelect hearingSummarySelect = new EditHearingSummarySelect();
+    private static final CcdPageConfiguration hearingSummarySelect = new EditHearingSummarySelect();
 
     @Autowired
     private HearingService hearingService;
@@ -69,7 +72,7 @@ public class CaseWorkerEditHearingSummary implements CCDConfig<CaseData, State, 
                 .showSummary()
                 .aboutToStartCallback(this::aboutToStart)
                 .aboutToSubmitCallback(this::aboutToSubmit)
-                .submittedCallback(this::summaryCreated)
+                .submittedCallback(this::submitted)
                 .grant(CREATE_READ_UPDATE, SUPER_USER,
                     ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER, ST_CIC_HEARING_CENTRE_ADMIN,
                     ST_CIC_HEARING_CENTRE_TEAM_LEADER, ST_CIC_SENIOR_JUDGE)
@@ -89,13 +92,12 @@ public class CaseWorkerEditHearingSummary implements CCDConfig<CaseData, State, 
         hearingAttendeesRole.addTo(pageBuilder);
         HearingOutcome.addTo(pageBuilder);
         hearingRecordingUploadPage.addTo(pageBuilder);
-
     }
 
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToStart(CaseDetails<CaseData, State> details) {
         final CaseData caseData = details.getData();
         caseData.setCurrentEvent(CASEWORKER_EDIT_HEARING_SUMMARY);
-        if (null != caseData.getListing().getSummary() && null != caseData.getListing().getHearingFormat()) {
+        if (caseData.getListing().getSummary() != null && caseData.getListing().getHearingFormat() != null) {
             caseData.getListing().setHearingSummaryExists("YES");
         } else {
             caseData.getListing().setHearingSummaryExists("There are no Completed Hearings to edit");
@@ -114,9 +116,15 @@ public class CaseWorkerEditHearingSummary implements CCDConfig<CaseData, State, 
         final CaseData caseData = details.getData();
         caseData.setJudicialId(judicialService.populateJudicialId(caseData));
         caseData.getListing().getSummary().setJudgeList(null);
+        uploadRecFile(caseData);
+
+        final String hearingName = caseData.getCicCase().getHearingSummaryList().getValue().getLabel();
 
         recordListHelper.saveSummary(details.getData());
-        hearingService.updateHearingSummaryList(caseData);
+        hearingService.updateHearingList(caseData, hearingName);
+
+        caseData.getListing().getSummary().setRecFile(new ArrayList<>());
+
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
             .state(AwaitingOutcome)
@@ -124,7 +132,7 @@ public class CaseWorkerEditHearingSummary implements CCDConfig<CaseData, State, 
 
     }
 
-    public SubmittedCallbackResponse summaryCreated(CaseDetails<CaseData, State> details,
+    public SubmittedCallbackResponse submitted(CaseDetails<CaseData, State> details,
                                                     CaseDetails<CaseData, State> beforeDetails) {
         return SubmittedCallbackResponse.builder()
             .confirmationHeader(MessageUtil.generateSimpleMessage(

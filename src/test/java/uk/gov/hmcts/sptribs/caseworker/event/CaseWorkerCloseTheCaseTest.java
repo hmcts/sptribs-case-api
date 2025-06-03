@@ -7,6 +7,7 @@ import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.test.util.ReflectionTestUtils;
 import uk.gov.hmcts.ccd.sdk.ConfigBuilderImpl;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.Event;
@@ -24,11 +25,12 @@ import uk.gov.hmcts.sptribs.ciccase.model.RespondentCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.SubjectCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
-import uk.gov.hmcts.sptribs.common.notification.CaseWithdrawnNotification;
+import uk.gov.hmcts.sptribs.ciccase.model.access.Permissions;
 import uk.gov.hmcts.sptribs.document.DocumentUtil;
-import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
+import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocumentUpload;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
 import uk.gov.hmcts.sptribs.judicialrefdata.JudicialService;
+import uk.gov.hmcts.sptribs.notification.dispatcher.CaseWithdrawnNotification;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -39,6 +41,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_WA_CONFIG_USER;
 import static uk.gov.hmcts.sptribs.document.DocumentConstants.DOCUMENT_VALIDATION_MESSAGE;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigBuilder;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.getEventsFrom;
@@ -52,7 +55,7 @@ import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_SOLICITOR_NAME;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_SUBJECT_EMAIL;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.LOCAL_DATE_TIME;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.closedCaseData;
-import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getCaseworkerCICDocumentList;
+import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getCaseworkerCICDocumentUploadList;
 import static uk.gov.hmcts.sptribs.testutil.TestEventConstants.CASEWORKER_CLOSE_THE_CASE;
 
 @ExtendWith(MockitoExtension.class)
@@ -76,6 +79,38 @@ class CaseWorkerCloseTheCaseTest {
         assertThat(getEventsFrom(configBuilder).values())
             .extracting(Event::getId)
             .contains(CASEWORKER_CLOSE_THE_CASE);
+
+        assertThat(getEventsFrom(configBuilder).values())
+                .extracting(Event::isPublishToCamunda)
+                .contains(false);
+
+        assertThat(getEventsFrom(configBuilder).values())
+                .extracting(Event::getGrants)
+                .extracting(map -> map.containsKey(ST_CIC_WA_CONFIG_USER))
+                .contains(false);
+    }
+
+    @Test
+    void shouldAddPublishToCamundaWhenWAIsEnabled() {
+        ReflectionTestUtils.setField(caseworkerCloseTheCase, "isWorkAllocationEnabled", true);
+
+        final ConfigBuilderImpl<CaseData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
+
+        caseworkerCloseTheCase.configure(configBuilder);
+
+        assertThat(getEventsFrom(configBuilder).values())
+                .extracting(Event::isPublishToCamunda)
+                .contains(true);
+
+        assertThat(getEventsFrom(configBuilder).values())
+                .extracting(Event::getGrants)
+                .extracting(map -> map.containsKey(ST_CIC_WA_CONFIG_USER))
+                .contains(true);
+
+        assertThat(getEventsFrom(configBuilder).values())
+                .extracting(Event::getGrants)
+                .extracting(map -> map.get(ST_CIC_WA_CONFIG_USER))
+                .contains(Permissions.CREATE_READ_UPDATE);
     }
 
     @Test
@@ -99,19 +134,18 @@ class CaseWorkerCloseTheCaseTest {
 
     @Test
     void shouldSuccessfullyChangeCaseManagementStateToClosedState() {
-        //Given
         final CaseData caseData = closedCaseData();
-        final CaseworkerCICDocument caseworkerCICDocument = CaseworkerCICDocument.builder()
+        final CaseworkerCICDocumentUpload document = CaseworkerCICDocumentUpload.builder()
             .documentLink(Document.builder().build())
             .documentEmailContent("some email content")
             .documentCategory(DocumentType.LINKED_DOCS)
             .build();
-        final List<ListValue<CaseworkerCICDocument>> documentList = new ArrayList<>();
-        final ListValue<CaseworkerCICDocument> caseworkerCICDocumentListValue = new ListValue<>();
-        caseworkerCICDocumentListValue.setValue(caseworkerCICDocument);
-        documentList.add(caseworkerCICDocumentListValue);
+        final List<ListValue<CaseworkerCICDocumentUpload>> documentList = new ArrayList<>();
+        final ListValue<CaseworkerCICDocumentUpload> documentListValue = new ListValue<>();
+        documentListValue.setValue(document);
+        documentList.add(documentListValue);
 
-        final CloseCase closeCase = CloseCase.builder().documents(documentList).build();
+        final CloseCase closeCase = CloseCase.builder().documentsUpload(documentList).build();
         caseData.setCloseCase(closeCase);
 
         final CicCase cicCase = CicCase.builder()
@@ -135,15 +169,13 @@ class CaseWorkerCloseTheCaseTest {
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
 
-        //When
         assertThat(caseData.getCaseStatus()).isEqualTo(State.CaseManagement);
         final AboutToStartOrSubmitResponse<CaseData, State> response =
             caseworkerCloseTheCase.aboutToSubmit(updatedCaseDetails, beforeDetails);
 
         final SubmittedCallbackResponse closedCase =
-            caseworkerCloseTheCase.closed(updatedCaseDetails, beforeDetails);
+            caseworkerCloseTheCase.submitted(updatedCaseDetails, beforeDetails);
 
-        //Then
         assertThat(closedCase).isNotNull();
         assertThat(closedCase.getConfirmationHeader()).contains("Case closed");
         assertThat(response.getState()).isEqualTo(State.CaseClosed);
@@ -152,7 +184,7 @@ class CaseWorkerCloseTheCaseTest {
     @Test
     void shouldReturnErrorForInvalidUploadedDocument() {
         final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
-        final CloseCase closeCase = CloseCase.builder().documents(getCaseworkerCICDocumentList("file.xml")).build();
+        final CloseCase closeCase = CloseCase.builder().documentsUpload(getCaseworkerCICDocumentUploadList("file.xml")).build();
         final CaseData caseData = CaseData.builder()
             .closeCase(closeCase)
             .build();
@@ -166,7 +198,7 @@ class CaseWorkerCloseTheCaseTest {
     @Test
     void midEventShouldValidateUploadedDocumentsOnce() {
         final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
-        final CloseCase closeCase = CloseCase.builder().documents(getCaseworkerCICDocumentList("file.xml")).build();
+        final CloseCase closeCase = CloseCase.builder().documentsUpload(getCaseworkerCICDocumentUploadList("file.xml")).build();
         final CaseData caseData = CaseData.builder()
             .closeCase(closeCase)
             .build();

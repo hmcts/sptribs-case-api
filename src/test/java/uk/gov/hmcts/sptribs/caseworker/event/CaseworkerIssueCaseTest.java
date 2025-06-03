@@ -6,6 +6,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.test.util.ReflectionTestUtils;
 import uk.gov.hmcts.ccd.sdk.ConfigBuilderImpl;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.Event;
@@ -16,23 +17,27 @@ import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.event.page.IssueCaseSelectDocument;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseIssue;
-import uk.gov.hmcts.sptribs.ciccase.model.ApplicantCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
-import uk.gov.hmcts.sptribs.ciccase.model.RepresentativeCIC;
-import uk.gov.hmcts.sptribs.ciccase.model.RespondentCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
-import uk.gov.hmcts.sptribs.ciccase.model.SubjectCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
-import uk.gov.hmcts.sptribs.common.notification.CaseIssuedNotification;
+import uk.gov.hmcts.sptribs.ciccase.model.access.Permissions;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
+import uk.gov.hmcts.sptribs.notification.dispatcher.CaseIssuedNotification;
+import uk.gov.hmcts.sptribs.notification.exception.NotificationException;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.doThrow;
+import static uk.gov.hmcts.sptribs.ciccase.model.ApplicantCIC.APPLICANT_CIC;
+import static uk.gov.hmcts.sptribs.ciccase.model.RepresentativeCIC.REPRESENTATIVE;
+import static uk.gov.hmcts.sptribs.ciccase.model.RespondentCIC.RESPONDENT;
+import static uk.gov.hmcts.sptribs.ciccase.model.SubjectCIC.SUBJECT;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_WA_CONFIG_USER;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigBuilder;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.getEventsFrom;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.SOLICITOR_ADDRESS;
@@ -61,21 +66,49 @@ class CaseworkerIssueCaseTest {
 
     @Test
     void shouldAddConfigurationToConfigBuilder() {
-        //Given
         final ConfigBuilderImpl<CaseData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
 
-        //When
         caseworkerIssueCase.configure(configBuilder);
 
-        //Then
         assertThat(getEventsFrom(configBuilder).values())
             .extracting(Event::getId)
             .contains(CASEWORKER_ISSUE_CASE);
+
+        assertThat(getEventsFrom(configBuilder).values())
+                .extracting(Event::isPublishToCamunda)
+                .contains(false);
+
+        assertThat(getEventsFrom(configBuilder).values())
+                .extracting(Event::getGrants)
+                .extracting(map -> map.containsKey(ST_CIC_WA_CONFIG_USER))
+                .contains(false);
+    }
+
+    @Test
+    void shouldAddPublishToCamundaWhenWAIsEnabled() {
+        ReflectionTestUtils.setField(caseworkerIssueCase, "isWorkAllocationEnabled", true);
+
+        final ConfigBuilderImpl<CaseData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
+
+        caseworkerIssueCase.configure(configBuilder);
+
+        assertThat(getEventsFrom(configBuilder).values())
+                .extracting(Event::isPublishToCamunda)
+                .contains(true);
+
+        assertThat(getEventsFrom(configBuilder).values())
+                .extracting(Event::getGrants)
+                .extracting(map -> map.containsKey(ST_CIC_WA_CONFIG_USER))
+                .contains(true);
+
+        assertThat(getEventsFrom(configBuilder).values())
+                .extracting(Event::getGrants)
+                .extracting(map -> map.get(ST_CIC_WA_CONFIG_USER))
+                .contains(Permissions.CREATE_READ_UPDATE);
     }
 
     @Test
     void shouldSuccessfullyIssueTheCase() {
-        //Given
         final CaseData caseData = caseData();
         final CicCase cicCase = CicCase.builder()
             .fullName(TEST_FIRST_NAME)
@@ -83,10 +116,10 @@ class CaseworkerIssueCaseTest {
             .applicantEmailAddress(TEST_APPLICANT_EMAIL)
             .representativeFullName(TEST_SOLICITOR_NAME)
             .representativeAddress(SOLICITOR_ADDRESS)
-            .notifyPartyRepresentative(Set.of(RepresentativeCIC.REPRESENTATIVE))
-            .notifyPartyApplicant(Set.of(ApplicantCIC.APPLICANT_CIC))
-            .notifyPartySubject(Set.of(SubjectCIC.SUBJECT))
-            .notifyPartyRespondent(Set.of(RespondentCIC.RESPONDENT)).build();
+            .notifyPartyRepresentative(Set.of(REPRESENTATIVE))
+            .notifyPartyApplicant(Set.of(APPLICANT_CIC))
+            .notifyPartySubject(Set.of(SUBJECT))
+            .notifyPartyRespondent(Set.of(RESPONDENT)).build();
         caseData.setCicCase(cicCase);
 
         final CaseIssue caseIssue = new CaseIssue();
@@ -100,7 +133,6 @@ class CaseworkerIssueCaseTest {
 
         final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
 
-        //When
         AboutToStartOrSubmitResponse<CaseData, State> response =
             caseworkerIssueCase.aboutToSubmit(updatedCaseDetails, beforeDetails);
 
@@ -108,16 +140,52 @@ class CaseworkerIssueCaseTest {
         Mockito.doNothing().when(caseIssuedNotification).sendToApplicant(caseData, caseData.getHyphenatedCaseRef());
         Mockito.doNothing().when(caseIssuedNotification).sendToRepresentative(caseData, caseData.getHyphenatedCaseRef());
         Mockito.doNothing().when(caseIssuedNotification).sendToRespondent(caseData, caseData.getHyphenatedCaseRef());
-        SubmittedCallbackResponse issuedResponse = caseworkerIssueCase.issued(updatedCaseDetails, beforeDetails);
+        SubmittedCallbackResponse submittedResponse = caseworkerIssueCase.submitted(updatedCaseDetails, beforeDetails);
 
-        //Then
         assertThat(response.getData().getCicCase().getNotifyPartyApplicant()).isNotNull();
-        assertThat(issuedResponse).isNotNull();
+        assertThat(submittedResponse).isNotNull();
+        assertThat(submittedResponse.getConfirmationHeader())
+            .contains("# Case issued \n##  This case has now been issued.");
+    }
+
+
+    @Test
+    void shouldReturnErrorMessageInSubmittedResponse() {
+        final CaseData caseData = caseData();
+        final String hyphenatedCaseRef = caseData.formatCaseRef(TEST_CASE_ID);
+        caseData.setHyphenatedCaseRef(hyphenatedCaseRef);
+        caseData.getCicCase().setNotifyPartySubject(Set.of(SUBJECT));
+        caseData.getCicCase().setNotifyPartyApplicant(Set.of(APPLICANT_CIC));
+        caseData.getCicCase().setNotifyPartyRepresentative(Set.of(REPRESENTATIVE));
+        caseData.getCicCase().setNotifyPartyRespondent(Set.of(RESPONDENT));
+
+        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+        caseDetails.setData(caseData);
+
+        doThrow(NotificationException.class)
+            .when(caseIssuedNotification)
+            .sendToSubject(caseData, hyphenatedCaseRef);
+        doThrow(NotificationException.class)
+            .when(caseIssuedNotification)
+            .sendToApplicant(caseData, hyphenatedCaseRef);
+        doThrow(NotificationException.class)
+            .when(caseIssuedNotification)
+            .sendToRepresentative(caseData, hyphenatedCaseRef);
+        doThrow(NotificationException.class)
+            .when(caseIssuedNotification)
+            .sendToRespondent(caseData, hyphenatedCaseRef);
+
+        SubmittedCallbackResponse submittedResponse = caseworkerIssueCase.submitted(caseDetails, caseDetails);
+
+        assertThat(submittedResponse.getConfirmationHeader())
+            .isEqualTo("""
+                # Issue case notification failed\s
+                ## A notification could not be sent to: Subject, Applicant, Representative, Respondent\s
+                ## Please resend the notification.""");
     }
 
     @Test
     void shouldSendErrorOnTooManyDocuments() {
-        //Given
         final CaseData caseData = caseData();
         final CicCase cicCase = CicCase.builder()
             .fullName(TEST_FIRST_NAME)
@@ -125,10 +193,10 @@ class CaseworkerIssueCaseTest {
             .applicantEmailAddress(TEST_APPLICANT_EMAIL)
             .representativeFullName(TEST_SOLICITOR_NAME)
             .representativeAddress(SOLICITOR_ADDRESS)
-            .notifyPartyRepresentative(Set.of(RepresentativeCIC.REPRESENTATIVE))
-            .notifyPartyApplicant(Set.of(ApplicantCIC.APPLICANT_CIC))
-            .notifyPartySubject(Set.of(SubjectCIC.SUBJECT))
-            .notifyPartyRespondent(Set.of(RespondentCIC.RESPONDENT)).build();
+            .notifyPartyRepresentative(Set.of(REPRESENTATIVE))
+            .notifyPartyApplicant(Set.of(APPLICANT_CIC))
+            .notifyPartySubject(Set.of(SUBJECT))
+            .notifyPartyRespondent(Set.of(RESPONDENT)).build();
         caseData.setCicCase(cicCase);
 
         final CaseIssue caseIssue = new CaseIssue();
@@ -144,18 +212,14 @@ class CaseworkerIssueCaseTest {
 
         final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
 
-        //When
         AboutToStartOrSubmitResponse<CaseData, State> response =
             issueCaseSelectDocument.midEvent(updatedCaseDetails, beforeDetails);
 
-
-        //Then
         assertThat(response.getErrors()).hasSize(1);
     }
 
     @Test
     void shouldCreateDocumentList() {
-        //Given
         final CaseData caseData = caseData();
         List<ListValue<CaseworkerCICDocument>> listValueList = new ArrayList<>();
         CaseworkerCICDocument doc = CaseworkerCICDocument.builder()
@@ -165,6 +229,7 @@ class CaseworkerIssueCaseTest {
         ListValue<CaseworkerCICDocument> list = new ListValue<>();
         list.setValue(doc);
         listValueList.add(list);
+
         final CicCase cicCase = CicCase.builder()
             .fullName(TEST_FIRST_NAME)
             .address(SUBJECT_ADDRESS)
@@ -172,10 +237,10 @@ class CaseworkerIssueCaseTest {
             .applicantEmailAddress(TEST_APPLICANT_EMAIL)
             .representativeFullName(TEST_SOLICITOR_NAME)
             .representativeAddress(SOLICITOR_ADDRESS)
-            .notifyPartyRepresentative(Set.of(RepresentativeCIC.REPRESENTATIVE))
-            .notifyPartyApplicant(Set.of(ApplicantCIC.APPLICANT_CIC))
-            .notifyPartySubject(Set.of(SubjectCIC.SUBJECT))
-            .notifyPartyRespondent(Set.of(RespondentCIC.RESPONDENT)).build();
+            .notifyPartyRepresentative(Set.of(REPRESENTATIVE))
+            .notifyPartyApplicant(Set.of(APPLICANT_CIC))
+            .notifyPartySubject(Set.of(SUBJECT))
+            .notifyPartyRespondent(Set.of(RESPONDENT)).build();
         caseData.setCicCase(cicCase);
 
         caseData.setHyphenatedCaseRef("1234-5678-3456");
@@ -185,10 +250,8 @@ class CaseworkerIssueCaseTest {
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
 
-        //When
         AboutToStartOrSubmitResponse<CaseData, State> response = caseworkerIssueCase.aboutToStart(updatedCaseDetails);
 
-        //Then
         assertThat(response).isNotNull();
         DynamicMultiSelectList documentList = response.getData().getCaseIssue().getDocumentList();
         assertThat(documentList).isNotNull();

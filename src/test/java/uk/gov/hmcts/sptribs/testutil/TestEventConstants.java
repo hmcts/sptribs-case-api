@@ -34,13 +34,17 @@ public final class TestEventConstants {
     public static final String CASEWORKER_POSTPONE_HEARING = "caseworker-postpone-hearing";
     public static final String TEST_CHANGE_STATE = "change-state";
     public static final String CHANGE_SECURITY_CLASS = "change-security-class";
-    
+    public static final String CASEWORKER_REFER_TO_JUDGE = "refer-to-judge";
+    public static final String CASEWORKER_REFER_TO_LEGAL_OFFICER = "refer-to-legal-officer";
+
+    public static final String CITIZEN_CIC_SUBMIT_CASE = "citizen-cic-submit-dss-application";
+
     public static final String CREATE_BUNDLE = "createBundle";
     public static final String STITCH_BUNDLE = "stitchBundle";
     public static final String EDIT_BUNDLE = "editBundle";
     public static final String CLONE_BUNDLE = "cloneBundle";
     public static final String ASYNC_STITCH_COMPLETE = "asyncStitchingComplete";
-    
+
     private TestEventConstants() {
     }
 

@@ -34,8 +34,8 @@ idam:
   api:
     url: http://localhost:5000
   systemupdate:
-    username: dummy@test.com
-    password: dummy
+    username: ${IDAM_SYSTEM_UPDATE_USERNAME:dummy@test.com}
+    password: ${IDAM_SYSTEM_UPDATE_PASSWORD:dummy}
 
 s2s-authorised:
   services: ccd_data,sptribs_frontend
@@ -83,10 +83,6 @@ document_management:
 case_document_am:
   url: ${CASE_DOCUMENT_AM_BASEURL:http://ccd-case-document-am-api-aat.service.core-compute-aat.internal}
 
-prd:
-  api:
-    url: ${PRD_API_BASEURL:http://rd-professional-api-aat.service.core-compute-aat.internal}
-
 send-letter:
   url: ${SEND_LETTER_SERVICE_BASEURL:http://rpe-send-letter-service-aat.service.core-compute-aat.internal}
 
@@ -103,36 +99,17 @@ court:
 
 SERVICE_AUTH_MICROSERVICE: sptribs_case_api
 
-toggle:
-  enable_entitlement_email: ${ENABLE_ENTITLEMENT_EMAIL:true}
-
 feature:
-  contact-parties:
-    enabled: ${CONTACT_PARTIES_FEATURE:true}
-  link-case:
-    enabled: ${LINK_CASE_FEATURE:true}
-  case-flags:
-    enabled: ${CASE_FLAGS_FEATURE:true}
-  migration:
-    enabled: ${MIGRATION_ENABLED:true}
-  case-file-view:
-    enabled: ${CASE_FILE_VIEW_FEATURE:true}
-  document-management:
-    enabled: ${DOCUMENT_MANAGEMENT_FEATURE:true}
-  bundling-create:
-    enabled: ${CREATE_BUNDLING_FEATURE:true}
-  bundling-edit:
-    enabled: ${EDIT_BUNDLING_FEATURE:true}
-  bundling-clone:
-    enabled: ${CLONE_BUNDLING_FEATURE:true}
-  bundling-stitch:
-    enabled: ${STITCH_BUNDLING_FEATURE:true}
   security-classification:
-    enabled: ${SECURITY_CLASSIFICATION:false}
+    enabled: ${SECURITY_CLASSIFICATION:true}
   access-profiles:
     enabled: ${ACCESS_PROFILES_ENABLED:true}
-  update-case:
-    enabled: ${DSS_UPDATE_CASE_ENABLED:true}
+  wa:
+    enabled: ${WA_FEATURE_ENABLED:false}
+    functional-tests-enabled: ${WA_FUNCTIONAL_TESTS_ENABLED:false}
+  migrate-global-search-task:
+    enabled: ${GLOBAL_SEARCH_MIGRATION_ENABLED:false}
+    caseReference: ${GLOBAL_SEARCH_MIGRATION_TEST_CASE_REF:}
 
 caseinfo:
   apps:
@@ -145,3 +122,8 @@ caseinfo:
         submitEvent: citizen-cic-submit-dss-application
       caseTypeOfApplication:
         - CIC
+
+wa_task_monitor_api:
+  url: http://wa-task-monitor-aat.service.core-compute-aat.internal
+wa_task_management_api:
+  url: http://wa-task-management-api-aat.service.core-compute-aat.internal

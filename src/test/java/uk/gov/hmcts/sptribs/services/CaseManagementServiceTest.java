@@ -8,9 +8,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
@@ -18,10 +15,10 @@ import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.DssCaseData;
 import uk.gov.hmcts.sptribs.common.config.AppsConfig;
 import uk.gov.hmcts.sptribs.constants.CommonConstants;
-import uk.gov.hmcts.sptribs.edgecase.event.Event;
 import uk.gov.hmcts.sptribs.exception.CaseCreateOrUpdateException;
 import uk.gov.hmcts.sptribs.model.CaseResponse;
 import uk.gov.hmcts.sptribs.services.ccd.CaseApiService;
+import uk.gov.hmcts.sptribs.services.model.Event;
 import uk.gov.hmcts.sptribs.util.AppsUtil;
 
 import java.util.List;
@@ -47,9 +44,6 @@ import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_USER;
 import static uk.gov.hmcts.sptribs.testutil.TestFileUtil.loadJson;
 
 @ExtendWith(SpringExtension.class)
-@SpringBootTest
-@TestPropertySource("classpath:application.yaml")
-@ActiveProfiles("test")
 class CaseManagementServiceTest {
     private final ObjectMapper mapper = new ObjectMapper().registerModule(new JavaTimeModule());
 
@@ -64,9 +58,6 @@ class CaseManagementServiceTest {
 
     @Mock
     private AppsConfig.AppsDetails cicAppDetail;
-
-    @Mock
-    private AppsUtil appsUtil;
 
     @Mock
     CaseApiService caseApiService;
@@ -130,7 +121,7 @@ class CaseManagementServiceTest {
         final CaseData caseData = mapper.readValue(caseDataJson, CaseData.class);
         final DssCaseData dssCaseData = DssCaseData.builder().caseTypeOfApplication(CASE_DATA_CIC_ID).build();
 
-        when(appsUtil.isValidCaseTypeOfApplication(appsConfig,dssCaseData))
+        when(AppsUtil.isValidCaseTypeOfApplication(appsConfig,dssCaseData))
             .thenThrow(new CaseCreateOrUpdateException("Invalid Case type application. Please check the request."));
 
         final CaseCreateOrUpdateException caseCreateOrUpdateException =
@@ -273,7 +264,7 @@ class CaseManagementServiceTest {
         final CaseData caseData = mapper.readValue(caseDataJson, CaseData.class);
         final DssCaseData dssCaseData = DssCaseData.builder().caseTypeOfApplication(CASE_DATA_CIC_ID).build();
 
-        when(appsUtil.isValidCaseTypeOfApplication(appsConfig,dssCaseData))
+        when(AppsUtil.isValidCaseTypeOfApplication(appsConfig,dssCaseData))
             .thenThrow(new CaseCreateOrUpdateException("Invalid Case type application. Please check the request."));
 
         final CaseCreateOrUpdateException caseCreateOrUpdateException =

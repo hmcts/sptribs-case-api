@@ -6,11 +6,13 @@ import uk.gov.hmcts.sptribs.caseworker.model.ContactParties;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.NotificationParties;
 
+import java.util.List;
 import java.util.Set;
 
 import static java.lang.String.format;
 
 public final class MessageUtil {
+
     private static final String REPRESENTATIVE = "Representative";
     private static final String RESPONDENT = "Respondent";
     private static final String SUBJECT = "Subject";
@@ -95,6 +97,15 @@ public final class MessageUtil {
         if (!CollectionUtils.isEmpty(contactParties.getTribunal())) {
             message.append(TRIBUNAL + COMMA_SPACE);
         }
+
+        return message.substring(0, message.length() - 2);
+    }
+
+    public static String generateSimpleErrorMessage(final List<String> errors) {
+        final StringBuilder message = new StringBuilder(100);
+
+        message.append("A notification could not be sent to: ");
+        errors.forEach(e -> message.append(e).append(COMMA_SPACE));
 
         return message.substring(0, message.length() - 2);
     }

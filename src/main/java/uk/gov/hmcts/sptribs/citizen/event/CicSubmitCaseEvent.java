@@ -4,13 +4,16 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ObjectUtils;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
+import uk.gov.hmcts.ccd.sdk.api.Event;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.ccd.sdk.type.Document;
+import uk.gov.hmcts.ccd.sdk.type.Flags;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.reform.idam.client.models.User;
@@ -43,6 +46,7 @@ import java.util.UUID;
 
 import static java.lang.String.format;
 import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
+import static org.apache.commons.lang.StringUtils.isNotBlank;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.DSS_Draft;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.DSS_Submitted;
@@ -54,6 +58,7 @@ import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_HEARING_CENTRE_
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_JUDGE;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_CASEWORKER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_JUDGE;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_WA_CONFIG_USER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SYSTEM_UPDATE;
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE;
@@ -64,41 +69,50 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 @Setter
 public class CicSubmitCaseEvent implements CCDConfig<CaseData, State, UserRole> {
 
-    @Autowired
     private HttpServletRequest request;
-
-    @Autowired
     private IdamService idamService;
-
-    @Autowired
     private AppsConfig appsConfig;
+    private DssApplicationReceivedNotification dssApplicationReceivedNotification;
+
+    @Value("${feature.wa.enabled}")
+    private boolean isWorkAllocationEnabled;
 
     @Autowired
-    private DssApplicationReceivedNotification dssApplicationReceivedNotification;
+    public CicSubmitCaseEvent(HttpServletRequest request, IdamService idamService, AppsConfig appsConfig,
+                              DssApplicationReceivedNotification dssApplicationReceivedNotification) {
+        this.request = request;
+        this.idamService = idamService;
+        this.appsConfig = appsConfig;
+        this.dssApplicationReceivedNotification = dssApplicationReceivedNotification;
+    }
 
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
-        configBuilder
-            .event(AppsUtil.getExactAppsDetailsByCaseType(appsConfig, CcdCaseType.CIC.getCaseTypeName()).getEventIds()
-                .getSubmitEvent())
-            .forStateTransition(DSS_Draft, DSS_Submitted)
-            .name("Submit case (cic)")
-            .description("Application submit (cic)")
-            .retries(120, 120)
-            .grant(CREATE_READ_UPDATE_DELETE, CITIZEN)
-            .grant(CREATE_READ_UPDATE, SYSTEM_UPDATE, CREATOR)
-            .grantHistoryOnly(
-                ST_CIC_CASEWORKER,
-                ST_CIC_SENIOR_CASEWORKER,
-                ST_CIC_HEARING_CENTRE_ADMIN,
-                ST_CIC_HEARING_CENTRE_TEAM_LEADER,
-                ST_CIC_SENIOR_JUDGE,
-                SUPER_USER,
-                ST_CIC_JUDGE,
-                CITIZEN,
-                CREATOR)
-            .aboutToSubmitCallback(this::aboutToSubmit)
-            .submittedCallback(this::submitted);
+        Event.EventBuilder<CaseData, UserRole, State> eventBuilder =
+            configBuilder
+                .event(AppsUtil.getExactAppsDetailsByCaseType(appsConfig, CcdCaseType.CIC.getCaseTypeName()).getEventIds()
+                    .getSubmitEvent())
+                .forStateTransition(DSS_Draft, DSS_Submitted)
+                .name("Submit case (cic)")
+                .description("Application submit (cic)")
+                .retries(120, 120)
+                .grant(CREATE_READ_UPDATE_DELETE, CITIZEN)
+                .grant(CREATE_READ_UPDATE, SYSTEM_UPDATE, CREATOR)
+                .grantHistoryOnly(
+                    ST_CIC_CASEWORKER,
+                    ST_CIC_SENIOR_CASEWORKER,
+                    ST_CIC_HEARING_CENTRE_ADMIN,
+                    ST_CIC_HEARING_CENTRE_TEAM_LEADER,
+                    ST_CIC_SENIOR_JUDGE,
+                    SUPER_USER,
+                    ST_CIC_JUDGE)
+                .aboutToSubmitCallback(this::aboutToSubmit)
+                .submittedCallback(this::submitted);
+
+        if (isWorkAllocationEnabled) {
+            eventBuilder.publishToCamunda()
+                        .grant(CREATE_READ_UPDATE, ST_CIC_WA_CONFIG_USER);
+        }
     }
 
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(CaseDetails<CaseData, State> details,
@@ -181,6 +195,16 @@ public class CicSubmitCaseEvent implements CCDConfig<CaseData, State, UserRole> 
         caseData.getCicCase().setDateOfBirth(dssCaseData.getSubjectDateOfBirth());
         caseData.getCicCase().setEmail(dssCaseData.getSubjectEmailAddress());
         caseData.getCicCase().setPhoneNumber(dssCaseData.getSubjectContactNumber());
+        caseData.setCaseNameHmctsInternal(dssCaseData.getSubjectFullName());
+        caseData.setCaseFlags(Flags.builder()
+            .details(new ArrayList<>())
+            .build());
+        caseData.setSubjectFlags(Flags.builder()
+            .details(new ArrayList<>())
+            .partyName(dssCaseData.getSubjectFullName())
+            .roleOnCase("subject")
+            .build()
+        );
 
         final Set<PartiesCIC> setParty = new HashSet<>();
         setParty.add(PartiesCIC.SUBJECT);
@@ -202,44 +226,51 @@ public class CicSubmitCaseEvent implements CCDConfig<CaseData, State, UserRole> 
             setRep.add(RepresentativeCIC.REPRESENTATIVE);
             caseData.getCicCase().setRepresentativeCIC(setRep);
             caseData.getCicCase().setRepresentativeContactDetailsPreference(ContactPreferenceType.EMAIL);
+            caseData.setRepresentativeFlags(Flags.builder()
+                .details(new ArrayList<>())
+                .partyName(dssCaseData.getRepresentativeFullName())
+                .roleOnCase("Representative")
+                .build()
+            );
         }
 
         List<CaseworkerCICDocument> docList = new ArrayList<>();
-        List<ListValue<DssMessage>> listValues = new ArrayList<>();
 
         if (isNotEmpty(dssCaseData.getOtherInfoDocuments())) {
-            //For showing additional information page data on tab
             for (ListValue<EdgeCaseDocument> documentListValue : dssCaseData.getOtherInfoDocuments()) {
                 Document doc = documentListValue.getValue().getDocumentLink();
+                String documentComment = documentListValue.getValue().getComment();
                 doc.setCategoryId(DocumentType.DSS_OTHER.getCategory());
                 CaseworkerCICDocument caseworkerCICDocument = CaseworkerCICDocument.builder()
                     .documentLink(doc)
                     .documentCategory(DocumentType.DSS_OTHER)
+                    .documentEmailContent(documentComment)
+                    .date(LocalDate.now())
                     .build();
 
                 if (!docList.contains(caseworkerCICDocument)) {
                     docList.add(caseworkerCICDocument);
                 }
-
-                final User caseworkerUser = idamService.retrieveUser(request.getHeader(AUTHORIZATION));
-
-                final DssMessage message = DssMessage.builder()
-                    .message(dssCaseData.getAdditionalInformation())
-                    .dateReceived(LocalDate.now())
-                    .receivedFrom(caseworkerUser.getUserDetails().getFullName())
-                    .documentRelevance(dssCaseData.getDocumentRelevance())
-                    .build();
-
-                final ListValue<DssMessage> listValue = ListValue
-                    .<DssMessage>builder()
-                    .id(UUID.randomUUID().toString())
-                    .value(message)
-                    .build();
-
-                listValues.add(listValue);
             }
         }
-        caseData.setMessages(listValues);
+
+        if (isNotBlank(dssCaseData.getAdditionalInformation())) {
+            final User caseworkerUser = idamService.retrieveUser(request.getHeader(AUTHORIZATION));
+            final DssMessage message = DssMessage.builder()
+                .message(dssCaseData.getAdditionalInformation())
+                .dateReceived(LocalDate.now())
+                .receivedFrom(caseworkerUser.getUserDetails().getFullName())
+                .build();
+
+            final ListValue<DssMessage> listValue = ListValue
+                .<DssMessage>builder()
+                .id(UUID.randomUUID().toString())
+                .value(message)
+                .build();
+            List<ListValue<DssMessage>> messagesList = new ArrayList<>();
+            messagesList.add(listValue);
+            caseData.setMessages(messagesList);
+        }
 
         if (isNotEmpty(dssCaseData.getSupportingDocuments())) {
             for (ListValue<EdgeCaseDocument> documentListValue : dssCaseData.getSupportingDocuments()) {
@@ -248,6 +279,7 @@ public class CicSubmitCaseEvent implements CCDConfig<CaseData, State, UserRole> 
                 CaseworkerCICDocument caseworkerCICDocument = CaseworkerCICDocument.builder()
                     .documentLink(doc)
                     .documentCategory(DocumentType.DSS_SUPPORTING)
+                    .date(LocalDate.now())
                     .build();
                 if (!docList.contains(caseworkerCICDocument)) {
                     docList.add(caseworkerCICDocument);
@@ -262,6 +294,7 @@ public class CicSubmitCaseEvent implements CCDConfig<CaseData, State, UserRole> 
                 CaseworkerCICDocument caseworkerCICDocument = CaseworkerCICDocument.builder()
                     .documentLink(doc)
                     .documentCategory(DocumentType.DSS_TRIBUNAL_FORM)
+                    .date(LocalDate.now())
                     .build();
                 if (!docList.contains(caseworkerCICDocument)) {
                     docList.add(caseworkerCICDocument);
@@ -276,5 +309,4 @@ public class CicSubmitCaseEvent implements CCDConfig<CaseData, State, UserRole> 
         caseData.setDssCaseData(dssCaseData);
         return caseData;
     }
-
 }

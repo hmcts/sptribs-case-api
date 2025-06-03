@@ -1,0 +1,75 @@
+{
+  "data": {
+    "cicCaseHearingList": {
+      "value": {
+        "code": "18b88d33-9da8-4ee0-946d-de71d33e4d6f",
+        "label": "Case management - 10 May 2024 09:00"
+      },
+      "list_items": [
+        {
+          "code": "18b88d33-9da8-4ee0-946d-de71d33e4d6f",
+          "label": "Case management - 10 May 2024 09:00"
+        }
+      ],
+      "valueCode": "18b88d33-9da8-4ee0-946d-de71d33e4d6f",
+      "valueLabel": "Case management - 10 May 2024 09:00"
+    },
+    "cicCaseRespondentName": "Appeals team",
+    "cicCaseRespondentOrganisation": "CICA",
+    "cicCaseRespondentEmail": "appeals.team@cica.gov.uk",
+    "hearingStatus": "Complete",
+    "recFile": [],
+    "recFileUpload": [],
+    "hearingList": [
+      {
+        "id": "${json-unit.any-string}",
+        "value": {
+          "hearingStatus": "Complete",
+          "recFile": [
+            {
+              "id": "${json-unit.any-string}",
+              "value": {
+                "documentCategory": "DSS Tribunal form uploaded documents",
+                "documentEmailContent": "a relevant doc",
+                "documentLink": {
+                  "document_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/4ee1bc04-47a9-48da-9370-9f6b9c54ccaa",
+                  "document_filename": "mockFile.mp3",
+                  "document_binary_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/4ee1bc04-47a9-48da-9370-9f6b9c54ccaa/binary",
+                  "category_id": "DSS"
+                }
+              }
+            },
+            {
+              "id": "${json-unit.any-string}",
+              "value": {
+                "documentCategory": "DSS Supporting uploaded documents",
+                "documentEmailContent": "a relevant doc",
+                "documentLink": {
+                  "document_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/9d046706-8fa5-4c24-968d-f0aa30a9ceb8",
+                  "document_filename": "mockFile.mp3",
+                  "document_binary_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/9d046706-8fa5-4c24-968d-f0aa30a9ceb8/binary",
+                  "category_id": "DSS"
+                }
+              }
+            },
+            {
+              "id": "${json-unit.any-string}",
+              "value": {
+                "documentCategory": "DSS Other information documents",
+                "documentEmailContent": "a relevant doc updated by event",
+                "documentLink": {
+                  "document_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/8509dc97-a8f9-4359-ad48-f9285f31d038",
+                  "document_filename": "mockFileUpdatedByEvent.mp3",
+                  "document_binary_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/8509dc97-a8f9-4359-ad48-f9285f31d038/binary",
+                  "category_id": "DSS"
+                }
+              }
+            }
+          ],
+          "recFileUpload": []
+        }
+      }
+    ]
+  },
+  "state": "AwaitingOutcome"
+}

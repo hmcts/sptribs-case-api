@@ -1,0 +1,13 @@
+{
+  "data": {
+    "cicCaseHearingList": {
+      "list_items": [
+        {
+          "code": "${json-unit.any-string}",
+          "label": "${json-unit.any-string}"
+        }
+      ]
+    },
+    "currentEvent": "caseworker-postpone-hearing"
+  }
+}

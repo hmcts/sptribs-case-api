@@ -3,10 +3,12 @@ package uk.gov.hmcts.sptribs.caseworker.event;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
+import uk.gov.hmcts.ccd.sdk.api.Event;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.ccd.sdk.type.DynamicList;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
@@ -17,11 +19,12 @@ import uk.gov.hmcts.sptribs.caseworker.helper.RecordListHelper;
 import uk.gov.hmcts.sptribs.caseworker.service.HearingService;
 import uk.gov.hmcts.sptribs.caseworker.util.MessageUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
-import uk.gov.hmcts.sptribs.common.notification.HearingPostponedNotification;
+import uk.gov.hmcts.sptribs.notification.dispatcher.HearingPostponedNotification;
 
 import java.time.LocalDate;
 
@@ -36,6 +39,7 @@ import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_HEARING_CENTRE_
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_JUDGE;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_CASEWORKER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_JUDGE;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_WA_CONFIG_USER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE;
 
@@ -53,6 +57,9 @@ public class CaseworkerPostponeHearing implements CCDConfig<CaseData, State, Use
 
     private final HearingPostponedNotification hearingPostponedNotification;
 
+    @Value("${feature.wa.enabled}")
+    private boolean isWorkAllocationEnabled;
+
     @Autowired
     public CaseworkerPostponeHearing(HearingService hearingService,
                                      RecordListHelper recordListHelper,
@@ -64,7 +71,7 @@ public class CaseworkerPostponeHearing implements CCDConfig<CaseData, State, Use
 
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
-        PageBuilder pageBuilder = new PageBuilder(
+        Event.EventBuilder<CaseData, UserRole, State> eventBuilder =
             configBuilder
                 .event(CASEWORKER_POSTPONE_HEARING)
                 .forStates(AwaitingHearing)
@@ -76,14 +83,13 @@ public class CaseworkerPostponeHearing implements CCDConfig<CaseData, State, Use
                 .grant(CREATE_READ_UPDATE, SUPER_USER,
                     ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER, ST_CIC_HEARING_CENTRE_ADMIN,
                     ST_CIC_HEARING_CENTRE_TEAM_LEADER, ST_CIC_SENIOR_JUDGE)
-                .grantHistoryOnly(
-                    ST_CIC_CASEWORKER,
-                    ST_CIC_SENIOR_CASEWORKER,
-                    ST_CIC_HEARING_CENTRE_ADMIN,
-                    ST_CIC_HEARING_CENTRE_TEAM_LEADER,
-                    ST_CIC_SENIOR_JUDGE,
-                    SUPER_USER,
-                    ST_CIC_JUDGE));
+                .grantHistoryOnly(ST_CIC_JUDGE);
+
+        if (isWorkAllocationEnabled) {
+            eventBuilder.publishToCamunda()
+                        .grant(CREATE_READ_UPDATE, ST_CIC_WA_CONFIG_USER);
+        }
+        PageBuilder pageBuilder = new PageBuilder(eventBuilder);
         selectHearing.addTo(pageBuilder);
         selectReason.addTo(pageBuilder);
         notifyParties.addTo(pageBuilder);
@@ -102,7 +108,6 @@ public class CaseworkerPostponeHearing implements CCDConfig<CaseData, State, Use
 
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(CaseDetails<CaseData, State> details,
                                                                        CaseDetails<CaseData, State> beforeDetails) {
-        log.info("Caseworker postpone hearing callback invoked for Case Id: {}", details.getId());
 
         final CaseData caseData = details.getData();
 
@@ -110,7 +115,11 @@ public class CaseworkerPostponeHearing implements CCDConfig<CaseData, State, Use
         caseData.setCurrentEvent("");
         caseData.getListing().setHearingStatus(Postponed);
         caseData.getListing().setPostponeDate(LocalDate.now());
-        hearingService.updateHearingList(caseData);
+
+        final String hearingName = caseData.getCicCase().getHearingList().getValue().getLabel();
+
+        hearingService.updateHearingList(caseData, hearingName);
+
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
             .state(CaseManagement)
@@ -135,16 +144,17 @@ public class CaseworkerPostponeHearing implements CCDConfig<CaseData, State, Use
     }
 
     private void sendHearingPostponedNotification(String caseNumber, CaseData caseData) {
+        CicCase cicCase = caseData.getCicCase();
 
-        if (CollectionUtils.isNotEmpty(caseData.getCicCase().getNotifyPartySubject())) {
+        if (CollectionUtils.isNotEmpty(cicCase.getNotifyPartySubject())) {
             hearingPostponedNotification.sendToSubject(caseData, caseNumber);
         }
 
-        if (CollectionUtils.isNotEmpty(caseData.getCicCase().getNotifyPartyRepresentative())) {
+        if (CollectionUtils.isNotEmpty(cicCase.getNotifyPartyRepresentative())) {
             hearingPostponedNotification.sendToRepresentative(caseData, caseNumber);
         }
 
-        if (CollectionUtils.isNotEmpty(caseData.getCicCase().getNotifyPartyRespondent())) {
+        if (CollectionUtils.isNotEmpty(cicCase.getNotifyPartyRespondent())) {
             hearingPostponedNotification.sendToRespondent(caseData, caseNumber);
         }
     }

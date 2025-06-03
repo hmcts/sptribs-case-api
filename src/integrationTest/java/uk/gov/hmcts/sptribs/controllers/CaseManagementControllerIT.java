@@ -9,9 +9,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
@@ -42,6 +42,7 @@ import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CITIZEN_CIC_SU
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CITIZEN_CIC_UPDATE_CASE;
 import static uk.gov.hmcts.sptribs.constants.CommonConstants.ST_CIC_CASE_TYPE;
 import static uk.gov.hmcts.sptribs.constants.CommonConstants.ST_CIC_JURISDICTION;
+import static uk.gov.hmcts.sptribs.controllers.model.DssCaseDataRequest.convertDssCaseDataToRequest;
 import static uk.gov.hmcts.sptribs.testutil.IdamWireMock.ST_CIC_CASEWORKER;
 import static uk.gov.hmcts.sptribs.testutil.IdamWireMock.stubForIdamDetails;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.AUTHORIZATION;
@@ -58,7 +59,7 @@ import static uk.gov.hmcts.sptribs.testutil.TestResourceUtil.expectedResponse;
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class CaseManagementControllerIT {
 
-    private static final String CCD_CASE_RESPONSE = "classpath:citizen-create-case-response.json";
+    private static final String CCD_CASE_RESPONSE = "classpath:responses/citizen-create-case-response.json";
 
     private static final String CREATE_URL = "/case/dss-orchestration/create";
     private static final String UPDATE_URL = "/case/dss-orchestration/1616591401473378/update";
@@ -77,13 +78,13 @@ public class CaseManagementControllerIT {
     @Autowired
     private ObjectMapper objectMapper;
 
-    @MockBean
+    @MockitoBean
     private WebMvcConfig webMvcConfig;
 
-    @MockBean
+    @MockitoBean
     private AuthTokenGenerator authTokenGenerator;
 
-    @MockBean
+    @MockitoBean
     private CoreCaseDataApi coreCaseDataApi;
 
     @BeforeAll
@@ -220,7 +221,7 @@ public class CaseManagementControllerIT {
             .build();
 
         final CaseDataContent caseDataContent = CaseDataContent.builder()
-            .data(caseData)
+            .data(convertDssCaseDataToRequest(caseData.getDssCaseData()))
             .event(uk.gov.hmcts.reform.ccd.client.model.Event.builder()
                 .id(CITIZEN_CIC_UPDATE_CASE)
                 .build()
@@ -319,7 +320,7 @@ public class CaseManagementControllerIT {
             .build();
 
         final CaseDataContent caseDataContent = CaseDataContent.builder()
-            .data(caseData)
+            .data(convertDssCaseDataToRequest(caseData.getDssCaseData()))
             .event(uk.gov.hmcts.reform.ccd.client.model.Event.builder()
                 .id(CITIZEN_CIC_SUBMIT_CASE)
                 .build()

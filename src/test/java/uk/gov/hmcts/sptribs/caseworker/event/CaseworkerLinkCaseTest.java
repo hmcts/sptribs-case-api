@@ -16,14 +16,16 @@ import uk.gov.hmcts.sptribs.ciccase.model.RepresentativeCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.SubjectCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
-import uk.gov.hmcts.sptribs.common.notification.CaseLinkedNotification;
+import uk.gov.hmcts.sptribs.notification.dispatcher.CaseLinkedNotification;
 
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doThrow;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigBuilder;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.getEventsFrom;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID;
@@ -42,30 +44,13 @@ class CaseworkerLinkCaseTest {
     @Test
     void shouldAddConfigurationToConfigBuilder() {
         //Given
-        caseWorkerLinkCase.setLinkCaseEnabled(true);
         final ConfigBuilderImpl<CaseData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
-
         //When
         caseWorkerLinkCase.configure(configBuilder);
-
         //Then
         assertThat(getEventsFrom(configBuilder).values())
             .extracting(Event::getId)
             .contains(CASEWORKER_LINK_CASE);
-    }
-
-    @Test
-    void shouldNotConfigureLinkCaseIfFeatureFlagFalse() {
-        //Given
-        final ConfigBuilderImpl<CaseData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
-
-        //When
-        caseWorkerLinkCase.configure(configBuilder);
-
-        //Then
-        assertThat(getEventsFrom(configBuilder).values())
-            .extracting(Event::getId)
-            .doesNotContain(CASEWORKER_LINK_CASE);
     }
 
     @Test
@@ -82,19 +67,35 @@ class CaseworkerLinkCaseTest {
         updatedCaseDetails.setData(caseData);
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
-
         //When
         doNothing().when(caseLinkedNotification).sendToSubject(any(CaseData.class), eq(null));
         doNothing().when(caseLinkedNotification).sendToApplicant(any(CaseData.class), eq(null));
         doNothing().when(caseLinkedNotification).sendToRepresentative(any(CaseData.class), eq(null));
-
         SubmittedCallbackResponse response =
             caseWorkerLinkCase.submitted(updatedCaseDetails, beforeDetails);
-
         //Then
         assertThat(response).isNotNull();
         assertThat(response.getConfirmationHeader()).contains("Case Link created");
-
     }
 
+    @Test
+    void shouldHandleNotificationFailureGracefully() {
+        // Given
+        final CaseData caseData = caseData();
+        CicCase cicCase = new CicCase();
+        cicCase.setSubjectCIC(Set.of(SubjectCIC.SUBJECT));
+        caseData.setCicCase(cicCase);
+        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
+        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        updatedCaseDetails.setData(caseData);
+        updatedCaseDetails.setId(TEST_CASE_ID);
+        updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
+        // When
+        doThrow(new RuntimeException("Notification error")).when(caseLinkedNotification).sendToSubject(any(CaseData.class), anyString());
+        SubmittedCallbackResponse response = caseWorkerLinkCase.submitted(updatedCaseDetails, beforeDetails);
+        // Then
+        assertThat(response).isNotNull();
+        assertThat(response.getConfirmationHeader()).contains("Case Link notification failed");
+        assertThat(response.getConfirmationHeader()).contains("Please resend the notification");
+    }
 }

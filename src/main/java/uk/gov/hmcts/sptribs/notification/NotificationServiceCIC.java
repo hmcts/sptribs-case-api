@@ -53,12 +53,12 @@ public class NotificationServiceCIC {
     @Autowired
     private final DocumentClient caseDocumentClient;
 
-    public NotificationServiceCIC(
-        NotificationClient notificationClient,
-        EmailTemplatesConfigCIC emailTemplatesConfig,
-        IdamService idamService, HttpServletRequest request,
-        AuthTokenGenerator authTokenGenerator,
-        DocumentClient caseDocumentClient) {
+    public NotificationServiceCIC(NotificationClient notificationClient,
+                                  EmailTemplatesConfigCIC emailTemplatesConfig,
+                                  IdamService idamService, HttpServletRequest request,
+                                  AuthTokenGenerator authTokenGenerator,
+                                  DocumentClient caseDocumentClient) {
+
         this.notificationClient = notificationClient;
         this.emailTemplatesConfig = emailTemplatesConfig;
         this.idamService = idamService;
@@ -82,8 +82,6 @@ public class NotificationServiceCIC {
 
             String templateId = emailTemplatesConfig.getTemplatesCIC().get(template.name());
 
-            log.info("Sending email for reference id : {} using template : {}", referenceId, templateId);
-
             sendEmailResponse =
                 notificationClient.sendEmail(
                     templateId,
@@ -92,7 +90,7 @@ public class NotificationServiceCIC {
                     referenceId
                 );
 
-            log.info("Successfully sent email with notification id {} and reference {}",
+            log.debug("Successfully sent email with notification id {} and reference {}",
                 sendEmailResponse.getNotificationId(),
                 sendEmailResponse.getReference().orElse(referenceId)
             );
@@ -124,8 +122,6 @@ public class NotificationServiceCIC {
         try {
             final String templateId = emailTemplatesConfig.getTemplatesCIC().get(template.name());
 
-            log.info("Sending letter for reference id : {} using template : {}", referenceId, templateId);
-
             SendLetterResponse sendLetterResponse =
                 notificationClient.sendLetter(
                     templateId,
@@ -133,7 +129,7 @@ public class NotificationServiceCIC {
                     referenceId
                 );
 
-            log.info("Successfully sent letter with notification id {} and reference {}",
+            log.debug("Successfully sent letter with notification id {} and reference {}",
                 sendLetterResponse.getNotificationId(),
                 sendLetterResponse.getReference().orElse(referenceId)
             );
@@ -169,7 +165,7 @@ public class NotificationServiceCIC {
                         .getDocumentBinary(authorisation, serviceAuthorizationLatest, UUID.fromString(item)).getBody();
 
                     if (uploadedDocument != null) {
-                        log.info("Document available for: {}", docName);
+                        log.debug("Document available for: {}", docName);
                         templateVars.put(docName, getJsonFileAttachment(uploadedDocument));
                     } else {
                         templateVars.put(docName, "");

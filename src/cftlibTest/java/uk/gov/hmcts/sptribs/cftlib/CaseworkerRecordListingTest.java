@@ -10,6 +10,7 @@ import uk.gov.hmcts.sptribs.cftlib.util.Login;
 import uk.gov.hmcts.sptribs.cftlib.util.PlaywrightHelpers;
 
 public class CaseworkerRecordListingTest extends XuiTest {
+
     @Disabled
     @RetryingTest(maxAttempts = PlaywrightHelpers.RETRIES)
     public void caseworkerShouldAbleToRecordListing() {
@@ -24,6 +25,5 @@ public class CaseworkerRecordListingTest extends XuiTest {
         Hearing hearing = new Hearing(page);
         hearing.createListing();
         Assertions.assertEquals("Awaiting hearing", newCase.getCaseStatus());
-
     }
 }

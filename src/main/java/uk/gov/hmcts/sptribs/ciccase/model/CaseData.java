@@ -14,14 +14,17 @@ import org.springframework.util.ObjectUtils;
 import uk.gov.hmcts.ccd.sdk.api.CCD;
 import uk.gov.hmcts.ccd.sdk.type.CaseLink;
 import uk.gov.hmcts.ccd.sdk.type.ComponentLauncher;
+import uk.gov.hmcts.ccd.sdk.type.DynamicList;
 import uk.gov.hmcts.ccd.sdk.type.FlagLauncher;
 import uk.gov.hmcts.ccd.sdk.type.Flags;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
+import uk.gov.hmcts.ccd.sdk.type.SearchCriteria;
 import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseBuilt;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseIssue;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseIssueDecision;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseIssueFinalDecision;
+import uk.gov.hmcts.sptribs.caseworker.model.CaseManagementLocation;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseNote;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseStay;
 import uk.gov.hmcts.sptribs.caseworker.model.CloseCase;
@@ -35,14 +38,17 @@ import uk.gov.hmcts.sptribs.caseworker.model.ReferToJudge;
 import uk.gov.hmcts.sptribs.caseworker.model.ReferToLegalOfficer;
 import uk.gov.hmcts.sptribs.caseworker.model.RemoveCaseStay;
 import uk.gov.hmcts.sptribs.caseworker.model.SecurityClass;
+import uk.gov.hmcts.sptribs.caseworker.model.YesNo;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseFlagsAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseLinksDefaultAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerAndSuperUserAccess;
+import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerRASValidationAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerWithCAAAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CitizenAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.DSSUpdateAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.DefaultAccess;
+import uk.gov.hmcts.sptribs.ciccase.model.access.GlobalSearchAccess;
 import uk.gov.hmcts.sptribs.document.bundling.model.Bundle;
 import uk.gov.hmcts.sptribs.document.bundling.model.MultiBundleConfig;
 import uk.gov.hmcts.sptribs.document.model.AbstractCaseworkerCICDocument;
@@ -91,9 +97,29 @@ public class CaseData {
 
     @CCD(
         label = "Case name Hmcts Internal",
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class, GlobalSearchAccess.class}
     )
     private String caseNameHmctsInternal;
+
+    @CCD(
+        label = "Search Criteria",
+        access = {GlobalSearchAccess.class}
+    )
+    @SuppressWarnings("MemberName") // Field name is case-sensitive in CCD
+    private SearchCriteria SearchCriteria;
+
+    @CCD(
+        label = "Case Location",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class, CitizenAccess.class,
+            GlobalSearchAccess.class, CaseworkerRASValidationAccess.class}
+    )
+    private CaseManagementLocation caseManagementLocation;
+
+    @CCD(
+        label = "Case Management Category",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class, CitizenAccess.class, GlobalSearchAccess.class}
+    )
+    private DynamicList caseManagementCategory;
 
     @CCD(access = {DefaultAccess.class, CaseFlagsAccess.class},
         label = "Case Flags")
@@ -131,14 +157,12 @@ public class CaseData {
     )
     private EditCicaCaseDetails editCicaCaseDetails = new EditCicaCaseDetails();
 
-
     @JsonUnwrapped(prefix = "orderContent")
     @Builder.Default
     @CCD(
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private DraftOrderContentCIC draftOrderContentCIC = new DraftOrderContentCIC();
-
 
     @Builder.Default
     @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
@@ -340,7 +364,6 @@ public class CaseData {
     )
     private List<ListValue<DssMessage>> messages;
 
-
     @JsonUnwrapped(prefix = "issueCase")
     @Builder.Default
     @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
@@ -360,7 +383,6 @@ public class CaseData {
     @Builder.Default
     @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
     private CaseIssueFinalDecision caseIssueFinalDecision = new CaseIssueFinalDecision();
-
 
     @JsonUnwrapped(prefix = "close")
     @Builder.Default
@@ -424,7 +446,6 @@ public class CaseData {
     )
     private String dssAnswer3;
 
-
     @CCD(
         label = "Uploaded DSS Documents",
         typeOverride = Collection,
@@ -451,6 +472,12 @@ public class CaseData {
 
     @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
     private String judicialId;
+
+    @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
+    private YesNo stitchHearingBundleTask;
+
+    @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
+    private YesNo completeHearingOutcomeTask;
 
     @CCD(access = {DefaultAccess.class})
     @JsonUnwrapped

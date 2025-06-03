@@ -1,0 +1,111 @@
+{
+  "data": {
+    "cicCaseHearingNotificationParties": [
+      "Respondent",
+      "Subject"
+    ],
+    "cicCaseNotifyPartySubject": [
+      "SubjectCIC"
+    ],
+    "cicCaseNotifyPartyRespondent": [
+      "RespondentCIC"
+    ],
+    "stayIsCaseStayed": "No",
+    "hearingCreatedDate": "${json-unit.any-string}",
+    "hearingStatus": "Listed",
+    "hearingType": "CaseManagement",
+    "hearingFormat": "Face to Face",
+    "hearingVenueNameAndAddress": "East London Tribunal Hearing Centre-2 Clove Crescent, East India Dock London",
+    "readOnlyHearingVenueName": "East London Tribunal Hearing Centre",
+    "date": "2000-01-01",
+    "hearingTime": "09:00",
+    "session": "morning",
+    "numberOfDays": "No",
+    "memberList": [],
+    "recFile": [],
+    "hearingList": [
+      {
+        "id": "1",
+        "value": {
+          "hearingCreatedDate": "2024-06-06",
+          "hearingStatus": "Listed",
+          "hearingType": "CaseManagement",
+          "hearingFormat": "Face to Face",
+          "hearingVenues": {
+            "value": {
+              "code": "${json-unit.any-string}",
+              "label": "East London Tribunal Hearing Centre-2 Clove Crescent, East India Dock London"
+            },
+            "list_items": [
+              {
+                "code": "${json-unit.any-string}",
+                "label": "East London Tribunal Hearing Centre-2 Clove Crescent, East India Dock London"
+              },
+              {
+                "code": "${json-unit.any-string}",
+                "label": "Fox Court - London (Central) SSCS Tribunal-4th Floor, Fox Court, 30 Brooke Street, London"
+              }
+            ],
+            "valueLabel": "East London Tribunal Hearing Centre-2 Clove Crescent, East India Dock London",
+            "valueCode": "${json-unit.any-string}"
+          },
+          "regionList": {
+            "value": {
+              "code": "${json-unit.any-string}",
+              "label": "1-London"
+            },
+            "list_items": [
+              {
+                "code": "${json-unit.any-string}",
+                "label": "1-London"
+              },
+              {
+                "code": "${json-unit.any-string}",
+                "label": "11-Scotland"
+              },
+              {
+                "code": "${json-unit.any-string}",
+                "label": "2-Midlands"
+              },
+              {
+                "code": "${json-unit.any-string}",
+                "label": "3-North East"
+              },
+              {
+                "code": "${json-unit.any-string}",
+                "label": "4-North West"
+              },
+              {
+                "code": "${json-unit.any-string}",
+                "label": "5-South East"
+              },
+              {
+                "code": "${json-unit.any-string}",
+                "label": "6-South West"
+              },
+              {
+                "code": "${json-unit.any-string}",
+                "label": "7-Wales"
+              }
+            ],
+            "valueLabel": "1-London",
+            "valueCode": "${json-unit.any-string}"
+          },
+          "venueNotListedOption": [],
+          "hearingVenueNameAndAddress": "East London Tribunal Hearing Centre-2 Clove Crescent, East India Dock London",
+          "readOnlyHearingVenueName": "East London Tribunal Hearing Centre",
+          "date": "2000-01-01",
+          "hearingTime": "09:00",
+          "session": "morning",
+          "numberOfDays": "No",
+          "memberList": [],
+          "recFile": []
+        }
+      }
+    ],
+    "currentEvent": "",
+    "firstHearingDate": "01 Jan 2000",
+    "hearingVenueName": "East London Tribunal Hearing Centre-2 Clove Crescent, East India Dock London"
+  },
+  "state": "AwaitingHearing"
+}

@@ -8,7 +8,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
-import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
+import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocumentUpload;
 
 import java.util.List;
 
@@ -16,7 +16,7 @@ import static uk.gov.hmcts.sptribs.document.DocumentUtil.validateCaseworkerCICDo
 
 public class UploadCaseDocuments implements CcdPageConfiguration {
 
-    private static final String ALWAYS_HIDE = "newCaseworkerCICDocument=\"NEVER_SHOW\"";
+    private static final String ALWAYS_HIDE = "newCaseworkerCICDocumentUpload=\"NEVER_SHOW\"";
 
     @Override
     public void addTo(PageBuilder pageBuilder) {
@@ -38,10 +38,10 @@ public class UploadCaseDocuments implements CcdPageConfiguration {
                  """
             )
             .complex(CaseData::getNewDocManagement)
-            .mandatory(DocumentManagement::getCaseworkerCICDocument)
+            .mandatory(DocumentManagement::getCaseworkerCICDocumentUpload)
             .done()
             .complex(CaseData::getAllDocManagement)
-            .readonly(DocumentManagement::getCaseworkerCICDocument, ALWAYS_HIDE)
+            .readonly(DocumentManagement::getCaseworkerCICDocumentUpload, ALWAYS_HIDE)
             .done();
     }
 
@@ -49,7 +49,7 @@ public class UploadCaseDocuments implements CcdPageConfiguration {
                                                                   CaseDetails<CaseData, State> detailsBefore) {
         final CaseData data = details.getData();
 
-        List<ListValue<CaseworkerCICDocument>> uploadedDocuments = data.getNewDocManagement().getCaseworkerCICDocument();
+        List<ListValue<CaseworkerCICDocumentUpload>> uploadedDocuments = data.getNewDocManagement().getCaseworkerCICDocumentUpload();
         List<String> errors = validateCaseworkerCICDocumentFormat(uploadedDocuments);
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()

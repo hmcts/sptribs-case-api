@@ -4,6 +4,7 @@ import org.apache.commons.lang.ArrayUtils;
 import org.springframework.util.ObjectUtils;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
+import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.ccd.sdk.type.DynamicList;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.sptribs.caseworker.util.DocumentListUtil;
@@ -13,8 +14,8 @@ import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
+import uk.gov.hmcts.sptribs.document.model.DocumentType;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.DOUBLE_HYPHEN;
@@ -36,13 +37,11 @@ public class DocumentManagementSelectDocuments implements CcdPageConfiguration {
     public AboutToStartOrSubmitResponse<CaseData, State> midEvent(CaseDetails<CaseData, State> details,
                                                                   CaseDetails<CaseData, State> detailsBefore) {
         final CaseData data = details.getData();
-        final List<String> errors = new ArrayList<>();
 
         setSelectedDocuments(data);
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(data)
-            .errors(errors)
             .build();
     }
 
@@ -50,7 +49,9 @@ public class DocumentManagementSelectDocuments implements CcdPageConfiguration {
         var cicCase = data.getCicCase();
         DynamicList documentList = cicCase.getAmendDocumentList();
         List<ListValue<CaseworkerCICDocument>> allCaseDocuments = DocumentListUtil.getAllCaseDocuments(data);
-        CaseworkerCICDocument selectedDocument = null;
+        DocumentType selectedDocumentCategory = null;
+        String selectedDocumentEmailContent = null;
+        Document selectedDocumentLink = null;
         String selectedDocumentType = null;
 
         if (!ObjectUtils.isEmpty(documentList.getValue())) {
@@ -61,14 +62,17 @@ public class DocumentManagementSelectDocuments implements CcdPageConfiguration {
                 String documentTypeLabel = documentListValue.getValue().getDocumentCategory().getLabel();
                 String filename = documentListValue.getValue().getDocumentLink().getFilename();
                 if (ArrayUtils.isNotEmpty(labels) && labels[1].equals(filename) && labels[2].equals(documentTypeLabel)) {
-                    selectedDocument = documentListValue.getValue();
+                    selectedDocumentCategory = documentListValue.getValue().getDocumentCategory();
+                    selectedDocumentEmailContent = documentListValue.getValue().getDocumentEmailContent();
+                    selectedDocumentLink = documentListValue.getValue().getDocumentLink();
                     selectedDocumentType = labels[0];
                 }
             }
 
-            cicCase.setSelectedDocument(selectedDocument);
+            cicCase.setSelectedDocumentCategory(selectedDocumentCategory);
+            cicCase.setSelectedDocumentEmailContent(selectedDocumentEmailContent);
+            cicCase.setSelectedDocumentLink(selectedDocumentLink);
             cicCase.setSelectedDocumentType(selectedDocumentType);
         }
     }
-
 }

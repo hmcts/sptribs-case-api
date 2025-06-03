@@ -10,10 +10,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.test.util.ReflectionTestUtils;
 import uk.gov.hmcts.ccd.sdk.ConfigBuilderImpl;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.Event;
@@ -28,22 +26,28 @@ import uk.gov.hmcts.sptribs.ciccase.model.ContactPreferenceType;
 import uk.gov.hmcts.sptribs.ciccase.model.DssCaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
+import uk.gov.hmcts.sptribs.ciccase.model.access.Permissions;
 import uk.gov.hmcts.sptribs.common.config.AppsConfig;
 import uk.gov.hmcts.sptribs.constants.CommonConstants;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
 import uk.gov.hmcts.sptribs.document.model.EdgeCaseDocument;
 import uk.gov.hmcts.sptribs.idam.IdamService;
+import uk.gov.hmcts.sptribs.notification.exception.NotificationException;
 import uk.gov.hmcts.sptribs.testutil.TestDataHelper;
 import uk.gov.hmcts.sptribs.util.AppsUtil;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_WA_CONFIG_USER;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigBuilder;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.getEventsFrom;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.CASE_DATA_CIC_ID;
@@ -58,10 +62,7 @@ import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.LOCAL_DATE_TIME;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.caseData;
 import static uk.gov.hmcts.sptribs.testutil.TestFileUtil.loadJson;
 
-@ExtendWith(SpringExtension.class)
-@SpringBootTest
-@TestPropertySource("classpath:application.yaml")
-@ActiveProfiles("test")
+@ExtendWith({MockitoExtension.class})
 class CicSubmitCaseEventTest {
     final ConfigBuilderImpl<CaseData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
 
@@ -114,6 +115,111 @@ class CicSubmitCaseEventTest {
             .extracting(Event::getId)
             .contains(AppsUtil.getExactAppsDetailsByCaseType(appsConfig, CommonConstants.ST_CIC_CASE_TYPE).getEventIds()
                 .getSubmitEvent());
+
+        assertThat(getEventsFrom(configBuilder).values())
+                .extracting(Event::isPublishToCamunda)
+                .contains(false);
+
+        assertThat(getEventsFrom(configBuilder).values())
+                .extracting(Event::getGrants)
+                .extracting(map -> map.containsKey(ST_CIC_WA_CONFIG_USER))
+                .contains(false);
+    }
+
+    @Test
+    void shouldAddPublishToCamundaWhenWAIsEnabled() {
+        ReflectionTestUtils.setField(cicSubmitCaseEvent, "isWorkAllocationEnabled", true);
+        when(appsConfig.getApps()).thenReturn(List.of(cicAppDetail));
+
+        final ConfigBuilderImpl<CaseData, State, UserRole> configBuilderImpl = createCaseDataConfigBuilder();
+
+        cicSubmitCaseEvent.configure(configBuilderImpl);
+
+        assertThat(getEventsFrom(configBuilderImpl).values())
+                .extracting(Event::isPublishToCamunda)
+                .contains(true);
+
+        assertThat(getEventsFrom(configBuilderImpl).values())
+                .extracting(Event::getGrants)
+                .extracting(map -> map.containsKey(ST_CIC_WA_CONFIG_USER))
+                .contains(true);
+
+        assertThat(getEventsFrom(configBuilderImpl).values())
+                .extracting(Event::getGrants)
+                .extracting(map -> map.get(ST_CIC_WA_CONFIG_USER))
+                .contains(Permissions.CREATE_READ_UPDATE);
+    }
+
+
+    @Test
+    void shouldGetDocumentRelevanceAndAdditionalInformationFromCaseData() {
+        final Document genericTestDocument = Document.builder().build();
+        final String genericAdditionalInformation = "this is some additional information about the case";
+        final String genericTestDocumentRelevance1 = "this document is relevant because it is important to the case";
+        final String genericTestDocumentRelevance2 = "this document is also relevant because it is also important to the case";
+
+        final EdgeCaseDocument dssTribunalForm = new EdgeCaseDocument();
+        dssTribunalForm.setDocumentLink(genericTestDocument);
+        final ListValue<EdgeCaseDocument> tribunalFormDocListValue = new ListValue<>();
+        tribunalFormDocListValue.setValue(dssTribunalForm);
+
+        final EdgeCaseDocument dssSupportingDoc = new EdgeCaseDocument();
+        dssSupportingDoc.setDocumentLink(genericTestDocument);
+        final ListValue<EdgeCaseDocument> supportingDocListValue = new ListValue<>();
+        supportingDocListValue.setValue(dssSupportingDoc);
+
+        final EdgeCaseDocument dssOtherInfoDoc1 = new EdgeCaseDocument();
+        dssOtherInfoDoc1.setDocumentLink(genericTestDocument);
+        dssOtherInfoDoc1.setComment(genericTestDocumentRelevance1);
+        final ListValue<EdgeCaseDocument> otherInfoDocListValue1 = new ListValue<>();
+        otherInfoDocListValue1.setValue(dssOtherInfoDoc1);
+
+        final EdgeCaseDocument dssOtherInfoDoc2 = new EdgeCaseDocument();
+        dssOtherInfoDoc2.setDocumentLink(genericTestDocument);
+        dssOtherInfoDoc2.setComment(genericTestDocumentRelevance2);
+        final ListValue<EdgeCaseDocument> otherInfoDocListValue2 = new ListValue<>();
+        otherInfoDocListValue2.setValue(dssOtherInfoDoc2);
+
+        final DssCaseData dssCaseData = DssCaseData.builder()
+            .caseTypeOfApplication(CASE_DATA_CIC_ID)
+            .otherInfoDocuments(List.of(otherInfoDocListValue1, otherInfoDocListValue2))
+            .supportingDocuments(List.of(supportingDocListValue))
+            .tribunalFormDocuments(List.of(tribunalFormDocListValue))
+            .subjectFullName(TEST_FIRST_NAME)
+            .representation(YesOrNo.YES)
+            .representationQualified(YesOrNo.YES)
+            .representativeEmailAddress(TEST_SOLICITOR_EMAIL)
+            .representativeFullName(TEST_SOLICITOR_NAME)
+            .additionalInformation(genericAdditionalInformation)
+            .build();
+
+        final CicCase cicCase = CicCase.builder().build();
+        final CaseData caseData = caseData();
+        caseData.setCicCase(cicCase);
+        caseData.setDssCaseData(dssCaseData);
+
+        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
+        updatedCaseDetails.setId(TEST_CASE_ID);
+        updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
+        updatedCaseDetails.setData(caseData);
+
+        when(request.getHeader(AUTHORIZATION)).thenReturn(TEST_AUTHORIZATION_TOKEN);
+        when(idamService.retrieveUser(TEST_AUTHORIZATION_TOKEN)).thenReturn(TestDataHelper.getUser());
+
+        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+
+        final AboutToStartOrSubmitResponse<CaseData, State> response =
+            cicSubmitCaseEvent.aboutToSubmit(updatedCaseDetails, beforeDetails);
+
+        assertThat(response.getData().getCicCase().getApplicantDocumentsUploaded().get(0).getValue().getDocumentEmailContent())
+            .isEqualTo(genericTestDocumentRelevance1);
+        assertThat(response.getData().getCicCase().getApplicantDocumentsUploaded().get(1).getValue().getDocumentEmailContent())
+            .isEqualTo(genericTestDocumentRelevance2);
+        assertThat(response.getData().getMessages().get(0).getValue().getMessage()).isEqualTo(genericAdditionalInformation);
+        assertThat(response.getData().getMessages().get(0).getValue().getDateReceived())
+            .isEqualTo(LocalDate.now());
+        assertThat(response.getData().getMessages().get(0).getValue().getReceivedFrom())
+            .isEqualTo(TestDataHelper.getUser().getUserDetails().getFullName());
     }
 
     @Test
@@ -143,8 +249,6 @@ class CicSubmitCaseEventTest {
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
         updatedCaseDetails.setData(caseData);
-        when(request.getHeader(AUTHORIZATION)).thenReturn(TEST_AUTHORIZATION_TOKEN);
-        when(idamService.retrieveUser(TEST_AUTHORIZATION_TOKEN)).thenReturn(TestDataHelper.getUser());
 
         final AboutToStartOrSubmitResponse<CaseData, State> response =
             cicSubmitCaseEvent.aboutToSubmit(updatedCaseDetails, beforeDetails);
@@ -154,7 +258,22 @@ class CicSubmitCaseEventTest {
         assertThat(response.getData().getCicCase().getApplicantDocumentsUploaded()).hasSize(3);
         assertThat(response.getData().getCicCase().getRepresentativeContactDetailsPreference()).isEqualTo(ContactPreferenceType.EMAIL);
         assertThat(response.getData().getCicCase().getApplicantDocumentsUploaded().get(0).getValue().getDocumentCategory())
-            .isIn(DocumentType.DSS_OTHER, DocumentType.DSS_SUPPORTING, DocumentType.DSS_TRIBUNAL_FORM);
+            .isEqualTo(DocumentType.DSS_OTHER);
+        assertThat(response.getData().getCicCase().getApplicantDocumentsUploaded().get(0).getValue().getDate()).isEqualTo(LocalDate.now());
+        assertThat(response.getData().getCicCase().getApplicantDocumentsUploaded().get(1).getValue().getDocumentCategory())
+            .isEqualTo(DocumentType.DSS_SUPPORTING);
+        assertThat(response.getData().getCicCase().getApplicantDocumentsUploaded().get(1).getValue().getDate()).isEqualTo(LocalDate.now());
+        assertThat(response.getData().getCicCase().getApplicantDocumentsUploaded().get(2).getValue().getDocumentCategory())
+            .isEqualTo(DocumentType.DSS_TRIBUNAL_FORM);
+        assertThat(response.getData().getCicCase().getApplicantDocumentsUploaded().get(2).getValue().getDate()).isEqualTo(LocalDate.now());
+        assertThat(response.getData().getCaseFlags()).isNotNull();
+        assertThat(response.getData().getSubjectFlags()).isNotNull();
+        assertThat(response.getData().getSubjectFlags().getPartyName()).isEqualTo(TEST_FIRST_NAME);
+        assertThat(response.getData().getSubjectFlags().getRoleOnCase()).isEqualTo("subject");
+        assertThat(response.getData().getRepresentativeFlags()).isNotNull();
+        assertThat(response.getData().getRepresentativeFlags().getPartyName()).isEqualTo(TEST_SOLICITOR_NAME);
+        assertThat(response.getData().getRepresentativeFlags().getRoleOnCase()).isEqualTo("Representative");
+        assertThat(response.getData().getCaseNameHmctsInternal()).isEqualTo(TEST_FIRST_NAME);
     }
 
     @Test
@@ -181,8 +300,6 @@ class CicSubmitCaseEventTest {
         caseDetails.getData().getDssCaseData().setRepresentativeFullName(TEST_FIRST_NAME);
         caseDetails.getData().getDssCaseData().setRepresentativeEmailAddress(TEST_UPDATE_CASE_EMAIL_ADDRESS);
 
-        when(request.getHeader(AUTHORIZATION)).thenReturn(TEST_AUTHORIZATION_TOKEN);
-        when(idamService.retrieveUser(TEST_AUTHORIZATION_TOKEN)).thenReturn(TestDataHelper.getUser());
         when(appsConfig.getApps()).thenReturn(List.of(cicAppDetail));
         cicSubmitCaseEvent.configure(configBuilder);
 
@@ -228,8 +345,6 @@ class CicSubmitCaseEventTest {
         caseDetails.getData().getDssCaseData().setSubjectFullName(TEST_FIRST_NAME);
         caseDetails.getData().getDssCaseData().setRepresentativeFullName(TEST_FIRST_NAME);
 
-        when(request.getHeader(AUTHORIZATION)).thenReturn(TEST_AUTHORIZATION_TOKEN);
-        when(idamService.retrieveUser(TEST_AUTHORIZATION_TOKEN)).thenReturn(TestDataHelper.getUser());
         when(appsConfig.getApps()).thenReturn(List.of(cicAppDetail));
         cicSubmitCaseEvent.configure(configBuilder);
 
@@ -249,6 +364,31 @@ class CicSubmitCaseEventTest {
 
         assertThat(submittedResponse.getConfirmationHeader())
             .isEqualTo("# Application Received %n##");
+    }
+
+    @Test
+    void shouldCatchErrorIfSendEmailNotificationFails() {
+        CaseData caseData = CaseData.builder().build();
+        DssCaseData dssCaseData = DssCaseData.builder().build();
+        dssCaseData.setSubjectEmailAddress(TEST_UPDATE_CASE_EMAIL_ADDRESS);
+        dssCaseData.setRepresentativeEmailAddress(TEST_UPDATE_CASE_EMAIL_ADDRESS);
+        caseData.setDssCaseData(dssCaseData);
+
+        final CaseDetails<CaseData, State> details = new CaseDetails<>();
+        details.setId(TEST_CASE_ID);
+        details.setData(caseData);
+
+        doThrow(NotificationException.class)
+            .when(dssApplicationReceivedNotification)
+            .sendToSubject(any(DssCaseData.class), anyString());
+        doThrow(NotificationException.class)
+            .when(dssApplicationReceivedNotification)
+            .sendToRepresentative(any(DssCaseData.class), anyString());
+
+        SubmittedCallbackResponse response = cicSubmitCaseEvent.submitted(details, details);
+
+        assertThat(response.getConfirmationHeader())
+            .contains("# Application Received notification failed %n## Please resend the notification");
     }
 
 }

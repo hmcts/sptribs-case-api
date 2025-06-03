@@ -1,6 +1,9 @@
 package uk.gov.hmcts.sptribs.caseworker.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import uk.gov.hmcts.ccd.sdk.type.DynamicList;
@@ -24,8 +27,10 @@ import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.SPACE;
 @Slf4j
 public class HearingService {
 
-    final DateTimeFormatter dateFormatter = ofPattern("dd MMM yyyy", UK);
+    @Autowired
+    private ObjectMapper objectMapper;
 
+    private static final DateTimeFormatter dateFormatter = ofPattern("dd MMM yyyy", UK);
 
     public DynamicList getListedHearingDynamicList(final CaseData data) {
 
@@ -53,16 +58,6 @@ public class HearingService {
                 firstListing.getValue().setPostponeAdditionalInformation(data.getRetiredFields().getCicCasePostponeAdditionalInformation());
             }
         }
-    }
-
-    private String getHearingDate(String id, Listing listing) {
-        return id
-                + SPACE + HYPHEN + SPACE
-                + listing.getHearingType().getLabel()
-                + SPACE + HYPHEN + SPACE
-                + listing.getDate().format(dateFormatter)
-                + SPACE
-                + listing.getHearingTime();
     }
 
     public DynamicList getCompletedHearingDynamicList(final CaseData data) {
@@ -114,30 +109,32 @@ public class HearingService {
         }
     }
 
-    public void updateHearingList(CaseData caseData) {
+    @SneakyThrows
+    public void updateHearingList(CaseData caseData, String hearingName) {
         for (ListValue<Listing> listingListValue : caseData.getHearingList()) {
-            String hearingName = caseData.getCicCase().getHearingList().getValue().getLabel();
             if (isMatchingHearing(listingListValue, hearingName)) {
-                listingListValue.setValue(caseData.getListing());
+                // deep copy of listing needed in order to clear rec file
+                Listing listingDeepCopy = objectMapper
+                    .readValue(objectMapper.writeValueAsString(caseData.getListing()), Listing.class);
+                listingListValue.setValue(listingDeepCopy);
                 break;
             }
         }
     }
 
-    public void updateHearingSummaryList(CaseData caseData) {
-        for (ListValue<Listing> listingListValue : caseData.getHearingList()) {
-            String hearingName = caseData.getCicCase().getHearingSummaryList().getValue().getLabel();
-            if (isMatchingHearing(listingListValue, hearingName)) {
-                listingListValue.setValue(caseData.getListing());
-                break;
-            }
-        }
-    }
-
-    private boolean isMatchingHearing(ListValue<Listing> listingListValue, String hearingName) {
+    public static boolean isMatchingHearing(ListValue<Listing> listingListValue, String hearingName) {
         return hearingName.contains(listingListValue.getValue().getHearingTime())
             && hearingName.contains(listingListValue.getValue().getHearingType().getLabel())
             && hearingName.contains(listingListValue.getValue().getDate().format(dateFormatter));
     }
 
+    private String getHearingDate(String id, Listing listing) {
+        return id
+            + SPACE + HYPHEN + SPACE
+            + listing.getHearingType().getLabel()
+            + SPACE + HYPHEN + SPACE
+            + listing.getDate().format(dateFormatter)
+            + SPACE
+            + listing.getHearingTime();
+    }
 }

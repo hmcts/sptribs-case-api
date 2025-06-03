@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
+import uk.gov.hmcts.ccd.sdk.api.Event;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.ccd.sdk.type.DynamicMultiSelectList;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
@@ -23,10 +24,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.common.event.page.PartiesToContact;
-import uk.gov.hmcts.sptribs.common.notification.ContactPartiesNotification;
-
-import java.util.ArrayList;
-import java.util.List;
+import uk.gov.hmcts.sptribs.notification.dispatcher.ContactPartiesNotification;
 
 import static java.lang.String.format;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_CONTACT_PARTIES;
@@ -47,6 +45,7 @@ import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_HEARING_CENTRE_
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_JUDGE;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_CASEWORKER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_JUDGE;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_WA_CONFIG_USER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE;
 
@@ -55,9 +54,6 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 @Slf4j
 @Setter
 public class CaseWorkerContactParties implements CCDConfig<CaseData, State, UserRole> {
-
-    @Value("${feature.contact-parties.enabled}")
-    private boolean contactPartiesEnabled;
 
     @Value("${case-api.url}")
     private String baseUrl;
@@ -68,15 +64,12 @@ public class CaseWorkerContactParties implements CCDConfig<CaseData, State, User
     @Autowired
     private ContactPartiesNotification contactPartiesNotification;
 
+    @Value("${feature.wa.enabled}")
+    private boolean isWorkAllocationEnabled;
+
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
-        if (contactPartiesEnabled) {
-            doConfigure(configBuilder);
-        }
-    }
-
-    private void doConfigure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
-        PageBuilder pageBuilder = new PageBuilder(
+        Event.EventBuilder<CaseData, UserRole, State> eventBuilder =
             configBuilder
                 .event(CASEWORKER_CONTACT_PARTIES)
                 .forStates(Draft,
@@ -92,9 +85,8 @@ public class CaseWorkerContactParties implements CCDConfig<CaseData, State, User
                     CaseStayed)
                 .name("Case: Contact parties")
                 .showSummary()
-                .aboutToSubmitCallback(this::aboutToSubmit)
                 .aboutToStartCallback(this::aboutToStart)
-                .submittedCallback(this::partiesContacted)
+                .submittedCallback(this::submitted)
                 .grant(CREATE_READ_UPDATE, SUPER_USER,
                     ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER, ST_CIC_HEARING_CENTRE_ADMIN,
                     ST_CIC_HEARING_CENTRE_TEAM_LEADER, ST_CIC_SENIOR_JUDGE)
@@ -105,7 +97,14 @@ public class CaseWorkerContactParties implements CCDConfig<CaseData, State, User
                     ST_CIC_HEARING_CENTRE_TEAM_LEADER,
                     ST_CIC_SENIOR_JUDGE,
                     SUPER_USER,
-                    ST_CIC_JUDGE));
+                    ST_CIC_JUDGE);
+
+        if (isWorkAllocationEnabled) {
+            eventBuilder.publishToCamunda()
+                        .grant(CREATE_READ_UPDATE, ST_CIC_WA_CONFIG_USER);
+        }
+
+        PageBuilder pageBuilder = new PageBuilder(eventBuilder);
         contactPartiesSelectDocument.addTo(pageBuilder);
         partiesToContact.addTo(pageBuilder);
     }
@@ -122,19 +121,8 @@ public class CaseWorkerContactParties implements CCDConfig<CaseData, State, User
             .build();
     }
 
-    public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(CaseDetails<CaseData, State> details,
-                                                                       CaseDetails<CaseData, State> detailsBefore) {
-        final CaseData caseData = details.getData();
-        final List<String> errors = new ArrayList<>();
-
-        return AboutToStartOrSubmitResponse.<CaseData, State>builder()
-            .data(caseData)
-            .errors(errors)
-            .build();
-    }
-
-    public SubmittedCallbackResponse partiesContacted(CaseDetails<CaseData, State> details,
-                                                      CaseDetails<CaseData, State> beforeDetails) {
+    public SubmittedCallbackResponse submitted(CaseDetails<CaseData, State> details,
+                                               CaseDetails<CaseData, State> beforeDetails) {
 
         final CaseData data = details.getData();
         final CicCase cicCase = data.getCicCase();
@@ -142,18 +130,17 @@ public class CaseWorkerContactParties implements CCDConfig<CaseData, State, User
 
         try {
             sendContactPartiesNotification(details, cicCase, caseNumber);
+
+            return SubmittedCallbackResponse.builder()
+                .confirmationHeader(format("# Message sent %n## %s", MessageUtil.generateSimpleMessage(cicCase)))
+                .build();
         } catch (Exception notificationException) {
             log.error("Contact Parties notification failed with exception : {}", notificationException.getMessage());
+
             return SubmittedCallbackResponse.builder()
                 .confirmationHeader(format("# Contact Parties notification failed %n## Please resend the notification"))
                 .build();
         }
-
-        return SubmittedCallbackResponse.builder()
-            .confirmationHeader(format("# Message sent %n## %s",
-                MessageUtil.generateSimpleMessage(cicCase)
-            ))
-            .build();
     }
 
     private void sendContactPartiesNotification(CaseDetails<CaseData, State> details, CicCase cicCase, String caseNumber) {

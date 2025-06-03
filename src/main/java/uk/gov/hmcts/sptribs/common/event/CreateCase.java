@@ -8,9 +8,13 @@ import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
+import uk.gov.hmcts.ccd.sdk.type.DynamicList;
+import uk.gov.hmcts.ccd.sdk.type.DynamicListElement;
 import uk.gov.hmcts.ccd.sdk.type.Flags;
+import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
+import uk.gov.hmcts.sptribs.caseworker.model.CaseManagementLocation;
 import uk.gov.hmcts.sptribs.caseworker.model.SecurityClass;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
@@ -27,14 +31,19 @@ import uk.gov.hmcts.sptribs.common.event.page.FurtherDetails;
 import uk.gov.hmcts.sptribs.common.event.page.RepresentativeDetails;
 import uk.gov.hmcts.sptribs.common.event.page.SelectParties;
 import uk.gov.hmcts.sptribs.common.event.page.SubjectDetails;
-import uk.gov.hmcts.sptribs.common.notification.ApplicationReceivedNotification;
 import uk.gov.hmcts.sptribs.common.service.CcdSupplementaryDataService;
 import uk.gov.hmcts.sptribs.common.service.SubmissionService;
+import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
+import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocumentUpload;
+import uk.gov.hmcts.sptribs.notification.dispatcher.ApplicationReceivedNotification;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
 import static java.lang.String.format;
 import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
+import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_CREATE_CASE;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.Draft;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_CASEWORKER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_HEARING_CENTRE_ADMIN;
@@ -42,14 +51,14 @@ import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_HEARING_CENTRE_
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_CASEWORKER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_JUDGE;
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE;
-import static uk.gov.hmcts.sptribs.document.DocumentUtil.updateCategoryToCaseworkerDocument;
+import static uk.gov.hmcts.sptribs.constants.CommonConstants.ST_CIC_WA_CASE_BASE_LOCATION;
+import static uk.gov.hmcts.sptribs.constants.CommonConstants.ST_CIC_WA_CASE_MANAGEMENT_CATEGORY;
+import static uk.gov.hmcts.sptribs.constants.CommonConstants.ST_CIC_WA_CASE_REGION;
+import static uk.gov.hmcts.sptribs.document.DocumentUtil.updateUploadedDocumentCategory;
 
 @Slf4j
 @Component
 public class CreateCase implements CCDConfig<CaseData, State, UserRole> {
-
-    private static final String ENVIRONMENT_PROD = "prod";
-    public static final String TEST_CREATE = "caseworker-create-case";
 
     private static final CcdPageConfiguration categorisationDetails = new CaseCategorisationDetails();
     private static final CcdPageConfiguration dateOfReceipt = new DateOfReceipt();
@@ -61,19 +70,25 @@ public class CreateCase implements CCDConfig<CaseData, State, UserRole> {
     private static final CcdPageConfiguration furtherDetails = new FurtherDetails();
     private static final CcdPageConfiguration contactPreferenceDetails = new ContactPreferenceDetails();
 
-    @Autowired
-    private SubmissionService submissionService;
+    private final SubmissionService submissionService;
+
+    private final CcdSupplementaryDataService ccdSupplementaryDataService;
+
+    private final ApplicationReceivedNotification applicationReceivedNotification;
 
     @Autowired
-    private CcdSupplementaryDataService ccdSupplementaryDataService;
-
-    @Autowired
-    private ApplicationReceivedNotification applicationReceivedNotification;
+    public CreateCase(SubmissionService submissionService,
+                      CcdSupplementaryDataService ccdSupplementaryDataService,
+                      ApplicationReceivedNotification applicationReceivedNotification) {
+        this.submissionService = submissionService;
+        this.ccdSupplementaryDataService = ccdSupplementaryDataService;
+        this.applicationReceivedNotification = applicationReceivedNotification;
+    }
 
     @Override
     public void configure(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         PageBuilder pageBuilder = new PageBuilder(configBuilder
-            .event(TEST_CREATE)
+            .event(CASEWORKER_CREATE_CASE)
             .initialState(Draft)
             .name("Create Case")
             .showSummary()
@@ -102,12 +117,17 @@ public class CreateCase implements CCDConfig<CaseData, State, UserRole> {
         final CaseDetails<CaseData, State> submittedDetails = submissionService.submitApplication(details);
         final CaseData caseData = submittedDetails.getData();
 
-        updateCategoryToCaseworkerDocument(caseData.getCicCase().getApplicantDocumentsUploaded());
+        List<ListValue<CaseworkerCICDocumentUpload>> uploadedDocuments = caseData.getCicCase().getCaseDocumentsUpload();
+        List<ListValue<CaseworkerCICDocument>> documents = updateUploadedDocumentCategory(uploadedDocuments, false);
+        caseData.getCicCase().setCaseDocumentsUpload(new ArrayList<>());
+
+        caseData.getCicCase().setApplicantDocumentsUploaded(documents);
         setIsRepresentativePresent(caseData);
         caseData.setSecurityClass(SecurityClass.PUBLIC);
         caseData.setCaseNameHmctsInternal(caseData.getCicCase().getFullName());
 
         initialiseFlags(caseData);
+        setDefaultCaseDetails(caseData);
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
@@ -134,6 +154,26 @@ public class CreateCase implements CCDConfig<CaseData, State, UserRole> {
         return SubmittedCallbackResponse.builder()
             .confirmationHeader(format("# Case Created %n## Case reference number: %n## %s", caseReference))
             .build();
+    }
+
+    private void setDefaultCaseDetails(CaseData data) {
+        data.setCaseManagementLocation(
+            CaseManagementLocation
+                .builder()
+                .baseLocation(ST_CIC_WA_CASE_BASE_LOCATION)
+                .region(ST_CIC_WA_CASE_REGION)
+                .build()
+        );
+
+        DynamicListElement caseManagementCategory = new DynamicListElement(
+            UUID.randomUUID(), ST_CIC_WA_CASE_MANAGEMENT_CATEGORY);
+        data.setCaseManagementCategory(
+            DynamicList
+                .builder()
+                .listItems(List.of(caseManagementCategory))
+                .value(caseManagementCategory)
+                .build()
+        );
     }
 
     private void initialiseFlags(CaseData data) {

@@ -1,17 +1,25 @@
 package uk.gov.hmcts.sptribs.caseworker.event;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
+import uk.gov.hmcts.ccd.sdk.api.Event;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
+import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.event.page.UploadCaseDocuments;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
+import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
+import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocumentUpload;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.RESPONDENT_DOCUMENT_MANAGEMENT;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
@@ -31,8 +39,10 @@ import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_JUDGE;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_RESPONDENT;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_CASEWORKER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_JUDGE;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_WA_CONFIG_USER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE;
+import static uk.gov.hmcts.sptribs.document.DocumentUtil.convertToCaseworkerCICDocumentUpload;
 import static uk.gov.hmcts.sptribs.document.DocumentUtil.uploadDocument;
 
 @Component
@@ -41,34 +51,44 @@ public class RespondentDocumentManagement implements CCDConfig<CaseData, State, 
 
     private final UploadCaseDocuments uploadCaseDocuments = new UploadCaseDocuments();
 
+    @Value("${feature.wa.enabled}")
+    private boolean isWorkAllocationEnabled;
+
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
-        PageBuilder pageBuilder = new PageBuilder(configBuilder
-            .event(RESPONDENT_DOCUMENT_MANAGEMENT)
-            .forStates(Withdrawn,
-                Rejected,
-                Submitted,
-                NewCaseReceived,
-                CaseManagement,
-                ReadyToList,
-                AwaitingHearing,
-                AwaitingOutcome,
-                CaseClosed,
-                CaseStayed)
-            .name("Document management: Upload")
-            .description("Document management: Upload")
-            .showSummary()
-            .grant(CREATE_READ_UPDATE, SUPER_USER, ST_CIC_RESPONDENT)
-            .grantHistoryOnly(
-                ST_CIC_CASEWORKER,
-                ST_CIC_SENIOR_CASEWORKER,
-                ST_CIC_HEARING_CENTRE_ADMIN,
-                ST_CIC_HEARING_CENTRE_TEAM_LEADER,
-                ST_CIC_SENIOR_JUDGE,
-                ST_CIC_JUDGE)
-            .aboutToSubmitCallback(this::aboutToSubmit)
-            .submittedCallback(this::submitted));
+        Event.EventBuilder<CaseData, UserRole, State> eventBuilder =
+            configBuilder
+                .event(RESPONDENT_DOCUMENT_MANAGEMENT)
+                .forStates(Withdrawn,
+                    Rejected,
+                    Submitted,
+                    NewCaseReceived,
+                    CaseManagement,
+                    ReadyToList,
+                    AwaitingHearing,
+                    AwaitingOutcome,
+                    CaseClosed,
+                    CaseStayed)
+                .name("Document management: Upload")
+                .description("Document management: Upload")
+                .showSummary()
+                .grant(CREATE_READ_UPDATE, SUPER_USER, ST_CIC_RESPONDENT)
+                .grantHistoryOnly(
+                    ST_CIC_CASEWORKER,
+                    ST_CIC_SENIOR_CASEWORKER,
+                    ST_CIC_HEARING_CENTRE_ADMIN,
+                    ST_CIC_HEARING_CENTRE_TEAM_LEADER,
+                    ST_CIC_SENIOR_JUDGE,
+                    ST_CIC_JUDGE)
+                .aboutToSubmitCallback(this::aboutToSubmit)
+                .submittedCallback(this::submitted);
 
+        if (isWorkAllocationEnabled) {
+            eventBuilder.publishToCamunda()
+                        .grant(CREATE_READ_UPDATE, ST_CIC_WA_CONFIG_USER);
+        }
+
+        PageBuilder pageBuilder = new PageBuilder(eventBuilder);
         uploadCaseDocuments.addTo(pageBuilder);
     }
 
@@ -76,6 +96,10 @@ public class RespondentDocumentManagement implements CCDConfig<CaseData, State, 
                                                                        final CaseDetails<CaseData, State> beforeDetails) {
 
         final CaseData caseData = details.getData();
+        List<ListValue<CaseworkerCICDocumentUpload>> uploadedDocuments = caseData.getNewDocManagement().getCaseworkerCICDocumentUpload();
+        List<ListValue<CaseworkerCICDocument>> documents = convertToCaseworkerCICDocumentUpload(uploadedDocuments, false);
+        caseData.getNewDocManagement().setCaseworkerCICDocumentUpload(new ArrayList<>());
+        caseData.getNewDocManagement().setCaseworkerCICDocument(documents);
         uploadDocument(caseData);
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()

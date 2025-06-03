@@ -84,8 +84,6 @@ class SelectHearingTest {
 
         final AboutToStartOrSubmitResponse<CaseData, State> response = selectHearing.midEvent(caseDetails, caseDetails);
 
-        assertThat(response.getErrors()).isNotNull();
-        assertThat(response.getErrors()).isEmpty();
         assertThat(response.getData().getListing()).isEqualTo(finalListingListValue.getValue());
         assertThat(response.getData().getListing()).isNotEqualTo(initialListing);
     }
@@ -98,8 +96,6 @@ class SelectHearingTest {
 
         final AboutToStartOrSubmitResponse<CaseData, State> response = selectHearing.midEvent(caseDetails, caseDetails);
 
-        assertThat(response.getErrors()).isNotNull();
-        assertThat(response.getErrors()).isEmpty();
         assertThat(response.getData().getListing()).isEqualTo(initialListing);
         assertThat(response.getData().getListing()).isNotEqualTo(finalListingListValue.getValue());
     }

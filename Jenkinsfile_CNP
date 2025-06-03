@@ -22,6 +22,8 @@ static Map<String, Object> secret(String secretName, String envVariable) {
   ]
 }
 
+def githubApi = new GithubAPI(this) as Object
+
 def secrets = [
         's2s-${env}'      : [
                 secret('microservicekey-ccd-data', 'DATA_STORE_S2S_KEY'),
@@ -46,6 +48,12 @@ def secrets = [
                 secret('idam-solicitor-password', 'IDAM_SOLICITOR_PASSWORD'),
                 secret('idam-systemupdate-username', 'IDAM_SYSTEM_UPDATE_USERNAME'),
                 secret('idam-systemupdate-password', 'IDAM_SYSTEM_UPDATE_PASSWORD'),
+                secret('wa-seniorCaseworker-username', 'IDAM_WA_SENIOR_CASEWORKER_USERNAME'),
+                secret('wa-seniorCaseworker-password', 'IDAM_WA_SENIOR_CASEWORKER_PASSWORD'),
+                secret('wa-seniorCaseworker-uid', 'WA_SENIOR_CASEWORKER_UID'),
+                secret('wa-regionalHearingCentreTeamLead-username', 'IDAM_WA_REGIONAL_HEARING_CENTRE_TEAM_LEAD_USERNAME'),
+                secret('wa-regionalHearingCentreTeamLead-password', 'IDAM_WA_REGIONAL_HEARING_CENTRE_TEAM_LEAD_PASSWORD'),
+                secret('wa-regionalHearingCentreTeamLead-uid', 'IDAM_WA_REGIONAL_HEARING_CENTRE_TEAM_LEAD_UID'),
                 secret('citizen-user', 'IDAM_CITIZEN_USERNAME'),
                 secret('citizen-password', 'IDAM_CITIZEN_PASSWORD'),
                 secret('sptribs-postgres-username-preview', 'SPTRIBS_POSTGRES_USERNAME_PREVIEW'),
@@ -57,11 +65,15 @@ def secrets = [
                 secret('ccd-user-profile-db-username-preview', 'CCD_USER_PROFILE_DB_USERNAME_PREVIEW'),
                 secret('ccd-user-profile-db-password-preview', 'CCD_USER_PROFILE_DB_PASSWORD_PREVIEW'),
                 secret('em-spring-datasource-username-preview', 'EM_SPRING_DATASOURCE_USERNAME_PREVIEW'),
-                secret('em-spring-datasource-password-preview', 'EM_SPRING_DATASOURCE_PASSWORD_PREVIEW')
+                secret('em-spring-datasource-password-preview', 'EM_SPRING_DATASOURCE_PASSWORD_PREVIEW'),
+                secret('s2s-case-api-secret', 'S2S_SECRET')
         ],
         'civil-${env}'    :[
           secret('ccd-importer-username', 'DEFINITION_IMPORTER_USERNAME'),
           secret('ccd-importer-password', 'DEFINITION_IMPORTER_PASSWORD')
+        ],
+        'sptribs-prod'    :[
+          secret('s2s-case-api-secret', 'S2S_SECRET_PROD')
         ]
 ]
 
@@ -75,6 +87,15 @@ withPipeline(type, product, component) {
     disableLegacyDeployment()
     loadVaultSecrets(secrets)
     syncBranchesWithMaster(['demo', 'perftest', 'ithc'])
+    afterSuccess('checkout') {
+      def subscription = 'nonprod'
+      if (env.ENVIRONMENT == 'ithc' || env.ENVIRONMENT == 'demo' || env.ENVIRONMENT == 'perftest') {
+        withSubscription(subscription) {
+            uploadDmnDiagrams()
+            uploadBpmnDiagram()
+        }
+      }
+    }
     enableSlackNotifications('#special-tribunals-builds')
     MetricsPublisher metricsPublisher = new MetricsPublisher(this, currentBuild, product, component)
     approvedEnvironmentRepository(params.environment, metricsPublisher) {
@@ -199,111 +220,128 @@ withPipeline(type, product, component) {
     generateDefinitions()
   }
 
+  onPR {
+    env.ENVIRONMENT="preview"
+    env.CASE_API_URL = "http://sptribs-case-api-pr-${CHANGE_ID}-java"
+    env.CCD_DEF_NAME = "preview"
+    env.DEFINITION_STORE_URL_BASE = "https://ccd-definition-store-sptribs-case-api-pr-${CHANGE_ID}.preview.platform.hmcts.net"
+    env.CASE_DATA_STORE_BASEURL = "https://ccd-data-store-api-sptribs-case-api-pr-${CHANGE_ID}.preview.platform.hmcts.net"
+    env.CASE_DOCUMENT_AM_BASEURL= "http://ccd-case-document-am-api-sptribs-case-api-pr-${CHANGE_ID}.preview.platform.hmcts.net"
+    env.TEST_S2S_URL = "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
+    env.CITIZEN_UPDATE_CASE_STATE_ENABLED=true
+    env.SERVICE_AUTH_MICROSERVICE = "sptribs_case_api"
+    env.SERVICE_AUTH_PROVIDER_URL = "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
+    env.TEST_E2E_URL = "https://xui-sptribs-case-api-pr-${CHANGE_ID}.preview.platform.hmcts.net"
+    env.TASK_MONITOR_API_URL = "https://wa-task-monitor-sptribs-case-api-pr-${CHANGE_ID}.preview.platform.hmcts.net"
+    env.TASK_MANAGEMENT_API_URL = "https://wa-task-management-api-sptribs-case-api-pr-${CHANGE_ID}.preview.platform.hmcts.net"
+    env.ROLE_ASSIGNMENT_API_URL = "https://am-org-role-mapping-service-sptribs-case-api-pr-${CHANGE_ID}.preview.platform.hmcts.net"
+
+    def waPRLabels = githubApi.getLabelsbyPattern(env.BRANCH_NAME, "pr-values:wa")
+    if (waPRLabels.contains("pr-values:wa")) {
+      env.WA_FEATURE_ENABLED  = true
+    }
+    if (waPRLabels.contains("pr-values:wa-ft-tests")) {
+      env.WA_FUNCTIONAL_TESTS_ENABLED = true
+    }
+
+    setCommonEnvVariables()
+
+    enablePactAs([AppPipelineDsl.PactRoles.CONSUMER])
+  }
+
+  onMaster {
+    env.ENVIRONMENT="aat"
+    env.CASE_API_URL="http://sptribs-case-api-aat.service.core-compute-aat.internal"
+    env.CCD_DEF_NAME="aat"
+    env.ELASTIC_SEARCH_ENABLED=true
+    env.CITIZEN_UPDATE_CASE_STATE_ENABLED=true
+    env.SERVICE_AUTH_MICROSERVICE = "sptribs_case_api"
+    env.SERVICE_AUTH_PROVIDER_URL = "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
+    env.WA_FEATURE_ENABLED = true
+    env.CAMUNDA_BASE_URL = "http://camunda-api-aat.service.core-compute-aat.internal"
+    setCommonEnvVariables()
+
+    enablePactAs([AppPipelineDsl.PactRoles.CONSUMER])
+  }
+
+  afterSuccess('functionalTest:aat') {
+      env.ENVIRONMENT="prod"
+      env.CASE_API_URL="http://sptribs-case-api-prod.service.core-compute-prod.internal"
+      env.CCD_DEF_NAME="prod"
+      env.DEFINITION_STORE_URL_BASE="http://ccd-definition-store-api-prod.service.core-compute-prod.internal"
+      env.CITIZEN_UPDATE_CASE_STATE_ENABLED=false
+      env.CASE_API_DOCUMENT_DOWNLOAD_URL = "http://manage-case.platform.hmcts.net/"
+      env.SERVICE_AUTH_MICROSERVICE = "sptribs_case_api"
+      env.SERVICE_AUTH_PROVIDER_URL = "http://rpe-service-auth-provider-prod.service.core-compute-prod.internal"
+      env.IDAM_API_URL_BASE = "https://idam-api.platform.hmcts.net"
+      env.S2S_URL_BASE = "http://rpe-service-auth-provider-prod.service.core-compute-prod.internal"
+      env.BEFTA_S2S_CLIENT_ID = "ccd_data"
+      env.WA_FEATURE_ENABLED = true
+      env.CAMUNDA_BASE_URL = "http://camunda-api-prod.service.core-compute-prod.internal"
+
+      builder.gradle('generateCCDConfig --rerun-tasks')
+
+      generateDefinitions()
+
+      uploadDmnDiagrams()
+      uploadBpmnDiagram()
+  }
+
+  afterSuccess('akschartsinstall') {
     onPR {
-      env.ENVIRONMENT="preview"
-      env.CASE_API_URL = "http://sptribs-case-api-pr-${CHANGE_ID}-java"
-      env.CCD_DEF_NAME = "preview"
-      env.DEFINITION_STORE_URL_BASE = "https://ccd-definition-store-sptribs-case-api-pr-${CHANGE_ID}.preview.platform.hmcts.net"
-      env.CASE_DATA_STORE_BASEURL = "https://ccd-data-store-api-sptribs-case-api-pr-${CHANGE_ID}.preview.platform.hmcts.net"
-      env.CASE_DOCUMENT_AM_BASEURL= "http://ccd-case-document-am-api-sptribs-case-api-pr-${CHANGE_ID}.preview.platform.hmcts.net"
-      env.TEST_S2S_URL = "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
-      env.CITIZEN_UPDATE_CASE_STATE_ENABLED=true
-      env.SERVICE_AUTH_MICROSERVICE = "sptribs_case_api"
-      env.SERVICE_AUTH_PROVIDER_URL = "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
-      env.TEST_E2E_URL = "https://xui-sptribs-case-api-pr-${CHANGE_ID}.preview.platform.hmcts.net"
-      setCommonEnvVariables()
-      setFeatureFlags(env.ENVIRONMENT)
-
-      enablePactAs([AppPipelineDsl.PactRoles.CONSUMER])
-    }
-
-    onMaster {
-      env.ENVIRONMENT="aat"
-      env.CASE_API_URL="http://sptribs-case-api-aat.service.core-compute-aat.internal"
-      env.CCD_DEF_NAME="aat"
-      env.ELASTIC_SEARCH_ENABLED=true
-      env.CITIZEN_UPDATE_CASE_STATE_ENABLED=true
-      env.SERVICE_AUTH_MICROSERVICE = "sptribs_case_api"
-      env.SERVICE_AUTH_PROVIDER_URL = "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
-      setCommonEnvVariables()
-      setFeatureFlags(env.ENVIRONMENT)
-
-      enablePactAs([AppPipelineDsl.PactRoles.CONSUMER])
-    }
-
-    afterSuccess('functionalTest:aat') {
-
-        env.ENVIRONMENT="prod"
-        env.CASE_API_URL="http://sptribs-case-api-prod.service.core-compute-prod.internal"
-        env.CCD_DEF_NAME="prod"
-        env.DEFINITION_STORE_URL_BASE="http://ccd-definition-store-api-prod.service.core-compute-prod.internal"
-        env.CITIZEN_UPDATE_CASE_STATE_ENABLED=false
-        env.CASE_API_DOCUMENT_DOWNLOAD_URL = "http://manage-case.platform.hmcts.net/"
-        env.SERVICE_AUTH_MICROSERVICE = "sptribs_case_api"
-        env.SERVICE_AUTH_PROVIDER_URL = "http://rpe-service-auth-provider-prod.service.core-compute-prod.internal"
-        env.IDAM_API_URL_BASE = "https://idam-api.platform.hmcts.net"
-        env.S2S_URL_BASE = "http://rpe-service-auth-provider-prod.service.core-compute-prod.internal"
-        env.BEFTA_S2S_CLIENT_ID = "ccd_data"
-        setFeatureFlags(env.ENVIRONMENT)
-
-        builder.gradle('generateCCDConfig --rerun-tasks')
-
-        generateDefinitions()
-    }
-
-  def githubApi = new GithubAPI(this) as Object
-  if (githubApi.getLabelsbyPattern(env.BRANCH_NAME, "enable-e2e-tests")) {
-    afterSuccess('functionalTest:preview') {
-      try {
-        builder.gradle('e2eTests')
-      } finally {
-        publishHTML target: [
-          allowMissing         : true,
-          alwaysLinkToLastBuild: true,
-          keepAll              : true,
-          reportDir            : "build/reports/tests/e2eTests",
-          reportFiles          : "index.html",
-          reportName           : "E2E Tests Report"
-        ]
+      for (label in githubApi.getLabelsbyPattern(env.BRANCH_NAME, "pr-values:wa") ) {
+        env.CAMUNDA_BASE_URL = "https://camunda-sptribs-case-api-pr-${CHANGE_ID}.preview.platform.hmcts.net"
+        println """After akschartsinstall upload DNM and BPMN diagrams""".stripIndent()
+        sh 'chmod -R +x ./bin'
+        uploadDmnDiagrams()
+        uploadBpmnDiagram()
+        setupRoleAssignments()
       }
     }
   }
 
-
   onDemo {
-      env.ENVIRONMENT="demo"
-      env.CASE_API_URL = "http://sptribs-case-api-demo.service.core-compute-demo.internal"
-      env.CASE_API_DOCUMENT_DOWNLOAD_URL = "http://manage-case.demo.platform.hmcts.net/"
-      env.CCD_DEF_NAME = "demo"
-      env.IDAM_API_URL_BASE = "https://idam-api.demo.platform.hmcts.net"
-      env.S2S_URL_BASE = "http://rpe-service-auth-provider-demo.service.core-compute-demo.internal"
-      setFeatureFlags(env.ENVIRONMENT)
-    }
+    env.WA_FEATURE_ENABLED = true
+    env.ENVIRONMENT="demo"
+    env.CASE_API_URL = "http://sptribs-case-api-demo.service.core-compute-demo.internal"
+    env.CASE_API_DOCUMENT_DOWNLOAD_URL = "http://manage-case.demo.platform.hmcts.net/"
+    env.CCD_DEF_NAME = "demo"
+    env.IDAM_API_URL_BASE = "https://idam-api.demo.platform.hmcts.net"
+    env.S2S_URL_BASE = "http://rpe-service-auth-provider-demo.service.core-compute-demo.internal"
+    env.CAMUNDA_BASE_URL = "http://camunda-api-demo.service.core-compute-demo.internal"
+  }
 
-    onPerftest {
-      env.ENVIRONMENT="perftest"
-      env.CASE_API_URL = "http://sptribs-case-api-perftest.service.core-compute-perftest.internal"
-      env.CCD_DEF_NAME = "perftest"
-      env.IDAM_API_URL_BASE = "https://idam-api.perftest.platform.hmcts.net"
-      env.S2S_URL_BASE = "http://rpe-service-auth-provider-perftest.service.core-compute-perftest.internal"
-      env.FEE_API_URL = "http://fees-register-api-demo.service.core-compute-demo.internal"
-      setFeatureFlags(env.ENVIRONMENT)
-    }
+  onPerftest {
+    env.WA_FEATURE_ENABLED = true
+    env.ENVIRONMENT="perftest"
+    env.CASE_API_URL = "http://sptribs-case-api-perftest.service.core-compute-perftest.internal"
+    env.CCD_DEF_NAME = "perftest"
+    env.IDAM_API_URL_BASE = "https://idam-api.perftest.platform.hmcts.net"
+    env.S2S_URL_BASE = "http://rpe-service-auth-provider-perftest.service.core-compute-perftest.internal"
+    env.FEE_API_URL = "http://fees-register-api-demo.service.core-compute-demo.internal"
+    env.CAMUNDA_BASE_URL = "http://camunda-api-perftest.service.core-compute-perftest.internal"
+  }
 
   onIthc {
+    env.WA_FEATURE_ENABLED = true
     env.ENVIRONMENT="ithc"
     env.CASE_API_URL = "http://sptribs-case-api-ithc.service.core-compute-ithc.internal"
     env.CCD_DEF_NAME = "ithc"
     env.IDAM_API_URL_BASE = "https://idam-api.ithc.platform.hmcts.net"
     env.S2S_URL_BASE = "http://rpe-service-auth-provider-ithc.service.core-compute-ithc.internal"
     env.FEE_API_URL = "http://fees-register-api-demo.service.core-compute-ithc.internal"
-    setFeatureFlags(env.ENVIRONMENT)
+    env.CAMUNDA_BASE_URL = "http://camunda-api-ithc.service.core-compute-ithc.internal"
   }
 
-    before('functionalTest:preview') {
-      // Only for preview upload the definitions via script as high level data set up relies on an existing environment
-      uploadCoreCaseDataDefinitions()
-    }
+  before('functionalTest:preview') {
+    // Only for preview upload the definitions via script as high level data set up relies on an existing environment
+    uploadCoreCaseDataDefinitions()
+  }
+
+  before('functionalTest:aat') {
+    uploadDmnDiagrams()
+    uploadBpmnDiagram()
+  }
 }
 
 def setCommonEnvVariables() {
@@ -332,48 +370,26 @@ def generateDefinitions() {
   }
 }
 
-def setFeatureFlags(environment) {
-  if (environment =~ /preview|demo|perftest/) {
-    env.CONTACT_PARTIES_FEATURE = true
-    env.LINK_CASE_FEATURE = true
-    env.CASE_FLAGS_FEATURE = true
-    env.CASE_FILE_VIEW = true
-    env.DOCUMENT_MANAGEMENT_FEATURE = true
-    env.CREATE_BUNDLING_FEATURE = true
-    env.EDIT_BUNDLING_FEATURE = true
-    env.CLONE_BUNDLING_FEATURE = true
-    env.STITCH_BUNDLING_FEATURE = true
-    env.SECURITY_CLASSIFICATION = true
-    env.MIGRATION_ENABLED = true
-    env.ACCESS_PROFILES_ENABLED = true
-    env.DSS_UPDATE_CASE_ENABLED = true
-  } else if (environment =~ /aat/) {
-    env.CONTACT_PARTIES_FEATURE = true
-    env.LINK_CASE_FEATURE = true
-    env.CASE_FLAGS_FEATURE = true
-    env.CASE_FILE_VIEW = true
-    env.DOCUMENT_MANAGEMENT_FEATURE = true
-    env.CREATE_BUNDLING_FEATURE = true
-    env.EDIT_BUNDLING_FEATURE = true
-    env.CLONE_BUNDLING_FEATURE = true
-    env.STITCH_BUNDLING_FEATURE = true
-    env.SECURITY_CLASSIFICATION = true
-    env.MIGRATION_ENABLED = true
-    env.ACCESS_PROFILES_ENABLED = true
-    env.DSS_UPDATE_CASE_ENABLED = true
-  } else if (environment =~ /prod/) {
-    env.CONTACT_PARTIES_FEATURE = true
-    env.CASE_FILE_VIEW = false
-    env.DOCUMENT_MANAGEMENT_FEATURE = true
-    env.LINK_CASE_FEATURE = true
-    env.CASE_FLAGS_FEATURE = true
-    env.CREATE_BUNDLING_FEATURE = true
-    env.EDIT_BUNDLING_FEATURE = true
-    env.CLONE_BUNDLING_FEATURE = true
-    env.STITCH_BUNDLING_FEATURE = true
-    env.SECURITY_CLASSIFICATION = false
-    env.MIGRATION_ENABLED = true
-    env.ACCESS_PROFILES_ENABLED = true
-    env.DSS_UPDATE_CASE_ENABLED = false
+def uploadDmnDiagrams() {
+  dir("${WORKSPACE}/bin") {
+    tenantId = "st_cic"
+    product = "st_cic"
+    sh "./wa/import-dmn-diagram.sh ${WORKSPACE} ${env} ${tenantId} ${product}"
+  }
+}
+
+def uploadBpmnDiagram() {
+  dir("${WORKSPACE}/bin") {
+    bpmnBranch = "master"
+    sh """
+      ./wa/pull-latest-camunda-wa-files.sh ${bpmnBranch}
+      ./wa/import-wa-bpmn-diagram.sh .
+    """
+  }
+}
+
+def setupRoleAssignments() {
+  dir("${WORKSPACE}/bin") {
+    sh "./wa/setup-role-assignments.sh"
   }
 }

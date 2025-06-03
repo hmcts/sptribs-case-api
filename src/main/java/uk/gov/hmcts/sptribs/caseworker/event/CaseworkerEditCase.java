@@ -1,10 +1,12 @@
 package uk.gov.hmcts.sptribs.caseworker.event;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
+import uk.gov.hmcts.ccd.sdk.api.Event;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.ccd.sdk.type.Flags;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
@@ -41,6 +43,7 @@ import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_JUDGE;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_RESPONDENT;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_CASEWORKER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_JUDGE;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_WA_CONFIG_USER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE;
 
@@ -58,6 +61,9 @@ public class CaseworkerEditCase implements CCDConfig<CaseData, State, UserRole> 
 
     private final SubmissionService submissionService;
 
+    @Value("${feature.wa.enabled}")
+    private boolean isWorkAllocationEnabled;
+
     @Autowired
     public CaseworkerEditCase(SubmissionService submissionService) {
         this.submissionService = submissionService;
@@ -74,21 +80,6 @@ public class CaseworkerEditCase implements CCDConfig<CaseData, State, UserRole> 
         editRepresentativeDetails.addTo(pageBuilder);
         editContactPreferenceDetails.addTo(pageBuilder);
         editFurtherDetails.addTo(pageBuilder);
-    }
-
-    private PageBuilder addEventConfig(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
-        return new PageBuilder(configBuilder
-            .event(CASEWORKER_EDIT_CASE)
-            .forStates(DSS_Submitted, Submitted, CaseManagement, ReadyToList, AwaitingHearing, AwaitingOutcome)
-            .name("Case: Edit case")
-            .description("Case: Edit case")
-            .showSummary()
-            .grant(CREATE_READ_UPDATE, SUPER_USER,
-                ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER, ST_CIC_HEARING_CENTRE_ADMIN,
-                ST_CIC_HEARING_CENTRE_TEAM_LEADER, ST_CIC_SENIOR_JUDGE, ST_CIC_RESPONDENT)
-            .grantHistoryOnly(SUPER_USER, ST_CIC_JUDGE)
-            .aboutToSubmitCallback(this::aboutToSubmit)
-            .submittedCallback(this::submitted));
     }
 
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(CaseDetails<CaseData, State> details,
@@ -126,6 +117,28 @@ public class CaseworkerEditCase implements CCDConfig<CaseData, State, UserRole> 
         return SubmittedCallbackResponse.builder()
             .confirmationHeader("# Case Updated")
             .build();
+    }
+
+    private PageBuilder addEventConfig(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
+        Event.EventBuilder<CaseData, UserRole, State> eventBuilder = configBuilder
+            .event(CASEWORKER_EDIT_CASE)
+            .forStates(DSS_Submitted, Submitted, CaseManagement, ReadyToList, AwaitingHearing, AwaitingOutcome)
+            .name("Case: Edit case")
+            .description("Case: Edit case")
+            .showSummary()
+            .grant(CREATE_READ_UPDATE, SUPER_USER,
+                ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER, ST_CIC_HEARING_CENTRE_ADMIN,
+                ST_CIC_HEARING_CENTRE_TEAM_LEADER, ST_CIC_SENIOR_JUDGE, ST_CIC_RESPONDENT)
+            .grantHistoryOnly(ST_CIC_JUDGE)
+            .aboutToSubmitCallback(this::aboutToSubmit)
+            .submittedCallback(this::submitted);
+
+        if (isWorkAllocationEnabled) {
+            eventBuilder.publishToCamunda()
+                .grant(CREATE_READ_UPDATE, ST_CIC_WA_CONFIG_USER);
+        }
+
+        return new PageBuilder(eventBuilder);
     }
 
     private boolean checkNull(CaseData data) {

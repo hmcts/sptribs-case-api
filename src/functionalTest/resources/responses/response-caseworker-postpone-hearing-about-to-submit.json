@@ -1,0 +1,43 @@
+{
+  "data": {
+    "cicCaseHearingList": {
+      "value": {
+        "code": "${json-unit.any-string}",
+        "label": "${json-unit.any-string}"
+      },
+      "list_items": [
+        {
+          "code": "${json-unit.any-string}",
+          "label": "${json-unit.any-string}"
+        }
+      ],
+      "valueCode": "${json-unit.any-string}",
+      "valueLabel": "${json-unit.any-string}"
+    },
+    "cicCaseHearingNotificationParties": [
+      "Subject",
+      "Respondent"
+    ],
+    "cicCaseNotifyPartySubject": [
+      "SubjectCIC"
+    ],
+    "cicCaseNotifyPartyRespondent": [
+      "RespondentCIC"
+    ],
+    "cicCaseRespondentName": "Appeals team",
+    "cicCaseRespondentOrganisation": "CICA",
+    "cicCaseRespondentEmail": "appeals.team@cica.gov.uk",
+    "cicCaseFullName": "Testing subject",
+    "cicCaseFirstDueDate": "",
+    "stayIsCaseStayed": "No",
+    "hearingStatus": "Postponed",
+    "postponeDate": "${json-unit.any-string}",
+    "postponeReason": "Appellant is out of country",
+    "hearingList": [],
+    "closedDayCount": "",
+    "currentEvent": "",
+    "firstHearingDate": "",
+    "dataVersion": 0
+  },
+  "state": "CaseManagement"
+}

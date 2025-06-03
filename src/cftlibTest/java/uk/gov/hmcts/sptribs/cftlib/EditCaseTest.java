@@ -17,8 +17,6 @@ public class EditCaseTest extends XuiTest {
         login.signInWithCaseworker();
         Case newCase = new Case(page);
         newCase.createCase();
-
         newCase.editCase();
-
     }
 }

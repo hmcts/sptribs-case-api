@@ -1,0 +1,57 @@
+{
+  "cicCaseEmail": "subject@hmcts.net",
+  "subjectFlags": {
+    "details": [],
+    "partyName": "Testing subject",
+    "roleOnCase": "subject"
+  },
+  "securityClass": "PUBLIC",
+  "cicCaseAddress": {
+    "County": "",
+    "Country": "United Kingdom",
+    "PostCode": "SW1A 1AA",
+    "PostTown": "London",
+    "AddressLine1": "Buckingham Palace",
+    "AddressLine2": "",
+    "AddressLine3": ""
+  },
+  "cicCaseFullName": "Testing subject",
+  "cicCaseRegionCIC": "London",
+  "cicCaseSchemeCic": "Year2012",
+  "stayIsCaseStayed": "No",
+  "cicCasePartiesCIC": [
+    "SubjectCIC"
+  ],
+  "cicCaseSubjectCIC": [
+    "SubjectCIC"
+  ],
+  "hyphenatedCaseRef": "1717-6752-8225-0217",
+  "cicCaseDateOfBirth": "2000-01-01",
+  "cicCaseCaseCategory": "Assessment",
+  "caseNameHmctsInternal": "Testing subject",
+  "cicCaseRespondentName": "Appeals team",
+  "cicCaseCaseSubcategory": "other",
+  "cicCaseRespondentEmail": "appeals.team@cica.gov.uk",
+  "cicCaseCaseReceivedDate": "2000-01-01",
+  "cicCaseClaimLinkedToCic": "No",
+  "cicCaseFormReceivedInTime": "Yes",
+  "cicCaseContactPreferenceType": "Email",
+  "cicCaseRespondentOrganisation": "CICA",
+  "cicCaseIsRepresentativePresent": "No",
+  "cicCaseCompensationClaimLinkCIC": "No",
+  "cicCaseApplicantDocumentsUploaded": [
+    {
+      "id": "94039259-a1a2-4a13-9581-27e4e4facd48",
+      "value": {
+        "documentLink": {
+          "category_id": "A",
+          "document_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/4225351d-5740-41da-b27d-519eabf8ed55",
+          "document_filename": "pdf.pdf",
+          "document_binary_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/4225351d-5740-41da-b27d-519eabf8ed55/binary"
+        },
+        "documentCategory": "ApplicationForm",
+        "documentEmailContent": "Lorem ipsum description"
+      }
+    }
+  ]
+}

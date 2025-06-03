@@ -28,6 +28,8 @@ import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerWithCAAAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.DefaultAccess;
 import uk.gov.hmcts.sptribs.document.model.CICDocument;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
+import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocumentUpload;
+import uk.gov.hmcts.sptribs.document.model.DocumentType;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -49,12 +51,15 @@ import static uk.gov.hmcts.ccd.sdk.type.FieldType.TextArea;
 @Builder(toBuilder = true)
 @JsonNaming(PropertyNamingStrategies.UpperCamelCaseStrategy.class)
 public class CicCase {
+    @CCD(
+        access = {DefaultAccess.class}
+    )
+    private String referralTypeForWA;
 
     @CCD(
         label = "Preview order",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
         categoryID = "TD"
-
     )
     private Document orderTemplateIssued;
 
@@ -65,7 +70,6 @@ public class CicCase {
     private DynamicList draftOrderDynamicList;
 
     @CCD(
-        label = "",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private DynamicList flagDynamicList;
@@ -146,11 +150,25 @@ public class CicCase {
     private DynamicList amendDocumentList;
 
     @CCD(
-        label = "Documents",
-        typeParameterOverride = "CaseworkerCICDocument",
-        access = {DefaultAccess.class}
+        label = "Document Category",
+        typeOverride = FixedList,
+        typeParameterOverride = "DocumentType",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
-    private CaseworkerCICDocument selectedDocument;
+    private DocumentType selectedDocumentCategory;
+
+    @CCD(
+        label = "Description",
+        typeOverride = TextArea,
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private String selectedDocumentEmailContent;
+
+    @CCD(
+        label = "File",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private Document selectedDocumentLink;
 
     @CCD(
         label = "Notified Parties",
@@ -466,7 +484,6 @@ public class CicCase {
     @CCD(
         label = "Is the representative legally qualified?",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
-
     )
     private YesOrNo isRepresentativeQualified;
 
@@ -475,12 +492,12 @@ public class CicCase {
     )
     private YesOrNo representativeDetailsObjects;
 
-
     @CCD(
         label = "Have the tribunal forms been received in time?",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private YesOrNo formReceivedInTime;
+
     @CCD(
         label = "Has the applicant explained why they missed the deadline?",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
@@ -490,14 +507,12 @@ public class CicCase {
     @CCD(
         label = "Have any claims linked to this case been lodged with CICA? ",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
-
     )
     private YesOrNo claimLinkedToCic;
 
     @CCD(
         label = "Are there any ongoing compensation claims linked to this case?",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
-
     )
     private YesOrNo compensationClaimLinkCIC;
 
@@ -513,7 +528,6 @@ public class CicCase {
     )
     private YesOrNo isRepresentativePresent;
 
-    //new
     @CCD(
         label = "Case Documents",
         typeOverride = Collection,
@@ -523,10 +537,24 @@ public class CicCase {
     private List<ListValue<CaseworkerCICDocument>> applicantDocumentsUploaded;
 
     @CCD(
+        label = "Case Documents",
+        typeOverride = Collection,
+        typeParameterOverride = "CaseworkerCICDocumentUpload",
+        access = {DefaultAccess.class}
+    )
+    private List<ListValue<CaseworkerCICDocumentUpload>> caseDocumentsUpload;
+
+    @CCD(
         label = "Reinstate Documents",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     List<ListValue<CaseworkerCICDocument>> reinstateDocuments;
+
+    @CCD(
+        label = "Reinstate Documents",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    List<ListValue<CaseworkerCICDocumentUpload>> reinstateDocumentsUpload;
 
     @CCD(
         label = "Decision Documents",
@@ -544,7 +572,6 @@ public class CicCase {
         access = {CaseworkerAndSuperUserAccess.class}
     )
     private List<ListValue<CaseworkerCICDocument>> finalDecisionDocumentList;
-
 
     @CCD(
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
@@ -621,26 +648,26 @@ public class CicCase {
     private LocalDate findEarliestDate(List<ListValue<DateModel>> dueDateList, LocalDate compare) {
         LocalDate earliestDate = compare;
         for (ListValue<DateModel> dateModelListValue : dueDateList) {
-            if ((null == dateModelListValue.getValue().getOrderMarkAsCompleted()
+            if ((dateModelListValue.getValue().getOrderMarkAsCompleted() == null
                 || !dateModelListValue.getValue().getOrderMarkAsCompleted().contains(GetAmendDateAsCompleted.MARKASCOMPLETED))
                 && dateModelListValue.getValue().getDueDate().isBefore(compare)) {
                 earliestDate = dateModelListValue.getValue().getDueDate();
             }
         }
         return earliestDate;
-
     }
 
     public String getFirstDueDate() {
-
         DateTimeFormatter dateFormatter = ofPattern("dd MMM yyyy", UK);
         LocalDate compare = LocalDate.MAX;
+
         if (!CollectionUtils.isEmpty(orderList)) {
             for (ListValue<Order> orderListValue : orderList) {
                 if (!CollectionUtils.isEmpty(orderListValue.getValue().getDueDateList())) {
                     compare = findEarliestDate(orderListValue.getValue().getDueDateList(), compare);
                 }
             }
+
             if (compare.isBefore(LocalDate.MAX)) {
                 return dateFormatter.format(compare);
             }
@@ -654,16 +681,17 @@ public class CicCase {
     }
 
     public void removeRepresentative() {
-        if (null != representativeCIC) {
+        if (representativeCIC != null) {
             representativeCIC = new HashSet<>();
         }
-        if (null != notifyPartyRepresentative) {
+        if (notifyPartyRepresentative != null) {
             notifyPartyRepresentative = new HashSet<>();
         }
-        if (null != hearingNotificationParties) {
+        if (hearingNotificationParties != null) {
             hearingNotificationParties.remove(NotificationParties.REPRESENTATIVE);
         }
-        if (null != contactPartiesCIC) {
+
+        if (contactPartiesCIC != null) {
             Set<ContactPartiesCIC> temp = new HashSet<>();
             for (ContactPartiesCIC partyCIC : contactPartiesCIC) {
                 if (partyCIC != ContactPartiesCIC.REPRESENTATIVETOCONTACT) {
@@ -672,6 +700,7 @@ public class CicCase {
             }
             contactPartiesCIC = temp;
         }
+
         representativeFullName = "";
         representativeOrgName = "";
         representativeReference = "";
@@ -681,15 +710,16 @@ public class CicCase {
     }
 
     public void removeApplicant() {
-        if (null != applicantCIC) {
+        if (applicantCIC != null) {
             applicantCIC = new HashSet<>();
         }
-        if (null != notifyPartyApplicant) {
+        if (notifyPartyApplicant != null) {
             notifyPartyApplicant = new HashSet<>();
         }
-        if (null != hearingNotificationParties) {
+        if (hearingNotificationParties != null) {
             hearingNotificationParties.remove(NotificationParties.APPLICANT);
         }
+
         applicantFullName = "";
         applicantAddress = new AddressGlobalUK();
         applicantPhoneNumber = "";

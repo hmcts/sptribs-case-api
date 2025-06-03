@@ -5,10 +5,13 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.test.util.ReflectionTestUtils;
 import uk.gov.hmcts.ccd.sdk.ConfigBuilderImpl;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.Event;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
+import uk.gov.hmcts.ccd.sdk.type.DynamicList;
+import uk.gov.hmcts.ccd.sdk.type.DynamicListElement;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.helper.RecordListHelper;
@@ -23,7 +26,8 @@ import uk.gov.hmcts.sptribs.ciccase.model.RespondentCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.SubjectCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
-import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
+import uk.gov.hmcts.sptribs.ciccase.model.access.Permissions;
+import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocumentUpload;
 import uk.gov.hmcts.sptribs.judicialrefdata.JudicialService;
 
 import java.util.List;
@@ -32,9 +36,10 @@ import java.util.Set;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_WA_CONFIG_USER;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigBuilder;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.getEventsFrom;
-import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getCaseworkerCICDocumentList;
+import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getCaseworkerCICDocumentUploadList;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getDynamicList;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getRecordListing;
 import static uk.gov.hmcts.sptribs.testutil.TestEventConstants.CASEWORKER_CREATE_HEARING_SUMMARY;
@@ -56,21 +61,49 @@ class CaseworkerCreateHearingSummaryTest {
 
     @Test
     void shouldAddConfigurationToConfigBuilder() {
-        //Given
         final ConfigBuilderImpl<CaseData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
 
-        //When
         caseWorkerCreateHearingSummary.configure(configBuilder);
 
-        //Then
         assertThat(getEventsFrom(configBuilder).values())
             .extracting(Event::getId)
             .contains(CASEWORKER_CREATE_HEARING_SUMMARY);
+
+        assertThat(getEventsFrom(configBuilder).values())
+            .extracting(Event::isPublishToCamunda)
+            .contains(false);
+
+        assertThat(getEventsFrom(configBuilder).values())
+                .extracting(Event::getGrants)
+                .extracting(map -> map.containsKey(ST_CIC_WA_CONFIG_USER))
+                .contains(false);
+    }
+
+    @Test
+    void shouldAddPublishToCamundaWhenWAIsEnabled() {
+        ReflectionTestUtils.setField(caseWorkerCreateHearingSummary, "isWorkAllocationEnabled", true);
+
+        final ConfigBuilderImpl<CaseData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
+
+        caseWorkerCreateHearingSummary.configure(configBuilder);
+
+        assertThat(getEventsFrom(configBuilder).values())
+            .extracting(Event::isPublishToCamunda)
+            .contains(true);
+
+        assertThat(getEventsFrom(configBuilder).values())
+                .extracting(Event::getGrants)
+                .extracting(map -> map.containsKey(ST_CIC_WA_CONFIG_USER))
+                .contains(true);
+
+        assertThat(getEventsFrom(configBuilder).values())
+                .extracting(Event::getGrants)
+                .extracting(map -> map.get(ST_CIC_WA_CONFIG_USER))
+                .contains(Permissions.CREATE_READ_UPDATE);
     }
 
     @Test
     void shouldRunAboutToStart() {
-        //Given
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
         final CicCase cicCase = CicCase.builder().build();
         final CaseData caseData = CaseData.builder()
@@ -81,10 +114,8 @@ class CaseworkerCreateHearingSummaryTest {
         when(hearingService.getListedHearingDynamicList(any())).thenReturn(null);
         when(judicialService.getAllUsers(caseData)).thenReturn(getDynamicList());
 
-        //When
         AboutToStartOrSubmitResponse<CaseData, State> response = caseWorkerCreateHearingSummary.aboutToStart(updatedCaseDetails);
 
-        //Then
         assertThat(response).isNotNull();
         assertThat(response.getData().getCicCase().getHearingList()).isNull();
         assertThat(response.getData().getCurrentEvent()).isEqualTo(CASEWORKER_CREATE_HEARING_SUMMARY);
@@ -92,12 +123,16 @@ class CaseworkerCreateHearingSummaryTest {
 
     @Test
     void shouldRunAboutToSubmit() {
-        //Given
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
         final CicCase cicCase = CicCase.builder()
             .notifyPartyRepresentative(Set.of(RepresentativeCIC.REPRESENTATIVE))
             .notifyPartyRespondent(Set.of(RespondentCIC.RESPONDENT))
             .notifyPartySubject(Set.of(SubjectCIC.SUBJECT))
+            .hearingList(
+                DynamicList.builder()
+                    .value(DynamicListElement.builder().label("1 - Final - 21 Apr 2023 10:00").build())
+                    .build()
+            )
             .build();
         final CaseData caseData = CaseData.builder()
             .cicCase(cicCase)
@@ -106,9 +141,9 @@ class CaseworkerCreateHearingSummaryTest {
         Listing recordListing = getRecordListing();
         caseData.setListing(recordListing);
 
-        List<ListValue<CaseworkerCICDocument>> documentList = getCaseworkerCICDocumentList("file.pdf");
+        List<ListValue<CaseworkerCICDocumentUpload>> documentList = getCaseworkerCICDocumentUploadList("file.pdf");
 
-        HearingSummary hearingSummary = HearingSummary.builder().recFile(documentList).build();
+        HearingSummary hearingSummary = HearingSummary.builder().recFileUpload(documentList).build();
         recordListing.setSummary(hearingSummary);
 
         updatedCaseDetails.setData(caseData);
@@ -116,11 +151,9 @@ class CaseworkerCreateHearingSummaryTest {
         when(recordListHelper.saveSummary(any())).thenReturn(recordListing);
         when(judicialService.populateJudicialId(any())).thenReturn("personal_code");
 
-        //When
         AboutToStartOrSubmitResponse<CaseData, State> response =
             caseWorkerCreateHearingSummary.aboutToSubmit(updatedCaseDetails, beforeDetails);
 
-        //Then
         assertThat(response).isNotNull();
         assertThat(response.getData().getListing().getHearingStatus())
             .isEqualTo(HearingState.Complete);
@@ -130,19 +163,18 @@ class CaseworkerCreateHearingSummaryTest {
             .isEqualTo(recordListing);
         assertThat(response.getData().getListing().getSummary().getJudgeList())
             .isNull();
+        assertThat(response.getData().getListing().getSummary().getRecFileUpload()).hasSize(0);
+        assertThat(response.getData().getListing().getSummary().getRecFile()).hasSize(0);
     }
 
     @Test
     void shouldRunSubmitted() {
-        //Given
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
         final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
 
-        //When
         SubmittedCallbackResponse response =
             caseWorkerCreateHearingSummary.summaryCreated(updatedCaseDetails, beforeDetails);
 
-        //Then
         assertThat(response).isNotNull();
         assertThat(response.getConfirmationHeader()).contains("Hearing summary created");
     }

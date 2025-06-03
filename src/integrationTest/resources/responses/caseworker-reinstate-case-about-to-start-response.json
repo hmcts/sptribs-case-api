@@ -1,0 +1,26 @@
+{
+  "data": {
+    "cicCaseReinstateDocuments": [
+      {
+        "value": {
+          "documentCategory": "Linked docs",
+          "documentEmailContent": "some email content",
+          "documentLink": {
+            "document_filename": "file.pdf"
+          }
+        }
+      }
+    ],
+    "cicCaseReinstateDocumentsUpload": [
+      {
+        "value": {
+          "documentCategory": "Linked docs",
+          "documentEmailContent": "some email content",
+          "documentLink": {
+            "document_filename": "file.pdf"
+          }
+        }
+      }
+    ]
+  }
+}

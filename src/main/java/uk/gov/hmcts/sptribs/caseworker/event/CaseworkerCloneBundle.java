@@ -2,12 +2,9 @@ package uk.gov.hmcts.sptribs.caseworker.event;
 
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
-import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
-import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
@@ -30,24 +27,14 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 @Setter
 public class CaseworkerCloneBundle implements CCDConfig<CaseData, State, UserRole> {
 
-    @Value("${feature.bundling-clone.enabled}")
-    private boolean bundlingEnabled;
-
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
-        if (bundlingEnabled) {
-            doConfigure(configBuilder);
-        }
-    }
-
-    private void doConfigure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         new PageBuilder(configBuilder
             .event(CLONE_BUNDLE)
             .forStates(CaseManagement, AwaitingHearing)
             .name("Bundle: Clone a bundle")
             .description("Bundle: Clone a bundle")
             .showSummary()
-            .aboutToSubmitCallback(this::aboutToSubmit)
             .grant(CREATE_READ_UPDATE, SUPER_USER)
             .grantHistoryOnly(
                 ST_CIC_CASEWORKER,
@@ -60,18 +47,5 @@ public class CaseworkerCloneBundle implements CCDConfig<CaseData, State, UserRol
             .page("cloneBundle")
             .pageLabel("Clone a bundle")
             .done();
-    }
-
-    public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(
-        final CaseDetails<CaseData, State> details,
-        final CaseDetails<CaseData, State> beforeDetails
-    ) {
-        log.info("Caseworker create bundle callback invoked for Case Id: {}", details.getId());
-
-        final CaseData caseData = details.getData();
-
-        return AboutToStartOrSubmitResponse.<CaseData, State>builder()
-            .data(caseData)
-            .build();
     }
 }
