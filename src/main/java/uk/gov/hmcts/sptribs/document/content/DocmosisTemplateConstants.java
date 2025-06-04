@@ -47,12 +47,12 @@ public final class DocmosisTemplateConstants {
     public static final String ME_DMI_MAIN_CONTENT =
         """
             (Directions for DMI/ Psychological/Psychiatric Report – please specify which expert) \
-            1.     I have reviewed the available evidence and consider that it is necessary for <<SubjectRepFullName>> to be \
+            1.     I have reviewed the available evidence and consider that it is necessary for ... to be \
             assessed by a Psychiatrist or Clinical Psychologist.  \
             2.     The CICA is directed to commission an assessment by a Psychiatrist or Clinical Psychologist.  Up-to-date GP \
             records should be sent to the expert, along with a copy of the questions overleaf. CICA is requested to provide an \
             update on progress if the report has not been completed within 4 months of the issue of this notice. \
-            3.     To <<SubjectRepFullName>>: Please could you ask your GP for a copy of all your records up to the present \
+            3.     To ...: Please could you ask your GP for a copy of all your records up to the present \
             day. You are entitled to a copy of these without charge, and it is likely to avoid delay if you obtain them yourself. \
             The records can be in digital form and emailed to CICA.  Please do this as soon as you can.  (If you are unable to \
             do this, it may be possible for the CICA to obtain the GP records with your consent, although the cost of this may \
