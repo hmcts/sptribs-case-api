@@ -21,7 +21,6 @@
     "cicCaseRepresentativeFullName": "Rep Name",
     "cicCaseRepresentativeEmailAddress": "representative@test.com",
     "cicCaseRepresentativeContactDetailsPreference": "Email",
-    "cicCaseFirstDueDate": "",
     "stayIsCaseStayed": "No",
     "hearingCreatedDate": "${json-unit.any-string}",
     "hearingStatus": "Listed",

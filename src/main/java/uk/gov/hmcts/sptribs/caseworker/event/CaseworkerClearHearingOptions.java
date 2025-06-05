@@ -49,6 +49,8 @@ public class CaseworkerClearHearingOptions implements CCDConfig<CaseData, State,
         listing.setHearingFormat(null);
         listing.setShortNotice(null);
 
+        caseData.getCicCase().setFirstDueDate(caseData.getCicCase().calculateFirstDueDate());
+
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
             .build();
