@@ -5,7 +5,6 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
-import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
@@ -46,7 +45,6 @@ public class CaseWorkerEditCicaCaseDetails implements CCDConfig<CaseData, State,
                 .name("Case: Edit case details")
                 .description("Edit case details")
                 .showSummary()
-                .aboutToSubmitCallback(this::aboutToSubmit)
                 .submittedCallback(this::submitted)
                 .grant(CREATE_READ_UPDATE, SUPER_USER, ST_CIC_RESPONDENT)
                 .grantHistoryOnly(
@@ -57,18 +55,6 @@ public class CaseWorkerEditCicaCaseDetails implements CCDConfig<CaseData, State,
                     ST_CIC_SENIOR_JUDGE,
                     ST_CIC_JUDGE));
         editCicaCaseDetailsPage.addTo(pageBuilder);
-    }
-
-    public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(
-        final CaseDetails<CaseData, State> details,
-        final CaseDetails<CaseData, State> beforeDetails
-    ) {
-
-        CaseData caseData = details.getData();
-        return AboutToStartOrSubmitResponse.<CaseData, State>builder()
-            .data(caseData)
-            .state(details.getState())
-            .build();
     }
 
     public SubmittedCallbackResponse submitted(CaseDetails<CaseData, State> details,
