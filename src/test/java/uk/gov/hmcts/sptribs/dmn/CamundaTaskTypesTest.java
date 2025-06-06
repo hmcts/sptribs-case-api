@@ -37,6 +37,7 @@ import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.PROCESS_POSTPON
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.PROCESS_REINSTATEMENT_DECISION_NOTICE_TASK;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.PROCESS_RULE27_DECISION_TASK;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.PROCESS_SET_ASIDE_DIR_TASK;
+import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.PROCESS_STAY_DIR_LISTED_TASK;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.PROCESS_STAY_DIR_TASK;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.PROCESS_STRIKE_OUT_DIR_RETURNED_TASK;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.PROCESS_TIME_EXT_DIR_RETURNED_TASK;
@@ -64,6 +65,7 @@ import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.REVIEW_SPECIFIC
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.REVIEW_SPECIFIC_ACCESS_REQ_CTSC_TASK;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.REVIEW_SPECIFIC_ACCESS_REQ_JUDICIARY_TASK;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.REVIEW_SPECIFIC_ACCESS_REQ_LO_TASK;
+import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.REVIEW_STAY_REQ_CASE_LISTED_JUDGE_TASK;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.REVIEW_STAY_REQ_JUDGE_TASK;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.REVIEW_STAY_REQ_LO_TASK;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.REVIEW_STRIKE_OUT_REQ_JUDGE_TASK;
@@ -144,6 +146,10 @@ class CamundaTaskTypesTest extends DmnDecisionTableBaseUnitTest {
             Map.of(
                 "taskTypeId", PROCESS_STAY_DIR_TASK,
                 "taskTypeName", "Process stay directions"
+            ),
+            Map.of(
+                "taskTypeId", PROCESS_STAY_DIR_LISTED_TASK,
+                "taskTypeName", "Process stay directions listed"
             ),
             Map.of(
                 "taskTypeId", ISSUE_DECISION_NOTICE_TASK,
@@ -238,6 +244,10 @@ class CamundaTaskTypesTest extends DmnDecisionTableBaseUnitTest {
                 "taskTypeName", "Review stay request - Judge"
             ),
             Map.of(
+                "taskTypeId", REVIEW_STAY_REQ_CASE_LISTED_JUDGE_TASK,
+                "taskTypeName", "Review stay request case listed - Judge"
+            ),
+            Map.of(
                 "taskTypeId", REVIEW_NEW_CASE_PROVIDE_DIR_JUDGE_TASK,
                 "taskTypeName", "Review new case and provide directions - Judge"
             ),
@@ -323,7 +333,7 @@ class CamundaTaskTypesTest extends DmnDecisionTableBaseUnitTest {
         DmnDecisionTableImpl logic = (DmnDecisionTableImpl) decision.getDecisionLogic();
         assertThat(logic.getInputs().size(), is(1));
         assertThat(logic.getOutputs().size(), is(2));
-        assertThat(logic.getRules().size(), is(56));
+        assertThat(logic.getRules().size(), is(58));
     }
 
     @ParameterizedTest(name = "retrieve all task type data")
