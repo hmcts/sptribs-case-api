@@ -67,7 +67,7 @@ public final class DocmosisTemplateConstants {
             incident on .......
             (a) By disabling mental injury/illness, we mean having a substantial adverse effect on a person's ability to carry \
             out normal day-to-day activities, including but not limited to impaired work or school performance or effects on \
-            social relationships or sexual function. It does not include temporary mental anxiety and similar temporary conditions.\
+            social relationships or sexual function. It does not include temporary mental anxiety and similar temporary conditions.
             (b) By 'directly attributable' we mean it is enough if the incident was a substantial or significant cause of the \
             injury/illness. It does not have to be the sole cause.
             2.     If no, please give reasons.
