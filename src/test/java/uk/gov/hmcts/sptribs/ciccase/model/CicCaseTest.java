@@ -71,7 +71,7 @@ class CicCaseTest {
     }
 
     @Test
-    void shouldGetFirstDueDate() {
+    void shouldCalculateFirstDueDate() {
         //When
         LocalDate now = LocalDate.now();
         DateModel dateModel1 = DateModel.builder().dueDate(now).build();
@@ -109,7 +109,7 @@ class CicCaseTest {
 
         //When
         DateTimeFormatter dateFormatter = ofPattern("dd MMM yyyy", UK);
-        String result = cicCase.getFirstDueDate();
+        String result = cicCase.calculateFirstDueDate();
 
         //Then
         assertThat(result).isEqualTo(dateFormatter.format(now));
