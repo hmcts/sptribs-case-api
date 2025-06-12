@@ -275,7 +275,7 @@ dependencyManagement {
     dependency group: 'org.bouncycastle', name: 'bcpkix-jdk18on', version: '1.80'
     dependency group: 'org.camunda.connect', name: 'camunda-connect-connectors-all', version: '7.23.0'
 
-    dependencySet(group: 'commons-fileupload', version: '1.5') {
+    dependencySet(group: 'commons-fileupload', version: '1.6.0') {
       entry 'commons-fileupload'
     }
   }
