@@ -29,6 +29,7 @@ import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.FOLLOW_UP_NONCO
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.ISSUE_CASE_TO_RESPONDENT_TASK;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.ISSUE_DECISION_NOTICE_TASK;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.ISSUE_DUE_DATE;
+import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.PROCESS_CASE_WITHDRAWAL_DIR_LISTED_TASK;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.PROCESS_CASE_WITHDRAWAL_DIR_TASK;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.PROCESS_CORRECTIONS_TASK;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.PROCESS_DIR_RELISTED_CASE_TASK;
@@ -74,6 +75,7 @@ import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.REVIEW_STRIKE_O
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.REVIEW_STRIKE_OUT_REQ_LO_TASK;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.REVIEW_TIME_EXT_REQ_JUDGE_TASK;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.REVIEW_TIME_EXT_REQ_LO_TASK;
+import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.REVIEW_WITHDRAWAL_REQ_CASE_LISTED_JUDGE_TASK;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.REVIEW_WITHDRAWAL_REQ_JUDGE_TASK;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.REVIEW_WITHDRAWAL_REQ_LO_TASK;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.REVIEW_WRITTEN_REASONS_REQ_TASK;
@@ -97,6 +99,11 @@ class CamundaTaskWaPermissionTest extends DmnDecisionTableBaseUnitTest {
         return Stream.of(
             Arguments.of(
                 PROCESS_CASE_WITHDRAWAL_DIR_TASK,
+                DUMMY_CASE_DATA,
+                defaultAdminAndCtscTaskPermissions()
+            ),
+            Arguments.of(
+                PROCESS_CASE_WITHDRAWAL_DIR_LISTED_TASK,
                 DUMMY_CASE_DATA,
                 defaultAdminAndCtscTaskPermissions()
             ),
@@ -306,6 +313,11 @@ class CamundaTaskWaPermissionTest extends DmnDecisionTableBaseUnitTest {
                 defaultJudicialPermissions()
             ),
             Arguments.of(
+                REVIEW_WITHDRAWAL_REQ_CASE_LISTED_JUDGE_TASK,
+                DUMMY_CASE_DATA,
+                defaultJudicialPermissions()
+            ),
+            Arguments.of(
                 REVIEW_RULE27_REQ_JUDGE_TASK,
                 DUMMY_CASE_DATA,
                 defaultJudicialPermissions()
@@ -368,28 +380,12 @@ class CamundaTaskWaPermissionTest extends DmnDecisionTableBaseUnitTest {
             Arguments.of(
                 CREATE_DUE_DATE,
                 DUMMY_CASE_DATA,
-                List.of(
-                    taskSupervisorPermissions(),
-                    regionalCentreAdminPermissions(),
-                    regionalCentreTeamLeaderPermissions(),
-                    hearingCentreAdminPermissions(),
-                    hearingCentreTeamLeaderPermissions(),
-                    ctscPermissions(),
-                    ctscTeamLeaderPermissions()
-                )
+                defaultAdminAndCtscTaskPermissions()
             ),
             Arguments.of(
                 ISSUE_DUE_DATE,
                 DUMMY_CASE_DATA,
-                List.of(
-                    taskSupervisorPermissions(),
-                    regionalCentreAdminPermissions(),
-                    regionalCentreTeamLeaderPermissions(),
-                    hearingCentreAdminPermissions(),
-                    hearingCentreTeamLeaderPermissions(),
-                    ctscPermissions(),
-                    ctscTeamLeaderPermissions()
-                )
+                defaultAdminAndCtscTaskPermissions()
             )
         );
     }
