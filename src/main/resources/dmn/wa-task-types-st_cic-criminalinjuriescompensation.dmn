@@ -284,6 +284,17 @@
           <text>"Review listing directions - Legal Officer"</text>
         </outputEntry>
       </rule>
+      <rule id="DecisionRule_15xk8yc">
+        <inputEntry id="UnaryTests_0d0z7nr">
+          <text></text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_04uwlit">
+          <text>"reviewListingDirectionsCaseListedLO"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_08g7mtn">
+          <text>"Review listing directions case listed - Legal Officer"</text>
+        </outputEntry>
+      </rule>
       <rule id="DecisionRule_044w3wb">
         <inputEntry id="UnaryTests_18lverr">
           <text></text>

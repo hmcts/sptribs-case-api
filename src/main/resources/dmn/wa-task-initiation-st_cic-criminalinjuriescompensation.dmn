@@ -860,6 +860,38 @@
           <text>"LEGAL_OPERATIONS"</text>
         </outputEntry>
       </rule>
+      <rule id="DecisionRule_0hkmf5u">
+        <inputEntry id="UnaryTests_0xjiqrn">
+          <text>"refer-to-legal-officer"</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_1lg60vd">
+          <text>"ReadyToList"</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_0vylhaa">
+          <text>"Listing directions"</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_0y6qj01">
+          <text>"reviewListingDirectionsCaseListedLO"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_079y2ym">
+          <text>"Review listing directions case listed - Legal Officer"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_1ojypah">
+          <text></text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_1qnu3sq">
+          <text>5</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_1yhomau">
+          <text>"Processing"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_1rnijk3">
+          <text>"decision_making_work"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_12eg50x">
+          <text>"LEGAL_OPERATIONS"</text>
+        </outputEntry>
+      </rule>
       <rule id="DecisionRule_05hhwn0">
         <inputEntry id="UnaryTests_0ocwwzw">
           <text>"refer-to-legal-officer"</text>

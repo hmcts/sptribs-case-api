@@ -49,6 +49,7 @@ import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.PROCESS_WRITTEN
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.REGISTER_NEW_CASE_TASK;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.REVIEW_CORRECTIONS_REQ_TASK;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.REVIEW_LISTING_DIR_CASE_LISTED_JUDGE_TASK;
+import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.REVIEW_LISTING_DIR_CASE_LISTED_LO_TASK;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.REVIEW_LISTING_DIR_JUDGE_TASK;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.REVIEW_LISTING_DIR_LO_TASK;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.REVIEW_LIST_CASE_JUDGE_TASK;
@@ -239,6 +240,11 @@ class CamundaTaskWaPermissionTest extends DmnDecisionTableBaseUnitTest {
             ),
             Arguments.of(
                 REVIEW_LIST_CASE_LO_TASK,
+                DUMMY_CASE_DATA,
+                defaultLegalOperationsPermissions()
+            ),
+            Arguments.of(
+                REVIEW_LISTING_DIR_CASE_LISTED_LO_TASK,
                 DUMMY_CASE_DATA,
                 defaultLegalOperationsPermissions()
             ),

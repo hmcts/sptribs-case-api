@@ -47,6 +47,7 @@ import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.PROCESS_WRITTEN
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.REGISTER_NEW_CASE_TASK;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.REVIEW_CORRECTIONS_REQ_TASK;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.REVIEW_LISTING_DIR_CASE_LISTED_JUDGE_TASK;
+import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.REVIEW_LISTING_DIR_CASE_LISTED_LO_TASK;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.REVIEW_LISTING_DIR_JUDGE_TASK;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.REVIEW_LISTING_DIR_LO_TASK;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.REVIEW_LIST_CASE_JUDGE_TASK;
@@ -259,6 +260,10 @@ class CamundaTaskCompletionTest extends DmnDecisionTableBaseUnitTest {
                         "completionMode", AUTO_COMPLETE_MODE
                     ),
                     Map.of(
+                        "taskType", REVIEW_LISTING_DIR_CASE_LISTED_LO_TASK,
+                        "completionMode", AUTO_COMPLETE_MODE
+                    ),
+                    Map.of(
                         "taskType", REVIEW_WITHDRAWAL_REQ_LO_TASK,
                         "completionMode", AUTO_COMPLETE_MODE
                     ),
@@ -434,7 +439,7 @@ class CamundaTaskCompletionTest extends DmnDecisionTableBaseUnitTest {
         DmnDecisionTableImpl logic = (DmnDecisionTableImpl) decision.getDecisionLogic();
         assertThat(logic.getInputs().size(), is(1));
         assertThat(logic.getOutputs().size(), is(2));
-        assertThat(logic.getRules().size(), is(55));
+        assertThat(logic.getRules().size(), is(56));
     }
 
     @ParameterizedTest(name = "event id: {0}")

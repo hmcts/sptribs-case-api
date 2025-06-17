@@ -71,6 +71,7 @@ import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.REGION;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.REGISTER_NEW_CASE_TASK;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.REVIEW_CORRECTIONS_REQ_TASK;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.REVIEW_LISTING_DIR_CASE_LISTED_JUDGE_TASK;
+import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.REVIEW_LISTING_DIR_CASE_LISTED_LO_TASK;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.REVIEW_LISTING_DIR_JUDGE_TASK;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.REVIEW_LISTING_DIR_LO_TASK;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.REVIEW_LIST_CASE_JUDGE_TASK;
@@ -579,6 +580,28 @@ class CamundaTaskWaConfigurationTest extends DmnDecisionTableBaseUnitTest {
                         DESCRIPTION,
                         "[Orders: Create draft](/cases/case-details/${[CASE_REFERENCE]}/trigger"
                             + "/create-draft-order)",
+                        true
+                    )
+                    .build()
+            ),
+            Arguments.of(
+                REVIEW_LISTING_DIR_CASE_LISTED_LO_TASK,
+                CaseDataBuilder.customCase(REQUEST).build(),
+                ConfigurationExpectationBuilder.defaultExpectations()
+                    .expectedValue(CASE_NAME, "Rio Read", true)
+                    .expectedValue(CASE_MANAGEMENT_CATEGORY, "ST CIC", true)
+                    .expectedValue(REGION, "123", true)
+                    .expectedValue(LOCATION, "123456", true)
+                    .expectedValue(LOCATION_NAME, "GTC", true)
+                    .expectedValue(MINOR_PRIORITY, DEFAULT_MINOR_PRIORITY, true)
+                    .expectedValue(MAJOR_PRIORITY, DEFAULT_MAJOR_PRIORITY, true)
+                    .expectedValue(WORK_TYPE, DECISION_WORK_TYPE, true)
+                    .expectedValue(ROLE_CATEGORY, ROLE_CATEGORY_LO, true)
+                    .expectedValue(DUE_DATE_INTERVAL_DAYS, "5", true)
+                    .expectedValue(
+                        DESCRIPTION,
+                        "[Orders: Create draft](/cases/case-details/${[CASE_REFERENCE]}/trigger"
+                                + "/create-draft-order)",
                         true
                     )
                     .build()
