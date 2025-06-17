@@ -410,7 +410,7 @@ class CamundaTaskWaConfigurationTest extends DmnDecisionTableBaseUnitTest {
                     .expectedValue(MAJOR_PRIORITY, DEFAULT_MAJOR_PRIORITY, true)
                     .expectedValue(WORK_TYPE, DECISION_WORK_TYPE, true)
                     .expectedValue(ROLE_CATEGORY, ROLE_CATEGORY_JUDICIAL, true)
-                    .expectedValue(DUE_DATE_INTERVAL_DAYS, "1", true)
+                    .expectedValue(DUE_DATE_INTERVAL_DAYS, "2", true)
                     .expectedValue(
                         DESCRIPTION,
                         "[Decision: Issue a decision](/cases/case-details/${[CASE_REFERENCE]}/trigger"

@@ -344,7 +344,7 @@ class CamundaTaskWaInitiationTest extends DmnDecisionTableBaseUnitTest {
                     Map.of(
                         "taskId", ISSUE_DECISION_NOTICE_TASK,
                         "name", "Issue decision notice",
-                        "workingDaysAllowed", 1,
+                        "workingDaysAllowed", 2,
                         "workType", DECISION_WORK_TYPE,
                         "roleCategory", ROLE_CATEGORY_JUDICIAL
                     )
