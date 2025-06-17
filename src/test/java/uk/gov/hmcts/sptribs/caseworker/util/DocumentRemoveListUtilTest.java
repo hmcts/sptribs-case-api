@@ -84,7 +84,7 @@ public class DocumentRemoveListUtilTest {
         oldData.setCloseCase(CloseCase.builder().documents(get2Document()).build());
 
         //When
-        CaseData result = DocumentRemoveListUtil.removeEvaluatedListDoc(caseData, oldData);
+        CaseData result = DocumentRemoveListUtil.setDocumentsListForRemoval(caseData, oldData);
 
         //Then
         assertThat(result).isNotNull();
@@ -146,7 +146,7 @@ public class DocumentRemoveListUtilTest {
         oldData.setCloseCase(CloseCase.builder().documents(get2Document()).build());
 
         //When
-        CaseData result = DocumentRemoveListUtil.removeEvaluatedListDoc(caseData, oldData);
+        CaseData result = DocumentRemoveListUtil.setDocumentsListForRemoval(caseData, oldData);
 
         //Then
         assertThat(result).isNotNull();
