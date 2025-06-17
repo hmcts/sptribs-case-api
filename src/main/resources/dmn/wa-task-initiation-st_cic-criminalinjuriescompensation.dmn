@@ -129,7 +129,7 @@
           <text>"create-draft-order"</text>
         </inputEntry>
         <inputEntry id="UnaryTests_0n9usem">
-          <text>"AwaitingHearing"</text>
+          <text>"ReadyToList"</text>
         </inputEntry>
         <inputEntry id="UnaryTests_06w6zxg">
           <text>"Listing directions"</text>
