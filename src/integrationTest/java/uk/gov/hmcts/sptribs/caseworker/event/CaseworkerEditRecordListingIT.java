@@ -36,6 +36,7 @@ import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
 import static net.javacrumbs.jsonunit.assertj.JsonAssertions.json;
 import static net.javacrumbs.jsonunit.core.Option.IGNORING_EXTRA_FIELDS;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.anyString;
 import static org.mockito.Mockito.times;
@@ -219,6 +220,7 @@ public class CaseworkerEditRecordListingIT {
         when(judicialClient.getUserProfiles(
             eq(TEST_SERVICE_AUTH_TOKEN),
             eq(TEST_AUTHORIZATION_TOKEN),
+            anyInt(),
             eq(ACCEPT_VALUE),
             eq(JudicialUsersRequest.builder().ccdServiceName(ST_CIC_JURISDICTION).build())
         )).thenReturn(getUserProfiles());

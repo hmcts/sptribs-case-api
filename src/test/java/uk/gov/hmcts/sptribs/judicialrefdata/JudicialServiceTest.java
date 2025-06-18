@@ -1,6 +1,7 @@
 package uk.gov.hmcts.sptribs.judicialrefdata;
 
 import feign.FeignException;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -27,8 +28,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.util.ReflectionTestUtils.setField;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.ACCEPT_VALUE;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_AUTHORIZATION_TOKEN;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_JUDICIAL_USERS_PAGE_SIZE;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_SERVICE_AUTH_TOKEN;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.caseData;
 
@@ -46,6 +49,11 @@ class JudicialServiceTest {
 
     @Mock
     private IdamService idamService;
+
+    @BeforeEach
+    void setPageSize() {
+        setField(judicialService, "judicialUsersPageSize", TEST_JUDICIAL_USERS_PAGE_SIZE);
+    }
 
     @Test
     void shouldPopulateUserDynamicList() {
@@ -70,6 +78,7 @@ class JudicialServiceTest {
         when(judicialClient.getUserProfiles(
             TEST_SERVICE_AUTH_TOKEN,
             TEST_AUTHORIZATION_TOKEN,
+            TEST_JUDICIAL_USERS_PAGE_SIZE,
             ACCEPT_VALUE,
             new JudicialUsersRequest("ST_CIC"))).thenReturn(responseEntity);
         final DynamicList userList = judicialService.getAllUsers(caseData);
@@ -82,6 +91,7 @@ class JudicialServiceTest {
         verify(judicialClient).getUserProfiles(
             TEST_SERVICE_AUTH_TOKEN,
             TEST_AUTHORIZATION_TOKEN,
+            TEST_JUDICIAL_USERS_PAGE_SIZE,
             ACCEPT_VALUE,
             new JudicialUsersRequest("ST_CIC")
         );
@@ -96,6 +106,7 @@ class JudicialServiceTest {
         when(judicialClient.getUserProfiles(
             TEST_SERVICE_AUTH_TOKEN,
             TEST_AUTHORIZATION_TOKEN,
+            TEST_JUDICIAL_USERS_PAGE_SIZE,
             ACCEPT_VALUE,
             new JudicialUsersRequest("ST_CIC"))).thenReturn(null);
         final DynamicList regionList = judicialService.getAllUsers(caseData());
@@ -115,6 +126,7 @@ class JudicialServiceTest {
             .when(judicialClient).getUserProfiles(
                 TEST_SERVICE_AUTH_TOKEN,
                 TEST_AUTHORIZATION_TOKEN,
+                TEST_JUDICIAL_USERS_PAGE_SIZE,
                 ACCEPT_VALUE,
                 new JudicialUsersRequest("ST_CIC")
             );
@@ -126,6 +138,7 @@ class JudicialServiceTest {
         verify(judicialClient).getUserProfiles(
             TEST_SERVICE_AUTH_TOKEN,
             TEST_AUTHORIZATION_TOKEN,
+            TEST_JUDICIAL_USERS_PAGE_SIZE,
             ACCEPT_VALUE,
             new JudicialUsersRequest("ST_CIC")
         );
