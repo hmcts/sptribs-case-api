@@ -479,11 +479,10 @@ em-ccdorc:
     ingressHost: em-ccdorc-${SERVICE_FQDN}
     environment:
       EM_STITCHING_API_URL: https://em-stitching-${SERVICE_FQDN}
-      DM_STORE_APP_URL: http://dm-store-aat.service.core-compute-aat.internal
       CCD_DATA_API_URL: https://ccd-data-store-api-${SERVICE_FQDN}
       CALLBACK_DOMAIN: em-ccdorc-${SERVICE_FQDN}
       CALLBACK_HTTP_SCHEME: https
-      LOGGING_LEVEL_UK_GOV_HMCTS_REFORM_EM: DEBUG
+      APPLICATIONINSIGHTS_INSTRUMENTATION_LOGGING_LEVEL: WARN
 
 em-stitching:
   enabled: true
@@ -493,17 +492,15 @@ em-stitching:
     image: hmctspublic.azurecr.io/em/stitching:latest
     ingressHost: em-stitching-${SERVICE_FQDN}
     environment:
-      DM_STORE_APP_URL: http://dm-store-aat.service.core-compute-aat.internal
       CDAM_URL: http://${SERVICE_NAME}-ccd-case-document-am-api
       SPRING_DATASOURCE_HOST: '{{ tpl .Values.global.postgresHostname $}}'
       SPRING_DATASOURCE_NAME: "pr-${CHANGE_ID}-emstitch"
       SPRING_DATASOURCE_OPTIONS: "?ssl=disable"
-      SPRING_DATASOURCE_PORT: 5432
       SPRING_DATASOURCE_USERNAME: ${EM_SPRING_DATASOURCE_USERNAME_PREVIEW}
       ENABLE_DB_MIGRATE: true
       RUN_DB_MIGRATION_ON_STARTUP: true
       FLYWAY_POSTGRESQL_TRANSACTIONAL_LOCK: false
-      LOGGING_LEVEL_UK_GOV_HMCTS_REFORM_EM: DEBUG
+      APPLICATIONINSIGHTS_INSTRUMENTATION_LOGGING_LEVEL: WARN
     secrets:
       SPRING_DATASOURCE_PASSWORD:
         secretRef: postgres
