@@ -36,6 +36,7 @@ public class FinalDecisionTemplateContentTest {
         CaseData caseData = buildCaseData();
         HearingSummary summary = HearingSummary.builder()
             .memberList(getMembers())
+            .subjectName("John Smith")
             .build();
 
         Listing listing = Listing.builder().date(LocalDate.now()).hearingTime("11::00")
@@ -49,9 +50,9 @@ public class FinalDecisionTemplateContentTest {
         Map<String, Object> result = templateContent.apply(caseData, TEST_CASE_ID);
 
         //Then
-        assertThat(result).contains(
-            entry("cicCaseSchemeCic", SchemeCic.Year1996.getLabel())
-        );
+        assertThat(result)
+            .contains(entry("cicCaseSchemeCic", SchemeCic.Year1996.getLabel()))
+            .contains(entry(SUBJECT_FULL_NAME, "John Smith"));
     }
 
     @Test
@@ -82,6 +83,7 @@ public class FinalDecisionTemplateContentTest {
         CaseData caseData = buildCaseDataWithSubcategory(CaseSubcategory.FATAL);
         HearingSummary summary = HearingSummary.builder()
             .memberList(getMembers())
+            .subjectName("John Smith")
             .build();
 
         Listing listing = Listing.builder().date(LocalDate.now()).hearingTime("11::00")
@@ -106,6 +108,7 @@ public class FinalDecisionTemplateContentTest {
         CaseData caseData = buildCaseDataWithSubcategory(CaseSubcategory.MINOR);
         HearingSummary summary = HearingSummary.builder()
             .memberList(getMembers())
+            .subjectName("John Smith")
             .build();
 
         Listing listing = Listing.builder().date(LocalDate.now()).hearingTime("11::00")
@@ -121,7 +124,7 @@ public class FinalDecisionTemplateContentTest {
         //Then
         assertThat(result)
             .contains(entry("cicCaseSchemeCic", SchemeCic.Year1996.getLabel()))
-            .contains(entry(SUBJECT_FULL_NAME, "Jane Doe"));;
+            .contains(entry(SUBJECT_FULL_NAME, "Jane Doe"));
     }
 
     private CaseData buildCaseData() {

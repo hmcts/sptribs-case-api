@@ -42,6 +42,7 @@ public class DecisionTemplateContentTest {
         caseData.setDecisionMainContent("Case Closed");
         final HearingSummary summary = HearingSummary.builder()
             .memberList(getMembers())
+            .subjectName("John Smith")
             .build();
         final Listing listing = Listing.builder()
             .date(LocalDate.now())
@@ -58,7 +59,8 @@ public class DecisionTemplateContentTest {
         assertThat(result)
             .contains(entry("cicCaseSchemeCic", SchemeCic.Year1996.getLabel()))
             .contains(entry(DECISION_SIGNATURE, "John Doe"))
-            .contains(entry(MAIN_CONTENT, "Case Closed"));
+            .contains(entry(MAIN_CONTENT, "Case Closed"))
+            .contains(entry(SUBJECT_FULL_NAME, "John Smith"));
     }
 
     @Test
@@ -86,6 +88,7 @@ public class DecisionTemplateContentTest {
     void shouldSuccessfullyApplyDecisionContentWithEmptyDate() {
         final CaseData caseData = buildCaseData();
         final HearingSummary summary = HearingSummary.builder()
+            .subjectName("John Smith")
             .build();
         final Listing listing = Listing.builder()
             .summary(summary)
@@ -101,7 +104,8 @@ public class DecisionTemplateContentTest {
 
         assertThat(result)
             .contains(entry("cicCaseSchemeCic", SchemeCic.Year1996.getLabel()))
-            .contains(entry(HEARING_DATE, ""));
+            .contains(entry(HEARING_DATE, ""))
+            .contains(entry(SUBJECT_FULL_NAME, "John Smith"));
     }
 
     @Test
@@ -111,6 +115,7 @@ public class DecisionTemplateContentTest {
         caseData.setDecisionMainContent("Case Closed");
         final HearingSummary summary = HearingSummary.builder()
             .memberList(getMembers())
+            .subjectName("John Smith")
             .build();
         final Listing listing = Listing.builder()
             .date(LocalDate.now())
@@ -138,6 +143,7 @@ public class DecisionTemplateContentTest {
         caseData.setDecisionMainContent("Case Closed");
         final HearingSummary summary = HearingSummary.builder()
             .memberList(getMembers())
+            .subjectName("John Smith")
             .build();
         final Listing listing = Listing.builder()
             .date(LocalDate.now())

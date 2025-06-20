@@ -41,6 +41,7 @@ class PreviewDraftOrderTemplateContentTest {
         CaseData caseData = buildCaseData();
         final HearingSummary summary = HearingSummary.builder()
             .memberList(getMembers())
+            .subjectName("John Smith")
             .build();
         final Listing listing = Listing.builder()
             .date(LocalDate.now())
@@ -56,8 +57,8 @@ class PreviewDraftOrderTemplateContentTest {
 
         assertThat(result)
             .contains(entry("cicCaseSchemeCic", SchemeCic.Year1996.getLabel()))
-            .contains(entry(SUBJECT_FULL_NAME, "John Smith"))
-            .contains(entry(HEARING_DATE, LocalDate.now().format(formatter)));
+            .contains(entry(HEARING_DATE, LocalDate.now().format(formatter)))
+            .contains(entry(SUBJECT_FULL_NAME, "John Smith"));
     }
 
     @Test
@@ -85,6 +86,7 @@ class PreviewDraftOrderTemplateContentTest {
     void shouldSuccessfullyApplyPreviewDraftOrderContentWithEmptyDate() {
         final CaseData caseData = buildCaseData();
         final HearingSummary summary = HearingSummary.builder()
+            .subjectName("John Smith")
             .build();
         final Listing listing = Listing.builder()
             .summary(summary)
@@ -100,7 +102,8 @@ class PreviewDraftOrderTemplateContentTest {
 
         assertThat(result)
             .contains(entry("cicCaseSchemeCic", SchemeCic.Year1996.getLabel()))
-            .contains(entry(HEARING_DATE, ""));
+            .contains(entry(HEARING_DATE, ""))
+            .contains(entry(SUBJECT_FULL_NAME, "John Smith"));
     }
 
     @Test
@@ -108,6 +111,7 @@ class PreviewDraftOrderTemplateContentTest {
         CaseData caseData = buildCaseDataWithSubcategory(CaseSubcategory.FATAL);
         final HearingSummary summary = HearingSummary.builder()
             .memberList(getMembers())
+            .subjectName("John Smith")
             .build();
         final Listing listing = Listing.builder()
             .date(LocalDate.now())
@@ -132,6 +136,7 @@ class PreviewDraftOrderTemplateContentTest {
         CaseData caseData = buildCaseDataWithSubcategory(CaseSubcategory.MINOR);
         final HearingSummary summary = HearingSummary.builder()
             .memberList(getMembers())
+            .subjectName("John Smith")
             .build();
         final Listing listing = Listing.builder()
             .date(LocalDate.now())
