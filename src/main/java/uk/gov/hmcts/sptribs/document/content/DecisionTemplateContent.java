@@ -2,6 +2,7 @@ package uk.gov.hmcts.sptribs.document.content;
 
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.CaseSubcategory;
 
 import java.util.Map;
 
@@ -26,7 +27,15 @@ public class DecisionTemplateContent {
                                      final Long ccdCaseReference) {
 
         Map<String, Object> templateContent = getCommonFields(caseData, ccdCaseReference);
-        templateContent.put(SUBJECT_FULL_NAME, caseData.getLatestCompletedHearing().getSummary().getSubjectName());
+
+        if ((caseData.getCicCase().getCaseSubcategory() == CaseSubcategory.FATAL
+            || caseData.getCicCase().getCaseSubcategory() == CaseSubcategory.MINOR)
+            && !caseData.getCicCase().getApplicantFullName().isEmpty()) {
+            templateContent.put(SUBJECT_FULL_NAME, caseData.getCicCase().getApplicantFullName());
+        } else {
+            templateContent.put(SUBJECT_FULL_NAME, caseData.getLatestCompletedHearing().getSummary().getSubjectName());
+        }
+
         templateContent.put(REPRESENTATIVE_FULL_NAME, caseData.getCicCase().getRepresentativeFullName());
         templateContent.put(HEARING_TYPE, caseData.getLatestCompletedHearing().getHearingType());
         templateContent.put(TRIBUNAL_MEMBERS, getMembers(caseData.getLatestCompletedHearing().getSummary().getMemberList()));
