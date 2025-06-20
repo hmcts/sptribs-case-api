@@ -76,7 +76,7 @@ public class CaseWorkerCreateHearingSummary implements CCDConfig<CaseData, State
             configBuilder
                 .event(CASEWORKER_CREATE_HEARING_SUMMARY)
                 .forStates(AwaitingHearing)
-                .name("Hearings:Create summary")
+                .name("Hearings: Create summary")
                 .showSummary()
                 .aboutToStartCallback(this::aboutToStart)
                 .aboutToSubmitCallback(this::aboutToSubmit)

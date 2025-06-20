@@ -3,6 +3,7 @@ package uk.gov.hmcts.sptribs.document.content;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.CaseSubcategory;
 
 import java.util.Map;
 
@@ -26,7 +27,15 @@ public class FinalDecisionTemplateContent {
                                      final Long ccdCaseReference) {
 
         Map<String, Object> templateContent = getCommonFields(caseData, ccdCaseReference);
-        templateContent.put(SUBJECT_FULL_NAME, caseData.getLatestCompletedHearing().getSummary().getSubjectName());
+
+        if ((caseData.getCicCase().getCaseSubcategory() == CaseSubcategory.FATAL
+            || caseData.getCicCase().getCaseSubcategory() == CaseSubcategory.MINOR)
+            && (caseData.getCicCase().getApplicantFullName() != null)) {
+            templateContent.put(SUBJECT_FULL_NAME, caseData.getCicCase().getApplicantFullName());
+        } else {
+            templateContent.put(SUBJECT_FULL_NAME, caseData.getLatestCompletedHearing().getSummary().getSubjectName());
+        }
+
         templateContent.put(HEARING_TYPE, caseData.getLatestCompletedHearing().getHearingType());
         templateContent.put(TRIBUNAL_MEMBERS, getMembers(caseData.getLatestCompletedHearing().getSummary().getMemberList()));
         templateContent.put(DECISION_SIGNATURE, caseData.getDecisionSignature());
