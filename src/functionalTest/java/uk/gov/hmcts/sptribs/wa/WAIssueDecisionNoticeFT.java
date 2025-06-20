@@ -41,8 +41,7 @@ public class WAIssueDecisionNoticeFT extends FunctionalTestSuite {
     private RoleAssignmentService roleAssignmentService;
 
     private static final String TASK_TYPE = "issueDecisionNotice";
-    private static final List<String> TASK_ROLES = Arrays.asList("regional-centre-admin", "regional-centre-team-leader", "task-supervisor",
-        "hearing-centre-admin", "hearing-centre-team-leader", "ctsc", "ctsc-team-leader");
+    private static final List<String> TASK_ROLES = Arrays.asList("judge", "senior-judge", "task-supervisor");
     private static final int DEFAULT_TIMEOUT_SECONDS = 300;
     private static final int DEFAULT_POLL_INTERVAL_SECONDS = 4;
 
@@ -66,7 +65,6 @@ public class WAIssueDecisionNoticeFT extends FunctionalTestSuite {
         final Map<String, Object> hearingCaseData = ccdCaseCreator.createInitialStartEventAndSubmit(
             CASEWORKER_RECORD_LISTING, ST_CIC_JURISDICTION, ST_CIC_CASE_TYPE, newCaseId, caseData);
 
-        hearingCaseData.putAll(caseData(CASEWORKER_CREATE_HEARING_SUMMARY_DATA));
         ccdCaseCreator.createInitialStartEventAndSubmit(
             CASEWORKER_CREATE_HEARING_SUMMARY, ST_CIC_JURISDICTION, ST_CIC_CASE_TYPE, newCaseId, hearingCaseData);
 
@@ -93,7 +91,7 @@ public class WAIssueDecisionNoticeFT extends FunctionalTestSuite {
                     assertThat(taskType).isEqualTo(TASK_TYPE);
 
                     Response retrieveTaskRolePermissionsResponseBody =
-                        taskManagementService.retrieveTaskRolePermissions(taskId, 7, 200);
+                        taskManagementService.retrieveTaskRolePermissions(taskId, 3, 200);
 
                     if (retrieveTaskRolePermissionsResponseBody.asString().isBlank()) {
                         return false;

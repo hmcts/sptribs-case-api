@@ -408,9 +408,9 @@ class CamundaTaskWaConfigurationTest extends DmnDecisionTableBaseUnitTest {
                     .expectedValue(LOCATION_NAME, "GTC", true)
                     .expectedValue(MINOR_PRIORITY, DEFAULT_MINOR_PRIORITY, true)
                     .expectedValue(MAJOR_PRIORITY, DEFAULT_MAJOR_PRIORITY, true)
-                    .expectedValue(WORK_TYPE, HEARING_WORK_TYPE, true)
-                    .expectedValue(ROLE_CATEGORY, ROLE_CATEGORY_ADMIN, true)
-                    .expectedValue(DUE_DATE_INTERVAL_DAYS, "1", true)
+                    .expectedValue(WORK_TYPE, DECISION_WORK_TYPE, true)
+                    .expectedValue(ROLE_CATEGORY, ROLE_CATEGORY_JUDICIAL, true)
+                    .expectedValue(DUE_DATE_INTERVAL_DAYS, "2", true)
                     .expectedValue(
                         DESCRIPTION,
                         "[Decision: Issue a decision](/cases/case-details/${[CASE_REFERENCE]}/trigger"
