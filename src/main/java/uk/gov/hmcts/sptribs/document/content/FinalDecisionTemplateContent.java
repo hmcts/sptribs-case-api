@@ -36,7 +36,6 @@ public class FinalDecisionTemplateContent {
             templateContent.put(SUBJECT_FULL_NAME, caseData.getLatestCompletedHearing().getSummary().getSubjectName());
         }
 
-        templateContent.put(SUBJECT_FULL_NAME, caseData.getLatestCompletedHearing().getSummary().getSubjectName());
         templateContent.put(HEARING_TYPE, caseData.getLatestCompletedHearing().getHearingType());
         templateContent.put(TRIBUNAL_MEMBERS, getMembers(caseData.getLatestCompletedHearing().getSummary().getMemberList()));
         templateContent.put(DECISION_SIGNATURE, caseData.getDecisionSignature());

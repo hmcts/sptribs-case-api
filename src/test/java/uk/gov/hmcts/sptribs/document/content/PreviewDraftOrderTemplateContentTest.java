@@ -8,6 +8,7 @@ import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.sptribs.caseworker.model.HearingSummary;
 import uk.gov.hmcts.sptribs.caseworker.model.Listing;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.CaseSubcategory;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.HearingState;
 import uk.gov.hmcts.sptribs.ciccase.model.SchemeCic;
@@ -102,8 +103,68 @@ class PreviewDraftOrderTemplateContentTest {
             .contains(entry(HEARING_DATE, ""));
     }
 
+    @Test
+    void shouldSuccessfullyPreviewDraftOrderContentWithFatalSubcategory() {
+        CaseData caseData = buildCaseDataWithSubcategory(CaseSubcategory.FATAL);
+        final HearingSummary summary = HearingSummary.builder()
+            .memberList(getMembers())
+            .build();
+        final Listing listing = Listing.builder()
+            .date(LocalDate.now())
+            .hearingTime("11::00")
+            .hearingStatus(HearingState.Complete)
+            .summary(summary)
+            .build();
+        final ListValue<Listing> listingListValue = new ListValue<>();
+        listingListValue.setValue(listing);
+        caseData.setHearingList(List.of(listingListValue));
+
+        Map<String, Object> result = previewDraftOrderTemplateContent.apply(caseData, TEST_CASE_ID);
+
+        assertThat(result)
+            .contains(entry("cicCaseSchemeCic", SchemeCic.Year1996.getLabel()))
+            .contains(entry(SUBJECT_FULL_NAME, "Jane Doe"))
+            .contains(entry(HEARING_DATE, LocalDate.now().format(formatter)));
+    }
+
+    @Test
+    void shouldSuccessfullyPreviewDraftOrderContentWithMinorSubcategory() {
+        CaseData caseData = buildCaseDataWithSubcategory(CaseSubcategory.MINOR);
+        final HearingSummary summary = HearingSummary.builder()
+            .memberList(getMembers())
+            .build();
+        final Listing listing = Listing.builder()
+            .date(LocalDate.now())
+            .hearingTime("11::00")
+            .hearingStatus(HearingState.Complete)
+            .summary(summary)
+            .build();
+        final ListValue<Listing> listingListValue = new ListValue<>();
+        listingListValue.setValue(listing);
+        caseData.setHearingList(List.of(listingListValue));
+
+        Map<String, Object> result = previewDraftOrderTemplateContent.apply(caseData, TEST_CASE_ID);
+
+        assertThat(result)
+            .contains(entry("cicCaseSchemeCic", SchemeCic.Year1996.getLabel()))
+            .contains(entry(SUBJECT_FULL_NAME, "Jane Doe"))
+            .contains(entry(HEARING_DATE, LocalDate.now().format(formatter)));
+    }
+
     private CaseData buildCaseData() {
         final CicCase cicCase = CicCase.builder().fullName("John Smith").schemeCic(SchemeCic.Year1996).build();
+
+        return CaseData.builder()
+            .cicCase(cicCase)
+            .build();
+    }
+
+    private CaseData buildCaseDataWithSubcategory(CaseSubcategory caseSubcategory) {
+        final CicCase cicCase = CicCase.builder()
+            .fullName("John Smith")
+            .applicantFullName("Jane Doe")
+            .caseSubcategory(caseSubcategory)
+            .schemeCic(SchemeCic.Year1996).build();
 
         return CaseData.builder()
             .cicCase(cicCase)
