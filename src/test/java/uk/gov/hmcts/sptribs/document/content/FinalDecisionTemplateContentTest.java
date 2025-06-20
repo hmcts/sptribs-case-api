@@ -80,7 +80,7 @@ public class FinalDecisionTemplateContentTest {
     @Test
     void shouldSuccessfullyApplyFinalDecisionContentWithFatalSubcategory() {
         //Given
-        CaseData caseData = buildCaseDataWithSubcategory(CaseSubcategory.FATAL);
+        CaseData caseData = buildCaseDataWithSubcategory(CaseSubcategory.FATAL, true);
         HearingSummary summary = HearingSummary.builder()
             .memberList(getMembers())
             .subjectName("John Smith")
@@ -105,7 +105,7 @@ public class FinalDecisionTemplateContentTest {
     @Test
     void shouldSuccessfullyApplyFinalDecisionContentWithMinorSubcategory() {
         //Given
-        CaseData caseData = buildCaseDataWithSubcategory(CaseSubcategory.MINOR);
+        CaseData caseData = buildCaseDataWithSubcategory(CaseSubcategory.MINOR, true);
         HearingSummary summary = HearingSummary.builder()
             .memberList(getMembers())
             .subjectName("John Smith")
@@ -127,6 +127,56 @@ public class FinalDecisionTemplateContentTest {
             .contains(entry(SUBJECT_FULL_NAME, "Jane Doe"));
     }
 
+    @Test
+    void shouldSuccessfullyApplyFinalDecisionContentWithFatalSubcategoryNoApplicant() {
+        //Given
+        CaseData caseData = buildCaseDataWithSubcategory(CaseSubcategory.FATAL, false);
+        HearingSummary summary = HearingSummary.builder()
+            .memberList(getMembers())
+            .subjectName("John Smith")
+            .build();
+
+        Listing listing = Listing.builder().date(LocalDate.now()).hearingTime("11::00")
+            .hearingStatus(HearingState.Complete)
+            .summary(summary)
+            .build();
+        ListValue<Listing> listingListValue = new ListValue<>();
+        listingListValue.setValue(listing);
+        caseData.setHearingList(List.of(listingListValue));
+        //When
+        Map<String, Object> result = templateContent.apply(caseData, TEST_CASE_ID);
+
+        //Then
+        assertThat(result)
+            .contains(entry("cicCaseSchemeCic", SchemeCic.Year1996.getLabel()))
+            .contains(entry(SUBJECT_FULL_NAME, "John Smith"));
+    }
+
+    @Test
+    void shouldSuccessfullyApplyFinalDecisionContentWithMinorSubcategoryNoApplicant() {
+        //Given
+        CaseData caseData = buildCaseDataWithSubcategory(CaseSubcategory.MINOR, false);
+        HearingSummary summary = HearingSummary.builder()
+            .memberList(getMembers())
+            .subjectName("John Smith")
+            .build();
+
+        Listing listing = Listing.builder().date(LocalDate.now()).hearingTime("11::00")
+            .hearingStatus(HearingState.Complete)
+            .summary(summary)
+            .build();
+        ListValue<Listing> listingListValue = new ListValue<>();
+        listingListValue.setValue(listing);
+        caseData.setHearingList(List.of(listingListValue));
+        //When
+        Map<String, Object> result = templateContent.apply(caseData, TEST_CASE_ID);
+
+        //Then
+        assertThat(result)
+            .contains(entry("cicCaseSchemeCic", SchemeCic.Year1996.getLabel()))
+            .contains(entry(SUBJECT_FULL_NAME, "John Smith"));
+    }
+
     private CaseData buildCaseData() {
         final CicCase cicCase = CicCase.builder().schemeCic(SchemeCic.Year1996).build();
 
@@ -135,15 +185,26 @@ public class FinalDecisionTemplateContentTest {
             .build();
     }
 
-    private CaseData buildCaseDataWithSubcategory(CaseSubcategory caseSubcategory) {
-        final CicCase cicCase = CicCase.builder()
-            .fullName("John Smith")
-            .applicantFullName("Jane Doe")
-            .caseSubcategory(caseSubcategory)
-            .schemeCic(SchemeCic.Year1996).build();
+    private CaseData buildCaseDataWithSubcategory(CaseSubcategory caseSubcategory, boolean applicant) {
+        if (applicant) {
+            final CicCase cicCase = CicCase.builder()
+                .fullName("John Smith")
+                .applicantFullName("Jane Doe")
+                .caseSubcategory(caseSubcategory)
+                .schemeCic(SchemeCic.Year1996).build();
 
-        return CaseData.builder()
-            .cicCase(cicCase)
-            .build();
+            return CaseData.builder()
+                .cicCase(cicCase)
+                .build();
+        } else {
+            final CicCase cicCase = CicCase.builder()
+                .fullName("John Smith")
+                .caseSubcategory(caseSubcategory)
+                .schemeCic(SchemeCic.Year1996).build();
+
+            return CaseData.builder()
+                .cicCase(cicCase)
+                .build();
+        }
     }
 }

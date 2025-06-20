@@ -108,7 +108,7 @@ class PreviewDraftOrderTemplateContentTest {
 
     @Test
     void shouldSuccessfullyPreviewDraftOrderContentWithFatalSubcategory() {
-        CaseData caseData = buildCaseDataWithSubcategory(CaseSubcategory.FATAL);
+        CaseData caseData = buildCaseDataWithSubcategory(CaseSubcategory.FATAL, true);
         final HearingSummary summary = HearingSummary.builder()
             .memberList(getMembers())
             .subjectName("John Smith")
@@ -133,7 +133,7 @@ class PreviewDraftOrderTemplateContentTest {
 
     @Test
     void shouldSuccessfullyPreviewDraftOrderContentWithMinorSubcategory() {
-        CaseData caseData = buildCaseDataWithSubcategory(CaseSubcategory.MINOR);
+        CaseData caseData = buildCaseDataWithSubcategory(CaseSubcategory.MINOR, true);
         final HearingSummary summary = HearingSummary.builder()
             .memberList(getMembers())
             .subjectName("John Smith")
@@ -156,6 +156,56 @@ class PreviewDraftOrderTemplateContentTest {
             .contains(entry(HEARING_DATE, LocalDate.now().format(formatter)));
     }
 
+    @Test
+    void shouldSuccessfullyPreviewDraftOrderContentWithFatalSubcategoryNoApplicant() {
+        CaseData caseData = buildCaseDataWithSubcategory(CaseSubcategory.FATAL, false);
+        final HearingSummary summary = HearingSummary.builder()
+            .memberList(getMembers())
+            .subjectName("John Smith")
+            .build();
+        final Listing listing = Listing.builder()
+            .date(LocalDate.now())
+            .hearingTime("11::00")
+            .hearingStatus(HearingState.Complete)
+            .summary(summary)
+            .build();
+        final ListValue<Listing> listingListValue = new ListValue<>();
+        listingListValue.setValue(listing);
+        caseData.setHearingList(List.of(listingListValue));
+
+        Map<String, Object> result = previewDraftOrderTemplateContent.apply(caseData, TEST_CASE_ID);
+
+        assertThat(result)
+            .contains(entry("cicCaseSchemeCic", SchemeCic.Year1996.getLabel()))
+            .contains(entry(SUBJECT_FULL_NAME, "John Smith"))
+            .contains(entry(HEARING_DATE, LocalDate.now().format(formatter)));
+    }
+
+    @Test
+    void shouldSuccessfullyPreviewDraftOrderContentWithMinorSubcategoryNoApplicant() {
+        CaseData caseData = buildCaseDataWithSubcategory(CaseSubcategory.MINOR, false);
+        final HearingSummary summary = HearingSummary.builder()
+            .memberList(getMembers())
+            .subjectName("John Smith")
+            .build();
+        final Listing listing = Listing.builder()
+            .date(LocalDate.now())
+            .hearingTime("11::00")
+            .hearingStatus(HearingState.Complete)
+            .summary(summary)
+            .build();
+        final ListValue<Listing> listingListValue = new ListValue<>();
+        listingListValue.setValue(listing);
+        caseData.setHearingList(List.of(listingListValue));
+
+        Map<String, Object> result = previewDraftOrderTemplateContent.apply(caseData, TEST_CASE_ID);
+
+        assertThat(result)
+            .contains(entry("cicCaseSchemeCic", SchemeCic.Year1996.getLabel()))
+            .contains(entry(SUBJECT_FULL_NAME, "John Smith"))
+            .contains(entry(HEARING_DATE, LocalDate.now().format(formatter)));
+    }
+
     private CaseData buildCaseData() {
         final CicCase cicCase = CicCase.builder().fullName("John Smith").schemeCic(SchemeCic.Year1996).build();
 
@@ -164,16 +214,27 @@ class PreviewDraftOrderTemplateContentTest {
             .build();
     }
 
-    private CaseData buildCaseDataWithSubcategory(CaseSubcategory caseSubcategory) {
-        final CicCase cicCase = CicCase.builder()
-            .fullName("John Smith")
-            .applicantFullName("Jane Doe")
-            .caseSubcategory(caseSubcategory)
-            .schemeCic(SchemeCic.Year1996).build();
+    private CaseData buildCaseDataWithSubcategory(CaseSubcategory caseSubcategory, boolean applicant) {
+        if (applicant) {
+            final CicCase cicCase = CicCase.builder()
+                .fullName("John Smith")
+                .applicantFullName("Jane Doe")
+                .caseSubcategory(caseSubcategory)
+                .schemeCic(SchemeCic.Year1996).build();
 
-        return CaseData.builder()
-            .cicCase(cicCase)
-            .build();
+            return CaseData.builder()
+                .cicCase(cicCase)
+                .build();
+        } else {
+            final CicCase cicCase = CicCase.builder()
+                .fullName("John Smith")
+                .caseSubcategory(caseSubcategory)
+                .schemeCic(SchemeCic.Year1996).build();
+
+            return CaseData.builder()
+                .cicCase(cicCase)
+                .build();
+        }
     }
 
 }

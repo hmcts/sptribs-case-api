@@ -30,7 +30,7 @@ public class PreviewDraftOrderTemplateContent {
 
         if ((caseData.getCicCase().getCaseSubcategory() == CaseSubcategory.FATAL
             || caseData.getCicCase().getCaseSubcategory() == CaseSubcategory.MINOR)
-            && !caseData.getCicCase().getApplicantFullName().isEmpty()) {
+            && (caseData.getCicCase().getApplicantFullName() != null)) {
             templateContent.put(SUBJECT_FULL_NAME, caseData.getCicCase().getApplicantFullName());
         } else {
             templateContent.put(SUBJECT_FULL_NAME, caseData.getCicCase().getFullName());
