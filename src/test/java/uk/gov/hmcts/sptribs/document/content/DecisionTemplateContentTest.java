@@ -105,7 +105,7 @@ public class DecisionTemplateContentTest {
     }
 
     @Test
-    public void shouldSuccessfullyApplyDecisionContentWithFatalSubcategory() {
+    void shouldSuccessfullyApplyDecisionContentWithFatalSubcategory() {
         final CaseData caseData = buildCaseDataWithSubcategory(CaseSubcategory.FATAL);
         caseData.setDecisionSignature("John Doe");
         caseData.setDecisionMainContent("Case Closed");
@@ -132,7 +132,7 @@ public class DecisionTemplateContentTest {
     }
 
     @Test
-    public void shouldSuccessfullyApplyDecisionContentWithMinorSubcategory() {
+    void shouldSuccessfullyApplyDecisionContentWithMinorSubcategory() {
         final CaseData caseData = buildCaseDataWithSubcategory(CaseSubcategory.MINOR);
         caseData.setDecisionSignature("John Doe");
         caseData.setDecisionMainContent("Case Closed");

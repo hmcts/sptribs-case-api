@@ -31,8 +31,6 @@ public class FinalDecisionTemplateContentTest {
     @InjectMocks
     private FinalDecisionTemplateContent templateContent;
 
-    private static final LocalDate ISSUE_DATE = LocalDate.of(2022, 2, 2);
-
     @Test
     public void shouldSuccessfullyApplyFinalDecisionContent() {
         //Given
@@ -80,7 +78,7 @@ public class FinalDecisionTemplateContentTest {
     }
 
     @Test
-    public void shouldSuccessfullyApplyFinalDecisionContentWithFatalSubcategory() {
+    void shouldSuccessfullyApplyFinalDecisionContentWithFatalSubcategory() {
         //Given
         CaseData caseData = buildCaseDataWithSubcategory(CaseSubcategory.FATAL);
         HearingSummary summary = HearingSummary.builder()
@@ -104,7 +102,7 @@ public class FinalDecisionTemplateContentTest {
     }
 
     @Test
-    public void shouldSuccessfullyApplyFinalDecisionContentWithMinorSubcategory() {
+    void shouldSuccessfullyApplyFinalDecisionContentWithMinorSubcategory() {
         //Given
         CaseData caseData = buildCaseDataWithSubcategory(CaseSubcategory.MINOR);
         HearingSummary summary = HearingSummary.builder()
