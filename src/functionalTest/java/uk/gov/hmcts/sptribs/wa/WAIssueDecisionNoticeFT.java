@@ -65,7 +65,6 @@ public class WAIssueDecisionNoticeFT extends FunctionalTestSuite {
         final Map<String, Object> hearingCaseData = ccdCaseCreator.createInitialStartEventAndSubmit(
             CASEWORKER_RECORD_LISTING, ST_CIC_JURISDICTION, ST_CIC_CASE_TYPE, newCaseId, caseData);
 
-        hearingCaseData.putAll(caseData(CASEWORKER_CREATE_HEARING_SUMMARY_DATA));
         ccdCaseCreator.createInitialStartEventAndSubmit(
             CASEWORKER_CREATE_HEARING_SUMMARY, ST_CIC_JURISDICTION, ST_CIC_CASE_TYPE, newCaseId, hearingCaseData);
 
@@ -92,7 +91,7 @@ public class WAIssueDecisionNoticeFT extends FunctionalTestSuite {
                     assertThat(taskType).isEqualTo(TASK_TYPE);
 
                     Response retrieveTaskRolePermissionsResponseBody =
-                        taskManagementService.retrieveTaskRolePermissions(taskId, 7, 200);
+                        taskManagementService.retrieveTaskRolePermissions(taskId, 3, 200);
 
                     if (retrieveTaskRolePermissionsResponseBody.asString().isBlank()) {
                         return false;
