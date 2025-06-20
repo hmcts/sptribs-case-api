@@ -27,7 +27,6 @@ import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getMembers;
 @ExtendWith(MockitoExtension.class)
 public class FinalDecisionTemplateContentTest {
 
-
     @InjectMocks
     private FinalDecisionTemplateContent templateContent;
 
@@ -98,7 +97,7 @@ public class FinalDecisionTemplateContentTest {
         //Then
         assertThat(result)
             .contains(entry("cicCaseSchemeCic", SchemeCic.Year1996.getLabel()))
-            .contains(entry(SUBJECT_FULL_NAME, "Jane Doe"));;
+            .contains(entry(SUBJECT_FULL_NAME, "Jane Doe"));
     }
 
     @Test
