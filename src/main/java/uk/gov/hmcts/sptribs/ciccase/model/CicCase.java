@@ -657,7 +657,7 @@ public class CicCase {
         return earliestDate;
     }
 
-    public String getFirstDueDate() {
+    public String calculateFirstDueDate() {
         DateTimeFormatter dateFormatter = ofPattern("dd MMM yyyy", UK);
         LocalDate compare = LocalDate.MAX;
 
