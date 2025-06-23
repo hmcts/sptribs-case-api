@@ -2,7 +2,6 @@ package uk.gov.hmcts.sptribs.document.content;
 
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
-import uk.gov.hmcts.sptribs.ciccase.model.CaseSubcategory;
 
 import java.util.Map;
 

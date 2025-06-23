@@ -3,7 +3,6 @@ package uk.gov.hmcts.sptribs.document.content;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
-import uk.gov.hmcts.sptribs.ciccase.model.CaseSubcategory;
 
 import java.util.Map;
 
