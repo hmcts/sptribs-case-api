@@ -28,7 +28,6 @@
     "cicCaseRespondentOrganisation": "CICA",
     "cicCaseRespondentEmail": "appeals.team@cica.gov.uk",
     "cicCaseFullName": "Testing subject",
-    "cicCaseFirstDueDate": "",
     "stayIsCaseStayed": "No",
     "hearingStatus": "Postponed",
     "postponeDate": "${json-unit.any-string}",
