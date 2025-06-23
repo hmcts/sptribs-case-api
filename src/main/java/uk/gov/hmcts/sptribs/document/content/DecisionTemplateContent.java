@@ -28,9 +28,7 @@ public class DecisionTemplateContent {
 
         Map<String, Object> templateContent = getCommonFields(caseData, ccdCaseReference);
 
-        if ((caseData.getCicCase().getCaseSubcategory() == CaseSubcategory.FATAL
-            || caseData.getCicCase().getCaseSubcategory() == CaseSubcategory.MINOR)
-            && (caseData.getCicCase().getApplicantFullName() != null)) {
+        if (caseData.getCicCase().shouldUseApplicantNameForSubject(caseData)) {
             templateContent.put(SUBJECT_FULL_NAME, caseData.getCicCase().getApplicantFullName());
         } else {
             templateContent.put(SUBJECT_FULL_NAME, caseData.getLatestCompletedHearing().getSummary().getSubjectName());

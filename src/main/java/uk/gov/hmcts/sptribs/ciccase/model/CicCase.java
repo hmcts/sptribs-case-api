@@ -35,6 +35,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import static java.time.format.DateTimeFormatter.ofPattern;
@@ -44,6 +45,7 @@ import static uk.gov.hmcts.ccd.sdk.type.FieldType.Email;
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.FixedList;
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.MultiSelectList;
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.TextArea;
+import static uk.gov.hmcts.sptribs.document.content.DocmosisTemplateConstants.SUBJECT_FULL_NAME;
 
 @Data
 @AllArgsConstructor
@@ -724,5 +726,15 @@ public class CicCase {
         applicantAddress = new AddressGlobalUK();
         applicantPhoneNumber = "";
         applicantEmailAddress = "";
+    }
+
+    public boolean shouldUseApplicantNameForSubject(CaseData caseData) {
+        if ((caseData.getCicCase().getCaseSubcategory() == CaseSubcategory.FATAL
+            || caseData.getCicCase().getCaseSubcategory() == CaseSubcategory.MINOR)
+            && (caseData.getCicCase().getApplicantFullName() != null)) {
+            return true;
+        } else {
+            return false;
+        }
     }
 }
