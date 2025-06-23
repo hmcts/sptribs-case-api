@@ -1,6 +1,8 @@
 package uk.gov.hmcts.sptribs.ciccase.model;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.sptribs.caseworker.model.DateModel;
 import uk.gov.hmcts.sptribs.caseworker.model.Order;
@@ -113,5 +115,38 @@ class CicCaseTest {
 
         //Then
         assertThat(result).isEqualTo(dateFormatter.format(now));
+    }
+
+    @ParameterizedTest
+    @EnumSource(CaseSubcategory.class)
+    void shouldUseApplicantNameForSubjectWithMinorSubcategoryAndFatalSubcategory(CaseSubcategory caseSubcategory) {
+        final CicCase cicCase = CicCase.builder()
+            .caseSubcategory(caseSubcategory)
+            .applicantFullName("Jane Doe")
+            .build();
+
+        final CaseData caseData = CaseData.builder()
+            .cicCase(cicCase)
+            .build();
+
+        if (caseSubcategory == CaseSubcategory.FATAL
+        || caseSubcategory == CaseSubcategory.MINOR) {
+            assertThat(caseData.getCicCase().useApplicantNameForSubject(caseData)).isTrue();
+        } else {
+            assertThat(caseData.getCicCase().useApplicantNameForSubject(caseData)).isFalse();
+        }
+
+        final CicCase cicCaseNoApplicantName = CicCase.builder()
+            .caseSubcategory(caseSubcategory)
+            .build();
+
+        final CaseData caseDataNoApplicantName = CaseData.builder()
+            .cicCase(cicCaseNoApplicantName)
+            .build();
+
+        if (caseSubcategory == CaseSubcategory.FATAL
+            || caseSubcategory == CaseSubcategory.MINOR) {
+            assertThat(caseDataNoApplicantName.getCicCase().useApplicantNameForSubject(caseDataNoApplicantName)).isFalse();
+        }
     }
 }
