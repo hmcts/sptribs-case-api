@@ -130,7 +130,7 @@ class CicCaseTest {
             .build();
 
         if (caseSubcategory == CaseSubcategory.FATAL
-        || caseSubcategory == CaseSubcategory.MINOR) {
+            || caseSubcategory == CaseSubcategory.MINOR) {
             assertThat(caseData.getCicCase().useApplicantNameForSubject(caseData)).isTrue();
         } else {
             assertThat(caseData.getCicCase().useApplicantNameForSubject(caseData)).isFalse();
