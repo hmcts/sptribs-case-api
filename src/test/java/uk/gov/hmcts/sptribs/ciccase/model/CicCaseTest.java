@@ -131,9 +131,9 @@ class CicCaseTest {
 
         if (caseSubcategory == CaseSubcategory.FATAL
             || caseSubcategory == CaseSubcategory.MINOR) {
-            assertThat(caseData.getCicCase().useApplicantNameForSubject(caseData)).isTrue();
+            assertThat(caseData.getCicCase().useApplicantNameForSubject()).isTrue();
         } else {
-            assertThat(caseData.getCicCase().useApplicantNameForSubject(caseData)).isFalse();
+            assertThat(caseData.getCicCase().useApplicantNameForSubject()).isFalse();
         }
 
         final CicCase cicCaseNoApplicantName = CicCase.builder()
@@ -146,7 +146,7 @@ class CicCaseTest {
 
         if (caseSubcategory == CaseSubcategory.FATAL
             || caseSubcategory == CaseSubcategory.MINOR) {
-            assertThat(caseDataNoApplicantName.getCicCase().useApplicantNameForSubject(caseDataNoApplicantName)).isFalse();
+            assertThat(caseDataNoApplicantName.getCicCase().useApplicantNameForSubject()).isFalse();
         }
     }
 }

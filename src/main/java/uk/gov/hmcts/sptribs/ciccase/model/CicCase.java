@@ -726,9 +726,9 @@ public class CicCase {
         applicantEmailAddress = "";
     }
 
-    public boolean useApplicantNameForSubject(CaseData caseData) {
-        return (caseData.getCicCase().getCaseSubcategory() == CaseSubcategory.FATAL
-            || caseData.getCicCase().getCaseSubcategory() == CaseSubcategory.MINOR)
-            && (caseData.getCicCase().getApplicantFullName() != null);
+    public boolean useApplicantNameForSubject() {
+        return (caseSubcategory == CaseSubcategory.FATAL
+            || caseSubcategory == CaseSubcategory.MINOR)
+            && (applicantFullName != null);
     }
 }

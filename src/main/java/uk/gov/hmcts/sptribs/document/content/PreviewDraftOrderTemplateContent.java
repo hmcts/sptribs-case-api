@@ -27,7 +27,7 @@ public class PreviewDraftOrderTemplateContent {
 
         Map<String, Object> templateContent = getCommonFields(caseData, ccdCaseReference);
 
-        if (caseData.getCicCase().useApplicantNameForSubject(caseData)) {
+        if (caseData.getCicCase().useApplicantNameForSubject()) {
             templateContent.put(SUBJECT_FULL_NAME, caseData.getCicCase().getApplicantFullName());
         } else {
             templateContent.put(SUBJECT_FULL_NAME, caseData.getCicCase().getFullName());
