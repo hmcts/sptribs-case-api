@@ -6,14 +6,11 @@ import uk.gov.hmcts.sptribs.caseworker.model.DateModel;
 import uk.gov.hmcts.sptribs.caseworker.model.Order;
 
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import static java.time.format.DateTimeFormatter.ofPattern;
-import static java.util.Locale.UK;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.APPLICANT_ADDRESS;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.APPLICANT_FIRST_NAME;
@@ -108,7 +105,6 @@ class CicCaseTest {
             .build();
 
         //When
-        DateTimeFormatter dateFormatter = ofPattern("dd MMM yyyy", UK);
         LocalDate result = cicCase.calculateFirstDueDate();
 
         //Then
