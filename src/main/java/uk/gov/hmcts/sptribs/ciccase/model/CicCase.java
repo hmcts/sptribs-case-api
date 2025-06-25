@@ -26,6 +26,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerAndSuperUserAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerWithCAAAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.DefaultAccess;
+import uk.gov.hmcts.sptribs.ciccase.model.access.ImmutableCollectionDefaultAccess;
 import uk.gov.hmcts.sptribs.document.model.CICDocument;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocumentUpload;
@@ -566,6 +567,11 @@ public class CicCase {
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class, CaseworkerAndSuperUserAccess.class}
     )
     private List<ListValue<CaseworkerCICDocument>> removedDocumentList;
+
+    @CCD(
+        access = {ImmutableCollectionDefaultAccess.class}
+    )
+    private List<ListValue<CaseworkerCICDocument>> readOnlyRemovedDocList;
 
     @CCD(
         label = "Final Decision Documents",
