@@ -1,3 +1,5 @@
+import uk.gov.hmcts.rse.CftlibExec
+
 buildscript {
   repositories {
     mavenLocal()
@@ -39,6 +41,7 @@ version = '0.0.1'
 
 ccd {
   configDir = file('ccd-definitions/definitions')
+  decentralised = true
 }
 
 sourceSets {
@@ -351,6 +354,8 @@ dependencies {
   implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.17.0'
   implementation group: 'com.github.ben-manes.caffeine', name: 'caffeine', version: '3.2.1'
   implementation 'org.camunda.bpm:camunda-external-task-client:7.23.0'
+  implementation group: 'org.postgresql', name: 'postgresql', version: '42.7.5'
+  implementation 'org.flywaydb:flyway-database-postgresql:11.3.1'
 
   annotationProcessor group: 'org.projectlombok', name: 'lombok', version: versions.lombok
   testImplementation 'com.github.hmcts:fortify-client:1.4.8:all'
@@ -499,6 +504,10 @@ ccd {
   configDir = file('build/definitions')
 }
 
+tasks.withType(CftlibExec).configureEach {
+  environment 'RSE_LIB_ADDITIONAL_DATABASES', 'sptribs'
+}
+
 bootWithCCD {
     environment 'XUI_JURISDICTIONS', 'ST_CIC'
     group = 'ccd tasks'
@@ -562,7 +571,7 @@ configurations.testImplementation {
   exclude group: 'ch.qos.logback', module: 'logback-classic'
 }
 
-rootProject.tasks.named("processContractTestResources") {
+tasks.named("processContractTestResources") {
   duplicatesStrategy = 'include'
 }
 
