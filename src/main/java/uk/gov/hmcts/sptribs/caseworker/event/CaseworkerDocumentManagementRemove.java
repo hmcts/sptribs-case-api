@@ -102,7 +102,6 @@ public class CaseworkerDocumentManagementRemove implements CCDConfig<CaseData, S
         }
         List<ListValue<CaseworkerCICDocument>> listValues = new ArrayList<>();
         caseData.getCicCase().setRemovedDocumentList(listValues);
-        caseData.getCicCase().setReadOnlyRemovedDocList(caseData.getCicCase().getRemovedDocumentList());
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
             .state(details.getState())
