@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
+import uk.gov.hmcts.ccd.sdk.api.Permission;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
@@ -68,8 +69,10 @@ public class CaseworkerDocumentManagementRemove implements CCDConfig<CaseData, S
                 CaseStayed)
             .name("Document management: Remove")
             .description("Document management: Remove")
+            .grant(Permission.C, ST_CIC_CASEWORKER)
+                .grant(Permission.D, ST_CIC_CASEWORKER)
             .grant(CREATE_READ_UPDATE_DELETE, SUPER_USER, ST_CIC_SENIOR_JUDGE, ST_CIC_SENIOR_CASEWORKER, ST_CIC_HEARING_CENTRE_TEAM_LEADER)
-            .grantHistoryOnly(ST_CIC_CASEWORKER, ST_CIC_HEARING_CENTRE_ADMIN, ST_CIC_JUDGE)
+            .grantHistoryOnly(ST_CIC_HEARING_CENTRE_ADMIN, ST_CIC_JUDGE)
             .aboutToStartCallback(this::aboutToStart)
             .aboutToSubmitCallback(this::aboutToSubmit)
             .submittedCallback(this::submitted));
@@ -101,6 +104,7 @@ public class CaseworkerDocumentManagementRemove implements CCDConfig<CaseData, S
         }
         List<ListValue<CaseworkerCICDocument>> listValues = new ArrayList<>();
         caseData.getCicCase().setRemovedDocumentList(listValues);
+        caseData.getCicCase().setReadOnlyRemovedDocList(caseData.getCicCase().getRemovedDocumentList());
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
             .state(details.getState())
