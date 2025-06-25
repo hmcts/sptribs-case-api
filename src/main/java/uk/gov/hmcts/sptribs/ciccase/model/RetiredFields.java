@@ -146,6 +146,12 @@ public class RetiredFields {
     private List<ListValue<CaseLinks>> cicCaseCaseLinks;
 
     @CCD(
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
+        label = "Retired field for firstDueDate"
+    )
+    private String cicCaseFirstDueDate;
+
+    @CCD(
         label = "Case Status",
         typeOverride = FixedRadioList,
         typeParameterOverride = "State",

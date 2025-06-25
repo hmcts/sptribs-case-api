@@ -640,11 +640,6 @@ public class CicCase {
     @CCD(
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
-    private String firstDueDate;
-
-    @CCD(
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
-    )
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate firstOrderDueDate;
 
