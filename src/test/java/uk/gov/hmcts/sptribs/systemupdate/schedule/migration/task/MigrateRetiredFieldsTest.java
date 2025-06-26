@@ -11,6 +11,8 @@ import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.testutil.TestDataHelper;
 
+import java.time.LocalDate;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
@@ -27,6 +29,9 @@ class MigrateRetiredFieldsTest {
     @Test
     void shouldMigrateFields() {
         final CaseData caseData = TestDataHelper.awaitingOutcomeData();
+        caseData.setCicCase(TestDataHelper.cicCase());
+
+        caseData.getCicCase().setFirstDueDate("26 Jun 2025");
 
         final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
         caseDetails.setData(caseData);
@@ -36,6 +41,8 @@ class MigrateRetiredFieldsTest {
         assertNotNull(result);
         assertEquals(State.AwaitingOutcome, result.getData().getCaseStatus());
         assertEquals(caseDetails.getData(), result.getData());
+
+        assertEquals(result.getData().getCicCase().getFirstOrderDueDate(), LocalDate.of(2025, 6, 26));
 
     }
 }

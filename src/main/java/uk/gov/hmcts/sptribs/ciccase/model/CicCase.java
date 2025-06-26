@@ -643,6 +643,11 @@ public class CicCase {
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate firstOrderDueDate;
 
+    @CCD(
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private String firstDueDate;
+
     private LocalDate findEarliestDate(List<ListValue<DateModel>> dueDateList, LocalDate compare) {
         LocalDate earliestDate = compare;
         for (ListValue<DateModel> dateModelListValue : dueDateList) {
