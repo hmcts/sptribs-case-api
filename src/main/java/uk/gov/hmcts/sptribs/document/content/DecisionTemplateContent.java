@@ -26,7 +26,13 @@ public class DecisionTemplateContent {
                                      final Long ccdCaseReference) {
 
         Map<String, Object> templateContent = getCommonFields(caseData, ccdCaseReference);
-        templateContent.put(SUBJECT_FULL_NAME, caseData.getLatestCompletedHearing().getSummary().getSubjectName());
+
+        if (caseData.getCicCase().useApplicantNameForSubject()) {
+            templateContent.put(SUBJECT_FULL_NAME, caseData.getCicCase().getApplicantFullName());
+        } else {
+            templateContent.put(SUBJECT_FULL_NAME, caseData.getLatestCompletedHearing().getSummary().getSubjectName());
+        }
+
         templateContent.put(REPRESENTATIVE_FULL_NAME, caseData.getCicCase().getRepresentativeFullName());
         templateContent.put(HEARING_TYPE, caseData.getLatestCompletedHearing().getHearingType());
         templateContent.put(TRIBUNAL_MEMBERS, getMembers(caseData.getLatestCompletedHearing().getSummary().getMemberList()));
