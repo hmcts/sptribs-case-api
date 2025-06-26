@@ -728,4 +728,10 @@ public class CicCase {
         applicantPhoneNumber = "";
         applicantEmailAddress = "";
     }
+
+    public boolean useApplicantNameForSubject() {
+        return (caseSubcategory == CaseSubcategory.FATAL
+            || caseSubcategory == CaseSubcategory.MINOR)
+            && (applicantFullName != null);
+    }
 }
