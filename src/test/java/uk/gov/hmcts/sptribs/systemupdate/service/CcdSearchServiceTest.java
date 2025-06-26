@@ -33,6 +33,7 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.util.ReflectionTestUtils.setField;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.Submitted;
 import static uk.gov.hmcts.sptribs.systemupdate.service.CcdSearchService.DUE_DATE;
+import static uk.gov.hmcts.sptribs.systemupdate.service.CcdSearchService.MIGRATION_PAGE_SIZE;
 import static uk.gov.hmcts.sptribs.systemupdate.service.CcdSearchService.STATE;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.SERVICE_AUTHORIZATION;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.SYSTEM_UPDATE_AUTH_TOKEN;
@@ -100,7 +101,7 @@ class CcdSearchServiceTest {
                                         .must(rangeQuery("data.dataVersion").lt(latestVersion)))
                 )
                 .from(0)
-                .size(500);
+                .size(MIGRATION_PAGE_SIZE);
 
         when(coreCaseDataApi.searchCases(
             SYSTEM_UPDATE_AUTH_TOKEN,
