@@ -3,7 +3,6 @@ package uk.gov.hmcts.sptribs.ciccase.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.elasticsearch.common.TriConsumer;
 import uk.gov.hmcts.ccd.sdk.api.CCD;
 import uk.gov.hmcts.ccd.sdk.type.CaseLink;
@@ -34,7 +33,6 @@ import static uk.gov.hmcts.ccd.sdk.type.FieldType.TextArea;
 
 @Data
 @NoArgsConstructor
-@Slf4j
 public class RetiredFields {
 
     @CCD(
@@ -187,7 +185,7 @@ public class RetiredFields {
                     caseData.put("cicCaseFirstOrderDueDate", newValue);
                 }
             } catch (Exception e) {
-                log.error("Could not migrate case: {}", caseData.get("hyphenatedCaseRef"), e);
+                System.err.println("Could not migrate case " + caseData.get("hyphenatedCaseRef") + ":" + e);
             }
         }
     );
