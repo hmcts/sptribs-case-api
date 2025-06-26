@@ -20,9 +20,11 @@ import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.common.service.CcdSupplementaryDataService;
+import uk.gov.hmcts.sptribs.services.wa.TaskManagementService;
 
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
@@ -50,11 +52,13 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
 
     private final ObjectMapper objectMapper;
     private final CcdSupplementaryDataService ccdSupplementaryDataService;
+    private final TaskManagementService taskManagementService;
 
     @Autowired
-    public CreateTestCase(ObjectMapper objectMapper, CcdSupplementaryDataService ccdSupplementaryDataService) {
+    public CreateTestCase(ObjectMapper objectMapper, CcdSupplementaryDataService ccdSupplementaryDataService, TaskManagementService taskManagementService) {
         this.objectMapper = objectMapper;
         this.ccdSupplementaryDataService = ccdSupplementaryDataService;
+        this.taskManagementService = taskManagementService;
     }
 
     @Override
@@ -94,6 +98,7 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
 
         caseData.setHyphenatedCaseRef(caseData.formatCaseRef(details.getId()));
         setDefaultCaseDetails(caseData);
+        taskManagementService.initiateTask("processFurtherEvidence", new HashMap<>());
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)

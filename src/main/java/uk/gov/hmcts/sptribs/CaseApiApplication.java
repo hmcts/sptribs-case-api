@@ -21,6 +21,7 @@ import uk.gov.hmcts.sptribs.document.bundling.client.BundlingClient;
 import uk.gov.hmcts.sptribs.judicialrefdata.JudicialClient;
 import uk.gov.hmcts.sptribs.recordlisting.LocationClient;
 import uk.gov.hmcts.sptribs.services.cdam.CaseDocumentClientApi;
+import uk.gov.hmcts.sptribs.services.wa.TaskManagementClient;
 import uk.gov.hmcts.sptribs.systemupdate.service.ScheduledTaskRunner;
 
 import java.util.TimeZone;
@@ -41,7 +42,8 @@ import java.util.TimeZone;
         ExtendedCaseDataApi.class,
         CaseAssignmentApi.class,
         CaseDocumentClientApi.class,
-        BundlingClient.class
+        BundlingClient.class,
+        TaskManagementClient.class,
     }
 )
 @EnableScheduling
