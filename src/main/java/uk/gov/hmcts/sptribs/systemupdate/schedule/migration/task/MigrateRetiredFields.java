@@ -2,7 +2,6 @@ package uk.gov.hmcts.sptribs.systemupdate.schedule.migration.task;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -23,8 +22,6 @@ public class MigrateRetiredFields implements CaseTask {
 
     @Override
     public CaseDetails<CaseData, State> apply(final CaseDetails<CaseData, State> caseDetails) throws IllegalArgumentException  {
-        objectMapper = new ObjectMapper().findAndRegisterModules();
-        objectMapper.registerModule(new JavaTimeModule());
 
         final Map<String, Object> mappedData = objectMapper.convertValue(caseDetails.getData(), new TypeReference<>() {});
         final Map<String, Object> migratedMappedData = RetiredFields.migrate(mappedData);
