@@ -12,6 +12,9 @@ import uk.gov.hmcts.sptribs.ciccase.model.RetiredFields;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.testutil.TestDataHelper;
 
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
+import java.util.HashMap;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -45,7 +48,7 @@ class MigrateRetiredFieldsTest {
 
     @Test
     void shouldMigrateAllKeysAndNullOldFields() {
-        Map<String, Object> data = new java.util.HashMap<>();
+        Map<String, Object> data = new HashMap<>();
         data.put("cicBundles", "bundleValue");
         data.put("cicCaseFirstDueDate", "01 Jan 2024");
 
@@ -65,7 +68,7 @@ class MigrateRetiredFieldsTest {
 
     @Test
     void shouldHandleNullAndMissingKeysAndValuesInMigrate() {
-        Map<String, Object> dataWithNull = new java.util.HashMap<>();
+        Map<String, Object> dataWithNull = new HashMap<>();
         dataWithNull.put("cicBundles", null);
 
         Map<String, Object> migratedNull = RetiredFields.migrate(dataWithNull);
@@ -77,7 +80,7 @@ class MigrateRetiredFieldsTest {
             migratedNull.get("dataVersion")
         );
 
-        Map<String, Object> dataMissing = new java.util.HashMap<>();
+        Map<String, Object> dataMissing = new HashMap<>();
         Map<String, Object> migratedMissing = RetiredFields.migrate(dataMissing);
 
         assertNull(migratedMissing.get("caseBundles"));
@@ -90,12 +93,12 @@ class MigrateRetiredFieldsTest {
 
     @Test
     void shouldHandleInvalidDateFormatInMigrate() {
-        Map<String, Object> data = new java.util.HashMap<>();
+        Map<String, Object> data = new HashMap<>();
         data.put("cicCaseFirstDueDate", "invalid-date");
 
-        java.io.ByteArrayOutputStream errContent = new java.io.ByteArrayOutputStream();
+        java.io.ByteArrayOutputStream errContent = new ByteArrayOutputStream();
         java.io.PrintStream originalErr = System.err;
-        System.setErr(new java.io.PrintStream(errContent));
+        System.setErr(new PrintStream(errContent));
 
         try {
             Map<String, Object> migrated = RetiredFields.migrate(data);
@@ -116,7 +119,7 @@ class MigrateRetiredFieldsTest {
 
     @Test
     void shouldHandleEmptyStringForFirstDueDate() {
-        Map<String, Object> data = new java.util.HashMap<>();
+        Map<String, Object> data = new HashMap<>();
         data.put("cicCaseFirstDueDate", "");
 
         Map<String, Object> migrated = RetiredFields.migrate(data);
