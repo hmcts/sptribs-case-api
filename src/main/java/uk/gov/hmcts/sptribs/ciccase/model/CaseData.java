@@ -176,14 +176,18 @@ public class CaseData {
     private SecurityClass securityClass;
 
     @Builder.Default
-    @CCD(label = "Bundles",
-         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    @CCD(
+        label = "Bundles",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private List<ListValue<Bundle>> caseBundles = new ArrayList<>();
 
     @JsonUnwrapped(prefix = "cicCase")
     @Builder.Default
-    @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
+    @CCD(
+        inheritAccessFromParent = false,
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
     private CicCase cicCase = new CicCase();
 
     @JsonUnwrapped(prefix = "notifications")
