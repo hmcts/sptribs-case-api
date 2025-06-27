@@ -20,9 +20,13 @@ import uk.gov.hmcts.sptribs.ciccase.model.access.DefaultAccess;
 import uk.gov.hmcts.sptribs.document.bundling.model.Bundle;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 
+import static java.time.format.DateTimeFormatter.ofPattern;
+import static java.util.Locale.UK;
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.Collection;
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.FixedRadioList;
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.TextArea;
@@ -146,6 +150,12 @@ public class RetiredFields {
     private List<ListValue<CaseLinks>> cicCaseCaseLinks;
 
     @CCD(
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
+        label = "Retired field for firstDueDate"
+    )
+    private String cicCaseFirstDueDate;
+
+    @CCD(
         label = "Case Status",
         typeOverride = FixedRadioList,
         typeParameterOverride = "State",
@@ -166,7 +176,18 @@ public class RetiredFields {
 
     @JsonIgnore
     private static final Map<String, TriConsumer<Map<String, Object>, String, Object>> migrations = Map.of(
-        "cicBundles", moveTo("caseBundles")
+        "cicBundles", moveTo("caseBundles"),
+        "cicCaseFirstDueDate", (caseData, key, value) -> {
+            try {
+                if (!value.toString().isEmpty()) {
+                    DateTimeFormatter dateFormatter = ofPattern("dd MMM yyyy", UK);
+                    LocalDate newValue = dateFormatter.parse(value.toString(), LocalDate::from);
+                    caseData.put("cicCaseFirstOrderDueDate", newValue);
+                }
+            } catch (Exception e) {
+                System.err.println("Could not migrate case " + caseData.get("hyphenatedCaseRef") + ":" + e);
+            }
+        }
     );
 
     /**

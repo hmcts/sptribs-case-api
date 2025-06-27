@@ -69,7 +69,7 @@
     "ApplicantCIC"
   ],
   "cicCaseCaseCategory": "Assessment",
-  "cicCaseFirstDueDate": "01 Jan 2025",
+  "cicCaseFirstOrderDueDate": "2025-01-01",
   "representativeFlags": {
     "details": [],
     "partyName": "Representative AutoTesting",

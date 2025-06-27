@@ -60,7 +60,7 @@ class WorkBasketResultFieldsTest {
                     "Applicant Name",
                     null,
                     null),
-                tuple("cicCaseFirstDueDate",
+                tuple("cicCaseFirstOrderDueDate",
                     "Due Date",
                     null,
                     null)
