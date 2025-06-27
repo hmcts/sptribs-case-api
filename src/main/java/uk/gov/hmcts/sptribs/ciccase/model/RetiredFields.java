@@ -179,7 +179,7 @@ public class RetiredFields {
         "cicBundles", moveTo("caseBundles"),
         "cicCaseFirstDueDate", (caseData, key, value) -> {
             try {
-                if (value != null && !value.toString().isEmpty()) {
+                if (!value.toString().isEmpty()) {
                     DateTimeFormatter dateFormatter = ofPattern("dd MMM yyyy", UK);
                     LocalDate newValue = dateFormatter.parse(value.toString(), LocalDate::from);
                     caseData.put("cicCaseFirstOrderDueDate", newValue);
