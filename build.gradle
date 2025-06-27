@@ -215,8 +215,7 @@ def sonarExclusions = [
   '**/uk/gov/hmcts/sptribs/CaseApiApplication.java',
   '**/uk/gov/hmcts/sptribs/notification/GetAllTemplatesFromNotify.java',
   '**/uk/gov/hmcts/sptribs/ciccase/model/UserRolesForAccessProfiles.java',
-  '**/uk/gov/hmcts/sptribs/common/config/**',
-  '**/uk/gov/hmcts/sptribs/ciccase/model/RetiredFields.java'
+  '**/uk/gov/hmcts/sptribs/common/config/**'
 ]
 
 sonarqube {
