@@ -5,7 +5,9 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.DefaultResourceLoader;
+import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
@@ -13,13 +15,21 @@ import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.ccd.sdk.type.DynamicList;
 import uk.gov.hmcts.ccd.sdk.type.DynamicListElement;
+import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
+import uk.gov.hmcts.reform.ccd.document.am.model.Classification;
+import uk.gov.hmcts.reform.ccd.document.am.model.DocumentUploadRequest;
+import uk.gov.hmcts.reform.ccd.document.am.util.InMemoryMultipartFile;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseManagementLocation;
+import uk.gov.hmcts.sptribs.cdam.model.UploadResponse;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
+import uk.gov.hmcts.sptribs.common.config.AppsConfig;
+import uk.gov.hmcts.sptribs.common.service.AuthorisationService;
 import uk.gov.hmcts.sptribs.common.service.CcdSupplementaryDataService;
+import uk.gov.hmcts.sptribs.services.cdam.CaseDocumentClientApi;
 
 import java.nio.charset.Charset;
 import java.util.ArrayList;
@@ -47,14 +57,28 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
     private static final String ENVIRONMENT_AAT = "aat";
     private static final String TEST_CREATE = "create-test-case";
     private static final String TEST_CASE_DATA_FILE = "classpath:data/st_cic_test_case.json";
+    private final Resource samplePdf = new ClassPathResource("data/sample_pdf.pdf");
 
     private final ObjectMapper objectMapper;
     private final CcdSupplementaryDataService ccdSupplementaryDataService;
+    private final AppsConfig appsConfig;
+    private final CaseDocumentClientApi caseDocumentClientApi;
+    private AuthorisationService authorisationService;
+    private final AuthTokenGenerator authTokenGenerator;
 
     @Autowired
-    public CreateTestCase(ObjectMapper objectMapper, CcdSupplementaryDataService ccdSupplementaryDataService) {
+    public CreateTestCase(ObjectMapper objectMapper,
+                          CcdSupplementaryDataService ccdSupplementaryDataService,
+                          CaseDocumentClientApi caseDocumentClientApi,
+                          AppsConfig appsConfig,
+                          AuthorisationService authorisationService,
+                          AuthTokenGenerator authTokenGenerator) {
         this.objectMapper = objectMapper;
         this.ccdSupplementaryDataService = ccdSupplementaryDataService;
+        this.caseDocumentClientApi = caseDocumentClientApi;
+        this.appsConfig = appsConfig;
+        this.authorisationService = authorisationService;
+        this.authTokenGenerator = authTokenGenerator;
     }
 
     @Override
@@ -84,6 +108,18 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
     @SneakyThrows
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(CaseDetails<CaseData, State> details,
                                                                        CaseDetails<CaseData, State> beforeDetails) {
+        String caseType = appsConfig.getApps().get(0).getCaseType();
+        String jurisdiction = appsConfig.getApps().get(0).getJurisdiction();
+
+        String authString = authorisationService.getAuthorisation();
+        String serviceAuth = authTokenGenerator.generate();
+        InMemoryMultipartFile inMemoryMultipartFile = new InMemoryMultipartFile(samplePdf.getFile());
+
+        DocumentUploadRequest documentUploadRequest = new DocumentUploadRequest(Classification.RESTRICTED.toString(),
+                caseType,
+                jurisdiction,
+                List.of(inMemoryMultipartFile));
+        UploadResponse uploadResponse = this.caseDocumentClientApi.uploadDocuments(authString, serviceAuth, documentUploadRequest);
 
         final DefaultResourceLoader resourceLoader = new DefaultResourceLoader();
         final String json = IOUtils.toString(
@@ -142,6 +178,32 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
                 .value(caseManagementCategory)
                 .build()
         );
+    }
+
+    private void uploadTestApplicantDocument() {
+        // Create metadata as a JSON string
+//        ObjectMapper objectMapper = new ObjectMapper();
+//        DocumentUploadRequest metadata = new DocumentUploadRequest();
+//        metadata.setSomeField("value"); // populate it
+//        String metadataJson = objectMapper.writeValueAsString(metadata);
+//
+//        // Set up body
+//        LinkedMultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
+//        body.add("file", file);
+//        body.add("metadata", new HttpEntity<>(metadataJson, createJsonHeaders()));
+//
+//        // Set headers
+//        HttpHeaders headers = new HttpHeaders();
+//        headers.setContentType(MediaType.MULTIPART_FORM_DATA);
+//        headers.set("Authorization", "Bearer some-token");
+//        headers.set("ServiceAuthorization", "Bearer service-token");
+//
+//        HttpEntity<LinkedMultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
+//
+//        String url = "http://localhost:8080/api/upload";
+//
+//        ResponseEntity<UploadResponse> response = restTemplate.postForEntity(url, requestEntity, UploadResponse.class);
+//        System.out.println("Upload complete: " + response.getBody());
     }
 
 }
