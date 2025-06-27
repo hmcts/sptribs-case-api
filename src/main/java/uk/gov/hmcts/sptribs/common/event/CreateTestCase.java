@@ -179,31 +179,4 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
                 .build()
         );
     }
-
-    private void uploadTestApplicantDocument() {
-        // Create metadata as a JSON string
-//        ObjectMapper objectMapper = new ObjectMapper();
-//        DocumentUploadRequest metadata = new DocumentUploadRequest();
-//        metadata.setSomeField("value"); // populate it
-//        String metadataJson = objectMapper.writeValueAsString(metadata);
-//
-//        // Set up body
-//        LinkedMultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
-//        body.add("file", file);
-//        body.add("metadata", new HttpEntity<>(metadataJson, createJsonHeaders()));
-//
-//        // Set headers
-//        HttpHeaders headers = new HttpHeaders();
-//        headers.setContentType(MediaType.MULTIPART_FORM_DATA);
-//        headers.set("Authorization", "Bearer some-token");
-//        headers.set("ServiceAuthorization", "Bearer service-token");
-//
-//        HttpEntity<LinkedMultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
-//
-//        String url = "http://localhost:8080/api/upload";
-//
-//        ResponseEntity<UploadResponse> response = restTemplate.postForEntity(url, requestEntity, UploadResponse.class);
-//        System.out.println("Upload complete: " + response.getBody());
-    }
-
 }
