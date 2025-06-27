@@ -33,6 +33,7 @@ import java.util.List;
 
 import static java.util.Collections.emptySet;
 import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
@@ -123,6 +124,7 @@ public class CaseworkerCreateHearingSummaryIT {
         when(judicialClient.getUserProfiles(
             eq(TEST_SERVICE_AUTH_TOKEN),
             eq(TEST_AUTHORIZATION_TOKEN),
+            anyInt(),
             eq(ACCEPT_VALUE),
             eq(JudicialUsersRequest.builder().ccdServiceName(ST_CIC_JURISDICTION).build())
         )).thenReturn(getUserProfiles());
