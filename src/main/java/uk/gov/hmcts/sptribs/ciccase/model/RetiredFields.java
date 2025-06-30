@@ -19,6 +19,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerWithCAAAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.DefaultAccess;
 import uk.gov.hmcts.sptribs.document.bundling.model.Bundle;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
+import uk.gov.hmcts.sptribs.systemupdate.util.LoggerUtil;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -185,7 +186,7 @@ public class RetiredFields {
                     caseData.put("cicCaseFirstOrderDueDate", newValue);
                 }
             } catch (Exception e) {
-                System.err.println("Could not migrate case " + caseData.get("hyphenatedCaseRef") + ":" + e);
+                LoggerUtil.logMigrationError("Could not migrate case " + caseData.get("hyphenatedCaseRef") + ":" + e, e);
             }
         }
     );

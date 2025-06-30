@@ -12,16 +12,12 @@ import uk.gov.hmcts.sptribs.ciccase.model.RetiredFields;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.testutil.TestDataHelper;
 
-import java.io.ByteArrayOutputStream;
-import java.io.PrintStream;
 import java.util.HashMap;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 
 @ExtendWith(MockitoExtension.class)
 class MigrateRetiredFieldsTest {
@@ -96,25 +92,14 @@ class MigrateRetiredFieldsTest {
         Map<String, Object> data = new HashMap<>();
         data.put("cicCaseFirstDueDate", "invalid-date");
 
-        java.io.ByteArrayOutputStream errContent = new ByteArrayOutputStream();
-        java.io.PrintStream originalErr = System.err;
-        System.setErr(new PrintStream(errContent));
+        Map<String, Object> migrated = RetiredFields.migrate(data);
 
-        try {
-            Map<String, Object> migrated = RetiredFields.migrate(data);
-
-            assertNull(migrated.get("cicCaseFirstDueDate"));
-            assertNull(migrated.get("cicCaseFirstOrderDueDate"));
-            assertEquals(
-                RetiredFields.getVersion(),
-                migrated.get("dataVersion")
-            );
-
-            String errOutput = errContent.toString();
-            assertTrue(errOutput.contains("Could not migrate case"));
-        } finally {
-            System.setErr(originalErr);
-        }
+        assertNull(migrated.get("cicCaseFirstOrderDueDate"));
+        assertNull(migrated.get("cicCaseFirstDueDate"));
+        assertEquals(
+            RetiredFields.getVersion(),
+            migrated.get("dataVersion")
+        );
     }
 
     @Test
