@@ -570,7 +570,6 @@ public class CicCase {
     private List<ListValue<CaseworkerCICDocument>> removedDocumentList;
 
     @CCD(
-        inheritAccessFromParent = false,
         access = {ImmutableCollectionDefaultAccess.class}
     )
     private List<ListValue<CaseworkerCICDocument>> readOnlyRemovedDocList;
