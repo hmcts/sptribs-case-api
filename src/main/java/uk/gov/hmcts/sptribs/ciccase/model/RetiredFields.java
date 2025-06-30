@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.elasticsearch.common.TriConsumer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import uk.gov.hmcts.ccd.sdk.api.CCD;
 import uk.gov.hmcts.ccd.sdk.type.CaseLink;
 import uk.gov.hmcts.ccd.sdk.type.Document;
@@ -19,7 +21,6 @@ import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerWithCAAAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.DefaultAccess;
 import uk.gov.hmcts.sptribs.document.bundling.model.Bundle;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
-import uk.gov.hmcts.sptribs.systemupdate.util.LoggerUtil;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -172,6 +173,9 @@ public class RetiredFields {
     private CaseworkerCICDocument cicCaseSelectedDocument = new CaseworkerCICDocument();
 
     @JsonIgnore
+    private static Logger log = LoggerFactory.getLogger(RetiredFields.class);
+
+    @JsonIgnore
     private static final TriConsumer<Map<String, Object>, String, Object> DO_NOTHING = (data, key, val) -> {
     };
 
@@ -186,7 +190,7 @@ public class RetiredFields {
                     caseData.put("cicCaseFirstOrderDueDate", newValue);
                 }
             } catch (Exception e) {
-                LoggerUtil.logMigrationError("Could not migrate case " + caseData.get("hyphenatedCaseRef") + ":" + e, e);
+                log.error("Could not migrate case {}: {}", caseData.get("hyphenatedCaseRef"), e.getMessage());
             }
         }
     );
