@@ -1,5 +1,6 @@
 package uk.gov.hmcts.sptribs.ciccase.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonValue;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -20,6 +21,7 @@ public enum UserRole implements HasRole {
     DISTRICT_JUDGE_CIC("caseworker-sptribs-cic-districtjudge", "CRU"),
     RESPONDENT_CIC("caseworker-sptribs-cic-respondent", "CRU"),
 
+    @JsonIgnore
     ST_CIC("caseworker-st_cic", "CRU"), // base role all users have
     ST_CIC_CASEWORKER("caseworker-st_cic-caseworker", "CRU"),
     ST_CIC_SENIOR_CASEWORKER("caseworker-st_cic-senior-caseworker", "CRU"),
