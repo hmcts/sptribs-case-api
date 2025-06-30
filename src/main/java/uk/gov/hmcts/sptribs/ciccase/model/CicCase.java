@@ -25,6 +25,7 @@ import uk.gov.hmcts.sptribs.caseworker.model.YesNo;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerAndSuperUserAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerWithCAAAccess;
+import uk.gov.hmcts.sptribs.ciccase.model.access.CollectionDefaultAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.DefaultAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.ImmutableCollectionDefaultAccess;
 import uk.gov.hmcts.sptribs.document.model.CICDocument;
@@ -533,7 +534,7 @@ public class CicCase {
         label = "Case Documents",
         typeOverride = Collection,
         typeParameterOverride = "CaseworkerCICDocument",
-        access = {DefaultAccess.class}
+        access = {CollectionDefaultAccess.class}
     )
     private List<ListValue<CaseworkerCICDocument>> applicantDocumentsUploaded;
 
