@@ -118,7 +118,7 @@ test {
   jvmArgs = ['--add-opens=java.base/java.lang.reflect=ALL-UNNAMED','--add-opens=java.base/java.util=ALL-UNNAMED']
 }
 
-task functional(type: Test) {
+tasks.register('functional', Test) {
   if (System.getenv('WA_FUNCTIONAL_TESTS_ENABLED') == 'true') {
     maxParallelForks = Runtime.runtime.availableProcessors()
   }
@@ -126,7 +126,7 @@ task functional(type: Test) {
   group = "Verification"
   testClassesDirs = sourceSets.functionalTest.output.classesDirs
   classpath = sourceSets.functionalTest.runtimeClasspath
-  jvmArgs = ['--add-opens=java.base/java.lang.reflect=ALL-UNNAMED','--add-opens=java.base/java.util=ALL-UNNAMED']
+  jvmArgs = ['--add-opens=java.base/java.lang.reflect=ALL-UNNAMED', '--add-opens=java.base/java.util=ALL-UNNAMED']
 }
 
 task integration(type: Test) {
@@ -138,27 +138,27 @@ task integration(type: Test) {
 }
 
 // Invoked from CftLibConfig when booting with CCD.
-task buildCCDXlsx(type: Exec) {
+tasks.register('buildCCDXlsx', Exec) {
   group 'ccd tasks'
   commandLine './bin/ccd-build-definition.sh'
   inputs.dir layout.buildDirectory.dir('definitions')
   outputs.dir layout.buildDirectory.dir('ccd-config')
 }
 
-task smoke(type: Test) {
+tasks.register('smoke', Test) {
   description = "Runs Smoke Tests"
   setTestClassesDirs(sourceSets.functionalTest.output.classesDirs)
   setClasspath(sourceSets.functionalTest.runtimeClasspath)
   include "uk/gov/hmcts/sptribs/smoke/**"
 }
 
-task highLevelDataSetup(type: JavaExec) {
+tasks.register('highLevelDataSetup', JavaExec) {
   mainClass.set("uk.gov.hmcts.sptribs.common.ccd.HighLevelDataSetupApp")
   classpath += sourceSets.main.runtimeClasspath
-  jvmArgs = ['--add-opens=java.base/java.lang.reflect=ALL-UNNAMED','--add-opens=java.base/java.util=ALL-UNNAMED']
+  jvmArgs = ['--add-opens=java.base/java.lang.reflect=ALL-UNNAMED', '--add-opens=java.base/java.util=ALL-UNNAMED']
 }
 
-task fortifyScan(type: JavaExec)  {
+tasks.register('fortifyScan', JavaExec) {
   mainClass.set("uk.gov.hmcts.fortifyclient.FortifyClientMainApp")
   classpath += sourceSets.test.runtimeClasspath
   jvmArgs = ['--add-opens=java.base/java.lang.reflect=ALL-UNNAMED']
@@ -285,8 +285,7 @@ dependencyManagement {
 repositories {
   mavenLocal()
   mavenCentral()
-  maven { name = "AzureArtifacts"
-    url = uri('https://pkgs.dev.azure.com/hmcts/Artifacts/_packaging/hmcts-lib/maven/v1') }
+  maven { url 'https://pkgs.dev.azure.com/hmcts/Artifacts/_packaging/hmcts-lib/maven/v1'}
 }
 
 def versions = [
@@ -414,7 +413,7 @@ dependencies {
 
 mainClassName = 'uk.gov.hmcts.sptribs.CaseApiApplication'
 
-task loadEnvSecrets() {
+tasks.register('loadEnvSecrets') {
   doLast {
     if (!project.file('./.aat-env').exists()) {
       new ByteArrayOutputStream().withStream { os ->
@@ -428,7 +427,8 @@ task loadEnvSecrets() {
   }
 }
 
-task reloadEnvSecrets(group: 'ccd tasks', dependsOn: [loadEnvSecrets]) {
+tasks.register('reloadEnvSecrets') {
+  dependsOn[loadEnvSecrets]
   doFirst {
     if (project.file('./.aat-env').exists()) {
       project.file('./.aat-env').delete()
@@ -549,7 +549,7 @@ configurations.cftlibTestImplementation {
   exclude group: 'ch.qos.logback', module: 'logback-classic'
 }
 
-task installChromium(type: JavaExec) {
+tasks.register('installChromium', JavaExec) {
   // group = "Execution"
   // description = "Run the main class with JavaExecTask"
   classpath = sourceSets.cftlibTest.runtimeClasspath
@@ -581,7 +581,7 @@ pact {
   }
 }
 
-task runAndPublishConsumerPactTests(type: Test){
+tasks.register('runAndPublishConsumerPactTests', Test) {
   logger.lifecycle("Runs consumer pact tests")
   systemProperty 'pact.rootDir', "pacts"
   useJUnitPlatform()
