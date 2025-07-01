@@ -355,7 +355,7 @@ dependencies {
   implementation 'org.camunda.bpm:camunda-external-task-client:7.23.0'
 
   annotationProcessor group: 'org.projectlombok', name: 'lombok', version: versions.lombok
-  testImplementation 'com.github.hmcts:fortify-client:1.4.8:all'
+  testImplementation 'com.github.hmcts:fortify-client:1.4.9'
 
   testImplementation group: 'jakarta.enterprise', name: 'jakarta.enterprise.cdi-api', version: '4.1.0'
   testImplementation libraries.junit5
