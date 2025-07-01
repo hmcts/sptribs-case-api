@@ -3,7 +3,7 @@ buildscript {
     mavenLocal()
     mavenCentral()
     maven {
-      url "https://jitpack.io"
+      url 'https://pkgs.dev.azure.com/hmcts/Artifacts/_packaging/hmcts-lib/maven/v1'
       content {
         excludeGroup "com.github.ben-manes.versions"
       }
@@ -284,7 +284,7 @@ dependencyManagement {
 repositories {
   mavenLocal()
   mavenCentral()
-  maven { url 'https://jitpack.io' }
+  maven { url 'https://pkgs.dev.azure.com/hmcts/Artifacts/_packaging/hmcts-lib/maven/v1'}
 }
 
 def versions = [
