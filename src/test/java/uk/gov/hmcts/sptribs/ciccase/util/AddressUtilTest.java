@@ -1,6 +1,6 @@
 package uk.gov.hmcts.sptribs.ciccase.util;
 
-import com.microsoft.applicationinsights.boot.dependencies.apachecommons.lang3.RandomStringUtils;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.ccd.sdk.type.AddressGlobalUK;
 
