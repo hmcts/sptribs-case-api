@@ -17,6 +17,7 @@ import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_HEARING_CENTRE_
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_HEARING_CENTRE_TEAM_LEADER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_CASEWORKER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_JUDGE;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SYSTEM_UPDATE;
 
 class CollectionDefaultAccessTest {
@@ -55,7 +56,11 @@ class CollectionDefaultAccessTest {
                 entry(SYSTEM_UPDATE, C),
                 entry(SYSTEM_UPDATE, R),
                 entry(SYSTEM_UPDATE, U),
-                entry(SYSTEM_UPDATE, D)
+                entry(SYSTEM_UPDATE, D),
+                entry(SUPER_USER, C),
+                entry(SUPER_USER, R),
+                entry(SUPER_USER, U),
+                entry(SUPER_USER, D)
             );
     }
 }
