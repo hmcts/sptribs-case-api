@@ -28,7 +28,7 @@ class CollectionDefaultAccessTest {
         final SetMultimap<HasRole, Permission> grants = new CollectionDefaultAccess().getGrants();
         //Then
         assertThat(grants)
-            .hasSize(27)
+            .hasSize(31)
             .contains(
                 entry(CREATOR, C),
                 entry(CREATOR, R),
