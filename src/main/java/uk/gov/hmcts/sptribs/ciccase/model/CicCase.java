@@ -142,7 +142,7 @@ public class CicCase {
 
     @CCD(
         label = "Order Documents",
-        access = {CaseworkerAndSuperUserAccess.class}
+        access = {CollectionDefaultAccess.class, CaseworkerAndSuperUserAccess.class}
     )
     private List<ListValue<CaseworkerCICDocument>> orderDocumentList;
 
@@ -548,7 +548,7 @@ public class CicCase {
 
     @CCD(
         label = "Reinstate Documents",
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+        access = {CollectionDefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     List<ListValue<CaseworkerCICDocument>> reinstateDocuments;
 
@@ -560,7 +560,7 @@ public class CicCase {
 
     @CCD(
         label = "Decision Documents",
-        access = {CaseworkerAndSuperUserAccess.class}
+        access = {CollectionDefaultAccess.class, CaseworkerAndSuperUserAccess.class}
     )
     private List<ListValue<CaseworkerCICDocument>> decisionDocumentList;
 
@@ -576,7 +576,7 @@ public class CicCase {
 
     @CCD(
         label = "Final Decision Documents",
-        access = {CaseworkerAndSuperUserAccess.class}
+        access = {CollectionDefaultAccess.class, CaseworkerAndSuperUserAccess.class}
     )
     private List<ListValue<CaseworkerCICDocument>> finalDecisionDocumentList;
 
