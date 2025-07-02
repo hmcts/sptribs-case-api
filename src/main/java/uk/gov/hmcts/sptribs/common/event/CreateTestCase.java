@@ -1,6 +1,7 @@
 package uk.gov.hmcts.sptribs.common.event;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
@@ -46,6 +47,7 @@ import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_CASEWORK
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SYSTEM_UPDATE;
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE;
+import static uk.gov.hmcts.sptribs.common.config.ControllerConstants.AUTHORIZATION;
 import static uk.gov.hmcts.sptribs.constants.CommonConstants.ST_CIC_WA_CASE_BASE_LOCATION;
 import static uk.gov.hmcts.sptribs.constants.CommonConstants.ST_CIC_WA_CASE_MANAGEMENT_CATEGORY;
 import static uk.gov.hmcts.sptribs.constants.CommonConstants.ST_CIC_WA_CASE_REGION;
@@ -65,6 +67,7 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
     private final CaseDocumentClientApi caseDocumentClientApi;
     private AuthorisationService authorisationService;
     private final AuthTokenGenerator authTokenGenerator;
+    private final HttpServletRequest request;
 
     @Autowired
     public CreateTestCase(ObjectMapper objectMapper,
@@ -72,13 +75,15 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
                           CaseDocumentClientApi caseDocumentClientApi,
                           AppsConfig appsConfig,
                           AuthorisationService authorisationService,
-                          AuthTokenGenerator authTokenGenerator) {
+                          AuthTokenGenerator authTokenGenerator,
+                          HttpServletRequest request) {
         this.objectMapper = objectMapper;
         this.ccdSupplementaryDataService = ccdSupplementaryDataService;
         this.caseDocumentClientApi = caseDocumentClientApi;
         this.appsConfig = appsConfig;
         this.authorisationService = authorisationService;
         this.authTokenGenerator = authTokenGenerator;
+        this.request = request;
     }
 
     @Override
@@ -119,7 +124,8 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
                 caseType,
                 jurisdiction,
                 List.of(inMemoryMultipartFile));
-        UploadResponse uploadResponse = this.caseDocumentClientApi.uploadDocuments(authString, serviceAuth, documentUploadRequest);
+        String requestHeader = request.getHeader(AUTHORIZATION);
+        UploadResponse uploadResponse = this.caseDocumentClientApi.uploadDocuments(requestHeader, serviceAuth, documentUploadRequest);
 
         final DefaultResourceLoader resourceLoader = new DefaultResourceLoader();
         final String json = IOUtils.toString(
