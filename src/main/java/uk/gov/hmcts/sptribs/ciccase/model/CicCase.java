@@ -570,11 +570,6 @@ public class CicCase {
     private List<ListValue<CaseworkerCICDocument>> removedDocumentList;
 
     @CCD(
-        access = {ImmutableCollectionDefaultAccess.class}
-    )
-    private List<ListValue<CaseworkerCICDocument>> readOnlyRemovedDocList;
-
-    @CCD(
         label = "Final Decision Documents",
         access = {CollectionDefaultAccess.class, CaseworkerAndSuperUserAccess.class}
     )
