@@ -66,11 +66,9 @@ def secrets = [
                 secret('ccd-user-profile-db-password-preview', 'CCD_USER_PROFILE_DB_PASSWORD_PREVIEW'),
                 secret('em-spring-datasource-username-preview', 'EM_SPRING_DATASOURCE_USERNAME_PREVIEW'),
                 secret('em-spring-datasource-password-preview', 'EM_SPRING_DATASOURCE_PASSWORD_PREVIEW'),
-                secret('s2s-case-api-secret', 'S2S_SECRET')
-        ],
-        'civil-${env}'    :[
-          secret('ccd-importer-username', 'DEFINITION_IMPORTER_USERNAME'),
-          secret('ccd-importer-password', 'DEFINITION_IMPORTER_PASSWORD')
+                secret('s2s-case-api-secret', 'S2S_SECRET'),
+                secret('ccd-importer-username', 'DEFINITION_IMPORTER_USERNAME'),
+                secret('ccd-importer-password', 'DEFINITION_IMPORTER_PASSWORD')
         ],
         'sptribs-prod'    :[
           secret('s2s-case-api-secret', 'S2S_SECRET_PROD')
