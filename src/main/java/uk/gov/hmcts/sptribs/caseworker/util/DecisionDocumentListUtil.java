@@ -95,28 +95,28 @@ public  final class DecisionDocumentListUtil {
     }
 
     public static void removeFinalDecisionDraftAndCICDocument(CaseData caseData, ListValue<CaseworkerCICDocument> cicDocumentListValue) {
-        if (caseData.getCaseIssueFinalDecision() != null
-            && (caseData.getCaseIssueFinalDecision().getFinalDecisionDraft() != null
-                || caseData.getCaseIssueFinalDecision().getDocument() != null)) {
-            if (cicDocumentListValue.getValue().getDocumentLink()
-                .equals(caseData.getCaseIssueFinalDecision().getFinalDecisionDraft())) {
+        if (caseData.getCaseIssueFinalDecision() != null) {
+            if (caseData.getCaseIssueFinalDecision().getFinalDecisionDraft() != null
+                && cicDocumentListValue.getValue().getDocumentLink()
+                    .equals(caseData.getCaseIssueFinalDecision().getFinalDecisionDraft())) {
                 caseData.getCaseIssueFinalDecision().setFinalDecisionDraft(null);
-            } else if (cicDocumentListValue.getValue().getDocumentLink()
-                .equals(caseData.getCaseIssueFinalDecision().getDocument().getDocumentLink())) {
+            } else if (caseData.getCaseIssueFinalDecision().getDocument() != null
+                && cicDocumentListValue.getValue().getDocumentLink()
+                    .equals(caseData.getCaseIssueFinalDecision().getDocument().getDocumentLink())) {
                 caseData.getCaseIssueFinalDecision().setDocument(EMPTY_DOCUMENT);
             }
         }
     }
 
-    public static void removeDecisionDraftAndCICDocument(CaseData caseData, ListValue<CaseworkerCICDocument> cioDocumentListValue) {
-        if (caseData.getCaseIssueDecision() != null
-             && (caseData.getCaseIssueDecision().getIssueDecisionDraft() != null
-                || caseData.getCaseIssueDecision().getDecisionDocument() != null)) {
-            if (cioDocumentListValue.getValue().getDocumentLink()
-                .equals(caseData.getCaseIssueDecision().getIssueDecisionDraft())) {
+    public static void removeDecisionDraftAndCICDocument(CaseData caseData, ListValue<CaseworkerCICDocument> cicDocumentListValue) {
+        if (caseData.getCaseIssueDecision() != null) {
+            if (caseData.getCaseIssueDecision().getIssueDecisionDraft() != null
+                && cicDocumentListValue.getValue().getDocumentLink()
+                    .equals(caseData.getCaseIssueDecision().getIssueDecisionDraft())) {
                 caseData.getCaseIssueDecision().setIssueDecisionDraft(null);
-            } else if (cioDocumentListValue.getValue().getDocumentLink()
-                .equals(caseData.getCaseIssueDecision().getDecisionDocument().getDocumentLink())) {
+            } else if (caseData.getCaseIssueDecision().getDecisionDocument() != null
+                && cicDocumentListValue.getValue().getDocumentLink()
+                    .equals(caseData.getCaseIssueDecision().getDecisionDocument().getDocumentLink())) {
                 caseData.getCaseIssueDecision().setDecisionDocument(EMPTY_DOCUMENT);
             }
         }
