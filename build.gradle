@@ -291,7 +291,7 @@ repositories {
 def versions = [
   camunda           : '7.23.0',
   jackson           : '2.16.0',
-  junit             : '5.10.3',
+  junit             : '5.13.2',
   junitPlatform     : '1.10.3',
   lombok            : '1.18.38',
   pact              : '4.1.34',
