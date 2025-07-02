@@ -290,7 +290,7 @@ repositories {
 
 def versions = [
   camunda           : '7.23.0',
-  jackson           : '2.16.0',
+  jackson           : '2.19.1',
   lombok            : '1.18.38',
   pact              : '4.1.34',
   springBoot        : springBoot.class.package.implementationVersion
