@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
@@ -21,6 +22,7 @@ import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.reform.ccd.document.am.model.Classification;
 import uk.gov.hmcts.reform.ccd.document.am.model.DocumentUploadRequest;
 import uk.gov.hmcts.reform.ccd.document.am.util.InMemoryMultipartFile;
+import uk.gov.hmcts.reform.idam.client.models.User;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseManagementLocation;
 import uk.gov.hmcts.sptribs.cdam.model.UploadResponse;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
@@ -30,6 +32,7 @@ import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.common.config.AppsConfig;
 import uk.gov.hmcts.sptribs.common.service.AuthorisationService;
 import uk.gov.hmcts.sptribs.common.service.CcdSupplementaryDataService;
+import uk.gov.hmcts.sptribs.idam.IdamService;
 import uk.gov.hmcts.sptribs.services.cdam.CaseDocumentClientApi;
 
 import java.nio.charset.Charset;
@@ -67,7 +70,8 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
     private final CaseDocumentClientApi caseDocumentClientApi;
     private AuthorisationService authorisationService;
     private final AuthTokenGenerator authTokenGenerator;
-    private final HttpServletRequest request;
+    private HttpServletRequest httpServletRequest;
+    private final IdamService idamService;
 
     @Autowired
     public CreateTestCase(ObjectMapper objectMapper,
@@ -76,14 +80,16 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
                           AppsConfig appsConfig,
                           AuthorisationService authorisationService,
                           AuthTokenGenerator authTokenGenerator,
-                          HttpServletRequest request) {
+                          HttpServletRequest httpServletRequest,
+                          IdamService idamService) {
         this.objectMapper = objectMapper;
         this.ccdSupplementaryDataService = ccdSupplementaryDataService;
         this.caseDocumentClientApi = caseDocumentClientApi;
         this.appsConfig = appsConfig;
         this.authorisationService = authorisationService;
         this.authTokenGenerator = authTokenGenerator;
-        this.request = request;
+        this.httpServletRequest= httpServletRequest;
+        this.idamService = idamService;
     }
 
     @Override
@@ -124,8 +130,9 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
                 caseType,
                 jurisdiction,
                 List.of(inMemoryMultipartFile));
-        String requestHeader = request.getHeader(AUTHORIZATION);
-        UploadResponse uploadResponse = this.caseDocumentClientApi.uploadDocuments(requestHeader, serviceAuth, documentUploadRequest);
+        User user = idamService.retrieveUser(httpServletRequest.getHeader(HttpHeaders.AUTHORIZATION));
+
+        UploadResponse uploadResponse = this.caseDocumentClientApi.uploadDocuments(serviceAuth, user.getAuthToken(), documentUploadRequest);
 
         final DefaultResourceLoader resourceLoader = new DefaultResourceLoader();
         final String json = IOUtils.toString(
