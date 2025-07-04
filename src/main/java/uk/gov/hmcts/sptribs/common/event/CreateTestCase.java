@@ -1,11 +1,15 @@
 package uk.gov.hmcts.sptribs.common.event;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.DefaultResourceLoader;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
@@ -13,13 +17,23 @@ import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.ccd.sdk.type.DynamicList;
 import uk.gov.hmcts.ccd.sdk.type.DynamicListElement;
+import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
+import uk.gov.hmcts.reform.ccd.document.am.model.Classification;
+import uk.gov.hmcts.reform.ccd.document.am.model.DocumentUploadRequest;
+import uk.gov.hmcts.reform.ccd.document.am.util.InMemoryMultipartFile;
+import uk.gov.hmcts.reform.idam.client.models.User;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseManagementLocation;
+import uk.gov.hmcts.sptribs.cdam.model.UploadResponse;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
+import uk.gov.hmcts.sptribs.common.config.AppsConfig;
+import uk.gov.hmcts.sptribs.common.service.AuthorisationService;
 import uk.gov.hmcts.sptribs.common.service.CcdSupplementaryDataService;
+import uk.gov.hmcts.sptribs.idam.IdamService;
+import uk.gov.hmcts.sptribs.services.cdam.CaseDocumentClientApi;
 
 import java.nio.charset.Charset;
 import java.util.ArrayList;
@@ -36,6 +50,7 @@ import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_CASEWORK
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SYSTEM_UPDATE;
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE;
+import static uk.gov.hmcts.sptribs.common.config.ControllerConstants.AUTHORIZATION;
 import static uk.gov.hmcts.sptribs.constants.CommonConstants.ST_CIC_WA_CASE_BASE_LOCATION;
 import static uk.gov.hmcts.sptribs.constants.CommonConstants.ST_CIC_WA_CASE_MANAGEMENT_CATEGORY;
 import static uk.gov.hmcts.sptribs.constants.CommonConstants.ST_CIC_WA_CASE_REGION;
@@ -47,14 +62,34 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
     private static final String ENVIRONMENT_AAT = "aat";
     private static final String TEST_CREATE = "create-test-case";
     private static final String TEST_CASE_DATA_FILE = "classpath:data/st_cic_test_case.json";
+    private final Resource samplePdf = new ClassPathResource("data/sample_pdf.pdf");
 
     private final ObjectMapper objectMapper;
     private final CcdSupplementaryDataService ccdSupplementaryDataService;
+    private final AppsConfig appsConfig;
+    private final CaseDocumentClientApi caseDocumentClientApi;
+    private AuthorisationService authorisationService;
+    private final AuthTokenGenerator authTokenGenerator;
+    private HttpServletRequest httpServletRequest;
+    private final IdamService idamService;
 
     @Autowired
-    public CreateTestCase(ObjectMapper objectMapper, CcdSupplementaryDataService ccdSupplementaryDataService) {
+    public CreateTestCase(ObjectMapper objectMapper,
+                          CcdSupplementaryDataService ccdSupplementaryDataService,
+                          CaseDocumentClientApi caseDocumentClientApi,
+                          AppsConfig appsConfig,
+                          AuthorisationService authorisationService,
+                          AuthTokenGenerator authTokenGenerator,
+                          HttpServletRequest httpServletRequest,
+                          IdamService idamService) {
         this.objectMapper = objectMapper;
         this.ccdSupplementaryDataService = ccdSupplementaryDataService;
+        this.caseDocumentClientApi = caseDocumentClientApi;
+        this.appsConfig = appsConfig;
+        this.authorisationService = authorisationService;
+        this.authTokenGenerator = authTokenGenerator;
+        this.httpServletRequest= httpServletRequest;
+        this.idamService = idamService;
     }
 
     @Override
@@ -84,6 +119,20 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
     @SneakyThrows
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(CaseDetails<CaseData, State> details,
                                                                        CaseDetails<CaseData, State> beforeDetails) {
+        String caseType = appsConfig.getApps().get(0).getCaseType();
+        String jurisdiction = appsConfig.getApps().get(0).getJurisdiction();
+
+        String authString = authorisationService.getAuthorisation();
+        String serviceAuth = authTokenGenerator.generate();
+        InMemoryMultipartFile inMemoryMultipartFile = new InMemoryMultipartFile(samplePdf.getFile());
+
+        DocumentUploadRequest documentUploadRequest = new DocumentUploadRequest(Classification.RESTRICTED.toString(),
+                caseType,
+                jurisdiction,
+                List.of(inMemoryMultipartFile));
+        User user = idamService.retrieveUser(httpServletRequest.getHeader(HttpHeaders.AUTHORIZATION));
+
+        UploadResponse uploadResponse = this.caseDocumentClientApi.uploadDocuments(user.getAuthToken(), serviceAuth, documentUploadRequest);
 
         final DefaultResourceLoader resourceLoader = new DefaultResourceLoader();
         final String json = IOUtils.toString(
@@ -143,5 +192,4 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
                 .build()
         );
     }
-
 }
