@@ -30,7 +30,7 @@ public class DocumentManagementSelectDocuments implements CcdPageConfiguration {
             .label("LabelSelectCaseDocuments", "")
             .label("LabelSelectCaseDocumentsWarning", "")
             .complex(CaseData::getCicCase)
-            .optional(CicCase::getAmendDocumentList)
+            .mandatory(CicCase::getAmendDocumentList)
             .done();
     }
 

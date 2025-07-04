@@ -142,6 +142,8 @@ public class CicCase {
     private List<ListValue<CaseworkerCICDocument>> orderDocumentList;
 
     @CCD(
+        label = "Amended Document",
+        hint = "Please select a document from the dropdown menu",
         access = {CaseworkerAndSuperUserAccess.class}
     )
     private DynamicList amendDocumentList;
