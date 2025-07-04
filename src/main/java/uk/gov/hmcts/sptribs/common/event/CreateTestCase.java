@@ -132,7 +132,7 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
                 List.of(inMemoryMultipartFile));
         User user = idamService.retrieveUser(httpServletRequest.getHeader(HttpHeaders.AUTHORIZATION));
 
-        UploadResponse uploadResponse = this.caseDocumentClientApi.uploadDocuments(serviceAuth, user.getAuthToken(), documentUploadRequest);
+        UploadResponse uploadResponse = this.caseDocumentClientApi.uploadDocuments(user.getAuthToken(), serviceAuth, documentUploadRequest);
 
         final DefaultResourceLoader resourceLoader = new DefaultResourceLoader();
         final String json = IOUtils.toString(
