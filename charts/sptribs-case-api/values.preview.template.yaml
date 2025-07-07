@@ -10,10 +10,11 @@ java:
     CASE_DOCUMENT_AM_BASEURL: http://${SERVICE_NAME}-ccd-case-document-am-api
     BUNDLING_API_URL: https://em-ccdorc-${SERVICE_FQDN}
     CITIZEN_UPDATE_CASE_STATE_ENABLED: true
-    POSTGRES_HOST: '{{ tpl .Values.global.postgresHostname $}}'
-    POSTGRES_NAME: "{{ .Values.global.databaseNamePrefix }}sptribs-case-api"
-    POSTGRES_USERNAME: ${SPTRIBS_POSTGRES_USERNAME_PREVIEW}
-    POSTGRES_CONNECTION_OPTIONS: ""
+    # TODO: Fix this madness
+#    POSTGRES_HOST: '{{ tpl .Values.global.postgresHostname $}}'
+#    POSTGRES_NAME: "{{ .Values.global.databaseNamePrefix }}sptribs-case-api"
+#    POSTGRES_USERNAME: ${SPTRIBS_POSTGRES_USERNAME_PREVIEW}
+#    POSTGRES_CONNECTION_OPTIONS: ""
 
   keyVaults:
     sptribs:
@@ -101,6 +102,7 @@ ccd:
         ELASTIC_SEARCH_HOSTS: ${SERVICE_NAME}-es-master:9200
         ELASTIC_SEARCH_DATA_NODES_HOSTS: http://${SERVICE_NAME}-es-master:9200
         CASE_DOCUMENT_AM_URL: http://${SERVICE_NAME}-ccd-case-document-am-api
+        POC_APIS_URL: https://${SERVICE_FQDN}
         IDAM_OAUTH2_DATA_STORE_CLIENT_SECRET: ${IDAM_OAUTH2_DATA_STORE_CLIENT_SECRET}
         IDAM_DATA_STORE_SYSTEM_USER_USERNAME: ${IDAM_DATA_STORE_SYSTEM_USER_USERNAME}
         IDAM_DATA_STORE_SYSTEM_USER_PASSWORD: ${IDAM_DATA_STORE_SYSTEM_USER_PASSWORD}
@@ -534,6 +536,7 @@ postgresql:
       - name: "pr-${CHANGE_ID}-user-profile"
       - name: "pr-${CHANGE_ID}-role_assignment"
       - name: "pr-${CHANGE_ID}-emstitch"
+      - name: "pr-${CHANGE_ID}-sptribs"
 
 servicebus:
   enabled: false
