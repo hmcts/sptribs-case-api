@@ -3,8 +3,11 @@ spring:
     allow-bean-definition-overriding: true
   messages:
     encoding: ISO-8859-1
-
-springdoc:
+  autoconfigure:
+    exclude: com.azure.spring.cloud.autoconfigure.implementation.context.AzureTokenCredentialAutoConfiguration
+  jms:
+    servicebus:
+      enabled: false
   packagesToScan: uk.gov.hmcts.sptribs,uk.gov.hmcts.ccd.sdk.runtime
   pathsToMatch: /**
 
