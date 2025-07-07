@@ -72,8 +72,8 @@
               }
             }
           ],
-          "paginationStyle": "bottomCenter",
-          "pageNumberFormat": "numberOfPages",
+          "paginationStyle": "topRight",
+          "pageNumberFormat": "pageRange",
           "stitchingFailureMessage": "",
           "stitchStatus": ""
         }
