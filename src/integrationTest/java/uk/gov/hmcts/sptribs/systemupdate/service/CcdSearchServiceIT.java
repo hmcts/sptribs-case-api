@@ -29,6 +29,7 @@ import static org.elasticsearch.search.sort.SortOrder.ASC;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.Submitted;
 import static uk.gov.hmcts.sptribs.systemupdate.service.CcdSearchService.DUE_DATE;
+import static uk.gov.hmcts.sptribs.systemupdate.service.CcdSearchService.MIGRATION_PAGE_SIZE;
 import static uk.gov.hmcts.sptribs.systemupdate.service.CcdSearchService.STATE;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.SERVICE_AUTHORIZATION;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.SYSTEM_UPDATE_AUTH_TOKEN;
@@ -133,7 +134,7 @@ public class CcdSearchServiceIT {
                 boolQuery().must(boolQuery().must(rangeQuery("data.dataVersion").lt(1)))
             )
             .from(0)
-            .size(500);
+            .size(MIGRATION_PAGE_SIZE);
 
         when(coreCaseDataApi.searchCases(
             SYSTEM_UPDATE_AUTH_TOKEN,
