@@ -14,7 +14,6 @@ java:
     POSTGRES_NAME: "{{ .Values.global.databaseNamePrefix }}sptribs-case-api"
     POSTGRES_USERNAME: ${SPTRIBS_POSTGRES_USERNAME_PREVIEW}
     POSTGRES_CONNECTION_OPTIONS: ""
-    SPRING_JMS_SERVICEBUS_ENABLED: true
   keyVaults:
     sptribs:
       secrets:

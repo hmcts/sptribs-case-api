@@ -1,6 +1,12 @@
 java:
   environment:
     WA_FEATURE_ENABLED: true
+    SPRING_JMS_SERVICEBUS_ENABLED: true
+  sptribs:
+    secrets:
+      AZURE_SERVICE_BUS_CONNECTION_STRING:
+        secretRef: sptribs-sb-preview
+        key: connectionString
 
 servicebus:
   enabled: true
