@@ -130,6 +130,7 @@ public class RecordListHelper {
             listing.setReadOnlyHearingVenueName(parseHyphen(selectedVenue, 0));
         } else {
             listing.setReadOnlyHearingVenueName(null);
+            listing.setHearingVenues(null);
         }
         return listing;
     }
