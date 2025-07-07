@@ -6,9 +6,7 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.DefaultResourceLoader;
-import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
@@ -133,7 +131,7 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
                 List.of(inMemoryMultipartFile));
         User user = idamService.retrieveUser(httpServletRequest.getHeader(HttpHeaders.AUTHORIZATION));
 
-        UploadResponse uploadResponse = this.caseDocumentClientApi.uploadDocuments(user.getAuthToken(), serviceAuth, documentUploadRequest);
+        UploadResponse uploadResponse = this.caseDocumentClientApi.uploadDocuments(user.getAuthToken(), authString, documentUploadRequest);
 
         final String json = IOUtils.toString(
             resourceLoader.getResource(TEST_CASE_DATA_FILE).getInputStream(),
