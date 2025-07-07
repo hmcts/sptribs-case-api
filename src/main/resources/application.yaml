@@ -27,9 +27,12 @@ spring:
       max-request-size: 500MB
   jms:
     servicebus:
-      enabled: true
+      enabled: false
       connection-string: ${AZURE_SERVICE_BUS_CONNECTION_STRING}
       topic-client-id: sptribs-ccd-case-events-publisher
+      pricing-tier: Standard
+  autoconfigure:
+    exclude: com.azure.spring.cloud.autoconfigure.implementation.context.AzureTokenCredentialAutoConfiguration
 
 logging:
   level:
