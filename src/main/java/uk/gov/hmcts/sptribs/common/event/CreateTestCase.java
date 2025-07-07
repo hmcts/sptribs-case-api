@@ -50,7 +50,6 @@ import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_CASEWORK
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SYSTEM_UPDATE;
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE;
-import static uk.gov.hmcts.sptribs.common.config.ControllerConstants.AUTHORIZATION;
 import static uk.gov.hmcts.sptribs.constants.CommonConstants.ST_CIC_WA_CASE_BASE_LOCATION;
 import static uk.gov.hmcts.sptribs.constants.CommonConstants.ST_CIC_WA_CASE_MANAGEMENT_CATEGORY;
 import static uk.gov.hmcts.sptribs.constants.CommonConstants.ST_CIC_WA_CASE_REGION;
@@ -88,7 +87,7 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
         this.appsConfig = appsConfig;
         this.authorisationService = authorisationService;
         this.authTokenGenerator = authTokenGenerator;
-        this.httpServletRequest= httpServletRequest;
+        this.httpServletRequest = httpServletRequest;
         this.idamService = idamService;
     }
 

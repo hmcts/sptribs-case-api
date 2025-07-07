@@ -13,17 +13,21 @@ import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.Event;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
+import uk.gov.hmcts.reform.idam.client.models.User;
+import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.config.AppsConfig;
 import uk.gov.hmcts.sptribs.common.service.AuthorisationService;
 import uk.gov.hmcts.sptribs.common.service.CcdSupplementaryDataService;
+import uk.gov.hmcts.sptribs.idam.IdamService;
 import uk.gov.hmcts.sptribs.services.cdam.CaseDocumentClientApi;
 
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
@@ -53,6 +57,9 @@ public class CreateTestCaseTest {
 
     @Mock
     private AuthorisationService authorisationService;
+
+    @Mock
+    private IdamService idamService;
 
     @Mock
     private AuthTokenGenerator authTokenGenerator;
@@ -89,6 +96,8 @@ public class CreateTestCaseTest {
         caseDetails.setData(caseData);
         when(appsConfig.getApps()).thenReturn(List.of(appsDetails));
         when(mapper.readValue(anyString(), eq(CaseData.class))).thenReturn(caseData());
+
+        when(idamService.retrieveUser(any())).thenReturn(new User("authToken", new UserDetails()));
 
         AboutToStartOrSubmitResponse<CaseData, State> response =
             createTestCase.aboutToSubmit(caseDetails, caseDetails);
