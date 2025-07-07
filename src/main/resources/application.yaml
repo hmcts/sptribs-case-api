@@ -25,6 +25,11 @@ spring:
     multipart:
       max-file-size: 500MB
       max-request-size: 500MB
+  jms:
+    servicebus:
+      enabled: true
+      connection-string: ${AZURE_SERVICE_BUS_CONNECTION_STRING}
+      topic-client-id: sptribs-ccd-case-events-publisher
 
 logging:
   level:
@@ -38,6 +43,9 @@ springdoc:
 azure:
   application-insights:
     instrumentation-key: ${app-insights-instrumentation-key:00000000-0000-0000-0000-000000000000}
+  servicebus:
+    ccd-case-events:
+      topic-name: ccd-case-events
 
 uk:
   gov:

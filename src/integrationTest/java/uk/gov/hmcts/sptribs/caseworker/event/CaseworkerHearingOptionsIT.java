@@ -7,10 +7,12 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
@@ -64,6 +66,12 @@ import static uk.gov.hmcts.sptribs.testutil.TestResourceUtil.expectedResponse;
     RefDataLocationWireMock.PropertiesInitializer.class
 })
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
+@ImportAutoConfiguration(exclude = {
+    com.azure.spring.cloud.autoconfigure.implementation.context.AzureTokenCredentialAutoConfiguration.class
+})
+@TestPropertySource(properties = {
+    "spring.jms.servicebus.enabled=false"
+})
 public class CaseworkerHearingOptionsIT {
 
     private static final String CASEWORKER_HEARING_OPTIONS_ABOUT_TO_START_RESPONSE =
