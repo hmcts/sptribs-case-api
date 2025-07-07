@@ -134,6 +134,7 @@ tasks.register('functional', Test) {
   testClassesDirs = sourceSets.functionalTest.output.classesDirs
   classpath = sourceSets.functionalTest.runtimeClasspath
   jvmArgs = ['--add-opens=java.base/java.lang.reflect=ALL-UNNAMED', '--add-opens=java.base/java.util=ALL-UNNAMED']
+  environment 'SPRING_PROFILES_ACTIVE', 'functional'
 }
 
 task integration(type: Test) {
@@ -142,6 +143,7 @@ task integration(type: Test) {
   testClassesDirs = sourceSets.integrationTest.output.classesDirs
   classpath = sourceSets.integrationTest.runtimeClasspath
   failFast = true
+  environment 'SPRING_PROFILES_ACTIVE', 'integration'
 }
 
 // Invoked from CftLibConfig when booting with CCD.
