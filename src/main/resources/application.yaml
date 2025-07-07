@@ -26,9 +26,9 @@ spring:
       max-file-size: 500MB
       max-request-size: 500MB
   datasource:
-    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:pcs}${DB_OPTIONS:}
-    username: ${DB_USER_NAME}
-    password: ${DB_PASSWORD}
+    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:6432}/${DB_NAME:sptribs}${DB_OPTIONS:}
+    username: ${DB_USER_NAME:postgres}
+    password: ${DB_PASSWORD:postgres}
 logging:
   level:
     root: info
