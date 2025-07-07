@@ -44,6 +44,11 @@ ccd {
   decentralised = true
 }
 
+project.tasks.named("generateCCDConfig") {
+  environment 'SPRING_PROFILES_ACTIVE', 'config-gen'
+  environment 'SPRING_FLYWAY_ENABLED', 'false'
+}
+
 sourceSets {
   functionalTest {
     java {
