@@ -40,6 +40,7 @@ import java.util.UUID;
 
 import static java.lang.String.format;
 import static java.lang.System.getenv;
+import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.Draft;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.CASEWORKER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.CITIZEN;
@@ -64,11 +65,11 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
     private final ObjectMapper objectMapper;
     private final CcdSupplementaryDataService ccdSupplementaryDataService;
     private final AppsConfig appsConfig;
-    private final CaseDocumentClientApi caseDocumentClientApi;
     private AuthorisationService authorisationService;
     private final AuthTokenGenerator authTokenGenerator;
     private HttpServletRequest httpServletRequest;
     private final IdamService idamService;
+    private CaseDocumentClientApi caseDocumentClientApi;
 
     @Autowired
     public CreateTestCase(ObjectMapper objectMapper,
@@ -131,7 +132,9 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
                 List.of(inMemoryMultipartFile));
         User user = idamService.retrieveUser(httpServletRequest.getHeader(HttpHeaders.AUTHORIZATION));
 
-        UploadResponse uploadResponse = this.caseDocumentClientApi.uploadDocuments(user.getAuthToken(), authString, documentUploadRequest);
+
+        String authHeader = httpServletRequest.getHeader(AUTHORIZATION);
+        UploadResponse uploadResponse = this.caseDocumentClientApi.uploadDocuments(authHeader, serviceAuth, documentUploadRequest);
 
         final String json = IOUtils.toString(
             resourceLoader.getResource(TEST_CASE_DATA_FILE).getInputStream(),
