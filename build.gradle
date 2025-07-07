@@ -341,6 +341,7 @@ dependencies {
   implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.17.0'
   implementation group: 'com.github.ben-manes.caffeine', name: 'caffeine', version: '3.2.1'
   implementation 'org.camunda.bpm:camunda-external-task-client:7.23.0'
+  implementation group: 'com.azure.spring', name: 'spring-cloud-azure-starter-servicebus-jms', version: '5.14.0'
 
   annotationProcessor group: 'org.projectlombok', name: 'lombok', version: versions.lombok
   testImplementation group: 'com.github.hmcts', name: 'fortify-client', version: '1.4.9', classifier: 'all'
