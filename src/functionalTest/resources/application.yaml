@@ -4,18 +4,16 @@ spring:
 
   main:
     allow-bean-definition-overriding: true
+  autoconfigure:
+    exclude: com.azure.spring.cloud.autoconfigure.implementation.context.AzureTokenCredentialAutoConfiguration
   jms:
     servicebus:
-      enabled: true
-      connection-string: Endpoint=sb://dummy.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=dummy;
-      topic-client-id: ccd-case-events-publisher-functional-test
+      enabled: false
+
 # because functional tests load up SpringBootTest
 azure:
   application-insights:
     instrumentation-key: functional-test
-  servicebus:
-    ccd-case-events:
-      topic-name: dummy-asb-ccd-case-events
 
 test-url: ${TEST_URL:http://localhost:4013}
 
