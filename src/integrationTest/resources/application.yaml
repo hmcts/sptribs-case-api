@@ -8,6 +8,8 @@ spring:
   jms:
     servicebus:
       enabled: false
+
+springdoc:
   packagesToScan: uk.gov.hmcts.sptribs,uk.gov.hmcts.ccd.sdk.runtime
   pathsToMatch: /**
 
