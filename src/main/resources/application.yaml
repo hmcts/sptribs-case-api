@@ -111,7 +111,6 @@ idam:
     id: ${IDAM_CLIENT_ID:sptribs-case-api}
     redirect_uri: ${IDAM_CLIENT_REDIRECT_URI:http://localhost:3001/receiver}
     secret: ${IDAM_CLIENT_SECRET:thUphEveC2Ekuqedaneh4jEcRuba4t2t}
-
   systemupdate:
     username: ${IDAM_SYSTEM_UPDATE_USERNAME:st-test1@mailinator.com}
     password: ${IDAM_SYSTEM_UPDATE_PASSWORD:Pa55w0rd11}
