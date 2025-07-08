@@ -164,7 +164,7 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
         log.info("Document uploaded: {}", documentInfo);
 
         Document uploadedDoc = Document.builder()
-                .binaryUrl(uploadedDocument.links.self.href)
+                .url(uploadedDocument.links.self.href)
                 .filename(uploadedDocument.originalDocumentName)
                 .categoryId("A")
                 .binaryUrl(uploadedDocument.links.binary.href)
