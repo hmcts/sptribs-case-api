@@ -10,7 +10,7 @@ java:
     CASE_DOCUMENT_AM_BASEURL: http://${SERVICE_NAME}-ccd-case-document-am-api
     BUNDLING_API_URL: https://em-ccdorc-${SERVICE_FQDN}
     CITIZEN_UPDATE_CASE_STATE_ENABLED: true
-    DB_NAME: "{{ .Values.global.databaseNamePrefix }}sptribs"
+    DB_NAME: "{{ .Values.global.databaseNamePrefix }}sptribs-case-api"
     DB_HOST: '{{ tpl .Values.global.postgresHostname $}}'
     DB_USER_NAME: "{{ .Values.global.postgresUsername}}"
     ELASTIC_SEARCH_HOSTS: "http://{{ .Release.Name }}-es-master:9200"
