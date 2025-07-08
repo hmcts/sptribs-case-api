@@ -27,8 +27,10 @@ spring:
       max-request-size: 500MB
   jms:
     servicebus:
-      enabled: false
-      connection-string: ${AZURE_SERVICE_BUS_CONNECTION_STRING}
+      enabled: true
+      fully-qualified-namespace: ${AZURE_SERVICE_BUS_URL:sptribs-sb-preview.servicebus.windows.net}
+      credential:
+        client-id: 34df67df-77f4-4c8d-9e89-d59a86ef9ffe
       topic-client-id: sptribs-ccd-case-events-publisher
       pricing-tier: Standard
   autoconfigure:
