@@ -30,7 +30,7 @@ plugins {
   id 'org.springframework.boot' version '3.5.3'
   id 'com.github.ben-manes.versions' version '0.50.0'
   id "au.com.dius.pact" version "4.3.10"
-  id 'com.github.hmcts.rse-cft-lib' version '0.20.0-alpha.28'
+  id 'com.github.hmcts.rse-cft-lib' version '0.20.0-alpha.29'
 }
 
 apply plugin: 'cz.habarta.typescript-generator'
