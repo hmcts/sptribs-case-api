@@ -127,7 +127,8 @@ tasks.register('functional', Test) {
   classpath = sourceSets.functionalTest.runtimeClasspath
   jvmArgs = ['--add-opens=java.base/java.lang.reflect=ALL-UNNAMED', '--add-opens=java.base/java.util=ALL-UNNAMED']
   environment 'SPRING_PROFILES_ACTIVE', 'functional'
-  include "**/*FunctionalTest.class"
+  include "**/*FT.class"
+  exclude "uk/gov/hmcts/sptribs/smoke/**"
 }
 
 task integration(type: Test) {
