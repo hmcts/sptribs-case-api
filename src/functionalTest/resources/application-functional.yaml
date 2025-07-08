@@ -1,3 +1,7 @@
+s2s:
+  name: ccd_data
+  task_management_name: wa_task_management_api
+  access_management_name: am_role_assignment_service
 
 idam:
   api:
@@ -26,10 +30,6 @@ idam:
   citizen:
     username: ${IDAM_CITIZEN_USERNAME:dummycitizen@test.com}
     password: ${IDAM_CITIZEN_PASSWORD:dummy}
-  client:
-    id: 'sptribs-case-api'
-    secret: ${OAUTH2_CLIENT_SECRET:dummy}
-    redirect_uri: ${IDAM_API_REDIRECT_URL:http://localhost:3001/oauth2/callback}
 
 feature:
   security-classification:
