@@ -34,3 +34,6 @@ idam:
 feature:
   security-classification:
     enabled: false
+
+role_assignment_mapping_api:
+  url: ${ROLE_ASSIGNMENT_API_URL:http://am-org-role-mapping-service-aat.service.core-compute-aat.internal}

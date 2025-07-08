@@ -4,6 +4,7 @@ server:
 case-flags:
   supplementary-data:
     hmctsid: ${SUPPLEMENTARY_DATA_HMCTSID:BBA2}
+
 management:
   endpoint:
     health:
@@ -134,6 +135,7 @@ s2s:
 launchDarkly:
   sdk-key: ${LAUNCH_DARKLY_SDK_KEY:}
   env: ${ENVIRONMENT:local}
+
 core_case_data:
   api:
     url: ${CASE_DATA_STORE_BASEURL:http://ccd-data-store-api-aat.service.core-compute-aat.internal}
@@ -215,5 +217,3 @@ wa_task_monitor_api:
   url: ${TASK_MONITOR_API_URL:http://wa-task-monitor-aat.service.core-compute-aat.internal}
 wa_task_management_api:
   url: ${TASK_MANAGEMENT_API_URL:http://wa-task-management-api-aat.service.core-compute-aat.internal}
-role_assignment_mapping_api:
-  url: ${ROLE_ASSIGNMENT_API_URL:http://am-org-role-mapping-service-aat.service.core-compute-aat.internal}
