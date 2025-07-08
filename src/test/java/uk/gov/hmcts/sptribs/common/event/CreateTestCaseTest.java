@@ -3,7 +3,6 @@ package uk.gov.hmcts.sptribs.common.event;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
-import org.junit.Ignore;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -20,9 +19,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.config.AppsConfig;
-import uk.gov.hmcts.sptribs.common.service.AuthorisationService;
 import uk.gov.hmcts.sptribs.common.service.CcdSupplementaryDataService;
-import uk.gov.hmcts.sptribs.idam.IdamService;
 import uk.gov.hmcts.sptribs.services.cdam.CaseDocumentClientApi;
 
 import java.util.List;
@@ -57,16 +54,10 @@ public class CreateTestCaseTest {
     private CaseDocumentClientApi caseDocumentClientApi;
 
     @Mock
-    private AuthorisationService authorisationService;
-
-    @Mock
-    private IdamService idamService;
-
-    @Mock
     private AuthTokenGenerator authTokenGenerator;
 
     @Mock
-    private HttpServletRequest request;
+    private HttpServletRequest httpServletRequest;
 
     @Mock
     private CcdSupplementaryDataService ccdSupplementaryDataService;
@@ -82,7 +73,7 @@ public class CreateTestCaseTest {
             .contains("create-test-case");
     }
 
-    @Ignore
+    @Test
     void shouldMoveCaseIntoChosenStateAndCreateTestCase() throws JsonProcessingException {
         final CaseData caseData =
             CaseData.builder()
@@ -97,8 +88,6 @@ public class CreateTestCaseTest {
         caseDetails.setData(caseData);
         when(appsConfig.getApps()).thenReturn(List.of(appsDetails));
         when(mapper.readValue(anyString(), eq(CaseData.class))).thenReturn(caseData());
-
-        when(idamService.retrieveUser(any())).thenReturn(new User("authToken", new UserDetails()));
 
         AboutToStartOrSubmitResponse<CaseData, State> response =
             createTestCase.aboutToSubmit(caseDetails, caseDetails);

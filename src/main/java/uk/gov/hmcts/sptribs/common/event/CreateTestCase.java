@@ -8,7 +8,6 @@ import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.DefaultResourceLoader;
-import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
@@ -23,7 +22,6 @@ import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.reform.ccd.document.am.model.Classification;
 import uk.gov.hmcts.reform.ccd.document.am.model.DocumentUploadRequest;
 import uk.gov.hmcts.reform.ccd.document.am.util.InMemoryMultipartFile;
-import uk.gov.hmcts.reform.idam.client.models.User;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseManagementLocation;
 import uk.gov.hmcts.sptribs.cdam.model.UploadResponse;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
@@ -31,14 +29,12 @@ import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.common.config.AppsConfig;
-import uk.gov.hmcts.sptribs.common.service.AuthorisationService;
 import uk.gov.hmcts.sptribs.common.service.CcdSupplementaryDataService;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
-import uk.gov.hmcts.sptribs.idam.IdamService;
-import uk.gov.hmcts.sptribs.model.DocumentInfo;
 import uk.gov.hmcts.sptribs.services.cdam.CaseDocumentClientApi;
 
+import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
@@ -66,34 +62,28 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
     private static final String ENVIRONMENT_AAT = "aat";
     private static final String TEST_CREATE = "create-test-case";
     private static final String TEST_CASE_DATA_FILE = "classpath:data/st_cic_test_case.json";
-    private static ClassPathResource SAMPLE_PDF_FILE_RESOURCE =  new ClassPathResource("data/sample_pdf.pdf");
+    private static final ClassPathResource SAMPLE_PDF_FILE_RESOURCE =  new ClassPathResource("data/sample_file.pdf");
 
     private final ObjectMapper objectMapper;
     private final CcdSupplementaryDataService ccdSupplementaryDataService;
     private final AppsConfig appsConfig;
-    private AuthorisationService authorisationService;
     private final AuthTokenGenerator authTokenGenerator;
-    private HttpServletRequest httpServletRequest;
-    private final IdamService idamService;
-    private CaseDocumentClientApi caseDocumentClientApi;
+    private final HttpServletRequest httpServletRequest;
+    private final CaseDocumentClientApi caseDocumentClientApi;
 
     @Autowired
     public CreateTestCase(ObjectMapper objectMapper,
                           CcdSupplementaryDataService ccdSupplementaryDataService,
                           CaseDocumentClientApi caseDocumentClientApi,
                           AppsConfig appsConfig,
-                          AuthorisationService authorisationService,
                           AuthTokenGenerator authTokenGenerator,
-                          HttpServletRequest httpServletRequest,
-                          IdamService idamService) {
+                          HttpServletRequest httpServletRequest) {
         this.objectMapper = objectMapper;
         this.ccdSupplementaryDataService = ccdSupplementaryDataService;
         this.caseDocumentClientApi = caseDocumentClientApi;
         this.appsConfig = appsConfig;
-        this.authorisationService = authorisationService;
         this.authTokenGenerator = authTokenGenerator;
         this.httpServletRequest = httpServletRequest;
-        this.idamService = idamService;
     }
 
     @Override
@@ -123,61 +113,14 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
     @SneakyThrows
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(CaseDetails<CaseData, State> details,
                                                                        CaseDetails<CaseData, State> beforeDetails) {
-        String caseType = appsConfig.getApps().get(0).getCaseType();
-        String jurisdiction = appsConfig.getApps().get(0).getJurisdiction();
 
-        String authString = authorisationService.getAuthorisation();
-        String serviceAuth = authTokenGenerator.generate();
-
-        InMemoryMultipartFile inMemoryMultipartFile =
-            new InMemoryMultipartFile("sample_pdf.pdf", SAMPLE_PDF_FILE_RESOURCE.getContentAsByteArray());
-
-        DocumentUploadRequest documentUploadRequest =
-            new DocumentUploadRequest(Classification.RESTRICTED.toString(),
-                caseType,
-                jurisdiction,
-                List.of(inMemoryMultipartFile));
-        User user = idamService.retrieveUser(httpServletRequest.getHeader(HttpHeaders.AUTHORIZATION));
-
-
-        String authHeader = httpServletRequest.getHeader(AUTHORIZATION);
-        log.info("Calling CDAM api on {} with {}, {}. {}",
-            this.caseDocumentClientApi.toString(), authHeader, serviceAuth, documentUploadRequest);
-        UploadResponse uploadResponse = this.caseDocumentClientApi.uploadDocuments(authHeader, serviceAuth, documentUploadRequest);
         final DefaultResourceLoader resourceLoader = new DefaultResourceLoader();
         final String json = IOUtils.toString(
             resourceLoader.getResource(TEST_CASE_DATA_FILE).getInputStream(),
             Charset.defaultCharset()
         );
         final CaseData caseData = objectMapper.readValue(json, CaseData.class);
-
-        log.info("Received response of {}", uploadResponse);
-
-        final uk.gov.hmcts.sptribs.cdam.model.Document uploadedDocument = uploadResponse.getDocuments().get(0);
-        final String[] split = uploadedDocument.links.self.href.split("/");
-        final DocumentInfo documentInfo = DocumentInfo.builder()
-                .url(uploadedDocument.links.self.href)
-                .binaryUrl(uploadedDocument.links.binary.href)
-                .fileName(uploadedDocument.originalDocumentName)
-                .documentId(split[split.length - 1])
-                .build();
-        log.info("Document uploaded: {}", documentInfo);
-
-        Document uploadedDoc = Document.builder()
-                .url(uploadedDocument.links.self.href)
-                .filename(uploadedDocument.originalDocumentName)
-                .categoryId("A")
-                .binaryUrl(uploadedDocument.links.binary.href)
-                .build();
-        CaseworkerCICDocument uploadedCICDoc = CaseworkerCICDocument.builder()
-            .documentLink(uploadedDoc)
-            .documentCategory(DocumentType.APPLICATION_FORM)
-            .documentEmailContent("This is a test document uploaded during create case journey")
-            .build();
-        ListValue<CaseworkerCICDocument> testDocumentListValue = new ListValue<>();
-        testDocumentListValue.setValue(uploadedCICDoc);
-        caseData.getCicCase().setApplicantDocumentsUploaded(List.of(testDocumentListValue));
-
+        uploadTestDocumentAndUpdateCaseData(caseData);
         caseData.setHyphenatedCaseRef(caseData.formatCaseRef(details.getId()));
         setDefaultCaseDetails(caseData);
 
@@ -228,5 +171,45 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
                 .value(caseManagementCategory)
                 .build()
         );
+    }
+
+    private void uploadTestDocumentAndUpdateCaseData(CaseData caseData) {
+        final String caseType = appsConfig.getApps().get(0).getCaseType();
+        final String jurisdiction = appsConfig.getApps().get(0).getJurisdiction();
+
+        try {
+            final InMemoryMultipartFile inMemoryMultipartFile =
+                new InMemoryMultipartFile("sample_file.pdf", SAMPLE_PDF_FILE_RESOURCE.getContentAsByteArray());
+
+            final DocumentUploadRequest documentUploadRequest =
+                new DocumentUploadRequest(Classification.RESTRICTED.toString(),
+                    caseType,
+                    jurisdiction,
+                    List.of(inMemoryMultipartFile));
+
+            final String serviceToken = authTokenGenerator.generate();
+            final String authorizationHeader = httpServletRequest.getHeader(AUTHORIZATION);
+            final UploadResponse uploadResponse =
+                this.caseDocumentClientApi.uploadDocuments(authorizationHeader, serviceToken, documentUploadRequest);
+            final uk.gov.hmcts.sptribs.cdam.model.Document cdamUploadedDocument = uploadResponse.getDocuments().get(0);
+
+            final Document uploadedDocument = Document.builder()
+                .url(cdamUploadedDocument.links.self.href)
+                .filename(cdamUploadedDocument.originalDocumentName)
+                .categoryId("A")
+                .binaryUrl(cdamUploadedDocument.links.binary.href)
+                .build();
+            final CaseworkerCICDocument uploadedCICDoc = CaseworkerCICDocument.builder()
+                .documentLink(uploadedDocument)
+                .documentCategory(DocumentType.APPLICATION_FORM)
+                .documentEmailContent("This is a test document uploaded during create case journey")
+                .build();
+
+            final ListValue<CaseworkerCICDocument> testDocumentListValue = new ListValue<>();
+            testDocumentListValue.setValue(uploadedCICDoc);
+            caseData.getCicCase().setApplicantDocumentsUploaded(List.of(testDocumentListValue));
+        } catch (IOException ioException) {
+            log.error("Failed to upload test document due to {}", ioException);
+        }
     }
 }
