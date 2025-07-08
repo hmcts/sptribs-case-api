@@ -6,6 +6,7 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Component;
@@ -60,7 +61,7 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
     private static final String ENVIRONMENT_AAT = "aat";
     private static final String TEST_CREATE = "create-test-case";
     private static final String TEST_CASE_DATA_FILE = "classpath:data/st_cic_test_case.json";
-    private static String SAMPLE_PDF_FILE = "classpath:data/sample_pdf.pdf";
+    private static ClassPathResource SAMPLE_PDF_FILE_RESOURCE =  new ClassPathResource("data/sample_pdf.pdf");
 
     private final ObjectMapper objectMapper;
     private final CcdSupplementaryDataService ccdSupplementaryDataService;
@@ -123,10 +124,11 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
         String authString = authorisationService.getAuthorisation();
         String serviceAuth = authTokenGenerator.generate();
 
-        final DefaultResourceLoader resourceLoader = new DefaultResourceLoader();
-        InMemoryMultipartFile inMemoryMultipartFile = new InMemoryMultipartFile(resourceLoader.getResource(SAMPLE_PDF_FILE).getFile());
+        InMemoryMultipartFile inMemoryMultipartFile =
+            new InMemoryMultipartFile("sample_pdf.pdf", SAMPLE_PDF_FILE_RESOURCE.getContentAsByteArray());
 
-        DocumentUploadRequest documentUploadRequest = new DocumentUploadRequest(Classification.RESTRICTED.toString(),
+        DocumentUploadRequest documentUploadRequest =
+            new DocumentUploadRequest(Classification.RESTRICTED.toString(),
                 caseType,
                 jurisdiction,
                 List.of(inMemoryMultipartFile));
@@ -135,9 +137,10 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
 
         String authHeader = httpServletRequest.getHeader(AUTHORIZATION);
         log.info("Calling CDAM api on {} with {}, {}. {}",
-                this.caseDocumentClientApi.toString(), authHeader, serviceAuth, documentUploadRequest);
+            this.caseDocumentClientApi.toString(), authHeader, serviceAuth, documentUploadRequest);
         UploadResponse uploadResponse = this.caseDocumentClientApi.uploadDocuments(authHeader, serviceAuth, documentUploadRequest);
 
+        final DefaultResourceLoader resourceLoader = new DefaultResourceLoader();
         final String json = IOUtils.toString(
             resourceLoader.getResource(TEST_CASE_DATA_FILE).getInputStream(),
             Charset.defaultCharset()

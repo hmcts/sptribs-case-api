@@ -16,7 +16,8 @@ import java.util.UUID;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE;
 
-@FeignClient(name = "sptribs-case-document-am-client-api", url = "${case_document_am.url}/cases/documents")
+@FeignClient(name = "sptribs-case-document-am-client-api", url = "${case_document_am.url}/cases/documents",
+    configuration = FeignSupportConfig.class)
 public interface CaseDocumentClientApi {
 
     String SERVICE_AUTHORIZATION = "ServiceAuthorization";
