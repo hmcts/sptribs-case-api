@@ -13,6 +13,9 @@ management:
       base-path: /
       exposure:
         include: health, info, prometheus
+  health:
+    elasticsearch:
+      enabled: false
 
 spring:
   application:
