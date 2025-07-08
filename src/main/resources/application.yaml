@@ -25,6 +25,16 @@ spring:
     multipart:
       max-file-size: 500MB
       max-request-size: 500MB
+  jms:
+    servicebus:
+      enabled: true
+      fully-qualified-namespace: ${AZURE_SERVICE_BUS_URL:sptribs-sb-preview.servicebus.windows.net}
+      credential:
+        client-id: 34df67df-77f4-4c8d-9e89-d59a86ef9ffe
+      topic-client-id: sptribs-ccd-case-events-publisher
+      pricing-tier: Standard
+  autoconfigure:
+    exclude: com.azure.spring.cloud.autoconfigure.implementation.context.AzureTokenCredentialAutoConfiguration
 
 logging:
   level:
@@ -38,6 +48,10 @@ springdoc:
 azure:
   application-insights:
     instrumentation-key: ${app-insights-instrumentation-key:00000000-0000-0000-0000-000000000000}
+  servicebus:
+    ccd-case-events:
+      topic-name: ${AZURE_SERVICE_BUS_TOPIC_NAME:sptribs-asb-ccd-case-events}
+      subscription-name: ${AZURE_SERVICE_BUS_SUBSCRIPTION_NAME:sptribs-asb-ccd-case-events}
 
 uk:
   gov:

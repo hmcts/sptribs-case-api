@@ -4,6 +4,12 @@ spring:
 
   main:
     allow-bean-definition-overriding: true
+  autoconfigure:
+    exclude: com.azure.spring.cloud.autoconfigure.implementation.context.AzureTokenCredentialAutoConfiguration
+  jms:
+    servicebus:
+      enabled: false
+
 # because functional tests load up SpringBootTest
 azure:
   application-insights:
