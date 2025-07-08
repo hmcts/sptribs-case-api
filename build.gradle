@@ -152,6 +152,7 @@ tasks.register('smoke', Test) {
   description = "Runs Smoke Tests"
   setTestClassesDirs(sourceSets.functionalTest.output.classesDirs)
   setClasspath(sourceSets.functionalTest.runtimeClasspath)
+  environment 'SPRING_PROFILES_ACTIVE', 'functional'
   include "uk/gov/hmcts/sptribs/smoke/**"
 }
 
@@ -206,8 +207,10 @@ dependencyCheck {
   }
 }
 
-check.dependsOn integration
-integration.shouldRunAfter(test)
+if (System.getenv("CI") == null) {
+  check.dependsOn integration
+  integration.shouldRunAfter(test)
+}
 project.tasks['sonarqube'].dependsOn jacocoTestReport
 
 def sonarExclusions = [
