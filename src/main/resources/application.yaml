@@ -189,8 +189,6 @@ court:
       email: 'ciccase@justice.gov.uk'
       phoneNumber: '0300 303 0642'
 
-SERVICE_AUTH_MICROSERVICE: sptribs_case_api
-
 feature:
   security-classification:
     enabled: ${SECURITY_CLASSIFICATION:true}
