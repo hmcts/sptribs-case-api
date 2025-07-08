@@ -192,6 +192,7 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
             final UploadResponse uploadResponse =
                 this.caseDocumentClientApi.uploadDocuments(authorizationHeader, serviceToken, documentUploadRequest);
             final uk.gov.hmcts.sptribs.cdam.model.Document cdamUploadedDocument = uploadResponse.getDocuments().get(0);
+            log.info("Document uploaded successfully. href: {}", cdamUploadedDocument.links.self.href);
 
             final Document uploadedDocument = Document.builder()
                 .url(cdamUploadedDocument.links.self.href)
