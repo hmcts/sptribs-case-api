@@ -14,8 +14,10 @@ import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
+import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.ccd.sdk.type.DynamicList;
 import uk.gov.hmcts.ccd.sdk.type.DynamicListElement;
+import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.reform.ccd.document.am.model.Classification;
@@ -31,7 +33,10 @@ import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.common.config.AppsConfig;
 import uk.gov.hmcts.sptribs.common.service.AuthorisationService;
 import uk.gov.hmcts.sptribs.common.service.CcdSupplementaryDataService;
+import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
+import uk.gov.hmcts.sptribs.document.model.DocumentType;
 import uk.gov.hmcts.sptribs.idam.IdamService;
+import uk.gov.hmcts.sptribs.model.DocumentInfo;
 import uk.gov.hmcts.sptribs.services.cdam.CaseDocumentClientApi;
 
 import java.nio.charset.Charset;
@@ -139,13 +144,39 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
         log.info("Calling CDAM api on {} with {}, {}. {}",
             this.caseDocumentClientApi.toString(), authHeader, serviceAuth, documentUploadRequest);
         UploadResponse uploadResponse = this.caseDocumentClientApi.uploadDocuments(authHeader, serviceAuth, documentUploadRequest);
-
         final DefaultResourceLoader resourceLoader = new DefaultResourceLoader();
         final String json = IOUtils.toString(
             resourceLoader.getResource(TEST_CASE_DATA_FILE).getInputStream(),
             Charset.defaultCharset()
         );
         final CaseData caseData = objectMapper.readValue(json, CaseData.class);
+
+        log.info("Received response of {}", uploadResponse);
+
+        final uk.gov.hmcts.sptribs.cdam.model.Document uploadedDocument = uploadResponse.getDocuments().get(0);
+        final String[] split = uploadedDocument.links.self.href.split("/");
+        final DocumentInfo documentInfo = DocumentInfo.builder()
+                .url(uploadedDocument.links.self.href)
+                .binaryUrl(uploadedDocument.links.binary.href)
+                .fileName(uploadedDocument.originalDocumentName)
+                .documentId(split[split.length - 1])
+                .build();
+        log.info("Document uploaded: {}", documentInfo);
+
+        Document uploadedDoc = Document.builder()
+                .binaryUrl(uploadedDocument.links.self.href)
+                .filename(uploadedDocument.originalDocumentName)
+                .categoryId("A")
+                .binaryUrl(uploadedDocument.links.binary.href)
+                .build();
+        CaseworkerCICDocument uploadedCICDoc = CaseworkerCICDocument.builder()
+            .documentLink(uploadedDoc)
+            .documentCategory(DocumentType.APPLICATION_FORM)
+            .documentEmailContent("This is a test document uploaded during create case journey")
+            .build();
+        ListValue<CaseworkerCICDocument> testDocumentListValue = new ListValue<>();
+        testDocumentListValue.setValue(uploadedCICDoc);
+        caseData.getCicCase().setApplicantDocumentsUploaded(List.of(testDocumentListValue));
 
         caseData.setHyphenatedCaseRef(caseData.formatCaseRef(details.getId()));
         setDefaultCaseDetails(caseData);
