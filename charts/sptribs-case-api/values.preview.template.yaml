@@ -13,6 +13,7 @@ java:
     DB_NAME: "{{ .Values.global.databaseNamePrefix }}sptribs-case-api"
     DB_HOST: '{{ tpl .Values.global.postgresHostname $}}'
     DB_USER_NAME: "{{ .Values.global.postgresUsername}}"
+    DB_PORT: 5432
     ELASTIC_SEARCH_HOSTS: "http://{{ .Release.Name }}-es-master:9200"
   postgresql:
     enabled: false
