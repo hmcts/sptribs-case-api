@@ -12,16 +12,20 @@ import uk.gov.hmcts.ccd.sdk.ConfigBuilderImpl;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.Event;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
+import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
-import uk.gov.hmcts.reform.idam.client.models.User;
-import uk.gov.hmcts.reform.idam.client.models.UserDetails;
+import uk.gov.hmcts.sptribs.cdam.model.Document;
+import uk.gov.hmcts.sptribs.cdam.model.UploadResponse;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.config.AppsConfig;
 import uk.gov.hmcts.sptribs.common.service.CcdSupplementaryDataService;
+import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
+import uk.gov.hmcts.sptribs.document.model.DocumentType;
 import uk.gov.hmcts.sptribs.services.cdam.CaseDocumentClientApi;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -79,21 +83,55 @@ public class CreateTestCaseTest {
             CaseData.builder()
                 .caseStatus(CaseManagement)
                 .build();
-        AppsConfig.AppsDetails appsDetails = new AppsConfig.AppsDetails();
+        final AppsConfig.AppsDetails appsDetails = new AppsConfig.AppsDetails();
         appsDetails.setCaseType("CriminalInjuriesCompensation");
         appsDetails.setJurisdiction("ST_CIC");
 
         final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
         caseDetails.setId(TEST_CASE_ID);
         caseDetails.setData(caseData);
+
+        final Document expectedCdamUploadedDocument = new Document();
+        final Document.DocumentLink documentLink = new Document.DocumentLink();
+        documentLink.href = "dmstore-url/doc-id";
+        final Document.DocumentLink binaryDocumentLink = new Document.DocumentLink();
+        binaryDocumentLink.href = "dmstore-url/doc-id/binary";
+        final Document.Links links = new Document.Links();
+        links.self = documentLink;
+        links.binary = binaryDocumentLink;
+        expectedCdamUploadedDocument.setLinks(links);
+        expectedCdamUploadedDocument.setOriginalDocumentName("sample_file.pdf");
+
+        final List<Document> expectedDocuments = new ArrayList<>();
+        expectedDocuments.add(expectedCdamUploadedDocument);
+
+        final uk.gov.hmcts.ccd.sdk.type.Document expectedUploadDocument = uk.gov.hmcts.ccd.sdk.type.Document.builder()
+            .url(expectedCdamUploadedDocument.links.self.href)
+            .filename(expectedCdamUploadedDocument.originalDocumentName)
+            .categoryId("A")
+            .binaryUrl(expectedCdamUploadedDocument.links.binary.href)
+            .build();
+
+        final CaseworkerCICDocument expectedCICDocument = CaseworkerCICDocument.builder()
+            .documentLink(expectedUploadDocument)
+            .documentCategory(DocumentType.APPLICATION_FORM)
+            .documentEmailContent("This is a test document uploaded during create case journey")
+            .build();
+        final ListValue<CaseworkerCICDocument> expectedCICDocumentListValue =
+            ListValue.<CaseworkerCICDocument>builder().value(expectedCICDocument).build();
+
+        UploadResponse expectedResponse = new UploadResponse();
+        expectedResponse.setDocuments(expectedDocuments);
         when(appsConfig.getApps()).thenReturn(List.of(appsDetails));
         when(mapper.readValue(anyString(), eq(CaseData.class))).thenReturn(caseData());
+        when(caseDocumentClientApi.uploadDocuments(any(), any(), any())).thenReturn(expectedResponse);
 
-        AboutToStartOrSubmitResponse<CaseData, State> response =
-            createTestCase.aboutToSubmit(caseDetails, caseDetails);
+        AboutToStartOrSubmitResponse<CaseData, State> response = createTestCase.aboutToSubmit(caseDetails, caseDetails);
 
         assertThat(response.getState()).isEqualTo(CaseManagement);
         assertThat(response.getData().getHyphenatedCaseRef()).isEqualTo(TEST_CASE_ID_HYPHENATED);
+        assertThat(response.getData().getCicCase().getApplicantDocumentsUploaded().size()).isEqualTo(1);
+        assertThat(response.getData().getCicCase().getApplicantDocumentsUploaded()).contains(expectedCICDocumentListValue);
     }
 
     @Test
