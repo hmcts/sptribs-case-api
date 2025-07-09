@@ -210,6 +210,7 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
                     .build();
 
                 final ListValue<CaseworkerCICDocument> testDocumentListValue = new ListValue<>();
+                testDocumentListValue.setId(UUID.randomUUID().toString());
                 testDocumentListValue.setValue(uploadedCICDoc);
                 caseData.getCicCase().setApplicantDocumentsUploaded(List.of(testDocumentListValue));
             } catch (IOException ioException) {
