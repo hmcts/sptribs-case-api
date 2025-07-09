@@ -131,7 +131,7 @@ public class CreateTestCaseTest {
         assertThat(response.getState()).isEqualTo(CaseManagement);
         assertThat(response.getData().getHyphenatedCaseRef()).isEqualTo(TEST_CASE_ID_HYPHENATED);
         assertThat(response.getData().getCicCase().getApplicantDocumentsUploaded()).hasSize(1);
-        assertThat(response.getData().getCicCase().getApplicantDocumentsUploaded()).contains(expectedCICDocumentListValue);
+        assertThat(response.getData().getCicCase().getApplicantDocumentsUploaded().getFirst().getValue()).isEqualTo(expectedCICDocument);
     }
 
     @Test
