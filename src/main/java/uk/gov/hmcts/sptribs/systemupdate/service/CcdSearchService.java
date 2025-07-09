@@ -30,7 +30,7 @@ public class CcdSearchService {
 
     public static final String DUE_DATE = "data.dueDate";
     public static final String STATE = "state";
-    public static final int MIGRATION_PAGE_SIZE = 4000;
+    public static final int MIGRATION_PAGE_SIZE = 500;
 
     @Value("${core_case_data.search.page_size}")
     private int pageSize;

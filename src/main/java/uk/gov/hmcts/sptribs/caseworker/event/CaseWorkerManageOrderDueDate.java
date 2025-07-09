@@ -110,7 +110,7 @@ public class CaseWorkerManageOrderDueDate implements CCDConfig<CaseData, State, 
         }
         caseData.getCicCase().setOrderList(orderList);
         cicCase.setOrderDueDates(new ArrayList<>());
-        cicCase.setFirstDueDate(cicCase.calculateFirstDueDate());
+        cicCase.setFirstOrderDueDate(cicCase.calculateFirstDueDate());
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .state(details.getState())
             .data(caseData)
