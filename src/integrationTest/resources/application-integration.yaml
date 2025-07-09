@@ -1,0 +1,21 @@
+spring:
+  flyway:
+    enabled: false
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration
+  datasource:
+    url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;MODE=PostgreSQL
+    username: sa
+    password:
+    driver-class-name: org.h2.Driver
+
+s2s:
+  stub: true
+
+core_case_data:
+  api:
+    url: http://localhost:4012
+  search:
+    page_size: 100
+

@@ -113,9 +113,11 @@ tasks.withType(JavaExec).configureEach {
 
 tasks.withType(Test) {
   useJUnitPlatform()
+  maxParallelForks = Math.floorDiv(Runtime.runtime.availableProcessors(), 2)
 
   testLogging {
     exceptionFormat = 'full'
+    events "PASSED", "FAILED", "SKIPPED"
   }
 }
 
@@ -126,14 +128,14 @@ test {
 }
 
 tasks.register('functional', Test) {
-  if (System.getenv('WA_FUNCTIONAL_TESTS_ENABLED') == 'true') {
-    maxParallelForks = Runtime.runtime.availableProcessors()
-  }
   description = "Runs functional tests"
   group = "Verification"
   testClassesDirs = sourceSets.functionalTest.output.classesDirs
   classpath = sourceSets.functionalTest.runtimeClasspath
   jvmArgs = ['--add-opens=java.base/java.lang.reflect=ALL-UNNAMED', '--add-opens=java.base/java.util=ALL-UNNAMED']
+  environment 'SPRING_PROFILES_ACTIVE', 'functional'
+  include "**/*FT.class"
+  exclude "uk/gov/hmcts/sptribs/smoke/**"
 }
 
 task integration(type: Test) {
@@ -142,6 +144,8 @@ task integration(type: Test) {
   testClassesDirs = sourceSets.integrationTest.output.classesDirs
   classpath = sourceSets.integrationTest.runtimeClasspath
   failFast = true
+  environment 'SPRING_PROFILES_ACTIVE', 'integration'
+  include "**/*IT.class"
 }
 
 // Invoked from CftLibConfig when booting with CCD.
@@ -156,6 +160,7 @@ tasks.register('smoke', Test) {
   description = "Runs Smoke Tests"
   setTestClassesDirs(sourceSets.functionalTest.output.classesDirs)
   setClasspath(sourceSets.functionalTest.runtimeClasspath)
+  environment 'SPRING_PROFILES_ACTIVE', 'functional'
   include "uk/gov/hmcts/sptribs/smoke/**"
 }
 
@@ -210,8 +215,10 @@ dependencyCheck {
   }
 }
 
-check.dependsOn integration
-integration.shouldRunAfter(test)
+if (System.getenv("CI") == null) {
+  check.dependsOn integration
+  integration.shouldRunAfter(test)
+}
 project.tasks['sonarqube'].dependsOn jacocoTestReport
 
 def sonarExclusions = [
@@ -312,7 +319,7 @@ dependencies {
   implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: versions.jackson
   implementation group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: versions.jackson
   implementation group: 'com.fasterxml.jackson.core', name: 'jackson-annotations', version: versions.jackson
-  implementation (group: 'com.github.hmcts', name: 'befta-fw', version: '8.10.1') {
+  implementation (group: 'com.github.hmcts', name: 'befta-fw', version: '9.2.4') {
     exclude group: 'org.apache.commons', module: 'commons-compress'
     exclude group: 'com.google.guava', module: 'guava'
     exclude group: 'org.apache.poi', module: 'poi-ooxml'
