@@ -174,12 +174,27 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
     }
 
     private void uploadTestDocumentAndUpdateCaseData(CaseData caseData) {
-        final List<AppsConfig.AppsDetails> appDetails = appsConfig.getApps();
+        final UploadResponse uploadResponse = uploadApplicantDocument();
 
+        if (uploadResponse != null) {
+            final uk.gov.hmcts.sptribs.cdam.model.Document cdamUploadedDocument = uploadResponse.getDocuments().getFirst();
+            log.info("Document uploaded successfully. href: {}", cdamUploadedDocument.links.self.href);
+
+            CaseworkerCICDocument caseworkerCICDocument = convertCdamDocumentToCaseworkerCICDocument(cdamUploadedDocument);
+            final ListValue<CaseworkerCICDocument> testDocumentListValue = new ListValue<>();
+            testDocumentListValue.setId(UUID.randomUUID().toString());
+            testDocumentListValue.setValue(caseworkerCICDocument);
+
+            caseData.getCicCase().setApplicantDocumentsUploaded(List.of(testDocumentListValue));
+        }
+
+    }
+
+    private UploadResponse uploadApplicantDocument() {
+        final List<AppsConfig.AppsDetails> appDetails = appsConfig.getApps();
         if (!appDetails.isEmpty() && appDetails.getFirst() != null) {
             final String caseType = appsConfig.getApps().getFirst().getCaseType();
             final String jurisdiction = appsConfig.getApps().getFirst().getJurisdiction();
-
             try {
                 final InMemoryMultipartFile inMemoryMultipartFile =
                     new InMemoryMultipartFile("sample_file.pdf", SAMPLE_PDF_FILE_RESOURCE.getContentAsByteArray());
@@ -192,30 +207,26 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
 
                 final String serviceToken = authTokenGenerator.generate();
                 final String authorizationHeader = httpServletRequest.getHeader(AUTHORIZATION);
-                final UploadResponse uploadResponse =
-                    this.caseDocumentClientApi.uploadDocuments(authorizationHeader, serviceToken, documentUploadRequest);
-                final uk.gov.hmcts.sptribs.cdam.model.Document cdamUploadedDocument = uploadResponse.getDocuments().getFirst();
-                log.info("Document uploaded successfully. href: {}", cdamUploadedDocument.links.self.href);
 
-                final Document uploadedDocument = Document.builder()
-                    .url(cdamUploadedDocument.links.self.href)
-                    .filename(cdamUploadedDocument.originalDocumentName)
-                    .categoryId("A")
-                    .binaryUrl(cdamUploadedDocument.links.binary.href)
-                    .build();
-                final CaseworkerCICDocument uploadedCICDoc = CaseworkerCICDocument.builder()
-                    .documentLink(uploadedDocument)
-                    .documentCategory(DocumentType.APPLICATION_FORM)
-                    .documentEmailContent("This is a test document uploaded during create case journey")
-                    .build();
-
-                final ListValue<CaseworkerCICDocument> testDocumentListValue = new ListValue<>();
-                testDocumentListValue.setId(UUID.randomUUID().toString());
-                testDocumentListValue.setValue(uploadedCICDoc);
-                caseData.getCicCase().setApplicantDocumentsUploaded(List.of(testDocumentListValue));
+                return this.caseDocumentClientApi.uploadDocuments(authorizationHeader, serviceToken, documentUploadRequest);
             } catch (IOException ioException) {
                 log.error("Failed to upload test document due to {}", ioException.toString());
             }
         }
+        return null;
+    }
+
+    private CaseworkerCICDocument convertCdamDocumentToCaseworkerCICDocument(uk.gov.hmcts.sptribs.cdam.model.Document cdamDocument) {
+        final Document uploadedDocument = Document.builder()
+                .url(cdamDocument.links.self.href)
+                .filename(cdamDocument.originalDocumentName)
+                .categoryId("A")
+                .binaryUrl(cdamDocument.links.binary.href)
+                .build();
+        return  CaseworkerCICDocument.builder()
+                .documentLink(uploadedDocument)
+                .documentCategory(DocumentType.APPLICATION_FORM)
+                .documentEmailContent("This is a test document uploaded during create case journey")
+                .build();
     }
 }
