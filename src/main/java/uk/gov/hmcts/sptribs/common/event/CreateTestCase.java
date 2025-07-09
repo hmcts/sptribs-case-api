@@ -218,15 +218,15 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
 
     private CaseworkerCICDocument convertCdamDocumentToCaseworkerCICDocument(uk.gov.hmcts.sptribs.cdam.model.Document cdamDocument) {
         final Document uploadedDocument = Document.builder()
-                .url(cdamDocument.links.self.href)
-                .filename(cdamDocument.originalDocumentName)
-                .categoryId("A")
-                .binaryUrl(cdamDocument.links.binary.href)
-                .build();
+            .url(cdamDocument.links.self.href)
+            .filename(cdamDocument.originalDocumentName)
+            .categoryId("A")
+            .binaryUrl(cdamDocument.links.binary.href)
+            .build();
         return  CaseworkerCICDocument.builder()
-                .documentLink(uploadedDocument)
-                .documentCategory(DocumentType.APPLICATION_FORM)
-                .documentEmailContent("This is a test document uploaded during create case journey")
-                .build();
+            .documentLink(uploadedDocument)
+            .documentCategory(DocumentType.APPLICATION_FORM)
+            .documentEmailContent("This is a test document uploaded during create case journey")
+            .build();
     }
 }
