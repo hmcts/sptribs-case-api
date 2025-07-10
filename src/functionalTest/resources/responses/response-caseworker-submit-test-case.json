@@ -85,14 +85,14 @@
     "cicCaseIsRepresentativePresent": "Yes",
     "cicCaseApplicantDocumentsUploaded": [
       {
-        "id": "e8479029-f964-4210-9bfb-5e5a212a5954",
+        "id": "${json-unit.any-string}",
         "value": {
           "documentCategory": "ApplicationForm",
           "documentEmailContent": "This is a test document uploaded during create case journey",
           "documentLink": {
-            "document_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/ee195897-14ca-4ff2-aafc-bbc891597469",
+            "document_url": "${json-unit.any-string}",
             "document_filename": "sample_file.pdf",
-            "document_binary_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/ee195897-14ca-4ff2-aafc-bbc891597469/binary",
+            "document_binary_url": "${json-unit.any-string}",
             "category_id": "A"
           }
         }
