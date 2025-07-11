@@ -4,8 +4,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
 import org.elasticsearch.index.query.BoolQueryBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.TestPropertySource;
 import uk.gov.hmcts.reform.ccd.client.CoreCaseDataApi;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
@@ -13,12 +16,15 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDataContent;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.client.model.Event;
 import uk.gov.hmcts.reform.ccd.client.model.StartEventResponse;
+import uk.gov.hmcts.sptribs.cdam.model.Document;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.DssCaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.common.ccd.CcdJurisdiction;
 import uk.gov.hmcts.sptribs.common.ccd.CcdServiceCode;
+import uk.gov.hmcts.sptribs.common.config.AppsConfig;
 import uk.gov.hmcts.sptribs.idam.IdamService;
+import uk.gov.hmcts.sptribs.services.cdam.CaseDocumentClientApi;
 import uk.gov.hmcts.sptribs.systemupdate.service.CcdSearchService;
 
 import java.io.IOException;
@@ -26,6 +32,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
@@ -37,6 +44,7 @@ import static uk.gov.hmcts.sptribs.common.config.ControllerConstants.SERVICE_AUT
 public abstract class FunctionalTestSuite {
 
     private static final LocalDateTime LOCAL_DATE_TIME = LocalDateTime.of(2021, 4, 28, 1, 0);
+    private static final Logger log = LoggerFactory.getLogger(FunctionalTestSuite.class);
 
     @Value("${test-url}")
     protected String testUrl;
@@ -57,12 +65,16 @@ public abstract class FunctionalTestSuite {
     protected CcdSearchService searchService;
 
     @Autowired
+    private CaseDocumentClientApi caseDocumentClientApi;
+
+    @Autowired
     protected ObjectMapper objectMapper;
 
     protected static final String EVENT_PARAM = "event";
     protected static final String UPDATE = "UPDATE";
     protected static final String UPDATE_CASE = "UPDATE_CASE";
     protected static final String SUBMIT = "SUBMIT";
+    private AppsConfig appsConfig;
 
     protected CaseDetails createCaseInCcd() {
         String caseworkerToken = idamTokenGenerator.generateIdamTokenForCaseworker();
@@ -250,6 +262,7 @@ public abstract class FunctionalTestSuite {
 
     protected Response createAndSubmitTestCaseAndGetResponse() {
         final long caseReference = createTestCaseAndGetCaseReference();
+        log.debug("Test url: {}", testUrl);
         return RestAssured
             .given()
             .relaxedHTTPSValidation()
@@ -292,5 +305,11 @@ public abstract class FunctionalTestSuite {
             .caseTypeOfApplication("CIC")
             .additionalInformation("some additional info")
             .build();
+    }
+
+    protected ResponseEntity<Document> checkDocuments(UUID documentId) {
+        return caseDocumentClientApi.getDocumentByDocumentId(idamTokenGenerator.generateIdamTokenForCaseworker(),
+            serviceAuthenticationGenerator.generate(),
+                documentId);
     }
 }

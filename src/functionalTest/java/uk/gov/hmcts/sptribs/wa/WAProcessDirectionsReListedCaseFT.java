@@ -6,6 +6,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledIfEnvironmentVariable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.ResponseEntity;
+import uk.gov.hmcts.sptribs.cdam.model.Document;
 import uk.gov.hmcts.sptribs.testutil.CcdCaseCreator;
 import uk.gov.hmcts.sptribs.testutil.FunctionalTestSuite;
 import uk.gov.hmcts.sptribs.testutil.RoleAssignmentService;
@@ -15,6 +17,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -58,7 +61,7 @@ public class WAProcessDirectionsReListedCaseFT extends FunctionalTestSuite {
         final String newCaseId = String.valueOf(id);
         final Map<String, Object> caseData = response.getBody().path("caseData");
 
-        log.debug("New case created: " + newCaseId);
+        log.debug("New case created: {}", newCaseId);
 
         ccdCaseCreator.createInitialStartEventAndSubmit(CASEWORKER_EDIT_CASE, ST_CIC_JURISDICTION, ST_CIC_CASE_TYPE, newCaseId, caseData);
         ccdCaseCreator.createInitialStartEventAndSubmit(CASEWORKER_CASE_BUILT, ST_CIC_JURISDICTION, ST_CIC_CASE_TYPE, newCaseId, caseData);
@@ -68,6 +71,9 @@ public class WAProcessDirectionsReListedCaseFT extends FunctionalTestSuite {
             CASEWORKER_RECORD_LISTING, ST_CIC_JURISDICTION, ST_CIC_CASE_TYPE, newCaseId, caseData);
 
         hearingCaseData.put("cicCaseReferralTypeForWA", "Listed case");
+        ResponseEntity<Document> documentResponse = checkDocuments(UUID.fromString("5d76ff31-8547-4702-b2c8-34c43a53d220"));
+        log.debug("Document response: status {}; body: {}", documentResponse.getStatusCode(), documentResponse.getBody());
+
         hearingCaseData.putAll(caseData(CASEWORKER_CREATE_DRAFT_ORDER_DATA));
         ccdCaseCreator.createInitialStartEventAndSubmit(
             CASEWORKER_CREATE_DRAFT_ORDER, ST_CIC_JURISDICTION, ST_CIC_CASE_TYPE, newCaseId, hearingCaseData);
