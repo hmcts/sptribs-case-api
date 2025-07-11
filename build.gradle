@@ -509,6 +509,7 @@ tasks.withType(CftlibExec).configureEach {
 
 bootWithCCD {
     environment 'XUI_JURISDICTIONS', 'ST_CIC'
+    environment 'CCD_DECENTRALISED_CASE-TYPE-SERVICE-URLS_CriminalInjuriesCompensation', 'http://localhost:4013'
     group = 'ccd tasks'
     dependsOn(loadEnvSecrets)
 
