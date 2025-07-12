@@ -178,7 +178,7 @@ class CamundaTaskWaPermissionTest extends DmnDecisionTableBaseUnitTest {
             Arguments.of(
                 ISSUE_DECISION_NOTICE_TASK,
                 DUMMY_CASE_DATA,
-                defaultAdminAndCtscTaskPermissions()
+                defaultJudicialPermissions()
             ),
             Arguments.of(
                 COMPLETE_HEARING_OUTCOME_TASK,

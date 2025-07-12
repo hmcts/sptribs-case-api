@@ -560,16 +560,16 @@
           <text></text>
         </outputEntry>
         <outputEntry id="LiteralExpression_1noinni">
-          <text>1</text>
+          <text>2</text>
         </outputEntry>
         <outputEntry id="LiteralExpression_04q866u">
           <text></text>
         </outputEntry>
         <outputEntry id="LiteralExpression_1a9hp96">
-          <text>"hearing_work"</text>
+          <text>"decision_making_work"</text>
         </outputEntry>
         <outputEntry id="LiteralExpression_0eu03om">
-          <text>"ADMIN"</text>
+          <text>"JUDICIAL"</text>
         </outputEntry>
       </rule>
       <rule id="DecisionRule_056amwa">
