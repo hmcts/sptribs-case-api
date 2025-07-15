@@ -213,7 +213,7 @@ withPipeline(type, product, component) {
     ]
   }
 
-  afterAlways('checkout') {
+  before('highleveldatasetup') {
     builder.gradle('generateCCDConfig')
     generateDefinitions()
   }
@@ -225,7 +225,6 @@ withPipeline(type, product, component) {
     env.DEFINITION_STORE_URL_BASE = "https://ccd-definition-store-sptribs-case-api-pr-${CHANGE_ID}.preview.platform.hmcts.net"
     env.CASE_DATA_STORE_BASEURL = "https://ccd-data-store-api-sptribs-case-api-pr-${CHANGE_ID}.preview.platform.hmcts.net"
     env.CASE_DOCUMENT_AM_BASEURL= "http://ccd-case-document-am-api-sptribs-case-api-pr-${CHANGE_ID}.preview.platform.hmcts.net"
-    env.TEST_S2S_URL = "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
     env.CITIZEN_UPDATE_CASE_STATE_ENABLED=true
     env.SERVICE_AUTH_MICROSERVICE = "sptribs_case_api"
     env.SERVICE_AUTH_PROVIDER_URL = "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
@@ -331,11 +330,6 @@ withPipeline(type, product, component) {
     env.CAMUNDA_BASE_URL = "http://camunda-api-ithc.service.core-compute-ithc.internal"
   }
 
-  before('functionalTest:preview') {
-    // Only for preview upload the definitions via script as high level data set up relies on an existing environment
-    uploadCoreCaseDataDefinitions()
-  }
-
   before('functionalTest:aat') {
     uploadDmnDiagrams()
     uploadBpmnDiagram()
@@ -347,16 +341,6 @@ def setCommonEnvVariables() {
     env.S2S_URL_BASE = "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
     env.FEE_API_URL = "http://fees-register-api-aat.service.core-compute-aat.internal"
     env.BEFTA_S2S_CLIENT_ID = "ccd_data"
-}
-
-def uploadCoreCaseDataDefinitions() {
-    dir("${WORKSPACE}/bin"){
-        sh "./add-roles.sh"
-        sh "./process-and-import-ccd-definition.sh"
-    }
-    dir("${WORKSPACE}") {
-        steps.archiveArtifacts artifacts: "build/ccd-config/*.xlsx"
-    }
 }
 
 def generateDefinitions() {
