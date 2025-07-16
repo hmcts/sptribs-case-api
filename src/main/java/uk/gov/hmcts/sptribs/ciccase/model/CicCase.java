@@ -25,6 +25,7 @@ import uk.gov.hmcts.sptribs.caseworker.model.YesNo;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerAndSuperUserAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerWithCAAAccess;
+import uk.gov.hmcts.sptribs.ciccase.model.access.CollectionDefaultAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.DefaultAccess;
 import uk.gov.hmcts.sptribs.document.model.CICDocument;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
@@ -32,13 +33,10 @@ import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocumentUpload;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
 
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import static java.time.format.DateTimeFormatter.ofPattern;
-import static java.util.Locale.UK;
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.Collection;
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.Email;
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.FixedList;
@@ -140,7 +138,7 @@ public class CicCase {
 
     @CCD(
         label = "Order Documents",
-        access = {CaseworkerAndSuperUserAccess.class}
+        access = {CollectionDefaultAccess.class, CaseworkerAndSuperUserAccess.class}
     )
     private List<ListValue<CaseworkerCICDocument>> orderDocumentList;
 
@@ -532,7 +530,7 @@ public class CicCase {
         label = "Case Documents",
         typeOverride = Collection,
         typeParameterOverride = "CaseworkerCICDocument",
-        access = {DefaultAccess.class}
+        access = {CollectionDefaultAccess.class}
     )
     private List<ListValue<CaseworkerCICDocument>> applicantDocumentsUploaded;
 
@@ -546,7 +544,7 @@ public class CicCase {
 
     @CCD(
         label = "Reinstate Documents",
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+        access = {CollectionDefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     List<ListValue<CaseworkerCICDocument>> reinstateDocuments;
 
@@ -558,7 +556,7 @@ public class CicCase {
 
     @CCD(
         label = "Decision Documents",
-        access = {CaseworkerAndSuperUserAccess.class}
+        access = {CollectionDefaultAccess.class, CaseworkerAndSuperUserAccess.class}
     )
     private List<ListValue<CaseworkerCICDocument>> decisionDocumentList;
 
@@ -569,7 +567,7 @@ public class CicCase {
 
     @CCD(
         label = "Final Decision Documents",
-        access = {CaseworkerAndSuperUserAccess.class}
+        access = {CollectionDefaultAccess.class, CaseworkerAndSuperUserAccess.class}
     )
     private List<ListValue<CaseworkerCICDocument>> finalDecisionDocumentList;
 
@@ -643,7 +641,8 @@ public class CicCase {
     @CCD(
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
-    private String firstDueDate;
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private LocalDate firstOrderDueDate;
 
     private LocalDate findEarliestDate(List<ListValue<DateModel>> dueDateList, LocalDate compare) {
         LocalDate earliestDate = compare;
@@ -657,8 +656,7 @@ public class CicCase {
         return earliestDate;
     }
 
-    public String calculateFirstDueDate() {
-        DateTimeFormatter dateFormatter = ofPattern("dd MMM yyyy", UK);
+    public LocalDate calculateFirstDueDate() {
         LocalDate compare = LocalDate.MAX;
 
         if (!CollectionUtils.isEmpty(orderList)) {
@@ -669,10 +667,11 @@ public class CicCase {
             }
 
             if (compare.isBefore(LocalDate.MAX)) {
-                return dateFormatter.format(compare);
+                return compare;
             }
         }
-        return "";
+
+        return null;
     }
 
     @JsonIgnore
@@ -724,5 +723,11 @@ public class CicCase {
         applicantAddress = new AddressGlobalUK();
         applicantPhoneNumber = "";
         applicantEmailAddress = "";
+    }
+
+    public boolean useApplicantNameForSubject() {
+        return (caseSubcategory == CaseSubcategory.FATAL
+            || caseSubcategory == CaseSubcategory.MINOR)
+            && (applicantFullName != null);
     }
 }
