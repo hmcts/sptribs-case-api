@@ -30,6 +30,7 @@ public class CcdSearchService {
 
     public static final String DUE_DATE = "data.dueDate";
     public static final String STATE = "state";
+    public static final int MIGRATION_PAGE_SIZE = 500;
 
     @Value("${core_case_data.search.page_size}")
     private int pageSize;
@@ -72,7 +73,7 @@ public class CcdSearchService {
                         .must(rangeQuery("data.dataVersion").lt(latestVersion)))
             )
             .from(0)
-            .size(500);
+            .size(MIGRATION_PAGE_SIZE);
 
         return coreCaseDataApi.searchCases(
             user.getAuthToken(),
