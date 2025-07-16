@@ -29,7 +29,7 @@ plugins {
   id 'com.github.ben-manes.versions' version '0.50.0'
   id 'hmcts.ccd.sdk' version '5.6.0'
   id "au.com.dius.pact" version "4.3.10"
-  id 'com.github.hmcts.rse-cft-lib' version '0.19.1797'
+  id 'com.github.hmcts.rse-cft-lib' version '0.19.1801'
 }
 
 apply plugin: 'cz.habarta.typescript-generator'
@@ -328,8 +328,8 @@ dependencies {
   implementation group: 'com.github.hmcts.java-logging', name: 'logging', version: '6.1.9'
   implementation group: 'com.github.hmcts', name: 'service-auth-provider-java-client', version: '5.3.3'
   implementation group: 'net.logstash.logback', name: 'logstash-logback-encoder', version: '8.1'
-  implementation group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.25.0'
-  implementation group: 'org.apache.logging.log4j', name: 'log4j-to-slf4j', version: '2.25.0'
+  implementation group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.25.1'
+  implementation group: 'org.apache.logging.log4j', name: 'log4j-to-slf4j', version: '2.25.1'
   implementation group: 'org.elasticsearch', name: 'elasticsearch' , version: '7.17.29'
   implementation group: 'org.projectlombok', name: 'lombok', version: versions.lombok
   implementation group: 'org.springdoc', name: 'springdoc-openapi-starter-webmvc-ui', version: '2.8.9'
@@ -346,7 +346,7 @@ dependencies {
   implementation group: 'com.launchdarkly', name: 'launchdarkly-java-server-sdk', version: '7.10.1'
   implementation group: 'org.apache.commons', name: 'commons-collections4', version: '4.5.0'
   implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.18.0'
-  implementation group: 'com.github.ben-manes.caffeine', name: 'caffeine', version: '3.2.1'
+  implementation group: 'com.github.ben-manes.caffeine', name: 'caffeine', version: '3.2.2'
   implementation 'org.camunda.bpm:camunda-external-task-client:7.23.0'
 
   annotationProcessor group: 'org.projectlombok', name: 'lombok', version: versions.lombok
