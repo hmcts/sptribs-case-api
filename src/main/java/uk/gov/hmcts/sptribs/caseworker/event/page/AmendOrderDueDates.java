@@ -11,7 +11,7 @@ public class AmendOrderDueDates implements CcdPageConfiguration {
     public void addTo(PageBuilder pageBuilder) {
         pageBuilder.page("caseworkerAmendDueDateEditDueDate")
             .pageLabel("Amend due dates")
-            .label("LabelAmendDueDates", null)
+            .label("LabelAmendDueDates", "")
             .complex(CaseData::getCicCase)
             .optional(CicCase::getOrderDueDates)
             .done();
