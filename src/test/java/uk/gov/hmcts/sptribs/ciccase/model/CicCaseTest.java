@@ -1,19 +1,18 @@
 package uk.gov.hmcts.sptribs.ciccase.model;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.sptribs.caseworker.model.DateModel;
 import uk.gov.hmcts.sptribs.caseworker.model.Order;
 
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import static java.time.format.DateTimeFormatter.ofPattern;
-import static java.util.Locale.UK;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.APPLICANT_ADDRESS;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.APPLICANT_FIRST_NAME;
@@ -71,7 +70,7 @@ class CicCaseTest {
     }
 
     @Test
-    void shouldCalculateFirstDueDate() {
+    void shouldCalculateFirstOrderDueDate() {
         //When
         LocalDate now = LocalDate.now();
         DateModel dateModel1 = DateModel.builder().dueDate(now).build();
@@ -108,10 +107,42 @@ class CicCaseTest {
             .build();
 
         //When
-        DateTimeFormatter dateFormatter = ofPattern("dd MMM yyyy", UK);
-        String result = cicCase.calculateFirstDueDate();
+        LocalDate result = cicCase.calculateFirstDueDate();
 
         //Then
-        assertThat(result).isEqualTo(dateFormatter.format(now));
+        assertThat(result).isEqualTo(now);
+    }
+
+    @ParameterizedTest
+    @EnumSource(CaseSubcategory.class)
+    void shouldUseApplicantNameForSubjectWithMinorSubcategoryAndFatalSubcategory(CaseSubcategory caseSubcategory) {
+        final CicCase cicCase = CicCase.builder()
+            .caseSubcategory(caseSubcategory)
+            .applicantFullName("Jane Doe")
+            .build();
+
+        final CaseData caseData = CaseData.builder()
+            .cicCase(cicCase)
+            .build();
+
+        if (caseSubcategory == CaseSubcategory.FATAL
+            || caseSubcategory == CaseSubcategory.MINOR) {
+            assertThat(caseData.getCicCase().useApplicantNameForSubject()).isTrue();
+        } else {
+            assertThat(caseData.getCicCase().useApplicantNameForSubject()).isFalse();
+        }
+
+        final CicCase cicCaseNoApplicantName = CicCase.builder()
+            .caseSubcategory(caseSubcategory)
+            .build();
+
+        final CaseData caseDataNoApplicantName = CaseData.builder()
+            .cicCase(cicCaseNoApplicantName)
+            .build();
+
+        if (caseSubcategory == CaseSubcategory.FATAL
+            || caseSubcategory == CaseSubcategory.MINOR) {
+            assertThat(caseDataNoApplicantName.getCicCase().useApplicantNameForSubject()).isFalse();
+        }
     }
 }
