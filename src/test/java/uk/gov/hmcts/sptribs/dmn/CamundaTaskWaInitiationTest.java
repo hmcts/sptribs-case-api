@@ -1008,7 +1008,7 @@ class CamundaTaskWaInitiationTest extends DmnDecisionTableBaseUnitTest {
         DmnDecisionTableImpl logic = (DmnDecisionTableImpl) decision.getDecisionLogic();
         assertThat(logic.getInputs().size(), is(3));
         assertThat(logic.getOutputs().size(), is(7));
-        assertThat(logic.getRules().size(), is(55));
+        assertThat(logic.getRules().size(), is(58));
     }
 
     @ParameterizedTest(name = "event id: {0} post event state: {1} appeal type: {2}")
