@@ -65,6 +65,7 @@ import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.REVIEW_SPECIFIC
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.REVIEW_SPECIFIC_ACCESS_REQ_CTSC_TASK;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.REVIEW_SPECIFIC_ACCESS_REQ_JUDICIARY_TASK;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.REVIEW_SPECIFIC_ACCESS_REQ_LO_TASK;
+import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.REVIEW_STAY_REQ_CASE_LISTED_LO_TASK;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.REVIEW_STAY_REQ_JUDGE_TASK;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.REVIEW_STAY_REQ_LO_TASK;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.REVIEW_STRIKE_OUT_REQ_JUDGE_TASK;
@@ -177,6 +178,10 @@ class CamundaTaskTypesTest extends DmnDecisionTableBaseUnitTest {
             Map.of(
                 "taskTypeId", REVIEW_STAY_REQ_LO_TASK,
                 "taskTypeName", "Review stay request - Legal Officer"
+            ),
+            Map.of(
+                "taskTypeId", REVIEW_STAY_REQ_CASE_LISTED_LO_TASK,
+                "taskTypeName", "Review stay request case listed - Legal Officer"
             ),
             Map.of(
                 "taskTypeId", REVIEW_LISTING_DIR_LO_TASK,

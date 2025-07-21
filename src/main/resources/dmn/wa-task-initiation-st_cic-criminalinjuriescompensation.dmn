@@ -796,6 +796,38 @@
           <text>"LEGAL_OPERATIONS"</text>
         </outputEntry>
       </rule>
+      <rule id="DecisionRule_0t8pm9c">
+        <inputEntry id="UnaryTests_0wrzg66">
+          <text>"refer-to-legal-officer"</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_00bs3zr">
+          <text>"AwaitingHearing"</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_0w6lgsz">
+          <text>"Stay request"</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_0mzayma">
+          <text>"reviewStayRequestCaseListedLO"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_1rfiwpy">
+          <text>"Review stay request case listed - Legal Officer"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_07n7ouh">
+          <text></text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_1hanfo8">
+          <text>5</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_0s9o55i">
+          <text>"Processing"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_19oy1is">
+          <text>"decision_making_work"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_0yasv4b">
+          <text>"LEGAL_OPERATIONS"</text>
+        </outputEntry>
+      </rule>
       <rule id="DecisionRule_1nld8fd">
         <inputEntry id="UnaryTests_1t9uxs7">
           <text>"refer-to-legal-officer"</text>

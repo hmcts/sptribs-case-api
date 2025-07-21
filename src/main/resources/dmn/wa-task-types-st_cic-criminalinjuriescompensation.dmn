@@ -262,6 +262,17 @@
           <text>"Review stay request - Legal Officer"</text>
         </outputEntry>
       </rule>
+      <rule id="DecisionRule_1ehugmr">
+        <inputEntry id="UnaryTests_1y5rr1e">
+          <text></text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_0sgk5xp">
+          <text>"reviewStayRequestCaseListedLO"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_0fderps">
+          <text>"Review stay request case listed - Legal Officer"</text>
+        </outputEntry>
+      </rule>
       <rule id="DecisionRule_1mwb11x">
         <inputEntry id="UnaryTests_0v29bmz">
           <text></text>
