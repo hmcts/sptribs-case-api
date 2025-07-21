@@ -262,6 +262,17 @@
           <text>"Auto"</text>
         </outputEntry>
       </rule>
+      <rule id="DecisionRule_1iwp79z">
+        <inputEntry id="UnaryTests_0pxgeu8">
+          <text>"create-draft-order"</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_1k31mhj">
+          <text>"reviewStayRequestCaseListedLO"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_0naaily">
+          <text>"Auto"</text>
+        </outputEntry>
+      </rule>
       <rule id="DecisionRule_05yenh6">
         <inputEntry id="UnaryTests_1mi6xri">
           <text>"create-draft-order"</text>
@@ -303,6 +314,17 @@
           <text>"reviewRule27RequestLO"</text>
         </outputEntry>
         <outputEntry id="LiteralExpression_1j7h6vd">
+          <text>"Auto"</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_0elthwo">
+        <inputEntry id="UnaryTests_1n71s5u">
+          <text>"create-draft-order"</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_18lpveg">
+          <text>"reviewRule27RequestCaseListedLO"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_03fbtih">
           <text>"Auto"</text>
         </outputEntry>
       </rule>

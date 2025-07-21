@@ -3,7 +3,8 @@ buildscript {
     mavenLocal()
     mavenCentral()
     maven {
-      url "https://jitpack.io"
+      name = "AzureArtifacts"
+      url = uri('https://pkgs.dev.azure.com/hmcts/Artifacts/_packaging/hmcts-lib/maven/v1')
       content {
         excludeGroup "com.github.ben-manes.versions"
       }
@@ -24,11 +25,11 @@ plugins {
   id 'org.owasp.dependencycheck' version '12.1.3'
   id 'org.sonarqube' version '6.2.0.5505'
   id 'io.spring.dependency-management' version '1.1.7'
-  id 'org.springframework.boot' version '3.4.5'
+  id 'org.springframework.boot' version '3.5.3'
   id 'com.github.ben-manes.versions' version '0.50.0'
-  id 'hmcts.ccd.sdk' version '5.5.21'
+  id 'hmcts.ccd.sdk' version '5.6.0'
   id "au.com.dius.pact" version "4.3.10"
-  id 'com.github.hmcts.rse-cft-lib' version '0.19.1701'
+  id 'com.github.hmcts.rse-cft-lib' version '0.19.1803'
 }
 
 apply plugin: 'cz.habarta.typescript-generator'
@@ -105,9 +106,11 @@ tasks.withType(JavaExec).configureEach {
 
 tasks.withType(Test) {
   useJUnitPlatform()
+  maxParallelForks = Math.floorDiv(Runtime.runtime.availableProcessors(), 2)
 
   testLogging {
     exceptionFormat = 'full'
+    events "PASSED", "FAILED", "SKIPPED"
   }
 }
 
@@ -117,15 +120,15 @@ test {
   jvmArgs = ['--add-opens=java.base/java.lang.reflect=ALL-UNNAMED','--add-opens=java.base/java.util=ALL-UNNAMED']
 }
 
-task functional(type: Test) {
-  if (System.getenv('WA_FUNCTIONAL_TESTS_ENABLED') == 'true') {
-    maxParallelForks = Runtime.runtime.availableProcessors()
-  }
+tasks.register('functional', Test) {
   description = "Runs functional tests"
   group = "Verification"
   testClassesDirs = sourceSets.functionalTest.output.classesDirs
   classpath = sourceSets.functionalTest.runtimeClasspath
-  jvmArgs = ['--add-opens=java.base/java.lang.reflect=ALL-UNNAMED','--add-opens=java.base/java.util=ALL-UNNAMED']
+  jvmArgs = ['--add-opens=java.base/java.lang.reflect=ALL-UNNAMED', '--add-opens=java.base/java.util=ALL-UNNAMED']
+  environment 'SPRING_PROFILES_ACTIVE', 'functional'
+  include "**/*FT.class"
+  exclude "uk/gov/hmcts/sptribs/smoke/**"
 }
 
 task integration(type: Test) {
@@ -134,30 +137,33 @@ task integration(type: Test) {
   testClassesDirs = sourceSets.integrationTest.output.classesDirs
   classpath = sourceSets.integrationTest.runtimeClasspath
   failFast = true
+  environment 'SPRING_PROFILES_ACTIVE', 'integration'
+  include "**/*IT.class"
 }
 
 // Invoked from CftLibConfig when booting with CCD.
-task buildCCDXlsx(type: Exec) {
+tasks.register('buildCCDXlsx', Exec) {
   group 'ccd tasks'
   commandLine './bin/ccd-build-definition.sh'
   inputs.dir layout.buildDirectory.dir('definitions')
   outputs.dir layout.buildDirectory.dir('ccd-config')
 }
 
-task smoke(type: Test) {
+tasks.register('smoke', Test) {
   description = "Runs Smoke Tests"
   setTestClassesDirs(sourceSets.functionalTest.output.classesDirs)
   setClasspath(sourceSets.functionalTest.runtimeClasspath)
+  environment 'SPRING_PROFILES_ACTIVE', 'functional'
   include "uk/gov/hmcts/sptribs/smoke/**"
 }
 
-task highLevelDataSetup(type: JavaExec) {
+tasks.register('highLevelDataSetup', JavaExec) {
   mainClass.set("uk.gov.hmcts.sptribs.common.ccd.HighLevelDataSetupApp")
   classpath += sourceSets.main.runtimeClasspath
-  jvmArgs = ['--add-opens=java.base/java.lang.reflect=ALL-UNNAMED','--add-opens=java.base/java.util=ALL-UNNAMED']
+  jvmArgs = ['--add-opens=java.base/java.lang.reflect=ALL-UNNAMED', '--add-opens=java.base/java.util=ALL-UNNAMED']
 }
 
-task fortifyScan(type: JavaExec)  {
+tasks.register('fortifyScan', JavaExec) {
   mainClass.set("uk.gov.hmcts.fortifyclient.FortifyClientMainApp")
   classpath += sourceSets.test.runtimeClasspath
   jvmArgs = ['--add-opens=java.base/java.lang.reflect=ALL-UNNAMED']
@@ -170,7 +176,7 @@ checkstyle {
 }
 
 pmd {
-  toolVersion = "7.14.0"
+  toolVersion = "7.15.0"
   sourceSets = [sourceSets.main]
   reportsDir = file("$project.buildDir/reports/pmd")
   // https://github.com/pmd/pmd/issues/876
@@ -202,8 +208,10 @@ dependencyCheck {
   }
 }
 
-check.dependsOn integration
-integration.shouldRunAfter(test)
+if (System.getenv("CI") == null) {
+  check.dependsOn integration
+  integration.shouldRunAfter(test)
+}
 project.tasks['sonarqube'].dependsOn jacocoTestReport
 
 def sonarExclusions = [
@@ -284,29 +292,18 @@ dependencyManagement {
 repositories {
   mavenLocal()
   mavenCentral()
-  maven { url 'https://jitpack.io' }
+  maven { url 'https://pkgs.dev.azure.com/hmcts/Artifacts/_packaging/hmcts-lib/maven/v1'}
 }
 
 def versions = [
   camunda           : '7.23.0',
   jackson           : '2.16.0',
-  junit             : '5.10.3',
-  junitPlatform     : '1.10.3',
   lombok            : '1.18.38',
   pact              : '4.1.34',
   springBoot        : springBoot.class.package.implementationVersion
 ]
 
 
-ext.libraries = [
-  junit5: [
-    "org.junit.jupiter:junit-jupiter-api:${versions.junit}",
-    "org.junit.jupiter:junit-jupiter-engine:${versions.junit}",
-    "org.junit.jupiter:junit-jupiter-params:${versions.junit}",
-    "org.junit.platform:junit-platform-commons:${versions.junitPlatform}",
-    "org.junit.platform:junit-platform-engine:${versions.junitPlatform}"
-  ]
-]
 
 dependencies {
 // uncomment for local version
@@ -315,7 +312,7 @@ dependencies {
   implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: versions.jackson
   implementation group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: versions.jackson
   implementation group: 'com.fasterxml.jackson.core', name: 'jackson-annotations', version: versions.jackson
-  implementation (group: 'com.github.hmcts', name: 'befta-fw', version: '8.10.1') {
+  implementation (group: 'com.github.hmcts', name: 'befta-fw', version: '9.2.4') {
     exclude group: 'org.apache.commons', module: 'commons-compress'
     exclude group: 'com.google.guava', module: 'guava'
     exclude group: 'org.apache.poi', module: 'poi-ooxml'
@@ -325,15 +322,15 @@ dependencies {
   implementation 'io.swagger:swagger-annotations:1.6.16'
   implementation group: 'ch.qos.logback', name: 'logback-classic', version: '1.5.18'
   implementation group: 'ch.qos.logback', name: 'logback-core', version: '1.5.18'
-  implementation group: 'com.github.hmcts', name: 'ccd-client', version: '5.1.1'
+  implementation group: 'com.github.hmcts', name: 'core-case-data-store-client', version: '5.1.1'
   implementation group: 'com.github.hmcts', name:'ccd-case-document-am-client', version: '1.59.2'
   implementation group: 'com.github.hmcts', name: 'idam-java-client', version: '3.0.4'
-  implementation group: 'com.github.hmcts', name: 'java-logging', version: '6.1.9'
-  implementation group: 'com.github.hmcts', name: 'service-auth-provider-java-client', version: '5.3.2'
+  implementation group: 'com.github.hmcts.java-logging', name: 'logging', version: '6.1.9'
+  implementation group: 'com.github.hmcts', name: 'service-auth-provider-java-client', version: '5.3.3'
   implementation group: 'net.logstash.logback', name: 'logstash-logback-encoder', version: '8.1'
-  implementation group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.25.0'
-  implementation group: 'org.apache.logging.log4j', name: 'log4j-to-slf4j', version: '2.25.0'
-  implementation group: 'org.elasticsearch', name: 'elasticsearch' , version: '7.17.28'
+  implementation group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.25.1'
+  implementation group: 'org.apache.logging.log4j', name: 'log4j-to-slf4j', version: '2.25.1'
+  implementation group: 'org.elasticsearch', name: 'elasticsearch' , version: '7.17.29'
   implementation group: 'org.projectlombok', name: 'lombok', version: versions.lombok
   implementation group: 'org.springdoc', name: 'springdoc-openapi-starter-webmvc-ui', version: '2.8.9'
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-web'
@@ -343,20 +340,19 @@ dependencies {
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-validation', version: versions.springBoot
   implementation group: 'org.springframework.retry', name: 'spring-retry', version: '2.0.12'
   implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-netflix-hystrix', version: '2.2.10.RELEASE'
-  implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-bootstrap', version: '4.2.1'
-  implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-openfeign', version: '4.2.1'
+  implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-bootstrap', version: '4.3.0'
+  implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-openfeign', version: '4.3.0'
   implementation group: 'uk.gov.service.notify', name: 'notifications-java-client', version: '5.2.1-RELEASE'
-  implementation group: 'com.launchdarkly', name: 'launchdarkly-java-server-sdk', version: '7.9.0'
+  implementation group: 'com.launchdarkly', name: 'launchdarkly-java-server-sdk', version: '7.10.1'
   implementation group: 'org.apache.commons', name: 'commons-collections4', version: '4.5.0'
-  implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.17.0'
-  implementation group: 'com.github.ben-manes.caffeine', name: 'caffeine', version: '3.2.1'
+  implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.18.0'
+  implementation group: 'com.github.ben-manes.caffeine', name: 'caffeine', version: '3.2.2'
   implementation 'org.camunda.bpm:camunda-external-task-client:7.23.0'
 
   annotationProcessor group: 'org.projectlombok', name: 'lombok', version: versions.lombok
-  testImplementation 'com.github.hmcts:fortify-client:1.4.8:all'
+  testImplementation group: 'com.github.hmcts', name: 'fortify-client', version: '1.4.9', classifier: 'all'
 
   testImplementation group: 'jakarta.enterprise', name: 'jakarta.enterprise.cdi-api', version: '4.1.0'
-  testImplementation libraries.junit5
   testImplementation group: 'org.springframework.boot', name: 'spring-boot-starter-test', {
     exclude group: 'junit', module: 'junit'
     exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
@@ -368,13 +364,13 @@ dependencies {
   testImplementation group: 'com.github.stefanbirkner', name: 'system-lambda', version: '1.2.1'
   testImplementation group: 'org.assertj', name: 'assertj-core', version: '3.27.3'
   testImplementation group: 'org.assertj', name: 'assertj-guava', version: '3.27.3'
-  testImplementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-contract-stub-runner', version: '4.2.1'
+  testImplementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-contract-stub-runner', version: '4.3.0'
   testImplementation group: 'org.projectlombok', name: 'lombok', version: versions.lombok
   testImplementation group: 'org.mockito', name: 'mockito-inline', version: '5.2.0'
   testImplementation group: 'io.github.openfeign', name: 'feign-jackson', version: '13.6'
   testImplementation group: 'io.rest-assured', name: 'rest-assured'
   testImplementation group: 'org.apache.pdfbox', name: 'pdfbox', version: '3.0.5'
-  testImplementation group: 'com.microsoft.playwright', name: 'playwright', version: '1.52.0'
+  testImplementation group: 'com.microsoft.playwright', name: 'playwright', version: '1.53.0'
 
   testImplementation group: 'org.camunda.bpm.dmn', name: 'camunda-engine-dmn', version: "${versions.camunda}"
   testImplementation group: 'org.camunda.bpm', name: 'camunda-engine-plugin-spin', version: "${versions.camunda}"
@@ -389,30 +385,26 @@ dependencies {
   functionalTestImplementation sourceSets.test.runtimeClasspath
 
   functionalTestImplementation group: 'com.github.hmcts', name: 'document-management-client', version: '7.0.1'
-  functionalTestImplementation group: 'com.github.hmcts', name: 'service-auth-provider-java-client', version: '5.3.2'
+  functionalTestImplementation group: 'com.github.hmcts', name: 'service-auth-provider-java-client', version: '5.3.3'
 
   functionalTestImplementation group: 'org.projectlombok', name: 'lombok', version: versions.lombok
   functionalTestAnnotationProcessor group: 'org.projectlombok', name: 'lombok', version: versions.lombok
 
   contractTestImplementation group: 'au.com.dius.pact.consumer', name: 'junit5', version: '4.6.17'
-  contractTestImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: '5.10.3'
-  contractTestRuntimeOnly group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: '5.10.3'
-  contractTestImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: '5.10.3'
-  contractTestRuntimeOnly group: 'org.junit.platform', name: 'junit-platform-commons', version: '1.10.3'
 
   contractTestImplementation sourceSets.main.runtimeClasspath
   contractTestImplementation sourceSets.test.runtimeClasspath
 
   // Provides fast-reload of just the sptribs service.
   cftlibImplementation 'org.springframework.boot:spring-boot-devtools'
-  cftlibTestImplementation 'com.microsoft.playwright:playwright:1.52.0'
+  cftlibTestImplementation 'com.microsoft.playwright:playwright:1.53.0'
   cftlibTestImplementation 'org.junit-pioneer:junit-pioneer:2.3.0'
   cftlibTestImplementation 'io.github.artsok:rerunner-jupiter:2.1.6'
 }
 
 mainClassName = 'uk.gov.hmcts.sptribs.CaseApiApplication'
 
-task loadEnvSecrets() {
+tasks.register('loadEnvSecrets') {
   doLast {
     if (!project.file('./.aat-env').exists()) {
       new ByteArrayOutputStream().withStream { os ->
@@ -426,7 +418,8 @@ task loadEnvSecrets() {
   }
 }
 
-task reloadEnvSecrets(group: 'ccd tasks', dependsOn: [loadEnvSecrets]) {
+tasks.register('reloadEnvSecrets') {
+  dependsOn[loadEnvSecrets]
   doFirst {
     if (project.file('./.aat-env').exists()) {
       project.file('./.aat-env').delete()
@@ -547,7 +540,7 @@ configurations.cftlibTestImplementation {
   exclude group: 'ch.qos.logback', module: 'logback-classic'
 }
 
-task installChromium(type: JavaExec) {
+tasks.register('installChromium', JavaExec) {
   // group = "Execution"
   // description = "Run the main class with JavaExecTask"
   classpath = sourceSets.cftlibTest.runtimeClasspath
@@ -579,7 +572,7 @@ pact {
   }
 }
 
-task runAndPublishConsumerPactTests(type: Test){
+tasks.register('runAndPublishConsumerPactTests', Test) {
   logger.lifecycle("Runs consumer pact tests")
   systemProperty 'pact.rootDir', "pacts"
   useJUnitPlatform()
