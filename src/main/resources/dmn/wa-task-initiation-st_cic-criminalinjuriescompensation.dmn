@@ -604,6 +604,38 @@
           <text>"ADMIN"</text>
         </outputEntry>
       </rule>
+      <rule id="DecisionRule_1ib016j">
+        <inputEntry id="UnaryTests_02jl76t">
+          <text>"create-draft-order"</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_1q47tsk">
+          <text>"AwaitingHearing"</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_1pua08x">
+          <text>"Stay request"</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_0opeaq8">
+          <text>"processStayDirectionsListed"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_0fz3hpt">
+          <text>"Process stay directions listed"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_0vhw6ul">
+          <text></text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_0rpaxt1">
+          <text>7</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_1sqzo0w">
+          <text>"Processing"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_1qqo4v0">
+          <text>"routine_work"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_1xf3h60">
+          <text>"ADMIN"</text>
+        </outputEntry>
+      </rule>
       <rule id="DecisionRule_16achsh">
         <inputEntry id="UnaryTests_1l0e0bp">
           <text>"create-hearing-summary"</text>
@@ -1465,6 +1497,38 @@
           <text>"decision_making_work"</text>
         </outputEntry>
         <outputEntry id="LiteralExpression_0yqbxbx">
+          <text>"JUDICIAL"</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_0pwr9wc">
+        <inputEntry id="UnaryTests_0ildysh">
+          <text>"refer-to-judge"</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_1vz6ml8">
+          <text>"AwaitingHearing"</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_1vm78dm">
+          <text>"Stay request"</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_030upw9">
+          <text>"reviewStayRequestCaseListedJudge"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_09sz28z">
+          <text>"Review stay request case listed - Judge"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_130greo">
+          <text></text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_1y73rrm">
+          <text>5</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_0vb6fcj">
+          <text>"Processing"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_02pa8en">
+          <text>"decision_making_work"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_0o9mrtg">
           <text>"JUDICIAL"</text>
         </outputEntry>
       </rule>

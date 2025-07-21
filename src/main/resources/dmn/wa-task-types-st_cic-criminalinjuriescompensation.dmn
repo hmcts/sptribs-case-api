@@ -196,6 +196,17 @@
           <text>"Process stay directions"</text>
         </outputEntry>
       </rule>
+      <rule id="DecisionRule_1auayyo">
+        <inputEntry id="UnaryTests_0hx0akc">
+          <text></text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_1pwqxar">
+          <text>"processStayDirectionsListed"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_0228sxr">
+          <text>"Process stay directions listed"</text>
+        </outputEntry>
+      </rule>
       <rule id="DecisionRule_14h1b34">
         <inputEntry id="UnaryTests_1f6clop">
           <text></text>
@@ -491,6 +502,17 @@
         </outputEntry>
         <outputEntry id="LiteralExpression_1ceu71t">
           <text>"Review stay request - Judge"</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_1vdbn5k">
+        <inputEntry id="UnaryTests_05a0utj">
+          <text></text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_1skbq6u">
+          <text>"reviewStayRequestCaseListedJudge"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_0hwcmak">
+          <text>"Review stay request case listed - Judge"</text>
         </outputEntry>
       </rule>
       <rule id="DecisionRule_0mfjdpj">

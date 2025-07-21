@@ -196,6 +196,17 @@
           <text>"Auto"</text>
         </outputEntry>
       </rule>
+      <rule id="DecisionRule_0rwpfgz">
+        <inputEntry id="UnaryTests_094467b">
+          <text>"caseworker-send-order"</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_0t4qnq9">
+          <text>"processStayDirectionsListed"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_00qnf6f">
+          <text>"Auto"</text>
+        </outputEntry>
+      </rule>
       <rule id="DecisionRule_1volnhb">
         <inputEntry id="UnaryTests_0vb9ofl">
           <text>"caseworker-issue-final-decision","caseworker-issue-decision"</text>
@@ -490,6 +501,17 @@
           <text>"reviewStayRequestJudge"</text>
         </outputEntry>
         <outputEntry id="LiteralExpression_1uylxjr">
+          <text>"Auto"</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_03dikx7">
+        <inputEntry id="UnaryTests_1wqeonx">
+          <text>"create-draft-order"</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_0zy7g8v">
+          <text>"reviewStayRequestCaseListedJudge"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_0zhukzh">
           <text>"Auto"</text>
         </outputEntry>
       </rule>
