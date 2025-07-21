@@ -124,6 +124,38 @@
           <text>"ADMIN"</text>
         </outputEntry>
       </rule>
+      <rule id="DecisionRule_1it7fdq">
+        <inputEntry id="UnaryTests_0bfybkc">
+          <text>"create-draft-order"</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_0n9usem">
+          <text>"ReadyToList"</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_06w6zxg">
+          <text>"Listing directions"</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_1seu3uk">
+          <text>"processListingDirectionsListed"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_1r4shwz">
+          <text>"Process listing directions listed"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_0c1rk0p">
+          <text></text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_0zr1nkn">
+          <text>3</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_1vc8955">
+          <text>"Processing"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_12xpe94">
+          <text>"routine_work"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_0dwstgm">
+          <text>"ADMIN"</text>
+        </outputEntry>
+      </rule>
       <rule id="DecisionRule_1rinmce">
         <inputEntry id="UnaryTests_04qbxxh">
           <text>"create-draft-order"</text>
@@ -860,6 +892,38 @@
           <text>"LEGAL_OPERATIONS"</text>
         </outputEntry>
       </rule>
+      <rule id="DecisionRule_0hkmf5u">
+        <inputEntry id="UnaryTests_0xjiqrn">
+          <text>"refer-to-legal-officer"</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_1lg60vd">
+          <text>"ReadyToList"</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_0vylhaa">
+          <text>"Listing directions"</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_0y6qj01">
+          <text>"reviewListingDirectionsCaseListedLO"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_079y2ym">
+          <text>"Review listing directions case listed - Legal Officer"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_1ojypah">
+          <text></text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_1qnu3sq">
+          <text>5</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_1yhomau">
+          <text>"Processing"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_1rnijk3">
+          <text>"decision_making_work"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_12eg50x">
+          <text>"LEGAL_OPERATIONS"</text>
+        </outputEntry>
+      </rule>
       <rule id="DecisionRule_05hhwn0">
         <inputEntry id="UnaryTests_0ocwwzw">
           <text>"refer-to-legal-officer"</text>
@@ -1529,6 +1593,38 @@
           <text>"decision_making_work"</text>
         </outputEntry>
         <outputEntry id="LiteralExpression_1yk34ab">
+          <text>"JUDICIAL"</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_1qztlrr">
+        <inputEntry id="UnaryTests_001xlyv">
+          <text>"refer-to-judge"</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_0vy1iqh">
+          <text>"ReadyToList"</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_035joth">
+          <text>"Listing directions"</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_0eyktgd">
+          <text>"reviewListingDirectionsCaseListedJudge"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_0dgv891">
+          <text>"Review listing directions case listed - Judge"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_15f41ax">
+          <text></text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_1004mch">
+          <text>5</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_0y0y0vn">
+          <text>"Processing"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_0emffr9">
+          <text>"decision_making_work"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_0j8lv90">
           <text>"JUDICIAL"</text>
         </outputEntry>
       </rule>
