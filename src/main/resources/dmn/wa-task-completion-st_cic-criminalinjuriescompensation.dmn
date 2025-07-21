@@ -42,6 +42,17 @@
           <text>"Auto"</text>
         </outputEntry>
       </rule>
+      <rule id="DecisionRule_02tmtmy">
+        <inputEntry id="UnaryTests_0r3w0gi">
+          <text>"caseworker-send-order"</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_0trwb1r">
+          <text>"processListingDirectionsListed"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_0fkfuhg">
+          <text>"Auto"</text>
+        </outputEntry>
+      </rule>
       <rule id="DecisionRule_0vw5fia">
         <inputEntry id="UnaryTests_0ckg8ai">
           <text>"caseworker-send-order"</text>
@@ -284,6 +295,17 @@
           <text>"Auto"</text>
         </outputEntry>
       </rule>
+      <rule id="DecisionRule_1ub9xv2">
+        <inputEntry id="UnaryTests_1el9hz4">
+          <text>"create-draft-order"</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_0riwf42">
+          <text>"reviewListingDirectionsCaseListedLO"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_0slndpx">
+          <text>"Auto"</text>
+        </outputEntry>
+      </rule>
       <rule id="DecisionRule_1fc3kyh">
         <inputEntry id="UnaryTests_16a6gof">
           <text>"create-draft-order"</text>
@@ -512,6 +534,17 @@
           <text>"reviewListingDirectionsJudge"</text>
         </outputEntry>
         <outputEntry id="LiteralExpression_1p2yiuz">
+          <text>"Auto"</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_04vxwx5">
+        <inputEntry id="UnaryTests_0xigilk">
+          <text>"create-draft-order"</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_0y0dxk0">
+          <text>"reviewListingDirectionsCaseListedJudge"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_093tjnk">
           <text>"Auto"</text>
         </outputEntry>
       </rule>

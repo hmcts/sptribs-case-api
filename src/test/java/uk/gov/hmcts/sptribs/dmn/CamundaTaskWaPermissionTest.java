@@ -35,6 +35,7 @@ import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.PROCESS_DIR_REL
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.PROCESS_DIR_RELISTED_CASE_WITHIN_5DAYS_TASK;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.PROCESS_DIR_RETURNED_TASK;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.PROCESS_FURTHER_EVIDENCE_TASK;
+import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.PROCESS_LISTING_DIR_LISTED_TASK;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.PROCESS_LISTING_DIR_TASK;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.PROCESS_OTHER_DIR_RETURNED_TASK;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.PROCESS_POSTPONEMENT_DIR_TASK;
@@ -47,6 +48,8 @@ import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.PROCESS_TIME_EX
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.PROCESS_WRITTEN_REASONS_TASK;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.REGISTER_NEW_CASE_TASK;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.REVIEW_CORRECTIONS_REQ_TASK;
+import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.REVIEW_LISTING_DIR_CASE_LISTED_JUDGE_TASK;
+import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.REVIEW_LISTING_DIR_CASE_LISTED_LO_TASK;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.REVIEW_LISTING_DIR_JUDGE_TASK;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.REVIEW_LISTING_DIR_LO_TASK;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.REVIEW_LIST_CASE_JUDGE_TASK;
@@ -109,6 +112,11 @@ class CamundaTaskWaPermissionTest extends DmnDecisionTableBaseUnitTest {
             ),
             Arguments.of(
                 PROCESS_LISTING_DIR_TASK,
+                DUMMY_CASE_DATA,
+                defaultAdminAndCtscTaskPermissions()
+            ),
+            Arguments.of(
+                PROCESS_LISTING_DIR_LISTED_TASK,
                 DUMMY_CASE_DATA,
                 defaultAdminAndCtscTaskPermissions()
             ),
@@ -248,6 +256,11 @@ class CamundaTaskWaPermissionTest extends DmnDecisionTableBaseUnitTest {
                 defaultLegalOperationsPermissions()
             ),
             Arguments.of(
+                REVIEW_LISTING_DIR_CASE_LISTED_LO_TASK,
+                DUMMY_CASE_DATA,
+                defaultLegalOperationsPermissions()
+            ),
+            Arguments.of(
                 REVIEW_OTHER_REQ_LO_TASK,
                 DUMMY_CASE_DATA,
                 defaultLegalOperationsPermissions()
@@ -328,6 +341,11 @@ class CamundaTaskWaPermissionTest extends DmnDecisionTableBaseUnitTest {
                 defaultJudicialPermissions()
             ),
             Arguments.of(
+                REVIEW_LISTING_DIR_CASE_LISTED_JUDGE_TASK,
+                DUMMY_CASE_DATA,
+                defaultJudicialPermissions()
+            ),
+            Arguments.of(
                 REVIEW_LIST_CASE_JUDGE_TASK,
                 DUMMY_CASE_DATA,
                 defaultJudicialPermissions()
@@ -380,28 +398,12 @@ class CamundaTaskWaPermissionTest extends DmnDecisionTableBaseUnitTest {
             Arguments.of(
                 CREATE_DUE_DATE,
                 DUMMY_CASE_DATA,
-                List.of(
-                    taskSupervisorPermissions(),
-                    regionalCentreAdminPermissions(),
-                    regionalCentreTeamLeaderPermissions(),
-                    hearingCentreAdminPermissions(),
-                    hearingCentreTeamLeaderPermissions(),
-                    ctscPermissions(),
-                    ctscTeamLeaderPermissions()
-                )
+                defaultAdminAndCtscTaskPermissions()
             ),
             Arguments.of(
                 ISSUE_DUE_DATE,
                 DUMMY_CASE_DATA,
-                List.of(
-                    taskSupervisorPermissions(),
-                    regionalCentreAdminPermissions(),
-                    regionalCentreTeamLeaderPermissions(),
-                    hearingCentreAdminPermissions(),
-                    hearingCentreTeamLeaderPermissions(),
-                    ctscPermissions(),
-                    ctscTeamLeaderPermissions()
-                )
+                defaultAdminAndCtscTaskPermissions()
             )
         );
     }
