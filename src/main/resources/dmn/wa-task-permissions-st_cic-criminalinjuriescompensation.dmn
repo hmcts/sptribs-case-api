@@ -84,7 +84,7 @@
       </rule>
       <rule id="DecisionRule_1wt3p0o">
         <inputEntry id="UnaryTests_0dx0tat">
-          <text>"processCaseWithdrawalDirections","processRule27Decision","processListingDirections","processDirectionsReListedCase","processDirectionsReListedCaseWithin5Days","processSetAsideDirections","processCorrections","processDirectionsReturned","processTimeExtensionDirectionsReturned","processReinstatementDecisionNotice","processOtherDirectionsReturned","processWrittenReasons","processStrikeOutDirectionsReturned","processStayDirections","issueDecisionNotice","completeHearingOutcome","issueCaseToRespondent","vetNewCaseDocuments","followUpNoncomplianceOfDirections","registerNewCase","stitchCollateHearingBundle","processPostponementDirections","processFurtherEvidence","createDueDate","issueDueDate","processListingDirectionsListed","processCaseWithdrawalDirectionsListed</text>
+          <text>"processCaseWithdrawalDirections","processRule27Decision","processListingDirections","processDirectionsReListedCase","processDirectionsReListedCaseWithin5Days","processSetAsideDirections","processCorrections","processDirectionsReturned","processTimeExtensionDirectionsReturned","processReinstatementDecisionNotice","processOtherDirectionsReturned","processWrittenReasons","processStrikeOutDirectionsReturned","processStayDirections","issueDecisionNotice","completeHearingOutcome","issueCaseToRespondent","vetNewCaseDocuments","followUpNoncomplianceOfDirections","registerNewCase","stitchCollateHearingBundle","processPostponementDirections","processFurtherEvidence","createDueDate","issueDueDate","processListingDirectionsListed","processCaseWithdrawalDirectionsListed"</text>
         </inputEntry>
         <inputEntry id="UnaryTests_0wy7as6">
           <text></text>
