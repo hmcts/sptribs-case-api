@@ -273,6 +273,17 @@
           <text>"Review stay request - Legal Officer"</text>
         </outputEntry>
       </rule>
+      <rule id="DecisionRule_1ehugmr">
+        <inputEntry id="UnaryTests_1y5rr1e">
+          <text></text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_0sgk5xp">
+          <text>"reviewStayRequestCaseListedLO"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_0fderps">
+          <text>"Review stay request case listed - Legal Officer"</text>
+        </outputEntry>
+      </rule>
       <rule id="DecisionRule_1mwb11x">
         <inputEntry id="UnaryTests_0v29bmz">
           <text></text>
@@ -306,6 +317,17 @@
           <text>"Review withdrawal request - Legal Officer"</text>
         </outputEntry>
       </rule>
+      <rule id="DecisionRule_047t52f">
+        <inputEntry id="UnaryTests_0ltclwn">
+          <text></text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_01l183b">
+          <text>"reviewWithdrawalRequestCaseListedLO"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_1koatu5">
+          <text>"Review withdrawal request case listed - Legal Officer"</text>
+        </outputEntry>
+      </rule>
       <rule id="DecisionRule_0ipn5kc">
         <inputEntry id="UnaryTests_0gema8k">
           <text></text>
@@ -315,6 +337,17 @@
         </outputEntry>
         <outputEntry id="LiteralExpression_0iylx57">
           <text>"Review Rule 27 request - Legal Officer"</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_0atpuvt">
+        <inputEntry id="UnaryTests_0423dxg">
+          <text></text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_1c5mbil">
+          <text>"reviewRule27RequestCaseListedLO"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_1e9rk4h">
+          <text>"Review Rule 27 request case listed - Legal Officer"</text>
         </outputEntry>
       </rule>
       <rule id="DecisionRule_0sq973a">
