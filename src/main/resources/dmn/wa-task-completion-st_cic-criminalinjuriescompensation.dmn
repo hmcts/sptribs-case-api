@@ -306,6 +306,17 @@
           <text>"Auto"</text>
         </outputEntry>
       </rule>
+      <rule id="DecisionRule_0elthwo">
+        <inputEntry id="UnaryTests_1n71s5u">
+          <text>"create-draft-order"</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_18lpveg">
+          <text>"reviewRule27RequestCaseListedLO"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_03fbtih">
+          <text>"Auto"</text>
+        </outputEntry>
+      </rule>
       <rule id="DecisionRule_1qy1a8t">
         <inputEntry id="UnaryTests_1j5u1hh">
           <text>"create-draft-order"</text>
