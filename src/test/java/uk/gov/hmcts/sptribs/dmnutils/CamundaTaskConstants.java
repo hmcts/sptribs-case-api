@@ -67,9 +67,11 @@ public class CamundaTaskConstants {
     public static final String PROCESS_CASE_WITHDRAWAL_DIR_TASK = "processCaseWithdrawalDirections";
     public static final String PROCESS_CASE_WITHDRAWAL_DIR_LISTED_TASK = "processCaseWithdrawalDirectionsListed";
     public static final String REVIEW_RULE27_REQ_JUDGE_TASK = "reviewRule27RequestJudge";
+    public static final String REVIEW_RULE27_REQ_CASE_LISTED_JUDGE_TASK = "reviewRule27RequestCaseListedJudge";
     public static final String REVIEW_RULE27_REQ_LO_TASK = "reviewRule27RequestLO";
     public static final String REVIEW_RULE27_REQ_CASE_LISTED_LO_TASK = "reviewRule27RequestCaseListedLO";
     public static final String PROCESS_RULE27_DECISION_TASK = "processRule27Decision";
+    public static final String PROCESS_RULE27_DECISION_LISTED_TASK = "processRule27DecisionListed";
     public static final String REVIEW_STAY_REQ_JUDGE_TASK = "reviewStayRequestJudge";
     public static final String REVIEW_STAY_REQ_CASE_LISTED_JUDGE_TASK = "reviewStayRequestCaseListedJudge";
     public static final String REVIEW_STAY_REQ_LO_TASK = "reviewStayRequestLO";

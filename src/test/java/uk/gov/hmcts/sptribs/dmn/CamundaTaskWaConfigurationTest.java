@@ -62,6 +62,7 @@ import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.PROCESS_LISTING
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.PROCESS_OTHER_DIR_RETURNED_TASK;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.PROCESS_POSTPONEMENT_DIR_TASK;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.PROCESS_REINSTATEMENT_DECISION_NOTICE_TASK;
+import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.PROCESS_RULE27_DECISION_LISTED_TASK;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.PROCESS_RULE27_DECISION_TASK;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.PROCESS_SET_ASIDE_DIR_TASK;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.PROCESS_STAY_DIR_LISTED_TASK;
@@ -88,6 +89,7 @@ import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.REVIEW_POSTPONE
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.REVIEW_POSTPONEMENT_REQ_LO_TASK;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.REVIEW_REINSTATEMENT_REQ_JUDGE_TASK;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.REVIEW_REINSTATEMENT_REQ_LO_TASK;
+import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.REVIEW_RULE27_REQ_CASE_LISTED_JUDGE_TASK;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.REVIEW_RULE27_REQ_CASE_LISTED_LO_TASK;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.REVIEW_RULE27_REQ_JUDGE_TASK;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.REVIEW_RULE27_REQ_LO_TASK;
@@ -168,6 +170,28 @@ class CamundaTaskWaConfigurationTest extends DmnDecisionTableBaseUnitTest {
             ),
             Arguments.of(
                 PROCESS_RULE27_DECISION_TASK,
+                CaseDataBuilder.customCase(REQUEST).build(),
+                ConfigurationExpectationBuilder.defaultExpectations()
+                    .expectedValue(CASE_NAME, "Rio Read", true)
+                    .expectedValue(CASE_MANAGEMENT_CATEGORY, "ST CIC", true)
+                    .expectedValue(REGION, "123", true)
+                    .expectedValue(LOCATION, "123456", true)
+                    .expectedValue(LOCATION_NAME, "GTC", true)
+                    .expectedValue(MINOR_PRIORITY, DEFAULT_MINOR_PRIORITY, true)
+                    .expectedValue(MAJOR_PRIORITY, DEFAULT_MAJOR_PRIORITY, true)
+                    .expectedValue(WORK_TYPE, ROUTINE_WORK_TYPE, true)
+                    .expectedValue(ROLE_CATEGORY, ROLE_CATEGORY_ADMIN, true)
+                    .expectedValue(DUE_DATE_INTERVAL_DAYS, "7", true)
+                    .expectedValue(
+                        DESCRIPTION,
+                        "[Orders: Send order](/cases/case-details/${[CASE_REFERENCE]}/trigger"
+                            + "/caseworker-send-order)",
+                        true
+                    )
+                    .build()
+            ),
+            Arguments.of(
+                PROCESS_RULE27_DECISION_LISTED_TASK,
                 CaseDataBuilder.customCase(REQUEST).build(),
                 ConfigurationExpectationBuilder.defaultExpectations()
                     .expectedValue(CASE_NAME, "Rio Read", true)
@@ -1041,6 +1065,23 @@ class CamundaTaskWaConfigurationTest extends DmnDecisionTableBaseUnitTest {
             ),
             Arguments.of(
                 REVIEW_RULE27_REQ_JUDGE_TASK,
+                CaseDataBuilder.defaultCase().build(),
+                ConfigurationExpectationBuilder.defaultExpectations()
+                    .expectedValue(MINOR_PRIORITY, DEFAULT_MINOR_PRIORITY, true)
+                    .expectedValue(MAJOR_PRIORITY, DEFAULT_MAJOR_PRIORITY, true)
+                    .expectedValue(WORK_TYPE, DECISION_WORK_TYPE, true)
+                    .expectedValue(ROLE_CATEGORY, ROLE_CATEGORY_JUDICIAL, true)
+                    .expectedValue(DUE_DATE_INTERVAL_DAYS, "5", true)
+                    .expectedValue(
+                        DESCRIPTION,
+                        "[Orders: Create draft](/cases/case-details/${[CASE_REFERENCE]}/trigger"
+                            + "/create-draft-order)",
+                        true
+                    )
+                    .build()
+            ),
+            Arguments.of(
+                REVIEW_RULE27_REQ_CASE_LISTED_JUDGE_TASK,
                 CaseDataBuilder.defaultCase().build(),
                 ConfigurationExpectationBuilder.defaultExpectations()
                     .expectedValue(MINOR_PRIORITY, DEFAULT_MINOR_PRIORITY, true)

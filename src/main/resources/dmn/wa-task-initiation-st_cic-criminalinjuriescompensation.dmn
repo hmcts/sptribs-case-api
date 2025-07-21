@@ -124,6 +124,38 @@
           <text>"ADMIN"</text>
         </outputEntry>
       </rule>
+      <rule id="DecisionRule_0r2aa7f">
+        <inputEntry id="UnaryTests_0ehve9e">
+          <text>"create-draft-order"</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_050zz8c">
+          <text>"AwaitingHearing"</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_1svbhoj">
+          <text>"Rule 27 request"</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_00m0rhz">
+          <text>"processRule27DecisionListed"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_0srt58o">
+          <text>"Process Rule 27 decision listed"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_1hth4vv">
+          <text></text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_1a5lwxc">
+          <text>7</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_0052jyl">
+          <text>"Processing"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_1px01lw">
+          <text>"routine_work"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_0fo8qfy">
+          <text>"ADMIN"</text>
+        </outputEntry>
+      </rule>
       <rule id="DecisionRule_1ijq5gk">
         <inputEntry id="UnaryTests_1s5ovbr">
           <text>"create-draft-order"</text>
@@ -1689,6 +1721,38 @@
           <text>"decision_making_work"</text>
         </outputEntry>
         <outputEntry id="LiteralExpression_1jb4vt9">
+          <text>"JUDICIAL"</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_0fodt3x">
+        <inputEntry id="UnaryTests_1sqymmg">
+          <text>"refer-to-judge"</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_11okal1">
+          <text>"AwaitingHearing"</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_11ca1oh">
+          <text>"Rule 27 request"</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_0j8x1c1">
+          <text>"reviewRule27RequestCaseListedJudge"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_0hj4d97">
+          <text>"Review Rule 27 request case listed - Judge"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_085s5s5">
+          <text></text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_0yjg3fe">
+          <text>5</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_1c3ndbj">
+          <text>"Processing"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_17w5a4o">
+          <text>"decision_making_work"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_1w1xjhz">
           <text>"JUDICIAL"</text>
         </outputEntry>
       </rule>
