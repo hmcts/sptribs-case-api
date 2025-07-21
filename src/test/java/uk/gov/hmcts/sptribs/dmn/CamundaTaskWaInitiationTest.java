@@ -28,6 +28,7 @@ import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.ISSUE_CASE_TO_R
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.ISSUE_DECISION_NOTICE_TASK;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.ISSUE_DUE_DATE;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.PRIORITY_WORK_TYPE;
+import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.PROCESS_CASE_WITHDRAWAL_DIR_LISTED_TASK;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.PROCESS_CASE_WITHDRAWAL_DIR_TASK;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.PROCESS_CATEGORY_AMENDMENT;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.PROCESS_CATEGORY_APPLICATION;
@@ -82,6 +83,7 @@ import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.REVIEW_STRIKE_O
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.REVIEW_STRIKE_OUT_REQ_LO_TASK;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.REVIEW_TIME_EXT_REQ_JUDGE_TASK;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.REVIEW_TIME_EXT_REQ_LO_TASK;
+import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.REVIEW_WITHDRAWAL_REQ_CASE_LISTED_JUDGE_TASK;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.REVIEW_WITHDRAWAL_REQ_CASE_LISTED_LO_TASK;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.REVIEW_WITHDRAWAL_REQ_JUDGE_TASK;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.REVIEW_WITHDRAWAL_REQ_LO_TASK;
@@ -110,6 +112,21 @@ class CamundaTaskWaInitiationTest extends DmnDecisionTableBaseUnitTest {
                     Map.of(
                         "taskId", PROCESS_CASE_WITHDRAWAL_DIR_TASK,
                         "name", "Process case withdrawal directions",
+                        "workingDaysAllowed", 7,
+                        "processCategories", PROCESS_CATEGORY_PROCESSING,
+                        "workType", ROUTINE_WORK_TYPE,
+                        "roleCategory", ROLE_CATEGORY_ADMIN
+                    )
+                )
+            ),
+            Arguments.of(
+                "create-draft-order",
+                "AwaitingHearing",
+                Map.of("Data", Map.of("cicCaseReferralTypeForWA", "Withdrawal request")),
+                List.of(
+                    Map.of(
+                        "taskId", PROCESS_CASE_WITHDRAWAL_DIR_LISTED_TASK,
+                        "name", "Process case withdrawal directions listed",
                         "workingDaysAllowed", 7,
                         "processCategories", PROCESS_CATEGORY_PROCESSING,
                         "workType", ROUTINE_WORK_TYPE,
@@ -836,6 +853,21 @@ class CamundaTaskWaInitiationTest extends DmnDecisionTableBaseUnitTest {
             ),
             Arguments.of(
                 "refer-to-judge",
+                "AwaitingHearing",
+                Map.of("Data", Map.of("cicCaseReferralTypeForWA", "Withdrawal request")),
+                List.of(
+                    Map.of(
+                        "taskId", REVIEW_WITHDRAWAL_REQ_CASE_LISTED_JUDGE_TASK,
+                        "name", "Review withdrawal request case listed - Judge",
+                        "workingDaysAllowed", 5,
+                        "processCategories", PROCESS_CATEGORY_PROCESSING,
+                        "workType", DECISION_WORK_TYPE,
+                        "roleCategory", ROLE_CATEGORY_JUDICIAL
+                    )
+                )
+            ),
+            Arguments.of(
+                "refer-to-judge",
                 "CaseManagement",
                 Map.of("Data", Map.of("cicCaseReferralTypeForWA", "Rule 27 request")),
                 List.of(
@@ -1008,7 +1040,7 @@ class CamundaTaskWaInitiationTest extends DmnDecisionTableBaseUnitTest {
         DmnDecisionTableImpl logic = (DmnDecisionTableImpl) decision.getDecisionLogic();
         assertThat(logic.getInputs().size(), is(3));
         assertThat(logic.getOutputs().size(), is(7));
-        assertThat(logic.getRules().size(), is(58));
+        assertThat(logic.getRules().size(), is(60));
     }
 
     @ParameterizedTest(name = "event id: {0} post event state: {1} appeal type: {2}")
