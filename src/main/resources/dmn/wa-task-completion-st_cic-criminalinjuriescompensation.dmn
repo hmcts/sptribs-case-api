@@ -20,6 +20,17 @@
           <text>"Auto"</text>
         </outputEntry>
       </rule>
+      <rule id="DecisionRule_0z9vwsc">
+        <inputEntry id="UnaryTests_0rp108l">
+          <text>"caseworker-send-order"</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_00dp9vz">
+          <text>"processCaseWithdrawalDirectionsListed"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_0p64aco">
+          <text>"Auto"</text>
+        </outputEntry>
+      </rule>
       <rule id="DecisionRule_03yedz5">
         <inputEntry id="UnaryTests_1ltp2em">
           <text>"caseworker-send-order"</text>
@@ -534,6 +545,17 @@
           <text>"reviewWithdrawalRequestJudge"</text>
         </outputEntry>
         <outputEntry id="LiteralExpression_1sxi2i4">
+          <text>"Auto"</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_19pxvlc">
+        <inputEntry id="UnaryTests_1jyl7j3">
+          <text>"create-draft-order"</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_0vwaqss">
+          <text>"reviewWithdrawalRequestCaseListedJudge"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_11b5yr0">
           <text>"Auto"</text>
         </outputEntry>
       </rule>
