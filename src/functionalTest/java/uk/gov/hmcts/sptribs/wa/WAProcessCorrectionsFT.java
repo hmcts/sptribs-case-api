@@ -6,6 +6,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledIfEnvironmentVariable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.ResponseEntity;
+import uk.gov.hmcts.sptribs.cdam.model.Document;
 import uk.gov.hmcts.sptribs.testutil.CcdCaseCreator;
 import uk.gov.hmcts.sptribs.testutil.FunctionalTestSuite;
 import uk.gov.hmcts.sptribs.testutil.RoleAssignmentService;
@@ -15,6 +17,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -62,6 +65,10 @@ public class WAProcessCorrectionsFT extends FunctionalTestSuite {
         ccdCaseCreator.createInitialStartEventAndSubmit(CASEWORKER_CASE_BUILT, ST_CIC_JURISDICTION, ST_CIC_CASE_TYPE, newCaseId, caseData);
         ccdCaseCreator.createInitialStartEventAndSubmit(
             CASEWORKER_CLOSE_THE_CASE, ST_CIC_JURISDICTION, ST_CIC_CASE_TYPE, newCaseId, caseData);
+
+        ResponseEntity<Document> documentResponse = checkDocuments(UUID.fromString("5d76ff31-8547-4702-b2c8-34c43a53d220"));
+        log.info("Document response: status {}; body: {}", documentResponse.getStatusCode(), documentResponse.getBody());
+        log.info("Document response links: {}", documentResponse.getBody().links);
 
         caseData.put("cicCaseReferralTypeForWA", "Corrections");
         caseData.putAll(caseData(CASEWORKER_CREATE_DRAFT_ORDER_DATA));
