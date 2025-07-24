@@ -53,7 +53,8 @@ public class WAProcessCorrectionsFT extends FunctionalTestSuite {
     private static final int DEFAULT_POLL_INTERVAL_SECONDS = 4;
 
     private static final String CASEWORKER_CREATE_DRAFT_ORDER_DATA = "classpath:wa/caseworker-create-draft-order-submit-data.json";
-    private static final ClassPathResource DRAFT_ORDER_FILE =  new ClassPathResource("files/DRAFT :Order--[Subject Name]--26-04-2024 10:09:12.pdf");
+    private static final ClassPathResource DRAFT_ORDER_FILE =
+            new ClassPathResource("files/DRAFT :Order--[Subject Name]--26-04-2024 10:09:12.pdf");
 
     @Test
     @EnabledIfEnvironmentVariable(named = "WA_FUNCTIONAL_TESTS_ENABLED", matches = "true")
@@ -78,12 +79,11 @@ public class WAProcessCorrectionsFT extends FunctionalTestSuite {
         try {
             documentResponse = checkDocuments(UUID.fromString("5d76ff31-8547-4702-b2c8-34c43a53d220"));
             log.info("Document response: status {}; body: {}", documentResponse.getStatusCode(), documentResponse.getBody());
-        }
-        catch (FeignException.FeignClientException feignClientException) {
+        } catch (FeignException.FeignClientException feignClientException) {
             log.info("Exception: {}", feignClientException.getMessage());
         }
 
-        if(documentResponse != null) {
+        if (documentResponse != null) {
             UploadResponse uploadResponse = uploadTestDocument(DRAFT_ORDER_FILE);
 
             if (uploadResponse != null) {
@@ -148,17 +148,17 @@ public class WAProcessCorrectionsFT extends FunctionalTestSuite {
         }
 
         List<Map<String, Object>> draftOrderList = (List<Map<String, Object>>) caseData.get("cicCaseDraftOrderCICList");
-            if (draftOrderList != null && !draftOrderList.isEmpty()) {
-                Map<String, Object> firstItem = draftOrderList.getFirst();
-                Map<String, Object> value = (Map<String, Object>) firstItem.get("value");
-                if (value != null) {
-                    Map<String, Object> templateGeneratedDocument = (Map<String, Object>) value.get("templateGeneratedDocument");
-                    if (templateGeneratedDocument != null) {
-                        templateGeneratedDocument.put("document_url", document.links.self.href);
-                        templateGeneratedDocument.put("document_filename", document.originalDocumentName);
-                        templateGeneratedDocument.put("document_binary_url", document.links.binary.href);
-                    }
+        if (draftOrderList != null && !draftOrderList.isEmpty()) {
+            Map<String, Object> firstItem = draftOrderList.getFirst();
+            Map<String, Object> value = (Map<String, Object>) firstItem.get("value");
+            if (value != null) {
+                Map<String, Object> templateGeneratedDocument = (Map<String, Object>) value.get("templateGeneratedDocument");
+                if (templateGeneratedDocument != null) {
+                    templateGeneratedDocument.put("document_url", document.links.self.href);
+                    templateGeneratedDocument.put("document_filename", document.originalDocumentName);
+                    templateGeneratedDocument.put("document_binary_url", document.links.binary.href);
                 }
             }
+        }
     }
 }
