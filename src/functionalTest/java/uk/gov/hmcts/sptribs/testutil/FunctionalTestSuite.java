@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.TestPropertySource;
 import uk.gov.hmcts.reform.ccd.client.CoreCaseDataApi;
@@ -16,7 +17,11 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDataContent;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.client.model.Event;
 import uk.gov.hmcts.reform.ccd.client.model.StartEventResponse;
+import uk.gov.hmcts.reform.ccd.document.am.model.Classification;
+import uk.gov.hmcts.reform.ccd.document.am.model.DocumentUploadRequest;
+import uk.gov.hmcts.reform.ccd.document.am.util.InMemoryMultipartFile;
 import uk.gov.hmcts.sptribs.cdam.model.Document;
+import uk.gov.hmcts.sptribs.cdam.model.UploadResponse;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.DssCaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
@@ -27,6 +32,7 @@ import uk.gov.hmcts.sptribs.idam.IdamService;
 import uk.gov.hmcts.sptribs.services.cdam.CaseDocumentClientApi;
 import uk.gov.hmcts.sptribs.systemupdate.service.CcdSearchService;
 
+import java.io.File;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -70,11 +76,13 @@ public abstract class FunctionalTestSuite {
     @Autowired
     protected ObjectMapper objectMapper;
 
+    @Autowired
+    private AppsConfig appsConfig;
+
     protected static final String EVENT_PARAM = "event";
     protected static final String UPDATE = "UPDATE";
     protected static final String UPDATE_CASE = "UPDATE_CASE";
     protected static final String SUBMIT = "SUBMIT";
-    private AppsConfig appsConfig;
 
     protected CaseDetails createCaseInCcd() {
         String caseworkerToken = idamTokenGenerator.generateIdamTokenForCaseworker();
@@ -305,6 +313,32 @@ public abstract class FunctionalTestSuite {
             .caseTypeOfApplication("CIC")
             .additionalInformation("some additional info")
             .build();
+    }
+
+    protected UploadResponse uploadTestDocument(ClassPathResource resource) {
+        final List<AppsConfig.AppsDetails> appDetails = appsConfig.getApps();
+        if (!appDetails.isEmpty() && appDetails.getFirst() != null) {
+            final String caseType = appsConfig.getApps().getFirst().getCaseType();
+            final String jurisdiction = appsConfig.getApps().getFirst().getJurisdiction();
+            try {
+                final InMemoryMultipartFile inMemoryMultipartFile =
+                        new InMemoryMultipartFile(resource.getFilename(), resource.getContentAsByteArray());
+
+                final DocumentUploadRequest documentUploadRequest =
+                        new DocumentUploadRequest(Classification.RESTRICTED.toString(),
+                                caseType,
+                                jurisdiction,
+                                List.of(inMemoryMultipartFile));
+
+                final String serviceToken = serviceAuthenticationGenerator.generate();
+                final String userToken = idamTokenGenerator.generateIdamTokenForSystemUser();
+
+                return this.caseDocumentClientApi.uploadDocuments(userToken, serviceToken, documentUploadRequest);
+            } catch (IOException ioException) {
+                log.error("Failed to upload test document due to {}", ioException.toString());
+            }
+        }
+        return null;
     }
 
     protected ResponseEntity<Document> checkDocuments(UUID documentId) {
