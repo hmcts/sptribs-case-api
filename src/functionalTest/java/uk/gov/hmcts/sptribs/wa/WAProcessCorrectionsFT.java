@@ -64,7 +64,7 @@ public class WAProcessCorrectionsFT extends FunctionalTestSuite {
         final String newCaseId = String.valueOf(id);
         final Map<String, Object> caseData = response.getBody().path("caseData");
 
-        log.debug("New case created: " + newCaseId);
+        log.debug("New case created: {}", newCaseId);
 
         ccdCaseCreator.createInitialStartEventAndSubmit(CASEWORKER_EDIT_CASE, ST_CIC_JURISDICTION, ST_CIC_CASE_TYPE, newCaseId, caseData);
         ccdCaseCreator.createInitialStartEventAndSubmit(CASEWORKER_CASE_BUILT, ST_CIC_JURISDICTION, ST_CIC_CASE_TYPE, newCaseId, caseData);
@@ -75,21 +75,11 @@ public class WAProcessCorrectionsFT extends FunctionalTestSuite {
         caseData.put("cicCaseReferralTypeForWA", "Corrections");
         caseData.putAll(caseData(CASEWORKER_CREATE_DRAFT_ORDER_DATA));
 
-        ResponseEntity<Document> documentResponse = null;
-        try {
-            documentResponse = checkDocuments(UUID.fromString("5d76ff31-8547-4702-b2c8-34c43a53d220"));
-            log.info("Document response: status {}; body: {}", documentResponse.getStatusCode(), documentResponse.getBody());
-        } catch (FeignException.FeignClientException feignClientException) {
-            log.info("Exception: {}", feignClientException.getMessage());
-        }
+        UploadResponse uploadResponse = uploadTestDocument(DRAFT_ORDER_FILE);
 
-        if (documentResponse != null) {
-            UploadResponse uploadResponse = uploadTestDocument(DRAFT_ORDER_FILE);
-
-            if (uploadResponse != null) {
-                log.info("Document uploaded: {}", uploadResponse.getDocuments().getFirst());
-                updateOrderTemplate(uploadResponse.getDocuments().getFirst(), caseData);
-            }
+        if (uploadResponse != null) {
+            log.info("Document uploaded: {}", uploadResponse.getDocuments().getFirst());
+            updateOrderTemplate(uploadResponse.getDocuments().getFirst(), caseData);
         }
 
         ccdCaseCreator.createInitialStartEventAndSubmit(
