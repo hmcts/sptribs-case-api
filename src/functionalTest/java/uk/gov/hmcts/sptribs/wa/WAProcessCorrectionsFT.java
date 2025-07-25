@@ -6,6 +6,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledIfEnvironmentVariable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.core.io.ClassPathResource;
+import uk.gov.hmcts.sptribs.cdam.model.Document;
+import uk.gov.hmcts.sptribs.cdam.model.UploadResponse;
 import uk.gov.hmcts.sptribs.testutil.CcdCaseCreator;
 import uk.gov.hmcts.sptribs.testutil.FunctionalTestSuite;
 import uk.gov.hmcts.sptribs.testutil.RoleAssignmentService;
@@ -47,6 +50,8 @@ public class WAProcessCorrectionsFT extends FunctionalTestSuite {
     private static final int DEFAULT_POLL_INTERVAL_SECONDS = 4;
 
     private static final String CASEWORKER_CREATE_DRAFT_ORDER_DATA = "classpath:wa/caseworker-create-draft-order-submit-data.json";
+    private static final ClassPathResource DRAFT_ORDER_FILE =
+            new ClassPathResource("files/DRAFT :Order--[Subject Name]--26-04-2024 10:09:12.pdf");
 
     @Test
     @EnabledIfEnvironmentVariable(named = "WA_FUNCTIONAL_TESTS_ENABLED", matches = "true")
@@ -56,15 +61,24 @@ public class WAProcessCorrectionsFT extends FunctionalTestSuite {
         final String newCaseId = String.valueOf(id);
         final Map<String, Object> caseData = response.getBody().path("caseData");
 
-        log.debug("New case created: " + newCaseId);
+        log.debug("New case created: {}", newCaseId);
 
         ccdCaseCreator.createInitialStartEventAndSubmit(CASEWORKER_EDIT_CASE, ST_CIC_JURISDICTION, ST_CIC_CASE_TYPE, newCaseId, caseData);
         ccdCaseCreator.createInitialStartEventAndSubmit(CASEWORKER_CASE_BUILT, ST_CIC_JURISDICTION, ST_CIC_CASE_TYPE, newCaseId, caseData);
         ccdCaseCreator.createInitialStartEventAndSubmit(
             CASEWORKER_CLOSE_THE_CASE, ST_CIC_JURISDICTION, ST_CIC_CASE_TYPE, newCaseId, caseData);
 
+
         caseData.put("cicCaseReferralTypeForWA", "Corrections");
         caseData.putAll(caseData(CASEWORKER_CREATE_DRAFT_ORDER_DATA));
+
+        UploadResponse uploadResponse = uploadTestDocument(DRAFT_ORDER_FILE);
+
+        if (uploadResponse != null) {
+            log.info("Document uploaded: {}", uploadResponse.getDocuments().getFirst());
+            updateOrderTemplate(uploadResponse.getDocuments().getFirst(), caseData);
+        }
+
         ccdCaseCreator.createInitialStartEventAndSubmit(
             CASEWORKER_CREATE_DRAFT_ORDER, ST_CIC_JURISDICTION, ST_CIC_CASE_TYPE, newCaseId, caseData);
 
@@ -109,5 +123,32 @@ public class WAProcessCorrectionsFT extends FunctionalTestSuite {
 
                     return true;
                 });
+    }
+
+    @SuppressWarnings("unchecked")
+    private void updateOrderTemplate(Document document, Map<String, Object> caseData) {
+        Map<String, Object> orderTemplateIssued = (Map<String, Object>) caseData.get("cicCaseOrderTemplateIssued");
+        if (orderTemplateIssued != null) {
+            orderTemplateIssued.put("document_url", document.links.self.href);
+            orderTemplateIssued.put("document_filename", document.originalDocumentName);
+            orderTemplateIssued.put("document_binary_url", document.links.binary.href);
+        }
+        caseData.put("cicCaseOrderTemplateIssued", orderTemplateIssued);
+
+        List<Map<String, Object>> draftOrderList = (List<Map<String, Object>>) caseData.get("cicCaseDraftOrderCICList");
+        if (draftOrderList != null && !draftOrderList.isEmpty()) {
+            Map<String, Object> firstItem = draftOrderList.getFirst();
+            Map<String, Object> value = (Map<String, Object>) firstItem.get("value");
+            if (value != null) {
+                Map<String, Object> templateGeneratedDocument = (Map<String, Object>) value.get("templateGeneratedDocument");
+                if (templateGeneratedDocument != null) {
+                    templateGeneratedDocument.put("document_url", document.links.self.href);
+                    templateGeneratedDocument.put("document_filename", document.originalDocumentName);
+                    templateGeneratedDocument.put("document_binary_url", document.links.binary.href);
+                }
+                value.put("templateGeneratedDocument", templateGeneratedDocument);
+            }
+        }
+        caseData.put("cicCaseDraftOrderCICList", draftOrderList);
     }
 }

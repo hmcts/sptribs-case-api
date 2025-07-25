@@ -60,6 +60,7 @@ import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_SOLICITOR_NAME;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_UPDATE_CASE_EMAIL_ADDRESS;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.LOCAL_DATE_TIME;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.caseData;
+import static uk.gov.hmcts.sptribs.testutil.TestEventConstants.CITIZEN_CIC_SUBMIT_CASE;
 import static uk.gov.hmcts.sptribs.testutil.TestFileUtil.loadJson;
 
 @ExtendWith({MockitoExtension.class})
@@ -95,7 +96,7 @@ class CicSubmitCaseEventTest {
         cicAppDetail.setJurisdiction(CommonConstants.ST_CIC_JURISDICTION);
         cicAppDetail.setCaseTypeOfApplication(List.of(CASE_DATA_CIC_ID));
         final AppsConfig.EventsConfig eventsConfig = new AppsConfig.EventsConfig();
-        eventsConfig.setSubmitEvent("citizen-cic-submit-dss-application");
+        eventsConfig.setSubmitEvent(CITIZEN_CIC_SUBMIT_CASE);
 
         cicAppDetail.setEventIds(eventsConfig);
     }
