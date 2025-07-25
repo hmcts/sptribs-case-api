@@ -133,6 +133,7 @@ public class WAProcessCorrectionsFT extends FunctionalTestSuite {
             orderTemplateIssued.put("document_filename", document.originalDocumentName);
             orderTemplateIssued.put("document_binary_url", document.links.binary.href);
         }
+        caseData.put("cicCaseOrderTemplateIssued", orderTemplateIssued);
 
         List<Map<String, Object>> draftOrderList = (List<Map<String, Object>>) caseData.get("cicCaseDraftOrderCICList");
         if (draftOrderList != null && !draftOrderList.isEmpty()) {
@@ -145,7 +146,9 @@ public class WAProcessCorrectionsFT extends FunctionalTestSuite {
                     templateGeneratedDocument.put("document_filename", document.originalDocumentName);
                     templateGeneratedDocument.put("document_binary_url", document.links.binary.href);
                 }
+                value.put("templateGeneratedDocument", templateGeneratedDocument);
             }
         }
+        caseData.put("cicCaseDraftOrderCICList", draftOrderList);
     }
 }

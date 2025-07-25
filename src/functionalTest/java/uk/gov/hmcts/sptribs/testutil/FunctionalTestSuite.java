@@ -325,14 +325,14 @@ public abstract class FunctionalTestSuite {
 
                 final DocumentUploadRequest documentUploadRequest =
                         new DocumentUploadRequest(Classification.RESTRICTED.toString(),
-                                caseType,
-                                jurisdiction,
-                                List.of(inMemoryMultipartFile));
+                            caseType,
+                            jurisdiction,
+                            List.of(inMemoryMultipartFile));
 
                 final String serviceToken = serviceAuthenticationGenerator.generate();
                 final String userToken = idamTokenGenerator.generateIdamTokenForSystemUser();
 
-                return this.caseDocumentClientApi.uploadDocuments(userToken, serviceToken, documentUploadRequest);
+                return caseDocumentClientApi.uploadDocuments(userToken, serviceToken, documentUploadRequest);
             } catch (IOException ioException) {
                 log.error("Failed to upload test document due to {}", ioException.toString());
             }
