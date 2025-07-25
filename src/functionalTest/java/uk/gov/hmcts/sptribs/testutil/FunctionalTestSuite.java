@@ -70,7 +70,7 @@ public abstract class FunctionalTestSuite {
     protected CcdSearchService searchService;
 
     @Autowired
-    private CaseDocumentClientApi caseDocumentClientApi;
+    protected CaseDocumentClientApi caseDocumentClientApi;
 
     @Autowired
     protected ObjectMapper objectMapper;
