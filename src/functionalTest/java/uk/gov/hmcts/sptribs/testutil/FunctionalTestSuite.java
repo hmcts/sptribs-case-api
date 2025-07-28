@@ -339,11 +339,4 @@ public abstract class FunctionalTestSuite {
         }
         return null;
     }
-
-    protected ResponseEntity<Document> checkDocuments(UUID documentId) {
-        return caseDocumentClientApi.getDocumentByDocumentId(
-            idamTokenGenerator.generateIdamTokenForSystemUser(),
-            serviceAuthenticationGenerator.generate(),
-            documentId);
-    }
 }
