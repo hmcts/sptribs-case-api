@@ -2,7 +2,6 @@ package uk.gov.hmcts.sptribs.caseworker.event;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
@@ -75,9 +74,6 @@ public class CaseworkerCloseTheCase implements CCDConfig<CaseData, State, UserRo
     @Autowired
     private CaseWithdrawnNotification caseWithdrawnNotification;
 
-    @Value("${feature.wa.enabled}")
-    private boolean isWorkAllocationEnabled;
-
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
 
@@ -105,13 +101,9 @@ public class CaseworkerCloseTheCase implements CCDConfig<CaseData, State, UserRo
                 .aboutToSubmitCallback(this::aboutToSubmit)
                 .submittedCallback(this::submitted)
                 .grant(CREATE_READ_UPDATE, SUPER_USER, ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER,
-                    ST_CIC_HEARING_CENTRE_ADMIN, ST_CIC_HEARING_CENTRE_TEAM_LEADER, ST_CIC_SENIOR_JUDGE)
-                .grantHistoryOnly(ST_CIC_JUDGE);
-
-        if (isWorkAllocationEnabled) {
-            eventBuilder.publishToCamunda()
-                        .grant(CREATE_READ_UPDATE, ST_CIC_WA_CONFIG_USER);
-        }
+                    ST_CIC_HEARING_CENTRE_ADMIN, ST_CIC_HEARING_CENTRE_TEAM_LEADER, ST_CIC_SENIOR_JUDGE, ST_CIC_WA_CONFIG_USER)
+                .grantHistoryOnly(ST_CIC_JUDGE)
+                .publishToCamunda();
 
         return new PageBuilder(eventBuilder);
     }

@@ -1,7 +1,6 @@
 package uk.gov.hmcts.sptribs.caseworker.event;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
@@ -43,9 +42,6 @@ public class CaseWorkerReferToJudge implements CCDConfig<CaseData, State, UserRo
     private final ReferToJudgeReason referToJudgeReason = new ReferToJudgeReason();
     private final ReferToJudgeAdditionalInfo referToJudgeAdditionalInfo = new ReferToJudgeAdditionalInfo();
 
-    @Value("${feature.wa.enabled}")
-    private boolean isWorkAllocationEnabled;
-
     @Override
     public void configure(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         Event.EventBuilder<CaseData, UserRole, State> eventBuilder =
@@ -66,15 +62,11 @@ public class CaseWorkerReferToJudge implements CCDConfig<CaseData, State, UserRo
                 .submittedCallback(this::submitted)
                 .grant(CREATE_READ_UPDATE, SUPER_USER,
                     ST_CIC_HEARING_CENTRE_ADMIN, ST_CIC_HEARING_CENTRE_TEAM_LEADER,
-                    ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER)
+                    ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER, ST_CIC_WA_CONFIG_USER)
                 .grantHistoryOnly(
                     ST_CIC_SENIOR_JUDGE,
-                    ST_CIC_JUDGE);
-
-        if (isWorkAllocationEnabled) {
-            eventBuilder.publishToCamunda()
-                        .grant(CREATE_READ_UPDATE, ST_CIC_WA_CONFIG_USER);
-        }
+                    ST_CIC_JUDGE)
+                .publishToCamunda();
 
         PageBuilder pageBuilder = new PageBuilder(eventBuilder);
         referToJudgeReason.addTo(pageBuilder);
@@ -95,8 +87,7 @@ public class CaseWorkerReferToJudge implements CCDConfig<CaseData, State, UserRo
 
         CaseData caseData = details.getData();
         caseData.getReferToJudge().setReferralDate(LocalDate.now());
-        if (isWorkAllocationEnabled
-                && caseData.getReferToJudge() != null
+        if (caseData.getReferToJudge() != null
                 && caseData.getReferToJudge().getReferralReason() != null) {
             caseData.getCicCase().setReferralTypeForWA(caseData.getReferToJudge().getReferralReason().getLabel());
         }
