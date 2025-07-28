@@ -391,7 +391,7 @@ ccd-case-document-am-api:
     releaseNameOverride: ${SERVICE_NAME}-ccd-case-document-am-api
     imagePullPolicy: Always
     image: hmctspublic.azurecr.io/ccd/case-document-am-api:latest
-    ingressHost: ${SERVICE_NAME}-ccd-case-document-am-api
+    ingressHost: ccd-case-document-am-api-${SERVICE_FQDN}
     environment:
       CASE_DOCUMENT_S2S_AUTHORISED_SERVICES: ccd_case_document_am_api,ccd_gw,xui_webapp,ccd_data,bulk_scan_processor,em_npa_app,dg_docassembly_api,em_stitching_api,em_ccd_orchestrator,bulk_scan_orchestrator,sptribs_case_api,sptribs_frontend
       CCD_DATA_STORE_API_BASE_URL: http://{{ .Release.Name }}-ccd-data-store-api
