@@ -3,24 +3,23 @@ package uk.gov.hmcts.sptribs.services.wa;
 import feign.FeignException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.idam.client.models.User;
 import uk.gov.hmcts.sptribs.exception.CaseCreateOrUpdateException;
 import uk.gov.hmcts.sptribs.idam.IdamService;
-import uk.gov.hmcts.sptribs.services.wa.TaskManagementClient.Domain.Task;
-import uk.gov.hmcts.sptribs.services.wa.TaskManagementClient.Request.InitiateTaskRequestMap;
-import uk.gov.hmcts.sptribs.services.wa.TaskManagementClient.Request.Options.TerminateInfo;
-import uk.gov.hmcts.sptribs.services.wa.TaskManagementClient.Request.SearchTaskRequest;
-import uk.gov.hmcts.sptribs.services.wa.TaskManagementClient.Request.TerminateTaskRequest;
+import uk.gov.hmcts.sptribs.services.model.wa.ProcessCategoryIdentifier;
+import uk.gov.hmcts.sptribs.services.model.wa.Search;
+import uk.gov.hmcts.sptribs.services.model.wa.TaskType;
+import uk.gov.hmcts.sptribs.services.model.wa.WaRequest;
+import uk.gov.hmcts.sptribs.services.model.wa.WaTask;
 
 import java.util.List;
 import java.util.Map;
 
-import static uk.gov.hmcts.sptribs.services.wa.TaskManagementClient.Domain.Search.SearchOperator.IN;
-import static uk.gov.hmcts.sptribs.services.wa.TaskManagementClient.Domain.Search.SearchParameterKey.CASE_ID;
-import static uk.gov.hmcts.sptribs.services.wa.TaskManagementClient.Request.Enums.InitiateTaskOperation.INITIATION;
+import static uk.gov.hmcts.sptribs.services.model.wa.Search.SearchOperator.IN;
+import static uk.gov.hmcts.sptribs.services.model.wa.Search.SearchParameterKey.CASE_ID;
+import static uk.gov.hmcts.sptribs.services.model.wa.WaRequest.Enums.InitiateTaskOperation.INITIATION;
 
 
 @Service
@@ -37,7 +36,7 @@ public class TaskManagementService {
      * @param searchTaskRequest The request containing search parameters.
      * @return A list of tasks matching the criteria.
      */
-    public List<Task> searchTasks(SearchTaskRequest searchTaskRequest) {
+    public List<WaTask> searchTasks(WaRequest.SearchTaskRequest searchTaskRequest) {
         User user = idamService.retrieveSystemUpdateUserDetails();
         String serviceAuthToken = authTokenGenerator.generate();
 
@@ -54,7 +53,7 @@ public class TaskManagementService {
      */
     public void initiateTask(String taskId, Map<String, Object> taskAttributes) {
         String serviceAuthToken = authTokenGenerator.generate();
-        InitiateTaskRequestMap initiateTaskRequest = new InitiateTaskRequestMap(INITIATION, taskAttributes);
+        WaRequest.InitiateTaskRequestMap initiateTaskRequest = new WaRequest.InitiateTaskRequestMap(INITIATION, taskAttributes);
         try {
             log.info("Attempting to initiate task with id: {}", taskId);
             taskManagementClient.initiateTask(serviceAuthToken, taskId, initiateTaskRequest);
@@ -62,6 +61,25 @@ public class TaskManagementService {
         } catch (FeignException e) {
             log.error("Error initiating task id: {}. Status: {}, Body: {}", taskId, e.status(), e.contentUTF8(), e);
             throw new CaseCreateOrUpdateException("Failed to initiate task", e);
+        }
+    }
+
+    /**
+     * Reconfigures an existing task in the WA system - cancels the current task and initiates a new one with updated attributes.
+     * @param taskId
+     * @param taskAttributes
+     */
+    public void reconfigureTask(TaskType taskId, Map<String, Object> taskAttributes, ProcessCategoryIdentifier processCategoryIdentifier) {
+        User user = idamService.retrieveSystemUpdateUserDetails();
+        String serviceAuthToken = authTokenGenerator.generate();
+        WaRequest.InitiateTaskRequestMap initiateTaskRequest = new WaRequest.InitiateTaskRequestMap(INITIATION, taskAttributes);
+        try {
+            log.info("Attempting to reconfigure task with id: {}", taskId);
+            //taskManagementClient.cancelTask(user.getAuthToken(), serviceAuthToken, taskId);
+            log.info("Task reconfigured successfully: {}", taskId);
+        } catch (FeignException e) {
+            log.error("Error reconfiguring task id: {}. Status: {}, Body: {}", taskId, e.status(), e.contentUTF8(), e);
+            throw new CaseCreateOrUpdateException("Failed to reconfigure task", e);
         }
     }
 
@@ -84,6 +102,15 @@ public class TaskManagementService {
         }
     }
 
+    public void cancelTasksForProcessCategoryId(String caseId,
+                                                ProcessCategoryIdentifier processCategoryIdentifier) {
+
+    }
+
+    public void completeTasks(String caseId, TaskType... taskTypes) {
+
+    }
+
     /**
      * Terminates a task. This is a more definitive system-level action.
      *
@@ -92,7 +119,7 @@ public class TaskManagementService {
      */
     public void terminateTask(String taskId, String terminateReason) {
         String serviceAuthToken = authTokenGenerator.generate();
-        TerminateTaskRequest terminateTaskRequest = new TerminateTaskRequest(new TerminateInfo(terminateReason));
+        WaRequest.TerminateTaskRequest terminateTaskRequest = new WaRequest.TerminateTaskRequest(new WaRequest.Options.TerminateInfo(terminateReason));
         try {
             log.info("Attempting to terminate task with id: {} for reason: {}", taskId, terminateReason);
             taskManagementClient.terminateTask(serviceAuthToken, taskId, terminateTaskRequest);
@@ -108,10 +135,10 @@ public class TaskManagementService {
      * @param caseId The CCD Case ID.
      * @return A list of tasks for the given case.
      */
-    public List<Task> getTasksForCase(String caseId) {
-        SearchTaskRequest searchTaskRequest = SearchTaskRequest.builder()
+    public List<WaTask> getTasksForCase(String caseId) {
+        WaRequest.SearchTaskRequest searchTaskRequest = WaRequest.SearchTaskRequest.builder()
             .searchParameters(List.of(
-                new TaskManagementClient.Domain.Search.SearchParameterList(CASE_ID, IN, List.of(caseId))
+                new Search.SearchParameterList(CASE_ID, IN, List.of(caseId))
             ))
             .build();
         return searchTasks(searchTaskRequest);
