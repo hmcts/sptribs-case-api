@@ -1,4 +1,4 @@
-package uk.gov.hmcts.sptribs.testutil;
+package uk.gov.hmcts.sptribs.services.cdam;
 
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;

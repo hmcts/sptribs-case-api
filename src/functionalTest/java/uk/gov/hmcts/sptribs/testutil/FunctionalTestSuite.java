@@ -28,6 +28,7 @@ import uk.gov.hmcts.sptribs.common.ccd.CcdServiceCode;
 import uk.gov.hmcts.sptribs.common.config.AppsConfig;
 import uk.gov.hmcts.sptribs.idam.IdamService;
 import uk.gov.hmcts.sptribs.services.cdam.CaseDocumentClientApi;
+import uk.gov.hmcts.sptribs.services.cdam.CdamUrlDebugger;
 import uk.gov.hmcts.sptribs.systemupdate.service.CcdSearchService;
 
 import java.io.IOException;
