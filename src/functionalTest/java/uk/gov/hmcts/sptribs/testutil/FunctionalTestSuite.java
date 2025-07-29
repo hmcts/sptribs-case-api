@@ -73,7 +73,10 @@ public abstract class FunctionalTestSuite {
     protected ObjectMapper objectMapper;
 
     @Autowired
-    private AppsConfig appsConfig;
+    protected AppsConfig appsConfig;
+
+    @Autowired
+    protected CdamUrlDebugger cdamUrlDebugger;
 
     protected static final String EVENT_PARAM = "event";
     protected static final String UPDATE = "UPDATE";
@@ -312,6 +315,7 @@ public abstract class FunctionalTestSuite {
     }
 
     protected UploadResponse uploadTestDocument(ClassPathResource resource) {
+        cdamUrlDebugger.logUrls();
         final List<AppsConfig.AppsDetails> appDetails = appsConfig.getApps();
         if (!appDetails.isEmpty() && appDetails.getFirst() != null) {
             final String caseType = appsConfig.getApps().getFirst().getCaseType();

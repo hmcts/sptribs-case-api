@@ -10,6 +10,7 @@ import org.springframework.core.io.ClassPathResource;
 import uk.gov.hmcts.sptribs.cdam.model.Document;
 import uk.gov.hmcts.sptribs.cdam.model.UploadResponse;
 import uk.gov.hmcts.sptribs.testutil.CcdCaseCreator;
+import uk.gov.hmcts.sptribs.testutil.CdamUrlDebugger;
 import uk.gov.hmcts.sptribs.testutil.FunctionalTestSuite;
 import uk.gov.hmcts.sptribs.testutil.RoleAssignmentService;
 import uk.gov.hmcts.sptribs.testutil.TaskManagementService;
@@ -43,6 +44,9 @@ public class WAProcessCorrectionsFT extends FunctionalTestSuite {
     @Autowired
     private RoleAssignmentService roleAssignmentService;
 
+    @Autowired
+    private CdamUrlDebugger cdamUrlDebugger;
+
     private static final String TASK_TYPE = "processCorrections";
     private static final List<String> TASK_ROLES = Arrays.asList("regional-centre-admin", "regional-centre-team-leader", "task-supervisor",
         "hearing-centre-admin", "hearing-centre-team-leader", "ctsc", "ctsc-team-leader");
@@ -71,7 +75,7 @@ public class WAProcessCorrectionsFT extends FunctionalTestSuite {
 
         caseData.put("cicCaseReferralTypeForWA", "Corrections");
         caseData.putAll(caseData(CASEWORKER_CREATE_DRAFT_ORDER_DATA));
-
+        cdamUrlDebugger.logUrls();
         UploadResponse uploadResponse = uploadTestDocument(DRAFT_ORDER_FILE);
 
         if (uploadResponse != null) {
