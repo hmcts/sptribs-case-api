@@ -39,3 +39,18 @@ feature:
 
 role_assignment_mapping_api:
   url: ${ROLE_ASSIGNMENT_API_URL:http://am-org-role-mapping-service-aat.service.core-compute-aat.internal}
+
+case_document_am:
+  url: ${CASE_DOCUMENT_AM_BASEURL:http://ccd-case-document-am-api-aat.service.core-compute-aat.internal}
+
+caseinfo:
+  apps:
+    - caseType: CriminalInjuriesCompensation
+      jurisdiction: ST_CIC
+      eventIds:
+        createEvent: citizen-cic-create-dss-application
+        updateEvent: citizen-cic-update-dss-application
+        updateCaseEvent: citizen-cic-dss-update-case
+        submitEvent: citizen-cic-submit-dss-application
+      caseTypeOfApplication:
+        - CIC

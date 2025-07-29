@@ -4,8 +4,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
 import org.elasticsearch.index.query.BoolQueryBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.test.context.TestPropertySource;
 import uk.gov.hmcts.reform.ccd.client.CoreCaseDataApi;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
@@ -13,12 +16,19 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDataContent;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.client.model.Event;
 import uk.gov.hmcts.reform.ccd.client.model.StartEventResponse;
+import uk.gov.hmcts.reform.ccd.document.am.model.Classification;
+import uk.gov.hmcts.reform.ccd.document.am.model.DocumentUploadRequest;
+import uk.gov.hmcts.reform.ccd.document.am.util.InMemoryMultipartFile;
+import uk.gov.hmcts.sptribs.cdam.model.UploadResponse;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.DssCaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.common.ccd.CcdJurisdiction;
 import uk.gov.hmcts.sptribs.common.ccd.CcdServiceCode;
+import uk.gov.hmcts.sptribs.common.config.AppsConfig;
 import uk.gov.hmcts.sptribs.idam.IdamService;
+import uk.gov.hmcts.sptribs.services.cdam.CaseDocumentClientApi;
+import uk.gov.hmcts.sptribs.services.cdam.CdamUrlDebugger;
 import uk.gov.hmcts.sptribs.systemupdate.service.CcdSearchService;
 
 import java.io.IOException;
@@ -33,10 +43,11 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_CREATE_CASE;
 import static uk.gov.hmcts.sptribs.common.config.ControllerConstants.SERVICE_AUTHORIZATION;
 
-@TestPropertySource("classpath:application.yaml")
+@TestPropertySource("classpath:application-functional.yaml")
 public abstract class FunctionalTestSuite {
 
     private static final LocalDateTime LOCAL_DATE_TIME = LocalDateTime.of(2021, 4, 28, 1, 0);
+    private static final Logger log = LoggerFactory.getLogger(FunctionalTestSuite.class);
 
     @Value("${test-url}")
     protected String testUrl;
@@ -57,7 +68,16 @@ public abstract class FunctionalTestSuite {
     protected CcdSearchService searchService;
 
     @Autowired
+    protected CaseDocumentClientApi caseDocumentClientApi;
+
+    @Autowired
     protected ObjectMapper objectMapper;
+
+    @Autowired
+    protected AppsConfig appsConfig;
+
+    @Autowired
+    protected CdamUrlDebugger cdamUrlDebugger;
 
     protected static final String EVENT_PARAM = "event";
     protected static final String UPDATE = "UPDATE";
@@ -250,6 +270,7 @@ public abstract class FunctionalTestSuite {
 
     protected Response createAndSubmitTestCaseAndGetResponse() {
         final long caseReference = createTestCaseAndGetCaseReference();
+        log.debug("Test url: {}", testUrl);
         return RestAssured
             .given()
             .relaxedHTTPSValidation()
@@ -292,5 +313,32 @@ public abstract class FunctionalTestSuite {
             .caseTypeOfApplication("CIC")
             .additionalInformation("some additional info")
             .build();
+    }
+
+    protected UploadResponse uploadTestDocument(ClassPathResource resource) {
+        cdamUrlDebugger.logUrls();
+        final List<AppsConfig.AppsDetails> appDetails = appsConfig.getApps();
+        if (!appDetails.isEmpty() && appDetails.getFirst() != null) {
+            final String caseType = appsConfig.getApps().getFirst().getCaseType();
+            final String jurisdiction = appsConfig.getApps().getFirst().getJurisdiction();
+            try {
+                final InMemoryMultipartFile inMemoryMultipartFile =
+                        new InMemoryMultipartFile(resource.getFilename(), resource.getContentAsByteArray());
+
+                final DocumentUploadRequest documentUploadRequest =
+                        new DocumentUploadRequest(Classification.RESTRICTED.toString(),
+                            caseType,
+                            jurisdiction,
+                            List.of(inMemoryMultipartFile));
+
+                final String serviceToken = serviceAuthenticationGenerator.generate();
+                final String userToken = idamTokenGenerator.generateIdamTokenForSystemUser();
+
+                return caseDocumentClientApi.uploadDocuments(userToken, serviceToken, documentUploadRequest);
+            } catch (IOException ioException) {
+                log.error("Failed to upload test document due to {}", ioException.toString());
+            }
+        }
+        return null;
     }
 }
