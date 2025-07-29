@@ -16,19 +16,19 @@ import java.util.UUID;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE;
 
-@FeignClient(name = "sptribs-case-document-am-client-api", url = "${case_document_am.url}/cases/documents",
+@FeignClient(name = "sptribs-case-document-am-client-api", url = "${case_document_am.url}",
     configuration = FeignSupportConfig.class)
 public interface CaseDocumentClientApi {
 
     String SERVICE_AUTHORIZATION = "ServiceAuthorization";
     String DOCUMENT_ID = "documentId";
 
-    @PostMapping(produces = APPLICATION_JSON_VALUE,  consumes = MULTIPART_FORM_DATA_VALUE)
+    @PostMapping(value = "/cases/documents", produces = APPLICATION_JSON_VALUE,  consumes = MULTIPART_FORM_DATA_VALUE)
     UploadResponse uploadDocuments(@RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation,
                                    @RequestHeader(SERVICE_AUTHORIZATION) String serviceAuth,
                                    @RequestBody DocumentUploadRequest uploadRequest);
 
-    @DeleteMapping(value = "/{documentId}")
+    @DeleteMapping(value = "/cases/documents/{documentId}")
     void deleteDocument(@RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation,
                                   @RequestHeader(SERVICE_AUTHORIZATION) String serviceAuth,
                                   @PathVariable(DOCUMENT_ID) UUID documentId,
