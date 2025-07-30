@@ -29,8 +29,8 @@ spring:
 
 logging:
   level:
-    root: info
-    web: info
+    root: debug
+    web: debug
 
 springdoc:
   packagesToScan: uk.gov.hmcts.sptribs,uk.gov.hmcts.ccd.sdk.runtime

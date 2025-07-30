@@ -43,7 +43,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_CREATE_CASE;
 import static uk.gov.hmcts.sptribs.common.config.ControllerConstants.SERVICE_AUTHORIZATION;
 
-@TestPropertySource("classpath:application-functional.yaml")
+@TestPropertySource("classpath:application.yaml")
 public abstract class FunctionalTestSuite {
 
     private static final LocalDateTime LOCAL_DATE_TIME = LocalDateTime.of(2021, 4, 28, 1, 0);
@@ -326,10 +326,10 @@ public abstract class FunctionalTestSuite {
                         new InMemoryMultipartFile(resource.getFilename(), resource.getContentAsByteArray());
 
                 final DocumentUploadRequest documentUploadRequest =
-                        new DocumentUploadRequest(Classification.RESTRICTED.toString(),
-                            caseType,
-                            jurisdiction,
-                            List.of(inMemoryMultipartFile));
+                    new DocumentUploadRequest(Classification.RESTRICTED.toString(),
+                        caseType,
+                        jurisdiction,
+                        List.of(inMemoryMultipartFile));
 
                 final String serviceToken = serviceAuthenticationGenerator.generate();
                 final String userToken = idamTokenGenerator.generateIdamTokenForSystemUser();
