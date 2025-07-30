@@ -3,7 +3,6 @@ package uk.gov.hmcts.sptribs.citizen.event;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
@@ -73,9 +72,6 @@ public class CicDssUpdateCaseEvent implements CCDConfig<CaseData, State, UserRol
     @Autowired
     private Clock clock;
 
-    @Value("${feature.wa.enabled}")
-    private boolean isWorkAllocationEnabled;
-
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         Event.EventBuilder<CaseData, UserRole, State> eventBuilder =
@@ -97,12 +93,9 @@ public class CicDssUpdateCaseEvent implements CCDConfig<CaseData, State, UserRol
                     SYSTEM_UPDATE
                 )
                 .aboutToSubmitCallback(this::aboutToSubmit)
-                .submittedCallback(this::submitted);
-
-        if (isWorkAllocationEnabled) {
-            eventBuilder.publishToCamunda()
-                        .grant(CREATE_READ_UPDATE, ST_CIC_WA_CONFIG_USER);
-        }
+                .submittedCallback(this::submitted)
+                .publishToCamunda()
+                .grant(CREATE_READ_UPDATE, ST_CIC_WA_CONFIG_USER);
     }
 
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(CaseDetails<CaseData, State> details,
