@@ -317,6 +317,7 @@ public abstract class FunctionalTestSuite {
 
     protected UploadResponse uploadTestDocument(ClassPathResource resource) {
         cdamUrlDebugger.logUrls();
+        log.debug("uploading FT test document");
         final List<AppsConfig.AppsDetails> appDetails = appsConfig.getApps();
         if (!appDetails.isEmpty() && appDetails.getFirst() != null) {
             final String caseType = appsConfig.getApps().getFirst().getCaseType();
@@ -333,7 +334,11 @@ public abstract class FunctionalTestSuite {
 
                 final String serviceToken = serviceAuthenticationGenerator.generate();
                 final String userToken = idamTokenGenerator.generateIdamTokenForSystemUser();
-
+                log.debug("Document Request:\nClassification: {}\nCase Type: {}\nJurisdiction: {}\nFile: {}",
+                        documentUploadRequest.getClassification(),
+                        documentUploadRequest.getCaseTypeId(),
+                        documentUploadRequest.getJurisdictionId(),
+                        inMemoryMultipartFile.getName());
                 return caseDocumentClientApi.uploadDocuments(userToken, serviceToken, documentUploadRequest);
             } catch (IOException ioException) {
                 log.error("Failed to upload test document due to {}", ioException.toString());

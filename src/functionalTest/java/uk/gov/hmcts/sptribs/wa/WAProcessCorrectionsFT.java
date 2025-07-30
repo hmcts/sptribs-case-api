@@ -76,6 +76,7 @@ public class WAProcessCorrectionsFT extends FunctionalTestSuite {
         caseData.put("cicCaseReferralTypeForWA", "Corrections");
         caseData.putAll(caseData(CASEWORKER_CREATE_DRAFT_ORDER_DATA));
         cdamUrlDebugger.logUrls();
+        log.debug("Trying to upload test document in WAProcessCorrections");
         UploadResponse uploadResponse = uploadTestDocument(DRAFT_ORDER_FILE);
 
         if (uploadResponse != null) {
