@@ -58,8 +58,4 @@ logging:
   level:
     root: DEBUG
     feign: DEBUG
-    uk:
-      gov:
-        hmcts:
-          sptribs:
-            wa: DEBUG
+    uk.gov.hmcts.sptribs.wa: DEBUG
