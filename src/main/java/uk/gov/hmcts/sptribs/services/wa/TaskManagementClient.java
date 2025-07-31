@@ -2,13 +2,13 @@ package uk.gov.hmcts.sptribs.services.wa;
 
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
+import uk.gov.hmcts.sptribs.services.model.wa.InitiateTaskRequest;
 import uk.gov.hmcts.sptribs.services.model.wa.ProcessCategoryIdentifier;
 import uk.gov.hmcts.sptribs.services.model.wa.TaskType;
 import uk.gov.hmcts.sptribs.services.model.wa.WaRequest;
@@ -50,36 +50,6 @@ public interface TaskManagementClient {
         @PathVariable("task-id") String taskId
     );
 
-    @PostMapping(path = "/task/{task-id}/claim")
-    ResponseEntity<Void> claimTask(
-        @RequestHeader(AUTHORIZATION) String authToken,
-        @RequestHeader(SERVICE_AUTHORIZATION) String serviceAuthToken,
-        @PathVariable("task-id") String taskId
-    );
-
-    @PostMapping(path = "/task/{task-id}/unclaim")
-    ResponseEntity<Void> unclaimTask(
-        @RequestHeader(AUTHORIZATION) String authToken,
-        @RequestHeader(SERVICE_AUTHORIZATION) String serviceAuthToken,
-        @PathVariable("task-id") String taskId
-    );
-
-    @PostMapping(path = "/task/{task-id}/assign")
-    ResponseEntity<Void> assignTask(
-        @RequestHeader(AUTHORIZATION) String authToken,
-        @RequestHeader(SERVICE_AUTHORIZATION) String serviceAuthToken,
-        @PathVariable("task-id") String taskId,
-        @RequestBody WaRequest.AssignTaskRequest assignTaskRequest
-    );
-
-    @PostMapping(path = "/task/{task-id}/complete")
-    ResponseEntity<Void> completeTask(
-        @RequestHeader(AUTHORIZATION) String authToken,
-        @RequestHeader(SERVICE_AUTHORIZATION) String serviceAuthToken,
-        @PathVariable("task-id") String taskId,
-        @RequestBody(required = false) WaRequest.CompleteTaskRequest completeTaskRequest
-    );
-
     @PostMapping(path = "/task/{case-id}/complete")
     ResponseEntity<Void> completeTasks(
         @RequestHeader(AUTHORIZATION) String authToken,
@@ -103,18 +73,27 @@ public interface TaskManagementClient {
         @RequestBody List<ProcessCategoryIdentifier> processCategoryIdentifiers
     );
 
-    @PostMapping(path = "/task/{task-id}/initiation", consumes = APPLICATION_JSON_VALUE)
-    ResponseEntity<WaTask> initiateTask(
+    @PostMapping(path = "/task/{case-id}/initiation", consumes = APPLICATION_JSON_VALUE)
+    ResponseEntity<WaTask> initiateTaskForCase(
+        @RequestHeader(AUTHORIZATION) String authToken,
         @RequestHeader(SERVICE_AUTHORIZATION) String serviceAuthToken,
-        @PathVariable("task-id") String taskId,
-        @RequestBody WaRequest.InitiateTaskRequestMap initiateTaskRequest
+        @PathVariable("case-id") String caseId,
+        @RequestBody InitiateTaskRequest initiateTaskRequest
     );
 
-    @DeleteMapping(path = "/task/{task-id}")
-    ResponseEntity<Void> terminateTask(
+    @PostMapping(path = "/task/{case-id}/reconfigure")
+    ResponseEntity<Void> reconfigureTask(
+        @RequestHeader(AUTHORIZATION) String authToken,
         @RequestHeader(SERVICE_AUTHORIZATION) String serviceAuthToken,
-        @PathVariable("task-id") String taskId,
-        @RequestBody WaRequest.TerminateTaskRequest terminateTaskRequest
+        @PathVariable("case-id") String caseId,
+        @RequestBody List<ProcessCategoryIdentifier> processCategoryIdentifiers
+    );
+
+    @PostMapping(path = "/task/{case-id}/reconfigure")
+    ResponseEntity<Void> reconfigureAllTasks(
+        @RequestHeader(AUTHORIZATION) String authToken,
+        @RequestHeader(SERVICE_AUTHORIZATION) String serviceAuthToken,
+        @PathVariable("case-id") String caseId
     );
 
 

@@ -20,6 +20,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.common.service.CcdSupplementaryDataService;
+import uk.gov.hmcts.sptribs.services.model.wa.TaskType;
 import uk.gov.hmcts.sptribs.services.wa.TaskManagementService;
 
 import java.nio.charset.Charset;
@@ -98,7 +99,7 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
 
         caseData.setHyphenatedCaseRef(caseData.formatCaseRef(details.getId()));
         setDefaultCaseDetails(caseData);
-        taskManagementService.initiateTask("processFurtherEvidence", new HashMap<>());
+        taskManagementService.initiateTask("processFurtherEvidence", TaskType.createDueDate, new HashMap<>());
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)

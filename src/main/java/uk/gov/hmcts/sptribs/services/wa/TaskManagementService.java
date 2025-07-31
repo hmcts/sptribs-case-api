@@ -8,6 +8,7 @@ import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.idam.client.models.User;
 import uk.gov.hmcts.sptribs.exception.CaseCreateOrUpdateException;
 import uk.gov.hmcts.sptribs.idam.IdamService;
+import uk.gov.hmcts.sptribs.services.model.wa.InitiateTaskRequest;
 import uk.gov.hmcts.sptribs.services.model.wa.ProcessCategoryIdentifier;
 import uk.gov.hmcts.sptribs.services.model.wa.Search;
 import uk.gov.hmcts.sptribs.services.model.wa.TaskType;
@@ -19,7 +20,6 @@ import java.util.Map;
 
 import static uk.gov.hmcts.sptribs.services.model.wa.Search.SearchOperator.IN;
 import static uk.gov.hmcts.sptribs.services.model.wa.Search.SearchParameterKey.CASE_ID;
-import static uk.gov.hmcts.sptribs.services.model.wa.WaRequest.Enums.InitiateTaskOperation.INITIATION;
 
 
 @Service
@@ -44,41 +44,39 @@ public class TaskManagementService {
         return taskManagementClient.searchTask(user.getAuthToken(), serviceAuthToken, 0, 100, searchTaskRequest).getTasks();
     }
 
-    /**
-     * Initiates a task in the WA system.
-     * This is usually called after a task is created in Camunda.
-     *
-     * @param taskId         The unique ID of the task to initiate.
-     * @param taskAttributes A map of attributes to set on the task.
-     */
-    public void initiateTask(String taskId, Map<String, Object> taskAttributes) {
+    public void initiateTask(String caseId, TaskType taskType, Map<String, Object> taskAttributes) {
+        User user = idamService.retrieveSystemUpdateUserDetails();
         String serviceAuthToken = authTokenGenerator.generate();
-        WaRequest.InitiateTaskRequestMap initiateTaskRequest = new WaRequest.InitiateTaskRequestMap(INITIATION, taskAttributes);
+        InitiateTaskRequest initiateTaskRequest = InitiateTaskRequest.builder()
+            .caseId(caseId)
+            .taskType(taskType)
+            .taskAttributes(taskAttributes)
+            .build();
         try {
-            log.info("Attempting to initiate task with id: {}", taskId);
-            taskManagementClient.initiateTask(serviceAuthToken, taskId, initiateTaskRequest);
-            log.info("Task initiated successfully: {}", taskId);
+            log.info("Attempting to initiate task of type {} for case: {}", taskType, caseId);
+            taskManagementClient.initiateTaskForCase(user.getAuthToken(), serviceAuthToken, caseId, initiateTaskRequest);
+            log.info("Task {} initiated successfully for case: {}", taskType, caseId);
         } catch (FeignException e) {
-            log.error("Error initiating task id: {}. Status: {}, Body: {}", taskId, e.status(), e.contentUTF8(), e);
+            log.error("Error initiating tasks for case id: {}. Status: {}, Body: {}", caseId, e.status(), e.contentUTF8(), e);
             throw new CaseCreateOrUpdateException("Failed to initiate task", e);
         }
     }
 
     /**
-     * Reconfigures an existing task in the WA system - cancels the current task and initiates a new one with updated attributes.
-     * @param taskId
-     * @param taskAttributes
+     * Reconfigures existing tasks with the lastest case data (usually Case Management Location Changes) that belong to the provided
+     * process category identifiers.
+     * @param caseId
+     * @param processCategoryIdentifiers
      */
-    public void reconfigureTask(TaskType taskId, Map<String, Object> taskAttributes, ProcessCategoryIdentifier processCategoryIdentifier) {
+    public void reconfigureTask(String caseId, List<ProcessCategoryIdentifier> processCategoryIdentifiers) {
         User user = idamService.retrieveSystemUpdateUserDetails();
         String serviceAuthToken = authTokenGenerator.generate();
-        WaRequest.InitiateTaskRequestMap initiateTaskRequest = new WaRequest.InitiateTaskRequestMap(INITIATION, taskAttributes);
         try {
-            log.info("Attempting to reconfigure task with id: {}", taskId);
-            //taskManagementClient.cancelTask(user.getAuthToken(), serviceAuthToken, taskId);
-            log.info("Task reconfigured successfully: {}", taskId);
+            log.info("Attempting to reconfigure tasks for case: {}", caseId);
+            taskManagementClient.reconfigureTask(user.getAuthToken(), serviceAuthToken, caseId, processCategoryIdentifiers);
+            log.info("Task reconfigured successfully for case: {}", caseId);
         } catch (FeignException e) {
-            log.error("Error reconfiguring task id: {}. Status: {}, Body: {}", taskId, e.status(), e.contentUTF8(), e);
+            log.error("Error reconfiguring tasks for case id: {}. Status: {}, Body: {}", caseId, e.status(), e.contentUTF8(), e);
             throw new CaseCreateOrUpdateException("Failed to reconfigure task", e);
         }
     }
@@ -102,31 +100,43 @@ public class TaskManagementService {
         }
     }
 
+    /**
+     * Cancels all tasks for a specific case which also belongs to the provided process category id - these ids are service-defined.
+     *
+     * @param caseId The CCD Case ID.
+     * @param processCategoryIdentifier The process category identifier to cancel tasks for.
+     */
     public void cancelTasksForProcessCategoryId(String caseId,
                                                 ProcessCategoryIdentifier processCategoryIdentifier) {
-
-    }
-
-    public void completeTasks(String caseId, TaskType... taskTypes) {
+        User user = idamService.retrieveSystemUpdateUserDetails();
+        String serviceAuthToken = authTokenGenerator.generate();
+        try {
+            log.info("Attempting to cancel tasks for case id: {}", caseId);
+            taskManagementClient.cancelForCase(user.getAuthToken(), serviceAuthToken, caseId, List.of(processCategoryIdentifier));
+            log.info("Tasks cancelled successfully for caseId: {}", caseId);
+        } catch (FeignException e) {
+            log.error("Error cancelling task for caseId: {}. Status: {}, Body: {}", caseId, e.status(), e.contentUTF8(), e);
+            throw new CaseCreateOrUpdateException("Failed to cancel task", e);
+        }
 
     }
 
     /**
-     * Terminates a task. This is a more definitive system-level action.
-     *
-     * @param taskId          The unique ID of the task to terminate.
-     * @param terminateReason A string explaining why the task is being terminated.
+     * Completes tasks for a specific case ID. Often, a user event triggers this action and auto-completes a number of task types at once.
+     * @param caseId
+     * @param taskTypes
      */
-    public void terminateTask(String taskId, String terminateReason) {
+    public void completeTasks(String caseId, TaskType... taskTypes) {
+        User user = idamService.retrieveSystemUpdateUserDetails();
         String serviceAuthToken = authTokenGenerator.generate();
-        WaRequest.TerminateTaskRequest terminateTaskRequest = new WaRequest.TerminateTaskRequest(new WaRequest.Options.TerminateInfo(terminateReason));
+
         try {
-            log.info("Attempting to terminate task with id: {} for reason: {}", taskId, terminateReason);
-            taskManagementClient.terminateTask(serviceAuthToken, taskId, terminateTaskRequest);
-            log.info("Task terminated successfully: {}", taskId);
+            log.info("Attempting to complete tasks for case id: {}", caseId);
+            taskManagementClient.completeTasks(user.getAuthToken(), serviceAuthToken, caseId, List.of(taskTypes));
+            log.info("Tasks completed successfully for caseId: {}", caseId);
         } catch (FeignException e) {
-            log.error("Error terminating task id: {}. Status: {}, Body: {}", taskId, e.status(), e.contentUTF8(), e);
-            throw new CaseCreateOrUpdateException("Failed to terminate task", e);
+            log.error("Error completing tasks for caseId: {}. Status: {}, Body: {}", caseId, e.status(), e.contentUTF8(), e);
+            throw new CaseCreateOrUpdateException("Failed to cancel task", e);
         }
     }
 
