@@ -42,8 +42,8 @@ public class CaseWorkerEditCicaCaseDetails implements CCDConfig<CaseData, State,
             configBuilder
                 .event(CASEWORKER_EDIT_CICA_CASE_DETAILS)
                 .forStates(CaseManagement, AwaitingHearing, AwaitingOutcome, CaseStayed, CaseClosed)
-                .name("Case: Edit case details")
-                .description("Edit case details")
+                .name("Case: Edit CICA details")
+                .description("Edit CICA details")
                 .showSummary()
                 .submittedCallback(this::submitted)
                 .grant(CREATE_READ_UPDATE, SUPER_USER, ST_CIC_RESPONDENT)
