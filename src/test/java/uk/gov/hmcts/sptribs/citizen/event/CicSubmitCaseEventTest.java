@@ -11,7 +11,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.test.util.ReflectionTestUtils;
 import uk.gov.hmcts.ccd.sdk.ConfigBuilderImpl;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.Event;
@@ -107,7 +106,7 @@ class CicSubmitCaseEventTest {
     }
 
     @Test
-    void shouldAddConfigurationToConfigBuilder() {
+    void shouldAddPublishToCamundaWhenWAIsEnabled() {
         when(appsConfig.getApps()).thenReturn(List.of(cicAppDetail));
 
         cicSubmitCaseEvent.configure(configBuilder);
@@ -119,33 +118,14 @@ class CicSubmitCaseEventTest {
 
         assertThat(getEventsFrom(configBuilder).values())
                 .extracting(Event::isPublishToCamunda)
-                .contains(false);
+                .contains(true);
 
         assertThat(getEventsFrom(configBuilder).values())
                 .extracting(Event::getGrants)
                 .extracting(map -> map.containsKey(ST_CIC_WA_CONFIG_USER))
-                .contains(false);
-    }
-
-    @Test
-    void shouldAddPublishToCamundaWhenWAIsEnabled() {
-        ReflectionTestUtils.setField(cicSubmitCaseEvent, "isWorkAllocationEnabled", true);
-        when(appsConfig.getApps()).thenReturn(List.of(cicAppDetail));
-
-        final ConfigBuilderImpl<CaseData, State, UserRole> configBuilderImpl = createCaseDataConfigBuilder();
-
-        cicSubmitCaseEvent.configure(configBuilderImpl);
-
-        assertThat(getEventsFrom(configBuilderImpl).values())
-                .extracting(Event::isPublishToCamunda)
                 .contains(true);
 
-        assertThat(getEventsFrom(configBuilderImpl).values())
-                .extracting(Event::getGrants)
-                .extracting(map -> map.containsKey(ST_CIC_WA_CONFIG_USER))
-                .contains(true);
-
-        assertThat(getEventsFrom(configBuilderImpl).values())
+        assertThat(getEventsFrom(configBuilder).values())
                 .extracting(Event::getGrants)
                 .extracting(map -> map.get(ST_CIC_WA_CONFIG_USER))
                 .contains(Permissions.CREATE_READ_UPDATE);

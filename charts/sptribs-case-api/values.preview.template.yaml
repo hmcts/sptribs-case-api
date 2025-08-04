@@ -9,7 +9,6 @@ java:
     CASE_DATA_STORE_BASEURL: http://{{ .Release.Name }}-ccd-data-store-api
     CASE_DOCUMENT_AM_BASEURL: "http://ccd-case-document-am-api-sptribs-case-api-pr-${CHANGE_ID}.preview.platform.hmcts.net"
     BUNDLING_API_URL: https://em-ccdorc-${SERVICE_FQDN}
-    CITIZEN_UPDATE_CASE_STATE_ENABLED: true
     POSTGRES_HOST: '{{ tpl .Values.global.postgresHostname $}}'
     POSTGRES_NAME: "{{ .Values.global.databaseNamePrefix }}sptribs-case-api"
     POSTGRES_USERNAME: ${SPTRIBS_POSTGRES_USERNAME_PREVIEW}

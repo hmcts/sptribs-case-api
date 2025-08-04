@@ -1,6 +1,4 @@
-java:
-  environment:
-    WA_FEATURE_ENABLED: true
+
 
 servicebus:
   enabled: true
