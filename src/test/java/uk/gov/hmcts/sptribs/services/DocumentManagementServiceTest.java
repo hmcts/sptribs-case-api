@@ -1,13 +1,11 @@
 package uk.gov.hmcts.sptribs.services;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.sptribs.common.config.AppsConfig;
 import uk.gov.hmcts.sptribs.constants.CommonConstants;
 import uk.gov.hmcts.sptribs.exception.DocumentUploadOrDeleteException;
@@ -36,7 +34,7 @@ import static uk.gov.hmcts.sptribs.testutil.TestConstants.RESPONSE_STATUS_SUCCES
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_URL;
 import static uk.gov.hmcts.sptribs.testutil.TestFileUtil.loadJson;
 
-@ExtendWith(SpringExtension.class)
+@ExtendWith(MockitoExtension.class)
 class DocumentManagementServiceTest {
 
     @InjectMocks
@@ -50,11 +48,6 @@ class DocumentManagementServiceTest {
 
     @Mock
     private AppsConfig.AppsDetails fgmAppDetail;
-
-    @BeforeEach
-    public void setUp() {
-        MockitoAnnotations.openMocks(this);
-    }
 
     @Test
     void shouldUploadFgmDocument() throws Exception {
