@@ -4,8 +4,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.sptribs.ciccase.model.DssCaseData;
 import uk.gov.hmcts.sptribs.common.config.AppsConfig;
 import uk.gov.hmcts.sptribs.constants.CommonConstants;
@@ -20,7 +19,7 @@ import static uk.gov.hmcts.sptribs.constants.CommonConstants.ST_CIC_CASE_TYPE;
 import static uk.gov.hmcts.sptribs.constants.CommonConstants.ST_CIC_JURISDICTION;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.CASE_DATA_CIC_ID;
 
-@ExtendWith(SpringExtension.class)
+@ExtendWith(MockitoExtension.class)
 public class AppsUtilTest {
 
     @Mock
@@ -28,8 +27,6 @@ public class AppsUtilTest {
 
     @BeforeEach
     public void setUp() {
-        MockitoAnnotations.openMocks(this);
-
         cicAppDetails = new AppsConfig.AppsDetails();
         cicAppDetails.setCaseType(CommonConstants.ST_CIC_CASE_TYPE);
         cicAppDetails.setJurisdiction(CommonConstants.ST_CIC_JURISDICTION);

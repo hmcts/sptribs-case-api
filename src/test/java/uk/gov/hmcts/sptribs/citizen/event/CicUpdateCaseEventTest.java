@@ -6,7 +6,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.ccd.sdk.ConfigBuilderImpl;
 import uk.gov.hmcts.ccd.sdk.api.Event;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
@@ -24,7 +24,7 @@ import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigB
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.getEventsFrom;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.CASE_DATA_CIC_ID;
 
-@ExtendWith(SpringExtension.class)
+@ExtendWith(MockitoExtension.class)
 class CicUpdateCaseEventTest {
     @InjectMocks
     private CicUpdateCaseEvent cicUpdateCaseEvent;
