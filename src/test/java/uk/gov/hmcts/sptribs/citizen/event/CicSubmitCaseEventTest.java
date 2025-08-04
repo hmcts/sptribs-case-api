@@ -28,8 +28,8 @@ import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.ciccase.model.access.Permissions;
 import uk.gov.hmcts.sptribs.common.config.AppsConfig;
 import uk.gov.hmcts.sptribs.constants.CommonConstants;
+import uk.gov.hmcts.sptribs.document.model.DSSCICDocument;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
-import uk.gov.hmcts.sptribs.document.model.EdgeCaseDocument;
 import uk.gov.hmcts.sptribs.idam.IdamService;
 import uk.gov.hmcts.sptribs.notification.exception.NotificationException;
 import uk.gov.hmcts.sptribs.testutil.TestDataHelper;
@@ -138,26 +138,26 @@ class CicSubmitCaseEventTest {
         final String genericTestDocumentRelevance1 = "this document is relevant because it is important to the case";
         final String genericTestDocumentRelevance2 = "this document is also relevant because it is also important to the case";
 
-        final EdgeCaseDocument dssTribunalForm = new EdgeCaseDocument();
+        final DSSCICDocument dssTribunalForm = new DSSCICDocument();
         dssTribunalForm.setDocumentLink(genericTestDocument);
-        final ListValue<EdgeCaseDocument> tribunalFormDocListValue = new ListValue<>();
+        final ListValue<DSSCICDocument> tribunalFormDocListValue = new ListValue<>();
         tribunalFormDocListValue.setValue(dssTribunalForm);
 
-        final EdgeCaseDocument dssSupportingDoc = new EdgeCaseDocument();
+        final DSSCICDocument dssSupportingDoc = new DSSCICDocument();
         dssSupportingDoc.setDocumentLink(genericTestDocument);
-        final ListValue<EdgeCaseDocument> supportingDocListValue = new ListValue<>();
+        final ListValue<DSSCICDocument> supportingDocListValue = new ListValue<>();
         supportingDocListValue.setValue(dssSupportingDoc);
 
-        final EdgeCaseDocument dssOtherInfoDoc1 = new EdgeCaseDocument();
+        final DSSCICDocument dssOtherInfoDoc1 = new DSSCICDocument();
         dssOtherInfoDoc1.setDocumentLink(genericTestDocument);
         dssOtherInfoDoc1.setComment(genericTestDocumentRelevance1);
-        final ListValue<EdgeCaseDocument> otherInfoDocListValue1 = new ListValue<>();
+        final ListValue<DSSCICDocument> otherInfoDocListValue1 = new ListValue<>();
         otherInfoDocListValue1.setValue(dssOtherInfoDoc1);
 
-        final EdgeCaseDocument dssOtherInfoDoc2 = new EdgeCaseDocument();
+        final DSSCICDocument dssOtherInfoDoc2 = new DSSCICDocument();
         dssOtherInfoDoc2.setDocumentLink(genericTestDocument);
         dssOtherInfoDoc2.setComment(genericTestDocumentRelevance2);
-        final ListValue<EdgeCaseDocument> otherInfoDocListValue2 = new ListValue<>();
+        final ListValue<DSSCICDocument> otherInfoDocListValue2 = new ListValue<>();
         otherInfoDocListValue2.setValue(dssOtherInfoDoc2);
 
         final DssCaseData dssCaseData = DssCaseData.builder()
@@ -204,9 +204,9 @@ class CicSubmitCaseEventTest {
 
     @Test
     void shouldUpdateCaseDetails() {
-        final EdgeCaseDocument dssDoc = new EdgeCaseDocument();
+        final DSSCICDocument dssDoc = new DSSCICDocument();
         dssDoc.setDocumentLink(Document.builder().build());
-        final ListValue<EdgeCaseDocument> listValue = new ListValue<>();
+        final ListValue<DSSCICDocument> listValue = new ListValue<>();
         listValue.setValue(dssDoc);
         final DssCaseData dssCaseData = DssCaseData.builder()
             .caseTypeOfApplication(CASE_DATA_CIC_ID)

@@ -34,8 +34,8 @@ import uk.gov.hmcts.sptribs.common.ccd.CcdCaseType;
 import uk.gov.hmcts.sptribs.document.model.CICDocument;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocumentUpload;
+import uk.gov.hmcts.sptribs.document.model.DSSCICDocument;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
-import uk.gov.hmcts.sptribs.document.model.EdgeCaseDocument;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -595,7 +595,7 @@ public class TestDataHelper {
     }
 
     public static DssCaseData getDssCaseData() {
-        EdgeCaseDocument doc1 = new EdgeCaseDocument();
+        DSSCICDocument doc1 = new DSSCICDocument();
         doc1.setDocumentLink(
             Document.builder()
                 .filename("doc1.pdf")
@@ -604,7 +604,7 @@ public class TestDataHelper {
                 .build()
         );
         doc1.setComment("this doc is relevant to the case");
-        EdgeCaseDocument doc2 = new EdgeCaseDocument();
+        DSSCICDocument doc2 = new DSSCICDocument();
         doc2.setDocumentLink(
             Document.builder()
                 .filename("doc2.pdf")
@@ -613,7 +613,7 @@ public class TestDataHelper {
                 .build()
         );
         doc2.setComment("this doc is also relevant to the case");
-        final List<ListValue<EdgeCaseDocument>> dssCaseDataOtherInfoDocuments = List.of(
+        final List<ListValue<DSSCICDocument>> dssCaseDataOtherInfoDocuments = List.of(
             new ListValue<>("1", doc1),
             new ListValue<>("2", doc2)
         );

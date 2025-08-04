@@ -9,7 +9,7 @@ import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 import uk.gov.hmcts.sptribs.ciccase.model.DssCaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.LanguagePreference;
-import uk.gov.hmcts.sptribs.document.model.EdgeCaseDocument;
+import uk.gov.hmcts.sptribs.document.model.DSSCICDocument;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -51,11 +51,11 @@ public class DssCaseDataRequest {
 
     private String dssCaseDataPcqId;
 
-    private List<ListValue<EdgeCaseDocument>> dssCaseDataTribunalFormDocuments;
+    private List<ListValue<DSSCICDocument>> dssCaseDataTribunalFormDocuments;
 
-    private List<ListValue<EdgeCaseDocument>> dssCaseDataSupportingDocuments;
+    private List<ListValue<DSSCICDocument>> dssCaseDataSupportingDocuments;
 
-    private List<ListValue<EdgeCaseDocument>> dssCaseDataOtherInfoDocuments;
+    private List<ListValue<DSSCICDocument>> dssCaseDataOtherInfoDocuments;
 
     private YesOrNo dssCaseDataIsRepresentativePresent;
 

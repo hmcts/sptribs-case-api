@@ -31,8 +31,8 @@ import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.CcdCaseType;
 import uk.gov.hmcts.sptribs.common.config.AppsConfig;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
+import uk.gov.hmcts.sptribs.document.model.DSSCICDocument;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
-import uk.gov.hmcts.sptribs.document.model.EdgeCaseDocument;
 import uk.gov.hmcts.sptribs.idam.IdamService;
 import uk.gov.hmcts.sptribs.util.AppsUtil;
 
@@ -229,7 +229,7 @@ public class CicSubmitCaseEvent implements CCDConfig<CaseData, State, UserRole> 
         List<CaseworkerCICDocument> docList = new ArrayList<>();
 
         if (isNotEmpty(dssCaseData.getOtherInfoDocuments())) {
-            for (ListValue<EdgeCaseDocument> documentListValue : dssCaseData.getOtherInfoDocuments()) {
+            for (ListValue<DSSCICDocument> documentListValue : dssCaseData.getOtherInfoDocuments()) {
                 Document doc = documentListValue.getValue().getDocumentLink();
                 String documentComment = documentListValue.getValue().getComment();
                 doc.setCategoryId(DocumentType.DSS_OTHER.getCategory());
@@ -265,7 +265,7 @@ public class CicSubmitCaseEvent implements CCDConfig<CaseData, State, UserRole> 
         }
 
         if (isNotEmpty(dssCaseData.getSupportingDocuments())) {
-            for (ListValue<EdgeCaseDocument> documentListValue : dssCaseData.getSupportingDocuments()) {
+            for (ListValue<DSSCICDocument> documentListValue : dssCaseData.getSupportingDocuments()) {
                 Document doc = documentListValue.getValue().getDocumentLink();
                 doc.setCategoryId(DocumentType.DSS_SUPPORTING.getCategory());
                 CaseworkerCICDocument caseworkerCICDocument = CaseworkerCICDocument.builder()
@@ -280,7 +280,7 @@ public class CicSubmitCaseEvent implements CCDConfig<CaseData, State, UserRole> 
         }
 
         if (isNotEmpty(dssCaseData.getTribunalFormDocuments())) {
-            for (ListValue<EdgeCaseDocument> documentListValue : dssCaseData.getTribunalFormDocuments()) {
+            for (ListValue<DSSCICDocument> documentListValue : dssCaseData.getTribunalFormDocuments()) {
                 Document doc = documentListValue.getValue().getDocumentLink();
                 doc.setCategoryId(DocumentType.DSS_TRIBUNAL_FORM.getCategory());
                 CaseworkerCICDocument caseworkerCICDocument = CaseworkerCICDocument.builder()
