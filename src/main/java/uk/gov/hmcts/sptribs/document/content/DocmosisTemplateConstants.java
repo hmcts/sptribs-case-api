@@ -12,8 +12,6 @@ public final class DocmosisTemplateConstants {
     public static final String CASE_NUMBER = "cicCaseCaseNumber";
     public static final String DECISION_DATED = "DateDecisionDocCreated";
     public static final String DIRECTION_DATED = "DateDirectionDocCreated";
-    public static final String HEARING_TYPE = "venueOrHearingType";
-    public static final String TRIBUNAL_MEMBERS = "tribunalMembers";
     public static final String DECISION_SIGNATURE = "decisionSignature";
     public static final String ORDER_SIGNATURE = "orderSignature";
     public static final String MAIN_CONTENT = "MainBody";
