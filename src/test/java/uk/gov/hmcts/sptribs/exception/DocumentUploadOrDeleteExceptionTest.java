@@ -1,13 +1,11 @@
 package uk.gov.hmcts.sptribs.exception;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.sptribs.controllers.DocumentManagementController;
 import uk.gov.hmcts.sptribs.model.DocumentInfo;
 import uk.gov.hmcts.sptribs.services.DocumentManagementService;
@@ -28,7 +26,7 @@ import static uk.gov.hmcts.sptribs.testutil.TestConstants.JSON_FILE_TYPE;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_URL;
 import static uk.gov.hmcts.sptribs.testutil.TestFileUtil.loadJson;
 
-@ExtendWith(SpringExtension.class)
+@ExtendWith(MockitoExtension.class)
 class DocumentUploadOrDeleteExceptionTest {
 
     private DocumentInfo documentInfo;
@@ -37,12 +35,7 @@ class DocumentUploadOrDeleteExceptionTest {
     private DocumentManagementController documentManagementController;
 
     @Mock
-    DocumentManagementService documentManagementService;
-
-    @BeforeEach
-    public void setUp() {
-        MockitoAnnotations.openMocks(this);
-    }
+    private DocumentManagementService documentManagementService;
 
     @Test
     void deleteDocumentUploadOrDeleteException() {
