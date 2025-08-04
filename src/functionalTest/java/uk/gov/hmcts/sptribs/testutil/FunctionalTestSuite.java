@@ -333,7 +333,7 @@ public abstract class FunctionalTestSuite {
                         List.of(inMemoryMultipartFile));
 
                 final String serviceToken = serviceAuthenticationGenerator.generate();
-                final String userToken = idamTokenGenerator.generateIdamTokenForSystemUser();
+                final String userToken = idamTokenGenerator.generateIdamTokenForWASeniorCaseworker();
                 log.debug("Document Request:\nClassification: {}\nCase Type: {}\nJurisdiction: {}\nFile: {}",
                         documentUploadRequest.getClassification(),
                         documentUploadRequest.getCaseTypeId(),
