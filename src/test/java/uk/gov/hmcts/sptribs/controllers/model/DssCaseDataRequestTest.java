@@ -4,7 +4,7 @@ import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.sptribs.ciccase.model.DssCaseData;
-import uk.gov.hmcts.sptribs.document.model.DSSCICDocument;
+import uk.gov.hmcts.sptribs.document.model.CitizenCICDocument;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -66,8 +66,8 @@ public class DssCaseDataRequestTest {
         assertEquals(request.getDssCaseDataLanguagePreference(), dssCaseData.getLanguagePreference());
     }
 
-    private List<ListValue<DSSCICDocument>> getDssCaseDataDocuments() {
-        DSSCICDocument doc1 = new DSSCICDocument();
+    private List<ListValue<CitizenCICDocument>> getDssCaseDataDocuments() {
+        CitizenCICDocument doc1 = new CitizenCICDocument();
         doc1.setDocumentLink(
             Document.builder()
                 .filename("doc1.pdf")
@@ -76,7 +76,7 @@ public class DssCaseDataRequestTest {
                 .build()
         );
         doc1.setComment("this doc is relevant to the case");
-        DSSCICDocument doc2 = new DSSCICDocument();
+        CitizenCICDocument doc2 = new CitizenCICDocument();
         doc2.setDocumentLink(
             Document.builder()
                 .filename("doc2.pdf")

@@ -10,7 +10,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.access.DefaultAccess;
 @Data
 @NoArgsConstructor
 @ToString
-public class DSSCICDocument {
+public class CitizenCICDocument {
 
     @CCD(
         label = "Document",

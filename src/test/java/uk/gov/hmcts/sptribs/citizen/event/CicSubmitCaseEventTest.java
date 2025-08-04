@@ -28,7 +28,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.ciccase.model.access.Permissions;
 import uk.gov.hmcts.sptribs.common.config.AppsConfig;
 import uk.gov.hmcts.sptribs.constants.CommonConstants;
-import uk.gov.hmcts.sptribs.document.model.DSSCICDocument;
+import uk.gov.hmcts.sptribs.document.model.CitizenCICDocument;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
 import uk.gov.hmcts.sptribs.idam.IdamService;
 import uk.gov.hmcts.sptribs.notification.exception.NotificationException;
@@ -138,26 +138,26 @@ class CicSubmitCaseEventTest {
         final String genericTestDocumentRelevance1 = "this document is relevant because it is important to the case";
         final String genericTestDocumentRelevance2 = "this document is also relevant because it is also important to the case";
 
-        final DSSCICDocument dssTribunalForm = new DSSCICDocument();
+        final CitizenCICDocument dssTribunalForm = new CitizenCICDocument();
         dssTribunalForm.setDocumentLink(genericTestDocument);
-        final ListValue<DSSCICDocument> tribunalFormDocListValue = new ListValue<>();
+        final ListValue<CitizenCICDocument> tribunalFormDocListValue = new ListValue<>();
         tribunalFormDocListValue.setValue(dssTribunalForm);
 
-        final DSSCICDocument dssSupportingDoc = new DSSCICDocument();
+        final CitizenCICDocument dssSupportingDoc = new CitizenCICDocument();
         dssSupportingDoc.setDocumentLink(genericTestDocument);
-        final ListValue<DSSCICDocument> supportingDocListValue = new ListValue<>();
+        final ListValue<CitizenCICDocument> supportingDocListValue = new ListValue<>();
         supportingDocListValue.setValue(dssSupportingDoc);
 
-        final DSSCICDocument dssOtherInfoDoc1 = new DSSCICDocument();
+        final CitizenCICDocument dssOtherInfoDoc1 = new CitizenCICDocument();
         dssOtherInfoDoc1.setDocumentLink(genericTestDocument);
         dssOtherInfoDoc1.setComment(genericTestDocumentRelevance1);
-        final ListValue<DSSCICDocument> otherInfoDocListValue1 = new ListValue<>();
+        final ListValue<CitizenCICDocument> otherInfoDocListValue1 = new ListValue<>();
         otherInfoDocListValue1.setValue(dssOtherInfoDoc1);
 
-        final DSSCICDocument dssOtherInfoDoc2 = new DSSCICDocument();
+        final CitizenCICDocument dssOtherInfoDoc2 = new CitizenCICDocument();
         dssOtherInfoDoc2.setDocumentLink(genericTestDocument);
         dssOtherInfoDoc2.setComment(genericTestDocumentRelevance2);
-        final ListValue<DSSCICDocument> otherInfoDocListValue2 = new ListValue<>();
+        final ListValue<CitizenCICDocument> otherInfoDocListValue2 = new ListValue<>();
         otherInfoDocListValue2.setValue(dssOtherInfoDoc2);
 
         final DssCaseData dssCaseData = DssCaseData.builder()
@@ -204,9 +204,9 @@ class CicSubmitCaseEventTest {
 
     @Test
     void shouldUpdateCaseDetails() {
-        final DSSCICDocument dssDoc = new DSSCICDocument();
+        final CitizenCICDocument dssDoc = new CitizenCICDocument();
         dssDoc.setDocumentLink(Document.builder().build());
-        final ListValue<DSSCICDocument> listValue = new ListValue<>();
+        final ListValue<CitizenCICDocument> listValue = new ListValue<>();
         listValue.setValue(dssDoc);
         final DssCaseData dssCaseData = DssCaseData.builder()
             .caseTypeOfApplication(CASE_DATA_CIC_ID)
