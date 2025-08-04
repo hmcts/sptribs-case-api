@@ -11,7 +11,6 @@ import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.Event;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.ccd.sdk.type.DynamicList;
-import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.event.page.HearingTypeAndFormat;
 import uk.gov.hmcts.sptribs.caseworker.event.page.HearingVenues;
@@ -31,6 +30,7 @@ import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.notification.dispatcher.ListingUpdatedNotification;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -148,11 +148,15 @@ public class CaseworkerEditRecordListing implements CCDConfig<CaseData, State, U
 
         final CaseData caseData = details.getData();
         final List<String> errors = recordListHelper.getErrorMsg(details.getData().getCicCase());
-        if (null != caseData.getListing()
-            && null != caseData.getListing().getNumberOfDays()
-            && caseData.getListing().getNumberOfDays().equals(YesOrNo.NO)) {
-            caseData.getListing().setAdditionalHearingDate(null);
+
+        if (caseData.getListing() != null
+            && caseData.getListing().getVenueNotListedOption() != null
+            && !caseData.getListing().getVenueNotListedOption().isEmpty()) {
+            caseData.getListing().setHearingVenues(
+                DynamicList.builder().listItems(Collections.emptyList()).build()
+            );
         }
+
         recordListHelper.getNotificationParties(caseData);
         caseData.setListing(recordListHelper.checkAndUpdateVenueInformation(caseData.getListing()));
         caseData.setCurrentEvent("");
