@@ -17,6 +17,7 @@ import static com.fasterxml.jackson.core.JsonParser.Feature.INCLUDE_SOURCE_IN_LO
 import static com.fasterxml.jackson.databind.MapperFeature.ACCEPT_CASE_INSENSITIVE_ENUMS;
 import static com.fasterxml.jackson.databind.MapperFeature.INFER_BUILDER_TYPE_BINDINGS;
 import static com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer.INSTANCE;
+import uk.gov.hmcts.sptribs.common.config.jackson.deserializer.DocumentDeserializer; // Added import
 
 @Configuration
 public class JacksonConfiguration {
@@ -33,6 +34,7 @@ public class JacksonConfiguration {
         SimpleModule deserialization = new SimpleModule();
         deserialization.addDeserializer(HasRole.class, new HasRoleDeserializer());
         deserialization.addDeserializer(InternalHealth.class, new InternalHealthDeserializer());
+        deserialization.addDeserializer(uk.gov.hmcts.ccd.sdk.type.Document.class, new DocumentDeserializer());
         mapper.registerModule(deserialization);
 
         JavaTimeModule datetime = new JavaTimeModule();
