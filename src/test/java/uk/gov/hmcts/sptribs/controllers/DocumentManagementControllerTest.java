@@ -1,16 +1,13 @@
 package uk.gov.hmcts.sptribs.controllers;
 
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.sptribs.exception.DocumentUploadOrDeleteException;
 import uk.gov.hmcts.sptribs.model.DocumentInfo;
 import uk.gov.hmcts.sptribs.model.DocumentResponse;
@@ -37,7 +34,7 @@ import static uk.gov.hmcts.sptribs.testutil.TestConstants.RESPONSE_STATUS_SUCCES
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_URL;
 import static uk.gov.hmcts.sptribs.testutil.TestFileUtil.loadJson;
 
-@ExtendWith(SpringExtension.class)
+@ExtendWith(MockitoExtension.class)
 class DocumentManagementControllerTest {
 
     @InjectMocks
@@ -46,7 +43,6 @@ class DocumentManagementControllerTest {
     @Mock
     private DocumentManagementService documentManagementService;
 
-    private AutoCloseable closeableMocks;
 
     private final DocumentInfo documentInfo = DocumentInfo.builder()
         .documentId(CASE_DATA_CIC_ID)
@@ -55,16 +51,6 @@ class DocumentManagementControllerTest {
     private final DocumentResponse documentResponseSuccess = DocumentResponse.builder()
         .status(RESPONSE_STATUS_SUCCESS)
         .document(documentInfo).build();
-
-    @BeforeEach
-    void setUp() {
-        closeableMocks = MockitoAnnotations.openMocks(this);
-    }
-
-    @AfterEach
-    void tearDown() throws Exception {
-        closeableMocks.close();
-    }
 
     @Test
     void testCicDocumentControllerFileUpload() throws IOException {

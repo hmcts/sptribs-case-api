@@ -2,16 +2,15 @@ package uk.gov.hmcts.sptribs.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.Spy;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.DssCaseData;
 import uk.gov.hmcts.sptribs.exception.CaseCreateOrUpdateException;
@@ -40,9 +39,10 @@ import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_UPDATE_CASE_EMAIL_ADDRESS;
 import static uk.gov.hmcts.sptribs.testutil.TestFileUtil.loadJson;
 
-@ExtendWith(SpringExtension.class)
+@ExtendWith(MockitoExtension.class)
 class CaseManagementControllerTest {
 
+    @Spy
     private final ObjectMapper mapper = new ObjectMapper().registerModule(new JavaTimeModule());
 
     @InjectMocks
@@ -51,21 +51,14 @@ class CaseManagementControllerTest {
     @Mock
     private CaseManagementService caseManagementService;
 
-    private AutoCloseable closeableMocks;
     private CaseData caseData;
 
     @BeforeEach
     void setUp() throws Exception {
-        closeableMocks = MockitoAnnotations.openMocks(this);
 
         final String caseDataJson = loadJson(CASE_DATA_FILE_CIC);
         final DssCaseData dssCaseData = mapper.readValue(caseDataJson, DssCaseData.class);
         caseData = CaseData.builder().dssCaseData(dssCaseData).build();
-    }
-
-    @AfterEach
-    void tearDown() throws Exception {
-        closeableMocks.close();
     }
 
     @Test
