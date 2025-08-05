@@ -3,6 +3,7 @@ package uk.gov.hmcts.sptribs.testutil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
+import jakarta.servlet.http.HttpServletRequest;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -75,6 +76,9 @@ public abstract class FunctionalTestSuite {
 
     @Autowired
     protected AppsConfig appsConfig;
+
+    @Autowired
+    protected HttpServletRequest httpServletRequest;
 
     @Autowired
     protected CdamUrlDebugger cdamUrlDebugger;
@@ -333,7 +337,9 @@ public abstract class FunctionalTestSuite {
                         List.of(inMemoryMultipartFile));
 
                 final String serviceToken = serviceAuthenticationGenerator.generate();
-                final String userToken = idamTokenGenerator.generateIdamTokenForWASeniorCaseworker();
+                final String userToken = httpServletRequest.getHeader(AUTHORIZATION);
+                // final String userToken = idamTokenGenerator.generateIdamTokenForWASeniorCaseworker();
+                log.debug("service: {}\nuser auth: \n");
                 log.debug("Document Request:\nClassification: {}\nCase Type: {}\nJurisdiction: {}\nFile: {}",
                         documentUploadRequest.getClassification(),
                         documentUploadRequest.getCaseTypeId(),
