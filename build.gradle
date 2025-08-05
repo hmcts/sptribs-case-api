@@ -29,7 +29,7 @@ plugins {
   id 'com.github.ben-manes.versions' version '0.50.0'
   id 'hmcts.ccd.sdk' version '5.6.0'
   id "au.com.dius.pact" version "4.3.10"
-  id 'com.github.hmcts.rse-cft-lib' version '0.19.1823'
+  id 'com.github.hmcts.rse-cft-lib' version '0.19.1826'
 }
 
 apply plugin: 'cz.habarta.typescript-generator'
@@ -350,7 +350,7 @@ dependencies {
   implementation 'org.camunda.bpm:camunda-external-task-client:7.23.0'
 
   annotationProcessor group: 'org.projectlombok', name: 'lombok', version: versions.lombok
-  testImplementation group: 'com.github.hmcts', name: 'fortify-client', version: '1.4.9', classifier: 'all'
+  testImplementation group: 'com.github.hmcts', name: 'fortify-client', version: '1.4.10', classifier: 'all'
 
   testImplementation group: 'jakarta.enterprise', name: 'jakarta.enterprise.cdi-api', version: '4.1.0'
   testImplementation group: 'org.springframework.boot', name: 'spring-boot-starter-test', {
