@@ -4,7 +4,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ObjectUtils;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
@@ -74,9 +73,6 @@ public class CicSubmitCaseEvent implements CCDConfig<CaseData, State, UserRole> 
     private AppsConfig appsConfig;
     private DssApplicationReceivedNotification dssApplicationReceivedNotification;
 
-    @Value("${feature.wa.enabled}")
-    private boolean isWorkAllocationEnabled;
-
     @Autowired
     public CicSubmitCaseEvent(HttpServletRequest request, IdamService idamService, AppsConfig appsConfig,
                               DssApplicationReceivedNotification dssApplicationReceivedNotification) {
@@ -97,7 +93,7 @@ public class CicSubmitCaseEvent implements CCDConfig<CaseData, State, UserRole> 
                 .description("Application submit (cic)")
                 .retries(120, 120)
                 .grant(CREATE_READ_UPDATE_DELETE, CITIZEN)
-                .grant(CREATE_READ_UPDATE, SYSTEM_UPDATE, CREATOR)
+                .grant(CREATE_READ_UPDATE, SYSTEM_UPDATE, CREATOR, ST_CIC_WA_CONFIG_USER)
                 .grantHistoryOnly(
                     ST_CIC_CASEWORKER,
                     ST_CIC_SENIOR_CASEWORKER,
@@ -107,12 +103,8 @@ public class CicSubmitCaseEvent implements CCDConfig<CaseData, State, UserRole> 
                     SUPER_USER,
                     ST_CIC_JUDGE)
                 .aboutToSubmitCallback(this::aboutToSubmit)
-                .submittedCallback(this::submitted);
-
-        if (isWorkAllocationEnabled) {
-            eventBuilder.publishToCamunda()
-                        .grant(CREATE_READ_UPDATE, ST_CIC_WA_CONFIG_USER);
-        }
+                .submittedCallback(this::submitted)
+                .publishToCamunda();
     }
 
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(CaseDetails<CaseData, State> details,

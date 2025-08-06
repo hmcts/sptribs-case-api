@@ -1,7 +1,6 @@
 package uk.gov.hmcts.sptribs.caseworker.event;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
@@ -51,9 +50,6 @@ public class RespondentDocumentManagement implements CCDConfig<CaseData, State, 
 
     private final UploadCaseDocuments uploadCaseDocuments = new UploadCaseDocuments();
 
-    @Value("${feature.wa.enabled}")
-    private boolean isWorkAllocationEnabled;
-
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         Event.EventBuilder<CaseData, UserRole, State> eventBuilder =
@@ -72,7 +68,7 @@ public class RespondentDocumentManagement implements CCDConfig<CaseData, State, 
                 .name("Document management: Upload")
                 .description("Document management: Upload")
                 .showSummary()
-                .grant(CREATE_READ_UPDATE, SUPER_USER, ST_CIC_RESPONDENT)
+                .grant(CREATE_READ_UPDATE, SUPER_USER, ST_CIC_RESPONDENT, ST_CIC_WA_CONFIG_USER)
                 .grantHistoryOnly(
                     ST_CIC_CASEWORKER,
                     ST_CIC_SENIOR_CASEWORKER,
@@ -81,12 +77,8 @@ public class RespondentDocumentManagement implements CCDConfig<CaseData, State, 
                     ST_CIC_SENIOR_JUDGE,
                     ST_CIC_JUDGE)
                 .aboutToSubmitCallback(this::aboutToSubmit)
-                .submittedCallback(this::submitted);
-
-        if (isWorkAllocationEnabled) {
-            eventBuilder.publishToCamunda()
-                        .grant(CREATE_READ_UPDATE, ST_CIC_WA_CONFIG_USER);
-        }
+                .submittedCallback(this::submitted)
+                .publishToCamunda();
 
         PageBuilder pageBuilder = new PageBuilder(eventBuilder);
         uploadCaseDocuments.addTo(pageBuilder);
