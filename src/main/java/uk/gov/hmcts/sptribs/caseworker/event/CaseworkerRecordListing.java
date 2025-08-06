@@ -3,7 +3,6 @@ package uk.gov.hmcts.sptribs.caseworker.event;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
@@ -67,9 +66,6 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
 
     private final ListingCreatedNotification listingCreatedNotification;
 
-    @Value("${feature.wa.enabled}")
-    private boolean isWorkAllocationEnabled;
-
     @Autowired
     public CaseworkerRecordListing(HearingService hearingService,
                                    RecordListHelper recordListHelper,
@@ -93,13 +89,9 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
                 .submittedCallback(this::submitted)
                 .grant(CREATE_READ_UPDATE, SUPER_USER,
                     ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER, ST_CIC_HEARING_CENTRE_ADMIN,
-                    ST_CIC_HEARING_CENTRE_TEAM_LEADER, ST_CIC_SENIOR_JUDGE)
-                .grantHistoryOnly(ST_CIC_JUDGE);
-
-        if (isWorkAllocationEnabled) {
-            eventBuilder.publishToCamunda()
-                        .grant(CREATE_READ_UPDATE, ST_CIC_WA_CONFIG_USER);
-        }
+                    ST_CIC_HEARING_CENTRE_TEAM_LEADER, ST_CIC_SENIOR_JUDGE, ST_CIC_WA_CONFIG_USER)
+                .grantHistoryOnly(ST_CIC_JUDGE)
+                .publishToCamunda();
 
         PageBuilder pageBuilder = new PageBuilder(eventBuilder);
         hearingTypeAndFormat.addTo(pageBuilder);

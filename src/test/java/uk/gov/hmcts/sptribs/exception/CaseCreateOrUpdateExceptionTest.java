@@ -2,13 +2,12 @@ package uk.gov.hmcts.sptribs.exception;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.mockito.Spy;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.DssCaseData;
 import uk.gov.hmcts.sptribs.controllers.CaseManagementController;
@@ -29,9 +28,10 @@ import static uk.gov.hmcts.sptribs.testutil.TestConstants.CASE_UPDATE_FAILURE_MS
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.sptribs.testutil.TestFileUtil.loadJson;
 
-@ExtendWith(SpringExtension.class)
+@ExtendWith(MockitoExtension.class)
 class CaseCreateOrUpdateExceptionTest {
 
+    @Spy
     private final ObjectMapper mapper = new ObjectMapper().registerModule(new JavaTimeModule());
 
     @InjectMocks
@@ -39,11 +39,6 @@ class CaseCreateOrUpdateExceptionTest {
 
     @Mock
     private CaseManagementService caseManagementService;
-
-    @BeforeEach
-    void setUp() {
-        MockitoAnnotations.openMocks(this);
-    }
 
     @Test
     void createCaseDataCaseCreateUpdateException() throws IOException {

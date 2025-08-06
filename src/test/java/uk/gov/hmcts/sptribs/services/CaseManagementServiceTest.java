@@ -7,8 +7,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.mockito.Spy;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
@@ -19,7 +19,6 @@ import uk.gov.hmcts.sptribs.exception.CaseCreateOrUpdateException;
 import uk.gov.hmcts.sptribs.model.CaseResponse;
 import uk.gov.hmcts.sptribs.services.ccd.CaseApiService;
 import uk.gov.hmcts.sptribs.services.model.Event;
-import uk.gov.hmcts.sptribs.util.AppsUtil;
 
 import java.util.List;
 import java.util.Map;
@@ -40,11 +39,12 @@ import static uk.gov.hmcts.sptribs.testutil.TestConstants.CASE_UPDATE_FAILURE_MS
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.RESPONSE_STATUS_SUCCESS;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_UPDATE_CASE_EMAIL_ADDRESS;
-import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_USER;
 import static uk.gov.hmcts.sptribs.testutil.TestFileUtil.loadJson;
 
-@ExtendWith(SpringExtension.class)
+@ExtendWith(MockitoExtension.class)
 class CaseManagementServiceTest {
+
+    @Spy
     private final ObjectMapper mapper = new ObjectMapper().registerModule(new JavaTimeModule());
 
     @InjectMocks
@@ -56,7 +56,7 @@ class CaseManagementServiceTest {
     @Mock
     private AuthTokenGenerator authTokenGenerator;
 
-    @Mock
+    @Spy
     private AppsConfig.AppsDetails cicAppDetail;
 
     @Mock
@@ -64,8 +64,6 @@ class CaseManagementServiceTest {
 
     @BeforeEach
     public void setUp() {
-        MockitoAnnotations.openMocks(this);
-
         cicAppDetail = new AppsConfig.AppsDetails();
         cicAppDetail.setCaseType(CommonConstants.ST_CIC_CASE_TYPE);
         cicAppDetail.setJurisdiction(CommonConstants.ST_CIC_JURISDICTION);
@@ -85,9 +83,6 @@ class CaseManagementServiceTest {
 
         cicAppDetail.setEventIds(eventsConfig);
         when(appsConfig.getApps()).thenReturn(List.of(cicAppDetail));
-
-
-        when(authTokenGenerator.generate()).thenReturn(TEST_USER);
 
         final CaseDetails caseDetail = CaseDetails.builder().caseTypeId(CASE_DATA_CIC_ID)
             .id(TEST_CASE_ID)
@@ -121,9 +116,6 @@ class CaseManagementServiceTest {
         final CaseData caseData = mapper.readValue(caseDataJson, CaseData.class);
         final DssCaseData dssCaseData = DssCaseData.builder().caseTypeOfApplication(CASE_DATA_CIC_ID).build();
 
-        when(AppsUtil.isValidCaseTypeOfApplication(appsConfig,dssCaseData))
-            .thenThrow(new CaseCreateOrUpdateException("Invalid Case type application. Please check the request."));
-
         final CaseCreateOrUpdateException caseCreateOrUpdateException =
             assertThrows(CaseCreateOrUpdateException.class, () ->
             caseManagementService.createCase(CASE_TEST_AUTHORIZATION, caseData));
@@ -140,18 +132,10 @@ class CaseManagementServiceTest {
         eventsConfig.setCreateEvent("citizen-cic-create-dss-application");
 
         cicAppDetail.setEventIds(eventsConfig);
-        when(appsConfig.getApps()).thenReturn(List.of(cicAppDetail));
-
-
-        when(authTokenGenerator.generate()).thenReturn(TEST_USER);
 
         final String caseDataJson = loadJson(CASE_DATA_FILE_CIC);
 
         final CaseData caseData = mapper.readValue(caseDataJson, CaseData.class);
-
-        when(caseApiService.createCase(CASE_TEST_AUTHORIZATION, caseData, cicAppDetail)).thenThrow(
-            new CaseCreateOrUpdateException(CASE_CREATE_FAILURE_MSG, new RuntimeException()
-            ));
 
         final CaseCreateOrUpdateException caseCreateOrUpdateException =
             assertThrows(CaseCreateOrUpdateException.class, () ->
@@ -181,8 +165,6 @@ class CaseManagementServiceTest {
         when(appsConfig.getApps()).thenReturn(List.of(cicAppDetail));
 
         assertNotNull(cicAppDetail);
-
-        when(authTokenGenerator.generate()).thenReturn(TEST_USER);
 
         final Map<String, Object> caseDataMap = new ConcurrentHashMap<>();
         caseDataMap.put(CASE_DATA_CIC_ID, caseData);
@@ -233,7 +215,6 @@ class CaseManagementServiceTest {
         final CaseData caseData = mapper.readValue(caseDataJson, CaseData.class);
         final DssCaseData dssCaseData = mapper.readValue(caseDataJson, DssCaseData.class);
 
-        when(authTokenGenerator.generate()).thenReturn(TEST_USER);
         when(caseApiService.updateCase(
             CASE_TEST_AUTHORIZATION,
             Event.UPDATE,
@@ -262,10 +243,6 @@ class CaseManagementServiceTest {
 
         final String caseDataJson = loadJson(CASE_DATA_FILE_CIC);
         final CaseData caseData = mapper.readValue(caseDataJson, CaseData.class);
-        final DssCaseData dssCaseData = DssCaseData.builder().caseTypeOfApplication(CASE_DATA_CIC_ID).build();
-
-        when(AppsUtil.isValidCaseTypeOfApplication(appsConfig,dssCaseData))
-            .thenThrow(new CaseCreateOrUpdateException("Invalid Case type application. Please check the request."));
 
         final CaseCreateOrUpdateException caseCreateOrUpdateException =
             assertThrows(CaseCreateOrUpdateException.class, () ->
@@ -285,8 +262,6 @@ class CaseManagementServiceTest {
         final String origEmailAddress = caseData.getDssCaseData().getSubjectEmailAddress();
         dssCaseData.setSubjectEmailAddress(TEST_UPDATE_CASE_EMAIL_ADDRESS);
         assertNotEquals(dssCaseData.getSubjectEmailAddress(), origEmailAddress);
-
-        when(authTokenGenerator.generate()).thenReturn(TEST_USER);
 
         final Map<String, Object> caseDataMap = new ConcurrentHashMap<>();
         caseDataMap.put(CASE_DATA_CIC_ID, caseData);
