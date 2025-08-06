@@ -6,6 +6,7 @@ USER hmcts
 
 COPY build/libs/sptribs-case-api.jar /opt/app/
 COPY lib/applicationinsights.json /opt/app/
+COPY build/cftlib/definition-snapshots /opt/app/build/cftlib/definition-snapshots
 
 EXPOSE 4013
 CMD [ "sptribs-case-api.jar" ]

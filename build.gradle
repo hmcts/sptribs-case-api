@@ -1,3 +1,4 @@
+import uk.gov.hmcts.rse.AuthMode
 import uk.gov.hmcts.rse.CftlibExec
 
 buildscript {
@@ -523,6 +524,16 @@ bootWithCCD {
     }
 }
 
+dumpCCDDefinitions {
+ authMode = AuthMode.Local
+  doLast {
+    project.fileTree('build/cftlib/definition-snapshots').each {
+      println "Exported definition snapshot ${it.name}"
+    }
+  }
+}
+
+assemble.dependsOn(dumpCCDDefinitions)
 
 cftlibTest {
   // IDAM simulator will be started on port 5000,
