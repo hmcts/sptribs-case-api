@@ -95,7 +95,7 @@ ccd:
 
   ccd-data-store-api:
     java:
-      image: 'hmctspublic.azurecr.io/ccd/data-store-api:pr-2612'
+      image: 'hmctspublic.azurecr.io/ccd/data-store-api:pr-2496'
       imagePullPolicy: Always
       environment:
         CASE_DOCUMENT_AM_API_ATTACH_DOCUMENT_ENABLED: true
