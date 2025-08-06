@@ -3,6 +3,7 @@ package uk.gov.hmcts.sptribs.controllers;
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
 import org.junit.Ignore;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import uk.gov.hmcts.sptribs.testutil.FunctionalTestSuite;
@@ -31,7 +32,7 @@ public class CaseManagementControllerFT extends FunctionalTestSuite {
         "classpath:responses/response-citizen-dss-update-case.json";
 
     @Test
-    @Ignore
+    @Disabled
     public void shouldCreateCaseWhenEndpointTriggered() throws IOException {
 
         Response response = RestAssured
@@ -52,7 +53,7 @@ public class CaseManagementControllerFT extends FunctionalTestSuite {
     }
 
     @Test
-    @Ignore
+    @Disabled
     public void shouldUpdateCaseWhenEndpointTriggered() throws IOException {
 
         final long caseReference = createTestCaseAndGetCaseReference();
@@ -76,7 +77,7 @@ public class CaseManagementControllerFT extends FunctionalTestSuite {
     }
 
     @Test
-    @Ignore
+    @Disabled
     public void shouldSubmitCaseWhenEndpointTriggered() throws IOException {
 
         final long caseReference = createTestCaseAndGetCaseReference();
@@ -100,7 +101,7 @@ public class CaseManagementControllerFT extends FunctionalTestSuite {
     }
 
     @Test
-    @Ignore
+    @Disabled
     public void shouldTriggerDssUpdateCaseWhenEndpointTriggered() throws IOException {
 
         final long caseReference = createAndSubmitTestCaseAndGetCaseReference();
@@ -124,7 +125,7 @@ public class CaseManagementControllerFT extends FunctionalTestSuite {
     }
 
     @Test
-    @Ignore
+    @Disabled
     public void shouldFetchCaseDetailsWhenEndpointTriggered() {
 
         final long caseReference = createTestCaseAndGetCaseReference();
