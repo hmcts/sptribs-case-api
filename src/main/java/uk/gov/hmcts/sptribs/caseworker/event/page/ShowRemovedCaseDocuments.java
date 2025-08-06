@@ -18,7 +18,6 @@ public class ShowRemovedCaseDocuments implements CcdPageConfiguration {
             .complex(CaseData::getCicCase)
             .readonly(CicCase::getRemovedDocumentList)
             .done();
-
     }
 
 

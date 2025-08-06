@@ -1,7 +1,6 @@
 package uk.gov.hmcts.sptribs.caseworker.event;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
@@ -43,9 +42,6 @@ public class CaseWorkerReferToLegalOfficer implements CCDConfig<CaseData, State,
     private final ReferToLegalOfficerReason referToLegalOfficerReason = new ReferToLegalOfficerReason();
     private final ReferToLegalOfficerAdditionalInfo referToLegalOfficerAdditionalInfo = new ReferToLegalOfficerAdditionalInfo();
 
-    @Value("${feature.wa.enabled}")
-    private boolean isWorkAllocationEnabled;
-
     @Override
     public void configure(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         Event.EventBuilder<CaseData, UserRole, State> eventBuilder =
@@ -60,12 +56,8 @@ public class CaseWorkerReferToLegalOfficer implements CCDConfig<CaseData, State,
                 .submittedCallback(this::submitted)
                 .grant(CREATE_READ_UPDATE, SUPER_USER,
                     ST_CIC_HEARING_CENTRE_ADMIN, ST_CIC_HEARING_CENTRE_TEAM_LEADER,
-                    ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER, ST_CIC_JUDGE, ST_CIC_SENIOR_JUDGE);
-
-        if (isWorkAllocationEnabled) {
-            eventBuilder.publishToCamunda()
-                        .grant(CREATE_READ_UPDATE, ST_CIC_WA_CONFIG_USER);
-        }
+                    ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER, ST_CIC_JUDGE, ST_CIC_SENIOR_JUDGE, ST_CIC_WA_CONFIG_USER)
+                .publishToCamunda();
 
         PageBuilder pageBuilder = new PageBuilder(eventBuilder);
         referToLegalOfficerReason.addTo(pageBuilder);
@@ -86,8 +78,7 @@ public class CaseWorkerReferToLegalOfficer implements CCDConfig<CaseData, State,
 
         CaseData caseData = details.getData();
         caseData.getReferToLegalOfficer().setReferralDate(LocalDate.now());
-        if (isWorkAllocationEnabled
-                && caseData.getReferToLegalOfficer() != null
+        if (caseData.getReferToLegalOfficer() != null
                 && caseData.getReferToLegalOfficer().getReferralReason() != null) {
             caseData.getCicCase().setReferralTypeForWA(caseData.getReferToLegalOfficer().getReferralReason().getLabel());
         }
