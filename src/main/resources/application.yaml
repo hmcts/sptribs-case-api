@@ -33,6 +33,12 @@ spring:
         client-id: 34df67df-77f4-4c8d-9e89-d59a86ef9ffe
       topic-client-id: sptribs-ccd-case-events-publisher
       pricing-tier: Standard
+      passwordless-enabled: true
+  cloud:
+    azure:
+      credential:
+        managed-identity-enabled: true
+        client-id: 34df67df-77f4-4c8d-9e89-d59a86ef9ffe
   autoconfigure:
     exclude: com.azure.spring.cloud.autoconfigure.implementation.context.AzureTokenCredentialAutoConfiguration
 
