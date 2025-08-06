@@ -2,7 +2,6 @@ package uk.gov.hmcts.sptribs.controllers;
 
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
-import org.junit.Ignore;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
