@@ -8,7 +8,6 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.test.util.ReflectionTestUtils;
 import uk.gov.hmcts.ccd.sdk.ConfigBuilderImpl;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.Event;
@@ -71,7 +70,8 @@ class CaseworkerPostponeHearingTest {
     private PostponeHearingNotifyParties postponeHearingNotifyParties;
 
     @Test
-    void shouldAddConfigurationToConfigBuilder() {
+    void shouldAddPublishToCamundaWhenWAIsEnabled() {
+
         final ConfigBuilderImpl<CaseData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
 
         caseworkerPostponeHearing.configure(configBuilder);
@@ -79,24 +79,6 @@ class CaseworkerPostponeHearingTest {
         assertThat(getEventsFrom(configBuilder).values())
             .extracting(Event::getId)
             .contains(CASEWORKER_POSTPONE_HEARING);
-
-        assertThat(getEventsFrom(configBuilder).values())
-                .extracting(Event::isPublishToCamunda)
-                .contains(false);
-
-        assertThat(getEventsFrom(configBuilder).values())
-                .extracting(Event::getGrants)
-                .extracting(map -> map.containsKey(ST_CIC_WA_CONFIG_USER))
-                .contains(false);
-    }
-
-    @Test
-    void shouldAddPublishToCamundaWhenWAIsEnabled() {
-        ReflectionTestUtils.setField(caseworkerPostponeHearing, "isWorkAllocationEnabled", true);
-
-        final ConfigBuilderImpl<CaseData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
-
-        caseworkerPostponeHearing.configure(configBuilder);
 
         assertThat(getEventsFrom(configBuilder).values())
                 .extracting(Event::isPublishToCamunda)

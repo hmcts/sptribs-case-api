@@ -201,7 +201,6 @@ feature:
   security-classification:
     enabled: ${SECURITY_CLASSIFICATION:true}
   wa:
-    enabled: ${WA_FEATURE_ENABLED:false}
     functional-tests-enabled: ${WA_FUNCTIONAL_TESTS_ENABLED:false}
   migrate-global-search-task:
     enabled: ${GLOBAL_SEARCH_MIGRATION_ENABLED:false}

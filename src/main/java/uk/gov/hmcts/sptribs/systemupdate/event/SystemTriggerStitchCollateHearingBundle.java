@@ -1,6 +1,5 @@
 package uk.gov.hmcts.sptribs.systemupdate.event;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
@@ -22,9 +21,6 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 public class SystemTriggerStitchCollateHearingBundle implements CCDConfig<CaseData, State, UserRole> {
     public static final String SYSTEM_TRIGGER_STITCH_COLLATE_HEARING_BUNDLE = "system-trigger-stitch-collate-hearing-bundle";
 
-    @Value("${feature.wa.enabled}")
-    private boolean isWorkAllocationEnabled;
-
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         Event.EventBuilder<CaseData, UserRole, State> eventBuilder = configBuilder
@@ -33,12 +29,10 @@ public class SystemTriggerStitchCollateHearingBundle implements CCDConfig<CaseDa
             .name("Trigger stitch hearing bundle")
             .description("Trigger stitch hearing bundle")
             .aboutToSubmitCallback(this::aboutToSubmit)
-            .grant(CREATE_READ_UPDATE_DELETE, SYSTEM_UPDATE);
+            .grant(CREATE_READ_UPDATE_DELETE, SYSTEM_UPDATE)
+            .publishToCamunda()
+            .grant(CREATE_READ_UPDATE, ST_CIC_WA_CONFIG_USER);
 
-        if (isWorkAllocationEnabled) {
-            eventBuilder.publishToCamunda()
-                    .grant(CREATE_READ_UPDATE, ST_CIC_WA_CONFIG_USER);
-        }
     }
 
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(final CaseDetails<CaseData, State> details,

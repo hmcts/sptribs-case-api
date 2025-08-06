@@ -8,6 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import uk.gov.hmcts.ccd.sdk.api.CCD;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
+import uk.gov.hmcts.sptribs.ciccase.model.access.CollectionDefaultAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.DefaultAccess;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocumentUpload;
@@ -28,7 +29,7 @@ public class DocumentManagement {
         label = "Documents",
         typeOverride = Collection,
         typeParameterOverride = "CaseworkerCICDocument",
-        access = {DefaultAccess.class}
+        access = {CollectionDefaultAccess.class}
     )
     @Builder.Default
     private List<ListValue<CaseworkerCICDocument>> caseworkerCICDocument = new ArrayList<>();
