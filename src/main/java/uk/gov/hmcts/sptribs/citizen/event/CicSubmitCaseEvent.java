@@ -31,8 +31,8 @@ import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.CcdCaseType;
 import uk.gov.hmcts.sptribs.common.config.AppsConfig;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
-import uk.gov.hmcts.sptribs.document.model.CitizenCICDocument;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
+import uk.gov.hmcts.sptribs.document.model.CitizenCICDocument;
 import uk.gov.hmcts.sptribs.idam.IdamService;
 import uk.gov.hmcts.sptribs.util.AppsUtil;
 
