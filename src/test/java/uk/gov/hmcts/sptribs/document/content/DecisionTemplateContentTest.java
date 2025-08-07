@@ -25,7 +25,6 @@ import static uk.gov.hmcts.sptribs.document.content.DocmosisTemplateConstants.DE
 import static uk.gov.hmcts.sptribs.document.content.DocmosisTemplateConstants.HEARING_DATE;
 import static uk.gov.hmcts.sptribs.document.content.DocmosisTemplateConstants.MAIN_CONTENT;
 import static uk.gov.hmcts.sptribs.document.content.DocmosisTemplateConstants.SUBJECT_FULL_NAME;
-import static uk.gov.hmcts.sptribs.document.content.DocmosisTemplateConstants.TRIBUNAL_MEMBERS;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getMembers;
 
@@ -80,8 +79,7 @@ public class DecisionTemplateContentTest {
 
         assertThat(result)
             .contains(entry("cicCaseSchemeCic", SchemeCic.Year1996.getLabel()))
-            .contains(entry(DECISION_SIGNATURE, null))
-            .contains(entry(TRIBUNAL_MEMBERS, ""));
+            .contains(entry(DECISION_SIGNATURE, null));
     }
 
     @Test

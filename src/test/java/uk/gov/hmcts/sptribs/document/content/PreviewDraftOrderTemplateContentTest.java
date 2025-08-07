@@ -24,7 +24,6 @@ import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.sptribs.document.content.DocmosisTemplateConstants.HEARING_DATE;
 import static uk.gov.hmcts.sptribs.document.content.DocmosisTemplateConstants.ORDER_SIGNATURE;
 import static uk.gov.hmcts.sptribs.document.content.DocmosisTemplateConstants.SUBJECT_FULL_NAME;
-import static uk.gov.hmcts.sptribs.document.content.DocmosisTemplateConstants.TRIBUNAL_MEMBERS;
 import static uk.gov.hmcts.sptribs.document.content.DocmosisTemplateConstants.formatter;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getMembers;
@@ -78,8 +77,7 @@ class PreviewDraftOrderTemplateContentTest {
 
         assertThat(result)
             .contains(entry("cicCaseSchemeCic", SchemeCic.Year1996.getLabel()))
-            .contains(entry(ORDER_SIGNATURE, null))
-            .contains(entry(TRIBUNAL_MEMBERS, ""));
+            .contains(entry(ORDER_SIGNATURE, null));
     }
 
     @Test
