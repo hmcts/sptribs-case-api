@@ -37,7 +37,7 @@ public interface CaseDocumentClientApi {
                                   @PathVariable(DOCUMENT_ID) UUID documentId,
                                   @RequestParam("permanent") boolean permanent);
 
-    @GetMapping(value = "/cases/documents/{documentId")
+    @GetMapping(value = "/cases/documents/{documentId}")
     ResponseEntity<Document> getDocument(@RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation,
                                             @RequestHeader(SERVICE_AUTHORIZATION) String serviceAuth,
                                             @PathVariable(DOCUMENT_ID) UUID documentId);
