@@ -2,13 +2,16 @@ package uk.gov.hmcts.sptribs.services.cdam;
 
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
 import uk.gov.hmcts.reform.ccd.document.am.model.DocumentUploadRequest;
+import uk.gov.hmcts.sptribs.cdam.model.Document;
 import uk.gov.hmcts.sptribs.cdam.model.UploadResponse;
 
 import java.util.UUID;
@@ -33,4 +36,9 @@ public interface CaseDocumentClientApi {
                                   @RequestHeader(SERVICE_AUTHORIZATION) String serviceAuth,
                                   @PathVariable(DOCUMENT_ID) UUID documentId,
                                   @RequestParam("permanent") boolean permanent);
+
+    @GetMapping(value = "/cases/documents/{documentId")
+    ResponseEntity<Document> getDocument(@RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation,
+                                            @RequestHeader(SERVICE_AUTHORIZATION) String serviceAuth,
+                                            @PathVariable(DOCUMENT_ID) UUID documentId);
 }
