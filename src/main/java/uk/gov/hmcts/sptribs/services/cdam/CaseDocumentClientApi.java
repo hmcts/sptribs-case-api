@@ -23,7 +23,6 @@ public interface CaseDocumentClientApi {
     String SERVICE_AUTHORIZATION = "ServiceAuthorization";
     String DOCUMENT_ID = "documentId";
 
-
     @PostMapping(produces = APPLICATION_JSON_VALUE,  consumes = MULTIPART_FORM_DATA_VALUE)
     UploadResponse uploadDocuments(@RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation,
                                    @RequestHeader(SERVICE_AUTHORIZATION) String serviceAuth,
