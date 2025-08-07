@@ -31,7 +31,7 @@ plugins {
   id 'org.springframework.boot' version '3.5.4'
   id 'com.github.ben-manes.versions' version '0.50.0'
   id "au.com.dius.pact" version "4.3.10"
-  id 'com.github.hmcts.rse-cft-lib' version '0.20.0-alpha.36'
+  id 'com.github.hmcts.rse-cft-lib' version 'sptribs-rc5'
 }
 
 apply plugin: 'cz.habarta.typescript-generator'
@@ -511,6 +511,7 @@ tasks.withType(CftlibExec).configureEach {
 
 bootWithCCD {
     environment 'XUI_JURISDICTIONS', 'ST_CIC'
+    environment 'CASE_DOCUMENT_S2S_AUTHORISED_SERVICES', 'ccd_case_document_am_api,ccd_gw,xui_webapp,ccd_data,bulk_scan_processor,em_npa_app,dg_docassembly_api,em_stitching_api,em_ccd_orchestrator,bulk_scan_orchestrator,sptribs_case_api,sptribs_frontend'
     group = 'ccd tasks'
     dependsOn(loadEnvSecrets)
 
