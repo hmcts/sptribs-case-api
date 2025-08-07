@@ -3,7 +3,6 @@ package uk.gov.hmcts.sptribs.caseworker.event;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
@@ -50,9 +49,6 @@ public class CaseworkerAddNote implements CCDConfig<CaseData, State, UserRole> {
     @Autowired
     private Clock clock;
 
-    @Value("${feature.wa.enabled}")
-    private boolean isWorkAllocationEnabled;
-
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         Event.EventBuilder<CaseData, UserRole, State> eventBuilder =
@@ -64,12 +60,7 @@ public class CaseworkerAddNote implements CCDConfig<CaseData, State, UserRole> {
                 .aboutToSubmitCallback(this::aboutToSubmit)
                 .grant(CREATE_READ_UPDATE,
                     ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER, ST_CIC_HEARING_CENTRE_ADMIN,
-                    ST_CIC_HEARING_CENTRE_TEAM_LEADER, ST_CIC_SENIOR_JUDGE, SUPER_USER);
-
-        if (isWorkAllocationEnabled) {
-            eventBuilder.publishToCamunda()
-                        .grant(CREATE_READ_UPDATE, ST_CIC_WA_CONFIG_USER);
-        }
+                    ST_CIC_HEARING_CENTRE_TEAM_LEADER, ST_CIC_SENIOR_JUDGE, SUPER_USER, ST_CIC_WA_CONFIG_USER).publishToCamunda();
 
         new PageBuilder(eventBuilder)
             .page("addCaseNotes")
