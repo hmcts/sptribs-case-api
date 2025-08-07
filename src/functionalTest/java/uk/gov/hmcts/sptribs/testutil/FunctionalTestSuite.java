@@ -336,7 +336,7 @@ public abstract class FunctionalTestSuite {
                         jurisdiction,
                         List.of(inMemoryMultipartFile));
 
-                final String serviceToken = serviceAuthenticationGenerator.generate();
+                final String serviceToken = serviceAuthenticationGenerator.generate("sptribs_case_api");
                 final String userToken = idamTokenGenerator.generateIdamTokenForSystemUser();
 
                 log.debug("service: {}\nuser auth: \n");
