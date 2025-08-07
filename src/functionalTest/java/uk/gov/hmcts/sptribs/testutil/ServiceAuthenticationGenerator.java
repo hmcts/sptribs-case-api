@@ -22,6 +22,9 @@ public class ServiceAuthenticationGenerator {
     @Value("${s2s.task_management_name}")
     private String s2sTaskManagementName;
 
+    @Value("${s2s.ccd_data_name}")
+    private String s2sCcdDataName;
+
     @Value("${s2s.access_management_name}")
     private String s2sAccessManagementName;
 
@@ -30,6 +33,10 @@ public class ServiceAuthenticationGenerator {
 
     public String generateTaskManagementToken() {
         return generate(this.s2sTaskManagementName);
+    }
+
+    public String generateCcdDataToken() {
+        return generate(this.s2sCcdDataName);
     }
 
     public String generateAccessManagementToken() {
