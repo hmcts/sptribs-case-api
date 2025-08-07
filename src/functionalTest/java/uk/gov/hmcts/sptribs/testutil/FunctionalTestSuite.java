@@ -90,7 +90,7 @@ public abstract class FunctionalTestSuite {
 
     protected CaseDetails createCaseInCcd() {
         String caseworkerToken = idamTokenGenerator.generateIdamTokenForCaseworker();
-        String s2sTokenForCaseApi = serviceAuthenticationGenerator.generate("sptribs_case_api");
+        String s2sTokenForCaseApi = serviceAuthenticationGenerator.generate();
         String caseworkerUserId = idamTokenGenerator.getUserDetailsFor(caseworkerToken).getId();
         StartEventResponse startEventResponse = startEventForCreateCase(caseworkerToken, s2sTokenForCaseApi, caseworkerUserId);
 
@@ -220,7 +220,7 @@ public abstract class FunctionalTestSuite {
             .relaxedHTTPSValidation()
             .baseUri(testUrl)
             .header(CONTENT_TYPE, APPLICATION_JSON_VALUE)
-            .header(SERVICE_AUTHORIZATION, serviceAuthenticationGenerator.generate())
+            .header(SERVICE_AUTHORIZATION, serviceAuthenticationGenerator.generateCcdDataToken())
             .header(AUTHORIZATION, idamTokenGenerator.generateIdamTokenForSolicitor())
             .body(request)
             .when()
@@ -231,7 +231,7 @@ public abstract class FunctionalTestSuite {
         return searchService.searchForAllCasesWithQuery(
             query,
             idamService.retrieveSystemUpdateUserDetails(),
-            serviceAuthenticationGenerator.generate(),
+            serviceAuthenticationGenerator.generateCcdDataToken(),
             State.Draft
         );
     }
@@ -246,7 +246,7 @@ public abstract class FunctionalTestSuite {
             .relaxedHTTPSValidation()
             .baseUri(testUrl)
             .header(CONTENT_TYPE, APPLICATION_JSON_VALUE)
-            .header(SERVICE_AUTHORIZATION, serviceAuthenticationGenerator.generate())
+            .header(SERVICE_AUTHORIZATION, serviceAuthenticationGenerator.generateCcdDataToken())
             .header(AUTHORIZATION, idamTokenGenerator.generateIdamTokenForCitizen())
             .body(getDssCaseData())
             .when()
@@ -262,7 +262,7 @@ public abstract class FunctionalTestSuite {
             .relaxedHTTPSValidation()
             .baseUri(testUrl)
             .header(CONTENT_TYPE, APPLICATION_JSON_VALUE)
-            .header(SERVICE_AUTHORIZATION, serviceAuthenticationGenerator.generate())
+            .header(SERVICE_AUTHORIZATION, serviceAuthenticationGenerator.generateCcdDataToken())
             .header(AUTHORIZATION, idamTokenGenerator.generateIdamTokenForCitizen())
             .param(EVENT_PARAM, SUBMIT)
             .body(getDssCaseData())
@@ -280,7 +280,7 @@ public abstract class FunctionalTestSuite {
             .relaxedHTTPSValidation()
             .baseUri(testUrl)
             .header(CONTENT_TYPE, APPLICATION_JSON_VALUE)
-            .header(SERVICE_AUTHORIZATION, serviceAuthenticationGenerator.generate())
+            .header(SERVICE_AUTHORIZATION, serviceAuthenticationGenerator.generateCcdDataToken())
             .header(AUTHORIZATION, idamTokenGenerator.generateIdamTokenForCitizen())
             .param(EVENT_PARAM, SUBMIT)
             .body(getDssCaseData())
@@ -294,7 +294,7 @@ public abstract class FunctionalTestSuite {
             .relaxedHTTPSValidation()
             .baseUri(testUrl)
             .header(CONTENT_TYPE, APPLICATION_JSON_VALUE)
-            .header(SERVICE_AUTHORIZATION, serviceAuthenticationGenerator.generate())
+            .header(SERVICE_AUTHORIZATION, serviceAuthenticationGenerator.generateCcdDataToken())
             .header(AUTHORIZATION, idamTokenGenerator.generateIdamTokenForCitizen())
             .param(EVENT_PARAM, SUBMIT)
             .body(getDssCaseData())
