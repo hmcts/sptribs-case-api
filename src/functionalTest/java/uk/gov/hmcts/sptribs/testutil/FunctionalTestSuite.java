@@ -347,7 +347,8 @@ public abstract class FunctionalTestSuite {
         final String userToken = idamTokenGenerator.generateIdamTokenForSystemUser();
 
         try {
-            ResponseEntity<Document> documentResponse = caseDocumentClientApi.getDocument(userToken, serviceToken, UUID.fromString(documentId));
+            ResponseEntity<Document> documentResponse =
+                    caseDocumentClientApi.getDocument(userToken, serviceToken, UUID.fromString(documentId));
             return true;
         } catch (FeignException.NotFound exception) {
             log.info("Document {} not found", documentId);
