@@ -107,6 +107,10 @@ tasks.withType(JavaExec).configureEach {
 tasks.withType(Test) {
   useJUnitPlatform()
   maxParallelForks = Math.floorDiv(Runtime.runtime.availableProcessors(), 2)
+  //Use more available processors for FT as WA Tests have timeouts and will run out of time
+  if (System.getenv('WA_FUNCTIONAL_TESTS_ENABLED') == 'true') {
+    maxParallelForks = Runtime.runtime.availableProcessors()
+  }
 
   testLogging {
     exceptionFormat = 'full'
