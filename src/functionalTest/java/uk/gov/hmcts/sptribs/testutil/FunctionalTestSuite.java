@@ -1,6 +1,7 @@
 package uk.gov.hmcts.sptribs.testutil;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import feign.FeignException;
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
 import jakarta.servlet.http.HttpServletRequest;
@@ -344,9 +345,17 @@ public abstract class FunctionalTestSuite {
     private boolean checkDocumentExists(String documentId) {
         final String serviceToken = serviceAuthenticationGenerator.generate();
         final String userToken = idamTokenGenerator.generateIdamTokenForSystemUser();
-        ResponseEntity<Document> documentResponse = caseDocumentClientApi.getDocument(userToken, serviceToken, UUID.fromString(documentId));
 
-        return documentResponse.getStatusCode().is2xxSuccessful();
+        try {
+            ResponseEntity<Document> documentResponse = caseDocumentClientApi.getDocument(userToken, serviceToken, UUID.fromString(documentId));
+            return true;
+        } catch (FeignException.NotFound exception) {
+            log.info("Document {} not found", documentId);
+            return false;
+        } catch (FeignException feignException) {
+            log.info("Feign exception {}", feignException.getMessage());
+            return false;
+        }
     }
 
     private UploadResponse uploadTestDocument(ClassPathResource resource) {
