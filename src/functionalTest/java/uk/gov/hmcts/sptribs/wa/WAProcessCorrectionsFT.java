@@ -6,7 +6,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledIfEnvironmentVariable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import uk.gov.hmcts.sptribs.services.cdam.CdamUrlDebugger;
 import uk.gov.hmcts.sptribs.testutil.CcdCaseCreator;
 import uk.gov.hmcts.sptribs.testutil.FunctionalTestSuite;
 import uk.gov.hmcts.sptribs.testutil.RoleAssignmentService;
@@ -41,9 +40,6 @@ public class WAProcessCorrectionsFT extends FunctionalTestSuite {
     @Autowired
     private RoleAssignmentService roleAssignmentService;
 
-    @Autowired
-    private CdamUrlDebugger cdamUrlDebugger;
-
     private static final String TASK_TYPE = "processCorrections";
     private static final List<String> TASK_ROLES = Arrays.asList("regional-centre-admin", "regional-centre-team-leader", "task-supervisor",
         "hearing-centre-admin", "hearing-centre-team-leader", "ctsc", "ctsc-team-leader");
@@ -70,11 +66,7 @@ public class WAProcessCorrectionsFT extends FunctionalTestSuite {
 
         caseData.put("cicCaseReferralTypeForWA", "Corrections");
         caseData.putAll(caseData(CASEWORKER_CREATE_DRAFT_ORDER_DATA));
-        cdamUrlDebugger.logUrls();
-        log.debug("Trying to upload test document in WAProcessCorrections");
-
         checkAndUpdateDraftOrderDocument(caseData);
-
         ccdCaseCreator.createInitialStartEventAndSubmit(
             CASEWORKER_CREATE_DRAFT_ORDER, ST_CIC_JURISDICTION, ST_CIC_CASE_TYPE, newCaseId, caseData);
 

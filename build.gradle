@@ -465,12 +465,6 @@ functional {
       }
     }
   }
-//  testLogging {
-//    showStandardStreams = true
-//    showCauses = true
-//    showExceptions = true
-//    showStackTraces = true
-//  }
 }
 
 generateTypeScript {

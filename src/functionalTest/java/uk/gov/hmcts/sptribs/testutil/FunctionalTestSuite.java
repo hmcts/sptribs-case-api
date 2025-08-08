@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import feign.FeignException;
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
-import jakarta.servlet.http.HttpServletRequest;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,7 +31,6 @@ import uk.gov.hmcts.sptribs.common.ccd.CcdServiceCode;
 import uk.gov.hmcts.sptribs.common.config.AppsConfig;
 import uk.gov.hmcts.sptribs.idam.IdamService;
 import uk.gov.hmcts.sptribs.services.cdam.CaseDocumentClientApi;
-import uk.gov.hmcts.sptribs.services.cdam.CdamUrlDebugger;
 import uk.gov.hmcts.sptribs.systemupdate.service.CcdSearchService;
 
 import java.io.IOException;
@@ -83,12 +81,6 @@ public abstract class FunctionalTestSuite {
 
     @Autowired
     protected AppsConfig appsConfig;
-
-    @Autowired
-    protected HttpServletRequest httpServletRequest;
-
-    @Autowired
-    protected CdamUrlDebugger cdamUrlDebugger;
 
     protected static final String EVENT_PARAM = "event";
     protected static final String UPDATE = "UPDATE";
@@ -360,8 +352,7 @@ public abstract class FunctionalTestSuite {
     }
 
     private UploadResponse uploadTestDocument(ClassPathResource resource) {
-        cdamUrlDebugger.logUrls();
-        log.debug("uploading FT test document");
+        log.debug("Uploading FT test document");
         final List<AppsConfig.AppsDetails> appDetails = appsConfig.getApps();
         if (!appDetails.isEmpty() && appDetails.getFirst() != null) {
             final String caseType = appsConfig.getApps().getFirst().getCaseType();
@@ -379,12 +370,6 @@ public abstract class FunctionalTestSuite {
                 final String serviceToken = serviceAuthenticationGenerator.generate();
                 final String userToken = idamTokenGenerator.generateIdamTokenForSystemUser();
 
-                log.debug("service: {}\nuser auth: \n");
-                log.debug("Document Request:\nClassification: {}\nCase Type: {}\nJurisdiction: {}\nFile: {}",
-                        documentUploadRequest.getClassification(),
-                        documentUploadRequest.getCaseTypeId(),
-                        documentUploadRequest.getJurisdictionId(),
-                        inMemoryMultipartFile.getName());
                 return caseDocumentClientApi.uploadDocuments(userToken, serviceToken, documentUploadRequest);
             } catch (IOException ioException) {
                 log.error("Failed to upload test document due to {}", ioException.toString());

@@ -55,8 +55,3 @@ caseinfo:
         submitEvent: citizen-cic-submit-dss-application
       caseTypeOfApplication:
         - CIC
-#logging:
-#  level:
-#    root: DEBUG
-#    feign: DEBUG
-#    uk.gov.hmcts.sptribs.wa: DEBUG
