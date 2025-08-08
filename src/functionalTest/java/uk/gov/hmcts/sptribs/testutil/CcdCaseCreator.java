@@ -35,7 +35,7 @@ public class CcdCaseCreator {
                                                                 Map<String, Object> caseData) {
 
         final String userToken = idamTokenGenerator.generateIdamTokenForWASeniorCaseworker();
-        final String serviceToken = serviceAuthenticationGenerator.generateCcdDataToken();
+        final String serviceToken = serviceAuthenticationGenerator.generate();
         final String userId = idamService.retrieveUser(userToken).getUserDetails().getId();
 
         //Fire start event
