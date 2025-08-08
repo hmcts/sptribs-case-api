@@ -1,5 +1,13 @@
 test-url: ${TEST_URL:http://localhost:4013}
 
+main:
+  allow-bean-definition-overriding: true
+  autoconfigure:
+    exclude: com.azure.spring.cloud.autoconfigure.implementation.context.AzureTokenCredentialAutoConfiguration
+  jms:
+    servicebus:
+      enabled: false
+
 s2s:
   name: ccd_data
   task_management_name: wa_task_management_api
