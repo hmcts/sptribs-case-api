@@ -349,7 +349,7 @@ public abstract class FunctionalTestSuite {
         try {
             ResponseEntity<Document> documentResponse =
                     caseDocumentClientApi.getDocument(userToken, serviceToken, UUID.fromString(documentId));
-            return true;
+            return documentResponse.getStatusCode().is2xxSuccessful();
         } catch (FeignException.NotFound exception) {
             log.info("Document {} not found", documentId);
             return false;
