@@ -16,7 +16,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.access.CitizenAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CitizenDocumentAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.DefaultAccess;
 import uk.gov.hmcts.sptribs.common.MappableObject;
-import uk.gov.hmcts.sptribs.document.model.EdgeCaseDocument;
+import uk.gov.hmcts.sptribs.document.model.CitizenCICDocument;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -142,26 +142,26 @@ public class DssCaseData implements MappableObject {
     @CCD(
         label = "Tribunal form uploaded documents",
         typeOverride = Collection,
-        typeParameterOverride = "EdgeCaseDocument",
+        typeParameterOverride = "CitizenCICDocument",
         access = {DefaultAccess.class, CitizenDocumentAccess.class}
     )
-    private List<ListValue<EdgeCaseDocument>> tribunalFormDocuments;
+    private List<ListValue<CitizenCICDocument>> tribunalFormDocuments;
 
     @CCD(
         label = "Supporting uploaded documents",
         typeOverride = Collection,
-        typeParameterOverride = "EdgeCaseDocument",
+        typeParameterOverride = "CitizenCICDocument",
         access = {DefaultAccess.class, CitizenDocumentAccess.class}
     )
-    private List<ListValue<EdgeCaseDocument>> supportingDocuments;
+    private List<ListValue<CitizenCICDocument>> supportingDocuments;
 
     @CCD(
         label = "Other information uploaded documents",
         typeOverride = Collection,
-        typeParameterOverride = "EdgeCaseDocument",
+        typeParameterOverride = "CitizenCICDocument",
         access = {DefaultAccess.class, CitizenDocumentAccess.class}
     )
-    private List<ListValue<EdgeCaseDocument>> otherInfoDocuments;
+    private List<ListValue<CitizenCICDocument>> otherInfoDocuments;
 
     @CCD(
         label = "Message",

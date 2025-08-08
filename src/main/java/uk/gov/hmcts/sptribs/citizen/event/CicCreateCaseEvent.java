@@ -52,7 +52,7 @@ public class CicCreateCaseEvent implements CCDConfig<CaseData, State, UserRole> 
                 .getCreateEvent())
             .initialState(State.Draft)
             .name("Create draft case (DSS)")
-            .description("Apply for edge case (DSS)")
+            .description("Apply for draft case (DSS)")
             .grant(CREATE_READ_UPDATE, CITIZEN, CREATOR)
             .aboutToSubmitCallback(this::aboutToSubmit)
             .submittedCallback(this::submitted)

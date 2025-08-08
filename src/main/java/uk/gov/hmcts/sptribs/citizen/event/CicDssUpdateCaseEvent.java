@@ -20,8 +20,8 @@ import uk.gov.hmcts.sptribs.ciccase.model.DssMessage;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
+import uk.gov.hmcts.sptribs.document.model.CitizenCICDocument;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
-import uk.gov.hmcts.sptribs.document.model.EdgeCaseDocument;
 import uk.gov.hmcts.sptribs.idam.IdamService;
 import uk.gov.hmcts.sptribs.notification.dispatcher.DssUpdateCaseSubmissionNotification;
 
@@ -113,7 +113,7 @@ public class CicDssUpdateCaseEvent implements CCDConfig<CaseData, State, UserRol
         final List<ListValue<DssMessage>> messagesList = new ArrayList<>();
 
         if (!isEmpty(dssCaseData.getOtherInfoDocuments())) {
-            for (ListValue<EdgeCaseDocument> documentListValue : dssCaseData.getOtherInfoDocuments()) {
+            for (ListValue<CitizenCICDocument> documentListValue : dssCaseData.getOtherInfoDocuments()) {
                 Document document = documentListValue.getValue().getDocumentLink();
                 String documentComment = documentListValue.getValue().getComment();
                 document.setCategoryId(DocumentType.DSS_OTHER.getCategory());
