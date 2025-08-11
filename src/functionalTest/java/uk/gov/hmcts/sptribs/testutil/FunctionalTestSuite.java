@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.TestPropertySource;
 import uk.gov.hmcts.reform.ccd.client.CoreCaseDataApi;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDataContent;
@@ -23,6 +24,7 @@ import uk.gov.hmcts.reform.ccd.document.am.model.DocumentUploadRequest;
 import uk.gov.hmcts.reform.ccd.document.am.util.InMemoryMultipartFile;
 import uk.gov.hmcts.sptribs.cdam.model.Document;
 import uk.gov.hmcts.sptribs.cdam.model.UploadResponse;
+import uk.gov.hmcts.sptribs.caseworker.util.EventConstants;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.DssCaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
@@ -32,6 +34,7 @@ import uk.gov.hmcts.sptribs.common.config.AppsConfig;
 import uk.gov.hmcts.sptribs.idam.IdamService;
 import uk.gov.hmcts.sptribs.services.cdam.CaseDocumentClientApi;
 import uk.gov.hmcts.sptribs.systemupdate.service.CcdSearchService;
+import uk.gov.hmcts.sptribs.util.AppsUtil;
 
 import java.io.IOException;
 import java.time.LocalDate;
@@ -45,6 +48,7 @@ import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_CREATE_CASE;
 import static uk.gov.hmcts.sptribs.common.config.ControllerConstants.SERVICE_AUTHORIZATION;
+import static uk.gov.hmcts.sptribs.controllers.model.DssCaseDataRequest.convertDssCaseDataToRequest;
 
 @ActiveProfiles("functional")
 public abstract class FunctionalTestSuite {
@@ -239,66 +243,56 @@ public abstract class FunctionalTestSuite {
         return objectMapper.convertValue(data, CaseData.class);
     }
 
-    protected long createTestCaseAndGetCaseReference() {
-        return RestAssured
-            .given()
-            .relaxedHTTPSValidation()
-            .baseUri(testUrl)
-            .header(CONTENT_TYPE, APPLICATION_JSON_VALUE)
-            .header(SERVICE_AUTHORIZATION, serviceAuthenticationGenerator.generateCcdDataToken())
-            .header(AUTHORIZATION, idamTokenGenerator.generateIdamTokenForCitizen())
-            .body(getDssCaseData())
-            .when()
-            .post("/case/dss-orchestration/create")
-            .getBody()
-            .path("id");
+    protected long createAndSubmitCitizenCaseAndGetCaseReference() {
+        return createAndSubmitCitizenCaseAndGetCaseDetails().getId();
     }
 
-    protected long createAndSubmitTestCaseAndGetCaseReference() {
-        final long caseReference = createTestCaseAndGetCaseReference();
-        return RestAssured
-            .given()
-            .relaxedHTTPSValidation()
-            .baseUri(testUrl)
-            .header(CONTENT_TYPE, APPLICATION_JSON_VALUE)
-            .header(SERVICE_AUTHORIZATION, serviceAuthenticationGenerator.generateCcdDataToken())
-            .header(AUTHORIZATION, idamTokenGenerator.generateIdamTokenForCitizen())
-            .param(EVENT_PARAM, SUBMIT)
-            .body(getDssCaseData())
-            .when()
-            .put("/case/dss-orchestration/" + caseReference +  "/update")
-            .getBody()
-            .path("id");
+    protected CaseDetails createAndSubmitCitizenCaseAndGetCaseDetails() {
+        CaseData caseData = getCaseDataWithDssData();
+        AppsConfig.AppsDetails details = AppsUtil.getExactAppsDetails(appsConfig, caseData.getDssCaseData());
+        CaseDetails caseDetails = createCitizenCase();
+
+        return updateCitizenCase(EventConstants.CITIZEN_CIC_SUBMIT_CASE, caseDetails.getId(),caseData);
     }
 
-    protected Response createAndSubmitTestCaseAndGetResponse() {
-        final long caseReference = createTestCaseAndGetCaseReference();
-        log.debug("Test url: {}", testUrl);
-        return RestAssured
-            .given()
-            .relaxedHTTPSValidation()
-            .baseUri(testUrl)
-            .header(CONTENT_TYPE, APPLICATION_JSON_VALUE)
-            .header(SERVICE_AUTHORIZATION, serviceAuthenticationGenerator.generateCcdDataToken())
-            .header(AUTHORIZATION, idamTokenGenerator.generateIdamTokenForCitizen())
-            .param(EVENT_PARAM, SUBMIT)
-            .body(getDssCaseData())
-            .when()
-            .put("/case/dss-orchestration/" + caseReference +  "/update");
+    protected CaseDetails updateCitizenCase(String eventId, Long caseId, CaseData caseData) {
+        final String citizenToken = idamTokenGenerator.generateIdamTokenForCitizen();
+        final String userId = idamService.retrieveUser(citizenToken).getUserDetails().getId();
+        AppsConfig.AppsDetails details = AppsUtil.getExactAppsDetails(appsConfig, caseData.getDssCaseData());
+
+        final StartEventResponse startEventResponse = coreCaseDataApi.startEventForCitizen(
+                citizenToken,
+                serviceAuthenticationGenerator.generate(),
+                userId,
+                details.getJurisdiction(),
+                details.getCaseType(),
+                String.valueOf(caseId),
+                eventId
+        );
+        final String eventToken = startEventResponse.getToken();
+
+        final CaseDataContent caseDataContent = CaseDataContent.builder()
+                .data(convertDssCaseDataToRequest(caseData.getDssCaseData()))
+                .event(Event.builder().id(eventId).build())
+                .eventToken(eventToken)
+                .build();
+
+        return coreCaseDataApi.submitEventForCitizen(
+                citizenToken,
+                serviceAuthenticationGenerator.generate(),
+                userId,
+                details.getJurisdiction(),
+                details.getCaseType(),
+                String.valueOf(caseId),
+                true,
+                caseDataContent
+        );
     }
 
-    protected void updateTestCaseAndGetResponse(long caseReference) {
-        RestAssured
-            .given()
-            .relaxedHTTPSValidation()
-            .baseUri(testUrl)
-            .header(CONTENT_TYPE, APPLICATION_JSON_VALUE)
-            .header(SERVICE_AUTHORIZATION, serviceAuthenticationGenerator.generateCcdDataToken())
-            .header(AUTHORIZATION, idamTokenGenerator.generateIdamTokenForCitizen())
-            .param(EVENT_PARAM, SUBMIT)
-            .body(getDssCaseData())
-            .when()
-            .put("/case/dss-orchestration/" + caseReference + "/update?event=UPDATE_CASE");
+    protected CaseData getCaseDataWithDssData() {
+        return CaseData.builder()
+                .dssCaseData(getDssCaseData())
+                .build();
     }
 
     protected DssCaseData getDssCaseData() {
@@ -316,6 +310,37 @@ public abstract class FunctionalTestSuite {
             .caseTypeOfApplication("CIC")
             .additionalInformation("some additional info")
             .build();
+    }
+
+    private CaseDetails createCitizenCase() {
+        final String citizenToken = idamTokenGenerator.generateIdamTokenForCitizen();
+        final String userId = idamService.retrieveUser(citizenToken).getUserDetails().getId();
+        final AppsConfig.AppsDetails appsDetails = AppsUtil.getExactAppsDetails(this.appsConfig, getDssCaseData());
+        final StartEventResponse createEventResponse = coreCaseDataApi.startForCitizen(
+            citizenToken,
+            serviceAuthenticationGenerator.generate(),
+            userId,
+            appsDetails.getJurisdiction(),
+            appsDetails.getCaseType(),
+            appsDetails.getEventIds().getCreateEvent()
+        );
+
+        final String createEventResponseToken = createEventResponse.getToken();
+
+        final CaseDataContent caseDataContent = CaseDataContent.builder()
+            .data(convertDssCaseDataToRequest(getDssCaseData()))
+            .event(uk.gov.hmcts.reform.ccd.client.model.Event.builder().id(appsDetails.getEventIds().getCreateEvent()).build())
+            .eventToken(createEventResponseToken)
+            .build();
+        return coreCaseDataApi.submitForCitizen(
+            citizenToken,
+            serviceAuthenticationGenerator.generate(),
+            userId,
+            appsDetails.getJurisdiction(),
+            appsDetails.getCaseType(),
+            true,
+            caseDataContent
+        );
     }
 
     protected void checkAndUpdateDraftOrderDocument(Map<String, Object> caseData) {
