@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledIfEnvironmentVariable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.sptribs.testutil.CcdCaseCreator;
 import uk.gov.hmcts.sptribs.testutil.FunctionalTestSuite;
 import uk.gov.hmcts.sptribs.testutil.RoleAssignmentService;
@@ -53,10 +54,10 @@ public class WAProcessDirectionsReListedCaseWithin5DaysFT extends FunctionalTest
     @Test
     @EnabledIfEnvironmentVariable(named = "WA_FUNCTIONAL_TESTS_ENABLED", matches = "true")
     void shouldInitiateProcessDirectionsReListedCaseWithin5DaysTask() throws IOException {
-        final Response response = createAndSubmitTestCaseAndGetResponse();
-        final long id = response.getBody().path("id");
+        final CaseDetails caseDetails = createAndSubmitCitizenCaseAndGetCaseDetails();
+        final long id = caseDetails.getId();
         final String newCaseId = String.valueOf(id);
-        final Map<String, Object> caseData = response.getBody().path("caseData");
+        final Map<String, Object> caseData = caseDetails.getData();
 
         log.debug("New case created: " + newCaseId);
 
