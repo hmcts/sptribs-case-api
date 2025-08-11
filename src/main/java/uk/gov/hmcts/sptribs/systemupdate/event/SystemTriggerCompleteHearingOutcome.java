@@ -1,6 +1,5 @@
 package uk.gov.hmcts.sptribs.systemupdate.event;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
@@ -23,9 +22,6 @@ public class SystemTriggerCompleteHearingOutcome implements CCDConfig<CaseData, 
 
     public static final String SYSTEM_TRIGGER_COMPLETE_HEARING_OUTCOME = "system-trigger-complete-hearing-outcome";
 
-    @Value("${feature.wa.enabled}")
-    private boolean isWorkAllocationEnabled;
-
     @Override
     public void configure(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         Event.EventBuilder<CaseData, UserRole, State> eventBuilder = configBuilder
@@ -34,12 +30,9 @@ public class SystemTriggerCompleteHearingOutcome implements CCDConfig<CaseData, 
             .name("Trigger hearing outcome")
             .description("Trigger hearing outcome")
             .aboutToSubmitCallback(this::aboutToSubmit)
-            .grant(CREATE_READ_UPDATE_DELETE, SYSTEM_UPDATE);
-
-        if (isWorkAllocationEnabled) {
-            eventBuilder.publishToCamunda()
-                    .grant(CREATE_READ_UPDATE, ST_CIC_WA_CONFIG_USER);
-        }
+            .grant(CREATE_READ_UPDATE_DELETE, SYSTEM_UPDATE)
+            .publishToCamunda()
+            .grant(CREATE_READ_UPDATE, ST_CIC_WA_CONFIG_USER);
     }
 
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(CaseDetails<CaseData, State> caseDetails,
