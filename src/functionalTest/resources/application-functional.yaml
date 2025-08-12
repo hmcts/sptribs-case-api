@@ -1,7 +1,8 @@
 test-url: ${TEST_URL:http://localhost:4013}
 
 s2s:
-  name: ccd_data
+  name: sptribs_case_api
+  ccd_data_name: ccd_data
   task_management_name: wa_task_management_api
   access_management_name: am_role_assignment_service
 
