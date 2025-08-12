@@ -23,7 +23,6 @@ public class EditCicaCaseDetailsPage implements CcdPageConfiguration {
                 .optional(EditCicaCaseDetails::getCicaCasePresentingOfficer)
                 .done()
             .done();
-//            .publishToCamunda(false);
     }
 
 
