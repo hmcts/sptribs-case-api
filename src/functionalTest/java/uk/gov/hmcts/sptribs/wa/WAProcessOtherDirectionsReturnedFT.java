@@ -63,6 +63,7 @@ public class WAProcessOtherDirectionsReturnedFT extends FunctionalTestSuite {
 
         caseData.put("cicCaseReferralTypeForWA", "Other");
         caseData.putAll(caseData(CASEWORKER_CREATE_DRAFT_ORDER_DATA));
+        checkAndUpdateDraftOrderDocument(caseData);
         ccdCaseCreator.createInitialStartEventAndSubmit(
             CASEWORKER_CREATE_DRAFT_ORDER, ST_CIC_JURISDICTION, ST_CIC_CASE_TYPE, newCaseId, caseData);
 

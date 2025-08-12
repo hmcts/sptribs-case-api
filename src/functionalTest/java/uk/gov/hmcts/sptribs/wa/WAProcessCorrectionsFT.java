@@ -57,15 +57,17 @@ public class WAProcessCorrectionsFT extends FunctionalTestSuite {
         final String newCaseId = String.valueOf(id);
         final Map<String, Object> caseData = caseDetails.getData();
 
-        log.debug("New case created: " + newCaseId);
+        log.debug("New case created: {}", newCaseId);
 
         ccdCaseCreator.createInitialStartEventAndSubmit(CASEWORKER_EDIT_CASE, ST_CIC_JURISDICTION, ST_CIC_CASE_TYPE, newCaseId, caseData);
         ccdCaseCreator.createInitialStartEventAndSubmit(CASEWORKER_CASE_BUILT, ST_CIC_JURISDICTION, ST_CIC_CASE_TYPE, newCaseId, caseData);
         ccdCaseCreator.createInitialStartEventAndSubmit(
             CASEWORKER_CLOSE_THE_CASE, ST_CIC_JURISDICTION, ST_CIC_CASE_TYPE, newCaseId, caseData);
 
+
         caseData.put("cicCaseReferralTypeForWA", "Corrections");
         caseData.putAll(caseData(CASEWORKER_CREATE_DRAFT_ORDER_DATA));
+        checkAndUpdateDraftOrderDocument(caseData);
         ccdCaseCreator.createInitialStartEventAndSubmit(
             CASEWORKER_CREATE_DRAFT_ORDER, ST_CIC_JURISDICTION, ST_CIC_CASE_TYPE, newCaseId, caseData);
 
