@@ -29,7 +29,7 @@ plugins {
   id 'com.github.ben-manes.versions' version '0.50.0'
   id 'hmcts.ccd.sdk' version '5.6.0'
   id "au.com.dius.pact" version "4.3.10"
-  id 'com.github.hmcts.rse-cft-lib' version '0.19.1831'
+  id 'com.github.hmcts.rse-cft-lib' version '0.19.1836'
 }
 
 apply plugin: 'cz.habarta.typescript-generator'
@@ -107,6 +107,10 @@ tasks.withType(JavaExec).configureEach {
 tasks.withType(Test) {
   useJUnitPlatform()
   maxParallelForks = Math.floorDiv(Runtime.runtime.availableProcessors(), 2)
+  //Use more available processors for FT as WA Tests have timeouts and will run out of time
+  if (System.getenv('WA_FUNCTIONAL_TESTS_ENABLED') == 'true') {
+    maxParallelForks = Runtime.runtime.availableProcessors()
+  }
 
   testLogging {
     exceptionFormat = 'full'

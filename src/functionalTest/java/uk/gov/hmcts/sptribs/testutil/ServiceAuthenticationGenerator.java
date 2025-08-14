@@ -4,7 +4,7 @@ import io.restassured.RestAssured;
 import io.restassured.response.Response;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.ActiveProfiles;
 
 import java.util.Map;
 
@@ -12,7 +12,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
-@TestPropertySource("classpath:application.yaml")
+@ActiveProfiles("functional")
 @Service
 public class ServiceAuthenticationGenerator {
 
@@ -22,6 +22,9 @@ public class ServiceAuthenticationGenerator {
     @Value("${s2s.task_management_name}")
     private String s2sTaskManagementName;
 
+    @Value("${s2s.ccd_data_name}")
+    private String s2sCcdDataName;
+
     @Value("${s2s.access_management_name}")
     private String s2sAccessManagementName;
 
@@ -30,6 +33,10 @@ public class ServiceAuthenticationGenerator {
 
     public String generateTaskManagementToken() {
         return generate(this.s2sTaskManagementName);
+    }
+
+    public String generateCcdDataToken() {
+        return generate(this.s2sCcdDataName);
     }
 
     public String generateAccessManagementToken() {
