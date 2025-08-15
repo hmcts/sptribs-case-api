@@ -221,6 +221,7 @@ project.tasks['sonarqube'].dependsOn jacocoTestReport
 def sonarExclusions = [
   '**/uk/gov/hmcts/sptribs/common/ccd/**',
   '**/uk/gov/hmcts/sptribs/common/model/Status.java',
+  '**/uk/gov/hmcts/sptribs/common/model/accessprofile/**',
   '**/uk/gov/hmcts/sptribs/caseworker/event/CaseWorkerDraftOrder.java',
   '**/uk/gov/hmcts/sptribs/caseworker/event/CaseworkerCaseFlag.java',
   '**/uk/gov/hmcts/sptribs/common/event/CreateTestCase.java',
