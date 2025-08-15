@@ -151,7 +151,6 @@ public class CaseData {
     )
     private DocumentManagement newDocManagement = new DocumentManagement();
 
-    @JsonUnwrapped(prefix = "cicaCase")
     @Builder.Default
     @CCD(
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
