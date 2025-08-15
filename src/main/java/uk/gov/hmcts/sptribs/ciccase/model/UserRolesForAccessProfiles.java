@@ -27,7 +27,7 @@ public enum UserRolesForAccessProfiles implements HasRole {
     // Below are the Access Profiles for the Idam Roles
     CIC_SUPER_USER("caseworker-sptribs-superuser", "CRU"),
     //Privileged Granted to all users who are allowed to read privileged tabs (in essence this is everyone except the respondent)
-    CIC_PRIVILEGED_USER("caseworker-sptribs-privileged-user", "R"),
+    NON_RESPONDENT_PROFILE("non-respondent-user", "R"),
     AC_SYSTEMUPDATE("caseworker-sptribs-systemupdate", "CRU"),
     CIC_CASEWORKER("caseworker-st_cic-caseworker", "CRU"),
     CIC_SENIOR_CASEWORKER("caseworker-st_cic-senior-caseworker", "CRU"),

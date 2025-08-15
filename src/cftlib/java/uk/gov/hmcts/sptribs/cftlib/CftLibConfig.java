@@ -73,7 +73,7 @@ public class CftLibConfig implements CFTLibConfigurer {
             "caseworker-wa-task-configuration",
             "GS_profile",
             "caseworker-ras-validation",
-            "caseworker-sptribs-privileged-user"
+            "non-respondent-user"
         );
 
         ResourceLoader resourceLoader = new DefaultResourceLoader();
