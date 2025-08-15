@@ -2,6 +2,17 @@
 s2s:
   stub: true
 
+spring:
+  main:
+    allow-bean-definition-overriding: true
+  messages:
+    encoding: ISO-8859-1
+  autoconfigure:
+    exclude: com.azure.spring.cloud.autoconfigure.implementation.context.AzureTokenCredentialAutoConfiguration
+  jms:
+    servicebus:
+      enabled: false
+
 core_case_data:
   api:
     url: http://localhost:4012
