@@ -69,6 +69,9 @@ public final class CommonConstants {
     public static final String TRIBUNAL_NAME_VALUE = "First-tier Tribunal (CIC)";
     public static final String TRIBUNAL_EMAIL_VALUE = "CIC.enquiries@justice.gov.uk";
 
+    public static final String HAS_CICA_NUMBER = "hasCicaNumber";
+    public static final String CICA_CASE_NUMBER = "cicaCaseNumber";
+
     private CommonConstants() {
     }
 }

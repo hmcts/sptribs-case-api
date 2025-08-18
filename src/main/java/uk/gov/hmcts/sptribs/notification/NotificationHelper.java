@@ -9,6 +9,7 @@ import uk.gov.hmcts.ccd.sdk.type.AddressGlobalUK;
 import uk.gov.hmcts.ccd.sdk.type.DynamicListElement;
 import uk.gov.hmcts.ccd.sdk.type.DynamicMultiSelectList;
 import uk.gov.hmcts.sptribs.caseworker.model.Listing;
+import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.HearingFormat;
 import uk.gov.hmcts.sptribs.common.CommonConstants;
@@ -29,11 +30,13 @@ import static uk.gov.hmcts.sptribs.common.CommonConstants.ADDRESS_LINE_5;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.ADDRESS_LINE_6;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.ADDRESS_LINE_7;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.CASE_DOCUMENT;
+import static uk.gov.hmcts.sptribs.common.CommonConstants.CICA_CASE_NUMBER;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.CIC_CASE_NUMBER;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.CIC_CASE_SUBJECT_NAME;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.CONTACT_NAME;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.DOC_AVAILABLE;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.EMPTY_PLACEHOLDER;
+import static uk.gov.hmcts.sptribs.common.CommonConstants.HAS_CICA_NUMBER;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.HEARING_DATE;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.HEARING_TIME;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.MARKUP_SEPARATOR;
@@ -57,33 +60,33 @@ public class NotificationHelper {
         templateVars.put(ADDRESS_LINE_7, address.getPostCode());
     }
 
-    public Map<String, Object> getSubjectCommonVars(String caseNumber, CicCase cicCase) {
-        final Map<String, Object> templateVars = commonTemplateVars(cicCase, caseNumber);
-        templateVars.put(CONTACT_NAME, cicCase.getFullName());
+    public Map<String, Object> getSubjectCommonVars(String caseNumber, CaseData caseData) {
+        final Map<String, Object> templateVars = commonTemplateVars(caseData, caseNumber);
+        templateVars.put(CONTACT_NAME, caseData.getCicCase().getFullName());
         return templateVars;
     }
 
-    public Map<String, Object> getRepresentativeCommonVars(String caseNumber, CicCase cicCase) {
-        final Map<String, Object> templateVars = commonTemplateVars(cicCase, caseNumber);
-        templateVars.put(CONTACT_NAME, cicCase.getRepresentativeFullName());
+    public Map<String, Object> getRepresentativeCommonVars(String caseNumber, CaseData caseData) {
+        final Map<String, Object> templateVars = commonTemplateVars(caseData, caseNumber);
+        templateVars.put(CONTACT_NAME, caseData.getCicCase().getRepresentativeFullName());
         return templateVars;
     }
 
-    public Map<String, Object> getRespondentCommonVars(String caseNumber, CicCase cicCase) {
-        final Map<String, Object> templateVars = commonTemplateVars(cicCase, caseNumber);
-        templateVars.put(CONTACT_NAME, cicCase.getRespondentName());
+    public Map<String, Object> getRespondentCommonVars(String caseNumber, CaseData caseData) {
+        final Map<String, Object> templateVars = commonTemplateVars(caseData, caseNumber);
+        templateVars.put(CONTACT_NAME, caseData.getCicCase().getRespondentName());
         return templateVars;
     }
 
-    public Map<String, Object> getTribunalCommonVars(String caseNumber, CicCase cicCase) {
-        final Map<String, Object> templateVars = commonTemplateVars(cicCase, caseNumber);
+    public Map<String, Object> getTribunalCommonVars(String caseNumber, CaseData caseData) {
+        final Map<String, Object> templateVars = commonTemplateVars(caseData, caseNumber);
         templateVars.put(CONTACT_NAME, TRIBUNAL_NAME_VALUE);
         return templateVars;
     }
 
-    public Map<String, Object> getApplicantCommonVars(String caseNumber, CicCase cicCase) {
-        final Map<String, Object> templateVars = commonTemplateVars(cicCase, caseNumber);
-        templateVars.put(CONTACT_NAME, cicCase.getApplicantFullName());
+    public Map<String, Object> getApplicantCommonVars(String caseNumber, CaseData caseData) {
+        final Map<String, Object> templateVars = commonTemplateVars(caseData, caseNumber);
+        templateVars.put(CONTACT_NAME, caseData.getCicCase().getApplicantFullName());
         return templateVars;
     }
 
@@ -216,11 +219,16 @@ public class NotificationHelper {
         templateVars.put(HEARING_TIME, hearingTime);
     }
 
-    private Map<String, Object> commonTemplateVars(final CicCase cicCase, final String caseNumber) {
+    private Map<String, Object> commonTemplateVars(final CaseData caseData, final String caseNumber) {
+        final CicCase cicCase = caseData.getCicCase();
         final Map<String, Object> templateVars = new HashMap<>();
         templateVars.put(TRIBUNAL_NAME, CIC);
         templateVars.put(CIC_CASE_NUMBER, caseNumber);
         templateVars.put(CIC_CASE_SUBJECT_NAME, cicCase.getFullName());
+        if (caseData.getEditCicaCaseDetails() != null && caseData.getEditCicaCaseDetails().getCicaReferenceNumber() != null) {
+            templateVars.put(HAS_CICA_NUMBER, "true");
+            templateVars.put(CICA_CASE_NUMBER, caseData.getEditCicaCaseDetails().getCicaReferenceNumber());
+        }
         return templateVars;
     }
 

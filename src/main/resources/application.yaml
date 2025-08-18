@@ -57,7 +57,8 @@ uk:
           tribunalEmail: CIC.enquiries@justice.gov.uk
         templatesCIC:
           APPLICATION_NEW_ORDER_ISSUED: 'e451a469-e61d-4daf-95c3-e405448ececf'
-          APPLICATION_RECEIVED: '5385bfc6-eb33-41f6-ad2b-590a4f427606'
+#          APPLICATION_RECEIVED: '5385bfc6-eb33-41f6-ad2b-590a4f427606'
+          APPLICATION_RECEIVED: '48ccf890-0550-48ca-8c52-fa68cec09947'
           APPLICATION_RECEIVED_CY: '2a434482-a070-457c-935d-12b49f2ac223'
           CASE_REINSTATED_EMAIL: '1f41595f-1ab8-4e41-a240-026c61ecd852'
           CASE_REINSTATED_POST: '313e8992-8538-4485-a461-a244cc893bb3'

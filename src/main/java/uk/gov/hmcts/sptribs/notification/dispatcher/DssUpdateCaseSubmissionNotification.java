@@ -33,7 +33,7 @@ public class DssUpdateCaseSubmissionNotification implements PartiesNotification 
     @Override
     public void sendToApplicant(final CaseData caseData, final String caseNumber) {
         final CicCase cicCase = caseData.getCicCase();
-        final Map<String, Object> templateVars = notificationHelper.getSubjectCommonVars(caseNumber, cicCase);
+        final Map<String, Object> templateVars = notificationHelper.getSubjectCommonVars(caseNumber, caseData);
         final NotificationRequest request = notificationHelper.buildEmailNotificationRequest(
             cicCase.getEmail(),
             templateVars,
@@ -44,7 +44,7 @@ public class DssUpdateCaseSubmissionNotification implements PartiesNotification 
 
     @Override
     public void sendToTribunal(final CaseData caseData, final String caseNumber) {
-        final Map<String, Object> templateVars = notificationHelper.getTribunalCommonVars(caseNumber, caseData.getCicCase());
+        final Map<String, Object> templateVars = notificationHelper.getTribunalCommonVars(caseNumber, caseData);
         final NotificationRequest request = notificationHelper.buildEmailNotificationRequest(
             TRIBUNAL_EMAIL_VALUE,
             templateVars,

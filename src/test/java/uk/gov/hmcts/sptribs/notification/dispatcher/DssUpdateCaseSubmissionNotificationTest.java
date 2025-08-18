@@ -49,7 +49,7 @@ class DssUpdateCaseSubmissionNotificationTest {
             .templateVars(templateVars)
             .build();
 
-        when(notificationHelper.getSubjectCommonVars(caseReference, cicCase))
+        when(notificationHelper.getSubjectCommonVars(caseReference, caseData))
             .thenReturn(templateVars);
         when(notificationHelper.buildEmailNotificationRequest(
             TEST_APPLICANT_EMAIL,
@@ -74,7 +74,7 @@ class DssUpdateCaseSubmissionNotificationTest {
             .templateVars(templateVars)
             .build();
 
-        when(notificationHelper.getTribunalCommonVars(caseReference, cicCase))
+        when(notificationHelper.getTribunalCommonVars(caseReference, caseData))
             .thenReturn(templateVars);
         when(notificationHelper.buildEmailNotificationRequest(
             TRIBUNAL_EMAIL_VALUE,

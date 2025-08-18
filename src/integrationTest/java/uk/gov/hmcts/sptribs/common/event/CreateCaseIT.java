@@ -200,7 +200,7 @@ public class CreateCaseIT {
         );
 
         doThrow(NotificationException.class)
-            .when(notificationHelper).getSubjectCommonVars(eq(TEST_CASE_ID_HYPHENATED), eq(caseData.getCicCase()));
+            .when(notificationHelper).getSubjectCommonVars(eq(TEST_CASE_ID_HYPHENATED), eq(caseData));
 
         String response = mockMvc.perform(post(SUBMITTED_URL)
             .contentType(APPLICATION_JSON)
