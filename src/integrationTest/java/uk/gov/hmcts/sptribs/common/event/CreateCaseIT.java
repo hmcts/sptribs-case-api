@@ -28,6 +28,7 @@ import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
 import static net.javacrumbs.jsonunit.assertj.JsonAssertions.json;
 import static net.javacrumbs.jsonunit.core.Option.IGNORING_EXTRA_FIELDS;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.times;
@@ -199,8 +200,10 @@ public class CreateCaseIT {
                 .build()
         );
 
+        //verify the CicCase object is the same as the CaseData object with have the same value but is a different object
         doThrow(NotificationException.class)
-            .when(notificationHelper).getSubjectCommonVars(eq(TEST_CASE_ID_HYPHENATED), eq(caseData));
+            .when(notificationHelper).getSubjectCommonVars(eq(TEST_CASE_ID_HYPHENATED),
+                    argThat(cd -> cd.getCicCase().equals(caseData.getCicCase())));
 
         String response = mockMvc.perform(post(SUBMITTED_URL)
             .contentType(APPLICATION_JSON)
@@ -221,7 +224,6 @@ public class CreateCaseIT {
             .inPath(CONFIRMATION_HEADER)
             .isString()
             .contains("# Create case notification failed \n## Please resend the notification");
-
         verifyNoInteractions(notificationServiceCIC);
     }
 }
