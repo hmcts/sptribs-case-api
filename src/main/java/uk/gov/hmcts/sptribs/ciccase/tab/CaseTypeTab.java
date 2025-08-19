@@ -8,14 +8,8 @@ import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 
-import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.AC_CASE_FLAGS_VIEWER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.CASEWORKER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.NON_RESPONDENT_USER;
-import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_CASEWORKER;
-import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_HEARING_CENTRE_ADMIN;
-import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_HEARING_CENTRE_TEAM_LEADER;
-import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_CASEWORKER;
-import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
 import static uk.gov.hmcts.sptribs.ciccase.search.CaseFieldsConstants.APPLICANT_ADDRESS;
 import static uk.gov.hmcts.sptribs.ciccase.search.CaseFieldsConstants.APPLICANT_CONTACT_PREFERENCE;
 import static uk.gov.hmcts.sptribs.ciccase.search.CaseFieldsConstants.APPLICANT_DATE_OF_BIRTH;
@@ -94,9 +88,7 @@ public class CaseTypeTab implements CCDConfig<CaseData, State, UserRole> {
 
     private void buildCaseFlagTab(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         configBuilder.tab("caseFlags", "Case Flags")
-            .forRoles(AC_CASE_FLAGS_VIEWER, SUPER_USER,
-                ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER, ST_CIC_HEARING_CENTRE_ADMIN,
-                ST_CIC_HEARING_CENTRE_TEAM_LEADER)
+            .forRoles(CASEWORKER)
             .field(CaseData::getFlagLauncher, null, "#ARGUMENT(READ)")
             .field(CaseData::getCaseFlags, COND_ALWAYS_HIDE_STAY_REASON)
             .field(CaseData::getSubjectFlags, COND_ALWAYS_HIDE_STAY_REASON)
@@ -106,7 +98,7 @@ public class CaseTypeTab implements CCDConfig<CaseData, State, UserRole> {
 
     private void buildCaseLinkTab(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         configBuilder.tab("caseLinks", "Linked cases")
-            .forRoles(AC_CASE_FLAGS_VIEWER, CASEWORKER)
+            .forRoles(CASEWORKER)
             .field(CaseData::getLinkedCasesComponentLauncher, null, "#ARGUMENT(LinkedCases)")
             .field(CaseData::getCaseNameHmctsInternal, COND_ALWAYS_HIDE_STAY_REASON, null)
             .field(CaseData::getCaseLinks, "LinkedCasesComponentLauncher!=\"\"", "#ARGUMENT(LinkedCases)");
