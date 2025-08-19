@@ -226,8 +226,11 @@ public class NotificationHelper {
         templateVars.put(CIC_CASE_NUMBER, caseNumber);
         templateVars.put(CIC_CASE_SUBJECT_NAME, cicCase.getFullName());
         if (caseData.getEditCicaCaseDetails() != null && caseData.getEditCicaCaseDetails().getCicaReferenceNumber() != null) {
-            templateVars.put(HAS_CICA_NUMBER, "true");
+            templateVars.put(HAS_CICA_NUMBER, true);
             templateVars.put(CICA_CASE_NUMBER, caseData.getEditCicaCaseDetails().getCicaReferenceNumber());
+        } else {
+            templateVars.put(HAS_CICA_NUMBER, false);
+            templateVars.put(CICA_CASE_NUMBER, " ");
         }
         return templateVars;
     }
