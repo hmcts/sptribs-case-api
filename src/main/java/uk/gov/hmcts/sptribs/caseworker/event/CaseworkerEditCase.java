@@ -131,7 +131,7 @@ public class CaseworkerEditCase implements CCDConfig<CaseData, State, UserRole> 
             .grantHistoryOnly(ST_CIC_JUDGE)
             .aboutToSubmitCallback(this::aboutToSubmit)
             .submittedCallback(this::submitted)
-            .publishToCamundaWithoutFields("editCicaCaseDetails");
+            .publishToCamunda();
 
         return new PageBuilder(eventBuilder);
     }
