@@ -3,6 +3,7 @@ package uk.gov.hmcts.sptribs.judicialrefdata;
 import feign.FeignException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.ccd.sdk.type.DynamicList;
 import uk.gov.hmcts.ccd.sdk.type.DynamicListElement;
@@ -30,6 +31,9 @@ import static uk.gov.hmcts.sptribs.constants.CommonConstants.ST_CIC_JURISDICTION
 @Service
 @Slf4j
 public class JudicialService {
+
+    @Value("${judicial.api.usersPageSize}")
+    private int judicialUsersPageSize;
 
     private final AuthTokenGenerator authTokenGenerator;
 
@@ -74,14 +78,19 @@ public class JudicialService {
                 judicialClient.getUserProfiles(
                     authTokenGenerator.generate(),
                     authToken,
+                    judicialUsersPageSize,
                     ACCEPT_VALUE,
                     JudicialUsersRequest.builder()
                         .ccdServiceName(ST_CIC_JURISDICTION)
                         .build()
                 );
+
             if (isEmpty(list)) {
+                log.info("No judge profiles found in JRD");
                 return new ArrayList<>();
             }
+
+            log.info("Number of judge profiles found in JRD: {}", list.size());
             return list;
         } catch (FeignException exception) {
             log.error(

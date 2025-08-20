@@ -12,8 +12,6 @@ public final class DocmosisTemplateConstants {
     public static final String CASE_NUMBER = "cicCaseCaseNumber";
     public static final String DECISION_DATED = "DateDecisionDocCreated";
     public static final String DIRECTION_DATED = "DateDirectionDocCreated";
-    public static final String HEARING_TYPE = "venueOrHearingType";
-    public static final String TRIBUNAL_MEMBERS = "tribunalMembers";
     public static final String DECISION_SIGNATURE = "decisionSignature";
     public static final String ORDER_SIGNATURE = "orderSignature";
     public static final String MAIN_CONTENT = "MainBody";
@@ -47,43 +45,55 @@ public final class DocmosisTemplateConstants {
     public static final String ME_DMI_MAIN_CONTENT =
         """
             (Directions for DMI/ Psychological/Psychiatric Report – please specify which expert)
-            1.     I have reviewed the available evidence and consider that it is necessary for .. to be assessed by a Psychiatrist or \
-            Clinical Psychologist.\s
-            2.     The CICA is directed to commission an assessment by a Psychiatrist or Clinical Psychologist. Up to date GP records \
-            should be sent to the expert, along with a copy of the questions overleaf. CICA is requested to provide an update on \
-            progress, if the report has not been completed within 4 months of issue of this notice.
-            3.     To .. >: Please could you ask your GP for a copy of all your records up to the present day. You are entitled to a copy \
-            of these without charge and it is likely to avoid delay if you obtain them yourself. The records can be in digital form and \
-            emailed to CICA. Please do this as soon as you can. (If you are unable to do this, it may be possible for the CICA to obtain \
-            the GP records with your consent although the cost of this maybe deducted from any award. Please write to the Tribunal if you \
-            need help with this or do not agree to all your records being disclosed).
-            4.     Clerk: Please refer back to any Judge on receipt of report, the update or after 3 months.
-            A party is entitled to challenge any direction given by applying within a month for another direction which amends, suspends \
-            or sets aside the first direction.
-
+            1.     I have reviewed the available evidence and consider that it is necessary for ... to be \
+            assessed by a Psychiatrist or Clinical Psychologist.\s
+            2.     The CICA is directed to commission an assessment by a Psychiatrist or Clinical Psychologist.  Up-to-date GP \
+            records should be sent to the expert, along with a copy of the questions overleaf. CICA is requested to provide an \
+            update on progress if the report has not been completed within 4 months of the issue of this notice.
+            3.     To ... : Please could you ask your GP for a copy of all your records up to the present \
+            day. You are entitled to a copy of these without charge, and it is likely to avoid delay if you obtain them yourself. \
+            The records can be in digital form and emailed to CICA.  Please do this as soon as you can.  (If you are unable to \
+            do this, it may be possible for the CICA to obtain the GP records with your consent, although the cost of this may \
+            be deducted from any award. Please write to the Tribunal if you need help with this or do not agree to all your \
+            records being disclosed).
+            4.     Clerk: Please refer back to any Judge on receipt of the report, the update or after 3 months.\
+            A party is entitled to challenge any direction given by applying within a month for another direction which amends, \
+            suspends or sets aside the first direction.
+            
             Expert Questions (detail to be completed by Tribunal)
-            1.     Has the appellant suffered a mental injury or illness which is directly attributable to the incident on ....... \
-            By ‘directly attributable’ we mean that the incident must have been a substantial or significant cause of the injury/illness.
+            1.     Has the appellant suffered a disabling mental injury or illness which is directly attributable to the \
+            incident on .......
+            (a) By disabling mental injury/illness, we mean having a substantial adverse effect on a person's ability to carry \
+            out normal day-to-day activities, including but not limited to impaired work or school performance or effects on \
+            social relationships or sexual function. It does not include temporary mental anxiety and similar temporary conditions.
+            (b) By 'directly attributable' we mean it is enough if the incident was a substantial or significant cause of the \
+            injury/illness. It does not have to be the sole cause.
             2.     If no, please give reasons.
-            3.     If yes, what is the diagnosis? Please refer to the clinical features and recognised diagnostic systems, such as \
-            ICD-10, DSM-V or other diagnostic method.
+            3.     If yes, are you able to provide a diagnosis and prognosis of the nature and degree of the mental \
+            injury/illness by reference to the recognised classification systems, such as the International Classification of \
+            Diseases [ICD], Diagnostic and Statistical Manual of Mental Disorders [DSM] or other diagnostic systems?
             4.     What are the symptoms of the mental illness/injury?
-            5.     What effect have the symptoms of the mental illness/injury had on the Appellant's day to day activities? \
-            Please consider ability to work, manage social and domestic activities and sexual or other relevant function.\s
-            6.     To what extent has the mental illness/injury affected the Appellant’s capacity to undertake paid employment?
+            5.     What effect have the symptoms of the mental illness/injury had on the Appellant's day-to-day activities? \
+            Please consider the ability to work, manage social and domestic activities and sexual or other relevant functions.\s
+            6.     To what extent has the mental illness/injury affected the Appellant's capacity to undertake paid employment?
             7.     If the symptoms due to the incident are no longer present, for how long did they last?\s
             8.     What treatment or rehabilitation has the Appellant had?
-            9.     What future treatment or rehabilitative measures are recommended?\s
-            10.     What is the nature of such treatment, the length of time it will take and the probable outcome?
-            11.    If the Appellant undergoes treatment, how long are the symptoms likely to last?
-            12.    Are any symptoms likely to be permanent? If yes, which symptoms and what is their effect on the Appellant’s \
-             day to day activities?
-            13.    Has the mental illness/injury exacerbated or accelerated a pre-existing condition?\s
-            14.    If yes, give details of the pre-existing condition, and the extent (in percentage terms if possible) to which \
-            the injury has exacerbated or accelerated the pre-existing condition?
-            15.    Have any other life events played a part in the reduction in functional capacity either before or since the incident? \
-            If so, please give details.
-            16. Identify and comment on any other issues that you consider to be relevant.""";
+            9.     What future treatment or rehabilitative measures, available via the NHS and likely to be undertaken by the \
+            Applicant, are recommended? To what extent is the treatment available, and what are the likely waiting times?
+            10.    If the Appellant undergoes treatment, how long are the symptoms likely to last?
+            11.    What treatment or rehabilitative measures, not available via the NHS and likely to be undertaken by the \
+            Applicant, are recommended? What is the likely availability and cost?
+            12.    If the Appellant undergoes treatment, how long are the symptoms likely to last?
+            13.    Are any symptoms likely to be permanent?  If yes, which symptoms and what is their effect on the \
+            Appellant's day-to-day activities?
+            14.    If the symptoms are not likely to be permanent, which symptoms will improve, to what extent and what is \
+            likely to cause the improvement?
+            15.    Has the mental illness/injury exacerbated or accelerated a pre-existing condition?
+            16.    If yes, give details of the pre-existing condition, and the extent (in percentage terms if possible) to \
+            which the injury has exacerbated or accelerated the pre-existing condition?
+            17.    Have any other life events played a part in the reduction in functional capacity either before or since the \
+            incident? If so, please give details.
+            18.    Identify and comment on any other issues that you consider to be relevant.""";
 
     public static final String ME_JOINT_MAIN_CONTENT = """
         (Where parties should liaise for medical evidence progression)

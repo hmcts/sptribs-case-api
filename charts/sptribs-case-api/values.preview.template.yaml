@@ -9,7 +9,6 @@ java:
     CASE_DATA_STORE_BASEURL: http://{{ .Release.Name }}-ccd-data-store-api
     CASE_DOCUMENT_AM_BASEURL: http://${SERVICE_NAME}-ccd-case-document-am-api
     BUNDLING_API_URL: https://em-ccdorc-${SERVICE_FQDN}
-    CITIZEN_UPDATE_CASE_STATE_ENABLED: true
     POSTGRES_HOST: '{{ tpl .Values.global.postgresHostname $}}'
     POSTGRES_NAME: "{{ .Values.global.databaseNamePrefix }}sptribs-case-api"
     POSTGRES_USERNAME: ${SPTRIBS_POSTGRES_USERNAME_PREVIEW}
@@ -483,6 +482,14 @@ em-ccdorc:
       CALLBACK_DOMAIN: em-ccdorc-${SERVICE_FQDN}
       CALLBACK_HTTP_SCHEME: https
       APPLICATIONINSIGHTS_INSTRUMENTATION_LOGGING_LEVEL: WARN
+    keyVaults:
+      em-ccdorc:
+        resourceGroup: em-ccdorc
+        secrets:
+          - name: microservicekey-em-ccd-orchestrator
+            alias: S2S_KEY
+          - name: notification-api-key
+            alias: NOTIFICATION_API_KEY
 
 em-stitching:
   enabled: true
@@ -506,6 +513,14 @@ em-stitching:
         secretRef: postgres
         key: PASSWORD
         disabled: false
+    keyVaults:
+      em-stitching:
+        resourceGroup: em-stitching
+        secrets:
+          - name: docmosis-access-key
+            alias: DOCMOSIS_ACCESS_KEY
+          - name: microservicekey-em-stitching-api
+            alias: S2S_KEY
 
 postgresql:
   enabled: true

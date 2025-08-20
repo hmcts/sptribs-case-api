@@ -2,7 +2,6 @@ package uk.gov.hmcts.sptribs.caseworker.event;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
@@ -71,9 +70,6 @@ public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole>
     @Autowired
     private NewOrderIssuedNotification newOrderIssuedNotification;
 
-    @Value("${feature.wa.enabled}")
-    private boolean isWorkAllocationEnabled;
-
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         final PageBuilder pageBuilder = send(configBuilder);
@@ -97,12 +93,8 @@ public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole>
                     .submittedCallback(this::submitted)
                     .grant(CREATE_READ_UPDATE,
                         ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER, ST_CIC_HEARING_CENTRE_ADMIN,
-                        ST_CIC_HEARING_CENTRE_TEAM_LEADER, ST_CIC_SENIOR_JUDGE, ST_CIC_JUDGE);
-
-        if (isWorkAllocationEnabled) {
-            eventBuilder.publishToCamunda()
-                        .grant(CREATE_READ_UPDATE, ST_CIC_WA_CONFIG_USER);
-        }
+                        ST_CIC_HEARING_CENTRE_TEAM_LEADER, ST_CIC_SENIOR_JUDGE, ST_CIC_JUDGE, ST_CIC_WA_CONFIG_USER)
+                    .publishToCamunda();
 
         return new PageBuilder(eventBuilder);
     }
@@ -178,7 +170,7 @@ public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole>
         }
 
         caseData.getCicCase().setOrderDueDates(new ArrayList<>());
-        caseData.getCicCase().setFirstDueDate(caseData.getCicCase().calculateFirstDueDate());
+        caseData.getCicCase().setFirstOrderDueDate(caseData.getCicCase().calculateFirstDueDate());
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)

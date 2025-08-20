@@ -66,11 +66,9 @@ def secrets = [
                 secret('ccd-user-profile-db-password-preview', 'CCD_USER_PROFILE_DB_PASSWORD_PREVIEW'),
                 secret('em-spring-datasource-username-preview', 'EM_SPRING_DATASOURCE_USERNAME_PREVIEW'),
                 secret('em-spring-datasource-password-preview', 'EM_SPRING_DATASOURCE_PASSWORD_PREVIEW'),
-                secret('s2s-case-api-secret', 'S2S_SECRET')
-        ],
-        'civil-${env}'    :[
-          secret('ccd-importer-username', 'DEFINITION_IMPORTER_USERNAME'),
-          secret('ccd-importer-password', 'DEFINITION_IMPORTER_PASSWORD')
+                secret('s2s-case-api-secret', 'S2S_SECRET'),
+                secret('ccd-importer-username', 'DEFINITION_IMPORTER_USERNAME'),
+                secret('ccd-importer-password', 'DEFINITION_IMPORTER_PASSWORD')
         ],
         'sptribs-prod'    :[
           secret('s2s-case-api-secret', 'S2S_SECRET_PROD')
@@ -215,7 +213,7 @@ withPipeline(type, product, component) {
     ]
   }
 
-  afterAlways('checkout') {
+  before('highleveldatasetup') {
     builder.gradle('generateCCDConfig')
     generateDefinitions()
   }
@@ -226,9 +224,7 @@ withPipeline(type, product, component) {
     env.CCD_DEF_NAME = "preview"
     env.DEFINITION_STORE_URL_BASE = "https://ccd-definition-store-sptribs-case-api-pr-${CHANGE_ID}.preview.platform.hmcts.net"
     env.CASE_DATA_STORE_BASEURL = "https://ccd-data-store-api-sptribs-case-api-pr-${CHANGE_ID}.preview.platform.hmcts.net"
-    env.CASE_DOCUMENT_AM_BASEURL= "http://ccd-case-document-am-api-sptribs-case-api-pr-${CHANGE_ID}.preview.platform.hmcts.net"
-    env.TEST_S2S_URL = "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
-    env.CITIZEN_UPDATE_CASE_STATE_ENABLED=true
+    env.CASE_DOCUMENT_AM_BASEURL= "https://ccd-case-document-am-api-sptribs-case-api-pr-${CHANGE_ID}.preview.platform.hmcts.net"
     env.SERVICE_AUTH_MICROSERVICE = "sptribs_case_api"
     env.SERVICE_AUTH_PROVIDER_URL = "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
     env.TEST_E2E_URL = "https://xui-sptribs-case-api-pr-${CHANGE_ID}.preview.platform.hmcts.net"
@@ -237,9 +233,6 @@ withPipeline(type, product, component) {
     env.ROLE_ASSIGNMENT_API_URL = "https://am-org-role-mapping-service-sptribs-case-api-pr-${CHANGE_ID}.preview.platform.hmcts.net"
 
     def waPRLabels = githubApi.getLabelsbyPattern(env.BRANCH_NAME, "pr-values:wa")
-    if (waPRLabels.contains("pr-values:wa")) {
-      env.WA_FEATURE_ENABLED  = true
-    }
     if (waPRLabels.contains("pr-values:wa-ft-tests")) {
       env.WA_FUNCTIONAL_TESTS_ENABLED = true
     }
@@ -254,10 +247,8 @@ withPipeline(type, product, component) {
     env.CASE_API_URL="http://sptribs-case-api-aat.service.core-compute-aat.internal"
     env.CCD_DEF_NAME="aat"
     env.ELASTIC_SEARCH_ENABLED=true
-    env.CITIZEN_UPDATE_CASE_STATE_ENABLED=true
     env.SERVICE_AUTH_MICROSERVICE = "sptribs_case_api"
     env.SERVICE_AUTH_PROVIDER_URL = "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
-    env.WA_FEATURE_ENABLED = true
     env.CAMUNDA_BASE_URL = "http://camunda-api-aat.service.core-compute-aat.internal"
     setCommonEnvVariables()
 
@@ -269,14 +260,12 @@ withPipeline(type, product, component) {
       env.CASE_API_URL="http://sptribs-case-api-prod.service.core-compute-prod.internal"
       env.CCD_DEF_NAME="prod"
       env.DEFINITION_STORE_URL_BASE="http://ccd-definition-store-api-prod.service.core-compute-prod.internal"
-      env.CITIZEN_UPDATE_CASE_STATE_ENABLED=false
       env.CASE_API_DOCUMENT_DOWNLOAD_URL = "http://manage-case.platform.hmcts.net/"
       env.SERVICE_AUTH_MICROSERVICE = "sptribs_case_api"
       env.SERVICE_AUTH_PROVIDER_URL = "http://rpe-service-auth-provider-prod.service.core-compute-prod.internal"
       env.IDAM_API_URL_BASE = "https://idam-api.platform.hmcts.net"
       env.S2S_URL_BASE = "http://rpe-service-auth-provider-prod.service.core-compute-prod.internal"
       env.BEFTA_S2S_CLIENT_ID = "ccd_data"
-      env.WA_FEATURE_ENABLED = true
       env.CAMUNDA_BASE_URL = "http://camunda-api-prod.service.core-compute-prod.internal"
 
       builder.gradle('generateCCDConfig --rerun-tasks')
@@ -301,7 +290,6 @@ withPipeline(type, product, component) {
   }
 
   onDemo {
-    env.WA_FEATURE_ENABLED = true
     env.ENVIRONMENT="demo"
     env.CASE_API_URL = "http://sptribs-case-api-demo.service.core-compute-demo.internal"
     env.CASE_API_DOCUMENT_DOWNLOAD_URL = "http://manage-case.demo.platform.hmcts.net/"
@@ -312,7 +300,6 @@ withPipeline(type, product, component) {
   }
 
   onPerftest {
-    env.WA_FEATURE_ENABLED = true
     env.ENVIRONMENT="perftest"
     env.CASE_API_URL = "http://sptribs-case-api-perftest.service.core-compute-perftest.internal"
     env.CCD_DEF_NAME = "perftest"
@@ -323,7 +310,6 @@ withPipeline(type, product, component) {
   }
 
   onIthc {
-    env.WA_FEATURE_ENABLED = true
     env.ENVIRONMENT="ithc"
     env.CASE_API_URL = "http://sptribs-case-api-ithc.service.core-compute-ithc.internal"
     env.CCD_DEF_NAME = "ithc"
@@ -331,11 +317,6 @@ withPipeline(type, product, component) {
     env.S2S_URL_BASE = "http://rpe-service-auth-provider-ithc.service.core-compute-ithc.internal"
     env.FEE_API_URL = "http://fees-register-api-demo.service.core-compute-ithc.internal"
     env.CAMUNDA_BASE_URL = "http://camunda-api-ithc.service.core-compute-ithc.internal"
-  }
-
-  before('functionalTest:preview') {
-    // Only for preview upload the definitions via script as high level data set up relies on an existing environment
-    uploadCoreCaseDataDefinitions()
   }
 
   before('functionalTest:aat') {
@@ -349,16 +330,6 @@ def setCommonEnvVariables() {
     env.S2S_URL_BASE = "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
     env.FEE_API_URL = "http://fees-register-api-aat.service.core-compute-aat.internal"
     env.BEFTA_S2S_CLIENT_ID = "ccd_data"
-}
-
-def uploadCoreCaseDataDefinitions() {
-    dir("${WORKSPACE}/bin"){
-        sh "./add-roles.sh"
-        sh "./process-and-import-ccd-definition.sh"
-    }
-    dir("${WORKSPACE}") {
-        steps.archiveArtifacts artifacts: "build/ccd-config/*.xlsx"
-    }
 }
 
 def generateDefinitions() {

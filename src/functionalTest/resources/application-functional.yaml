@@ -1,0 +1,57 @@
+test-url: ${TEST_URL:http://localhost:4013}
+
+s2s:
+  name: sptribs_case_api
+  ccd_data_name: ccd_data
+  task_management_name: wa_task_management_api
+  access_management_name: am_role_assignment_service
+
+idam:
+  api:
+    url: ${IDAM_API_BASEURL:https://idam-api.aat.platform.hmcts.net}
+  s2s-auth:
+    url: ${TEST_S2S_URL:http://rpe-service-auth-provider-aat.service.core-compute-aat.internal}
+    secret: ${S2S_SECRET:dummy}
+    microservice: sptribs_case_api
+  solicitor:
+    username: ${IDAM_SOLICITOR_USERNAME:dummysolicitor@test.com}
+    password: ${IDAM_SOLICITOR_PASSWORD:dummy}
+  caseworker:
+    username: ${IDAM_CASEWORKER_USERNAME:dummycaseworker@test.com}
+    password: ${IDAM_CASEWORKER_PASSWORD:dummy}
+  waseniorcaseworker:
+    username: ${IDAM_WA_SENIOR_CASEWORKER_USERNAME:dummywaseniorcaseworker@test.com}
+    password: ${IDAM_WA_SENIOR_CASEWORKER_PASSWORD:dummy}
+    uid: ${WA_SENIOR_CASEWORKER_UID:dummy}
+  waregionalhearingcentreteamlead:
+    username: ${IDAM_WA_REGIONAL_HEARING_CENTRE_TEAM_LEAD_USERNAME:dummywaregionalhearingcentreteamlead@test.com}
+    password: ${IDAM_WA_REGIONAL_HEARING_CENTRE_TEAM_LEAD_PASSWORD:dummy}
+    uid: ${IDAM_WA_REGIONAL_HEARING_CENTRE_TEAM_LEAD_UID:dummy}
+  systemupdate:
+    username: ${IDAM_SYSTEM_UPDATE_USERNAME:dummysystemupdate@test.com}
+    password: ${IDAM_SYSTEM_UPDATE_PASSWORD:dummy}
+  citizen:
+    username: ${IDAM_CITIZEN_USERNAME:dummycitizen@test.com}
+    password: ${IDAM_CITIZEN_PASSWORD:dummy}
+
+feature:
+  security-classification:
+    enabled: false
+
+role_assignment_mapping_api:
+  url: ${ROLE_ASSIGNMENT_API_URL:http://am-org-role-mapping-service-aat.service.core-compute-aat.internal}
+
+case_document_am:
+  url: ${CASE_DOCUMENT_AM_BASEURL:http://ccd-case-document-am-api-aat.service.core-compute-aat.internal}
+
+caseinfo:
+  apps:
+    - caseType: CriminalInjuriesCompensation
+      jurisdiction: ST_CIC
+      eventIds:
+        createEvent: citizen-cic-create-dss-application
+        updateEvent: citizen-cic-update-dss-application
+        updateCaseEvent: citizen-cic-dss-update-case
+        submitEvent: citizen-cic-submit-dss-application
+      caseTypeOfApplication:
+        - CIC
