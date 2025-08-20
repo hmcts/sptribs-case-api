@@ -94,4 +94,5 @@ public class CaseworkerLinkCase implements CCDConfig<CaseData, State, UserRole> 
             caseLinkedNotification.sendToRepresentative(data, caseNumber);
         }
     }
+
 }
