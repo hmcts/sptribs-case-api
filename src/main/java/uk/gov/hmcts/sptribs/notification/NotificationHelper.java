@@ -230,7 +230,7 @@ public class NotificationHelper {
             templateVars.put(CICA_CASE_NUMBER, caseData.getEditCicaCaseDetails().getCicaReferenceNumber());
         } else {
             templateVars.put(HAS_CICA_NUMBER, false);
-            templateVars.put(CICA_CASE_NUMBER, " ");
+            templateVars.put(CICA_CASE_NUMBER, "");
         }
         return templateVars;
     }
