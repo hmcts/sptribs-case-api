@@ -225,7 +225,7 @@ public class NotificationHelper {
         templateVars.put(TRIBUNAL_NAME, CIC);
         templateVars.put(CIC_CASE_NUMBER, caseNumber);
         templateVars.put(CIC_CASE_SUBJECT_NAME, cicCase.getFullName());
-        if (caseData.getEditCicaCaseDetails() != null && StringUtils.isEmpty(caseData.getEditCicaCaseDetails().getCicaReferenceNumber())) {
+        if (caseData.getEditCicaCaseDetails() != null && !StringUtils.isEmpty(caseData.getEditCicaCaseDetails().getCicaReferenceNumber())) {
             templateVars.put(HAS_CICA_NUMBER, true);
             templateVars.put(CICA_CASE_NUMBER, caseData.getEditCicaCaseDetails().getCicaReferenceNumber());
         } else {
