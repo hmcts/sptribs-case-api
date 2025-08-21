@@ -51,16 +51,16 @@ public final class EventUtil {
     public static String getRecipients(final CicCase cicCase) {
         final StringBuilder recipients = new StringBuilder(100);
         if (!CollectionUtils.isEmpty(cicCase.getNotifyPartySubject())) {
-            recipients.append(cicCase.getNotifyPartySubject() + ", ");
+            recipients.append("Subject, ");
         }
         if (!CollectionUtils.isEmpty(cicCase.getNotifyPartyRespondent())) {
-            recipients.append(cicCase.getNotifyPartyRespondent() + ", ");
+            recipients.append("Respondent, ");
         }
         if (!CollectionUtils.isEmpty(cicCase.getNotifyPartyRepresentative())) {
-            recipients.append(cicCase.getNotifyPartyRepresentative() + ", ");
+            recipients.append("Representative, ");
         }
         if (!CollectionUtils.isEmpty(cicCase.getNotifyPartyApplicant())) {
-            recipients.append(getNotifyPartyApplicant + ", ");
+            recipients.append("Applicant, ");
         }
         if (recipients.length() > 0) {
             return recipients.substring(0, recipients.length() - 2);
