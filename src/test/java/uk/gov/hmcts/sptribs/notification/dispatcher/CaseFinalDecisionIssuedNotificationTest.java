@@ -71,7 +71,7 @@ public class CaseFinalDecisionIssuedNotificationTest {
         //When
         when(notificationHelper.buildEmailNotificationRequest(any(), anyBoolean(), anyMap(), anyMap(), any(TemplateName.class)))
             .thenReturn(NotificationRequest.builder().build());
-        when(notificationHelper.getSubjectCommonVars(any(), any(CicCase.class))).thenReturn(new HashMap<>());
+        when(notificationHelper.getSubjectCommonVars(any(), any(CaseData.class))).thenReturn(new HashMap<>());
 
         finalDecisionIssuedNotification.sendToSubject(data, "CN1");
 
@@ -108,7 +108,7 @@ public class CaseFinalDecisionIssuedNotificationTest {
         //When
         when(notificationHelper.buildEmailNotificationRequest(any(), anyBoolean(), anyMap(), anyMap(), any(TemplateName.class)))
             .thenReturn(NotificationRequest.builder().build());
-        when(notificationHelper.getSubjectCommonVars(any(), any(CicCase.class))).thenReturn(new HashMap<>());
+        when(notificationHelper.getSubjectCommonVars(any(), any(CaseData.class))).thenReturn(new HashMap<>());
 
         finalDecisionIssuedNotification.sendToSubject(data, "CN1");
 
@@ -136,7 +136,7 @@ public class CaseFinalDecisionIssuedNotificationTest {
         //When
         when(notificationHelper.buildLetterNotificationRequest(anyMap(), any(TemplateName.class)))
             .thenReturn(NotificationRequest.builder().build());
-        when(notificationHelper.getSubjectCommonVars(any(), any(CicCase.class))).thenReturn(new HashMap<>());
+        when(notificationHelper.getSubjectCommonVars(any(), any(CaseData.class))).thenReturn(new HashMap<>());
         doNothing().when(notificationHelper).addAddressTemplateVars(any(AddressGlobalUK.class), anyMap());
         finalDecisionIssuedNotification.sendToSubject(data, "CN1");
 
@@ -168,7 +168,7 @@ public class CaseFinalDecisionIssuedNotificationTest {
         //When
         when(notificationHelper.buildEmailNotificationRequest(any(), anyBoolean(), anyMap(), anyMap(), any(TemplateName.class)))
             .thenReturn(NotificationRequest.builder().build());
-        when(notificationHelper.getRespondentCommonVars(any(), any(CicCase.class))).thenReturn(new HashMap<>());
+        when(notificationHelper.getRespondentCommonVars(any(), any(CaseData.class))).thenReturn(new HashMap<>());
         finalDecisionIssuedNotification.sendToRespondent(data, "CN1");
 
         //Then
@@ -204,7 +204,7 @@ public class CaseFinalDecisionIssuedNotificationTest {
         //When
         when(notificationHelper.buildEmailNotificationRequest(any(), anyBoolean(), anyMap(), anyMap(), any(TemplateName.class)))
             .thenReturn(NotificationRequest.builder().build());
-        when(notificationHelper.getRespondentCommonVars(any(), any(CicCase.class))).thenReturn(new HashMap<>());
+        when(notificationHelper.getRespondentCommonVars(any(), any(CaseData.class))).thenReturn(new HashMap<>());
         finalDecisionIssuedNotification.sendToRespondent(data, "CN1");
 
         //Then
@@ -243,7 +243,7 @@ public class CaseFinalDecisionIssuedNotificationTest {
         //When
         when(notificationHelper.buildEmailNotificationRequest(any(), anyBoolean(), anyMap(), anyMap(), any(TemplateName.class)))
             .thenReturn(NotificationRequest.builder().build());
-        when(notificationHelper.getRepresentativeCommonVars(any(), any(CicCase.class))).thenReturn(new HashMap<>());
+        when(notificationHelper.getRepresentativeCommonVars(any(), any(CaseData.class))).thenReturn(new HashMap<>());
 
         finalDecisionIssuedNotification.sendToRepresentative(data, "CN1");
 
@@ -283,7 +283,7 @@ public class CaseFinalDecisionIssuedNotificationTest {
         //When
         when(notificationHelper.buildEmailNotificationRequest(any(), anyBoolean(), anyMap(), anyMap(), any(TemplateName.class)))
             .thenReturn(NotificationRequest.builder().build());
-        when(notificationHelper.getRepresentativeCommonVars(any(), any(CicCase.class))).thenReturn(new HashMap<>());
+        when(notificationHelper.getRepresentativeCommonVars(any(), any(CaseData.class))).thenReturn(new HashMap<>());
 
         finalDecisionIssuedNotification.sendToRepresentative(data, "CN1");
 
@@ -311,7 +311,7 @@ public class CaseFinalDecisionIssuedNotificationTest {
         //When
         when(notificationHelper.buildLetterNotificationRequest(anyMap(), any(TemplateName.class)))
             .thenReturn(NotificationRequest.builder().build());
-        when(notificationHelper.getRepresentativeCommonVars(any(), any(CicCase.class))).thenReturn(new HashMap<>());
+        when(notificationHelper.getRepresentativeCommonVars(any(), any(CaseData.class))).thenReturn(new HashMap<>());
         doNothing().when(notificationHelper).addAddressTemplateVars(any(), anyMap());
         finalDecisionIssuedNotification.sendToRepresentative(data, "CN1");
 
@@ -347,7 +347,7 @@ public class CaseFinalDecisionIssuedNotificationTest {
         //When
         when(notificationHelper.buildEmailNotificationRequest(any(), anyBoolean(), anyMap(), anyMap(), any(TemplateName.class)))
             .thenReturn(NotificationRequest.builder().build());
-        when(notificationHelper.getApplicantCommonVars(any(), any(CicCase.class))).thenReturn(new HashMap<>());
+        when(notificationHelper.getApplicantCommonVars(any(), any(CaseData.class))).thenReturn(new HashMap<>());
 
         finalDecisionIssuedNotification.sendToApplicant(data, "CN1");
 
@@ -375,7 +375,7 @@ public class CaseFinalDecisionIssuedNotificationTest {
         //When
         when(notificationHelper.buildLetterNotificationRequest(anyMap(), any(TemplateName.class)))
             .thenReturn(NotificationRequest.builder().build());
-        when(notificationHelper.getApplicantCommonVars(any(), any(CicCase.class))).thenReturn(new HashMap<>());
+        when(notificationHelper.getApplicantCommonVars(any(), any(CaseData.class))).thenReturn(new HashMap<>());
         doNothing().when(notificationHelper).addAddressTemplateVars(any(AddressGlobalUK.class), anyMap());
         finalDecisionIssuedNotification.sendToApplicant(data, "CN1");
 

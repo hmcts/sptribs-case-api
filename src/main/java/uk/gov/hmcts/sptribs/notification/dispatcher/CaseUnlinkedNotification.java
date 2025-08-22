@@ -32,7 +32,7 @@ public class CaseUnlinkedNotification implements PartiesNotification {
     @Override
     public void sendToSubject(final CaseData caseData, final String caseNumber) {
         final CicCase cicCase = caseData.getCicCase();
-        final Map<String, Object> templateVars = notificationHelper.getSubjectCommonVars(caseNumber, cicCase);
+        final Map<String, Object> templateVars = notificationHelper.getSubjectCommonVars(caseNumber, caseData);
 
         if (cicCase.getContactPreferenceType() == ContactPreferenceType.EMAIL) {
             NotificationResponse response = sendEmailNotification(cicCase.getEmail(), templateVars);
@@ -47,7 +47,7 @@ public class CaseUnlinkedNotification implements PartiesNotification {
     public void sendToApplicant(final CaseData caseData, final String caseNumber) {
         CicCase cicCase = caseData.getCicCase();
 
-        Map<String, Object> templateVars = notificationHelper.getApplicantCommonVars(caseNumber, cicCase);
+        Map<String, Object> templateVars = notificationHelper.getApplicantCommonVars(caseNumber, caseData);
         if (cicCase.getApplicantContactDetailsPreference() == ContactPreferenceType.EMAIL) {
             NotificationResponse response = sendEmailNotification(cicCase.getApplicantEmailAddress(), templateVars);
             cicCase.setAppNotificationResponse(response);
@@ -61,7 +61,7 @@ public class CaseUnlinkedNotification implements PartiesNotification {
     public void sendToRepresentative(final CaseData caseData, final String caseNumber) {
         CicCase cicCase = caseData.getCicCase();
 
-        Map<String, Object> templateVars = notificationHelper.getRepresentativeCommonVars(caseNumber, cicCase);
+        Map<String, Object> templateVars = notificationHelper.getRepresentativeCommonVars(caseNumber, caseData);
 
         if (cicCase.getRepresentativeContactDetailsPreference() == ContactPreferenceType.EMAIL) {
             NotificationResponse response = sendEmailNotification(cicCase.getRepresentativeEmailAddress(), templateVars);

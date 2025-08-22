@@ -34,7 +34,7 @@ public class ListingUpdatedNotification implements PartiesNotification {
     @Override
     public void sendToSubject(final CaseData caseData, final String caseNumber) {
         final CicCase cicCase = caseData.getCicCase();
-        final Map<String, Object> templateVarsSubject = notificationHelper.getSubjectCommonVars(caseNumber, cicCase);
+        final Map<String, Object> templateVarsSubject = notificationHelper.getSubjectCommonVars(caseNumber, caseData);
         final Listing listing = caseData.getListing();
         notificationHelper.setRecordingTemplateVars(templateVarsSubject, listing);
 
@@ -54,7 +54,7 @@ public class ListingUpdatedNotification implements PartiesNotification {
     @Override
     public void sendToRepresentative(final CaseData caseData, final String caseNumber) {
         final CicCase cicCase = caseData.getCicCase();
-        final Map<String, Object> templateVarsRepresentative  = notificationHelper.getRepresentativeCommonVars(caseNumber, cicCase);
+        final Map<String, Object> templateVarsRepresentative  = notificationHelper.getRepresentativeCommonVars(caseNumber, caseData);
         templateVarsRepresentative.put(CommonConstants.CIC_CASE_REPRESENTATIVE_NAME, cicCase.getRepresentativeFullName());
         final Listing listing = caseData.getListing();
         notificationHelper.setRecordingTemplateVars(templateVarsRepresentative, listing);
@@ -75,7 +75,7 @@ public class ListingUpdatedNotification implements PartiesNotification {
     @Override
     public void sendToRespondent(final CaseData caseData, final String caseNumber) {
         final CicCase cicCase = caseData.getCicCase();
-        final Map<String, Object> templateVarsRespondent = notificationHelper.getRespondentCommonVars(caseNumber, cicCase);
+        final Map<String, Object> templateVarsRespondent = notificationHelper.getRespondentCommonVars(caseNumber, caseData);
         templateVarsRespondent.put(CommonConstants.CIC_CASE_RESPONDENT_NAME, caseData.getCicCase().getRespondentName());
         final Listing listing = caseData.getListing();
         notificationHelper.setRecordingTemplateVars(templateVarsRespondent, listing);

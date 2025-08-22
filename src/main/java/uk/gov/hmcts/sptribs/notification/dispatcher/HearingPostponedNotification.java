@@ -32,7 +32,7 @@ public class HearingPostponedNotification implements PartiesNotification {
     @Override
     public void sendToSubject(final CaseData caseData, final String caseNumber) {
         final CicCase cicCase = caseData.getCicCase();
-        final Map<String, Object> templateVars = notificationHelper.getSubjectCommonVars(caseNumber, cicCase);
+        final Map<String, Object> templateVars = notificationHelper.getSubjectCommonVars(caseNumber, caseData);
         notificationHelper.addHearingPostponedTemplateVars(cicCase, templateVars);
 
         final NotificationResponse hearingNotifyResponse;
@@ -49,7 +49,7 @@ public class HearingPostponedNotification implements PartiesNotification {
     @Override
     public void sendToRepresentative(final CaseData caseData, final String caseNumber) {
         final CicCase cicCase = caseData.getCicCase();
-        final Map<String, Object> templateVars = notificationHelper.getRepresentativeCommonVars(caseNumber, cicCase);
+        final Map<String, Object> templateVars = notificationHelper.getRepresentativeCommonVars(caseNumber, caseData);
         notificationHelper.addHearingPostponedTemplateVars(cicCase, templateVars);
 
         final NotificationResponse hearingNotifyResponse;
@@ -68,7 +68,7 @@ public class HearingPostponedNotification implements PartiesNotification {
     public void sendToRespondent(final CaseData caseData, final String caseNumber) {
         final CicCase cicCase = caseData.getCicCase();
 
-        final Map<String, Object> respondentTemplateVars = notificationHelper.getRespondentCommonVars(caseNumber, cicCase);
+        final Map<String, Object> respondentTemplateVars = notificationHelper.getRespondentCommonVars(caseNumber, caseData);
         notificationHelper.addHearingPostponedTemplateVars(cicCase, respondentTemplateVars);
 
         final NotificationResponse hearingNotifyResponse = sendEmailNotification(cicCase.getRespondentEmail(), respondentTemplateVars);
