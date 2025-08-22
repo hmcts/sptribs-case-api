@@ -33,16 +33,16 @@ public class PartiesToContact implements CcdPageConfiguration {
             .label("LabelPartiesToContactMessage", "Which parties do you want to contact?")
             .complex(CaseData::getCicCase)
             .readonly(CicCase::getFullName, ALWAYS_HIDE)
-            .optionalWithoutDefaultValue(CicCase::getNotifyPartySubject,
+            .optionalWithoutDefaultValue(CicCase::getFullName,
                 "cicCaseFullName!=\"\" ", RECIPIENT_LABEL)
             .readonly(CicCase::getApplicantFullName, ALWAYS_HIDE)
-            .optionalWithoutDefaultValue(CicCase::getNotifyPartyApplicant,
+            .optionalWithoutDefaultValue(CicCase::getApplicantFullName,
                 "cicCaseApplicantFullName!=\"\" ", RECIPIENT_LABEL)
             .readonly(CicCase::getRepresentativeFullName, ALWAYS_HIDE)
-            .optionalWithoutDefaultValue(CicCase::getNotifyPartyRepresentative,
+            .optionalWithoutDefaultValue(CicCase::getRepresentativeFullName,
                 "cicCaseRepresentativeFullName!=\"\" ", RECIPIENT_LABEL)
             .readonly(CicCase::getRespondentName, ALWAYS_HIDE)
-            .optionalWithoutDefaultValue(CicCase::getNotifyPartyRespondent,
+            .optionalWithoutDefaultValue(CicCase::getRespondentName,
                 "cicCaseRespondentName!=\"\" ", RECIPIENT_LABEL)
             .mandatory(CicCase::getNotifyPartyMessage)
             .done();

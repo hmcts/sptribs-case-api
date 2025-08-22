@@ -25,19 +25,19 @@ public final class SelectRecipientsHelper {
             .label("label" + labelPrefix + "SelectRecipients", label)
             .complex(CaseData::getCicCase)
             .readonly(CicCase::getFullName, alwaysHide)
-            .optionalWithoutDefaultValue(CicCase::getNotifyPartySubject,
+            .optionalWithoutDefaultValue(CicCase::getFullName,
                 "cicCaseFullName!=\"\" ",
                 fieldLabelPrefix + " recipient")
             .readonly(CicCase::getRepresentativeFullName, alwaysHide)
-            .optionalWithoutDefaultValue(CicCase::getNotifyPartyRepresentative,
+            .optionalWithoutDefaultValue(CicCase::getRepresentativeFullName,
                 "cicCaseRepresentativeFullName!=\"\" ",
                 fieldLabelPrefix + " recipient")
             .readonly(CicCase::getRespondentName, alwaysHide)
-            .optionalWithoutDefaultValue(CicCase::getNotifyPartyRespondent,
+            .optionalWithoutDefaultValue(CicCase::getRespondentName,
                 "cicCaseRespondentName!=\"\" ",
                 fieldLabelPrefix + " recipient")
             .readonly(CicCase::getApplicantFullName, alwaysHide)
-            .optionalWithoutDefaultValue(CicCase::getNotifyPartyApplicant,
+            .optionalWithoutDefaultValue(CicCase::getApplicantFullName,
                 "cicCaseApplicantFullName!=\"\"",
                 fieldLabelPrefix + " recipient")
             .done();
