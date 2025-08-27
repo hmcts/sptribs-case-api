@@ -32,24 +32,24 @@ public class ListingCreatedNotification implements PartiesNotification {
     }
 
     @Override
-    public void sendToSubject(final CaseData caseDataSubject, final String caseNumber) {
-        final CicCase cicCaseListing = caseDataSubject.getCicCase();
-        final Map<String, Object> templateVarsSubject = notificationHelper.getSubjectCommonVars(caseNumber, caseDataSubject);
-        final Listing listingSubject = caseDataSubject.getListing();
+    public void sendToSubject(final CaseData caseData, final String caseNumber) {
+        final CicCase cicCase = caseData.getCicCase();
+        final Map<String, Object> templateVarsSubject = notificationHelper.getSubjectCommonVars(caseNumber, caseData);
+        final Listing listingSubject = caseData.getListing();
         notificationHelper.setRecordingTemplateVars(templateVarsSubject, listingSubject);
 
         final NotificationResponse notificationResponse;
-        if (cicCaseListing.getContactPreferenceType() == ContactPreferenceType.EMAIL) {
+        if (cicCase.getContactPreferenceType() == ContactPreferenceType.EMAIL) {
             // Send Email
             notificationResponse = sendEmailNotification(templateVarsSubject,
-                cicCaseListing.getEmail());
+                cicCase.getEmail());
         } else {
-            notificationHelper.addAddressTemplateVars(cicCaseListing.getAddress(), templateVarsSubject);
+            notificationHelper.addAddressTemplateVars(cicCase.getAddress(), templateVarsSubject);
             //SEND POST
             notificationResponse = sendLetterNotification(templateVarsSubject);
         }
 
-        cicCaseListing.setSubHearingNotificationResponse(notificationResponse);
+        cicCase.setSubHearingNotificationResponse(notificationResponse);
     }
 
     @Override
