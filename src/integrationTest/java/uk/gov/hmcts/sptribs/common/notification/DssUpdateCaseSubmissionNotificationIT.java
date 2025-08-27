@@ -27,8 +27,8 @@ import static uk.gov.hmcts.sptribs.common.CommonConstants.TRIBUNAL_EMAIL_VALUE;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.TRIBUNAL_NAME;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.TRIBUNAL_NAME_VALUE;
 import static uk.gov.hmcts.sptribs.common.ccd.CcdCaseType.CIC;
-import static uk.gov.hmcts.sptribs.notification.TemplateName.UPDATE_RECEIVED_CIC;
 import static uk.gov.hmcts.sptribs.notification.TemplateName.UPDATE_RECEIVED;
+import static uk.gov.hmcts.sptribs.notification.TemplateName.UPDATE_RECEIVED_CIC;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID;
 
 @ExtendWith(SpringExtension.class)
