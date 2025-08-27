@@ -31,7 +31,7 @@ import static uk.gov.hmcts.sptribs.common.CommonConstants.CONTACT_NAME;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.REINSTATE_REASON;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.TRIBUNAL_NAME;
 import static uk.gov.hmcts.sptribs.common.ccd.CcdCaseType.CIC;
-import static uk.gov.hmcts.sptribs.notification.TemplateName.CASE_REINSTATED_EMAIL;
+import static uk.gov.hmcts.sptribs.notification.TemplateName.REINSTATED_EMAIL;
 import static uk.gov.hmcts.sptribs.notification.TemplateName.CASE_REINSTATED_POST;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID;
 
@@ -77,7 +77,7 @@ public class CaseReinstatedNotificationIT {
         assertThat(notificationRequest.getDestinationAddress())
             .isEqualTo("test@email.com");
         assertThat(notificationRequest.getTemplate())
-            .isEqualTo(CASE_REINSTATED_EMAIL);
+            .isEqualTo(REINSTATED_EMAIL);
         assertThat(notificationRequest.getTemplateVars())
             .containsAllEntriesOf(expectedTemplateVars);
     }
@@ -148,7 +148,7 @@ public class CaseReinstatedNotificationIT {
         assertThat(notificationRequest.getDestinationAddress())
             .isEqualTo("test@email.com");
         assertThat(notificationRequest.getTemplate())
-            .isEqualTo(CASE_REINSTATED_EMAIL);
+            .isEqualTo(REINSTATED_EMAIL);
         assertThat(notificationRequest.getTemplateVars())
             .containsAllEntriesOf(expectedTemplateVars);
     }
@@ -220,7 +220,7 @@ public class CaseReinstatedNotificationIT {
         assertThat(notificationRequest.getDestinationAddress())
             .isEqualTo("test@email.com");
         assertThat(notificationRequest.getTemplate())
-            .isEqualTo(CASE_REINSTATED_EMAIL);
+            .isEqualTo(REINSTATED_EMAIL);
         assertThat(notificationRequest.getTemplateVars())
             .containsAllEntriesOf(expectedTemplateVars);
     }
@@ -291,7 +291,7 @@ public class CaseReinstatedNotificationIT {
         assertThat(notificationRequest.getDestinationAddress())
             .isEqualTo("test@email.com");
         assertThat(notificationRequest.getTemplate())
-            .isEqualTo(CASE_REINSTATED_EMAIL);
+            .isEqualTo(REINSTATED_EMAIL);
         assertThat(notificationRequest.getTemplateVars())
             .containsAllEntriesOf(expectedTemplateVars);
     }

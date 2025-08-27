@@ -13,8 +13,8 @@ import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
 import java.util.Map;
 
 import static uk.gov.hmcts.sptribs.common.CommonConstants.TRIBUNAL_EMAIL_VALUE;
-import static uk.gov.hmcts.sptribs.notification.TemplateName.UPDATE_RECEIVED_CASEWORKER;
-import static uk.gov.hmcts.sptribs.notification.TemplateName.UPDATE_RECEIVED_CITIZEN;
+import static uk.gov.hmcts.sptribs.notification.TemplateName.UPDATE_RECEIVED;
+import static uk.gov.hmcts.sptribs.notification.TemplateName.UPDATE_RECEIVED_CIC;
 
 @Component
 @Slf4j
@@ -37,7 +37,7 @@ public class DssUpdateCaseSubmissionNotification implements PartiesNotification 
         final NotificationRequest request = notificationHelper.buildEmailNotificationRequest(
             cicCase.getEmail(),
             templateVars,
-            UPDATE_RECEIVED_CITIZEN);
+                UPDATE_RECEIVED);
 
         notificationService.sendEmail(request);
     }
@@ -48,7 +48,7 @@ public class DssUpdateCaseSubmissionNotification implements PartiesNotification 
         final NotificationRequest request = notificationHelper.buildEmailNotificationRequest(
             TRIBUNAL_EMAIL_VALUE,
             templateVars,
-            UPDATE_RECEIVED_CASEWORKER);
+                UPDATE_RECEIVED_CIC);
 
         notificationService.sendEmail(request);
     }

@@ -16,7 +16,6 @@ import uk.gov.hmcts.sptribs.common.CommonConstants;
 import uk.gov.hmcts.sptribs.notification.NotificationHelper;
 import uk.gov.hmcts.sptribs.notification.NotificationServiceCIC;
 import uk.gov.hmcts.sptribs.notification.TemplateName;
-import uk.gov.hmcts.sptribs.notification.dispatcher.CaseReinstatedNotification;
 import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
 
 import java.time.LocalDate;
@@ -61,7 +60,7 @@ class CaseReinstatedNotificationTest {
         verify(notificationHelper).buildEmailNotificationRequest(
             data.getCicCase().getEmail(),
             Map.of(CommonConstants.REINSTATE_REASON,data.getCicCase().getReinstateReason().getType()),
-            TemplateName.CASE_REINSTATED_EMAIL);
+            TemplateName.REINSTATED_EMAIL);
     }
 
     @Test
@@ -107,7 +106,7 @@ class CaseReinstatedNotificationTest {
         verify(notificationHelper).buildEmailNotificationRequest(
             data.getCicCase().getRespondentEmail(),
             Map.of(CommonConstants.REINSTATE_REASON,data.getCicCase().getReinstateReason().getType()),
-            TemplateName.CASE_REINSTATED_EMAIL);
+            TemplateName.REINSTATED_EMAIL);
     }
 
     @Test
@@ -131,7 +130,7 @@ class CaseReinstatedNotificationTest {
         verify(notificationHelper).buildEmailNotificationRequest(
             data.getCicCase().getRepresentativeEmailAddress(),
             Map.of(CommonConstants.REINSTATE_REASON,data.getCicCase().getReinstateReason().getType()),
-            TemplateName.CASE_REINSTATED_EMAIL);
+            TemplateName.REINSTATED_EMAIL);
     }
 
     @Test
@@ -178,7 +177,7 @@ class CaseReinstatedNotificationTest {
         verify(notificationHelper).buildEmailNotificationRequest(
             data.getCicCase().getApplicantEmailAddress(),
             Map.of(CommonConstants.REINSTATE_REASON,data.getCicCase().getReinstateReason().getType()),
-            TemplateName.CASE_REINSTATED_EMAIL);
+            TemplateName.REINSTATED_EMAIL);
     }
 
     @Test

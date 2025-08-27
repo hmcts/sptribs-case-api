@@ -101,7 +101,7 @@ public class CaseReinstatedNotification implements PartiesNotification {
         NotificationRequest request = notificationHelper.buildEmailNotificationRequest(
             destinationAddress,
             templateVars,
-            TemplateName.CASE_REINSTATED_EMAIL);
+            TemplateName.REINSTATED_EMAIL);
         return notificationService.sendEmail(request);
     }
 

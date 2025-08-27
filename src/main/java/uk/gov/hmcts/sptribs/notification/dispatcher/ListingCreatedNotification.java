@@ -114,7 +114,7 @@ public class ListingCreatedNotification implements PartiesNotification {
         final NotificationRequest request = notificationHelper.buildEmailNotificationRequest(
             toEmail,
             templateVars,
-            TemplateName.LISTING_CREATED_CITIZEN_EMAIL);
+            TemplateName.HEARING_CREATED_EMAIL);
         return notificationService.sendEmail(request);
     }
 

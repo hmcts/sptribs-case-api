@@ -34,7 +34,7 @@ import static uk.gov.hmcts.sptribs.common.CommonConstants.CIC_CASE_SUBJECT_NAME;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.CONTACT_NAME;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.TRIBUNAL_NAME;
 import static uk.gov.hmcts.sptribs.common.ccd.CcdCaseType.CIC;
-import static uk.gov.hmcts.sptribs.notification.TemplateName.LISTING_UPDATED_CITIZEN_EMAIL;
+import static uk.gov.hmcts.sptribs.notification.TemplateName.HEARING_UPDATED_EMAIL;
 import static uk.gov.hmcts.sptribs.notification.TemplateName.LISTING_UPDATED_CITIZEN_POST;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getRecordListing;
@@ -84,7 +84,7 @@ public class ListingUpdatedNotificationIT {
         assertThat(notificationRequest.getDestinationAddress())
             .isEqualTo("test@email.com");
         assertThat(notificationRequest.getTemplate())
-            .isEqualTo(LISTING_UPDATED_CITIZEN_EMAIL);
+            .isEqualTo(HEARING_UPDATED_EMAIL);
         assertThat(notificationRequest.getTemplateVars())
             .containsAllEntriesOf(expectedTemplateVars);
     }
@@ -161,7 +161,7 @@ public class ListingUpdatedNotificationIT {
         assertThat(notificationRequest.getDestinationAddress())
             .isEqualTo("test@email.com");
         assertThat(notificationRequest.getTemplate())
-            .isEqualTo(LISTING_UPDATED_CITIZEN_EMAIL);
+            .isEqualTo(HEARING_UPDATED_EMAIL);
         assertThat(notificationRequest.getTemplateVars())
             .containsAllEntriesOf(expectedTemplateVars);
     }
@@ -239,7 +239,7 @@ public class ListingUpdatedNotificationIT {
         assertThat(notificationRequest.getDestinationAddress())
             .isEqualTo("test@email.com");
         assertThat(notificationRequest.getTemplate())
-            .isEqualTo(LISTING_UPDATED_CITIZEN_EMAIL);
+            .isEqualTo(HEARING_UPDATED_EMAIL);
         assertThat(notificationRequest.getTemplateVars())
             .containsAllEntriesOf(expectedTemplateVars);
     }

@@ -30,7 +30,7 @@ import static uk.gov.hmcts.sptribs.common.CommonConstants.ADDRESS_LINE_5;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.ADDRESS_LINE_6;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.ADDRESS_LINE_7;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.CASE_DOCUMENT;
-import static uk.gov.hmcts.sptribs.common.CommonConstants.CICA_CASE_NUMBER;
+import static uk.gov.hmcts.sptribs.common.CommonConstants.CICA_REF_NUMBER;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.CIC_CASE_NUMBER;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.CIC_CASE_SUBJECT_NAME;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.CONTACT_NAME;
@@ -227,10 +227,10 @@ public class NotificationHelper {
         templateVars.put(CIC_CASE_SUBJECT_NAME, cicCase.getFullName());
         if (caseData.getEditCicaCaseDetails() != null && !StringUtils.isEmpty(caseData.getEditCicaCaseDetails().getCicaReferenceNumber())) {
             templateVars.put(HAS_CICA_NUMBER, true);
-            templateVars.put(CICA_CASE_NUMBER, caseData.getEditCicaCaseDetails().getCicaReferenceNumber());
+            templateVars.put(CICA_REF_NUMBER, caseData.getEditCicaCaseDetails().getCicaReferenceNumber());
         } else {
             templateVars.put(HAS_CICA_NUMBER, false);
-            templateVars.put(CICA_CASE_NUMBER, "");
+            templateVars.put(CICA_REF_NUMBER, "");
         }
         return templateVars;
     }

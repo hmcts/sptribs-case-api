@@ -114,7 +114,7 @@ public class CaseFinalDecisionIssuedNotification implements PartiesNotification 
             true,
             uploadedDocuments,
             templateVars,
-            TemplateName.CASE_FINAL_DECISION_ISSUED_EMAIL);
+            TemplateName.FINAL_DECISION_ISSUED_EMAIL);
         return notificationService.sendEmail(request);
     }
 

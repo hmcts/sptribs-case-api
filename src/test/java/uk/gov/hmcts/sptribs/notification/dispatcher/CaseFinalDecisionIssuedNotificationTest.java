@@ -21,7 +21,6 @@ import uk.gov.hmcts.sptribs.document.model.CICDocument;
 import uk.gov.hmcts.sptribs.notification.NotificationHelper;
 import uk.gov.hmcts.sptribs.notification.NotificationServiceCIC;
 import uk.gov.hmcts.sptribs.notification.TemplateName;
-import uk.gov.hmcts.sptribs.notification.dispatcher.CaseFinalDecisionIssuedNotification;
 import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
 
 import java.time.LocalDate;
@@ -84,7 +83,7 @@ public class CaseFinalDecisionIssuedNotificationTest {
                 CommonConstants.FINAL_DECISION_GUIDANCE, uuid.toString(),
                 CommonConstants.FINAL_DECISION_NOTICE, uuid.toString()),
             new HashMap<>(),
-            TemplateName.CASE_FINAL_DECISION_ISSUED_EMAIL);
+            TemplateName.FINAL_DECISION_ISSUED_EMAIL);
     }
 
     @Test
@@ -121,7 +120,7 @@ public class CaseFinalDecisionIssuedNotificationTest {
                 CommonConstants.FINAL_DECISION_GUIDANCE, uuid.toString(),
                 CommonConstants.FINAL_DECISION_NOTICE, ""),
             new HashMap<>(),
-            TemplateName.CASE_FINAL_DECISION_ISSUED_EMAIL);
+            TemplateName.FINAL_DECISION_ISSUED_EMAIL);
     }
 
     @Test
@@ -180,7 +179,7 @@ public class CaseFinalDecisionIssuedNotificationTest {
                 CommonConstants.FINAL_DECISION_GUIDANCE, uuid.toString(),
                 CommonConstants.FINAL_DECISION_NOTICE, uuid.toString()),
             new HashMap<>(),
-            TemplateName.CASE_FINAL_DECISION_ISSUED_EMAIL);
+            TemplateName.FINAL_DECISION_ISSUED_EMAIL);
     }
 
     @Test
@@ -216,7 +215,7 @@ public class CaseFinalDecisionIssuedNotificationTest {
                 CommonConstants.FINAL_DECISION_GUIDANCE, uuid.toString(),
                 CommonConstants.FINAL_DECISION_NOTICE, ""),
             new HashMap<>(),
-            TemplateName.CASE_FINAL_DECISION_ISSUED_EMAIL);
+            TemplateName.FINAL_DECISION_ISSUED_EMAIL);
     }
 
     @Test
@@ -256,7 +255,7 @@ public class CaseFinalDecisionIssuedNotificationTest {
                 CommonConstants.FINAL_DECISION_GUIDANCE, uuid.toString(),
                 CommonConstants.FINAL_DECISION_NOTICE, uuid.toString()),
             new HashMap<>(),
-            TemplateName.CASE_FINAL_DECISION_ISSUED_EMAIL);
+            TemplateName.FINAL_DECISION_ISSUED_EMAIL);
     }
 
     @Test
@@ -296,7 +295,7 @@ public class CaseFinalDecisionIssuedNotificationTest {
                 CommonConstants.FINAL_DECISION_GUIDANCE, uuid.toString(),
                 CommonConstants.FINAL_DECISION_NOTICE, ""),
             new HashMap<>(),
-            TemplateName.CASE_FINAL_DECISION_ISSUED_EMAIL);
+            TemplateName.FINAL_DECISION_ISSUED_EMAIL);
     }
 
     @Test
@@ -360,7 +359,7 @@ public class CaseFinalDecisionIssuedNotificationTest {
                 CommonConstants.FINAL_DECISION_GUIDANCE, uuid.toString(),
                 CommonConstants.FINAL_DECISION_NOTICE, uuid.toString()),
             new HashMap<>(),
-            TemplateName.CASE_FINAL_DECISION_ISSUED_EMAIL);
+            TemplateName.FINAL_DECISION_ISSUED_EMAIL);
     }
 
     @Test

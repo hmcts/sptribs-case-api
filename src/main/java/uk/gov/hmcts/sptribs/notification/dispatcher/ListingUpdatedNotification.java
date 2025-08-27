@@ -91,7 +91,7 @@ public class ListingUpdatedNotification implements PartiesNotification {
         final NotificationRequest request = notificationHelper.buildEmailNotificationRequest(
             toEmail,
             templateVars,
-            TemplateName.LISTING_UPDATED_CITIZEN_EMAIL);
+            TemplateName.HEARING_UPDATED_EMAIL);
         return notificationService.sendEmail(request);
     }
 

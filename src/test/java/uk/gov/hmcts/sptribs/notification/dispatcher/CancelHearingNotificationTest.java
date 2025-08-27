@@ -17,7 +17,6 @@ import uk.gov.hmcts.sptribs.ciccase.model.ContactPreferenceType;
 import uk.gov.hmcts.sptribs.notification.NotificationHelper;
 import uk.gov.hmcts.sptribs.notification.NotificationServiceCIC;
 import uk.gov.hmcts.sptribs.notification.TemplateName;
-import uk.gov.hmcts.sptribs.notification.dispatcher.CancelHearingNotification;
 import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
 import uk.gov.hmcts.sptribs.testutil.TestEventConstants;
 
@@ -68,7 +67,7 @@ public class CancelHearingNotificationTest {
         verify(notificationHelper).buildEmailNotificationRequest(
             data.getCicCase().getEmail(),
             new HashMap<>(),
-            TemplateName.CASE_CANCEL_HEARING_EMAIL);
+            TemplateName.HEARING_CANCELLED_EMAIL);
     }
 
     @Test
@@ -114,7 +113,7 @@ public class CancelHearingNotificationTest {
         verify(notificationHelper).buildEmailNotificationRequest(
             data.getCicCase().getRespondentEmail(),
             new HashMap<>(),
-            TemplateName.CASE_CANCEL_HEARING_EMAIL);
+            TemplateName.HEARING_CANCELLED_EMAIL);
     }
 
     @Test
@@ -138,7 +137,7 @@ public class CancelHearingNotificationTest {
         verify(notificationHelper).buildEmailNotificationRequest(
             data.getCicCase().getRepresentativeEmailAddress(),
             new HashMap<>(),
-            TemplateName.CASE_CANCEL_HEARING_EMAIL);
+            TemplateName.HEARING_CANCELLED_EMAIL);
     }
 
     @Test
@@ -187,7 +186,7 @@ public class CancelHearingNotificationTest {
         verify(notificationHelper).buildEmailNotificationRequest(
             data.getCicCase().getApplicantEmailAddress(),
             new HashMap<>(),
-            TemplateName.CASE_CANCEL_HEARING_EMAIL);
+            TemplateName.HEARING_CANCELLED_EMAIL);
     }
 
     @Test

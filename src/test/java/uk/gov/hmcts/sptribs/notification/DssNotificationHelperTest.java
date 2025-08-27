@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
+import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.DssCaseData;
 import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
 
@@ -28,7 +29,8 @@ public class DssNotificationHelperTest {
     @Test
     void shouldSetSubjectCommonVars() {
         final DssCaseData dssCaseData = getMockDssCaseData();
-        Map<String, Object> templateVars = dssNotificationHelper.getSubjectCommonVars(CASE_NUMBER, dssCaseData);
+        final CaseData caseData = CaseData.builder().dssCaseData(dssCaseData).build();
+        Map<String, Object> templateVars = dssNotificationHelper.getSubjectCommonVars(CASE_NUMBER, caseData);
 
         assertThat(templateVars.get(TRIBUNAL_NAME)).isEqualTo(CIC);
         assertThat(templateVars.get(CIC_CASE_NUMBER)).isEqualTo(CASE_NUMBER);
@@ -39,7 +41,8 @@ public class DssNotificationHelperTest {
     @Test
     void shouldSetRepresentativeCommonVars() {
         final DssCaseData dssCaseData = getMockDssCaseData();
-        Map<String, Object> templateVars = dssNotificationHelper.getRepresentativeCommonVars(CASE_NUMBER, dssCaseData);
+        final CaseData caseData = CaseData.builder().dssCaseData(dssCaseData).build();
+        Map<String, Object> templateVars = dssNotificationHelper.getRepresentativeCommonVars(CASE_NUMBER, caseData);
 
         assertThat(templateVars.get(TRIBUNAL_NAME)).isEqualTo(CIC);
         assertThat(templateVars.get(CIC_CASE_NUMBER)).isEqualTo(CASE_NUMBER);
@@ -50,7 +53,8 @@ public class DssNotificationHelperTest {
     @Test
     void shouldBuildEmailNotificationRequest() {
         final DssCaseData dssCaseData = getMockDssCaseData();
-        Map<String, Object> templateVars = dssNotificationHelper.getSubjectCommonVars(CASE_NUMBER, dssCaseData);
+        final CaseData caseData = CaseData.builder().dssCaseData(dssCaseData).build();
+        Map<String, Object> templateVars = dssNotificationHelper.getSubjectCommonVars(CASE_NUMBER, caseData);
 
         NotificationRequest notificationRequest = dssNotificationHelper.buildEmailNotificationRequest(
             EMAIL_ID,

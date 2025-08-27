@@ -16,7 +16,6 @@ import uk.gov.hmcts.sptribs.common.CommonConstants;
 import uk.gov.hmcts.sptribs.notification.NotificationHelper;
 import uk.gov.hmcts.sptribs.notification.NotificationServiceCIC;
 import uk.gov.hmcts.sptribs.notification.TemplateName;
-import uk.gov.hmcts.sptribs.notification.dispatcher.ListingCreatedNotification;
 import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
 
 import java.util.HashMap;
@@ -54,7 +53,7 @@ public class ListingCreatedNotificationTest {
         verify(notificationHelper).buildEmailNotificationRequest(
             data.getCicCase().getEmail(),
             new HashMap<>(),
-            TemplateName.LISTING_CREATED_CITIZEN_EMAIL);
+            TemplateName.HEARING_CREATED_EMAIL);
     }
 
     @Test
@@ -82,7 +81,7 @@ public class ListingCreatedNotificationTest {
         verify(notificationHelper).buildEmailNotificationRequest(
             data.getCicCase().getEmail(),
             new HashMap<>(),
-            TemplateName.LISTING_CREATED_CITIZEN_EMAIL);
+            TemplateName.HEARING_CREATED_EMAIL);
 
     }
 
@@ -124,7 +123,7 @@ public class ListingCreatedNotificationTest {
         verify(notificationHelper).buildEmailNotificationRequest(
             data.getCicCase().getRepresentativeEmailAddress(),
             Map.of(CommonConstants.CIC_CASE_REPRESENTATIVE_NAME, data.getCicCase().getRepresentativeFullName()),
-            TemplateName.LISTING_CREATED_CITIZEN_EMAIL);
+            TemplateName.HEARING_CREATED_EMAIL);
     }
 
     @Test
@@ -165,7 +164,7 @@ public class ListingCreatedNotificationTest {
             data.getCicCase().getRespondentEmail(),
             Map.of(
                 CommonConstants.CIC_CASE_RESPONDENT_NAME, data.getCicCase().getRespondentName()),
-            TemplateName.LISTING_CREATED_CITIZEN_EMAIL);
+            TemplateName.HEARING_CREATED_EMAIL);
     }
 
     @Test
@@ -184,7 +183,7 @@ public class ListingCreatedNotificationTest {
         verify(notificationHelper).buildEmailNotificationRequest(
             data.getCicCase().getApplicantEmailAddress(),
             new HashMap<>(),
-            TemplateName.LISTING_CREATED_CITIZEN_EMAIL);
+            TemplateName.HEARING_CREATED_EMAIL);
     }
 
     @Test

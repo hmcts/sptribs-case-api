@@ -70,7 +70,7 @@ public final class CommonConstants {
     public static final String TRIBUNAL_EMAIL_VALUE = "CIC.enquiries@justice.gov.uk";
 
     public static final String HAS_CICA_NUMBER = "hasCicaNumber";
-    public static final String CICA_CASE_NUMBER = "cicaCaseNumber";
+    public static final String CICA_REF_NUMBER = "cicaRefNumber";
 
     private CommonConstants() {
     }

@@ -101,7 +101,7 @@ public class CancelHearingNotification implements PartiesNotification {
         final NotificationRequest request = notificationHelper.buildEmailNotificationRequest(
             destinationAddress,
             templateVars,
-            TemplateName.CASE_CANCEL_HEARING_EMAIL);
+            TemplateName.HEARING_CANCELLED_EMAIL);
         return notificationService.sendEmail(request);
     }
 
