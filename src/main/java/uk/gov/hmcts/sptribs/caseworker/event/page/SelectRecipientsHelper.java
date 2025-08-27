@@ -25,21 +25,17 @@ public final class SelectRecipientsHelper {
             .label("label" + labelPrefix + "SelectRecipients", label)
             .complex(CaseData::getCicCase)
             .readonly(CicCase::getFullName, alwaysHide)
-            .optionalWithoutDefaultValue(CicCase::getFullName,
-                "cicCaseFullName!=\"\" ",
-                fieldLabelPrefix + " recipient")
+            .optionalWithoutDefaultValue(CicCase::getNotifyPartySubject,
+                "cicCaseFullName!=\"\" ", "${cicCaseFullName}")
             .readonly(CicCase::getRepresentativeFullName, alwaysHide)
-            .optionalWithoutDefaultValue(CicCase::getRepresentativeFullName,
-                "cicCaseRepresentativeFullName!=\"\" ",
-                fieldLabelPrefix + " recipient")
+            .optionalWithoutDefaultValue(CicCase::getNotifyPartyRepresentative,
+                "cicCaseRepresentativeFullName!=\"\" ", "${cicCaseRepresentativeFullName}")
             .readonly(CicCase::getRespondentName, alwaysHide)
-            .optionalWithoutDefaultValue(CicCase::getRespondentName,
-                "cicCaseRespondentName!=\"\" ",
-                fieldLabelPrefix + " recipient")
+            .optionalWithoutDefaultValue(CicCase::getNotifyPartyRespondent,
+                "cicCaseRespondentName!=\"\" ", "${cicCaseRespondentName}")
             .readonly(CicCase::getApplicantFullName, alwaysHide)
-            .optionalWithoutDefaultValue(CicCase::getApplicantFullName,
-                "cicCaseApplicantFullName!=\"\"",
-                fieldLabelPrefix + " recipient")
+            .optionalWithoutDefaultValue(CicCase::getNotifyPartyApplicant,
+                "cicCaseApplicantFullName!=\"\" ", "${cicCaseApplicantFullName}")
             .done();
     }
 
