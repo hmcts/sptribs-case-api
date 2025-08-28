@@ -129,7 +129,7 @@ public class CicSubmitCaseEvent implements CCDConfig<CaseData, State, UserRole> 
         final String caseNumber = data.getHyphenatedCaseRef();
 
         try {
-            sendApplicationReceivedNotification(caseNumber, dssCaseData);
+            sendApplicationReceivedNotification(caseNumber, data);
         } catch (Exception notificationException) {
             log.error("Application Received notification failed with exception : {}", notificationException.getMessage());
             return SubmittedCallbackResponse.builder()
@@ -171,13 +171,14 @@ public class CicSubmitCaseEvent implements CCDConfig<CaseData, State, UserRole> 
         dssCaseData.setNotificationParties(notificationParties);
     }
 
-    private void sendApplicationReceivedNotification(String caseNumber, DssCaseData dssCaseData) {
+    private void sendApplicationReceivedNotification(String caseNumber, CaseData caseData) {
+        final DssCaseData dssCaseData = caseData.getDssCaseData();
         if (dssCaseData.getNotificationParties().contains(NotificationParties.SUBJECT)) {
-            dssApplicationReceivedNotification.sendToSubject(dssCaseData, caseNumber);
+            dssApplicationReceivedNotification.sendToSubject(caseData, caseNumber);
         }
 
         if (dssCaseData.getNotificationParties().contains(NotificationParties.REPRESENTATIVE)) {
-            dssApplicationReceivedNotification.sendToRepresentative(dssCaseData, caseNumber);
+            dssApplicationReceivedNotification.sendToRepresentative(caseData, caseNumber);
         }
     }
 

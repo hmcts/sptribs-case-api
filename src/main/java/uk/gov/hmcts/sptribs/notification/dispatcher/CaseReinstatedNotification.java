@@ -35,7 +35,7 @@ public class CaseReinstatedNotification implements PartiesNotification {
     public void sendToSubject(final CaseData caseData, final String caseNumber) {
         final CicCase cicCase = caseData.getCicCase();
 
-        final Map<String, Object> templateVars = notificationHelper.getSubjectCommonVars(caseNumber, cicCase);
+        final Map<String, Object> templateVars = notificationHelper.getSubjectCommonVars(caseNumber, caseData);
         addCaseReInstateTemplateVars(cicCase, templateVars);
 
         final NotificationResponse notificationResponse;
@@ -53,7 +53,7 @@ public class CaseReinstatedNotification implements PartiesNotification {
     public void sendToRepresentative(final CaseData caseData, final String caseNumber) {
         final CicCase cicCase = caseData.getCicCase();
 
-        final Map<String, Object> templateVars = notificationHelper.getRepresentativeCommonVars(caseNumber, cicCase);
+        final Map<String, Object> templateVars = notificationHelper.getRepresentativeCommonVars(caseNumber, caseData);
         addCaseReInstateTemplateVars(cicCase, templateVars);
 
         final NotificationResponse notificationResponse;
@@ -71,7 +71,7 @@ public class CaseReinstatedNotification implements PartiesNotification {
     public void sendToRespondent(final CaseData caseData, final String caseNumber) {
         final CicCase cicCase = caseData.getCicCase();
 
-        final Map<String, Object> templateVars = notificationHelper.getRespondentCommonVars(caseNumber, cicCase);
+        final Map<String, Object> templateVars = notificationHelper.getRespondentCommonVars(caseNumber, caseData);
         addCaseReInstateTemplateVars(cicCase, templateVars);
 
         final NotificationResponse notificationResponse = sendEmailNotification(cicCase.getRespondentEmail(), templateVars);
@@ -82,7 +82,7 @@ public class CaseReinstatedNotification implements PartiesNotification {
     public void sendToApplicant(final CaseData caseData, final String caseNumber) {
         final CicCase cicCase = caseData.getCicCase();
 
-        final Map<String, Object> templateVars = notificationHelper.getApplicantCommonVars(caseNumber, cicCase);
+        final Map<String, Object> templateVars = notificationHelper.getApplicantCommonVars(caseNumber, caseData);
         addCaseReInstateTemplateVars(cicCase, templateVars);
 
         final NotificationResponse notificationResponse;
@@ -101,14 +101,14 @@ public class CaseReinstatedNotification implements PartiesNotification {
         NotificationRequest request = notificationHelper.buildEmailNotificationRequest(
             destinationAddress,
             templateVars,
-            TemplateName.CASE_REINSTATED_EMAIL);
+            TemplateName.REINSTATED_EMAIL);
         return notificationService.sendEmail(request);
     }
 
     private NotificationResponse sendLetterNotification(Map<String, Object> templateVarsLetter) {
         NotificationRequest letterRequest = notificationHelper.buildLetterNotificationRequest(
             templateVarsLetter,
-            TemplateName.CASE_REINSTATED_POST);
+            TemplateName.REINSTATED_POST);
         return notificationService.sendLetter(letterRequest);
     }
 
