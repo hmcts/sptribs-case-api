@@ -32,7 +32,7 @@ public class IssueDecisionSelectRecipients implements CcdPageConfiguration {
                 "cicCaseRespondentName!=\"\" ", "${cicCaseRespondentName}")
             .readonly(CicCase::getApplicantFullName, ALWAYS_HIDE)
             .optionalWithoutDefaultValue(CicCase::getNotifyPartyApplicant,
-                "cicCaseApplicantFullName!=\"\" ", "${cicCaseApplicantFullName}")
+                "cicCaseApplicantFullName!=\"\"", "${cicCaseApplicantFullName}")
             .done();
     }
 
