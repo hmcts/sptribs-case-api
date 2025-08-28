@@ -97,8 +97,8 @@ public class NotificationHelperTest {
         notificationHelper.setRecordingTemplateVars(templateVars, listing);
 
         //Then
-        assertThat(templateVars).hasSize(10);
-        assertThat(templateVars).containsEntry(CIC_CASE_RECORD_HEARING_FORMAT_VIDEO, true)
+        assertThat(templateVars).hasSize(10)
+                .containsEntry(CIC_CASE_RECORD_HEARING_FORMAT_VIDEO, true)
                 .containsEntry(CIC_CASE_HEARING_VENUE, CIC_CASE_RECORD_REMOTE_HEARING)
                 .containsEntry(CIC_CASE_HEARING_INFO, listing.getAddlInstr())
                 .containsEntry(CIC_CASE_RECORD_VIDEO_CALL_LINK, listing.getVideoCallLink())
@@ -117,8 +117,8 @@ public class NotificationHelperTest {
         notificationHelper.setRecordingTemplateVars(templateVars, listing);
 
         //Then
-        assertThat(templateVars).hasSize(10);
-        assertThat(templateVars).containsEntry(CIC_CASE_RECORD_HEARING_FORMAT_VIDEO, false)
+        assertThat(templateVars).hasSize(10)
+                .containsEntry(CIC_CASE_RECORD_HEARING_FORMAT_VIDEO, false)
                 .containsEntry(CIC_CASE_RECORD_HEARING_1FACE_TO_FACE, false)
                 .containsEntry(CIC_CASE_RECORD_FORMAT_TEL, false)
                 .containsEntry(CIC_CASE_HEARING_VENUE, " ")
@@ -145,8 +145,8 @@ public class NotificationHelperTest {
         notificationHelper.setRecordingTemplateVars(templateVars, listing);
 
         //Then
-        assertThat(templateVars).hasSize(10);
-        assertThat(templateVars).containsEntry(CIC_CASE_RECORD_FORMAT_TEL, true);
+        assertThat(templateVars).hasSize(10)
+                .containsEntry(CIC_CASE_RECORD_FORMAT_TEL, true);
     }
 
     @Test
@@ -162,8 +162,8 @@ public class NotificationHelperTest {
         notificationHelper.setRecordingTemplateVars(templateVars, listing);
 
         //Then
-        assertThat(templateVars).hasSize(10);
-        assertThat(templateVars).containsEntry(CIC_CASE_RECORD_HEARING_1FACE_TO_FACE, true);
+        assertThat(templateVars).hasSize(10)
+                .containsEntry(CIC_CASE_RECORD_HEARING_1FACE_TO_FACE, true);
     }
 
 
@@ -221,8 +221,8 @@ public class NotificationHelperTest {
 
         notificationHelper.setRecordingTemplateVars(templateVars, listing);
 
-        assertThat(templateVars).hasSize(10);
-        assertThat(templateVars).containsEntry(CIC_CASE_RECORD_HEARING_FORMAT_VIDEO, false)
+        assertThat(templateVars).hasSize(10)
+                .containsEntry(CIC_CASE_RECORD_HEARING_FORMAT_VIDEO, false)
                 .containsEntry(CIC_CASE_RECORD_HEARING_1FACE_TO_FACE, false)
                 .containsEntry(CIC_CASE_RECORD_FORMAT_TEL, false)
                 .containsEntry(CIC_CASE_HEARING_VENUE, " ");
@@ -373,13 +373,13 @@ public class NotificationHelperTest {
         notificationHelper.addAddressTemplateVars(addressGlobalUK, templateVars);
 
         // Then
-        assertThat(templateVars.get(ADDRESS_LINE_1)).isEqualTo("test addr1");
-        assertThat(templateVars.get(ADDRESS_LINE_2)).isEqualTo("test addr2");
-        assertThat(templateVars.get(ADDRESS_LINE_3)).isEqualTo("test addr3");
-        assertThat(templateVars.get(ADDRESS_LINE_4)).isEqualTo("test postTown");
-        assertThat(templateVars.get(ADDRESS_LINE_5)).isEqualTo("test county");
-        assertThat(templateVars.get(ADDRESS_LINE_6)).isEqualTo("test county");
-        assertThat(templateVars.get(ADDRESS_LINE_7)).isEqualTo("test postcode");
+        assertThat(templateVars).containsEntry(ADDRESS_LINE_1,"test addr1")
+                .containsEntry(ADDRESS_LINE_2, "test addr2")
+                .containsEntry(ADDRESS_LINE_3, "test addr3")
+                .containsEntry(ADDRESS_LINE_4, "test postTown")
+                .containsEntry(ADDRESS_LINE_5, "test county")
+                .containsEntry(ADDRESS_LINE_6, "test county")
+                .containsEntry(ADDRESS_LINE_7, "test postcode");
     }
 
     @Test
@@ -418,8 +418,8 @@ public class NotificationHelperTest {
         notificationHelper.addHearingPostponedTemplateVars(cicCase, templateVars);
 
         // Then
-        assertThat(templateVars.get(HEARING_DATE)).isEqualTo(LocalDate.now().toString());
-        assertThat(templateVars.get(HEARING_TIME)).isEqualTo("11:00");
+        assertThat(templateVars).containsEntry(HEARING_DATE, LocalDate.now().toString())
+                .containsEntry(HEARING_TIME, "11:00");
     }
 
     @Test
