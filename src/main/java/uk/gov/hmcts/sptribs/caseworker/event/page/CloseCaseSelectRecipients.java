@@ -13,7 +13,6 @@ public class CloseCaseSelectRecipients implements CcdPageConfiguration {
             "closeCaseSelectRecipients",
             "CloseCase",
             "Who should be notified of the decision to close this case?",
-            "Close case",
             ALWAYS_HIDE
         );
     }

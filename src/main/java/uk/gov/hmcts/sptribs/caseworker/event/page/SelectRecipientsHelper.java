@@ -16,7 +16,6 @@ public final class SelectRecipientsHelper {
                       String pageId,
                       String labelPrefix,
                       String label,
-                      String fieldLabelPrefix,
                       String alwaysHide) {
         pageBuilder
             .page(pageId, this::midEvent)
