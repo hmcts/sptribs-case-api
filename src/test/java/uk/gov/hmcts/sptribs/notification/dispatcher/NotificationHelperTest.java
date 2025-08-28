@@ -11,6 +11,7 @@ import uk.gov.hmcts.ccd.sdk.type.AddressGlobalUK;
 import uk.gov.hmcts.ccd.sdk.type.DynamicList;
 import uk.gov.hmcts.ccd.sdk.type.DynamicListElement;
 import uk.gov.hmcts.ccd.sdk.type.DynamicMultiSelectList;
+import uk.gov.hmcts.sptribs.caseworker.model.EditCicaCaseDetails;
 import uk.gov.hmcts.sptribs.caseworker.model.Listing;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
@@ -48,8 +49,10 @@ import static uk.gov.hmcts.sptribs.common.CommonConstants.ADDRESS_LINE_4;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.ADDRESS_LINE_5;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.ADDRESS_LINE_6;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.ADDRESS_LINE_7;
+import static uk.gov.hmcts.sptribs.common.CommonConstants.CICA_REF_NUMBER;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.CONTACT_NAME;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.EMPTY_PLACEHOLDER;
+import static uk.gov.hmcts.sptribs.common.CommonConstants.HAS_CICA_NUMBER;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.HEARING_DATE;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.HEARING_TIME;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.NO;
@@ -58,6 +61,11 @@ import static uk.gov.hmcts.sptribs.testutil.TestConstants.HEARING_DATE_1;
 
 @ExtendWith(MockitoExtension.class)
 public class NotificationHelperTest {
+
+    private static final String CICA_REFERENCE_NUMBER = "X/12/123456-TM1A";
+
+    private static final EditCicaCaseDetails CICA_CASE_DETAILS = EditCicaCaseDetails.builder()
+            .cicaReferenceNumber(CICA_REFERENCE_NUMBER).build();
 
     @InjectMocks
     private NotificationHelper notificationHelper;
@@ -257,6 +265,24 @@ public class NotificationHelperTest {
 
         // Then
         assertThat(commonVars.get(CONTACT_NAME)).isEqualTo("subject name");
+        assertThat(commonVars.get(HAS_CICA_NUMBER)).isEqualTo(false);
+        assertThat(commonVars.get(CICA_REF_NUMBER)).isEqualTo("");
+    }
+
+    @Test
+    void shouldGetSubjectCommonVarsWithCicaRef() {
+        // Given
+        final CicCase cicCase = CicCase.builder()
+                .fullName("subject name")
+                .build();
+        final CaseData caseData = CaseData.builder().cicCase(cicCase).editCicaCaseDetails(CICA_CASE_DETAILS).build();
+        // When
+        final Map<String, Object> commonVars = notificationHelper.getSubjectCommonVars("case number", caseData);
+
+        // Then
+        assertThat(commonVars.get(CONTACT_NAME)).isEqualTo("subject name");
+        assertThat(commonVars.get(HAS_CICA_NUMBER)).isEqualTo(true);
+        assertThat(commonVars.get(CICA_REF_NUMBER)).isEqualTo(CICA_REFERENCE_NUMBER);
     }
 
     @Test
@@ -271,6 +297,24 @@ public class NotificationHelperTest {
 
         // Then
         assertThat(commonVars.get(CONTACT_NAME)).isEqualTo("app name");
+        assertThat(commonVars.get(HAS_CICA_NUMBER)).isEqualTo(false);
+        assertThat(commonVars.get(CICA_REF_NUMBER)).isEqualTo("");
+    }
+
+    @Test
+    void shouldGetApplicantCommonVarsWithCicaRef() {
+        // Given
+        final CicCase cicCase = CicCase.builder()
+                .applicantFullName("app name")
+                .build();
+        final CaseData caseData = CaseData.builder().cicCase(cicCase).editCicaCaseDetails(CICA_CASE_DETAILS).build();
+        // When
+        final Map<String, Object> commonVars = notificationHelper.getApplicantCommonVars("case number", caseData);
+
+        // Then
+        assertThat(commonVars.get(CONTACT_NAME)).isEqualTo("app name");
+        assertThat(commonVars.get(HAS_CICA_NUMBER)).isEqualTo(true);
+        assertThat(commonVars.get(CICA_REF_NUMBER)).isEqualTo(CICA_REFERENCE_NUMBER);
     }
 
     @Test
@@ -286,6 +330,25 @@ public class NotificationHelperTest {
 
         // Then
         assertThat(commonVars.get(CONTACT_NAME)).isEqualTo("repr name");
+        assertThat(commonVars.get(HAS_CICA_NUMBER)).isEqualTo(false);
+        assertThat(commonVars.get(CICA_REF_NUMBER)).isEqualTo("");
+    }
+
+    @Test
+    void shouldGetReprCommonVarsWithCicaRef() {
+        // Given
+        final CicCase cicCase = CicCase.builder()
+                .representativeFullName("repr name")
+                .build();
+        final CaseData caseData = CaseData.builder().cicCase(cicCase).editCicaCaseDetails(CICA_CASE_DETAILS).build();
+
+        // When
+        final Map<String, Object> commonVars = notificationHelper.getRepresentativeCommonVars("case number", caseData);
+
+        // Then
+        assertThat(commonVars.get(CONTACT_NAME)).isEqualTo("repr name");
+        assertThat(commonVars.get(HAS_CICA_NUMBER)).isEqualTo(true);
+        assertThat(commonVars.get(CICA_REF_NUMBER)).isEqualTo(CICA_REFERENCE_NUMBER);
     }
 
     @Test

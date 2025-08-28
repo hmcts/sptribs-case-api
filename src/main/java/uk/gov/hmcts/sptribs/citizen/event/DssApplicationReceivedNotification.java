@@ -62,7 +62,13 @@ public class DssApplicationReceivedNotification implements PartiesNotification {
         final Map<String, Object> templateVarsRep = dssNotificationHelper.getRepresentativeCommonVars(caseNumber, caseData);
         templateVarsRep.put(CIC_CASE_REPRESENTATIVE_NAME, dssCaseData.getRepresentativeFullName());
         templateVarsRep.put(CONTACT_PARTY_INFO, dssCaseData.getNotifyPartyMessage());
-
+        if (caseData.getEditCicaCaseDetails() != null && !StringUtils.isEmpty(caseData.getEditCicaCaseDetails().getCicaReferenceNumber())) {
+            templateVarsRep.put(HAS_CICA_NUMBER, true);
+            templateVarsRep.put(CICA_REF_NUMBER, caseData.getEditCicaCaseDetails().getCicaReferenceNumber());
+        } else {
+            templateVarsRep.put(HAS_CICA_NUMBER, false);
+            templateVarsRep.put(CICA_REF_NUMBER, "");
+        }
         NotificationResponse notificationResponse = sendEmailNotification(
             templateVarsRep,
             dssCaseData.getRepresentativeEmailAddress(),
