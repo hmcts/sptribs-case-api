@@ -75,6 +75,14 @@ Generating the CCD JSON files will happen on every `./gradlew bootWithCcd` but y
 
     ./gradlew generateTypeScript
 
+### Using a Local version of the CCD-Config-Generator
+
+You can edit the `ccd-config generator` and test a local version by checking out the project, making changes and running the `publishToMavenLocal` gradle task
+Then uncomment the dependency in `build.gradle` like so:
+```groovy
+  implementation group: 'com.github.hmcts', name: 'ccd-config-generator', version: 'DEV-SNAPSHOT'
+```
+
 ### Crons
 
 You can manually run a cron task from the cli:

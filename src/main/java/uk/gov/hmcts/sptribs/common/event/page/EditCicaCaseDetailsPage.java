@@ -18,10 +18,10 @@ public class EditCicaCaseDetailsPage implements CcdPageConfiguration {
             .page("editCaseDetails")
             .pageLabel("Case details")
             .complex(CaseData::getEditCicaCaseDetails)
-            .optional(EditCicaCaseDetails::getCicaReferenceNumber)
-            .optional(EditCicaCaseDetails::getCicaCaseWorker)
-            .optional(EditCicaCaseDetails::getCicaCasePresentingOfficer)
-            .done()
+                .optional(EditCicaCaseDetails::getCicaReferenceNumber)
+                .optional(EditCicaCaseDetails::getCicaCaseWorker)
+                .optional(EditCicaCaseDetails::getCicaCasePresentingOfficer)
+                .done()
             .done();
     }
 
