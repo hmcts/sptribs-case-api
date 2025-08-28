@@ -108,7 +108,7 @@ public class CaseReinstatedNotification implements PartiesNotification {
     private NotificationResponse sendLetterNotification(Map<String, Object> templateVarsLetter) {
         NotificationRequest letterRequest = notificationHelper.buildLetterNotificationRequest(
             templateVarsLetter,
-            TemplateName.CASE_REINSTATED_POST);
+            TemplateName.REINSTATED_POST);
         return notificationService.sendLetter(letterRequest);
     }
 

@@ -98,7 +98,7 @@ public class ListingUpdatedNotificationTest {
         verify(notificationService).sendLetter(any(NotificationRequest.class));
         verify(notificationHelper).buildLetterNotificationRequest(
             new HashMap<>(),
-            TemplateName.LISTING_UPDATED_CITIZEN_POST);
+            TemplateName.HEARING_UPDATED_POST);
     }
 
 
@@ -140,7 +140,7 @@ public class ListingUpdatedNotificationTest {
         verify(notificationService).sendLetter(any(NotificationRequest.class));
         verify(notificationHelper).buildLetterNotificationRequest(
             Map.of(CommonConstants.CIC_CASE_REPRESENTATIVE_NAME,data.getCicCase().getRepresentativeFullName()),
-            TemplateName.LISTING_UPDATED_CITIZEN_POST);
+            TemplateName.HEARING_UPDATED_POST);
     }
 
     @Test

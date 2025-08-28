@@ -121,7 +121,7 @@ public class CaseFinalDecisionIssuedNotification implements PartiesNotification 
     private NotificationResponse sendLetterNotification(Map<String, Object> templateVarsLetter) {
         final NotificationRequest letterRequest = notificationHelper.buildLetterNotificationRequest(
             templateVarsLetter,
-            TemplateName.CASE_FINAL_DECISION_ISSUED_POST);
+            TemplateName.FINAL_DECISION_ISSUED_POST);
         return notificationService.sendLetter(letterRequest);
     }
 

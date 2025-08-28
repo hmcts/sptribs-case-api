@@ -143,7 +143,7 @@ public class CaseFinalDecisionIssuedNotificationTest {
         verify(notificationService).sendLetter(any(NotificationRequest.class));
         verify(notificationHelper).buildLetterNotificationRequest(
             new HashMap<>(),
-            TemplateName.CASE_FINAL_DECISION_ISSUED_POST);
+            TemplateName.FINAL_DECISION_ISSUED_POST);
     }
 
     @Test
@@ -318,7 +318,7 @@ public class CaseFinalDecisionIssuedNotificationTest {
         verify(notificationService).sendLetter(any(NotificationRequest.class));
         verify(notificationHelper).buildLetterNotificationRequest(
             new HashMap<>(),
-            TemplateName.CASE_FINAL_DECISION_ISSUED_POST);
+            TemplateName.FINAL_DECISION_ISSUED_POST);
     }
 
     @Test
@@ -382,7 +382,7 @@ public class CaseFinalDecisionIssuedNotificationTest {
         verify(notificationService).sendLetter(any(NotificationRequest.class));
         verify(notificationHelper).buildLetterNotificationRequest(
             new HashMap<>(),
-            TemplateName.CASE_FINAL_DECISION_ISSUED_POST);
+            TemplateName.FINAL_DECISION_ISSUED_POST);
     }
 
     private CaseData getMockCaseData(LocalDate stayCaseExpDate) {

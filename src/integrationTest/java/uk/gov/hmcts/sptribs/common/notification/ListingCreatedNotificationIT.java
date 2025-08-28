@@ -35,7 +35,7 @@ import static uk.gov.hmcts.sptribs.common.CommonConstants.CONTACT_NAME;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.TRIBUNAL_NAME;
 import static uk.gov.hmcts.sptribs.common.ccd.CcdCaseType.CIC;
 import static uk.gov.hmcts.sptribs.notification.TemplateName.HEARING_CREATED_EMAIL;
-import static uk.gov.hmcts.sptribs.notification.TemplateName.LISTING_CREATED_CITIZEN_POST;
+import static uk.gov.hmcts.sptribs.notification.TemplateName.HEARING_CREATED_POST;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getRecordListing;
 
@@ -124,7 +124,7 @@ public class ListingCreatedNotificationIT {
         NotificationRequest notificationRequest = notificationRequestCaptor.getValue();
 
         assertThat(notificationRequest.getTemplate())
-            .isEqualTo(LISTING_CREATED_CITIZEN_POST);
+            .isEqualTo(HEARING_CREATED_POST);
         assertThat(notificationRequest.getTemplateVars())
             .containsAllEntriesOf(expectedTemplateVars);
     }
@@ -202,7 +202,7 @@ public class ListingCreatedNotificationIT {
         NotificationRequest notificationRequest = notificationRequestCaptor.getValue();
 
         assertThat(notificationRequest.getTemplate())
-            .isEqualTo(LISTING_CREATED_CITIZEN_POST);
+            .isEqualTo(HEARING_CREATED_POST);
         assertThat(notificationRequest.getTemplateVars())
             .containsAllEntriesOf(expectedTemplateVars);
     }
@@ -280,7 +280,7 @@ public class ListingCreatedNotificationIT {
         NotificationRequest notificationRequest = notificationRequestCaptor.getValue();
 
         assertThat(notificationRequest.getTemplate())
-            .isEqualTo(LISTING_CREATED_CITIZEN_POST);
+            .isEqualTo(HEARING_CREATED_POST);
         assertThat(notificationRequest.getTemplateVars())
             .containsAllEntriesOf(expectedTemplateVars);
     }

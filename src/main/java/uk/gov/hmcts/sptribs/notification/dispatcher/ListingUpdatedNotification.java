@@ -98,7 +98,7 @@ public class ListingUpdatedNotification implements PartiesNotification {
     private NotificationResponse sendLetterNotification(Map<String, Object> templateVarsLetter) {
         final NotificationRequest letterRequest = notificationHelper.buildLetterNotificationRequest(
             templateVarsLetter,
-            TemplateName.LISTING_UPDATED_CITIZEN_POST);
+            TemplateName.HEARING_UPDATED_POST);
         return notificationService.sendLetter(letterRequest);
     }
 }

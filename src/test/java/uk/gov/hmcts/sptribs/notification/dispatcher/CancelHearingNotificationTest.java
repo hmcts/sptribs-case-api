@@ -90,7 +90,7 @@ public class CancelHearingNotificationTest {
         verify(notificationService).sendLetter(any(NotificationRequest.class));
         verify(notificationHelper).buildLetterNotificationRequest(
             new HashMap<>(),
-            TemplateName.CASE_CANCEL_HEARING_POST);
+            TemplateName.HEARING_CANCELLED_POST);
     }
 
     @Test
@@ -161,7 +161,7 @@ public class CancelHearingNotificationTest {
         verify(notificationService).sendLetter(any(NotificationRequest.class));
         verify(notificationHelper).buildLetterNotificationRequest(
             new HashMap<>(),
-            TemplateName.CASE_CANCEL_HEARING_POST);
+            TemplateName.HEARING_CANCELLED_POST);
     }
 
 
@@ -210,7 +210,7 @@ public class CancelHearingNotificationTest {
         verify(notificationService).sendLetter(any(NotificationRequest.class));
         verify(notificationHelper).buildLetterNotificationRequest(
             new HashMap<>(),
-            TemplateName.CASE_CANCEL_HEARING_POST);
+            TemplateName.HEARING_CANCELLED_POST);
     }
 
 

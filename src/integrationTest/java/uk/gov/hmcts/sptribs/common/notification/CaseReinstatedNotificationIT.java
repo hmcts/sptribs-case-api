@@ -31,7 +31,7 @@ import static uk.gov.hmcts.sptribs.common.CommonConstants.CONTACT_NAME;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.REINSTATE_REASON;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.TRIBUNAL_NAME;
 import static uk.gov.hmcts.sptribs.common.ccd.CcdCaseType.CIC;
-import static uk.gov.hmcts.sptribs.notification.TemplateName.CASE_REINSTATED_POST;
+import static uk.gov.hmcts.sptribs.notification.TemplateName.REINSTATED_POST;
 import static uk.gov.hmcts.sptribs.notification.TemplateName.REINSTATED_EMAIL;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID;
 
@@ -114,7 +114,7 @@ public class CaseReinstatedNotificationIT {
         NotificationRequest notificationRequest = notificationRequestCaptor.getValue();
 
         assertThat(notificationRequest.getTemplate())
-            .isEqualTo(CASE_REINSTATED_POST);
+            .isEqualTo(REINSTATED_POST);
         assertThat(notificationRequest.getTemplateVars())
             .containsAllEntriesOf(expectedTemplateVars);
     }
@@ -186,7 +186,7 @@ public class CaseReinstatedNotificationIT {
         NotificationRequest notificationRequest = notificationRequestCaptor.getValue();
 
         assertThat(notificationRequest.getTemplate())
-            .isEqualTo(CASE_REINSTATED_POST);
+            .isEqualTo(REINSTATED_POST);
         assertThat(notificationRequest.getTemplateVars())
             .containsAllEntriesOf(expectedTemplateVars);
     }
@@ -258,7 +258,7 @@ public class CaseReinstatedNotificationIT {
         NotificationRequest notificationRequest = notificationRequestCaptor.getValue();
 
         assertThat(notificationRequest.getTemplate())
-            .isEqualTo(CASE_REINSTATED_POST);
+            .isEqualTo(REINSTATED_POST);
         assertThat(notificationRequest.getTemplateVars())
             .containsAllEntriesOf(expectedTemplateVars);
     }

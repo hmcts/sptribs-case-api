@@ -122,7 +122,7 @@ public class ListingCreatedNotification implements PartiesNotification {
 
         final NotificationRequest letterRequest = notificationHelper.buildLetterNotificationRequest(
             templateVarsLetter,
-            TemplateName.LISTING_CREATED_CITIZEN_POST);
+            TemplateName.HEARING_CREATED_POST);
         return notificationService.sendLetter(letterRequest);
     }
 }

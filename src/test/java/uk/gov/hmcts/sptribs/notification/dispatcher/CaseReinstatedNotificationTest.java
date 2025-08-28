@@ -83,7 +83,7 @@ class CaseReinstatedNotificationTest {
         verify(notificationService).sendLetter(any(NotificationRequest.class));
         verify(notificationHelper).buildLetterNotificationRequest(
             Map.of(CommonConstants.REINSTATE_REASON,data.getCicCase().getReinstateReason().getType()),
-            TemplateName.CASE_REINSTATED_POST);
+            TemplateName.REINSTATED_POST);
     }
 
     @Test
@@ -154,7 +154,7 @@ class CaseReinstatedNotificationTest {
         verify(notificationService).sendLetter(any(NotificationRequest.class));
         verify(notificationHelper).buildLetterNotificationRequest(
             Map.of(CommonConstants.REINSTATE_REASON,data.getCicCase().getReinstateReason().getType()),
-            TemplateName.CASE_REINSTATED_POST);
+            TemplateName.REINSTATED_POST);
     }
 
     @Test
@@ -200,7 +200,7 @@ class CaseReinstatedNotificationTest {
         verify(notificationService).sendLetter(any(NotificationRequest.class));
         verify(notificationHelper).buildLetterNotificationRequest(
             Map.of(CommonConstants.REINSTATE_REASON,data.getCicCase().getReinstateReason().getType()),
-            TemplateName.CASE_REINSTATED_POST);
+            TemplateName.REINSTATED_POST);
     }
 
     private CaseData getMockCaseData(LocalDate stayCaseExpDate) {

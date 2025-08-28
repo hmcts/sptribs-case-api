@@ -101,7 +101,7 @@ public class ListingCreatedNotificationTest {
         verify(notificationService).sendLetter(any(NotificationRequest.class));
         verify(notificationHelper).buildLetterNotificationRequest(
             new HashMap<>(),
-            TemplateName.LISTING_CREATED_CITIZEN_POST);
+            TemplateName.HEARING_CREATED_POST);
     }
 
 
@@ -143,7 +143,7 @@ public class ListingCreatedNotificationTest {
         verify(notificationService).sendLetter(any(NotificationRequest.class));
         verify(notificationHelper).buildLetterNotificationRequest(
             Map.of(CommonConstants.CIC_CASE_REPRESENTATIVE_NAME, data.getCicCase().getRepresentativeFullName()),
-            TemplateName.LISTING_CREATED_CITIZEN_POST);
+            TemplateName.HEARING_CREATED_POST);
     }
 
     @Test
@@ -202,7 +202,7 @@ public class ListingCreatedNotificationTest {
         verify(notificationService).sendLetter(any(NotificationRequest.class));
         verify(notificationHelper).buildLetterNotificationRequest(
             new HashMap<>(),
-            TemplateName.LISTING_CREATED_CITIZEN_POST);
+            TemplateName.HEARING_CREATED_POST);
     }
 
     private CaseData getMockCaseData() {
