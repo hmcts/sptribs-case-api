@@ -42,12 +42,13 @@ public class DssNotificationHelperTest {
         final CaseData caseData = CaseData.builder().dssCaseData(dssCaseData).build();
         Map<String, Object> templateVars = dssNotificationHelper.getSubjectCommonVars(CASE_NUMBER, caseData);
         
-        assertThat(templateVars).containsEntry(TRIBUNAL_NAME, CIC);
-        assertThat(templateVars).containsEntry(CIC_CASE_NUMBER, CASE_NUMBER);
-        assertThat(templateVars).containsEntry(CIC_CASE_SUBJECT_NAME, dssCaseData.getSubjectFullName());
-        assertThat(templateVars).containsEntry(CONTACT_NAME, dssCaseData.getSubjectFullName());
-        assertThat(templateVars).containsEntry(HAS_CICA_NUMBER, false);
-        assertThat(templateVars).containsEntry(CICA_REF_NUMBER, "");
+        assertThat(templateVars)
+                .containsEntry(TRIBUNAL_NAME, CIC)
+                .containsEntry(CIC_CASE_NUMBER, CASE_NUMBER)
+                .containsEntry(CIC_CASE_SUBJECT_NAME, dssCaseData.getSubjectFullName())
+                .containsEntry(CONTACT_NAME, dssCaseData.getSubjectFullName())
+                .containsEntry(HAS_CICA_NUMBER, false)
+                .containsEntry(CICA_REF_NUMBER, "");
     }
 
     @Test
@@ -56,12 +57,12 @@ public class DssNotificationHelperTest {
         final CaseData caseData = CaseData.builder().dssCaseData(dssCaseData).build();
         Map<String, Object> templateVars = dssNotificationHelper.getRepresentativeCommonVars(CASE_NUMBER, caseData);
 
-        assertThat(templateVars).containsEntry(TRIBUNAL_NAME, CIC);
-        assertThat(templateVars).containsEntry(CIC_CASE_NUMBER, CASE_NUMBER);
-        assertThat(templateVars).containsEntry(CIC_CASE_SUBJECT_NAME, dssCaseData.getSubjectFullName());
-        assertThat(templateVars).containsEntry(CONTACT_NAME, dssCaseData.getRepresentativeFullName());
-        assertThat(templateVars).containsEntry(HAS_CICA_NUMBER, false);
-        assertThat(templateVars).containsEntry(CICA_REF_NUMBER, "");
+        assertThat(templateVars).containsEntry(TRIBUNAL_NAME, CIC)
+                .containsEntry(CIC_CASE_NUMBER, CASE_NUMBER)
+                .containsEntry(CIC_CASE_SUBJECT_NAME, dssCaseData.getSubjectFullName())
+                .containsEntry(CONTACT_NAME, dssCaseData.getRepresentativeFullName())
+                .containsEntry(HAS_CICA_NUMBER, false)
+                .containsEntry(CICA_REF_NUMBER, "");
     }
 
     @Test
@@ -70,12 +71,12 @@ public class DssNotificationHelperTest {
         final CaseData caseData = CaseData.builder().dssCaseData(dssCaseData).editCicaCaseDetails(CICA_CASE_DETAILS).build();
         Map<String, Object> templateVars = dssNotificationHelper.getRepresentativeCommonVars(CASE_NUMBER, caseData);
 
-        assertThat(templateVars).containsEntry(TRIBUNAL_NAME, CIC);
-        assertThat(templateVars).containsEntry(CIC_CASE_NUMBER, CASE_NUMBER);
-        assertThat(templateVars).containsEntry(CIC_CASE_SUBJECT_NAME, dssCaseData.getSubjectFullName());
-        assertThat(templateVars).containsEntry(CONTACT_NAME, dssCaseData.getRepresentativeFullName());
-        assertThat(templateVars).containsEntry(HAS_CICA_NUMBER, true);
-        assertThat(templateVars).containsEntry(CICA_REF_NUMBER, CICA_REFERENCE_NUMBER);
+        assertThat(templateVars).containsEntry(TRIBUNAL_NAME, CIC)
+                .containsEntry(CIC_CASE_NUMBER, CASE_NUMBER)
+                .containsEntry(CIC_CASE_SUBJECT_NAME, dssCaseData.getSubjectFullName())
+                .containsEntry(CONTACT_NAME, dssCaseData.getRepresentativeFullName())
+                .containsEntry(HAS_CICA_NUMBER, true)
+                .containsEntry(CICA_REF_NUMBER, CICA_REFERENCE_NUMBER);
     }
 
     @Test
@@ -87,12 +88,12 @@ public class DssNotificationHelperTest {
                 .build();
         Map<String, Object> templateVars = dssNotificationHelper.getSubjectCommonVars(CASE_NUMBER, caseData);
 
-        assertThat(templateVars).containsEntry(TRIBUNAL_NAME, CIC);
-        assertThat(templateVars).containsEntry(CIC_CASE_NUMBER, CASE_NUMBER);
-        assertThat(templateVars).containsEntry(CIC_CASE_SUBJECT_NAME, dssCaseData.getSubjectFullName());
-        assertThat(templateVars).containsEntry(CONTACT_NAME, dssCaseData.getSubjectFullName());
-        assertThat(templateVars).containsEntry(HAS_CICA_NUMBER, true);
-        assertThat(templateVars).containsEntry(CICA_REF_NUMBER, CICA_REFERENCE_NUMBER);
+        assertThat(templateVars).containsEntry(TRIBUNAL_NAME, CIC)
+                .containsEntry(CIC_CASE_NUMBER, CASE_NUMBER)
+                .containsEntry(CIC_CASE_SUBJECT_NAME, dssCaseData.getSubjectFullName())
+                .containsEntry(CONTACT_NAME, dssCaseData.getSubjectFullName())
+                .containsEntry(HAS_CICA_NUMBER, true)
+                .containsEntry(CICA_REF_NUMBER, CICA_REFERENCE_NUMBER);
     }
 
     @Test
@@ -101,12 +102,12 @@ public class DssNotificationHelperTest {
         final CaseData caseData = CaseData.builder().dssCaseData(dssCaseData).editCicaCaseDetails(EMPTY_CICA_CASE_DETAILS).build();
         Map<String, Object> templateVars = dssNotificationHelper.getRepresentativeCommonVars(CASE_NUMBER, caseData);
 
-        assertThat(templateVars).containsEntry(TRIBUNAL_NAME, CIC);
-        assertThat(templateVars).containsEntry(CIC_CASE_NUMBER, CASE_NUMBER);
-        assertThat(templateVars).containsEntry(CIC_CASE_SUBJECT_NAME, dssCaseData.getSubjectFullName());
-        assertThat(templateVars).containsEntry(CONTACT_NAME, dssCaseData.getRepresentativeFullName());
-        assertThat(templateVars).containsEntry(HAS_CICA_NUMBER, false);
-        assertThat(templateVars).containsEntry(CICA_REF_NUMBER, "");
+        assertThat(templateVars).containsEntry(TRIBUNAL_NAME, CIC)
+                .containsEntry(CIC_CASE_NUMBER, CASE_NUMBER)
+                .containsEntry(CIC_CASE_SUBJECT_NAME, dssCaseData.getSubjectFullName())
+                .containsEntry(CONTACT_NAME, dssCaseData.getRepresentativeFullName())
+                .containsEntry(HAS_CICA_NUMBER, false)
+                .containsEntry(CICA_REF_NUMBER, "");
     }
 
     @Test
@@ -115,12 +116,12 @@ public class DssNotificationHelperTest {
         final CaseData caseData = CaseData.builder().dssCaseData(dssCaseData).editCicaCaseDetails(EMPTY_CICA_CASE_DETAILS).build();
         Map<String, Object> templateVars = dssNotificationHelper.getSubjectCommonVars(CASE_NUMBER, caseData);
 
-        assertThat(templateVars).containsEntry(TRIBUNAL_NAME, CIC);
-        assertThat(templateVars).containsEntry(CIC_CASE_NUMBER, CASE_NUMBER);
-        assertThat(templateVars).containsEntry(CIC_CASE_SUBJECT_NAME, dssCaseData.getSubjectFullName());
-        assertThat(templateVars).containsEntry(CONTACT_NAME, dssCaseData.getSubjectFullName());
-        assertThat(templateVars).containsEntry(HAS_CICA_NUMBER, false);
-        assertThat(templateVars).containsEntry(CICA_REF_NUMBER, "");
+        assertThat(templateVars).containsEntry(TRIBUNAL_NAME, CIC)
+                .containsEntry(CIC_CASE_NUMBER, CASE_NUMBER)
+                .containsEntry(CIC_CASE_SUBJECT_NAME, dssCaseData.getSubjectFullName())
+                .containsEntry(CONTACT_NAME, dssCaseData.getSubjectFullName())
+                .containsEntry(HAS_CICA_NUMBER, false)
+                .containsEntry(CICA_REF_NUMBER, "");
     }
 
     @Test

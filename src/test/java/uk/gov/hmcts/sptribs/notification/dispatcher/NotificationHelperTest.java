@@ -98,11 +98,11 @@ public class NotificationHelperTest {
 
         //Then
         assertThat(templateVars).hasSize(10);
-        assertThat(templateVars).containsEntry(CIC_CASE_RECORD_HEARING_FORMAT_VIDEO, true);
-        assertThat(templateVars).containsEntry(CIC_CASE_HEARING_VENUE, CIC_CASE_RECORD_REMOTE_HEARING);
-        assertThat(templateVars).containsEntry(CIC_CASE_HEARING_INFO, listing.getAddlInstr());
-        assertThat(templateVars).containsEntry(CIC_CASE_RECORD_VIDEO_CALL_LINK, listing.getVideoCallLink());
-        assertThat(templateVars).containsEntry(CIC_CASE_RECORD_CONF_CALL_NUM, listing.getConferenceCallNumber());
+        assertThat(templateVars).containsEntry(CIC_CASE_RECORD_HEARING_FORMAT_VIDEO, true)
+                .containsEntry(CIC_CASE_HEARING_VENUE, CIC_CASE_RECORD_REMOTE_HEARING)
+                .containsEntry(CIC_CASE_HEARING_INFO, listing.getAddlInstr())
+                .containsEntry(CIC_CASE_RECORD_VIDEO_CALL_LINK, listing.getVideoCallLink())
+                .containsEntry(CIC_CASE_RECORD_CONF_CALL_NUM, listing.getConferenceCallNumber());
     }
 
     @Test
@@ -118,13 +118,13 @@ public class NotificationHelperTest {
 
         //Then
         assertThat(templateVars).hasSize(10);
-        assertThat(templateVars).containsEntry(CIC_CASE_RECORD_HEARING_FORMAT_VIDEO, false);
-        assertThat(templateVars).containsEntry(CIC_CASE_RECORD_HEARING_1FACE_TO_FACE, false);
-        assertThat(templateVars).containsEntry(CIC_CASE_RECORD_FORMAT_TEL, false);
-        assertThat(templateVars).containsEntry(CIC_CASE_HEARING_VENUE, " ");
-        assertThat(templateVars).containsEntry(CIC_CASE_HEARING_INFO, " ");
-        assertThat(templateVars).containsEntry(CIC_CASE_RECORD_VIDEO_CALL_LINK, " ");
-        assertThat(templateVars).containsEntry(CIC_CASE_RECORD_CONF_CALL_NUM, " ");
+        assertThat(templateVars).containsEntry(CIC_CASE_RECORD_HEARING_FORMAT_VIDEO, false)
+                .containsEntry(CIC_CASE_RECORD_HEARING_1FACE_TO_FACE, false)
+                .containsEntry(CIC_CASE_RECORD_FORMAT_TEL, false)
+                .containsEntry(CIC_CASE_HEARING_VENUE, " ")
+                .containsEntry(CIC_CASE_HEARING_INFO, " ")
+                .containsEntry(CIC_CASE_RECORD_VIDEO_CALL_LINK, " ")
+                .containsEntry(CIC_CASE_RECORD_CONF_CALL_NUM, " ");
     }
 
     @Test
@@ -222,10 +222,10 @@ public class NotificationHelperTest {
         notificationHelper.setRecordingTemplateVars(templateVars, listing);
 
         assertThat(templateVars).hasSize(10);
-        assertThat(templateVars).containsEntry(CIC_CASE_RECORD_HEARING_FORMAT_VIDEO, false);
-        assertThat(templateVars).containsEntry(CIC_CASE_RECORD_HEARING_1FACE_TO_FACE, false);
-        assertThat(templateVars).containsEntry(CIC_CASE_RECORD_FORMAT_TEL, false);
-        assertThat(templateVars).containsEntry(CIC_CASE_HEARING_VENUE, " ");
+        assertThat(templateVars).containsEntry(CIC_CASE_RECORD_HEARING_FORMAT_VIDEO, false)
+                .containsEntry(CIC_CASE_RECORD_HEARING_1FACE_TO_FACE, false)
+                .containsEntry(CIC_CASE_RECORD_FORMAT_TEL, false)
+                .containsEntry(CIC_CASE_HEARING_VENUE, " ");
     }
 
 
@@ -268,9 +268,9 @@ public class NotificationHelperTest {
         final Map<String, Object> commonVars = notificationHelper.getSubjectCommonVars("case number", caseData);
 
         // Then
-        assertThat(commonVars).containsEntry(CONTACT_NAME, "subject name");
-        assertThat(commonVars).containsEntry(HAS_CICA_NUMBER, false);
-        assertThat(commonVars).containsEntry(CICA_REF_NUMBER, "");
+        assertThat(commonVars).containsEntry(CONTACT_NAME, "subject name")
+                .containsEntry(HAS_CICA_NUMBER, false)
+                .containsEntry(CICA_REF_NUMBER, "");
     }
 
     @Test
@@ -284,9 +284,9 @@ public class NotificationHelperTest {
         final Map<String, Object> commonVars = notificationHelper.getSubjectCommonVars("case number", caseData);
 
         // Then
-        assertThat(commonVars).containsEntry(CONTACT_NAME, "subject name");
-        assertThat(commonVars).containsEntry(HAS_CICA_NUMBER, true);
-        assertThat(commonVars).containsEntry(CICA_REF_NUMBER, CICA_REFERENCE_NUMBER);
+        assertThat(commonVars).containsEntry(CONTACT_NAME, "subject name")
+                .containsEntry(HAS_CICA_NUMBER, true)
+                .containsEntry(CICA_REF_NUMBER, CICA_REFERENCE_NUMBER);
     }
 
     @Test
@@ -300,9 +300,9 @@ public class NotificationHelperTest {
         final Map<String, Object> commonVars = notificationHelper.getApplicantCommonVars("case number", caseData);
 
         // Then
-        assertThat(commonVars).containsEntry(CONTACT_NAME, "app name");
-        assertThat(commonVars).containsEntry(HAS_CICA_NUMBER, false);
-        assertThat(commonVars).containsEntry(CICA_REF_NUMBER, "");
+        assertThat(commonVars).containsEntry(CONTACT_NAME, "app name")
+                .containsEntry(HAS_CICA_NUMBER, false)
+                .containsEntry(CICA_REF_NUMBER, "");
     }
 
     @Test
@@ -316,9 +316,9 @@ public class NotificationHelperTest {
         final Map<String, Object> commonVars = notificationHelper.getApplicantCommonVars("case number", caseData);
 
         // Then
-        assertThat(commonVars).containsEntry(CONTACT_NAME, "app name");
-        assertThat(commonVars).containsEntry(HAS_CICA_NUMBER, true);
-        assertThat(commonVars).containsEntry(CICA_REF_NUMBER, CICA_REFERENCE_NUMBER);
+        assertThat(commonVars).containsEntry(CONTACT_NAME, "app name")
+                .containsEntry(HAS_CICA_NUMBER, true)
+                .containsEntry(CICA_REF_NUMBER, CICA_REFERENCE_NUMBER);
     }
 
     @Test
@@ -333,9 +333,9 @@ public class NotificationHelperTest {
         final Map<String, Object> commonVars = notificationHelper.getRepresentativeCommonVars("case number", caseData);
 
         // Then
-        assertThat(commonVars.get(CONTACT_NAME)).isEqualTo("repr name");
-        assertThat(commonVars).containsEntry(HAS_CICA_NUMBER, false);
-        assertThat(commonVars).containsEntry(CICA_REF_NUMBER, "");
+        assertThat(commonVars).containsEntry(CONTACT_NAME, "repr name")
+                .containsEntry(HAS_CICA_NUMBER, false)
+                .containsEntry(CICA_REF_NUMBER, "");
     }
 
     @Test
@@ -350,9 +350,9 @@ public class NotificationHelperTest {
         final Map<String, Object> commonVars = notificationHelper.getRepresentativeCommonVars("case number", caseData);
 
         // Then
-        assertThat(commonVars.get(CONTACT_NAME)).isEqualTo("repr name");
-        assertThat(commonVars).containsEntry(HAS_CICA_NUMBER, true);
-        assertThat(commonVars).containsEntry(CICA_REF_NUMBER, CICA_REFERENCE_NUMBER);
+        assertThat(commonVars).containsEntry(CONTACT_NAME, "repr name")
+                .containsEntry(HAS_CICA_NUMBER, true)
+                .containsEntry(CICA_REF_NUMBER, CICA_REFERENCE_NUMBER);
     }
 
     @Test
