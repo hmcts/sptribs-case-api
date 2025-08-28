@@ -1,6 +1,5 @@
 package uk.gov.hmcts.sptribs.notification.dispatcher;
 
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -71,7 +70,7 @@ public class NotificationHelperTest {
     private NotificationHelper notificationHelper;
 
     @Mock
-    private CicCase cicCase;
+    private CicCase cicCaseMock;
 
     @Test
     void setRecordingTemplateVarsTestAllConditionsMet() {
@@ -141,8 +140,8 @@ public class NotificationHelperTest {
         notificationHelper.setRecordingTemplateVars(templateVars, listing);
 
         //Then
-        Assertions.assertThat(templateVars.size()).isEqualTo(10);
-        Assertions.assertThat(templateVars.get(CommonConstants.CIC_CASE_RECORD_FORMAT_TEL)).isEqualTo(true);
+        assertThat(templateVars.size()).isEqualTo(10);
+        assertThat(templateVars.get(CommonConstants.CIC_CASE_RECORD_FORMAT_TEL)).isEqualTo(true);
     }
 
     @Test
@@ -158,8 +157,8 @@ public class NotificationHelperTest {
         notificationHelper.setRecordingTemplateVars(templateVars, listing);
 
         //Then
-        Assertions.assertThat(templateVars.size()).isEqualTo(10);
-        Assertions.assertThat(templateVars.get(CommonConstants.CIC_CASE_RECORD_HEARING_1FACE_TO_FACE)).isEqualTo(true);
+        assertThat(templateVars.size()).isEqualTo(10);
+        assertThat(templateVars.get(CommonConstants.CIC_CASE_RECORD_HEARING_1FACE_TO_FACE)).isEqualTo(true);
     }
 
 
@@ -178,7 +177,7 @@ public class NotificationHelperTest {
         notificationHelper.setRecordingTemplateVars(templateVars, listing);
 
         //Then
-        Assertions.assertThat(templateVars.size()).isEqualTo(10);
+        assertThat(templateVars.size()).isEqualTo(10);
     }
 
     @Test
@@ -195,7 +194,7 @@ public class NotificationHelperTest {
         notificationHelper.setRecordingTemplateVars(templateVars, listing);
 
         //Then
-        Assertions.assertThat(templateVars.size()).isEqualTo(10);
+        assertThat(templateVars.size()).isEqualTo(10);
     }
 
 
@@ -265,7 +264,7 @@ public class NotificationHelperTest {
 
         // Then
         assertThat(commonVars.get(CONTACT_NAME)).isEqualTo("subject name");
-        assertThat(commonVars.get(HAS_CICA_NUMBER)).isEqualTo(false);
+        assertEquals(false, commonVars.get(HAS_CICA_NUMBER));
         assertThat(commonVars.get(CICA_REF_NUMBER)).isEqualTo("");
     }
 
@@ -281,7 +280,7 @@ public class NotificationHelperTest {
 
         // Then
         assertThat(commonVars.get(CONTACT_NAME)).isEqualTo("subject name");
-        assertThat(commonVars.get(HAS_CICA_NUMBER)).isEqualTo(true);
+        assertEquals(true, commonVars.get(HAS_CICA_NUMBER));
         assertThat(commonVars.get(CICA_REF_NUMBER)).isEqualTo(CICA_REFERENCE_NUMBER);
     }
 
@@ -297,7 +296,7 @@ public class NotificationHelperTest {
 
         // Then
         assertThat(commonVars.get(CONTACT_NAME)).isEqualTo("app name");
-        assertThat(commonVars.get(HAS_CICA_NUMBER)).isEqualTo(false);
+        assertEquals(false, commonVars.get(HAS_CICA_NUMBER));
         assertThat(commonVars.get(CICA_REF_NUMBER)).isEqualTo("");
     }
 
@@ -313,7 +312,7 @@ public class NotificationHelperTest {
 
         // Then
         assertThat(commonVars.get(CONTACT_NAME)).isEqualTo("app name");
-        assertThat(commonVars.get(HAS_CICA_NUMBER)).isEqualTo(true);
+        assertEquals(true, commonVars.get(HAS_CICA_NUMBER));
         assertThat(commonVars.get(CICA_REF_NUMBER)).isEqualTo(CICA_REFERENCE_NUMBER);
     }
 
@@ -330,7 +329,7 @@ public class NotificationHelperTest {
 
         // Then
         assertThat(commonVars.get(CONTACT_NAME)).isEqualTo("repr name");
-        assertThat(commonVars.get(HAS_CICA_NUMBER)).isEqualTo(false);
+        assertEquals(false, commonVars.get(HAS_CICA_NUMBER));
         assertThat(commonVars.get(CICA_REF_NUMBER)).isEqualTo("");
     }
 
@@ -347,7 +346,7 @@ public class NotificationHelperTest {
 
         // Then
         assertThat(commonVars.get(CONTACT_NAME)).isEqualTo("repr name");
-        assertThat(commonVars.get(HAS_CICA_NUMBER)).isEqualTo(true);
+        assertEquals(true, commonVars.get(HAS_CICA_NUMBER));
         assertThat(commonVars.get(CICA_REF_NUMBER)).isEqualTo(CICA_REFERENCE_NUMBER);
     }
 
@@ -421,9 +420,9 @@ public class NotificationHelperTest {
     @Test
     void shouldAddHearingPostponedTemplateVarsWithNull() {
         final Map<String, Object> templateVars = new HashMap<>();
-        when(cicCase.getSelectedHearingToCancel()).thenReturn(null);
+        when(cicCaseMock.getSelectedHearingToCancel()).thenReturn(null);
 
-        notificationHelper.addHearingPostponedTemplateVars(cicCase, templateVars);
+        notificationHelper.addHearingPostponedTemplateVars(cicCaseMock, templateVars);
 
         assertNull(templateVars.get(HEARING_DATE));
         assertNull(templateVars.get(HEARING_TIME));
@@ -436,10 +435,10 @@ public class NotificationHelperTest {
 
         final String invalidFormat = "13/04/2024";
 
-        when(cicCase.getSelectedHearingToCancel()).thenReturn(invalidFormat);
+        when(cicCaseMock.getSelectedHearingToCancel()).thenReturn(invalidFormat);
 
         assertThrows(StringIndexOutOfBoundsException.class, () ->
-            notificationHelper.addHearingPostponedTemplateVars(cicCase, templateVars));
+            notificationHelper.addHearingPostponedTemplateVars(cicCaseMock, templateVars));
 
         assertNull(templateVars.get(HEARING_DATE));
         assertNull(templateVars.get(HEARING_TIME));

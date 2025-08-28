@@ -12,6 +12,7 @@ import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.CICA_REF_NUMBER;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.CIC_CASE_NUMBER;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.CIC_CASE_SUBJECT_NAME;
@@ -40,12 +41,12 @@ public class DssNotificationHelperTest {
         final CaseData caseData = CaseData.builder().dssCaseData(dssCaseData).build();
         Map<String, Object> templateVars = dssNotificationHelper.getSubjectCommonVars(CASE_NUMBER, caseData);
 
-        assertThat(templateVars.get(TRIBUNAL_NAME)).isEqualTo(CIC);
-        assertThat(templateVars.get(CIC_CASE_NUMBER)).isEqualTo(CASE_NUMBER);
-        assertThat(templateVars.get(CIC_CASE_SUBJECT_NAME)).isEqualTo(dssCaseData.getSubjectFullName());
-        assertThat(templateVars.get(CONTACT_NAME)).isEqualTo(dssCaseData.getSubjectFullName());
-        assertThat(templateVars.get(HAS_CICA_NUMBER)).isEqualTo(false);
-        assertThat(templateVars.get(CICA_REF_NUMBER)).isEqualTo("");
+        assertEquals(CIC, templateVars.get(TRIBUNAL_NAME));
+        assertEquals(CASE_NUMBER, templateVars.get(CIC_CASE_NUMBER));
+        assertEquals(dssCaseData.getSubjectFullName(), templateVars.get(CIC_CASE_SUBJECT_NAME));
+        assertEquals(dssCaseData.getSubjectFullName(), templateVars.get(CONTACT_NAME));
+        assertEquals(false, templateVars.get(HAS_CICA_NUMBER));
+        assertEquals("", templateVars.get(CICA_REF_NUMBER));
     }
 
     @Test
@@ -54,12 +55,12 @@ public class DssNotificationHelperTest {
         final CaseData caseData = CaseData.builder().dssCaseData(dssCaseData).build();
         Map<String, Object> templateVars = dssNotificationHelper.getRepresentativeCommonVars(CASE_NUMBER, caseData);
 
-        assertThat(templateVars.get(TRIBUNAL_NAME)).isEqualTo(CIC);
-        assertThat(templateVars.get(CIC_CASE_NUMBER)).isEqualTo(CASE_NUMBER);
-        assertThat(templateVars.get(CIC_CASE_SUBJECT_NAME)).isEqualTo(dssCaseData.getSubjectFullName());
-        assertThat(templateVars.get(CONTACT_NAME)).isEqualTo(dssCaseData.getRepresentativeFullName());
-        assertThat(templateVars.get(HAS_CICA_NUMBER)).isEqualTo(false);
-        assertThat(templateVars.get(CICA_REF_NUMBER)).isEqualTo("");
+        assertEquals(CIC, templateVars.get(TRIBUNAL_NAME));
+        assertEquals(CASE_NUMBER, templateVars.get(CIC_CASE_NUMBER));
+        assertEquals(dssCaseData.getSubjectFullName(), templateVars.get(CIC_CASE_SUBJECT_NAME));
+        assertEquals(dssCaseData.getRepresentativeFullName(), templateVars.get(CONTACT_NAME));
+        assertEquals(false, templateVars.get(HAS_CICA_NUMBER));
+        assertEquals("", templateVars.get(CICA_REF_NUMBER));
     }
 
     @Test
@@ -68,12 +69,12 @@ public class DssNotificationHelperTest {
         final CaseData caseData = CaseData.builder().dssCaseData(dssCaseData).editCicaCaseDetails(CICA_CASE_DETAILS).build();
         Map<String, Object> templateVars = dssNotificationHelper.getRepresentativeCommonVars(CASE_NUMBER, caseData);
 
-        assertThat(templateVars.get(TRIBUNAL_NAME)).isEqualTo(CIC);
-        assertThat(templateVars.get(CIC_CASE_NUMBER)).isEqualTo(CASE_NUMBER);
-        assertThat(templateVars.get(CIC_CASE_SUBJECT_NAME)).isEqualTo(dssCaseData.getSubjectFullName());
-        assertThat(templateVars.get(CONTACT_NAME)).isEqualTo(dssCaseData.getRepresentativeFullName());
-        assertThat(templateVars.get(HAS_CICA_NUMBER)).isEqualTo(true);
-        assertThat(templateVars.get(CICA_REF_NUMBER)).isEqualTo(CICA_REFERENCE_NUMBER);
+        assertEquals(CIC, templateVars.get(TRIBUNAL_NAME));
+        assertEquals(CASE_NUMBER, templateVars.get(CIC_CASE_NUMBER));
+        assertEquals(dssCaseData.getSubjectFullName(), templateVars.get(CIC_CASE_SUBJECT_NAME));
+        assertEquals(dssCaseData.getRepresentativeFullName(), templateVars.get(CONTACT_NAME));
+        assertEquals(true, templateVars.get(HAS_CICA_NUMBER));
+        assertEquals(CICA_REFERENCE_NUMBER, templateVars.get(CICA_REF_NUMBER));
     }
 
     @Test
@@ -85,12 +86,12 @@ public class DssNotificationHelperTest {
                 .build();
         Map<String, Object> templateVars = dssNotificationHelper.getSubjectCommonVars(CASE_NUMBER, caseData);
 
-        assertThat(templateVars.get(TRIBUNAL_NAME)).isEqualTo(CIC);
-        assertThat(templateVars.get(CIC_CASE_NUMBER)).isEqualTo(CASE_NUMBER);
-        assertThat(templateVars.get(CIC_CASE_SUBJECT_NAME)).isEqualTo(dssCaseData.getSubjectFullName());
-        assertThat(templateVars.get(CONTACT_NAME)).isEqualTo(dssCaseData.getSubjectFullName());
-        assertThat(templateVars.get(HAS_CICA_NUMBER)).isEqualTo(true);
-        assertThat(templateVars.get(CICA_REF_NUMBER)).isEqualTo(CICA_REFERENCE_NUMBER);
+        assertEquals(CIC, templateVars.get(TRIBUNAL_NAME));
+        assertEquals(CASE_NUMBER, templateVars.get(CIC_CASE_NUMBER));
+        assertEquals(dssCaseData.getSubjectFullName(), templateVars.get(CIC_CASE_SUBJECT_NAME));
+        assertEquals(dssCaseData.getSubjectFullName(), templateVars.get(CONTACT_NAME));
+        assertEquals(true, templateVars.get(HAS_CICA_NUMBER));
+        assertEquals(CICA_REFERENCE_NUMBER, templateVars.get(CICA_REF_NUMBER));
     }
 
     @Test
