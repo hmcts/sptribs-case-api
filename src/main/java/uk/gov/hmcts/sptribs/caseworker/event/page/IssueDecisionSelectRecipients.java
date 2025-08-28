@@ -14,7 +14,6 @@ import java.util.List;
 public class IssueDecisionSelectRecipients implements CcdPageConfiguration {
 
     private static final String ALWAYS_HIDE = "caseIssueDecisionDecisionNotice = \"ALWAYS_HIDE\"";
-    private static final String RECIPIENT_LABEL = "Decision information recipient";
 
     @Override
     public void addTo(PageBuilder pageBuilder) {
@@ -24,16 +23,16 @@ public class IssueDecisionSelectRecipients implements CcdPageConfiguration {
             .complex(CaseData::getCicCase)
             .readonly(CicCase::getFullName, ALWAYS_HIDE)
             .optionalWithoutDefaultValue(CicCase::getNotifyPartySubject,
-                "cicCaseFullName!=\"\" ", RECIPIENT_LABEL)
+                "cicCaseFullName!=\"\" ", "${cicCaseFullName}")
             .readonly(CicCase::getRepresentativeFullName, ALWAYS_HIDE)
             .optionalWithoutDefaultValue(CicCase::getNotifyPartyRepresentative,
-                "cicCaseRepresentativeFullName!=\"\" ", RECIPIENT_LABEL)
+                "cicCaseRepresentativeFullName!=\"\" ", "${cicCaseRepresentativeFullName}")
             .readonly(CicCase::getRespondentName, ALWAYS_HIDE)
             .optionalWithoutDefaultValue(CicCase::getNotifyPartyRespondent,
-                "cicCaseRespondentName!=\"\" ", RECIPIENT_LABEL)
+                "cicCaseRespondentName!=\"\" ", "${cicCaseRespondentName}")
             .readonly(CicCase::getApplicantFullName, ALWAYS_HIDE)
             .optionalWithoutDefaultValue(CicCase::getNotifyPartyApplicant,
-                "cicCaseApplicantFullName!=\"\"", RECIPIENT_LABEL)
+                "cicCaseApplicantFullName!=\"\"", "${cicCaseApplicantFullName}")
             .done();
     }
 

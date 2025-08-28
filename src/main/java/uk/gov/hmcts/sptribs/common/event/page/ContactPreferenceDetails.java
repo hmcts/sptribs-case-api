@@ -18,6 +18,7 @@ import static uk.gov.hmcts.sptribs.caseworker.util.ErrorConstants.SELECT_AT_LEAS
 
 
 public class ContactPreferenceDetails implements CcdPageConfiguration {
+
     @Override
     public void addTo(PageBuilder pageBuilder) {
         pageBuilder
@@ -25,9 +26,12 @@ public class ContactPreferenceDetails implements CcdPageConfiguration {
             .pageLabel("Who should receive information about the case?")
             .label("LabelObjectContacts", "")
             .complex(CaseData::getCicCase)
-            .optional(CicCase::getSubjectCIC, "cicCasePartiesCICCONTAINS \"SubjectCIC\"")
-            .optional(CicCase::getApplicantCIC, "cicCasePartiesCICCONTAINS \"ApplicantCIC\"")
-            .optional(CicCase::getRepresentativeCIC, "cicCasePartiesCICCONTAINS \"RepresentativeCIC\"")
+            .optionalWithoutDefaultValue(CicCase::getSubjectCIC, "cicCasePartiesCICCONTAINS \"SubjectCIC\"",
+                "${cicCaseFullName}")
+            .optionalWithoutDefaultValue(CicCase::getApplicantCIC, "cicCasePartiesCICCONTAINS \"ApplicantCIC\"",
+                "${cicCaseApplicantFullName}")
+            .optionalWithoutDefaultValue(CicCase::getRepresentativeCIC, "cicCasePartiesCICCONTAINS \"RepresentativeCIC\"",
+                "${cicCaseRepresentativeFullName}")
             .done();
     }
 

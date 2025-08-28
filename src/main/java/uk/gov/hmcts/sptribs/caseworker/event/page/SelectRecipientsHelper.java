@@ -16,7 +16,6 @@ public final class SelectRecipientsHelper {
                       String pageId,
                       String labelPrefix,
                       String label,
-                      String fieldLabelPrefix,
                       String alwaysHide) {
         pageBuilder
             .page(pageId, this::midEvent)
@@ -26,20 +25,16 @@ public final class SelectRecipientsHelper {
             .complex(CaseData::getCicCase)
             .readonly(CicCase::getFullName, alwaysHide)
             .optionalWithoutDefaultValue(CicCase::getNotifyPartySubject,
-                "cicCaseFullName!=\"\" ",
-                fieldLabelPrefix + " recipient")
+                "cicCaseFullName!=\"\" ", "${cicCaseFullName}")
             .readonly(CicCase::getRepresentativeFullName, alwaysHide)
             .optionalWithoutDefaultValue(CicCase::getNotifyPartyRepresentative,
-                "cicCaseRepresentativeFullName!=\"\" ",
-                fieldLabelPrefix + " recipient")
+                "cicCaseRepresentativeFullName!=\"\" ", "${cicCaseRepresentativeFullName}")
             .readonly(CicCase::getRespondentName, alwaysHide)
             .optionalWithoutDefaultValue(CicCase::getNotifyPartyRespondent,
-                "cicCaseRespondentName!=\"\" ",
-                fieldLabelPrefix + " recipient")
+                "cicCaseRespondentName!=\"\" ", "${cicCaseRespondentName}")
             .readonly(CicCase::getApplicantFullName, alwaysHide)
             .optionalWithoutDefaultValue(CicCase::getNotifyPartyApplicant,
-                "cicCaseApplicantFullName!=\"\"",
-                fieldLabelPrefix + " recipient")
+                "cicCaseApplicantFullName!=\"\"", "${cicCaseApplicantFullName}")
             .done();
     }
 

@@ -23,7 +23,6 @@ import static uk.gov.hmcts.sptribs.caseworker.util.ErrorConstants.SELECT_AT_LEAS
 public class PartiesToContact implements CcdPageConfiguration {
 
     private static final String ALWAYS_HIDE = "[STATE]=\"ALWAYS_HIDE\"";
-    private static final String RECIPIENT_LABEL = "Contact parties recipient";
 
     @Override
     public void addTo(PageBuilder pageBuilder) {
@@ -34,16 +33,16 @@ public class PartiesToContact implements CcdPageConfiguration {
             .complex(CaseData::getCicCase)
             .readonly(CicCase::getFullName, ALWAYS_HIDE)
             .optionalWithoutDefaultValue(CicCase::getNotifyPartySubject,
-                "cicCaseFullName!=\"\" ", RECIPIENT_LABEL)
+                "cicCaseFullName!=\"\" ", "${cicCaseFullName}")
             .readonly(CicCase::getApplicantFullName, ALWAYS_HIDE)
             .optionalWithoutDefaultValue(CicCase::getNotifyPartyApplicant,
-                "cicCaseApplicantFullName!=\"\" ", RECIPIENT_LABEL)
+                "cicCaseApplicantFullName!=\"\" ", "${cicCaseApplicantFullName}")
             .readonly(CicCase::getRepresentativeFullName, ALWAYS_HIDE)
             .optionalWithoutDefaultValue(CicCase::getNotifyPartyRepresentative,
-                "cicCaseRepresentativeFullName!=\"\" ", RECIPIENT_LABEL)
+                "cicCaseRepresentativeFullName!=\"\" ", "${cicCaseRepresentativeFullName}")
             .readonly(CicCase::getRespondentName, ALWAYS_HIDE)
             .optionalWithoutDefaultValue(CicCase::getNotifyPartyRespondent,
-                "cicCaseRespondentName!=\"\" ", RECIPIENT_LABEL)
+                "cicCaseRespondentName!=\"\" ", "${cicCaseRespondentName}")
             .mandatory(CicCase::getNotifyPartyMessage)
             .done();
     }
