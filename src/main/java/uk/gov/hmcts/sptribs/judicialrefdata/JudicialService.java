@@ -109,6 +109,7 @@ public class JudicialService {
                             .uuid(UUID.randomUUID().toString())
                             .judgeFullName(userProfile.getFullName())
                             .personalCode(userProfile.getPersonalCode())
+                            .title(userProfile.getTitle())
                             .build()
                     )
                     .build()
