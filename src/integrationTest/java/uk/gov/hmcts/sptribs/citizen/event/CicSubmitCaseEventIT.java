@@ -14,6 +14,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
+import uk.gov.hmcts.sptribs.caseworker.model.EditCicaCaseDetails;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.DssCaseData;
 import uk.gov.hmcts.sptribs.common.config.EmailTemplatesConfigCIC;
@@ -35,11 +36,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CITIZEN_CIC_SUBMIT_CASE;
 import static uk.gov.hmcts.sptribs.ciccase.model.LanguagePreference.ENGLISH;
 import static uk.gov.hmcts.sptribs.ciccase.model.LanguagePreference.WELSH;
+import static uk.gov.hmcts.sptribs.common.CommonConstants.CICA_REF_NUMBER;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.CIC_CASE_NUMBER;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.CIC_CASE_REPRESENTATIVE_NAME;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.CIC_CASE_SUBJECT_NAME;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.CONTACT_NAME;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.CONTACT_PARTY_INFO;
+import static uk.gov.hmcts.sptribs.common.CommonConstants.HAS_CICA_NUMBER;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.TRIBUNAL_NAME;
 import static uk.gov.hmcts.sptribs.common.ccd.CcdCaseType.CIC;
 import static uk.gov.hmcts.sptribs.testutil.IdamWireMock.ST_CIC_CASEWORKER;
@@ -50,6 +53,7 @@ import static uk.gov.hmcts.sptribs.testutil.TestConstants.SERVICE_AUTHORIZATION;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.SUBMITTED_URL;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_AUTHORIZATION_TOKEN;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID_HYPHENATED;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CICA_REF_NUMBER;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.callbackRequest;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.caseData;
 
@@ -91,8 +95,8 @@ public class CicSubmitCaseEventIT {
     @BeforeEach
     void setTestData() {
         Map<String, String> templatesCIC = new HashMap<>();
-        templatesCIC.put("APPLICATION_RECEIVED", "5385bfc6-eb33-41f6-ad2b-590a4f427606");
-        templatesCIC.put("APPLICATION_RECEIVED_CY", "2a434482-a070-457c-935d-12b49f2ac223");
+        templatesCIC.put("APPLICATION_RECEIVED", "48ccf890-0550-48ca-8c52-fa68cec09947");
+        templatesCIC.put("APPLICATION_RECEIVED_CY", "86e6988c-dfc8-43de-8890-e38269ee40d1");
 
         when(emailTemplatesConfig.getTemplatesCIC()).thenReturn(templatesCIC);
     }
@@ -106,8 +110,10 @@ public class CicSubmitCaseEventIT {
             .notifyPartyMessage("A message")
             .languagePreference(ENGLISH)
             .build();
+        final EditCicaCaseDetails cicaCaseDetails = EditCicaCaseDetails.builder().cicaReferenceNumber(TEST_CICA_REF_NUMBER).build();
         caseData.setDssCaseData(dssCaseData);
         caseData.setHyphenatedCaseRef(TEST_CASE_ID_HYPHENATED);
+        caseData.setEditCicaCaseDetails(cicaCaseDetails);
 
         stubForIdamDetails(TEST_AUTHORIZATION_TOKEN, CASEWORKER_USER_ID, ST_CIC_CASEWORKER);
 
@@ -124,14 +130,16 @@ public class CicSubmitCaseEventIT {
                 status().isOk());
 
         verify(notificationClient).sendEmail(
-            eq("5385bfc6-eb33-41f6-ad2b-590a4f427606"),
+            eq("48ccf890-0550-48ca-8c52-fa68cec09947"),
             eq("test@subject.com"),
             eq(Map.of(
                 TRIBUNAL_NAME, CIC,
                 CONTACT_PARTY_INFO, "A message",
                 CIC_CASE_SUBJECT_NAME, "Test Subject",
                 CONTACT_NAME, "Test Subject",
-                CIC_CASE_NUMBER, TEST_CASE_ID_HYPHENATED
+                CIC_CASE_NUMBER, TEST_CASE_ID_HYPHENATED,
+                HAS_CICA_NUMBER, true,
+                CICA_REF_NUMBER, TEST_CICA_REF_NUMBER
             )),
             anyString()
         );
@@ -164,14 +172,16 @@ public class CicSubmitCaseEventIT {
                 status().isOk());
 
         verify(notificationClient).sendEmail(
-            eq("2a434482-a070-457c-935d-12b49f2ac223"),
+            eq("86e6988c-dfc8-43de-8890-e38269ee40d1"),
             eq("test@subject.com"),
             eq(Map.of(
                 TRIBUNAL_NAME, CIC,
                 CONTACT_PARTY_INFO, "A message",
                 CIC_CASE_SUBJECT_NAME, "Test Subject",
                 CONTACT_NAME, "Test Subject",
-                CIC_CASE_NUMBER, TEST_CASE_ID_HYPHENATED
+                CIC_CASE_NUMBER, TEST_CASE_ID_HYPHENATED,
+                HAS_CICA_NUMBER, true,
+                CICA_REF_NUMBER, TEST_CICA_REF_NUMBER
             )),
             anyString()
         );
@@ -186,8 +196,10 @@ public class CicSubmitCaseEventIT {
             .representativeEmailAddress("test@representative.com")
             .notifyPartyMessage("A message")
             .build();
+        final EditCicaCaseDetails cicaCaseDetails = EditCicaCaseDetails.builder().cicaReferenceNumber(TEST_CICA_REF_NUMBER).build();
         caseData.setDssCaseData(dssCaseData);
         caseData.setHyphenatedCaseRef(TEST_CASE_ID_HYPHENATED);
+        caseData.setEditCicaCaseDetails(cicaCaseDetails);
 
         stubForIdamDetails(TEST_AUTHORIZATION_TOKEN, CASEWORKER_USER_ID, ST_CIC_CASEWORKER);
 
@@ -204,7 +216,7 @@ public class CicSubmitCaseEventIT {
                 status().isOk());
 
         verify(notificationClient).sendEmail(
-            eq("5385bfc6-eb33-41f6-ad2b-590a4f427606"),
+            eq("48ccf890-0550-48ca-8c52-fa68cec09947"),
             eq("test@representative.com"),
             eq(Map.of(
                 TRIBUNAL_NAME, CIC,
@@ -212,7 +224,9 @@ public class CicSubmitCaseEventIT {
                 CIC_CASE_SUBJECT_NAME, "Test Subject",
                 CIC_CASE_REPRESENTATIVE_NAME, "Test Representative",
                 CONTACT_NAME, "Test Representative",
-                CIC_CASE_NUMBER, TEST_CASE_ID_HYPHENATED
+                CIC_CASE_NUMBER, TEST_CASE_ID_HYPHENATED,
+                HAS_CICA_NUMBER, true,
+                CICA_REF_NUMBER, TEST_CICA_REF_NUMBER
             )),
             anyString()
         );
