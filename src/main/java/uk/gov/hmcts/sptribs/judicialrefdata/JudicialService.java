@@ -21,7 +21,6 @@ import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
-import static java.util.Comparator.comparing;
 import static java.util.Objects.isNull;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.EMPTY_PLACEHOLDER;
@@ -121,7 +120,7 @@ public class JudicialService {
         final List<DynamicListElement> usersDynamicList =
             judges.stream()
                 .map(ListValue::getValue)
-                .sorted(comparing(Judge::getJudgeFullName))
+                .sorted(Judge.byFullNameIgnoringTitle())
                 .map(user -> DynamicListElement.builder().label(user.getJudgeFullName()).code(UUID.fromString(user.getUuid())).build())
                 .collect(Collectors.toList());
 
