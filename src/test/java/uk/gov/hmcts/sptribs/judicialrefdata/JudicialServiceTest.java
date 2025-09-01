@@ -9,7 +9,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.ccd.sdk.type.DynamicList;
 import uk.gov.hmcts.ccd.sdk.type.DynamicListElement;
-import uk.gov.hmcts.ccd.sdk.type.DynamicListItem;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.idam.client.models.User;
@@ -89,7 +88,8 @@ class JudicialServiceTest {
                 .personalCode("98765")
                 .title("Professor")
                 .build();
-        List<UserProfileRefreshResponse> responseEntity = List.of(userResponse1, userResponse2, userResponse3, userResponse4, userResponse5);
+        List<UserProfileRefreshResponse> responseEntity =
+                List.of(userResponse1, userResponse2, userResponse3, userResponse4, userResponse5);
         final CaseData caseData = CaseData.builder().build();
 
         //When
