@@ -154,8 +154,10 @@ public class CicSubmitCaseEventIT {
             .notifyPartyMessage("A message")
             .languagePreference(WELSH)
             .build();
+        final EditCicaCaseDetails cicaCaseDetails = EditCicaCaseDetails.builder().cicaReferenceNumber(TEST_CICA_REF_NUMBER).build();
         caseData.setDssCaseData(dssCaseData);
         caseData.setHyphenatedCaseRef(TEST_CASE_ID_HYPHENATED);
+        caseData.setEditCicaCaseDetails(cicaCaseDetails);
 
         stubForIdamDetails(TEST_AUTHORIZATION_TOKEN, CASEWORKER_USER_ID, ST_CIC_CASEWORKER);
 
