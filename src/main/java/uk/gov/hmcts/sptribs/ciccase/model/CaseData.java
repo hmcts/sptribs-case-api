@@ -154,7 +154,8 @@ public class CaseData {
 
     @Builder.Default
     @CCD(
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
+        label = "CICA Case Details"
     )
     private EditCicaCaseDetails editCicaCaseDetails = new EditCicaCaseDetails();
 
