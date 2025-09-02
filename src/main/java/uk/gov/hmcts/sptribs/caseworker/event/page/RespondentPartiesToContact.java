@@ -40,10 +40,10 @@ public class RespondentPartiesToContact implements CcdPageConfiguration {
             .complex(CaseData::getContactParties)
             .optional(ContactParties::getSubjectContactParties, "cicCaseFullName!=\"\" ",
                 "", RECIPIENT_LABEL, "${cicCaseFullName}")
-            .optional(ContactParties::getRepresentativeContactParties, "cicCaseRepresentativeFullName!=\"\" ",
-                "", RECIPIENT_LABEL, "${cicCaseRepresentativeFullName}")
             .optional(ContactParties::getApplicantContactParties, "cicCaseApplicantFullName!=\"\" ",
                 "", RECIPIENT_LABEL, "${cicCaseApplicantFullName}")
+            .optional(ContactParties::getRepresentativeContactParties, "cicCaseRepresentativeFullName!=\"\" ",
+                "", RECIPIENT_LABEL, "${cicCaseRepresentativeFullName}")
             .optionalWithoutDefaultValue(ContactParties::getTribunal,
                 null, RECIPIENT_LABEL)
             .done()

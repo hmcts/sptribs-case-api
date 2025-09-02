@@ -34,7 +34,7 @@ public final class SelectRecipientsHelper {
             .optional(CicCase::getNotifyPartyRespondent, "cicCaseRespondentName!=\"\" ",
                 "", fieldLabelPrefix + " recipient", "${cicCaseRespondentName}")
             .readonly(CicCase::getApplicantFullName, alwaysHide)
-            .optional(CicCase::getNotifyPartyApplicant, "cicCaseApplicantFullName!=\"\" ",
+            .optional(CicCase::getNotifyPartyApplicant, "cicCaseApplicantFullName!=\"\"",
                 "", fieldLabelPrefix + " recipient", "${cicCaseApplicantFullName}")
             .done();
     }

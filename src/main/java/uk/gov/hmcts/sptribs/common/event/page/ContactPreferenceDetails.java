@@ -18,7 +18,6 @@ import static uk.gov.hmcts.sptribs.caseworker.util.ErrorConstants.SELECT_AT_LEAS
 
 
 public class ContactPreferenceDetails implements CcdPageConfiguration {
-
     @Override
     public void addTo(PageBuilder pageBuilder) {
         pageBuilder

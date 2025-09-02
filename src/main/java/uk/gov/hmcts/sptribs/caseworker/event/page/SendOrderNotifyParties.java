@@ -33,7 +33,7 @@ public class SendOrderNotifyParties implements CcdPageConfiguration {
             .optional(CicCase::getNotifyPartyRespondent, "cicCaseRespondentName!=\"\" ",
                 "", RECIPIENT_LABEL, "${cicCaseRespondentName}")
             .readonly(CicCase::getApplicantFullName, ALWAYS_HIDE)
-            .optional(CicCase::getNotifyPartyApplicant, "cicCaseApplicantFullName!=\"\" ",
+            .optional(CicCase::getNotifyPartyApplicant, "cicCaseApplicantFullName!=\"\"",
                 "", RECIPIENT_LABEL, "${cicCaseApplicantFullName}")
             .done();
     }
