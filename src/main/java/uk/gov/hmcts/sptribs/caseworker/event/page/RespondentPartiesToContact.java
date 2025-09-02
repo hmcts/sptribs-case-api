@@ -23,6 +23,7 @@ import static uk.gov.hmcts.sptribs.caseworker.util.ErrorConstants.SELECT_AT_LEAS
 @Component
 public class RespondentPartiesToContact implements CcdPageConfiguration {
 
+    private static final String RECIPIENT_LABEL = "Contact parties recipient";
     private static final String ALWAYS_HIDE = "[STATE]=\"ALWAYS_HIDE\"";
 
     @Override
@@ -37,14 +38,14 @@ public class RespondentPartiesToContact implements CcdPageConfiguration {
             .readonly(CicCase::getRepresentativeFullName, ALWAYS_HIDE)
             .done()
             .complex(CaseData::getContactParties)
-            .optionalWithoutDefaultValue(ContactParties::getSubjectContactParties,
-                "cicCaseFullName!=\"\" ", "${cicCaseFullName}")
-            .optionalWithoutDefaultValue(ContactParties::getApplicantContactParties,
-                "cicCaseApplicantFullName!=\"\" ", "${cicCaseApplicantFullName}")
-            .optionalWithoutDefaultValue(ContactParties::getRepresentativeContactParties,
-                "cicCaseRepresentativeFullName!=\"\" ", "${cicCaseRepresentativeFullName}")
+            .optional(ContactParties::getSubjectContactParties, "cicCaseFullName!=\"\" ",
+                "", RECIPIENT_LABEL, "${cicCaseFullName}")
+            .optional(ContactParties::getRepresentativeContactParties, "cicCaseRepresentativeFullName!=\"\" ",
+                "", RECIPIENT_LABEL, "${cicCaseRepresentativeFullName}")
+            .optional(ContactParties::getApplicantContactParties, "cicCaseApplicantFullName!=\"\" ",
+                "", RECIPIENT_LABEL, "${cicCaseApplicantFullName}")
             .optionalWithoutDefaultValue(ContactParties::getTribunal,
-                null, "Tribunal")
+                null, RECIPIENT_LABEL)
             .done()
             .complex(CaseData::getCicCase)
             .mandatory(CicCase::getNotifyPartyMessage)

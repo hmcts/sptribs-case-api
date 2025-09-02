@@ -14,6 +14,7 @@ import java.util.List;
 public class RecordNotifyParties implements CcdPageConfiguration {
 
     private static final String ALWAYS_HIDE = "LabelNotifyParties=\"NEVER_SHOW\"";
+    private static final String RECIPIENT_LABEL = "Listing information recipient";
 
     @Override
     public void addTo(PageBuilder pageBuilder) {
@@ -23,17 +24,17 @@ public class RecordNotifyParties implements CcdPageConfiguration {
             .complex(CaseData::getCicCase)
             .label("caseworkerCreateListingNotifyParty", "Who should be notified about the listing?")
             .readonly(CicCase::getFullName, ALWAYS_HIDE)
-            .optionalWithoutDefaultValue(CicCase::getNotifyPartySubject,
-                "cicCaseFullName!=\"\" ", "${cicCaseFullName}")
+            .optional(CicCase::getNotifyPartySubject, "cicCaseFullName!=\"\" ",
+                "", RECIPIENT_LABEL, "${cicCaseFullName}")
             .readonly(CicCase::getRepresentativeFullName, ALWAYS_HIDE)
-            .optionalWithoutDefaultValue(CicCase::getNotifyPartyRepresentative,
-                "cicCaseRepresentativeFullName!=\"\" ", "${cicCaseRepresentativeFullName}")
+            .optional(CicCase::getNotifyPartyRepresentative, "cicCaseRepresentativeFullName!=\"\" ",
+                "", RECIPIENT_LABEL, "${cicCaseRepresentativeFullName}")
             .readonly(CicCase::getRespondentName, ALWAYS_HIDE)
-            .optionalWithoutDefaultValue(CicCase::getNotifyPartyRespondent,
-                "cicCaseRespondentName!=\"\" ", "${cicCaseRespondentName}")
+            .optional(CicCase::getNotifyPartyRespondent, "cicCaseRespondentName!=\"\" ",
+                "", RECIPIENT_LABEL, "${cicCaseRespondentName}")
             .readonly(CicCase::getApplicantFullName, ALWAYS_HIDE)
-            .optionalWithoutDefaultValue(CicCase::getNotifyPartyApplicant,
-                "cicCaseApplicantFullName!=\"\"", "${cicCaseApplicantFullName}")
+            .optional(CicCase::getNotifyPartyApplicant, "cicCaseApplicantFullName!=\"\" ",
+                "", RECIPIENT_LABEL, "${cicCaseApplicantFullName}")
             .done();
     }
 

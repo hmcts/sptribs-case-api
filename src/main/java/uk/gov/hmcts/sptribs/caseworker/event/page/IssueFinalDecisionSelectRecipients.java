@@ -13,6 +13,7 @@ public class IssueFinalDecisionSelectRecipients implements CcdPageConfiguration 
             "issueFinalDecisionSelectRecipients",
             "IssueFinalDecision",
             "Who should receive this decision notice?",
+            "Final Decision information",
             ALWAYS_HIDE
         );
     }

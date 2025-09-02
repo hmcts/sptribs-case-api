@@ -20,6 +20,7 @@ import static uk.gov.hmcts.sptribs.caseworker.util.ErrorConstants.SELECT_AT_LEAS
 public class IssueCaseNotifyParties implements CcdPageConfiguration {
 
     private static final String ALWAYS_HIDE = "issueCaseDocumentList= \"ALWAYS_HIDE\"";
+    private static final String RECIPIENT_LABEL = "Issue Case information recipient";
 
     @Override
     public void addTo(PageBuilder pageBuilder) {
@@ -30,17 +31,17 @@ public class IssueCaseNotifyParties implements CcdPageConfiguration {
             .complex(CaseData::getCicCase)
             .label("issueCaseNotifyPartiesMessage", "Which other parties should be notified that the case has been issued to respondent?")
             .readonly(CicCase::getFullName, ALWAYS_HIDE)
-            .optionalWithoutDefaultValue(CicCase::getNotifyPartySubject,
-                "cicCaseFullName!=\"\" ", "${cicCaseFullName}")
+            .optional(CicCase::getNotifyPartySubject, "cicCaseFullName!=\"\" ",
+                "", RECIPIENT_LABEL, "${cicCaseFullName}")
             .readonly(CicCase::getRepresentativeFullName, ALWAYS_HIDE)
-            .optionalWithoutDefaultValue(CicCase::getNotifyPartyRepresentative,
-                "cicCaseRepresentativeFullName!=\"\" ", "${cicCaseRepresentativeFullName}")
+            .optional(CicCase::getNotifyPartyRepresentative, "cicCaseRepresentativeFullName!=\"\" ",
+                "", RECIPIENT_LABEL, "${cicCaseRepresentativeFullName}")
             .readonly(CicCase::getRespondentName, ALWAYS_HIDE)
-            .optionalWithoutDefaultValue(CicCase::getNotifyPartyRespondent,
-                "cicCaseRespondentName!=\"\" ", "${cicCaseRespondentName}")
+            .optional(CicCase::getNotifyPartyRespondent, "cicCaseRespondentName!=\"\" ",
+                "", RECIPIENT_LABEL, "${cicCaseRespondentName}")
             .readonly(CicCase::getApplicantFullName, ALWAYS_HIDE)
-            .optionalWithoutDefaultValue(CicCase::getNotifyPartyApplicant,
-                "cicCaseApplicantFullName!=\"\"", "${cicCaseApplicantFullName}")
+            .optional(CicCase::getNotifyPartyApplicant, "cicCaseApplicantFullName!=\"\" ",
+                "", RECIPIENT_LABEL, "${cicCaseApplicantFullName}")
             .done();
     }
 

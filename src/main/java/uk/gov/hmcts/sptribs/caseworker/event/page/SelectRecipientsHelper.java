@@ -16,6 +16,7 @@ public final class SelectRecipientsHelper {
                       String pageId,
                       String labelPrefix,
                       String label,
+                      String fieldLabelPrefix,
                       String alwaysHide) {
         pageBuilder
             .page(pageId, this::midEvent)
@@ -24,17 +25,17 @@ public final class SelectRecipientsHelper {
             .label("label" + labelPrefix + "SelectRecipients", label)
             .complex(CaseData::getCicCase)
             .readonly(CicCase::getFullName, alwaysHide)
-            .optionalWithoutDefaultValue(CicCase::getNotifyPartySubject,
-                "cicCaseFullName!=\"\" ", "${cicCaseFullName}")
+            .optional(CicCase::getNotifyPartySubject, "cicCaseFullName!=\"\" ",
+                "", fieldLabelPrefix + " recipient", "${cicCaseFullName}")
             .readonly(CicCase::getRepresentativeFullName, alwaysHide)
-            .optionalWithoutDefaultValue(CicCase::getNotifyPartyRepresentative,
-                "cicCaseRepresentativeFullName!=\"\" ", "${cicCaseRepresentativeFullName}")
+            .optional(CicCase::getNotifyPartyRepresentative, "cicCaseRepresentativeFullName!=\"\" ",
+                "", fieldLabelPrefix + " recipient", "${cicCaseRepresentativeFullName}")
             .readonly(CicCase::getRespondentName, alwaysHide)
-            .optionalWithoutDefaultValue(CicCase::getNotifyPartyRespondent,
-                "cicCaseRespondentName!=\"\" ", "${cicCaseRespondentName}")
+            .optional(CicCase::getNotifyPartyRespondent, "cicCaseRespondentName!=\"\" ",
+                "", fieldLabelPrefix + " recipient", "${cicCaseRespondentName}")
             .readonly(CicCase::getApplicantFullName, alwaysHide)
-            .optionalWithoutDefaultValue(CicCase::getNotifyPartyApplicant,
-                "cicCaseApplicantFullName!=\"\"", "${cicCaseApplicantFullName}")
+            .optional(CicCase::getNotifyPartyApplicant, "cicCaseApplicantFullName!=\"\" ",
+                "", fieldLabelPrefix + " recipient", "${cicCaseApplicantFullName}")
             .done();
     }
 
