@@ -12,8 +12,6 @@ import java.util.List;
 
 public final class SelectRecipientsHelper {
 
-    private static final String FIELD_LABEL_SUFFIX = " recipient";
-
 
     public void addTo(PageBuilder pageBuilder,
                       String pageId,
@@ -29,16 +27,16 @@ public final class SelectRecipientsHelper {
             .complex(CaseData::getCicCase)
             .readonly(CicCase::getFullName, alwaysHide)
             .optional(CicCase::getNotifyPartySubject, "cicCaseFullName!=\"\" ",
-                "", fieldLabelPrefix + FIELD_LABEL_SUFFIX, "${cicCaseFullName}")
+                "", fieldLabelPrefix, "${cicCaseFullName}")
             .readonly(CicCase::getRepresentativeFullName, alwaysHide)
             .optional(CicCase::getNotifyPartyRepresentative, "cicCaseRepresentativeFullName!=\"\" ",
-                "", fieldLabelPrefix + FIELD_LABEL_SUFFIX, "${cicCaseRepresentativeFullName}")
+                "", fieldLabelPrefix, "${cicCaseRepresentativeFullName}")
             .readonly(CicCase::getRespondentName, alwaysHide)
             .optional(CicCase::getNotifyPartyRespondent, "cicCaseRespondentName!=\"\" ",
-                "", fieldLabelPrefix + FIELD_LABEL_SUFFIX, "${cicCaseRespondentName}")
+                "", fieldLabelPrefix, "${cicCaseRespondentName}")
             .readonly(CicCase::getApplicantFullName, alwaysHide)
             .optional(CicCase::getNotifyPartyApplicant, "cicCaseApplicantFullName!=\"\"",
-                "", fieldLabelPrefix + FIELD_LABEL_SUFFIX, "${cicCaseApplicantFullName}")
+                "", fieldLabelPrefix, "${cicCaseApplicantFullName}")
             .done();
     }
 
