@@ -25,9 +25,12 @@ public class ContactPreferenceDetails implements CcdPageConfiguration {
             .pageLabel("Who should receive information about the case?")
             .label("LabelObjectContacts", "")
             .complex(CaseData::getCicCase)
-            .optional(CicCase::getSubjectCIC, "cicCasePartiesCICCONTAINS \"SubjectCIC\"")
-            .optional(CicCase::getApplicantCIC, "cicCasePartiesCICCONTAINS \"ApplicantCIC\"")
-            .optional(CicCase::getRepresentativeCIC, "cicCasePartiesCICCONTAINS \"RepresentativeCIC\"")
+            .optional(CicCase::getSubjectCIC, "cicCasePartiesCICCONTAINS \"SubjectCIC\"",
+                "", "", "${cicCaseFullName}")
+            .optional(CicCase::getApplicantCIC, "cicCasePartiesCICCONTAINS \"ApplicantCIC\"",
+                "", "", "${cicCaseApplicantFullName}")
+            .optional(CicCase::getRepresentativeCIC, "cicCasePartiesCICCONTAINS \"RepresentativeCIC\"",
+                "", "", "${cicCaseRepresentativeFullName}")
             .done();
     }
 

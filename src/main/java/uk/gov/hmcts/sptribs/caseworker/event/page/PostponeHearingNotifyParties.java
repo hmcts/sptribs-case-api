@@ -27,14 +27,14 @@ public class PostponeHearingNotifyParties implements CcdPageConfiguration {
             .complex(CaseData::getCicCase)
             .label("caseworkerPostponeHearingNotifyPartiesMessage", "Which parties should be notified this Postponement?")
             .readonly(CicCase::getFullName, ALWAYS_HIDE)
-            .optionalWithoutDefaultValue(CicCase::getNotifyPartySubject,
-                "cicCaseFullName!=\"\" ", RECIPIENT_LABEL)
+            .optional(CicCase::getNotifyPartySubject, "cicCaseFullName!=\"\" ",
+                "", RECIPIENT_LABEL, "${cicCaseFullName}")
             .readonly(CicCase::getRepresentativeFullName, ALWAYS_HIDE)
-            .optionalWithoutDefaultValue(CicCase::getNotifyPartyRepresentative,
-                "cicCaseRepresentativeFullName!=\"\" ", RECIPIENT_LABEL)
+            .optional(CicCase::getNotifyPartyRepresentative, "cicCaseRepresentativeFullName!=\"\" ",
+                "", RECIPIENT_LABEL, "${cicCaseRepresentativeFullName}")
             .readonly(CicCase::getRespondentName, ALWAYS_HIDE)
-            .optionalWithoutDefaultValue(CicCase::getNotifyPartyRespondent,
-                "cicCaseRespondentName!=\"\" ", RECIPIENT_LABEL)
+            .optional(CicCase::getNotifyPartyRespondent, "cicCaseRespondentName!=\"\" ",
+                "", RECIPIENT_LABEL, "${cicCaseRespondentName}")
             .done();
     }
 
