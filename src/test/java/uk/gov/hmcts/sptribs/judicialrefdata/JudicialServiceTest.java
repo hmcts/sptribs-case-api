@@ -62,13 +62,34 @@ class JudicialServiceTest {
             .builder()
             .fullName("John Smith")
             .personalCode("12345")
+            .title(null)
             .build();
         final UserProfileRefreshResponse userResponse2 = UserProfileRefreshResponse
             .builder()
-            .fullName("John Doe")
+            .fullName("Mr John Doe")
             .personalCode("98765")
+            .title("Mr")
             .build();
-        List<UserProfileRefreshResponse> responseEntity = List.of(userResponse1, userResponse2);
+        final UserProfileRefreshResponse userResponse3 = UserProfileRefreshResponse
+                .builder()
+                .fullName("Dr Indiana Jones")
+                .personalCode("98765")
+                .title("Dr")
+                .build();
+        final UserProfileRefreshResponse userResponse4 = UserProfileRefreshResponse
+                .builder()
+                .fullName("Ms Elizabeth Swan")
+                .personalCode("98765")
+                .title("Ms")
+                .build();
+        final UserProfileRefreshResponse userResponse5 = UserProfileRefreshResponse
+                .builder()
+                .fullName("Professor James Moriarty")
+                .personalCode("98765")
+                .title("Professor")
+                .build();
+        List<UserProfileRefreshResponse> responseEntity =
+                List.of(userResponse1, userResponse2, userResponse3, userResponse4, userResponse5);
         final CaseData caseData = CaseData.builder().build();
 
         //When
@@ -86,7 +107,12 @@ class JudicialServiceTest {
         //Then
         assertThat(userList).isNotNull();
         assertThat(caseData.getListing().getSummary().getJudgeList()).isNotNull();
-        assertThat(caseData.getListing().getSummary().getJudgeList()).hasSize(2);
+        assertThat(caseData.getListing().getSummary().getJudgeList()).hasSize(5);
+        assertThat(userList.getListItems().getFirst().getLabel()).isEqualTo(userResponse4.getFullName());
+        assertThat(userList.getListItems().get(1).getLabel()).isEqualTo(userResponse3.getFullName());
+        assertThat(userList.getListItems().get(2).getLabel()).isEqualTo(userResponse5.getFullName());
+        assertThat(userList.getListItems().get(3).getLabel()).isEqualTo(userResponse2.getFullName());
+        assertThat(userList.getListItems().getLast().getLabel()).isEqualTo(userResponse1.getFullName());
 
         verify(judicialClient).getUserProfiles(
             TEST_SERVICE_AUTH_TOKEN,

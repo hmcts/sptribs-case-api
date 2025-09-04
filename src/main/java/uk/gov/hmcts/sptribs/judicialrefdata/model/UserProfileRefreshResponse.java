@@ -28,6 +28,8 @@ public class UserProfileRefreshResponse {
 
     private String fullName;
 
+    private String title;
+
     private String postNominals;
 
     private String emailId;
