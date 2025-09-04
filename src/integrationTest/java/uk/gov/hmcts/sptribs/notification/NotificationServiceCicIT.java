@@ -62,7 +62,7 @@ public class NotificationServiceCicIT {
     @BeforeEach
     void setTestData() {
         Map<String, String> templatesCIC = new HashMap<>();
-        templatesCIC.put("APPLICATION_RECEIVED", "5385bfc6-eb33-41f6-ad2b-590a4f427606");
+        templatesCIC.put("APPLICATION_RECEIVED", "48ccf890-0550-48ca-8c52-fa68cec09947");
         templatesCIC.put("CASE_ISSUED_CITIZEN_POST", "eedc916f-088f-4653-99ed-b954e1dbd58d");
 
         when(emailTemplatesConfig.getTemplatesCIC()).thenReturn(templatesCIC);
@@ -88,7 +88,7 @@ public class NotificationServiceCicIT {
         final SendEmailResponse sendEmailResponse = new SendEmailResponse(sendEmailResponseJsonString);
 
         when(notificationClient.sendEmail(
-            eq("5385bfc6-eb33-41f6-ad2b-590a4f427606"),
+            eq("48ccf890-0550-48ca-8c52-fa68cec09947"),
             eq("test@email.com"),
             eq(templateVars),
             anyString()
@@ -118,7 +118,7 @@ public class NotificationServiceCicIT {
 
         doThrow(NotificationClientException.class)
             .when(notificationClient).sendEmail(
-                eq("5385bfc6-eb33-41f6-ad2b-590a4f427606"),
+                eq("48ccf890-0550-48ca-8c52-fa68cec09947"),
                 eq("test@email.com"),
                 eq(templateVars),
                 anyString()

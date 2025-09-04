@@ -42,7 +42,7 @@ class CaseUnlinkedNotificationTest {
         data.getCicCase().setEmail("testsubject@outlook.com");
         when(notificationHelper.buildEmailNotificationRequest(any(), anyMap(), any(TemplateName.class)))
             .thenReturn(NotificationRequest.builder().build());
-        when(notificationHelper.getSubjectCommonVars(any(), any(CicCase.class))).thenReturn(new HashMap<>());
+        when(notificationHelper.getSubjectCommonVars(any(), any(CaseData.class))).thenReturn(new HashMap<>());
 
         //When
         caseUnlinkedNotification.sendToSubject(data, "CN1");
@@ -63,7 +63,7 @@ class CaseUnlinkedNotificationTest {
         data.getCicCase().setAddress(AddressGlobalUK.builder().build());
         when(notificationHelper.buildLetterNotificationRequest(anyMap(), any(TemplateName.class)))
             .thenReturn(NotificationRequest.builder().build());
-        when(notificationHelper.getSubjectCommonVars(any(), any(CicCase.class))).thenReturn(new HashMap<>());
+        when(notificationHelper.getSubjectCommonVars(any(), any(CaseData.class))).thenReturn(new HashMap<>());
         doNothing().when(notificationHelper).addAddressTemplateVars(any(AddressGlobalUK.class), anyMap());
 
         //When
@@ -86,7 +86,7 @@ class CaseUnlinkedNotificationTest {
         data.getCicCase().setApplicantEmailAddress("testApplicant@outlook.com");
         when(notificationHelper.buildEmailNotificationRequest(any(), anyMap(), any(TemplateName.class)))
             .thenReturn(NotificationRequest.builder().build());
-        when(notificationHelper.getApplicantCommonVars(any(), any(CicCase.class))).thenReturn(new HashMap<>());
+        when(notificationHelper.getApplicantCommonVars(any(), any(CaseData.class))).thenReturn(new HashMap<>());
 
         //When
         caseUnlinkedNotification.sendToApplicant(data, "CN1");
@@ -108,7 +108,7 @@ class CaseUnlinkedNotificationTest {
         data.getCicCase().setApplicantAddress(AddressGlobalUK.builder().build());
         when(notificationHelper.buildLetterNotificationRequest(anyMap(), any(TemplateName.class)))
             .thenReturn(NotificationRequest.builder().build());
-        when(notificationHelper.getApplicantCommonVars(any(), any(CicCase.class))).thenReturn(new HashMap<>());
+        when(notificationHelper.getApplicantCommonVars(any(), any(CaseData.class))).thenReturn(new HashMap<>());
         doNothing().when(notificationHelper).addAddressTemplateVars(any(AddressGlobalUK.class), anyMap());
 
         //When
@@ -130,7 +130,7 @@ class CaseUnlinkedNotificationTest {
         data.getCicCase().setRepresentativeEmailAddress("testrepr@outlook.com");
         when(notificationHelper.buildEmailNotificationRequest(any(), anyMap(), any(TemplateName.class)))
             .thenReturn(NotificationRequest.builder().build());
-        when(notificationHelper.getRepresentativeCommonVars(any(), any(CicCase.class))).thenReturn(new HashMap<>());
+        when(notificationHelper.getRepresentativeCommonVars(any(), any(CaseData.class))).thenReturn(new HashMap<>());
 
         //When
         caseUnlinkedNotification.sendToRepresentative(data, "CN1");
@@ -152,7 +152,7 @@ class CaseUnlinkedNotificationTest {
         data.getCicCase().setRepresentativeAddress(AddressGlobalUK.builder().build());
         when(notificationHelper.buildLetterNotificationRequest(anyMap(), any(TemplateName.class)))
             .thenReturn(NotificationRequest.builder().build());
-        when(notificationHelper.getRepresentativeCommonVars(any(), any(CicCase.class))).thenReturn(new HashMap<>());
+        when(notificationHelper.getRepresentativeCommonVars(any(), any(CaseData.class))).thenReturn(new HashMap<>());
         doNothing().when(notificationHelper).addAddressTemplateVars(any(AddressGlobalUK.class), anyMap());
 
         //When

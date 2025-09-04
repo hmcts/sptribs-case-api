@@ -54,5 +54,8 @@
         }
       }
     }
-  ]
+  ],
+  "editCicaCaseDetails": {
+    "cicaReferenceNumber": "X/12/123456-TM1A"
+  }
 }

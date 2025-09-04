@@ -53,7 +53,7 @@ public class CaseWithdrawnNotificationTest {
 
         when(notificationHelper.buildEmailNotificationRequest(any(), anyMap(), any(TemplateName.class)))
             .thenReturn(NotificationRequest.builder().build());
-        when(notificationHelper.getSubjectCommonVars(any(), any(CicCase.class))).thenReturn(new HashMap<>());
+        when(notificationHelper.getSubjectCommonVars(any(), any(CaseData.class))).thenReturn(new HashMap<>());
         caseWithdrawnNotification.sendToSubject(data, "CN1");
 
         verify(notificationService).sendEmail(any(NotificationRequest.class));
@@ -74,7 +74,7 @@ public class CaseWithdrawnNotificationTest {
 
         when(notificationHelper.buildEmailNotificationRequest(any(), anyMap(), any(TemplateName.class)))
             .thenReturn(NotificationRequest.builder().build());
-        when(notificationHelper.getSubjectCommonVars(any(), any(CicCase.class))).thenReturn(new HashMap<>());
+        when(notificationHelper.getSubjectCommonVars(any(), any(CaseData.class))).thenReturn(new HashMap<>());
         caseWithdrawnNotification.sendToSubject(data, "CN1");
 
         verify(notificationService).sendEmail(any(NotificationRequest.class));
@@ -94,7 +94,7 @@ public class CaseWithdrawnNotificationTest {
 
         when(notificationHelper.buildLetterNotificationRequest(anyMap(), any(TemplateName.class)))
             .thenReturn(NotificationRequest.builder().build());
-        when(notificationHelper.getSubjectCommonVars(any(), any(CicCase.class))).thenReturn(new HashMap<>());
+        when(notificationHelper.getSubjectCommonVars(any(), any(CaseData.class))).thenReturn(new HashMap<>());
         doNothing().when(notificationHelper).addAddressTemplateVars(any(AddressGlobalUK.class), anyMap());
         caseWithdrawnNotification.sendToSubject(data, "CN1");
 
@@ -116,7 +116,7 @@ public class CaseWithdrawnNotificationTest {
 
         when(notificationHelper.buildEmailNotificationRequest(any(), anyMap(), any(TemplateName.class)))
             .thenReturn(NotificationRequest.builder().build());
-        when(notificationHelper.getRespondentCommonVars(any(), any(CicCase.class))).thenReturn(new HashMap<>());
+        when(notificationHelper.getRespondentCommonVars(any(), any(CaseData.class))).thenReturn(new HashMap<>());
         caseWithdrawnNotification.sendToRespondent(data, "CN1");
 
         verify(notificationService).sendEmail(any(NotificationRequest.class));
@@ -137,7 +137,7 @@ public class CaseWithdrawnNotificationTest {
 
         when(notificationHelper.buildEmailNotificationRequest(any(), anyMap(), any(TemplateName.class)))
             .thenReturn(NotificationRequest.builder().build());
-        when(notificationHelper.getRepresentativeCommonVars(any(), any(CicCase.class))).thenReturn(new HashMap<>());
+        when(notificationHelper.getRepresentativeCommonVars(any(), any(CaseData.class))).thenReturn(new HashMap<>());
         caseWithdrawnNotification.sendToRepresentative(data, "CN1");
 
         verify(notificationService).sendEmail(any(NotificationRequest.class));
@@ -158,7 +158,7 @@ public class CaseWithdrawnNotificationTest {
 
         when(notificationHelper.buildLetterNotificationRequest(anyMap(), any(TemplateName.class)))
             .thenReturn(NotificationRequest.builder().build());
-        when(notificationHelper.getRepresentativeCommonVars(any(), any(CicCase.class))).thenReturn(new HashMap<>());
+        when(notificationHelper.getRepresentativeCommonVars(any(), any(CaseData.class))).thenReturn(new HashMap<>());
         doNothing().when(notificationHelper).addAddressTemplateVars(any(AddressGlobalUK.class), anyMap());
         caseWithdrawnNotification.sendToRepresentative(data, "CN1");
 
@@ -178,7 +178,7 @@ public class CaseWithdrawnNotificationTest {
 
         when(notificationHelper.buildEmailNotificationRequest(any(), anyMap(), any(TemplateName.class)))
             .thenReturn(NotificationRequest.builder().build());
-        when(notificationHelper.getApplicantCommonVars(any(), any(CicCase.class))).thenReturn(new HashMap<>());
+        when(notificationHelper.getApplicantCommonVars(any(), any(CaseData.class))).thenReturn(new HashMap<>());
         caseWithdrawnNotification.sendToApplicant(data, "CN1");
 
         verify(notificationService).sendEmail(any(NotificationRequest.class));
@@ -198,7 +198,7 @@ public class CaseWithdrawnNotificationTest {
 
         when(notificationHelper.buildLetterNotificationRequest(anyMap(), any(TemplateName.class)))
             .thenReturn(NotificationRequest.builder().build());
-        when(notificationHelper.getApplicantCommonVars(any(), any(CicCase.class))).thenReturn(new HashMap<>());
+        when(notificationHelper.getApplicantCommonVars(any(), any(CaseData.class))).thenReturn(new HashMap<>());
         doNothing().when(notificationHelper).addAddressTemplateVars(any(AddressGlobalUK.class), anyMap());
         caseWithdrawnNotification.sendToApplicant(data, "CN1");
 

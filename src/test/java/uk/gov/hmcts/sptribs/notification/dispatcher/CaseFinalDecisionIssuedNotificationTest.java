@@ -21,7 +21,6 @@ import uk.gov.hmcts.sptribs.document.model.CICDocument;
 import uk.gov.hmcts.sptribs.notification.NotificationHelper;
 import uk.gov.hmcts.sptribs.notification.NotificationServiceCIC;
 import uk.gov.hmcts.sptribs.notification.TemplateName;
-import uk.gov.hmcts.sptribs.notification.dispatcher.CaseFinalDecisionIssuedNotification;
 import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
 
 import java.time.LocalDate;
@@ -71,7 +70,7 @@ public class CaseFinalDecisionIssuedNotificationTest {
         //When
         when(notificationHelper.buildEmailNotificationRequest(any(), anyBoolean(), anyMap(), anyMap(), any(TemplateName.class)))
             .thenReturn(NotificationRequest.builder().build());
-        when(notificationHelper.getSubjectCommonVars(any(), any(CicCase.class))).thenReturn(new HashMap<>());
+        when(notificationHelper.getSubjectCommonVars(any(), any(CaseData.class))).thenReturn(new HashMap<>());
 
         finalDecisionIssuedNotification.sendToSubject(data, "CN1");
 
@@ -84,7 +83,7 @@ public class CaseFinalDecisionIssuedNotificationTest {
                 CommonConstants.FINAL_DECISION_GUIDANCE, uuid.toString(),
                 CommonConstants.FINAL_DECISION_NOTICE, uuid.toString()),
             new HashMap<>(),
-            TemplateName.CASE_FINAL_DECISION_ISSUED_EMAIL);
+            TemplateName.FINAL_DECISION_ISSUED_EMAIL);
     }
 
     @Test
@@ -108,7 +107,7 @@ public class CaseFinalDecisionIssuedNotificationTest {
         //When
         when(notificationHelper.buildEmailNotificationRequest(any(), anyBoolean(), anyMap(), anyMap(), any(TemplateName.class)))
             .thenReturn(NotificationRequest.builder().build());
-        when(notificationHelper.getSubjectCommonVars(any(), any(CicCase.class))).thenReturn(new HashMap<>());
+        when(notificationHelper.getSubjectCommonVars(any(), any(CaseData.class))).thenReturn(new HashMap<>());
 
         finalDecisionIssuedNotification.sendToSubject(data, "CN1");
 
@@ -121,7 +120,7 @@ public class CaseFinalDecisionIssuedNotificationTest {
                 CommonConstants.FINAL_DECISION_GUIDANCE, uuid.toString(),
                 CommonConstants.FINAL_DECISION_NOTICE, ""),
             new HashMap<>(),
-            TemplateName.CASE_FINAL_DECISION_ISSUED_EMAIL);
+            TemplateName.FINAL_DECISION_ISSUED_EMAIL);
     }
 
     @Test
@@ -136,7 +135,7 @@ public class CaseFinalDecisionIssuedNotificationTest {
         //When
         when(notificationHelper.buildLetterNotificationRequest(anyMap(), any(TemplateName.class)))
             .thenReturn(NotificationRequest.builder().build());
-        when(notificationHelper.getSubjectCommonVars(any(), any(CicCase.class))).thenReturn(new HashMap<>());
+        when(notificationHelper.getSubjectCommonVars(any(), any(CaseData.class))).thenReturn(new HashMap<>());
         doNothing().when(notificationHelper).addAddressTemplateVars(any(AddressGlobalUK.class), anyMap());
         finalDecisionIssuedNotification.sendToSubject(data, "CN1");
 
@@ -144,7 +143,7 @@ public class CaseFinalDecisionIssuedNotificationTest {
         verify(notificationService).sendLetter(any(NotificationRequest.class));
         verify(notificationHelper).buildLetterNotificationRequest(
             new HashMap<>(),
-            TemplateName.CASE_FINAL_DECISION_ISSUED_POST);
+            TemplateName.FINAL_DECISION_ISSUED_POST);
     }
 
     @Test
@@ -168,7 +167,7 @@ public class CaseFinalDecisionIssuedNotificationTest {
         //When
         when(notificationHelper.buildEmailNotificationRequest(any(), anyBoolean(), anyMap(), anyMap(), any(TemplateName.class)))
             .thenReturn(NotificationRequest.builder().build());
-        when(notificationHelper.getRespondentCommonVars(any(), any(CicCase.class))).thenReturn(new HashMap<>());
+        when(notificationHelper.getRespondentCommonVars(any(), any(CaseData.class))).thenReturn(new HashMap<>());
         finalDecisionIssuedNotification.sendToRespondent(data, "CN1");
 
         //Then
@@ -180,7 +179,7 @@ public class CaseFinalDecisionIssuedNotificationTest {
                 CommonConstants.FINAL_DECISION_GUIDANCE, uuid.toString(),
                 CommonConstants.FINAL_DECISION_NOTICE, uuid.toString()),
             new HashMap<>(),
-            TemplateName.CASE_FINAL_DECISION_ISSUED_EMAIL);
+            TemplateName.FINAL_DECISION_ISSUED_EMAIL);
     }
 
     @Test
@@ -204,7 +203,7 @@ public class CaseFinalDecisionIssuedNotificationTest {
         //When
         when(notificationHelper.buildEmailNotificationRequest(any(), anyBoolean(), anyMap(), anyMap(), any(TemplateName.class)))
             .thenReturn(NotificationRequest.builder().build());
-        when(notificationHelper.getRespondentCommonVars(any(), any(CicCase.class))).thenReturn(new HashMap<>());
+        when(notificationHelper.getRespondentCommonVars(any(), any(CaseData.class))).thenReturn(new HashMap<>());
         finalDecisionIssuedNotification.sendToRespondent(data, "CN1");
 
         //Then
@@ -216,7 +215,7 @@ public class CaseFinalDecisionIssuedNotificationTest {
                 CommonConstants.FINAL_DECISION_GUIDANCE, uuid.toString(),
                 CommonConstants.FINAL_DECISION_NOTICE, ""),
             new HashMap<>(),
-            TemplateName.CASE_FINAL_DECISION_ISSUED_EMAIL);
+            TemplateName.FINAL_DECISION_ISSUED_EMAIL);
     }
 
     @Test
@@ -243,7 +242,7 @@ public class CaseFinalDecisionIssuedNotificationTest {
         //When
         when(notificationHelper.buildEmailNotificationRequest(any(), anyBoolean(), anyMap(), anyMap(), any(TemplateName.class)))
             .thenReturn(NotificationRequest.builder().build());
-        when(notificationHelper.getRepresentativeCommonVars(any(), any(CicCase.class))).thenReturn(new HashMap<>());
+        when(notificationHelper.getRepresentativeCommonVars(any(), any(CaseData.class))).thenReturn(new HashMap<>());
 
         finalDecisionIssuedNotification.sendToRepresentative(data, "CN1");
 
@@ -256,7 +255,7 @@ public class CaseFinalDecisionIssuedNotificationTest {
                 CommonConstants.FINAL_DECISION_GUIDANCE, uuid.toString(),
                 CommonConstants.FINAL_DECISION_NOTICE, uuid.toString()),
             new HashMap<>(),
-            TemplateName.CASE_FINAL_DECISION_ISSUED_EMAIL);
+            TemplateName.FINAL_DECISION_ISSUED_EMAIL);
     }
 
     @Test
@@ -283,7 +282,7 @@ public class CaseFinalDecisionIssuedNotificationTest {
         //When
         when(notificationHelper.buildEmailNotificationRequest(any(), anyBoolean(), anyMap(), anyMap(), any(TemplateName.class)))
             .thenReturn(NotificationRequest.builder().build());
-        when(notificationHelper.getRepresentativeCommonVars(any(), any(CicCase.class))).thenReturn(new HashMap<>());
+        when(notificationHelper.getRepresentativeCommonVars(any(), any(CaseData.class))).thenReturn(new HashMap<>());
 
         finalDecisionIssuedNotification.sendToRepresentative(data, "CN1");
 
@@ -296,7 +295,7 @@ public class CaseFinalDecisionIssuedNotificationTest {
                 CommonConstants.FINAL_DECISION_GUIDANCE, uuid.toString(),
                 CommonConstants.FINAL_DECISION_NOTICE, ""),
             new HashMap<>(),
-            TemplateName.CASE_FINAL_DECISION_ISSUED_EMAIL);
+            TemplateName.FINAL_DECISION_ISSUED_EMAIL);
     }
 
     @Test
@@ -311,7 +310,7 @@ public class CaseFinalDecisionIssuedNotificationTest {
         //When
         when(notificationHelper.buildLetterNotificationRequest(anyMap(), any(TemplateName.class)))
             .thenReturn(NotificationRequest.builder().build());
-        when(notificationHelper.getRepresentativeCommonVars(any(), any(CicCase.class))).thenReturn(new HashMap<>());
+        when(notificationHelper.getRepresentativeCommonVars(any(), any(CaseData.class))).thenReturn(new HashMap<>());
         doNothing().when(notificationHelper).addAddressTemplateVars(any(), anyMap());
         finalDecisionIssuedNotification.sendToRepresentative(data, "CN1");
 
@@ -319,7 +318,7 @@ public class CaseFinalDecisionIssuedNotificationTest {
         verify(notificationService).sendLetter(any(NotificationRequest.class));
         verify(notificationHelper).buildLetterNotificationRequest(
             new HashMap<>(),
-            TemplateName.CASE_FINAL_DECISION_ISSUED_POST);
+            TemplateName.FINAL_DECISION_ISSUED_POST);
     }
 
     @Test
@@ -347,7 +346,7 @@ public class CaseFinalDecisionIssuedNotificationTest {
         //When
         when(notificationHelper.buildEmailNotificationRequest(any(), anyBoolean(), anyMap(), anyMap(), any(TemplateName.class)))
             .thenReturn(NotificationRequest.builder().build());
-        when(notificationHelper.getApplicantCommonVars(any(), any(CicCase.class))).thenReturn(new HashMap<>());
+        when(notificationHelper.getApplicantCommonVars(any(), any(CaseData.class))).thenReturn(new HashMap<>());
 
         finalDecisionIssuedNotification.sendToApplicant(data, "CN1");
 
@@ -360,7 +359,7 @@ public class CaseFinalDecisionIssuedNotificationTest {
                 CommonConstants.FINAL_DECISION_GUIDANCE, uuid.toString(),
                 CommonConstants.FINAL_DECISION_NOTICE, uuid.toString()),
             new HashMap<>(),
-            TemplateName.CASE_FINAL_DECISION_ISSUED_EMAIL);
+            TemplateName.FINAL_DECISION_ISSUED_EMAIL);
     }
 
     @Test
@@ -375,7 +374,7 @@ public class CaseFinalDecisionIssuedNotificationTest {
         //When
         when(notificationHelper.buildLetterNotificationRequest(anyMap(), any(TemplateName.class)))
             .thenReturn(NotificationRequest.builder().build());
-        when(notificationHelper.getApplicantCommonVars(any(), any(CicCase.class))).thenReturn(new HashMap<>());
+        when(notificationHelper.getApplicantCommonVars(any(), any(CaseData.class))).thenReturn(new HashMap<>());
         doNothing().when(notificationHelper).addAddressTemplateVars(any(AddressGlobalUK.class), anyMap());
         finalDecisionIssuedNotification.sendToApplicant(data, "CN1");
 
@@ -383,7 +382,7 @@ public class CaseFinalDecisionIssuedNotificationTest {
         verify(notificationService).sendLetter(any(NotificationRequest.class));
         verify(notificationHelper).buildLetterNotificationRequest(
             new HashMap<>(),
-            TemplateName.CASE_FINAL_DECISION_ISSUED_POST);
+            TemplateName.FINAL_DECISION_ISSUED_POST);
     }
 
     private CaseData getMockCaseData(LocalDate stayCaseExpDate) {

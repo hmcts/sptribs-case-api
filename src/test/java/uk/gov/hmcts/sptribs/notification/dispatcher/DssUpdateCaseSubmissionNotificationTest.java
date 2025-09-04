@@ -9,7 +9,6 @@ import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.notification.NotificationHelper;
 import uk.gov.hmcts.sptribs.notification.NotificationServiceCIC;
-import uk.gov.hmcts.sptribs.notification.dispatcher.DssUpdateCaseSubmissionNotification;
 import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
 
 import java.util.HashMap;
@@ -18,8 +17,8 @@ import java.util.Map;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.TRIBUNAL_EMAIL_VALUE;
-import static uk.gov.hmcts.sptribs.notification.TemplateName.UPDATE_RECEIVED_CASEWORKER;
-import static uk.gov.hmcts.sptribs.notification.TemplateName.UPDATE_RECEIVED_CITIZEN;
+import static uk.gov.hmcts.sptribs.notification.TemplateName.UPDATE_RECEIVED;
+import static uk.gov.hmcts.sptribs.notification.TemplateName.UPDATE_RECEIVED_CIC;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_APPLICANT_EMAIL;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID;
 
@@ -45,16 +44,16 @@ class DssUpdateCaseSubmissionNotificationTest {
         final Map<String, Object> templateVars = new HashMap<>();
         final NotificationRequest notificationRequest = NotificationRequest.builder()
             .destinationAddress(TEST_APPLICANT_EMAIL)
-            .template(UPDATE_RECEIVED_CITIZEN)
+            .template(UPDATE_RECEIVED)
             .templateVars(templateVars)
             .build();
 
-        when(notificationHelper.getSubjectCommonVars(caseReference, cicCase))
+        when(notificationHelper.getSubjectCommonVars(caseReference, caseData))
             .thenReturn(templateVars);
         when(notificationHelper.buildEmailNotificationRequest(
             TEST_APPLICANT_EMAIL,
             templateVars,
-            UPDATE_RECEIVED_CITIZEN
+                UPDATE_RECEIVED
         )).thenReturn(notificationRequest);
 
         dssUpdateCaseSubmissionNotification.sendToApplicant(caseData, caseReference);
@@ -70,16 +69,16 @@ class DssUpdateCaseSubmissionNotificationTest {
         final Map<String, Object> templateVars = new HashMap<>();
         final NotificationRequest notificationRequest = NotificationRequest.builder()
             .destinationAddress(TRIBUNAL_EMAIL_VALUE)
-            .template(UPDATE_RECEIVED_CASEWORKER)
+            .template(UPDATE_RECEIVED_CIC)
             .templateVars(templateVars)
             .build();
 
-        when(notificationHelper.getTribunalCommonVars(caseReference, cicCase))
+        when(notificationHelper.getTribunalCommonVars(caseReference, caseData))
             .thenReturn(templateVars);
         when(notificationHelper.buildEmailNotificationRequest(
             TRIBUNAL_EMAIL_VALUE,
             templateVars,
-            UPDATE_RECEIVED_CASEWORKER
+                UPDATE_RECEIVED_CIC
         )).thenReturn(notificationRequest);
 
         dssUpdateCaseSubmissionNotification.sendToTribunal(caseData, String.valueOf(TEST_CASE_ID));
