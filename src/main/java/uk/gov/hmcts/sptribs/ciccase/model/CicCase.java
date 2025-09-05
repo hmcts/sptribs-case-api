@@ -386,7 +386,7 @@ public class CicCase {
     private RegionCIC regionCIC;
 
     @CCD(
-        label = "CICA reference number",
+        label = "Linked CICA reference number",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private String cicaReferenceNumber;

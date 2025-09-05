@@ -28,8 +28,8 @@ import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.ciccase.model.access.Permissions;
 import uk.gov.hmcts.sptribs.common.config.AppsConfig;
 import uk.gov.hmcts.sptribs.constants.CommonConstants;
+import uk.gov.hmcts.sptribs.document.model.CitizenCICDocument;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
-import uk.gov.hmcts.sptribs.document.model.EdgeCaseDocument;
 import uk.gov.hmcts.sptribs.idam.IdamService;
 import uk.gov.hmcts.sptribs.notification.exception.NotificationException;
 import uk.gov.hmcts.sptribs.testutil.TestDataHelper;
@@ -59,6 +59,7 @@ import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_SOLICITOR_NAME;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_UPDATE_CASE_EMAIL_ADDRESS;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.LOCAL_DATE_TIME;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.caseData;
+import static uk.gov.hmcts.sptribs.testutil.TestEventConstants.CITIZEN_CIC_SUBMIT_CASE;
 import static uk.gov.hmcts.sptribs.testutil.TestFileUtil.loadJson;
 
 @ExtendWith({MockitoExtension.class})
@@ -94,7 +95,7 @@ class CicSubmitCaseEventTest {
         cicAppDetail.setJurisdiction(CommonConstants.ST_CIC_JURISDICTION);
         cicAppDetail.setCaseTypeOfApplication(List.of(CASE_DATA_CIC_ID));
         final AppsConfig.EventsConfig eventsConfig = new AppsConfig.EventsConfig();
-        eventsConfig.setSubmitEvent("citizen-cic-submit-dss-application");
+        eventsConfig.setSubmitEvent(CITIZEN_CIC_SUBMIT_CASE);
 
         cicAppDetail.setEventIds(eventsConfig);
     }
@@ -138,26 +139,26 @@ class CicSubmitCaseEventTest {
         final String genericTestDocumentRelevance1 = "this document is relevant because it is important to the case";
         final String genericTestDocumentRelevance2 = "this document is also relevant because it is also important to the case";
 
-        final EdgeCaseDocument dssTribunalForm = new EdgeCaseDocument();
+        final CitizenCICDocument dssTribunalForm = new CitizenCICDocument();
         dssTribunalForm.setDocumentLink(genericTestDocument);
-        final ListValue<EdgeCaseDocument> tribunalFormDocListValue = new ListValue<>();
+        final ListValue<CitizenCICDocument> tribunalFormDocListValue = new ListValue<>();
         tribunalFormDocListValue.setValue(dssTribunalForm);
 
-        final EdgeCaseDocument dssSupportingDoc = new EdgeCaseDocument();
+        final CitizenCICDocument dssSupportingDoc = new CitizenCICDocument();
         dssSupportingDoc.setDocumentLink(genericTestDocument);
-        final ListValue<EdgeCaseDocument> supportingDocListValue = new ListValue<>();
+        final ListValue<CitizenCICDocument> supportingDocListValue = new ListValue<>();
         supportingDocListValue.setValue(dssSupportingDoc);
 
-        final EdgeCaseDocument dssOtherInfoDoc1 = new EdgeCaseDocument();
+        final CitizenCICDocument dssOtherInfoDoc1 = new CitizenCICDocument();
         dssOtherInfoDoc1.setDocumentLink(genericTestDocument);
         dssOtherInfoDoc1.setComment(genericTestDocumentRelevance1);
-        final ListValue<EdgeCaseDocument> otherInfoDocListValue1 = new ListValue<>();
+        final ListValue<CitizenCICDocument> otherInfoDocListValue1 = new ListValue<>();
         otherInfoDocListValue1.setValue(dssOtherInfoDoc1);
 
-        final EdgeCaseDocument dssOtherInfoDoc2 = new EdgeCaseDocument();
+        final CitizenCICDocument dssOtherInfoDoc2 = new CitizenCICDocument();
         dssOtherInfoDoc2.setDocumentLink(genericTestDocument);
         dssOtherInfoDoc2.setComment(genericTestDocumentRelevance2);
-        final ListValue<EdgeCaseDocument> otherInfoDocListValue2 = new ListValue<>();
+        final ListValue<CitizenCICDocument> otherInfoDocListValue2 = new ListValue<>();
         otherInfoDocListValue2.setValue(dssOtherInfoDoc2);
 
         final DssCaseData dssCaseData = DssCaseData.builder()
@@ -204,9 +205,9 @@ class CicSubmitCaseEventTest {
 
     @Test
     void shouldUpdateCaseDetails() {
-        final EdgeCaseDocument dssDoc = new EdgeCaseDocument();
+        final CitizenCICDocument dssDoc = new CitizenCICDocument();
         dssDoc.setDocumentLink(Document.builder().build());
-        final ListValue<EdgeCaseDocument> listValue = new ListValue<>();
+        final ListValue<CitizenCICDocument> listValue = new ListValue<>();
         listValue.setValue(dssDoc);
         final DssCaseData dssCaseData = DssCaseData.builder()
             .caseTypeOfApplication(CASE_DATA_CIC_ID)

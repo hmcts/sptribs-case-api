@@ -25,6 +25,7 @@ public enum UserRole implements HasRole {
     ST_CIC_HEARING_CENTRE_ADMIN("caseworker-st_cic-hearing-centre-admin", "CRU"),
     ST_CIC_HEARING_CENTRE_TEAM_LEADER("caseworker-st_cic-hearing-centre-team-leader", "CRU"),
     ST_CIC_SENIOR_JUDGE("caseworker-st_cic-senior-judge", "CRU"),
+    NON_RESPONDENT_USER("non-respondent-user", "R"),
 
     ST_CIC_JUDGE("caseworker-st_cic-judge", "CRU"),
     ST_CIC_RESPONDENT("caseworker-st_cic-respondent", "CRU"),

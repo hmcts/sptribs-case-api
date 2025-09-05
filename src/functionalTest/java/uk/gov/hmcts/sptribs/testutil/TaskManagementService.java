@@ -80,7 +80,7 @@ public class TaskManagementService {
                                               int expectedStatus) {
 
         Response result = given()
-            .header(SERVICE_AUTHORIZATION, serviceAuthenticationGenerator.generate())
+            .header(SERVICE_AUTHORIZATION, serviceAuthenticationGenerator.generateTaskManagementToken())
             .header(AUTHORIZATION, idamTokenGenerator.generateIdamTokenForWASeniorCaseworker())
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .when()
@@ -96,7 +96,7 @@ public class TaskManagementService {
 
     public void assignTask(String taskId) {
         Response result = given()
-            .header(SERVICE_AUTHORIZATION, serviceAuthenticationGenerator.generate())
+            .header(SERVICE_AUTHORIZATION, serviceAuthenticationGenerator.generateTaskManagementToken())
             .header(AUTHORIZATION, idamTokenGenerator.generateIdamTokenForWARegionalHearingCentreTeamLead())
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .when()
@@ -108,7 +108,7 @@ public class TaskManagementService {
 
     public void completeTask(String taskId) {
         Response result = given()
-            .header(SERVICE_AUTHORIZATION, serviceAuthenticationGenerator.generate())
+            .header(SERVICE_AUTHORIZATION, serviceAuthenticationGenerator.generateTaskManagementToken())
             .header(AUTHORIZATION, idamTokenGenerator.generateIdamTokenForWARegionalHearingCentreTeamLead())
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .when()
