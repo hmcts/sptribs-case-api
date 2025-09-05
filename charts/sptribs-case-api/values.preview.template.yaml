@@ -272,14 +272,36 @@ ccd:
       01_input.conf: |
         input  {
           jdbc {
-            jdbc_connection_string => "jdbc:postgresql://sptribs-preview.postgres.database.azure.com:5432/pr-${CHANGE_ID}-data-store?sslmode-require&stringtype=unspecified"
+            jdbc_connection_string => "jdbc:postgresql://sptribs-preview.postgres.database.azure.com:5432/pr-${CHANGE_ID}-sptribs?sslmode=require"
             jdbc_user => "hmcts"
             jdbc_password_filepath => "/etc/logstash/secrets/PASSWORD"
             jdbc_validate_connection => true
             jdbc_driver_library => "/usr/share/logstash/ccd/postgresql.jar"
             jdbc_driver_class => "org.postgresql.Driver"
             jdbc_default_timezone => "UTC"
-            statement => "UPDATE case_data SET marked_by_logstash = true WHERE marked_by_logstash = false RETURNING id, created_date, last_modified, jurisdiction, case_type_id, state, last_state_modified_date, data::TEXT as json_data, data_classification::TEXT as json_data_classification, reference, security_classification, supplementary_data::TEXT as json_supplementary_data"
+            statement => "
+              WITH updated AS (
+                DELETE FROM ccd.es_queue
+                WHERE id IN (SELECT id FROM ccd.es_queue LIMIT 100)
+                RETURNING id
+              )
+              SELECT
+                cd.reference AS id,
+                cd.version,
+                cd.case_type_id,
+                cd.created_date,
+                ce.created_date AS last_modified,
+                cd.jurisdiction,
+                cd.last_state_modified_date,
+                cd.state,
+                cd.security_classification,
+                ce.data::TEXT AS json_data,
+                '{}' as json_data_classification,
+                cd.supplementary_data::TEXT AS json_supplementary_data
+              FROM updated
+              JOIN ccd.case_event ce USING(id)
+              JOIN ccd.case_data cd ON cd.reference = ce.case_reference
+            "
             clean_run => false
             schedule => "* * * * * *"
           }
