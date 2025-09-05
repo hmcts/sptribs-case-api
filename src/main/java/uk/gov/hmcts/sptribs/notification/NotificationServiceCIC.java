@@ -17,6 +17,7 @@ import uk.gov.hmcts.sptribs.notification.exception.NotificationException;
 import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
 import uk.gov.service.notify.NotificationClient;
 import uk.gov.service.notify.NotificationClientException;
+import uk.gov.service.notify.NotificationList;
 import uk.gov.service.notify.SendEmailResponse;
 import uk.gov.service.notify.SendLetterResponse;
 
@@ -52,6 +53,10 @@ public class NotificationServiceCIC {
 
     @Autowired
     private final DocumentClient caseDocumentClient;
+
+    private static final String EMAIL_STATUS = "delivered";
+    private static final String LETTER_STATUS = "received";
+    private static final String SMS_STATUS = "sent";
 
     public NotificationServiceCIC(NotificationClient notificationClient,
                                   EmailTemplatesConfigCIC emailTemplatesConfig,
@@ -224,4 +229,22 @@ public class NotificationServiceCIC {
             .status("Received")
             .build();
     }
+
+    public NotificationList getNotifications(String notificationType) throws NotificationClientException {
+        log.info("Getting notifications of type: {}", notificationType);
+        String status = switch (notificationType.toLowerCase()) {
+            case "email" -> EMAIL_STATUS;
+            case "letter" -> LETTER_STATUS;
+            case "sms" -> SMS_STATUS;
+            default -> throw new IllegalArgumentException("Invalid notification type: " + notificationType);
+        };
+
+        try {
+            return notificationClient.getNotifications(status, notificationType, null, null);
+        } catch (NotificationClientException e) {
+            log.error("Error fetching notifications: {}", e.getMessage());
+            throw e;
+        }
+    }
+
 }
