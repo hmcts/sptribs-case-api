@@ -1,9 +1,9 @@
 package uk.gov.hmcts.sptribs.systemupdate.schedule.notification;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.sptribs.notification.NotificationServiceCIC;
-import lombok.extern.slf4j.Slf4j;
 import uk.gov.service.notify.NotificationClientException;
 import uk.gov.service.notify.NotificationList;
 
