@@ -14,15 +14,6 @@ java:
     DB_HOST: '{{ tpl .Values.global.postgresHostname $}}'
     DB_USER_NAME: "{{ .Values.global.postgresUsername}}"
     DB_PORT: 5432
-    ELASTIC_SEARCH_HOSTS: ${SERVICE_NAME}-es-master:9200
-  # postgresql:
-  #   enabled: false
-  #   primary:
-  #     initdb:
-  #       scripts:
-  #         init.sql: |-
-  #           CREATE DATABASE "data-store" WITH OWNER = javapostgres ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
-  #           CREATE DATABASE "definition-store" WITH OWNER = javapostgres ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
   keyVaults:
     sptribs:
       secrets:
