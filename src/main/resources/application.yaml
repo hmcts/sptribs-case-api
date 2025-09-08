@@ -6,6 +6,9 @@ case-flags:
     hmctsid: ${SUPPLEMENTARY_DATA_HMCTSID:BBA2}
 
 management:
+  health:
+    elasticsearch:
+      enabled: false
   endpoint:
     health:
       show-details: "always"
