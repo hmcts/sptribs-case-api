@@ -15,6 +15,7 @@ import uk.gov.hmcts.sptribs.notification.exception.NotificationException;
 import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
 import uk.gov.service.notify.NotificationClient;
 import uk.gov.service.notify.NotificationClientException;
+import uk.gov.service.notify.NotificationList;
 import uk.gov.service.notify.SendEmailResponse;
 import uk.gov.service.notify.SendLetterResponse;
 
@@ -58,6 +59,15 @@ public class NotificationServiceCicIT {
 
     private static final String NOTIFICATION_RESPONSE_JSON =
         "classpath:responses/notification-response.json";
+
+    private static final String GET_EMAIL_NOTIFICATIONS_RESPONSE_JSON =
+        "classpath:responses/get-email-notifications-response.json";
+
+    private static final String GET_LETTER_NOTIFICATIONS_RESPONSE_JSON =
+        "classpath:responses/get-letter-notifications-response.json";
+
+    private static final String GET_SMS_NOTIFICATIONS_RESPONSE_JSON =
+        "classpath:responses/get-sms-notifications-response.json";
 
     @BeforeEach
     void setTestData() {
@@ -185,4 +195,78 @@ public class NotificationServiceCicIT {
 
         assertThrows(NotificationException.class, () -> notificationServiceCIC.sendLetter(request));
     }
+
+    @Test
+    void shouldSuccessfullyGetEmailNotifications() throws Exception {
+        String receivedNotificationResponseJsonString = expectedResponse(GET_EMAIL_NOTIFICATIONS_RESPONSE_JSON);
+        NotificationList receivedNotificationList = new NotificationList(receivedNotificationResponseJsonString);
+
+        when(notificationClient.getNotifications(
+            eq("delivered"),
+            eq("email"),
+            eq(null),
+            eq(null)
+        )).thenReturn(receivedNotificationList);
+
+        NotificationList notificationResponse = notificationServiceCIC.getNotifications("email");
+
+        assertThat(notificationResponse.getNotifications()).hasSizeGreaterThan(0);
+        assertThat(notificationResponse.getNotifications().getFirst().getStatus()).isEqualTo("delivered");
+    }
+
+    @Test
+    void shouldSuccessfullyGetLetterNotifications() throws Exception {
+        String receivedNotificationResponseJsonString = expectedResponse(GET_LETTER_NOTIFICATIONS_RESPONSE_JSON);
+        NotificationList receivedNotificationList = new NotificationList(receivedNotificationResponseJsonString);
+
+        when(notificationClient.getNotifications(
+            eq("received"),
+            eq("letter"),
+            eq(null),
+            eq(null)
+        )).thenReturn(receivedNotificationList);
+
+        NotificationList notificationResponse = notificationServiceCIC.getNotifications("letter");
+
+        assertThat(notificationResponse.getNotifications()).hasSizeGreaterThan(0);
+        assertThat(notificationResponse.getNotifications().getFirst().getStatus()).isEqualTo("received");
+    }
+
+    @Test
+    void shouldSuccessfullyGetSMSNotifications() throws Exception {
+        String receivedNotificationResponseJsonString = expectedResponse(GET_SMS_NOTIFICATIONS_RESPONSE_JSON);
+        NotificationList receivedNotificationList = new NotificationList(receivedNotificationResponseJsonString);
+
+        when(notificationClient.getNotifications(
+            eq("sent"),
+            eq("sms"),
+            eq(null),
+            eq(null)
+        )).thenReturn(receivedNotificationList);
+
+        NotificationList notificationResponse = notificationServiceCIC.getNotifications("sms");
+
+        assertThat(notificationResponse.getNotifications()).hasSizeGreaterThan(0);
+        assertThat(notificationResponse.getNotifications().getFirst().getStatus()).isEqualTo("sent");
+    }
+
+    @Test
+    void shouldThrowIllegalArgumentExceptionIfNotificationTypeInvalid() {
+        assertThrows(IllegalArgumentException.class, () -> notificationServiceCIC.getNotifications("invalid type"));
+    }
+
+    @Test
+    void shouldThrowNotificationClientExceptionIfGetNotificationsFails() throws NotificationClientException {
+        doThrow(NotificationClientException.class)
+            .when(notificationClient).getNotifications(
+                eq("delivered"),
+                eq("email"),
+                eq(null),
+                eq(null)
+            );
+
+        assertThrows(NotificationClientException.class, () -> notificationServiceCIC.getNotifications("email"));
+    }
+
+
 }
