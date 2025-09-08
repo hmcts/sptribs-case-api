@@ -1,3 +1,6 @@
+import uk.gov.hmcts.rse.AuthMode
+import uk.gov.hmcts.rse.CftlibExec
+
 buildscript {
   repositories {
     mavenLocal()
@@ -27,9 +30,8 @@ plugins {
   id 'io.spring.dependency-management' version '1.1.7'
   id 'org.springframework.boot' version '3.5.5'
   id 'com.github.ben-manes.versions' version '0.50.0'
-  id 'hmcts.ccd.sdk' version '5.6.1'
   id "au.com.dius.pact" version "4.3.10"
-  id 'com.github.hmcts.rse-cft-lib' version '0.19.1852'
+  id 'com.github.hmcts.rse-cft-lib' version 'sptribs-rc6'
 }
 
 apply plugin: 'cz.habarta.typescript-generator'
@@ -40,6 +42,12 @@ version = '0.0.1'
 
 ccd {
   configDir = file('ccd-definitions/definitions')
+  decentralised = true
+}
+
+project.tasks.named("generateCCDConfig") {
+  environment 'SPRING_PROFILES_ACTIVE', 'config-gen'
+  environment 'SPRING_FLYWAY_ENABLED', 'false'
 }
 
 sourceSets {
@@ -353,6 +361,8 @@ dependencies {
   implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.18.0'
   implementation group: 'com.github.ben-manes.caffeine', name: 'caffeine', version: '3.2.2'
   implementation 'org.camunda.bpm:camunda-external-task-client:7.23.0'
+  implementation group: 'org.postgresql', name: 'postgresql', version: '42.7.5'
+  implementation 'org.flywaydb:flyway-database-postgresql:11.3.1'
 
   annotationProcessor group: 'org.projectlombok', name: 'lombok', version: versions.lombok
   testImplementation group: 'com.github.hmcts', name: 'fortify-client', version: '1.4.10', classifier: 'all'
@@ -385,9 +395,11 @@ dependencies {
   testAnnotationProcessor group: 'org.projectlombok', name: 'lombok', version: versions.lombok
   integrationTestImplementation sourceSets.main.runtimeClasspath
   integrationTestImplementation sourceSets.test.runtimeClasspath
+  integrationTestImplementation 'com.h2database:h2'
 
   functionalTestImplementation sourceSets.main.runtimeClasspath
   functionalTestImplementation sourceSets.test.runtimeClasspath
+  functionalTestImplementation 'com.h2database:h2'
 
   functionalTestImplementation group: 'com.github.hmcts', name: 'document-management-client', version: '7.0.1'
   functionalTestImplementation group: 'com.github.hmcts', name: 'service-auth-provider-java-client', version: '5.3.3'
@@ -497,8 +509,14 @@ ccd {
   configDir = file('build/definitions')
 }
 
+tasks.withType(CftlibExec).configureEach {
+  environment 'RSE_LIB_ADDITIONAL_DATABASES', 'sptribs'
+  environment 'CCD_DECENTRALISED_CASE-TYPE-SERVICE-URLS_CriminalInjuriesCompensation', 'http://localhost:4013'
+}
+
 bootWithCCD {
     environment 'XUI_JURISDICTIONS', 'ST_CIC'
+    environment 'CASE_DOCUMENT_S2S_AUTHORISED_SERVICES', 'ccd_case_document_am_api,ccd_gw,xui_webapp,ccd_data,bulk_scan_processor,em_npa_app,dg_docassembly_api,em_stitching_api,em_ccd_orchestrator,bulk_scan_orchestrator,sptribs_case_api,sptribs_frontend'
     group = 'ccd tasks'
     dependsOn(loadEnvSecrets)
 
@@ -512,6 +530,16 @@ bootWithCCD {
     }
 }
 
+dumpCCDDefinitions {
+ authMode = AuthMode.Local
+  doLast {
+    project.fileTree('build/cftlib/definition-snapshots').each {
+      println "Exported definition snapshot ${it.name}"
+    }
+  }
+}
+
+assemble.dependsOn(dumpCCDDefinitions)
 
 cftlibTest {
   // IDAM simulator will be started on port 5000,
@@ -559,7 +587,7 @@ configurations.testImplementation {
   exclude group: 'ch.qos.logback', module: 'logback-classic'
 }
 
-rootProject.tasks.named("processContractTestResources") {
+tasks.named("processContractTestResources") {
   duplicatesStrategy = 'include'
 }
 

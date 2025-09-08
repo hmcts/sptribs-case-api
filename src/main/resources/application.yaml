@@ -6,6 +6,9 @@ case-flags:
     hmctsid: ${SUPPLEMENTARY_DATA_HMCTSID:BBA2}
 
 management:
+  health:
+    elasticsearch:
+      enabled: false
   endpoint:
     health:
       show-details: "always"
@@ -26,7 +29,10 @@ spring:
     multipart:
       max-file-size: 500MB
       max-request-size: 500MB
-
+  datasource:
+    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:6432}/${DB_NAME:sptribs}${DB_OPTIONS:}
+    username: ${DB_USER_NAME:postgres}
+    password: ${DB_PASSWORD:postgres}
 logging:
   level:
     root: info
