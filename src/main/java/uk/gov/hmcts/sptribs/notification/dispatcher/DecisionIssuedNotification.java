@@ -43,10 +43,10 @@ public class DecisionIssuedNotification implements PartiesNotification {
 
     @Override
     public void sendToSubject(final CaseData caseData, final String caseNumber) {
-        final CicCase cicCase = caseData.getCicCase();
-        final Map<String, Object> templateVars = notificationHelper.getSubjectCommonVars(caseNumber, cicCase);
+        final Map<String, Object> templateVars = notificationHelper.getSubjectCommonVars(caseNumber, caseData);
 
         final NotificationResponse notificationResponse;
+        final CicCase cicCase = caseData.getCicCase();
         if (cicCase.getContactPreferenceType() == ContactPreferenceType.EMAIL) {
             final Map<String, String> uploadedDocumentIds = getUploadedDocuments(caseData);
 
@@ -65,7 +65,7 @@ public class DecisionIssuedNotification implements PartiesNotification {
     public void sendToRepresentative(final CaseData caseData, final String caseNumber) {
         final CicCase cicCase = caseData.getCicCase();
         final NotificationResponse notificationResponse;
-        final Map<String, Object> templateVars = notificationHelper.getRepresentativeCommonVars(caseNumber, cicCase);
+        final Map<String, Object> templateVars = notificationHelper.getRepresentativeCommonVars(caseNumber, caseData);
 
         if (cicCase.getRepresentativeContactDetailsPreference() == ContactPreferenceType.EMAIL) {
             final Map<String, String> uploadedDocumentIds = getUploadedDocuments(caseData);
@@ -82,7 +82,7 @@ public class DecisionIssuedNotification implements PartiesNotification {
     @Override
     public void sendToRespondent(final CaseData caseData, final String caseNumber) {
         final CicCase cicCase = caseData.getCicCase();
-        final Map<String, Object> templateVars = notificationHelper.getRespondentCommonVars(caseNumber, cicCase);
+        final Map<String, Object> templateVars = notificationHelper.getRespondentCommonVars(caseNumber, caseData);
         final Map<String, String> uploadedDocuments = getUploadedDocuments(caseData);
 
         final NotificationResponse notificationResponse = sendEmailNotificationWithAttachment(cicCase.getRespondentEmail(),
@@ -93,7 +93,7 @@ public class DecisionIssuedNotification implements PartiesNotification {
     @Override
     public void sendToApplicant(final CaseData caseData, final String caseNumber) {
         final CicCase cicCase = caseData.getCicCase();
-        final Map<String, Object> templateVars = notificationHelper.getApplicantCommonVars(caseNumber, cicCase);
+        final Map<String, Object> templateVars = notificationHelper.getApplicantCommonVars(caseNumber, caseData);
 
         final NotificationResponse notificationResponse;
         if (cicCase.getContactPreferenceType() == ContactPreferenceType.EMAIL) {
