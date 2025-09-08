@@ -241,9 +241,9 @@ public class NotificationServiceCIC {
 
         try {
             return notificationClient.getNotifications(status, notificationType, null, null);
-        } catch (NotificationClientException e) {
-            log.error("Error fetching notifications: {}", e.getMessage());
-            throw e;
+        } catch (NotificationClientException notificationClientException) {
+            log.error("Error fetching notifications: {}", notificationClientException.getMessage());
+            throw new NotificationException(notificationClientException);
         }
     }
 

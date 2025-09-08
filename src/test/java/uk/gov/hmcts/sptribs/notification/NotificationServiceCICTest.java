@@ -15,8 +15,10 @@ import uk.gov.hmcts.sptribs.idam.IdamService;
 import uk.gov.hmcts.sptribs.notification.exception.NotificationException;
 import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
 import uk.gov.hmcts.sptribs.testutil.TestDataHelper;
+import uk.gov.service.notify.Notification;
 import uk.gov.service.notify.NotificationClient;
 import uk.gov.service.notify.NotificationClientException;
+import uk.gov.service.notify.NotificationList;
 import uk.gov.service.notify.SendEmailResponse;
 import uk.gov.service.notify.SendLetterResponse;
 
@@ -38,6 +40,7 @@ import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static uk.gov.hmcts.sptribs.notification.TemplateName.APPLICATION_RECEIVED;
@@ -75,6 +78,12 @@ public class NotificationServiceCICTest {
 
     @Mock
     private SendLetterResponse sendLetterResponse;
+
+    @Mock
+    private NotificationList notificationList;
+
+    @Mock
+    private Notification notification;
 
     @Test
     void shouldInvokeNotificationClientToSendEmail() throws NotificationClientException {
@@ -362,5 +371,114 @@ public class NotificationServiceCICTest {
             eq(templateId),
             any(),
             any());
+    }
+
+    @Test
+    void shouldInvokeNotificationClientToGetEmailNotifications() throws NotificationClientException {
+        //Given
+        notificationList.getNotifications().add(notification);
+
+        when(notificationClient.getNotifications(
+            eq("delivered"),
+            eq("email"),
+            eq(null),
+            eq(null)
+        )).thenReturn(notificationList);
+
+        //When
+        notificationService.getNotifications("email");
+
+        //Then
+        verify(notificationClient).getNotifications(
+            eq("delivered"),
+            eq("email"),
+            eq(null),
+            eq(null));
+
+        verify(notificationClient, times(1)).getNotifications("delivered", "email", null, null);
+    }
+
+    @Test
+    void shouldInvokeNotificationClientToGetLetterNotifications() throws NotificationClientException {
+        //Given
+        notificationList.getNotifications().add(notification);
+
+        when(notificationClient.getNotifications(
+            eq("received"),
+            eq("letter"),
+            eq(null),
+            eq(null)
+        )).thenReturn(notificationList);
+
+        //When
+        notificationService.getNotifications("letter");
+
+        //Then
+        verify(notificationClient).getNotifications(
+            eq("received"),
+            eq("letter"),
+            eq(null),
+            eq(null));
+
+        verify(notificationClient, times(1)).getNotifications("received", "letter", null, null);
+    }
+
+    @Test
+    void shouldInvokeNotificationClientToGetSMSNotifications() throws NotificationClientException {
+        //Given
+        notificationList.getNotifications().add(notification);
+
+        when(notificationClient.getNotifications(
+            eq("sent"),
+            eq("sms"),
+            eq(null),
+            eq(null)
+        )).thenReturn(notificationList);
+
+        //When
+        notificationService.getNotifications("sms");
+
+        //Then
+        verify(notificationClient).getNotifications(
+            eq("sent"),
+            eq("sms"),
+            eq(null),
+            eq(null));
+
+        verify(notificationClient, times(1)).getNotifications("sent", "sms", null, null);
+    }
+
+    @Test
+    void shouldThrowIllegalArgumentWhenNotificationTypeIsInvalid() throws NotificationClientException {
+        //When&Then
+        assertThatThrownBy(() -> notificationService.getNotifications("invalidType"))
+            .isInstanceOf(IllegalArgumentException.class)
+            .hasMessageContaining("Invalid notification type: invalidType");
+
+        verifyNoInteractions(notificationClient);
+
+        verify(notificationClient, times(0)).getNotifications(anyString(), anyString(), any(), any());
+    }
+
+    @Test
+    void shouldThrowNotificationExceptionWhenClientFailsToGetNotifications() throws NotificationClientException {
+        //Given
+        doThrow(new NotificationClientException("some message"))
+            .when(notificationClient).getNotifications(
+                eq("delivered"),
+                eq("email"),
+                eq(null),
+                eq(null));
+
+        //When&Then
+        assertThatThrownBy(() -> notificationService.getNotifications("email"))
+            .isInstanceOf(NotificationException.class)
+            .hasMessageContaining("some message");
+
+        verify(notificationClient).getNotifications(
+            eq("delivered"),
+            eq("email"),
+            eq(null),
+            eq(null));
     }
 }

@@ -256,7 +256,7 @@ public class NotificationServiceCicIT {
     }
 
     @Test
-    void shouldThrowNotificationClientExceptionIfGetNotificationsFails() throws NotificationClientException {
+    void shouldThrowNotificationExceptionIfGetNotificationsFails() throws NotificationClientException {
         doThrow(NotificationClientException.class)
             .when(notificationClient).getNotifications(
                 eq("delivered"),
@@ -265,8 +265,6 @@ public class NotificationServiceCicIT {
                 eq(null)
             );
 
-        assertThrows(NotificationClientException.class, () -> notificationServiceCIC.getNotifications("email"));
+        assertThrows(NotificationException.class, () -> notificationServiceCIC.getNotifications("email"));
     }
-
-
 }
