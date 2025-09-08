@@ -11,8 +11,12 @@ import uk.gov.service.notify.NotificationList;
 @Component
 public class SystemGetCorrespondence implements Runnable {
 
+    private final NotificationServiceCIC notificationService;
+
     @Autowired
-    private NotificationServiceCIC notificationService;
+    public SystemGetCorrespondence(NotificationServiceCIC notificationService) {
+        this.notificationService = notificationService;
+    }
 
     @Override
     public void run() {
