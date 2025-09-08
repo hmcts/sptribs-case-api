@@ -27,8 +27,8 @@ import static uk.gov.hmcts.sptribs.common.CommonConstants.TRIBUNAL_EMAIL_VALUE;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.TRIBUNAL_NAME;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.TRIBUNAL_NAME_VALUE;
 import static uk.gov.hmcts.sptribs.common.ccd.CcdCaseType.CIC;
-import static uk.gov.hmcts.sptribs.notification.TemplateName.UPDATE_RECEIVED_CASEWORKER;
-import static uk.gov.hmcts.sptribs.notification.TemplateName.UPDATE_RECEIVED_CITIZEN;
+import static uk.gov.hmcts.sptribs.notification.TemplateName.UPDATE_RECEIVED;
+import static uk.gov.hmcts.sptribs.notification.TemplateName.UPDATE_RECEIVED_CIC;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID;
 
 @ExtendWith(SpringExtension.class)
@@ -71,7 +71,7 @@ public class DssUpdateCaseSubmissionNotificationIT {
         assertThat(notificationRequest.getDestinationAddress())
             .isEqualTo("test@email.com");
         assertThat(notificationRequest.getTemplate())
-            .isEqualTo(UPDATE_RECEIVED_CITIZEN);
+            .isEqualTo(UPDATE_RECEIVED);
         assertThat(notificationRequest.getTemplateVars())
             .containsAllEntriesOf(expectedTemplateVars);
     }
@@ -100,7 +100,7 @@ public class DssUpdateCaseSubmissionNotificationIT {
         assertThat(notificationRequest.getDestinationAddress())
             .isEqualTo(TRIBUNAL_EMAIL_VALUE);
         assertThat(notificationRequest.getTemplate())
-            .isEqualTo(UPDATE_RECEIVED_CASEWORKER);
+            .isEqualTo(UPDATE_RECEIVED_CIC);
         assertThat(notificationRequest.getTemplateVars())
             .containsAllEntriesOf(expectedTemplateVars);
     }
