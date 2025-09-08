@@ -285,7 +285,7 @@ ccd:
                 cd.jurisdiction,
                 cd.last_state_modified_date,
                 cd.state,
-                cd.security_classification,
+                cd.security_classification::text,
                 ce.data::TEXT AS json_data,
                 '{}' as json_data_classification,
                 cd.supplementary_data::TEXT AS json_supplementary_data
