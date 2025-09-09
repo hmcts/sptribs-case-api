@@ -379,10 +379,10 @@ public class NotificationServiceCICTest {
         notificationList.getNotifications().add(notification);
 
         when(notificationClient.getNotifications(
-            eq("delivered"),
-            eq("email"),
-            eq(null),
-            eq(null)
+            "delivered",
+            "email",
+            null,
+            null
         )).thenReturn(notificationList);
 
         //When
@@ -390,10 +390,10 @@ public class NotificationServiceCICTest {
 
         //Then
         verify(notificationClient).getNotifications(
-            eq("delivered"),
-            eq("email"),
-            eq(null),
-            eq(null));
+            "delivered",
+            "email",
+            null,
+            null);
 
         verify(notificationClient, times(1)).getNotifications("delivered", "email", null, null);
     }
@@ -404,10 +404,10 @@ public class NotificationServiceCICTest {
         notificationList.getNotifications().add(notification);
 
         when(notificationClient.getNotifications(
-            eq("received"),
-            eq("letter"),
-            eq(null),
-            eq(null)
+            "received",
+            "letter",
+            null,
+            null
         )).thenReturn(notificationList);
 
         //When
@@ -415,10 +415,10 @@ public class NotificationServiceCICTest {
 
         //Then
         verify(notificationClient).getNotifications(
-            eq("received"),
-            eq("letter"),
-            eq(null),
-            eq(null));
+            "received",
+            "letter",
+            null,
+            null);
 
         verify(notificationClient, times(1)).getNotifications("received", "letter", null, null);
     }
@@ -429,10 +429,10 @@ public class NotificationServiceCICTest {
         notificationList.getNotifications().add(notification);
 
         when(notificationClient.getNotifications(
-            eq("sent"),
-            eq("sms"),
-            eq(null),
-            eq(null)
+            "sent",
+            "sms",
+            null,
+            null
         )).thenReturn(notificationList);
 
         //When
@@ -440,10 +440,10 @@ public class NotificationServiceCICTest {
 
         //Then
         verify(notificationClient).getNotifications(
-            eq("sent"),
-            eq("sms"),
-            eq(null),
-            eq(null));
+            "sent",
+            "sms",
+            null,
+            null);
 
         verify(notificationClient, times(1)).getNotifications("sent", "sms", null, null);
     }
@@ -465,10 +465,10 @@ public class NotificationServiceCICTest {
         //Given
         doThrow(new NotificationClientException("some message"))
             .when(notificationClient).getNotifications(
-                eq("delivered"),
-                eq("email"),
-                eq(null),
-                eq(null));
+                "delivered",
+                "email",
+                null,
+                null);
 
         //When&Then
         assertThatThrownBy(() -> notificationService.getNotifications("email"))
@@ -476,9 +476,9 @@ public class NotificationServiceCICTest {
             .hasMessageContaining("some message");
 
         verify(notificationClient).getNotifications(
-            eq("delivered"),
-            eq("email"),
-            eq(null),
-            eq(null));
+            "delivered",
+            "email",
+            null,
+            null);
     }
 }
