@@ -277,7 +277,8 @@ ccd:
                 RETURNING id
               )
               SELECT
-                cd.reference AS id,
+                cd.id,
+                cd.reference,
                 cd.version,
                 cd.case_type_id,
                 cd.created_date,
