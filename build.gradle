@@ -219,16 +219,7 @@ if (System.getenv("CI") == null) {
 project.tasks['sonarqube'].dependsOn jacocoTestReport
 
 def sonarExclusions = [
-  '**/uk/gov/hmcts/sptribs/common/ccd/**',
-  '**/uk/gov/hmcts/sptribs/common/model/Status.java',
-  '**/uk/gov/hmcts/sptribs/ciccase/model/accessprofile/**',
-  '**/uk/gov/hmcts/sptribs/caseworker/event/CaseWorkerDraftOrder.java',
-  '**/uk/gov/hmcts/sptribs/caseworker/event/CaseworkerCaseFlag.java',
-  '**/uk/gov/hmcts/sptribs/common/event/CreateTestCase.java',
-  '**/uk/gov/hmcts/sptribs/CaseApiApplication.java',
-  '**/uk/gov/hmcts/sptribs/notification/GetAllTemplatesFromNotify.java',
-  '**/uk/gov/hmcts/sptribs/ciccase/model/UserRolesForAccessProfiles.java',
-  '**/uk/gov/hmcts/sptribs/common/config/**'
+  '**/uk/gov/hmcts/sptribs/**'
 ]
 
 sonarqube {
