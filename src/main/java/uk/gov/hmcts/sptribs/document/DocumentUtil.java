@@ -196,6 +196,32 @@ public final class DocumentUtil {
         return documentList;
     }
 
+    public static CaseworkerCICDocument mapCdamDocumentToCicCaseworkerDocument(uk.gov.hmcts.sptribs.cdam.model.Document document,
+                                                                               CaseworkerCICDocument originalDocument,
+                                                                               boolean addDate) {
+        var documentLink = Document.builder()
+            .filename(document.originalDocumentName)
+            .url(document.links.self.href)
+            .binaryUrl(document.links.binary.href)
+            .categoryId(originalDocument.getDocumentCategory().getType())
+            .build();
+
+        return mapDocumentLinkToCaseworkerCICDocument(documentLink, originalDocument, addDate);
+    }
+
+    public static CaseworkerCICDocument mapDocumentLinkToCaseworkerCICDocument(
+        Document convertedDocument,
+        CaseworkerCICDocument originalDocument,
+        Boolean addDate
+    ) {
+        return CaseworkerCICDocument.builder()
+            .documentCategory(originalDocument.getDocumentCategory())
+            .documentEmailContent(originalDocument.getDocumentEmailContent())
+            .documentLink(convertedDocument)
+            .date(addDate ? LocalDate.now() : null)
+            .build();
+    }
+
     public static boolean isValidDocument(String fileName, String validExtensions) {
         String fileExtension = substringAfterLast(fileName, ".");
         return fileExtension != null && validExtensions.contains(fileExtension.toLowerCase(ROOT));

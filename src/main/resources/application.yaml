@@ -143,6 +143,9 @@ core_case_data:
     page_size: ${CCD_SEARCH_PAGE_SIZE:250}
 
 docmosis:
+  tornado:
+      url: ${DOCMOSIS_ENDPOINT:https://docmosis.aat.platform.hmcts.net}
+      key: ${DOCMOSIS_ACCESS_KEY:fake-key}
   templates:
     english:
       ST-CIC-DEC-ENG-CIC1_Eligibility: ST-CIC-DEC-ENG-CIC1_Eligibility.docx
@@ -163,6 +166,7 @@ docmosis:
       CIC13_Pro_Forma_Summons: ST-CIC-STD-ENG-CIC13_Pro_Forma_Summons.docx
       CIC14_LO_General_Directions: ST-CIC-STD-ENG-CIC14_Legal_Officer_General_Directions.docx
       CIC3_Rule_27: ST-CIC-STD-ENG-CIC3_Rule_27.docx
+
 
 
 case-api:

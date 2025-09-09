@@ -483,6 +483,9 @@ public class CaseData {
     @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
     private YesNo completeHearingOutcomeTask;
 
+    @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
+    private Integer bundlePageCount;
+
     @CCD(access = {DefaultAccess.class})
     @JsonUnwrapped
     private RetiredFields retiredFields;
@@ -557,5 +560,10 @@ public class CaseData {
         }
         return "";
 
+    }
+
+    @JsonIgnore
+    public int getCurrentBundlePageCount() {
+        return bundlePageCount != null ? bundlePageCount : 0;
     }
 }

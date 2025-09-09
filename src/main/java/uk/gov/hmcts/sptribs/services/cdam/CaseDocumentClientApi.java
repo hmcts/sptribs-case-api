@@ -1,6 +1,7 @@
 package uk.gov.hmcts.sptribs.services.cdam;
 
 import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -41,4 +42,14 @@ public interface CaseDocumentClientApi {
     ResponseEntity<Document> getDocument(@RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation,
                                             @RequestHeader(SERVICE_AUTHORIZATION) String serviceAuth,
                                             @PathVariable(DOCUMENT_ID) UUID documentId);
+
+    @GetMapping(value = "/cases/documents/{documentId}/binary")
+    ResponseEntity<Resource> getDocumentBinary(@RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation,
+                                               @RequestHeader(SERVICE_AUTHORIZATION) String serviceAuth,
+                                               @PathVariable(DOCUMENT_ID) UUID documentId);
+
+    @GetMapping(value = "/cases/documents/{documentId}")
+    Document getMetadataForDocument(@RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation,
+                                    @RequestHeader(SERVICE_AUTHORIZATION) String serviceAuth,
+                                    @PathVariable(DOCUMENT_ID) UUID documentId);
 }
