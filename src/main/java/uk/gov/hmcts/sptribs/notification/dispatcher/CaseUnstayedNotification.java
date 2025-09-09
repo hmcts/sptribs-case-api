@@ -31,10 +31,10 @@ public class CaseUnstayedNotification implements PartiesNotification {
 
     @Override
     public void sendToSubject(final CaseData caseData, final String caseNumber) {
-        final CicCase cicCase = caseData.getCicCase();
-        final Map<String, Object> templateVars = notificationHelper.getSubjectCommonVars(caseNumber, cicCase);
+        final Map<String, Object> templateVars = notificationHelper.getSubjectCommonVars(caseNumber, caseData);
 
         final NotificationResponse notificationResponse;
+        final CicCase cicCase = caseData.getCicCase();
         if (cicCase.getContactPreferenceType() == ContactPreferenceType.EMAIL) {
             notificationResponse = sendEmailNotification(cicCase.getEmail(), templateVars);
         } else {
@@ -47,10 +47,10 @@ public class CaseUnstayedNotification implements PartiesNotification {
 
     @Override
     public void sendToApplicant(final CaseData caseData, final String caseNumber) {
-        final CicCase cicCase = caseData.getCicCase();
-        final Map<String, Object> templateVars = notificationHelper.getApplicantCommonVars(caseNumber, cicCase);
+        final Map<String, Object> templateVars = notificationHelper.getApplicantCommonVars(caseNumber, caseData);
 
         final NotificationResponse notificationResponse;
+        final CicCase cicCase = caseData.getCicCase();
         if (cicCase.getApplicantContactDetailsPreference() == ContactPreferenceType.EMAIL) {
             notificationResponse = sendEmailNotification(cicCase.getApplicantEmailAddress(), templateVars);
         } else {
@@ -63,10 +63,10 @@ public class CaseUnstayedNotification implements PartiesNotification {
 
     @Override
     public void sendToRepresentative(final CaseData caseData, final String caseNumber) {
-        final CicCase cicCase = caseData.getCicCase();
-        final Map<String, Object> templateVars = notificationHelper.getRepresentativeCommonVars(caseNumber, cicCase);
+        final Map<String, Object> templateVars = notificationHelper.getRepresentativeCommonVars(caseNumber, caseData);
 
         final NotificationResponse notificationResponse;
+        final CicCase cicCase = caseData.getCicCase();
         if (cicCase.getRepresentativeContactDetailsPreference() == ContactPreferenceType.EMAIL) {
             notificationResponse = sendEmailNotification(cicCase.getRepresentativeEmailAddress(), templateVars);
         } else {

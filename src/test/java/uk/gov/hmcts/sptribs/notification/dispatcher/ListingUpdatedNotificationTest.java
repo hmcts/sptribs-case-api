@@ -16,7 +16,6 @@ import uk.gov.hmcts.sptribs.common.CommonConstants;
 import uk.gov.hmcts.sptribs.notification.NotificationHelper;
 import uk.gov.hmcts.sptribs.notification.NotificationServiceCIC;
 import uk.gov.hmcts.sptribs.notification.TemplateName;
-import uk.gov.hmcts.sptribs.notification.dispatcher.ListingUpdatedNotification;
 import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
 
 import java.util.HashMap;
@@ -54,7 +53,7 @@ public class ListingUpdatedNotificationTest {
         verify(notificationHelper).buildEmailNotificationRequest(
             data.getCicCase().getEmail(),
             new HashMap<>(),
-            TemplateName.LISTING_UPDATED_CITIZEN_EMAIL);
+            TemplateName.HEARING_UPDATED_EMAIL);
     }
 
     @Test
@@ -80,7 +79,7 @@ public class ListingUpdatedNotificationTest {
         verify(notificationHelper).buildEmailNotificationRequest(
             "testSubject@outlook.com",
             new HashMap<>(),
-            TemplateName.LISTING_UPDATED_CITIZEN_EMAIL);
+            TemplateName.HEARING_UPDATED_EMAIL);
     }
 
     @Test
@@ -99,7 +98,7 @@ public class ListingUpdatedNotificationTest {
         verify(notificationService).sendLetter(any(NotificationRequest.class));
         verify(notificationHelper).buildLetterNotificationRequest(
             new HashMap<>(),
-            TemplateName.LISTING_UPDATED_CITIZEN_POST);
+            TemplateName.HEARING_UPDATED_POST);
     }
 
 
@@ -121,7 +120,7 @@ public class ListingUpdatedNotificationTest {
         verify(notificationHelper).buildEmailNotificationRequest(
             data.getCicCase().getRepresentativeEmailAddress(),
             Map.of(CommonConstants.CIC_CASE_REPRESENTATIVE_NAME, data.getCicCase().getRepresentativeFullName()),
-            TemplateName.LISTING_UPDATED_CITIZEN_EMAIL);
+            TemplateName.HEARING_UPDATED_EMAIL);
     }
 
     @Test
@@ -141,7 +140,7 @@ public class ListingUpdatedNotificationTest {
         verify(notificationService).sendLetter(any(NotificationRequest.class));
         verify(notificationHelper).buildLetterNotificationRequest(
             Map.of(CommonConstants.CIC_CASE_REPRESENTATIVE_NAME,data.getCicCase().getRepresentativeFullName()),
-            TemplateName.LISTING_UPDATED_CITIZEN_POST);
+            TemplateName.HEARING_UPDATED_POST);
     }
 
     @Test
@@ -161,7 +160,7 @@ public class ListingUpdatedNotificationTest {
         verify(notificationHelper).buildEmailNotificationRequest(
             data.getCicCase().getRespondentEmail(),
             Map.of(CommonConstants.CIC_CASE_RESPONDENT_NAME, data.getCicCase().getRespondentName()),
-            TemplateName.LISTING_UPDATED_CITIZEN_EMAIL);
+            TemplateName.HEARING_UPDATED_EMAIL);
     }
 
     private CaseData getMockCaseData() {
