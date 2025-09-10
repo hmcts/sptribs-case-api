@@ -41,7 +41,7 @@ public class CaseWithdrawnNotification implements PartiesNotification {
     public void sendToSubject(final CaseData caseData, final String caseNumber) {
         final CicCase cicCase = caseData.getCicCase();
 
-        final Map<String, Object> templateVars = notificationHelper.getSubjectCommonVars(caseNumber, cicCase);
+        final Map<String, Object> templateVars = notificationHelper.getSubjectCommonVars(caseNumber, caseData);
         addCaseClosedTemplateVars(caseData, templateVars);
 
         if (ContactPreferenceType.EMAIL.equals(cicCase.getContactPreferenceType())) {
@@ -57,7 +57,7 @@ public class CaseWithdrawnNotification implements PartiesNotification {
     public void sendToRepresentative(final CaseData caseData, final String caseNumber) {
         final CicCase cicCase = caseData.getCicCase();
 
-        final Map<String, Object> templateVars = notificationHelper.getRepresentativeCommonVars(caseNumber, cicCase);
+        final Map<String, Object> templateVars = notificationHelper.getRepresentativeCommonVars(caseNumber, caseData);
         addCaseClosedTemplateVars(caseData, templateVars);
 
         if (cicCase.getRepresentativeContactDetailsPreference() == ContactPreferenceType.EMAIL) {
@@ -74,7 +74,7 @@ public class CaseWithdrawnNotification implements PartiesNotification {
     public void sendToRespondent(final CaseData caseData, final String caseNumber) {
         final CicCase cicCase = caseData.getCicCase();
 
-        final Map<String, Object> respondentTemplateVars = notificationHelper.getRespondentCommonVars(caseNumber, cicCase);
+        final Map<String, Object> respondentTemplateVars = notificationHelper.getRespondentCommonVars(caseNumber, caseData);
         addCaseClosedTemplateVars(caseData, respondentTemplateVars);
 
         final NotificationResponse caseWithdrawnNotifyResponse =
@@ -86,7 +86,7 @@ public class CaseWithdrawnNotification implements PartiesNotification {
     public void sendToApplicant(final CaseData caseData, final String caseNumber) {
         final CicCase cicCase = caseData.getCicCase();
 
-        final Map<String, Object> templateVars = notificationHelper.getApplicantCommonVars(caseNumber, cicCase);
+        final Map<String, Object> templateVars = notificationHelper.getApplicantCommonVars(caseNumber, caseData);
         addCaseClosedTemplateVars(caseData, templateVars);
 
         if (cicCase.getContactPreferenceType() == ContactPreferenceType.EMAIL) {
