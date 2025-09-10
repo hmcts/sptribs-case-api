@@ -33,17 +33,17 @@ public class PartiesToContact implements CcdPageConfiguration {
             .label("LabelPartiesToContactMessage", "Which parties do you want to contact?")
             .complex(CaseData::getCicCase)
             .readonly(CicCase::getFullName, ALWAYS_HIDE)
-            .optionalWithoutDefaultValue(CicCase::getNotifyPartySubject,
-                "cicCaseFullName!=\"\" ", RECIPIENT_LABEL)
+            .optional(CicCase::getNotifyPartySubject, "cicCaseFullName!=\"\" ",
+                "", RECIPIENT_LABEL, "${cicCaseFullName}")
             .readonly(CicCase::getApplicantFullName, ALWAYS_HIDE)
-            .optionalWithoutDefaultValue(CicCase::getNotifyPartyApplicant,
-                "cicCaseApplicantFullName!=\"\" ", RECIPIENT_LABEL)
+            .optional(CicCase::getNotifyPartyApplicant, "cicCaseApplicantFullName!=\"\" ",
+                "", RECIPIENT_LABEL, "${cicCaseApplicantFullName}")
             .readonly(CicCase::getRepresentativeFullName, ALWAYS_HIDE)
-            .optionalWithoutDefaultValue(CicCase::getNotifyPartyRepresentative,
-                "cicCaseRepresentativeFullName!=\"\" ", RECIPIENT_LABEL)
+            .optional(CicCase::getNotifyPartyRepresentative, "cicCaseRepresentativeFullName!=\"\" ",
+                "", RECIPIENT_LABEL, "${cicCaseRepresentativeFullName}")
             .readonly(CicCase::getRespondentName, ALWAYS_HIDE)
-            .optionalWithoutDefaultValue(CicCase::getNotifyPartyRespondent,
-                "cicCaseRespondentName!=\"\" ", RECIPIENT_LABEL)
+            .optional(CicCase::getNotifyPartyRespondent, "cicCaseRespondentName!=\"\" ",
+                "", RECIPIENT_LABEL, "${cicCaseRespondentName}")
             .mandatory(CicCase::getNotifyPartyMessage)
             .done();
     }
