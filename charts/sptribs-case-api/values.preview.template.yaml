@@ -292,7 +292,7 @@ ccd:
                 cd.supplementary_data::TEXT AS json_supplementary_data
               FROM updated
               JOIN ccd.case_event ce USING(id)
-              JOIN ccd.case_data cd ON cd.reference = ce.case_reference
+              JOIN ccd.case_data cd ON cd.id = ce.case_data_id
             "
             clean_run => false
             schedule => "* * * * * *"
