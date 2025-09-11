@@ -19,9 +19,9 @@ import uk.gov.hmcts.sptribs.caseworker.service.ExtendedCaseDataApi;
 import uk.gov.hmcts.sptribs.document.DocAssemblyClient;
 import uk.gov.hmcts.sptribs.document.bundling.client.BundlingClient;
 import uk.gov.hmcts.sptribs.judicialrefdata.JudicialClient;
-import uk.gov.hmcts.sptribs.services.docmosis.DocmosisApiClient;
 import uk.gov.hmcts.sptribs.recordlisting.LocationClient;
 import uk.gov.hmcts.sptribs.services.cdam.CaseDocumentClientApi;
+import uk.gov.hmcts.sptribs.services.docmosis.DocmosisApiClient;
 import uk.gov.hmcts.sptribs.systemupdate.service.ScheduledTaskRunner;
 
 import java.util.TimeZone;

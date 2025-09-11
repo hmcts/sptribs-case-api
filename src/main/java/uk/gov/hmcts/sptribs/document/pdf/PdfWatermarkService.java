@@ -5,7 +5,6 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.sptribs.document.pdf.converter.ConvertedPdf;
 
-
 import java.util.List;
 
 @Service

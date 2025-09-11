@@ -1,8 +1,5 @@
 package uk.gov.hmcts.sptribs.document.pdf;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import javax.xml.transform.TransformerException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.common.PDMetadata;
@@ -11,6 +8,10 @@ import org.apache.xmpbox.XMPMetadata;
 import org.apache.xmpbox.schema.PDFAIdentificationSchema;
 import org.apache.xmpbox.type.BadFieldValueException;
 import org.apache.xmpbox.xml.XmpSerializer;
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import javax.xml.transform.TransformerException;
 
 /**
  * Copied from https://github.com/keefmarshall/pdfpoc
