@@ -50,7 +50,7 @@ class CaseStayedNotificationTest {
         //When
         when(notificationHelper.buildEmailNotificationRequest(any(), anyMap(), any(TemplateName.class)))
             .thenReturn(NotificationRequest.builder().build());
-        when(notificationHelper.getSubjectCommonVars(any(), any(CicCase.class))).thenReturn(new HashMap<>());
+        when(notificationHelper.getSubjectCommonVars(any(), any(CaseData.class))).thenReturn(new HashMap<>());
         caseStayedNotification.sendToSubject(data, "CN1");
 
         //Then
@@ -76,7 +76,7 @@ class CaseStayedNotificationTest {
         //When
         when(notificationHelper.buildEmailNotificationRequest(any(), anyMap(), any(TemplateName.class)))
             .thenReturn(NotificationRequest.builder().build());
-        when(notificationHelper.getSubjectCommonVars(any(), any(CicCase.class))).thenReturn(new HashMap<>());
+        when(notificationHelper.getSubjectCommonVars(any(), any(CaseData.class))).thenReturn(new HashMap<>());
         caseStayedNotification.sendToSubject(data, "CN1");
 
         //Then
@@ -101,7 +101,7 @@ class CaseStayedNotificationTest {
         //When
         when(notificationHelper.buildLetterNotificationRequest(anyMap(), any(TemplateName.class)))
             .thenReturn(NotificationRequest.builder().build());
-        when(notificationHelper.getSubjectCommonVars(any(), any(CicCase.class))).thenReturn(new HashMap<>());
+        when(notificationHelper.getSubjectCommonVars(any(), any(CaseData.class))).thenReturn(new HashMap<>());
         doNothing().when(notificationHelper).addAddressTemplateVars(any(AddressGlobalUK.class), anyMap());
         caseStayedNotification.sendToSubject(data, "CN1");
 
@@ -127,7 +127,7 @@ class CaseStayedNotificationTest {
         //When
         when(notificationHelper.buildEmailNotificationRequest(any(), anyMap(), any(TemplateName.class)))
             .thenReturn(NotificationRequest.builder().build());
-        when(notificationHelper.getApplicantCommonVars(any(), any(CicCase.class))).thenReturn(new HashMap<>());
+        when(notificationHelper.getApplicantCommonVars(any(), any(CaseData.class))).thenReturn(new HashMap<>());
         caseStayedNotification.sendToApplicant(data, "CN1");
 
         //Then
@@ -153,7 +153,7 @@ class CaseStayedNotificationTest {
         //When
         when(notificationHelper.buildLetterNotificationRequest(anyMap(), any(TemplateName.class)))
             .thenReturn(NotificationRequest.builder().build());
-        when(notificationHelper.getApplicantCommonVars(any(), any(CicCase.class))).thenReturn(new HashMap<>());
+        when(notificationHelper.getApplicantCommonVars(any(), any(CaseData.class))).thenReturn(new HashMap<>());
         doNothing().when(notificationHelper).addAddressTemplateVars(any(AddressGlobalUK.class), anyMap());
         caseStayedNotification.sendToApplicant(data, "CN1");
 
@@ -179,7 +179,7 @@ class CaseStayedNotificationTest {
         //When
         when(notificationHelper.buildEmailNotificationRequest(any(), anyMap(), any(TemplateName.class)))
             .thenReturn(NotificationRequest.builder().build());
-        when(notificationHelper.getRepresentativeCommonVars(any(), any(CicCase.class))).thenReturn(new HashMap<>());
+        when(notificationHelper.getRepresentativeCommonVars(any(), any(CaseData.class))).thenReturn(new HashMap<>());
         caseStayedNotification.sendToRepresentative(data, "CN1");
 
         //Then
@@ -205,7 +205,7 @@ class CaseStayedNotificationTest {
         //When
         when(notificationHelper.buildLetterNotificationRequest(anyMap(), any(TemplateName.class)))
             .thenReturn(NotificationRequest.builder().build());
-        when(notificationHelper.getRepresentativeCommonVars(any(), any(CicCase.class))).thenReturn(new HashMap<>());
+        when(notificationHelper.getRepresentativeCommonVars(any(), any(CaseData.class))).thenReturn(new HashMap<>());
         doNothing().when(notificationHelper).addAddressTemplateVars(any(AddressGlobalUK.class), anyMap());
         caseStayedNotification.sendToRepresentative(data, "CN1");
 

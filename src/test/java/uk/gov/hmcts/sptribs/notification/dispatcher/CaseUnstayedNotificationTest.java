@@ -44,7 +44,7 @@ class CaseUnstayedNotificationTest {
         //When
         when(notificationHelper.buildEmailNotificationRequest(any(), anyMap(), any(TemplateName.class)))
             .thenReturn(NotificationRequest.builder().build());
-        when(notificationHelper.getSubjectCommonVars(any(), any(CicCase.class))).thenReturn(new HashMap<>());
+        when(notificationHelper.getSubjectCommonVars(any(), any(CaseData.class))).thenReturn(new HashMap<>());
         caseUnstayedNotification.sendToSubject(data, "CN1");
 
         //Then
@@ -66,7 +66,7 @@ class CaseUnstayedNotificationTest {
         //When
         when(notificationHelper.buildLetterNotificationRequest(anyMap(), any(TemplateName.class)))
             .thenReturn(NotificationRequest.builder().build());
-        when(notificationHelper.getSubjectCommonVars(any(), any(CicCase.class))).thenReturn(new HashMap<>());
+        when(notificationHelper.getSubjectCommonVars(any(), any(CaseData.class))).thenReturn(new HashMap<>());
         doNothing().when(notificationHelper).addAddressTemplateVars(any(AddressGlobalUK.class), anyMap());
         caseUnstayedNotification.sendToSubject(data, "CN1");
 
@@ -88,7 +88,7 @@ class CaseUnstayedNotificationTest {
         //When
         when(notificationHelper.buildEmailNotificationRequest(any(), anyMap(), any(TemplateName.class)))
             .thenReturn(NotificationRequest.builder().build());
-        when(notificationHelper.getApplicantCommonVars(any(), any(CicCase.class))).thenReturn(new HashMap<>());
+        when(notificationHelper.getApplicantCommonVars(any(), any(CaseData.class))).thenReturn(new HashMap<>());
         caseUnstayedNotification.sendToApplicant(data, "CN1");
 
         //Then
@@ -110,7 +110,7 @@ class CaseUnstayedNotificationTest {
         //When
         when(notificationHelper.buildLetterNotificationRequest(anyMap(), any(TemplateName.class)))
             .thenReturn(NotificationRequest.builder().build());
-        when(notificationHelper.getApplicantCommonVars(any(), any(CicCase.class))).thenReturn(new HashMap<>());
+        when(notificationHelper.getApplicantCommonVars(any(), any(CaseData.class))).thenReturn(new HashMap<>());
         doNothing().when(notificationHelper).addAddressTemplateVars(any(AddressGlobalUK.class), anyMap());
         caseUnstayedNotification.sendToApplicant(data, "CN1");
 
@@ -132,7 +132,7 @@ class CaseUnstayedNotificationTest {
         //When
         when(notificationHelper.buildEmailNotificationRequest(any(), anyMap(), any(TemplateName.class)))
             .thenReturn(NotificationRequest.builder().build());
-        when(notificationHelper.getRepresentativeCommonVars(any(), any(CicCase.class))).thenReturn(new HashMap<>());
+        when(notificationHelper.getRepresentativeCommonVars(any(), any(CaseData.class))).thenReturn(new HashMap<>());
         caseUnstayedNotification.sendToRepresentative(data, "CN1");
 
         //Then
@@ -154,7 +154,7 @@ class CaseUnstayedNotificationTest {
         //When
         when(notificationHelper.buildLetterNotificationRequest(anyMap(), any(TemplateName.class)))
             .thenReturn(NotificationRequest.builder().build());
-        when(notificationHelper.getRepresentativeCommonVars(any(), any(CicCase.class))).thenReturn(new HashMap<>());
+        when(notificationHelper.getRepresentativeCommonVars(any(), any(CaseData.class))).thenReturn(new HashMap<>());
         doNothing().when(notificationHelper).addAddressTemplateVars(any(AddressGlobalUK.class), anyMap());
         caseUnstayedNotification.sendToRepresentative(data, "CN1");
 

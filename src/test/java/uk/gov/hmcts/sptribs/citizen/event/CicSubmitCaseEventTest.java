@@ -300,8 +300,8 @@ class CicSubmitCaseEventTest {
 
         assertThat(submittedResponse.getConfirmationHeader())
             .isEqualTo("# Application Received \n## A notification has been sent to: Subject, Representative");
-        verify(dssApplicationReceivedNotification).sendToSubject(any(DssCaseData.class), any());
-        verify(dssApplicationReceivedNotification).sendToRepresentative(any(DssCaseData.class), any());
+        verify(dssApplicationReceivedNotification).sendToSubject(any(CaseData.class), any());
+        verify(dssApplicationReceivedNotification).sendToRepresentative(any(CaseData.class), any());
     }
 
     @Test
@@ -361,7 +361,7 @@ class CicSubmitCaseEventTest {
 
         doThrow(NotificationException.class)
             .when(dssApplicationReceivedNotification)
-            .sendToSubject(any(DssCaseData.class), anyString());
+            .sendToSubject(any(CaseData.class), anyString());
         doThrow(NotificationException.class)
             .when(dssApplicationReceivedNotification)
             .sendToRepresentative(any(DssCaseData.class), anyString());
