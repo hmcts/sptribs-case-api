@@ -1,6 +1,7 @@
 package uk.gov.hmcts.sptribs.document.pdf.converter;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
@@ -16,6 +17,7 @@ import java.util.List;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class ImageConverter implements FileToPDFConverter {
 
     @Override
@@ -30,6 +32,7 @@ public class ImageConverter implements FileToPDFConverter {
 
     @Override
     public ConvertedPdf convert(byte[] fileContent, String fileName) throws IOException {
+        log.info("Converting image to PDF");
         final PDDocument document = new PDDocument();
         final PDPage page = new PDPage();
 
@@ -55,6 +58,7 @@ public class ImageConverter implements FileToPDFConverter {
         document.close();
 
         final String convertedFileName = fileName + ".pdf";
+        log.info("Converted image to PDF with file name: {}", convertedFileName);
 
         return ConvertedPdf.builder()
             .fileContent(byteStream.toByteArray())

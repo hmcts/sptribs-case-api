@@ -57,6 +57,7 @@ public class PdfConversionService {
         for (var converter : fileToPDFConverters) {
             if (converter.accepts().contains(fileExtension.toLowerCase())) {
                 try {
+                    log.info("Converting document type {} to PDF for case {}", converter.getClass().getSimpleName(), caseId);
                     return getConvertedPdf(document, converter, docId);
                 } catch (Exception e) {
                     throw new DocumentTaskProcessingException(String.format("Error trying to convert file %s to PDF for case %s",
@@ -73,6 +74,7 @@ public class PdfConversionService {
         try {
             final var response = getDocumentBinary(docId);
             if (response != null && response.getStatusCode().is2xxSuccessful()) {
+                log.info("Successfully downloaded document with id {} for case {}", docId, docId);
                 var byteArrayResource = (ByteArrayResource) response.getBody();
                 if (byteArrayResource != null) {
                     byte[] fileContent = byteArrayResource.getByteArray();

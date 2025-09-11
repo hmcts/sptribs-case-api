@@ -39,6 +39,7 @@ public class DocmosisConverter implements FileToPDFConverter {
 
     @Override
     public ConvertedPdf convert(byte[] fileContent, String originalFileName) throws IOException {
+        log.info("Converting docmosis file to PDF");
 
         final String convertedFileName = originalFileName + ".pdf";
 
@@ -50,6 +51,8 @@ public class DocmosisConverter implements FileToPDFConverter {
             .build();
 
         final var response = docmosisApiClient.convert(docmosisAccessKey, convertedFileName, multipartFile);
+
+        log.info("Converted docmosis file to PDF");
 
         if (!response.getStatusCode().is2xxSuccessful()) {
             String responseMsg = String.format(
