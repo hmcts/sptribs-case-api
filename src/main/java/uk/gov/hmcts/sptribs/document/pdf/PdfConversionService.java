@@ -94,6 +94,7 @@ public class PdfConversionService {
     private ResponseEntity<Resource> getDocumentBinary(String docId) {
         var serviceAuthorization = serviceAuthTokenGenerator.generate();
         var authorization = idamService.retrieveSystemUpdateUserDetails().getAuthToken();
+        log.info("Service auth {} and authorization {}", serviceAuthorization, authorization);
         UUID docIdAsUUID = UUID.fromString(docId);
         return caseDocumentClientApi.getDocumentBinary(authorization, serviceAuthorization, docIdAsUUID);
     }

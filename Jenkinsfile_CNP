@@ -68,7 +68,8 @@ def secrets = [
                 secret('em-spring-datasource-password-preview', 'EM_SPRING_DATASOURCE_PASSWORD_PREVIEW'),
                 secret('s2s-case-api-secret', 'S2S_SECRET'),
                 secret('ccd-importer-username', 'DEFINITION_IMPORTER_USERNAME'),
-                secret('ccd-importer-password', 'DEFINITION_IMPORTER_PASSWORD')
+                secret('ccd-importer-password', 'DEFINITION_IMPORTER_PASSWORD'),
+                secret('docmosis-access-key', 'DOCMOSIS_ACCESS_KEY'),
         ],
         'sptribs-prod'    :[
           secret('s2s-case-api-secret', 'S2S_SECRET_PROD')
