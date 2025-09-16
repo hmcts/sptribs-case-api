@@ -31,6 +31,7 @@ import uk.gov.hmcts.sptribs.document.model.CICDocument;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocumentUpload;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
+import uk.gov.hmcts.sptribs.notification.model.Correspondence;
 
 import java.time.LocalDate;
 import java.util.HashSet;
@@ -543,6 +544,14 @@ public class CicCase {
         access = {DefaultAccess.class}
     )
     private List<ListValue<CaseworkerCICDocumentUpload>> caseDocumentsUpload;
+
+    @CCD(
+        label = "Correspondence",
+        typeOverride = Collection,
+        typeParameterOverride = "Correspondence",
+        access = {CollectionDefaultAccess.class}
+    )
+    private List<ListValue<Correspondence>> correspondence;
 
     @CCD(
         label = "Reinstate Documents",

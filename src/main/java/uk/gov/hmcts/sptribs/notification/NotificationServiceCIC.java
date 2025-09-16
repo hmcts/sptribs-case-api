@@ -247,4 +247,13 @@ public class NotificationServiceCIC {
         }
     }
 
+    public byte[] getNotificationAsPdf(String notificationId) {
+        try {
+            return notificationClient.getPdfForLetter(notificationId);
+        } catch (NotificationClientException notificationClientException) {
+            log.error("Error fetching notification as PDF: {}", notificationClientException.getMessage());
+            throw new NotificationException(notificationClientException);
+        }
+    }
+
 }

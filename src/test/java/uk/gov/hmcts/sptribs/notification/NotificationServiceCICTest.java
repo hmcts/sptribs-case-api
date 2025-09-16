@@ -481,4 +481,35 @@ public class NotificationServiceCICTest {
             null,
             null);
     }
+
+    @Test
+    void shouldInvokeNotificationClientToGetPDFForNotification() throws NotificationClientException {
+        //Given
+        String notificationId = randomUUID().toString();
+
+        when(notificationClient.getPdfForLetter(notificationId)).thenReturn(any(byte[].class));
+
+        //When
+        notificationService.getNotificationAsPdf(notificationId);
+
+        //Then
+        verify(notificationClient).getPdfForLetter(notificationId);
+
+        verify(notificationClient, times(1)).getPdfForLetter(notificationId);
+    }
+
+    @Test
+    void shouldThrowNotificationExceptionWhenClientFailsToGetPDFForNotification() throws NotificationClientException {
+        //Given
+        String notificationId = randomUUID().toString();
+
+        doThrow(new NotificationClientException("some message")).when(notificationClient).getPdfForLetter(notificationId);
+
+        //When&Then
+        assertThatThrownBy(() -> notificationService.getNotificationAsPdf(notificationId))
+            .isInstanceOf(NotificationException.class)
+            .hasMessageContaining("some message");
+
+        verify(notificationClient).getPdfForLetter(notificationId);
+    }
 }

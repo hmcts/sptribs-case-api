@@ -21,7 +21,9 @@ import uk.gov.service.notify.SendLetterResponse;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 
+import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -266,5 +268,35 @@ public class NotificationServiceCicIT {
             );
 
         assertThrows(NotificationException.class, () -> notificationServiceCIC.getNotifications("email"));
+    }
+
+    @Test
+    void shouldSuccessfullyGetPDFForNotification() throws Exception {
+        final int SIZE = 1024;
+
+        final byte[] expectedByteArray = new byte[SIZE];
+        Random random = new Random();
+        random.nextBytes(expectedByteArray);
+
+        String notificationId = randomUUID().toString();
+
+        when(notificationClient.getPdfForLetter(
+            eq(notificationId)
+        )).thenReturn(expectedByteArray);
+
+        byte[] getPdfForLetterResponse = notificationServiceCIC.getNotificationAsPdf(notificationId);
+
+        assertThat(getPdfForLetterResponse).hasSizeGreaterThan(0);
+        assertThat(getPdfForLetterResponse.length).isEqualTo(SIZE);
+    }
+
+    @Test
+    void shouldThrowNotificationExceptionIfGetNotificationAsPDFFails() throws NotificationClientException {
+        String notificationId = randomUUID().toString();
+
+        doThrow(NotificationClientException.class)
+            .when(notificationClient).getPdfForLetter(notificationId);
+
+        assertThrows(NotificationException.class, () -> notificationServiceCIC.getNotificationAsPdf(notificationId));
     }
 }
