@@ -111,8 +111,8 @@ public class SystemGetCorrespondence implements Runnable {
 
     // Uploads & then retrieves the correspondence PDF details
     public Document getCorrespondenceDocumentURL(byte[] pdfBytes, String cicaReferenceNumber, LocalDateTime sentOn) {
-        DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("dd-MM-y-HH-mm");
-        final String formattedSentOn = sentOn.format(DATE_TIME_FORMATTER);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-y-HH-mm");
+        final String formattedSentOn = sentOn.format(formatter);
         final InMemoryMultipartFile inMemoryMultipartFile =
             new InMemoryMultipartFile(cicaReferenceNumber.replace(" ", "-") + "-" + formattedSentOn + ".pdf", pdfBytes);
 
