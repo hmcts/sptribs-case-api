@@ -33,6 +33,8 @@ java:
           alias: IDAM_SYSTEM_UPDATE_PASSWORD
         - name: launchdarkly-sdk-key
           alias: LAUNCH_DARKLY_SDK_KEY
+        - name: docmosis-access-key
+          alias: DOCMOSIS_ACCESS_KEY
   secrets:
     POSTGRES_PASSWORD:
       secretRef: postgres
