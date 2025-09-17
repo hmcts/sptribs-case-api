@@ -36,6 +36,7 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 @Setter
 public class CaseworkerLinkCase implements CCDConfig<CaseData, State, UserRole> {
 
+
     private static final String ALWAYS_HIDE = "LinkedCasesComponentLauncher = \"DONOTSHOW\"";
 
     private final CaseLinkedNotification caseLinkedNotification;
