@@ -31,8 +31,8 @@ import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.CcdCaseType;
 import uk.gov.hmcts.sptribs.common.config.AppsConfig;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
+import uk.gov.hmcts.sptribs.document.model.CitizenCICDocument;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
-import uk.gov.hmcts.sptribs.document.model.EdgeCaseDocument;
 import uk.gov.hmcts.sptribs.idam.IdamService;
 import uk.gov.hmcts.sptribs.util.AppsUtil;
 
@@ -129,7 +129,7 @@ public class CicSubmitCaseEvent implements CCDConfig<CaseData, State, UserRole> 
         final String caseNumber = data.getHyphenatedCaseRef();
 
         try {
-            sendApplicationReceivedNotification(caseNumber, dssCaseData);
+            sendApplicationReceivedNotification(caseNumber, data);
         } catch (Exception notificationException) {
             log.error("Application Received notification failed with exception : {}", notificationException.getMessage());
             return SubmittedCallbackResponse.builder()
@@ -171,13 +171,14 @@ public class CicSubmitCaseEvent implements CCDConfig<CaseData, State, UserRole> 
         dssCaseData.setNotificationParties(notificationParties);
     }
 
-    private void sendApplicationReceivedNotification(String caseNumber, DssCaseData dssCaseData) {
+    private void sendApplicationReceivedNotification(String caseNumber, CaseData caseData) {
+        final DssCaseData dssCaseData = caseData.getDssCaseData();
         if (dssCaseData.getNotificationParties().contains(NotificationParties.SUBJECT)) {
-            dssApplicationReceivedNotification.sendToSubject(dssCaseData, caseNumber);
+            dssApplicationReceivedNotification.sendToSubject(caseData, caseNumber);
         }
 
         if (dssCaseData.getNotificationParties().contains(NotificationParties.REPRESENTATIVE)) {
-            dssApplicationReceivedNotification.sendToRepresentative(dssCaseData, caseNumber);
+            dssApplicationReceivedNotification.sendToRepresentative(caseData, caseNumber);
         }
     }
 
@@ -229,7 +230,7 @@ public class CicSubmitCaseEvent implements CCDConfig<CaseData, State, UserRole> 
         List<CaseworkerCICDocument> docList = new ArrayList<>();
 
         if (isNotEmpty(dssCaseData.getOtherInfoDocuments())) {
-            for (ListValue<EdgeCaseDocument> documentListValue : dssCaseData.getOtherInfoDocuments()) {
+            for (ListValue<CitizenCICDocument> documentListValue : dssCaseData.getOtherInfoDocuments()) {
                 Document doc = documentListValue.getValue().getDocumentLink();
                 String documentComment = documentListValue.getValue().getComment();
                 doc.setCategoryId(DocumentType.DSS_OTHER.getCategory());
@@ -265,7 +266,7 @@ public class CicSubmitCaseEvent implements CCDConfig<CaseData, State, UserRole> 
         }
 
         if (isNotEmpty(dssCaseData.getSupportingDocuments())) {
-            for (ListValue<EdgeCaseDocument> documentListValue : dssCaseData.getSupportingDocuments()) {
+            for (ListValue<CitizenCICDocument> documentListValue : dssCaseData.getSupportingDocuments()) {
                 Document doc = documentListValue.getValue().getDocumentLink();
                 doc.setCategoryId(DocumentType.DSS_SUPPORTING.getCategory());
                 CaseworkerCICDocument caseworkerCICDocument = CaseworkerCICDocument.builder()
@@ -280,7 +281,7 @@ public class CicSubmitCaseEvent implements CCDConfig<CaseData, State, UserRole> 
         }
 
         if (isNotEmpty(dssCaseData.getTribunalFormDocuments())) {
-            for (ListValue<EdgeCaseDocument> documentListValue : dssCaseData.getTribunalFormDocuments()) {
+            for (ListValue<CitizenCICDocument> documentListValue : dssCaseData.getTribunalFormDocuments()) {
                 Document doc = documentListValue.getValue().getDocumentLink();
                 doc.setCategoryId(DocumentType.DSS_TRIBUNAL_FORM.getCategory());
                 CaseworkerCICDocument caseworkerCICDocument = CaseworkerCICDocument.builder()

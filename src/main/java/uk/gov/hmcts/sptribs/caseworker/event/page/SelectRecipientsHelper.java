@@ -12,6 +12,7 @@ import java.util.List;
 
 public final class SelectRecipientsHelper {
 
+
     public void addTo(PageBuilder pageBuilder,
                       String pageId,
                       String labelPrefix,
@@ -25,21 +26,17 @@ public final class SelectRecipientsHelper {
             .label("label" + labelPrefix + "SelectRecipients", label)
             .complex(CaseData::getCicCase)
             .readonly(CicCase::getFullName, alwaysHide)
-            .optionalWithoutDefaultValue(CicCase::getNotifyPartySubject,
-                "cicCaseFullName!=\"\" ",
-                fieldLabelPrefix + " recipient")
+            .optional(CicCase::getNotifyPartySubject, "cicCaseFullName!=\"\" ",
+                "", fieldLabelPrefix, "${cicCaseFullName}")
             .readonly(CicCase::getRepresentativeFullName, alwaysHide)
-            .optionalWithoutDefaultValue(CicCase::getNotifyPartyRepresentative,
-                "cicCaseRepresentativeFullName!=\"\" ",
-                fieldLabelPrefix + " recipient")
+            .optional(CicCase::getNotifyPartyRepresentative, "cicCaseRepresentativeFullName!=\"\" ",
+                "", fieldLabelPrefix, "${cicCaseRepresentativeFullName}")
             .readonly(CicCase::getRespondentName, alwaysHide)
-            .optionalWithoutDefaultValue(CicCase::getNotifyPartyRespondent,
-                "cicCaseRespondentName!=\"\" ",
-                fieldLabelPrefix + " recipient")
+            .optional(CicCase::getNotifyPartyRespondent, "cicCaseRespondentName!=\"\" ",
+                "", fieldLabelPrefix, "${cicCaseRespondentName}")
             .readonly(CicCase::getApplicantFullName, alwaysHide)
-            .optionalWithoutDefaultValue(CicCase::getNotifyPartyApplicant,
-                "cicCaseApplicantFullName!=\"\"",
-                fieldLabelPrefix + " recipient")
+            .optional(CicCase::getNotifyPartyApplicant, "cicCaseApplicantFullName!=\"\"",
+                "", fieldLabelPrefix, "${cicCaseApplicantFullName}")
             .done();
     }
 
