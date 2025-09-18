@@ -33,7 +33,6 @@ spring:
       topic-client-id: sptribs-ccd-case-events-publisher
       connection-string: ${AZURE_SERVICE_BUS_CONNECTION_STRING:dummy}
       pricing-tier: Standard
-      passwordless-enabled: true
   cloud:
     azure:
       credential:
