@@ -49,6 +49,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.access.CitizenAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.DSSUpdateAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.DefaultAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.GlobalSearchAccess;
+import uk.gov.hmcts.sptribs.ciccase.model.access.NonRespondentAccess;
 import uk.gov.hmcts.sptribs.document.bundling.model.Bundle;
 import uk.gov.hmcts.sptribs.document.bundling.model.MultiBundleConfig;
 import uk.gov.hmcts.sptribs.document.model.AbstractCaseworkerCICDocument;
@@ -153,7 +154,8 @@ public class CaseData {
 
     @Builder.Default
     @CCD(
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
+        label = "CICA Case Details"
     )
     private EditCicaCaseDetails editCicaCaseDetails = new EditCicaCaseDetails();
 
@@ -261,7 +263,7 @@ public class CaseData {
         label = "Notes",
         typeOverride = Collection,
         typeParameterOverride = "CaseNote",
-        access = {CaseworkerAndSuperUserAccess.class}
+        access = {NonRespondentAccess.class}
     )
     private List<ListValue<CaseNote>> notes;
 

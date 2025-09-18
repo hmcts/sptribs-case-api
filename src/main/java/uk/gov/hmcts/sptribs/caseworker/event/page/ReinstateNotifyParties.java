@@ -24,17 +24,17 @@ public class ReinstateNotifyParties implements CcdPageConfiguration {
             .complex(CaseData::getCicCase)
             .label("reinstateCaseNotifyPartiesMessage", "Who should be notified about this reinstatement?")
             .readonly(CicCase::getFullName, ALWAYS_HIDE)
-            .optionalWithoutDefaultValue(CicCase::getNotifyPartySubject,
-                "cicCaseFullName!=\"\" ", RECIPIENT_LABEL)
+            .optional(CicCase::getNotifyPartySubject, "cicCaseFullName!=\"\" ",
+                "", RECIPIENT_LABEL, "${cicCaseFullName}")
             .readonly(CicCase::getRepresentativeFullName, ALWAYS_HIDE)
-            .optionalWithoutDefaultValue(CicCase::getNotifyPartyRepresentative,
-                "cicCaseRepresentativeFullName!=\"\" ", RECIPIENT_LABEL)
+            .optional(CicCase::getNotifyPartyRepresentative, "cicCaseRepresentativeFullName!=\"\" ",
+                "", RECIPIENT_LABEL, "${cicCaseRepresentativeFullName}")
             .readonly(CicCase::getRespondentName, ALWAYS_HIDE)
-            .optionalWithoutDefaultValue(CicCase::getNotifyPartyRespondent,
-                "cicCaseRespondentName!=\"\" ", RECIPIENT_LABEL)
+            .optional(CicCase::getNotifyPartyRespondent, "cicCaseRespondentName!=\"\" ",
+                "", RECIPIENT_LABEL, "${cicCaseRespondentName}")
             .readonly(CicCase::getApplicantFullName, ALWAYS_HIDE)
-            .optionalWithoutDefaultValue(CicCase::getNotifyPartyApplicant,
-                "cicCaseApplicantFullName!=\"\"",RECIPIENT_LABEL)
+            .optional(CicCase::getNotifyPartyApplicant, "cicCaseApplicantFullName!=\"\"",
+                "", RECIPIENT_LABEL, "${cicCaseApplicantFullName}")
             .done();
     }
 

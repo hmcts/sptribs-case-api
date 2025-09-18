@@ -35,7 +35,7 @@ public class CcdCaseCreator {
                                                                 Map<String, Object> caseData) {
 
         final String userToken = idamTokenGenerator.generateIdamTokenForWASeniorCaseworker();
-        final String serviceToken = serviceAuthenticationGenerator.generate();
+        final String serviceToken = serviceAuthenticationGenerator.generateCcdDataToken();
         final String userId = idamService.retrieveUser(userToken).getUserDetails().getId();
 
         //Fire start event
@@ -83,7 +83,7 @@ public class CcdCaseCreator {
                                                             Map<String, Object> caseData) {
 
         final String userToken = idamTokenGenerator.generateIdamTokenForWARegionalHearingCentreTeamLead();
-        final String serviceToken = serviceAuthenticationGenerator.generate();
+        final String serviceToken = serviceAuthenticationGenerator.generateCcdDataToken();
         final String userId = idamService.retrieveUser(userToken).getUserDetails().getId();
 
         //Fire start event
@@ -129,7 +129,7 @@ public class CcdCaseCreator {
                                                    Map<String, Object> caseData) {
 
         final String userToken = idamTokenGenerator.generateIdamTokenForSystemUser();
-        final String serviceToken = serviceAuthenticationGenerator.generate();
+        final String serviceToken = serviceAuthenticationGenerator.generateCcdDataToken();
         final String userId = idamService.retrieveUser(userToken).getUserDetails().getId();
 
         //Fire start event
