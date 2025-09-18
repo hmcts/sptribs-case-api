@@ -30,9 +30,8 @@ spring:
     servicebus:
       enabled: true
       fully-qualified-namespace: ${AZURE_SERVICE_BUS_URL:sptribs-sb-preview.servicebus.windows.net}
-      credential:
-        client-id: 34df67df-77f4-4c8d-9e89-d59a86ef9ffe
       topic-client-id: sptribs-ccd-case-events-publisher
+      connection-string: ${AZURE_SERVICE_BUS_CONNECTION_STRING:dummy}
       pricing-tier: Standard
       passwordless-enabled: true
   cloud:
