@@ -9,6 +9,7 @@ import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.fasterxml.jackson.module.paramnames.ParameterNamesModule;
 import jakarta.jms.ConnectionFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
@@ -21,6 +22,7 @@ import org.springframework.jms.support.converter.MessageType;
 import uk.gov.hmcts.sptribs.common.servicebus.CcdMessageConverter;
 
 @Configuration
+@Slf4j
 public class JmsConfiguration {
 
     @Bean
@@ -36,6 +38,7 @@ public class JmsConfiguration {
     @ConditionalOnProperty(name = "spring.jms.servicebus.enabled")
     public ConnectionFactory connectionFactory(
         @Value("${spring.jms.servicebus.connection-string}") String connectionString) {
+        log.info("Creating ConnectionFactory with connection string {}", connectionString);
         return new ServiceBusJmsConnectionFactory(connectionString);
     }
 
