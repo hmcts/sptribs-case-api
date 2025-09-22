@@ -21,7 +21,7 @@ public class CcdCaseEventPublisher {
     public void publishMessage(String message) {
         try {
             log.info("Attempting to send message to Azure Service Bus topic: {}", topicName);
-            jmsTemplate.convertAndSend(topicName, message);
+            jmsTemplate.convertAndSend("ccd-case-events-aat", message);
             log.info("Message sent successfully to Azure Service Bus topic: {}", topicName);
         } catch (Exception e) {
             log.error("Error sending message to Azure Service Bus topic {}: {}", topicName, e.getMessage(), e);
