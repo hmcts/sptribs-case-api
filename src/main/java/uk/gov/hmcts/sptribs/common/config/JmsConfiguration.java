@@ -25,6 +25,8 @@ import uk.gov.hmcts.sptribs.common.servicebus.CcdMessageConverter;
 @Slf4j
 public class JmsConfiguration {
 
+    private static final String ENDPOINT_PREFIX = "Endpoint=";
+
     @Bean
     public ObjectMapper defaultObjectMapper() {
         return new ObjectMapper()
@@ -39,6 +41,7 @@ public class JmsConfiguration {
     public ConnectionFactory connectionFactory(
         @Value("${spring.jms.servicebus.connection-string}") String connectionString) {
         log.info("Creating ConnectionFactory with connection string {}", connectionString);
+        connectionString = connectionString.replace(ENDPOINT_PREFIX, "");
         return new ServiceBusJmsConnectionFactory(connectionString);
     }
 
