@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.jms.connection.CachingConnectionFactory;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.support.converter.MappingJackson2MessageConverter;
@@ -39,6 +40,7 @@ public class JmsConfiguration {
 
     @Bean
     @ConditionalOnProperty(name = "spring.jms.servicebus.enabled")
+    @Primary
     public ConnectionFactory connectionFactory(
         @Value("${spring.jms.servicebus.connection-string}") String connectionString) {
         log.info("Creating ConnectionFactory with connection string {}", connectionString);
