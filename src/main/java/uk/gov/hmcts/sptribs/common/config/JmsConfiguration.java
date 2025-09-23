@@ -22,9 +22,17 @@ import org.springframework.jms.support.converter.MessageConverter;
 import org.springframework.jms.support.converter.MessageType;
 import uk.gov.hmcts.sptribs.common.servicebus.CcdMessageConverter;
 
+import static java.lang.System.getenv;
+
 @Configuration
 @Slf4j
 public class JmsConfiguration {
+
+    @Value("${spring.jms.servicebus.connection-string}")
+    private String connectionString;
+
+    @Value("${azure.servicebus.ccd-case-events.preview-connection-string}")
+    private String previewConnectionString;
 
     private static final String ENDPOINT_PREFIX = "Endpoint=sb://";
     private static final String AMQPS_PREFIX = "amqps://";
@@ -41,11 +49,11 @@ public class JmsConfiguration {
     @Bean
     @ConditionalOnProperty(name = "spring.jms.servicebus.enabled")
     @Primary
-    public ConnectionFactory connectionFactory(
-        @Value("${spring.jms.servicebus.connection-string}") String connectionString) {
-        log.info("Creating ConnectionFactory with connection string {}", connectionString);
-        connectionString = connectionString.replace(ENDPOINT_PREFIX, AMQPS_PREFIX);
-        return new ServiceBusJmsConnectionFactory(connectionString);
+    public ConnectionFactory connectionFactory() {
+        final String env = getenv().getOrDefault("ENVIRONMENT", "preview");
+        String conn = env.equals("preview") ? previewConnectionString : connectionString.replace(ENDPOINT_PREFIX, AMQPS_PREFIX);
+        log.info("Creating ConnectionFactory with connection string {}", conn);
+        return new ServiceBusJmsConnectionFactory(conn);
     }
 
     @Bean
