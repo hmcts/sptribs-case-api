@@ -29,10 +29,8 @@ spring:
   jms:
     servicebus:
       enabled: true
-      fully-qualified-namespace: ${AZURE_SERVICE_BUS_URL:sptribs-sb-preview.servicebus.windows.net}
-      topic-client-id: sptribs-ccd-case-events-publisher
       connection-string: ${AZURE_SERVICE_BUS_CONNECTION_STRING:dummy}
-      pricing-tier: Standard
+      pricing-tier: standard
   cloud:
     azure:
       credential:

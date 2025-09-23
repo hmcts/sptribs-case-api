@@ -52,7 +52,7 @@ public class JmsConfiguration {
     public ConnectionFactory connectionFactory() {
         final String env = getenv().getOrDefault("ENVIRONMENT", "preview");
         log.info("Current environment is {}", env);
-        String conn = env.equals("preview") ? previewConnectionString : connectionString.replace(ENDPOINT_PREFIX, AMQPS_PREFIX);
+        String conn = env.equals("preview") ? previewConnectionString : connectionString;
         log.info("Creating ConnectionFactory with connection string {}", conn);
         return new ServiceBusJmsConnectionFactory(conn);
     }
