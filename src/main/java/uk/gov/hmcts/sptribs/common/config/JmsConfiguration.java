@@ -51,12 +51,15 @@ public class JmsConfiguration {
     @Primary
     public ConnectionFactory connectionFactory() {
         final String env = getenv().getOrDefault("ENVIRONMENT", "preview");
+        log.info("Current environment is {}", env);
         String conn = env.equals("preview") ? previewConnectionString : connectionString.replace(ENDPOINT_PREFIX, AMQPS_PREFIX);
         log.info("Creating ConnectionFactory with connection string {}", conn);
         return new ServiceBusJmsConnectionFactory(conn);
     }
 
     @Bean
+    @ConditionalOnProperty(name = "spring.jms.servicebus.enabled")
+    @Primary
     public JmsTemplate jmsTemplate(ConnectionFactory jmsConnectionFactory) {
         final JmsTemplate jmsTemplate = new JmsTemplate();
         jmsTemplate.setMessageConverter(jacksonJmsMessageConverter());
