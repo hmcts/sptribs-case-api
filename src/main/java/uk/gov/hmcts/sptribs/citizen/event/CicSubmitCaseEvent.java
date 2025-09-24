@@ -4,7 +4,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ObjectUtils;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
@@ -32,8 +31,8 @@ import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.CcdCaseType;
 import uk.gov.hmcts.sptribs.common.config.AppsConfig;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
+import uk.gov.hmcts.sptribs.document.model.CitizenCICDocument;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
-import uk.gov.hmcts.sptribs.document.model.EdgeCaseDocument;
 import uk.gov.hmcts.sptribs.idam.IdamService;
 import uk.gov.hmcts.sptribs.util.AppsUtil;
 
@@ -74,9 +73,6 @@ public class CicSubmitCaseEvent implements CCDConfig<CaseData, State, UserRole> 
     private AppsConfig appsConfig;
     private DssApplicationReceivedNotification dssApplicationReceivedNotification;
 
-    @Value("${feature.wa.enabled}")
-    private boolean isWorkAllocationEnabled;
-
     @Autowired
     public CicSubmitCaseEvent(HttpServletRequest request, IdamService idamService, AppsConfig appsConfig,
                               DssApplicationReceivedNotification dssApplicationReceivedNotification) {
@@ -97,7 +93,7 @@ public class CicSubmitCaseEvent implements CCDConfig<CaseData, State, UserRole> 
                 .description("Application submit (cic)")
                 .retries(120, 120)
                 .grant(CREATE_READ_UPDATE_DELETE, CITIZEN)
-                .grant(CREATE_READ_UPDATE, SYSTEM_UPDATE, CREATOR)
+                .grant(CREATE_READ_UPDATE, SYSTEM_UPDATE, CREATOR, ST_CIC_WA_CONFIG_USER)
                 .grantHistoryOnly(
                     ST_CIC_CASEWORKER,
                     ST_CIC_SENIOR_CASEWORKER,
@@ -107,12 +103,8 @@ public class CicSubmitCaseEvent implements CCDConfig<CaseData, State, UserRole> 
                     SUPER_USER,
                     ST_CIC_JUDGE)
                 .aboutToSubmitCallback(this::aboutToSubmit)
-                .submittedCallback(this::submitted);
-
-        if (isWorkAllocationEnabled) {
-            eventBuilder.publishToCamunda()
-                        .grant(CREATE_READ_UPDATE, ST_CIC_WA_CONFIG_USER);
-        }
+                .submittedCallback(this::submitted)
+                .publishToCamunda();
     }
 
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(CaseDetails<CaseData, State> details,
@@ -137,7 +129,7 @@ public class CicSubmitCaseEvent implements CCDConfig<CaseData, State, UserRole> 
         final String caseNumber = data.getHyphenatedCaseRef();
 
         try {
-            sendApplicationReceivedNotification(caseNumber, dssCaseData);
+            sendApplicationReceivedNotification(caseNumber, data);
         } catch (Exception notificationException) {
             log.error("Application Received notification failed with exception : {}", notificationException.getMessage());
             return SubmittedCallbackResponse.builder()
@@ -179,13 +171,14 @@ public class CicSubmitCaseEvent implements CCDConfig<CaseData, State, UserRole> 
         dssCaseData.setNotificationParties(notificationParties);
     }
 
-    private void sendApplicationReceivedNotification(String caseNumber, DssCaseData dssCaseData) {
+    private void sendApplicationReceivedNotification(String caseNumber, CaseData caseData) {
+        final DssCaseData dssCaseData = caseData.getDssCaseData();
         if (dssCaseData.getNotificationParties().contains(NotificationParties.SUBJECT)) {
-            dssApplicationReceivedNotification.sendToSubject(dssCaseData, caseNumber);
+            dssApplicationReceivedNotification.sendToSubject(caseData, caseNumber);
         }
 
         if (dssCaseData.getNotificationParties().contains(NotificationParties.REPRESENTATIVE)) {
-            dssApplicationReceivedNotification.sendToRepresentative(dssCaseData, caseNumber);
+            dssApplicationReceivedNotification.sendToRepresentative(caseData, caseNumber);
         }
     }
 
@@ -237,7 +230,7 @@ public class CicSubmitCaseEvent implements CCDConfig<CaseData, State, UserRole> 
         List<CaseworkerCICDocument> docList = new ArrayList<>();
 
         if (isNotEmpty(dssCaseData.getOtherInfoDocuments())) {
-            for (ListValue<EdgeCaseDocument> documentListValue : dssCaseData.getOtherInfoDocuments()) {
+            for (ListValue<CitizenCICDocument> documentListValue : dssCaseData.getOtherInfoDocuments()) {
                 Document doc = documentListValue.getValue().getDocumentLink();
                 String documentComment = documentListValue.getValue().getComment();
                 doc.setCategoryId(DocumentType.DSS_OTHER.getCategory());
@@ -273,7 +266,7 @@ public class CicSubmitCaseEvent implements CCDConfig<CaseData, State, UserRole> 
         }
 
         if (isNotEmpty(dssCaseData.getSupportingDocuments())) {
-            for (ListValue<EdgeCaseDocument> documentListValue : dssCaseData.getSupportingDocuments()) {
+            for (ListValue<CitizenCICDocument> documentListValue : dssCaseData.getSupportingDocuments()) {
                 Document doc = documentListValue.getValue().getDocumentLink();
                 doc.setCategoryId(DocumentType.DSS_SUPPORTING.getCategory());
                 CaseworkerCICDocument caseworkerCICDocument = CaseworkerCICDocument.builder()
@@ -288,7 +281,7 @@ public class CicSubmitCaseEvent implements CCDConfig<CaseData, State, UserRole> 
         }
 
         if (isNotEmpty(dssCaseData.getTribunalFormDocuments())) {
-            for (ListValue<EdgeCaseDocument> documentListValue : dssCaseData.getTribunalFormDocuments()) {
+            for (ListValue<CitizenCICDocument> documentListValue : dssCaseData.getTribunalFormDocuments()) {
                 Document doc = documentListValue.getValue().getDocumentLink();
                 doc.setCategoryId(DocumentType.DSS_TRIBUNAL_FORM.getCategory());
                 CaseworkerCICDocument caseworkerCICDocument = CaseworkerCICDocument.builder()

@@ -38,12 +38,12 @@ public class RespondentPartiesToContact implements CcdPageConfiguration {
             .readonly(CicCase::getRepresentativeFullName, ALWAYS_HIDE)
             .done()
             .complex(CaseData::getContactParties)
-            .optionalWithoutDefaultValue(ContactParties::getSubjectContactParties,
-                "cicCaseFullName!=\"\" ", RECIPIENT_LABEL)
-            .optionalWithoutDefaultValue(ContactParties::getApplicantContactParties,
-                "cicCaseApplicantFullName!=\"\" ", RECIPIENT_LABEL)
-            .optionalWithoutDefaultValue(ContactParties::getRepresentativeContactParties,
-                "cicCaseRepresentativeFullName!=\"\" ", RECIPIENT_LABEL)
+            .optional(ContactParties::getSubjectContactParties, "cicCaseFullName!=\"\" ",
+                "", RECIPIENT_LABEL, "${cicCaseFullName}")
+            .optional(ContactParties::getApplicantContactParties, "cicCaseApplicantFullName!=\"\" ",
+                "", RECIPIENT_LABEL, "${cicCaseApplicantFullName}")
+            .optional(ContactParties::getRepresentativeContactParties, "cicCaseRepresentativeFullName!=\"\" ",
+                "", RECIPIENT_LABEL, "${cicCaseRepresentativeFullName}")
             .optionalWithoutDefaultValue(ContactParties::getTribunal,
                 null, RECIPIENT_LABEL)
             .done()

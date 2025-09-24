@@ -33,7 +33,7 @@ public class CancelHearingNotification implements PartiesNotification {
     public void sendToSubject(final CaseData caseData, final String caseNumber) {
         final CicCase cicCase = caseData.getCicCase();
 
-        final Map<String, Object> subjectTemplateVars = notificationHelper.getSubjectCommonVars(caseNumber, cicCase);
+        final Map<String, Object> subjectTemplateVars = notificationHelper.getSubjectCommonVars(caseNumber, caseData);
         notificationHelper.addHearingPostponedTemplateVars(cicCase, subjectTemplateVars);
 
         final NotificationResponse subjectNotificationResponse;
@@ -51,7 +51,7 @@ public class CancelHearingNotification implements PartiesNotification {
     public void sendToRepresentative(final CaseData caseData, final String caseNumber) {
         final CicCase cicCase = caseData.getCicCase();
 
-        final Map<String, Object> reprTemplateVars = notificationHelper.getRepresentativeCommonVars(caseNumber, cicCase);
+        final Map<String, Object> reprTemplateVars = notificationHelper.getRepresentativeCommonVars(caseNumber, caseData);
         notificationHelper.addHearingPostponedTemplateVars(cicCase, reprTemplateVars);
 
         final NotificationResponse representativeNotificationResponse;
@@ -70,7 +70,7 @@ public class CancelHearingNotification implements PartiesNotification {
         final CicCase cicCase = caseData.getCicCase();
 
         final Map<String, Object> respondentTemplateVars =
-            notificationHelper.getRespondentCommonVars(caseNumber, cicCase);
+            notificationHelper.getRespondentCommonVars(caseNumber, caseData);
         notificationHelper.addHearingPostponedTemplateVars(cicCase, respondentTemplateVars);
 
         final NotificationResponse respondentNotificationResponse =
@@ -83,7 +83,7 @@ public class CancelHearingNotification implements PartiesNotification {
     public void sendToApplicant(final CaseData caseData, final String caseNumber) {
         final CicCase cicCase = caseData.getCicCase();
 
-        final Map<String, Object> applicantCommonVars = notificationHelper.getApplicantCommonVars(caseNumber, cicCase);
+        final Map<String, Object> applicantCommonVars = notificationHelper.getApplicantCommonVars(caseNumber, caseData);
         notificationHelper.addHearingPostponedTemplateVars(cicCase, applicantCommonVars);
 
         final NotificationResponse applicantNotificationResponse;
@@ -101,14 +101,14 @@ public class CancelHearingNotification implements PartiesNotification {
         final NotificationRequest request = notificationHelper.buildEmailNotificationRequest(
             destinationAddress,
             templateVars,
-            TemplateName.CASE_CANCEL_HEARING_EMAIL);
+            TemplateName.HEARING_CANCELLED_EMAIL);
         return notificationService.sendEmail(request);
     }
 
     private NotificationResponse sendLetterNotification(Map<String, Object> templateVarsLetter) {
         final NotificationRequest letterRequest = notificationHelper.buildLetterNotificationRequest(
             templateVarsLetter,
-            TemplateName.CASE_CANCEL_HEARING_POST);
+            TemplateName.HEARING_CANCELLED_POST);
         return notificationService.sendLetter(letterRequest);
     }
 }

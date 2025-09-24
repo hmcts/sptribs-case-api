@@ -25,6 +25,7 @@ import uk.gov.hmcts.sptribs.caseworker.model.YesNo;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerAndSuperUserAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerWithCAAAccess;
+import uk.gov.hmcts.sptribs.ciccase.model.access.CollectionDefaultAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.DefaultAccess;
 import uk.gov.hmcts.sptribs.document.model.CICDocument;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
@@ -137,11 +138,13 @@ public class CicCase {
 
     @CCD(
         label = "Order Documents",
-        access = {CaseworkerAndSuperUserAccess.class}
+        access = {CollectionDefaultAccess.class, CaseworkerAndSuperUserAccess.class}
     )
     private List<ListValue<CaseworkerCICDocument>> orderDocumentList;
 
     @CCD(
+        label = "Amended Document",
+        hint = "Please select a document from the dropdown menu",
         access = {CaseworkerAndSuperUserAccess.class}
     )
     private DynamicList amendDocumentList;
@@ -383,7 +386,7 @@ public class CicCase {
     private RegionCIC regionCIC;
 
     @CCD(
-        label = "CICA reference number",
+        label = "Linked CICA reference number",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private String cicaReferenceNumber;
@@ -529,7 +532,7 @@ public class CicCase {
         label = "Case Documents",
         typeOverride = Collection,
         typeParameterOverride = "CaseworkerCICDocument",
-        access = {DefaultAccess.class}
+        access = {CollectionDefaultAccess.class}
     )
     private List<ListValue<CaseworkerCICDocument>> applicantDocumentsUploaded;
 
@@ -543,7 +546,7 @@ public class CicCase {
 
     @CCD(
         label = "Reinstate Documents",
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+        access = {CollectionDefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     List<ListValue<CaseworkerCICDocument>> reinstateDocuments;
 
@@ -555,7 +558,7 @@ public class CicCase {
 
     @CCD(
         label = "Decision Documents",
-        access = {CaseworkerAndSuperUserAccess.class}
+        access = {CollectionDefaultAccess.class, CaseworkerAndSuperUserAccess.class}
     )
     private List<ListValue<CaseworkerCICDocument>> decisionDocumentList;
 
@@ -566,7 +569,7 @@ public class CicCase {
 
     @CCD(
         label = "Final Decision Documents",
-        access = {CaseworkerAndSuperUserAccess.class}
+        access = {CollectionDefaultAccess.class, CaseworkerAndSuperUserAccess.class}
     )
     private List<ListValue<CaseworkerCICDocument>> finalDecisionDocumentList;
 

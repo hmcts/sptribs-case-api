@@ -49,6 +49,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.access.CitizenAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.DSSUpdateAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.DefaultAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.GlobalSearchAccess;
+import uk.gov.hmcts.sptribs.ciccase.model.access.NonRespondentAccess;
 import uk.gov.hmcts.sptribs.document.bundling.model.Bundle;
 import uk.gov.hmcts.sptribs.document.bundling.model.MultiBundleConfig;
 import uk.gov.hmcts.sptribs.document.model.AbstractCaseworkerCICDocument;
@@ -153,7 +154,8 @@ public class CaseData {
 
     @Builder.Default
     @CCD(
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
+        label = "CICA Case Details"
     )
     private EditCicaCaseDetails editCicaCaseDetails = new EditCicaCaseDetails();
 
@@ -176,14 +178,17 @@ public class CaseData {
     private SecurityClass securityClass;
 
     @Builder.Default
-    @CCD(label = "Bundles",
-         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    @CCD(
+        label = "Bundles",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private List<ListValue<Bundle>> caseBundles = new ArrayList<>();
 
     @JsonUnwrapped(prefix = "cicCase")
     @Builder.Default
-    @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
+    @CCD(
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
     private CicCase cicCase = new CicCase();
 
     @JsonUnwrapped(prefix = "notifications")
@@ -258,7 +263,7 @@ public class CaseData {
         label = "Notes",
         typeOverride = Collection,
         typeParameterOverride = "CaseNote",
-        access = {CaseworkerAndSuperUserAccess.class}
+        access = {NonRespondentAccess.class}
     )
     private List<ListValue<CaseNote>> notes;
 
