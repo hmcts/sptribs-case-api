@@ -224,8 +224,7 @@ withPipeline(type, product, component) {
     env.CCD_DEF_NAME = "preview"
     env.DEFINITION_STORE_URL_BASE = "https://ccd-definition-store-sptribs-case-api-pr-${CHANGE_ID}.preview.platform.hmcts.net"
     env.CASE_DATA_STORE_BASEURL = "https://ccd-data-store-api-sptribs-case-api-pr-${CHANGE_ID}.preview.platform.hmcts.net"
-    env.CASE_DOCUMENT_AM_BASEURL= "http://ccd-case-document-am-api-sptribs-case-api-pr-${CHANGE_ID}.preview.platform.hmcts.net"
-    env.CITIZEN_UPDATE_CASE_STATE_ENABLED=true
+    env.CASE_DOCUMENT_AM_BASEURL= "https://ccd-case-document-am-api-sptribs-case-api-pr-${CHANGE_ID}.preview.platform.hmcts.net"
     env.SERVICE_AUTH_MICROSERVICE = "sptribs_case_api"
     env.SERVICE_AUTH_PROVIDER_URL = "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
     env.TEST_E2E_URL = "https://xui-sptribs-case-api-pr-${CHANGE_ID}.preview.platform.hmcts.net"
@@ -234,9 +233,6 @@ withPipeline(type, product, component) {
     env.ROLE_ASSIGNMENT_API_URL = "https://am-org-role-mapping-service-sptribs-case-api-pr-${CHANGE_ID}.preview.platform.hmcts.net"
 
     def waPRLabels = githubApi.getLabelsbyPattern(env.BRANCH_NAME, "pr-values:wa")
-    if (waPRLabels.contains("pr-values:wa")) {
-      env.WA_FEATURE_ENABLED  = true
-    }
     if (waPRLabels.contains("pr-values:wa-ft-tests")) {
       env.WA_FUNCTIONAL_TESTS_ENABLED = true
     }
@@ -251,10 +247,8 @@ withPipeline(type, product, component) {
     env.CASE_API_URL="http://sptribs-case-api-aat.service.core-compute-aat.internal"
     env.CCD_DEF_NAME="aat"
     env.ELASTIC_SEARCH_ENABLED=true
-    env.CITIZEN_UPDATE_CASE_STATE_ENABLED=true
     env.SERVICE_AUTH_MICROSERVICE = "sptribs_case_api"
     env.SERVICE_AUTH_PROVIDER_URL = "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
-    env.WA_FEATURE_ENABLED = true
     env.CAMUNDA_BASE_URL = "http://camunda-api-aat.service.core-compute-aat.internal"
     setCommonEnvVariables()
 
@@ -266,14 +260,12 @@ withPipeline(type, product, component) {
       env.CASE_API_URL="http://sptribs-case-api-prod.service.core-compute-prod.internal"
       env.CCD_DEF_NAME="prod"
       env.DEFINITION_STORE_URL_BASE="http://ccd-definition-store-api-prod.service.core-compute-prod.internal"
-      env.CITIZEN_UPDATE_CASE_STATE_ENABLED=false
       env.CASE_API_DOCUMENT_DOWNLOAD_URL = "http://manage-case.platform.hmcts.net/"
       env.SERVICE_AUTH_MICROSERVICE = "sptribs_case_api"
       env.SERVICE_AUTH_PROVIDER_URL = "http://rpe-service-auth-provider-prod.service.core-compute-prod.internal"
       env.IDAM_API_URL_BASE = "https://idam-api.platform.hmcts.net"
       env.S2S_URL_BASE = "http://rpe-service-auth-provider-prod.service.core-compute-prod.internal"
       env.BEFTA_S2S_CLIENT_ID = "ccd_data"
-      env.WA_FEATURE_ENABLED = true
       env.CAMUNDA_BASE_URL = "http://camunda-api-prod.service.core-compute-prod.internal"
 
       builder.gradle('generateCCDConfig --rerun-tasks')
@@ -298,7 +290,6 @@ withPipeline(type, product, component) {
   }
 
   onDemo {
-    env.WA_FEATURE_ENABLED = true
     env.ENVIRONMENT="demo"
     env.CASE_API_URL = "http://sptribs-case-api-demo.service.core-compute-demo.internal"
     env.CASE_API_DOCUMENT_DOWNLOAD_URL = "http://manage-case.demo.platform.hmcts.net/"
@@ -309,7 +300,6 @@ withPipeline(type, product, component) {
   }
 
   onPerftest {
-    env.WA_FEATURE_ENABLED = true
     env.ENVIRONMENT="perftest"
     env.CASE_API_URL = "http://sptribs-case-api-perftest.service.core-compute-perftest.internal"
     env.CCD_DEF_NAME = "perftest"
@@ -320,7 +310,6 @@ withPipeline(type, product, component) {
   }
 
   onIthc {
-    env.WA_FEATURE_ENABLED = true
     env.ENVIRONMENT="ithc"
     env.CASE_API_URL = "http://sptribs-case-api-ithc.service.core-compute-ithc.internal"
     env.CCD_DEF_NAME = "ithc"

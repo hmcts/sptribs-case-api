@@ -49,7 +49,7 @@ public class HearingPostponedNotificationTest {
         //When
         when(notificationHelper.buildEmailNotificationRequest(any(), anyMap(), any(TemplateName.class)))
             .thenReturn(NotificationRequest.builder().build());
-        when(notificationHelper.getSubjectCommonVars(any(), any(CicCase.class))).thenReturn(new HashMap<>());
+        when(notificationHelper.getSubjectCommonVars(any(), any(CaseData.class))).thenReturn(new HashMap<>());
         doNothing().when(notificationHelper).addHearingPostponedTemplateVars(any(CicCase.class), anyMap());
         hearingPostponedNotification.sendToSubject(data, "CN1");
 
@@ -72,7 +72,7 @@ public class HearingPostponedNotificationTest {
         //When
         when(notificationHelper.buildLetterNotificationRequest(anyMap(), any(TemplateName.class)))
             .thenReturn(NotificationRequest.builder().build());
-        when(notificationHelper.getSubjectCommonVars(any(), any(CicCase.class))).thenReturn(new HashMap<>());
+        when(notificationHelper.getSubjectCommonVars(any(), any(CaseData.class))).thenReturn(new HashMap<>());
         doNothing().when(notificationHelper).addAddressTemplateVars(any(AddressGlobalUK.class), anyMap());
         doNothing().when(notificationHelper).addHearingPostponedTemplateVars(any(CicCase.class), anyMap());
         hearingPostponedNotification.sendToSubject(data, "CN1");
@@ -96,7 +96,7 @@ public class HearingPostponedNotificationTest {
         //When
         when(notificationHelper.buildEmailNotificationRequest(any(), anyMap(), any(TemplateName.class)))
             .thenReturn(NotificationRequest.builder().build());
-        when(notificationHelper.getRespondentCommonVars(any(), any(CicCase.class))).thenReturn(new HashMap<>());
+        when(notificationHelper.getRespondentCommonVars(any(), any(CaseData.class))).thenReturn(new HashMap<>());
         doNothing().when(notificationHelper).addHearingPostponedTemplateVars(any(CicCase.class), anyMap());
         hearingPostponedNotification.sendToRespondent(data, "CN1");
 
@@ -120,7 +120,7 @@ public class HearingPostponedNotificationTest {
         //When
         when(notificationHelper.buildEmailNotificationRequest(any(), anyMap(), any(TemplateName.class)))
             .thenReturn(NotificationRequest.builder().build());
-        when(notificationHelper.getRepresentativeCommonVars(any(), any(CicCase.class))).thenReturn(new HashMap<>());
+        when(notificationHelper.getRepresentativeCommonVars(any(), any(CaseData.class))).thenReturn(new HashMap<>());
         doNothing().when(notificationHelper).addHearingPostponedTemplateVars(any(CicCase.class), anyMap());
         hearingPostponedNotification.sendToRepresentative(data, "CN1");
 
@@ -144,7 +144,7 @@ public class HearingPostponedNotificationTest {
         //When
         when(notificationHelper.buildLetterNotificationRequest(anyMap(), any(TemplateName.class)))
             .thenReturn(NotificationRequest.builder().build());
-        when(notificationHelper.getRepresentativeCommonVars(any(), any(CicCase.class))).thenReturn(new HashMap<>());
+        when(notificationHelper.getRepresentativeCommonVars(any(), any(CaseData.class))).thenReturn(new HashMap<>());
         doNothing().when(notificationHelper).addAddressTemplateVars(any(AddressGlobalUK.class), anyMap());
         doNothing().when(notificationHelper).addHearingPostponedTemplateVars(any(CicCase.class), anyMap());
         hearingPostponedNotification.sendToRepresentative(data, "CN1");

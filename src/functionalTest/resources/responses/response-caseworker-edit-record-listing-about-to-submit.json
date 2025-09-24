@@ -96,7 +96,6 @@
       "valueCode": "${json-unit.any-string}"
     },
     "venueNotListedOption": [],
-    "hearingVenueNameAndAddress": "East London Tribunal Hearing Centre-2 Clove Crescent, East India Dock London",
     "readOnlyHearingVenueName": "East London Tribunal Hearing Centre",
     "date": "2025-01-01",
     "hearingTime": "12:00",
