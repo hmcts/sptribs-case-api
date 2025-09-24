@@ -279,7 +279,7 @@ ccd:
               SELECT
                 cd.id,
                 cd.reference,
-                cd.case_version,
+                id as event_id,
                 cd.case_type_id,
                 cd.created_date,
                 ce.created_date AS last_modified,
@@ -405,7 +405,7 @@ ccd:
                 index => "%{[index_id]}"
                 document_type => "_doc"
                 document_id => "%{id}"
-                version => "%{case_version}"
+                version => "%{event_id}"
                 version_type => "external"
                 timeout => 60
             }
