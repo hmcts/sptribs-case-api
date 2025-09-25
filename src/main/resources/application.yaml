@@ -66,6 +66,10 @@ azure:
 sptribs:
   servicebus:
     scheduler-enabled: ${SPTRIBS_SERVICEBUS_SCHEDULER_ENABLED:false}
+    message-type: ${SPTRIBS_SERVICEBUS_MESSAGE_TYPE:CASE_EVENT}
+    batch-size: ${SPTRIBS_SERVICEBUS_BATCH_SIZE:1000}
+    published-retention-days: ${SPTRIBS_SERVICEBUS_PUBLISHED_RETENTION_DAYS:7}
+    schedule: ${SPTRIBS_SERVICEBUS_SCHEDULE:*/30 * * * * *}
 
 uk:
   gov:
