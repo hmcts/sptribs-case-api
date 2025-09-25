@@ -1,14 +1,22 @@
 spring:
   flyway:
     enabled: false
+  main:
+    allow-bean-definition-overriding: true
+  messages:
+    encoding: ISO-8859-1
   autoconfigure:
     exclude:
       - org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration
+      - com.azure.spring.cloud.autoconfigure.implementation.context.AzureTokenCredentialAutoConfiguration
   datasource:
     url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;MODE=PostgreSQL
     username: sa
     password:
     driver-class-name: org.h2.Driver
+  jms:
+    servicebus:
+      enabled: false
 
 s2s:
   stub: true
@@ -18,4 +26,3 @@ core_case_data:
     url: http://localhost:4012
   search:
     page_size: 100
-

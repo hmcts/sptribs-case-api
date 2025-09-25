@@ -14,6 +14,10 @@ java:
     DB_HOST: '{{ tpl .Values.global.postgresHostname $}}'
     DB_USER_NAME: "{{ .Values.global.postgresUsername}}"
     DB_PORT: 5432
+    POSTGRES_HOST: '{{ tpl .Values.global.postgresHostname $}}'
+    POSTGRES_NAME: "{{ .Values.global.databaseNamePrefix }}sptribs-case-api"
+    POSTGRES_USERNAME: ${SPTRIBS_POSTGRES_USERNAME_PREVIEW}
+    POSTGRES_CONNECTION_OPTIONS: ""
   keyVaults:
     sptribs:
       secrets:
@@ -33,6 +37,8 @@ java:
           alias: IDAM_SYSTEM_UPDATE_PASSWORD
         - name: launchdarkly-sdk-key
           alias: LAUNCH_DARKLY_SDK_KEY
+        - name: ccd-case-events-sendonly-connection-string
+          alias: AZURE_SERVICE_BUS_CONNECTION_STRING
   secrets:
     DB_PASSWORD:
       secretRef: postgres

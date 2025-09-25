@@ -38,8 +38,8 @@ import static uk.gov.hmcts.sptribs.common.CommonConstants.FINAL_DECISION_GUIDANC
 import static uk.gov.hmcts.sptribs.common.CommonConstants.FINAL_DECISION_NOTICE;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.TRIBUNAL_NAME;
 import static uk.gov.hmcts.sptribs.common.ccd.CcdCaseType.CIC;
-import static uk.gov.hmcts.sptribs.notification.TemplateName.CASE_FINAL_DECISION_ISSUED_EMAIL;
-import static uk.gov.hmcts.sptribs.notification.TemplateName.CASE_FINAL_DECISION_ISSUED_POST;
+import static uk.gov.hmcts.sptribs.notification.TemplateName.FINAL_DECISION_ISSUED_EMAIL;
+import static uk.gov.hmcts.sptribs.notification.TemplateName.FINAL_DECISION_ISSUED_POST;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID;
 
 @ExtendWith(SpringExtension.class)
@@ -92,7 +92,7 @@ public class CaseFinalDecisionIssuedNotificationIT {
         assertThat(notificationRequest.getDestinationAddress())
             .isEqualTo("subject@email.com");
         assertThat(notificationRequest.getTemplate())
-            .isEqualTo(CASE_FINAL_DECISION_ISSUED_EMAIL);
+            .isEqualTo(FINAL_DECISION_ISSUED_EMAIL);
         assertThat(notificationRequest.getTemplateVars())
             .containsAllEntriesOf(Map.of(
                 TRIBUNAL_NAME, CIC,
@@ -136,7 +136,7 @@ public class CaseFinalDecisionIssuedNotificationIT {
         NotificationRequest notificationRequest = notificationRequestCaptor.getValue();
 
         assertThat(notificationRequest.getTemplate())
-            .isEqualTo(CASE_FINAL_DECISION_ISSUED_POST);
+            .isEqualTo(FINAL_DECISION_ISSUED_POST);
         assertThat(notificationRequest.getTemplateVars())
             .containsAllEntriesOf(Map.of(
                 TRIBUNAL_NAME, CIC,
@@ -195,7 +195,7 @@ public class CaseFinalDecisionIssuedNotificationIT {
         assertThat(notificationRequest.getDestinationAddress())
             .isEqualTo("representative@email.com");
         assertThat(notificationRequest.getTemplate())
-            .isEqualTo(CASE_FINAL_DECISION_ISSUED_EMAIL);
+            .isEqualTo(FINAL_DECISION_ISSUED_EMAIL);
         assertThat(notificationRequest.getTemplateVars())
             .containsAllEntriesOf(Map.of(
                 TRIBUNAL_NAME, CIC,
@@ -241,7 +241,7 @@ public class CaseFinalDecisionIssuedNotificationIT {
         NotificationRequest notificationRequest = notificationRequestCaptor.getValue();
 
         assertThat(notificationRequest.getTemplate())
-            .isEqualTo(CASE_FINAL_DECISION_ISSUED_POST);
+            .isEqualTo(FINAL_DECISION_ISSUED_POST);
         assertThat(notificationRequest.getTemplateVars())
             .containsAllEntriesOf(Map.of(
                 TRIBUNAL_NAME, CIC,
@@ -298,7 +298,7 @@ public class CaseFinalDecisionIssuedNotificationIT {
         assertThat(notificationRequest.getDestinationAddress())
             .isEqualTo("respondent@email.com");
         assertThat(notificationRequest.getTemplate())
-            .isEqualTo(CASE_FINAL_DECISION_ISSUED_EMAIL);
+            .isEqualTo(FINAL_DECISION_ISSUED_EMAIL);
         assertThat(notificationRequest.getTemplateVars())
             .containsAllEntriesOf(Map.of(
                 TRIBUNAL_NAME, CIC,
@@ -359,7 +359,7 @@ public class CaseFinalDecisionIssuedNotificationIT {
         assertThat(notificationRequest.getDestinationAddress())
             .isEqualTo("applicant@email.com");
         assertThat(notificationRequest.getTemplate())
-            .isEqualTo(CASE_FINAL_DECISION_ISSUED_EMAIL);
+            .isEqualTo(FINAL_DECISION_ISSUED_EMAIL);
         assertThat(notificationRequest.getTemplateVars())
             .containsAllEntriesOf(Map.of(
                 TRIBUNAL_NAME, CIC,
@@ -404,7 +404,7 @@ public class CaseFinalDecisionIssuedNotificationIT {
         NotificationRequest notificationRequest = notificationRequestCaptor.getValue();
 
         assertThat(notificationRequest.getTemplate())
-            .isEqualTo(CASE_FINAL_DECISION_ISSUED_POST);
+            .isEqualTo(FINAL_DECISION_ISSUED_POST);
         assertThat(notificationRequest.getTemplateVars())
             .containsAllEntriesOf(Map.of(
                 TRIBUNAL_NAME, CIC,
