@@ -5,6 +5,7 @@ java:
       key: connectionString
   environment:
     SPRING_JMS_SERVICEBUS_ENABLED: true
+    SPTRIBS_SERVICEBUS_SCHEDULER_ENABLED: true
     AZURE_SERVICE_BUS_TOPIC_NAME: ccd-case-events-aat
     AZURE_SERVICE_BUS_SUBSCRIPTION_NAME: ccd-case-events-aat
     AZURE_SERVICE_BUS_URL: sptribs-sb-preview.servicebus.windows.net
