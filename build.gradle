@@ -522,6 +522,8 @@ tasks.withType(CftlibExec).configureEach {
 bootWithCCD {
     environment 'XUI_JURISDICTIONS', 'ST_CIC'
     environment 'CASE_DOCUMENT_S2S_AUTHORISED_SERVICES', 'ccd_case_document_am_api,ccd_gw,xui_webapp,ccd_data,bulk_scan_processor,em_npa_app,dg_docassembly_api,em_stitching_api,em_ccd_orchestrator,bulk_scan_orchestrator,sptribs_case_api,sptribs_frontend'
+    environment 'SPRING_JMS_SERVICEBUS_ENABLED', 'false'
+
     group = 'ccd tasks'
     dependsOn(loadEnvSecrets)
 
