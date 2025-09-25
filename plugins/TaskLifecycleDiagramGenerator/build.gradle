@@ -1,5 +1,4 @@
 plugins {
-//    id 'application'
     id 'java-gradle-plugin'
 }
 
@@ -7,7 +6,6 @@ repositories {
     mavenCentral()
 }
 
-//mainClassName = 'TaskLifecycleDiagramGenerator'
 gradlePlugin {
     plugins {
         taskLifecycleDiagram {
@@ -17,24 +15,12 @@ gradlePlugin {
     }
 }
 dependencies {
-    implementation group: 'org.camunda.bpm.dmn', name: 'camunda-engine-dmn', version: '7.23.0'
     implementation group: 'org.camunda.bpm.model', name: 'camunda-dmn-model', version: '7.23.0'
 
-//    implementation "org.camunda.bpm.dmn:camunda-engine-dmn:7.20.0"
     compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.40'
-    annotationProcessor 'org.projectlombok:lombok:1.18.40'
-//    implementation group: 'org.apache.logging.log4j', name: 'log4j-to-slf4j', version: '2.25.1'
+    annotationProcessor group:'org.projectlombok', name: 'lombok', version: '1.18.40'
+
     implementation "org.slf4j:slf4j-api:2.0.13"
-//    runtimeOnly "org.slf4j:slf4j-simple:2.0.9"
+    implementation "org.slf4j:slf4j-simple:2.0.13"
 
-    // Allow plugin to access main project classes/resources if needed
-    //    implementation project(':')
 }
-
-//tasks.register('generateDiagram', JavaExec) {
-//    group = "dmn"
-//    description = "Generates Mermaid diagram from DMN files"
-//    classpath = sourceSets.main.runtimeClasspath
-////    mainClass = application.mainClass
-//    workingDir = rootProject.projectDir // so it sees root src/main/resources/dmn
-//}

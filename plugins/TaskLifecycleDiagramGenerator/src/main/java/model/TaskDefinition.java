@@ -1,4 +1,4 @@
-import lombok.Value;
+package model;
 
 /**
  * @param id   e.g., "TriageTask"
