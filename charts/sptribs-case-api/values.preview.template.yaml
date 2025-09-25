@@ -14,6 +14,7 @@ java:
     DB_HOST: '{{ tpl .Values.global.postgresHostname $}}'
     DB_USER_NAME: "{{ .Values.global.postgresUsername}}"
     DB_PORT: 5432
+    SPTRIBS_SERVICEBUS_SCHEDULER_ENABLED: true
     POSTGRES_HOST: '{{ tpl .Values.global.postgresHostname $}}'
     POSTGRES_NAME: "{{ .Values.global.databaseNamePrefix }}sptribs-case-api"
     POSTGRES_USERNAME: ${SPTRIBS_POSTGRES_USERNAME_PREVIEW}
