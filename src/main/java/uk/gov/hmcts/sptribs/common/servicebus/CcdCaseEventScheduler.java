@@ -8,7 +8,10 @@ import org.springframework.stereotype.Component;
 
 @Component
 @Slf4j
-@ConditionalOnProperty(name = "spring.jms.servicebus.enabled", havingValue = "true")
+@ConditionalOnProperty(
+    name = {"spring.jms.servicebus.enabled", "sptribs.servicebus.scheduler-enabled"},
+    havingValue = "true"
+)
 public class CcdCaseEventScheduler {
 
     @Autowired
