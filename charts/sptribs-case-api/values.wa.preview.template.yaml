@@ -107,10 +107,10 @@ wa:
       ingressHost: ccd-message-publisher-${SERVICE_FQDN}
       releaseNameOverride: ${SERVICE_NAME}-ccd-message-publisher
       keyVaults:
-      ccd:
-        secrets:
-          - name: AppInsightsInstrumentationKey
-            alias: azure.application-insights.instrumentation-key
+        ccd:
+          secrets:
+            - name: AppInsightsInstrumentationKey
+              alias: azure.application-insights.instrumentation-key
       environment:
         DATA_STORE_DB_HOST: sptribs-preview.postgres.database.azure.com
         DATA_STORE_DB_NAME: "pr-${CHANGE_ID}-data-store"
