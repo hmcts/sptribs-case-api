@@ -501,6 +501,10 @@ ccd {
   configDir = file('build/definitions')
 }
 
+generateCCDConfig {
+  environment 'SPRING_JMS_SERVICEBUS_ENABLED', 'false'
+}
+
 bootWithCCD {
     environment 'XUI_JURISDICTIONS', 'ST_CIC'
     group = 'ccd tasks'
