@@ -32,31 +32,31 @@ public class ListingCreatedNotification implements PartiesNotification {
     }
 
     @Override
-    public void sendToSubject(final CaseData caseDataSubject, final String caseNumber) {
-        final CicCase cicCaseListing = caseDataSubject.getCicCase();
-        final Map<String, Object> templateVarsSubject = notificationHelper.getSubjectCommonVars(caseNumber, cicCaseListing);
-        final Listing listingSubject = caseDataSubject.getListing();
+    public void sendToSubject(final CaseData caseData, final String caseNumber) {
+        final CicCase cicCase = caseData.getCicCase();
+        final Map<String, Object> templateVarsSubject = notificationHelper.getSubjectCommonVars(caseNumber, caseData);
+        final Listing listingSubject = caseData.getListing();
         notificationHelper.setRecordingTemplateVars(templateVarsSubject, listingSubject);
 
         final NotificationResponse notificationResponse;
-        if (cicCaseListing.getContactPreferenceType() == ContactPreferenceType.EMAIL) {
+        if (cicCase.getContactPreferenceType() == ContactPreferenceType.EMAIL) {
             // Send Email
             notificationResponse = sendEmailNotification(templateVarsSubject,
-                cicCaseListing.getEmail());
+                cicCase.getEmail());
         } else {
-            notificationHelper.addAddressTemplateVars(cicCaseListing.getAddress(), templateVarsSubject);
+            notificationHelper.addAddressTemplateVars(cicCase.getAddress(), templateVarsSubject);
             //SEND POST
             notificationResponse = sendLetterNotification(templateVarsSubject);
         }
 
-        cicCaseListing.setSubHearingNotificationResponse(notificationResponse);
+        cicCase.setSubHearingNotificationResponse(notificationResponse);
     }
 
     @Override
     public void sendToRepresentative(final CaseData caseData, final String caseNumber) {
         final CicCase cicCase = caseData.getCicCase();
         final Listing listing = caseData.getListing();
-        final Map<String, Object> templateVarsRepresentative  = notificationHelper.getRepresentativeCommonVars(caseNumber, cicCase);
+        final Map<String, Object> templateVarsRepresentative  = notificationHelper.getRepresentativeCommonVars(caseNumber, caseData);
 
         templateVarsRepresentative.put(CommonConstants.CIC_CASE_REPRESENTATIVE_NAME, cicCase.getRepresentativeFullName());
         notificationHelper.setRecordingTemplateVars(templateVarsRepresentative, listing);
@@ -77,7 +77,7 @@ public class ListingCreatedNotification implements PartiesNotification {
     @Override
     public void sendToRespondent(final CaseData caseData, final String caseNumber) {
         final CicCase cicCase = caseData.getCicCase();
-        final Map<String, Object> templateVarsRespondent = notificationHelper.getRespondentCommonVars(caseNumber, cicCase);
+        final Map<String, Object> templateVarsRespondent = notificationHelper.getRespondentCommonVars(caseNumber, caseData);
         templateVarsRespondent.put(CommonConstants.CIC_CASE_RESPONDENT_NAME, caseData.getCicCase().getRespondentName());
         final Listing listing = caseData.getListing();
         notificationHelper.setRecordingTemplateVars(templateVarsRespondent, listing);
@@ -90,7 +90,7 @@ public class ListingCreatedNotification implements PartiesNotification {
     @Override
     public void sendToApplicant(final CaseData caseData, final String caseNumber) {
         final CicCase cicCase = caseData.getCicCase();
-        final Map<String, Object> templateVars = notificationHelper.getApplicantCommonVars(caseNumber, cicCase);
+        final Map<String, Object> templateVars = notificationHelper.getApplicantCommonVars(caseNumber, caseData);
         final Listing listing = caseData.getListing();
         notificationHelper.setRecordingTemplateVars(templateVars, listing);
 
@@ -114,7 +114,7 @@ public class ListingCreatedNotification implements PartiesNotification {
         final NotificationRequest request = notificationHelper.buildEmailNotificationRequest(
             toEmail,
             templateVars,
-            TemplateName.LISTING_CREATED_CITIZEN_EMAIL);
+            TemplateName.HEARING_CREATED_EMAIL);
         return notificationService.sendEmail(request);
     }
 
@@ -122,7 +122,7 @@ public class ListingCreatedNotification implements PartiesNotification {
 
         final NotificationRequest letterRequest = notificationHelper.buildLetterNotificationRequest(
             templateVarsLetter,
-            TemplateName.LISTING_CREATED_CITIZEN_POST);
+            TemplateName.HEARING_CREATED_POST);
         return notificationService.sendLetter(letterRequest);
     }
 }
