@@ -57,6 +57,10 @@ azure:
       subscription-name: ${AZURE_SERVICE_BUS_SUBSCRIPTION_NAME:ccd-case-events-aat}
       preview-connection-string: ${AZURE_SERVICE_BUS_PREVIEW_CONNECTION_STRING:dummy}
 
+sptribs:
+  servicebus:
+    scheduler-enabled: ${SPTRIBS_SERVICEBUS_SCHEDULER_ENABLED:false}
+
 uk:
   gov:
     notify:
