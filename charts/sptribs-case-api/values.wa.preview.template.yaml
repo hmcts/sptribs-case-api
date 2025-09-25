@@ -102,29 +102,6 @@ wa:
     postgresql:
       enabled: false
 
-  ccd-message-publisher:
-    java:
-      ingressHost: ccd-message-publisher-${SERVICE_FQDN}
-      releaseNameOverride: ${SERVICE_NAME}-ccd-message-publisher
-      keyVaults:
-        ccd:
-          secrets:
-            - name: AppInsightsInstrumentationKey
-              alias: azure.application-insights.instrumentation-key
-      environment:
-        DATA_STORE_DB_HOST: sptribs-preview.postgres.database.azure.com
-        DATA_STORE_DB_NAME: "pr-${CHANGE_ID}-data-store"
-        DATA_STORE_DB_USERNAME: ${CCD_GLOBAL_POSTGRES_USERNAME_PREVIEW}
-        DATA_STORE_DB_OPTIONS: "?stringtype=unspecified&reWriteBatchedInserts=true&sslmode=require"
-        CCD_CASE_EVENTS_DESTINATION: "ccd-case-events-aat"
-    secrets:
-      SERVICE_BUS_CONNECTION_STRING:
-        secretRef: sptribs-sb-preview
-        key: connectionString
-      DATA_STORE_DB_PASSWORD:
-        secretRef: "{{ .Values.global.postgresSecret }}"
-        key: PASSWORD
-
 am-org-role-mapping-service:
   enabled: true
   java:
