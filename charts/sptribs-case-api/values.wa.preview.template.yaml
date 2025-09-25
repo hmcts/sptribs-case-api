@@ -5,8 +5,8 @@ java:
       key: connectionString
   environment:
     SPRING_JMS_SERVICEBUS_ENABLED: true
-    AZURE_SERVICE_BUS_TOPIC_NAME: ccd-case-events
-    AZURE_SERVICE_BUS_SUBSCRIPTION_NAME: ccd-case-events
+    AZURE_SERVICE_BUS_TOPIC_NAME: ccd-case-events-aat
+    AZURE_SERVICE_BUS_SUBSCRIPTION_NAME: ccd-case-events-aat
     AZURE_SERVICE_BUS_URL: sptribs-sb-preview.servicebus.windows.net
 
 servicebus:
@@ -20,7 +20,7 @@ servicebus:
         subscriptionNeeded: yes
       - name: jrd-topic
         subscriptionNeeded: yes
-      - name: ccd-case-events
+      - name: ccd-case-events-aat
         subscriptionNeeded: yes
         requiresSession: true
 
@@ -61,9 +61,9 @@ wa:
           secretRef: sptribs-sb-preview
           key: connectionString
       environment:
-        AZURE_SERVICE_BUS_TOPIC_NAME: ccd-case-events
-        AZURE_SERVICE_BUS_SUBSCRIPTION_NAME: ccd-case-events
-        AZURE_SERVICE_BUS_CCD_CASE_EVENTS_SUBSCRIPTION_NAME: ccd-case-events
+        AZURE_SERVICE_BUS_TOPIC_NAME: ccd-case-events-aat
+        AZURE_SERVICE_BUS_SUBSCRIPTION_NAME: ccd-case-events-aat
+        AZURE_SERVICE_BUS_CCD_CASE_EVENTS_SUBSCRIPTION_NAME: ccd-case-events-aat
 
   wa-task-management-api:
     java:
@@ -116,7 +116,7 @@ wa:
         DATA_STORE_DB_NAME: "pr-${CHANGE_ID}-data-store"
         DATA_STORE_DB_USERNAME: ${CCD_GLOBAL_POSTGRES_USERNAME_PREVIEW}
         DATA_STORE_DB_OPTIONS: "?stringtype=unspecified&reWriteBatchedInserts=true&sslmode=require"
-        CCD_CASE_EVENTS_DESTINATION: "ccd-case-events"
+        CCD_CASE_EVENTS_DESTINATION: "ccd-case-events-aat"
     secrets:
       SERVICE_BUS_CONNECTION_STRING:
         secretRef: sptribs-sb-preview
