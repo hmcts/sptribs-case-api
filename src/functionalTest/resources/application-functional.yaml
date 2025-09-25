@@ -1,7 +1,8 @@
 test-url: ${TEST_URL:http://localhost:4013}
 
-main:
-  allow-bean-definition-overriding: true
+spring:
+  main:
+    allow-bean-definition-overriding: true
   autoconfigure:
     exclude: com.azure.spring.cloud.autoconfigure.implementation.context.AzureTokenCredentialAutoConfiguration
   jms:
