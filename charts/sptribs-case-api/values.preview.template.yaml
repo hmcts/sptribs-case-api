@@ -278,15 +278,20 @@ ccd:
             jdbc_driver_class => "org.postgresql.Driver"
             jdbc_default_timezone => "UTC"
             statement => "
-              WITH updated AS (
+              WITH deleted AS (
                 DELETE FROM ccd.es_queue
-                WHERE id IN (SELECT id FROM ccd.es_queue LIMIT 100)
+                WHERE id IN (
+                  SELECT id
+                  FROM ccd.es_queue
+                  ORDER BY id
+                  LIMIT 100
+                )
                 RETURNING id
               )
               SELECT
                 cd.id,
                 cd.reference,
-                id as event_id,
+                deleted.id AS event_id,
                 cd.case_type_id,
                 cd.created_date,
                 ce.created_date AS last_modified,
@@ -297,8 +302,8 @@ ccd:
                 ce.data::TEXT AS json_data,
                 '{}' as json_data_classification,
                 cd.supplementary_data::TEXT AS json_supplementary_data
-              FROM updated
-              JOIN ccd.case_event ce USING(id)
+              FROM deleted
+              JOIN ccd.case_event ce ON ce.id = deleted.id
               JOIN ccd.case_data cd ON cd.id = ce.case_data_id
             "
             clean_run => false
