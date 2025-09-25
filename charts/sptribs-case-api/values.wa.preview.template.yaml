@@ -6,9 +6,8 @@ java:
   environment:
     SPRING_JMS_SERVICEBUS_ENABLED: true
     SPTRIBS_SERVICEBUS_SCHEDULER_ENABLED: true
-    AZURE_SERVICE_BUS_TOPIC_NAME: ccd-case-events-aat
-    AZURE_SERVICE_BUS_SUBSCRIPTION_NAME: ccd-case-events-aat
-    AZURE_SERVICE_BUS_URL: sptribs-sb-preview.servicebus.windows.net
+    AZURE_SERVICE_BUS_TOPIC_NAME: ${SERVICE_NAME}-asb-ccd-case-events
+    AZURE_SERVICE_BUS_SUBSCRIPTION_NAME: ${SERVICE_NAME}-asb-ccd-case-events
 
 servicebus:
   enabled: true
@@ -21,7 +20,7 @@ servicebus:
         subscriptionNeeded: yes
       - name: jrd-topic
         subscriptionNeeded: yes
-      - name: ccd-case-events-aat
+      - name: ccd-case-events
         subscriptionNeeded: yes
         requiresSession: true
 
@@ -62,9 +61,9 @@ wa:
           secretRef: sptribs-sb-preview
           key: connectionString
       environment:
-        AZURE_SERVICE_BUS_TOPIC_NAME: ccd-case-events-aat
-        AZURE_SERVICE_BUS_SUBSCRIPTION_NAME: ccd-case-events-aat
-        AZURE_SERVICE_BUS_CCD_CASE_EVENTS_SUBSCRIPTION_NAME: ccd-case-events-aat
+        AZURE_SERVICE_BUS_TOPIC_NAME: ${SERVICE_NAME}-asb-ccd-case-events
+        AZURE_SERVICE_BUS_SUBSCRIPTION_NAME: ${SERVICE_NAME}-asb-ccd-case-events
+        AZURE_SERVICE_BUS_CCD_CASE_EVENTS_SUBSCRIPTION_NAME: ${SERVICE_NAME}-asb-ccd-case-events
 
   wa-task-management-api:
     java:
