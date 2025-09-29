@@ -178,12 +178,9 @@ public class CaseWorkerCreateDraftOrder implements CCDConfig<CaseData, State, Us
             cicCase.setDraftOrderDynamicList(orderTemplateDynamicList);
         }
 
-        String templateNamePlusCurrentDate = orderTemplate.getLabel() + DOUBLE_HYPHEN + date + ".pdf";
+        String templateNamePlusCurrentDate = orderTemplate.getLabel() + DOUBLE_HYPHEN + date + DOUBLE_HYPHEN + "draft.pdf";
 
-        DynamicListElement element = DynamicListElement.builder()
-            .code(UUID.randomUUID())
-            .label(templateNamePlusCurrentDate)
-            .build();
+        DynamicListElement element = DynamicListElement.builder().label(templateNamePlusCurrentDate).code(UUID.randomUUID()).build();
         orderTemplateDynamicList.getListItems().add(element);
     }
 }
