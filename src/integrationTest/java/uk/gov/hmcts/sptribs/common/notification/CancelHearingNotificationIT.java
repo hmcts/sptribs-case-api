@@ -33,8 +33,8 @@ import static uk.gov.hmcts.sptribs.common.CommonConstants.HEARING_DATE;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.HEARING_TIME;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.TRIBUNAL_NAME;
 import static uk.gov.hmcts.sptribs.common.ccd.CcdCaseType.CIC;
-import static uk.gov.hmcts.sptribs.notification.TemplateName.CASE_CANCEL_HEARING_EMAIL;
-import static uk.gov.hmcts.sptribs.notification.TemplateName.CASE_CANCEL_HEARING_POST;
+import static uk.gov.hmcts.sptribs.notification.TemplateName.HEARING_CANCELLED_EMAIL;
+import static uk.gov.hmcts.sptribs.notification.TemplateName.HEARING_CANCELLED_POST;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID;
 
 @ExtendWith(SpringExtension.class)
@@ -78,7 +78,7 @@ public class CancelHearingNotificationIT {
         assertThat(notificationRequest.getDestinationAddress())
             .isEqualTo("subject@email.com");
         assertThat(notificationRequest.getTemplate())
-            .isEqualTo(CASE_CANCEL_HEARING_EMAIL);
+            .isEqualTo(HEARING_CANCELLED_EMAIL);
         assertThat(notificationRequest.getTemplateVars())
             .containsAllEntriesOf(Map.of(
                 TRIBUNAL_NAME, CIC,
@@ -119,7 +119,7 @@ public class CancelHearingNotificationIT {
         NotificationRequest notificationRequest = notificationRequestCaptor.getValue();
 
         assertThat(notificationRequest.getTemplate())
-            .isEqualTo(CASE_CANCEL_HEARING_POST);
+            .isEqualTo(HEARING_CANCELLED_POST);
         assertThat(notificationRequest.getTemplateVars())
             .containsAllEntriesOf(Map.of(
                 TRIBUNAL_NAME, CIC,
@@ -161,7 +161,7 @@ public class CancelHearingNotificationIT {
         assertThat(notificationRequest.getDestinationAddress())
             .isEqualTo("representative@email.com");
         assertThat(notificationRequest.getTemplate())
-            .isEqualTo(CASE_CANCEL_HEARING_EMAIL);
+            .isEqualTo(HEARING_CANCELLED_EMAIL);
         assertThat(notificationRequest.getTemplateVars())
             .containsAllEntriesOf(Map.of(
                 TRIBUNAL_NAME, CIC,
@@ -204,7 +204,7 @@ public class CancelHearingNotificationIT {
         NotificationRequest notificationRequest = notificationRequestCaptor.getValue();
 
         assertThat(notificationRequest.getTemplate())
-            .isEqualTo(CASE_CANCEL_HEARING_POST);
+            .isEqualTo(HEARING_CANCELLED_POST);
         assertThat(notificationRequest.getTemplateVars())
             .containsAllEntriesOf(Map.of(
                 TRIBUNAL_NAME, CIC,
@@ -245,7 +245,7 @@ public class CancelHearingNotificationIT {
         assertThat(notificationRequest.getDestinationAddress())
             .isEqualTo("respondent@email.com");
         assertThat(notificationRequest.getTemplate())
-            .isEqualTo(CASE_CANCEL_HEARING_EMAIL);
+            .isEqualTo(HEARING_CANCELLED_EMAIL);
         assertThat(notificationRequest.getTemplateVars())
             .containsAllEntriesOf(Map.of(
                 TRIBUNAL_NAME, CIC,
@@ -285,7 +285,7 @@ public class CancelHearingNotificationIT {
         assertThat(notificationRequest.getDestinationAddress())
             .isEqualTo("applicant@email.com");
         assertThat(notificationRequest.getTemplate())
-            .isEqualTo(CASE_CANCEL_HEARING_EMAIL);
+            .isEqualTo(HEARING_CANCELLED_EMAIL);
         assertThat(notificationRequest.getTemplateVars())
             .containsAllEntriesOf(Map.of(
                 TRIBUNAL_NAME, CIC,
@@ -328,7 +328,7 @@ public class CancelHearingNotificationIT {
         NotificationRequest notificationRequest = notificationRequestCaptor.getValue();
 
         assertThat(notificationRequest.getTemplate())
-            .isEqualTo(CASE_CANCEL_HEARING_POST);
+            .isEqualTo(HEARING_CANCELLED_POST);
         assertThat(notificationRequest.getTemplateVars())
             .containsAllEntriesOf(Map.of(
                 TRIBUNAL_NAME, CIC,
