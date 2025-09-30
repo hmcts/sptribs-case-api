@@ -338,7 +338,7 @@ public class DocumentListUtilTest {
     }
 
     @Test
-    void shouldGetAllCaseDocumentsExcludingCicaUploadWithFurtherUploadedDocuments() {
+    void shouldGetAllCaseDocumentsExcludingInitialCicaUploadWithFurtherUploadedDocuments() {
         //Given
         final CaseData caseData = CaseData.builder().build();
 
@@ -383,7 +383,7 @@ public class DocumentListUtilTest {
         caseData.setCicCase(cicCase);
 
         //When
-        List<ListValue<CaseworkerCICDocument>> result = DocumentListUtil.getAllCaseDocumentsExcludingCicaUpload(caseData);
+        List<ListValue<CaseworkerCICDocument>> result = DocumentListUtil.getAllCaseDocumentsExcludingInitialCicaUpload(caseData);
 
         //Then
         assertThat(result).isNotNull();
@@ -403,7 +403,7 @@ public class DocumentListUtilTest {
     }
 
     @Test
-    void shouldGetAllCaseDocumentsExcludingCicaUploadWithNullFurtherUploadedDocuments() {
+    void shouldGetAllCaseDocumentsExcludingInitialCicaUploadWithNullFurtherUploadedDocuments() {
         //Given
         final CaseData caseData = CaseData.builder().build();
 
@@ -439,7 +439,7 @@ public class DocumentListUtilTest {
         caseData.setCicCase(cicCase);
 
         //When
-        List<ListValue<CaseworkerCICDocument>> result = DocumentListUtil.getAllCaseDocumentsExcludingCicaUpload(caseData);
+        List<ListValue<CaseworkerCICDocument>> result = DocumentListUtil.getAllCaseDocumentsExcludingInitialCicaUpload(caseData);
 
         //Then
         assertThat(result).isNotNull();
@@ -455,7 +455,7 @@ public class DocumentListUtilTest {
     }
 
     @Test
-    void shouldGetAllCaseDocumentsExcludingCicaUploadWithEmptyFurtherUploadedDocuments() {
+    void shouldGetAllCaseDocumentsExcludingInitialCicaUploadWithEmptyFurtherUploadedDocuments() {
         //Given
         final CaseData caseData = CaseData.builder().build();
 
@@ -491,7 +491,7 @@ public class DocumentListUtilTest {
         caseData.setCicCase(cicCase);
 
         //When
-        List<ListValue<CaseworkerCICDocument>> result = DocumentListUtil.getAllCaseDocumentsExcludingCicaUpload(caseData);
+        List<ListValue<CaseworkerCICDocument>> result = DocumentListUtil.getAllCaseDocumentsExcludingInitialCicaUpload(caseData);
 
         //Then
         assertThat(result).isNotNull();
@@ -507,7 +507,7 @@ public class DocumentListUtilTest {
     }
 
     @Test
-    void shouldGetAllCaseDocumentsExcludingCicaUploadWithMultipleFurtherUploadedDocuments() {
+    void shouldGetAllCaseDocumentsExcludingInitialCicaUploadWithMultipleFurtherUploadedDocuments() {
         //Given
         final CaseData caseData = CaseData.builder().build();
 
@@ -563,7 +563,7 @@ public class DocumentListUtilTest {
         caseData.setCicCase(cicCase);
 
         //When
-        List<ListValue<CaseworkerCICDocument>> result = DocumentListUtil.getAllCaseDocumentsExcludingCicaUpload(caseData);
+        List<ListValue<CaseworkerCICDocument>> result = DocumentListUtil.getAllCaseDocumentsExcludingInitialCicaUpload(caseData);
 
         //Then
         assertThat(result).isNotNull();
@@ -585,7 +585,7 @@ public class DocumentListUtilTest {
     }
 
     @Test
-    void shouldGetAllCaseDocumentsExcludingCicaUploadWithNoDocuments() {
+    void shouldGetAllCaseDocumentsExcludingInitialCicaUploadWithNoDocuments() {
         //Given
         final CaseData caseData = CaseData.builder().build();
 
@@ -597,7 +597,7 @@ public class DocumentListUtilTest {
         caseData.setCicCase(cicCase);
 
         //When
-        List<ListValue<CaseworkerCICDocument>> result = DocumentListUtil.getAllCaseDocumentsExcludingCicaUpload(caseData);
+        List<ListValue<CaseworkerCICDocument>> result = DocumentListUtil.getAllCaseDocumentsExcludingInitialCicaUpload(caseData);
 
         //Then
         assertThat(result).isNotNull();

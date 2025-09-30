@@ -11,6 +11,7 @@ import uk.gov.hmcts.sptribs.idam.IdamService;
 @Service
 @Slf4j
 public class AuditEventService {
+
     private final ExtendedCaseDataApi extendedCaseDataApi;
     private final AuthTokenGenerator authTokenGenerator;
     private final IdamService idamService;
@@ -27,13 +28,13 @@ public class AuditEventService {
             caseId
         );
 
-        if (response == null || response.getAuditEvents() == null) {
+        if (eventId == null || response == null || response.getAuditEvents() == null) {
             log.warn("No audit events found for caseId: {}", caseId);
             return false;
         }
 
         return response.getAuditEvents()
             .stream()
-            .anyMatch(auditEvent -> auditEvent.getId().equals(eventId));
+            .anyMatch(auditEvent -> eventId.equals(auditEvent.getId()));
     }
 }

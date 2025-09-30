@@ -69,7 +69,7 @@ public final class DocumentListUtil {
             .collect(Collectors.toList()) : new ArrayList<>();
     }
 
-    public static List<ListValue<CaseworkerCICDocument>> getAllCaseDocumentsExcludingCicaUpload(final CaseData data) {
+    public static List<ListValue<CaseworkerCICDocument>> getAllCaseDocumentsExcludingInitialCicaUpload(final CaseData data) {
         return buildListValues(prepareListExcludingInitialCicaUpload(data));
     }
 
