@@ -1,5 +1,6 @@
 package uk.gov.hmcts.sptribs.caseworker.event;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
@@ -14,6 +15,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
+import uk.gov.hmcts.sptribs.common.service.AuditEventService;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocumentUpload;
 
@@ -46,9 +48,11 @@ import static uk.gov.hmcts.sptribs.document.DocumentUtil.uploadDocument;
 
 @Component
 @Slf4j
+@RequiredArgsConstructor
 public class RespondentDocumentManagement implements CCDConfig<CaseData, State, UserRole> {
 
     private final UploadCaseDocuments uploadCaseDocuments = new UploadCaseDocuments();
+    private final AuditEventService auditEventService;
 
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
@@ -93,6 +97,18 @@ public class RespondentDocumentManagement implements CCDConfig<CaseData, State, 
         caseData.getNewDocManagement().setCaseworkerCICDocumentUpload(new ArrayList<>());
         caseData.getNewDocManagement().setCaseworkerCICDocument(documents);
         uploadDocument(caseData);
+
+        if (caseData.isNewBundleOrderEnabled()) {
+            if (auditEventService.hasCaseEvent(String.valueOf(details.getId()), RESPONDENT_DOCUMENT_MANAGEMENT)) {
+                if (caseData.getFurtherUploadedDocuments() == null) {
+                    caseData.setFurtherUploadedDocuments(documents);
+                } else {
+                    caseData.getFurtherUploadedDocuments().addAll(documents);
+                }
+            } else {
+                caseData.setInitialCicaDocuments(documents);
+            }
+        }
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)

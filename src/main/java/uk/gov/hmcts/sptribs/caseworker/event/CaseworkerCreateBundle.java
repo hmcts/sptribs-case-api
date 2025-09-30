@@ -23,8 +23,10 @@ import uk.gov.hmcts.sptribs.document.model.AbstractCaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
+import static uk.gov.hmcts.sptribs.caseworker.util.DocumentListUtil.getAllCaseDocumentsExcludingCicaUpload;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CREATE_BUNDLE;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
@@ -76,14 +78,12 @@ public class CaseworkerCreateBundle implements CCDConfig<CaseData, State, UserRo
         final List<ListValue<CaseworkerCICDocument>> documentListValues = DocumentListUtil.getAllCaseDocuments(caseData);
         final List<AbstractCaseworkerCICDocument<CaseworkerCICDocument>> abstractCaseworkerCICDocumentList = new ArrayList<>();
 
-        for (ListValue<CaseworkerCICDocument> caseworkerCICDocumentListValue : documentListValues) {
-            CaseworkerCICDocument document = caseworkerCICDocumentListValue.getValue();
-            if (document.isValidBundleDocument()) {
-                abstractCaseworkerCICDocumentList.add(new AbstractCaseworkerCICDocument<>(caseworkerCICDocumentListValue.getValue()));
-            }
+        if (caseData.isNewBundleOrderEnabled()) {
+            caseData.setCaseDocuments(getInitialCicaUpload(caseData));
+            caseData.setFurtherCaseDocuments(getFurtherDocuments(caseData));
+        } else {
+            prepareBundleDocumentsPreBundleChanges(documentListValues, abstractCaseworkerCICDocumentList, caseData);
         }
-
-        caseData.setCaseDocuments(abstractCaseworkerCICDocumentList);
 
         caseData.setBundleConfiguration(bundlingService.getMultiBundleConfig());
         caseData.setMultiBundleConfiguration(bundlingService.getMultiBundleConfigs());
@@ -103,5 +103,50 @@ public class CaseworkerCreateBundle implements CCDConfig<CaseData, State, UserRo
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
             .build();
+    }
+
+    private static void prepareBundleDocumentsPreBundleChanges(List<ListValue<CaseworkerCICDocument>> documentListValues,
+                                                               List<AbstractCaseworkerCICDocument<CaseworkerCICDocument>> cicDocumentList,
+                                                               CaseData caseData) {
+        for (ListValue<CaseworkerCICDocument> caseworkerCICDocumentListValue : documentListValues) {
+            CaseworkerCICDocument document = caseworkerCICDocumentListValue.getValue();
+            if (document.isValidBundleDocument()) {
+                cicDocumentList.add(new AbstractCaseworkerCICDocument<>(caseworkerCICDocumentListValue.getValue()));
+            }
+        }
+
+        caseData.setCaseDocuments(cicDocumentList);
+    }
+
+    private List<AbstractCaseworkerCICDocument<CaseworkerCICDocument>> getInitialCicaUpload(CaseData caseData) {
+        var initialDocs = caseData.getInitialCicaDocuments();
+
+        List<AbstractCaseworkerCICDocument<CaseworkerCICDocument>> abstractCaseworkerCICDocumentList = new ArrayList<>();
+
+        for (ListValue<CaseworkerCICDocument> caseworkerCICDocumentListValue : initialDocs) {
+            CaseworkerCICDocument document = caseworkerCICDocumentListValue.getValue();
+            if (document.isValidBundleDocument()) {
+                abstractCaseworkerCICDocumentList.add(new AbstractCaseworkerCICDocument<>(caseworkerCICDocumentListValue.getValue()));
+            }
+        }
+
+        return abstractCaseworkerCICDocumentList;
+    }
+
+    private List<AbstractCaseworkerCICDocument<CaseworkerCICDocument>> getFurtherDocuments(CaseData caseData) {
+        var docs = getAllCaseDocumentsExcludingCicaUpload(caseData);
+
+        List<AbstractCaseworkerCICDocument<CaseworkerCICDocument>> abstractCaseworkerCICDocumentList = new ArrayList<>();
+
+        for (ListValue<CaseworkerCICDocument> caseworkerCICDocumentListValue : docs) {
+            CaseworkerCICDocument document = caseworkerCICDocumentListValue.getValue();
+            if (document.isValidBundleDocument()) {
+                abstractCaseworkerCICDocumentList.add(new AbstractCaseworkerCICDocument<>(caseworkerCICDocumentListValue.getValue()));
+            }
+        }
+
+        abstractCaseworkerCICDocumentList
+            .sort(Comparator.comparing(doc -> doc.getValue().getDate()));
+        return abstractCaseworkerCICDocumentList;
     }
 }
