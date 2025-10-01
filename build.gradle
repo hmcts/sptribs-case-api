@@ -186,7 +186,7 @@ tasks.register('fortifyScan', JavaExec) {
 checkstyle {
   maxWarnings = 0
   toolVersion = '9.3'
-  getConfigDirectory().set(new File(rootDir, 'config/checkstyle'))
+  getConfigDirectory().set(project.layout.projectDirectory.dir('config/checkstyle').asFile)
 }
 
 pmd {
@@ -195,7 +195,7 @@ pmd {
   reportsDir = file("$project.buildDir/reports/pmd")
   // https://github.com/pmd/pmd/issues/876
   ruleSets = []
-  ruleSetFiles = files("${rootDir}/config/pmd/ruleset.xml")
+  ruleSetFiles = files(project.layout.projectDirectory.file('config/pmd/ruleset.xml'))
 }
 
 jacocoTestReport {
@@ -428,7 +428,7 @@ dependencies {
 
 mainClassName = 'uk.gov.hmcts.sptribs.CaseApiApplication'
 
-tasks.register('loadEnvSecrets') {
+def loadEnvSecretsTask = tasks.register('loadEnvSecrets') {
   doLast {
     if (!project.file('./.aat-env').exists()) {
       new ByteArrayOutputStream().withStream { os ->
@@ -443,7 +443,7 @@ tasks.register('loadEnvSecrets') {
 }
 
 tasks.register('reloadEnvSecrets') {
-  dependsOn[loadEnvSecrets]
+  dependsOn loadEnvSecretsTask
   doFirst {
     if (project.file('./.aat-env').exists()) {
       project.file('./.aat-env').delete()
@@ -528,7 +528,7 @@ bootWithCCD {
     environment 'SPRING_JMS_SERVICEBUS_ENABLED', 'false'
 
     group = 'ccd tasks'
-    dependsOn(loadEnvSecrets)
+    dependsOn loadEnvSecretsTask
 
     doFirst() {
         project.file('./.aat-env').readLines().each() {
