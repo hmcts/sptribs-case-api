@@ -506,7 +506,8 @@ public class CaseData {
     @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
     private YesNo completeHearingOutcomeTask;
 
-    @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
+    @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class, CitizenAccess.class,
+        GlobalSearchAccess.class, CaseworkerRASValidationAccess.class})
     private YesNo newBundleOrderEnabled;
 
     @CCD(access = {DefaultAccess.class})

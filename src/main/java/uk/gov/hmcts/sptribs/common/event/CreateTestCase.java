@@ -156,7 +156,9 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
             .build();
         log.info("Case Management (builder) base location {}, region {}",
             caseManagementLocation1.getBaseLocation(), caseManagementLocation1.getRegion());
+
         data.setNewBundleOrderEnabled(YesNo.YES);
+        log.info("New Bundle Order Enabled {}", data.getNewBundleOrderEnabled());
 
         data.setCaseManagementLocation(
             caseManagementLocation

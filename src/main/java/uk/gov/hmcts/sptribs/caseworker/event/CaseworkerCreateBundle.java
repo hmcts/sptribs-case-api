@@ -79,9 +79,11 @@ public class CaseworkerCreateBundle implements CCDConfig<CaseData, State, UserRo
         final List<AbstractCaseworkerCICDocument<CaseworkerCICDocument>> abstractCaseworkerCICDocumentList = new ArrayList<>();
 
         if (caseData.isNewBundleOrderEnabled()) {
+            log.info("Preparing documents for bundle creation for case id: {} - new bundle enabled", details.getId());
             caseData.setCaseDocuments(getInitialCicaUpload(caseData));
             caseData.setFurtherCaseDocuments(getFurtherDocuments(caseData));
         } else {
+            log.info("Preparing documents for bundle creation for case id: {} - new bundle not enabled", details.getId());
             prepareBundleDocumentsPreBundleChanges(documentListValues, abstractCaseworkerCICDocumentList, caseData);
         }
 
