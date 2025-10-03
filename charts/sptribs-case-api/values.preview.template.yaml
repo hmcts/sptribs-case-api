@@ -41,9 +41,13 @@ java:
           alias: IDAM_SYSTEM_UPDATE_PASSWORD
         - name: launchdarkly-sdk-key
           alias: LAUNCH_DARKLY_SDK_KEY
-        - name: ccd-case-events-sendonly-connection-string
-          alias: AZURE_SERVICE_BUS_CONNECTION_STRING
   secrets:
+    AZURE_SERVICE_BUS_CONNECTION_STRING:
+      secretRef: sptribs-sb-preview
+      key: connectionString
+    AZURE_SERVICE_BUS_PREVIEW_CONNECTION_STRING:
+      secretRef: sptribs-sb-preview
+      key: connectionString
     DB_PASSWORD:
       secretRef: postgres
       key: PASSWORD
