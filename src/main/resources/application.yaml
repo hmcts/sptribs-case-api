@@ -36,7 +36,7 @@ spring:
   jms:
     servicebus:
       enabled: true
-      connection-string: ${AZURE_SERVICE_BUS_CONNECTION_STRING:dummy}
+      connection-string: ${AZURE_SERVICE_BUS_CONNECTION_STRING:${AZURE_SERVICE_BUS_PREVIEW_CONNECTION_STRING:dummy}}
       pricing-tier: standard
   cloud:
     azure:
