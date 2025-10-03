@@ -1,5 +1,8 @@
 java:
   secrets:
+    AZURE_SERVICE_BUS_CONNECTION_STRING:
+      secretRef: sptribs-sb-preview
+      key: connectionString
     AZURE_SERVICE_BUS_PREVIEW_CONNECTION_STRING:
       secretRef: sptribs-sb-preview
       key: connectionString

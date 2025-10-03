@@ -14,10 +14,7 @@ java:
     DB_HOST: '{{ tpl .Values.global.postgresHostname $}}'
     DB_USER_NAME: "{{ .Values.global.postgresUsername}}"
     DB_PORT: 5432
-    SPRING_JMS_SERVICEBUS_ENABLED: true
-    AZURE_SERVICE_BUS_TOPIC_NAME: ${SERVICE_NAME}-asb-ccd-case-events
-    AZURE_SERVICE_BUS_SUBSCRIPTION_NAME: ${SERVICE_NAME}-asb-ccd-case-events
-    SPTRIBS_SERVICEBUS_SCHEDULER_ENABLED: true
+    SPRING_JMS_SERVICEBUS_ENABLED: false
     POSTGRES_HOST: '{{ tpl .Values.global.postgresHostname $}}'
     POSTGRES_NAME: "{{ .Values.global.databaseNamePrefix }}sptribs-case-api"
     POSTGRES_USERNAME: ${SPTRIBS_POSTGRES_USERNAME_PREVIEW}
@@ -42,12 +39,6 @@ java:
         - name: launchdarkly-sdk-key
           alias: LAUNCH_DARKLY_SDK_KEY
   secrets:
-    AZURE_SERVICE_BUS_CONNECTION_STRING:
-      secretRef: sptribs-sb-preview
-      key: connectionString
-    AZURE_SERVICE_BUS_PREVIEW_CONNECTION_STRING:
-      secretRef: sptribs-sb-preview
-      key: connectionString
     DB_PASSWORD:
       secretRef: postgres
       key: PASSWORD
