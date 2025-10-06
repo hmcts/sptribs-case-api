@@ -69,6 +69,10 @@ public class BundlingService {
                 authTokenGenerator.generate(),
                 httpServletRequest.getHeader(AUTHORIZATION),
                 callback);
+            System.out.println(response.getData());
+            System.out.println(response.getErrors());
+            System.out.println(response.getWarnings());
+            System.out.println(response.getDocumentTaskId());
 
             return getBundleFromResponse((List<LinkedHashMap<String, Object>>) response.getData().get(CASE_BUNDLES));
         } catch (FeignException exception) {

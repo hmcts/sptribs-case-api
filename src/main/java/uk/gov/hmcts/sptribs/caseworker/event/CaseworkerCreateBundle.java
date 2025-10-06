@@ -147,8 +147,12 @@ public class CaseworkerCreateBundle implements CCDConfig<CaseData, State, UserRo
             }
         }
 
-        abstractCaseworkerCICDocumentList
-            .sort(Comparator.comparing(doc -> doc.getValue().getDate()));
+        abstractCaseworkerCICDocumentList.sort(
+            Comparator.comparing(
+                doc -> doc.getValue().getDate(),
+                Comparator.nullsLast(Comparator.naturalOrder())
+            )
+        );
         return abstractCaseworkerCICDocumentList;
     }
 }
