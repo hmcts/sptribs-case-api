@@ -93,7 +93,7 @@ public class CaseworkerDocumentManagement implements CCDConfig<CaseData, State, 
         caseData.getNewDocManagement().setCaseworkerCICDocument(documents);
         uploadDocument(caseData);
 
-        if (caseData.isNewBundleOrderEnabled()) {
+        if (caseData.isBundleOrderEnabled()) {
             if (caseData.getFurtherUploadedDocuments() == null) {
                 caseData.setFurtherUploadedDocuments(documents);
             } else {

@@ -139,7 +139,7 @@ public class CaseworkerDocumentManagementAmend implements CCDConfig<CaseData, St
                     selectedDocumentEmailContent,
                     selectedDocumentLink
                 );
-                if (data.isNewBundleOrderEnabled()) {
+                if (data.isBundleOrderEnabled()) {
                     updateCaseDocumentList(
                         data.getInitialCicaDocuments(),
                         selectedDocumentCategory,

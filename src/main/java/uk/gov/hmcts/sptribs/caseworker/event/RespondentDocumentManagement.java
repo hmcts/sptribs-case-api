@@ -98,7 +98,7 @@ public class RespondentDocumentManagement implements CCDConfig<CaseData, State, 
         caseData.getNewDocManagement().setCaseworkerCICDocument(documents);
         uploadDocument(caseData);
 
-        if (caseData.isNewBundleOrderEnabled()) {
+        if (caseData.isBundleOrderEnabled()) {
             if (auditEventService.hasCaseEvent(String.valueOf(details.getId()), RESPONDENT_DOCUMENT_MANAGEMENT)) {
                 if (caseData.getFurtherUploadedDocuments() == null) {
                     caseData.setFurtherUploadedDocuments(documents);

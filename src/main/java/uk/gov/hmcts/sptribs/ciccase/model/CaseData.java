@@ -526,7 +526,7 @@ public class CaseData {
     }
 
     @JsonIgnore
-    public boolean isNewBundleOrderEnabled() {
+    public boolean isBundleOrderEnabled() {
         return YesNo.YES.equals(this.newBundleOrderEnabled);
     }
 

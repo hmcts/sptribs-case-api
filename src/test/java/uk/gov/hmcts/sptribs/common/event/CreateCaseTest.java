@@ -81,6 +81,8 @@ class CreateCaseTest {
         assertThat(result.getState()).isEqualTo(Submitted);
         assertThat(result.getData().getSecurityClass()).isEqualTo(PUBLIC);
         assertThat(result.getData().getCaseNameHmctsInternal()).isEqualTo("Test Full Name");
+        assertThat(result.getData().getNewBundleOrderEnabled())
+            .isEqualTo(uk.gov.hmcts.sptribs.caseworker.model.YesNo.YES);
     }
 
     @Test
