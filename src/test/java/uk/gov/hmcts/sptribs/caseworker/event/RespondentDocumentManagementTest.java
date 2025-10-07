@@ -98,7 +98,7 @@ class RespondentDocumentManagementTest {
         assertThat(response.getData().getAllDocManagement()
             .getCaseworkerCICDocument().getFirst().getValue().getDocumentLink().getFilename())
             .isEqualTo("file.pdf");
-        assertThat(response.getData().getAllDocManagement().getCaseworkerCICDocument().getFirst().getValue().getDate()).isNull();
+        assertThat(response.getData().getAllDocManagement().getCaseworkerCICDocument().getFirst().getValue().getDate()).isNotNull();
     }
 
     @Test
@@ -126,7 +126,6 @@ class RespondentDocumentManagementTest {
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
 
-        // Mock audit service to return false (no previous event)
         when(auditEventService.hasCaseEvent(anyString(), eq(RESPONDENT_DOCUMENT_MANAGEMENT))).thenReturn(false);
 
         AboutToStartOrSubmitResponse<CaseData, State> response =
@@ -154,7 +153,6 @@ class RespondentDocumentManagementTest {
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
 
-        // Mock audit service to return true (has previous event)
         when(auditEventService.hasCaseEvent(anyString(), eq(RESPONDENT_DOCUMENT_MANAGEMENT))).thenReturn(true);
 
         AboutToStartOrSubmitResponse<CaseData, State> response =
@@ -185,7 +183,6 @@ class RespondentDocumentManagementTest {
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
 
-        // Mock audit service to return true (has previous event)
         when(auditEventService.hasCaseEvent(anyString(), eq(RESPONDENT_DOCUMENT_MANAGEMENT))).thenReturn(true);
 
         AboutToStartOrSubmitResponse<CaseData, State> response =

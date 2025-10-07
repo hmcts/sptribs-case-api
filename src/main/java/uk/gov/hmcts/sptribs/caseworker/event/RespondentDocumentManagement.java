@@ -51,6 +51,7 @@ import static uk.gov.hmcts.sptribs.document.DocumentUtil.uploadDocument;
 @RequiredArgsConstructor
 public class RespondentDocumentManagement implements CCDConfig<CaseData, State, UserRole> {
 
+    private static final boolean DATE_INCLUDED = true;
     private final UploadCaseDocuments uploadCaseDocuments = new UploadCaseDocuments();
     private final AuditEventService auditEventService;
 
@@ -93,7 +94,7 @@ public class RespondentDocumentManagement implements CCDConfig<CaseData, State, 
 
         final CaseData caseData = details.getData();
         List<ListValue<CaseworkerCICDocumentUpload>> uploadedDocuments = caseData.getNewDocManagement().getCaseworkerCICDocumentUpload();
-        List<ListValue<CaseworkerCICDocument>> documents = convertToCaseworkerCICDocumentUpload(uploadedDocuments, false);
+        List<ListValue<CaseworkerCICDocument>> documents = convertToCaseworkerCICDocumentUpload(uploadedDocuments, DATE_INCLUDED);
         caseData.getNewDocManagement().setCaseworkerCICDocumentUpload(new ArrayList<>());
         caseData.getNewDocManagement().setCaseworkerCICDocument(documents);
         uploadDocument(caseData);
