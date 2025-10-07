@@ -199,9 +199,6 @@ class RespondentDocumentManagementBundleIT {
         assertThat(furtherDocumentNames.get())
             .containsExactlyInAnyOrder("second-application.pdf", "second-linked.pdf", "caseworker-direction.pdf");
 
-        assertThat(extractFilenames(afterBundleCreation.getFurtherCaseDocuments()))
-            .containsExactlyInAnyOrder("second-application.pdf", "second-linked.pdf", "caseworker-direction.pdf");
-
         verify(bundlingClient).createBundle(
             eq(SERVICE_AUTHORIZATION),
             eq(TEST_AUTHORIZATION_TOKEN),
