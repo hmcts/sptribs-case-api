@@ -9,6 +9,13 @@
           "description": "",
           "folders": [
             {
+              "id": "46",
+              "value": {
+                "name": "Further Documents",
+                "sortIndex": 9
+              }
+            },
+            {
               "id": "37",
               "value": {
                 "name": "General evidence",
