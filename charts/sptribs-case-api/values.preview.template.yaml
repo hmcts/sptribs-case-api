@@ -9,11 +9,15 @@ java:
     CASE_DATA_STORE_BASEURL: http://{{ .Release.Name }}-ccd-data-store-api
     CASE_DOCUMENT_AM_BASEURL: http://${SERVICE_NAME}-ccd-case-document-am-api
     BUNDLING_API_URL: https://em-ccdorc-${SERVICE_FQDN}
+    DB_NAME: "{{ .Values.global.databaseNamePrefix }}sptribs"
+    DB_HOST: '{{ tpl .Values.global.postgresHostname $}}'
+    DB_USER_NAME: "{{ .Values.global.postgresUsername}}"
+    DB_PORT: 5432
+    SPRING_JMS_SERVICEBUS_ENABLED: false
     POSTGRES_HOST: '{{ tpl .Values.global.postgresHostname $}}'
     POSTGRES_NAME: "{{ .Values.global.databaseNamePrefix }}sptribs-case-api"
     POSTGRES_USERNAME: ${SPTRIBS_POSTGRES_USERNAME_PREVIEW}
     POSTGRES_CONNECTION_OPTIONS: ""
-
   keyVaults:
     sptribs:
       secrets:
@@ -34,7 +38,7 @@ java:
         - name: launchdarkly-sdk-key
           alias: LAUNCH_DARKLY_SDK_KEY
   secrets:
-    POSTGRES_PASSWORD:
+    DB_PASSWORD:
       secretRef: postgres
       key: PASSWORD
       disabled: false
@@ -86,6 +90,7 @@ ccd:
 
   ccd-data-store-api:
     java:
+      image: 'hmctspublic.azurecr.io/ccd/data-store-api:pr-2496'
       imagePullPolicy: Always
       environment:
         CASE_DOCUMENT_AM_API_ATTACH_DOCUMENT_ENABLED: true
@@ -100,6 +105,7 @@ ccd:
         ELASTIC_SEARCH_HOSTS: ${SERVICE_NAME}-es-master:9200
         ELASTIC_SEARCH_DATA_NODES_HOSTS: http://${SERVICE_NAME}-es-master:9200
         CASE_DOCUMENT_AM_URL: http://${SERVICE_NAME}-ccd-case-document-am-api
+        CCD_DECENTRALISED_CASE-TYPE-SERVICE-URLS_CriminalInjuriesCompensation: https://${SERVICE_FQDN}
         IDAM_OAUTH2_DATA_STORE_CLIENT_SECRET: ${IDAM_OAUTH2_DATA_STORE_CLIENT_SECRET}
         IDAM_DATA_STORE_SYSTEM_USER_USERNAME: ${IDAM_DATA_STORE_SYSTEM_USER_USERNAME}
         IDAM_DATA_STORE_SYSTEM_USER_PASSWORD: ${IDAM_DATA_STORE_SYSTEM_USER_PASSWORD}
@@ -261,14 +267,42 @@ ccd:
       01_input.conf: |
         input  {
           jdbc {
-            jdbc_connection_string => "jdbc:postgresql://sptribs-preview.postgres.database.azure.com:5432/pr-${CHANGE_ID}-data-store?sslmode-require&stringtype=unspecified"
+            jdbc_connection_string => "jdbc:postgresql://sptribs-preview.postgres.database.azure.com:5432/pr-${CHANGE_ID}-sptribs?sslmode=require"
             jdbc_user => "hmcts"
             jdbc_password_filepath => "/etc/logstash/secrets/PASSWORD"
             jdbc_validate_connection => true
             jdbc_driver_library => "/usr/share/logstash/ccd/postgresql.jar"
             jdbc_driver_class => "org.postgresql.Driver"
             jdbc_default_timezone => "UTC"
-            statement => "UPDATE case_data SET marked_by_logstash = true WHERE marked_by_logstash = false RETURNING id, created_date, last_modified, jurisdiction, case_type_id, state, last_state_modified_date, data::TEXT as json_data, data_classification::TEXT as json_data_classification, reference, security_classification, supplementary_data::TEXT as json_supplementary_data"
+            statement => "
+              WITH deleted AS (
+                DELETE FROM ccd.es_queue
+                WHERE id IN (
+                  SELECT id
+                  FROM ccd.es_queue
+                  ORDER BY id
+                  LIMIT 100
+                )
+                RETURNING id
+              )
+              SELECT
+                cd.id,
+                cd.reference,
+                deleted.id AS event_id,
+                cd.case_type_id,
+                cd.created_date,
+                ce.created_date AS last_modified,
+                cd.jurisdiction,
+                cd.last_state_modified_date,
+                cd.state,
+                cd.security_classification::text,
+                ce.data::TEXT AS json_data,
+                '{}' as json_data_classification,
+                cd.supplementary_data::TEXT AS json_supplementary_data
+              FROM deleted
+              JOIN ccd.case_event ce ON ce.id = deleted.id
+              JOIN ccd.case_data cd ON cd.id = ce.case_data_id
+            "
             clean_run => false
             schedule => "* * * * * *"
           }
@@ -380,6 +414,8 @@ ccd:
                 index => "%{[index_id]}"
                 document_type => "_doc"
                 document_id => "%{id}"
+                version => "%{event_id}"
+                version_type => "external"
                 timeout => 60
             }
         }
@@ -533,6 +569,7 @@ postgresql:
       - name: "pr-${CHANGE_ID}-user-profile"
       - name: "pr-${CHANGE_ID}-role_assignment"
       - name: "pr-${CHANGE_ID}-emstitch"
+      - name: "pr-${CHANGE_ID}-sptribs"
 
 servicebus:
   enabled: false
