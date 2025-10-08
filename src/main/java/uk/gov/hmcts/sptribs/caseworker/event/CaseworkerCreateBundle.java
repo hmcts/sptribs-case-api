@@ -78,13 +78,13 @@ public class CaseworkerCreateBundle implements CCDConfig<CaseData, State, UserRo
 
         final CaseData caseData = details.getData();
         final List<ListValue<CaseworkerCICDocument>> documentListValues = DocumentListUtil.getAllCaseDocuments(caseData);
-        final List<AbstractCaseworkerCICDocument<CaseworkerCICDocument>> abstractCaseworkerCICDocumentList = new ArrayList<>();
 
         if (caseData.isBundleOrderEnabled()) {
             caseData.setCaseDocuments(getInitialCicaUpload(caseData, details.getId()));
             caseData.setFurtherCaseDocuments(getFurtherDocuments(caseData));
         } else {
-            prepareBundleDocumentsPreBundleChanges(documentListValues, abstractCaseworkerCICDocumentList, caseData);
+            var cicDocumentList = convertToBundleDocumentType(documentListValues);
+            caseData.setCaseDocuments(cicDocumentList);
         }
 
         caseData.setBundleConfiguration(bundlingService.getMultiBundleConfig());
@@ -106,19 +106,6 @@ public class CaseworkerCreateBundle implements CCDConfig<CaseData, State, UserRo
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
             .build();
-    }
-
-    private static void prepareBundleDocumentsPreBundleChanges(List<ListValue<CaseworkerCICDocument>> documentListValues,
-                                                               List<AbstractCaseworkerCICDocument<CaseworkerCICDocument>> cicDocumentList,
-                                                               CaseData caseData) {
-        for (ListValue<CaseworkerCICDocument> documentListValue : documentListValues) {
-            var document = documentListValue.getValue();
-            if (document.isValidBundleDocument()) {
-                cicDocumentList.add(new AbstractCaseworkerCICDocument<>(document));
-            }
-        }
-
-        caseData.setCaseDocuments(cicDocumentList);
     }
 
     private List<AbstractCaseworkerCICDocument<CaseworkerCICDocument>> getInitialCicaUpload(CaseData caseData, long caseId) {
