@@ -264,7 +264,7 @@ class CaseworkerDocumentManagementAmendTest {
         assertThat(documentMgmtResponse).isNotNull();
     }
 
-    private Document  getDocumentData() {
+    private Document getDocumentData() {
         return Document.builder()
             .filename("test.pdf")
             .binaryUrl("http://url/")
