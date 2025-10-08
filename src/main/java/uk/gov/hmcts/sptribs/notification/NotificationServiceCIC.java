@@ -252,7 +252,7 @@ public class NotificationServiceCIC {
             return notificationClient.getPdfForLetter(notificationId);
         } catch (NotificationClientException notificationClientException) {
             log.error("Error fetching notification as PDF: {}", notificationClientException.getMessage());
-            throw new NotificationException(notificationClientException);
+            return new byte[] {};
         }
     }
 
