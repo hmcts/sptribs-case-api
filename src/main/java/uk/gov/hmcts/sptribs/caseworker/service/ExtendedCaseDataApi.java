@@ -29,11 +29,13 @@ public interface ExtendedCaseDataApi {
         @PathVariable("cid") String caseId
     );
 
-    @GetMapping("/cases/{caseId}/events")
+    @GetMapping(
+        path = "/cases/{caseId}/events",
+        headers = EXPERIMENTAL
+    )
     AuditEventsResponse getAuditEvents(
         @RequestHeader(AUTHORIZATION) String authorisation,
         @RequestHeader(SERVICE_AUTHORIZATION) String serviceAuthorization,
-        @RequestHeader("experimental") boolean experimental,
         @PathVariable("caseId") String caseId
     );
 }

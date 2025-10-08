@@ -16,7 +16,6 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
@@ -43,7 +42,7 @@ class AuditEventServiceTest {
     void shouldReturnFalseWhenApiResponseIsNull() {
         when(idamService.retrieveSystemUpdateUserDetails()).thenReturn(SYSTEM_USER);
         when(authTokenGenerator.generate()).thenReturn(SERVICE_TOKEN);
-        when(extendedCaseDataApi.getAuditEvents(any(), anyString(), anyBoolean(), anyString()))
+        when(extendedCaseDataApi.getAuditEvents(any(), anyString(), anyString()))
             .thenReturn(null);
 
         boolean result = auditEventService.hasCaseEvent("case-1", "event-1");
@@ -58,7 +57,7 @@ class AuditEventServiceTest {
         when(idamService.retrieveSystemUpdateUserDetails()).thenReturn(SYSTEM_USER);
         when(authTokenGenerator.generate()).thenReturn(SERVICE_TOKEN);
 
-        when(extendedCaseDataApi.getAuditEvents(any(), anyString(), anyBoolean(), anyString()))
+        when(extendedCaseDataApi.getAuditEvents(any(), anyString(), anyString()))
             .thenReturn(response);
 
         boolean result = auditEventService.hasCaseEvent("case-1", "event-1");
@@ -74,7 +73,7 @@ class AuditEventServiceTest {
         when(idamService.retrieveSystemUpdateUserDetails()).thenReturn(SYSTEM_USER);
         when(authTokenGenerator.generate()).thenReturn(SERVICE_TOKEN);
 
-        when(extendedCaseDataApi.getAuditEvents(any(), anyString(), anyBoolean(), anyString()))
+        when(extendedCaseDataApi.getAuditEvents(any(), anyString(), anyString()))
             .thenReturn(response);
 
         boolean result = auditEventService.hasCaseEvent("case-1", "event-1");

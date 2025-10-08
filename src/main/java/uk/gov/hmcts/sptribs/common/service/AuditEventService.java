@@ -24,7 +24,6 @@ public class AuditEventService {
         var response = extendedCaseDataApi.getAuditEvents(
             authToken,
             serviceAuthToken,
-            false,
             caseId
         );
 
