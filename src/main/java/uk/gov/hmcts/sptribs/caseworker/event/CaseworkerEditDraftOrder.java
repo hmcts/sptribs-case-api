@@ -47,10 +47,9 @@ import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_WA_CONFIG_USER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE;
 
-
 @Component
 @Slf4j
-public class CaseWorkerEditDraftOrder implements CCDConfig<CaseData, State, UserRole> {
+public class CaseworkerEditDraftOrder implements CCDConfig<CaseData, State, UserRole> {
 
     private static final CcdPageConfiguration editDraftOrder = new EditDraftOrder();
 
@@ -71,6 +70,7 @@ public class CaseWorkerEditDraftOrder implements CCDConfig<CaseData, State, User
                 .forStates(CaseManagement, ReadyToList, AwaitingHearing, CaseStayed, CaseClosed)
                 .name("Orders: Edit draft")
                 .showSummary()
+                .aboutToStartCallback(this::aboutToStart)
                 .aboutToSubmitCallback(this::aboutToSubmit)
                 .submittedCallback(this::submitted)
                 .grant(CREATE_READ_UPDATE, SUPER_USER,
@@ -83,6 +83,15 @@ public class CaseWorkerEditDraftOrder implements CCDConfig<CaseData, State, User
         draftOrderEditMainContentPage.addTo(pageBuilder);
         editDraftOrderAddDocumentFooter(pageBuilder);
         previewOrder.addTo(pageBuilder);
+    }
+
+    public AboutToStartOrSubmitResponse<CaseData, State> aboutToStart(CaseDetails<CaseData, State> caseDetails) {
+        CaseData data = caseDetails.getData();
+        data.setCurrentEvent(CASEWORKER_EDIT_DRAFT_ORDER);
+
+        return AboutToStartOrSubmitResponse.<CaseData, State>builder()
+            .data(data)
+            .build();
     }
 
     private void editDraftOrderAddDocumentFooter(PageBuilder pageBuilder) {
@@ -146,6 +155,7 @@ public class CaseWorkerEditDraftOrder implements CCDConfig<CaseData, State, User
         caseData.setDraftOrderContentCIC(new DraftOrderContentCIC());
         caseData.getCicCase().getDraftOrderDynamicList().setValue(null);
         caseData.getCicCase().setOrderTemplateIssued(null);
+        caseData.setCurrentEvent("");
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
@@ -161,6 +171,4 @@ public class CaseWorkerEditDraftOrder implements CCDConfig<CaseData, State, User
                 + "'Send order' to send the case documentation to parties in the case."))
             .build();
     }
-
-
 }

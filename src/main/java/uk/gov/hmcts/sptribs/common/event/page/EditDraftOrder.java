@@ -28,6 +28,7 @@ public class EditDraftOrder implements CcdPageConfiguration {
             .page("editDraftOrder", this::midEvent)
             .pageLabel("Edit order")
             .label("LabelEditDraftOrder", "Draft to be edited")
+            .readonly(CaseData::getCurrentEvent, ALWAYS_HIDE)
             .complex(CaseData::getCicCase)
             .mandatoryWithLabel(CicCase::getDraftOrderDynamicList, "Draft order to be edited")
             .done()
