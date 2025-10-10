@@ -61,7 +61,7 @@ import static uk.gov.hmcts.sptribs.testutil.TestResourceUtil.expectedResponse;
 @AutoConfigureMockMvc
 @ContextConfiguration(initializers = {IdamWireMock.PropertiesInitializer.class})
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-public class CaseWorkerCreateDraftOrderIT {
+public class CaseworkerCreateDraftOrderIT {
 
     @Autowired
     private MockMvc mockMvc;

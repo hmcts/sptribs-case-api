@@ -11,17 +11,22 @@ import java.util.Map;
 
 public class SendOrderAddDraftOrder implements CcdPageConfiguration {
 
+    private final Map<String, String> pageShowCondition;
+
+    public SendOrderAddDraftOrder(Map<String, String> pageShowCondition) {
+        this.pageShowCondition = pageShowCondition;
+    }
+
+    public SendOrderAddDraftOrder() {
+        this(new HashMap<>());
+    }
+
     @Override
     public void addTo(PageBuilder pageBuilder) {
-        String pageNameUploadOrder = "caseworkerSendOrderUploadOrder";
-        String pageNameDraftOrder = "caseworkerSendOrderSelectDraftOrder";
-        Map<String, String> map = new HashMap<>();
-        map.put(pageNameDraftOrder, "cicCaseOrderIssuingType = \"DraftOrder\"");
-        map.put(pageNameUploadOrder, "cicCaseOrderIssuingType = \"UploadOrder\"");
-        pageBuilder.page(pageNameDraftOrder)
+        pageBuilder.page("caseworkerSendOrderSelectDraftOrder")
             .pageLabel("Select order")
             .label("LabelSelectOrder", "")
-            .pageShowConditions(map)
+            .pageShowConditions(pageShowCondition)
             .complex(CaseData::getCicCase)
             .mandatory(CicCase::getDraftOrderDynamicList)
             .done();

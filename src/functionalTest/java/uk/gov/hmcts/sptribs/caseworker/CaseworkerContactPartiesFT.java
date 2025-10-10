@@ -19,7 +19,7 @@ import static uk.gov.hmcts.sptribs.testutil.TestConstants.SUBMITTED_URL;
 import static uk.gov.hmcts.sptribs.testutil.TestResourceUtil.expectedResponse;
 
 @SpringBootTest
-public class CaseWorkerContactPartiesFT extends FunctionalTestSuite {
+public class CaseworkerContactPartiesFT extends FunctionalTestSuite {
 
     private static final String ABOUT_TO_START_REQUEST =
         "classpath:request/casedata/ccd-callback-casedata-caseworker-contact-parties-about-to-start.json";
