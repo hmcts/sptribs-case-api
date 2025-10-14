@@ -38,6 +38,7 @@ public class CaseTypeTabTest {
         final Tab.TabBuilder<CaseData, UserRole> casePartiesTabBuilder = Tab.TabBuilder.builder(CaseData.class, utils);
         final Tab.TabBuilder<CaseData, UserRole> ordersTabBuilder = Tab.TabBuilder.builder(CaseData.class, utils);
         final Tab.TabBuilder<CaseData, UserRole> caseDocsTabBuilder = Tab.TabBuilder.builder(CaseData.class, utils);
+        final Tab.TabBuilder<CaseData, UserRole> notifyTabBuilder = Tab.TabBuilder.builder(CaseData.class, utils);
         final Tab.TabBuilder<CaseData, UserRole> hearingsTabBuilder = Tab.TabBuilder.builder(CaseData.class, utils);
         final Tab.TabBuilder<CaseData, UserRole> cicaDetailsTabBuilder = Tab.TabBuilder.builder(CaseData.class, utils);
         final Tab.TabBuilder<CaseData, UserRole> caseCategoryTabBuilder = Tab.TabBuilder.builder(CaseData.class, utils);
@@ -54,6 +55,7 @@ public class CaseTypeTabTest {
         when(configBuilder.tab("caseParties", "Case Parties")).thenReturn(casePartiesTabBuilder);
         when(configBuilder.tab("orders", "Orders & Decisions")).thenReturn(ordersTabBuilder);
         when(configBuilder.tab("caseDocuments", "Case Documents")).thenReturn(caseDocsTabBuilder);
+        when(configBuilder.tab("notify", "Notify")).thenReturn(notifyTabBuilder);
         when(configBuilder.tab("hearings", "Hearings")).thenReturn(hearingsTabBuilder);
         when(configBuilder.tab("cicaDetails", "CICA Details")).thenReturn(cicaDetailsTabBuilder);
         when(configBuilder.tab("caseFileView", "Case file view")).thenReturn(caseCategoryTabBuilder);
@@ -70,6 +72,7 @@ public class CaseTypeTabTest {
         final Tab<CaseData, UserRole> casePartiesTab = casePartiesTabBuilder.build();
         final Tab<CaseData, UserRole> ordersTab = ordersTabBuilder.build();
         final Tab<CaseData, UserRole> caseDocsTab = caseDocsTabBuilder.build();
+        final Tab<CaseData, UserRole> notifyTab = notifyTabBuilder.build();
         final Tab<CaseData, UserRole> hearingsTab = hearingsTabBuilder.build();
         final Tab<CaseData, UserRole> cicaDetailsTab = cicaDetailsTabBuilder.build();
         final Tab<CaseData, UserRole> caseCategoryTab = caseCategoryTabBuilder.build();
@@ -85,6 +88,7 @@ public class CaseTypeTabTest {
         assertThat(casePartiesTab.getFields()).extracting(TabField::getId).contains("cicCaseFullName");
         assertThat(ordersTab.getFields()).extracting(TabField::getId).contains("cicCaseOrderList");
         assertThat(caseDocsTab.getFields()).extracting(TabField::getId).contains("cicCaseApplicantDocumentsUploaded");
+        assertThat(notifyTab.getFields()).extracting(TabField::getId).contains("cicCaseCorrespondence");
         assertThat(hearingsTab.getFields()).extracting(TabField::getId).contains("hearingStatus");
         assertThat(cicaDetailsTab.getFields()).extracting(TabField::getId).contains("CICA Details");
         assertThat(caseCategoryTab.getFields()).extracting(TabField::getDisplayContextParameter).isNotNull();

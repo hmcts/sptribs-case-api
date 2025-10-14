@@ -6,14 +6,18 @@ import org.apache.commons.lang.StringUtils;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.idam.client.models.User;
 import uk.gov.hmcts.sptribs.ciccase.model.NotificationResponse;
 import uk.gov.hmcts.sptribs.ciccase.model.NotificationType;
 import uk.gov.hmcts.sptribs.common.config.EmailTemplatesConfigCIC;
+import uk.gov.hmcts.sptribs.controllers.model.CorrespondenceRepository;
+import uk.gov.hmcts.sptribs.controllers.model.MainController;
 import uk.gov.hmcts.sptribs.document.DocumentClient;
 import uk.gov.hmcts.sptribs.idam.IdamService;
 import uk.gov.hmcts.sptribs.notification.exception.NotificationException;
+import uk.gov.hmcts.sptribs.notification.model.Correspondence;
 import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
 import uk.gov.service.notify.NotificationClient;
 import uk.gov.service.notify.NotificationClientException;
@@ -22,6 +26,7 @@ import uk.gov.service.notify.SendLetterResponse;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -53,11 +58,15 @@ public class NotificationServiceCIC {
     @Autowired
     private final DocumentClient caseDocumentClient;
 
+    @Autowired
+    private final MainController mainController;
+
     public NotificationServiceCIC(NotificationClient notificationClient,
                                   EmailTemplatesConfigCIC emailTemplatesConfig,
                                   IdamService idamService, HttpServletRequest request,
                                   AuthTokenGenerator authTokenGenerator,
-                                  DocumentClient caseDocumentClient) {
+                                  DocumentClient caseDocumentClient,
+                                  MainController mainController) {
 
         this.notificationClient = notificationClient;
         this.emailTemplatesConfig = emailTemplatesConfig;
@@ -65,9 +74,40 @@ public class NotificationServiceCIC {
         this.request = request;
         this.authTokenGenerator = authTokenGenerator;
         this.caseDocumentClient = caseDocumentClient;
+        this.mainController = mainController;
     }
 
-    public NotificationResponse sendEmail(NotificationRequest notificationRequest) {
+    public void saveEmailCorrespondence(SendEmailResponse sendEmailResponse, String sentTo, String caseReferenceNumber) {
+        String sentFrom = "Criminal Injuries Compensation Tribunal";
+
+        if (sendEmailResponse.getFromEmail().isPresent()) {
+            sentFrom = sendEmailResponse.getFromEmail().get();
+        }
+
+        Correspondence correspondence = Correspondence.builder()
+            .sentOn(LocalDateTime.now())
+            .from(sentFrom)
+            .to(sentTo)
+            .correspondenceType("Email")
+            .build();
+
+        mainController.addNewCorrespondence(correspondence);
+    }
+
+    public void saveLetterCorrespondence(SendLetterResponse sendLetterResponse, String sentTo, String caseReferenceNumber) {
+        String sentFrom = "Criminal Injuries Compensation Tribunal";
+
+        Correspondence correspondence = Correspondence.builder()
+            .sentOn(LocalDateTime.now())
+            .from(sentFrom)
+            .to(sentTo)
+            .correspondenceType("Letter")
+            .build();
+
+        mainController.addNewCorrespondence(correspondence);
+    }
+
+    public NotificationResponse sendEmail(NotificationRequest notificationRequest, String caseReferenceNumber) {
         final SendEmailResponse sendEmailResponse;
         final String destinationAddress = notificationRequest.getDestinationAddress();
         final TemplateName template = notificationRequest.getTemplate();
@@ -89,6 +129,8 @@ public class NotificationServiceCIC {
                     templateVars,
                     referenceId
                 );
+
+            this.saveEmailCorrespondence(sendEmailResponse, destinationAddress, caseReferenceNumber);
 
             log.debug("Successfully sent email with notification id {} and reference {}",
                 sendEmailResponse.getNotificationId(),
@@ -113,7 +155,7 @@ public class NotificationServiceCIC {
         }
     }
 
-    public NotificationResponse sendLetter(NotificationRequest notificationRequest) {
+    public NotificationResponse sendLetter(NotificationRequest notificationRequest, String caseReferenceNumber) {
         final TemplateName template = notificationRequest.getTemplate();
         final Map<String, Object> templateVars = notificationRequest.getTemplateVars();
 
@@ -128,6 +170,8 @@ public class NotificationServiceCIC {
                     templateVars,
                     referenceId
                 );
+
+            this.saveLetterCorrespondence(sendLetterResponse, notificationRequest.getDestinationAddress(), caseReferenceNumber);
 
             log.debug("Successfully sent letter with notification id {} and reference {}",
                 sendLetterResponse.getNotificationId(),

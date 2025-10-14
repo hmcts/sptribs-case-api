@@ -54,6 +54,7 @@ import uk.gov.hmcts.sptribs.document.bundling.model.Bundle;
 import uk.gov.hmcts.sptribs.document.bundling.model.MultiBundleConfig;
 import uk.gov.hmcts.sptribs.document.model.AbstractCaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
+import uk.gov.hmcts.sptribs.notification.model.Correspondence;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -311,6 +312,13 @@ public class CaseData {
         access = {CaseworkerAndSuperUserAccess.class}
     )
     private String note;
+
+    @CCD(
+        label = "Correspondence",
+        typeOverride = Collection,
+        access = {CaseworkerAndSuperUserAccess.class}
+    )
+    private List<ListValue<Correspondence>> correspondence;
 
     @CCD(
         label = "Case number",
