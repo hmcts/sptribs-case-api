@@ -313,6 +313,12 @@ public class CaseData {
     private String note;
 
     @CCD(
+        label = "Notification recipient",
+        access = {CaseworkerAndSuperUserAccess.class}
+    )
+    private String notificationRecipient;
+
+    @CCD(
         label = "Case number",
         access = {DefaultAccess.class, CaseworkerAccess.class}
     )
