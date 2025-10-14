@@ -11,6 +11,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
+import uk.gov.hmcts.ccd.sdk.External;
 import uk.gov.hmcts.ccd.sdk.api.CCD;
 import uk.gov.hmcts.ccd.sdk.type.CaseLink;
 import uk.gov.hmcts.ccd.sdk.type.ComponentLauncher;
@@ -316,7 +317,18 @@ public class CaseData {
         label = "Notification recipient",
         access = {CaseworkerAndSuperUserAccess.class}
     )
+    @External
     private String notificationRecipient;
+
+    @Builder.Default
+    @CCD(
+        label = "Notifications",
+        hint = "Rendered as markdown",
+        typeOverride = TextArea,
+        access = {DefaultAccess.class, CaseworkerAccess.class}
+    )
+    @External
+    private String notificationsMarkdown = "### Notifications\n\n_No notifications recorded yet._";
 
     @CCD(
         label = "Case number",

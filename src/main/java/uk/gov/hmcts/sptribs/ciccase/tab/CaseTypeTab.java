@@ -67,11 +67,14 @@ import static uk.gov.hmcts.sptribs.ciccase.search.CaseFieldsConstants.SUBJECT_PH
 @Setter
 public class CaseTypeTab implements CCDConfig<CaseData, State, UserRole> {
 
+    public static final String NEVER_SHOW = "[STATE]=\"NEVER_SHOW\"";
+
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         buildSummaryTab(configBuilder);
         buildStateTab(configBuilder);
         buildNotesTab(configBuilder);
+        buildNotificationsTab(configBuilder);
         buildCaseDetailsTab(configBuilder);
         buildCasePartiesTab(configBuilder);
         buildOrderTab(configBuilder);
@@ -149,6 +152,13 @@ public class CaseTypeTab implements CCDConfig<CaseData, State, UserRole> {
         configBuilder.tab("notes", "Notes")
             .forRoles(NON_RESPONDENT_USER)
             .field(CaseData::getNotes);
+    }
+
+    private void buildNotificationsTab(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
+        configBuilder.tab("notifications", "Notifications")
+            .forRoles(CASEWORKER)
+            .label("notificationsLabel", null, "${notificationsMarkdown}")
+            .field(CaseData::getNotificationsMarkdown, NEVER_SHOW);
     }
 
     private void buildBundlesTab(ConfigBuilder<CaseData, State, UserRole> configBuilder) {

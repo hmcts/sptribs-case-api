@@ -39,6 +39,7 @@ public class CaseTypeTabTest {
         final Tab.TabBuilder<CaseData, UserRole> ordersTabBuilder = Tab.TabBuilder.builder(CaseData.class, utils);
         final Tab.TabBuilder<CaseData, UserRole> caseDocsTabBuilder = Tab.TabBuilder.builder(CaseData.class, utils);
         final Tab.TabBuilder<CaseData, UserRole> hearingsTabBuilder = Tab.TabBuilder.builder(CaseData.class, utils);
+        final Tab.TabBuilder<CaseData, UserRole> notificationsTabBuilder = Tab.TabBuilder.builder(CaseData.class, utils);
         final Tab.TabBuilder<CaseData, UserRole> cicaDetailsTabBuilder = Tab.TabBuilder.builder(CaseData.class, utils);
         final Tab.TabBuilder<CaseData, UserRole> caseCategoryTabBuilder = Tab.TabBuilder.builder(CaseData.class, utils);
         final Tab.TabBuilder<CaseData, UserRole> bundlingTabBuilder = Tab.TabBuilder.builder(CaseData.class, utils);
@@ -55,6 +56,7 @@ public class CaseTypeTabTest {
         when(configBuilder.tab("orders", "Orders & Decisions")).thenReturn(ordersTabBuilder);
         when(configBuilder.tab("caseDocuments", "Case Documents")).thenReturn(caseDocsTabBuilder);
         when(configBuilder.tab("hearings", "Hearings")).thenReturn(hearingsTabBuilder);
+        when(configBuilder.tab("notifications", "Notifications")).thenReturn(notificationsTabBuilder);
         when(configBuilder.tab("cicaDetails", "CICA Details")).thenReturn(cicaDetailsTabBuilder);
         when(configBuilder.tab("caseFileView", "Case file view")).thenReturn(caseCategoryTabBuilder);
         when(configBuilder.tab("bundles", "Bundles")).thenReturn(bundlingTabBuilder);
@@ -71,6 +73,7 @@ public class CaseTypeTabTest {
         final Tab<CaseData, UserRole> ordersTab = ordersTabBuilder.build();
         final Tab<CaseData, UserRole> caseDocsTab = caseDocsTabBuilder.build();
         final Tab<CaseData, UserRole> hearingsTab = hearingsTabBuilder.build();
+        final Tab<CaseData, UserRole> notificationsTab = notificationsTabBuilder.build();
         final Tab<CaseData, UserRole> cicaDetailsTab = cicaDetailsTabBuilder.build();
         final Tab<CaseData, UserRole> caseCategoryTab = caseCategoryTabBuilder.build();
         final Tab<CaseData, UserRole> messages = messagesTabBuilder.build();
@@ -86,6 +89,8 @@ public class CaseTypeTabTest {
         assertThat(ordersTab.getFields()).extracting(TabField::getId).contains("cicCaseOrderList");
         assertThat(caseDocsTab.getFields()).extracting(TabField::getId).contains("cicCaseApplicantDocumentsUploaded");
         assertThat(hearingsTab.getFields()).extracting(TabField::getId).contains("hearingStatus");
+        assertThat(notificationsTab.getFields()).extracting(TabField::getId).contains("notificationsLabel");
+        assertThat(notificationsTab.getFields()).extracting(TabField::getShowCondition).contains(CaseTypeTab.NEVER_SHOW);
         assertThat(cicaDetailsTab.getFields()).extracting(TabField::getId).contains("CICA Details");
         assertThat(caseCategoryTab.getFields()).extracting(TabField::getDisplayContextParameter).isNotNull();
         assertThat(messages.getFields()).extracting(TabField::getId).isNotNull();

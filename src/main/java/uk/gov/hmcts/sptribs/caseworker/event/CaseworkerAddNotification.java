@@ -26,7 +26,6 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 
 @Component
 public class CaseworkerAddNotification implements CCDConfig<CaseData, State, UserRole> {
-
     @Autowired
     private NotificationsRepository notificationsRepository;
 
