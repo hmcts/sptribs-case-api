@@ -1,0 +1,14 @@
+### Notifications ⚖️
+
+{{#latest}}
+> **Latest:** `{{latest}}`
+{{/latest}}
+
+| **Recipient** | **Status** | **Sent At** |
+|---------------|------------|-------------|
+{{#notifications}}
+| {{recipient}} | {{#sentAt}}✅ Sent{{/sentAt}}{{^sentAt}}⚠️ Pending{{/sentAt}} | {{#sentAt}}`{{sentAt}}`{{/sentAt}}{{^sentAt}}_Pending_{{/sentAt}} |
+{{/notifications}}
+{{^notifications}}
+| _No notifications recorded yet._ | | |
+{{/notifications}}

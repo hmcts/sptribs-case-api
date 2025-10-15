@@ -59,7 +59,6 @@ public class CaseworkerAddNotification implements CCDConfig<CaseData, State, Use
             .recipient(caseData.getNotificationRecipient())
             .build());
 
-        caseData.setNotificationRecipient(null);
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
