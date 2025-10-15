@@ -68,6 +68,8 @@ public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole>
     private static final CcdPageConfiguration notifyParties = new SendOrderNotifyParties();
     private static final CcdPageConfiguration sendReminder = new SendOrderSendReminder();
 
+    private static final int ORDER_TIMESTAMP_WITH_EXTENSION = 2; //dd-MM-yyyy HH:mm:ss.pdf
+
     @Autowired
     private NewOrderIssuedNotification newOrderIssuedNotification;
 
@@ -123,7 +125,7 @@ public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole>
             selectedDynamicDraft = caseData.getCicCase().getDraftOrderDynamicList().getValue().getLabel();
             for (ListValue<DraftOrderCIC> draftOrderCICValue : caseData.getCicCase().getDraftOrderCICList()) {
                 String[] splitFilename = draftOrderCICValue.getValue().getTemplateGeneratedDocument().getFilename().split(DOUBLE_HYPHEN);
-                String timestamp = splitFilename[2].replace(".pdf", "").trim();
+                String timestamp = splitFilename[ORDER_TIMESTAMP_WITH_EXTENSION].replace(".pdf", "").trim();
                 if (selectedDynamicDraft.contains(draftOrderCICValue.getValue().getDraftOrderContentCIC().getOrderTemplate().getLabel())
                     && selectedDynamicDraft.contains(timestamp)) {
                     selectedDraftOrder = draftOrderCICValue.getValue();
