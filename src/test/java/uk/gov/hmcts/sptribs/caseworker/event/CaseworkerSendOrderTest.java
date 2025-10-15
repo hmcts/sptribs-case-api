@@ -562,6 +562,11 @@ class CaseworkerSendOrderTest {
         assertThat(order.getDraftOrder().getTemplateGeneratedDocument().getFilename())
                 .isEqualTo(SENT + COLON + "Order--[test]--15-10-2025 11:00:00.pdf");
         assertThat(submitted.getConfirmationHeader()).contains("Order sent");
+        final List<DraftOrderCIC> draftOrderCICS =
+                response.getData().getCicCase().getDraftOrderCICList().stream().map(ListValue::getValue).toList();
+        assertThat(draftOrderCICS).hasSize(1);
+        final DraftOrderCIC expectedRemainingDraft = draftOrderCICS.getFirst();
+        assertThat(expectedRemainingDraft).isEqualTo(draftOrderCIC);
     }
 
     @Test
