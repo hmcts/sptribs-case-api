@@ -39,6 +39,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import static java.lang.String.format;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_SEND_ORDER;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.COLON;
+import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.DOUBLE_HYPHEN;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.DRAFT;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.SENT;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventUtil.getRecipients;
@@ -120,10 +121,11 @@ public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole>
             && caseData.getCicCase().getOrderIssuingType().equals(OrderIssuingType.ISSUE_AND_SEND_AN_EXISTING_DRAFT)) {
 
             selectedDynamicDraft = caseData.getCicCase().getDraftOrderDynamicList().getValue().getLabel();
-
             for (ListValue<DraftOrderCIC> draftOrderCICValue : caseData.getCicCase().getDraftOrderCICList()) {
-
-                if (selectedDynamicDraft.contains(draftOrderCICValue.getValue().getDraftOrderContentCIC().getOrderTemplate().getLabel())) {
+                String[] splitFilename = draftOrderCICValue.getValue().getTemplateGeneratedDocument().getFilename().split(DOUBLE_HYPHEN);
+                String timestamp = splitFilename[2].replace(".pdf", "").trim();
+                if (selectedDynamicDraft.contains(draftOrderCICValue.getValue().getDraftOrderContentCIC().getOrderTemplate().getLabel())
+                    && selectedDynamicDraft.contains(timestamp)) {
                     selectedDraftOrder = draftOrderCICValue.getValue();
                     String fileName = selectedDraftOrder.getTemplateGeneratedDocument().getFilename().replace(DRAFT + COLON, "");
                     selectedDraftOrder.getTemplateGeneratedDocument().setFilename(SENT + COLON + fileName);
@@ -160,10 +162,10 @@ public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole>
                         .value(draftValue.getValue())
                         .build();
 
-                    draftList.add(0, listValue); // always add new note as first element so that it is displayed on top
+                    draftList.addFirst(listValue); // always add new order as first element so that it is displayed on top
 
                     draftList.forEach(
-                        caseNoteListValue -> caseNoteListValue.setId(String.valueOf(listValueIndex.incrementAndGet())));
+                        draftOrderListValue -> draftOrderListValue.setId(String.valueOf(listValueIndex.incrementAndGet())));
                 }
             }
             caseData.getCicCase().setDraftOrderCICList(draftList);
@@ -214,10 +216,11 @@ public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole>
                 .value(order)
                 .build();
 
-            caseData.getCicCase().getOrderList().add(0, listValue); // always add new note as first element so that it is displayed on top
+            // always add new order as first element so that it is displayed on top
+            caseData.getCicCase().getOrderList().addFirst(listValue);
 
             caseData.getCicCase().getOrderList().forEach(
-                caseNoteListValue -> caseNoteListValue.setId(String.valueOf(listValueIndex.incrementAndGet())));
+                orderListValue -> orderListValue.setId(String.valueOf(listValueIndex.incrementAndGet())));
         }
     }
 
