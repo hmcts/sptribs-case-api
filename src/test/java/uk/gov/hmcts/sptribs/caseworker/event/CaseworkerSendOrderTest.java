@@ -536,7 +536,6 @@ class CaseworkerSendOrderTest {
                 .notifyPartyRespondent(Set.of(RespondentCIC.RESPONDENT))
                 .notifyPartySubject(Set.of(SubjectCIC.SUBJECT))
                 .notifyPartyApplicant(Set.of(ApplicantCIC.APPLICANT_CIC))
-                .orderIssuingType(OrderIssuingType.UPLOAD_A_NEW_ORDER_FROM_YOUR_COMPUTER)
                 .orderFile(List.of(documentListValue))
                 .orderDueDates(List.of(dates))
                 .orderReminderYesOrNo(YesNo.YES)
