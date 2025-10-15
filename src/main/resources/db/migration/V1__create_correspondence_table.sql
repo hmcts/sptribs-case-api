@@ -1,5 +1,5 @@
 create table if not exists case_correspondence (
-  case_reference bigint not null references ccd.case_data(reference) on delete cascade,
+  case_reference_number bigint not null references ccd.case_data(reference) on delete cascade,
   id bigserial,
   timestamp timestamp not null default now(),
   sent_on timestamp not null default now(),
@@ -7,5 +7,5 @@ create table if not exists case_correspondence (
   sent_to varChar(200) not null,
   document_url varChar(2000) not null,
   correspondence_type varChar(200) not null,
-  primary key(case_reference, id)
+  primary key(case_reference_number, id)
 );

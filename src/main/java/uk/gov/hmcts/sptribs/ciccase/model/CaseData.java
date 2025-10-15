@@ -318,7 +318,7 @@ public class CaseData {
         typeOverride = Collection,
         access = {CaseworkerAndSuperUserAccess.class}
     )
-    private List<ListValue<Correspondence>> correspondence;
+    private List<Correspondence> correspondence;
 
     @CCD(
         label = "Case number",

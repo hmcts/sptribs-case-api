@@ -11,12 +11,12 @@ import uk.gov.hmcts.reform.idam.client.models.User;
 import uk.gov.hmcts.sptribs.ciccase.model.NotificationResponse;
 import uk.gov.hmcts.sptribs.ciccase.model.NotificationType;
 import uk.gov.hmcts.sptribs.common.config.EmailTemplatesConfigCIC;
-import uk.gov.hmcts.sptribs.controllers.model.MainController;
+import uk.gov.hmcts.sptribs.common.repositories.CorrespondenceRepository;
 import uk.gov.hmcts.sptribs.document.DocumentClient;
 import uk.gov.hmcts.sptribs.idam.IdamService;
 import uk.gov.hmcts.sptribs.notification.exception.NotificationException;
-import uk.gov.hmcts.sptribs.notification.model.Correspondence;
 import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
+import uk.gov.hmcts.sptribs.notification.persistence.CorrespondenceRecord;
 import uk.gov.service.notify.NotificationClient;
 import uk.gov.service.notify.NotificationClientException;
 import uk.gov.service.notify.SendEmailResponse;
@@ -36,6 +36,8 @@ import static uk.gov.hmcts.sptribs.common.config.ControllerConstants.BEARER_PREF
 @Service
 @Slf4j
 public class NotificationServiceCIC {
+    @Autowired
+    private CorrespondenceRepository correspondenceRepository;
 
     @Autowired
     private final NotificationClient notificationClient;
@@ -55,15 +57,11 @@ public class NotificationServiceCIC {
     @Autowired
     private final DocumentClient caseDocumentClient;
 
-    @Autowired
-    private final MainController mainController;
-
     public NotificationServiceCIC(NotificationClient notificationClient,
                                   EmailTemplatesConfigCIC emailTemplatesConfig,
                                   IdamService idamService, HttpServletRequest request,
                                   AuthTokenGenerator authTokenGenerator,
-                                  DocumentClient caseDocumentClient,
-                                  MainController mainController) {
+                                  DocumentClient caseDocumentClient) {
 
         this.notificationClient = notificationClient;
         this.emailTemplatesConfig = emailTemplatesConfig;
@@ -71,7 +69,6 @@ public class NotificationServiceCIC {
         this.request = request;
         this.authTokenGenerator = authTokenGenerator;
         this.caseDocumentClient = caseDocumentClient;
-        this.mainController = mainController;
     }
 
     public void saveEmailCorrespondence(SendEmailResponse sendEmailResponse, String sentTo, String caseReferenceNumber) {
@@ -81,31 +78,29 @@ public class NotificationServiceCIC {
             sentFrom = sendEmailResponse.getFromEmail().get();
         }
 
-        Correspondence correspondence = Correspondence.builder()
-            .caseReference(Long.parseLong(caseReferenceNumber))
+        CorrespondenceRecord correspondence = CorrespondenceRecord.builder()
+            .caseReferenceNumber(Long.parseLong(caseReferenceNumber.replace("-", "")))
             .id(Long.parseLong(sendEmailResponse.getNotificationId().toString()))
-            .sentOn(LocalDateTime.now())
-            .from(sentFrom)
-            .to(sentTo)
+            .sentFrom(sentFrom)
+            .sentTo(sentTo)
             .correspondenceType("Email")
             .build();
 
-        mainController.addNewCorrespondence(correspondence);
+        correspondenceRepository.save(correspondence);
     }
 
     public void saveLetterCorrespondence(SendLetterResponse sendLetterResponse, String sentTo, String caseReferenceNumber) {
         String sentFrom = "Criminal Injuries Compensation Tribunal";
 
-        Correspondence correspondence = Correspondence.builder()
-            .caseReference(Long.parseLong(caseReferenceNumber))
+        CorrespondenceRecord correspondence = CorrespondenceRecord.builder()
+            .caseReferenceNumber(Long.parseLong(caseReferenceNumber.replace("-", "")))
             .id(Long.parseLong(sendLetterResponse.getNotificationId().toString()))
-            .sentOn(LocalDateTime.now())
-            .from(sentFrom)
-            .to(sentTo)
+            .sentFrom(sentFrom)
+            .sentTo(sentTo)
             .correspondenceType("Letter")
             .build();
 
-        mainController.addNewCorrespondence(correspondence);
+        correspondenceRepository.save(correspondence);
     }
 
     public NotificationResponse sendEmail(NotificationRequest notificationRequest, String caseReferenceNumber) {
