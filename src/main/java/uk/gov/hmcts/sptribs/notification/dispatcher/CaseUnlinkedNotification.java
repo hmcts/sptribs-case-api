@@ -35,11 +35,11 @@ public class CaseUnlinkedNotification implements PartiesNotification {
         final Map<String, Object> templateVars = notificationHelper.getSubjectCommonVars(caseNumber, caseData);
 
         if (cicCase.getContactPreferenceType() == ContactPreferenceType.EMAIL) {
-            NotificationResponse response = sendEmailNotification(cicCase.getEmail(), templateVars);
+            NotificationResponse response = sendEmailNotification(cicCase.getEmail(), templateVars, caseNumber);
             cicCase.setSubjectNotifyList(response);
         } else {
             notificationHelper.addAddressTemplateVars(cicCase.getAddress(), templateVars);
-            sendLetterNotification(templateVars);
+            sendLetterNotification(templateVars, caseNumber);
         }
     }
 
@@ -49,11 +49,11 @@ public class CaseUnlinkedNotification implements PartiesNotification {
 
         Map<String, Object> templateVars = notificationHelper.getApplicantCommonVars(caseNumber, caseData);
         if (cicCase.getApplicantContactDetailsPreference() == ContactPreferenceType.EMAIL) {
-            NotificationResponse response = sendEmailNotification(cicCase.getApplicantEmailAddress(), templateVars);
+            NotificationResponse response = sendEmailNotification(cicCase.getApplicantEmailAddress(), templateVars, caseNumber);
             cicCase.setAppNotificationResponse(response);
         } else {
             notificationHelper.addAddressTemplateVars(cicCase.getApplicantAddress(), templateVars);
-            sendLetterNotification(templateVars);
+            sendLetterNotification(templateVars, caseNumber);
         }
     }
 
@@ -64,27 +64,29 @@ public class CaseUnlinkedNotification implements PartiesNotification {
         Map<String, Object> templateVars = notificationHelper.getRepresentativeCommonVars(caseNumber, caseData);
 
         if (cicCase.getRepresentativeContactDetailsPreference() == ContactPreferenceType.EMAIL) {
-            NotificationResponse response = sendEmailNotification(cicCase.getRepresentativeEmailAddress(), templateVars);
+            NotificationResponse response = sendEmailNotification(cicCase.getRepresentativeEmailAddress(), templateVars, caseNumber);
             cicCase.setRepNotificationResponse(response);
         } else {
             notificationHelper.addAddressTemplateVars(cicCase.getRepresentativeAddress(), templateVars);
-            sendLetterNotification(templateVars);
+            sendLetterNotification(templateVars, caseNumber);
         }
     }
 
-    private NotificationResponse sendEmailNotification(final String destinationAddress, final Map<String, Object> templateVars) {
+    private NotificationResponse sendEmailNotification(final String destinationAddress,
+                                                       final Map<String, Object> templateVars,
+                                                       String caseReferenceNumber) {
         NotificationRequest request = notificationHelper.buildEmailNotificationRequest(
             destinationAddress,
             templateVars,
             TemplateName.CASE_UNLINKED_EMAIL);
-        return notificationService.sendEmail(request);
+        return notificationService.sendEmail(request, caseReferenceNumber);
     }
 
-    private void sendLetterNotification(Map<String, Object> templateVarsLetter) {
+    private void sendLetterNotification(Map<String, Object> templateVarsLetter, String caseReferenceNumber) {
         NotificationRequest letterRequest = notificationHelper.buildLetterNotificationRequest(
             templateVarsLetter,
             TemplateName.CASE_UNLINKED_POST);
-        notificationService.sendLetter(letterRequest);
+        notificationService.sendLetter(letterRequest, caseReferenceNumber);
     }
 
 

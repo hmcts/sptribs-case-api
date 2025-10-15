@@ -9,14 +9,14 @@ import org.springframework.web.bind.annotation.RequestParam;
 import uk.gov.hmcts.sptribs.notification.model.Correspondence;
 
 @Controller
-@RequestMapping(path="/st-update-db")
+@RequestMapping(path = "/st-update-db")
 @Slf4j
 public class MainController {
 
     @Autowired
     private CorrespondenceRepository correspondenceRepository;
 
-    @PostMapping(path="/add-correspondence")
+    @PostMapping(path = "/add-correspondence")
     public void addNewCorrespondence(@RequestParam Correspondence correspondence) {
         correspondenceRepository.save(correspondence);
         log.debug("Correspondence saved");

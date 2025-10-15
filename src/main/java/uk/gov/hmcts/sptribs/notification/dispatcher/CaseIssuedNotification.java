@@ -45,11 +45,11 @@ public class CaseIssuedNotification implements PartiesNotification {
             // Send Email
             notificationResponse = sendEmailNotification(templateVarsSubject,
                 cicCase.getEmail(),
-                TemplateName.CASE_ISSUED_CITIZEN_EMAIL);
+                TemplateName.CASE_ISSUED_CITIZEN_EMAIL, caseNumber);
         } else {
             notificationHelper.addAddressTemplateVars(cicCase.getAddress(), templateVarsSubject);
             //SEND POST
-            notificationResponse = sendLetterNotification(templateVarsSubject);
+            notificationResponse = sendLetterNotification(templateVarsSubject, caseNumber);
         }
 
         cicCase.setSubjectLetterNotifyList(notificationResponse);
@@ -65,10 +65,10 @@ public class CaseIssuedNotification implements PartiesNotification {
         if (caseData.getCicCase().getApplicantContactDetailsPreference() == ContactPreferenceType.EMAIL) {
             // Send Email
             notificationResponse = sendEmailNotification(templateVarsApplicant,
-                cicCase.getApplicantEmailAddress(), TemplateName.CASE_ISSUED_CITIZEN_EMAIL);
+                cicCase.getApplicantEmailAddress(), TemplateName.CASE_ISSUED_CITIZEN_EMAIL, caseNumber);
         } else {
             notificationHelper.addAddressTemplateVars(cicCase.getApplicantAddress(), templateVarsApplicant);
-            notificationResponse = sendLetterNotification(templateVarsApplicant);
+            notificationResponse = sendLetterNotification(templateVarsApplicant, caseNumber);
         }
 
         cicCase.setAppNotificationResponse(notificationResponse);
@@ -84,10 +84,10 @@ public class CaseIssuedNotification implements PartiesNotification {
         if (cicCase.getRepresentativeContactDetailsPreference() == ContactPreferenceType.EMAIL) {
             // Send Email
             notificationResponse = sendEmailNotification(templateVarsRepresentative,
-                cicCase.getRepresentativeEmailAddress(), TemplateName.CASE_ISSUED_CITIZEN_EMAIL);
+                cicCase.getRepresentativeEmailAddress(), TemplateName.CASE_ISSUED_CITIZEN_EMAIL, caseNumber);
         } else {
             notificationHelper.addAddressTemplateVars(cicCase.getRepresentativeAddress(), templateVarsRepresentative);
-            notificationResponse = sendLetterNotification(templateVarsRepresentative);
+            notificationResponse = sendLetterNotification(templateVarsRepresentative, caseNumber);
         }
 
         cicCase.setRepNotificationResponse(notificationResponse);
@@ -106,37 +106,40 @@ public class CaseIssuedNotification implements PartiesNotification {
             // Send Email
             notificationResponse = sendEmailNotificationWithAttachment(cicCase.getRespondentEmail(),
                 templateVarsRespondent,
-                uploadedDocuments);
+                uploadedDocuments, caseNumber);
             cicCase.setSubjectLetterNotifyList(notificationResponse);
         } else {
             notificationResponse = sendEmailNotification(templateVarsRespondent,
-                cicCase.getRespondentEmail(), TemplateName.CASE_ISSUED_RESPONDENT_EMAIL);
+                cicCase.getRespondentEmail(), TemplateName.CASE_ISSUED_RESPONDENT_EMAIL, caseNumber);
             cicCase.setResNotificationResponse(notificationResponse);
         }
     }
 
     private NotificationResponse sendEmailNotification(final Map<String, Object> templateVars, String toEmail,
-                                                       TemplateName emailTemplateName) {
+                                                       TemplateName emailTemplateName, String caseReferenceNumber) {
         return notificationService.sendEmail(
             notificationHelper.buildEmailNotificationRequest(toEmail,
                 templateVars,
-                emailTemplateName));
+                emailTemplateName),
+            caseReferenceNumber);
     }
 
     private NotificationResponse sendEmailNotificationWithAttachment(String toEmail, final Map<String, Object> templateVars,
-                                                                     Map<String, String> uploadedDocuments) {
+                                                                     Map<String, String> uploadedDocuments,
+                                                                     String caseReferenceNumber) {
         return notificationService.sendEmail(
             notificationHelper.buildEmailNotificationRequest(toEmail,
                 true,
                 uploadedDocuments,
                 templateVars,
-                TemplateName.CASE_ISSUED_RESPONDENT_EMAIL));
+                TemplateName.CASE_ISSUED_RESPONDENT_EMAIL),
+            caseReferenceNumber);
     }
 
-    private NotificationResponse sendLetterNotification(Map<String, Object> templateVarsLetter) {
+    private NotificationResponse sendLetterNotification(Map<String, Object> templateVarsLetter, String caseReferenceNumber) {
         final NotificationRequest letterRequest = notificationHelper.buildLetterNotificationRequest(templateVarsLetter,
             TemplateName.CASE_ISSUED_CITIZEN_POST);
-        return notificationService.sendLetter(letterRequest);
+        return notificationService.sendLetter(letterRequest, caseReferenceNumber);
     }
 
     private Map<String, String> getUploadedDocuments(CaseData caseData) {
