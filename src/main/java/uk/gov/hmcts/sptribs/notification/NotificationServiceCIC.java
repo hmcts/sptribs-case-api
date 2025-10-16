@@ -11,10 +11,12 @@ import uk.gov.hmcts.reform.idam.client.models.User;
 import uk.gov.hmcts.sptribs.ciccase.model.NotificationResponse;
 import uk.gov.hmcts.sptribs.ciccase.model.NotificationType;
 import uk.gov.hmcts.sptribs.common.config.EmailTemplatesConfigCIC;
+import uk.gov.hmcts.sptribs.common.repositories.CorrespondenceRepository;
 import uk.gov.hmcts.sptribs.document.DocumentClient;
 import uk.gov.hmcts.sptribs.idam.IdamService;
 import uk.gov.hmcts.sptribs.notification.exception.NotificationException;
 import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
+import uk.gov.hmcts.sptribs.notification.persistence.CorrespondenceRecord;
 import uk.gov.service.notify.NotificationClient;
 import uk.gov.service.notify.NotificationClientException;
 import uk.gov.service.notify.SendEmailResponse;
@@ -34,6 +36,8 @@ import static uk.gov.hmcts.sptribs.common.config.ControllerConstants.BEARER_PREF
 @Service
 @Slf4j
 public class NotificationServiceCIC {
+    @Autowired
+    private CorrespondenceRepository correspondenceRepository;
 
     @Autowired
     private final NotificationClient notificationClient;
@@ -67,7 +71,39 @@ public class NotificationServiceCIC {
         this.caseDocumentClient = caseDocumentClient;
     }
 
-    public NotificationResponse sendEmail(NotificationRequest notificationRequest) {
+    public void saveEmailCorrespondence(SendEmailResponse sendEmailResponse, String sentTo, String caseReferenceNumber) {
+        String sentFrom = "Criminal Injuries Compensation Tribunal";
+
+        if (sendEmailResponse.getFromEmail().isPresent()) {
+            sentFrom = sendEmailResponse.getFromEmail().get();
+        }
+
+        CorrespondenceRecord correspondence = CorrespondenceRecord.builder()
+            .caseReferenceNumber(Long.parseLong(caseReferenceNumber.replace("-", "")))
+            .id(Long.parseLong(sendEmailResponse.getNotificationId().toString()))
+            .sentFrom(sentFrom)
+            .sentTo(sentTo)
+            .correspondenceType("Email")
+            .build();
+
+        correspondenceRepository.save(correspondence);
+    }
+
+    public void saveLetterCorrespondence(SendLetterResponse sendLetterResponse, String sentTo, String caseReferenceNumber) {
+        String sentFrom = "Criminal Injuries Compensation Tribunal";
+
+        CorrespondenceRecord correspondence = CorrespondenceRecord.builder()
+            .caseReferenceNumber(Long.parseLong(caseReferenceNumber.replace("-", "")))
+            .id(Long.parseLong(sendLetterResponse.getNotificationId().toString()))
+            .sentFrom(sentFrom)
+            .sentTo(sentTo)
+            .correspondenceType("Letter")
+            .build();
+
+        correspondenceRepository.save(correspondence);
+    }
+
+    public NotificationResponse sendEmail(NotificationRequest notificationRequest, String caseReferenceNumber) {
         final SendEmailResponse sendEmailResponse;
         final String destinationAddress = notificationRequest.getDestinationAddress();
         final TemplateName template = notificationRequest.getTemplate();
@@ -89,6 +125,8 @@ public class NotificationServiceCIC {
                     templateVars,
                     referenceId
                 );
+
+            this.saveEmailCorrespondence(sendEmailResponse, destinationAddress, caseReferenceNumber);
 
             log.debug("Successfully sent email with notification id {} and reference {}",
                 sendEmailResponse.getNotificationId(),
@@ -113,7 +151,7 @@ public class NotificationServiceCIC {
         }
     }
 
-    public NotificationResponse sendLetter(NotificationRequest notificationRequest) {
+    public NotificationResponse sendLetter(NotificationRequest notificationRequest, String caseReferenceNumber) {
         final TemplateName template = notificationRequest.getTemplate();
         final Map<String, Object> templateVars = notificationRequest.getTemplateVars();
 
@@ -128,6 +166,8 @@ public class NotificationServiceCIC {
                     templateVars,
                     referenceId
                 );
+
+            this.saveLetterCorrespondence(sendLetterResponse, notificationRequest.getDestinationAddress(), caseReferenceNumber);
 
             log.debug("Successfully sent letter with notification id {} and reference {}",
                 sendLetterResponse.getNotificationId(),
