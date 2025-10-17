@@ -1,0 +1,28 @@
+{
+  "notifications": [
+    {
+      "id": "bf524bab-eacf-4ad0-accd-781e614e2586",
+      "reference": "ST_CIC email reference",
+      "phone_number": "+447900900123",
+      "type": "sms",
+      "status": "sent",
+      "template": {
+        "id": "5385bfc6-eb33-41f6-ad2b-590a4f427606",
+        "version": "1",
+        "uri": "/test-uri"
+      },
+      "body": "dear sir, info.",
+      "created_at": "2024-05-17T15:58:38.342838Z",
+      "is_cost_data_ready": true,
+      "cost_details": {
+        "billable_sms_fragments": 1,
+        "international_rate_multiplier": 1,
+        "sms_rate": 0.0027
+      }
+    }
+  ],
+  "links": {
+    "current": "/notifications?template_type=sms&status=delivered",
+    "next": "/notifications?other_than=last_id_in_list&template_type=sms&status=delivered"
+  }
+}
