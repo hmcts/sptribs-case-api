@@ -318,7 +318,7 @@
       <rule id="DecisionRule_1x6fvmc">
         <description>"Access Request for Hearing Centre Team Leader"</description>
         <inputEntry id="UnaryTests_1q0ms1x">
-          <text>"reviewSpecificAccessRequestAdmin"</text>
+          <text>"reviewSpecificAccessRequestAdmin","reviewSpecificAccessRequestCTSC"</text>
         </inputEntry>
         <inputEntry id="UnaryTests_0vrobht">
           <text></text>
@@ -348,7 +348,7 @@
       <rule id="DecisionRule_18sw2h1">
         <description>"Access Request for Regional Hearing Centre Team Leader"</description>
         <inputEntry id="UnaryTests_0ltxmzm">
-          <text>"reviewSpecificAccessRequestAdmin"</text>
+          <text>"reviewSpecificAccessRequestAdmin","reviewSpecificAccessRequestCTSC"</text>
         </inputEntry>
         <inputEntry id="UnaryTests_0xodl7j">
           <text></text>
