@@ -38,9 +38,9 @@ import static uk.gov.hmcts.sptribs.testutil.TestEventConstants.CASEWORKER_EDIT_D
 
 
 @ExtendWith(MockitoExtension.class)
-class CaseWorkerEditDraftOrderTest {
+class CaseworkerEditDraftOrderTest {
     @InjectMocks
-    private CaseWorkerEditDraftOrder caseWorkerEditDraftOrder;
+    private CaseworkerEditDraftOrder caseWorkerEditDraftOrder;
 
     @Mock
     private OrderService orderService;

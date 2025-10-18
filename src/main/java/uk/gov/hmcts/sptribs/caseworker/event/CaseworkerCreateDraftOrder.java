@@ -31,6 +31,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -54,12 +55,13 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 
 @Component
 @Slf4j
-public class CaseWorkerCreateDraftOrder implements CCDConfig<CaseData, State, UserRole> {
+public class CaseworkerCreateDraftOrder implements CCDConfig<CaseData, State, UserRole> {
 
     private final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss", Locale.ENGLISH);
 
     private static final CcdPageConfiguration createDraftOrder = new CreateDraftOrder();
     private static final CcdPageConfiguration draftOrderMainContentPage = new DraftOrderMainContentPage();
+    public static final Map<String, String> pageShowConditionTest = Map.of("previewOrdersDocuments", "[STATE]='*'");
     private static final CcdPageConfiguration previewOrder = new PreviewDraftOrder();
 
     @Autowired
@@ -74,6 +76,7 @@ public class CaseWorkerCreateDraftOrder implements CCDConfig<CaseData, State, Us
                 .name("Orders: Create draft")
                 .description("Orders: Create draft")
                 .showSummary()
+                .aboutToStartCallback(this::aboutToStart)
                 .aboutToSubmitCallback(this::aboutToSubmit)
                 .submittedCallback(this::submitted)
                 .grant(CREATE_READ_UPDATE, SUPER_USER,
@@ -87,6 +90,15 @@ public class CaseWorkerCreateDraftOrder implements CCDConfig<CaseData, State, Us
         createDraftOrderAddDocumentFooter(pageBuilder);
         previewOrder.addTo(pageBuilder);
 
+    }
+
+    private AboutToStartOrSubmitResponse<CaseData, State> aboutToStart(CaseDetails<CaseData, State> caseDetails) {
+        CaseData data = caseDetails.getData();
+        data.setCurrentEvent(CASEWORKER_CREATE_DRAFT_ORDER);
+
+        return AboutToStartOrSubmitResponse.<CaseData, State>builder()
+            .data(data)
+            .build();
     }
 
     public AboutToStartOrSubmitResponse<CaseData, State> midEvent(CaseDetails<CaseData, State> details,
@@ -141,6 +153,7 @@ public class CaseWorkerCreateDraftOrder implements CCDConfig<CaseData, State, Us
 
         }
 
+        caseData.setCurrentEvent("");
         caseData.getCicCase().setOrderTemplateIssued(null);
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()

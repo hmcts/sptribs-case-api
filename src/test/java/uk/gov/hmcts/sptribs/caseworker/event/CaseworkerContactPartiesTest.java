@@ -54,7 +54,7 @@ import static uk.gov.hmcts.sptribs.testutil.TestEventConstants.CASEWORKER_CONTAC
 @ExtendWith(MockitoExtension.class)
 class CaseworkerContactPartiesTest {
     @InjectMocks
-    private CaseWorkerContactParties caseWorkerContactParties;
+    private CaseworkerContactParties caseWorkerContactParties;
 
     @InjectMocks
     private PartiesToContact partiesToContact;

@@ -39,10 +39,10 @@ import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.caseData;
 import static uk.gov.hmcts.sptribs.testutil.TestEventConstants.CASEWORKER_CREATE_DRAFT_ORDER;
 
 @ExtendWith(MockitoExtension.class)
-class CaseWorkerCreateDraftOrderTest {
+class CaseworkerCreateDraftOrderTest {
 
     @InjectMocks
-    private CaseWorkerCreateDraftOrder caseWorkerDraftOrder;
+    private CaseworkerCreateDraftOrder caseWorkerDraftOrder;
 
     @Mock
     private OrderService orderService;
