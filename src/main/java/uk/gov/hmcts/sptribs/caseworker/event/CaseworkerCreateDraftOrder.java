@@ -31,7 +31,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -61,7 +60,6 @@ public class CaseworkerCreateDraftOrder implements CCDConfig<CaseData, State, Us
 
     private static final CcdPageConfiguration createDraftOrder = new CreateDraftOrder();
     private static final CcdPageConfiguration draftOrderMainContentPage = new DraftOrderMainContentPage();
-    public static final Map<String, String> pageShowConditionTest = Map.of("previewOrdersDocuments", "[STATE]='*'");
     private static final CcdPageConfiguration previewOrder = new PreviewDraftOrder();
 
     @Autowired

@@ -12,14 +12,12 @@ import uk.gov.hmcts.ccd.sdk.type.DynamicListElement;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.event.page.ApplyAnonymity;
+import uk.gov.hmcts.sptribs.caseworker.event.page.CreateAndSendOrderIssueSelect;
 import uk.gov.hmcts.sptribs.caseworker.event.page.SendOrderNotifyParties;
 import uk.gov.hmcts.sptribs.caseworker.event.page.SendOrderOrderDueDates;
-import uk.gov.hmcts.sptribs.caseworker.event.page.SendOrderOrderIssuingSelect;
-import uk.gov.hmcts.sptribs.caseworker.event.page.SendOrderSendReminder;
 import uk.gov.hmcts.sptribs.caseworker.event.page.SendOrderUploadOrder;
 import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderCIC;
 import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderContentCIC;
-import uk.gov.hmcts.sptribs.caseworker.model.OrderIssuingType;
 import uk.gov.hmcts.sptribs.caseworker.service.OrderService;
 import uk.gov.hmcts.sptribs.caseworker.util.PageShowConditionsUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
@@ -36,7 +34,6 @@ import uk.gov.hmcts.sptribs.common.event.page.PreviewDraftOrder;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.EnumSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.UUID;
@@ -63,25 +60,21 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 @Component
 public class CaseworkerCreateAndSendOrder implements CCDConfig<CaseData, State, UserRole> {
 
-    private final EnumSet<OrderIssuingType> createAndSendOrderIssuingTypes =
-        EnumSet.of(OrderIssuingType.CREATE_AND_SEND_NEW_ORDER, OrderIssuingType.UPLOAD_A_NEW_ORDER_FROM_YOUR_COMPUTER);
     private final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss", Locale.ENGLISH);
 
     private static final CcdPageConfiguration applyAnonymitySelect = new ApplyAnonymity();
-    private static final CcdPageConfiguration orderIssuingSelect = new SendOrderOrderIssuingSelect();
+    private static final CcdPageConfiguration createSendIssuingSelect = new CreateAndSendOrderIssueSelect();
 
     private static final CcdPageConfiguration createDraftOrder =
-        new CreateDraftOrder(PageShowConditionsUtil.createAndSendOrderConditions());
+            new CreateDraftOrder();
     private static final CcdPageConfiguration draftOrderMainContentPage =
-        new DraftOrderMainContentPage(PageShowConditionsUtil.createAndSendOrderConditions());
-    private static final CcdPageConfiguration previewOrder =
-        new PreviewDraftOrder(PageShowConditionsUtil.createAndSendOrderConditions());
+        new DraftOrderMainContentPage();
 
     private static final CcdPageConfiguration uploadOrder =
-        new SendOrderUploadOrder(PageShowConditionsUtil.createAndSendOrderConditions());
+        new SendOrderUploadOrder();
     private static final CcdPageConfiguration orderDueDates = new SendOrderOrderDueDates();
+    private static final CcdPageConfiguration previewOrder = new PreviewDraftOrder();
     private static final CcdPageConfiguration notifyParties = new SendOrderNotifyParties();
-    private static final CcdPageConfiguration sendReminder = new SendOrderSendReminder();
 
     @Autowired
     private OrderService orderService;
@@ -105,23 +98,19 @@ public class CaseworkerCreateAndSendOrder implements CCDConfig<CaseData, State, 
 
         PageBuilder pageBuilder = new PageBuilder(eventBuilder);
         applyAnonymitySelect.addTo(pageBuilder);
-        orderIssuingSelect.addTo(pageBuilder);
-        //if new
+        createSendIssuingSelect.addTo(pageBuilder);
         createDraftOrder.addTo(pageBuilder);
         draftOrderMainContentPage.addTo(pageBuilder);
         createDraftOrderAddDocumentFooter(pageBuilder);
-        previewOrder.addTo(pageBuilder);
-        //if upload
         uploadOrder.addTo(pageBuilder);
 
         orderDueDates.addTo(pageBuilder);
         notifyParties.addTo(pageBuilder);
-        sendReminder.addTo(pageBuilder);
+        previewOrder.addTo(pageBuilder);
     }
 
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToStart(CaseDetails<CaseData, State> details) {
         final CaseData caseData = details.getData();
-        //        caseData.getCicCase().setCreateAndSendOrderIssuingTypes(createAndSendOrderIssuingTypes);
         caseData.setCurrentEvent(CASEWORKER_CREATE_AND_SEND_ORDER);
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
