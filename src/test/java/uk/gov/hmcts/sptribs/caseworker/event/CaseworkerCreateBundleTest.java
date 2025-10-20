@@ -10,6 +10,7 @@ import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.Event;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
+import uk.gov.hmcts.sptribs.caseworker.model.YesNo;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
@@ -97,7 +98,7 @@ class CaseworkerCreateBundleTest {
 
             //check case data at call time
             final CaseData dataAtMockTime = callbackAtMockTime.getCaseDetails().getData();
-            assertThat(dataAtMockTime.getCaseDocuments().get(0).getValue()).isEqualTo(cicDocuments.get(0).getValue());
+            assertThat(dataAtMockTime.getCaseDocuments().getFirst().getValue()).isEqualTo(cicDocuments.getFirst().getValue());
             assertThat(dataAtMockTime.getBundleConfiguration()).isEqualTo(MULTI_BUNDLE_CONFIG);
             assertThat(dataAtMockTime.getMultiBundleConfiguration()).isEqualTo(List.of(MULTI_BUNDLE_CONFIG));
             return List.of(bundle);
@@ -118,6 +119,114 @@ class CaseworkerCreateBundleTest {
 
         //case documents should remain null so that they are not duplicated
         //i.e. not in their respective child objects as well (CicCase.applicantDocumentsUploaded)
+        assertThat(responseData.getCaseDocuments()).isNull();
+        assertThat(responseData.getMultiBundleConfiguration()).isNull();
+    }
+
+    @Test
+    public void shouldSuccessfullyCreateBundleWithNewOrderEnabled() {
+        final CaseData caseData = caseData();
+        caseData.setNewBundleOrderEnabled(YesNo.YES);
+
+        // Set up initial CICA documents
+        final List<ListValue<CaseworkerCICDocument>> initialDocuments = getCaseworkerCICDocumentList("initial.pdf");
+        caseData.setInitialCicaDocuments(initialDocuments);
+
+        // Set up further uploaded documents
+        final List<ListValue<CaseworkerCICDocument>> furtherDocuments = getCaseworkerCICDocumentList("further.pdf");
+        caseData.setFurtherUploadedDocuments(furtherDocuments);
+
+        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
+        updatedCaseDetails.setData(caseData);
+        updatedCaseDetails.setId(TEST_CASE_ID);
+        updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
+
+        final Bundle bundle = Bundle.builder().build();
+
+        when(bundlingService.getMultiBundleConfig()).thenCallRealMethod();
+        when(bundlingService.getMultiBundleConfigs()).thenCallRealMethod();
+
+        when(bundlingService.createBundle(any(BundleCallback.class))).thenAnswer(callback -> {
+            final BundleCallback callbackAtMockTime = (BundleCallback) callback.getArguments()[0];
+
+            //check case data at call time
+            final CaseData dataAtMockTime = callbackAtMockTime.getCaseDetails().getData();
+            // Should have initial documents in caseDocuments
+            assertThat(dataAtMockTime.getCaseDocuments()).hasSize(1);
+            assertThat(dataAtMockTime.getCaseDocuments().getFirst().getValue()).isEqualTo(initialDocuments.getFirst().getValue());
+            // Should have further documents in furtherCaseDocuments
+            assertThat(dataAtMockTime.getFurtherCaseDocuments()).hasSize(1);
+            assertThat(dataAtMockTime.getFurtherCaseDocuments().getFirst().getValue()).isEqualTo(furtherDocuments.getFirst().getValue());
+            assertThat(dataAtMockTime.getBundleConfiguration()).isEqualTo(MULTI_BUNDLE_CONFIG);
+            assertThat(dataAtMockTime.getMultiBundleConfiguration()).isEqualTo(List.of(MULTI_BUNDLE_CONFIG));
+            return List.of(bundle);
+        });
+
+        final AboutToStartOrSubmitResponse<CaseData, State> response =
+            caseworkerCreateBundle.aboutToSubmit(updatedCaseDetails, CaseDetails.<CaseData, State>builder().build());
+
+        verify(bundlingService).getMultiBundleConfig();
+        verify(bundlingService).getMultiBundleConfigs();
+        verify(bundlingService).buildBundleListValues(anyList());
+
+        final CaseData responseData = response.getData();
+        assertThat(responseData)
+            .isNotNull()
+            .isEqualTo(updatedCaseDetails.getData());
+        assertThat(responseData.getCaseBundles()).isNotNull();
+
+        //case documents should remain null so that they are not duplicated
+        //i.e. not in their respective child objects as well (CicCase.applicantDocumentsUploaded)
+        assertThat(responseData.getCaseDocuments()).isNull();
+        assertThat(responseData.getMultiBundleConfiguration()).isNull();
+    }
+
+    @Test
+    public void shouldUseOldBundleLogicWhenNewOrderDisabled() {
+        final CaseData caseData = caseData();
+        caseData.setNewBundleOrderEnabled(YesNo.NO);
+
+        final List<ListValue<CaseworkerCICDocument>> cicDocuments = getCaseworkerCICDocumentList("test.pdf");
+        final CicCase cicCase = CicCase.builder().build();
+        cicCase.setApplicantDocumentsUploaded(cicDocuments);
+        caseData.setCicCase(cicCase);
+
+        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
+        updatedCaseDetails.setData(caseData);
+        updatedCaseDetails.setId(TEST_CASE_ID);
+        updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
+
+        final Bundle bundle = Bundle.builder().build();
+
+        when(bundlingService.getMultiBundleConfig()).thenCallRealMethod();
+        when(bundlingService.getMultiBundleConfigs()).thenCallRealMethod();
+
+        when(bundlingService.createBundle(any(BundleCallback.class))).thenAnswer(callback -> {
+            final BundleCallback callbackAtMockTime = (BundleCallback) callback.getArguments()[0];
+
+            final CaseData dataAtMockTime = callbackAtMockTime.getCaseDetails().getData();
+            // Should use old logic - documents should be in caseDocuments
+            assertThat(dataAtMockTime.getCaseDocuments()).hasSize(1);
+            assertThat(dataAtMockTime.getCaseDocuments().getFirst().getValue()).isEqualTo(cicDocuments.getFirst().getValue());
+            // furtherCaseDocuments should be null when new order is disabled
+            assertThat(dataAtMockTime.getFurtherCaseDocuments()).isNull();
+            assertThat(dataAtMockTime.getBundleConfiguration()).isEqualTo(MULTI_BUNDLE_CONFIG);
+            assertThat(dataAtMockTime.getMultiBundleConfiguration()).isEqualTo(List.of(MULTI_BUNDLE_CONFIG));
+            return List.of(bundle);
+        });
+
+        final AboutToStartOrSubmitResponse<CaseData, State> response =
+            caseworkerCreateBundle.aboutToSubmit(updatedCaseDetails, CaseDetails.<CaseData, State>builder().build());
+
+        verify(bundlingService).getMultiBundleConfig();
+        verify(bundlingService).getMultiBundleConfigs();
+        verify(bundlingService).buildBundleListValues(anyList());
+
+        final CaseData responseData = response.getData();
+        assertThat(responseData)
+            .isNotNull()
+            .isEqualTo(updatedCaseDetails.getData());
+        assertThat(responseData.getCaseBundles()).isNotNull();
         assertThat(responseData.getCaseDocuments()).isNull();
         assertThat(responseData.getMultiBundleConfiguration()).isNull();
     }
