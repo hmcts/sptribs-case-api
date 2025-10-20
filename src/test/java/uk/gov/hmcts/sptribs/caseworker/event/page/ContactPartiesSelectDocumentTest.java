@@ -146,7 +146,7 @@ class ContactPartiesSelectDocumentTest {
         caseDetails.setData(caseData);
 
         final AboutToStartOrSubmitResponse<CaseData, State> response = contactPartiesSelectDocument.midEvent(caseDetails, caseDetails);
-        assertThat(response.getErrors()).containsExactly(label + " is too large");
+        assertThat(response.getErrors()).containsExactly("Unable to proceed because " + label + " is larger than 2MB");
     }
 
     @Test

@@ -88,7 +88,7 @@ public class ContactPartiesSelectDocument implements CcdPageConfiguration {
             if (docIdAndSize.getRight() > TWO_MEGABYTES) {
                 userSelection.forEach(element -> {
                     if (element.getLabel().contains(docIdAndSize.getLeft())) {
-                        errors.add(element.getLabel() + " is too large");
+                        errors.add("Unable to proceed because " + element.getLabel() + " is larger than 2MB");
                     }
                 });
             }
