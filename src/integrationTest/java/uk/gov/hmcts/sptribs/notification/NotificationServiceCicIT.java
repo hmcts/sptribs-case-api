@@ -94,7 +94,7 @@ public class NotificationServiceCicIT {
             anyString()
         )).thenReturn(sendEmailResponse);
 
-        NotificationResponse notificationResponse = notificationServiceCIC.sendEmail(request);
+        NotificationResponse notificationResponse = notificationServiceCIC.sendEmail(request, TEST_CASE_ID.toString());
 
         assertThat(notificationResponse.getClientReference()).isEqualTo("ST_CIC email reference");
         assertThat(notificationResponse.getStatus()).isEqualTo("Received");
@@ -124,7 +124,7 @@ public class NotificationServiceCicIT {
                 anyString()
             );
 
-        assertThrows(NotificationException.class, () -> notificationServiceCIC.sendEmail(request));
+        assertThrows(NotificationException.class, () -> notificationServiceCIC.sendEmail(request, TEST_CASE_ID.toString()));
     }
 
     @Test
@@ -153,7 +153,7 @@ public class NotificationServiceCicIT {
             anyString()
         )).thenReturn(sendLetterResponse);
 
-        NotificationResponse notificationResponse = notificationServiceCIC.sendLetter(request);
+        NotificationResponse notificationResponse = notificationServiceCIC.sendLetter(request, TEST_CASE_ID.toString());
 
         assertThat(notificationResponse.getClientReference()).isEqualTo("ST_CIC email reference");
         assertThat(notificationResponse.getStatus()).isEqualTo("Received");
@@ -183,6 +183,6 @@ public class NotificationServiceCicIT {
                 anyString()
             );
 
-        assertThrows(NotificationException.class, () -> notificationServiceCIC.sendLetter(request));
+        assertThrows(NotificationException.class, () -> notificationServiceCIC.sendLetter(request, TEST_CASE_ID.toString()));
     }
 }

@@ -64,7 +64,7 @@ public class DssUpdateCaseSubmissionNotificationIT {
 
         dssUpdateCaseSubmissionNotification.sendToApplicant(data, TEST_CASE_ID.toString());
 
-        verify(notificationServiceCIC).sendEmail(notificationRequestCaptor.capture());
+        verify(notificationServiceCIC).sendEmail(notificationRequestCaptor.capture(), TEST_CASE_ID.toString());
 
         NotificationRequest notificationRequest = notificationRequestCaptor.getValue();
 
@@ -93,7 +93,7 @@ public class DssUpdateCaseSubmissionNotificationIT {
 
         dssUpdateCaseSubmissionNotification.sendToTribunal(data, TEST_CASE_ID.toString());
 
-        verify(notificationServiceCIC).sendEmail(notificationRequestCaptor.capture());
+        verify(notificationServiceCIC).sendEmail(notificationRequestCaptor.capture(), TEST_CASE_ID.toString());
 
         NotificationRequest notificationRequest = notificationRequestCaptor.getValue();
 

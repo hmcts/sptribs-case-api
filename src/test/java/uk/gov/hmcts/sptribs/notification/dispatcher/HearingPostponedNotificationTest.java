@@ -23,6 +23,7 @@ import java.util.HashMap;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -54,7 +55,7 @@ public class HearingPostponedNotificationTest {
         hearingPostponedNotification.sendToSubject(data, "CN1");
 
         //Then
-        verify(notificationService).sendEmail(any(NotificationRequest.class));
+        verify(notificationService).sendEmail(any(NotificationRequest.class), eq("CN1"));
         verify(notificationHelper).buildEmailNotificationRequest(
             data.getCicCase().getEmail(),
             new HashMap<>(),
@@ -78,7 +79,7 @@ public class HearingPostponedNotificationTest {
         hearingPostponedNotification.sendToSubject(data, "CN1");
 
         //Then
-        verify(notificationService).sendLetter(any(NotificationRequest.class));
+        verify(notificationService).sendLetter(any(NotificationRequest.class), eq("CN1"));
         verify(notificationHelper).buildLetterNotificationRequest(
             new HashMap<>(),
             TemplateName.HEARING_POSTPONED_POST);
@@ -101,7 +102,7 @@ public class HearingPostponedNotificationTest {
         hearingPostponedNotification.sendToRespondent(data, "CN1");
 
         //Then
-        verify(notificationService).sendEmail(any(NotificationRequest.class));
+        verify(notificationService).sendEmail(any(NotificationRequest.class), eq("CN1"));
         verify(notificationHelper).buildEmailNotificationRequest(
             data.getCicCase().getRespondentEmail(),
             new HashMap<>(),
@@ -125,7 +126,7 @@ public class HearingPostponedNotificationTest {
         hearingPostponedNotification.sendToRepresentative(data, "CN1");
 
         //Then
-        verify(notificationService).sendEmail(any(NotificationRequest.class));
+        verify(notificationService).sendEmail(any(NotificationRequest.class), eq("CN1"));
         verify(notificationHelper).buildEmailNotificationRequest(
             data.getCicCase().getRepresentativeEmailAddress(),
             new HashMap<>(),
@@ -150,7 +151,7 @@ public class HearingPostponedNotificationTest {
         hearingPostponedNotification.sendToRepresentative(data, "CN1");
 
         //Then
-        verify(notificationService).sendLetter(any(NotificationRequest.class));
+        verify(notificationService).sendLetter(any(NotificationRequest.class), eq("CN1"));
         verify(notificationHelper).buildLetterNotificationRequest(
             new HashMap<>(),
             TemplateName.HEARING_POSTPONED_POST);

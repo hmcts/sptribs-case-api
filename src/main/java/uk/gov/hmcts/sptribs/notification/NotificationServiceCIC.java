@@ -6,13 +6,17 @@ import org.apache.commons.lang.StringUtils;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.idam.client.models.User;
+import uk.gov.hmcts.sptribs.ciccase.model.LanguagePreference;
 import uk.gov.hmcts.sptribs.ciccase.model.NotificationResponse;
 import uk.gov.hmcts.sptribs.ciccase.model.NotificationType;
 import uk.gov.hmcts.sptribs.common.config.EmailTemplatesConfigCIC;
 import uk.gov.hmcts.sptribs.common.repositories.CorrespondenceRepository;
+import uk.gov.hmcts.sptribs.document.CaseDataDocumentService;
 import uk.gov.hmcts.sptribs.document.DocumentClient;
+import uk.gov.hmcts.sptribs.document.SerializableDocument;
 import uk.gov.hmcts.sptribs.idam.IdamService;
 import uk.gov.hmcts.sptribs.notification.exception.NotificationException;
 import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
@@ -24,6 +28,7 @@ import uk.gov.service.notify.SendLetterResponse;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -36,6 +41,9 @@ import static uk.gov.hmcts.sptribs.common.config.ControllerConstants.BEARER_PREF
 @Service
 @Slf4j
 public class NotificationServiceCIC {
+    @Autowired
+    private CaseDataDocumentService caseDataDocumentService;
+
     @Autowired
     private CorrespondenceRepository correspondenceRepository;
 
@@ -71,7 +79,33 @@ public class NotificationServiceCIC {
         this.caseDocumentClient = caseDocumentClient;
     }
 
-    public void saveEmailCorrespondence(SendEmailResponse sendEmailResponse, String sentTo, String caseReferenceNumber) {
+    public void saveEmailCorrespondence(String templateId,
+                                        Map<String, Object> templateVars,
+                                        String templateName,
+                                        SendEmailResponse sendEmailResponse,
+                                        String sentTo,
+                                        String caseReferenceNumber) {
+
+        Long longCaseRef = Long.parseLong(caseReferenceNumber.replace("-", ""));
+
+        final LocalDateTime sentAt = LocalDateTime.now();
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-y-HH-mm");
+        final String formattedSentOn = sentAt.format(formatter)
+            .replace(" ", "_").replace(":", "-");
+
+        String correspondenceDocumentFilename = templateName + "_" + longCaseRef + "_" + formattedSentOn + ".pdf";
+
+        Document correspondenceDocument = caseDataDocumentService.renderDocument(templateVars, longCaseRef, templateId,
+            LanguagePreference.ENGLISH, correspondenceDocumentFilename, request);
+
+        SerializableDocument serializedCorrespondenceDocument = SerializableDocument.builder()
+            .url(correspondenceDocument.getUrl())
+            .filename(correspondenceDocument.getFilename())
+            .binaryUrl(correspondenceDocument.getBinaryUrl())
+            .categoryId(correspondenceDocument.getCategoryId())
+            .build();
+
         String sentFrom = "Criminal Injuries Compensation Tribunal";
 
         if (sendEmailResponse.getFromEmail().isPresent()) {
@@ -79,24 +113,56 @@ public class NotificationServiceCIC {
         }
 
         CorrespondenceRecord correspondence = CorrespondenceRecord.builder()
-            .caseReferenceNumber(Long.parseLong(caseReferenceNumber.replace("-", "")))
             .id(Long.parseLong(sendEmailResponse.getNotificationId().toString()))
+            .eventType(templateName)
+            .caseReferenceNumber(longCaseRef)
+            .sentAt(sentAt.atOffset(java.time.ZoneOffset.UTC))
             .sentFrom(sentFrom)
             .sentTo(sentTo)
+            .documentUrl(serializedCorrespondenceDocument)
             .correspondenceType("Email")
             .build();
 
         correspondenceRepository.save(correspondence);
     }
 
-    public void saveLetterCorrespondence(SendLetterResponse sendLetterResponse, String sentTo, String caseReferenceNumber) {
+    public void saveLetterCorrespondence(String templateId,
+                                         Map<String, Object> templateVars,
+                                         String templateName,
+                                         SendLetterResponse sendLetterResponse,
+                                         String sentTo,
+                                         String caseReferenceNumber) {
+
+        Long longCaseRef = Long.parseLong(caseReferenceNumber.replace("-", ""));
+
+        final LocalDateTime sentAt = LocalDateTime.now();
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-y-HH-mm");
+        final String formattedSentOn = sentAt.format(formatter)
+            .replace(" ", "_").replace(":", "-");
+
+        String correspondenceDocumentFilename = templateName + "_" + longCaseRef + "_" + formattedSentOn + ".pdf";
+
+        Document correspondenceDocument = caseDataDocumentService.renderDocument(templateVars, longCaseRef, templateId,
+                LanguagePreference.ENGLISH, correspondenceDocumentFilename, request);
+
+        SerializableDocument serializedCorrespondenceDocument = SerializableDocument.builder()
+            .url(correspondenceDocument.getUrl())
+            .filename(correspondenceDocument.getFilename())
+            .binaryUrl(correspondenceDocument.getBinaryUrl())
+            .categoryId(correspondenceDocument.getCategoryId())
+            .build();
+
         String sentFrom = "Criminal Injuries Compensation Tribunal";
 
         CorrespondenceRecord correspondence = CorrespondenceRecord.builder()
-            .caseReferenceNumber(Long.parseLong(caseReferenceNumber.replace("-", "")))
             .id(Long.parseLong(sendLetterResponse.getNotificationId().toString()))
+            .eventType(templateName)
+            .caseReferenceNumber(longCaseRef)
+            .sentAt(sentAt.atOffset(java.time.ZoneOffset.UTC))
             .sentFrom(sentFrom)
             .sentTo(sentTo)
+            .documentUrl(serializedCorrespondenceDocument)
             .correspondenceType("Letter")
             .build();
 
@@ -108,6 +174,7 @@ public class NotificationServiceCIC {
         final String destinationAddress = notificationRequest.getDestinationAddress();
         final TemplateName template = notificationRequest.getTemplate();
         final Map<String, Object> templateVars = notificationRequest.getTemplateVars();
+        final String templateName = template.name();
 
         final String referenceId = UUID.randomUUID().toString();
 
@@ -126,7 +193,14 @@ public class NotificationServiceCIC {
                     referenceId
                 );
 
-            this.saveEmailCorrespondence(sendEmailResponse, destinationAddress, caseReferenceNumber);
+            this.saveEmailCorrespondence(
+                templateId,
+                templateVars,
+                templateName,
+                sendEmailResponse,
+                destinationAddress,
+                caseReferenceNumber
+            );
 
             log.debug("Successfully sent email with notification id {} and reference {}",
                 sendEmailResponse.getNotificationId(),
@@ -154,6 +228,7 @@ public class NotificationServiceCIC {
     public NotificationResponse sendLetter(NotificationRequest notificationRequest, String caseReferenceNumber) {
         final TemplateName template = notificationRequest.getTemplate();
         final Map<String, Object> templateVars = notificationRequest.getTemplateVars();
+        final String templateName = template.name();
 
         final String referenceId = UUID.randomUUID().toString();
 
@@ -167,7 +242,14 @@ public class NotificationServiceCIC {
                     referenceId
                 );
 
-            this.saveLetterCorrespondence(sendLetterResponse, notificationRequest.getDestinationAddress(), caseReferenceNumber);
+            this.saveLetterCorrespondence(
+                templateId,
+                templateVars,
+                templateName,
+                sendLetterResponse,
+                notificationRequest.getDestinationAddress(),
+                caseReferenceNumber
+            );
 
             log.debug("Successfully sent letter with notification id {} and reference {}",
                 sendLetterResponse.getNotificationId(),

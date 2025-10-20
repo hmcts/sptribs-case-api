@@ -22,6 +22,7 @@ import java.util.HashMap;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -49,7 +50,7 @@ public class ListingUpdatedNotificationTest {
         listingUpdatedNotification.sendToSubject(data, "CN1");
 
         //Then
-        verify(notificationService).sendEmail(any(NotificationRequest.class));
+        verify(notificationService).sendEmail(any(NotificationRequest.class), eq("CN1"));
         verify(notificationHelper).buildEmailNotificationRequest(
             data.getCicCase().getEmail(),
             new HashMap<>(),
@@ -75,7 +76,7 @@ public class ListingUpdatedNotificationTest {
         listingUpdatedNotification.sendToSubject(data, "CN1");
 
         //Then
-        verify(notificationService).sendEmail(any(NotificationRequest.class));
+        verify(notificationService).sendEmail(any(NotificationRequest.class), eq("CN1"));
         verify(notificationHelper).buildEmailNotificationRequest(
             "testSubject@outlook.com",
             new HashMap<>(),
@@ -95,7 +96,7 @@ public class ListingUpdatedNotificationTest {
         listingUpdatedNotification.sendToSubject(data, "CN1");
 
         //Then
-        verify(notificationService).sendLetter(any(NotificationRequest.class));
+        verify(notificationService).sendLetter(any(NotificationRequest.class), eq("CN1"));
         verify(notificationHelper).buildLetterNotificationRequest(
             new HashMap<>(),
             TemplateName.HEARING_UPDATED_POST);
@@ -116,7 +117,7 @@ public class ListingUpdatedNotificationTest {
         listingUpdatedNotification.sendToRepresentative(data, "CN1");
 
         //Then
-        verify(notificationService).sendEmail(any(NotificationRequest.class));
+        verify(notificationService).sendEmail(any(NotificationRequest.class), eq("CN1"));
         verify(notificationHelper).buildEmailNotificationRequest(
             data.getCicCase().getRepresentativeEmailAddress(),
             Map.of(CommonConstants.CIC_CASE_REPRESENTATIVE_NAME, data.getCicCase().getRepresentativeFullName()),
@@ -137,7 +138,7 @@ public class ListingUpdatedNotificationTest {
         listingUpdatedNotification.sendToRepresentative(data, "CN1");
 
         //Then
-        verify(notificationService).sendLetter(any(NotificationRequest.class));
+        verify(notificationService).sendLetter(any(NotificationRequest.class), eq("CN1"));
         verify(notificationHelper).buildLetterNotificationRequest(
             Map.of(CommonConstants.CIC_CASE_REPRESENTATIVE_NAME,data.getCicCase().getRepresentativeFullName()),
             TemplateName.HEARING_UPDATED_POST);
@@ -156,7 +157,7 @@ public class ListingUpdatedNotificationTest {
         listingUpdatedNotification.sendToRespondent(data, "CN1");
 
         //Then
-        verify(notificationService).sendEmail(any(NotificationRequest.class));
+        verify(notificationService).sendEmail(any(NotificationRequest.class), eq("CN1"));
         verify(notificationHelper).buildEmailNotificationRequest(
             data.getCicCase().getRespondentEmail(),
             Map.of(CommonConstants.CIC_CASE_RESPONDENT_NAME, data.getCicCase().getRespondentName()),

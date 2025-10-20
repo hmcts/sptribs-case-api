@@ -18,6 +18,7 @@ import java.util.HashMap;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -48,7 +49,7 @@ public class ApplicationReceivedNotificationTest {
         applicationReceivedNotification.sendToSubject(data, "CN1");
 
         //Then
-        verify(notificationService).sendEmail(any(NotificationRequest.class));
+        verify(notificationService).sendEmail(any(NotificationRequest.class), eq("CN1"));
         verify(notificationHelper).buildEmailNotificationRequest(
             data.getCicCase().getEmail(),
             new HashMap<>(),
@@ -63,7 +64,7 @@ public class ApplicationReceivedNotificationTest {
 
         applicationReceivedNotification.sendToSubject(data, "CN1");
 
-        verify(notificationService, never()).sendEmail(any(NotificationRequest.class));
+        verify(notificationService, never()).sendEmail(any(NotificationRequest.class), eq("CN1"));
     }
 
     @Test
@@ -81,7 +82,7 @@ public class ApplicationReceivedNotificationTest {
         applicationReceivedNotification.sendToApplicant(data, "CN1");
 
         //Then
-        verify(notificationService).sendEmail(any(NotificationRequest.class));
+        verify(notificationService).sendEmail(any(NotificationRequest.class), eq("CN1"));
         verify(notificationHelper).buildEmailNotificationRequest(
             data.getCicCase().getApplicantEmailAddress(),
             new HashMap<>(),
@@ -97,7 +98,7 @@ public class ApplicationReceivedNotificationTest {
 
         applicationReceivedNotification.sendToApplicant(data, "CN1");
 
-        verify(notificationService, never()).sendEmail(any(NotificationRequest.class));
+        verify(notificationService, never()).sendEmail(any(NotificationRequest.class), eq("CN1"));
     }
 
     @Test
@@ -115,7 +116,7 @@ public class ApplicationReceivedNotificationTest {
         applicationReceivedNotification.sendToRepresentative(data, "CN1");
 
         //Then
-        verify(notificationService).sendEmail(any(NotificationRequest.class));
+        verify(notificationService).sendEmail(any(NotificationRequest.class), eq("CN1"));
         verify(notificationHelper).buildEmailNotificationRequest(
             data.getCicCase().getRepresentativeEmailAddress(),
             new HashMap<>(),
@@ -131,7 +132,7 @@ public class ApplicationReceivedNotificationTest {
 
         applicationReceivedNotification.sendToRepresentative(data, "CN1");
 
-        verify(notificationService, never()).sendEmail(any(NotificationRequest.class));
+        verify(notificationService, never()).sendEmail(any(NotificationRequest.class), eq("CN1"));
     }
 
     private CaseData getMockCaseData() {

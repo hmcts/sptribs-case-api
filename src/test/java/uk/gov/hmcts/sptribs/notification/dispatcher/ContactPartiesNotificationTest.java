@@ -23,6 +23,7 @@ import java.util.HashMap;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyMap;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.TRIBUNAL_EMAIL_VALUE;
@@ -57,7 +58,7 @@ class ContactPartiesNotificationTest {
         contactPartiesNotification.sendToSubject(data, "CN1");
 
         //Then
-        verify(notificationService).sendEmail(any(NotificationRequest.class));
+        verify(notificationService).sendEmail(any(NotificationRequest.class), eq("CN1"));
         verify(notificationHelper).buildEmailNotificationRequest(
             data.getCicCase().getEmail(),
             true,
@@ -83,7 +84,7 @@ class ContactPartiesNotificationTest {
         contactPartiesNotification.sendToSubject(data, "CN1");
 
         //Then
-        verify(notificationService).sendLetter(any(NotificationRequest.class));
+        verify(notificationService).sendLetter(any(NotificationRequest.class), eq("CN1"));
         verify(notificationHelper).buildLetterNotificationRequest(
             Map.of(
                 CommonConstants.CIC_CASE_SUBJECT_NAME, data.getCicCase().getFullName(),
@@ -110,7 +111,7 @@ class ContactPartiesNotificationTest {
         contactPartiesNotification.sendToApplicant(data, "CN1");
 
         //Then
-        verify(notificationService).sendEmail(any(NotificationRequest.class));
+        verify(notificationService).sendEmail(any(NotificationRequest.class), eq("CN1"));
         verify(notificationHelper).buildEmailNotificationRequest(
             data.getCicCase().getApplicantEmailAddress(),
             true,
@@ -137,7 +138,7 @@ class ContactPartiesNotificationTest {
         contactPartiesNotification.sendToApplicant(data, "CN1");
 
         //Then
-        verify(notificationService).sendLetter(any(NotificationRequest.class));
+        verify(notificationService).sendLetter(any(NotificationRequest.class), eq("CN1"));
         verify(notificationHelper).buildLetterNotificationRequest(
             Map.of(
                 CommonConstants.CIC_CASE_SUBJECT_NAME, data.getCicCase().getFullName(),
@@ -163,7 +164,7 @@ class ContactPartiesNotificationTest {
         contactPartiesNotification.sendToRepresentative(data, "CN1");
 
         //Then
-        verify(notificationService).sendEmail(any(NotificationRequest.class));
+        verify(notificationService).sendEmail(any(NotificationRequest.class), eq("CN1"));
         verify(notificationHelper).buildEmailNotificationRequest(
             data.getCicCase().getRepresentativeEmailAddress(),
             true,
@@ -191,7 +192,7 @@ class ContactPartiesNotificationTest {
         contactPartiesNotification.sendToRepresentative(data, "CN1");
 
         //Then
-        verify(notificationService).sendLetter(any(NotificationRequest.class));
+        verify(notificationService).sendLetter(any(NotificationRequest.class), eq("CN1"));
         verify(notificationHelper).buildLetterNotificationRequest(
             Map.of(
                 CommonConstants.CIC_CASE_SUBJECT_NAME, data.getCicCase().getFullName(),
@@ -213,7 +214,7 @@ class ContactPartiesNotificationTest {
         contactPartiesNotification.sendToRespondent(data, "CN1");
 
         //Then
-        verify(notificationService).sendEmail(any(NotificationRequest.class));
+        verify(notificationService).sendEmail(any(NotificationRequest.class), eq("CN1"));
         verify(notificationHelper).buildEmailNotificationRequest(
             data.getCicCase().getRespondentEmail(),
             Map.of(
@@ -238,7 +239,7 @@ class ContactPartiesNotificationTest {
         contactPartiesNotification.sendToRespondent(data, "CN1");
 
         //Then
-        verify(notificationService).sendEmail(any(NotificationRequest.class));
+        verify(notificationService).sendEmail(any(NotificationRequest.class), eq("CN1"));
         verify(notificationHelper).buildEmailNotificationRequest(
             data.getCicCase().getRespondentEmail(),
             true,
@@ -262,7 +263,7 @@ class ContactPartiesNotificationTest {
         contactPartiesNotification.sendToTribunal(data, "CN1");
 
         //Then
-        verify(notificationService).sendEmail(any(NotificationRequest.class));
+        verify(notificationService).sendEmail(any(NotificationRequest.class), eq("CN1"));
         verify(notificationHelper).buildEmailNotificationRequest(
             TRIBUNAL_EMAIL_VALUE,
             Map.of(
@@ -286,7 +287,7 @@ class ContactPartiesNotificationTest {
         contactPartiesNotification.sendToTribunal(data, "CN1");
 
         //Then
-        verify(notificationService).sendEmail(any(NotificationRequest.class));
+        verify(notificationService).sendEmail(any(NotificationRequest.class), eq("CN1"));
         verify(notificationHelper).buildEmailNotificationRequest(
             TRIBUNAL_EMAIL_VALUE,
             true,

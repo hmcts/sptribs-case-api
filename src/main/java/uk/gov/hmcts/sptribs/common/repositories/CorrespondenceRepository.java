@@ -10,3 +10,4 @@ import java.util.List;
 public interface CorrespondenceRepository extends JpaRepository<CorrespondenceRecord, Long> {
     List<CorrespondenceRecord> findAllByCaseReferenceNumberOrderBySentAtDesc(Long caseReferenceNumber);
 }
+

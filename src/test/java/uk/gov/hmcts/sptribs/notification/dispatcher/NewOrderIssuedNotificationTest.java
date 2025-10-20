@@ -69,7 +69,7 @@ public class NewOrderIssuedNotificationTest {
         newOrderIssuedNotification.sendToSubject(data, "CN1");
 
         //Then
-        verify(notificationService).sendEmail(any(NotificationRequest.class));
+        verify(notificationService).sendEmail(any(NotificationRequest.class), eq("CN1"));
         verify(notificationHelper).buildEmailNotificationRequest(
             eq(data.getCicCase().getEmail()),
             eq(true),
@@ -106,7 +106,7 @@ public class NewOrderIssuedNotificationTest {
             argument.capture(), eq(new HashMap<>()), eq(TemplateName.NEW_ORDER_ISSUED_EMAIL));
         assertThat(argument.getValue())
             .containsEntry(TRIBUNAL_ORDER, recentOrder.getUploadedFile().get(0).getValue().getDocumentLink().getFilename());
-        verify(notificationService).sendEmail(any(NotificationRequest.class));
+        verify(notificationService).sendEmail(any(NotificationRequest.class), eq("CN1"));
 
     }
 
@@ -128,7 +128,7 @@ public class NewOrderIssuedNotificationTest {
         newOrderIssuedNotification.sendToSubject(data, "CN1");
 
         //Then
-        verify(notificationService).sendLetter(any(NotificationRequest.class));
+        verify(notificationService).sendLetter(any(NotificationRequest.class), eq("CN1"));
         verify(notificationHelper).buildLetterNotificationRequest(
             new HashMap<>(),
             TemplateName.NEW_ORDER_ISSUED_POST);
@@ -162,7 +162,7 @@ public class NewOrderIssuedNotificationTest {
             argument.capture(), eq(new HashMap<>()), eq(TemplateName.NEW_ORDER_ISSUED_EMAIL));
         assertThat(argument.getValue())
             .containsEntry(TRIBUNAL_ORDER, recentOrder.getUploadedFile().get(0).getValue().getDocumentLink().getFilename());
-        verify(notificationService).sendEmail(any(NotificationRequest.class));
+        verify(notificationService).sendEmail(any(NotificationRequest.class), eq("CN1"));
     }
 
 
@@ -200,7 +200,7 @@ public class NewOrderIssuedNotificationTest {
             argument.capture(), eq(new HashMap<>()), eq(TemplateName.NEW_ORDER_ISSUED_EMAIL));
         assertThat(argument.getValue())
             .containsEntry(TRIBUNAL_ORDER, recentOrder.getDraftOrder().getTemplateGeneratedDocument().getFilename());
-        verify(notificationService).sendEmail(any(NotificationRequest.class));
+        verify(notificationService).sendEmail(any(NotificationRequest.class), eq("CN1"));
     }
 
     @Test
@@ -219,7 +219,7 @@ public class NewOrderIssuedNotificationTest {
         newOrderIssuedNotification.sendToRepresentative(data, "CN1");
 
         //Then
-        verify(notificationService).sendLetter(any(NotificationRequest.class));
+        verify(notificationService).sendLetter(any(NotificationRequest.class), eq("CN1"));
         verify(notificationHelper).buildLetterNotificationRequest(
             new HashMap<>(),
             TemplateName.NEW_ORDER_ISSUED_POST);
@@ -254,7 +254,7 @@ public class NewOrderIssuedNotificationTest {
         verify(notificationHelper).buildEmailNotificationRequest(eq(data.getCicCase().getApplicantEmailAddress()), eq(true),
             argument.capture(), eq(new HashMap<>()), eq(TemplateName.NEW_ORDER_ISSUED_EMAIL));
         assertThat(argument.getValue().get(TRIBUNAL_ORDER)).isNull();
-        verify(notificationService).sendEmail(any(NotificationRequest.class));
+        verify(notificationService).sendEmail(any(NotificationRequest.class), eq("CN1"));
     }
 
     @Test
@@ -274,7 +274,7 @@ public class NewOrderIssuedNotificationTest {
         newOrderIssuedNotification.sendToApplicant(data, "CN1");
 
         //Then
-        verify(notificationService).sendEmail(any(NotificationRequest.class));
+        verify(notificationService).sendEmail(any(NotificationRequest.class), eq("CN1"));
         verify(notificationHelper).buildEmailNotificationRequest(
             eq(data.getCicCase().getApplicantEmailAddress()),
             eq(true),
@@ -300,7 +300,7 @@ public class NewOrderIssuedNotificationTest {
         newOrderIssuedNotification.sendToApplicant(data, "CN1");
 
         //Then
-        verify(notificationService).sendLetter(any(NotificationRequest.class));
+        verify(notificationService).sendLetter(any(NotificationRequest.class), eq("CN1"));
         verify(notificationHelper).buildLetterNotificationRequest(
             new HashMap<>(),
             TemplateName.NEW_ORDER_ISSUED_POST);

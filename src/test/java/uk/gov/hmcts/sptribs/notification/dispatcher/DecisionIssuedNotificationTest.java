@@ -67,7 +67,7 @@ public class DecisionIssuedNotificationTest {
         decisionIssuedNotification.sendToSubject(data, "CN1");
 
         //Then
-        verify(notificationService).sendEmail(any(NotificationRequest.class));
+        verify(notificationService).sendEmail(any(NotificationRequest.class), eq("CN1"));
         verify(notificationHelper).buildEmailNotificationRequest(
             eq(data.getCicCase().getEmail()),
             eq(true),
@@ -91,7 +91,7 @@ public class DecisionIssuedNotificationTest {
         decisionIssuedNotification.sendToSubject(data, "CN1");
 
         //Then
-        verify(notificationService).sendEmail(any(NotificationRequest.class));
+        verify(notificationService).sendEmail(any(NotificationRequest.class), eq("CN1"));
         verify(notificationHelper).buildEmailNotificationRequest(
             eq(data.getCicCase().getEmail()),
             eq(true),
@@ -122,7 +122,7 @@ public class DecisionIssuedNotificationTest {
         decisionIssuedNotification.sendToSubject(data, "CN1");
 
         //Then
-        verify(notificationService).sendLetter(any(NotificationRequest.class));
+        verify(notificationService).sendLetter(any(NotificationRequest.class), eq("CN1"));
         verify(notificationHelper).buildLetterNotificationRequest(
             new HashMap<>(),
             TemplateName.DECISION_ISSUED_POST);
@@ -150,7 +150,7 @@ public class DecisionIssuedNotificationTest {
         decisionIssuedNotification.sendToRespondent(data, "CN1");
 
         //Then
-        verify(notificationService).sendEmail(any(NotificationRequest.class));
+        verify(notificationService).sendEmail(any(NotificationRequest.class), eq("CN1"));
         verify(notificationHelper).buildEmailNotificationRequest(
             eq(data.getCicCase().getRespondentEmail()),
             eq(true),
@@ -173,7 +173,7 @@ public class DecisionIssuedNotificationTest {
         decisionIssuedNotification.sendToRespondent(data, "CN1");
 
         //Then
-        verify(notificationService).sendEmail(any(NotificationRequest.class));
+        verify(notificationService).sendEmail(any(NotificationRequest.class), eq("CN1"));
         verify(notificationHelper).buildEmailNotificationRequest(
             eq(data.getCicCase().getRespondentEmail()),
             eq(true),
@@ -210,7 +210,7 @@ public class DecisionIssuedNotificationTest {
         decisionIssuedNotification.sendToRepresentative(data, "CN1");
 
         //Then
-        verify(notificationService).sendEmail(any(NotificationRequest.class));
+        verify(notificationService).sendEmail(any(NotificationRequest.class), eq("CN1"));
         verify(notificationHelper).buildEmailNotificationRequest(
             eq(data.getCicCase().getRepresentativeEmailAddress()),
             eq(true),
@@ -235,7 +235,7 @@ public class DecisionIssuedNotificationTest {
         decisionIssuedNotification.sendToRepresentative(data, "CN1");
 
         //Then
-        verify(notificationService).sendEmail(any(NotificationRequest.class));
+        verify(notificationService).sendEmail(any(NotificationRequest.class), eq("CN1"));
         verify(notificationHelper).buildEmailNotificationRequest(
             eq(data.getCicCase().getRepresentativeEmailAddress()),
             eq(true),
@@ -260,7 +260,7 @@ public class DecisionIssuedNotificationTest {
         decisionIssuedNotification.sendToRepresentative(data, "CN1");
 
         //Then
-        verify(notificationService).sendLetter(any(NotificationRequest.class));
+        verify(notificationService).sendLetter(any(NotificationRequest.class), eq("CN1"));
         verify(notificationHelper).buildLetterNotificationRequest(
             new HashMap<>(),
             TemplateName.DECISION_ISSUED_POST);
@@ -291,7 +291,7 @@ public class DecisionIssuedNotificationTest {
         decisionIssuedNotification.sendToApplicant(data, "CN1");
 
         //Then
-        verify(notificationService).sendEmail(any(NotificationRequest.class));
+        verify(notificationService).sendEmail(any(NotificationRequest.class), eq("CN1"));
         verify(notificationHelper).buildEmailNotificationRequest(
             eq(data.getCicCase().getApplicantEmailAddress()),
             eq(true),
@@ -315,7 +315,7 @@ public class DecisionIssuedNotificationTest {
         decisionIssuedNotification.sendToApplicant(data, "CN1");
 
         //Then
-        verify(notificationService).sendEmail(any(NotificationRequest.class));
+        verify(notificationService).sendEmail(any(NotificationRequest.class), eq("CN1"));
         verify(notificationHelper).buildEmailNotificationRequest(
             eq(data.getCicCase().getApplicantEmailAddress()),
             eq(true),
@@ -339,7 +339,7 @@ public class DecisionIssuedNotificationTest {
         decisionIssuedNotification.sendToApplicant(data, "CN1");
 
         //Then
-        verify(notificationService).sendLetter(any(NotificationRequest.class));
+        verify(notificationService).sendLetter(any(NotificationRequest.class), eq("CN1"));
         verify(notificationHelper).buildLetterNotificationRequest(
             new HashMap<>(),
             TemplateName.DECISION_ISSUED_POST);

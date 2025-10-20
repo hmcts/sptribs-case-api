@@ -8,6 +8,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import uk.gov.hmcts.ccd.sdk.api.CCD;
+import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerWithCAAAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.DefaultAccess;
 
@@ -58,7 +59,7 @@ public class Correspondence {
         label = "Document url",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
-    private String documentUrl;
+    private Document documentUrl;
 
     @CCD(
         label = "Correspondence type",
@@ -72,7 +73,7 @@ public class Correspondence {
     public Correspondence(@JsonProperty("sentOn") LocalDateTime sentOn,
                           @JsonProperty("from") String from,
                           @JsonProperty("to") String to,
-                          @JsonProperty("documentUrl") String documentUrl,
+                          @JsonProperty("documentUrl") Document documentUrl,
                           @JsonProperty("correspondenceType") String correspondenceType) {
         this.sentOn = sentOn;
         this.from = from;
