@@ -182,7 +182,7 @@ public class ContactPartiesSelectDocumentIT {
                     CASEWORKER_CONTACT_PARTIES)))
             .accept(APPLICATION_JSON))
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$.errors[0]").value(label + " is too large"));
+            .andExpect(jsonPath("$.errors[0]").value("Unable to proceed because " + label + " is larger than 2MB"));
     }
 
     private List<DynamicListElement> populateContactPartiesDocumentsList() {

@@ -60,7 +60,9 @@ public class ContactPartiesSelectDocument implements CcdPageConfiguration {
             errors.add("Select up to 10 documents");
         }
 
-        validateDocumentFileSizes(list.getValue(), errors);
+        if (list != null && list.getValue() != null) {
+            validateDocumentFileSizes(list.getValue(), errors);
+        }
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(data)
