@@ -23,7 +23,6 @@ import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderCIC;
 import uk.gov.hmcts.sptribs.caseworker.model.Order;
 import uk.gov.hmcts.sptribs.caseworker.model.OrderIssuingType;
 import uk.gov.hmcts.sptribs.caseworker.util.MessageUtil;
-import uk.gov.hmcts.sptribs.caseworker.util.PageShowConditionsUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
@@ -62,8 +61,8 @@ import static uk.gov.hmcts.sptribs.document.DocumentUtil.updateCategoryToDocumen
 @Slf4j
 public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole> {
     private static final CcdPageConfiguration orderIssuingSelect = new SendOrderOrderIssuingSelect();
-    private static final CcdPageConfiguration uploadOrder = new SendOrderUploadOrder(PageShowConditionsUtil.sendOrderShowConditions());
-    private static final CcdPageConfiguration draftOrder = new SendOrderAddDraftOrder(PageShowConditionsUtil.sendOrderShowConditions());
+    private static final CcdPageConfiguration uploadOrder = new SendOrderUploadOrder();
+    private static final CcdPageConfiguration draftOrder = new SendOrderAddDraftOrder();
     private static final CcdPageConfiguration orderDueDates = new SendOrderOrderDueDates();
     private static final CcdPageConfiguration notifyParties = new SendOrderNotifyParties();
     private static final CcdPageConfiguration sendReminder = new SendOrderSendReminder();
@@ -90,6 +89,7 @@ public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole>
                     .name("Orders: Send order")
                     .description("Orders: Send order")
                     .showSummary()
+                    .aboutToStartCallback(this::aboutToStart)
                     .aboutToSubmitCallback(this::aboutToSubmit)
                     .submittedCallback(this::submitted)
                     .grant(CREATE_READ_UPDATE,
@@ -98,6 +98,15 @@ public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole>
                     .publishToCamunda();
 
         return new PageBuilder(eventBuilder);
+    }
+
+    private AboutToStartOrSubmitResponse<CaseData, State> aboutToStart(CaseDetails<CaseData, State> caseDetails) {
+        CaseData data = caseDetails.getData();
+        data.setCurrentEvent(CASEWORKER_SEND_ORDER);
+
+        return AboutToStartOrSubmitResponse.<CaseData, State>builder()
+            .data(data)
+            .build();
     }
 
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(final CaseDetails<CaseData, State> details,
@@ -172,6 +181,7 @@ public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole>
 
         caseData.getCicCase().setOrderDueDates(new ArrayList<>());
         caseData.getCicCase().setFirstOrderDueDate(caseData.getCicCase().calculateFirstDueDate());
+        caseData.setCurrentEvent("");
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
