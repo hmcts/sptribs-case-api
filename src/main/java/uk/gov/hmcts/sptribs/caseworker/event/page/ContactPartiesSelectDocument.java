@@ -77,9 +77,10 @@ public class ContactPartiesSelectDocument implements CcdPageConfiguration {
         var docIdsAndSizes = docIds.stream()
             .map(id -> {
                 var response = caseDocumentClientApi.getDocument(systemUserAuth, serviceAuth, UUID.fromString(id));
-
-                //If we haven't got a 200 or a body back, we can't check the size, so assume it's over the limit to block proceeding
-                return response.getBody() != null || !response.getStatusCode().is2xxSuccessful()
+                if (!response.getStatusCode().is2xxSuccessful()) {
+                    throw new RuntimeException("Failed to retrieve document with id " + id);
+                }
+                return response.getBody() != null
                     ? Pair.of(id, response.getBody().size)
                     : Pair.of(id, TWO_MEGABYTES * 2);
             }).toList();
