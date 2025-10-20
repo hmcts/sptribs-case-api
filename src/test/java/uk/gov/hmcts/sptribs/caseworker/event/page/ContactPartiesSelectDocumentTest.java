@@ -1,6 +1,7 @@
 package uk.gov.hmcts.sptribs.caseworker.event.page;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -49,59 +50,127 @@ class ContactPartiesSelectDocumentTest {
 
     private User systemUser;
 
-    @BeforeEach
-    void setUp() {
-        systemUser = mock(User.class);
-        when(idamService.retrieveSystemUpdateUserDetails()).thenReturn(systemUser);
-        when(systemUser.getAuthToken()).thenReturn(SYSTEM_AUTH);
-        when(authTokenGenerator.generate()).thenReturn(SERVICE_AUTH);
-    }
+    @Nested
+    class RequireStubbing {
+        @BeforeEach
+        void setUp() {
+            systemUser = mock(User.class);
+            when(idamService.retrieveSystemUpdateUserDetails()).thenReturn(systemUser);
+            when(systemUser.getAuthToken()).thenReturn(SYSTEM_AUTH);
+            when(authTokenGenerator.generate()).thenReturn(SERVICE_AUTH);
+        }
 
-    @Test
-    void midEventIsSuccessful() {
-        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
-        ContactPartiesDocuments contactPartiesDocuments = new ContactPartiesDocuments();
-        List<DynamicListElement> selection = IntStream.range(0, 10)
-            .mapToObj(i -> DynamicListElement.builder()
-                .code(UUID.randomUUID())
-                .label("Document " + i)
-                .build())
-            .toList();
-        contactPartiesDocuments.setDocumentList(DynamicMultiSelectList.builder()
-            .value(selection)
-            .listItems(selection)
-            .build());
-        final CaseData caseData = CaseData.builder()
-            .contactPartiesDocuments(contactPartiesDocuments)
-            .build();
-        caseDetails.setData(caseData);
+        @Test
+        void midEventIsSuccessful() {
+            final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+            ContactPartiesDocuments contactPartiesDocuments = new ContactPartiesDocuments();
+            List<DynamicListElement> selection = IntStream.range(0, 10)
+                .mapToObj(i -> DynamicListElement.builder()
+                    .code(UUID.randomUUID())
+                    .label("Document " + i)
+                    .build())
+                .toList();
+            contactPartiesDocuments.setDocumentList(DynamicMultiSelectList.builder()
+                .value(selection)
+                .listItems(selection)
+                .build());
+            final CaseData caseData = CaseData.builder()
+                .contactPartiesDocuments(contactPartiesDocuments)
+                .build();
+            caseDetails.setData(caseData);
 
-        final AboutToStartOrSubmitResponse<CaseData, State> response = contactPartiesSelectDocument.midEvent(caseDetails, caseDetails);
-        assertTrue(response.getErrors().isEmpty());
-    }
+            final AboutToStartOrSubmitResponse<CaseData, State> response = contactPartiesSelectDocument.midEvent(caseDetails, caseDetails);
+            assertTrue(response.getErrors().isEmpty());
+        }
 
-    @Test
-    void midEventReturnsErrorWhenMaxDocumentsExceeded() {
-        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
-        ContactPartiesDocuments contactPartiesDocuments = new ContactPartiesDocuments();
-        List<DynamicListElement> selection = IntStream.range(0, 11)
-            .mapToObj(i -> DynamicListElement.builder()
-                .code(UUID.randomUUID())
-                .label("Document " + i)
-                .build())
-            .toList();
-        contactPartiesDocuments.setDocumentList(DynamicMultiSelectList.builder()
-            .value(selection)
-            .listItems(selection)
-            .build());
-        final CaseData caseData = CaseData.builder()
-            .contactPartiesDocuments(contactPartiesDocuments)
-            .build();
-        caseDetails.setData(caseData);
+        @Test
+        void midEventReturnsErrorWhenMaxDocumentsExceeded() {
+            final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+            ContactPartiesDocuments contactPartiesDocuments = new ContactPartiesDocuments();
+            List<DynamicListElement> selection = IntStream.range(0, 11)
+                .mapToObj(i -> DynamicListElement.builder()
+                    .code(UUID.randomUUID())
+                    .label("Document " + i)
+                    .build())
+                .toList();
+            contactPartiesDocuments.setDocumentList(DynamicMultiSelectList.builder()
+                .value(selection)
+                .listItems(selection)
+                .build());
+            final CaseData caseData = CaseData.builder()
+                .contactPartiesDocuments(contactPartiesDocuments)
+                .build();
+            caseDetails.setData(caseData);
 
-        final AboutToStartOrSubmitResponse<CaseData, State> response = contactPartiesSelectDocument.midEvent(caseDetails, caseDetails);
-        assertThat(response.getErrors()).hasSize(1);
-        assertThat(response.getErrors()).contains("Select up to 10 documents");
+            final AboutToStartOrSubmitResponse<CaseData, State> response = contactPartiesSelectDocument.midEvent(caseDetails, caseDetails);
+            assertThat(response.getErrors()).hasSize(1);
+            assertThat(response.getErrors()).contains("Select up to 10 documents");
+        }
+
+
+
+        @Test
+        void midEventReturnsErrorWhenDocumentSizeExceedsLimit() {
+            final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+            UUID documentId = UUID.randomUUID();
+            String label = "[Large Document](http://example/documents/" + documentId + ")";
+
+            ContactPartiesDocuments contactPartiesDocuments = new ContactPartiesDocuments();
+            DynamicListElement element = DynamicListElement.builder()
+                .code(documentId)
+                .label(label)
+                .build();
+            List<DynamicListElement> selection = List.of(element);
+            contactPartiesDocuments.setDocumentList(DynamicMultiSelectList.builder()
+                .value(selection)
+                .listItems(selection)
+                .build());
+
+            Document oversizedDocument = new Document();
+            oversizedDocument.size = 3_000_000;
+            when(caseDocumentClientApi.getDocument(SYSTEM_AUTH, SERVICE_AUTH, documentId))
+                .thenReturn(ResponseEntity.ok(oversizedDocument));
+
+            final CaseData caseData = CaseData.builder()
+                .contactPartiesDocuments(contactPartiesDocuments)
+                .build();
+            caseDetails.setData(caseData);
+
+            final AboutToStartOrSubmitResponse<CaseData, State> response = contactPartiesSelectDocument.midEvent(caseDetails, caseDetails);
+            assertThat(response.getErrors()).containsExactly("Unable to proceed because " + label + " is larger than 2MB");
+        }
+
+        @Test
+        void midEventDoesNotReturnErrorWhenDocumentSizeWithinLimit() {
+            final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+            UUID documentId = UUID.randomUUID();
+            String label = "[Small Document](http://example/documents/" + documentId + ")";
+
+            ContactPartiesDocuments contactPartiesDocuments = new ContactPartiesDocuments();
+            DynamicListElement element = DynamicListElement.builder()
+                .code(documentId)
+                .label(label)
+                .build();
+            List<DynamicListElement> selection = List.of(element);
+            contactPartiesDocuments.setDocumentList(DynamicMultiSelectList.builder()
+                .value(selection)
+                .listItems(selection)
+                .build());
+
+            Document withinLimitDocument = new Document();
+            withinLimitDocument.size = 1_500_000;
+            when(caseDocumentClientApi.getDocument(SYSTEM_AUTH, SERVICE_AUTH, documentId))
+                .thenReturn(ResponseEntity.ok(withinLimitDocument));
+
+            final CaseData caseData = CaseData.builder()
+                .contactPartiesDocuments(contactPartiesDocuments)
+                .build();
+            caseDetails.setData(caseData);
+
+            final AboutToStartOrSubmitResponse<CaseData, State> response = contactPartiesSelectDocument.midEvent(caseDetails, caseDetails);
+            assertThat(response.getErrors()).isEmpty();
+        }
+
     }
 
     @Test
@@ -109,68 +178,6 @@ class ContactPartiesSelectDocumentTest {
         final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
         ContactPartiesDocuments contactPartiesDocuments = new ContactPartiesDocuments();
         contactPartiesDocuments.setDocumentList(DynamicMultiSelectList.builder().build());
-        final CaseData caseData = CaseData.builder()
-            .contactPartiesDocuments(contactPartiesDocuments)
-            .build();
-        caseDetails.setData(caseData);
-
-        final AboutToStartOrSubmitResponse<CaseData, State> response = contactPartiesSelectDocument.midEvent(caseDetails, caseDetails);
-        assertThat(response.getErrors()).isEmpty();
-    }
-
-    @Test
-    void midEventReturnsErrorWhenDocumentSizeExceedsLimit() {
-        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
-        UUID documentId = UUID.randomUUID();
-        String label = "[Large Document](http://example/documents/" + documentId + ")";
-
-        ContactPartiesDocuments contactPartiesDocuments = new ContactPartiesDocuments();
-        DynamicListElement element = DynamicListElement.builder()
-            .code(documentId)
-            .label(label)
-            .build();
-        List<DynamicListElement> selection = List.of(element);
-        contactPartiesDocuments.setDocumentList(DynamicMultiSelectList.builder()
-            .value(selection)
-            .listItems(selection)
-            .build());
-
-        Document oversizedDocument = new Document();
-        oversizedDocument.size = 3_000_000;
-        when(caseDocumentClientApi.getDocument(SYSTEM_AUTH, SERVICE_AUTH, documentId))
-            .thenReturn(ResponseEntity.ok(oversizedDocument));
-
-        final CaseData caseData = CaseData.builder()
-            .contactPartiesDocuments(contactPartiesDocuments)
-            .build();
-        caseDetails.setData(caseData);
-
-        final AboutToStartOrSubmitResponse<CaseData, State> response = contactPartiesSelectDocument.midEvent(caseDetails, caseDetails);
-        assertThat(response.getErrors()).containsExactly("Unable to proceed because " + label + " is larger than 2MB");
-    }
-
-    @Test
-    void midEventDoesNotReturnErrorWhenDocumentSizeWithinLimit() {
-        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
-        UUID documentId = UUID.randomUUID();
-        String label = "[Small Document](http://example/documents/" + documentId + ")";
-
-        ContactPartiesDocuments contactPartiesDocuments = new ContactPartiesDocuments();
-        DynamicListElement element = DynamicListElement.builder()
-            .code(documentId)
-            .label(label)
-            .build();
-        List<DynamicListElement> selection = List.of(element);
-        contactPartiesDocuments.setDocumentList(DynamicMultiSelectList.builder()
-            .value(selection)
-            .listItems(selection)
-            .build());
-
-        Document withinLimitDocument = new Document();
-        withinLimitDocument.size = 1_500_000;
-        when(caseDocumentClientApi.getDocument(SYSTEM_AUTH, SERVICE_AUTH, documentId))
-            .thenReturn(ResponseEntity.ok(withinLimitDocument));
-
         final CaseData caseData = CaseData.builder()
             .contactPartiesDocuments(contactPartiesDocuments)
             .build();
