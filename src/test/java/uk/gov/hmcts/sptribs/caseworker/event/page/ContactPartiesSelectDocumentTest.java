@@ -7,6 +7,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
@@ -26,6 +27,7 @@ import java.util.UUID;
 import java.util.stream.IntStream;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -169,6 +171,65 @@ class ContactPartiesSelectDocumentTest {
 
             final AboutToStartOrSubmitResponse<CaseData, State> response = contactPartiesSelectDocument.midEvent(caseDetails, caseDetails);
             assertThat(response.getErrors()).isEmpty();
+        }
+
+        @Test
+        void midEventTreatsMissingDocumentBodyAsOversized() {
+            final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+            UUID documentId = UUID.randomUUID();
+            String label = "[Unknown Document](http://example/documents/" + documentId + ")";
+
+            ContactPartiesDocuments contactPartiesDocuments = new ContactPartiesDocuments();
+            DynamicListElement element = DynamicListElement.builder()
+                .code(documentId)
+                .label(label)
+                .build();
+            List<DynamicListElement> selection = List.of(element);
+            contactPartiesDocuments.setDocumentList(DynamicMultiSelectList.builder()
+                .value(selection)
+                .listItems(selection)
+                .build());
+
+            when(caseDocumentClientApi.getDocument(SYSTEM_AUTH, SERVICE_AUTH, documentId))
+                .thenReturn(ResponseEntity.status(HttpStatus.OK).build());
+
+            final CaseData caseData = CaseData.builder()
+                .contactPartiesDocuments(contactPartiesDocuments)
+                .build();
+            caseDetails.setData(caseData);
+
+            final AboutToStartOrSubmitResponse<CaseData, State> response = contactPartiesSelectDocument.midEvent(caseDetails, caseDetails);
+            assertThat(response.getErrors()).containsExactly("Unable to proceed because " + label + " is larger than 2MB");
+        }
+
+        @Test
+        void midEventThrowsExceptionWhenDocumentRetrievalFails() {
+            final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+            UUID documentId = UUID.randomUUID();
+
+            ContactPartiesDocuments contactPartiesDocuments = new ContactPartiesDocuments();
+            DynamicListElement element = DynamicListElement.builder()
+                .code(documentId)
+                .label("[Missing Document](http://example/documents/" + documentId + ")")
+                .build();
+            List<DynamicListElement> selection = List.of(element);
+            contactPartiesDocuments.setDocumentList(DynamicMultiSelectList.builder()
+                .value(selection)
+                .listItems(selection)
+                .build());
+
+            when(caseDocumentClientApi.getDocument(SYSTEM_AUTH, SERVICE_AUTH, documentId))
+                .thenReturn(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build());
+
+            final CaseData caseData = CaseData.builder()
+                .contactPartiesDocuments(contactPartiesDocuments)
+                .build();
+            caseDetails.setData(caseData);
+
+            RuntimeException exception = assertThrows(RuntimeException.class,
+                () -> contactPartiesSelectDocument.midEvent(caseDetails, caseDetails));
+
+            assertThat(exception.getMessage()).isEqualTo("Failed to retrieve document with id " + documentId);
         }
 
     }
