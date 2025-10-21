@@ -34,6 +34,7 @@ import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.getEventsFrom;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.LOCAL_DATE_TIME;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.caseData;
+import static uk.gov.hmcts.sptribs.testutil.TestEventConstants.CASEWORKER_CREATE_DRAFT_ORDER;
 import static uk.gov.hmcts.sptribs.testutil.TestEventConstants.CASEWORKER_EDIT_DRAFT_ORDER;
 
 
@@ -72,6 +73,17 @@ class CaseworkerEditDraftOrderTest {
     }
 
     @Test
+    void aboutToStartShouldSetCurrentEvent() {
+        CaseDetails<CaseData, State> caseDetails = CaseDetails.<CaseData, State>builder()
+                .data(CaseData.builder().build())
+                .build();
+        AboutToStartOrSubmitResponse<CaseData, State> response = caseWorkerEditDraftOrder.aboutToStart(caseDetails);
+
+        assertThat(response).isNotNull();
+        assertThat(response.getData().getCurrentEvent()).isEqualTo(CASEWORKER_EDIT_DRAFT_ORDER);
+    }
+
+    @Test
     void shouldSuccessfullySaveDraftOrder() {
         //Given
         final CaseData caseData = caseData();
@@ -103,7 +115,7 @@ class CaseworkerEditDraftOrderTest {
             caseWorkerEditDraftOrder.aboutToSubmit(updatedCaseDetails, beforeDetails);
         assertThat(response).isNotNull();
         DraftOrderCIC updatedDraftOrder = response.getData()
-            .getCicCase().getDraftOrderCICList().get(0).getValue();
+            .getCicCase().getDraftOrderCICList().getFirst().getValue();
         assertThat(updatedDraftOrder.getDraftOrderContentCIC().getOrderTemplate()).isEqualTo(OrderTemplate.CIC6_GENERAL_DIRECTIONS);
         assertThat(updatedDraftOrder.getTemplateGeneratedDocument()).isNotNull();
 
