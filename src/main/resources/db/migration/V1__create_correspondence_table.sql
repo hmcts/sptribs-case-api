@@ -1,5 +1,5 @@
 create table if not exists case_correspondences (
-  case_reference_number bigint not null references ccd.case_data(reference) on delete cascade,
+  case_reference_number varChar(200) not null references ccd.case_data(case_reference_number) on delete cascade,
   id bigserial,
   event_type varChar(200) not null,
   sent_on timestamp not null,

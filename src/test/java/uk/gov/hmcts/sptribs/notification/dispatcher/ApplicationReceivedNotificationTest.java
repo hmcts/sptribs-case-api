@@ -22,6 +22,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID;
 
 @ExtendWith(MockitoExtension.class)
 public class ApplicationReceivedNotificationTest {
@@ -46,10 +47,10 @@ public class ApplicationReceivedNotificationTest {
             .thenReturn(NotificationRequest.builder().build());
         when(notificationHelper.getSubjectCommonVars(any(), any(CaseData.class))).thenReturn(new HashMap<>());
 
-        applicationReceivedNotification.sendToSubject(data, "CN1");
+        applicationReceivedNotification.sendToSubject(data, TEST_CASE_ID.toString());
 
         //Then
-        verify(notificationService).sendEmail(any(NotificationRequest.class), eq("CN1"));
+        verify(notificationService).sendEmail(any(NotificationRequest.class), eq(TEST_CASE_ID.toString()));
         verify(notificationHelper).buildEmailNotificationRequest(
             data.getCicCase().getEmail(),
             new HashMap<>(),
@@ -62,9 +63,9 @@ public class ApplicationReceivedNotificationTest {
         data.getCicCase().setContactPreferenceType(null);
         data.getCicCase().setEmail("test@outlook.com");
 
-        applicationReceivedNotification.sendToSubject(data, "CN1");
+        applicationReceivedNotification.sendToSubject(data, TEST_CASE_ID.toString());
 
-        verify(notificationService, never()).sendEmail(any(NotificationRequest.class), eq("CN1"));
+        verify(notificationService, never()).sendEmail(any(NotificationRequest.class), eq(TEST_CASE_ID.toString()));
     }
 
     @Test
@@ -79,10 +80,10 @@ public class ApplicationReceivedNotificationTest {
         when(notificationHelper.buildEmailNotificationRequest(any(), anyMap(), any(TemplateName.class)))
             .thenReturn(NotificationRequest.builder().build());
         when(notificationHelper.getApplicantCommonVars(any(), any(CaseData.class))).thenReturn(new HashMap<>());
-        applicationReceivedNotification.sendToApplicant(data, "CN1");
+        applicationReceivedNotification.sendToApplicant(data, TEST_CASE_ID.toString());
 
         //Then
-        verify(notificationService).sendEmail(any(NotificationRequest.class), eq("CN1"));
+        verify(notificationService).sendEmail(any(NotificationRequest.class), eq(TEST_CASE_ID.toString()));
         verify(notificationHelper).buildEmailNotificationRequest(
             data.getCicCase().getApplicantEmailAddress(),
             new HashMap<>(),
@@ -96,9 +97,9 @@ public class ApplicationReceivedNotificationTest {
         data.getCicCase().setContactPreferenceType(null);
         data.getCicCase().setEmail("test@outlook.com");
 
-        applicationReceivedNotification.sendToApplicant(data, "CN1");
+        applicationReceivedNotification.sendToApplicant(data, TEST_CASE_ID.toString());
 
-        verify(notificationService, never()).sendEmail(any(NotificationRequest.class), eq("CN1"));
+        verify(notificationService, never()).sendEmail(any(NotificationRequest.class), eq(TEST_CASE_ID.toString()));
     }
 
     @Test
@@ -113,10 +114,10 @@ public class ApplicationReceivedNotificationTest {
         when(notificationHelper.buildEmailNotificationRequest(any(), anyMap(), any(TemplateName.class)))
             .thenReturn(NotificationRequest.builder().build());
         when(notificationHelper.getRepresentativeCommonVars(any(), any(CaseData.class))).thenReturn(new HashMap<>());
-        applicationReceivedNotification.sendToRepresentative(data, "CN1");
+        applicationReceivedNotification.sendToRepresentative(data, TEST_CASE_ID.toString());
 
         //Then
-        verify(notificationService).sendEmail(any(NotificationRequest.class), eq("CN1"));
+        verify(notificationService).sendEmail(any(NotificationRequest.class), eq(TEST_CASE_ID.toString()));
         verify(notificationHelper).buildEmailNotificationRequest(
             data.getCicCase().getRepresentativeEmailAddress(),
             new HashMap<>(),
@@ -130,13 +131,13 @@ public class ApplicationReceivedNotificationTest {
         data.getCicCase().setContactPreferenceType(null);
         data.getCicCase().setEmail("test@outlook.com");
 
-        applicationReceivedNotification.sendToRepresentative(data, "CN1");
+        applicationReceivedNotification.sendToRepresentative(data, TEST_CASE_ID.toString());
 
-        verify(notificationService, never()).sendEmail(any(NotificationRequest.class), eq("CN1"));
+        verify(notificationService, never()).sendEmail(any(NotificationRequest.class), eq(TEST_CASE_ID.toString()));
     }
 
     private CaseData getMockCaseData() {
-        CicCase cicCase = CicCase.builder().fullName("fullName").caseNumber("CN1").build();
+        CicCase cicCase = CicCase.builder().fullName("fullName").caseNumber(TEST_CASE_ID.toString()).build();
 
         return CaseData.builder()
             .cicCase(cicCase)

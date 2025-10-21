@@ -43,6 +43,7 @@ import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static uk.gov.hmcts.sptribs.notification.TemplateName.APPLICATION_RECEIVED;
 import static uk.gov.hmcts.sptribs.notification.TemplateName.CASE_ISSUED_CITIZEN_POST;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_AUTHORIZATION_TOKEN;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_SERVICE_AUTH_TOKEN;
 
 @ExtendWith(MockitoExtension.class)
@@ -117,7 +118,7 @@ public class NotificationServiceCICTest {
         )).thenReturn(sendEmailResponse);
 
         //When
-        notificationService.sendEmail(request, eq("CN1"));
+        notificationService.sendEmail(request, TEST_CASE_ID.toString());
 
         //Then
         verify(notificationClient).sendEmail(
@@ -167,7 +168,7 @@ public class NotificationServiceCICTest {
         )).thenReturn(sendEmailResponse);
 
         //When
-        notificationService.sendEmail(request, eq("CN1"));
+        notificationService.sendEmail(request, TEST_CASE_ID.toString());
 
         //Then
         verify(notificationClient).sendEmail(
@@ -202,7 +203,7 @@ public class NotificationServiceCICTest {
         )).thenReturn(sendLetterResponse);
 
         //When
-        notificationService.sendLetter(request, eq("CN1"));
+        notificationService.sendLetter(request, TEST_CASE_ID.toString());
 
         //Then
         verify(notificationClient).sendLetter(
@@ -242,7 +243,7 @@ public class NotificationServiceCICTest {
         when(emailTemplatesConfig.getTemplatesCIC()).thenReturn(templateNameMap);
 
         //When&Then
-        assertThatThrownBy(() -> notificationService.sendEmail(request, eq("CN1")))
+        assertThatThrownBy(() -> notificationService.sendEmail(request, TEST_CASE_ID.toString()))
             .isInstanceOf(NotificationException.class)
             .hasMessageContaining("some message");
 
@@ -281,7 +282,7 @@ public class NotificationServiceCICTest {
         when(emailTemplatesConfig.getTemplatesCIC()).thenReturn(templateNameMap);
 
         //When&Then
-        assertThatThrownBy(() -> notificationService.sendEmail(request, eq("CN1")))
+        assertThatThrownBy(() -> notificationService.sendEmail(request, TEST_CASE_ID.toString()))
             .isInstanceOf(NotificationException.class)
             .satisfies(e -> assertAll(
                 () -> assertTrue(e.getCause() instanceof IOException)
@@ -329,7 +330,7 @@ public class NotificationServiceCICTest {
         when(NotificationClient.prepareUpload(newUploadDocument)).thenThrow(NotificationClientException.class);
 
         //When&Then
-        assertThatThrownBy(() -> notificationService.sendEmail(request, eq("CN1")))
+        assertThatThrownBy(() -> notificationService.sendEmail(request, TEST_CASE_ID.toString()))
             .isInstanceOf(NotificationException.class)
             .hasMessageContaining("uk.gov.service.notify.NotificationClientException");
     }
@@ -354,7 +355,7 @@ public class NotificationServiceCICTest {
         when(emailTemplatesConfig.getTemplatesCIC()).thenReturn(templateVars);
 
         //When&Then
-        assertThatThrownBy(() -> notificationService.sendLetter(request, eq("CN1")))
+        assertThatThrownBy(() -> notificationService.sendLetter(request, TEST_CASE_ID.toString()))
             .isInstanceOf(NotificationException.class)
             .hasMessageContaining("some message");
 

@@ -32,11 +32,12 @@ import static uk.gov.hmcts.sptribs.common.CommonConstants.CONTACT_PARTY_INFO;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.HAS_CICA_NUMBER;
 import static uk.gov.hmcts.sptribs.notification.TemplateName.APPLICATION_RECEIVED;
 import static uk.gov.hmcts.sptribs.notification.TemplateName.APPLICATION_RECEIVED_CY;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID;
 
 @ExtendWith(MockitoExtension.class)
 class DssApplicationReceivedNotificationTest {
 
-    private static final String CASE_NUMBER = "CN1";
+    private static final String CASE_NUMBER = TEST_CASE_ID.toString();
     private static final String CICA_REFERENCE_NUMBER = "X/12/123456-TM1A";
 
     private static final EditCicaCaseDetails CICA_CASE_DETAILS = EditCicaCaseDetails.builder()
