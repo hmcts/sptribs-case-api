@@ -90,7 +90,7 @@ public class CaseworkerCreateDraftOrder implements CCDConfig<CaseData, State, Us
 
     }
 
-    private AboutToStartOrSubmitResponse<CaseData, State> aboutToStart(CaseDetails<CaseData, State> caseDetails) {
+    public AboutToStartOrSubmitResponse<CaseData, State> aboutToStart(CaseDetails<CaseData, State> caseDetails) {
         CaseData data = caseDetails.getData();
         data.setCurrentEvent(CASEWORKER_CREATE_DRAFT_ORDER);
 
