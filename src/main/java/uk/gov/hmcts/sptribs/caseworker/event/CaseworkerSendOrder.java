@@ -103,7 +103,7 @@ public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole>
         return new PageBuilder(eventBuilder);
     }
 
-    private AboutToStartOrSubmitResponse<CaseData, State> aboutToStart(CaseDetails<CaseData, State> caseDetails) {
+    public AboutToStartOrSubmitResponse<CaseData, State> aboutToStart(CaseDetails<CaseData, State> caseDetails) {
         CaseData data = caseDetails.getData();
         data.setCurrentEvent(CASEWORKER_SEND_ORDER);
 
