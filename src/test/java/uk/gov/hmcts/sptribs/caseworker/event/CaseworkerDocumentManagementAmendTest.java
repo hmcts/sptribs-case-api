@@ -16,6 +16,7 @@ import uk.gov.hmcts.sptribs.caseworker.event.page.DocumentManagementAmendDocumen
 import uk.gov.hmcts.sptribs.caseworker.event.page.DocumentManagementSelectDocuments;
 import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderCIC;
 import uk.gov.hmcts.sptribs.caseworker.model.Order;
+import uk.gov.hmcts.sptribs.caseworker.model.YesNo;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
@@ -26,6 +27,7 @@ import uk.gov.hmcts.sptribs.document.model.CICDocument;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -102,7 +104,7 @@ class CaseworkerDocumentManagementAmendTest {
             caseworkerDocumentManagementAmend.aboutToStart(updatedCaseDetails);
 
         cicCase.getAmendDocumentList().setValue(getDynamicListItems());
-        cicCase.getApplicantDocumentsUploaded().get(0).setValue(getCaseworkerCICDocument());
+        cicCase.getApplicantDocumentsUploaded().getFirst().setValue(getCaseworkerCICDocument());
         AboutToStartOrSubmitResponse<CaseData, State> midResponse =
             selectCaseDocuments.midEvent(updatedCaseDetails, beforeDetails);
 
@@ -118,9 +120,9 @@ class CaseworkerDocumentManagementAmendTest {
         assertThat(aboutToStartResponse.getData().getCicCase().getAmendDocumentList().getListItems()).isNotEmpty();
         assertThat(midResponse).isNotNull();
         assertThat(midResponse.getData().getCicCase().getSelectedDocumentType()).isEqualTo(DocumentConstants.CASE_TYPE);
-        assertThat(aboutToSubmitResponse.getData().getCicCase().getApplicantDocumentsUploaded().get(0).getValue()).isNotNull();
+        assertThat(aboutToSubmitResponse.getData().getCicCase().getApplicantDocumentsUploaded().getFirst().getValue()).isNotNull();
         assertThat(aboutToSubmitResponse.getData().getCicCase()
-            .getApplicantDocumentsUploaded().get(0)
+            .getApplicantDocumentsUploaded().getFirst()
             .getValue().getDocumentCategory()).isEqualTo(APPLICATION_FORM);
         assertThat(documentMgmtResponse).isNotNull();
     }
@@ -153,8 +155,8 @@ class CaseworkerDocumentManagementAmendTest {
         SubmittedCallbackResponse documentMgmtResponse = caseworkerDocumentManagementAmend.submitted(updatedCaseDetails, beforeDetails);
 
         //Then
-        assertThat(aboutToSubmitResponse.getData().getCicCase().getReinstateDocuments().get(0).getValue()).isNotNull();
-        assertThat(aboutToSubmitResponse.getData().getCicCase().getReinstateDocuments().get(0)
+        assertThat(aboutToSubmitResponse.getData().getCicCase().getReinstateDocuments().getFirst().getValue()).isNotNull();
+        assertThat(aboutToSubmitResponse.getData().getCicCase().getReinstateDocuments().getFirst()
             .getValue().getDocumentCategory())
             .isEqualTo(APPLICATION_FORM);
         assertThat(documentMgmtResponse).isNotNull();
@@ -187,8 +189,8 @@ class CaseworkerDocumentManagementAmendTest {
         SubmittedCallbackResponse documentMgmtResponse = caseworkerDocumentManagementAmend.submitted(updatedCaseDetails, beforeDetails);
 
         //Then
-        assertThat(aboutToSubmitResponse.getData().getAllDocManagement().getCaseworkerCICDocument().get(0).getValue()).isNotNull();
-        assertThat(aboutToSubmitResponse.getData().getAllDocManagement().getCaseworkerCICDocument().get(0)
+        assertThat(aboutToSubmitResponse.getData().getAllDocManagement().getCaseworkerCICDocument().getFirst().getValue()).isNotNull();
+        assertThat(aboutToSubmitResponse.getData().getAllDocManagement().getCaseworkerCICDocument().getFirst()
             .getValue().getDocumentCategory())
             .isEqualTo(APPLICATION_FORM);
         assertThat(documentMgmtResponse).isNotNull();
@@ -221,8 +223,8 @@ class CaseworkerDocumentManagementAmendTest {
         SubmittedCallbackResponse documentMgmtResponse = caseworkerDocumentManagementAmend.submitted(updatedCaseDetails, beforeDetails);
 
         //Then
-        assertThat(aboutToSubmitResponse.getData().getCloseCase().getDocuments().get(0).getValue()).isNotNull();
-        assertThat(aboutToSubmitResponse.getData().getCloseCase().getDocuments().get(0)
+        assertThat(aboutToSubmitResponse.getData().getCloseCase().getDocuments().getFirst().getValue()).isNotNull();
+        assertThat(aboutToSubmitResponse.getData().getCloseCase().getDocuments().getFirst()
             .getValue().getDocumentCategory())
             .isEqualTo(APPLICATION_FORM);
         assertThat(documentMgmtResponse).isNotNull();
@@ -255,8 +257,8 @@ class CaseworkerDocumentManagementAmendTest {
         SubmittedCallbackResponse documentMgmtResponse = caseworkerDocumentManagementAmend.submitted(updatedCaseDetails, beforeDetails);
 
         //Then
-        assertThat(aboutToSubmitResponse.getData().getListing().getSummary().getRecFile().get(0).getValue()).isNotNull();
-        assertThat(aboutToSubmitResponse.getData().getListing().getSummary().getRecFile().get(0)
+        assertThat(aboutToSubmitResponse.getData().getListing().getSummary().getRecFile().getFirst().getValue()).isNotNull();
+        assertThat(aboutToSubmitResponse.getData().getListing().getSummary().getRecFile().getFirst()
             .getValue().getDocumentCategory())
             .isEqualTo(DocumentType.LINKED_DOCS);
         assertThat(documentMgmtResponse).isNotNull();
@@ -308,6 +310,141 @@ class CaseworkerDocumentManagementAmendTest {
             .label("CASE--test.pdf--A - Application Form")
             .code(UUID.randomUUID())
             .build();
+    }
+
+    private List<ListValue<CaseworkerCICDocument>> getCaseworkerCICDocumentListWithUrl(String fileName, String url) {
+        final CaseworkerCICDocument caseworkerCICDocument = CaseworkerCICDocument.builder()
+            .documentLink(Document.builder()
+                .filename(fileName)
+                .binaryUrl(url)
+                .url(url)
+                .build())
+            .documentCategory(APPLICATION_FORM)
+            .documentEmailContent("some email content")
+            .build();
+        List<ListValue<CaseworkerCICDocument>> documentList = new ArrayList<>();
+        ListValue<CaseworkerCICDocument> caseworkerCICDocumentListValue = new ListValue<>();
+        caseworkerCICDocumentListValue.setValue(caseworkerCICDocument);
+        documentList.add(caseworkerCICDocumentListValue);
+        return documentList;
+    }
+
+    @Test
+    void shouldUpdateInitialCicaDocumentsAndFurtherUploadedDocumentsWhenNewBundleOrderEnabled() {
+        //Given
+        final CaseData caseData = caseData();
+        caseData.setNewBundleOrderEnabled(YesNo.YES);
+
+        // Create documents with matching URLs for the update to work
+        final Document testDocument = getDocumentData();
+        final List<ListValue<CaseworkerCICDocument>> initialDocs = getCaseworkerCICDocumentListWithUrl("initial.pdf",
+            testDocument.getUrl());
+        final List<ListValue<CaseworkerCICDocument>> furtherDocs = getCaseworkerCICDocumentListWithUrl("further.pdf",
+            testDocument.getUrl());
+        final List<ListValue<CaseworkerCICDocument>> docMgmtDocs = getCaseworkerCICDocumentListWithUrl("doc-mgmt.pdf",
+            testDocument.getUrl());
+
+        caseData.setInitialCicaDocuments(initialDocs);
+        caseData.setFurtherUploadedDocuments(furtherDocs);
+        caseData.getAllDocManagement().setCaseworkerCICDocument(docMgmtDocs);
+
+        final CicCase cicCase = CicCase.builder().build();
+        caseData.setCicCase(cicCase);
+
+        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
+        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        beforeDetails.setData(caseData);
+        updatedCaseDetails.setData(caseData);
+        updatedCaseDetails.setState(State.CaseManagement);
+        updatedCaseDetails.setId(TEST_CASE_ID);
+        updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
+
+        cicCase.setSelectedDocumentCategory(APPLICATION_FORM);
+        cicCase.setSelectedDocumentEmailContent(UPDATED_EMAIL_CONTENT);
+        cicCase.setSelectedDocumentLink(testDocument);
+        cicCase.setSelectedDocumentType(DocumentConstants.DOC_MGMT_TYPE);
+
+        //When
+        AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmitResponse =
+            caseworkerDocumentManagementAmend.aboutToSubmit(updatedCaseDetails, beforeDetails);
+
+        //Then
+        // Should update the main document management list
+        assertThat(aboutToSubmitResponse.getData().getAllDocManagement().getCaseworkerCICDocument().getFirst().getValue()).isNotNull();
+        assertThat(aboutToSubmitResponse.getData().getAllDocManagement().getCaseworkerCICDocument().getFirst()
+            .getValue().getDocumentCategory()).isEqualTo(APPLICATION_FORM);
+        assertThat(aboutToSubmitResponse.getData().getAllDocManagement().getCaseworkerCICDocument().getFirst()
+            .getValue().getDocumentEmailContent()).isEqualTo(UPDATED_EMAIL_CONTENT);
+
+        // Should also update initial CICA documents when new bundle order is enabled
+        assertThat(aboutToSubmitResponse.getData().getInitialCicaDocuments().getFirst().getValue()).isNotNull();
+        assertThat(aboutToSubmitResponse.getData().getInitialCicaDocuments().getFirst()
+            .getValue().getDocumentCategory()).isEqualTo(APPLICATION_FORM);
+        assertThat(aboutToSubmitResponse.getData().getInitialCicaDocuments().getFirst()
+            .getValue().getDocumentEmailContent()).isEqualTo(UPDATED_EMAIL_CONTENT);
+
+        // Should also update further uploaded documents when new bundle order is enabled
+        assertThat(aboutToSubmitResponse.getData().getFurtherUploadedDocuments().get(0).getValue()).isNotNull();
+        assertThat(aboutToSubmitResponse.getData().getFurtherUploadedDocuments().get(0)
+            .getValue().getDocumentCategory()).isEqualTo(APPLICATION_FORM);
+        assertThat(aboutToSubmitResponse.getData().getFurtherUploadedDocuments().get(0)
+            .getValue().getDocumentEmailContent()).isEqualTo(UPDATED_EMAIL_CONTENT);
+    }
+
+    @Test
+    void shouldNotUpdateInitialCicaDocumentsAndFurtherUploadedDocumentsWhenNewBundleOrderDisabled() {
+        //Given
+        final CaseData caseData = caseData();
+        caseData.setNewBundleOrderEnabled(YesNo.NO);
+
+        // Create documents with matching URLs for the update to work
+        final Document testDocument = getDocumentData();
+        final List<ListValue<CaseworkerCICDocument>> initialDocs = getCaseworkerCICDocumentListWithUrl("initial.pdf",
+            testDocument.getUrl());
+        final List<ListValue<CaseworkerCICDocument>> furtherDocs = getCaseworkerCICDocumentListWithUrl("further.pdf",
+            testDocument.getUrl());
+        final List<ListValue<CaseworkerCICDocument>> docMgmtDocs = getCaseworkerCICDocumentListWithUrl("doc-mgmt.pdf",
+            testDocument.getUrl());
+
+        caseData.setInitialCicaDocuments(initialDocs);
+        caseData.setFurtherUploadedDocuments(furtherDocs);
+        caseData.getAllDocManagement().setCaseworkerCICDocument(docMgmtDocs);
+
+        final CicCase cicCase = CicCase.builder().build();
+        caseData.setCicCase(cicCase);
+
+        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
+        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        beforeDetails.setData(caseData);
+        updatedCaseDetails.setData(caseData);
+        updatedCaseDetails.setState(State.CaseManagement);
+        updatedCaseDetails.setId(TEST_CASE_ID);
+        updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
+
+        cicCase.setSelectedDocumentCategory(APPLICATION_FORM);
+        cicCase.setSelectedDocumentEmailContent(UPDATED_EMAIL_CONTENT);
+        cicCase.setSelectedDocumentLink(testDocument);
+        cicCase.setSelectedDocumentType(DocumentConstants.DOC_MGMT_TYPE);
+
+        //When
+        AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmitResponse =
+            caseworkerDocumentManagementAmend.aboutToSubmit(updatedCaseDetails, beforeDetails);
+
+        //Then
+        // Should update the main document management list
+        assertThat(aboutToSubmitResponse.getData().getAllDocManagement().getCaseworkerCICDocument().getFirst().getValue()).isNotNull();
+        assertThat(aboutToSubmitResponse.getData().getAllDocManagement().getCaseworkerCICDocument().getFirst()
+            .getValue().getDocumentCategory()).isEqualTo(APPLICATION_FORM);
+        assertThat(aboutToSubmitResponse.getData().getAllDocManagement().getCaseworkerCICDocument().getFirst()
+            .getValue().getDocumentEmailContent()).isEqualTo(UPDATED_EMAIL_CONTENT);
+
+        // Should NOT update initial CICA documents when new bundle order is disabled
+        assertThat(aboutToSubmitResponse.getData().getInitialCicaDocuments().getFirst()
+            .getValue().getDocumentEmailContent()).isEqualTo("some email content"); // Original value
+
+        // Should NOT update further uploaded documents when new bundle order is disabled
+        assertThat(aboutToSubmitResponse.getData().getFurtherUploadedDocuments().getFirst()
+            .getValue().getDocumentEmailContent()).isEqualTo("some email content"); // Original value
     }
 
 }

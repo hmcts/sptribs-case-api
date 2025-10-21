@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestHeader;
 import uk.gov.hmcts.sptribs.ciccase.model.ExtendedCaseDetails;
+import uk.gov.hmcts.sptribs.services.model.AuditEventsResponse;
 
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 
@@ -26,5 +27,15 @@ public interface ExtendedCaseDataApi {
         @RequestHeader(AUTHORIZATION) String authorisation,
         @RequestHeader(SERVICE_AUTHORIZATION) String serviceAuthorisation,
         @PathVariable("cid") String caseId
+    );
+
+    @GetMapping(
+        path = "/cases/{caseId}/events",
+        headers = EXPERIMENTAL
+    )
+    AuditEventsResponse getAuditEvents(
+        @RequestHeader(AUTHORIZATION) String authorisation,
+        @RequestHeader(SERVICE_AUTHORIZATION) String serviceAuthorization,
+        @PathVariable("caseId") String caseId
     );
 }
