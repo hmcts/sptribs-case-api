@@ -62,6 +62,7 @@ import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_SUBJECT_EMAIL;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.LOCAL_DATE_TIME;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.caseData;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getCICDocumentList;
+import static uk.gov.hmcts.sptribs.testutil.TestEventConstants.CASEWORKER_EDIT_DRAFT_ORDER;
 import static uk.gov.hmcts.sptribs.testutil.TestEventConstants.CASEWORKER_SEND_ORDER;
 
 
@@ -470,6 +471,17 @@ class CaseworkerSendOrderTest {
         assertThat(submitted.getConfirmationHeader()).contains("Order sent");
         assertThat(response).isNotNull();
         assertThat(response2.getData().getCicCase().getOrderList()).hasSize(2);
+    }
+
+    @Test
+    void aboutToStartShouldSetCurrentEvent() {
+        CaseDetails<CaseData, State> caseDetails = CaseDetails.<CaseData, State>builder()
+                .data(CaseData.builder().build())
+                .build();
+        AboutToStartOrSubmitResponse<CaseData, State> response = caseworkerSendOrder.aboutToStart(caseDetails);
+
+        assertThat(response).isNotNull();
+        assertThat(response.getData().getCurrentEvent()).isEqualTo(CASEWORKER_SEND_ORDER);
     }
 
     @Test
