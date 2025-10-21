@@ -8,9 +8,17 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import uk.gov.hmcts.ccd.sdk.type.Document;
+import uk.gov.hmcts.reform.idam.client.models.User;
+import uk.gov.hmcts.reform.idam.client.models.UserDetails;
+import uk.gov.hmcts.sptribs.ciccase.model.DecisionTemplate;
+import uk.gov.hmcts.sptribs.ciccase.model.LanguagePreference;
 import uk.gov.hmcts.sptribs.ciccase.model.NotificationResponse;
 import uk.gov.hmcts.sptribs.common.config.EmailTemplatesConfigCIC;
+import uk.gov.hmcts.sptribs.document.CaseDataDocumentService;
+import uk.gov.hmcts.sptribs.document.DocAssemblyService;
 import uk.gov.hmcts.sptribs.document.DocumentClient;
+import uk.gov.hmcts.sptribs.idam.IdamService;
 import uk.gov.hmcts.sptribs.notification.exception.NotificationException;
 import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
 import uk.gov.service.notify.NotificationClient;
@@ -18,13 +26,16 @@ import uk.gov.service.notify.NotificationClientException;
 import uk.gov.service.notify.SendEmailResponse;
 import uk.gov.service.notify.SendLetterResponse;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.ADDRESS_LINE_1;
@@ -36,6 +47,7 @@ import static uk.gov.hmcts.sptribs.common.CommonConstants.TRIBUNAL_NAME;
 import static uk.gov.hmcts.sptribs.common.ccd.CcdCaseType.CIC;
 import static uk.gov.hmcts.sptribs.notification.TemplateName.APPLICATION_RECEIVED;
 import static uk.gov.hmcts.sptribs.notification.TemplateName.CASE_ISSUED_CITIZEN_POST;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_AUTHORIZATION_TOKEN;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.sptribs.testutil.TestResourceUtil.expectedResponse;
 
@@ -51,7 +63,16 @@ public class NotificationServiceCicIT {
     private EmailTemplatesConfigCIC emailTemplatesConfig;
 
     @MockitoBean
+    private CaseDataDocumentService caseDataDocumentService;
+
+    @MockitoBean
+    private DocAssemblyService docAssemblyService;
+
+    @MockitoBean
     private DocumentClient caseDocumentClient;
+
+    @MockitoBean
+    private IdamService idamService;
 
     @Autowired
     private NotificationServiceCIC notificationServiceCIC;
@@ -93,6 +114,34 @@ public class NotificationServiceCicIT {
             eq(templateVars),
             anyString()
         )).thenReturn(sendEmailResponse);
+
+        final User user = new User(
+            TEST_AUTHORIZATION_TOKEN,
+            UserDetails.builder()
+                .roles(List.of("caseworker-st_cic"))
+                .build()
+        );
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-y-HH-mm");
+        String filename = APPLICATION_RECEIVED.name() + "_" + TEST_CASE_ID + "_" + LocalDateTime.now().format(formatter) + ".pdf";
+        Document document = new Document().builder()
+            .url("url")
+            .binaryUrl("binary url")
+            .filename(filename)
+            .categoryId("category")
+            .build();
+
+        when(idamService.retrieveUser(eq(TEST_AUTHORIZATION_TOKEN)))
+            .thenReturn(user);
+
+        when(caseDataDocumentService.renderDocument(
+            anyMap(),
+            eq(TEST_CASE_ID),
+            eq("48ccf890-0550-48ca-8c52-fa68cec09947"),
+            eq(LanguagePreference.ENGLISH),
+            eq(filename),
+            any()
+        )).thenReturn(document);
 
         NotificationResponse notificationResponse = notificationServiceCIC.sendEmail(request, TEST_CASE_ID.toString());
 
@@ -152,6 +201,34 @@ public class NotificationServiceCicIT {
             eq(templateVars),
             anyString()
         )).thenReturn(sendLetterResponse);
+
+        final User user = new User(
+            TEST_AUTHORIZATION_TOKEN,
+            UserDetails.builder()
+                .roles(List.of("caseworker-st_cic"))
+                .build()
+        );
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-y-HH-mm");
+        String filename = CASE_ISSUED_CITIZEN_POST.name() + "_" + TEST_CASE_ID + "_" + LocalDateTime.now().format(formatter) + ".pdf";
+        Document document = new Document().builder()
+            .url("url")
+            .binaryUrl("binary url")
+            .filename(filename)
+            .categoryId("category")
+            .build();
+
+        when(idamService.retrieveUser(eq(TEST_AUTHORIZATION_TOKEN)))
+            .thenReturn(user);
+
+        when(caseDataDocumentService.renderDocument(
+            anyMap(),
+            eq(TEST_CASE_ID),
+            eq("eedc916f-088f-4653-99ed-b954e1dbd58d"),
+            eq(LanguagePreference.ENGLISH),
+            eq(filename),
+            any()
+        )).thenReturn(document);
 
         NotificationResponse notificationResponse = notificationServiceCIC.sendLetter(request, TEST_CASE_ID.toString());
 

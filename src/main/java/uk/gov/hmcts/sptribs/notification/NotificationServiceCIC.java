@@ -113,7 +113,7 @@ public class NotificationServiceCIC {
         }
 
         CorrespondenceRecord correspondence = CorrespondenceRecord.builder()
-            .id(Long.parseLong(sendEmailResponse.getNotificationId().toString()))
+            .id(sendEmailResponse.getNotificationId())
             .eventType(templateName)
             .caseReferenceNumber(longCaseRef)
             .sentAt(sentAt.atOffset(java.time.ZoneOffset.UTC))
@@ -156,7 +156,7 @@ public class NotificationServiceCIC {
         String sentFrom = "Criminal Injuries Compensation Tribunal";
 
         CorrespondenceRecord correspondence = CorrespondenceRecord.builder()
-            .id(Long.parseLong(sendLetterResponse.getNotificationId().toString()))
+            .id(sendLetterResponse.getNotificationId())
             .eventType(templateName)
             .caseReferenceNumber(longCaseRef)
             .sentAt(sentAt.atOffset(java.time.ZoneOffset.UTC))

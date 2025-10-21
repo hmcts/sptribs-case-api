@@ -3,6 +3,7 @@ package uk.gov.hmcts.sptribs.notification.model;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.sun.jna.platform.win32.Guid;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -13,6 +14,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerWithCAAAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.DefaultAccess;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.TextArea;
 
@@ -32,7 +34,7 @@ public class Correspondence {
         label = "Notification ID",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
-    private Long id;
+    private UUID id;
 
     @CCD(
         label = "Sent on",

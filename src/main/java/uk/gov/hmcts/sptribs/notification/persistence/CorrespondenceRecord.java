@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 import uk.gov.hmcts.sptribs.document.SerializableDocument;
 
 import java.time.OffsetDateTime;
+import java.util.UUID;
 
 @Entity
 @Table(name = "case_correspondences")
@@ -21,7 +22,7 @@ import java.time.OffsetDateTime;
 public class CorrespondenceRecord {
 
     @Id
-    private Long id;
+    private UUID id;
 
     @Column(name = "event_type", nullable = false)
     private String eventType;
