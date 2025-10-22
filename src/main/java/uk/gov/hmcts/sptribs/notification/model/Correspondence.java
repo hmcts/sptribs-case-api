@@ -75,12 +75,14 @@ public class Correspondence {
                           @JsonProperty("from") String from,
                           @JsonProperty("to") String to,
                           @JsonProperty("documentUrl") Document documentUrl,
-                          @JsonProperty("correspondenceType") String correspondenceType) {
+                          @JsonProperty("correspondenceType") String correspondenceType,
+                          @JsonProperty("id") UUID id) {
         this.sentOn = sentOn;
         this.from = from;
         this.to = to;
         this.documentUrl = documentUrl;
         this.correspondenceType = correspondenceType;
+        this.id = id;
     }
 
 }
