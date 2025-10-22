@@ -3,6 +3,7 @@ package uk.gov.hmcts.sptribs.caseworker.event.page;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
@@ -113,6 +114,9 @@ public class ContactPartiesSelectDocument implements CcdPageConfiguration {
         }
 
         String url = label.substring(open + 1, close).trim();
+        if (Strings.CS.endsWith(url, "/binary")) {
+            url = StringUtils.substringBeforeLast(url, "/");
+        }
 
         String documentId = StringUtils.substringAfterLast(url, "/");
         return StringUtils.isEmpty(documentId) ? Optional.empty() : Optional.of(documentId);

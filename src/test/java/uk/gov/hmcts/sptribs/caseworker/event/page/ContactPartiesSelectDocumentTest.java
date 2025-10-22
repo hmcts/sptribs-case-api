@@ -247,4 +247,28 @@ class ContactPartiesSelectDocumentTest {
         final AboutToStartOrSubmitResponse<CaseData, State> response = contactPartiesSelectDocument.midEvent(caseDetails, caseDetails);
         assertThat(response.getErrors()).isEmpty();
     }
+
+    @Test
+    void extractDocumentIdReturnsIdWhenUrlHasBinarySuffix() {
+        String documentId = UUID.randomUUID().toString();
+        DynamicListElement element = DynamicListElement.builder()
+            .label("[Doc](http://example/documents/" + documentId + "/binary)")
+            .code(UUID.randomUUID())
+            .build();
+
+        assertThat(contactPartiesSelectDocument.extractDocumentId(element))
+            .contains(documentId);
+    }
+
+    @Test
+    void extractDocumentIdReturnsIdWhenUrlHasNoBinarySuffix() {
+        String documentId = UUID.randomUUID().toString();
+        DynamicListElement element = DynamicListElement.builder()
+            .label("[Doc](http://example/documents/" + documentId + ")")
+            .code(UUID.randomUUID())
+            .build();
+
+        assertThat(contactPartiesSelectDocument.extractDocumentId(element))
+            .contains(documentId);
+    }
 }
