@@ -4,6 +4,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -29,7 +30,9 @@ import java.util.stream.IntStream;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -174,6 +177,74 @@ class ContactPartiesSelectDocumentTest {
         }
 
         @Test
+        void midEventUsesDocumentIdFromLabelWithBinarySuffix() {
+            final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+            UUID documentId = UUID.randomUUID();
+            String label = "[Binary Document](http://example/documents/" + documentId + "/binary)";
+
+            ContactPartiesDocuments contactPartiesDocuments = new ContactPartiesDocuments();
+            DynamicListElement element = DynamicListElement.builder()
+                .code(documentId)
+                .label(label)
+                .build();
+            List<DynamicListElement> selection = List.of(element);
+            contactPartiesDocuments.setDocumentList(DynamicMultiSelectList.builder()
+                .value(selection)
+                .listItems(selection)
+                .build());
+
+            Document withinLimitDocument = new Document();
+            withinLimitDocument.size = 1_500_000;
+            when(caseDocumentClientApi.getDocument(SYSTEM_AUTH, SERVICE_AUTH, documentId))
+                .thenReturn(ResponseEntity.ok(withinLimitDocument));
+
+            final CaseData caseData = CaseData.builder()
+                .contactPartiesDocuments(contactPartiesDocuments)
+                .build();
+            caseDetails.setData(caseData);
+
+            contactPartiesSelectDocument.midEvent(caseDetails, caseDetails);
+
+            ArgumentCaptor<UUID> docIdCaptor = ArgumentCaptor.forClass(UUID.class);
+            verify(caseDocumentClientApi).getDocument(eq(SYSTEM_AUTH), eq(SERVICE_AUTH), docIdCaptor.capture());
+            assertThat(docIdCaptor.getValue()).isEqualTo(documentId);
+        }
+
+        @Test
+        void midEventUsesDocumentIdFromLabelWithoutBinarySuffix() {
+            final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+            UUID documentId = UUID.randomUUID();
+            String label = "[Plain Document](http://example/documents/" + documentId + ")";
+
+            ContactPartiesDocuments contactPartiesDocuments = new ContactPartiesDocuments();
+            DynamicListElement element = DynamicListElement.builder()
+                .code(documentId)
+                .label(label)
+                .build();
+            List<DynamicListElement> selection = List.of(element);
+            contactPartiesDocuments.setDocumentList(DynamicMultiSelectList.builder()
+                .value(selection)
+                .listItems(selection)
+                .build());
+
+            Document withinLimitDocument = new Document();
+            withinLimitDocument.size = 1_500_000;
+            when(caseDocumentClientApi.getDocument(SYSTEM_AUTH, SERVICE_AUTH, documentId))
+                .thenReturn(ResponseEntity.ok(withinLimitDocument));
+
+            final CaseData caseData = CaseData.builder()
+                .contactPartiesDocuments(contactPartiesDocuments)
+                .build();
+            caseDetails.setData(caseData);
+
+            contactPartiesSelectDocument.midEvent(caseDetails, caseDetails);
+
+            ArgumentCaptor<UUID> docIdCaptor = ArgumentCaptor.forClass(UUID.class);
+            verify(caseDocumentClientApi).getDocument(eq(SYSTEM_AUTH), eq(SERVICE_AUTH), docIdCaptor.capture());
+            assertThat(docIdCaptor.getValue()).isEqualTo(documentId);
+        }
+
+        @Test
         void midEventTreatsMissingDocumentBodyAsOversized() {
             final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
             UUID documentId = UUID.randomUUID();
@@ -248,27 +319,4 @@ class ContactPartiesSelectDocumentTest {
         assertThat(response.getErrors()).isEmpty();
     }
 
-    @Test
-    void extractDocumentIdReturnsIdWhenUrlHasBinarySuffix() {
-        String documentId = UUID.randomUUID().toString();
-        DynamicListElement element = DynamicListElement.builder()
-            .label("[Doc](http://example/documents/" + documentId + "/binary)")
-            .code(UUID.randomUUID())
-            .build();
-
-        assertThat(contactPartiesSelectDocument.extractDocumentId(element))
-            .contains(documentId);
-    }
-
-    @Test
-    void extractDocumentIdReturnsIdWhenUrlHasNoBinarySuffix() {
-        String documentId = UUID.randomUUID().toString();
-        DynamicListElement element = DynamicListElement.builder()
-            .label("[Doc](http://example/documents/" + documentId + ")")
-            .code(UUID.randomUUID())
-            .build();
-
-        assertThat(contactPartiesSelectDocument.extractDocumentId(element))
-            .contains(documentId);
-    }
 }

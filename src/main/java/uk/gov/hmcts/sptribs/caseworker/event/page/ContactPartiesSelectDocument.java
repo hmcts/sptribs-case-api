@@ -100,7 +100,7 @@ public class ContactPartiesSelectDocument implements CcdPageConfiguration {
     }
 
 
-    public Optional<String> extractDocumentId(DynamicListElement element) {
+    private Optional<String> extractDocumentId(DynamicListElement element) {
         if (element == null || element.getLabel() == null) {
             return Optional.empty();
         }
