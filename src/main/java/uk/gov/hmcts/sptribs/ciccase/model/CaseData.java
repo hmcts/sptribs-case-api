@@ -339,7 +339,7 @@ public class CaseData {
     @CCD(
         label = "Correspondence",
         typeOverride = Collection,
-        typeParameterOverride = "Correspondences",
+        typeParameterOverride = "Correspondence",
         access = {CaseworkerAndSuperUserAccess.class}
     )
     @External
