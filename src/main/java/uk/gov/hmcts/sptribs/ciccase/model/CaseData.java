@@ -11,6 +11,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
+import uk.gov.hmcts.ccd.sdk.External;
 import uk.gov.hmcts.ccd.sdk.api.CCD;
 import uk.gov.hmcts.ccd.sdk.type.CaseLink;
 import uk.gov.hmcts.ccd.sdk.type.ComponentLauncher;
@@ -340,7 +341,8 @@ public class CaseData {
         typeOverride = Collection,
         access = {CaseworkerAndSuperUserAccess.class}
     )
-    private List<Correspondence> correspondence;
+    @External
+    private List<ListValue<Correspondence>> correspondence;
 
     @CCD(
         label = "Case number",

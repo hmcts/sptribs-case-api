@@ -2,6 +2,7 @@ package uk.gov.hmcts.sptribs.common.repositories;
 
 import uk.gov.hmcts.ccd.sdk.CaseRepository;
 import uk.gov.hmcts.ccd.sdk.type.Document;
+import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.notification.model.Correspondence;
 import uk.gov.hmcts.sptribs.notification.persistence.CorrespondenceRecord;
@@ -20,7 +21,7 @@ public class SptribsCaseRepository implements CaseRepository<CaseData> {
     @Override
     public CaseData getCase(long caseRef, String state, CaseData data) {
 
-        List<Correspondence> correspondences = new ArrayList<>();
+        List<ListValue<Correspondence>> correspondences = new ArrayList<>();
 
         for (CorrespondenceRecord correspondenceRecord : correspondenceRepository.findAllByCaseReferenceNumberOrderBySentAtDesc(caseRef)) {
             Document correspondenceDocument = Document.builder()
@@ -38,7 +39,11 @@ public class SptribsCaseRepository implements CaseRepository<CaseData> {
                 .to(correspondenceRecord.getSentTo())
                 .documentUrl(correspondenceDocument)
                 .build();
-            correspondences.add(correspondence);
+
+            ListValue<Correspondence> correspondenceListValue = new ListValue<>();
+            correspondenceListValue.setId(correspondenceRecord.getId().toString());
+            correspondenceListValue.setValue(correspondence);
+            correspondences.add(correspondenceListValue);
         }
 
         data.setCorrespondence(correspondences);
