@@ -41,6 +41,7 @@ public class SendOrderUploadOrder implements CcdPageConfiguration {
             .complex(CaseData::getCicCase)
             .mandatory(CicCase::getOrderFile)
             .done();
+
     }
 
     public AboutToStartOrSubmitResponse<CaseData, State> midEvent(CaseDetails<CaseData, State> details,
