@@ -31,7 +31,7 @@ public class SptribsCaseRepository implements CaseRepository<CaseData> {
                 .build();
 
             Correspondence correspondence = Correspondence.builder()
-                .id(correspondenceRecord.getId())
+                .id(correspondenceRecord.getId().toString())
                 .caseReferenceNumber(correspondenceRecord.getCaseReferenceNumber())
                 .sentOn(correspondenceRecord.getSentAt() != null ? correspondenceRecord.getSentAt().toLocalDateTime() : null)
                 .from(correspondenceRecord.getSentFrom())

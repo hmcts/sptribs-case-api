@@ -33,7 +33,7 @@ public class Correspondence {
         label = "Notification ID",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
-    private UUID id;
+    private String id;
 
     @CCD(
         label = "Sent on",
@@ -76,7 +76,7 @@ public class Correspondence {
                           @JsonProperty("to") String to,
                           @JsonProperty("documentUrl") Document documentUrl,
                           @JsonProperty("correspondenceType") String correspondenceType,
-                          @JsonProperty("id") UUID id) {
+                          @JsonProperty("id") String id) {
         this.sentOn = sentOn;
         this.from = from;
         this.to = to;
