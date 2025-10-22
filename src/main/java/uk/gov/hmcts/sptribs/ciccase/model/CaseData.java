@@ -339,8 +339,8 @@ public class CaseData {
     @CCD(
         label = "Correspondence",
         typeOverride = Collection,
-        typeParameterOverride = "Correspondence",
-    access = {CaseworkerAndSuperUserAccess.class}
+        typeParameterOverride = "Correspondences",
+        access = {CaseworkerAndSuperUserAccess.class}
     )
     @External
     private List<ListValue<Correspondence>> correspondence;
