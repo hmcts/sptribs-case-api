@@ -3,7 +3,6 @@ package uk.gov.hmcts.sptribs.notification.model;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.sun.jna.platform.win32.Guid;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
