@@ -7,9 +7,14 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.ResponseEntity;
+import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.idam.client.models.User;
+import uk.gov.hmcts.sptribs.ciccase.model.LanguagePreference;
 import uk.gov.hmcts.sptribs.common.config.EmailTemplatesConfigCIC;
+import uk.gov.hmcts.sptribs.common.repositories.CorrespondenceRepository;
+import uk.gov.hmcts.sptribs.document.CaseDataDocumentService;
+import uk.gov.hmcts.sptribs.document.DocAssemblyService;
 import uk.gov.hmcts.sptribs.document.DocumentClient;
 import uk.gov.hmcts.sptribs.idam.IdamService;
 import uk.gov.hmcts.sptribs.notification.exception.NotificationException;
@@ -21,6 +26,8 @@ import uk.gov.service.notify.SendEmailResponse;
 import uk.gov.service.notify.SendLetterResponse;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -31,6 +38,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.doThrow;
@@ -58,6 +66,12 @@ public class NotificationServiceCICTest {
 
     @Mock
     private AuthTokenGenerator authTokenGenerator;
+
+    @Mock
+    private CaseDataDocumentService caseDataDocumentService;
+
+    @Mock
+    private CorrespondenceRepository correspondenceRepository;
 
     @Mock
     private DocumentClient caseDocumentClient;
@@ -117,6 +131,24 @@ public class NotificationServiceCICTest {
             any()
         )).thenReturn(sendEmailResponse);
 
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-y-HH-mm");
+        String filename = APPLICATION_RECEIVED.name() + "_" + TEST_CASE_ID + "_" + LocalDateTime.now().format(formatter) + ".pdf";
+        Document document = new Document().builder()
+            .url("url")
+            .binaryUrl("binary url")
+            .filename(filename)
+            .categoryId("category")
+            .build();
+
+        when(caseDataDocumentService.renderDocument(
+            anyMap(),
+            eq(TEST_CASE_ID),
+            eq(templateId),
+            eq(LanguagePreference.ENGLISH),
+            eq(filename),
+            any()
+        )).thenReturn(document);
+
         //When
         notificationService.sendEmail(request, TEST_CASE_ID.toString());
 
@@ -127,7 +159,7 @@ public class NotificationServiceCICTest {
             any(),
             any());
 
-        verify(sendEmailResponse, times(2)).getNotificationId();
+        verify(sendEmailResponse, times(3)).getNotificationId();
         verify(sendEmailResponse, times(2)).getReference();
 
     }
@@ -167,6 +199,24 @@ public class NotificationServiceCICTest {
             any()
         )).thenReturn(sendEmailResponse);
 
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-y-HH-mm");
+        String filename = APPLICATION_RECEIVED.name() + "_" + TEST_CASE_ID + "_" + LocalDateTime.now().format(formatter) + ".pdf";
+        Document document = new Document().builder()
+            .url("url")
+            .binaryUrl("binary url")
+            .filename(filename)
+            .categoryId("category")
+            .build();
+
+        when(caseDataDocumentService.renderDocument(
+            anyMap(),
+            eq(TEST_CASE_ID),
+            eq(templateId),
+            eq(LanguagePreference.ENGLISH),
+            eq(filename),
+            any()
+        )).thenReturn(document);
+
         //When
         notificationService.sendEmail(request, TEST_CASE_ID.toString());
 
@@ -177,7 +227,7 @@ public class NotificationServiceCICTest {
             any(),
             any());
 
-        verify(sendEmailResponse, times(2)).getNotificationId();
+        verify(sendEmailResponse, times(3)).getNotificationId();
         verify(sendEmailResponse, times(2)).getReference();
 
     }
@@ -202,6 +252,24 @@ public class NotificationServiceCICTest {
             any()
         )).thenReturn(sendLetterResponse);
 
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-y-HH-mm");
+        String filename = CASE_ISSUED_CITIZEN_POST.name() + "_" + TEST_CASE_ID + "_" + LocalDateTime.now().format(formatter) + ".pdf";
+        Document document = new Document().builder()
+            .url("url")
+            .binaryUrl("binary url")
+            .filename(filename)
+            .categoryId("category")
+            .build();
+
+        when(caseDataDocumentService.renderDocument(
+            anyMap(),
+            eq(TEST_CASE_ID),
+            eq(templateId),
+            eq(LanguagePreference.ENGLISH),
+            eq(filename),
+            any()
+        )).thenReturn(document);
+
         //When
         notificationService.sendLetter(request, TEST_CASE_ID.toString());
 
@@ -211,7 +279,7 @@ public class NotificationServiceCICTest {
             any(),
             any());
 
-        verify(sendLetterResponse, times(2)).getNotificationId();
+        verify(sendLetterResponse, times(3)).getNotificationId();
         verify(sendLetterResponse, times(2)).getReference();
     }
 

@@ -42,10 +42,10 @@ import static uk.gov.hmcts.sptribs.common.config.ControllerConstants.BEARER_PREF
 @Slf4j
 public class NotificationServiceCIC {
     @Autowired
-    private CaseDataDocumentService caseDataDocumentService;
+    private final CaseDataDocumentService caseDataDocumentService;
 
     @Autowired
-    private CorrespondenceRepository correspondenceRepository;
+    private final CorrespondenceRepository correspondenceRepository;
 
     @Autowired
     private final NotificationClient notificationClient;
@@ -69,7 +69,9 @@ public class NotificationServiceCIC {
                                   EmailTemplatesConfigCIC emailTemplatesConfig,
                                   IdamService idamService, HttpServletRequest request,
                                   AuthTokenGenerator authTokenGenerator,
-                                  DocumentClient caseDocumentClient) {
+                                  DocumentClient caseDocumentClient,
+                                  CaseDataDocumentService caseDataDocumentService,
+                                  CorrespondenceRepository correspondenceRepository) {
 
         this.notificationClient = notificationClient;
         this.emailTemplatesConfig = emailTemplatesConfig;
@@ -77,6 +79,8 @@ public class NotificationServiceCIC {
         this.request = request;
         this.authTokenGenerator = authTokenGenerator;
         this.caseDocumentClient = caseDocumentClient;
+        this.caseDataDocumentService = caseDataDocumentService;
+        this.correspondenceRepository = correspondenceRepository;
     }
 
     public void saveEmailCorrespondence(String templateId,
