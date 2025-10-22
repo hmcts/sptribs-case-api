@@ -23,9 +23,11 @@ import java.util.HashMap;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID;
 
 @ExtendWith(MockitoExtension.class)
 public class HearingPostponedNotificationTest {
@@ -51,10 +53,10 @@ public class HearingPostponedNotificationTest {
             .thenReturn(NotificationRequest.builder().build());
         when(notificationHelper.getSubjectCommonVars(any(), any(CaseData.class))).thenReturn(new HashMap<>());
         doNothing().when(notificationHelper).addHearingPostponedTemplateVars(any(CicCase.class), anyMap());
-        hearingPostponedNotification.sendToSubject(data, "CN1");
+        hearingPostponedNotification.sendToSubject(data, TEST_CASE_ID.toString());
 
         //Then
-        verify(notificationService).sendEmail(any(NotificationRequest.class));
+        verify(notificationService).sendEmail(any(NotificationRequest.class), eq(TEST_CASE_ID.toString()));
         verify(notificationHelper).buildEmailNotificationRequest(
             data.getCicCase().getEmail(),
             new HashMap<>(),
@@ -75,10 +77,10 @@ public class HearingPostponedNotificationTest {
         when(notificationHelper.getSubjectCommonVars(any(), any(CaseData.class))).thenReturn(new HashMap<>());
         doNothing().when(notificationHelper).addAddressTemplateVars(any(AddressGlobalUK.class), anyMap());
         doNothing().when(notificationHelper).addHearingPostponedTemplateVars(any(CicCase.class), anyMap());
-        hearingPostponedNotification.sendToSubject(data, "CN1");
+        hearingPostponedNotification.sendToSubject(data, TEST_CASE_ID.toString());
 
         //Then
-        verify(notificationService).sendLetter(any(NotificationRequest.class));
+        verify(notificationService).sendLetter(any(NotificationRequest.class), eq(TEST_CASE_ID.toString()));
         verify(notificationHelper).buildLetterNotificationRequest(
             new HashMap<>(),
             TemplateName.HEARING_POSTPONED_POST);
@@ -98,10 +100,10 @@ public class HearingPostponedNotificationTest {
             .thenReturn(NotificationRequest.builder().build());
         when(notificationHelper.getRespondentCommonVars(any(), any(CaseData.class))).thenReturn(new HashMap<>());
         doNothing().when(notificationHelper).addHearingPostponedTemplateVars(any(CicCase.class), anyMap());
-        hearingPostponedNotification.sendToRespondent(data, "CN1");
+        hearingPostponedNotification.sendToRespondent(data, TEST_CASE_ID.toString());
 
         //Then
-        verify(notificationService).sendEmail(any(NotificationRequest.class));
+        verify(notificationService).sendEmail(any(NotificationRequest.class), eq(TEST_CASE_ID.toString()));
         verify(notificationHelper).buildEmailNotificationRequest(
             data.getCicCase().getRespondentEmail(),
             new HashMap<>(),
@@ -122,10 +124,10 @@ public class HearingPostponedNotificationTest {
             .thenReturn(NotificationRequest.builder().build());
         when(notificationHelper.getRepresentativeCommonVars(any(), any(CaseData.class))).thenReturn(new HashMap<>());
         doNothing().when(notificationHelper).addHearingPostponedTemplateVars(any(CicCase.class), anyMap());
-        hearingPostponedNotification.sendToRepresentative(data, "CN1");
+        hearingPostponedNotification.sendToRepresentative(data, TEST_CASE_ID.toString());
 
         //Then
-        verify(notificationService).sendEmail(any(NotificationRequest.class));
+        verify(notificationService).sendEmail(any(NotificationRequest.class), eq(TEST_CASE_ID.toString()));
         verify(notificationHelper).buildEmailNotificationRequest(
             data.getCicCase().getRepresentativeEmailAddress(),
             new HashMap<>(),
@@ -147,10 +149,10 @@ public class HearingPostponedNotificationTest {
         when(notificationHelper.getRepresentativeCommonVars(any(), any(CaseData.class))).thenReturn(new HashMap<>());
         doNothing().when(notificationHelper).addAddressTemplateVars(any(AddressGlobalUK.class), anyMap());
         doNothing().when(notificationHelper).addHearingPostponedTemplateVars(any(CicCase.class), anyMap());
-        hearingPostponedNotification.sendToRepresentative(data, "CN1");
+        hearingPostponedNotification.sendToRepresentative(data, TEST_CASE_ID.toString());
 
         //Then
-        verify(notificationService).sendLetter(any(NotificationRequest.class));
+        verify(notificationService).sendLetter(any(NotificationRequest.class), eq(TEST_CASE_ID.toString()));
         verify(notificationHelper).buildLetterNotificationRequest(
             new HashMap<>(),
             TemplateName.HEARING_POSTPONED_POST);
@@ -158,7 +160,7 @@ public class HearingPostponedNotificationTest {
 
     private CaseData getMockCaseData(LocalDate stayCaseExpDate) {
         final CicCase cicCase = CicCase.builder()
-            .fullName("fullName").caseNumber("CN1")
+            .fullName("fullName").caseNumber(TEST_CASE_ID.toString())
             .build();
         final CaseStay caseStay = CaseStay.builder()
             .expirationDate(stayCaseExpDate)
