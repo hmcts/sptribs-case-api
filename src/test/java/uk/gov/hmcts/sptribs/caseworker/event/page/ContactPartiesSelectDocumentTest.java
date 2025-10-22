@@ -142,7 +142,8 @@ class ContactPartiesSelectDocumentTest {
             caseDetails.setData(caseData);
 
             final AboutToStartOrSubmitResponse<CaseData, State> response = contactPartiesSelectDocument.midEvent(caseDetails, caseDetails);
-            assertThat(response.getErrors()).containsExactly("Unable to proceed because " + label + " is larger than 2MB");
+            String displayName = label.substring(label.indexOf('[') + 1, label.indexOf(']'));
+            assertThat(response.getErrors()).containsExactly("Unable to proceed because " + displayName + " is larger than 2MB");
         }
 
         @Test
@@ -270,7 +271,8 @@ class ContactPartiesSelectDocumentTest {
             caseDetails.setData(caseData);
 
             final AboutToStartOrSubmitResponse<CaseData, State> response = contactPartiesSelectDocument.midEvent(caseDetails, caseDetails);
-            assertThat(response.getErrors()).containsExactly("Unable to proceed because " + label + " is larger than 2MB");
+            String displayName = label.substring(label.indexOf('[') + 1, label.indexOf(']'));
+            assertThat(response.getErrors()).containsExactly("Unable to proceed because " + displayName + " is larger than 2MB");
         }
 
         @Test

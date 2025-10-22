@@ -92,7 +92,8 @@ public class ContactPartiesSelectDocument implements CcdPageConfiguration {
             if (docIdAndSize.getRight() > TWO_MEGABYTES) {
                 userSelection.forEach(element -> {
                     if (element.getLabel().contains(docIdAndSize.getLeft())) {
-                        errors.add("Unable to proceed because " + element.getLabel() + " is larger than 2MB");
+                        String documentName = extractDocumentDisplayName(element.getLabel());
+                        errors.add("Unable to proceed because " + documentName + " is larger than 2MB");
                     }
                 });
             }
@@ -122,7 +123,22 @@ public class ContactPartiesSelectDocument implements CcdPageConfiguration {
         return StringUtils.isEmpty(documentId) ? Optional.empty() : Optional.of(documentId);
     }
 
-    public List<String> extractDocumentIds(List<DynamicListElement> elements) {
+    private String extractDocumentDisplayName(String label) {
+        if (StringUtils.isBlank(label)) {
+            return label;
+        }
+
+        int start = label.indexOf('[');
+        int end = label.indexOf(']', start + 1);
+
+        if (start >= 0 && end > start) {
+            return label.substring(start + 1, end);
+        }
+
+        return label;
+    }
+
+    private List<String> extractDocumentIds(List<DynamicListElement> elements) {
         if (elements == null || elements.isEmpty()) {
             return List.of();
         }
