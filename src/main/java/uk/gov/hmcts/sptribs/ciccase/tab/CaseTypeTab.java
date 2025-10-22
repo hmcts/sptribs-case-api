@@ -264,8 +264,7 @@ public class CaseTypeTab implements CCDConfig<CaseData, State, UserRole> {
         configBuilder.tab("notify", "Notify")
             .forRoles(NON_RESPONDENT_USER)
             .label("Notify", null, "#### Notify")
-            .field("cicCaseCorrespondence")
-            .field("allCorrespondence");
+            .field(CaseData::getCorrespondence);
     }
 
     private void buildCicaDetails(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
