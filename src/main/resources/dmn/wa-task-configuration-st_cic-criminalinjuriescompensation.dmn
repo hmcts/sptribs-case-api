@@ -343,7 +343,7 @@ else 5000</text>
           <text>"roleCategory"</text>
         </outputEntry>
         <outputEntry id="LiteralExpression_0wqped8">
-          <text>"CTSC"</text>
+          <text>"CTSC, ADMIN"</text>
         </outputEntry>
         <outputEntry id="LiteralExpression_0nh4l1u">
           <text>true</text>
