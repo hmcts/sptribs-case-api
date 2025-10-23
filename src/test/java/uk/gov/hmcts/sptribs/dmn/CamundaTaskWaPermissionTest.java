@@ -684,7 +684,7 @@ class CamundaTaskWaPermissionTest extends DmnDecisionTableBaseUnitTest {
         return Map.of(
                 "name", "hearing-centre-team-leader",
                 "value", "Read,Own,Claim,Manage,Assign,Unassign,Complete,Cancel",
-                "roleCategory", ROLE_CATEGORY_CTSC,
+                "roleCategory", ROLE_CATEGORY_ADMIN,
                 "autoAssignable", false
         );
     }
@@ -693,7 +693,7 @@ class CamundaTaskWaPermissionTest extends DmnDecisionTableBaseUnitTest {
         return Map.of(
                 "name", "regional-centre-team-leader",
                 "value", "Read,Own,Claim,Manage,Assign,Unassign,Complete,Cancel",
-                "roleCategory", ROLE_CATEGORY_CTSC,
+                "roleCategory", ROLE_CATEGORY_ADMIN,
                 "autoAssignable", false
         );
     }
