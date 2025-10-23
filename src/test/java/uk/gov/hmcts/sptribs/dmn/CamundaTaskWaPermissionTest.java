@@ -466,7 +466,7 @@ class CamundaTaskWaPermissionTest extends DmnDecisionTableBaseUnitTest {
         assertThat(logic.getOutputs().size(), is(7));
         assertThatOutputContainInOrder(outputColumnIds, logic.getOutputs());
         //Rules
-        assertThat(logic.getRules().size(), is(15));
+        assertThat(logic.getRules().size(), is(17));
     }
 
     @ParameterizedTest(name = "task type: {0} case data: {1}")
@@ -546,9 +546,9 @@ class CamundaTaskWaPermissionTest extends DmnDecisionTableBaseUnitTest {
     private static List<Map<String, Object>> defaultSpecificAccessRequestCtscPermissions() {
         return List.of(
             taskSupervisorPermissions(),
-            hearingCentreTeamLeaderSpecificAccessPermissions(),
-            regionalHearingCentreTeamLeaderSpecificAccessPermissions(),
-            ctscTeamLeaderSpecificAccessPermissions()
+            ctscTeamLeaderSpecificAccessPermissions(),
+            hearingCentreTeamLeaderSpecificAccessPermissionsCTSC(),
+            regionalHearingCentreTeamLeaderSpecificAccessPermissionsCTSC()
         );
     }
 
@@ -677,6 +677,24 @@ class CamundaTaskWaPermissionTest extends DmnDecisionTableBaseUnitTest {
             "value", "Read,Own,Claim,Manage,Assign,Unassign,Complete,Cancel",
             "roleCategory", ROLE_CATEGORY_CTSC,
             "autoAssignable", false
+        );
+    }
+
+    private static Map<String, Object> hearingCentreTeamLeaderSpecificAccessPermissionsCTSC() {
+        return Map.of(
+                "name", "hearing-centre-team-leader",
+                "value", "Read,Own,Claim,Manage,Assign,Unassign,Complete,Cancel",
+                "roleCategory", ROLE_CATEGORY_CTSC,
+                "autoAssignable", false
+        );
+    }
+
+    private static Map<String, Object> regionalHearingCentreTeamLeaderSpecificAccessPermissionsCTSC() {
+        return Map.of(
+                "name", "regional-centre-team-leader",
+                "value", "Read,Own,Claim,Manage,Assign,Unassign,Complete,Cancel",
+                "roleCategory", ROLE_CATEGORY_CTSC,
+                "autoAssignable", false
         );
     }
 
