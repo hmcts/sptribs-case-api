@@ -23,18 +23,17 @@ public class SptribsCaseRepository implements CaseRepository<CaseData> {
 
         List<ListValue<Correspondence>> correspondences = new ArrayList<>();
 
-        for (CorrespondenceEntity correspondenceEntity : correspondenceRepository.findAllByCaseReferenceNumberOrderBySentAtDesc(caseRef)) {
+        for (CorrespondenceEntity correspondenceEntity : correspondenceRepository.findAllByCaseReferenceNumberOrderBySentOnDesc(caseRef)) {
             Document correspondenceDocument = Document.builder()
-                .url(correspondenceEntity.getDocumentUrl().getUrl())
-                .filename(correspondenceEntity.getDocumentUrl().getFilename())
-                .binaryUrl(correspondenceEntity.getDocumentUrl().getBinaryUrl())
-                .categoryId(correspondenceEntity.getDocumentUrl().getCategoryId())
+                .url(correspondenceEntity.getDocumentUrl())
+                .filename(correspondenceEntity.getDocumentFilename())
+                .binaryUrl(correspondenceEntity.getDocumentBinaryUrl())
                 .build();
 
             Correspondence correspondence = Correspondence.builder()
                 .id(correspondenceEntity.getId().toString())
                 .caseReferenceNumber(correspondenceEntity.getCaseReferenceNumber())
-                .sentOn(correspondenceEntity.getSentAt() != null ? correspondenceEntity.getSentAt().toLocalDateTime() : null)
+                .sentOn(correspondenceEntity.getSentOn() != null ? correspondenceEntity.getSentOn().toLocalDateTime() : null)
                 .from(correspondenceEntity.getSentFrom())
                 .to(correspondenceEntity.getSentTo())
                 .documentUrl(correspondenceDocument)

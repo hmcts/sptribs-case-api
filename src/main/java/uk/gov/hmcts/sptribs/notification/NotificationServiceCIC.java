@@ -21,7 +21,6 @@ import uk.gov.hmcts.sptribs.ciccase.model.NotificationType;
 import uk.gov.hmcts.sptribs.common.config.EmailTemplatesConfigCIC;
 import uk.gov.hmcts.sptribs.common.repositories.CorrespondenceRepository;
 import uk.gov.hmcts.sptribs.document.DocumentClient;
-import uk.gov.hmcts.sptribs.document.SerializableDocument;
 import uk.gov.hmcts.sptribs.idam.IdamService;
 import uk.gov.hmcts.sptribs.notification.exception.NotificationException;
 import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
@@ -103,7 +102,7 @@ public class NotificationServiceCIC {
                                         String caseReferenceNumber) {
 
         Long longCaseRef = Long.parseLong(caseReferenceNumber.replace("-", ""));
-        final LocalDateTime sentAt = LocalDateTime.now();
+        final LocalDateTime sentOn = LocalDateTime.now();
         String sentFrom = "Criminal Injuries Compensation Tribunal";
 
         if (sendEmailResponse.getFromEmail().isPresent()) {
@@ -111,18 +110,23 @@ public class NotificationServiceCIC {
         }
 
         try {
-            CorrespondenceEntity correspondence = CorrespondenceEntity.builder()
-                .id(sendEmailResponse.getNotificationId())
-                .eventType(templateName)
-                .caseReferenceNumber(longCaseRef)
-                .sentAt(sentAt.atOffset(java.time.ZoneOffset.UTC))
-                .sentFrom(sentFrom)
-                .sentTo(sentTo)
-                .documentUrl(this.getPDF(sendEmailResponse, null, longCaseRef, sentAt, sentFrom, sentTo, templateName))
-                .correspondenceType("Email")
-                .build();
-
-            correspondenceRepository.save(correspondence);
+            Document correspondencePDF = this.getPDF(sendEmailResponse, null, longCaseRef, sentOn, sentFrom, sentTo, templateName);
+            CorrespondenceEntity correspondence = null;
+            if (correspondencePDF != null) {
+                correspondence = CorrespondenceEntity.builder()
+                    .id(sendEmailResponse.getNotificationId())
+                    .eventType(templateName)
+                    .caseReferenceNumber(longCaseRef)
+                    .sentOn(sentOn.atOffset(java.time.ZoneOffset.UTC))
+                    .sentFrom(sentFrom)
+                    .sentTo(sentTo)
+                    .documentUrl(correspondencePDF.getUrl())
+                    .documentFilename(correspondencePDF.getFilename())
+                    .documentBinaryUrl(correspondencePDF.getBinaryUrl())
+                    .correspondenceType("Letter")
+                    .build();
+                correspondenceRepository.save(correspondence);
+            }
         } catch (java.io.IOException e) {
             log.error("Failed to store pdf document", e);
         }
@@ -135,22 +139,26 @@ public class NotificationServiceCIC {
                                          String caseReferenceNumber) {
 
         Long longCaseRef = Long.parseLong(caseReferenceNumber.replace("-", ""));
-        final LocalDateTime sentAt = LocalDateTime.now();
+        final LocalDateTime sentOn = LocalDateTime.now();
         String sentFrom = "Criminal Injuries Compensation Tribunal";
-
         try {
-            CorrespondenceEntity correspondence = CorrespondenceEntity.builder()
-                .id(sendLetterResponse.getNotificationId())
-                .eventType(templateName)
-                .caseReferenceNumber(longCaseRef)
-                .sentAt(sentAt.atOffset(java.time.ZoneOffset.UTC))
-                .sentFrom(sentFrom)
-                .sentTo(sentTo)
-                .documentUrl(this.getPDF(null, sendLetterResponse, longCaseRef, sentAt, sentFrom, sentTo, templateName))
-                .correspondenceType("Letter")
-                .build();
-
-            correspondenceRepository.save(correspondence);
+            Document correspondencePDF = this.getPDF(null, sendLetterResponse, longCaseRef, sentOn, sentFrom, sentTo, templateName);
+            CorrespondenceEntity correspondence = null;
+            if (correspondencePDF != null) {
+                correspondence = CorrespondenceEntity.builder()
+                    .id(sendLetterResponse.getNotificationId())
+                    .eventType(templateName)
+                    .caseReferenceNumber(longCaseRef)
+                    .sentOn(sentOn.atOffset(java.time.ZoneOffset.UTC))
+                    .sentFrom(sentFrom)
+                    .sentTo(sentTo)
+                    .documentUrl(correspondencePDF.getUrl())
+                    .documentFilename(correspondencePDF.getFilename())
+                    .documentBinaryUrl(correspondencePDF.getBinaryUrl())
+                    .correspondenceType("Letter")
+                    .build();
+                correspondenceRepository.save(correspondence);
+            }
         } catch (java.io.IOException e) {
             log.error("Failed to store pdf document", e);
         }
@@ -330,10 +338,10 @@ public class NotificationServiceCIC {
             .build();
     }
 
-    private SerializableDocument getPDF(SendEmailResponse sendEmailResponse,
+    private Document getPDF(SendEmailResponse sendEmailResponse,
                                         SendLetterResponse sendLetterResponse,
                                         Long longCaseRef,
-                                        LocalDateTime sentAt,
+                                        LocalDateTime sentOn,
                                         String sentFrom,
                                         String sentTo,
                                         String templateName) throws IOException {
@@ -348,7 +356,7 @@ public class NotificationServiceCIC {
             correspondenceType = "Letter";
         }
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-y-HH-mm");
-        placeholders.put("sentOn", sentAt.format(formatter));
+        placeholders.put("sentOn", sentOn.format(formatter));
         placeholders.put("from", sentFrom);
         placeholders.put("to", sentTo);
 
@@ -364,7 +372,7 @@ public class NotificationServiceCIC {
 
         byte[] pdf = pdfServiceClient.generateFromHtml(template, placeholders);
 
-        final String formattedSentOn = sentAt.format(formatter)
+        final String formattedSentOn = sentOn.format(formatter)
             .replace(" ", "_").replace(":", "-");
 
         String correspondenceDocumentFilename = templateName + "_" + longCaseRef + "_" + formattedSentOn + ".pdf";
@@ -391,11 +399,7 @@ public class NotificationServiceCIC {
             uploadedPDF.setFilename(correspondenceDocumentFilename);
             uploadedPDF.setUrl(uploadResponse.getDocuments().getFirst().links.self.href);
 
-            return SerializableDocument.builder()
-                    .url(uploadedPDF.getUrl())
-                    .filename(uploadedPDF.getFilename())
-                    .binaryUrl(uploadedPDF.getBinaryUrl())
-                    .build();
+            return uploadedPDF;
         } catch (RestClientException e) {
             log.error("Failed to store pdf document but carrying on [" + correspondenceDocumentFilename + "]", e);
             return null;

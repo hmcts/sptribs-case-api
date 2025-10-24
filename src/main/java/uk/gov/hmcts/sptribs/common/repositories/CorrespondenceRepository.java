@@ -8,6 +8,6 @@ import java.util.List;
 
 @Repository
 public interface CorrespondenceRepository extends JpaRepository<CorrespondenceEntity, Long> {
-    List<CorrespondenceEntity> findAllByCaseReferenceNumberOrderBySentAtDesc(Long caseReferenceNumber);
+    List<CorrespondenceEntity> findAllByCaseReferenceNumberOrderBySentOnDesc(Long caseReferenceNumber);
 }
 

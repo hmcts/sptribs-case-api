@@ -8,7 +8,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import uk.gov.hmcts.sptribs.document.SerializableDocument;
 
 import java.time.OffsetDateTime;
 import java.util.UUID;
@@ -30,8 +29,8 @@ public class CorrespondenceEntity {
     @Column(name = "case_reference_number", nullable = false)
     private Long caseReferenceNumber;
 
-    @Column(name = "sent_on", insertable = false, updatable = false)
-    private OffsetDateTime sentAt;
+    @Column(name = "sent_on", nullable = false)
+    private OffsetDateTime sentOn;
 
     @Column(name = "sent_from", nullable = false)
     private String sentFrom;
@@ -39,9 +38,15 @@ public class CorrespondenceEntity {
     @Column(name = "sent_to", nullable = false)
     private String sentTo;
 
-    @Column(name = "document_url", nullable = false, columnDefinition = "jsonb")
-    private SerializableDocument documentUrl;
-
     @Column(name = "correspondence_type", nullable = false)
     private String correspondenceType;
+
+    @Column(name = "document_url", nullable = false)
+    private String documentUrl;
+
+    @Column(name = "document_filename", nullable = false)
+    private String documentFilename;
+
+    @Column(name = "document_binary_url", nullable = false)
+    private String documentBinaryUrl;
 }
