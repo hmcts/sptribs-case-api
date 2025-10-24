@@ -46,6 +46,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerAndSuperUserAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerRASValidationAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerWithCAAAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CitizenAccess;
+import uk.gov.hmcts.sptribs.ciccase.model.access.CollectionDefaultAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.DSSUpdateAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.DefaultAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.GlobalSearchAccess;
@@ -237,7 +238,28 @@ public class CaseData {
     @CCD(
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
-    private List<AbstractCaseworkerCICDocument<CaseworkerCICDocument>> caseDocuments;
+    private List<AbstractCaseworkerCICDocument<CaseworkerCICDocument>> caseDocuments; // bundle field
+
+    @CCD(
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private List<AbstractCaseworkerCICDocument<CaseworkerCICDocument>> furtherCaseDocuments; // bundle field
+
+    @CCD(
+        label = "Initial CICA Documents",
+        typeOverride = Collection,
+        typeParameterOverride = "CaseworkerCICDocument",
+        access = {CollectionDefaultAccess.class}
+    )
+    private List<ListValue<CaseworkerCICDocument>> initialCicaDocuments;
+
+    @CCD(
+        label = "Further Document Uploads",
+        typeOverride = Collection,
+        typeParameterOverride = "CaseworkerCICDocument",
+        access = {CollectionDefaultAccess.class}
+    )
+    private List<ListValue<CaseworkerCICDocument>> furtherUploadedDocuments;
 
     @CCD(
         label = "Hearing Date",
@@ -484,6 +506,10 @@ public class CaseData {
     @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class})
     private YesNo completeHearingOutcomeTask;
 
+    @CCD(access = {DefaultAccess.class, CaseworkerWithCAAAccess.class, CitizenAccess.class,
+        GlobalSearchAccess.class, CaseworkerRASValidationAccess.class})
+    private YesNo newBundleOrderEnabled;
+
     @CCD(access = {DefaultAccess.class})
     @JsonUnwrapped
     private RetiredFields retiredFields;
@@ -497,6 +523,11 @@ public class CaseData {
         }
         return "";
 
+    }
+
+    @JsonIgnore
+    public boolean isBundleOrderEnabled() {
+        return YesNo.YES.equals(this.newBundleOrderEnabled);
     }
 
     @JsonIgnore
