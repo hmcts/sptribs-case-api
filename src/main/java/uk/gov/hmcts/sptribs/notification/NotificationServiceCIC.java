@@ -25,7 +25,7 @@ import uk.gov.hmcts.sptribs.document.SerializableDocument;
 import uk.gov.hmcts.sptribs.idam.IdamService;
 import uk.gov.hmcts.sptribs.notification.exception.NotificationException;
 import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
-import uk.gov.hmcts.sptribs.notification.persistence.CorrespondenceRecord;
+import uk.gov.hmcts.sptribs.notification.persistence.CorrespondenceEntity;
 import uk.gov.hmcts.sptribs.services.cdam.CaseDocumentClientApi;
 import uk.gov.service.notify.NotificationClient;
 import uk.gov.service.notify.NotificationClientException;
@@ -111,7 +111,7 @@ public class NotificationServiceCIC {
         }
 
         try {
-            CorrespondenceRecord correspondence = CorrespondenceRecord.builder()
+            CorrespondenceEntity correspondence = CorrespondenceEntity.builder()
                 .id(sendEmailResponse.getNotificationId())
                 .eventType(templateName)
                 .caseReferenceNumber(longCaseRef)
@@ -139,7 +139,7 @@ public class NotificationServiceCIC {
         String sentFrom = "Criminal Injuries Compensation Tribunal";
 
         try {
-            CorrespondenceRecord correspondence = CorrespondenceRecord.builder()
+            CorrespondenceEntity correspondence = CorrespondenceEntity.builder()
                 .id(sendLetterResponse.getNotificationId())
                 .eventType(templateName)
                 .caseReferenceNumber(longCaseRef)

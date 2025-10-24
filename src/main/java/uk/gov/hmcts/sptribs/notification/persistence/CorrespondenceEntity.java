@@ -19,7 +19,7 @@ import java.util.UUID;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class CorrespondenceRecord {
+public class CorrespondenceEntity {
 
     @Id
     private UUID id;

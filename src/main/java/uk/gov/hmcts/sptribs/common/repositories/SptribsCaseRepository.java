@@ -5,7 +5,7 @@ import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.notification.model.Correspondence;
-import uk.gov.hmcts.sptribs.notification.persistence.CorrespondenceRecord;
+import uk.gov.hmcts.sptribs.notification.persistence.CorrespondenceEntity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,25 +23,25 @@ public class SptribsCaseRepository implements CaseRepository<CaseData> {
 
         List<ListValue<Correspondence>> correspondences = new ArrayList<>();
 
-        for (CorrespondenceRecord correspondenceRecord : correspondenceRepository.findAllByCaseReferenceNumberOrderBySentAtDesc(caseRef)) {
+        for (CorrespondenceEntity correspondenceEntity : correspondenceRepository.findAllByCaseReferenceNumberOrderBySentAtDesc(caseRef)) {
             Document correspondenceDocument = Document.builder()
-                .url(correspondenceRecord.getDocumentUrl().getUrl())
-                .filename(correspondenceRecord.getDocumentUrl().getFilename())
-                .binaryUrl(correspondenceRecord.getDocumentUrl().getBinaryUrl())
-                .categoryId(correspondenceRecord.getDocumentUrl().getCategoryId())
+                .url(correspondenceEntity.getDocumentUrl().getUrl())
+                .filename(correspondenceEntity.getDocumentUrl().getFilename())
+                .binaryUrl(correspondenceEntity.getDocumentUrl().getBinaryUrl())
+                .categoryId(correspondenceEntity.getDocumentUrl().getCategoryId())
                 .build();
 
             Correspondence correspondence = Correspondence.builder()
-                .id(correspondenceRecord.getId().toString())
-                .caseReferenceNumber(correspondenceRecord.getCaseReferenceNumber())
-                .sentOn(correspondenceRecord.getSentAt() != null ? correspondenceRecord.getSentAt().toLocalDateTime() : null)
-                .from(correspondenceRecord.getSentFrom())
-                .to(correspondenceRecord.getSentTo())
+                .id(correspondenceEntity.getId().toString())
+                .caseReferenceNumber(correspondenceEntity.getCaseReferenceNumber())
+                .sentOn(correspondenceEntity.getSentAt() != null ? correspondenceEntity.getSentAt().toLocalDateTime() : null)
+                .from(correspondenceEntity.getSentFrom())
+                .to(correspondenceEntity.getSentTo())
                 .documentUrl(correspondenceDocument)
                 .build();
 
             ListValue<Correspondence> correspondenceListValue = new ListValue<>();
-            correspondenceListValue.setId(correspondenceRecord.getId().toString());
+            correspondenceListValue.setId(correspondenceEntity.getId().toString());
             correspondenceListValue.setValue(correspondence);
             correspondences.add(correspondenceListValue);
         }
