@@ -1,5 +1,6 @@
 package uk.gov.hmcts.sptribs.caseworker.event;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
@@ -14,6 +15,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
+import uk.gov.hmcts.sptribs.common.service.AuditEventService;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocumentUpload;
 
@@ -40,15 +42,19 @@ import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_CASEWORK
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_JUDGE;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_WA_CONFIG_USER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SYSTEM_UPDATE;
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE;
 import static uk.gov.hmcts.sptribs.document.DocumentUtil.convertToCaseworkerCICDocumentUpload;
 import static uk.gov.hmcts.sptribs.document.DocumentUtil.uploadDocument;
 
 @Component
 @Slf4j
+@RequiredArgsConstructor
 public class RespondentDocumentManagement implements CCDConfig<CaseData, State, UserRole> {
 
+    private static final boolean DATE_INCLUDED = true;
     private final UploadCaseDocuments uploadCaseDocuments = new UploadCaseDocuments();
+    private final AuditEventService auditEventService;
 
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
@@ -75,7 +81,8 @@ public class RespondentDocumentManagement implements CCDConfig<CaseData, State, 
                     ST_CIC_HEARING_CENTRE_ADMIN,
                     ST_CIC_HEARING_CENTRE_TEAM_LEADER,
                     ST_CIC_SENIOR_JUDGE,
-                    ST_CIC_JUDGE)
+                    ST_CIC_JUDGE,
+                    SYSTEM_UPDATE)
                 .aboutToSubmitCallback(this::aboutToSubmit)
                 .submittedCallback(this::submitted)
                 .publishToCamunda();
@@ -89,10 +96,22 @@ public class RespondentDocumentManagement implements CCDConfig<CaseData, State, 
 
         final CaseData caseData = details.getData();
         List<ListValue<CaseworkerCICDocumentUpload>> uploadedDocuments = caseData.getNewDocManagement().getCaseworkerCICDocumentUpload();
-        List<ListValue<CaseworkerCICDocument>> documents = convertToCaseworkerCICDocumentUpload(uploadedDocuments, false);
+        List<ListValue<CaseworkerCICDocument>> documents = convertToCaseworkerCICDocumentUpload(uploadedDocuments, DATE_INCLUDED);
         caseData.getNewDocManagement().setCaseworkerCICDocumentUpload(new ArrayList<>());
         caseData.getNewDocManagement().setCaseworkerCICDocument(documents);
         uploadDocument(caseData);
+
+        if (caseData.isBundleOrderEnabled()) {
+            if (auditEventService.hasCaseEvent(String.valueOf(details.getId()), RESPONDENT_DOCUMENT_MANAGEMENT)) {
+                if (caseData.getFurtherUploadedDocuments() == null) {
+                    caseData.setFurtherUploadedDocuments(documents);
+                } else {
+                    caseData.getFurtherUploadedDocuments().addAll(documents);
+                }
+            } else {
+                caseData.setInitialCicaDocuments(documents);
+            }
+        }
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
