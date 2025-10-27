@@ -55,7 +55,7 @@ public abstract class FunctionalTestSuite {
     private static final LocalDateTime LOCAL_DATE_TIME = LocalDateTime.of(2021, 4, 28, 1, 0);
     private static final Logger log = LoggerFactory.getLogger(FunctionalTestSuite.class);
 
-    private static final ClassPathResource DRAFT_ORDER_FILE =
+    protected static final ClassPathResource DRAFT_ORDER_FILE =
             new ClassPathResource("files/DRAFT :Order--[Subject Name]--26-04-2024 10:09:12.pdf");
 
     @Value("${test-url}")
