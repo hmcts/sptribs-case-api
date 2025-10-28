@@ -19,8 +19,6 @@ import uk.gov.hmcts.sptribs.caseworker.event.page.SendOrderOrderDueDates;
 import uk.gov.hmcts.sptribs.caseworker.event.page.SendOrderUploadOrder;
 import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderCIC;
 import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderContentCIC;
-import uk.gov.hmcts.sptribs.caseworker.service.OrderService;
-import uk.gov.hmcts.sptribs.caseworker.util.PageShowConditionsUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.OrderTemplate;
@@ -32,11 +30,8 @@ import uk.gov.hmcts.sptribs.common.event.page.CreateDraftOrder;
 import uk.gov.hmcts.sptribs.common.event.page.DraftOrderMainContentPage;
 import uk.gov.hmcts.sptribs.common.event.page.PreviewDraftOrder;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
-import java.util.Locale;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -63,23 +58,17 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 @RequiredArgsConstructor
 public class CaseworkerCreateAndSendOrder implements CCDConfig<CaseData, State, UserRole> {
 
-    private final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss", Locale.ENGLISH);
-
     private static final CcdPageConfiguration applyAnonymitySelect = new ApplyAnonymity();
     private static final CcdPageConfiguration createSendIssuingSelect = new CreateAndSendOrderIssueSelect();
 
-    private static final CcdPageConfiguration createDraftOrder =
-            new CreateDraftOrder();
-    private static final CcdPageConfiguration draftOrderMainContentPage =
-        new DraftOrderMainContentPage();
-
-    private static final CcdPageConfiguration uploadOrder =
-        new SendOrderUploadOrder();
+    private static final CcdPageConfiguration createDraftOrder = new CreateDraftOrder();
+    private static final CcdPageConfiguration draftOrderMainContentPage = new DraftOrderMainContentPage();
+    private static final CcdPageConfiguration uploadOrder = new SendOrderUploadOrder();
     private static final CcdPageConfiguration orderDueDates = new SendOrderOrderDueDates();
     private static final CcdPageConfiguration previewOrder = new PreviewDraftOrder();
     private static final CcdPageConfiguration notifyParties = new SendOrderNotifyParties();
 
-    private final  OrderService orderService;
+    private final CcdPageConfiguration draftOrderFooter;
 
     @Override
     public void configure(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
@@ -103,7 +92,7 @@ public class CaseworkerCreateAndSendOrder implements CCDConfig<CaseData, State, 
         createSendIssuingSelect.addTo(pageBuilder);
         createDraftOrder.addTo(pageBuilder);
         draftOrderMainContentPage.addTo(pageBuilder);
-        createDraftOrderAddDocumentFooter(pageBuilder);
+        draftOrderFooter.addTo(pageBuilder);
         uploadOrder.addTo(pageBuilder);
 
         orderDueDates.addTo(pageBuilder);
@@ -114,17 +103,6 @@ public class CaseworkerCreateAndSendOrder implements CCDConfig<CaseData, State, 
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToStart(CaseDetails<CaseData, State> details) {
         final CaseData caseData = details.getData();
         caseData.setCurrentEvent(CASEWORKER_CREATE_AND_SEND_ORDER);
-
-        return AboutToStartOrSubmitResponse.<CaseData, State>builder()
-                .data(caseData)
-                .build();
-    }
-
-    public AboutToStartOrSubmitResponse<CaseData, State> midEvent(CaseDetails<CaseData, State> details,
-                                                                  CaseDetails<CaseData, State> detailsBefore) {
-        Calendar cal = Calendar.getInstance();
-        String date = simpleDateFormat.format(cal.getTime());
-        final CaseData caseData = orderService.generateOrderFile(details.getData(), details.getId(), date);
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
                 .data(caseData)
@@ -186,22 +164,6 @@ public class CaseworkerCreateAndSendOrder implements CCDConfig<CaseData, State, 
         return SubmittedCallbackResponse.builder()
                 .confirmationHeader("# Draft order created.")
                 .build();
-    }
-
-    private void createDraftOrderAddDocumentFooter(PageBuilder pageBuilder) {
-        pageBuilder.page("draftOrderDocumentFooter", this::midEvent)
-            .pageLabel("Document footer")
-            .pageShowConditions(PageShowConditionsUtil.createAndSendOrderConditions())
-            .label("draftOrderDocFooter",
-                """
-
-                    Order Signature
-
-                    Confirm the Role and Surname of the person who made this order - this will be added to the bottom of the generated \
-                    order notice. E.g. 'Tribunal Judge Farrelly'""")
-            .complex(CaseData::getDraftOrderContentCIC)
-            .mandatory(DraftOrderContentCIC::getOrderSignature)
-            .done();
     }
 
     private void addToDraftOrderTemplatesDynamicList(OrderTemplate orderTemplate, CicCase cicCase, String date) {
