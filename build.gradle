@@ -363,7 +363,7 @@ dependencies {
   implementation group: 'com.launchdarkly', name: 'launchdarkly-java-server-sdk', version: '7.10.2'
   implementation group: 'org.apache.commons', name: 'commons-collections4', version: '4.5.0'
   implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.18.0'
-  implementation group: 'com.github.ben-manes.caffeine', name: 'caffeine', version: '3.2.2'
+  implementation group: 'com.github.ben-manes.caffeine', name: 'caffeine', version: '3.2.3'
   implementation 'org.camunda.bpm:camunda-external-task-client:7.23.0'
   implementation group: 'org.postgresql', name: 'postgresql', version: '42.7.5'
   implementation 'org.flywaydb:flyway-database-postgresql:11.15.0'
@@ -381,13 +381,13 @@ dependencies {
   testImplementation group: 'com.jayway.awaitility', name: 'awaitility', version: '1.7.0'
   testImplementation group: 'com.github.stefanbirkner', name: 'system-lambda', version: '1.2.1'
   testImplementation group: 'org.assertj', name: 'assertj-core', version: '3.27.4'
-  testImplementation group: 'org.assertj', name: 'assertj-guava', version: '3.27.4'
+  testImplementation group: 'org.assertj', name: 'assertj-guava', version: '3.27.6'
   testImplementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-contract-stub-runner', version: '4.3.0'
   testImplementation group: 'org.projectlombok', name: 'lombok', version: versions.lombok
   testImplementation group: 'org.mockito', name: 'mockito-inline', version: '5.2.0'
   testImplementation group: 'io.github.openfeign', name: 'feign-jackson', version: '13.6'
   testImplementation group: 'io.rest-assured', name: 'rest-assured'
-  testImplementation group: 'org.apache.pdfbox', name: 'pdfbox', version: '3.0.5'
+  testImplementation group: 'org.apache.pdfbox', name: 'pdfbox', version: '3.0.6'
   testImplementation group: 'com.microsoft.playwright', name: 'playwright', version: '1.55.0'
   testImplementation group: 'org.camunda.bpm.dmn', name: 'camunda-engine-dmn', version: "${versions.camunda}"
   testImplementation group: 'org.camunda.bpm', name: 'camunda-engine-plugin-spin', version: "${versions.camunda}"
