@@ -340,7 +340,7 @@ public class CaseData {
         label = "Correspondence",
         typeOverride = Collection,
         typeParameterOverride = "Correspondence",
-        access = {CaseworkerAndSuperUserAccess.class}
+        access = {NonRespondentAccess.class}
     )
     @External
     private List<ListValue<Correspondence>> correspondence;

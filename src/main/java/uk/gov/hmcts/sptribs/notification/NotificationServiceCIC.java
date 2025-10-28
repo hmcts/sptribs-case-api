@@ -111,9 +111,8 @@ public class NotificationServiceCIC {
 
         try {
             Document correspondencePDF = this.getPDF(sendEmailResponse, null, longCaseRef, sentOn, sentFrom, sentTo, templateName);
-            CorrespondenceEntity correspondence = null;
             if (correspondencePDF != null) {
-                correspondence = CorrespondenceEntity.builder()
+                CorrespondenceEntity correspondence = CorrespondenceEntity.builder()
                     .id(sendEmailResponse.getNotificationId())
                     .eventType(templateName)
                     .caseReferenceNumber(longCaseRef)
@@ -123,7 +122,7 @@ public class NotificationServiceCIC {
                     .documentUrl(correspondencePDF.getUrl())
                     .documentFilename(correspondencePDF.getFilename())
                     .documentBinaryUrl(correspondencePDF.getBinaryUrl())
-                    .correspondenceType("Letter")
+                    .correspondenceType("Email")
                     .build();
                 correspondenceRepository.save(correspondence);
             }
@@ -143,9 +142,8 @@ public class NotificationServiceCIC {
         String sentFrom = "Criminal Injuries Compensation Tribunal";
         try {
             Document correspondencePDF = this.getPDF(null, sendLetterResponse, longCaseRef, sentOn, sentFrom, sentTo, templateName);
-            CorrespondenceEntity correspondence = null;
             if (correspondencePDF != null) {
-                correspondence = CorrespondenceEntity.builder()
+                CorrespondenceEntity correspondence = CorrespondenceEntity.builder()
                     .id(sendLetterResponse.getNotificationId())
                     .eventType(templateName)
                     .caseReferenceNumber(longCaseRef)

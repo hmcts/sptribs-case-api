@@ -18,27 +18,14 @@ import static uk.gov.hmcts.ccd.sdk.type.FieldType.TextArea;
 
 @Data
 @NoArgsConstructor
-@AllArgsConstructor
 @Builder
 public class Correspondence {
-
-    @CCD(
-        label = "Case Reference Number",
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
-    )
-    private Long caseReferenceNumber;
-
-    @CCD(
-        label = "Notification ID",
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
-    )
-    private String id;
 
     @CCD(
         label = "Sent on",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
-    @JsonFormat(pattern = "d MMM y HH:mm")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime sentOn;
 
     @CCD(
@@ -74,14 +61,12 @@ public class Correspondence {
                           @JsonProperty("from") String from,
                           @JsonProperty("to") String to,
                           @JsonProperty("documentUrl") Document documentUrl,
-                          @JsonProperty("correspondenceType") String correspondenceType,
-                          @JsonProperty("id") String id) {
+                          @JsonProperty("correspondenceType") String correspondenceType) {
         this.sentOn = sentOn;
         this.from = from;
         this.to = to;
         this.documentUrl = documentUrl;
         this.correspondenceType = correspondenceType;
-        this.id = id;
     }
 
 }
