@@ -30,7 +30,7 @@ plugins {
   id 'io.spring.dependency-management' version '1.1.7'
   id 'org.springframework.boot' version '3.5.5'
   id 'com.github.ben-manes.versions' version '0.50.0'
-  id 'hmcts.ccd.sdk' version '6.2.2'
+  id 'hmcts.ccd.sdk' version '6.4.1'
   id "au.com.dius.pact" version "4.3.10"
   id 'com.github.hmcts.rse-cft-lib' version '0.19.1894'
 }
@@ -351,6 +351,7 @@ dependencies {
   implementation group: 'org.projectlombok', name: 'lombok', version: versions.lombok
   implementation group: 'org.springdoc', name: 'springdoc-openapi-starter-webmvc-ui', version: '2.8.13'
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-web'
+  implementation group: 'org.springframework.boot', name: 'spring-boot-starter-jdbc'
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-actuator'
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-aop'
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-json'
@@ -392,7 +393,6 @@ dependencies {
   testImplementation group: 'io.rest-assured', name: 'rest-assured'
   testImplementation group: 'org.apache.pdfbox', name: 'pdfbox', version: '3.0.6'
   testImplementation group: 'com.microsoft.playwright', name: 'playwright', version: '1.55.0'
-
   testImplementation group: 'org.camunda.bpm.dmn', name: 'camunda-engine-dmn', version: "${versions.camunda}"
   testImplementation group: 'org.camunda.bpm', name: 'camunda-engine-plugin-spin', version: "${versions.camunda}"
   testImplementation group: 'org.camunda.bpm.assert', name: 'camunda-bpm-assert', version: '15.0.0'
@@ -402,6 +402,8 @@ dependencies {
   integrationTestImplementation sourceSets.main.runtimeClasspath
   integrationTestImplementation sourceSets.test.runtimeClasspath
   integrationTestImplementation 'com.h2database:h2'
+  integrationTestImplementation group: 'org.testcontainers', name: 'junit-jupiter', version: '1.20.3'
+  integrationTestImplementation group: 'org.testcontainers', name: 'postgresql', version: '1.20.3'
 
   functionalTestImplementation sourceSets.main.runtimeClasspath
   functionalTestImplementation sourceSets.test.runtimeClasspath
@@ -524,11 +526,9 @@ tasks.withType(CftlibExec).configureEach {
 bootWithCCD {
     environment 'XUI_JURISDICTIONS', 'ST_CIC'
     environment 'CASE_DOCUMENT_S2S_AUTHORISED_SERVICES', 'ccd_case_document_am_api,ccd_gw,xui_webapp,ccd_data,bulk_scan_processor,em_npa_app,dg_docassembly_api,em_stitching_api,em_ccd_orchestrator,bulk_scan_orchestrator,sptribs_case_api,sptribs_frontend'
-    environment 'SPRING_JMS_SERVICEBUS_ENABLED', 'false'
     environment 'PDF_API_URL', 'http://rpe-pdf-service-aat.service.core-compute-aat.internal'
-
-
-  group = 'ccd tasks'
+    environment 'SPRING_JMS_SERVICEBUS_ENABLED', 'false'
+    group = 'ccd tasks'
     dependsOn loadEnvSecretsTask
 
     doFirst() {

@@ -276,33 +276,45 @@ ccd:
             jdbc_driver_class => "org.postgresql.Driver"
             jdbc_default_timezone => "UTC"
             statement => "
-              WITH deleted AS (
-                DELETE FROM ccd.es_queue
-                WHERE id IN (
-                  SELECT id
-                  FROM ccd.es_queue
-                  ORDER BY id
-                  LIMIT 100
-                )
-                RETURNING id
+              WITH next_batch AS (
+                SELECT reference, case_revision
+                FROM ccd.es_queue
+                ORDER BY enqueued_at
+                LIMIT 1000
+                FOR UPDATE SKIP LOCKED
+              ),
+              deleted AS (
+                DELETE FROM ccd.es_queue q
+                USING next_batch nb
+                WHERE q.reference = nb.reference
+                  AND q.case_revision = nb.case_revision
+                RETURNING q.reference, q.case_revision
               )
               SELECT
-                cd.id,
+                cd.id AS case_data_id,
                 cd.reference,
-                deleted.id AS event_id,
+                ce.id AS event_id,
                 cd.case_type_id,
                 cd.created_date,
                 ce.created_date AS last_modified,
                 cd.jurisdiction,
                 cd.last_state_modified_date,
                 cd.state,
-                cd.security_classification::text,
+                cd.security_classification::TEXT,
                 ce.data::TEXT AS json_data,
-                '{}' as json_data_classification,
-                cd.supplementary_data::TEXT AS json_supplementary_data
-              FROM deleted
-              JOIN ccd.case_event ce ON ce.id = deleted.id
-              JOIN ccd.case_data cd ON cd.id = ce.case_data_id
+                '{}' AS json_data_classification,
+                cd.supplementary_data::TEXT AS json_supplementary_data,
+                cd.case_revision
+              FROM deleted d
+              JOIN ccd.case_data cd ON cd.reference = d.reference
+              JOIN LATERAL (
+                SELECT ce.*
+                FROM ccd.case_event ce
+                WHERE ce.case_data_id = cd.id
+                ORDER BY ce.id DESC
+                LIMIT 1
+              ) ce ON TRUE
+              WHERE cd.case_revision = d.case_revision
             "
             clean_run => false
             schedule => "* * * * * *"
@@ -414,8 +426,8 @@ ccd:
                 sniffing => false
                 index => "%{[index_id]}"
                 document_type => "_doc"
-                document_id => "%{id}"
-                version => "%{event_id}"
+                document_id => "%{case_data_id}"
+                version => "%{case_revision}"
                 version_type => "external"
                 timeout => 60
             }
