@@ -370,6 +370,8 @@ dependencies {
   implementation 'org.camunda.bpm:camunda-external-task-client:7.23.0'
   implementation group: 'org.postgresql', name: 'postgresql', version: '42.7.5'
   implementation 'org.flywaydb:flyway-database-postgresql:11.15.0'
+  // Ensure flyway-core and the database-specific module use the same version to avoid NoSuchMethodError
+  implementation 'org.flywaydb:flyway-core:11.15.0'
   runtimeOnly 'com.h2database:h2'
   annotationProcessor group: 'org.projectlombok', name: 'lombok', version: versions.lombok
   testImplementation group: 'com.github.hmcts', name: 'fortify-client', version: '1.4.10', classifier: 'all'

@@ -7,10 +7,11 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.ResponseEntity;
-import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.idam.client.models.User;
-import uk.gov.hmcts.sptribs.ciccase.model.LanguagePreference;
+import uk.gov.hmcts.reform.pdf.service.client.PDFServiceClient;
+import uk.gov.hmcts.sptribs.cdam.model.Document;
+import uk.gov.hmcts.sptribs.cdam.model.UploadResponse;
 import uk.gov.hmcts.sptribs.common.config.EmailTemplatesConfigCIC;
 import uk.gov.hmcts.sptribs.common.repositories.CorrespondenceRepository;
 import uk.gov.hmcts.sptribs.document.CaseDataDocumentService;
@@ -18,6 +19,7 @@ import uk.gov.hmcts.sptribs.document.DocumentClient;
 import uk.gov.hmcts.sptribs.idam.IdamService;
 import uk.gov.hmcts.sptribs.notification.exception.NotificationException;
 import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
+import uk.gov.hmcts.sptribs.services.cdam.CaseDocumentClientApi;
 import uk.gov.hmcts.sptribs.testutil.TestDataHelper;
 import uk.gov.service.notify.NotificationClient;
 import uk.gov.service.notify.NotificationClientException;
@@ -32,12 +34,12 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
+import static java.util.Collections.singletonList;
 import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.doThrow;
@@ -70,6 +72,9 @@ public class NotificationServiceCICTest {
     private CaseDataDocumentService caseDataDocumentService;
 
     @Mock
+    private CaseDocumentClientApi caseDocumentClientAPI;
+
+    @Mock
     private CorrespondenceRepository correspondenceRepository;
 
     @Mock
@@ -89,6 +94,9 @@ public class NotificationServiceCICTest {
 
     @Mock
     private SendLetterResponse sendLetterResponse;
+
+    @Mock
+    private PDFServiceClient pdfServiceClient;
 
     @Test
     void shouldInvokeNotificationClientToSendEmail() throws NotificationClientException {
@@ -130,23 +138,28 @@ public class NotificationServiceCICTest {
             any()
         )).thenReturn(sendEmailResponse);
 
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-y-HH-mm");
-        String filename = APPLICATION_RECEIVED.name() + "_" + TEST_CASE_ID + "_" + LocalDateTime.now().format(formatter) + ".pdf";
-        Document document = new Document().builder()
-            .url("url")
-            .binaryUrl("binary url")
-            .filename(filename)
-            .categoryId("category")
-            .build();
+        when(pdfServiceClient.generateFromHtml(any(), any())).thenReturn(sample);
 
-        when(caseDataDocumentService.renderDocument(
-            anyMap(),
-            eq(TEST_CASE_ID),
-            eq(templateId),
-            eq(LanguagePreference.ENGLISH),
-            eq(filename),
-            any()
-        )).thenReturn(document);
+        final Document.DocumentLink documentLink = new Document.DocumentLink();
+        documentLink.href = "dmstore-url/doc-id";
+        final Document.DocumentLink binaryDocumentLink = new Document.DocumentLink();
+        binaryDocumentLink.href = "dmstore-url/doc-id/binary";
+        final Document.Links links = new Document.Links();
+        links.self = documentLink;
+        links.binary = binaryDocumentLink;
+
+        final Document correspondencePDF = new Document();
+        correspondencePDF.setLinks(links);
+
+        final LocalDateTime testSentOn = LocalDateTime.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-y-HH-mm");
+        String filename = APPLICATION_RECEIVED.name() + "_" + TEST_CASE_ID + "_" + testSentOn.format(formatter) + ".pdf";
+        correspondencePDF.setOriginalDocumentName(filename);
+
+        UploadResponse expectedResponse = new UploadResponse();
+        expectedResponse.setDocuments(singletonList(correspondencePDF));
+
+        when(caseDocumentClientAPI.uploadDocuments(any(), any(), any())).thenReturn(expectedResponse);
 
         //When
         notificationService.sendEmail(request, TEST_CASE_ID.toString());
@@ -164,7 +177,7 @@ public class NotificationServiceCICTest {
     }
 
     @Test
-    void shouldInvokeNotificationClientToSendEmailWithNoDocumentFound() throws NotificationClientException {
+    void shouldInvokeNotificationClientToSendEmailWithNoDocumentFound() throws NotificationClientException, IOException {
         //Given
         final String templateId = UUID.randomUUID().toString();
         final Map<String, String> templateNameMap = Map.of(APPLICATION_RECEIVED.name(), templateId);
@@ -198,23 +211,30 @@ public class NotificationServiceCICTest {
             any()
         )).thenReturn(sendEmailResponse);
 
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-y-HH-mm");
-        String filename = APPLICATION_RECEIVED.name() + "_" + TEST_CASE_ID + "_" + LocalDateTime.now().format(formatter) + ".pdf";
-        Document document = new Document().builder()
-            .url("url")
-            .binaryUrl("binary url")
-            .filename(filename)
-            .categoryId("category")
-            .build();
+        final byte[] sample = new byte[1];
 
-        when(caseDataDocumentService.renderDocument(
-            anyMap(),
-            eq(TEST_CASE_ID),
-            eq(templateId),
-            eq(LanguagePreference.ENGLISH),
-            eq(filename),
-            any()
-        )).thenReturn(document);
+        when(pdfServiceClient.generateFromHtml(any(), any())).thenReturn(sample);
+
+        final Document.DocumentLink documentLink = new Document.DocumentLink();
+        documentLink.href = "dmstore-url/doc-id";
+        final Document.DocumentLink binaryDocumentLink = new Document.DocumentLink();
+        binaryDocumentLink.href = "dmstore-url/doc-id/binary";
+        final Document.Links links = new Document.Links();
+        links.self = documentLink;
+        links.binary = binaryDocumentLink;
+
+        final Document correspondencePDF = new Document();
+        correspondencePDF.setLinks(links);
+
+        final LocalDateTime testSentOn = LocalDateTime.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-y-HH-mm");
+        String filename = APPLICATION_RECEIVED.name() + "_" + TEST_CASE_ID + "_" + testSentOn.format(formatter) + ".pdf";
+        correspondencePDF.setOriginalDocumentName(filename);
+
+        UploadResponse expectedResponse = new UploadResponse();
+        expectedResponse.setDocuments(singletonList(correspondencePDF));
+
+        when(caseDocumentClientAPI.uploadDocuments(any(), any(), any())).thenReturn(expectedResponse);
 
         //When
         notificationService.sendEmail(request, TEST_CASE_ID.toString());
@@ -251,23 +271,30 @@ public class NotificationServiceCICTest {
             any()
         )).thenReturn(sendLetterResponse);
 
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-y-HH-mm");
-        String filename = CASE_ISSUED_CITIZEN_POST.name() + "_" + TEST_CASE_ID + "_" + LocalDateTime.now().format(formatter) + ".pdf";
-        Document document = new Document().builder()
-            .url("url")
-            .binaryUrl("binary url")
-            .filename(filename)
-            .categoryId("category")
-            .build();
+        final byte[] sample = new byte[1];
 
-        when(caseDataDocumentService.renderDocument(
-            anyMap(),
-            eq(TEST_CASE_ID),
-            eq(templateId),
-            eq(LanguagePreference.ENGLISH),
-            eq(filename),
-            any()
-        )).thenReturn(document);
+        when(pdfServiceClient.generateFromHtml(any(), any())).thenReturn(sample);
+
+        final Document.DocumentLink documentLink = new Document.DocumentLink();
+        documentLink.href = "dmstore-url/doc-id";
+        final Document.DocumentLink binaryDocumentLink = new Document.DocumentLink();
+        binaryDocumentLink.href = "dmstore-url/doc-id/binary";
+        final Document.Links links = new Document.Links();
+        links.self = documentLink;
+        links.binary = binaryDocumentLink;
+
+        final Document correspondencePDF = new Document();
+        correspondencePDF.setLinks(links);
+
+        final LocalDateTime testSentOn = LocalDateTime.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-y-HH-mm");
+        String filename = CASE_ISSUED_CITIZEN_POST.name() + "_" + TEST_CASE_ID + "_" + testSentOn.format(formatter) + ".pdf";
+        correspondencePDF.setOriginalDocumentName(filename);
+
+        UploadResponse expectedResponse = new UploadResponse();
+        expectedResponse.setDocuments(singletonList(correspondencePDF));
+
+        when(caseDocumentClientAPI.uploadDocuments(any(), any(), any())).thenReturn(expectedResponse);
 
         //When
         notificationService.sendLetter(request, TEST_CASE_ID.toString());
