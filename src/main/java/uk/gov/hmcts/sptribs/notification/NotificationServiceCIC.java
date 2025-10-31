@@ -357,7 +357,7 @@ public class NotificationServiceCIC {
         if (sendEmailResponse != null) {
             placeholders.put("body", sendEmailResponse.getBody());
             placeholders.put("subject", sendEmailResponse.getSubject());
-        } else if (sendLetterResponse != null) {
+        } else {
             placeholders.put("body", sendLetterResponse.getBody());
             placeholders.put("subject", sendLetterResponse.getSubject());
             correspondenceType = "Letter";
