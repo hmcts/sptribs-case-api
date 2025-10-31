@@ -177,7 +177,7 @@ public class NotificationServiceCICTest {
     }
 
     @Test
-    void shouldInvokeNotificationClientToSendEmailWithNoDocumentFound() throws NotificationClientException, IOException {
+    void shouldInvokeNotificationClientToSendEmailWithNoDocumentFound() throws NotificationClientException {
         //Given
         final String templateId = UUID.randomUUID().toString();
         final Map<String, String> templateNameMap = Map.of(APPLICATION_RECEIVED.name(), templateId);

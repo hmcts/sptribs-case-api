@@ -42,7 +42,7 @@ public class CicCaseView implements CaseView<CaseData, State> {
                 .build();
 
             Correspondence correspondence = Correspondence.builder()
-                .sentOn(correspondenceEntity.getSentOn() != null ? correspondenceEntity.getSentOn().toLocalDateTime() : null)
+                .sentOn(correspondenceEntity.getSentOn().toLocalDateTime())
                 .from(correspondenceEntity.getSentFrom())
                 .to(correspondenceEntity.getSentTo())
                 .documentUrl(correspondenceDocument)
