@@ -99,7 +99,7 @@ public class NotificationServiceCIC {
     public void saveEmailCorrespondence(String templateName,
                                         SendEmailResponse sendEmailResponse,
                                         String sentTo,
-                                        String caseReferenceNumber) {
+                                        String caseReferenceNumber) throws IOException {
 
         Long longCaseRef = Long.parseLong(caseReferenceNumber.replace("-", ""));
         final LocalDateTime sentOn = LocalDateTime.now();
@@ -128,6 +128,7 @@ public class NotificationServiceCIC {
             }
         } catch (java.io.IOException e) {
             log.error("Failed to store pdf document", e);
+            throw e;
         }
 
     }
@@ -135,7 +136,7 @@ public class NotificationServiceCIC {
     public void saveLetterCorrespondence(String templateName,
                                          SendLetterResponse sendLetterResponse,
                                          String sentTo,
-                                         String caseReferenceNumber) {
+                                         String caseReferenceNumber) throws IOException {
 
         Long longCaseRef = Long.parseLong(caseReferenceNumber.replace("-", ""));
         final LocalDateTime sentOn = LocalDateTime.now();
@@ -159,6 +160,7 @@ public class NotificationServiceCIC {
             }
         } catch (java.io.IOException e) {
             log.error("Failed to store pdf document", e);
+            throw e;
         }
     }
 
@@ -252,6 +254,13 @@ public class NotificationServiceCIC {
                 notificationClientException
             );
             throw new NotificationException(notificationClientException);
+        } catch (IOException ioException) {
+            log.error("Issue with attach documents to Notification. Failed to send email. Reference ID: {}. Reason: {}",
+                referenceId,
+                ioException.getMessage(),
+                ioException
+            );
+            throw new NotificationException(ioException);
         }
     }
 

@@ -1,6 +1,7 @@
 package uk.gov.hmcts.sptribs.notification;
 
 import jakarta.servlet.http.HttpServletRequest;
+import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -517,5 +518,61 @@ public class NotificationServiceCICTest {
             eq(EMAIL_ADDRESS),
             any(),
             any());
+    }
+
+    @Test
+    void shouldThrowRestClientExceptionWhenClientFailsToGetPDFByteArrayOfCorrespondence()
+        throws NotificationClientException {
+        try (var mockedIoUtils = mockStatic(IOUtils.class)) {
+            //Given
+            final String templateId = UUID.randomUUID().toString();
+            final Map<String, String> templateNameMap = Map.of(APPLICATION_RECEIVED.name(), templateId);
+            final Map<String, Object> templateVars = new HashMap<>();
+            templateVars.put(APPLICATION_RECEIVED.name(), templateId);
+
+            final Map<String, String> uploadedDocuments = new HashMap<>();
+            uploadedDocuments.put("FinalDecisionNotice", templateId);
+            uploadedDocuments.put("FinalDecisionNotice1", "");
+            uploadedDocuments.put("DocumentAvailable1", "no");
+
+            final NotificationRequest request = NotificationRequest.builder()
+                .destinationAddress(EMAIL_ADDRESS)
+                .template(TemplateName.APPLICATION_RECEIVED)
+                .templateVars(templateVars)
+                .hasFileAttachments(true)
+                .uploadedDocuments(uploadedDocuments)
+                .build();
+
+            final User user = TestDataHelper.getUser();
+
+            when(idamService.retrieveUser(any())).thenReturn(user);
+            when(emailTemplatesConfig.getTemplatesCIC()).thenReturn(templateNameMap);
+            when(httpServletRequest.getHeader(AUTHORIZATION)).thenReturn(TEST_AUTHORIZATION_TOKEN);
+            when(authTokenGenerator.generate()).thenReturn(TEST_SERVICE_AUTH_TOKEN);
+
+            final byte[] sample = new byte[1];
+            when(caseDocumentClient.getDocumentBinary(anyString(), anyString(), any())).thenReturn(ResponseEntity.ok(sample));
+
+            when(notificationClient.sendEmail(
+                eq(templateId),
+                eq(EMAIL_ADDRESS),
+                any(),
+                any()
+            )).thenReturn(sendEmailResponse);
+
+            mockedIoUtils.when(() -> IOUtils.toByteArray((java.io.InputStream) any()))
+                .thenThrow(new IOException("some message"));
+
+            //When&Then
+            assertThatThrownBy(() -> notificationService.sendEmail(request, TEST_CASE_ID.toString()))
+                .isInstanceOf(NotificationException.class)
+                .hasMessageContaining("some message");
+
+            verify(notificationClient).sendEmail(
+                eq(templateId),
+                eq(EMAIL_ADDRESS),
+                any(),
+                any());
+        }
     }
 }
