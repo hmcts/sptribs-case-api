@@ -399,8 +399,8 @@ public class NotificationServiceCIC {
 
             return uploadedPDF;
         } catch (RestClientException e) {
-            log.error("Failed to store pdf document but carrying on [" + correspondenceDocumentFilename + "]", e);
-            return null;
+            log.error("Failed to store correspondence document [" + correspondenceDocumentFilename + "]", e);
+            throw e;
         }
     }
 }

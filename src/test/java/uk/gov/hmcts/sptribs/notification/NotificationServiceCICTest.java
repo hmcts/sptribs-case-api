@@ -7,6 +7,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.client.RestClientException;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.idam.client.models.User;
 import uk.gov.hmcts.reform.pdf.service.client.PDFServiceClient;
@@ -455,6 +456,65 @@ public class NotificationServiceCICTest {
 
         verify(notificationClient).sendLetter(
             eq(templateId),
+            any(),
+            any());
+    }
+
+    @Test
+    void shouldThrowRestClientExceptionWhenClientFailsToGetPDFOfCorrespondence()
+        throws RestClientException, NotificationClientException {
+        //Given
+        final String templateId = UUID.randomUUID().toString();
+        final Map<String, String> templateNameMap = Map.of(APPLICATION_RECEIVED.name(), templateId);
+        final Map<String, Object> templateVars = new HashMap<>();
+        templateVars.put(APPLICATION_RECEIVED.name(), templateId);
+
+        final Map<String, String> uploadedDocuments = new HashMap<>();
+        uploadedDocuments.put("FinalDecisionNotice", templateId);
+        uploadedDocuments.put("FinalDecisionNotice1", "");
+        uploadedDocuments.put("DocumentAvailable1", "no");
+
+        final NotificationRequest request = NotificationRequest.builder()
+            .destinationAddress(EMAIL_ADDRESS)
+            .template(TemplateName.APPLICATION_RECEIVED)
+            .templateVars(templateVars)
+            .hasFileAttachments(true)
+            .uploadedDocuments(uploadedDocuments)
+            .build();
+
+        final User user = TestDataHelper.getUser();
+
+        when(idamService.retrieveUser(any())).thenReturn(user);
+        when(emailTemplatesConfig.getTemplatesCIC()).thenReturn(templateNameMap);
+        when(httpServletRequest.getHeader(AUTHORIZATION)).thenReturn(TEST_AUTHORIZATION_TOKEN);
+        when(authTokenGenerator.generate()).thenReturn(TEST_SERVICE_AUTH_TOKEN);
+
+        final byte[] sample = new byte[1];
+        when(caseDocumentClient.getDocumentBinary(anyString(), anyString(), any())).thenReturn(ResponseEntity.ok(sample));
+
+        when(notificationClient.sendEmail(
+            eq(templateId),
+            eq(EMAIL_ADDRESS),
+            any(),
+            any()
+        )).thenReturn(sendEmailResponse);
+
+        when(pdfServiceClient.generateFromHtml(any(), any())).thenReturn(sample);
+
+        doThrow(new RestClientException("some message"))
+            .when(caseDocumentClientAPI).uploadDocuments(
+                any(),
+                any(),
+                any());
+
+        //When&Then
+        assertThatThrownBy(() -> notificationService.sendEmail(request, TEST_CASE_ID.toString()))
+            .isInstanceOf(RestClientException.class)
+            .hasMessageContaining("some message");
+
+        verify(notificationClient).sendEmail(
+            eq(templateId),
+            eq(EMAIL_ADDRESS),
             any(),
             any());
     }
