@@ -19,7 +19,7 @@ import static uk.gov.hmcts.sptribs.testutil.TestConstants.SUBMITTED_URL;
 import static uk.gov.hmcts.sptribs.testutil.TestResourceUtil.expectedResponse;
 
 @SpringBootTest
-public class CaseWorkerCreateDraftOrderFT extends FunctionalTestSuite {
+public class CaseworkerCreateDraftOrderFT extends FunctionalTestSuite {
 
     public static final String CREATE_DRAFT_ORDER_ADD_FOOTER_MID_EVENT_URL =
         "/callbacks/mid-event?page=createDraftOrderAddDocumentFooter";

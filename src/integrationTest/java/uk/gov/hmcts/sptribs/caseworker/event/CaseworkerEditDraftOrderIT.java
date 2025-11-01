@@ -53,7 +53,7 @@ import static uk.gov.hmcts.sptribs.testutil.TestResourceUtil.expectedResponse;
 @AutoConfigureMockMvc
 @ContextConfiguration(initializers = {IdamWireMock.PropertiesInitializer.class})
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-public class CaseWorkerEditDraftOrderIT {
+public class CaseworkerEditDraftOrderIT {
     private static final String CASEWORKER_EDIT_DRAFT_ORDER_RESPONSE = "classpath:responses/caseworker-edit-draft-order-response.json";
     private static final String CONFIRMATION_HEADER = "$.confirmation_header";
 
