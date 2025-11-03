@@ -101,40 +101,25 @@ class CaseworkerCreateDraftOrderTest {
         caseData.setDraftOrderContentCIC(DraftOrderContentCIC.builder()
             .orderTemplate(OrderTemplate.CIC6_GENERAL_DIRECTIONS).build());
 
+        final DraftOrderCIC expectedDraftOrderCIC = DraftOrderCIC.builder()
+            .draftOrderContentCIC(DraftOrderContentCIC.builder()
+                .orderTemplate(OrderTemplate.CIC6_GENERAL_DIRECTIONS).build())
+            .templateGeneratedDocument(Document.builder().filename("a--b--02-02-2002 11:11:11.pdf").build())
+            .build();
+
         //When
         AboutToStartOrSubmitResponse<CaseData, State> response =
             caseworkerCreateDraftOrder.aboutToSubmit(updatedCaseDetails, beforeDetails);
-        assertThat(response).isNotNull();
-
         SubmittedCallbackResponse draftCreatedResponse = caseworkerCreateDraftOrder.submitted(updatedCaseDetails, beforeDetails);
+
         //  Then
-        assertThat(draftCreatedResponse).isNotNull();
-
-    }
-
-    @Test
-    void shouldSuccessfullySaveDraftOrderWithCurrentDateAndTime() {
-
-        //Given
-        final CicCase cicCase = CicCase.builder()
-            .orderTemplateIssued(Document.builder().filename("a--b--02-02-2002 11:11:11.pdf").build()).build();
-        final CaseData caseData = caseData();
-        caseData.setCicCase(cicCase);
-        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
-        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
-
-        updatedCaseDetails.setData(caseData);
-        updatedCaseDetails.setId(TEST_CASE_ID);
-        updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
-        caseData.setDraftOrderContentCIC(DraftOrderContentCIC.builder().orderTemplate(OrderTemplate.CIC6_GENERAL_DIRECTIONS).build());
-        //When
-        AboutToStartOrSubmitResponse<CaseData, State> response =
-            caseworkerCreateDraftOrder.aboutToSubmit(updatedCaseDetails, beforeDetails);
         assertThat(response).isNotNull();
-        SubmittedCallbackResponse draftCreatedResponse = caseworkerCreateDraftOrder.submitted(updatedCaseDetails, beforeDetails);
-        //  Then
-        assertThat(draftCreatedResponse).isNotNull();
+        CaseData responseData = response.getData();
+        assertThat(responseData.getCicCase().getDraftOrderCICList()).hasSize(1);
+        assertThat(responseData.getCicCase().getDraftOrderCICList().getFirst().getValue()).isEqualTo(expectedDraftOrderCIC);
 
+        assertThat(draftCreatedResponse).isNotNull();
+        assertThat(draftCreatedResponse.getConfirmationHeader()).isEqualTo("# Draft order created.");
     }
 
     @Test

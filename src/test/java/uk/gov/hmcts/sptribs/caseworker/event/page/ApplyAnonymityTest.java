@@ -14,7 +14,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.State;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(MockitoExtension.class)
-public class ApplyAnonymityTest {
+class ApplyAnonymityTest {
 
     @InjectMocks
     private ApplyAnonymity applyAnonymity;
