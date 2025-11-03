@@ -415,8 +415,10 @@ public class NotificationServiceCICTest {
 
         when(emailTemplatesConfig.getTemplatesCIC()).thenReturn(templateNameMap);
 
+        String testCaseRef = TEST_CASE_ID.toString();
+
         //When&Then
-        assertThatThrownBy(() -> notificationService.sendEmail(request, TEST_CASE_ID.toString()))
+        assertThatThrownBy(() -> notificationService.sendEmail(request, testCaseRef))
             .isInstanceOf(NotificationException.class)
             .hasMessageContaining("some message");
 
