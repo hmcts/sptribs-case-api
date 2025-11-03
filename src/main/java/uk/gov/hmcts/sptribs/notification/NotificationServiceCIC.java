@@ -197,20 +197,13 @@ public class NotificationServiceCIC {
             );
 
             return getNotificationResponse(sendEmailResponse);
-        } catch (NotificationClientException notificationClientException) {
+        } catch (NotificationClientException | IOException notificationClientException) {
             log.error("Failed to send email. Reference ID: {}. Reason: {}",
                 referenceId,
                 notificationClientException.getMessage(),
                 notificationClientException
             );
             throw new NotificationException(notificationClientException);
-        } catch (IOException ioException) {
-            log.error("Issue with attach documents to Notification. Failed to send email. Reference ID: {}. Reason: {}",
-                referenceId,
-                ioException.getMessage(),
-                ioException
-            );
-            throw new NotificationException(ioException);
         }
     }
 
