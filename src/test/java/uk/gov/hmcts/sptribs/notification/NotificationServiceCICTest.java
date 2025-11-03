@@ -254,6 +254,83 @@ public class NotificationServiceCICTest {
     }
 
     @Test
+    void shouldInvokeNotificationClientToSendEmailWithSenderEmailAndWithNoDocumentFound() throws NotificationClientException {
+        //Given
+        final String templateId = UUID.randomUUID().toString();
+        final Map<String, String> templateNameMap = Map.of(APPLICATION_RECEIVED.name(), templateId);
+        final Map<String, Object> templateVars = new HashMap<>();
+        templateVars.put(APPLICATION_RECEIVED.name(), templateId);
+
+        final Map<String, String> uploadedDocuments = new HashMap<>();
+        uploadedDocuments.put("FinalDecisionNotice", templateId);
+        final NotificationRequest request = NotificationRequest.builder()
+            .destinationAddress(EMAIL_ADDRESS)
+            .template(TemplateName.APPLICATION_RECEIVED)
+            .templateVars(templateVars)
+            .hasFileAttachments(true)
+            .uploadedDocuments(uploadedDocuments)
+            .build();
+
+        final User user = TestDataHelper.getUser();
+
+        when(idamService.retrieveUser(any())).thenReturn(user);
+        when(sendEmailResponse.getReference()).thenReturn(Optional.of(randomUUID().toString()));
+        when(sendEmailResponse.getNotificationId()).thenReturn(UUID.randomUUID());
+        when(sendEmailResponse.getFromEmail()).thenReturn("testSender@test.com".describeConstable());
+        when(emailTemplatesConfig.getTemplatesCIC()).thenReturn(templateNameMap);
+        when(httpServletRequest.getHeader(AUTHORIZATION)).thenReturn(TEST_AUTHORIZATION_TOKEN);
+        when(authTokenGenerator.generate()).thenReturn(TEST_SERVICE_AUTH_TOKEN);
+        when(caseDocumentClient.getDocumentBinary(anyString(), anyString(), any())).thenReturn(ResponseEntity.ok(null));
+
+        when(notificationClient.sendEmail(
+            eq(templateId),
+            eq(EMAIL_ADDRESS),
+            any(),
+            any()
+        )).thenReturn(sendEmailResponse);
+
+        final byte[] sample = new byte[1];
+
+        when(pdfServiceClient.generateFromHtml(any(), any())).thenReturn(sample);
+
+        final Document.DocumentLink documentLink = new Document.DocumentLink();
+        documentLink.href = "dmstore-url/doc-id";
+        final Document.DocumentLink binaryDocumentLink = new Document.DocumentLink();
+        binaryDocumentLink.href = "dmstore-url/doc-id/binary";
+        final Document.Links links = new Document.Links();
+        links.self = documentLink;
+        links.binary = binaryDocumentLink;
+
+        final Document correspondencePDF = new Document();
+        correspondencePDF.setLinks(links);
+
+        final LocalDateTime testSentOn = LocalDateTime.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-y-HH-mm");
+        String filename = APPLICATION_RECEIVED.name() + "_" + TEST_CASE_ID + "_" + testSentOn.format(formatter) + ".pdf";
+        correspondencePDF.setOriginalDocumentName(filename);
+
+        UploadResponse expectedResponse = new UploadResponse();
+        expectedResponse.setDocuments(singletonList(correspondencePDF));
+
+        when(caseDocumentClientAPI.uploadDocuments(any(), any(), any())).thenReturn(expectedResponse);
+
+        //When
+        notificationService.sendEmail(request, TEST_CASE_ID.toString());
+
+        //Then
+        verify(notificationClient).sendEmail(
+            eq(templateId),
+            eq(EMAIL_ADDRESS),
+            any(),
+            any());
+
+        verify(sendEmailResponse, times(2)).getFromEmail();
+        verify(sendEmailResponse, times(3)).getNotificationId();
+        verify(sendEmailResponse, times(2)).getReference();
+
+    }
+
+    @Test
     void shouldInvokeNotificationClientToSendLetter() throws NotificationClientException {
         //Given
         final String templateId = UUID.randomUUID().toString();
