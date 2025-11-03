@@ -3,13 +3,12 @@ package uk.gov.hmcts.sptribs.caseworker.event;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.Event;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
-import uk.gov.hmcts.ccd.sdk.type.DynamicList;
-import uk.gov.hmcts.ccd.sdk.type.DynamicListElement;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.event.page.ApplyAnonymity;
@@ -17,11 +16,12 @@ import uk.gov.hmcts.sptribs.caseworker.event.page.CreateAndSendOrderIssueSelect;
 import uk.gov.hmcts.sptribs.caseworker.event.page.SendOrderNotifyParties;
 import uk.gov.hmcts.sptribs.caseworker.event.page.SendOrderOrderDueDates;
 import uk.gov.hmcts.sptribs.caseworker.event.page.SendOrderUploadOrder;
+import uk.gov.hmcts.sptribs.caseworker.model.CreateAndSendIssueType;
 import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderCIC;
 import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderContentCIC;
+import uk.gov.hmcts.sptribs.caseworker.model.Order;
+import uk.gov.hmcts.sptribs.caseworker.util.MessageUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
-import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
-import uk.gov.hmcts.sptribs.ciccase.model.OrderTemplate;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
@@ -29,15 +29,19 @@ import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.common.event.page.CreateDraftOrder;
 import uk.gov.hmcts.sptribs.common.event.page.DraftOrderMainContentPage;
 import uk.gov.hmcts.sptribs.common.event.page.PreviewDraftOrder;
+import uk.gov.hmcts.sptribs.document.model.DocumentType;
+import uk.gov.hmcts.sptribs.notification.dispatcher.NewOrderIssuedNotification;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import static java.lang.String.format;
 import static org.springframework.util.CollectionUtils.isEmpty;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_CREATE_AND_SEND_ORDER;
-import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.DOUBLE_HYPHEN;
+import static uk.gov.hmcts.sptribs.caseworker.util.EventUtil.getRecipients;
+import static uk.gov.hmcts.sptribs.caseworker.util.SendOrderUtil.updateCicCaseOrderList;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseClosed;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
@@ -52,6 +56,7 @@ import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_JUDGE;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_WA_CONFIG_USER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE;
+import static uk.gov.hmcts.sptribs.document.DocumentUtil.updateCategoryToDocument;
 
 @Slf4j
 @Component
@@ -69,6 +74,7 @@ public class CaseworkerCreateAndSendOrder implements CCDConfig<CaseData, State, 
     private static final CcdPageConfiguration notifyParties = new SendOrderNotifyParties();
 
     private final CcdPageConfiguration draftOrderFooter;
+    private final NewOrderIssuedNotification newOrderIssuedNotification;
 
     @Override
     public void configure(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
@@ -112,10 +118,6 @@ public class CaseworkerCreateAndSendOrder implements CCDConfig<CaseData, State, 
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(CaseDetails<CaseData, State> details,
                                                                        CaseDetails<CaseData, State> beforeDetails) {
         final CaseData caseData = details.getData();
-        final OrderTemplate orderTemplate = caseData.getDraftOrderContentCIC().getOrderTemplate();
-
-        String[] fileName = caseData.getCicCase().getOrderTemplateIssued().getFilename().split(DOUBLE_HYPHEN);
-        addToDraftOrderTemplatesDynamicList(orderTemplate, caseData.getCicCase(), fileName[2]);
 
         DraftOrderCIC draftOrderCIC = DraftOrderCIC.builder()
                 .draftOrderContentCIC(caseData.getDraftOrderContentCIC())
@@ -143,39 +145,81 @@ public class CaseworkerCreateAndSendOrder implements CCDConfig<CaseData, State, 
                     .value(draftOrderCIC)
                     .build();
 
-            caseData.getCicCase().getDraftOrderCICList().addFirst(listValue);
+            caseData.getCicCase().getDraftOrderCICList().add(0, listValue);
 
             caseData.getCicCase().getDraftOrderCICList().forEach(
                     draftOrderListValue -> draftOrderListValue.setId(String.valueOf(listValueIndex.incrementAndGet())));
 
         }
 
+        caseData.setCurrentEvent("");
         caseData.getCicCase().setOrderTemplateIssued(null);
+        if (caseData.getCicCase().getCreateAndSendIssuingTypes().equals(CreateAndSendIssueType.CREATE_AND_SEND_NEW_ORDER)) {
+            //set up and check order to send
+
+        }
+        if (caseData.getCicCase().getOrderFile() != null) {
+            updateCategoryToDocument(caseData.getCicCase().getOrderFile(), DocumentType.TRIBUNAL_DIRECTION.getCategory());
+        }
+
+        final Order order = Order.builder()
+                .uploadedFile(caseData.getCicCase().getOrderFile())
+                .dueDateList(caseData.getCicCase().getOrderDueDates())
+                .parties(getRecipients(caseData.getCicCase()))
+                .orderSentDate(LocalDate.now())
+                .reminderDay(caseData.getCicCase().getOrderReminderDays()).build();
+
+        updateCicCaseOrderList(caseData, order);
+
+        caseData.getCicCase().setOrderIssuingType(null);
+        caseData.getCicCase().setOrderFile(null);
+        caseData.getCicCase().setOrderReminderYesOrNo(null);
+        caseData.getCicCase().setOrderReminderDays(null);
+
+        caseData.getCicCase().setOrderDueDates(new ArrayList<>());
+        caseData.getCicCase().setFirstOrderDueDate(caseData.getCicCase().calculateFirstDueDate());
         caseData.setCurrentEvent("");
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
-                .state(details.getState())
                 .data(caseData)
+                .state(details.getState())
                 .build();
     }
 
     public SubmittedCallbackResponse submitted(CaseDetails<CaseData, State> details,
-                                               CaseDetails<CaseData, State> beforeDetails) {
+                                                      CaseDetails<CaseData, State> beforeDetails) {
+        try {
+            sendOrderNotification(details.getData().getHyphenatedCaseRef(), details.getData());
+        } catch (Exception notificationException) {
+            return SubmittedCallbackResponse.builder()
+                    .confirmationHeader(format("# Send order notification failed %n## Please resend the order"))
+                    .build();
+        }
+
         return SubmittedCallbackResponse.builder()
-                .confirmationHeader("# Draft order created.")
+                .confirmationHeader(format("# Order sent %n## %s",
+                        MessageUtil.generateSimpleMessage(details.getData().getCicCase())))
                 .build();
     }
 
-    private void addToDraftOrderTemplatesDynamicList(OrderTemplate orderTemplate, CicCase cicCase, String date) {
-        DynamicList orderTemplateDynamicList = cicCase.getDraftOrderDynamicList();
-        if (orderTemplateDynamicList == null) {
-            orderTemplateDynamicList = DynamicList.builder().listItems(new ArrayList<>()).build();
-            cicCase.setDraftOrderDynamicList(orderTemplateDynamicList);
+
+
+    private void sendOrderNotification(String caseNumber, CaseData caseData) {
+        if (!CollectionUtils.isEmpty(caseData.getCicCase().getNotifyPartySubject())) {
+            newOrderIssuedNotification.sendToSubject(caseData, caseNumber);
         }
 
-        String templateNamePlusCurrentDate = orderTemplate.getLabel() + DOUBLE_HYPHEN + date + DOUBLE_HYPHEN + "draft.pdf";
+        if (!CollectionUtils.isEmpty(caseData.getCicCase().getNotifyPartyRepresentative())) {
+            newOrderIssuedNotification.sendToRepresentative(caseData, caseNumber);
+        }
 
-        DynamicListElement element = DynamicListElement.builder().label(templateNamePlusCurrentDate).code(UUID.randomUUID()).build();
-        orderTemplateDynamicList.getListItems().add(element);
+        if (!CollectionUtils.isEmpty(caseData.getCicCase().getNotifyPartyRespondent())) {
+            newOrderIssuedNotification.sendToRespondent(caseData, caseNumber);
+        }
+
+        if (!CollectionUtils.isEmpty(caseData.getCicCase().getNotifyPartyApplicant())) {
+            newOrderIssuedNotification.sendToApplicant(caseData, caseNumber);
+        }
+
     }
 }
