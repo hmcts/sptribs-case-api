@@ -255,7 +255,7 @@ public class NotificationServiceCIC {
             );
             throw new NotificationException(notificationClientException);
         } catch (IOException ioException) {
-            log.error("Issue with attach documents to Notification. Failed to send email. Reference ID: {}. Reason: {}",
+            log.error("Failed to get PDF of correspondence. Reference ID: {}. Reason: {}",
                 referenceId,
                 ioException.getMessage(),
                 ioException

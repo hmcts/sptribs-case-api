@@ -521,7 +521,7 @@ public class NotificationServiceCICTest {
     }
 
     @Test
-    void shouldThrowRestClientExceptionWhenClientFailsToGetPDFByteArrayOfCorrespondence()
+    void shouldThrowIOExceptionWhenServiceFailsToGetPDFByteArrayOfEmailCorrespondence()
         throws NotificationClientException {
         try (var mockedIoUtils = mockStatic(IOUtils.class)) {
             //Given
@@ -530,28 +530,14 @@ public class NotificationServiceCICTest {
             final Map<String, Object> templateVars = new HashMap<>();
             templateVars.put(APPLICATION_RECEIVED.name(), templateId);
 
-            final Map<String, String> uploadedDocuments = new HashMap<>();
-            uploadedDocuments.put("FinalDecisionNotice", templateId);
-            uploadedDocuments.put("FinalDecisionNotice1", "");
-            uploadedDocuments.put("DocumentAvailable1", "no");
-
             final NotificationRequest request = NotificationRequest.builder()
                 .destinationAddress(EMAIL_ADDRESS)
                 .template(TemplateName.APPLICATION_RECEIVED)
                 .templateVars(templateVars)
-                .hasFileAttachments(true)
-                .uploadedDocuments(uploadedDocuments)
+                .hasFileAttachments(false)
                 .build();
 
-            final User user = TestDataHelper.getUser();
-
-            when(idamService.retrieveUser(any())).thenReturn(user);
             when(emailTemplatesConfig.getTemplatesCIC()).thenReturn(templateNameMap);
-            when(httpServletRequest.getHeader(AUTHORIZATION)).thenReturn(TEST_AUTHORIZATION_TOKEN);
-            when(authTokenGenerator.generate()).thenReturn(TEST_SERVICE_AUTH_TOKEN);
-
-            final byte[] sample = new byte[1];
-            when(caseDocumentClient.getDocumentBinary(anyString(), anyString(), any())).thenReturn(ResponseEntity.ok(sample));
 
             when(notificationClient.sendEmail(
                 eq(templateId),
@@ -564,6 +550,11 @@ public class NotificationServiceCICTest {
                 .thenThrow(new IOException("some message"));
 
             //When&Then
+            assertThatThrownBy(() -> notificationService.saveEmailCorrespondence(APPLICATION_RECEIVED.name(),
+                sendEmailResponse, request.getDestinationAddress(), TEST_CASE_ID.toString()))
+                .isInstanceOf(IOException.class)
+                .hasMessageContaining("some message");
+
             assertThatThrownBy(() -> notificationService.sendEmail(request, TEST_CASE_ID.toString()))
                 .isInstanceOf(NotificationException.class)
                 .hasMessageContaining("some message");
@@ -571,6 +562,46 @@ public class NotificationServiceCICTest {
             verify(notificationClient).sendEmail(
                 eq(templateId),
                 eq(EMAIL_ADDRESS),
+                any(),
+                any());
+        }
+    }
+
+    @Test
+    void shouldThrowIOExceptionExceptionWhenServiceFailsToGetPDFByteArrayOfLetterCorrespondence()
+        throws NotificationClientException {
+        try (var mockedIoUtils = mockStatic(IOUtils.class)) {
+            //Given
+            final String templateId = UUID.randomUUID().toString();
+            final Map<String, String> templateVars = Map.of(CASE_ISSUED_CITIZEN_POST.name(), templateId);
+            final NotificationRequest request = NotificationRequest.builder()
+                .template(CASE_ISSUED_CITIZEN_POST)
+                .templateVars(Map.of(CASE_ISSUED_CITIZEN_POST.name(), templateId))
+                .build();
+
+            when(emailTemplatesConfig.getTemplatesCIC()).thenReturn(templateVars);
+
+            when(notificationClient.sendLetter(
+                eq(templateId),
+                any(),
+                any()
+            )).thenReturn(sendLetterResponse);
+
+            mockedIoUtils.when(() -> IOUtils.toByteArray((java.io.InputStream) any()))
+                .thenThrow(new IOException("some message"));
+
+            //When&Then
+            assertThatThrownBy(() -> notificationService.saveLetterCorrespondence(CASE_ISSUED_CITIZEN_POST.name(),
+                sendLetterResponse, request.getDestinationAddress(), TEST_CASE_ID.toString()))
+                .isInstanceOf(IOException.class)
+                .hasMessageContaining("some message");
+
+            assertThatThrownBy(() -> notificationService.sendLetter(request, TEST_CASE_ID.toString()))
+                .isInstanceOf(NotificationException.class)
+                .hasMessageContaining("some message");
+
+            verify(notificationClient).sendLetter(
+                eq(templateId),
                 any(),
                 any());
         }
