@@ -111,21 +111,19 @@ public class NotificationServiceCIC {
 
         try {
             Document correspondencePDF = this.getPDF(sendEmailResponse, null, longCaseRef, sentOn, sentFrom, sentTo, templateName);
-            if (correspondencePDF != null) {
-                CorrespondenceEntity correspondence = CorrespondenceEntity.builder()
-                    .id(sendEmailResponse.getNotificationId())
-                    .eventType(templateName)
-                    .caseReferenceNumber(longCaseRef)
-                    .sentOn(sentOn.atOffset(java.time.ZoneOffset.UTC))
-                    .sentFrom(sentFrom)
-                    .sentTo(sentTo)
-                    .documentUrl(correspondencePDF.getUrl())
-                    .documentFilename(correspondencePDF.getFilename())
-                    .documentBinaryUrl(correspondencePDF.getBinaryUrl())
-                    .correspondenceType("Email")
-                    .build();
-                correspondenceRepository.save(correspondence);
-            }
+            CorrespondenceEntity correspondence = CorrespondenceEntity.builder()
+                .id(sendEmailResponse.getNotificationId())
+                .eventType(templateName)
+                .caseReferenceNumber(longCaseRef)
+                .sentOn(sentOn.atOffset(java.time.ZoneOffset.UTC))
+                .sentFrom(sentFrom)
+                .sentTo(sentTo)
+                .documentUrl(correspondencePDF.getUrl())
+                .documentFilename(correspondencePDF.getFilename())
+                .documentBinaryUrl(correspondencePDF.getBinaryUrl())
+                .correspondenceType("Email")
+                .build();
+            correspondenceRepository.save(correspondence);
         } catch (java.io.IOException e) {
             log.error("Failed to store pdf document", e);
             throw e;
@@ -143,21 +141,19 @@ public class NotificationServiceCIC {
         String sentFrom = "Criminal Injuries Compensation Tribunal";
         try {
             Document correspondencePDF = this.getPDF(null, sendLetterResponse, longCaseRef, sentOn, sentFrom, sentTo, templateName);
-            if (correspondencePDF != null) {
-                CorrespondenceEntity correspondence = CorrespondenceEntity.builder()
-                    .id(sendLetterResponse.getNotificationId())
-                    .eventType(templateName)
-                    .caseReferenceNumber(longCaseRef)
-                    .sentOn(sentOn.atOffset(java.time.ZoneOffset.UTC))
-                    .sentFrom(sentFrom)
-                    .sentTo(sentTo)
-                    .documentUrl(correspondencePDF.getUrl())
-                    .documentFilename(correspondencePDF.getFilename())
-                    .documentBinaryUrl(correspondencePDF.getBinaryUrl())
-                    .correspondenceType("Letter")
-                    .build();
-                correspondenceRepository.save(correspondence);
-            }
+            CorrespondenceEntity correspondence = CorrespondenceEntity.builder()
+                .id(sendLetterResponse.getNotificationId())
+                .eventType(templateName)
+                .caseReferenceNumber(longCaseRef)
+                .sentOn(sentOn.atOffset(java.time.ZoneOffset.UTC))
+                .sentFrom(sentFrom)
+                .sentTo(sentTo)
+                .documentUrl(correspondencePDF.getUrl())
+                .documentFilename(correspondencePDF.getFilename())
+                .documentBinaryUrl(correspondencePDF.getBinaryUrl())
+                .correspondenceType("Letter")
+                .build();
+            correspondenceRepository.save(correspondence);
         } catch (java.io.IOException e) {
             log.error("Failed to store pdf document", e);
             throw e;
