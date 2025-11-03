@@ -49,33 +49,25 @@ import static uk.gov.hmcts.sptribs.common.config.ControllerConstants.BEARER_PREF
 @Slf4j
 public class NotificationServiceCIC {
 
-    @Autowired
     private final CorrespondenceRepository correspondenceRepository;
 
-    @Autowired
     private final NotificationClient notificationClient;
 
-    @Autowired
     private final EmailTemplatesConfigCIC emailTemplatesConfig;
 
-    @Autowired
     private final IdamService idamService;
 
-    @Autowired
     private final HttpServletRequest request;
 
-    @Autowired
     private final AuthTokenGenerator authTokenGenerator;
 
-    @Autowired
     private final DocumentClient caseDocumentClient;
 
-    @Autowired
     private final CaseDocumentClientApi caseDocumentClientApi;
 
-    @Autowired
     private final PDFServiceClient pdfServiceClient;
 
+    @Autowired
     public NotificationServiceCIC(NotificationClient notificationClient,
                                   EmailTemplatesConfigCIC emailTemplatesConfig,
                                   IdamService idamService, HttpServletRequest request,

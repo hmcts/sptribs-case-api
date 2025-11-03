@@ -456,8 +456,9 @@ public class NotificationServiceCICTest {
 
         when(emailTemplatesConfig.getTemplatesCIC()).thenReturn(templateNameMap);
 
-        //When&Then
-        assertThatThrownBy(() -> notificationService.sendEmail(request, TEST_CASE_ID.toString()))
+        String testCaseRef = TEST_CASE_ID.toString();
+
+        assertThatThrownBy(() -> notificationService.sendEmail(request, testCaseRef))
             .isInstanceOf(NotificationException.class)
             .satisfies(e -> assertAll(
                 () -> assertTrue(e.getCause() instanceof IOException)
@@ -504,8 +505,9 @@ public class NotificationServiceCICTest {
         mockStatic(NotificationClient.class);
         when(NotificationClient.prepareUpload(newUploadDocument)).thenThrow(NotificationClientException.class);
 
-        //When&Then
-        assertThatThrownBy(() -> notificationService.sendEmail(request, TEST_CASE_ID.toString()))
+        String testCaseRef = TEST_CASE_ID.toString();
+
+        assertThatThrownBy(() -> notificationService.sendEmail(request, testCaseRef))
             .isInstanceOf(NotificationException.class)
             .hasMessageContaining("uk.gov.service.notify.NotificationClientException");
     }
@@ -529,8 +531,9 @@ public class NotificationServiceCICTest {
 
         when(emailTemplatesConfig.getTemplatesCIC()).thenReturn(templateVars);
 
-        //When&Then
-        assertThatThrownBy(() -> notificationService.sendLetter(request, TEST_CASE_ID.toString()))
+        String testCaseRef = TEST_CASE_ID.toString();
+
+        assertThatThrownBy(() -> notificationService.sendLetter(request, testCaseRef))
             .isInstanceOf(NotificationException.class)
             .hasMessageContaining("some message");
 
@@ -564,6 +567,7 @@ public class NotificationServiceCICTest {
 
         final User user = TestDataHelper.getUser();
 
+        //When&Then
         when(idamService.retrieveUser(any())).thenReturn(user);
         when(emailTemplatesConfig.getTemplatesCIC()).thenReturn(templateNameMap);
         when(httpServletRequest.getHeader(AUTHORIZATION)).thenReturn(TEST_AUTHORIZATION_TOKEN);
@@ -587,8 +591,9 @@ public class NotificationServiceCICTest {
                 any(),
                 any());
 
-        //When&Then
-        assertThatThrownBy(() -> notificationService.sendEmail(request, TEST_CASE_ID.toString()))
+        String testCaseRef = TEST_CASE_ID.toString();
+
+        assertThatThrownBy(() -> notificationService.sendEmail(request, testCaseRef))
             .isInstanceOf(RestClientException.class)
             .hasMessageContaining("some message");
 
@@ -616,6 +621,7 @@ public class NotificationServiceCICTest {
                 .hasFileAttachments(false)
                 .build();
 
+            //When&Then
             when(emailTemplatesConfig.getTemplatesCIC()).thenReturn(templateNameMap);
 
             when(notificationClient.sendEmail(
@@ -628,13 +634,16 @@ public class NotificationServiceCICTest {
             mockedIoUtils.when(() -> IOUtils.toByteArray((java.io.InputStream) any()))
                 .thenThrow(new IOException("some message"));
 
-            //When&Then
-            assertThatThrownBy(() -> notificationService.saveEmailCorrespondence(APPLICATION_RECEIVED.name(),
-                sendEmailResponse, request.getDestinationAddress(), TEST_CASE_ID.toString()))
+            String testCaseRef = TEST_CASE_ID.toString();
+            String testTemplateName = APPLICATION_RECEIVED.name();
+            String testDestinationAddress = request.getDestinationAddress();
+
+            assertThatThrownBy(() -> notificationService.saveEmailCorrespondence(testTemplateName,
+                sendEmailResponse, testDestinationAddress, testCaseRef))
                 .isInstanceOf(IOException.class)
                 .hasMessageContaining("some message");
 
-            assertThatThrownBy(() -> notificationService.sendEmail(request, TEST_CASE_ID.toString()))
+            assertThatThrownBy(() -> notificationService.sendEmail(request, testCaseRef))
                 .isInstanceOf(NotificationException.class)
                 .hasMessageContaining("some message");
 
@@ -658,6 +667,7 @@ public class NotificationServiceCICTest {
                 .templateVars(Map.of(CASE_ISSUED_CITIZEN_POST.name(), templateId))
                 .build();
 
+            //When&Then
             when(emailTemplatesConfig.getTemplatesCIC()).thenReturn(templateVars);
 
             when(notificationClient.sendLetter(
@@ -669,13 +679,16 @@ public class NotificationServiceCICTest {
             mockedIoUtils.when(() -> IOUtils.toByteArray((java.io.InputStream) any()))
                 .thenThrow(new IOException("some message"));
 
-            //When&Then
-            assertThatThrownBy(() -> notificationService.saveLetterCorrespondence(CASE_ISSUED_CITIZEN_POST.name(),
-                sendLetterResponse, request.getDestinationAddress(), TEST_CASE_ID.toString()))
+            String testCaseRef = TEST_CASE_ID.toString();
+            String testTemplateName = CASE_ISSUED_CITIZEN_POST.name();
+            String testDestinationAddress = request.getDestinationAddress();
+
+            assertThatThrownBy(() -> notificationService.saveLetterCorrespondence(testTemplateName,
+                sendLetterResponse, testDestinationAddress, testCaseRef))
                 .isInstanceOf(IOException.class)
                 .hasMessageContaining("some message");
 
-            assertThatThrownBy(() -> notificationService.sendLetter(request, TEST_CASE_ID.toString()))
+            assertThatThrownBy(() -> notificationService.sendLetter(request, testCaseRef))
                 .isInstanceOf(NotificationException.class)
                 .hasMessageContaining("some message");
 
