@@ -26,7 +26,7 @@ public class ApplyAnonymityTest {
             .anonymiseYesOrNo(YesOrNo.YES)
             .build();
         final CaseData caseData = CaseData.builder()
-            .cicCase(cicCase) // Add necessary fields for testing
+            .cicCase(cicCase)
             .build();
         caseDetails.setData(caseData);
 
@@ -41,7 +41,7 @@ public class ApplyAnonymityTest {
             .anonymiseYesOrNo(YesOrNo.NO)
             .build();
         final CaseData caseData = CaseData.builder()
-            .cicCase(cicCase) // Add necessary fields for testing
+            .cicCase(cicCase)
             .build();
         caseDetails.setData(caseData);
 
