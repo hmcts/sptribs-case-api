@@ -38,6 +38,7 @@ public class CaseTypeTabTest {
         final Tab.TabBuilder<CaseData, UserRole> casePartiesTabBuilder = Tab.TabBuilder.builder(CaseData.class, utils);
         final Tab.TabBuilder<CaseData, UserRole> ordersTabBuilder = Tab.TabBuilder.builder(CaseData.class, utils);
         final Tab.TabBuilder<CaseData, UserRole> caseDocsTabBuilder = Tab.TabBuilder.builder(CaseData.class, utils);
+        final Tab.TabBuilder<CaseData, UserRole> correspondenceTabBuilder = Tab.TabBuilder.builder(CaseData.class, utils);
         final Tab.TabBuilder<CaseData, UserRole> hearingsTabBuilder = Tab.TabBuilder.builder(CaseData.class, utils);
         final Tab.TabBuilder<CaseData, UserRole> cicaDetailsTabBuilder = Tab.TabBuilder.builder(CaseData.class, utils);
         final Tab.TabBuilder<CaseData, UserRole> caseCategoryTabBuilder = Tab.TabBuilder.builder(CaseData.class, utils);
@@ -54,6 +55,7 @@ public class CaseTypeTabTest {
         when(configBuilder.tab("caseParties", "Case Parties")).thenReturn(casePartiesTabBuilder);
         when(configBuilder.tab("orders", "Orders & Decisions")).thenReturn(ordersTabBuilder);
         when(configBuilder.tab("caseDocuments", "Case Documents")).thenReturn(caseDocsTabBuilder);
+        when(configBuilder.tab("correspondence", "Correspondence")).thenReturn(correspondenceTabBuilder);
         when(configBuilder.tab("hearings", "Hearings")).thenReturn(hearingsTabBuilder);
         when(configBuilder.tab("cicaDetails", "CICA Details")).thenReturn(cicaDetailsTabBuilder);
         when(configBuilder.tab("caseFileView", "Case file view")).thenReturn(caseCategoryTabBuilder);
