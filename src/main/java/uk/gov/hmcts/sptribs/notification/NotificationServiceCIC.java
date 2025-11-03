@@ -99,7 +99,7 @@ public class NotificationServiceCIC {
     public void saveEmailCorrespondence(String templateName,
                                         SendEmailResponse sendEmailResponse,
                                         String sentTo,
-                                        String caseReferenceNumber) throws IOException {
+                                        String caseReferenceNumber) throws IOException, RestClientException {
 
         Long longCaseRef = Long.parseLong(caseReferenceNumber.replace("-", ""));
         final LocalDateTime sentOn = LocalDateTime.now();
@@ -124,7 +124,7 @@ public class NotificationServiceCIC {
                 .correspondenceType("Email")
                 .build();
             correspondenceRepository.save(correspondence);
-        } catch (java.io.IOException e) {
+        } catch (java.io.IOException | RestClientException e) {
             log.error("Failed to store pdf document", e);
             throw e;
         }
@@ -134,7 +134,7 @@ public class NotificationServiceCIC {
     public void saveLetterCorrespondence(String templateName,
                                          SendLetterResponse sendLetterResponse,
                                          String sentTo,
-                                         String caseReferenceNumber) throws IOException {
+                                         String caseReferenceNumber) throws IOException, RestClientException {
 
         Long longCaseRef = Long.parseLong(caseReferenceNumber.replace("-", ""));
         final LocalDateTime sentOn = LocalDateTime.now();
@@ -154,7 +154,7 @@ public class NotificationServiceCIC {
                 .correspondenceType("Letter")
                 .build();
             correspondenceRepository.save(correspondence);
-        } catch (java.io.IOException e) {
+        } catch (java.io.IOException | RestClientException e) {
             log.error("Failed to store pdf document", e);
             throw e;
         }
@@ -197,13 +197,13 @@ public class NotificationServiceCIC {
             );
 
             return getNotificationResponse(sendEmailResponse);
-        } catch (NotificationClientException | IOException notificationClientException) {
+        } catch (NotificationClientException | IOException e) {
             log.error("Failed to send email. Reference ID: {}. Reason: {}",
                 referenceId,
-                notificationClientException.getMessage(),
-                notificationClientException
+                e.getMessage(),
+                e
             );
-            throw new NotificationException(notificationClientException);
+            throw new NotificationException(e);
         }
     }
 
@@ -340,7 +340,7 @@ public class NotificationServiceCIC {
                                         LocalDateTime sentOn,
                                         String sentFrom,
                                         String sentTo,
-                                        String templateName) throws IOException {
+                                        String templateName) throws IOException, RestClientException {
         Map<String, Object> placeholders = new HashMap<>();
         String correspondenceType = "Email";
         if (sendEmailResponse != null) {
