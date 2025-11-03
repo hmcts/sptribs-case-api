@@ -17,7 +17,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.State;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(MockitoExtension.class)
-public class CaseworkerCreateAndSendOrderTest {
+class CaseworkerCreateAndSendOrderTest {
 
     @InjectMocks
     private CaseworkerCreateAndSendOrder caseworkerCreateAndSendOrder;
