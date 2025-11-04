@@ -216,10 +216,20 @@ public class NotificationServiceCIC {
                     referenceId
                 );
 
+            StringBuilder address = new StringBuilder();
+            for (int i = 0; i < 7; i++) {
+                if (!(notificationRequest.getTemplateVars().get("address_line_" + (i + 1)).toString().isEmpty())) {
+                    address.append(notificationRequest.getTemplateVars().get("address_line_" + (i + 1)).toString());
+                }
+                if ((i < 6) && !(notificationRequest.getTemplateVars().get("address_line_" + (i + 1)).toString().isEmpty())) {
+                    address.append(", ");
+                }
+            }
+
             this.saveLetterCorrespondence(
                 templateName,
                 sendLetterResponse,
-                notificationRequest.getDestinationAddress(),
+                address.toString(),
                 caseReferenceNumber
             );
 
