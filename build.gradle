@@ -400,7 +400,6 @@ dependencies {
   testAnnotationProcessor group: 'org.projectlombok', name: 'lombok', version: versions.lombok
   integrationTestImplementation sourceSets.main.runtimeClasspath
   integrationTestImplementation sourceSets.test.runtimeClasspath
-  integrationTestImplementation 'com.h2database:h2'
   integrationTestImplementation group: 'org.testcontainers', name: 'junit-jupiter', version: '1.20.3'
   integrationTestImplementation group: 'org.testcontainers', name: 'postgresql', version: '1.20.3'
 
