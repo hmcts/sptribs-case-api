@@ -217,19 +217,26 @@ public class NotificationServiceCIC {
                 );
 
             StringBuilder address = new StringBuilder();
-            for (int i = 0; i < 7; i++) {
-                if (!(notificationRequest.getTemplateVars().get("address_line_" + (i + 1)).toString().isEmpty())) {
-                    address.append(notificationRequest.getTemplateVars().get("address_line_" + (i + 1)).toString());
-                }
-                if ((i < 6) && !(notificationRequest.getTemplateVars().get("address_line_" + (i + 1)).toString().isEmpty())) {
-                    address.append(", ");
+            for (int i = 1; i <= 7; i++) {
+                Object addressLineValue = templateVars.get("address_line_" + i);
+                if (addressLineValue != null) {
+                    String trimmedLine = addressLineValue.toString().trim();
+                    if (!trimmedLine.isEmpty()) {
+                        if (address.length() > 0) {
+                            address.append(", ");
+                        }
+                        address.append(trimmedLine);
+                    }
                 }
             }
+            String formattedAddress = address.length() > 0
+                ? address.toString()
+                : Objects.toString(notificationRequest.getDestinationAddress(), "");
 
             this.saveLetterCorrespondence(
                 templateName,
                 sendLetterResponse,
-                address.toString(),
+                formattedAddress,
                 caseReferenceNumber
             );
 
