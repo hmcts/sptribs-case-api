@@ -51,6 +51,8 @@ project.tasks.named("generateCCDConfig") {
   environment 'SPRING_PROFILES_ACTIVE', 'config-gen'
   environment 'SPRING_FLYWAY_ENABLED', 'false'
   environment 'SPRING_JMS_SERVICEBUS_ENABLED', 'false'
+  environment 'SPRING_DATASOURCE_URL',
+    'jdbc:h2:mem:configgen;MODE=PostgreSQL;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false'
 }
 
 sourceSets {
@@ -351,6 +353,7 @@ dependencies {
   implementation group: 'org.projectlombok', name: 'lombok', version: versions.lombok
   implementation group: 'org.springdoc', name: 'springdoc-openapi-starter-webmvc-ui', version: '2.8.13'
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-web'
+  runtimeOnly 'com.h2database:h2'
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-jdbc'
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-actuator'
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-aop'
