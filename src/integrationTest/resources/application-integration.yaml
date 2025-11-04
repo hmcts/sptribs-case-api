@@ -3,16 +3,14 @@ spring:
     enabled: false
   main:
     allow-bean-definition-overriding: true
-  messages:
-    encoding: ISO-8859-1
   autoconfigure:
     exclude:
       - com.azure.spring.cloud.autoconfigure.implementation.context.AzureTokenCredentialAutoConfiguration
   datasource:
-    url: jdbc:tc:postgresql:16:///sptribs_case_api
-    username: test
-    password: test
-    driver-class-name: org.testcontainers.jdbc.ContainerDatabaseDriver
+    url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;MODE=PostgreSQL
+    username: sa
+    password:
+    driver-class-name: org.h2.Driver
   jms:
     servicebus:
       enabled: false
