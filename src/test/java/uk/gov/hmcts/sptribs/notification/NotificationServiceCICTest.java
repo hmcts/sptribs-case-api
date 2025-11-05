@@ -2,6 +2,7 @@ package uk.gov.hmcts.sptribs.notification;
 
 import jakarta.servlet.http.HttpServletRequest;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.NullArgumentException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -334,7 +335,7 @@ public class NotificationServiceCICTest {
     void shouldInvokeNotificationClientToSendLetter() throws NotificationClientException {
         //Given
         final String templateId = UUID.randomUUID().toString();
-        Map<String, String> templateVars = new HashMap<>(Map.of(CASE_ISSUED_CITIZEN_POST.name(), templateId));
+        final Map<String, String> templateVars = new HashMap<>(Map.of(CASE_ISSUED_CITIZEN_POST.name(), templateId));
         templateVars.put("address_line_1", "Buckingham Palace");
         templateVars.put("address_line_4", "London");
         templateVars.put("address_line_5", "United Kingdom");
@@ -707,5 +708,37 @@ public class NotificationServiceCICTest {
                 any(),
                 any());
         }
+    }
+
+    @Test
+    void shouldThrowNullArgumentExceptionWhenServiceFailsToGetAddressOfLetterRecipient() throws NotificationClientException {
+        //Given
+        final String templateId = UUID.randomUUID().toString();
+        final Map<String, String> templateVars = Map.of(CASE_ISSUED_CITIZEN_POST.name(), templateId);
+
+        final NotificationRequest request = NotificationRequest.builder()
+            .template(CASE_ISSUED_CITIZEN_POST)
+            .templateVars(new HashMap<>(templateVars))
+            .build();
+
+        //When&Then
+        when(emailTemplatesConfig.getTemplatesCIC()).thenReturn(templateVars);
+
+        when(notificationClient.sendLetter(
+            eq(templateId),
+            any(),
+            any()
+        )).thenReturn(sendLetterResponse);
+
+        String testCaseRef = TEST_CASE_ID.toString();
+
+        assertThatThrownBy(() -> notificationService.sendLetter(request, testCaseRef))
+            .isInstanceOf(NotificationException.class)
+            .hasMessageContaining("Recipient address must not be null");
+
+        verify(notificationClient).sendLetter(
+            eq(templateId),
+            any(),
+            any());
     }
 }

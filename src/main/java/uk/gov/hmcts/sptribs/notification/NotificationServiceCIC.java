@@ -218,14 +218,16 @@ public class NotificationServiceCIC {
                 );
 
             StringBuilder address = new StringBuilder();
+            String address_key = "address_line_";
+
             for (int i = 1; i <= 7; i++) {
-                if ((templateVars.get("address_line_" + (i)) != null)
-                    && !templateVars.get("address_line_" + (i)).toString().isEmpty()) {
-                    address.append(templateVars.get("address_line_" + (i)).toString().trim());
+                if ((templateVars.get(address_key + (i)) != null)
+                    && !templateVars.get(address_key + (i)).toString().isEmpty()) {
+                    address.append(templateVars.get(address_key + (i)).toString().trim());
                 }
                 if ((i != 7)
-                    && (templateVars.get("address_line_" + (i)) != null)
-                    && !templateVars.get("address_line_" + (i)).toString().isEmpty()) {
+                    && (templateVars.get(address_key + (i)) != null)
+                    && !templateVars.get(address_key + (i)).toString().isEmpty()) {
                     address.append(", ");
                 }
             }
@@ -235,7 +237,7 @@ public class NotificationServiceCIC {
                 : Objects.toString(notificationRequest.getDestinationAddress(), "");
 
             if (formattedAddress.isEmpty()) {
-                throw new NotificationException(new NullArgumentException("Destination address is empty"));
+                throw new NullArgumentException("Recipient address");
             }
 
             this.saveLetterCorrespondence(
@@ -264,6 +266,13 @@ public class NotificationServiceCIC {
                 ioException
             );
             throw new NotificationException(ioException);
+        } catch (NullArgumentException nullArgumentException) {
+            log.error("Failed to send letter due to missing data. Reference ID: {}. Reason: {}",
+                referenceId,
+                nullArgumentException.getMessage(),
+                nullArgumentException
+            );
+            throw new NotificationException(nullArgumentException);
         }
     }
 
