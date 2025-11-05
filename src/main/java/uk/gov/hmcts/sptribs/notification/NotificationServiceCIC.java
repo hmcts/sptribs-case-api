@@ -218,16 +218,16 @@ public class NotificationServiceCIC {
                 );
 
             StringBuilder address = new StringBuilder();
-            String address_key = "address_line_";
 
             for (int i = 1; i <= 7; i++) {
-                if ((templateVars.get(address_key + (i)) != null)
-                    && !templateVars.get(address_key + (i)).toString().isEmpty()) {
-                    address.append(templateVars.get(address_key + (i)).toString().trim());
+                Object addressLineValue = templateVars.get("address_line_" + i);
+                if ((addressLineValue != null)
+                    && !addressLineValue.toString().isEmpty()) {
+                    address.append(addressLineValue.toString().trim());
                 }
                 if ((i != 7)
-                    && (templateVars.get(address_key + (i)) != null)
-                    && !templateVars.get(address_key + (i)).toString().isEmpty()) {
+                    && (addressLineValue != null)
+                    && !addressLineValue.toString().isEmpty()) {
                     address.append(", ");
                 }
             }
