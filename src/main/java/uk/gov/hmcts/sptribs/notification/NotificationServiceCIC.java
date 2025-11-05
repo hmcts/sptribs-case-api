@@ -3,6 +3,7 @@ package uk.gov.hmcts.sptribs.notification;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.NullArgumentException;
 import org.apache.commons.lang.StringUtils;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -218,20 +219,24 @@ public class NotificationServiceCIC {
 
             StringBuilder address = new StringBuilder();
             for (int i = 1; i <= 7; i++) {
-                Object addressLineValue = templateVars.get("address_line_" + i);
-                if (addressLineValue != null) {
-                    String trimmedLine = addressLineValue.toString().trim();
-                    if (!trimmedLine.isEmpty()) {
-                        if (address.length() > 0) {
-                            address.append(", ");
-                        }
-                        address.append(trimmedLine);
-                    }
+                if ((templateVars.get("address_line_" + (i)) != null)
+                    && !templateVars.get("address_line_" + (i)).toString().isEmpty()) {
+                    address.append(templateVars.get("address_line_" + (i)).toString().trim());
+                }
+                if ((i != 7)
+                    && (templateVars.get("address_line_" + (i)) != null)
+                    && !templateVars.get("address_line_" + (i)).toString().isEmpty()) {
+                    address.append(", ");
                 }
             }
-            String formattedAddress = address.length() > 0
+
+            String formattedAddress = !address.isEmpty()
                 ? address.toString()
                 : Objects.toString(notificationRequest.getDestinationAddress(), "");
+
+            if (formattedAddress.isEmpty()) {
+                throw new NotificationException(new NullArgumentException("Destination address is empty"));
+            }
 
             this.saveLetterCorrespondence(
                 templateName,

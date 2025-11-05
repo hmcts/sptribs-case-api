@@ -334,15 +334,20 @@ public class NotificationServiceCICTest {
     void shouldInvokeNotificationClientToSendLetter() throws NotificationClientException {
         //Given
         final String templateId = UUID.randomUUID().toString();
-        final Map<String, String> templateVars = Map.of(CASE_ISSUED_CITIZEN_POST.name(), templateId);
+        Map<String, String> templateVars = new HashMap<>(Map.of(CASE_ISSUED_CITIZEN_POST.name(), templateId));
+        templateVars.put("address_line_1", "Buckingham Palace");
+        templateVars.put("address_line_4", "London");
+        templateVars.put("address_line_5", "United Kingdom");
+        templateVars.put("address_line_7", "SW1A 1AA");
+
         final NotificationRequest request = NotificationRequest.builder()
             .template(CASE_ISSUED_CITIZEN_POST)
-            .templateVars(Map.of(CASE_ISSUED_CITIZEN_POST.name(), templateId))
+            .templateVars(new HashMap<>(templateVars))
             .build();
 
         when(sendLetterResponse.getReference()).thenReturn(Optional.of(randomUUID().toString()));
         when(sendLetterResponse.getNotificationId()).thenReturn(UUID.randomUUID());
-        when(emailTemplatesConfig.getTemplatesCIC()).thenReturn(templateVars);
+        when(emailTemplatesConfig.getTemplatesCIC()).thenReturn(Map.of(CASE_ISSUED_CITIZEN_POST.name(), templateId));
 
         when(notificationClient.sendLetter(
             eq(templateId),
@@ -661,14 +666,19 @@ public class NotificationServiceCICTest {
         try (var mockedIoUtils = mockStatic(IOUtils.class)) {
             //Given
             final String templateId = UUID.randomUUID().toString();
-            final Map<String, String> templateVars = Map.of(CASE_ISSUED_CITIZEN_POST.name(), templateId);
+            final Map<String, String> templateVars = new HashMap<>(Map.of(CASE_ISSUED_CITIZEN_POST.name(), templateId));
+            templateVars.put("address_line_1", "Buckingham Palace");
+            templateVars.put("address_line_4", "London");
+            templateVars.put("address_line_5", "United Kingdom");
+            templateVars.put("address_line_7", "SW1A 1AA");
+
             final NotificationRequest request = NotificationRequest.builder()
                 .template(CASE_ISSUED_CITIZEN_POST)
-                .templateVars(Map.of(CASE_ISSUED_CITIZEN_POST.name(), templateId))
+                .templateVars(new HashMap<>(templateVars))
                 .build();
 
             //When&Then
-            when(emailTemplatesConfig.getTemplatesCIC()).thenReturn(templateVars);
+            when(emailTemplatesConfig.getTemplatesCIC()).thenReturn(Map.of(CASE_ISSUED_CITIZEN_POST.name(), templateId));
 
             when(notificationClient.sendLetter(
                 eq(templateId),
