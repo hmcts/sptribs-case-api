@@ -668,8 +668,11 @@ public class NotificationServiceCICTest {
             final String templateId = UUID.randomUUID().toString();
             final Map<String, String> templateVars = new HashMap<>(Map.of(CASE_ISSUED_CITIZEN_POST.name(), templateId));
             templateVars.put("address_line_1", "Buckingham Palace");
+            templateVars.put("address_line_2", "");
+            templateVars.put("address_line_3", "");
             templateVars.put("address_line_4", "London");
             templateVars.put("address_line_5", "United Kingdom");
+            templateVars.put("address_line_6", "");
             templateVars.put("address_line_7", "SW1A 1AA");
 
             final NotificationRequest request = NotificationRequest.builder()
