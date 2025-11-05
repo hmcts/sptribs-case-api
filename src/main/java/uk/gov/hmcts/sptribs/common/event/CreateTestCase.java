@@ -23,6 +23,7 @@ import uk.gov.hmcts.reform.ccd.document.am.model.Classification;
 import uk.gov.hmcts.reform.ccd.document.am.model.DocumentUploadRequest;
 import uk.gov.hmcts.reform.ccd.document.am.util.InMemoryMultipartFile;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseManagementLocation;
+import uk.gov.hmcts.sptribs.caseworker.model.YesNo;
 import uk.gov.hmcts.sptribs.cdam.model.UploadResponse;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
@@ -155,6 +156,9 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
             .build();
         log.info("Case Management (builder) base location {}, region {}",
             caseManagementLocation1.getBaseLocation(), caseManagementLocation1.getRegion());
+
+        data.setNewBundleOrderEnabled(YesNo.YES);
+        log.info("New Bundle Order Enabled {}", data.getNewBundleOrderEnabled());
 
         data.setCaseManagementLocation(
             caseManagementLocation

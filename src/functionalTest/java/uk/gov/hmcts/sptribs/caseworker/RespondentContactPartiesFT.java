@@ -1,11 +1,19 @@
 package uk.gov.hmcts.sptribs.caseworker;
 
 import io.restassured.response.Response;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
+import uk.gov.hmcts.sptribs.cdam.model.Document;
+import uk.gov.hmcts.sptribs.cdam.model.UploadResponse;
 import uk.gov.hmcts.sptribs.testutil.FunctionalTestSuite;
 
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
 
 import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
 import static net.javacrumbs.jsonunit.assertj.JsonAssertions.json;
@@ -22,6 +30,7 @@ import static uk.gov.hmcts.sptribs.testutil.TestConstants.SUBMITTED_URL;
 import static uk.gov.hmcts.sptribs.testutil.TestResourceUtil.expectedResponse;
 
 @SpringBootTest
+@Slf4j
 public class RespondentContactPartiesFT extends FunctionalTestSuite {
 
     public static final String PARTIES_TO_CONTACT_MID_EVENT_URL
@@ -108,6 +117,12 @@ public class RespondentContactPartiesFT extends FunctionalTestSuite {
     public void shouldNotReturnAnyErrorsInSelectDocumentMidEventCallback() throws Exception {
         final Map<String, Object> caseData = caseData(CONTACT_PARTIES_SELECT_DOCUMENT_MID_EVENT_REQUEST);
 
+        String documentId = "a17fa26b-6e91-48ba-841e-8ab75c772463";
+
+        UploadResponse uploadResponse = uploadTestDocumentIfMissing(documentId, DRAFT_ORDER_FILE);
+        String resolvedDocumentId = resolveDocumentId(documentId, uploadResponse);
+        updateDocumentSelectionWithDocumentId(caseData, resolvedDocumentId);
+
         final Response response = triggerCallback(
             caseData,
             RESPONDENT_CONTACT_PARTIES,
@@ -124,6 +139,12 @@ public class RespondentContactPartiesFT extends FunctionalTestSuite {
     @Test
     public void shouldReturnAnErrorIfMoreThan10DocumentsUploadedInSelectDocumentMidEventCallback() throws Exception {
         final Map<String, Object> caseData = caseData(CONTACT_PARTIES_SELECT_DOCUMENT_TOO_MANY_DOCUMENTS_MID_EVENT_REQUEST);
+
+        String documentId = "a17fa26b-6e91-48ba-841e-8ab75c772463";
+
+        UploadResponse docUploadResponse = uploadTestDocumentIfMissing(documentId, DRAFT_ORDER_FILE);
+        String resolvedDocumentId = resolveDocumentId(documentId, docUploadResponse);
+        updateDocumentSelectionWithDocumentId(caseData, resolvedDocumentId);
 
         final Response response = triggerCallback(
             caseData,
@@ -184,5 +205,81 @@ public class RespondentContactPartiesFT extends FunctionalTestSuite {
         assertThatJson(response.asString())
             .inPath(CONFIRMATION_HEADER)
             .isEqualTo("# Contact Parties notification failed \\n## Please resend the notification");
+    }
+
+    private String resolveDocumentId(String fallbackDocumentId, UploadResponse uploadResponse) {
+        if (uploadResponse == null
+            || uploadResponse.getDocuments() == null
+            || uploadResponse.getDocuments().isEmpty()) {
+            return fallbackDocumentId;
+        }
+
+        Document uploadedDocument = uploadResponse.getDocuments().getFirst();
+        if (uploadedDocument == null || uploadedDocument.links == null) {
+            return fallbackDocumentId;
+        }
+
+        String documentHref = Optional.ofNullable(uploadedDocument.links)
+            .map(links -> {
+                if (links.self != null && StringUtils.isNotBlank(links.self.href)) {
+                    return links.self.href;
+                }
+                if (links.binary != null && StringUtils.isNotBlank(links.binary.href)) {
+                    return links.binary.href;
+                }
+                return null;
+            })
+            .orElse(null);
+
+        if (StringUtils.isBlank(documentHref)) {
+            return fallbackDocumentId;
+        }
+
+        if (Strings.CS.endsWith(documentHref, "/binary")) {
+            documentHref = StringUtils.substringBeforeLast(documentHref, "/");
+        }
+
+        String extractedDocumentId = StringUtils.substringAfterLast(documentHref, "/");
+        return isValidUuid(extractedDocumentId) ? extractedDocumentId : fallbackDocumentId;
+    }
+
+    private boolean isValidUuid(String value) {
+        try {
+            UUID.fromString(value);
+            return true;
+        } catch (IllegalArgumentException ex) {
+            return false;
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    private void updateDocumentSelectionWithDocumentId(Map<String, Object> caseData, String documentId) {
+        if (caseData == null || StringUtils.isBlank(documentId)) {
+            return;
+        }
+
+        Object docListObject = caseData.get("contactPartiesDocumentsDocumentList");
+        if (!(docListObject instanceof Map<?, ?> documentList)) {
+            return;
+        }
+
+        replaceDocumentId((List<Map<String, Object>>) documentList.get("value"), documentId);
+        replaceDocumentId((List<Map<String, Object>>) documentList.get("list_items"), documentId);
+    }
+
+    private void replaceDocumentId(List<Map<String, Object>> elements, String documentId) {
+        if (elements == null) {
+            return;
+        }
+
+        for (Map<String, Object> element : elements) {
+            Object labelObj = element.get("label");
+            if (labelObj instanceof String label) {
+                String updatedLabel = label
+                    .replace("/null/", "/" + documentId + "/")
+                    .replace("/null)", "/" + documentId + ")");
+                element.put("label", updatedLabel);
+            }
+        }
     }
 }

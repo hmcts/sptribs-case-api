@@ -20,6 +20,7 @@
       "details": []
     },
     "securityClass": "PUBLIC",
+    "newBundleOrderEnabled": "Yes",
     "cicCaseRespondentName": "Respondent Name",
     "cicCaseRespondentOrganisation": "CICA",
     "cicCaseRespondentEmail": "appeals.team@cica.gov.uk",

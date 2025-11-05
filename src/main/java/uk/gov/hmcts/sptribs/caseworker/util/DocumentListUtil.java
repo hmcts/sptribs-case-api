@@ -42,16 +42,31 @@ public final class DocumentListUtil {
     }
 
     private static List<CaseworkerCICDocument> prepareList(CaseData data) {
-        List<CaseworkerCICDocument> docList = new ArrayList<>();
+        List<CaseworkerCICDocument> docList = new ArrayList<>(getDocumentManagementDocs(data));
+        prepareOtherCaseDocuments(data, docList);
+        return docList;
+    }
+
+    private static List<CaseworkerCICDocument> prepareListExcludingInitialCicaUpload(CaseData data) {
+        List<CaseworkerCICDocument> docList =  data.getFurtherUploadedDocuments() != null ? data.getFurtherUploadedDocuments().stream()
+            .map(ListValue::getValue)
+            .collect(Collectors.toList()) : new ArrayList<>();
+        prepareOtherCaseDocuments(data, docList);
+        return docList;
+    }
+
+    private static void prepareOtherCaseDocuments(CaseData data, List<CaseworkerCICDocument> docList) {
         docList.addAll(getOrderDocuments(data.getCicCase()));
         docList.addAll(getCaseDocs(data.getCicCase()));
         docList.addAll(getReinstateDocuments(data.getCicCase()));
         docList.addAll(getDecisionDocs(data));
         docList.addAll(getFinalDecisionDocs(data));
-        docList.addAll(getDocumentManagementDocs(data));
         docList.addAll(getCloseCaseDocuments(data));
         docList.addAll(getHearingSummaryDocuments(data));
-        return docList;
+    }
+
+    public static List<ListValue<CaseworkerCICDocument>> getAllCaseDocumentsExcludingInitialCicaUpload(final CaseData data) {
+        return buildListValues(prepareListExcludingInitialCicaUpload(data));
     }
 
     public static List<ListValue<CaseworkerCICDocument>> getAllCaseDocuments(final CaseData data) {

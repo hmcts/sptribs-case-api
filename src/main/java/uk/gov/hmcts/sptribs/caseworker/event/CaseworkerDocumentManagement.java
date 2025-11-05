@@ -1,5 +1,6 @@
 package uk.gov.hmcts.sptribs.caseworker.event;
 
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -47,6 +48,7 @@ import static uk.gov.hmcts.sptribs.document.DocumentUtil.uploadDocument;
 @Component
 @Slf4j
 @Setter
+@RequiredArgsConstructor
 public class CaseworkerDocumentManagement implements CCDConfig<CaseData, State, UserRole> {
 
     private final UploadCaseDocuments uploadCaseDocuments = new UploadCaseDocuments();
@@ -90,6 +92,14 @@ public class CaseworkerDocumentManagement implements CCDConfig<CaseData, State, 
         caseData.getNewDocManagement().setCaseworkerCICDocumentUpload(new ArrayList<>());
         caseData.getNewDocManagement().setCaseworkerCICDocument(documents);
         uploadDocument(caseData);
+
+        if (caseData.isBundleOrderEnabled()) {
+            if (caseData.getFurtherUploadedDocuments() == null) {
+                caseData.setFurtherUploadedDocuments(documents);
+            } else {
+                caseData.getFurtherUploadedDocuments().addAll(documents);
+            }
+        }
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)

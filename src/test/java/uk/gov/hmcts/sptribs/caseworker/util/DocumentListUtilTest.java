@@ -337,4 +337,271 @@ public class DocumentListUtilTest {
         assertThat(result).isNotNull();
     }
 
+    @Test
+    void shouldGetAllCaseDocumentsExcludingInitialCicaUploadWithFurtherUploadedDocuments() {
+        //Given
+        final CaseData caseData = CaseData.builder().build();
+
+        // Set up further uploaded documents (these should be included)
+        List<ListValue<CaseworkerCICDocument>> furtherDocs = new ArrayList<>();
+        CaseworkerCICDocument furtherDoc = CaseworkerCICDocument.builder()
+            .documentCategory(DocumentType.LINKED_DOCS)
+            .documentLink(Document.builder().url("further-url").binaryUrl("further-url").filename("further-doc.pdf").build())
+            .documentEmailContent("further email content")
+            .build();
+        ListValue<CaseworkerCICDocument> furtherDocListValue = new ListValue<>();
+        furtherDocListValue.setValue(furtherDoc);
+        furtherDocs.add(furtherDocListValue);
+        caseData.setFurtherUploadedDocuments(furtherDocs);
+
+        // Set up initial CICA documents (these should be excluded)
+        List<ListValue<CaseworkerCICDocument>> initialDocs = new ArrayList<>();
+        CaseworkerCICDocument initialDoc = CaseworkerCICDocument.builder()
+            .documentCategory(DocumentType.APPLICATION_FORM)
+            .documentLink(Document.builder().url("initial-url").binaryUrl("initial-url").filename("initial-doc.pdf").build())
+            .documentEmailContent("initial email content")
+            .build();
+        ListValue<CaseworkerCICDocument> initialDocListValue = new ListValue<>();
+        initialDocListValue.setValue(initialDoc);
+        initialDocs.add(initialDocListValue);
+        caseData.setInitialCicaDocuments(initialDocs);
+
+        // Set up other documents that should be included
+        List<ListValue<CaseworkerCICDocument>> applicantDocs = new ArrayList<>();
+        CaseworkerCICDocument applicantDoc = CaseworkerCICDocument.builder()
+            .documentCategory(DocumentType.APPLICATION_FORM)
+            .documentLink(Document.builder().url("applicant-url").binaryUrl("applicant-url").filename("applicant-doc.pdf").build())
+            .documentEmailContent("applicant email content")
+            .build();
+        ListValue<CaseworkerCICDocument> applicantDocListValue = new ListValue<>();
+        applicantDocListValue.setValue(applicantDoc);
+        applicantDocs.add(applicantDocListValue);
+
+        CicCase cicCase = CicCase.builder()
+            .applicantDocumentsUploaded(applicantDocs)
+            .build();
+        caseData.setCicCase(cicCase);
+
+        //When
+        List<ListValue<CaseworkerCICDocument>> result = DocumentListUtil.getAllCaseDocumentsExcludingInitialCicaUpload(caseData);
+
+        //Then
+        assertThat(result).isNotNull();
+        assertThat(result).hasSize(2); // Should include further docs and applicant docs, but exclude initial docs
+
+        // Verify further uploaded document is included
+        assertThat(result.stream().anyMatch(doc ->
+            doc.getValue().getDocumentLink().getFilename().equals("further-doc.pdf"))).isTrue();
+
+        // Verify applicant document is included
+        assertThat(result.stream().anyMatch(doc ->
+            doc.getValue().getDocumentLink().getFilename().equals("applicant-doc.pdf"))).isTrue();
+
+        // Verify initial CICA document is excluded
+        assertThat(result.stream().noneMatch(doc ->
+            doc.getValue().getDocumentLink().getFilename().equals("initial-doc.pdf"))).isTrue();
+    }
+
+    @Test
+    void shouldGetAllCaseDocumentsExcludingInitialCicaUploadWithNullFurtherUploadedDocuments() {
+        //Given
+        final CaseData caseData = CaseData.builder().build();
+
+        // Set further uploaded documents to null
+        caseData.setFurtherUploadedDocuments(null);
+
+        // Set up initial CICA documents (these should be excluded)
+        List<ListValue<CaseworkerCICDocument>> initialDocs = new ArrayList<>();
+        CaseworkerCICDocument initialDoc = CaseworkerCICDocument.builder()
+            .documentCategory(DocumentType.APPLICATION_FORM)
+            .documentLink(Document.builder().url("initial-url").binaryUrl("initial-url").filename("initial-doc.pdf").build())
+            .documentEmailContent("initial email content")
+            .build();
+        ListValue<CaseworkerCICDocument> initialDocListValue = new ListValue<>();
+        initialDocListValue.setValue(initialDoc);
+        initialDocs.add(initialDocListValue);
+        caseData.setInitialCicaDocuments(initialDocs);
+
+        // Set up other documents that should be included
+        List<ListValue<CaseworkerCICDocument>> applicantDocs = new ArrayList<>();
+        CaseworkerCICDocument applicantDoc = CaseworkerCICDocument.builder()
+            .documentCategory(DocumentType.APPLICATION_FORM)
+            .documentLink(Document.builder().url("applicant-url").binaryUrl("applicant-url").filename("applicant-doc.pdf").build())
+            .documentEmailContent("applicant email content")
+            .build();
+        ListValue<CaseworkerCICDocument> applicantDocListValue = new ListValue<>();
+        applicantDocListValue.setValue(applicantDoc);
+        applicantDocs.add(applicantDocListValue);
+
+        CicCase cicCase = CicCase.builder()
+            .applicantDocumentsUploaded(applicantDocs)
+            .build();
+        caseData.setCicCase(cicCase);
+
+        //When
+        List<ListValue<CaseworkerCICDocument>> result = DocumentListUtil.getAllCaseDocumentsExcludingInitialCicaUpload(caseData);
+
+        //Then
+        assertThat(result).isNotNull();
+        assertThat(result).hasSize(1); // Should include only applicant docs, exclude initial docs
+
+        // Verify applicant document is included
+        assertThat(result.stream().anyMatch(doc ->
+            doc.getValue().getDocumentLink().getFilename().equals("applicant-doc.pdf"))).isTrue();
+
+        // Verify initial CICA document is excluded
+        assertThat(result.stream().noneMatch(doc ->
+            doc.getValue().getDocumentLink().getFilename().equals("initial-doc.pdf"))).isTrue();
+    }
+
+    @Test
+    void shouldGetAllCaseDocumentsExcludingInitialCicaUploadWithEmptyFurtherUploadedDocuments() {
+        //Given
+        final CaseData caseData = CaseData.builder().build();
+
+        // Set further uploaded documents to empty list
+        caseData.setFurtherUploadedDocuments(new ArrayList<>());
+
+        // Set up initial CICA documents (these should be excluded)
+        List<ListValue<CaseworkerCICDocument>> initialDocs = new ArrayList<>();
+        CaseworkerCICDocument initialDoc = CaseworkerCICDocument.builder()
+            .documentCategory(DocumentType.APPLICATION_FORM)
+            .documentLink(Document.builder().url("initial-url").binaryUrl("initial-url").filename("initial-doc.pdf").build())
+            .documentEmailContent("initial email content")
+            .build();
+        ListValue<CaseworkerCICDocument> initialDocListValue = new ListValue<>();
+        initialDocListValue.setValue(initialDoc);
+        initialDocs.add(initialDocListValue);
+        caseData.setInitialCicaDocuments(initialDocs);
+
+        // Set up other documents that should be included
+        List<ListValue<CaseworkerCICDocument>> applicantDocs = new ArrayList<>();
+        CaseworkerCICDocument applicantDoc = CaseworkerCICDocument.builder()
+            .documentCategory(DocumentType.APPLICATION_FORM)
+            .documentLink(Document.builder().url("applicant-url").binaryUrl("applicant-url").filename("applicant-doc.pdf").build())
+            .documentEmailContent("applicant email content")
+            .build();
+        ListValue<CaseworkerCICDocument> applicantDocListValue = new ListValue<>();
+        applicantDocListValue.setValue(applicantDoc);
+        applicantDocs.add(applicantDocListValue);
+
+        CicCase cicCase = CicCase.builder()
+            .applicantDocumentsUploaded(applicantDocs)
+            .build();
+        caseData.setCicCase(cicCase);
+
+        //When
+        List<ListValue<CaseworkerCICDocument>> result = DocumentListUtil.getAllCaseDocumentsExcludingInitialCicaUpload(caseData);
+
+        //Then
+        assertThat(result).isNotNull();
+        assertThat(result).hasSize(1); // Should include only applicant docs, exclude initial docs
+
+        // Verify applicant document is included
+        assertThat(result.stream().anyMatch(doc ->
+            doc.getValue().getDocumentLink().getFilename().equals("applicant-doc.pdf"))).isTrue();
+
+        // Verify initial CICA document is excluded
+        assertThat(result.stream().noneMatch(doc ->
+            doc.getValue().getDocumentLink().getFilename().equals("initial-doc.pdf"))).isTrue();
+    }
+
+    @Test
+    void shouldGetAllCaseDocumentsExcludingInitialCicaUploadWithMultipleFurtherUploadedDocuments() {
+        //Given
+        final CaseData caseData = CaseData.builder().build();
+
+        // Set up multiple further uploaded documents
+        List<ListValue<CaseworkerCICDocument>> furtherDocs = new ArrayList<>();
+
+        CaseworkerCICDocument furtherDoc1 = CaseworkerCICDocument.builder()
+            .documentCategory(DocumentType.LINKED_DOCS)
+            .documentLink(Document.builder().url("further-url-1").binaryUrl("further-url-1").filename("further-doc-1.pdf").build())
+            .documentEmailContent("further email content 1")
+            .build();
+        ListValue<CaseworkerCICDocument> furtherDoc1ListValue = new ListValue<>();
+        furtherDoc1ListValue.setValue(furtherDoc1);
+        furtherDocs.add(furtherDoc1ListValue);
+
+        CaseworkerCICDocument furtherDoc2 = CaseworkerCICDocument.builder()
+            .documentCategory(DocumentType.APPLICATION_FORM)
+            .documentLink(Document.builder().url("further-url-2").binaryUrl("further-url-2").filename("further-doc-2.pdf").build())
+            .documentEmailContent("further email content 2")
+            .build();
+        ListValue<CaseworkerCICDocument> furtherDoc2ListValue = new ListValue<>();
+        furtherDoc2ListValue.setValue(furtherDoc2);
+        furtherDocs.add(furtherDoc2ListValue);
+
+        caseData.setFurtherUploadedDocuments(furtherDocs);
+
+        // Set up initial CICA documents (these should be excluded)
+        List<ListValue<CaseworkerCICDocument>> initialDocs = new ArrayList<>();
+        CaseworkerCICDocument initialDoc = CaseworkerCICDocument.builder()
+            .documentCategory(DocumentType.APPLICATION_FORM)
+            .documentLink(Document.builder().url("initial-url").binaryUrl("initial-url").filename("initial-doc.pdf").build())
+            .documentEmailContent("initial email content")
+            .build();
+        ListValue<CaseworkerCICDocument> initialDocListValue = new ListValue<>();
+        initialDocListValue.setValue(initialDoc);
+        initialDocs.add(initialDocListValue);
+        caseData.setInitialCicaDocuments(initialDocs);
+
+        // Set up other documents that should be included
+        List<ListValue<CaseworkerCICDocument>> applicantDocs = new ArrayList<>();
+        CaseworkerCICDocument applicantDoc = CaseworkerCICDocument.builder()
+            .documentCategory(DocumentType.APPLICATION_FORM)
+            .documentLink(Document.builder().url("applicant-url").binaryUrl("applicant-url").filename("applicant-doc.pdf").build())
+            .documentEmailContent("applicant email content")
+            .build();
+        ListValue<CaseworkerCICDocument> applicantDocListValue = new ListValue<>();
+        applicantDocListValue.setValue(applicantDoc);
+        applicantDocs.add(applicantDocListValue);
+
+        CicCase cicCase = CicCase.builder()
+            .applicantDocumentsUploaded(applicantDocs)
+            .build();
+        caseData.setCicCase(cicCase);
+
+        //When
+        List<ListValue<CaseworkerCICDocument>> result = DocumentListUtil.getAllCaseDocumentsExcludingInitialCicaUpload(caseData);
+
+        //Then
+        assertThat(result).isNotNull();
+        assertThat(result).hasSize(3); // Should include 2 further docs and 1 applicant doc, but exclude initial docs
+
+        // Verify both further uploaded documents are included
+        assertThat(result.stream().anyMatch(doc ->
+            doc.getValue().getDocumentLink().getFilename().equals("further-doc-1.pdf"))).isTrue();
+        assertThat(result.stream().anyMatch(doc ->
+            doc.getValue().getDocumentLink().getFilename().equals("further-doc-2.pdf"))).isTrue();
+
+        // Verify applicant document is included
+        assertThat(result.stream().anyMatch(doc ->
+            doc.getValue().getDocumentLink().getFilename().equals("applicant-doc.pdf"))).isTrue();
+
+        // Verify initial CICA document is excluded
+        assertThat(result.stream().noneMatch(doc ->
+            doc.getValue().getDocumentLink().getFilename().equals("initial-doc.pdf"))).isTrue();
+    }
+
+    @Test
+    void shouldGetAllCaseDocumentsExcludingInitialCicaUploadWithNoDocuments() {
+        //Given
+        final CaseData caseData = CaseData.builder().build();
+
+        // Set all document lists to null/empty
+        caseData.setFurtherUploadedDocuments(null);
+        caseData.setInitialCicaDocuments(null);
+
+        CicCase cicCase = CicCase.builder().build();
+        caseData.setCicCase(cicCase);
+
+        //When
+        List<ListValue<CaseworkerCICDocument>> result = DocumentListUtil.getAllCaseDocumentsExcludingInitialCicaUpload(caseData);
+
+        //Then
+        assertThat(result).isNotNull();
+        assertThat(result).isEmpty(); // Should return empty list when no documents exist
+    }
+
 }
