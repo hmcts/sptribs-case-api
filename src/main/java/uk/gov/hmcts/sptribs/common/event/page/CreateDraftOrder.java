@@ -14,7 +14,6 @@ import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 
 import static org.apache.commons.lang3.StringUtils.isEmpty;
 
-
 public class CreateDraftOrder implements CcdPageConfiguration {
 
     private static final String NEVER_SHOW = "orderContentOrderTemplate=\"NEVER_SHOW\"";
@@ -34,7 +33,8 @@ public class CreateDraftOrder implements CcdPageConfiguration {
             .complex(CaseData::getCicCase)
                 .readonly(CicCase::getReferralTypeForWA, NEVER_SHOW)
                 .readonly(CicCase::getCreateAndSendIssuingTypes, NEVER_SHOW)
-                .done();
+                .done()
+            .done();
     }
 
     public AboutToStartOrSubmitResponse<CaseData, State> midEvent(CaseDetails<CaseData, State> details,
