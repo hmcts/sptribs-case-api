@@ -11,18 +11,26 @@ import uk.gov.hmcts.sptribs.ciccase.model.State;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(MockitoExtension.class)
-class CaseworkerAnonymizeCaseTest {
+class CaseworkerAnonymiseCaseTest {
     @InjectMocks
-    private CaseworkerAnonymizeCase caseworkerAnonymizeCase;
+    private CaseworkerAnonymiseCase caseworkerAnonymiseCase;
 
     @Test
-    void shouldAnonymizeCaseSuccessfully() {
+    void shouldAnonymiseCaseSuccessfully() {
         final CaseData caseData = CaseData.builder().build();
         final CaseDetails<CaseData, State> details = new CaseDetails<>();
         details.setData(caseData);
+        final var cicCase = caseData.getCicCase();
+        cicCase.setAnonymisedAppellantName("Anonymised");
+        caseData.setCicCase(cicCase);
 
-        var response = caseworkerAnonymizeCase.aboutToSubmit(details, details);
+        final CaseDetails<CaseData, State> detailsBefore = new CaseDetails<>();
+        final CaseData caseDataBefore = CaseData.builder().build();
+        detailsBefore.setData(caseDataBefore);
+
+        var response = caseworkerAnonymiseCase.aboutToSubmit(details, detailsBefore);
 
         assertThat(response).isNotNull();
+        assertThat(response.getData().getCicCase().getAnonymisedAppellantName()).isEqualTo("Anonymised");
     }
 }

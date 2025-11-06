@@ -57,6 +57,9 @@ class CaseworkerCreateAndSendOrderTest {
         final var response = caseworkerCreateAndSendOrder.aboutToSubmit(details, details);
 
         assertThat(response).isNotNull();
+
+        final var submittedResponse = caseworkerCreateAndSendOrder.submitted(details, details);
+        assertThat(submittedResponse.getConfirmationHeader()).contains("# Order sent");
     }
 
     @Test
@@ -83,5 +86,46 @@ class CaseworkerCreateAndSendOrderTest {
         assertThat(response).isNotNull();
     }
 
+    @Test
+    void shouldSuccessfullySendUploadedOrder() {
+        // test uploaded order sending logic
+        final CaseDetails<CaseData, State> details = new CaseDetails<>();
+        final CaseData caseData = CaseData.builder().build();
+        details.setData(caseData);
+        final CicCase cicCase = CicCase.builder()
+            .createAndSendIssuingTypes(CreateAndSendIssueType.UPLOAD_A_NEW_ORDER_FROM_YOUR_COMPUTER)
+            .build();
+        caseData.setCicCase(cicCase);
 
+        final var response = caseworkerCreateAndSendOrder.aboutToSubmit(details, details);
+
+        assertThat(response).isNotNull();
+
+        final var submittedResponse = caseworkerCreateAndSendOrder.submitted(details, details);
+        assertThat(submittedResponse.getConfirmationHeader()).contains("# Order sent");
+    }
+
+    @Test
+    void shouldShowErrorMessageWhenUploadFails() {
+        // test uploaded order sending logic
+        final CaseDetails<CaseData, State> details = new CaseDetails<>();
+        final CaseData caseData = CaseData.builder().build();
+        details.setData(caseData);
+        final CicCase cicCase = CicCase.builder()
+            .createAndSendIssuingTypes(CreateAndSendIssueType.UPLOAD_A_NEW_ORDER_FROM_YOUR_COMPUTER)
+            .build();
+        caseData.setCicCase(cicCase);
+
+        DraftOrderContentCIC draftOrderContentCIC = DraftOrderContentCIC.builder()
+            .orderTemplate(OrderTemplate.CIC3_RULE_27)
+            .mainContent("Sample main content")
+            .orderSignature("Test Judge")
+            .build();
+        caseData.setDraftOrderContentCIC(draftOrderContentCIC);
+
+        final var response = caseworkerCreateAndSendOrder.aboutToSubmit(details, details);
+
+        assertThat(response.getErrors()).isNotEmpty();
+        assertThat(response.getErrors().getFirst()).isEqualTo("Please upload the order document to send to the parties.");
+    }
 }

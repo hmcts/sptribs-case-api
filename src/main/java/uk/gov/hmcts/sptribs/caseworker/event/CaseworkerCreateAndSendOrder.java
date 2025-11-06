@@ -13,6 +13,7 @@ import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.event.page.ApplyAnonymity;
 import uk.gov.hmcts.sptribs.caseworker.event.page.CreateAndSendOrderIssueSelect;
+import uk.gov.hmcts.sptribs.caseworker.event.page.DraftOrderFooter;
 import uk.gov.hmcts.sptribs.caseworker.event.page.SendOrderNotifyParties;
 import uk.gov.hmcts.sptribs.caseworker.event.page.SendOrderOrderDueDates;
 import uk.gov.hmcts.sptribs.caseworker.event.page.SendOrderUploadOrder;
@@ -73,7 +74,7 @@ public class CaseworkerCreateAndSendOrder implements CCDConfig<CaseData, State, 
     private static final CcdPageConfiguration previewOrder = new PreviewDraftOrder();
     private static final CcdPageConfiguration notifyParties = new SendOrderNotifyParties();
 
-    private final CcdPageConfiguration draftOrderFooter;
+    private final DraftOrderFooter draftOrderFooter;
     private final NewOrderIssuedNotification newOrderIssuedNotification;
 
     @Override
@@ -90,8 +91,7 @@ public class CaseworkerCreateAndSendOrder implements CCDConfig<CaseData, State, 
                 .submittedCallback(this::submitted)
                 .grant(CREATE_READ_UPDATE, SUPER_USER,
                     ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER, ST_CIC_HEARING_CENTRE_ADMIN,
-                    ST_CIC_HEARING_CENTRE_TEAM_LEADER, ST_CIC_SENIOR_JUDGE, ST_CIC_JUDGE, ST_CIC_WA_CONFIG_USER)
-                .publishToCamunda();
+                    ST_CIC_HEARING_CENTRE_TEAM_LEADER, ST_CIC_SENIOR_JUDGE, ST_CIC_JUDGE, ST_CIC_WA_CONFIG_USER);
 
         PageBuilder pageBuilder = new PageBuilder(eventBuilder);
         applyAnonymitySelect.addTo(pageBuilder);

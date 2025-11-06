@@ -50,7 +50,7 @@ public class OrderService {
                     orders.add(item);
                 } else {
                     String item = order.getId() + EventConstants.HYPHEN
-                        + order.getValue().getUploadedFile().get(0).getValue().getDocumentLink().getFilename();
+                        + order.getValue().getUploadedFile().getFirst().getValue().getDocumentLink().getFilename();
                     orders.add(item);
                 }
             }

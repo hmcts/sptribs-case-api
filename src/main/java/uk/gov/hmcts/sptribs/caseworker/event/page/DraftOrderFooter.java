@@ -21,6 +21,7 @@ import java.util.Locale;
 public class DraftOrderFooter implements CcdPageConfiguration {
 
     private final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss", Locale.ENGLISH);
+
     private final OrderService orderService;
 
     @Override
@@ -30,7 +31,7 @@ public class DraftOrderFooter implements CcdPageConfiguration {
             .pageShowConditions(PageShowConditionsUtil.createAndSendOrderConditions())
             .label("draftOrderDocFooter",
                 """
-
+                    Draft Order Footer
                     Order Signature
 
                     Confirm the Role and Surname of the person who made this order - this will be added to the bottom of the generated \

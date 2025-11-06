@@ -16,7 +16,8 @@ public class ApplyAnonymity implements CcdPageConfiguration {
             .pageLabel("Anonymity")
             .label("LabelCaseworkerApplyAnonymity","")
             .complex(CaseData::getCicCase)
-            .mandatory(CicCase::getAnonymiseYesOrNo)
+                .mandatory(CicCase::getAnonymiseYesOrNo)
+                .done()
             .done();
     }
 
@@ -24,8 +25,8 @@ public class ApplyAnonymity implements CcdPageConfiguration {
                                                                   CaseDetails<CaseData, State> caseDetailsBefore) {
         final CaseData caseData = caseDetails.getData();
 
-        // call to db to create anonymized name
-        caseData.getCicCase().setAnonymisedAppellantName("Anonymized Name");
+        // call to db to create anonymised name
+        caseData.getCicCase().setAnonymisedAppellantName("Anonymised Name");
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
             .build();
