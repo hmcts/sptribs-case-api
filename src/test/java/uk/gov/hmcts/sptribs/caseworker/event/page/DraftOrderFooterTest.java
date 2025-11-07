@@ -15,7 +15,6 @@ import java.util.Calendar;
 import java.util.Locale;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -39,11 +38,11 @@ class DraftOrderFooterTest {
         Calendar calendar = Calendar.getInstance();
         String date = simpleDateFormat.format(calendar.getTime());
 
-        when(orderService.generateOrderFile(eq(caseDetails.getData()), eq(caseDetails.getId()), eq(date))).thenReturn(caseData);
+        when(orderService.generateOrderFile(caseDetails.getData(), caseDetails.getId(), date)).thenReturn(caseData);
 
         var response = draftOrderFooter.midEvent(caseDetails, caseDetails);
         assertThat(response.getData()).isEqualTo(caseData);
-        verify(orderService).generateOrderFile(eq(caseDetails.getData()), eq(caseDetails.getId()), eq(date));
+        verify(orderService).generateOrderFile(caseDetails.getData(), caseDetails.getId(), date);
 
     }
 }
