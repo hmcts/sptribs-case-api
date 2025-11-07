@@ -281,6 +281,7 @@ class CaseworkerEditCaseTest {
             .representativeFullName(TEST_FIRST_NAME)
             .build();
         afterData.setCicCase(newCicCase);
+        afterData.setCaseFlags(null);
         beforeData.setCicCase(beforeCicCase);
         afterData.setNote("This is a test note");
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
