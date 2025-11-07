@@ -12,7 +12,6 @@ import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 import uk.gov.hmcts.sptribs.caseworker.event.page.DraftOrderFooter;
 import uk.gov.hmcts.sptribs.caseworker.model.CreateAndSendIssueType;
 import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderContentCIC;
-import uk.gov.hmcts.sptribs.caseworker.util.EventConstants;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.OrderTemplate;
@@ -64,7 +63,6 @@ class CaseworkerCreateAndSendOrderTest {
 
     @Test
     void shouldSuccessfullyCreateAndSendNewAnonymisedOrder() {
-        // test new order creation and sending logic
         final CaseDetails<CaseData, State> details = new CaseDetails<>();
         final CaseData caseData = CaseData.builder().build();
         details.setData(caseData);
@@ -154,7 +152,7 @@ class CaseworkerCreateAndSendOrderTest {
         assertThat(response).isNotNull();
     }
 
-    private CaseDetails <CaseData, State> caseDetailsBefore() {
+    private CaseDetails<CaseData, State> caseDetailsBefore() {
         final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
         final CaseData caseData = CaseData.builder().build();
         caseDetails.setData(caseData);
