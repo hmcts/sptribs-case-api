@@ -9,7 +9,6 @@ import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.Event;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
-import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.event.page.ApplyAnonymity;
 import uk.gov.hmcts.sptribs.caseworker.event.page.CreateAndSendOrderIssueSelect;
@@ -17,7 +16,6 @@ import uk.gov.hmcts.sptribs.caseworker.event.page.DraftOrderFooter;
 import uk.gov.hmcts.sptribs.caseworker.event.page.SendOrderNotifyParties;
 import uk.gov.hmcts.sptribs.caseworker.event.page.SendOrderOrderDueDates;
 import uk.gov.hmcts.sptribs.caseworker.event.page.SendOrderUploadOrder;
-import uk.gov.hmcts.sptribs.caseworker.model.CreateAndSendIssueType;
 import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderCIC;
 import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderContentCIC;
 import uk.gov.hmcts.sptribs.caseworker.model.Order;
@@ -35,11 +33,10 @@ import uk.gov.hmcts.sptribs.notification.dispatcher.NewOrderIssuedNotification;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import static java.lang.String.format;
-import static org.springframework.util.CollectionUtils.isEmpty;
+import static uk.gov.hmcts.sptribs.caseworker.model.CreateAndSendIssueType.CREATE_AND_SEND_NEW_ORDER;
+import static uk.gov.hmcts.sptribs.caseworker.model.CreateAndSendIssueType.UPLOAD_A_NEW_ORDER_FROM_YOUR_COMPUTER;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_CREATE_AND_SEND_ORDER;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventUtil.getRecipients;
 import static uk.gov.hmcts.sptribs.caseworker.util.SendOrderUtil.updateCicCaseOrderList;
@@ -119,51 +116,27 @@ public class CaseworkerCreateAndSendOrder implements CCDConfig<CaseData, State, 
                                                                        CaseDetails<CaseData, State> beforeDetails) {
         final CaseData caseData = details.getData();
 
-        DraftOrderCIC draftOrderCIC = DraftOrderCIC.builder()
-                .draftOrderContentCIC(caseData.getDraftOrderContentCIC())
-                .templateGeneratedDocument(caseData.getCicCase().getOrderTemplateIssued())
-                .build();
-
-        caseData.setDraftOrderContentCIC(new DraftOrderContentCIC());
-
-        if (isEmpty(caseData.getCicCase().getDraftOrderCICList())) {
-            final List<ListValue<DraftOrderCIC>> listValues = new ArrayList<>();
-
-            final ListValue<DraftOrderCIC> listValue = ListValue
-                    .<DraftOrderCIC>builder()
-                    .id("1")
-                    .value(draftOrderCIC)
+        Order.OrderBuilder orderBuilder = Order.builder();
+        if (caseData.getCicCase().getCreateAndSendIssuingTypes().equals(CREATE_AND_SEND_NEW_ORDER)) {
+            DraftOrderCIC draftOrderCIC = DraftOrderCIC.builder()
+                    .draftOrderContentCIC(caseData.getDraftOrderContentCIC())
+                    .templateGeneratedDocument(caseData.getCicCase().getOrderTemplateIssued())
                     .build();
 
-            listValues.add(listValue);
+            orderBuilder.draftOrder(draftOrderCIC);
 
-            caseData.getCicCase().setDraftOrderCICList(listValues);
-        } else {
-            AtomicInteger listValueIndex = new AtomicInteger(0);
-            ListValue<DraftOrderCIC> listValue = ListValue
-                    .<DraftOrderCIC>builder()
-                    .value(draftOrderCIC)
-                    .build();
-
-            caseData.getCicCase().getDraftOrderCICList().add(0, listValue);
-
-            caseData.getCicCase().getDraftOrderCICList().forEach(
-                    draftOrderListValue -> draftOrderListValue.setId(String.valueOf(listValueIndex.incrementAndGet())));
-
+            caseData.setDraftOrderContentCIC(new DraftOrderContentCIC());
+            caseData.getCicCase().setOrderTemplateIssued(null);
         }
 
-        caseData.setCurrentEvent("");
-        caseData.getCicCase().setOrderTemplateIssued(null);
-        if (caseData.getCicCase().getCreateAndSendIssuingTypes().equals(CreateAndSendIssueType.CREATE_AND_SEND_NEW_ORDER)) {
-            //set up and check order to send
-
-        }
-        if (caseData.getCicCase().getOrderFile() != null) {
-            updateCategoryToDocument(caseData.getCicCase().getOrderFile(), DocumentType.TRIBUNAL_DIRECTION.getCategory());
+        if (caseData.getCicCase().getCreateAndSendIssuingTypes().equals(UPLOAD_A_NEW_ORDER_FROM_YOUR_COMPUTER)) {
+            if (caseData.getCicCase().getOrderFile() != null) {
+                updateCategoryToDocument(caseData.getCicCase().getOrderFile(), DocumentType.TRIBUNAL_DIRECTION.getCategory());
+            }
+            orderBuilder.uploadedFile(caseData.getCicCase().getOrderFile());
         }
 
-        final Order order = Order.builder()
-                .uploadedFile(caseData.getCicCase().getOrderFile())
+        final Order order = orderBuilder
                 .dueDateList(caseData.getCicCase().getOrderDueDates())
                 .parties(getRecipients(caseData.getCicCase()))
                 .orderSentDate(LocalDate.now())
