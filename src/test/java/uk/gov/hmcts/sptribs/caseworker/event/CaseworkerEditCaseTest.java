@@ -93,9 +93,6 @@ class CaseworkerEditCaseTest {
         parties.add(PartiesCIC.SUBJECT);
         parties.add(PartiesCIC.APPLICANT);
         caseData.getCicCase().setPartiesCIC(parties);
-        caseData.setApplicantFlags(Flags.builder().build());
-        caseData.setSubjectFlags((Flags.builder().build()));
-        caseData.setCaseFlags(Flags.builder().build());
         updatedCaseDetails.setData(caseData);
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
@@ -283,9 +280,6 @@ class CaseworkerEditCaseTest {
             .applicantFullName(APPLICANT_FIRST_NAME)
             .representativeFullName(TEST_FIRST_NAME)
             .build();
-        afterData.setApplicantFlags(Flags.builder().build());
-        afterData.setSubjectFlags((Flags.builder().build()));
-        afterData.setCaseFlags(Flags.builder().build());
         afterData.setCicCase(newCicCase);
         beforeData.setCicCase(beforeCicCase);
         afterData.setNote("This is a test note");
@@ -326,9 +320,6 @@ class CaseworkerEditCaseTest {
             .applicantFullName(APPLICANT_FIRST_NAME)
             .representativeFullName(TEST_FIRST_NAME)
             .build();
-        afterData.setApplicantFlags(Flags.builder().build());
-        afterData.setSubjectFlags((Flags.builder().build()));
-        afterData.setCaseFlags(Flags.builder().build());
         afterData.setCicCase(newCicCase);
         beforeData.setCicCase(beforeCicCase);
         afterData.setNote("This is a test note");
@@ -370,8 +361,6 @@ class CaseworkerEditCaseTest {
             .representativeFullName(TEST_FIRST_NAME)
             .build();
         afterData.setApplicantFlags(Flags.builder().build());
-        afterData.setSubjectFlags((Flags.builder().build()));
-        afterData.setCaseFlags(Flags.builder().build());
         afterData.setCicCase(newCicCase);
         beforeData.setCicCase(beforeCicCase);
         afterData.setNote("This is a test note");
