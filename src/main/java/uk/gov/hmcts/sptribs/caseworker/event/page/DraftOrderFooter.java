@@ -31,7 +31,6 @@ public class DraftOrderFooter implements CcdPageConfiguration {
             .pageShowConditions(PageShowConditionsUtil.createAndSendOrderConditions())
             .label("draftOrderDocFooter",
                 """
-                    Draft Order Footer
                     Order Signature
 
                     Confirm the Role and Surname of the person who made this order - this will be added to the bottom of the generated \
