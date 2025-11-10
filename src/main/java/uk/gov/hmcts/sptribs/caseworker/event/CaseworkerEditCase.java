@@ -193,8 +193,7 @@ public class CaseworkerEditCase implements CCDConfig<CaseData, State, UserRole> 
                 .roleOnCase("applicant")
                 .build()
             );
-        }
-        else {
+        } else {
             data.setApplicantFlags(null);
         }
     }
