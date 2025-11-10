@@ -170,9 +170,9 @@ public class CaseworkerEditCase implements CCDConfig<CaseData, State, UserRole> 
     }
 
     private void updateRepresentativeFlags(CaseData data) {
-        if (data.getCicCase().getPartiesCIC().contains(PartiesCIC.REPRESENTATIVE) && data.getRepresentativeFlags() != null) {
+        if (data.getRepresentativeFlags() != null && data.getCicCase().getPartiesCIC().contains(PartiesCIC.REPRESENTATIVE)) {
             data.getRepresentativeFlags().setPartyName(data.getCicCase().getRepresentativeFullName());
-        } else if (data.getCicCase().getPartiesCIC().contains(PartiesCIC.REPRESENTATIVE) && data.getRepresentativeFlags() == null) {
+        } else if (data.getRepresentativeFlags() == null && data.getCicCase().getPartiesCIC().contains(PartiesCIC.REPRESENTATIVE)) {
             data.setRepresentativeFlags(Flags.builder()
                 .details(new ArrayList<>())
                 .partyName(data.getCicCase().getRepresentativeFullName())
@@ -184,9 +184,9 @@ public class CaseworkerEditCase implements CCDConfig<CaseData, State, UserRole> 
     }
 
     private void updateApplicantFlags(CaseData data) {
-        if (data.getCicCase().getPartiesCIC().contains(PartiesCIC.APPLICANT) && data.getApplicantFlags() != null) {
+        if (data.getApplicantFlags() != null && data.getCicCase().getPartiesCIC().contains(PartiesCIC.APPLICANT)) {
             data.getApplicantFlags().setPartyName(data.getCicCase().getApplicantFullName());
-        } else if (data.getCicCase().getPartiesCIC().contains(PartiesCIC.APPLICANT) && data.getApplicantFlags() == null) {
+        } else if (data.getApplicantFlags() == null && data.getCicCase().getPartiesCIC().contains(PartiesCIC.APPLICANT)) {
             data.setApplicantFlags(Flags.builder()
                 .details(new ArrayList<>())
                 .partyName(data.getCicCase().getApplicantFullName())
