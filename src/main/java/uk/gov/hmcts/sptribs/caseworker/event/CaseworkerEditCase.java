@@ -27,7 +27,6 @@ import uk.gov.hmcts.sptribs.common.event.page.SubjectDetails;
 import uk.gov.hmcts.sptribs.common.service.SubmissionService;
 
 import java.util.ArrayList;
-import java.util.Objects;
 
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_EDIT_CASE;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
