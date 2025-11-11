@@ -25,11 +25,11 @@ plugins {
   id 'org.owasp.dependencycheck' version '12.1.3'
   id 'org.sonarqube' version '6.3.1.5724'
   id 'io.spring.dependency-management' version '1.1.7'
-  id 'org.springframework.boot' version '3.5.5'
+  id 'org.springframework.boot' version '3.5.7'
   id 'com.github.ben-manes.versions' version '0.50.0'
   id 'hmcts.ccd.sdk' version '5.6.1'
   id "au.com.dius.pact" version "4.3.10"
-  id 'com.github.hmcts.rse-cft-lib' version '0.19.1892'
+  id 'com.github.hmcts.rse-cft-lib' version '0.19.1916'
 }
 
 apply plugin: 'cz.habarta.typescript-generator'
@@ -325,19 +325,19 @@ dependencies {
   }
 
   implementation 'io.swagger:swagger-annotations:1.6.16'
-  implementation group: 'ch.qos.logback', name: 'logback-classic', version: '1.5.18'
-  implementation group: 'ch.qos.logback', name: 'logback-core', version: '1.5.18'
+  implementation group: 'ch.qos.logback', name: 'logback-classic', version: '1.5.20'
+  implementation group: 'ch.qos.logback', name: 'logback-core', version: '1.5.20'
   implementation group: 'com.github.hmcts', name: 'core-case-data-store-client', version: '5.1.1'
   implementation group: 'com.github.hmcts', name:'ccd-case-document-am-client', version: '1.59.2'
   implementation group: 'com.github.hmcts', name: 'idam-java-client', version: '3.0.4'
   implementation group: 'com.github.hmcts.java-logging', name: 'logging', version: '6.1.9'
   implementation group: 'com.github.hmcts', name: 'service-auth-provider-java-client', version: '5.3.3'
   implementation group: 'net.logstash.logback', name: 'logstash-logback-encoder', version: '8.1'
-  implementation group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.25.1'
-  implementation group: 'org.apache.logging.log4j', name: 'log4j-to-slf4j', version: '2.25.1'
+  implementation group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.25.2'
+  implementation group: 'org.apache.logging.log4j', name: 'log4j-to-slf4j', version: '2.25.2'
   implementation group: 'org.elasticsearch', name: 'elasticsearch' , version: '7.17.29'
   implementation group: 'org.projectlombok', name: 'lombok', version: versions.lombok
-  implementation group: 'org.springdoc', name: 'springdoc-openapi-starter-webmvc-ui', version: '2.8.13'
+  implementation group: 'org.springdoc', name: 'springdoc-openapi-starter-webmvc-ui', version: '2.8.14'
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-web'
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-actuator'
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-aop'
@@ -350,8 +350,8 @@ dependencies {
   implementation group: 'uk.gov.service.notify', name: 'notifications-java-client', version: '5.2.1-RELEASE'
   implementation group: 'com.launchdarkly', name: 'launchdarkly-java-server-sdk', version: '7.10.2'
   implementation group: 'org.apache.commons', name: 'commons-collections4', version: '4.5.0'
-  implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.18.0'
-  implementation group: 'com.github.ben-manes.caffeine', name: 'caffeine', version: '3.2.2'
+  implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.19.0'
+  implementation group: 'com.github.ben-manes.caffeine', name: 'caffeine', version: '3.2.3'
   implementation 'org.camunda.bpm:camunda-external-task-client:7.23.0'
 
   annotationProcessor group: 'org.projectlombok', name: 'lombok', version: versions.lombok
@@ -368,19 +368,19 @@ dependencies {
   testImplementation group: 'com.jayway.awaitility', name: 'awaitility', version: '1.7.0'
   testImplementation group: 'com.github.stefanbirkner', name: 'system-lambda', version: '1.2.1'
   testImplementation group: 'org.assertj', name: 'assertj-core', version: '3.27.4'
-  testImplementation group: 'org.assertj', name: 'assertj-guava', version: '3.27.4'
+  testImplementation group: 'org.assertj', name: 'assertj-guava', version: '3.27.6'
   testImplementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-contract-stub-runner', version: '4.3.0'
   testImplementation group: 'org.projectlombok', name: 'lombok', version: versions.lombok
   testImplementation group: 'org.mockito', name: 'mockito-inline', version: '5.2.0'
   testImplementation group: 'io.github.openfeign', name: 'feign-jackson', version: '13.6'
   testImplementation group: 'io.rest-assured', name: 'rest-assured'
-  testImplementation group: 'org.apache.pdfbox', name: 'pdfbox', version: '3.0.5'
-  testImplementation group: 'com.microsoft.playwright', name: 'playwright', version: '1.55.0'
+  testImplementation group: 'org.apache.pdfbox', name: 'pdfbox', version: '3.0.6'
+  testImplementation group: 'com.microsoft.playwright', name: 'playwright', version: '1.56.0'
 
   testImplementation group: 'org.camunda.bpm.dmn', name: 'camunda-engine-dmn', version: "${versions.camunda}"
   testImplementation group: 'org.camunda.bpm', name: 'camunda-engine-plugin-spin', version: "${versions.camunda}"
   testImplementation group: 'org.camunda.bpm.assert', name: 'camunda-bpm-assert', version: '15.0.0'
-  testImplementation group: 'org.camunda.bpm', name: 'camunda-engine', version: '7.23.0'
+  testImplementation group: 'org.camunda.bpm', name: 'camunda-engine', version: '7.24.0'
 
   testAnnotationProcessor group: 'org.projectlombok', name: 'lombok', version: versions.lombok
   integrationTestImplementation sourceSets.main.runtimeClasspath
@@ -402,7 +402,7 @@ dependencies {
 
   // Provides fast-reload of just the sptribs service.
   cftlibImplementation 'org.springframework.boot:spring-boot-devtools'
-  cftlibTestImplementation 'com.microsoft.playwright:playwright:1.55.0'
+  cftlibTestImplementation 'com.microsoft.playwright:playwright:1.56.0'
   cftlibTestImplementation 'org.junit-pioneer:junit-pioneer:2.3.0'
   cftlibTestImplementation 'io.github.artsok:rerunner-jupiter:2.1.6'
 }
