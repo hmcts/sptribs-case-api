@@ -4,6 +4,7 @@ import uk.gov.hmcts.ccd.sdk.api.Permission;
 
 import java.util.Set;
 
+import static uk.gov.hmcts.ccd.sdk.api.Permission.C;
 import static uk.gov.hmcts.ccd.sdk.api.Permission.CR;
 import static uk.gov.hmcts.ccd.sdk.api.Permission.CRU;
 import static uk.gov.hmcts.ccd.sdk.api.Permission.CRUD;
@@ -20,6 +21,7 @@ public final class Permissions {
     public static final Set<Permission> READ_UPDATE_DELETE = Set.of(R, U, D);
     public static final Set<Permission> READ = Set.of(R);
     public static final Set<Permission> UPDATE_DELETE = Set.of(U, D);
+    public static final Set<Permission> CREATE_UPDATE = Set.of(C, U);
 
     private Permissions() {
     }
