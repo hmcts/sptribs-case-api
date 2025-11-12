@@ -6,7 +6,6 @@ import uk.gov.hmcts.ccd.sdk.CaseView;
 import uk.gov.hmcts.ccd.sdk.CaseViewRequest;
 import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
-import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.common.repositories.CorrespondenceRepository;
 import uk.gov.hmcts.sptribs.notification.model.Correspondence;
@@ -15,10 +14,11 @@ import uk.gov.hmcts.sptribs.notification.persistence.CorrespondenceEntity;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 
 @Component
 @Primary
-public class CicCaseView implements CaseView<CaseData, State> {
+public class CicCaseView implements CaseView<CriminalInjuriesCompensationData, State> {
 
     private final CorrespondenceRepository correspondenceRepository;
 
@@ -27,7 +27,8 @@ public class CicCaseView implements CaseView<CaseData, State> {
     }
 
     @Override
-    public CaseData getCase(CaseViewRequest<State> request, CaseData blobCase) {
+    public CriminalInjuriesCompensationData getCase(CaseViewRequest<State> request,
+                                                   CriminalInjuriesCompensationData blobCase) {
         // Invoked whenever CCD needs to load a case.
         // Load up any additional data or perform transformations as needed.
         List<ListValue<Correspondence>> correspondences = new ArrayList<>();

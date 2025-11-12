@@ -4,11 +4,11 @@ import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.ccd.sdk.CaseViewRequest;
 import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
-import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.common.repositories.CorrespondenceRepository;
 import uk.gov.hmcts.sptribs.notification.model.Correspondence;
 import uk.gov.hmcts.sptribs.notification.persistence.CorrespondenceEntity;
+import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -25,12 +25,11 @@ class CicCaseViewTest {
 
     @Test
     void shouldReturnProvidedCaseDataUnchanged() {
-        CaseData caseData = CaseData.builder()
-            .caseNameHmctsInternal("Sample case")
-            .build();
+        CriminalInjuriesCompensationData caseData = new CriminalInjuriesCompensationData();
+        caseData.setCaseNameHmctsInternal("Sample case");
         CaseViewRequest<State> request = new CaseViewRequest<>(1234567890123456L, State.CaseManagement);
 
-        CaseData returnedCaseData = cicCaseView.getCase(request, caseData);
+        var returnedCaseData = cicCaseView.getCase(request, caseData);
 
         assertThat(returnedCaseData).isSameAs(caseData);
     }
@@ -55,10 +54,9 @@ class CicCaseViewTest {
             .correspondenceType("Email")
             .build());
 
-        CaseData caseData = CaseData.builder()
-            .caseNameHmctsInternal("Sample case")
-            .correspondence(singletonList(testCorrespondenceListValue))
-            .build();
+        CriminalInjuriesCompensationData caseData = new CriminalInjuriesCompensationData();
+        caseData.setCaseNameHmctsInternal("Sample case");
+        caseData.setCorrespondence(singletonList(testCorrespondenceListValue));
 
         CaseViewRequest<State> request = new CaseViewRequest<>(1234567890123456L, State.CaseManagement);
 
@@ -78,7 +76,7 @@ class CicCaseViewTest {
         when(correspondenceRepository.findAllByCaseReferenceNumberOrderBySentOnDesc(request.caseRef()))
             .thenReturn(singletonList(testCorrespondenceEntity));
 
-        CaseData returnedCaseData = cicCaseView.getCase(request, caseData);
+        CriminalInjuriesCompensationData returnedCaseData = cicCaseView.getCase(request, caseData);
 
         assertThat(returnedCaseData).isSameAs(caseData);
     }
