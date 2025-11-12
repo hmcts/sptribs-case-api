@@ -32,7 +32,7 @@ plugins {
   id 'com.github.ben-manes.versions' version '0.50.0'
   id 'hmcts.ccd.sdk' version '6.5.2'
   id "au.com.dius.pact" version "4.3.10"
-  id 'com.github.hmcts.rse-cft-lib' version '0.19.1916'
+  id 'com.github.hmcts.rse-cft-lib' version '0.19.1922'
 }
 
 apply plugin: 'cz.habarta.typescript-generator'
@@ -410,7 +410,7 @@ dependencies {
   functionalTestImplementation group: 'org.projectlombok', name: 'lombok', version: versions.lombok
   functionalTestAnnotationProcessor group: 'org.projectlombok', name: 'lombok', version: versions.lombok
 
-  contractTestImplementation group: 'au.com.dius.pact.consumer', name: 'junit5', version: '4.6.17'
+  contractTestImplementation group: 'au.com.dius.pact.consumer', name: 'junit5', version: '4.6.18'
 
   contractTestImplementation sourceSets.main.runtimeClasspath
   contractTestImplementation sourceSets.test.runtimeClasspath
