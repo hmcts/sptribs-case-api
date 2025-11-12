@@ -102,6 +102,34 @@ class RequestInterceptorTest {
         when(request.getHeader(SERVICE_AUTHORIZATION)).thenReturn(TEST_AUTHORIZATION_TOKEN);
 
         //When
+        Boolean result = requestInterceptor.preHandle(request, response, new Object());
+
+        //Then
+        assertThat(result).isTrue();
+        verify(validator).getServiceName(AUTH_TOKEN_WITH_BEARER_PREFIX);
+    }
+
+    @Test
+    void shouldThrowExceptionWhenNonCcdDataServiceCallsCcdPersistenceEndpoint() {
+        //Given
+        when(validator.getServiceName(AUTH_TOKEN_WITH_BEARER_PREFIX)).thenReturn("test_service");
+        when(request.getHeader(SERVICE_AUTHORIZATION)).thenReturn(TEST_AUTHORIZATION_TOKEN);
+        when(request.getRequestURI()).thenReturn("/ccd-persistence/cases");
+
+        //When / Then
+        assertThatThrownBy(() -> requestInterceptor.preHandle(request, response, new Object()))
+            .isExactlyInstanceOf(UnAuthorisedServiceException.class)
+            .hasMessage("Service not authorised to access ccd-persistence endpoints");
+    }
+
+    @Test
+    void shouldAllowCcdDataServiceToCallCcdPersistenceEndpoint() {
+        //Given
+        when(validator.getServiceName(AUTH_TOKEN_WITH_BEARER_PREFIX)).thenReturn(CCD_DATA);
+        when(request.getHeader(SERVICE_AUTHORIZATION)).thenReturn(TEST_AUTHORIZATION_TOKEN);
+        when(request.getRequestURI()).thenReturn("/ccd-persistence/cases");
+
+        //When
         Boolean result = requestInterceptor.preHandle(request, response, testObj);
 
         //Then
