@@ -1,0 +1,35 @@
+{
+  "cicCaseCaseCategory": "Assessment",
+  "cicCaseCaseSubcategory": "other",
+  "cicCaseCaseReceivedDate": "2000-01-01",
+  "cicCasePartiesCIC": [
+    "SubjectCIC", "RepresentativeCIC", "ApplicantCIC"
+  ],
+  "cicCaseFullName": "Testing subject",
+  "cicCasePhoneNumber": "01234567891",
+  "cicCaseDateOfBirth": "2000-01-01",
+  "cicCaseAddress": {
+    "AddressLine1": "Buckingham Palace",
+    "PostTown": "London",
+    "Country": "United Kingdom",
+    "PostCode": "SW1A 1AA"
+  },
+  "cicCaseContactPreferenceType": "Email",
+  "cicCaseEmail": "subject@hmcts.net",
+  "cicCaseSubjectCIC": [
+    "SubjectCIC"
+  ],
+  "cicCaseRepresentativeFullName": "Testing representative",
+  "cicCaseRepresentativeCIC": [
+    "RepresentativeCIC"
+  ],
+  "cicCaseApplicantFullName": "Testing applicant",
+  "cicCaseNotifyPartyApplicant": [
+    "ApplicantCIC"
+  ],
+  "cicCaseSchemeCic": "Year2012",
+  "cicCaseRegionCIC": "London",
+  "cicCaseClaimLinkedToCic": "No",
+  "cicCaseCompensationClaimLinkCIC": "No",
+  "cicCaseFormReceivedInTime": "Yes"
+}

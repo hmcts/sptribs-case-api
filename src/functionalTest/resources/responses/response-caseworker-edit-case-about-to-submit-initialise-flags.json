@@ -1,0 +1,66 @@
+{
+  "data": {
+    "caseLinks": [],
+    "caseFlags": {
+      "details": []
+    },
+    "subjectFlags": {
+      "partyName": "Testing subject",
+      "roleOnCase": "subject",
+      "details": []
+    },
+    "representativeFlags": {
+      "partyName": "Testing representative",
+      "roleOnCase": "Representative",
+      "details": []
+    },
+    "applicantFlags": {
+      "partyName": "Testing applicant",
+      "roleOnCase": "applicant",
+      "details": []
+    },
+    "allCaseworkerCICDocument": [],
+    "newCaseworkerCICDocument": [],
+    "editCicaCaseDetails": {},
+    "caseBundles": [],
+    "cicCaseCaseCategory": "Assessment",
+    "cicCaseCaseSubcategory": "other",
+    "cicCaseCaseReceivedDate": "2000-01-01",
+    "cicCasePartiesCIC": [
+      "SubjectCIC", "RepresentativeCIC", "ApplicantCIC"
+    ],
+    "cicCaseSubjectCIC": [
+      "SubjectCIC"
+    ],
+    "cicCaseRepresentativeFullName": "Testing representative",
+    "cicCaseRepresentativeCIC": [
+      "RepresentativeCIC"
+    ],
+    "cicCaseApplicantFullName": "Testing applicant",
+    "cicCaseNotifyPartyApplicant": [
+      "ApplicantCIC"
+    ],
+    "cicCaseRespondentName": "Appeals team",
+    "cicCaseRespondentOrganisation": "CICA",
+    "cicCaseRespondentEmail": "appeals.team@cica.gov.uk",
+    "cicCaseFullName": "Testing subject",
+    "cicCaseAddress": {
+      "AddressLine1": "Buckingham Palace",
+      "PostTown": "London",
+      "PostCode": "SW1A 1AA",
+      "Country": "United Kingdom"
+    },
+    "cicCasePhoneNumber": "01234567891",
+    "cicCaseEmail": "subject@hmcts.net",
+    "cicCaseDateOfBirth": "2000-01-01",
+    "cicCaseContactPreferenceType": "Email",
+    "cicCaseSchemeCic": "Year2012",
+    "cicCaseRegionCIC": "London",
+    "cicCaseFormReceivedInTime": "Yes",
+    "cicCaseClaimLinkedToCic": "No",
+    "cicCaseCompensationClaimLinkCIC": "No",
+    "stayIsCaseStayed": "No",
+    "hearingList": [],
+    "hyphenatedCaseRef": "1234-5678-9012-3456"
+  }
+}

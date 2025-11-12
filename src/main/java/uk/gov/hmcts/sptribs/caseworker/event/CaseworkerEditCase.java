@@ -148,11 +148,7 @@ public class CaseworkerEditCase implements CCDConfig<CaseData, State, UserRole> 
                 .roleOnCase(null)
                 .build());
         } else {
-            data.setCaseFlags(Flags.builder()
-                .details(data.getCaseFlags().getDetails())
-                .partyName(data.getCaseFlags().getPartyName())
-                .roleOnCase(data.getCaseFlags().getRoleOnCase())
-                .build());
+            data.getCaseFlags().setPartyName(data.getCaseFlags().getPartyName());
         }
 
         if (data.getSubjectFlags() == null) {
