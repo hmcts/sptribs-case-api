@@ -2,6 +2,7 @@ package uk.gov.hmcts.sptribs.caseworker.event.page;
 
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
+import uk.gov.hmcts.sptribs.ciccase.model.Anonymisation;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
@@ -16,7 +17,8 @@ public class ApplyAnonymity implements CcdPageConfiguration {
             .pageLabel("Anonymity")
             .label("LabelCaseworkerApplyAnonymity","")
             .complex(CaseData::getCicCase)
-                .mandatory(CicCase::getAnonymiseYesOrNo)
+                .complex(CicCase::getAnonymisation)
+                .mandatory(Anonymisation::getAnonymiseYesOrNo)
                 .done()
             .done();
     }
@@ -26,9 +28,11 @@ public class ApplyAnonymity implements CcdPageConfiguration {
         final CaseData caseData = caseDetails.getData();
 
         // call to db to create anonymised name
-        caseData.getCicCase().setAnonymisedAppellantName("Anonymised Name");
+        caseData.getCicCase().getAnonymisation().setAnonymisedAppellantName("Anonymised Name");
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
             .build();
     }
 }
+
+
