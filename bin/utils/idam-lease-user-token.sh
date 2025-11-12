@@ -8,7 +8,7 @@ PASSWORD=${2}
 IDAM_URI=${IDAM_API_URL_BASE:-http://localhost:5000}
 REDIRECT_URI=http://localhost:3451/oauth2redirect
 CLIENT_ID="ccd_gateway"
-CLIENT_SECRET=${CCD_API_GATEWAY_IDAM_CLIENT_SECRET:-ccd_gateway_secret}
+CLIENT_SECRET=${CCD_API_GATEWAY_IDAM_CLIENT_SECRET:-${CCD_API_GATEWAY_OAUTH2_CLIENT_SECRET:-ccd_gateway_secret}}
 SCOPE="openid%20profile%20roles"
 
 curl --silent --show-error --fail \
