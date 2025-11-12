@@ -30,9 +30,9 @@ plugins {
   id 'io.spring.dependency-management' version '1.1.7'
   id 'org.springframework.boot' version '3.5.7'
   id 'com.github.ben-manes.versions' version '0.50.0'
-  id 'hmcts.ccd.sdk' version '6.4.3'
+  id 'hmcts.ccd.sdk' version '6.5.2'
   id "au.com.dius.pact" version "4.3.10"
-  id 'com.github.hmcts.rse-cft-lib' version '0.19.1916'
+  id 'com.github.hmcts.rse-cft-lib' version '0.19.1922'
 }
 
 apply plugin: 'cz.habarta.typescript-generator'
@@ -51,8 +51,6 @@ project.tasks.named("generateCCDConfig") {
   environment 'SPRING_PROFILES_ACTIVE', 'config-gen'
   environment 'SPRING_FLYWAY_ENABLED', 'false'
   environment 'SPRING_JMS_SERVICEBUS_ENABLED', 'false'
-  environment 'SPRING_DATASOURCE_URL',
-    'jdbc:h2:mem:configgen;MODE=PostgreSQL;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false'
 }
 
 sourceSets {
@@ -340,7 +338,7 @@ dependencies {
   implementation 'io.swagger:swagger-annotations:1.6.16'
   implementation group: 'ch.qos.logback', name: 'logback-classic', version: '1.5.20'
   implementation group: 'ch.qos.logback', name: 'logback-core', version: '1.5.20'
-  implementation group: 'com.github.hmcts', name: 'core-case-data-store-client', version: '5.1.1'
+  implementation group: 'com.github.hmcts', name: 'core-case-data-store-client', version: '5.2.0'
   implementation group: 'com.github.hmcts', name:'ccd-case-document-am-client', version: '1.59.2'
   implementation group: 'com.github.hmcts', name: 'idam-java-client', version: '3.0.4'
   implementation group: 'com.github.hmcts.java-logging', name: 'logging', version: '6.1.9'
@@ -352,7 +350,6 @@ dependencies {
   implementation group: 'org.projectlombok', name: 'lombok', version: versions.lombok
   implementation group: 'org.springdoc', name: 'springdoc-openapi-starter-webmvc-ui', version: '2.8.14'
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-web'
-  runtimeOnly 'com.h2database:h2'
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-jdbc'
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-actuator'
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-aop'
@@ -414,7 +411,7 @@ dependencies {
   functionalTestImplementation group: 'org.projectlombok', name: 'lombok', version: versions.lombok
   functionalTestAnnotationProcessor group: 'org.projectlombok', name: 'lombok', version: versions.lombok
 
-  contractTestImplementation group: 'au.com.dius.pact.consumer', name: 'junit5', version: '4.6.17'
+  contractTestImplementation group: 'au.com.dius.pact.consumer', name: 'junit5', version: '4.6.18'
 
   contractTestImplementation sourceSets.main.runtimeClasspath
   contractTestImplementation sourceSets.test.runtimeClasspath
