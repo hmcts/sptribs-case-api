@@ -9,11 +9,12 @@ java:
     CASE_DATA_STORE_BASEURL: http://{{ .Release.Name }}-ccd-data-store-api
     CASE_DOCUMENT_AM_BASEURL: http://${SERVICE_NAME}-ccd-case-document-am-api
     BUNDLING_API_URL: https://em-ccdorc-${SERVICE_FQDN}
+    SPRING_JMS_SERVICEBUS_ENABLED: false
     POSTGRES_HOST: '{{ tpl .Values.global.postgresHostname $}}'
+    POSTGRES_PORT: 5432
     POSTGRES_NAME: "{{ .Values.global.databaseNamePrefix }}sptribs-case-api"
     POSTGRES_USERNAME: ${SPTRIBS_POSTGRES_USERNAME_PREVIEW}
     POSTGRES_CONNECTION_OPTIONS: ""
-
   keyVaults:
     sptribs:
       secrets:
@@ -100,6 +101,7 @@ ccd:
         ELASTIC_SEARCH_HOSTS: ${SERVICE_NAME}-es-master:9200
         ELASTIC_SEARCH_DATA_NODES_HOSTS: http://${SERVICE_NAME}-es-master:9200
         CASE_DOCUMENT_AM_URL: http://${SERVICE_NAME}-ccd-case-document-am-api
+        CCD_DECENTRALISED_CASE-TYPE-SERVICE-URLS_CriminalInjuriesCompensation: https://${SERVICE_FQDN}
         IDAM_OAUTH2_DATA_STORE_CLIENT_SECRET: ${IDAM_OAUTH2_DATA_STORE_CLIENT_SECRET}
         IDAM_DATA_STORE_SYSTEM_USER_USERNAME: ${IDAM_DATA_STORE_SYSTEM_USER_USERNAME}
         IDAM_DATA_STORE_SYSTEM_USER_PASSWORD: ${IDAM_DATA_STORE_SYSTEM_USER_PASSWORD}
@@ -261,14 +263,54 @@ ccd:
       01_input.conf: |
         input  {
           jdbc {
-            jdbc_connection_string => "jdbc:postgresql://sptribs-preview.postgres.database.azure.com:5432/pr-${CHANGE_ID}-data-store?sslmode-require&stringtype=unspecified"
+            jdbc_connection_string => "jdbc:postgresql://sptribs-preview.postgres.database.azure.com:5432/pr-${CHANGE_ID}-sptribs?sslmode=require"
             jdbc_user => "hmcts"
             jdbc_password_filepath => "/etc/logstash/secrets/PASSWORD"
             jdbc_validate_connection => true
             jdbc_driver_library => "/usr/share/logstash/ccd/postgresql.jar"
             jdbc_driver_class => "org.postgresql.Driver"
             jdbc_default_timezone => "UTC"
-            statement => "UPDATE case_data SET marked_by_logstash = true WHERE marked_by_logstash = false RETURNING id, created_date, last_modified, jurisdiction, case_type_id, state, last_state_modified_date, data::TEXT as json_data, data_classification::TEXT as json_data_classification, reference, security_classification, supplementary_data::TEXT as json_supplementary_data"
+            statement => "
+              WITH next_batch AS (
+                SELECT reference, case_revision
+                FROM ccd.es_queue
+                ORDER BY enqueued_at
+                LIMIT 1000
+                FOR UPDATE SKIP LOCKED
+              ),
+              deleted AS (
+                DELETE FROM ccd.es_queue q
+                USING next_batch nb
+                WHERE q.reference = nb.reference
+                  AND q.case_revision = nb.case_revision
+                RETURNING q.reference, q.case_revision
+              )
+              SELECT
+                cd.id AS case_data_id,
+                cd.reference,
+                ce.id AS event_id,
+                cd.case_type_id,
+                cd.created_date,
+                ce.created_date AS last_modified,
+                cd.jurisdiction,
+                cd.last_state_modified_date,
+                cd.state,
+                cd.security_classification::TEXT,
+                ce.data::TEXT AS json_data,
+                '{}' AS json_data_classification,
+                cd.supplementary_data::TEXT AS json_supplementary_data,
+                cd.case_revision
+              FROM deleted d
+              JOIN ccd.case_data cd ON cd.reference = d.reference
+              JOIN LATERAL (
+                SELECT ce.*
+                FROM ccd.case_event ce
+                WHERE ce.case_data_id = cd.id
+                ORDER BY ce.id DESC
+                LIMIT 1
+              ) ce ON TRUE
+              WHERE cd.case_revision = d.case_revision
+            "
             clean_run => false
             schedule => "* * * * * *"
           }
@@ -379,7 +421,9 @@ ccd:
                 sniffing => false
                 index => "%{[index_id]}"
                 document_type => "_doc"
-                document_id => "%{id}"
+                document_id => "%{case_data_id}"
+                version => "%{case_revision}"
+                version_type => "external"
                 timeout => 60
             }
         }
@@ -533,6 +577,7 @@ postgresql:
       - name: "pr-${CHANGE_ID}-user-profile"
       - name: "pr-${CHANGE_ID}-role_assignment"
       - name: "pr-${CHANGE_ID}-emstitch"
+      - name: "pr-${CHANGE_ID}-sptribs"
 
 servicebus:
   enabled: false
