@@ -11,6 +11,7 @@ import uk.gov.hmcts.sptribs.notification.model.Correspondence;
 import uk.gov.hmcts.sptribs.notification.persistence.CorrespondenceEntity;
 
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.UUID;
 
 import static java.util.Collections.singletonList;
@@ -66,7 +67,7 @@ class CicCaseViewTest {
             .id(UUID.randomUUID())
             .eventType("TEST_EVENT")
             .caseReferenceNumber(1234567890123456L)
-            .sentOn(LocalDateTime.now().atOffset(java.time.ZoneOffset.UTC))
+            .sentOn(LocalDateTime.now().atOffset(ZoneOffset.UTC))
             .sentFrom("test@test.com")
             .sentTo("testRecipient@test.com")
             .documentUrl("http://test-url.com/document.pdf")
