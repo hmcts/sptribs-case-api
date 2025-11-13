@@ -32,7 +32,7 @@ plugins {
   id 'com.github.ben-manes.versions' version '0.50.0'
   id 'hmcts.ccd.sdk' version '6.5.3'
   id "au.com.dius.pact" version "4.3.10"
-  id 'com.github.hmcts.rse-cft-lib' version '0.19.1922'
+  id 'com.github.hmcts.rse-cft-lib' version '0.19.1923'
 }
 
 apply plugin: 'cz.habarta.typescript-generator'
@@ -366,7 +366,7 @@ dependencies {
   implementation group: 'org.apache.commons', name: 'commons-collections4', version: '4.5.0'
   implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.19.0'
   implementation group: 'com.github.ben-manes.caffeine', name: 'caffeine', version: '3.2.3'
-  implementation 'org.camunda.bpm:camunda-external-task-client:7.23.0'
+  implementation 'org.camunda.bpm:camunda-external-task-client:7.24.0'
   implementation group: 'org.postgresql', name: 'postgresql', version: '42.7.8'
   implementation 'org.flywaydb:flyway-database-postgresql:11.3.1'
   annotationProcessor group: 'org.projectlombok', name: 'lombok', version: versions.lombok
