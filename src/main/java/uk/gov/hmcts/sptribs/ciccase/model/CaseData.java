@@ -47,7 +47,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerAndSuperUserAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerRASValidationAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerWithCAAAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CitizenAccess;
-import uk.gov.hmcts.sptribs.ciccase.model.access.CollectionDefaultAccess;
+import uk.gov.hmcts.sptribs.ciccase.model.access.CollectionCreateUpdateOnlyAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.DSSUpdateAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.DefaultAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.GlobalSearchAccess;
@@ -251,7 +251,7 @@ public class CaseData {
         label = "Initial CICA Documents",
         typeOverride = Collection,
         typeParameterOverride = "CaseworkerCICDocument",
-        access = {CollectionDefaultAccess.class}
+        access = {CollectionCreateUpdateOnlyAccess.class}
     )
     private List<ListValue<CaseworkerCICDocument>> initialCicaDocuments;
 
@@ -259,7 +259,7 @@ public class CaseData {
         label = "Further Document Uploads",
         typeOverride = Collection,
         typeParameterOverride = "CaseworkerCICDocument",
-        access = {CollectionDefaultAccess.class}
+        access = {CollectionCreateUpdateOnlyAccess.class}
     )
     private List<ListValue<CaseworkerCICDocument>> furtherUploadedDocuments;
 
