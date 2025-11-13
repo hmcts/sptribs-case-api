@@ -16,7 +16,7 @@ import org.joda.time.DateTime;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class AnonymityEntity {
+public class AnonymisationEntity {
     @Id
     @Column(name = "case_reference", nullable = false)
     private Long caseReference;

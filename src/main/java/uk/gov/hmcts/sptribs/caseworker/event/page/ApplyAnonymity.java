@@ -1,37 +1,47 @@
 package uk.gov.hmcts.sptribs.caseworker.event.page;
 
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.sptribs.ciccase.model.Anonymisation;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
+import uk.gov.hmcts.sptribs.ciccase.persistence.AnonymisationEntity;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
+import uk.gov.hmcts.sptribs.common.service.AnonymisationService;
 
+@RequiredArgsConstructor
+@Component
 public class ApplyAnonymity implements CcdPageConfiguration {
+
+    private final AnonymisationService anonymisationService;
 
     @Override
     public void addTo(PageBuilder pageBuilder) {
         pageBuilder.page("caseworkerApplyAnonymity", this::midEvent)
-            .pageLabel("Anonymity")
-            .label("LabelCaseworkerApplyAnonymity","")
-            .complex(CaseData::getCicCase)
+                .pageLabel("Anonymity")
+                .label("LabelCaseworkerApplyAnonymity", "")
+                .complex(CaseData::getCicCase)
                 .complex(CicCase::getAnonymisation)
                 .mandatory(Anonymisation::getAnonymiseYesOrNo)
                 .done()
-            .done();
+                .done();
     }
 
     public AboutToStartOrSubmitResponse<CaseData, State> midEvent(CaseDetails<CaseData, State> caseDetails,
                                                                   CaseDetails<CaseData, State> caseDetailsBefore) {
         final CaseData caseData = caseDetails.getData();
 
-        // call to db to create anonymised name
-        caseData.getCicCase().getAnonymisation().setAnonymisedAppellantName("Anonymised Name");
+        AnonymisationEntity anonymisationEntity = anonymisationService.getOrCreateAnonymisation(caseDetails.getId());
+        String anonymisedName = anonymisationService.generateAnonymisedName(anonymisationEntity);
+        caseData.getCicCase().getAnonymisation().setAnonymisedAppellantName(anonymisedName);
+
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
-            .data(caseData)
-            .build();
+                .data(caseData)
+                .build();
     }
 }
 
