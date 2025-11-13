@@ -108,6 +108,7 @@ public class CaseData {
         access = {GlobalSearchAccess.class}
     )
     @SuppressWarnings("MemberName") // Field name is case-sensitive in CCD
+    @JsonProperty("SearchCriteria")
     private SearchCriteria SearchCriteria;
 
     @CCD(
