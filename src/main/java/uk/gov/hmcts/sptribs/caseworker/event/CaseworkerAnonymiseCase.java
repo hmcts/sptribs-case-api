@@ -1,5 +1,6 @@
 package uk.gov.hmcts.sptribs.caseworker.event;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
@@ -29,9 +30,10 @@ import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE;
 
 @Component
+@RequiredArgsConstructor
 public class CaseworkerAnonymiseCase implements CCDConfig<CaseData, State, UserRole> {
 
-    private static final ApplyAnonymity applyAnonymityPage = new ApplyAnonymity();
+    private final ApplyAnonymity applyAnonymityPage;
 
     @Override
     public void configure(ConfigBuilder<CaseData, State, UserRole> configBuilder) {

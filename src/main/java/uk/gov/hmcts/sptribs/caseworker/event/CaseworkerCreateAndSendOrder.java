@@ -61,7 +61,6 @@ import static uk.gov.hmcts.sptribs.document.DocumentUtil.updateCategoryToDocumen
 @RequiredArgsConstructor
 public class CaseworkerCreateAndSendOrder implements CCDConfig<CaseData, State, UserRole> {
 
-    private static final CcdPageConfiguration applyAnonymitySelect = new ApplyAnonymity();
     private static final CcdPageConfiguration createSendIssuingSelect = new CreateAndSendOrderIssueSelect();
 
     private static final CcdPageConfiguration createDraftOrder = new CreateDraftOrder();
@@ -71,6 +70,7 @@ public class CaseworkerCreateAndSendOrder implements CCDConfig<CaseData, State, 
     private static final CcdPageConfiguration previewOrder = new PreviewDraftOrder();
     private static final CcdPageConfiguration notifyParties = new SendOrderNotifyParties();
 
+    private final ApplyAnonymity applyAnonymitySelect;
     private final DraftOrderFooter draftOrderFooter;
     private final NewOrderIssuedNotification newOrderIssuedNotification;
 
