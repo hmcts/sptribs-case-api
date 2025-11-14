@@ -175,8 +175,6 @@ public class CaseworkerCreateAndSendOrder implements CCDConfig<CaseData, State, 
                 .build();
     }
 
-
-
     private void sendOrderNotification(String caseNumber, CaseData caseData) {
         if (!CollectionUtils.isEmpty(caseData.getCicCase().getNotifyPartySubject())) {
             newOrderIssuedNotification.sendToSubject(caseData, caseNumber);

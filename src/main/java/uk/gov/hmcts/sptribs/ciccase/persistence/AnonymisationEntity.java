@@ -8,7 +8,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.joda.time.DateTime;
+
+import java.time.LocalDateTime;
 
 @Entity
 @Table (name = "anonymisation")
@@ -21,9 +22,13 @@ public class AnonymisationEntity {
     @Column(name = "case_reference", nullable = false)
     private Long caseReference;
 
-    @Column(name = "anonymisation_seq", nullable = false)
+    @Column(name = "anonymisation_seq", nullable = false, updatable = false, insertable = false)
     private Long anonymisationSeq;
 
-    @Column(name = "created_at", nullable = false, updatable = false)
-    private DateTime createdAt;
+    @Column(name = "created_at", nullable = false, updatable = false, insertable = false)
+    private LocalDateTime createdAt;
+
+    public AnonymisationEntity(Long caseReference) {
+        this.caseReference = caseReference;
+    }
 }

@@ -12,15 +12,16 @@ import uk.gov.hmcts.sptribs.ciccase.model.access.DefaultAccess;
 @AllArgsConstructor
 @Builder
 public class Anonymisation {
-        @CCD(
-            label = "Apply anonymity to the case?",
-            access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
-        )
-        private YesOrNo anonymiseYesOrNo;
+    @CCD(
+        label = "Apply anonymity to the case?",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private YesOrNo anonymiseYesOrNo;
 
-        @CCD(
-            label = "Anonymised Name",
-            access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
-        )
-        private String anonymisedAppellantName;
+    @CCD(
+        label = "Anonymised Name",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private String anonymisedAppellantName;
+
 }
