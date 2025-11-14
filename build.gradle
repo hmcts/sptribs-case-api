@@ -51,6 +51,9 @@ project.tasks.named("generateCCDConfig") {
   environment 'SPRING_PROFILES_ACTIVE', 'config-gen'
   environment 'SPRING_FLYWAY_ENABLED', 'false'
   environment 'SPRING_JMS_SERVICEBUS_ENABLED', 'false'
+  environment 'SPRING_DATASOURCE_URL', 'jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;MODE=PostgreSQL'
+  environment 'SPRING_DATASOURCE_USERNAME', 'sa'
+  environment 'SPRING_DATASOURCE_PASSWORD', ''
 }
 
 sourceSets {
@@ -405,6 +408,7 @@ dependencies {
   functionalTestImplementation sourceSets.main.runtimeClasspath
   functionalTestImplementation sourceSets.test.runtimeClasspath
   functionalTestImplementation 'com.h2database:h2'
+  configGeneration 'com.h2database:h2'
 
   functionalTestImplementation group: 'com.github.hmcts', name: 'document-management-client', version: '7.0.1'
   functionalTestImplementation group: 'com.github.hmcts', name: 'service-auth-provider-java-client', version: '5.3.3'
