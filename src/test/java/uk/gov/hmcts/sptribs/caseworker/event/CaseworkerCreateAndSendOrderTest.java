@@ -9,9 +9,11 @@ import uk.gov.hmcts.ccd.sdk.ConfigBuilderImpl;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.Event;
 import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
+import uk.gov.hmcts.sptribs.caseworker.event.page.ApplyAnonymity;
 import uk.gov.hmcts.sptribs.caseworker.event.page.DraftOrderFooter;
 import uk.gov.hmcts.sptribs.caseworker.model.CreateAndSendIssueType;
 import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderContentCIC;
+import uk.gov.hmcts.sptribs.ciccase.model.Anonymisation;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.OrderTemplate;
@@ -29,6 +31,9 @@ class CaseworkerCreateAndSendOrderTest {
 
     @InjectMocks
     private CaseworkerCreateAndSendOrder caseworkerCreateAndSendOrder;
+
+    @Mock
+    private ApplyAnonymity applyAnonymity;
 
     @Mock
     private DraftOrderFooter draftOrderFooter;
@@ -66,9 +71,12 @@ class CaseworkerCreateAndSendOrderTest {
         final CaseDetails<CaseData, State> details = new CaseDetails<>();
         final CaseData caseData = CaseData.builder().build();
         details.setData(caseData);
-        final CicCase cicCase = CicCase.builder()
+        final Anonymisation anonymisation = Anonymisation.builder()
             .anonymiseYesOrNo(YesOrNo.YES)
             .anonymisedAppellantName("Anonymised Name")
+            .build();
+        final CicCase cicCase = CicCase.builder()
+            .anonymisation(anonymisation)
             .createAndSendIssuingTypes(CreateAndSendIssueType.CREATE_AND_SEND_NEW_ORDER)
             .build();
         caseData.setCicCase(cicCase);
@@ -94,8 +102,11 @@ class CaseworkerCreateAndSendOrderTest {
         final CaseDetails<CaseData, State> details = new CaseDetails<>();
         final CaseData caseData = CaseData.builder().build();
         details.setData(caseData);
-        final CicCase cicCase = CicCase.builder()
+        final Anonymisation anonymisation = Anonymisation.builder()
                 .anonymiseYesOrNo(YesOrNo.NO)
+                .build();
+        final CicCase cicCase = CicCase.builder()
+                .anonymisation(anonymisation)
                 .createAndSendIssuingTypes(CreateAndSendIssueType.CREATE_AND_SEND_NEW_ORDER)
                 .build();
         caseData.setCicCase(cicCase);
