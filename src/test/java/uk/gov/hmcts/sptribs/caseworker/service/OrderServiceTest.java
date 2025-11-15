@@ -68,8 +68,8 @@ class OrderServiceTest {
 
         assertThat(regionList).isNotNull();
         assertThat(regionList.getListItems()).isNotNull();
-        assertThat(regionList.getListItems().get(0)).isNotNull();
-        assertThat(regionList.getListItems().get(0).getLabel()).contains(OrderTemplate.CIC7_ME_DMI_REPORTS.name());
+        assertThat(regionList.getListItems().getFirst()).isNotNull();
+        assertThat(regionList.getListItems().getFirst().getLabel()).contains(OrderTemplate.CIC7_ME_DMI_REPORTS.name());
     }
 
     @Test
@@ -122,8 +122,8 @@ class OrderServiceTest {
 
         assertThat(regionList).isNotNull();
         assertThat(regionList.getListItems()).isNotNull();
-        assertThat(regionList.getListItems().get(0)).isNotNull();
-        assertThat(regionList.getListItems().get(0).getLabel()).contains("12345");
+        assertThat(regionList.getListItems().getFirst()).isNotNull();
+        assertThat(regionList.getListItems().getFirst().getLabel()).contains("12345");
 
     }
 

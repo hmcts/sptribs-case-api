@@ -7,6 +7,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 
+
 @Slf4j
 @Component
 public class PreviewDraftOrder implements CcdPageConfiguration {
@@ -24,10 +25,6 @@ public class PreviewDraftOrder implements CcdPageConfiguration {
 
                 If you are happy, continue to the next screen.""")
             .done();
-
-
     }
-
-
 }
 
