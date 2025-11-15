@@ -47,10 +47,11 @@ public class CaseFinalDecisionIssuedNotification implements PartiesNotification 
             final Map<String, String> uploadedDocuments = getUploadedDocuments(caseData);
             notificationResponse = sendEmailNotificationWithAttachment(templateVarsSubject,
                 cicCase.getEmail(),
-                uploadedDocuments);
+                uploadedDocuments,
+                caseNumber);
         } else {
             notificationHelper.addAddressTemplateVars(cicCase.getAddress(), templateVarsSubject);
-            notificationResponse = sendLetterNotification(templateVarsSubject);
+            notificationResponse = sendLetterNotification(templateVarsSubject, caseNumber);
         }
 
         cicCase.setSubjectNotifyList(notificationResponse);
@@ -66,10 +67,11 @@ public class CaseFinalDecisionIssuedNotification implements PartiesNotification 
             final Map<String, String> uploadedDocuments = getUploadedDocuments(caseData);
             notificationResponse = sendEmailNotificationWithAttachment(templateVarsRepresentative,
                 cicCase.getRepresentativeEmailAddress(),
-                uploadedDocuments);
+                uploadedDocuments,
+                caseNumber);
         } else {
             notificationHelper.addAddressTemplateVars(cicCase.getRepresentativeAddress(), templateVarsRepresentative);
-            notificationResponse = sendLetterNotification(templateVarsRepresentative);
+            notificationResponse = sendLetterNotification(templateVarsRepresentative, caseNumber);
         }
 
         cicCase.setRepNotificationResponse(notificationResponse);
@@ -84,7 +86,8 @@ public class CaseFinalDecisionIssuedNotification implements PartiesNotification 
 
         final NotificationResponse notificationResponse = sendEmailNotificationWithAttachment(templateVarsRespondent,
             caseData.getCicCase().getRespondentEmail(),
-            uploadedDocuments);
+            uploadedDocuments,
+            caseNumber);
         cicCase.setResNotificationResponse(notificationResponse);
     }
 
@@ -98,10 +101,11 @@ public class CaseFinalDecisionIssuedNotification implements PartiesNotification 
             final Map<String, String> uploadedDocuments = getUploadedDocuments(caseData);
             notificationResponse = sendEmailNotificationWithAttachment(templateVars,
                 cicCase.getApplicantEmailAddress(),
-                uploadedDocuments);
+                uploadedDocuments,
+                caseNumber);
         } else {
             notificationHelper.addAddressTemplateVars(cicCase.getApplicantAddress(), templateVars);
-            notificationResponse = sendLetterNotification(templateVars);
+            notificationResponse = sendLetterNotification(templateVars, caseNumber);
         }
 
         cicCase.setSubjectNotifyList(notificationResponse);
@@ -109,20 +113,21 @@ public class CaseFinalDecisionIssuedNotification implements PartiesNotification 
 
     private NotificationResponse sendEmailNotificationWithAttachment(final Map<String, Object> templateVars,
                                                                      String toEmail,
-                                                                     Map<String, String> uploadedDocuments) {
+                                                                     Map<String, String> uploadedDocuments,
+                                                                     String caseReferenceNumber) {
         final NotificationRequest request = notificationHelper.buildEmailNotificationRequest(toEmail,
             true,
             uploadedDocuments,
             templateVars,
             TemplateName.FINAL_DECISION_ISSUED_EMAIL);
-        return notificationService.sendEmail(request);
+        return notificationService.sendEmail(request, caseReferenceNumber);
     }
 
-    private NotificationResponse sendLetterNotification(Map<String, Object> templateVarsLetter) {
+    private NotificationResponse sendLetterNotification(Map<String, Object> templateVarsLetter, String caseReferenceNumber) {
         final NotificationRequest letterRequest = notificationHelper.buildLetterNotificationRequest(
             templateVarsLetter,
             TemplateName.FINAL_DECISION_ISSUED_POST);
-        return notificationService.sendLetter(letterRequest);
+        return notificationService.sendLetter(letterRequest, caseReferenceNumber);
     }
 
     private Map<String, String> getUploadedDocuments(CaseData caseData) {

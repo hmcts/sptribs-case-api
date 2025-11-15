@@ -34,7 +34,7 @@ public class ApplicationReceivedNotification implements PartiesNotification {
         final Map<String, Object> templateVars = notificationHelper.getSubjectCommonVars(caseNumber, caseData);
 
         if (caseData.getCicCase().getContactPreferenceType() == ContactPreferenceType.EMAIL) {
-            NotificationResponse notificationResponse = sendEmailNotification(caseData.getCicCase().getEmail(), templateVars);
+            NotificationResponse notificationResponse = sendEmailNotification(caseData.getCicCase().getEmail(), templateVars, caseNumber);
             caseData.getCicCase().setSubjectNotifyList(notificationResponse);
         }
     }
@@ -45,7 +45,7 @@ public class ApplicationReceivedNotification implements PartiesNotification {
         final Map<String, Object> templateVars = notificationHelper.getApplicantCommonVars(caseNumber, caseData);
 
         if (cicCase.getApplicantContactDetailsPreference() == ContactPreferenceType.EMAIL) {
-            NotificationResponse notificationResponse = sendEmailNotification(cicCase.getApplicantEmailAddress(), templateVars);
+            NotificationResponse notificationResponse = sendEmailNotification(cicCase.getApplicantEmailAddress(), templateVars, caseNumber);
             cicCase.setAppNotificationResponse(notificationResponse);
         }
     }
@@ -56,16 +56,19 @@ public class ApplicationReceivedNotification implements PartiesNotification {
         final Map<String, Object> templateVars = notificationHelper.getRepresentativeCommonVars(caseNumber, caseData);
 
         if (cicCase.getRepresentativeContactDetailsPreference() == ContactPreferenceType.EMAIL) {
-            NotificationResponse notificationResponse = sendEmailNotification(cicCase.getRepresentativeEmailAddress(), templateVars);
+            NotificationResponse notificationResponse = sendEmailNotification(cicCase.getRepresentativeEmailAddress(),
+                templateVars, caseNumber);
             cicCase.setRepNotificationResponse(notificationResponse);
         }
     }
 
-    private NotificationResponse sendEmailNotification(final String destinationAddress, final Map<String, Object> templateVars) {
+    private NotificationResponse sendEmailNotification(final String destinationAddress,
+                                                       final Map<String, Object> templateVars,
+                                                       String caseReferenceNumber) {
         final NotificationRequest request = notificationHelper.buildEmailNotificationRequest(
             destinationAddress,
             templateVars,
             TemplateName.APPLICATION_RECEIVED);
-        return notificationService.sendEmail(request);
+        return notificationService.sendEmail(request, caseReferenceNumber);
     }
 }

@@ -58,6 +58,7 @@ import static uk.gov.hmcts.sptribs.testutil.TestConstants.ISSUE_FINAL_DECISION_M
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.ISSUE_FINAL_DECISION_UPLOAD_MID_EVENT_URL;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.SUBMITTED_URL;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_AUTHORIZATION_TOKEN;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID_HYPHENATED;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.callbackRequest;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.caseData;
 import static uk.gov.hmcts.sptribs.testutil.TestEventConstants.CASEWORKER_ISSUE_FINAL_DECISION;
@@ -264,8 +265,10 @@ public class CaseworkerIssueFinalDecisionIT {
             .document(cicDocument)
             .build();
 
-        final CaseData caseData = CaseData.builder()
-            .cicCase(CicCase.builder()
+        final CaseData caseData = caseData();
+        caseData.setHyphenatedCaseRef(TEST_CASE_ID_HYPHENATED);
+        caseData.setCicCase(
+            CicCase.builder()
                 .notifyPartySubject(Set.of(SUBJECT))
                 .notifyPartyRespondent(Set.of(RESPONDENT))
                 .notifyPartyRepresentative(Set.of(REPRESENTATIVE))
@@ -282,9 +285,8 @@ public class CaseworkerIssueFinalDecisionIT {
                 .applicantFullName("Applicant Name")
                 .applicantEmailAddress("applicant@test.com")
                 .build()
-            )
-            .caseIssueFinalDecision(caseIssueFinalDecision)
-            .build();
+        );
+        caseData.setCaseIssueFinalDecision(caseIssueFinalDecision);
 
         final Document document = Document.builder()
             .url("url")
@@ -323,7 +325,7 @@ public class CaseworkerIssueFinalDecisionIT {
             .contains("# Final decision notice issued \n"
                 + "## A notification has been sent to: Subject, Respondent, Representative, Applicant");
 
-        verify(notificationServiceCIC, times(4)).sendEmail(any());
+        verify(notificationServiceCIC, times(4)).sendEmail(any(), eq(TEST_CASE_ID_HYPHENATED));
         verifyNoMoreInteractions(notificationServiceCIC);
     }
 
