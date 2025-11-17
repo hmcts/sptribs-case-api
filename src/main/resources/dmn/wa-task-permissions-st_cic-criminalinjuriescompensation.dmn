@@ -423,7 +423,7 @@
           <text>"Read,Own,Claim,Manage,Assign,Unassign,Complete,Cancel"</text>
         </outputEntry>
         <outputEntry id="LiteralExpression_16z67l7">
-          <text>"ADMIN"</text>
+          <text>"CTSC"</text>
         </outputEntry>
         <outputEntry id="LiteralExpression_0e3gtwo">
           <text></text>
@@ -453,7 +453,7 @@
           <text>"Read,Own,Claim,Manage,Assign,Unassign,Complete,Cancel"</text>
         </outputEntry>
         <outputEntry id="LiteralExpression_1cigz0r">
-          <text>"ADMIN"</text>
+          <text>"CTSC"</text>
         </outputEntry>
         <outputEntry id="LiteralExpression_18l5gp1">
           <text></text>
