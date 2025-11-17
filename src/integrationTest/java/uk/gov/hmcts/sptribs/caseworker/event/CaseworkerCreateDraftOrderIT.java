@@ -59,7 +59,7 @@ import static uk.gov.hmcts.sptribs.testutil.TestResourceUtil.expectedResponse;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
 @ContextConfiguration(initializers = {IdamWireMock.PropertiesInitializer.class})
-public class CaseWorkerCreateDraftOrderIT {
+public class CaseworkerCreateDraftOrderIT {
 
     @Autowired
     private MockMvc mockMvc;
