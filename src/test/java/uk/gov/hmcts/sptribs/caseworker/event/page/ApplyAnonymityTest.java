@@ -12,9 +12,18 @@ import uk.gov.hmcts.sptribs.ciccase.model.Anonymisation;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
+import uk.gov.hmcts.sptribs.ciccase.persistence.AnonymisationEntity;
 import uk.gov.hmcts.sptribs.common.service.AnonymisationService;
 
+import java.time.LocalDateTime;
+
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class ApplyAnonymityTest {
@@ -28,6 +37,7 @@ class ApplyAnonymityTest {
     @Test
     void shouldSuccessfullyApplyAnonymity() {
         final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+        caseDetails.setId(123L);
         final Anonymisation anonymisation = Anonymisation.builder()
             .anonymiseYesOrNo(YesOrNo.YES)
             .build();
@@ -39,8 +49,20 @@ class ApplyAnonymityTest {
             .build();
         caseDetails.setData(caseData);
 
+        final AnonymisationEntity anonymisationEntity = AnonymisationEntity.builder()
+                .anonymisationSeq(3L)
+                .caseReference(123L)
+                .createdAt(LocalDateTime.now())
+                .build();
+
+        when(anonymisationService.getOrCreateAnonymisation(123L)).thenReturn(anonymisationEntity);
+        when(anonymisationService.generateAnonymisedName(eq(anonymisationEntity))).thenReturn("AC");
+
         var response = applyAnonymity.midEvent(caseDetails, caseDetails);
+
+        verify(anonymisationService).getOrCreateAnonymisation(anyLong());
         assertThat(response).isNotNull();
+        assertThat(response.getData().getCicCase().getAnonymisation().getAnonymisedAppellantName().equals("AC"));
     }
 
     @Test
@@ -58,6 +80,9 @@ class ApplyAnonymityTest {
         caseDetails.setData(caseData);
 
         var response = applyAnonymity.midEvent(caseDetails, caseDetails);
+        verifyNoInteractions(anonymisationService);
+
         assertThat(response).isNotNull();
+        assertThat(response.getData().getCicCase().getAnonymisation().getAnonymisedAppellantName()).isNull();
     }
 }
