@@ -135,7 +135,18 @@ public abstract class FunctionalTestSuite {
         );
     }
 
+    private Long createPersistedCaseReference(Map<String, Object> caseData) {
+        CaseDetails createdCase = createCaseInCcd();
+        CaseData formatter = CaseData.builder().build();
+        caseData.put("hyphenatedCaseRef", formatter.formatCaseRef(createdCase.getId()));
+        return createdCase.getId();
+    }
+
     protected Response triggerCallback(Map<String, Object> caseData, String eventId, String url) throws IOException {
+        if (TestConstants.SUBMITTED_URL.equals(url)) {
+            return triggerCallback(caseData, eventId, url, createPersistedCaseReference(caseData));
+        }
+
         CallbackRequest request = CallbackRequest
             .builder()
             .eventId(eventId)
