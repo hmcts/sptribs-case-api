@@ -28,6 +28,10 @@ public class RequestInterceptor implements HandlerInterceptor {
 
     private static final String NO_AUTH_SERVICE_LIST = "List of authorised services is not yet configured";
     private static final String TOKEN_MISSING = "Service authorization token is missing";
+    private static final String CCD_DATA_SERVICE = "ccd_data";
+    private static final String CCD_PERSISTENCE_ENDPOINT_PREFIX = "/ccd-persistence";
+    private static final String CCD_PERSISTENCE_UNAUTHORISED =
+        "Service not authorised to access ccd-persistence endpoints";
 
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
         if (authorisedServices == null || authorisedServices.isEmpty()) {
@@ -51,6 +55,11 @@ public class RequestInterceptor implements HandlerInterceptor {
         if (!authorisedServices.contains(serviceName)) {
             log.error("Service {} not allowed to trigger save and sign out callback ", serviceName);
             throw new UnAuthorisedServiceException("Service " + serviceName + " not in configured list for accessing callback");
+        }
+
+        if (request.getRequestURI().startsWith(CCD_PERSISTENCE_ENDPOINT_PREFIX) && !CCD_DATA_SERVICE.equals(serviceName)) {
+            log.error(CCD_PERSISTENCE_UNAUTHORISED);
+            throw new UnAuthorisedServiceException(CCD_PERSISTENCE_UNAUTHORISED);
         }
 
         return true;
