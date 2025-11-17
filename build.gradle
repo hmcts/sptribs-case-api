@@ -362,7 +362,7 @@ dependencies {
   implementation group: 'uk.gov.service.notify', name: 'notifications-java-client', version: '5.2.1-RELEASE'
   implementation group: 'com.launchdarkly', name: 'launchdarkly-java-server-sdk', version: '7.10.2'
   implementation group: 'org.apache.commons', name: 'commons-collections4', version: '4.5.0'
-  implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.19.0'
+  implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.20.0'
   implementation group: 'com.github.ben-manes.caffeine', name: 'caffeine', version: '3.2.3'
   implementation 'org.camunda.bpm:camunda-external-task-client:7.24.0'
   implementation group: 'org.postgresql', name: 'postgresql', version: '42.7.8'
