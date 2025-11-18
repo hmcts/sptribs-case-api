@@ -49,7 +49,7 @@ class ApplyAnonymityTest {
 
         verify(anonymisationService).getOrCreateAnonymisation();
         assertThat(response).isNotNull();
-        assertThat(response.getData().getCicCase().getAnonymisation().getAnonymisedAppellantName().equals("AC"));
+        assertThat(response.getData().getCicCase().getAnonymisation().getAnonymisedAppellantName()).isEqualTo("AC");
     }
 
     @Test
