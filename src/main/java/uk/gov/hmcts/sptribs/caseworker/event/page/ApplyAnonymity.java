@@ -25,6 +25,7 @@ public class ApplyAnonymity implements CcdPageConfiguration {
                 .pageLabel("Anonymity")
                 .label("LabelCaseworkerApplyAnonymity", "")
                 .complex(CaseData::getCicCase)
+                .readonly(CicCase::getFullName, "LabelCaseworkerApplyAnonymity!=\"\"")
                 .complex(CicCase::getAnonymisation)
                 .mandatory(Anonymisation::getAnonymiseYesOrNo)
                 .done()
