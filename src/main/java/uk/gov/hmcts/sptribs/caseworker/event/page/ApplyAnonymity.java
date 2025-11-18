@@ -9,7 +9,6 @@ import uk.gov.hmcts.sptribs.ciccase.model.Anonymisation;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
-import uk.gov.hmcts.sptribs.ciccase.persistence.AnonymisationEntity;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.common.service.AnonymisationService;
@@ -36,9 +35,9 @@ public class ApplyAnonymity implements CcdPageConfiguration {
                                                                   CaseDetails<CaseData, State> caseDetailsBefore) {
         final CaseData caseData = caseDetails.getData();
 
-        if (caseData.getCicCase().getAnonymisation().getAnonymiseYesOrNo().equals(YesOrNo.YES)) {
-            AnonymisationEntity anonymisationEntity = anonymisationService.getOrCreateAnonymisation(caseDetails.getId());
-            String anonymisedName = anonymisationService.generateAnonymisedName(anonymisationEntity);
+        if (caseData.getCicCase().getAnonymisation().getAnonymiseYesOrNo().equals(YesOrNo.YES)
+            && caseData.getCicCase().getAnonymisation().getAnonymisedAppellantName() == null) {
+            String anonymisedName = anonymisationService.getOrCreateAnonymisation();
             caseData.getCicCase().getAnonymisation().setAnonymisedAppellantName(anonymisedName);
         }
 
