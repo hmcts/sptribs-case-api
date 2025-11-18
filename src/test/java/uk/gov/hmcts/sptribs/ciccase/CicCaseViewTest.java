@@ -12,6 +12,7 @@ import uk.gov.hmcts.sptribs.notification.persistence.CorrespondenceEntity;
 
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
 import java.util.UUID;
 
 import static java.util.Collections.singletonList;
@@ -43,7 +44,7 @@ class CicCaseViewTest {
             .binaryUrl("http://test-url.com/document.pdf/binary")
             .build();
 
-        LocalDateTime testSentOn = LocalDateTime.now();
+        String testSentOn = LocalDateTime.now().format(DateTimeFormatter.ofPattern("d MMM yyyy HH:mm"));
 
         ListValue<Correspondence> testCorrespondenceListValue = new ListValue<>();
         testCorrespondenceListValue.setId("1");

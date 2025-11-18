@@ -12,6 +12,7 @@ import uk.gov.hmcts.sptribs.common.repositories.CorrespondenceRepository;
 import uk.gov.hmcts.sptribs.notification.model.Correspondence;
 import uk.gov.hmcts.sptribs.notification.persistence.CorrespondenceEntity;
 
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -43,7 +44,7 @@ public class CicCaseView implements CaseView<CriminalInjuriesCompensationData, S
                 .build();
 
             Correspondence correspondence = Correspondence.builder()
-                .sentOn(correspondenceEntity.getSentOn().toLocalDateTime())
+                .sentOn(correspondenceEntity.getSentOn().format(DateTimeFormatter.ofPattern("d MMM yyyy HH:mm")))
                 .from(correspondenceEntity.getSentFrom())
                 .to(correspondenceEntity.getSentTo())
                 .documentUrl(correspondenceDocument)
