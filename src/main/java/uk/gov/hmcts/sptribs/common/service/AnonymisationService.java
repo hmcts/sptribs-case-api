@@ -1,10 +1,7 @@
 package uk.gov.hmcts.sptribs.common.service;
 
-import jakarta.persistence.EntityManager;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.sptribs.ciccase.persistence.AnonymisationEntity;
 import uk.gov.hmcts.sptribs.common.repositories.AnonymisationRepository;
 
 @Service
@@ -12,20 +9,10 @@ import uk.gov.hmcts.sptribs.common.repositories.AnonymisationRepository;
 public class AnonymisationService {
 
     private final AnonymisationRepository anonymisationRepository;
-    private final EntityManager entityManager;
 
-    @Transactional
-    public AnonymisationEntity getOrCreateAnonymisation(Long caseReference) {
-        return  anonymisationRepository.findByCaseReference(caseReference)
-            .orElseGet(() -> {
-                AnonymisationEntity entity = anonymisationRepository.saveAndFlush(new AnonymisationEntity(caseReference));
-                entityManager.refresh(entity);
-                return entity;
-            });
-    }
-
-    public String generateAnonymisedName(AnonymisationEntity anonymisationEntity) {
-        return sequenceToString(anonymisationEntity.getAnonymisationSeq());
+    public String getOrCreateAnonymisation() {
+        Long sequence = anonymisationRepository.getNextSequenceValue();
+        return sequenceToString(sequence);
     }
 
     private String sequenceToString(Long seq) {
