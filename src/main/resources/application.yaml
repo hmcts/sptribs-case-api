@@ -57,19 +57,14 @@ springdoc:
 azure:
   application-insights:
     instrumentation-key: ${app-insights-instrumentation-key:00000000-0000-0000-0000-000000000000}
-  servicebus:
-    ccd-case-events:
-      topic-name: ${AZURE_SERVICE_BUS_TOPIC_NAME:ccd-case-events-aat}
-      subscription-name: ${AZURE_SERVICE_BUS_SUBSCRIPTION_NAME:ccd-case-events-aat}
-      preview-connection-string: ${AZURE_SERVICE_BUS_PREVIEW_CONNECTION_STRING:dummy}
 
 ccd:
   servicebus:
     destination: ${CCD_SERVICEBUS_DESTINATION:${AZURE_SERVICE_BUS_TOPIC_NAME:ccd-case-events-aat}}
-    scheduler-enabled: ${SPTRIBS_SERVICEBUS_SCHEDULER_ENABLED:false}
-    batch-size: ${SPTRIBS_SERVICEBUS_BATCH_SIZE:1000}
+    scheduler-enabled: ${SPTRIBS_SERVICEBUS_SCHEDULER_ENABLED:true}
+    batch-size: ${SPTRIBS_SERVICEBUS_BATCH_SIZE:50}
     published-retention-days: ${SPTRIBS_SERVICEBUS_PUBLISHED_RETENTION_DAYS:7}
-    schedule: ${SPTRIBS_SERVICEBUS_SCHEDULE:*/30 * * * * *}
+    schedule: ${SPTRIBS_SERVICEBUS_SCHEDULE:*/10 * * * * *}
 
 uk:
   gov:
