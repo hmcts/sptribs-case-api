@@ -68,6 +68,11 @@ public class OrderService {
 
     public CaseData generateOrderFile(CaseData caseData, Long caseId, String date) {
         String subjectName = caseData.getCicCase().getFullName();
+        if (caseData.getCicCase().getAnonymisation() != null
+            && caseData.getCicCase().getAnonymisation().getAnonymiseYesOrNo().toBoolean()
+            && caseData.getCicCase().getAnonymisation().getAnonymisedAppellantName() != null) {
+            subjectName = caseData.getCicCase().getAnonymisation().getAnonymisedAppellantName();
+        }
         final String filename = "Order" + DOUBLE_HYPHEN + "[" + subjectName + "]" + DOUBLE_HYPHEN + date;
 
         Document generalOrderDocument = caseDataDocumentService.renderDocument(
