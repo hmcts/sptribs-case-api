@@ -156,6 +156,7 @@ task integration(type: Test) {
   classpath = sourceSets.integrationTest.runtimeClasspath
   failFast = true
   environment 'SPRING_PROFILES_ACTIVE', 'integration'
+  systemProperty 'spring.profiles.active', 'integration'
   include "**/*IT.class"
 }
 
