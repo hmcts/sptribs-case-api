@@ -143,7 +143,12 @@ public abstract class FunctionalTestSuite {
     }
 
     protected Response triggerCallback(Map<String, Object> caseData, String eventId, String url) throws IOException {
-        if (TestConstants.SUBMITTED_URL.equals(url)) {
+        return triggerCallback(caseData, eventId, url, true);
+    }
+
+    private Response triggerCallback(Map<String, Object> caseData, String eventId, String url, boolean createCase)
+        throws IOException {
+        if (createCase && TestConstants.SUBMITTED_URL.equals(url)) {
             return triggerCallback(caseData, eventId, url, createPersistedCaseReference(caseData));
         }
 
@@ -238,6 +243,11 @@ public abstract class FunctionalTestSuite {
             .body(request)
             .when()
             .post(url);
+    }
+
+    protected Response triggerCallbackWithoutPersistedCase(Map<String, Object> caseData, String eventId, String url)
+        throws IOException {
+        return triggerCallback(caseData, eventId, url, false);
     }
 
     protected List<CaseDetails> searchForCasesWithQuery(BoolQueryBuilder query) {
