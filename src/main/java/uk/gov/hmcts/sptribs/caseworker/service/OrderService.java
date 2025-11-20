@@ -22,9 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.COLON;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.DOUBLE_HYPHEN;
-import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.DRAFT;
 
 @Service
 @Slf4j
@@ -50,7 +48,7 @@ public class OrderService {
                     orders.add(item);
                 } else {
                     String item = order.getId() + EventConstants.HYPHEN
-                        + order.getValue().getUploadedFile().get(0).getValue().getDocumentLink().getFilename();
+                        + order.getValue().getUploadedFile().getFirst().getValue().getDocumentLink().getFilename();
                     orders.add(item);
                 }
             }
@@ -70,7 +68,7 @@ public class OrderService {
 
     public CaseData generateOrderFile(CaseData caseData, Long caseId, String date) {
         String subjectName = caseData.getCicCase().getFullName();
-        final String filename = DRAFT + COLON + "Order" + DOUBLE_HYPHEN + "[" + subjectName + "]" + DOUBLE_HYPHEN + date;
+        final String filename = "Order" + DOUBLE_HYPHEN + "[" + subjectName + "]" + DOUBLE_HYPHEN + date;
 
         Document generalOrderDocument = caseDataDocumentService.renderDocument(
             previewDraftOrderTemplateContent.apply(caseData, caseId),
