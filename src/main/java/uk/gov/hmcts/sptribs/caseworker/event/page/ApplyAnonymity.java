@@ -35,7 +35,7 @@ public class ApplyAnonymity implements CcdPageConfiguration {
         final CaseData caseData = caseDetails.getData();
 
         if (caseData.getCicCase().getAnonymiseYesOrNo().equals(YesOrNo.YES)
-            && caseData.getCicCase().getAnonymisedAppellantName() == null ) {
+            && caseData.getCicCase().getAnonymisedAppellantName() == null) {
             String anonymisedName = anonymisationService.getOrCreateAnonymisation();
             caseData.getCicCase().setAnonymisedAppellantName(anonymisedName);
         }
