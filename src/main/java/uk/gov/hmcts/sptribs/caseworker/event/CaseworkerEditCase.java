@@ -27,7 +27,6 @@ import uk.gov.hmcts.sptribs.common.event.page.SubjectDetails;
 import uk.gov.hmcts.sptribs.common.service.SubmissionService;
 
 import java.util.ArrayList;
-import java.util.Objects;
 
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_EDIT_CASE;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
@@ -141,20 +140,25 @@ public class CaseworkerEditCase implements CCDConfig<CaseData, State, UserRole> 
     }
 
     private void initialiseFlags(CaseData data) {
-        if (Objects.isNull(data.getCaseFlags())) {
+
+        if (data.getCaseFlags() == null) {
             data.setCaseFlags(Flags.builder()
                 .details(new ArrayList<>())
                 .partyName(null)
                 .roleOnCase(null)
                 .build());
+        } else {
+            data.getCaseFlags().setPartyName(data.getCaseFlags().getPartyName());
         }
 
-        if (Objects.isNull(data.getSubjectFlags()) || Objects.isNull(data.getSubjectFlags().getDetails())) {
+        if (data.getSubjectFlags() == null) {
             data.setSubjectFlags(Flags.builder()
                 .details(new ArrayList<>())
                 .partyName(data.getCicCase().getFullName())
                 .roleOnCase("subject")
                 .build());
+        } else {
+            data.getSubjectFlags().setPartyName(data.getCicCase().getFullName());
         }
 
         updateApplicantFlags(data);
@@ -162,30 +166,29 @@ public class CaseworkerEditCase implements CCDConfig<CaseData, State, UserRole> 
     }
 
     private void updateRepresentativeFlags(CaseData data) {
-        if (data.getCicCase().getPartiesCIC().contains(PartiesCIC.REPRESENTATIVE)) {
-            if (Objects.isNull(data.getRepresentativeFlags()) || Objects.isNull(data.getRepresentativeFlags().getDetails())) {
-                data.setRepresentativeFlags(Flags.builder()
-                    .details(new ArrayList<>())
-                    .partyName(data.getCicCase().getRepresentativeFullName())
-                    .roleOnCase("Representative")
-                    .build()
-                );
-            }
+        if (data.getRepresentativeFlags() != null && data.getCicCase().getPartiesCIC().contains(PartiesCIC.REPRESENTATIVE)) {
+            data.getRepresentativeFlags().setPartyName(data.getCicCase().getRepresentativeFullName());
+        } else if (data.getRepresentativeFlags() == null && data.getCicCase().getPartiesCIC().contains(PartiesCIC.REPRESENTATIVE)) {
+            data.setRepresentativeFlags(Flags.builder()
+                .details(new ArrayList<>())
+                .partyName(data.getCicCase().getRepresentativeFullName())
+                .roleOnCase("Representative")
+                .build());
         } else {
             data.setRepresentativeFlags(null);
         }
     }
 
     private void updateApplicantFlags(CaseData data) {
-        if (data.getCicCase().getPartiesCIC().contains(PartiesCIC.APPLICANT)) {
-            if (Objects.isNull(data.getApplicantFlags()) || Objects.isNull(data.getApplicantFlags().getDetails())) {
-                data.setApplicantFlags(Flags.builder()
-                    .details(new ArrayList<>())
-                    .partyName(data.getCicCase().getApplicantFullName())
-                    .roleOnCase("applicant")
-                    .build()
-                );
-            }
+        if (data.getApplicantFlags() != null && data.getCicCase().getPartiesCIC().contains(PartiesCIC.APPLICANT)) {
+            data.getApplicantFlags().setPartyName(data.getCicCase().getApplicantFullName());
+        } else if (data.getApplicantFlags() == null && data.getCicCase().getPartiesCIC().contains(PartiesCIC.APPLICANT)) {
+            data.setApplicantFlags(Flags.builder()
+                .details(new ArrayList<>())
+                .partyName(data.getCicCase().getApplicantFullName())
+                .roleOnCase("applicant")
+                .build()
+            );
         } else {
             data.setApplicantFlags(null);
         }

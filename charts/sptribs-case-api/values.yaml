@@ -35,7 +35,7 @@ wa:
 am-org-role-mapping-service:
   enabled: false
 servicebus:
-  enabled: false
+  enabled: true
 
 java:
   applicationPort: 4013
@@ -93,4 +93,6 @@ java:
     SERVICE_AUTH_PROVIDER_URL: http://rpe-service-auth-provider-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal
     NOTIFY_TEMPLATE_SIGN_IN_PROFESSIONAL_USERS_URL: https://manage-case.{{ .Values.global.environment }}.platform.hmcts.net/cases/case-details/
     S2S_AUTHORISED_SERVICES: ccd_definition,ccd_data,xui_webapp,sptribs_case_api,ccd_gw,sptribs_frontend,sptribs_dss_update_case_web
+
+    CCD_SERVICEBUS_DESTINATION: ccd-case-events-{{ .Values.global.environment }}
 
