@@ -25,6 +25,7 @@ public class ApplyAnonymity implements CcdPageConfiguration {
                 .label("LabelCaseworkerApplyAnonymity", "")
                 .complex(CaseData::getCicCase)
                     .readonly(CicCase::getFullName, "LabelCaseworkerApplyAnonymity!=\"\"")
+                    .readonly(CicCase::getAnonymisedAppellantName, "LabelCaseworkerApplyAnonymity!=\"\"")
                     .mandatory(CicCase::getAnonymiseYesOrNo)
                     .done()
                 .done();
@@ -34,10 +35,11 @@ public class ApplyAnonymity implements CcdPageConfiguration {
                                                                   CaseDetails<CaseData, State> caseDetailsBefore) {
         final CaseData caseData = caseDetails.getData();
 
-        if (caseData.getCicCase().getAnonymiseYesOrNo().equals(YesOrNo.YES)
-            && caseData.getCicCase().getAnonymisedAppellantName() == null) {
+        final CicCase cicCase = caseData.getCicCase();
+
+        if (cicCase.getAnonymiseYesOrNo().equals(YesOrNo.YES) && cicCase.getAnonymisedAppellantName() == null) {
             String anonymisedName = anonymisationService.getOrCreateAnonymisation();
-            caseData.getCicCase().setAnonymisedAppellantName(anonymisedName);
+            cicCase.setAnonymisedAppellantName(anonymisedName);
         }
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
