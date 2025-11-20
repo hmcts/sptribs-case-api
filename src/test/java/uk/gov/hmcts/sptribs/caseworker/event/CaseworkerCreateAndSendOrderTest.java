@@ -13,7 +13,6 @@ import uk.gov.hmcts.sptribs.caseworker.event.page.ApplyAnonymity;
 import uk.gov.hmcts.sptribs.caseworker.event.page.DraftOrderFooter;
 import uk.gov.hmcts.sptribs.caseworker.model.CreateAndSendIssueType;
 import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderContentCIC;
-import uk.gov.hmcts.sptribs.ciccase.model.Anonymisation;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.OrderTemplate;
