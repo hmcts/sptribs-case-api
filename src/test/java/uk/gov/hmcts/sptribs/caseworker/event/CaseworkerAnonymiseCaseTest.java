@@ -6,7 +6,6 @@ import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
-import uk.gov.hmcts.sptribs.ciccase.model.Anonymisation;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 
@@ -23,11 +22,9 @@ class CaseworkerAnonymiseCaseTest {
         final CaseDetails<CaseData, State> details = new CaseDetails<>();
         details.setData(caseData);
         final var cicCase = caseData.getCicCase();
-        Anonymisation anonymisation = Anonymisation.builder()
-            .anonymiseYesOrNo(YesOrNo.YES)
-            .anonymisedAppellantName("AA")
-            .build();
-        cicCase.setAnonymisation(anonymisation);
+        cicCase.setAnonymiseYesOrNo(YesOrNo.YES);
+        cicCase.setAnonymisedAppellantName("AA");
+
         caseData.setCicCase(cicCase);
 
         final CaseDetails<CaseData, State> detailsBefore = new CaseDetails<>();
@@ -37,6 +34,6 @@ class CaseworkerAnonymiseCaseTest {
         var response = caseworkerAnonymiseCase.aboutToSubmit(details, detailsBefore);
 
         assertThat(response).isNotNull();
-        assertThat(response.getData().getCicCase().getAnonymisation().getAnonymisedAppellantName()).isEqualTo("AA");
+        assertThat(response.getData().getCicCase().getAnonymisedAppellantName()).isEqualTo("AA");
     }
 }

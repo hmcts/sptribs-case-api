@@ -10,6 +10,7 @@ import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.ccd.sdk.type.DynamicList;
 import uk.gov.hmcts.ccd.sdk.type.DynamicListElement;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
+import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 import uk.gov.hmcts.sptribs.caseworker.model.Order;
 import uk.gov.hmcts.sptribs.caseworker.util.EventConstants;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
@@ -68,10 +69,9 @@ public class OrderService {
 
     public CaseData generateOrderFile(CaseData caseData, Long caseId, String date) {
         String subjectName = caseData.getCicCase().getFullName();
-        if (caseData.getCicCase().getAnonymisation() != null
-            && caseData.getCicCase().getAnonymisation().getAnonymiseYesOrNo().toBoolean()
-            && caseData.getCicCase().getAnonymisation().getAnonymisedAppellantName() != null) {
-            subjectName = caseData.getCicCase().getAnonymisation().getAnonymisedAppellantName();
+        if (caseData.getCicCase().getAnonymiseYesOrNo().equals(YesOrNo.YES)
+            && caseData.getCicCase().getAnonymisedAppellantName() != null) {
+            subjectName = caseData.getCicCase().getAnonymisedAppellantName();
         }
         final String filename = "Order" + DOUBLE_HYPHEN + "[" + subjectName + "]" + DOUBLE_HYPHEN + date;
 

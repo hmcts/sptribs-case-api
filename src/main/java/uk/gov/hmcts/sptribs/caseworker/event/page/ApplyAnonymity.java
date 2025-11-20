@@ -5,7 +5,6 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
-import uk.gov.hmcts.sptribs.ciccase.model.Anonymisation;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
@@ -25,10 +24,9 @@ public class ApplyAnonymity implements CcdPageConfiguration {
                 .pageLabel("Anonymity")
                 .label("LabelCaseworkerApplyAnonymity", "")
                 .complex(CaseData::getCicCase)
-                .readonly(CicCase::getFullName, "LabelCaseworkerApplyAnonymity!=\"\"")
-                .complex(CicCase::getAnonymisation)
-                .mandatory(Anonymisation::getAnonymiseYesOrNo)
-                .done()
+                    .readonly(CicCase::getFullName, "LabelCaseworkerApplyAnonymity!=\"\"")
+                    .mandatory(CicCase::getAnonymiseYesOrNo)
+                    .done()
                 .done();
     }
 
@@ -36,10 +34,10 @@ public class ApplyAnonymity implements CcdPageConfiguration {
                                                                   CaseDetails<CaseData, State> caseDetailsBefore) {
         final CaseData caseData = caseDetails.getData();
 
-        if (caseData.getCicCase().getAnonymisation().getAnonymiseYesOrNo().equals(YesOrNo.YES)
-            && caseData.getCicCase().getAnonymisation().getAnonymisedAppellantName() == null) {
+        if (caseData.getCicCase().getAnonymiseYesOrNo().equals(YesOrNo.YES)
+            && caseData.getCicCase().getAnonymisedAppellantName() == null ) {
             String anonymisedName = anonymisationService.getOrCreateAnonymisation();
-            caseData.getCicCase().getAnonymisation().setAnonymisedAppellantName(anonymisedName);
+            caseData.getCicCase().setAnonymisedAppellantName(anonymisedName);
         }
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()

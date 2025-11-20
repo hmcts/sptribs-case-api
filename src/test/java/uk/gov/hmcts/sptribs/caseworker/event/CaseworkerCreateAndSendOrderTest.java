@@ -71,12 +71,9 @@ class CaseworkerCreateAndSendOrderTest {
         final CaseDetails<CaseData, State> details = new CaseDetails<>();
         final CaseData caseData = CaseData.builder().build();
         details.setData(caseData);
-        final Anonymisation anonymisation = Anonymisation.builder()
-            .anonymiseYesOrNo(YesOrNo.YES)
-            .anonymisedAppellantName("Anonymised Name")
-            .build();
         final CicCase cicCase = CicCase.builder()
-            .anonymisation(anonymisation)
+                .anonymiseYesOrNo(YesOrNo.YES)
+                .anonymisedAppellantName("Anonymised Name")
             .createAndSendIssuingTypes(CreateAndSendIssueType.CREATE_AND_SEND_NEW_ORDER)
             .build();
         caseData.setCicCase(cicCase);
@@ -102,11 +99,8 @@ class CaseworkerCreateAndSendOrderTest {
         final CaseDetails<CaseData, State> details = new CaseDetails<>();
         final CaseData caseData = CaseData.builder().build();
         details.setData(caseData);
-        final Anonymisation anonymisation = Anonymisation.builder()
-                .anonymiseYesOrNo(YesOrNo.NO)
-                .build();
         final CicCase cicCase = CicCase.builder()
-                .anonymisation(anonymisation)
+                .anonymiseYesOrNo(YesOrNo.NO)
                 .createAndSendIssuingTypes(CreateAndSendIssueType.CREATE_AND_SEND_NEW_ORDER)
                 .build();
         caseData.setCicCase(cicCase);
