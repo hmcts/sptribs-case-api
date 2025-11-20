@@ -33,7 +33,7 @@
           <text>"create-draft-order"</text>
         </inputEntry>
         <inputEntry id="UnaryTests_0pzaled">
-          <text>"CaseManagement"</text>
+          <text>"CaseManagement", "ReadyToList"</text>
         </inputEntry>
         <inputEntry id="UnaryTests_1dz8lch">
           <text>"Withdrawal request"</text>
@@ -97,7 +97,7 @@
           <text>"create-draft-order"</text>
         </inputEntry>
         <inputEntry id="UnaryTests_0n012li">
-          <text>"CaseManagement"</text>
+          <text>"CaseManagement", "ReadyToList"</text>
         </inputEntry>
         <inputEntry id="UnaryTests_0qnm89t">
           <text>"Rule 27 request"</text>
@@ -353,7 +353,7 @@
           <text>"create-draft-order"</text>
         </inputEntry>
         <inputEntry id="UnaryTests_18z64ke">
-          <text>"CaseManagement"</text>
+          <text>"CaseManagement", "ReadyToList"</text>
         </inputEntry>
         <inputEntry id="UnaryTests_0xseb2q">
           <text>"New case"</text>
@@ -417,7 +417,7 @@
           <text>"create-draft-order"</text>
         </inputEntry>
         <inputEntry id="UnaryTests_0tensix">
-          <text>"CaseManagement"</text>
+          <text>"CaseManagement", "ReadyToList"</text>
         </inputEntry>
         <inputEntry id="UnaryTests_1w9ns8k">
           <text>"Time extension request"</text>
@@ -545,7 +545,7 @@
           <text>"create-draft-order"</text>
         </inputEntry>
         <inputEntry id="UnaryTests_1vszp6g">
-          <text>"CaseManagement"</text>
+          <text>"CaseManagement", "ReadyToList"</text>
         </inputEntry>
         <inputEntry id="UnaryTests_0gdf1cp">
           <text>"Strike out request"</text>
@@ -577,7 +577,7 @@
           <text>"create-draft-order"</text>
         </inputEntry>
         <inputEntry id="UnaryTests_0hr4yrm">
-          <text>"CaseManagement"</text>
+          <text>"CaseManagement", "ReadyToList"</text>
         </inputEntry>
         <inputEntry id="UnaryTests_1wbi73v">
           <text>"Stay request"</text>
@@ -801,7 +801,7 @@
           <text>"refer-to-legal-officer"</text>
         </inputEntry>
         <inputEntry id="UnaryTests_1955tbo">
-          <text>"CaseManagement"</text>
+          <text>"CaseManagement", "ReadyToList"</text>
         </inputEntry>
         <inputEntry id="UnaryTests_08h588e">
           <text>"New case"</text>
@@ -833,7 +833,7 @@
           <text>"refer-to-legal-officer"</text>
         </inputEntry>
         <inputEntry id="UnaryTests_1ezowpe">
-          <text>"CaseManagement"</text>
+          <text>"CaseManagement", "ReadyToList"</text>
         </inputEntry>
         <inputEntry id="UnaryTests_0hg9yz9">
           <text>"Time extension request"</text>
@@ -865,7 +865,7 @@
           <text>"refer-to-legal-officer"</text>
         </inputEntry>
         <inputEntry id="UnaryTests_0mg3wv8">
-          <text>"CaseManagement"</text>
+          <text>"CaseManagement", "ReadyToList"</text>
         </inputEntry>
         <inputEntry id="UnaryTests_0qg16a7">
           <text>"Strike out request"</text>
@@ -897,7 +897,7 @@
           <text>"refer-to-legal-officer"</text>
         </inputEntry>
         <inputEntry id="UnaryTests_0cdyq5s">
-          <text>"CaseManagement"</text>
+          <text>"CaseManagement", "ReadyToList"</text>
         </inputEntry>
         <inputEntry id="UnaryTests_1xk4vaj">
           <text>"Stay request"</text>
@@ -1025,7 +1025,7 @@
           <text>"refer-to-legal-officer"</text>
         </inputEntry>
         <inputEntry id="UnaryTests_08tj3s7">
-          <text>"CaseManagement"</text>
+          <text>"CaseManagement", "ReadyToList"</text>
         </inputEntry>
         <inputEntry id="UnaryTests_0knzls2">
           <text>"Withdrawal request"</text>
@@ -1089,7 +1089,7 @@
           <text>"refer-to-legal-officer"</text>
         </inputEntry>
         <inputEntry id="UnaryTests_1wltsiq">
-          <text>"CaseManagement"</text>
+          <text>"CaseManagement", "ReadyToList"</text>
         </inputEntry>
         <inputEntry id="UnaryTests_1ggy9bt">
           <text>"Rule 27 request"</text>
@@ -1505,7 +1505,7 @@
           <text>"refer-to-judge"</text>
         </inputEntry>
         <inputEntry id="UnaryTests_0ys1myi">
-          <text>"CaseManagement"</text>
+          <text>"CaseManagement", "ReadyToList"</text>
         </inputEntry>
         <inputEntry id="UnaryTests_0jlchl0">
           <text>"Stay request"</text>
@@ -1569,7 +1569,7 @@
           <text>"refer-to-judge"</text>
         </inputEntry>
         <inputEntry id="UnaryTests_0ylx5wu">
-          <text>"CaseManagement"</text>
+          <text>"CaseManagement", "ReadyToList"</text>
         </inputEntry>
         <inputEntry id="UnaryTests_1sw7z7x">
           <text>"New case"</text>
@@ -1633,7 +1633,7 @@
           <text>"refer-to-judge"</text>
         </inputEntry>
         <inputEntry id="UnaryTests_0a8zrm0">
-          <text>"CaseManagement"</text>
+          <text>"CaseManagement", "ReadyToList"</text>
         </inputEntry>
         <inputEntry id="UnaryTests_05boufg">
           <text>"Withdrawal request"</text>
@@ -1697,7 +1697,7 @@
           <text>"refer-to-judge"</text>
         </inputEntry>
         <inputEntry id="UnaryTests_0jb2u2f">
-          <text>"CaseManagement"</text>
+          <text>"CaseManagement", "ReadyToList"</text>
         </inputEntry>
         <inputEntry id="UnaryTests_086wqcs">
           <text>"Rule 27 request"</text>
@@ -1857,7 +1857,7 @@
           <text>"refer-to-judge"</text>
         </inputEntry>
         <inputEntry id="UnaryTests_1fjmkso">
-          <text>"CaseManagement"</text>
+          <text>"CaseManagement", "ReadyToList"</text>
         </inputEntry>
         <inputEntry id="UnaryTests_08wplkn">
           <text>"Strike out request"</text>
@@ -1889,7 +1889,7 @@
           <text>"refer-to-judge"</text>
         </inputEntry>
         <inputEntry id="UnaryTests_1dyjc0c">
-          <text>"CaseManagement"</text>
+          <text>"CaseManagement", "ReadyToList"</text>
         </inputEntry>
         <inputEntry id="UnaryTests_00qdyl2">
           <text>"Time extension request"</text>
