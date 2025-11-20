@@ -8,7 +8,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
-import uk.gov.hmcts.sptribs.ciccase.model.Anonymisation;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
@@ -32,11 +31,8 @@ class ApplyAnonymityTest {
     void shouldSuccessfullyApplyAnonymity() {
         final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
         caseDetails.setId(123L);
-        final Anonymisation anonymisation = Anonymisation.builder()
-            .anonymiseYesOrNo(YesOrNo.YES)
-            .build();
         final CicCase cicCase = CicCase.builder()
-            .anonymisation(anonymisation)
+            .anonymiseYesOrNo(YesOrNo.YES)
             .build();
         final CaseData caseData = CaseData.builder()
             .cicCase(cicCase)
@@ -49,17 +45,14 @@ class ApplyAnonymityTest {
 
         verify(anonymisationService).getOrCreateAnonymisation();
         assertThat(response).isNotNull();
-        assertThat(response.getData().getCicCase().getAnonymisation().getAnonymisedAppellantName()).isEqualTo("AC");
+        assertThat(response.getData().getCicCase().getAnonymisedAppellantName()).isEqualTo("AC");
     }
 
     @Test
     void shouldNotApplyAnonymityWhenNoSelected() {
         final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
-        final Anonymisation anonymisation = Anonymisation.builder()
-            .anonymiseYesOrNo(YesOrNo.NO)
-            .build();
         final CicCase cicCase = CicCase.builder()
-            .anonymisation(anonymisation)
+            .anonymiseYesOrNo(YesOrNo.NO)
             .build();
         final CaseData caseData = CaseData.builder()
             .cicCase(cicCase)
@@ -70,6 +63,6 @@ class ApplyAnonymityTest {
         verifyNoInteractions(anonymisationService);
 
         assertThat(response).isNotNull();
-        assertThat(response.getData().getCicCase().getAnonymisation().getAnonymisedAppellantName()).isNull();
+        assertThat(response.getData().getCicCase().getAnonymisedAppellantName()).isNull();
     }
 }

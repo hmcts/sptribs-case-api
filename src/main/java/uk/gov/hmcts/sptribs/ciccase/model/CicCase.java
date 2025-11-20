@@ -97,9 +97,16 @@ public class CicCase {
     private Set<ContactPartiesCIC> contactPartiesCIC;
 
     @CCD(
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+            label = "Apply anonymity to the case?",
+            access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
-    private Anonymisation anonymisation;
+    private YesOrNo anonymiseYesOrNo;
+
+    @CCD(
+            label = "Anonymised Name",
+            access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private String anonymisedAppellantName;
 
     @CCD(
         label = "How would you like to issue an order?",
