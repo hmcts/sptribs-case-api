@@ -10,6 +10,7 @@ import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.ccd.sdk.type.DynamicList;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
+import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderCIC;
 import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderContentCIC;
@@ -68,8 +69,8 @@ class OrderServiceTest {
 
         assertThat(regionList).isNotNull();
         assertThat(regionList.getListItems()).isNotNull();
-        assertThat(regionList.getListItems().get(0)).isNotNull();
-        assertThat(regionList.getListItems().get(0).getLabel()).contains(OrderTemplate.CIC7_ME_DMI_REPORTS.name());
+        assertThat(regionList.getListItems().getFirst()).isNotNull();
+        assertThat(regionList.getListItems().getFirst().getLabel()).contains(OrderTemplate.CIC7_ME_DMI_REPORTS.name());
     }
 
     @Test
@@ -122,8 +123,8 @@ class OrderServiceTest {
 
         assertThat(regionList).isNotNull();
         assertThat(regionList.getListItems()).isNotNull();
-        assertThat(regionList.getListItems().get(0)).isNotNull();
-        assertThat(regionList.getListItems().get(0).getLabel()).contains("12345");
+        assertThat(regionList.getListItems().getFirst()).isNotNull();
+        assertThat(regionList.getListItems().getFirst().getLabel()).contains("12345");
 
     }
 
@@ -132,7 +133,7 @@ class OrderServiceTest {
         final CaseDetails<CaseData, State> details = new CaseDetails<>();
         details.setId(12345L);
         final CaseData caseData = CaseData.builder().build();
-        final CicCase cicCase = CicCase.builder().fullName("Jane Smith").build();
+        final CicCase cicCase = CicCase.builder().fullName("Jane Smith").anonymiseYesOrNo(YesOrNo.NO).build();
         caseData.setCicCase(cicCase);
         final DraftOrderContentCIC orderContentCIC =
             DraftOrderContentCIC.builder().orderTemplate(OrderTemplate.CIC6_GENERAL_DIRECTIONS).build();
