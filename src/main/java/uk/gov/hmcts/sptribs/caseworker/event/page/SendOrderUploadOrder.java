@@ -39,8 +39,9 @@ public class SendOrderUploadOrder implements CcdPageConfiguration {
                  """
             )
             .complex(CaseData::getCicCase)
-            .mandatory(CicCase::getOrderFile)
-            .done();
+                .mandatory(CicCase::getOrderFile)
+                .done()
+            .readonly(CaseData::getCurrentEvent, "LabelPageNameUploadOrder=\"HIDDEN\"");
 
     }
 
