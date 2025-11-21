@@ -144,7 +144,7 @@ public class CaseworkerCreateAndSendOrder implements CCDConfig<CaseData, State, 
 
         updateCicCaseOrderList(caseData, order);
 
-        caseData.getCicCase().setOrderIssuingType(null);
+        caseData.getCicCase().setCreateAndSendIssuingTypes(null);
         caseData.getCicCase().setOrderFile(null);
         caseData.getCicCase().setOrderReminderYesOrNo(null);
         caseData.getCicCase().setOrderReminderDays(null);
