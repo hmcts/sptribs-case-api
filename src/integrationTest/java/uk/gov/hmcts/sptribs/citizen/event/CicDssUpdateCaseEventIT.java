@@ -42,6 +42,8 @@ import static uk.gov.hmcts.sptribs.testutil.TestConstants.AUTHORIZATION;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.SERVICE_AUTHORIZATION;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.SUBMITTED_URL;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_AUTHORIZATION_TOKEN;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID_HYPHENATED;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.callbackRequest;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.caseData;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getDssCaseData;
@@ -123,6 +125,7 @@ public class CicDssUpdateCaseEventIT {
     @Test
     void shouldSuccessfullyDispatchNotificationsInSubmitted() throws Exception {
         final CaseData caseData = caseData();
+        caseData.setHyphenatedCaseRef(TEST_CASE_ID_HYPHENATED);
 
         String response = mockMvc.perform(post(SUBMITTED_URL)
             .contentType(APPLICATION_JSON)
@@ -145,17 +148,18 @@ public class CicDssUpdateCaseEventIT {
             .isString()
             .contains("# CIC Dss Update Case Event Email notifications sent");
 
-        verify(notificationServiceCIC, times(2)).sendEmail(any());
+        verify(notificationServiceCIC, times(2)).sendEmail(any(), eq(TEST_CASE_ID.toString()));
         verifyNoMoreInteractions(notificationServiceCIC);
     }
 
     @Test
     void shouldReturnErrorMessageIfNotificationsFailInSubmitted() throws Exception {
         final CaseData caseData = caseData();
+        caseData.setHyphenatedCaseRef(TEST_CASE_ID_HYPHENATED);
 
         doThrow(NotificationException.class)
             .when(notificationServiceCIC)
-            .sendEmail(any(NotificationRequest.class));
+            .sendEmail(any(NotificationRequest.class), eq(TEST_CASE_ID.toString()));
 
         String response = mockMvc.perform(post(SUBMITTED_URL)
             .contentType(APPLICATION_JSON)

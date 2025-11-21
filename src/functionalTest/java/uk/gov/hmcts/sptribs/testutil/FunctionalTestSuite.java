@@ -135,7 +135,23 @@ public abstract class FunctionalTestSuite {
         );
     }
 
+    private Long createPersistedCaseReference(Map<String, Object> caseData) {
+        CaseDetails createdCase = createCaseInCcd();
+        CaseData formatter = CaseData.builder().build();
+        caseData.put("hyphenatedCaseRef", formatter.formatCaseRef(createdCase.getId()));
+        return createdCase.getId();
+    }
+
     protected Response triggerCallback(Map<String, Object> caseData, String eventId, String url) throws IOException {
+        return triggerCallback(caseData, eventId, url, true);
+    }
+
+    private Response triggerCallback(Map<String, Object> caseData, String eventId, String url, boolean createCase)
+        throws IOException {
+        if (createCase && TestConstants.SUBMITTED_URL.equals(url)) {
+            return triggerCallback(caseData, eventId, url, createPersistedCaseReference(caseData));
+        }
+
         CallbackRequest request = CallbackRequest
             .builder()
             .eventId(eventId)
@@ -227,6 +243,11 @@ public abstract class FunctionalTestSuite {
             .body(request)
             .when()
             .post(url);
+    }
+
+    protected Response triggerCallbackWithoutPersistedCase(Map<String, Object> caseData, String eventId, String url)
+        throws IOException {
+        return triggerCallback(caseData, eventId, url, false);
     }
 
     protected List<CaseDetails> searchForCasesWithQuery(BoolQueryBuilder query) {
