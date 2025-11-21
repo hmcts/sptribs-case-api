@@ -28,6 +28,7 @@ public class ApplyAnonymity implements CcdPageConfiguration {
                     .readonly(CicCase::getAnonymisedAppellantName, "LabelCaseworkerApplyAnonymity!=\"\"")
                     .mandatory(CicCase::getAnonymiseYesOrNo)
                     .done()
+                .readonly(CaseData::getCurrentEvent, "LabelCaseworkerApplyAnonymity=\"HIDDEN\"")
                 .done();
     }
 
