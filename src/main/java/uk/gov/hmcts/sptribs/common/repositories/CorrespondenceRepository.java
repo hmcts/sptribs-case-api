@@ -5,9 +5,10 @@ import org.springframework.stereotype.Repository;
 import uk.gov.hmcts.sptribs.notification.persistence.CorrespondenceEntity;
 
 import java.util.List;
+import java.util.UUID;
 
 @Repository
-public interface CorrespondenceRepository extends JpaRepository<CorrespondenceEntity, Long> {
+public interface CorrespondenceRepository extends JpaRepository<CorrespondenceEntity, UUID> {
     List<CorrespondenceEntity> findAllByCaseReferenceNumberOrderBySentOnDesc(Long caseReferenceNumber);
 }
 

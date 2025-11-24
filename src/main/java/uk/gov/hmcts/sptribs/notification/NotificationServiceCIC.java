@@ -68,6 +68,10 @@ public class NotificationServiceCIC {
 
     private final PDFServiceClient pdfServiceClient;
 
+    private static final int FIRST_ADDRESS_LINE = 1;
+
+    private static final int LAST_ADDRESS_LINE = 7;
+
     @Autowired
     public NotificationServiceCIC(NotificationClient notificationClient,
                                   EmailTemplatesConfigCIC emailTemplatesConfig,
@@ -219,7 +223,7 @@ public class NotificationServiceCIC {
 
             StringBuilder address = new StringBuilder();
 
-            for (int i = 1; i <= 7; i++) {
+            for (int i = FIRST_ADDRESS_LINE; i <= LAST_ADDRESS_LINE; i++) {
                 Object addressLineValue = templateVars.get("address_line_" + i);
                 if ((addressLineValue != null)
                     && !addressLineValue.toString().isEmpty()) {
