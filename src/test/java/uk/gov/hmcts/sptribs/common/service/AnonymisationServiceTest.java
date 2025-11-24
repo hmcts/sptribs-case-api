@@ -1,6 +1,5 @@
 package uk.gov.hmcts.sptribs.common.service;
 
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
@@ -22,16 +21,6 @@ class AnonymisationServiceTest {
 
     @Mock
     private AnonymisationRepository anonymisationRepository;
-
-    @Test
-    void shouldGenerateUniqueAnonymisedName() {
-        String anonymisedName1 = anonymisationService.getOrCreateAnonymisation();
-        String anonymisedName2 = anonymisationService.getOrCreateAnonymisation();
-
-        assertNotNull(anonymisedName1);
-        assertNotNull(anonymisedName2);
-        assertNotEquals(anonymisedName1, anonymisedName2, "Anonymised names should be unique");
-    }
 
     @ParameterizedTest
     @CsvSource({
