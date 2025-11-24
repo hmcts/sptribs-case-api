@@ -17,12 +17,12 @@ public final class PageShowConditionsUtil {
     private static final String ORDER_TYPE_DRAFT_CONDITION = "cicCaseOrderIssuingType = \"DraftOrder\"";
     private static final String ORDER_TYPE_UPLOAD_CONDITION = "cicCaseOrderIssuingType = \"UploadOrder\"";
 
-    public static final String ORDER_EVENT_CREATE_AND_SEND_NEW = "currentEvent = \"create-and-send-order\""
+    private static final String ORDER_EVENT_CREATE_AND_SEND_NEW = "currentEvent = \"create-and-send-order\""
             + " AND cicCaseCreateAndSendIssuingTypes = \"NewOrder\"";
-    public static final String ORDER_EVENT_CREATE_AND_SEND_UPLOAD = "currentEvent = \"create-and-send-order\" "
+    private static final String ORDER_EVENT_CREATE_AND_SEND_UPLOAD = "currentEvent = \"create-and-send-order\" "
             + "AND cicCaseCreateAndSendIssuingTypes = \"UploadOrder\"";
-    public static final String ORDER_EVENT_CREATE_DRAFT = "currentEvent = \"create-draft-order\"";
-    public static final String ORDER_EVENT_EDIT_DRAFT = "currentEvent = \"caseworker-edit-draft-order\"";
+    private static final String ORDER_EVENT_CREATE_DRAFT = "currentEvent = \"create-draft-order\"";
+    private static final String ORDER_EVENT_EDIT_DRAFT = "currentEvent = \"caseworker-edit-draft-order\"";
     private static final String ORDER_EVENT_SEND_ORDER = "currentEvent = \"caseworker-send-order\"";
 
     private PageShowConditionsUtil() {
