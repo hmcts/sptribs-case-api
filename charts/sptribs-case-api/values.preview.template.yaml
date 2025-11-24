@@ -9,6 +9,7 @@ java:
     CASE_DATA_STORE_BASEURL: http://{{ .Release.Name }}-ccd-data-store-api
     CASE_DOCUMENT_AM_BASEURL: http://${SERVICE_NAME}-ccd-case-document-am-api
     BUNDLING_API_URL: https://em-ccdorc-${SERVICE_FQDN}
+    CCD_SERVICEBUS_DESTINATION: ${SERVICE_NAME}-asb-ccd-case-events
     SPRING_JMS_SERVICEBUS_ENABLED: false
     POSTGRES_HOST: '{{ tpl .Values.global.postgresHostname $}}'
     POSTGRES_PORT: 5432
