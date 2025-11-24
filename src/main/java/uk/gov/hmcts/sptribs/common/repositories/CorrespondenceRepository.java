@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Repository
-public interface CorrespondenceRepository extends JpaRepository<CorrespondenceEntity, UUID> {
+public interface CorrespondenceRepository extends JpaRepository<CorrespondenceEntity, Long> {
     List<CorrespondenceEntity> findAllByCaseReferenceNumberOrderBySentOnDesc(Long caseReferenceNumber);
 }
 
