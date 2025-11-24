@@ -144,7 +144,7 @@ public class CaseworkerCreateDraftOrder implements CCDConfig<CaseData, State, Us
                 .value(draftOrderCIC)
                 .build();
 
-            caseData.getCicCase().getDraftOrderCICList().add(0, listValue);
+            caseData.getCicCase().getDraftOrderCICList().addFirst(listValue);
 
             caseData.getCicCase().getDraftOrderCICList().forEach(
                 draftOrderListValue -> draftOrderListValue.setId(String.valueOf(listValueIndex.incrementAndGet())));
