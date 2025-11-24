@@ -51,6 +51,8 @@ public class SendOrderUploadOrder implements CcdPageConfiguration {
         List<ListValue<CICDocument>> uploadedDocuments = data.getCicCase().getOrderFile();
         final List<String> errors = validateDocumentFormat(uploadedDocuments);
 
+        data.getCicCase().setOrderTemplateIssued(data.getCicCase().getOrderFile().getFirst().getValue().getDocumentLink());
+
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(data)
             .errors(errors)
