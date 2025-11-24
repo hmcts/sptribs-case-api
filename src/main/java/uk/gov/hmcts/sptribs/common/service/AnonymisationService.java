@@ -15,17 +15,41 @@ public class AnonymisationService {
         return sequenceToString(sequence);
     }
 
+    /**
+     * Generate an incremental alphabetic sequence based on the number provided.
+     * 1 -> AA
+     * 2 -> AB
+     * 26 -> AZ
+     * 52 -> BZ
+     * 676 -> ZZ
+     * 677 -> AAA
+     * @param seq the sequence number
+     * @return the generated string
+     */
     private String sequenceToString(Long seq) {
-        StringBuilder stringBuilder = new StringBuilder();
-        while (seq > 0) {
-            seq--;
-            stringBuilder.insert(0, (char) ('A' + (seq % 26)));
-            seq /= 26;
-        }
-        if (stringBuilder.length() == 1) {
-            stringBuilder.insert(0, 'A');
+        if (seq < 1) {
+            throw new IllegalArgumentException("Sequence must be >= 1");
         }
 
-        return stringBuilder.toString();
+        int length = 2;
+        long offset = 0;
+
+        long capacity = 676;
+
+        while (seq > offset + capacity) {
+            offset += capacity;
+            capacity *= 26;
+            length++;
+        }
+
+        long position = seq - offset - 1;
+
+        char[] result = new char[length];
+        for (int i = length - 1; i >= 0; i--) {
+            result[i] = (char) ('A' + (position % 26));
+            position /= 26;
+        }
+
+        return new String(result);
     }
 }

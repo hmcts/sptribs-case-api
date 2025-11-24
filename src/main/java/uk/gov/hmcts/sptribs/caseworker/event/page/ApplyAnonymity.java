@@ -12,6 +12,11 @@ import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.common.service.AnonymisationService;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import static uk.gov.hmcts.sptribs.caseworker.util.ErrorConstants.FAILED_TO_ANONYMISE_CASE;
+
 @RequiredArgsConstructor
 @Component
 public class ApplyAnonymity implements CcdPageConfiguration {
@@ -35,16 +40,21 @@ public class ApplyAnonymity implements CcdPageConfiguration {
     public AboutToStartOrSubmitResponse<CaseData, State> midEvent(CaseDetails<CaseData, State> caseDetails,
                                                                   CaseDetails<CaseData, State> caseDetailsBefore) {
         final CaseData caseData = caseDetails.getData();
-
         final CicCase cicCase = caseData.getCicCase();
+        final List<String> errors = new ArrayList<>();
 
         if (cicCase.getAnonymiseYesOrNo().equals(YesOrNo.YES) && cicCase.getAnonymisedAppellantName() == null) {
             String anonymisedName = anonymisationService.getOrCreateAnonymisation();
+            if (anonymisedName == null) {
+                errors.add(FAILED_TO_ANONYMISE_CASE);
+            }
             cicCase.setAnonymisedAppellantName(anonymisedName);
+
         }
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
                 .data(caseData)
+                .errors(errors)
                 .build();
     }
 }
