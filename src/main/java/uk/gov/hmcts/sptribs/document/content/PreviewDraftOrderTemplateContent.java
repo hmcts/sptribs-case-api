@@ -25,7 +25,7 @@ public class PreviewDraftOrderTemplateContent {
 
         Map<String, Object> templateContent = getCommonFields(caseData, ccdCaseReference);
 
-        if (caseData.getCicCase().getAnonymiseYesOrNo().equals(YesOrNo.YES)
+        if (caseData.getCicCase().getAnonymiseYesOrNo() != null && caseData.getCicCase().getAnonymiseYesOrNo().equals(YesOrNo.YES)
             && caseData.getCicCase().getAnonymisedAppellantName() != null) {
             templateContent.put(SUBJECT_FULL_NAME, caseData.getCicCase().getAnonymisedAppellantName());
         } else if (caseData.getCicCase().useApplicantNameForSubject()) {

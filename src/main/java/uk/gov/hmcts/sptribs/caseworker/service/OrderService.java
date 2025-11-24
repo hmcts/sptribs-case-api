@@ -69,7 +69,7 @@ public class OrderService {
 
     public CaseData generateOrderFile(CaseData caseData, Long caseId, String date) {
         String subjectName = caseData.getCicCase().getFullName();
-        if (caseData.getCicCase().getAnonymiseYesOrNo().equals(YesOrNo.YES)
+        if (caseData.getCicCase().getAnonymiseYesOrNo() != null && caseData.getCicCase().getAnonymiseYesOrNo().equals(YesOrNo.YES)
             && caseData.getCicCase().getAnonymisedAppellantName() != null) {
             subjectName = caseData.getCicCase().getAnonymisedAppellantName();
         }
