@@ -34,6 +34,8 @@ import uk.gov.service.notify.SendLetterResponse;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
@@ -99,7 +101,7 @@ public class NotificationServiceCIC {
                                         String caseReferenceNumber) throws IOException, RestClientException {
 
         Long longCaseRef = Long.parseLong(caseReferenceNumber.replace("-", ""));
-        final LocalDateTime sentOn = LocalDateTime.now();
+        final OffsetDateTime sentOn = OffsetDateTime.now(ZoneOffset.UTC);
         String sentFrom = "Criminal Injuries Compensation Tribunal";
 
         if (sendEmailResponse.getFromEmail().isPresent()) {
@@ -112,7 +114,7 @@ public class NotificationServiceCIC {
                 .id(sendEmailResponse.getNotificationId())
                 .eventType(templateName)
                 .caseReferenceNumber(longCaseRef)
-                .sentOn(sentOn.atOffset(java.time.ZoneOffset.UTC))
+                .sentOn(sentOn)
                 .sentFrom(sentFrom)
                 .sentTo(sentTo)
                 .documentUrl(correspondencePDF.getUrl())
@@ -134,7 +136,7 @@ public class NotificationServiceCIC {
                                          String caseReferenceNumber) throws IOException, RestClientException {
 
         Long longCaseRef = Long.parseLong(caseReferenceNumber.replace("-", ""));
-        final LocalDateTime sentOn = LocalDateTime.now();
+        final OffsetDateTime sentOn = OffsetDateTime.now(ZoneOffset.UTC);
         String sentFrom = "Criminal Injuries Compensation Tribunal";
         try {
             Document correspondencePDF = this.getPDF(null, sendLetterResponse, longCaseRef, sentOn, sentFrom, sentTo, templateName);
@@ -142,7 +144,7 @@ public class NotificationServiceCIC {
                 .id(sendLetterResponse.getNotificationId())
                 .eventType(templateName)
                 .caseReferenceNumber(longCaseRef)
-                .sentOn(sentOn.atOffset(java.time.ZoneOffset.UTC))
+                .sentOn(sentOn)
                 .sentFrom(sentFrom)
                 .sentTo(sentTo)
                 .documentUrl(correspondencePDF.getUrl())
@@ -364,7 +366,7 @@ public class NotificationServiceCIC {
     private Document getPDF(SendEmailResponse sendEmailResponse,
                                         SendLetterResponse sendLetterResponse,
                                         Long longCaseRef,
-                                        LocalDateTime sentOn,
+                                        OffsetDateTime sentOn,
                                         String sentFrom,
                                         String sentTo,
                                         String templateName) throws IOException, RestClientException {
