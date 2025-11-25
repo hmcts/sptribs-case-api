@@ -35,8 +35,8 @@ public class SendOrderUploadOrder implements CcdPageConfiguration {
 
 
 
-                 Note: If the remove button is disabled, please refresh the page to remove attachments
-                 """
+                Note: If the remove button is disabled, please refresh the page to remove attachments
+                """
             )
             .complex(CaseData::getCicCase)
                 .mandatory(CicCase::getOrderFile)

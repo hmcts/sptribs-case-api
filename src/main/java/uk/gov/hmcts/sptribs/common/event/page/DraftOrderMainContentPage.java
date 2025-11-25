@@ -15,6 +15,7 @@ public class DraftOrderMainContentPage implements CcdPageConfiguration {
 
     private static final String NEVER_SHOW = "orderContentOrderTemplate=\"NEVER_SHOW\"";
 
+    @Override
     public void addTo(PageBuilder pageBuilder) {
         pageBuilder
             .page("mainContent")
