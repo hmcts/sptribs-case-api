@@ -11,6 +11,9 @@ import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 @Component
 public class PreviewDraftOrder implements CcdPageConfiguration {
 
+    public static final String SHOW_CHANGE_DRAFT = "cicCaseCreateAndSendIssuingTypes=\"\" OR cicCaseCreateAndSendIssuingTypes=\"NewOrder\"";
+    public static final String SHOW_CHANGE_UPLOAD = "cicCaseCreateAndSendIssuingTypes=\"UploadOrder\"";
+
     @Override
     public void addTo(PageBuilder pageBuilder) {
         pageBuilder
@@ -22,11 +25,11 @@ public class PreviewDraftOrder implements CcdPageConfiguration {
                 .label("make Changes", """
                     To make changes, choose ‘Previous’ and navigate back to the 'Edit Order' page.
 
-                    If you are happy, continue to the next screen.""", "cicCaseCreateAndSendIssuingTypes=\"\" OR cicCaseCreateAndSendIssuingTypes=\"NewOrder\"")
+                    If you are happy, continue to the next screen.""", SHOW_CHANGE_DRAFT)
                 .label("changeUpload", """
                     To change the document, choose ‘Previous’ and navigate back to the 'Upload an Order' page.
                     
-                    If you are happy, continue to the next screen.""", "cicCaseCreateAndSendIssuingTypes=\"UploadOrder\"")
+                    If you are happy, continue to the next screen.""", SHOW_CHANGE_UPLOAD)
                 .done();
     }
 }
