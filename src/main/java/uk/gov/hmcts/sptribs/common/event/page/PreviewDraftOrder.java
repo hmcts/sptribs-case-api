@@ -20,9 +20,13 @@ public class PreviewDraftOrder implements CcdPageConfiguration {
             .complex(CaseData::getCicCase)
                 .readonly(CicCase::getOrderTemplateIssued)
                 .label("make Changes", """
-                    To make changes, choose ‘Previous’ and navigate back to the Edit Order page.'
+                    To make changes, choose ‘Previous’ and navigate back to the 'Edit Order' page.
 
-                    If you are happy, continue to the next screen.""")
+                    If you are happy, continue to the next screen.""", "cicCaseCreateAndSendIssuingTypes=\"\" OR cicCaseCreateAndSendIssuingTypes=\"NewOrder\"")
+                .label("changeUpload", """
+                    To change the document, choose ‘Previous’ and navigate back to the 'Upload an Order' page.
+                    
+                    If you are happy, continue to the next screen.""", "cicCaseCreateAndSendIssuingTypes=\"UploadOrder\"")
                 .done();
     }
 }
