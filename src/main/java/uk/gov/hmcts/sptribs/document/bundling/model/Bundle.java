@@ -37,17 +37,20 @@ public class Bundle {
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private String id;
+
     @CCD(
         label = "Date and time",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime dateAndTime;
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS")
+    private final LocalDateTime dateAndTime = LocalDateTime.now();
+
     @CCD(
         label = "Config used for bundle",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private String title;
+
     @CCD(
         label = "Description",
         typeOverride = TextArea,

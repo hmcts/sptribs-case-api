@@ -19,7 +19,6 @@ import uk.gov.hmcts.sptribs.document.bundling.model.Callback;
 import uk.gov.hmcts.sptribs.document.bundling.model.MultiBundleConfig;
 import uk.gov.hmcts.sptribs.document.model.PageNumberFormat;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -91,6 +90,9 @@ public class BundlingService {
         if (CollectionUtils.isEmpty(bundleList)) {
             return null;
         }
+
+        bundleList.sort((bundle1, bundle2) -> bundle2.getDateAndTime()
+            .compareTo(bundle1.getDateAndTime()));
 
         AtomicInteger listValueIndex = new AtomicInteger(0);
         List<ListValue<Bundle>> newList = new ArrayList<>();
@@ -193,7 +195,6 @@ public class BundlingService {
             .stitchStatus(NEW)
             .description(MapUtils.getString(objectLinkedHashMap, DESCRIPTION, ""))
             .id(MapUtils.getString(objectLinkedHashMap, ID, ""))
-            .dateAndTime(LocalDateTime.now())
             .title(MapUtils.getString(objectLinkedHashMap, TITLE, ""))
             .stitchedDocument(getStitchedDocument(objectLinkedHashMap))
             .paginationStyle(BundlePaginationStyle.valueOf(
