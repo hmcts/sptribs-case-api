@@ -14,24 +14,8 @@ import uk.gov.hmcts.sptribs.common.ccd.CcdServiceCode;
 
 import java.util.List;
 
-import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.AC_CASE_FLAGS_ADMIN;
-import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.AC_CASE_FLAGS_VIEWER;
-import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.CASEWORKER;
-import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.CITIZEN;
-import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.CREATOR;
-import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.DISTRICT_JUDGE_CIC;
-import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.GS_PROFILE;
-import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.NON_RESPONDENT_USER;
-import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.RAS_CASEWORKER_VALIDATION;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.RESPONDENT_CIC;
-import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_CASEWORKER;
-import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_HEARING_CENTRE_ADMIN;
-import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_HEARING_CENTRE_TEAM_LEADER;
-import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_JUDGE;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_RESPONDENT;
-import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_CASEWORKER;
-import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_JUDGE;
-import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SYSTEM_UPDATE;
 
 @Component
 @Slf4j
@@ -59,10 +43,7 @@ public class CriminalInjuriesCompensation implements CCDConfig<CriminalInjuriesC
         ConfigBuilderHelper.configureWithTestEvent(configBuilder);
 
         // to shutter the service within xui uncomment this line
-        configBuilder.shutterService(SYSTEM_UPDATE, CASEWORKER, CREATOR, DISTRICT_JUDGE_CIC, RESPONDENT_CIC, ST_CIC_CASEWORKER,
-            ST_CIC_SENIOR_CASEWORKER, ST_CIC_HEARING_CENTRE_ADMIN, ST_CIC_HEARING_CENTRE_TEAM_LEADER, ST_CIC_SENIOR_JUDGE, ST_CIC_JUDGE,
-            ST_CIC_RESPONDENT, AC_CASE_FLAGS_ADMIN, CITIZEN, NON_RESPONDENT_USER, AC_CASE_FLAGS_VIEWER,
-            RAS_CASEWORKER_VALIDATION, GS_PROFILE);
+        //configBuilder.shutterService();
         log.info("Building definition for " + System.getenv().getOrDefault("ENVIRONMENT", ""));
     }
 }
