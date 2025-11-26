@@ -31,7 +31,6 @@ import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_JUDGE;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_RESPONDENT;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_CASEWORKER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_JUDGE;
-import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_WA_CONFIG_USER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SYSTEM_UPDATE;
 
 @Component
@@ -62,7 +61,7 @@ public class CriminalInjuriesCompensation implements CCDConfig<CriminalInjuriesC
         // to shutter the service within xui uncomment this line
         configBuilder.shutterService(SYSTEM_UPDATE, CASEWORKER, CREATOR, DISTRICT_JUDGE_CIC, RESPONDENT_CIC, ST_CIC_CASEWORKER,
             ST_CIC_SENIOR_CASEWORKER, ST_CIC_HEARING_CENTRE_ADMIN, ST_CIC_HEARING_CENTRE_TEAM_LEADER, ST_CIC_SENIOR_JUDGE, ST_CIC_JUDGE,
-            ST_CIC_RESPONDENT, AC_CASE_FLAGS_ADMIN, CITIZEN, ST_CIC_WA_CONFIG_USER, NON_RESPONDENT_USER, AC_CASE_FLAGS_VIEWER,
+            ST_CIC_RESPONDENT, AC_CASE_FLAGS_ADMIN, CITIZEN, NON_RESPONDENT_USER, AC_CASE_FLAGS_VIEWER,
             RAS_CASEWORKER_VALIDATION, GS_PROFILE);
         log.info("Building definition for " + System.getenv().getOrDefault("ENVIRONMENT", ""));
     }
