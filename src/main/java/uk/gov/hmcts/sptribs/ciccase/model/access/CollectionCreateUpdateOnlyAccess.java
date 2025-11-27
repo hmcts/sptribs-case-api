@@ -12,24 +12,21 @@ import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_HEARING_CENTRE_
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_HEARING_CENTRE_TEAM_LEADER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_CASEWORKER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_JUDGE;
-import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_WA_CONFIG_USER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SYSTEM_UPDATE;
 
-
-public class DefaultAccess implements HasAccessControl {
+public class CollectionCreateUpdateOnlyAccess implements HasAccessControl {
     @Override
     public SetMultimap<HasRole, Permission> getGrants() {
         SetMultimap<HasRole, Permission> grants = HashMultimap.create();
-        grants.putAll(CREATOR, Permissions.CREATE_READ_UPDATE);
-        grants.putAll(ST_CIC_CASEWORKER, Permissions.CREATE_READ_UPDATE);
-        grants.putAll(ST_CIC_SENIOR_CASEWORKER, Permissions.CREATE_READ_UPDATE);
-        grants.putAll(ST_CIC_HEARING_CENTRE_ADMIN, Permissions.CREATE_READ_UPDATE);
-        grants.putAll(ST_CIC_HEARING_CENTRE_TEAM_LEADER, Permissions.CREATE_READ_UPDATE);
-        grants.putAll(ST_CIC_SENIOR_JUDGE, Permissions.CREATE_READ_UPDATE);
-        grants.putAll(ST_CIC_WA_CONFIG_USER, Permissions.READ);
+        grants.putAll(CREATOR, Permissions.CREATE_UPDATE);
+        grants.putAll(ST_CIC_CASEWORKER, Permissions.CREATE_UPDATE);
+        grants.putAll(ST_CIC_SENIOR_CASEWORKER, Permissions.CREATE_UPDATE);
+        grants.putAll(ST_CIC_HEARING_CENTRE_ADMIN, Permissions.CREATE_UPDATE);
+        grants.putAll(ST_CIC_HEARING_CENTRE_TEAM_LEADER, Permissions.CREATE_UPDATE);
+        grants.putAll(ST_CIC_SENIOR_JUDGE, Permissions.CREATE_UPDATE);
         grants.putAll(SYSTEM_UPDATE, Permissions.CREATE_READ_UPDATE_DELETE);
-        grants.putAll(SUPER_USER, Permissions.CREATE_READ_UPDATE);
+        grants.putAll(SUPER_USER, Permissions.CREATE_READ_UPDATE_DELETE);
         return grants;
     }
 }

@@ -1,0 +1,72 @@
+{
+  "caseFlags": {
+    "details": [
+      {
+        "id": "13125f1f-e339-401a-b544-c520da535ed6",
+        "value": {
+          "name": "Complex Case",
+          "path": [
+            {
+              "id": "fd4c451a-cc0c-4774-b5be-b6f84230eee0",
+              "value": "Case"
+            }
+          ],
+          "status": "Active",
+          "name_cy": "Achos Cymhleth",
+          "flagCode": "CF0002",
+          "flagComment": "Lorem ipsum flag comment",
+          "dateTimeCreated": "2024-05-29T10:20:28.158Z",
+          "hearingRelevant": "Yes",
+          "availableExternally": "No"
+        }
+      }
+    ]  },
+  "cicCaseCaseCategory": "Assessment",
+  "cicCaseCaseSubcategory": "other",
+  "cicCaseCaseReceivedDate": "2000-01-01",
+  "cicCasePartiesCIC": [
+    "SubjectCIC", "RepresentativeCIC", "ApplicantCIC"
+  ],
+  "cicCaseFullName": "Testing subject-subjectnewname",
+  "cicCasePhoneNumber": "01234567891",
+  "cicCaseDateOfBirth": "2000-01-01",
+  "cicCaseAddress": {
+    "AddressLine1": "Buckingham Palace",
+    "PostTown": "London",
+    "Country": "United Kingdom",
+    "PostCode": "SW1A 1AA"
+  },
+  "cicCaseContactPreferenceType": "Email",
+  "cicCaseEmail": "subject@hmcts.net",
+  "subjectFlags": {
+    "partyName": "Testing subject",
+    "roleOnCase": "subject",
+    "details": []
+  },
+  "cicCaseSubjectCIC": [
+    "SubjectCIC"
+  ],
+  "representativeFlags": {
+    "partyName": "Testing representative",
+    "roleOnCase": "Representative",
+    "details": []
+  },
+  "cicCaseRepresentativeFullName": "Testing representative-representativenewname",
+  "cicCaseRepresentativeCIC": [
+    "RepresentativeCIC"
+  ],
+  "applicantFlags": {
+    "partyName": "Testing applicant",
+    "roleOnCase": "applicant",
+    "details": []
+  },
+  "cicCaseApplicantFullName": "Testing applicant-applicantnewname",
+  "cicCaseNotifyPartyApplicant": [
+    "ApplicantCIC"
+  ],
+  "cicCaseSchemeCic": "Year2012",
+  "cicCaseRegionCIC": "London",
+  "cicCaseClaimLinkedToCic": "No",
+  "cicCaseCompensationClaimLinkCIC": "No",
+  "cicCaseFormReceivedInTime": "Yes"
+}
