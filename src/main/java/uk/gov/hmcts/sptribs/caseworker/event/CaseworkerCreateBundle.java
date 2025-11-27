@@ -17,14 +17,19 @@ import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.document.bundling.client.BundlingService;
+import uk.gov.hmcts.sptribs.document.bundling.model.Bundle;
 import uk.gov.hmcts.sptribs.document.bundling.model.BundleCallback;
+import uk.gov.hmcts.sptribs.document.bundling.model.BundleIdAndTimestamp;
 import uk.gov.hmcts.sptribs.document.bundling.model.Callback;
 import uk.gov.hmcts.sptribs.document.model.AbstractCaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import static java.util.Collections.emptyList;
@@ -98,7 +103,7 @@ public class CaseworkerCreateBundle implements CCDConfig<CaseData, State, UserRo
         final Callback callback = new Callback(details, beforeDetails, CREATE_BUNDLE, true);
         final BundleCallback bundleCallback = new BundleCallback(callback);
 
-        caseData.setCaseBundles(bundlingService.buildBundleListValues(bundlingService.createBundle(bundleCallback)));
+        caseData.setCaseBundles(getConfiguredCaseBundles(caseData, bundleCallback));
 
         caseData.setMultiBundleConfiguration(null);
         caseData.setCaseDocuments(null);
@@ -146,5 +151,54 @@ public class CaseworkerCreateBundle implements CCDConfig<CaseData, State, UserRo
         }
 
         return abstractCaseworkerCICDocumentList;
+    }
+
+    private List<ListValue<Bundle>> getConfiguredCaseBundles(CaseData caseData, BundleCallback bundleCallback) {
+        List<ListValue<Bundle>> caseBundles = bundlingService.buildBundleListValues(bundlingService.createBundle(bundleCallback));
+
+        ArrayList<String> bundleIds = new ArrayList<>();
+
+        List<ListValue<BundleIdAndTimestamp>> bundleIdsAndTimestamps = caseData.getCaseBundleIdsAndTimestamps();
+
+        Map<String, LocalDateTime> bundleIdToTimestampMap = new HashMap<>();
+
+        for (ListValue<BundleIdAndTimestamp> caseBundleIDAndTimestamp : bundleIdsAndTimestamps) {
+            bundleIds.add(caseBundleIDAndTimestamp.getValue().getBundleId());
+            bundleIdToTimestampMap.put(
+                caseBundleIDAndTimestamp.getValue().getBundleId(),
+                caseBundleIDAndTimestamp.getValue().getDateAndTime()
+            );
+        }
+
+        for (ListValue<Bundle> caseBundle : caseBundles) {
+            String listValueID = "1";
+            if (!bundleIdsAndTimestamps.isEmpty()) {
+                listValueID = String.valueOf(bundleIdsAndTimestamps.size() + 1);
+            }
+
+            if (!bundleIds.contains(caseBundle.getValue().getId())) {
+                BundleIdAndTimestamp bundleIdAndTimestamp = BundleIdAndTimestamp.builder()
+                    .bundleId(caseBundle.getValue().getId())
+                    .dateAndTime(LocalDateTime.now())
+                    .build();
+                bundleIdsAndTimestamps.add(ListValue.<BundleIdAndTimestamp>builder()
+                    .id(listValueID)
+                    .value(bundleIdAndTimestamp)
+                    .build());
+                caseData.setCaseBundleIdsAndTimestamps(bundleIdsAndTimestamps);
+                caseBundle.getValue().setDateAndTime(bundleIdAndTimestamp.getDateAndTime());
+            } else {
+                caseBundle.getValue().setDateAndTime(
+                    bundleIdToTimestampMap.get(caseBundle.getValue().getId())
+                );
+            }
+        }
+
+        if (caseBundles.size() > 1) {
+            caseBundles.sort((bundle1, bundle2) -> bundle2.getValue().getDateAndTime()
+                .compareTo(bundle1.getValue().getDateAndTime()));
+        }
+
+        return caseBundles;
     }
 }

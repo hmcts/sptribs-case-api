@@ -43,7 +43,7 @@ public class Bundle {
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS")
-    private final LocalDateTime dateAndTime = LocalDateTime.now();
+    private LocalDateTime dateAndTime;
 
     @CCD(
         label = "Config used for bundle",
