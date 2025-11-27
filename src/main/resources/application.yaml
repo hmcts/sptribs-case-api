@@ -34,16 +34,12 @@ spring:
     username: ${POSTGRES_USERNAME:postgres}
     password: ${POSTGRES_PASSWORD:postgres}
   jms:
-    cache:
-      enabled: false
     servicebus:
       enabled: true
       connection-string: ${AZURE_SERVICE_BUS_CONNECTION_STRING:${AZURE_SERVICE_BUS_PREVIEW_CONNECTION_STRING:dummy}}
       pricing-tier: standard
       pool:
         enabled: true
-        idle-timeout: 30s
-        max-connections: 10
   cloud:
     azure:
       credential:
