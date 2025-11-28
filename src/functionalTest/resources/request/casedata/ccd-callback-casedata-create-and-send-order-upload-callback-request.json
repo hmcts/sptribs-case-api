@@ -27,36 +27,11 @@
       }
     }
   ],
-  "cicCaseSelectedOrder": {
-    "document_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/c42d2333-b4c6-4065-a528-3cff9a0cd932",
-    "document_filename": "test.pdf",
-    "document_binary_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/c42d2333-b4c6-4065-a528-3cff9a0cd932/binary",
-    "category_id": "TD"
-  },
-  "cicCaseOrderList": [
-    {
-      "id": "1",
-      "value": {
-        "dueDateList": [],
-        "uploadedFile": [
-          {
-            "id": "79caf004-20e9-4837-abb7-8c22282bf9b5",
-            "value": {
-              "documentEmailContent": "Test",
-              "documentLink": {
-                "document_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/c42d2333-b4c6-4065-a528-3cff9a0cd932",
-                "document_filename": "test.pdf",
-                "document_binary_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/c42d2333-b4c6-4065-a528-3cff9a0cd932/binary",
-                "category_id": "TD"
-              }
-            }
-          }
-        ],
-        "parties": "Representative",
-        "orderSentDate": "2023-11-23"
-      }
-    }
-  ],
+  "newCaseworkerCICDocument": [],
+  "editCicaCaseDetails": {},
+  "securityClass": "PUBLIC",
+  "caseBundles": [],
+  "cicCaseOrderDueDates": [],
   "cicCaseOrderDocumentList": [],
   "cicCaseCaseCategory": "Assessment",
   "cicCaseCaseSubcategory": "Fatal",
@@ -66,15 +41,19 @@
     "RepresentativeCIC",
     "ApplicantCIC"
   ],
+  "cicCaseSubjectCIC": [],
   "cicCaseApplicantCIC": [
     "ApplicantCIC"
   ],
   "cicCaseRepresentativeCIC": [
     "RepresentativeCIC"
   ],
+  "cicCaseNotifyPartyApplicant": [],
+  "cicCaseNotifyPartySubject": [],
   "cicCaseNotifyPartyRepresentative": [
     "RepresentativeCIC"
   ],
+  "cicCaseNotifyPartyRespondent": [],
   "cicCaseRespondentName": "Appeals team",
   "cicCaseRespondentOrganisation": "CICA",
   "cicCaseRespondentEmail": "appeals.team@cica.gov.uk",
@@ -117,13 +96,37 @@
     "Country": "United Kingdom"
   },
   "cicCaseRepresentativePhoneNumber": "0745435345356",
-  "cicCaseRepresentativeContactDetailsPreference": "Email",
+  "cicCaseRepresentativeContactDetailsPreference": "Post",
   "cicCaseIsRepresentativeQualified": "No",
   "cicCaseFormReceivedInTime": "Yes",
   "cicCaseClaimLinkedToCic": "No",
   "cicCaseCompensationClaimLinkCIC": "No",
   "cicCaseIsRepresentativePresent": "Yes",
+  "cicCaseApplicantDocumentsUploaded": [],
+  "cicCaseReinstateDocuments": [],
+  "cicCaseDecisionDocumentList": [],
+  "cicCaseRemovedDocumentList": [],
+  "cicCaseFinalDecisionDocumentList": [],
   "stayIsCaseStayed": "No",
   "hearingSummaryExists": "YES",
-  "hyphenatedCaseRef": "1699-9545-8542-9659"
+  "hearingList": [],
+  "hyphenatedCaseRef": "1699-9545-8542-9659",
+  "currentEvent": "create-and-send-order",
+  "cicCaseAnonymiseYesOrNo": "Yes",
+  "cicCaseAnonymisedAppellantName": "AAC",
+  "cicCaseCreateAndSendIssuingTypes": "UploadOrder",
+  "cicCaseOrderFile": [
+    {
+      "id": "1",
+      "value": {
+        "documentEmailContent": "Test",
+        "documentLink": {
+          "document_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/c42d2333-b4c6-4065-a528-3cff9a0cd932",
+          "document_filename": "test.pdf",
+          "document_binary_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/c42d2333-b4c6-4065-a528-3cff9a0cd932/binary",
+          "category_id": "TD"
+        }
+      }
+    }
+  ]
 }

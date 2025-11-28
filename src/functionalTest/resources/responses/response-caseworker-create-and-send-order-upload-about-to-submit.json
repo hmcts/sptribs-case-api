@@ -38,14 +38,6 @@
         "id": "1",
         "value": {
           "dueDateList": [],
-          "parties": "Representative",
-          "orderSentDate": "${json-unit.any-string}"
-        }
-      },
-      {
-        "id": "2",
-        "value": {
-          "dueDateList": [],
           "uploadedFile": [
             {
               "id": "${json-unit.any-string}",
@@ -146,6 +138,8 @@
     "hyphenatedCaseRef": "1699-9545-8542-9659",
     "closedDayCount": "",
     "firstHearingDate": "",
+    "cicCaseAnonymiseYesOrNo": "Yes",
+    "cicCaseAnonymisedAppellantName": "AAC",
     "dataVersion": 0
   }
 }
