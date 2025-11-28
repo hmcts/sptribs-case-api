@@ -473,6 +473,17 @@ class CaseworkerSendOrderTest {
     }
 
     @Test
+    void aboutToStartShouldSetCurrentEvent() {
+        CaseDetails<CaseData, State> caseDetails = CaseDetails.<CaseData, State>builder()
+                .data(CaseData.builder().build())
+                .build();
+        AboutToStartOrSubmitResponse<CaseData, State> response = caseworkerSendOrder.aboutToStart(caseDetails);
+
+        assertThat(response).isNotNull();
+        assertThat(response.getData().getCurrentEvent()).isEqualTo(CASEWORKER_SEND_ORDER);
+    }
+
+    @Test
     void shouldOnlySendOneOrderWhenMultipleDraftsExist() {
         final DateModel dateModel = DateModel.builder().dueDate(LocalDate.now()).information("inf").build();
         final ListValue<DateModel> dates = new ListValue<>();

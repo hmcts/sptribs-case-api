@@ -44,12 +44,14 @@ import static uk.gov.hmcts.sptribs.ciccase.model.RepresentativeCIC.REPRESENTATIV
 import static uk.gov.hmcts.sptribs.ciccase.model.RespondentCIC.RESPONDENT;
 import static uk.gov.hmcts.sptribs.ciccase.model.SchemeCic.Year2012;
 import static uk.gov.hmcts.sptribs.ciccase.model.SubjectCIC.SUBJECT;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.ABOUT_TO_START_URL;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.ABOUT_TO_SUBMIT_URL;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.AUTHORIZATION;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.SERVICE_AUTHORIZATION;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.SUBMITTED_URL;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_AUTHORIZATION_TOKEN;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.callbackRequest;
+import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.caseData;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getCICDocumentList;
 import static uk.gov.hmcts.sptribs.testutil.TestResourceUtil.expectedResponse;
 
@@ -87,9 +89,32 @@ public class CaseworkerSendOrderIT {
         "classpath:responses/caseworker-send-order-about-to-submit-response.json";
 
     @Test
+    void shouldAddCurrentEventInAboutToStart() throws Exception {
+        final CaseData caseData = caseData();
+
+        String response = mockMvc.perform(post(ABOUT_TO_START_URL)
+            .contentType(APPLICATION_JSON)
+            .header(SERVICE_AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
+            .header(AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
+            .content(objectMapper.writeValueAsString(
+                callbackRequest(
+                    caseData,
+                    CASEWORKER_SEND_ORDER)))
+            .accept(APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andReturn()
+            .getResponse()
+            .getContentAsString();
+
+        assertThatJson(response)
+                .inPath("$.data.currentEvent")
+                .isEqualTo("\"caseworker-send-order\"");
+    }
+
+    @Test
     void shouldUpdateOrderRelatedDataOnAboutToSubmit() throws Exception {
         DateModel dateModel = DateModel.builder()
-            .dueDate(LocalDate.of(2024, 9, 04))
+            .dueDate(LocalDate.of(2024, 9, 4))
             .information("due date for test")
             .build();
 
