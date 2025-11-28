@@ -161,6 +161,10 @@ public class CaseworkerCreateBundle implements CCDConfig<CaseData, State, UserRo
     private List<ListValue<Bundle>> getConfiguredCaseBundles(CaseData caseData, BundleCallback bundleCallback) {
         List<ListValue<Bundle>> caseBundles = bundlingService.buildBundleListValues(bundlingService.createBundle(bundleCallback));
 
+        if (caseBundles == null || caseBundles.isEmpty()) {
+            return caseBundles;
+        }
+
         ArrayList<String> bundleIds = new ArrayList<>();
 
         List<ListValue<BundleIdAndTimestamp>> bundleIdsAndTimestamps = caseData.getCaseBundleIdsAndTimestamps();

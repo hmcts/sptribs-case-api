@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +24,9 @@ import uk.gov.hmcts.sptribs.document.bundling.client.BundlingClient;
 import uk.gov.hmcts.sptribs.document.bundling.model.BundleCallback;
 import uk.gov.hmcts.sptribs.testutil.IdamWireMock;
 
+import java.time.Clock;
+import java.time.Instant;
+import java.time.ZoneId;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -73,9 +77,15 @@ public class CaseworkerCreateBundleIT {
     @MockitoBean
     private BundlingClient bundlingClient;
 
+    @MockitoBean
+    private Clock clock;
+
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper().findAndRegisterModules();
     private static final TypeReference<HashMap<String, Object>> TYPE_REFERENCE = new TypeReference<>() {
     };
+
+    private static final Instant instant = Instant.now();
+    private static final ZoneId zoneId = ZoneId.systemDefault();
 
     @BeforeAll
     static void setUp() {
@@ -85,6 +95,12 @@ public class CaseworkerCreateBundleIT {
     @AfterAll
     static void tearDown() {
         IdamWireMock.stopAndReset();
+    }
+
+    @BeforeEach
+    void setClock() {
+        when(clock.instant()).thenReturn(Instant.parse("2021-06-18T12:00:00.000Z"));
+        when(clock.getZone()).thenReturn(ZoneId.systemDefault());
     }
 
     @Test
