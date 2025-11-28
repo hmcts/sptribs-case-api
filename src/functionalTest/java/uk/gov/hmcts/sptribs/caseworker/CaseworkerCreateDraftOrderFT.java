@@ -14,6 +14,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.HttpStatus.OK;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_CREATE_DRAFT_ORDER;
 import static uk.gov.hmcts.sptribs.testutil.CaseDataUtil.caseData;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.ABOUT_TO_START_URL;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.ABOUT_TO_SUBMIT_URL;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.SUBMITTED_URL;
 import static uk.gov.hmcts.sptribs.testutil.TestResourceUtil.expectedResponse;
@@ -39,6 +40,9 @@ public class CaseworkerCreateDraftOrderFT extends FunctionalTestSuite {
     private static final String EXISTING_DRAFT_ORDER_CIC_LIST_ABOUT_TO_SUBMIT_RESPONSE =
         "classpath:responses/response-caseworker-create-draft-order-about-to-submit.json";
 
+    private static final String ABOUT_TO_START_RESPONSE =
+        "classpath:responses/response-caseworker-create-draft-order-about-to-start.json";
+
     private static final String SUBMITTED_REQUEST =
         "classpath:request/casedata/ccd-callback-casedata-general.json";
 
@@ -57,6 +61,17 @@ public class CaseworkerCreateDraftOrderFT extends FunctionalTestSuite {
         assertThatJson(response.asString())
             .when(IGNORING_EXTRA_FIELDS)
             .isEqualTo(json(expectedResponse(MID_EVENT_RESPONSE)));
+    }
+
+    @Test
+    public void shouldSetCurrentEventInAboutToStartCallback() throws Exception {
+        final Map<String, Object> caseData = caseData(SUBMITTED_REQUEST);
+        final Response response = triggerCallback(caseData, CASEWORKER_CREATE_DRAFT_ORDER, ABOUT_TO_START_URL);
+
+        assertThat(response.getStatusCode()).isEqualTo(OK.value());
+        assertThatJson(response.asString())
+            .when(IGNORING_EXTRA_FIELDS)
+            .isEqualTo(json(expectedResponse(ABOUT_TO_START_RESPONSE)));
     }
 
     @Test
