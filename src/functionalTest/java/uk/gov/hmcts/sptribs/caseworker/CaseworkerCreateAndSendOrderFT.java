@@ -95,8 +95,6 @@ public class CaseworkerCreateAndSendOrderFT extends FunctionalTestSuite {
     public void shouldAddNonAnonymisedOrderFromTemplateWhenAboutToSubmitCallbackIsTriggered() throws Exception {
         final Map<String, Object> caseData = caseData(NEW_ORDER_TEMPLATE_NON_ANONYMISED_REQUEST);
 
-        caseData.put("cicCaseAnonymisedYesOrNo", "No");
-
         final Response response = triggerCallback(caseData, CASEWORKER_CREATE_AND_SEND_ORDER, ABOUT_TO_SUBMIT_URL);
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
 
