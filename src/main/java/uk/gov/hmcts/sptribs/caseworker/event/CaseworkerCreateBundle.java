@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
@@ -24,6 +25,7 @@ import uk.gov.hmcts.sptribs.document.bundling.model.Callback;
 import uk.gov.hmcts.sptribs.document.model.AbstractCaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 
+import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -55,6 +57,9 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 public class CaseworkerCreateBundle implements CCDConfig<CaseData, State, UserRole> {
 
     private final BundlingService bundlingService;
+
+    @Autowired
+    private Clock clock;
 
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
@@ -179,7 +184,7 @@ public class CaseworkerCreateBundle implements CCDConfig<CaseData, State, UserRo
             if (!bundleIds.contains(caseBundle.getValue().getId())) {
                 BundleIdAndTimestamp bundleIdAndTimestamp = BundleIdAndTimestamp.builder()
                     .bundleId(caseBundle.getValue().getId())
-                    .dateAndTime(LocalDateTime.now())
+                    .dateAndTime(LocalDateTime.now(clock))
                     .build();
                 bundleIdsAndTimestamps.add(ListValue.<BundleIdAndTimestamp>builder()
                     .id(listValueID)
