@@ -36,10 +36,10 @@ public class CaseUnstayedNotification implements PartiesNotification {
         final NotificationResponse notificationResponse;
         final CicCase cicCase = caseData.getCicCase();
         if (cicCase.getContactPreferenceType() == ContactPreferenceType.EMAIL) {
-            notificationResponse = sendEmailNotification(cicCase.getEmail(), templateVars);
+            notificationResponse = sendEmailNotification(cicCase.getEmail(), templateVars, caseNumber);
         } else {
             notificationHelper.addAddressTemplateVars(cicCase.getAddress(), templateVars);
-            notificationResponse = sendLetterNotification(templateVars);
+            notificationResponse = sendLetterNotification(templateVars, caseNumber);
         }
 
         cicCase.setSubjectNotifyList(notificationResponse);
@@ -52,10 +52,10 @@ public class CaseUnstayedNotification implements PartiesNotification {
         final NotificationResponse notificationResponse;
         final CicCase cicCase = caseData.getCicCase();
         if (cicCase.getApplicantContactDetailsPreference() == ContactPreferenceType.EMAIL) {
-            notificationResponse = sendEmailNotification(cicCase.getApplicantEmailAddress(), templateVars);
+            notificationResponse = sendEmailNotification(cicCase.getApplicantEmailAddress(), templateVars, caseNumber);
         } else {
             notificationHelper.addAddressTemplateVars(cicCase.getApplicantAddress(), templateVars);
-            notificationResponse = sendLetterNotification(templateVars);
+            notificationResponse = sendLetterNotification(templateVars, caseNumber);
         }
 
         cicCase.setAppNotificationResponse(notificationResponse);
@@ -68,26 +68,28 @@ public class CaseUnstayedNotification implements PartiesNotification {
         final NotificationResponse notificationResponse;
         final CicCase cicCase = caseData.getCicCase();
         if (cicCase.getRepresentativeContactDetailsPreference() == ContactPreferenceType.EMAIL) {
-            notificationResponse = sendEmailNotification(cicCase.getRepresentativeEmailAddress(), templateVars);
+            notificationResponse = sendEmailNotification(cicCase.getRepresentativeEmailAddress(), templateVars, caseNumber);
         } else {
             notificationHelper.addAddressTemplateVars(cicCase.getRepresentativeAddress(), templateVars);
-            notificationResponse = sendLetterNotification(templateVars);
+            notificationResponse = sendLetterNotification(templateVars, caseNumber);
         }
 
         cicCase.setRepNotificationResponse(notificationResponse);
     }
 
-    private NotificationResponse sendEmailNotification(final String destinationAddress, final Map<String, Object> templateVars) {
+    private NotificationResponse sendEmailNotification(final String destinationAddress,
+                                                       final Map<String, Object> templateVars,
+                                                       String caseReferenceNumber) {
         final NotificationRequest request = notificationHelper.buildEmailNotificationRequest(
             destinationAddress,
             templateVars,
             TemplateName.CASE_UNSTAYED_EMAIL);
-        return notificationService.sendEmail(request);
+        return notificationService.sendEmail(request, caseReferenceNumber);
     }
 
-    private NotificationResponse sendLetterNotification(Map<String, Object> templateVarsLetter) {
+    private NotificationResponse sendLetterNotification(Map<String, Object> templateVarsLetter, String caseReferenceNumber) {
         final NotificationRequest letterRequest = notificationHelper.buildLetterNotificationRequest(templateVarsLetter,
             TemplateName.CASE_UNSTAYED_POST);
-        return notificationService.sendLetter(letterRequest);
+        return notificationService.sendLetter(letterRequest, caseReferenceNumber);
     }
 }

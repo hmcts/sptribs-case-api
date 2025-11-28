@@ -67,6 +67,9 @@ ccd:
     batch-size: ${SPTRIBS_SERVICEBUS_BATCH_SIZE:50}
     published-retention-days: ${SPTRIBS_SERVICEBUS_PUBLISHED_RETENTION_DAYS:7}
     schedule: ${SPTRIBS_SERVICEBUS_SCHEDULE:*/10 * * * * *}
+pdf:
+  api:
+    url: ${PDF_API_URL:http://localhost:5500}
 
 uk:
   gov:

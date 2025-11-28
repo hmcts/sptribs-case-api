@@ -51,7 +51,8 @@ public class DssApplicationReceivedNotification implements PartiesNotification {
         NotificationResponse notificationResponse = sendEmailNotification(
             templateVarsSubject,
             dssCaseData.getSubjectEmailAddress(),
-            dssCaseData.getLanguagePreference()
+            dssCaseData.getLanguagePreference(),
+            caseNumber
         );
         dssCaseData.setSubjectNotificationResponse(notificationResponse);
     }
@@ -72,18 +73,20 @@ public class DssApplicationReceivedNotification implements PartiesNotification {
         NotificationResponse notificationResponse = sendEmailNotification(
             templateVarsRep,
             dssCaseData.getRepresentativeEmailAddress(),
-            ENGLISH
+            ENGLISH,
+            caseNumber
         );
         dssCaseData.setRepNotificationResponse(notificationResponse);
     }
 
     private NotificationResponse sendEmailNotification(final Map<String, Object> templateVars,
                                                        String toEmail,
-                                                       LanguagePreference languagePreference) {
+                                                       LanguagePreference languagePreference,
+                                                       String caseReferenceNumber) {
         TemplateName templateName = ENGLISH.equals(languagePreference) ? APPLICATION_RECEIVED : APPLICATION_RECEIVED_CY;
         NotificationRequest request =
             dssNotificationHelper.buildEmailNotificationRequest(toEmail, templateVars, templateName);
-        return notificationService.sendEmail(request);
+        return notificationService.sendEmail(request, caseReferenceNumber);
     }
 
 }
