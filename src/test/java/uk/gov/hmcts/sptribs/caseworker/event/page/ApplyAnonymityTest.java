@@ -33,6 +33,7 @@ class ApplyAnonymityTest {
         caseDetails.setId(123L);
         final CicCase cicCase = CicCase.builder()
             .anonymiseYesOrNo(YesOrNo.YES)
+            .anonymisedAppellantName(null)
             .build();
         final CaseData caseData = CaseData.builder()
             .cicCase(cicCase)
@@ -44,6 +45,26 @@ class ApplyAnonymityTest {
         var response = applyAnonymity.midEvent(caseDetails, caseDetails);
 
         verify(anonymisationService).getOrCreateAnonymisation();
+        assertThat(response).isNotNull();
+        assertThat(response.getData().getCicCase().getAnonymisedAppellantName()).isEqualTo("AC");
+    }
+
+    @Test
+    void shouldNotReapplyAnonymity() {
+        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+        caseDetails.setId(123L);
+        final CicCase cicCase = CicCase.builder()
+                .anonymiseYesOrNo(YesOrNo.YES)
+                .anonymisedAppellantName("AC")
+                .build();
+        final CaseData caseData = CaseData.builder()
+                .cicCase(cicCase)
+                .build();
+        caseDetails.setData(caseData);
+
+        var response = applyAnonymity.midEvent(caseDetails, caseDetails);
+        verifyNoInteractions(anonymisationService);
+
         assertThat(response).isNotNull();
         assertThat(response.getData().getCicCase().getAnonymisedAppellantName()).isEqualTo("AC");
     }

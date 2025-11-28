@@ -14,10 +14,16 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
+import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
+import uk.gov.hmcts.sptribs.caseworker.model.CreateAndSendIssueType;
 import uk.gov.hmcts.sptribs.caseworker.model.DateModel;
+import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderContentCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
+import uk.gov.hmcts.sptribs.ciccase.model.OrderTemplate;
 import uk.gov.hmcts.sptribs.common.config.WebMvcConfig;
+import uk.gov.hmcts.sptribs.document.DocAssemblyService;
+import uk.gov.hmcts.sptribs.idam.IdamService;
 import uk.gov.hmcts.sptribs.notification.NotificationServiceCIC;
 import uk.gov.hmcts.sptribs.testutil.IdamWireMock;
 
@@ -36,8 +42,7 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static uk.gov.hmcts.sptribs.caseworker.model.ReminderDays.DAY_COUNT_7;
-import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_SEND_ORDER;
+import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_CREATE_AND_SEND_ORDER;
 import static uk.gov.hmcts.sptribs.ciccase.model.ApplicantCIC.APPLICANT_CIC;
 import static uk.gov.hmcts.sptribs.ciccase.model.ContactPreferenceType.EMAIL;
 import static uk.gov.hmcts.sptribs.ciccase.model.RepresentativeCIC.REPRESENTATIVE;
@@ -52,14 +57,13 @@ import static uk.gov.hmcts.sptribs.testutil.TestConstants.SUBMITTED_URL;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_AUTHORIZATION_TOKEN;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.callbackRequest;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.caseData;
-import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getCICDocumentList;
 import static uk.gov.hmcts.sptribs.testutil.TestResourceUtil.expectedResponse;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
 @ContextConfiguration(initializers = {IdamWireMock.PropertiesInitializer.class})
-public class CaseworkerSendOrderIT {
+public class CaseworkerCreateAndSendOrderIT {
 
     @Autowired
     private MockMvc mockMvc;
@@ -71,7 +75,16 @@ public class CaseworkerSendOrderIT {
     private WebMvcConfig webMvcConfig;
 
     @MockitoBean
+    private IdamService idamService;
+
+    @MockitoBean
+    private DocAssemblyService docAssemblyService;
+
+    @MockitoBean
     private NotificationServiceCIC notificationServiceCIC;
+
+    private static final String CASEWORKER_CREATE_AND_SEND_ORDER_ABOUT_TO_SUBMIT_RESPONSE =
+            "classpath:responses/caseworker-create-and-send-order-about-to-submit-response.json";
 
     private static final String CONFIRMATION_HEADER = "$.confirmation_header";
 
@@ -85,9 +98,6 @@ public class CaseworkerSendOrderIT {
         IdamWireMock.stopAndReset();
     }
 
-    private static final String CASEWORKER_SEND_ORDER_ABOUT_TO_SUBMIT_RESPONSE =
-        "classpath:responses/caseworker-send-order-about-to-submit-response.json";
-
     @Test
     void shouldAddCurrentEventInAboutToStart() throws Exception {
         final CaseData caseData = caseData();
@@ -99,7 +109,7 @@ public class CaseworkerSendOrderIT {
             .content(objectMapper.writeValueAsString(
                 callbackRequest(
                     caseData,
-                    CASEWORKER_SEND_ORDER)))
+                    CASEWORKER_CREATE_AND_SEND_ORDER)))
             .accept(APPLICATION_JSON))
             .andExpect(status().isOk())
             .andReturn()
@@ -107,56 +117,66 @@ public class CaseworkerSendOrderIT {
             .getContentAsString();
 
         assertThatJson(response)
-                .inPath("$.data.currentEvent")
-                .isEqualTo("\"caseworker-send-order\"");
+            .inPath("$.data.currentEvent")
+            .isEqualTo("\"create-and-send-order\"");
     }
 
     @Test
-    void shouldUpdateOrderRelatedDataOnAboutToSubmit() throws Exception {
+    void shouldUpdateOrdersWithNewAnonymousOrderAboutToSubmit() throws Exception {
         DateModel dateModel = DateModel.builder()
-            .dueDate(LocalDate.of(2024, 9, 4))
+            .dueDate(LocalDate.of(2026, 1, 2))
             .information("due date for test")
             .build();
 
+        DraftOrderContentCIC draftOrderContentCIC = DraftOrderContentCIC.builder()
+            .orderTemplate(OrderTemplate.CIC3_RULE_27)
+            .mainContent("Main order content sample")
+            .orderSignature("Supreme Judge Fudge")
+            .build();
+
+        Document document = Document.builder()
+            .categoryId("TD")
+            .filename("Order--[AAC]--09-05-2024 09:04:04.pdf")
+            .binaryUrl("http://dm-store-aat.service.core-compute-aat.internal/documents/6bcdb209-ba65-4f31-a12a-5abbdf250fb6/binary")
+            .url("http://dm-store-aat.service.core-compute-aat.internal/documents/6bcdb209-ba65-4f31-a12a-5abbdf250fb6")
+            .build();
+
         final CaseData caseData = CaseData.builder()
+            .draftOrderContentCIC(draftOrderContentCIC)
             .cicCase(CicCase.builder()
-                .orderFile(getCICDocumentList("order.pdf"))
+                .createAndSendIssuingTypes(CreateAndSendIssueType.CREATE_AND_SEND_NEW_ORDER)
+                .anonymiseYesOrNo(YesOrNo.YES)
+                .anonymisedAppellantName("AAC")
+                .orderTemplateIssued(document)
                 .notifyPartySubject(Set.of(SUBJECT))
                 .notifyPartyRespondent(Set.of(RESPONDENT))
                 .notifyPartyRepresentative(Set.of(REPRESENTATIVE))
                 .notifyPartyApplicant(Set.of(APPLICANT_CIC))
-                .orderReminderDays(DAY_COUNT_7)
                 .orderDueDates(List.of(ListValue.<DateModel>builder().value(dateModel).build()))
                 .fullName("Test Name")
                 .schemeCic(Year2012)
-                .orderTemplateIssued(Document.builder()
-                    .categoryId("CIC")
-                    .binaryUrl("TestUrl/binary")
-                    .filename("SENT :Order--[Subject AutoTesting]--29-05-2024 13:36:27.pdf")
-                    .url("TestUrl")
-                    .build())
+                .orderTemplateIssued(document)
                 .build()
             )
             .build();
 
         String response = mockMvc.perform(post(ABOUT_TO_SUBMIT_URL)
-            .contentType(APPLICATION_JSON)
-            .header(SERVICE_AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
-            .header(AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
-            .content(objectMapper.writeValueAsString(
-                callbackRequest(
-                    caseData,
-                    CASEWORKER_SEND_ORDER)))
-            .accept(APPLICATION_JSON))
-            .andExpect(
-                status().isOk())
-            .andReturn()
-            .getResponse()
-            .getContentAsString();
+                .contentType(APPLICATION_JSON)
+                .header(SERVICE_AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
+                .header(AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
+                .content(objectMapper.writeValueAsString(
+                    callbackRequest(
+                        caseData,
+                        CASEWORKER_CREATE_AND_SEND_ORDER)))
+                .accept(APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
 
         assertThatJson(response)
-            .when(IGNORING_EXTRA_FIELDS)
-            .isEqualTo(json(expectedResponse(CASEWORKER_SEND_ORDER_ABOUT_TO_SUBMIT_RESPONSE)));
+                .when(IGNORING_EXTRA_FIELDS)
+                .isEqualTo(json(expectedResponse(CASEWORKER_CREATE_AND_SEND_ORDER_ABOUT_TO_SUBMIT_RESPONSE)));
     }
 
     @Test
@@ -179,7 +199,7 @@ public class CaseworkerSendOrderIT {
                 .applicantFullName("Applicant Name")
                 .applicantEmailAddress("applicant@test.com")
                 .build()
-            )
+                )
             .build();
 
         String response = mockMvc.perform(post(SUBMITTED_URL)
@@ -189,10 +209,9 @@ public class CaseworkerSendOrderIT {
             .content(objectMapper.writeValueAsString(
                 callbackRequest(
                     caseData,
-                    CASEWORKER_SEND_ORDER)))
+                    CASEWORKER_CREATE_AND_SEND_ORDER)))
             .accept(APPLICATION_JSON))
-            .andExpect(
-                status().isOk())
+            .andExpect(status().isOk())
             .andReturn()
             .getResponse()
             .getContentAsString();
@@ -225,18 +244,17 @@ public class CaseworkerSendOrderIT {
             .content(objectMapper.writeValueAsString(
                 callbackRequest(
                     caseData,
-                    CASEWORKER_SEND_ORDER)))
+                    CASEWORKER_CREATE_AND_SEND_ORDER)))
             .accept(APPLICATION_JSON))
-            .andExpect(
-                status().isOk())
+            .andExpect(status().isOk())
             .andReturn()
             .getResponse()
             .getContentAsString();
 
         assertThatJson(response)
-            .inPath(CONFIRMATION_HEADER)
-            .isString()
-            .contains("# Send order notification failed \n## Please resend the order");
+                .inPath(CONFIRMATION_HEADER)
+                .isString()
+                .contains("# Send order notification failed \n## Please resend the order");
 
         verifyNoInteractions(notificationServiceCIC);
     }

@@ -119,9 +119,9 @@ public class CaseworkerCreateAndSendOrder implements CCDConfig<CaseData, State, 
         Order.OrderBuilder orderBuilder = Order.builder();
         if (caseData.getCicCase().getCreateAndSendIssuingTypes().equals(CREATE_AND_SEND_NEW_ORDER)) {
             DraftOrderCIC draftOrderCIC = DraftOrderCIC.builder()
-                    .draftOrderContentCIC(caseData.getDraftOrderContentCIC())
-                    .templateGeneratedDocument(caseData.getCicCase().getOrderTemplateIssued())
-                    .build();
+                .draftOrderContentCIC(caseData.getDraftOrderContentCIC())
+                .templateGeneratedDocument(caseData.getCicCase().getOrderTemplateIssued())
+                .build();
 
             orderBuilder.draftOrder(draftOrderCIC);
 
@@ -137,10 +137,10 @@ public class CaseworkerCreateAndSendOrder implements CCDConfig<CaseData, State, 
         }
 
         final Order order = orderBuilder
-                .dueDateList(caseData.getCicCase().getOrderDueDates())
-                .parties(getRecipients(caseData.getCicCase()))
-                .orderSentDate(LocalDate.now())
-                .reminderDay(caseData.getCicCase().getOrderReminderDays()).build();
+            .dueDateList(caseData.getCicCase().getOrderDueDates())
+            .parties(getRecipients(caseData.getCicCase()))
+            .orderSentDate(LocalDate.now())
+            .build();
 
         updateCicCaseOrderList(caseData, order);
 
@@ -148,7 +148,6 @@ public class CaseworkerCreateAndSendOrder implements CCDConfig<CaseData, State, 
         caseData.getCicCase().setOrderFile(null);
         caseData.getCicCase().setOrderTemplateIssued(null);
         caseData.getCicCase().setOrderReminderYesOrNo(null);
-        caseData.getCicCase().setOrderReminderDays(null);
 
         caseData.getCicCase().setOrderDueDates(new ArrayList<>());
         caseData.getCicCase().setFirstOrderDueDate(caseData.getCicCase().calculateFirstDueDate());
