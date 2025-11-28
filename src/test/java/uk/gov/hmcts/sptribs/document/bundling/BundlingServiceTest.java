@@ -35,13 +35,10 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -117,13 +114,8 @@ public class BundlingServiceTest {
 
     private CaseDetails<CaseData, State> beforeCaseDetails;
 
-    private static final String testStringDate = "2025-01-01T12:00:00.000";
-    private static final String pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS";
-    private static final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(pattern, Locale.UK);
-    private static final LocalDateTime localDateTime = LocalDateTime.parse(testStringDate, dateTimeFormatter);
-    private static final ZoneId zoneId = ZoneId.of("Europe/London");
-    private static final ZonedDateTime zonedDateTime = localDateTime.atZone(zoneId);
-    private static final Instant instant = zonedDateTime.toInstant();
+    private static final Instant instant = Instant.now();
+    private static final ZoneId zoneId = ZoneId.systemDefault();
 
     @BeforeEach
     void setUp() {
@@ -161,8 +153,8 @@ public class BundlingServiceTest {
 
         when(bundlingClient.createBundle(any(), any(), any())).thenReturn(bundleResponse);
 
-        when(clock.instant()).thenReturn(Instant.parse(instant.toString()));
-        when(clock.getZone()).thenReturn(ZoneOffset.UTC);
+        when(clock.instant()).thenReturn(instant);
+        when(clock.getZone()).thenReturn(zoneId);
 
         final Callback callback = new Callback(updatedCaseDetails, beforeCaseDetails, CREATE_BUNDLE, true);
         final BundleCallback bundleCallback = new BundleCallback(callback);
@@ -227,8 +219,8 @@ public class BundlingServiceTest {
         final BundleResponse bundleResponse = new BundleResponse();
         bundleResponse.setData(caseBundlesMap);
 
-        when(clock.instant()).thenReturn(Instant.parse(instant.toString()));
-        when(clock.getZone()).thenReturn(ZoneOffset.UTC);
+        when(clock.instant()).thenReturn(instant);
+        when(clock.getZone()).thenReturn(zoneId);
 
         when(authTokenGenerator.generate()).thenReturn(TEST_SERVICE_AUTH_TOKEN);
         when(httpServletRequest.getHeader(AUTHORIZATION)).thenReturn(TEST_AUTHORIZATION_TOKEN);
