@@ -30,6 +30,11 @@ import uk.gov.hmcts.sptribs.document.bundling.model.Callback;
 import uk.gov.hmcts.sptribs.document.bundling.model.MultiBundleConfig;
 import uk.gov.hmcts.sptribs.document.model.PageNumberFormat;
 
+import java.time.Clock;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -100,11 +105,17 @@ public class BundlingServiceTest {
     @Mock
     private BundlingClient bundlingClient;
 
+    @Mock
+    private Clock clock;
+
     private CaseData caseData;
 
     private CaseDetails<CaseData, State> updatedCaseDetails;
 
     private CaseDetails<CaseData, State> beforeCaseDetails;
+
+    private static final Instant instant = Instant.now();
+    private static final ZoneId zoneId = ZoneId.systemDefault();
 
     @BeforeEach
     void setUp() {
@@ -142,9 +153,15 @@ public class BundlingServiceTest {
 
         when(bundlingClient.createBundle(any(), any(), any())).thenReturn(bundleResponse);
 
+        when(clock.instant()).thenReturn(instant);
+        when(clock.getZone()).thenReturn(zoneId);
+
         final Callback callback = new Callback(updatedCaseDetails, beforeCaseDetails, CREATE_BUNDLE, true);
         final BundleCallback bundleCallback = new BundleCallback(callback);
         final List<Bundle> result = bundlingService.createBundle(bundleCallback);
+
+        System.out.println("Bundle time:" + result.get(0).getDateAndTime());
+        System.out.println("Expected time:" + expectedBundle.getDateAndTime());
 
         verify(bundlingClient).createBundle(any(), any(), any());
         assertThat(result).hasSize(1);
@@ -160,6 +177,7 @@ public class BundlingServiceTest {
         when(authTokenGenerator.generate()).thenReturn(TEST_SERVICE_AUTH_TOKEN);
         when(httpServletRequest.getHeader(AUTHORIZATION)).thenReturn(TEST_AUTHORIZATION_TOKEN);
         final FeignException feignException = mock(FeignException.class);
+
         when(bundlingClient.createBundle(any(), any(), any())).thenThrow(feignException);
 
         final Callback callback = new Callback(updatedCaseDetails, beforeCaseDetails, CREATE_BUNDLE, true);
@@ -200,6 +218,9 @@ public class BundlingServiceTest {
 
         final BundleResponse bundleResponse = new BundleResponse();
         bundleResponse.setData(caseBundlesMap);
+
+        when(clock.instant()).thenReturn(instant);
+        when(clock.getZone()).thenReturn(zoneId);
 
         when(authTokenGenerator.generate()).thenReturn(TEST_SERVICE_AUTH_TOKEN);
         when(httpServletRequest.getHeader(AUTHORIZATION)).thenReturn(TEST_AUTHORIZATION_TOKEN);
@@ -263,7 +284,7 @@ public class BundlingServiceTest {
             Arguments.arguments(BUNDLE_MAP_ONE_FOLDER_DOCUMENT_NULL_DOCUMENTS, BUNDLE_ONE_FOLDER_DOCUMENT_NULL_DOCUMENTS),
             Arguments.arguments(BUNDLE_MAP_ONE_FOLDER_DOCUMENT_ONE_DOCUMENTS, BUNDLE_ONE_FOLDER_DOCUMENT_ONE_DOCUMENTS),
             Arguments.arguments(BUNDLE_MAP_ONE_FOLDER_DOCUMENT_MULTI_DOCUMENTS, BUNDLE_ONE_FOLDER_DOCUMENT_MULTI_DOCUMENTS)
-        );
+            );
     }
 
     static Stream<Arguments> createBundleListTestValues() {
@@ -301,6 +322,9 @@ public class BundlingServiceTest {
 
         DEFAULT_BUNDLE = Bundle.builder()
             .id("")
+            .dateAndTime(LocalDateTime.now(Clock.fixed(
+                instant,
+                ZoneOffset.UTC)))
             .description("")
             .title("")
             .stitchingFailureMessage("")
@@ -310,6 +334,9 @@ public class BundlingServiceTest {
 
         DEFAULT_BUNDLE_NULL_FOLDER = Bundle.builder()
             .id("")
+            .dateAndTime(LocalDateTime.now(Clock.fixed(
+                instant,
+                ZoneOffset.UTC)))
             .description("")
             .title("")
             .stitchingFailureMessage("")
@@ -466,6 +493,9 @@ public class BundlingServiceTest {
                                        List<ListValue<BundleDocument>> bundleDocuments) {
         return Bundle.builder()
             .id("1")
+            .dateAndTime(LocalDateTime.now(Clock.fixed(
+                instant,
+                ZoneOffset.UTC)))
             .title("")
             .description("")
             .stitchedDocument(stitchedDocument)

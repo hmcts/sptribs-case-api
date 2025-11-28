@@ -52,6 +52,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.access.DefaultAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.GlobalSearchAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.NonRespondentAccess;
 import uk.gov.hmcts.sptribs.document.bundling.model.Bundle;
+import uk.gov.hmcts.sptribs.document.bundling.model.BundleIdAndTimestamp;
 import uk.gov.hmcts.sptribs.document.bundling.model.MultiBundleConfig;
 import uk.gov.hmcts.sptribs.document.model.AbstractCaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
@@ -185,6 +186,13 @@ public class CaseData {
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private List<ListValue<Bundle>> caseBundles = new ArrayList<>();
+
+    @Builder.Default
+    @CCD(
+        label = "Bundles",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private List<ListValue<BundleIdAndTimestamp>> caseBundleIdsAndTimestamps = new ArrayList<>();
 
     @JsonUnwrapped(prefix = "cicCase")
     @Builder.Default

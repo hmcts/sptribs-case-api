@@ -274,5 +274,29 @@ class CaseworkerCreateBundleTest {
         assertThat(responseData.getMultiBundleConfiguration()).isNull();
     }
 
+    @Test
+    public void shouldReturnNullCaseBundlesWhenBundleListIsEmpty() {
+        final CaseData caseData = caseData();
+        final List<ListValue<CaseworkerCICDocument>> documents = getCaseworkerCICDocumentList("test.mp3");
+        final CicCase cicCase = CicCase.builder().build();
+        cicCase.setApplicantDocumentsUploaded(documents);
+        caseData.setCicCase(cicCase);
+        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
+        updatedCaseDetails.setData(caseData);
+        updatedCaseDetails.setId(TEST_CASE_ID);
+        updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
+
+        when(bundlingService.buildBundleListValues(anyList())).thenReturn(null);
+
+        final AboutToStartOrSubmitResponse<CaseData, State> response =
+            caseworkerCreateBundle.aboutToSubmit(updatedCaseDetails, CaseDetails.<CaseData, State>builder().build());
+
+        final CaseData responseData = response.getData();
+        assertThat(responseData)
+            .isNotNull()
+            .isEqualTo(updatedCaseDetails.getData());
+        assertThat(responseData.getCaseBundles()).isNull();
+    }
+
 
 }
