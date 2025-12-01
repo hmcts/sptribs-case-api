@@ -14,7 +14,7 @@ import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.event.page.ApplyAnonymity;
 import uk.gov.hmcts.sptribs.caseworker.event.page.DraftOrderFooter;
-import uk.gov.hmcts.sptribs.caseworker.model.CreateAndSendIssueType;
+import uk.gov.hmcts.sptribs.caseworker.model.CreateAndSendIssuingType;
 import uk.gov.hmcts.sptribs.caseworker.model.DateModel;
 import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderCIC;
 import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderContentCIC;
@@ -107,7 +107,7 @@ class CaseworkerCreateAndSendOrderTest {
 
         final CaseData caseData = CaseData.builder()
                 .draftOrderContentCIC(draftOrderContentCIC)
-                .cicCase(getCicCase(CreateAndSendIssueType.CREATE_AND_SEND_NEW_ORDER, YesOrNo.YES, "AAC", document))
+                .cicCase(getCicCase(CreateAndSendIssuingType.CREATE_AND_SEND_NEW_ORDER, YesOrNo.YES, "AAC", document))
                 .build();
 
         caseData.setDraftOrderContentCIC(draftOrderContentCIC);
@@ -156,7 +156,7 @@ class CaseworkerCreateAndSendOrderTest {
                 .build();
 
         final CaseData caseData = CaseData.builder().build();
-        caseData.setCicCase(getCicCase(CreateAndSendIssueType.CREATE_AND_SEND_NEW_ORDER, YesOrNo.NO, null, document));
+        caseData.setCicCase(getCicCase(CreateAndSendIssuingType.CREATE_AND_SEND_NEW_ORDER, YesOrNo.NO, null, document));
         caseData.setDraftOrderContentCIC(draftOrderContentCIC);
 
         details.setData(caseData);
@@ -200,7 +200,7 @@ class CaseworkerCreateAndSendOrderTest {
             .build();
 
         final CaseData caseData = CaseData.builder().build();
-        CicCase cicCase1 = getCicCase(CreateAndSendIssueType.UPLOAD_A_NEW_ORDER_FROM_YOUR_COMPUTER, YesOrNo.NO, null, null);
+        CicCase cicCase1 = getCicCase(CreateAndSendIssuingType.UPLOAD_A_NEW_ORDER_FROM_YOUR_COMPUTER, YesOrNo.NO, null, null);
         List<ListValue<CICDocument>> orderFile = List.of(ListValue.<CICDocument>builder().value(cicDocument).build());
         cicCase1.setOrderFile(orderFile);
         caseData.setCicCase(cicCase1);
@@ -355,7 +355,7 @@ class CaseworkerCreateAndSendOrderTest {
         return caseDetails;
     }
 
-    private static CicCase getCicCase(CreateAndSendIssueType issueType,
+    private static CicCase getCicCase(CreateAndSendIssuingType issueType,
                                       YesOrNo isAnonymised,
                                       String anonymisedName,
                                       Document document) {

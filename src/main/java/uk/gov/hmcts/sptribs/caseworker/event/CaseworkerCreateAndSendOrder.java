@@ -35,8 +35,8 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 
 import static java.lang.String.format;
-import static uk.gov.hmcts.sptribs.caseworker.model.CreateAndSendIssueType.CREATE_AND_SEND_NEW_ORDER;
-import static uk.gov.hmcts.sptribs.caseworker.model.CreateAndSendIssueType.UPLOAD_A_NEW_ORDER_FROM_YOUR_COMPUTER;
+import static uk.gov.hmcts.sptribs.caseworker.model.CreateAndSendIssuingType.CREATE_AND_SEND_NEW_ORDER;
+import static uk.gov.hmcts.sptribs.caseworker.model.CreateAndSendIssuingType.UPLOAD_A_NEW_ORDER_FROM_YOUR_COMPUTER;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_CREATE_AND_SEND_ORDER;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventUtil.getRecipients;
 import static uk.gov.hmcts.sptribs.caseworker.util.SendOrderUtil.updateCicCaseOrderList;

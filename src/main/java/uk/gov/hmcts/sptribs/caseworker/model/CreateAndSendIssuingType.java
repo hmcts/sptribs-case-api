@@ -7,7 +7,7 @@ import uk.gov.hmcts.ccd.sdk.api.HasLabel;
 
 @RequiredArgsConstructor
 @Getter
-public enum CreateAndSendIssueType implements HasLabel {
+public enum CreateAndSendIssuingType implements HasLabel {
 
     @JsonProperty("NewOrder")
     CREATE_AND_SEND_NEW_ORDER("NewOrder", "Create and send a new order"),

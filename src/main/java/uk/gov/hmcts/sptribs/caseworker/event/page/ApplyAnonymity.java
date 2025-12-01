@@ -43,7 +43,7 @@ public class ApplyAnonymity implements CcdPageConfiguration {
         final CicCase cicCase = caseData.getCicCase();
         final List<String> errors = new ArrayList<>();
 
-        if (cicCase.getAnonymiseYesOrNo().equals(YesOrNo.YES) && cicCase.getAnonymisedAppellantName() == null) {
+        if (YesOrNo.YES.equals(cicCase.getAnonymiseYesOrNo()) && cicCase.getAnonymisedAppellantName() == null) {
             String anonymisedName = anonymisationService.getOrCreateAnonymisation();
             if (anonymisedName == null) {
                 errors.add(FAILED_TO_ANONYMISE_CASE);

@@ -15,7 +15,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
-import uk.gov.hmcts.sptribs.caseworker.model.CreateAndSendIssueType;
+import uk.gov.hmcts.sptribs.caseworker.model.CreateAndSendIssuingType;
 import uk.gov.hmcts.sptribs.caseworker.model.DateModel;
 import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderContentCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
@@ -144,7 +144,7 @@ public class CaseworkerCreateAndSendOrderIT {
         final CaseData caseData = CaseData.builder()
             .draftOrderContentCIC(draftOrderContentCIC)
             .cicCase(CicCase.builder()
-                .createAndSendIssuingTypes(CreateAndSendIssueType.CREATE_AND_SEND_NEW_ORDER)
+                .createAndSendIssuingTypes(CreateAndSendIssuingType.CREATE_AND_SEND_NEW_ORDER)
                 .anonymiseYesOrNo(YesOrNo.YES)
                 .anonymisedAppellantName("AAC")
                 .orderTemplateIssued(document)
