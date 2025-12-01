@@ -15,7 +15,7 @@ import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.ccd.sdk.type.DynamicList;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
-import uk.gov.hmcts.sptribs.caseworker.model.CreateAndSendIssueType;
+import uk.gov.hmcts.sptribs.caseworker.model.CreateAndSendIssuingType;
 import uk.gov.hmcts.sptribs.caseworker.model.DateModel;
 import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderCIC;
 import uk.gov.hmcts.sptribs.caseworker.model.Order;
@@ -118,7 +118,7 @@ public class CicCase {
         label = "How would you like to issue an order?",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
-    private CreateAndSendIssueType createAndSendIssuingTypes;
+    private CreateAndSendIssuingType createAndSendIssuingTypes;
 
     @CCD(
         label = "Draft order",
