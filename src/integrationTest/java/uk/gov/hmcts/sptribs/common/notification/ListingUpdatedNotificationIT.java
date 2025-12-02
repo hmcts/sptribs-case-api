@@ -19,6 +19,7 @@ import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.sptribs.ciccase.model.ContactPreferenceType.EMAIL;
 import static uk.gov.hmcts.sptribs.ciccase.model.ContactPreferenceType.POST;
@@ -77,7 +78,7 @@ public class ListingUpdatedNotificationIT {
 
         listingUpdatedNotification.sendToSubject(data, TEST_CASE_ID.toString());
 
-        verify(notificationServiceCIC).sendEmail(notificationRequestCaptor.capture());
+        verify(notificationServiceCIC).sendEmail(notificationRequestCaptor.capture(), eq(TEST_CASE_ID.toString()));
 
         NotificationRequest notificationRequest = notificationRequestCaptor.getValue();
 
@@ -119,7 +120,7 @@ public class ListingUpdatedNotificationIT {
 
         listingUpdatedNotification.sendToSubject(data, TEST_CASE_ID.toString());
 
-        verify(notificationServiceCIC).sendLetter(notificationRequestCaptor.capture());
+        verify(notificationServiceCIC).sendLetter(notificationRequestCaptor.capture(), eq(TEST_CASE_ID.toString()));
 
         NotificationRequest notificationRequest = notificationRequestCaptor.getValue();
 
@@ -154,7 +155,7 @@ public class ListingUpdatedNotificationIT {
 
         listingUpdatedNotification.sendToRepresentative(data, TEST_CASE_ID.toString());
 
-        verify(notificationServiceCIC).sendEmail(notificationRequestCaptor.capture());
+        verify(notificationServiceCIC).sendEmail(notificationRequestCaptor.capture(), eq(TEST_CASE_ID.toString()));
 
         NotificationRequest notificationRequest = notificationRequestCaptor.getValue();
 
@@ -197,7 +198,7 @@ public class ListingUpdatedNotificationIT {
 
         listingUpdatedNotification.sendToRepresentative(data, TEST_CASE_ID.toString());
 
-        verify(notificationServiceCIC).sendLetter(notificationRequestCaptor.capture());
+        verify(notificationServiceCIC).sendLetter(notificationRequestCaptor.capture(), eq(TEST_CASE_ID.toString()));
 
         NotificationRequest notificationRequest = notificationRequestCaptor.getValue();
 
@@ -232,7 +233,7 @@ public class ListingUpdatedNotificationIT {
 
         listingUpdatedNotification.sendToRespondent(data, TEST_CASE_ID.toString());
 
-        verify(notificationServiceCIC).sendEmail(notificationRequestCaptor.capture());
+        verify(notificationServiceCIC).sendEmail(notificationRequestCaptor.capture(), eq(TEST_CASE_ID.toString()));
 
         NotificationRequest notificationRequest = notificationRequestCaptor.getValue();
 

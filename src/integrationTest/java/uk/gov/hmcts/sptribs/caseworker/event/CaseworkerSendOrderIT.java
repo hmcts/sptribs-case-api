@@ -29,6 +29,7 @@ import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
 import static net.javacrumbs.jsonunit.assertj.JsonAssertions.json;
 import static net.javacrumbs.jsonunit.core.Option.IGNORING_EXTRA_FIELDS;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -50,6 +51,7 @@ import static uk.gov.hmcts.sptribs.testutil.TestConstants.AUTHORIZATION;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.SERVICE_AUTHORIZATION;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.SUBMITTED_URL;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_AUTHORIZATION_TOKEN;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID_HYPHENATED;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.callbackRequest;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.caseData;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getCICDocumentList;
@@ -161,8 +163,10 @@ public class CaseworkerSendOrderIT {
 
     @Test
     void shouldSuccessfullyDispatchEmailsOnSubmitted() throws Exception {
-        final CaseData caseData = CaseData.builder()
-            .cicCase(CicCase.builder()
+        final CaseData caseData = caseData();
+        caseData.setHyphenatedCaseRef(TEST_CASE_ID_HYPHENATED);
+        caseData.setCicCase(
+            CicCase.builder()
                 .notifyPartySubject(Set.of(SUBJECT))
                 .notifyPartyRespondent(Set.of(RESPONDENT))
                 .notifyPartyRepresentative(Set.of(REPRESENTATIVE))
@@ -179,8 +183,7 @@ public class CaseworkerSendOrderIT {
                 .applicantFullName("Applicant Name")
                 .applicantEmailAddress("applicant@test.com")
                 .build()
-            )
-            .build();
+        );
 
         String response = mockMvc.perform(post(SUBMITTED_URL)
             .contentType(APPLICATION_JSON)
@@ -202,7 +205,7 @@ public class CaseworkerSendOrderIT {
             .isString()
             .contains("# Order sent \n## A notification has been sent to: Subject, Respondent, Representative, Applicant");
 
-        verify(notificationServiceCIC, times(4)).sendEmail(any());
+        verify(notificationServiceCIC, times(4)).sendEmail(any(), eq(TEST_CASE_ID_HYPHENATED));
         verifyNoMoreInteractions(notificationServiceCIC);
     }
 
