@@ -11,6 +11,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
+import uk.gov.hmcts.ccd.sdk.External;
 import uk.gov.hmcts.ccd.sdk.api.CCD;
 import uk.gov.hmcts.ccd.sdk.type.CaseLink;
 import uk.gov.hmcts.ccd.sdk.type.ComponentLauncher;
@@ -56,6 +57,7 @@ import uk.gov.hmcts.sptribs.document.bundling.model.BundleIdAndTimestamp;
 import uk.gov.hmcts.sptribs.document.bundling.model.MultiBundleConfig;
 import uk.gov.hmcts.sptribs.document.model.AbstractCaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
+import uk.gov.hmcts.sptribs.notification.model.Correspondence;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -342,6 +344,15 @@ public class CaseData {
         access = {CaseworkerAndSuperUserAccess.class}
     )
     private String note;
+
+    @CCD(
+        label = "Correspondence",
+        typeOverride = Collection,
+        typeParameterOverride = "Correspondence",
+        access = {NonRespondentAccess.class}
+    )
+    @External
+    private List<ListValue<Correspondence>> correspondence;
 
     @CCD(
         label = "Case number",
