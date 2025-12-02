@@ -10,7 +10,6 @@ import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.Event;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
-import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.sptribs.caseworker.model.YesNo;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
@@ -53,14 +52,11 @@ class CaseworkerCreateBundleTest {
     @InjectMocks
     private CaseworkerCreateBundle caseworkerCreateBundle;
 
-    @InjectMocks
+    @Mock
     private BundlingService bundlingService;
 
     @Mock
     private Clock clock;
-
-    @Mock
-    private AuthTokenGenerator authTokenGenerator;
 
     private static final MultiBundleConfig MULTI_BUNDLE_CONFIG = MultiBundleConfig.builder().value("st_cic_bundle_all_case.yaml").build();
 
@@ -177,6 +173,9 @@ class CaseworkerCreateBundleTest {
             return List.of(bundle);
         });
 
+        when(bundlingService.getMultiBundleConfig()).thenCallRealMethod();
+        when(bundlingService.getMultiBundleConfigs()).thenCallRealMethod();
+
         final AboutToStartOrSubmitResponse<CaseData, State> response =
             caseworkerCreateBundle.aboutToSubmit(updatedCaseDetails, CaseDetails.<CaseData, State>builder().build());
 
@@ -260,15 +259,15 @@ class CaseworkerCreateBundleTest {
 
         Bundle bundle = Bundle.builder().build();
 
-//        when(bundlingService.createBundle(any(BundleCallback.class))).thenAnswer(callback -> {
-//            final BundleCallback callbackAtMockTime = (BundleCallback) callback.getArguments()[0];
-//
-//            final CaseData dataAtMockTime = callbackAtMockTime.getCaseDetails().getData();
-//            assertThat(dataAtMockTime.getCaseDocuments()).isEmpty();
-//            assertThat(dataAtMockTime.getBundleConfiguration()).isEqualTo(MULTI_BUNDLE_CONFIG);
-//            assertThat(dataAtMockTime.getMultiBundleConfiguration()).isEqualTo(List.of(MULTI_BUNDLE_CONFIG));
-//            return List.of(bundle);
-//        });
+        when(bundlingService.createBundle(any(BundleCallback.class))).thenAnswer(callback -> {
+            final BundleCallback callbackAtMockTime = (BundleCallback) callback.getArguments()[0];
+
+            final CaseData dataAtMockTime = callbackAtMockTime.getCaseDetails().getData();
+            assertThat(dataAtMockTime.getCaseDocuments()).isEmpty();
+            assertThat(dataAtMockTime.getBundleConfiguration()).isEqualTo(MULTI_BUNDLE_CONFIG);
+            assertThat(dataAtMockTime.getMultiBundleConfiguration()).isEqualTo(List.of(MULTI_BUNDLE_CONFIG));
+            return List.of(bundle);
+        });
 
         when(bundlingService.getMultiBundleConfig()).thenCallRealMethod();
         when(bundlingService.getMultiBundleConfigs()).thenCallRealMethod();
@@ -301,6 +300,9 @@ class CaseworkerCreateBundleTest {
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
 
+        when(bundlingService.getMultiBundleConfig()).thenCallRealMethod();
+        when(bundlingService.getMultiBundleConfigs()).thenCallRealMethod();
+
         final AboutToStartOrSubmitResponse<CaseData, State> response =
             caseworkerCreateBundle.aboutToSubmit(updatedCaseDetails, CaseDetails.<CaseData, State>builder().build());
 
@@ -308,7 +310,7 @@ class CaseworkerCreateBundleTest {
         assertThat(responseData)
             .isNotNull()
             .isEqualTo(updatedCaseDetails.getData());
-        assertThat(responseData.getCaseBundles()).isNull();
+        assertThat(responseData.getCaseBundles()).isEmpty();
     }
 
     @Test
