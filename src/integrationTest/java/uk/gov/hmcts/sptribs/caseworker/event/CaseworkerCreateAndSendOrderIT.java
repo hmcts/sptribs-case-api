@@ -21,6 +21,7 @@ import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderContentCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.OrderTemplate;
+import uk.gov.hmcts.sptribs.ciccase.model.PartiesCIC;
 import uk.gov.hmcts.sptribs.common.config.WebMvcConfig;
 import uk.gov.hmcts.sptribs.document.DocAssemblyService;
 import uk.gov.hmcts.sptribs.idam.IdamService;
@@ -148,6 +149,7 @@ public class CaseworkerCreateAndSendOrderIT {
                 .anonymiseYesOrNo(YesOrNo.YES)
                 .anonymisedAppellantName("AAC")
                 .orderTemplateIssued(document)
+                .partiesCIC(Set.of(PartiesCIC.SUBJECT, PartiesCIC.REPRESENTATIVE, PartiesCIC.APPLICANT))
                 .notifyPartySubject(Set.of(SUBJECT))
                 .notifyPartyRespondent(Set.of(RESPONDENT))
                 .notifyPartyRepresentative(Set.of(REPRESENTATIVE))
