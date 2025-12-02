@@ -31,6 +31,7 @@ import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
 import static net.javacrumbs.jsonunit.assertj.JsonAssertions.json;
 import static net.javacrumbs.jsonunit.core.Option.IGNORING_EXTRA_FIELDS;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -49,7 +50,9 @@ import static uk.gov.hmcts.sptribs.testutil.TestConstants.AUTHORIZATION;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.SERVICE_AUTHORIZATION;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.SUBMITTED_URL;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_AUTHORIZATION_TOKEN;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID_HYPHENATED;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.callbackRequest;
+import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.caseData;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getCaseworkerCICDocumentList;
 import static uk.gov.hmcts.sptribs.testutil.TestResourceUtil.expectedResponse;
 
@@ -134,8 +137,10 @@ public class RespondentContactPartiesIT {
             .value(elements)
             .listItems(elements)
             .build());
-        final CaseData caseData = CaseData.builder()
-            .cicCase(CicCase.builder()
+        final CaseData caseData = caseData();
+        caseData.setHyphenatedCaseRef(TEST_CASE_ID_HYPHENATED);
+        caseData.setCicCase(
+            CicCase.builder()
                 .contactPreferenceType(EMAIL)
                 .representativeContactDetailsPreference(EMAIL)
                 .applicantContactDetailsPreference(EMAIL)
@@ -148,16 +153,16 @@ public class RespondentContactPartiesIT {
                 .applicantFullName("Applicant Name")
                 .applicantEmailAddress("applicant@test.com")
                 .build()
-            )
-            .contactParties(ContactParties.builder()
+        );
+        caseData.setContactParties(
+            ContactParties.builder()
                 .subjectContactParties(Set.of(SUBJECT))
                 .tribunal(Set.of(TRIBUNAL))
                 .representativeContactParties(Set.of(REPRESENTATIVE))
                 .applicantContactParties(Set.of(APPLICANT_CIC))
                 .build()
-            )
-            .contactPartiesDocuments(contactPartiesDocuments)
-            .build();
+        );
+        caseData.setContactPartiesDocuments(contactPartiesDocuments);
 
         String response = mockMvc.perform(post(SUBMITTED_URL)
             .contentType(APPLICATION_JSON)
@@ -179,7 +184,7 @@ public class RespondentContactPartiesIT {
             .isString()
             .contains("# Message sent \n## A notification has been sent to: Subject, Applicant, Representative, Tribunal");
 
-        verify(notificationServiceCIC, times(4)).sendEmail(any());
+        verify(notificationServiceCIC, times(4)).sendEmail(any(), eq(TEST_CASE_ID_HYPHENATED));
         verifyNoMoreInteractions(notificationServiceCIC);
     }
 
