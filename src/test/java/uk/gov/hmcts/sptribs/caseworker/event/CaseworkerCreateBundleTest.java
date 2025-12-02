@@ -49,6 +49,11 @@ import static uk.gov.hmcts.sptribs.testutil.TestEventConstants.CREATE_BUNDLE;
 @ExtendWith(MockitoExtension.class)
 class CaseworkerCreateBundleTest {
 
+    private static final MultiBundleConfig MULTI_BUNDLE_CONFIG = MultiBundleConfig.builder().value("st_cic_bundle_all_case.yaml").build();
+
+    private static final Instant instant = Instant.now();
+    private static final ZoneId zoneId = ZoneId.systemDefault();
+
     @InjectMocks
     private CaseworkerCreateBundle caseworkerCreateBundle;
 
@@ -57,11 +62,6 @@ class CaseworkerCreateBundleTest {
 
     @Mock
     private Clock clock;
-
-    private static final MultiBundleConfig MULTI_BUNDLE_CONFIG = MultiBundleConfig.builder().value("st_cic_bundle_all_case.yaml").build();
-
-    private static final Instant instant = Instant.now();
-    private static final ZoneId zoneId = ZoneId.systemDefault();
 
     @Test
     void shouldAddPublishToCamundaWhenWAIsEnabled() {
