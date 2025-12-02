@@ -29,6 +29,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
@@ -303,6 +304,8 @@ class CaseworkerCreateBundleTest {
         when(bundlingService.getMultiBundleConfig()).thenCallRealMethod();
         when(bundlingService.getMultiBundleConfigs()).thenCallRealMethod();
 
+        when(bundlingService.buildBundleListValues(anyList())).thenReturn(null);
+
         final AboutToStartOrSubmitResponse<CaseData, State> response =
             caseworkerCreateBundle.aboutToSubmit(updatedCaseDetails, CaseDetails.<CaseData, State>builder().build());
 
@@ -310,7 +313,7 @@ class CaseworkerCreateBundleTest {
         assertThat(responseData)
             .isNotNull()
             .isEqualTo(updatedCaseDetails.getData());
-        assertThat(responseData.getCaseBundles()).isEmpty();
+        assertThat(responseData.getCaseBundles()).isNull();
     }
 
     @Test
