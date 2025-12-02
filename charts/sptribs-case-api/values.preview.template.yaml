@@ -61,6 +61,10 @@ ccd:
       enabled: true
 
   ingressHost: ${SERVICE_FQDN}
+  memoryRequests: 200Mi
+  memoryLimits: 1Gi
+  devmemoryRequests: 200Mi
+  devmemoryLimits: 1Gi
   ingressIP: ${INGRESS_IP}
   consulIP: ${CONSUL_LB_IP}
 
