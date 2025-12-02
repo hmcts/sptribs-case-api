@@ -289,7 +289,7 @@ class CaseworkerCreateBundleTest {
     }
 
     @Test
-    void shouldReturnNullCaseBundlesWhenBundleListIsEmpty() {
+    void shouldReturnNullCaseBundlesWhenNoBundlesCreated() {
         final CaseData caseData = caseData();
         final List<ListValue<CaseworkerCICDocument>> documents = getCaseworkerCICDocumentList("test.mp3");
         final CicCase cicCase = CicCase.builder().build();
@@ -313,6 +313,67 @@ class CaseworkerCreateBundleTest {
             .isNotNull()
             .isEqualTo(updatedCaseDetails.getData());
         assertThat(responseData.getCaseBundles()).isNull();
+    }
+
+    @Test
+    void shouldCreateNewBundleWithTimestampWithoutExistingBundles() {
+        final CaseData caseData = caseData();
+        caseData.setCaseBundleIdsAndTimestamps(new ArrayList<>());
+        final List<ListValue<CaseworkerCICDocument>> cicDocuments = getCaseworkerCICDocumentList();
+        final CicCase cicCase = CicCase.builder().build();
+        cicCase.setApplicantDocumentsUploaded(cicDocuments);
+        caseData.setCicCase(cicCase);
+
+        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
+        updatedCaseDetails.setData(caseData);
+        updatedCaseDetails.setId(TEST_CASE_ID);
+        updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
+
+        final Bundle bundle = Bundle.builder().build();
+
+        when(bundlingService.getMultiBundleConfig()).thenCallRealMethod();
+        when(bundlingService.getMultiBundleConfigs()).thenCallRealMethod();
+
+        when(bundlingService.createBundle(any(BundleCallback.class))).thenAnswer(callback -> {
+            final BundleCallback callbackAtMockTime = (BundleCallback) callback.getArguments()[0];
+
+            //check case data at call time
+            final CaseData dataAtMockTime = callbackAtMockTime.getCaseDetails().getData();
+            assertThat(dataAtMockTime.getCaseDocuments().getFirst().getValue()).isEqualTo(cicDocuments.getFirst().getValue());
+            assertThat(dataAtMockTime.getBundleConfiguration()).isEqualTo(MULTI_BUNDLE_CONFIG);
+            assertThat(dataAtMockTime.getMultiBundleConfiguration()).isEqualTo(List.of(MULTI_BUNDLE_CONFIG));
+            return List.of(bundle);
+        });
+
+        List<ListValue<Bundle>> testListValueBundles = new ArrayList<>();
+
+        testListValueBundles.add(
+            ListValue.<Bundle>builder()
+                .id("5")
+                .value(Bundle.builder().build())
+                .build()
+        );
+
+        when(bundlingService.buildBundleListValues(anyList())).thenReturn(testListValueBundles);
+
+        when(clock.instant()).thenReturn(instant);
+        when(clock.getZone()).thenReturn(zoneId);
+
+        final AboutToStartOrSubmitResponse<CaseData, State> response =
+            caseworkerCreateBundle.aboutToSubmit(updatedCaseDetails, CaseDetails.<CaseData, State>builder().build());
+
+        verify(bundlingService).getMultiBundleConfig();
+        verify(bundlingService).getMultiBundleConfigs();
+        verify(bundlingService).buildBundleListValues(anyList());
+
+        final CaseData responseData = response.getData();
+        assertThat(responseData)
+            .isNotNull()
+            .isEqualTo(updatedCaseDetails.getData());
+        assertThat(responseData.getCaseBundles()).isNotNull();
+
+        assertThat(responseData.getCaseDocuments()).isNull();
+        assertThat(responseData.getMultiBundleConfiguration()).isNull();
     }
 
     @Test
