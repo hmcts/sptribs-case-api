@@ -281,7 +281,7 @@ public class BundlingServiceTest {
             Arguments.arguments(BUNDLE_MAP_ONE_FOLDER_DOCUMENT_NULL_DOCUMENTS, BUNDLE_ONE_FOLDER_DOCUMENT_NULL_DOCUMENTS),
             Arguments.arguments(BUNDLE_MAP_ONE_FOLDER_DOCUMENT_ONE_DOCUMENTS, BUNDLE_ONE_FOLDER_DOCUMENT_ONE_DOCUMENTS),
             Arguments.arguments(BUNDLE_MAP_ONE_FOLDER_DOCUMENT_MULTI_DOCUMENTS, BUNDLE_ONE_FOLDER_DOCUMENT_MULTI_DOCUMENTS)
-            );
+        );
     }
 
     static Stream<Arguments> createBundleListTestValues() {
