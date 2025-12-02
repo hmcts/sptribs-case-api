@@ -157,6 +157,9 @@ class CaseworkerCreateBundleTest {
 
         final Bundle bundle = Bundle.builder().build();
 
+        when(bundlingService.getMultiBundleConfig()).thenCallRealMethod();
+        when(bundlingService.getMultiBundleConfigs()).thenCallRealMethod();
+
         when(bundlingService.createBundle(any(BundleCallback.class))).thenAnswer(callback -> {
             final BundleCallback callbackAtMockTime = (BundleCallback) callback.getArguments()[0];
 
@@ -172,9 +175,6 @@ class CaseworkerCreateBundleTest {
             assertThat(dataAtMockTime.getMultiBundleConfiguration()).isEqualTo(List.of(MULTI_BUNDLE_CONFIG));
             return List.of(bundle);
         });
-
-        when(bundlingService.getMultiBundleConfig()).thenCallRealMethod();
-        when(bundlingService.getMultiBundleConfigs()).thenCallRealMethod();
 
         final AboutToStartOrSubmitResponse<CaseData, State> response =
             caseworkerCreateBundle.aboutToSubmit(updatedCaseDetails, CaseDetails.<CaseData, State>builder().build());
