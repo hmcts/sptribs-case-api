@@ -38,6 +38,8 @@ spring:
       enabled: true
       connection-string: ${AZURE_SERVICE_BUS_CONNECTION_STRING:${AZURE_SERVICE_BUS_PREVIEW_CONNECTION_STRING:dummy}}
       pricing-tier: standard
+      pool:
+        enabled: true
   cloud:
     azure:
       credential:
