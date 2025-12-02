@@ -5,10 +5,6 @@ java:
   # Don't modify below here
   image: ${IMAGE_NAME}
   ingressHost: ${SERVICE_FQDN}
-  memoryRequests: 200Mi
-  memoryLimits: 1Gi
-  devmemoryRequests: 200Mi
-  devmemoryLimits: 1Gi
   environment:
     CASE_DATA_STORE_BASEURL: http://{{ .Release.Name }}-ccd-data-store-api
     CASE_DOCUMENT_AM_BASEURL: http://${SERVICE_NAME}-ccd-case-document-am-api
