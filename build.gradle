@@ -51,6 +51,9 @@ project.tasks.named("generateCCDConfig") {
   environment 'SPRING_PROFILES_ACTIVE', 'config-gen'
   environment 'SPRING_FLYWAY_ENABLED', 'false'
   environment 'SPRING_JMS_SERVICEBUS_ENABLED', 'false'
+  environment 'SPRING_DATASOURCE_URL', 'jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;MODE=PostgreSQL'
+  environment 'SPRING_DATASOURCE_USERNAME', 'sa'
+  environment 'SPRING_DATASOURCE_PASSWORD', ''
 }
 
 sourceSets {
@@ -153,6 +156,7 @@ task integration(type: Test) {
   classpath = sourceSets.integrationTest.runtimeClasspath
   failFast = true
   environment 'SPRING_PROFILES_ACTIVE', 'integration'
+  systemProperty 'spring.profiles.active', 'integration'
   include "**/*IT.class"
 }
 
@@ -341,6 +345,7 @@ dependencies {
   implementation group: 'com.github.hmcts', name: 'core-case-data-store-client', version: '5.2.0'
   implementation group: 'com.github.hmcts', name:'ccd-case-document-am-client', version: '1.59.2'
   implementation group: 'com.github.hmcts', name: 'idam-java-client', version: '3.0.5'
+  implementation group: 'com.github.hmcts', name: 'pdf-service-client', version: '8.0.2'
   implementation group: 'com.github.hmcts.java-logging', name: 'logging', version: '6.1.9'
   implementation group: 'com.github.hmcts', name: 'service-auth-provider-java-client', version: '5.3.3'
   implementation group: 'net.logstash.logback', name: 'logstash-logback-encoder', version: '8.1'
@@ -354,11 +359,13 @@ dependencies {
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-actuator'
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-aop'
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-json'
+  implementation group: 'org.springframework.boot', name: 'spring-boot-starter-data-jpa'
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-validation', version: versions.springBoot
   implementation group: 'org.springframework.retry', name: 'spring-retry', version: '2.0.12'
   implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-netflix-hystrix', version: '2.2.10.RELEASE'
   implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-bootstrap', version: '4.3.0'
   implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-openfeign', version: '4.3.0'
+  implementation group: 'org.springframework.data', name: 'spring-data-commons', version: '3.5.3'
   implementation group: 'uk.gov.service.notify', name: 'notifications-java-client', version: '5.2.1-RELEASE'
   implementation group: 'com.launchdarkly', name: 'launchdarkly-java-server-sdk', version: '7.10.2'
   implementation group: 'org.apache.commons', name: 'commons-collections4', version: '4.5.0'
@@ -403,6 +410,7 @@ dependencies {
   functionalTestImplementation sourceSets.main.runtimeClasspath
   functionalTestImplementation sourceSets.test.runtimeClasspath
   functionalTestImplementation 'com.h2database:h2'
+  configGeneration 'com.h2database:h2'
 
   functionalTestImplementation group: 'com.github.hmcts', name: 'document-management-client', version: '7.0.1'
   functionalTestImplementation group: 'com.github.hmcts', name: 'service-auth-provider-java-client', version: '5.3.3'
@@ -521,6 +529,7 @@ tasks.withType(CftlibExec).configureEach {
 bootWithCCD {
     environment 'XUI_JURISDICTIONS', 'ST_CIC'
     environment 'CASE_DOCUMENT_S2S_AUTHORISED_SERVICES', 'ccd_case_document_am_api,ccd_gw,xui_webapp,ccd_data,bulk_scan_processor,em_npa_app,dg_docassembly_api,em_stitching_api,em_ccd_orchestrator,bulk_scan_orchestrator,sptribs_case_api,sptribs_frontend'
+    environment 'PDF_API_URL', 'http://rpe-pdf-service-aat.service.core-compute-aat.internal'
     environment 'SPRING_JMS_SERVICEBUS_ENABLED', 'false'
     group = 'ccd tasks'
     dependsOn loadEnvSecretsTask
