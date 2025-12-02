@@ -99,8 +99,8 @@ public class CaseworkerCreateBundleIT {
 
     @BeforeEach
     void setClock() {
-        when(clock.instant()).thenReturn(Instant.parse("2021-06-18T12:00:00.000Z"));
-        when(clock.getZone()).thenReturn(ZoneId.systemDefault());
+        when(clock.instant()).thenReturn(instant);
+        when(clock.getZone()).thenReturn(zoneId);
     }
 
     @Test
