@@ -21,6 +21,7 @@ import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.sptribs.ciccase.model.ContactPreferenceType.EMAIL;
 import static uk.gov.hmcts.sptribs.ciccase.model.ContactPreferenceType.POST;
@@ -71,7 +72,7 @@ public class CancelHearingNotificationIT {
 
         cancelHearingNotification.sendToSubject(data, TEST_CASE_ID.toString());
 
-        verify(notificationServiceCIC).sendEmail(notificationRequestCaptor.capture());
+        verify(notificationServiceCIC).sendEmail(notificationRequestCaptor.capture(), eq(TEST_CASE_ID.toString()));
 
         NotificationRequest notificationRequest = notificationRequestCaptor.getValue();
 
@@ -114,7 +115,7 @@ public class CancelHearingNotificationIT {
 
         cancelHearingNotification.sendToSubject(data, TEST_CASE_ID.toString());
 
-        verify(notificationServiceCIC).sendLetter(notificationRequestCaptor.capture());
+        verify(notificationServiceCIC).sendLetter(notificationRequestCaptor.capture(), eq(TEST_CASE_ID.toString()));
 
         NotificationRequest notificationRequest = notificationRequestCaptor.getValue();
 
@@ -154,7 +155,7 @@ public class CancelHearingNotificationIT {
 
         cancelHearingNotification.sendToRepresentative(data, TEST_CASE_ID.toString());
 
-        verify(notificationServiceCIC).sendEmail(notificationRequestCaptor.capture());
+        verify(notificationServiceCIC).sendEmail(notificationRequestCaptor.capture(), eq(TEST_CASE_ID.toString()));
 
         NotificationRequest notificationRequest = notificationRequestCaptor.getValue();
 
@@ -199,7 +200,7 @@ public class CancelHearingNotificationIT {
 
         cancelHearingNotification.sendToRepresentative(data, TEST_CASE_ID.toString());
 
-        verify(notificationServiceCIC).sendLetter(notificationRequestCaptor.capture());
+        verify(notificationServiceCIC).sendLetter(notificationRequestCaptor.capture(), eq(TEST_CASE_ID.toString()));
 
         NotificationRequest notificationRequest = notificationRequestCaptor.getValue();
 
@@ -238,7 +239,7 @@ public class CancelHearingNotificationIT {
 
         cancelHearingNotification.sendToRespondent(data, TEST_CASE_ID.toString());
 
-        verify(notificationServiceCIC).sendEmail(notificationRequestCaptor.capture());
+        verify(notificationServiceCIC).sendEmail(notificationRequestCaptor.capture(), eq(TEST_CASE_ID.toString()));
 
         NotificationRequest notificationRequest = notificationRequestCaptor.getValue();
 
@@ -278,7 +279,7 @@ public class CancelHearingNotificationIT {
 
         cancelHearingNotification.sendToApplicant(data, TEST_CASE_ID.toString());
 
-        verify(notificationServiceCIC).sendEmail(notificationRequestCaptor.capture());
+        verify(notificationServiceCIC).sendEmail(notificationRequestCaptor.capture(), eq(TEST_CASE_ID.toString()));
 
         NotificationRequest notificationRequest = notificationRequestCaptor.getValue();
 
@@ -323,7 +324,7 @@ public class CancelHearingNotificationIT {
 
         cancelHearingNotification.sendToApplicant(data, TEST_CASE_ID.toString());
 
-        verify(notificationServiceCIC).sendLetter(notificationRequestCaptor.capture());
+        verify(notificationServiceCIC).sendLetter(notificationRequestCaptor.capture(), eq(TEST_CASE_ID.toString()));
 
         NotificationRequest notificationRequest = notificationRequestCaptor.getValue();
 

@@ -19,12 +19,13 @@ import static uk.gov.hmcts.sptribs.common.CommonConstants.CONTACT_NAME;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.HAS_CICA_NUMBER;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.TRIBUNAL_NAME;
 import static uk.gov.hmcts.sptribs.common.ccd.CcdCaseType.CIC;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID;
 
 @ExtendWith(MockitoExtension.class)
 public class DssNotificationHelperTest {
 
 
-    private static final String CASE_NUMBER = "CN1";
+    private static final String CASE_NUMBER = TEST_CASE_ID.toString();
     private static final String EMAIL_ID = "test@outlook.com";
     private static final String CICA_REFERENCE_NUMBER = "X/12/123456-TM1A";
 
@@ -41,7 +42,7 @@ public class DssNotificationHelperTest {
         final DssCaseData dssCaseData = getMockDssCaseData();
         final CaseData caseData = CaseData.builder().dssCaseData(dssCaseData).build();
         Map<String, Object> templateVars = dssNotificationHelper.getSubjectCommonVars(CASE_NUMBER, caseData);
-        
+
         assertThat(templateVars)
                 .containsEntry(TRIBUNAL_NAME, CIC)
                 .containsEntry(CIC_CASE_NUMBER, CASE_NUMBER)

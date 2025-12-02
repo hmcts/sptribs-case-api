@@ -35,6 +35,7 @@ import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
 import static net.javacrumbs.jsonunit.assertj.JsonAssertions.json;
 import static net.javacrumbs.jsonunit.core.Option.IGNORING_EXTRA_FIELDS;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -54,7 +55,9 @@ import static uk.gov.hmcts.sptribs.testutil.TestConstants.AUTHORIZATION;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.SERVICE_AUTHORIZATION;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.SUBMITTED_URL;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_AUTHORIZATION_TOKEN;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID_HYPHENATED;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.callbackRequest;
+import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.caseData;
 import static uk.gov.hmcts.sptribs.testutil.TestEventConstants.CASEWORKER_REMOVE_STAY;
 import static uk.gov.hmcts.sptribs.testutil.TestResourceUtil.expectedResponse;
 
@@ -188,8 +191,10 @@ public class CaseworkerRemoveStayIT {
 
     @Test
     void shouldReturnConfirmationMessageIfNotificationsDispatchedOnSubmitted() throws Exception {
-        final CaseData caseData = CaseData.builder()
-            .cicCase(CicCase.builder()
+        final CaseData caseData = caseData();
+        caseData.setHyphenatedCaseRef(TEST_CASE_ID_HYPHENATED);
+        caseData.setCicCase(
+            CicCase.builder()
                 .subjectCIC(Set.of(SubjectCIC.SUBJECT))
                 .applicantCIC(Set.of(ApplicantCIC.APPLICANT_CIC))
                 .representativeCIC(Set.of(RepresentativeCIC.REPRESENTATIVE))
@@ -206,8 +211,7 @@ public class CaseworkerRemoveStayIT {
                 .applicantFullName("Applicant Name")
                 .applicantEmailAddress("applicant@test.com")
                 .build()
-            )
-            .build();
+        );
 
         String response = mockMvc.perform(post(SUBMITTED_URL)
                 .contentType(APPLICATION_JSON)
@@ -229,14 +233,16 @@ public class CaseworkerRemoveStayIT {
             .isString()
             .contains("# Stay Removed from Case \n## A notification has been sent to: Subject, Representative, Applicant");
 
-        verify(notificationServiceCIC, times(3)).sendEmail(any());
+        verify(notificationServiceCIC, times(3)).sendEmail(any(), eq(TEST_CASE_ID_HYPHENATED));
         verifyNoMoreInteractions(notificationServiceCIC);
     }
 
     @Test
     void shouldReturnErrorMessageIfNotificationsFailOnSubmitted() throws Exception {
-        final CaseData caseData = CaseData.builder()
-            .cicCase(CicCase.builder()
+        final CaseData caseData = caseData();
+        caseData.setHyphenatedCaseRef(TEST_CASE_ID_HYPHENATED);
+        caseData.setCicCase(
+            CicCase.builder()
                 .subjectCIC(Set.of(SubjectCIC.SUBJECT))
                 .applicantCIC(Set.of(ApplicantCIC.APPLICANT_CIC))
                 .representativeCIC(Set.of(RepresentativeCIC.REPRESENTATIVE))
@@ -247,10 +253,10 @@ public class CaseworkerRemoveStayIT {
                 .representativeContactDetailsPreference(EMAIL)
                 .applicantContactDetailsPreference(EMAIL)
                 .build()
-            )
-            .build();
+        );
 
-        when(notificationServiceCIC.sendEmail(any())).thenThrow(new NotificationException(new NotificationClientException("")));
+        when(notificationServiceCIC.sendEmail(any(), eq(TEST_CASE_ID_HYPHENATED)))
+            .thenThrow(new NotificationException(new NotificationClientException("")));
 
         String response = mockMvc.perform(post(SUBMITTED_URL)
                 .contentType(APPLICATION_JSON)
@@ -272,7 +278,7 @@ public class CaseworkerRemoveStayIT {
             .isString()
             .contains("# Remove case stay notification failed \n## Please resend the notification");
 
-        verify(notificationServiceCIC, times(1)).sendEmail(any());
+        verify(notificationServiceCIC, times(1)).sendEmail(any(), eq(TEST_CASE_ID_HYPHENATED));
         verifyNoMoreInteractions(notificationServiceCIC);
     }
 }
