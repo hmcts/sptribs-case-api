@@ -41,10 +41,13 @@ class RequestInterceptorTest {
     @InjectMocks
     private RequestInterceptor requestInterceptor;
 
+    private Object testObj;
+
     @BeforeEach
     public void setUp() {
         setField(requestInterceptor, "authorisedServices", List.of("ccd_data", "test_service"));
         lenient().when(request.getRequestURI()).thenReturn("");
+        this.testObj = new Object();
     }
 
     @Test
@@ -53,7 +56,7 @@ class RequestInterceptorTest {
         setField(requestInterceptor, "authorisedServices",null);
 
         //When
-        assertThatThrownBy(() -> requestInterceptor.preHandle(request, response, new Object()))
+        assertThatThrownBy(() -> requestInterceptor.preHandle(request, response, testObj))
             .isExactlyInstanceOf(UnAuthorisedServiceException.class)
             .hasMessageContaining("List of authorised services is not yet configured");
     }
@@ -64,7 +67,7 @@ class RequestInterceptorTest {
         setField(requestInterceptor, "authorisedServices", new ArrayList<>());
 
         //When
-        assertThatThrownBy(() -> requestInterceptor.preHandle(request, response, new Object()))
+        assertThatThrownBy(() -> requestInterceptor.preHandle(request, response, testObj))
             .isExactlyInstanceOf(UnAuthorisedServiceException.class)
             .hasMessageContaining("List of authorised services is not yet configured");
     }
@@ -75,7 +78,7 @@ class RequestInterceptorTest {
         when(request.getHeader(SERVICE_AUTHORIZATION)).thenReturn(null);
 
         //When
-        assertThatThrownBy(() -> requestInterceptor.preHandle(request, response, new Object()))
+        assertThatThrownBy(() -> requestInterceptor.preHandle(request, response, testObj))
             .isExactlyInstanceOf(UnAuthorisedServiceException.class)
             .hasMessageContaining("Service authorization token is missing");
     }
@@ -87,7 +90,7 @@ class RequestInterceptorTest {
         when(request.getHeader(SERVICE_AUTHORIZATION)).thenReturn(TEST_AUTHORIZATION_TOKEN);
 
         //When
-        assertThatThrownBy(() -> requestInterceptor.preHandle(request, response, new Object()))
+        assertThatThrownBy(() -> requestInterceptor.preHandle(request, response, testObj))
             .isExactlyInstanceOf(UnAuthorisedServiceException.class)
             .hasMessageContaining("Service fake_service not in configured list for accessing callback");
     }
@@ -127,7 +130,7 @@ class RequestInterceptorTest {
         when(request.getRequestURI()).thenReturn("/ccd-persistence/cases");
 
         //When
-        Boolean result = requestInterceptor.preHandle(request, response, new Object());
+        Boolean result = requestInterceptor.preHandle(request, response, testObj);
 
         //Then
         assertThat(result).isTrue();
@@ -141,7 +144,7 @@ class RequestInterceptorTest {
         when(request.getHeader(SERVICE_AUTHORIZATION)).thenReturn(AUTH_TOKEN_WITH_BEARER_PREFIX);
 
         //When
-        Boolean result = requestInterceptor.preHandle(request, response, new Object());
+        Boolean result = requestInterceptor.preHandle(request, response, testObj);
 
         //Then
         assertThat(result).isTrue();
