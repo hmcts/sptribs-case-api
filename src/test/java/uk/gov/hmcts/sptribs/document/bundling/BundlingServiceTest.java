@@ -160,9 +160,6 @@ public class BundlingServiceTest {
         final BundleCallback bundleCallback = new BundleCallback(callback);
         final List<Bundle> result = bundlingService.createBundle(bundleCallback);
 
-        System.out.println("Bundle time:" + result.get(0).getDateAndTime());
-        System.out.println("Expected time:" + expectedBundle.getDateAndTime());
-
         verify(bundlingClient).createBundle(any(), any(), any());
         assertThat(result).hasSize(1);
         assertThat(result.get(0)).isNotNull();
