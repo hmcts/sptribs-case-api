@@ -174,7 +174,6 @@ public class BundlingServiceTest {
         when(authTokenGenerator.generate()).thenReturn(TEST_SERVICE_AUTH_TOKEN);
         when(httpServletRequest.getHeader(AUTHORIZATION)).thenReturn(TEST_AUTHORIZATION_TOKEN);
         final FeignException feignException = mock(FeignException.class);
-
         when(bundlingClient.createBundle(any(), any(), any())).thenThrow(feignException);
 
         final Callback callback = new Callback(updatedCaseDetails, beforeCaseDetails, CREATE_BUNDLE, true);
