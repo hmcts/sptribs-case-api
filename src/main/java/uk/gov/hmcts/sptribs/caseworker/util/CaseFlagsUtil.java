@@ -6,8 +6,9 @@ import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.PartiesCIC;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.UUID;
 
 public final class CaseFlagsUtil {
     private CaseFlagsUtil() {
@@ -74,18 +75,13 @@ public final class CaseFlagsUtil {
         updateRepresentativeFlags(data);
     }
 
-    public static void addFlag(CaseData data, String code, String comment) {
+    public static void addFlag(CaseData data, FlagDetail flagDetail) {
         updateOrInitialiseFlags(data);
 
-        FlagDetail flagDetail = FlagDetail.builder()
-            .flagCode(code)
-            .flagComment(comment)
-            .dateTimeCreated(LocalDateTime.now())
-            .build();
-
         Flags flags = data.getCaseFlags();
-        if (flags.getDetails().stream().noneMatch(detailValue -> detailValue.getValue().getFlagCode().equals(code))) {
-            flags.getDetails().add(ListValue.<FlagDetail>builder().value(flagDetail).build());
+        if (flags.getDetails().stream().noneMatch(detailValue -> caseFlagDetailsEquals(detailValue.getValue(), flagDetail))) {
+            flags.getDetails().add(ListValue.<FlagDetail>builder()
+                .id(UUID.randomUUID().toString()).value(flagDetail).build());
             data.setCaseFlags(flags);
         }
     }
@@ -116,6 +112,25 @@ public final class CaseFlagsUtil {
             );
         } else {
             data.setApplicantFlags(null);
+        }
+    }
+
+    public static boolean caseFlagDetailsEquals(FlagDetail flagDetail1, FlagDetail flagDetail2) {
+        CaseFlagDetailsComparator caseFlagDetailsComparator = new CaseFlagDetailsComparator();
+        return caseFlagDetailsComparator.compare(flagDetail1, flagDetail2) == 0;
+    }
+
+    private static class CaseFlagDetailsComparator implements Comparator<FlagDetail> {
+        @Override
+        public int compare(FlagDetail flagDetail1, FlagDetail flagDetail2) {
+            return Comparator.comparing(FlagDetail::getName)
+                    .thenComparing(FlagDetail::getStatus)
+                    .thenComparing(FlagDetail::getNameCy)
+                    .thenComparing(FlagDetail::getFlagCode)
+                    .thenComparing(FlagDetail::getFlagComment)
+                    .thenComparing(FlagDetail::getHearingRelevant)
+                    .thenComparing(FlagDetail::getAvailableExternally)
+                    .compare(flagDetail1, flagDetail2);
         }
     }
 }

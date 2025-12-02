@@ -9,6 +9,8 @@ import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.Event;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
+import uk.gov.hmcts.ccd.sdk.type.FlagDetail;
+import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.event.page.ApplyAnonymity;
@@ -30,12 +32,14 @@ import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.common.event.page.CreateDraftOrder;
 import uk.gov.hmcts.sptribs.common.event.page.DraftOrderMainContentPage;
 import uk.gov.hmcts.sptribs.common.event.page.PreviewDraftOrder;
-import uk.gov.hmcts.sptribs.common.service.CcdSupplementaryDataService;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
 import uk.gov.hmcts.sptribs.notification.dispatcher.NewOrderIssuedNotification;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
 import static java.lang.String.format;
 import static uk.gov.hmcts.sptribs.caseworker.model.CreateAndSendIssuingType.CREATE_AND_SEND_NEW_ORDER;
@@ -77,10 +81,6 @@ public class CaseworkerCreateAndSendOrder implements CCDConfig<CaseData, State, 
     private final DraftOrderFooter draftOrderFooter;
     private final NewOrderIssuedNotification newOrderIssuedNotification;
 
-    private final CcdSupplementaryDataService ccdSupplementaryDataService;
-
-    private boolean caseFlagAdded = false;
-
     @Override
     public void configure(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         Event.EventBuilder<CaseData, UserRole, State> eventBuilder =
@@ -115,8 +115,8 @@ public class CaseworkerCreateAndSendOrder implements CCDConfig<CaseData, State, 
         caseData.setCurrentEvent(CASEWORKER_CREATE_AND_SEND_ORDER);
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
-                .data(caseData)
-                .build();
+            .data(caseData)
+            .build();
     }
 
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(CaseDetails<CaseData, State> details,
@@ -165,29 +165,25 @@ public class CaseworkerCreateAndSendOrder implements CCDConfig<CaseData, State, 
         caseData.setCurrentEvent("");
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
-                .data(caseData)
-                .state(details.getState())
-                .build();
+            .data(caseData)
+            .state(details.getState())
+            .build();
     }
 
     public SubmittedCallbackResponse submitted(CaseDetails<CaseData, State> details,
                                                       CaseDetails<CaseData, State> beforeDetails) {
-        if (this.caseFlagAdded) {
-            ccdSupplementaryDataService.submitSupplementaryDataToCcd(details.getId().toString());
-        }
-
         try {
             sendOrderNotification(details.getData().getHyphenatedCaseRef(), details.getData());
         } catch (Exception notificationException) {
             return SubmittedCallbackResponse.builder()
-                    .confirmationHeader(format("# Send order notification failed %n## Please resend the order"))
-                    .build();
+                .confirmationHeader(format("# Send order notification failed %n## Please resend the order"))
+                .build();
         }
 
         return SubmittedCallbackResponse.builder()
-                .confirmationHeader(format("# Order sent %n## %s",
-                        MessageUtil.generateSimpleMessage(details.getData().getCicCase())))
-                .build();
+            .confirmationHeader(format("# Order sent %n## %s",
+                MessageUtil.generateSimpleMessage(details.getData().getCicCase())))
+            .build();
     }
 
     private void sendOrderNotification(String caseNumber, CaseData caseData) {
@@ -210,6 +206,18 @@ public class CaseworkerCreateAndSendOrder implements CCDConfig<CaseData, State, 
     }
 
     private void applyAnonymityCaseFlag(CaseData data) {
-        CaseFlagsUtil.addFlag(data, "CF0012", "Applied anonymity");
+        FlagDetail flagDetail = FlagDetail.builder()
+            .name("RRO (Restricted Reporting Order / Anonymisation)")
+            .path(List.of(ListValue.<String>builder().id(UUID.randomUUID().toString()).value("Case").build()))
+            .status("Active")
+            .nameCy("RRO (Gorchymyn Cyfyngiadau Adrodd / Anhysbys)")
+            .flagCode("CF0012")
+            .flagComment("Applied anonymity")
+            .dateTimeCreated(LocalDateTime.now())
+            .hearingRelevant(YesOrNo.YES)
+            .availableExternally(YesOrNo.NO)
+            .build();
+
+        CaseFlagsUtil.addFlag(data, flagDetail);
     }
 }
