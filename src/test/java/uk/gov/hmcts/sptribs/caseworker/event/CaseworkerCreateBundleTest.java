@@ -90,7 +90,7 @@ class CaseworkerCreateBundleTest {
     }
 
     @Test
-    public void shouldSuccessfullyCreateBundle() {
+    void shouldSuccessfullyCreateBundle() {
         final CaseData caseData = caseData();
         final List<ListValue<CaseworkerCICDocument>> cicDocuments = getCaseworkerCICDocumentList();
         final CicCase cicCase = CicCase.builder().build();
@@ -138,7 +138,7 @@ class CaseworkerCreateBundleTest {
     }
 
     @Test
-    public void shouldSuccessfullyCreateBundleWithNewOrderEnabled() {
+    void shouldSuccessfullyCreateBundleWithNewOrderEnabled() {
         final CaseData caseData = caseData();
         caseData.setNewBundleOrderEnabled(YesNo.YES);
 
@@ -196,7 +196,7 @@ class CaseworkerCreateBundleTest {
     }
 
     @Test
-    public void shouldUseOldBundleLogicWhenNewOrderDisabled() {
+    void shouldUseOldBundleLogicWhenNewOrderDisabled() {
         final CaseData caseData = caseData();
         caseData.setNewBundleOrderEnabled(YesNo.NO);
 
@@ -246,7 +246,7 @@ class CaseworkerCreateBundleTest {
     }
 
     @Test
-    public void shouldIgnoreInvalidFilesWhenCreatingBundle() {
+    void shouldIgnoreInvalidFilesWhenCreatingBundle() {
         final CaseData caseData = caseData();
         final List<ListValue<CaseworkerCICDocument>> documents = getCaseworkerCICDocumentList("test.mp3");
         final CicCase cicCase = CicCase.builder().build();
@@ -289,7 +289,7 @@ class CaseworkerCreateBundleTest {
     }
 
     @Test
-    public void shouldReturnNullCaseBundlesWhenBundleListIsEmpty() {
+    void shouldReturnNullCaseBundlesWhenBundleListIsEmpty() {
         final CaseData caseData = caseData();
         final List<ListValue<CaseworkerCICDocument>> documents = getCaseworkerCICDocumentList("test.mp3");
         final CicCase cicCase = CicCase.builder().build();
@@ -316,7 +316,7 @@ class CaseworkerCreateBundleTest {
     }
 
     @Test
-    public void shouldCreateNewBundleWithTimestampWhenBundlesAlreadyExist() {
+    void shouldCreateNewBundleWithTimestampWhenBundlesAlreadyExist() {
         final CaseData caseData = caseData();
 
         String testBundleUUID1 = UUID.randomUUID().toString();
