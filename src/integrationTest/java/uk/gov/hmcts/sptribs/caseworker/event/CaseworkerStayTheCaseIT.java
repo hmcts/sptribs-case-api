@@ -23,6 +23,7 @@ import java.util.Set;
 
 import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -42,6 +43,7 @@ import static uk.gov.hmcts.sptribs.testutil.TestConstants.AUTHORIZATION;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.SERVICE_AUTHORIZATION;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.SUBMITTED_URL;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_AUTHORIZATION_TOKEN;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID_HYPHENATED;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.callbackRequest;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.caseData;
 
@@ -95,8 +97,10 @@ public class CaseworkerStayTheCaseIT {
 
     @Test
     void shouldSuccessfullyDispatchEmailsOnSubmitted() throws Exception {
-        final CaseData caseData = CaseData.builder()
-            .cicCase(CicCase.builder()
+        final CaseData caseData = caseData();
+        caseData.setHyphenatedCaseRef(TEST_CASE_ID_HYPHENATED);
+        caseData.setCicCase(
+            CicCase.builder()
                 .subjectCIC(Set.of(SUBJECT))
                 .representativeCIC(Set.of(REPRESENTATIVE))
                 .applicantCIC(Set.of(APPLICANT_CIC))
@@ -112,12 +116,11 @@ public class CaseworkerStayTheCaseIT {
                 .applicantFullName("Applicant Name")
                 .applicantEmailAddress("applicant@test.com")
                 .build()
-            )
-            .caseStay(CaseStay.builder()
+        );
+        caseData.setCaseStay(CaseStay.builder()
                 .stayReason(AWAITING_OUTCOME_OF_A_CIVIL_CASE)
                 .build()
-            )
-            .build();
+        );
 
         String response = mockMvc.perform(post(SUBMITTED_URL)
             .contentType(APPLICATION_JSON)
@@ -139,7 +142,7 @@ public class CaseworkerStayTheCaseIT {
             .isString()
             .contains("# Stay Added to Case \n## A notification has been sent to: Subject, Representative, Applicant");
 
-        verify(notificationServiceCIC, times(3)).sendEmail(any());
+        verify(notificationServiceCIC, times(3)).sendEmail(any(), eq(TEST_CASE_ID_HYPHENATED));
         verifyNoMoreInteractions(notificationServiceCIC);
     }
 

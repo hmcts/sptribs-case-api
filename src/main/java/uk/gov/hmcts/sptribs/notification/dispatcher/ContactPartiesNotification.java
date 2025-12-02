@@ -55,11 +55,11 @@ public class ContactPartiesNotification implements PartiesNotification {
                 cicCase.getEmail(),
                 templateVarsSubject,
                 uploadedDocuments,
-                TemplateName.CONTACT_PARTIES_EMAIL);
+                TemplateName.CONTACT_PARTIES_EMAIL, caseNumber);
         } else {
             notificationHelper.addAddressTemplateVars(cicCase.getAddress(), templateVarsSubject);
             //SEND POST
-            notificationResponse = sendLetterNotification(templateVarsSubject, TemplateName.CONTACT_PARTIES_POST);
+            notificationResponse = sendLetterNotification(templateVarsSubject, TemplateName.CONTACT_PARTIES_POST, caseNumber);
         }
         cicCase.setSubjectLetterNotifyList(notificationResponse);
     }
@@ -79,11 +79,11 @@ public class ContactPartiesNotification implements PartiesNotification {
                 cicCase.getApplicantEmailAddress(),
                 templateVarsApplicant,
                 uploadedDocuments,
-                TemplateName.CONTACT_PARTIES_EMAIL);
+                TemplateName.CONTACT_PARTIES_EMAIL, caseNumber);
         } else {
             notificationHelper.addAddressTemplateVars(cicCase.getApplicantAddress(), templateVarsApplicant);
             notificationResponse = sendLetterNotification(templateVarsApplicant,
-                TemplateName.CONTACT_PARTIES_POST);
+                TemplateName.CONTACT_PARTIES_POST, caseNumber);
         }
 
         cicCase.setAppNotificationResponse(notificationResponse);
@@ -104,11 +104,11 @@ public class ContactPartiesNotification implements PartiesNotification {
                 cicCase.getRepresentativeEmailAddress(),
                 templateVarsRepresentative,
                 uploadedDocuments,
-                TemplateName.CONTACT_PARTIES_EMAIL);
+                TemplateName.CONTACT_PARTIES_EMAIL, caseNumber);
         } else {
             notificationHelper.addAddressTemplateVars(cicCase.getRepresentativeAddress(), templateVarsRepresentative);
             notificationResponse = sendLetterNotification(templateVarsRepresentative,
-                TemplateName.CONTACT_PARTIES_POST);
+                TemplateName.CONTACT_PARTIES_POST, caseNumber);
         }
 
         cicCase.setRepNotificationResponse(notificationResponse);
@@ -128,10 +128,10 @@ public class ContactPartiesNotification implements PartiesNotification {
             notificationResponse = sendEmailNotificationWithAttachment(cicCase.getRespondentEmail(),
                 templateVarsRespondent,
                 uploadedDocuments,
-                TemplateName.CONTACT_PARTIES_EMAIL);
+                TemplateName.CONTACT_PARTIES_EMAIL, caseNumber);
         } else {
             notificationResponse = sendEmailNotification(templateVarsRespondent,
-                cicCase.getRespondentEmail(), TemplateName.CONTACT_PARTIES_EMAIL);
+                cicCase.getRespondentEmail(), TemplateName.CONTACT_PARTIES_EMAIL, caseNumber);
         }
 
         cicCase.setResNotificationResponse(notificationResponse);
@@ -151,10 +151,10 @@ public class ContactPartiesNotification implements PartiesNotification {
             notificationResponse = sendEmailNotificationWithAttachment(TRIBUNAL_EMAIL_VALUE,
                 templateVarsTribunal,
                 uploadedDocuments,
-                TemplateName.CONTACT_PARTIES_EMAIL);
+                TemplateName.CONTACT_PARTIES_EMAIL, caseNumber);
         } else {
             notificationResponse = sendEmailNotification(templateVarsTribunal,
-                TRIBUNAL_EMAIL_VALUE, TemplateName.CONTACT_PARTIES_EMAIL);
+                TRIBUNAL_EMAIL_VALUE, TemplateName.CONTACT_PARTIES_EMAIL, caseNumber);
         }
 
         cicCase.setTribunalNotificationResponse(notificationResponse);
@@ -162,26 +162,30 @@ public class ContactPartiesNotification implements PartiesNotification {
 
     private NotificationResponse sendEmailNotification(final Map<String, Object> templateVars,
                                                        String toEmail,
-                                                       TemplateName emailTemplateName) {
+                                                       TemplateName emailTemplateName,
+                                                       String caseReferenceNumber) {
         final NotificationRequest request = notificationHelper.buildEmailNotificationRequest(toEmail, templateVars, emailTemplateName);
-        return notificationService.sendEmail(request);
+        return notificationService.sendEmail(request, caseReferenceNumber);
     }
 
     private NotificationResponse sendEmailNotificationWithAttachment(
         String toEmail, final Map<String, Object> templateVars,
         Map<String, String> uploadedDocuments,
-        TemplateName emailTemplateName) {
+        TemplateName emailTemplateName,
+        String caseReferenceNumber) {
         final NotificationRequest request = notificationHelper.buildEmailNotificationRequest(toEmail,
             true,
             uploadedDocuments,
             templateVars,
             emailTemplateName);
-        return notificationService.sendEmail(request);
+        return notificationService.sendEmail(request, caseReferenceNumber);
     }
 
-    private NotificationResponse sendLetterNotification(Map<String, Object> templateVarsLetter, TemplateName emailTemplateName) {
+    private NotificationResponse sendLetterNotification(Map<String, Object> templateVarsLetter,
+                                                        TemplateName emailTemplateName,
+                                                        String caseReferenceNumber) {
         final NotificationRequest letterRequest = notificationHelper.buildLetterNotificationRequest(templateVarsLetter, emailTemplateName);
-        return notificationService.sendLetter(letterRequest);
+        return notificationService.sendLetter(letterRequest, caseReferenceNumber);
     }
 
     private Map<String, String> getUploadedDocuments(CaseData caseData) {

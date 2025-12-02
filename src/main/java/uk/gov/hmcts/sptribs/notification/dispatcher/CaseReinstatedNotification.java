@@ -40,10 +40,10 @@ public class CaseReinstatedNotification implements PartiesNotification {
 
         final NotificationResponse notificationResponse;
         if (cicCase.getContactPreferenceType() == ContactPreferenceType.EMAIL) {
-            notificationResponse = sendEmailNotification(cicCase.getEmail(), templateVars);
+            notificationResponse = sendEmailNotification(cicCase.getEmail(), templateVars, caseNumber);
         } else {
             notificationHelper.addAddressTemplateVars(cicCase.getAddress(), templateVars);
-            notificationResponse = sendLetterNotification(templateVars);
+            notificationResponse = sendLetterNotification(templateVars, caseNumber);
         }
 
         cicCase.setSubjectNotifyList(notificationResponse);
@@ -58,10 +58,10 @@ public class CaseReinstatedNotification implements PartiesNotification {
 
         final NotificationResponse notificationResponse;
         if (cicCase.getRepresentativeContactDetailsPreference() == ContactPreferenceType.EMAIL) {
-            notificationResponse = sendEmailNotification(cicCase.getRepresentativeEmailAddress(), templateVars);
+            notificationResponse = sendEmailNotification(cicCase.getRepresentativeEmailAddress(), templateVars, caseNumber);
         } else {
             notificationHelper.addAddressTemplateVars(cicCase.getRepresentativeAddress(), templateVars);
-            notificationResponse = sendLetterNotification(templateVars);
+            notificationResponse = sendLetterNotification(templateVars, caseNumber);
         }
 
         cicCase.setRepNotificationResponse(notificationResponse);
@@ -74,7 +74,7 @@ public class CaseReinstatedNotification implements PartiesNotification {
         final Map<String, Object> templateVars = notificationHelper.getRespondentCommonVars(caseNumber, caseData);
         addCaseReInstateTemplateVars(cicCase, templateVars);
 
-        final NotificationResponse notificationResponse = sendEmailNotification(cicCase.getRespondentEmail(), templateVars);
+        final NotificationResponse notificationResponse = sendEmailNotification(cicCase.getRespondentEmail(), templateVars, caseNumber);
         cicCase.setAppNotificationResponse(notificationResponse);
     }
 
@@ -87,29 +87,31 @@ public class CaseReinstatedNotification implements PartiesNotification {
 
         final NotificationResponse notificationResponse;
         if (cicCase.getContactPreferenceType() == ContactPreferenceType.EMAIL) {
-            notificationResponse = sendEmailNotification(cicCase.getApplicantEmailAddress(), templateVars);
+            notificationResponse = sendEmailNotification(cicCase.getApplicantEmailAddress(), templateVars, caseNumber);
         } else {
             notificationHelper.addAddressTemplateVars(cicCase.getApplicantAddress(), templateVars);
-            notificationResponse = sendLetterNotification(templateVars);
+            notificationResponse = sendLetterNotification(templateVars, caseNumber);
         }
 
         cicCase.setAppNotificationResponse(notificationResponse);
     }
 
 
-    private NotificationResponse sendEmailNotification(final String destinationAddress, final Map<String, Object> templateVars) {
+    private NotificationResponse sendEmailNotification(final String destinationAddress,
+                                                       final Map<String, Object> templateVars,
+                                                       String caseReferenceNumber) {
         NotificationRequest request = notificationHelper.buildEmailNotificationRequest(
             destinationAddress,
             templateVars,
             TemplateName.REINSTATED_EMAIL);
-        return notificationService.sendEmail(request);
+        return notificationService.sendEmail(request, caseReferenceNumber);
     }
 
-    private NotificationResponse sendLetterNotification(Map<String, Object> templateVarsLetter) {
+    private NotificationResponse sendLetterNotification(Map<String, Object> templateVarsLetter, String caseReferenceNumber) {
         NotificationRequest letterRequest = notificationHelper.buildLetterNotificationRequest(
             templateVarsLetter,
             TemplateName.REINSTATED_POST);
-        return notificationService.sendLetter(letterRequest);
+        return notificationService.sendLetter(letterRequest, caseReferenceNumber);
     }
 
     private void addCaseReInstateTemplateVars(CicCase cicCase, Map<String, Object> templateVars) {
