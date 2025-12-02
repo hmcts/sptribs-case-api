@@ -9,9 +9,6 @@ import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.Event;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
-import uk.gov.hmcts.ccd.sdk.type.FlagDetail;
-import uk.gov.hmcts.ccd.sdk.type.Flags;
-import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.event.page.ApplyAnonymity;
@@ -23,6 +20,7 @@ import uk.gov.hmcts.sptribs.caseworker.event.page.SendOrderUploadOrder;
 import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderCIC;
 import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderContentCIC;
 import uk.gov.hmcts.sptribs.caseworker.model.Order;
+import uk.gov.hmcts.sptribs.caseworker.util.CaseFlagsUtil;
 import uk.gov.hmcts.sptribs.caseworker.util.MessageUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
@@ -213,17 +211,6 @@ public class CaseworkerCreateAndSendOrder implements CCDConfig<CaseData, State, 
     }
 
     private void applyAnonymityCaseFlag(CaseData data) {
-        FlagDetail flagDetail = FlagDetail.builder()
-            .flagCode("CF0012")
-            .flagComment("Applied Anonymity in Create and Send Order")
-            .dateTimeCreated(LocalDateTime.now())
-            .build();
-
-        Flags flags = data.getCaseFlags();
-        if (flags.getDetails().stream().noneMatch(detailValue -> detailValue.getValue().getFlagCode().equals("CF0012"))) {
-            flags.getDetails().add(ListValue.<FlagDetail>builder().value(flagDetail).build());
-            data.setCaseFlags(flags);
-            this.caseFlagAdded = true;
-        }
+        CaseFlagsUtil.addFlag(data, "CF0012", "Applied anonymity");
     }
 }

@@ -22,6 +22,7 @@ import uk.gov.hmcts.sptribs.caseworker.model.Order;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.OrderTemplate;
+import uk.gov.hmcts.sptribs.ciccase.model.PartiesCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.document.model.CICDocument;
@@ -369,6 +370,7 @@ class CaseworkerCreateAndSendOrderTest {
             .anonymiseYesOrNo(isAnonymised)
             .anonymisedAppellantName(anonymisedName)
             .orderTemplateIssued(document)
+            .partiesCIC(Set.of(PartiesCIC.SUBJECT, PartiesCIC.REPRESENTATIVE))
             .notifyPartySubject(Set.of(SUBJECT))
             .notifyPartyRespondent(Set.of(RESPONDENT))
             .notifyPartyRepresentative(Set.of(REPRESENTATIVE))
