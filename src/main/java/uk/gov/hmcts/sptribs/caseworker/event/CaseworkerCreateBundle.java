@@ -204,8 +204,12 @@ public class CaseworkerCreateBundle implements CCDConfig<CaseData, State, UserRo
         }
 
         if (caseBundles.size() > 1) {
-            caseBundles.sort((bundle1, bundle2) -> bundle2.getValue().getDateAndTime()
-                .compareTo(bundle1.getValue().getDateAndTime()));
+            caseBundles.sort(
+                Comparator.comparing(
+                    bundle -> bundle.getValue().getDateAndTime(),
+                    Comparator.nullsLast(Comparator.reverseOrder())
+                )
+            );
         }
 
         return caseBundles;
