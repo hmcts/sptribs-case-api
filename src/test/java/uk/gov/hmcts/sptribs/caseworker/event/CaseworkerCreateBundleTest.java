@@ -29,7 +29,9 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -53,6 +55,8 @@ class CaseworkerCreateBundleTest {
 
     private static final Instant instant = Instant.now();
     private static final ZoneId zoneId = ZoneId.systemDefault();
+    private final Map<String, LocalDateTime> expectedDates = new HashMap<String, LocalDateTime>();
+
 
     @InjectMocks
     private CaseworkerCreateBundle caseworkerCreateBundle;
@@ -471,14 +475,19 @@ class CaseworkerCreateBundleTest {
                 .value(bundle4)
                 .build()
         );
+
+        String testBundleUUID5 = UUID.randomUUID().toString();
         testListValueBundles.add(
             ListValue.<Bundle>builder()
                 .id("5")
-                .value(Bundle.builder().build())
+                .value(Bundle.builder()
+                    .id(testBundleUUID5)
+                    .build())
                 .build()
         );
 
         when(bundlingService.createBundle(any(BundleCallback.class))).thenReturn(testBundles);
+        when(bundlingService.buildBundleListValues(anyList())).thenReturn(testListValueBundles);
 
         final List<ListValue<CaseworkerCICDocument>> documents = getCaseworkerCICDocumentList("test.mp3");
         final CicCase cicCase = CicCase.builder().build();
@@ -489,18 +498,49 @@ class CaseworkerCreateBundleTest {
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
 
-        when(bundlingService.buildBundleListValues(anyList())).thenReturn(testListValueBundles);
-
         when(clock.instant()).thenReturn(instant);
         when(clock.getZone()).thenReturn(zoneId);
 
         final AboutToStartOrSubmitResponse<CaseData, State> response =
             caseworkerCreateBundle.aboutToSubmit(updatedCaseDetails, CaseDetails.<CaseData, State>builder().build());
 
+        List<ListValue<BundleIdAndTimestamp>> updatedTestBundleIdsAndTimestampsWithValues =
+            new ArrayList<>(testBundleIdsAndTimestampsWithValues);
+        updatedTestBundleIdsAndTimestampsWithValues.addLast(
+            ListValue.<BundleIdAndTimestamp>builder()
+                .id("5")
+                .value(BundleIdAndTimestamp.builder()
+                    .bundleId(testListValueBundles.getLast().getValue().getId())
+                    .dateAndTime(LocalDateTime.ofInstant(instant, ZoneOffset.UTC))
+                    .build())
+                .build()
+        );
+        updatedCaseDetails.getData().setCaseBundleIdsAndTimestamps(updatedTestBundleIdsAndTimestampsWithValues);
+
         final CaseData responseData = response.getData();
         assertThat(responseData)
             .isNotNull()
             .isEqualTo(updatedCaseDetails.getData());
         assertThat(responseData.getCaseBundles()).isNotNull();
+
+        assertThat(responseData.getCaseBundleIdsAndTimestamps())
+            .hasSize(updatedCaseDetails.getData().getCaseBundleIdsAndTimestamps().size());
+
+        expectedDates.put(bundle1.getId(), LocalDateTime.now(Clock.fixed(instant,ZoneOffset.UTC)).minusYears(3));
+        expectedDates.put(bundle2.getId(), LocalDateTime.now(Clock.fixed(instant, ZoneOffset.UTC)).minusMonths(3));
+        expectedDates.put(bundle3.getId(), LocalDateTime.now(Clock.fixed(instant, ZoneOffset.UTC)).minusDays(3));
+        expectedDates.put(bundle4.getId(), LocalDateTime.now(Clock.fixed(instant, ZoneOffset.UTC)).minusHours(3));
+        expectedDates.put(testBundleUUID5, LocalDateTime.ofInstant(instant, ZoneOffset.UTC));
+
+        assertThat(responseData.getCaseBundles().getFirst().getValue().getDateAndTime())
+            .isEqualTo(expectedDates.get(responseData.getCaseBundles().getFirst().getValue().getId()));
+        assertThat(responseData.getCaseBundles().get(2).getValue().getDateAndTime())
+            .isEqualTo(expectedDates.get(responseData.getCaseBundles().get(2).getValue().getId()));
+        assertThat(responseData.getCaseBundles().get(3).getValue().getDateAndTime())
+            .isEqualTo(expectedDates.get(responseData.getCaseBundles().get(3).getValue().getId()));
+        assertThat(responseData.getCaseBundles().get(4).getValue().getDateAndTime())
+            .isEqualTo(expectedDates.get(responseData.getCaseBundles().get(4).getValue().getId()));
+        assertThat(responseData.getCaseBundles().getLast().getValue().getDateAndTime())
+            .isEqualTo(expectedDates.get(responseData.getCaseBundles().getLast().getValue().getId()));
     }
 }
