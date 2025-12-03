@@ -1,0 +1,1 @@
+create sequence if not exists anonymisation_global_seq start with 1 increment by 1;
