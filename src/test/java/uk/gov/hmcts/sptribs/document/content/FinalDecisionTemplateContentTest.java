@@ -185,26 +185,26 @@ public class FinalDecisionTemplateContentTest {
         CaseData caseData = buildCaseData();
         caseData.getCicCase().setAnonymiseYesOrNo(YesOrNo.YES);
         caseData.getCicCase().setAnonymisedAppellantName("Anonymised Name");
-        final HearingSummary summary = HearingSummary.builder()
-                .memberList(getMembers())
-                .subjectName("John Smith")
-                .build();
-        final Listing listing = Listing.builder()
-                .date(LocalDate.now())
-                .hearingTime("11::00")
-                .hearingStatus(HearingState.Complete)
-                .summary(summary)
-                .build();
-        final ListValue<Listing> listingListValue = new ListValue<>();
+        HearingSummary summary = HearingSummary.builder()
+            .memberList(getMembers())
+            .subjectName("John Smith")
+            .build();
+        Listing listing = Listing.builder()
+            .date(LocalDate.now())
+            .hearingTime("11::00")
+            .hearingStatus(HearingState.Complete)
+            .summary(summary)
+            .build();
+        ListValue<Listing> listingListValue = new ListValue<>();
         listingListValue.setValue(listing);
         caseData.setHearingList(List.of(listingListValue));
 
         Map<String, Object> result = templateContent.apply(caseData, TEST_CASE_ID);
 
         assertThat(result)
-                .contains(entry("cicCaseSchemeCic", SchemeCic.Year1996.getLabel()))
-                .contains(entry(HEARING_DATE, LocalDate.now().format(formatter)))
-                .contains(entry(SUBJECT_FULL_NAME, "Anonymised Name"));
+            .contains(entry("cicCaseSchemeCic", SchemeCic.Year1996.getLabel()))
+            .contains(entry(HEARING_DATE, LocalDate.now().format(formatter)))
+            .contains(entry(SUBJECT_FULL_NAME, "Anonymised Name"));
     }
 
     @Test
@@ -212,26 +212,26 @@ public class FinalDecisionTemplateContentTest {
         CaseData caseData = buildCaseData();
         caseData.getCicCase().setAnonymiseYesOrNo(YesOrNo.NO);
         caseData.getCicCase().setAnonymisedAppellantName("Anonymised Name");
-        final HearingSummary summary = HearingSummary.builder()
-                .memberList(getMembers())
-                .subjectName("John Smith")
-                .build();
-        final Listing listing = Listing.builder()
-                .date(LocalDate.now())
-                .hearingTime("11::00")
-                .hearingStatus(HearingState.Complete)
-                .summary(summary)
-                .build();
-        final ListValue<Listing> listingListValue = new ListValue<>();
+        HearingSummary summary = HearingSummary.builder()
+            .memberList(getMembers())
+            .subjectName("John Smith")
+            .build();
+        Listing listing = Listing.builder()
+            .date(LocalDate.now())
+            .hearingTime("11::00")
+            .hearingStatus(HearingState.Complete)
+            .summary(summary)
+            .build();
+        ListValue<Listing> listingListValue = new ListValue<>();
         listingListValue.setValue(listing);
         caseData.setHearingList(List.of(listingListValue));
 
         Map<String, Object> result = templateContent.apply(caseData, TEST_CASE_ID);
 
         assertThat(result)
-                .contains(entry("cicCaseSchemeCic", SchemeCic.Year1996.getLabel()))
-                .contains(entry(HEARING_DATE, LocalDate.now().format(formatter)))
-                .contains(entry(SUBJECT_FULL_NAME, "John Smith"));
+            .contains(entry("cicCaseSchemeCic", SchemeCic.Year1996.getLabel()))
+            .contains(entry(HEARING_DATE, LocalDate.now().format(formatter)))
+            .contains(entry(SUBJECT_FULL_NAME, "John Smith"));
     }
 
     private CaseData buildCaseData() {
