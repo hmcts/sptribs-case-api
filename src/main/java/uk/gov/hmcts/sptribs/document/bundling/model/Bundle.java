@@ -1,5 +1,6 @@
 package uk.gov.hmcts.sptribs.document.bundling.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
@@ -16,6 +17,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerWithCAAAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.DefaultAccess;
 import uk.gov.hmcts.sptribs.document.model.PageNumberFormat;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.Collection;
@@ -35,11 +37,20 @@ public class Bundle {
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private String id;
+
+    @CCD(
+        label = "Date and time",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS")
+    private LocalDateTime dateAndTime;
+
     @CCD(
         label = "Config used for bundle",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private String title;
+
     @CCD(
         label = "Description",
         typeOverride = TextArea,
