@@ -33,6 +33,7 @@ import uk.gov.service.notify.SendEmailResponse;
 import uk.gov.service.notify.SendLetterResponse;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
@@ -386,10 +387,8 @@ public class NotificationServiceCIC {
         placeholders.put("to", sentTo);
 
         byte[] template;
-        try {
-            template = IOUtils.toByteArray(Objects.requireNonNull(
-                getClass().getResourceAsStream("/templates/sent_notification.html")
-            ));
+        try (InputStream inputStream = getClass().getResourceAsStream("/templates/sent_notification.html")) {
+            template = IOUtils.toByteArray(Objects.requireNonNull(inputStream));
         } catch (IOException e) {
             log.info("Failed to get resource with exception {}", e.getMessage());
             throw e;
