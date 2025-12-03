@@ -353,7 +353,7 @@ class CaseworkerCreateBundleTest {
 
         testListValueBundles.add(
             ListValue.<Bundle>builder()
-                .id("5")
+                .id("1")
                 .value(Bundle.builder().build())
                 .build()
         );
@@ -378,6 +378,11 @@ class CaseworkerCreateBundleTest {
 
         assertThat(responseData.getCaseDocuments()).isNull();
         assertThat(responseData.getMultiBundleConfiguration()).isNull();
+
+        assertThat(responseData.getCaseBundles().size()).isEqualTo((1));
+
+        assertThat(responseData.getCaseBundles().getFirst().getValue().getDateAndTime())
+            .isEqualTo(LocalDateTime.ofInstant(instant, ZoneOffset.UTC));
     }
 
     @Test
