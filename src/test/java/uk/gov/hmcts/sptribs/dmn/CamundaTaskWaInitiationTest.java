@@ -68,6 +68,7 @@ import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.REVIEW_LIST_CAS
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.REVIEW_LIST_CASE_WITHIN_5DAYS_LO_TASK;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.REVIEW_NEW_CASE_PROVIDE_DIR_JUDGE_TASK;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.REVIEW_NEW_CASE_PROVIDE_DIR_LO_TASK;
+import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.REVIEW_ORDER;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.REVIEW_OTHER_REQ_JUDGE_TASK;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.REVIEW_OTHER_REQ_LO_TASK;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.REVIEW_POSTPONEMENT_REQ_JUDGE_TASK;
@@ -1364,6 +1365,21 @@ class CamundaTaskWaInitiationTest extends DmnDecisionTableBaseUnitTest {
                         "roleCategory", ROLE_CATEGORY_ADMIN
                     )
                 )
+            ),
+            Arguments.of(
+                "create-and-send-order",
+                "CaseManagement",
+                Map.of("Data", Map.of("cicCaseAdminActionRequired", "AdminActionRequired")),
+                List.of(
+                    Map.of(
+                        "taskId", REVIEW_ORDER,
+                        "name", "Review Order",
+                        "workingDaysAllowed", 5,
+                        "processCategories", PROCESS_CATEGORY_DECISION,
+                        "workType", DECISION_WORK_TYPE,
+                        "roleCategory", ROLE_CATEGORY_ADMIN
+                    )
+                )
             )
         );
     }
@@ -1372,9 +1388,9 @@ class CamundaTaskWaInitiationTest extends DmnDecisionTableBaseUnitTest {
     void if_this_test_fails_needs_updating_with_your_changes() {
         //The purpose of this test is to prevent adding new rows without being tested
         DmnDecisionTableImpl logic = (DmnDecisionTableImpl) decision.getDecisionLogic();
-        assertThat(logic.getInputs().size(), is(3));
+        assertThat(logic.getInputs().size(), is(4));
         assertThat(logic.getOutputs().size(), is(7));
-        assertThat(logic.getRules().size(), is(64));
+        assertThat(logic.getRules().size(), is(65));
     }
 
     @ParameterizedTest(name = "event id: {0} post event state: {1} appeal type: {2}")
@@ -1387,6 +1403,7 @@ class CamundaTaskWaInitiationTest extends DmnDecisionTableBaseUnitTest {
         inputVariables.putValue("eventId", eventId);
         inputVariables.putValue("postEventState", postEventState);
         inputVariables.putValue("additionalData", map);
+//        inputVariables.putValue("adminActionRequired", map);
         DmnDecisionTableResult dmnDecisionTableResult = evaluateDmnTable(inputVariables);
         assertThat(dmnDecisionTableResult.getResultList(), is(expectation));
     }
