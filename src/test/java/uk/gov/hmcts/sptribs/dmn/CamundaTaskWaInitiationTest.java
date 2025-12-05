@@ -1404,10 +1404,6 @@ class CamundaTaskWaInitiationTest extends DmnDecisionTableBaseUnitTest {
         inputVariables.putValue("postEventState", postEventState);
         inputVariables.putValue("additionalData", map);
         DmnDecisionTableResult dmnDecisionTableResult = evaluateDmnTable(inputVariables);
-        if (eventId.equals("create-and-send-order"))
-        {
-            assertThat(dmnDecisionTableResult.getResultList(), is(expectation));
-        }
         assertThat(dmnDecisionTableResult.getResultList(), is(expectation));
     }
 }
