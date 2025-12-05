@@ -24,7 +24,7 @@
       <input id="InputClause_113rn1o" label="Admin Action Required" camunda:inputVariable="adminActionRequired">
         <inputExpression id="LiteralExpression_0uwx76l" typeRef="boolean">
           <text>if(additionalData != null and additionalData.Data != null and additionalData.Data.cicCaseAdminActionRequired
-            != null and additionalData.Data.cicCaseAdminActionRequired = "[AdminActionRequired]") then 
+            != null and additionalData.Data.cicCaseAdminActionRequired = ["AdminActionRequired"]) then 
             true            
 else
             false</text>

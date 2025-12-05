@@ -13,6 +13,7 @@ import uk.gov.hmcts.sptribs.DmnDecisionTableBaseUnitTest;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Stream;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -1369,7 +1370,7 @@ class CamundaTaskWaInitiationTest extends DmnDecisionTableBaseUnitTest {
             Arguments.of(
                 "create-and-send-order",
                 "CaseManagement",
-                Map.of("Data", Map.of("cicCaseAdminActionRequired", "[AdminActionRequired]")),
+                Map.of("Data", Map.of("cicCaseAdminActionRequired", List.of("AdminActionRequired"))),
                 List.of(
                     Map.of(
                         "taskId", REVIEW_ORDER,
@@ -1404,6 +1405,10 @@ class CamundaTaskWaInitiationTest extends DmnDecisionTableBaseUnitTest {
         inputVariables.putValue("postEventState", postEventState);
         inputVariables.putValue("additionalData", map);
         DmnDecisionTableResult dmnDecisionTableResult = evaluateDmnTable(inputVariables);
+        if (eventId.equals("create-and-send-order"))
+        {
+            assertThat(dmnDecisionTableResult.getResultList(), is(expectation));
+        }
         assertThat(dmnDecisionTableResult.getResultList(), is(expectation));
     }
 }
