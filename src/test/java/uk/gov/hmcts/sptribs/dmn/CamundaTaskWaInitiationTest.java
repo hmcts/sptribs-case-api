@@ -1369,7 +1369,7 @@ class CamundaTaskWaInitiationTest extends DmnDecisionTableBaseUnitTest {
             Arguments.of(
                 "create-and-send-order",
                 "CaseManagement",
-                Map.of("Data", Map.of("cicCaseAdminActionRequired", "AdminActionRequired")),
+                Map.of("Data", Map.of("cicCaseAdminActionRequired", "[AdminActionRequired]")),
                 List.of(
                     Map.of(
                         "taskId", REVIEW_ORDER,
