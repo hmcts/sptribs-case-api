@@ -13,7 +13,6 @@ import uk.gov.hmcts.sptribs.DmnDecisionTableBaseUnitTest;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.stream.Stream;
 
 import static org.hamcrest.CoreMatchers.is;
