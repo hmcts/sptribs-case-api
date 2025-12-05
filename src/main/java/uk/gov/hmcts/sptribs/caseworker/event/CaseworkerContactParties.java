@@ -54,7 +54,7 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 @Slf4j
 @Setter
 @RequiredArgsConstructor
-public class CaseWorkerContactParties implements CCDConfig<CaseData, State, UserRole> {
+public class CaseworkerContactParties implements CCDConfig<CaseData, State, UserRole> {
 
     @Value("${case-api.url}")
     private String baseUrl;
