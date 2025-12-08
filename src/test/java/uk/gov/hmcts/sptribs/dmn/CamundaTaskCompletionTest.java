@@ -409,6 +409,156 @@ class CamundaTaskCompletionTest extends DmnDecisionTableBaseUnitTest {
                 )
             ),
             Arguments.of(
+                "create-and-send-order",
+                List.of(
+                    Map.of(
+                        "taskType", REVIEW_NEW_CASE_PROVIDE_DIR_LO_TASK,
+                        "completionMode", AUTO_COMPLETE_MODE
+                    ),
+                    Map.of(
+                        "taskType", REVIEW_TIME_EXT_REQ_LO_TASK,
+                        "completionMode", AUTO_COMPLETE_MODE
+                    ),
+                    Map.of(
+                        "taskType", REVIEW_STRIKE_OUT_REQ_LO_TASK,
+                        "completionMode", AUTO_COMPLETE_MODE
+                    ),
+                    Map.of(
+                        "taskType", REVIEW_STAY_REQ_LO_TASK,
+                        "completionMode", AUTO_COMPLETE_MODE
+                    ),
+                    Map.of(
+                        "taskType", REVIEW_STAY_REQ_CASE_LISTED_LO_TASK,
+                        "completionMode", AUTO_COMPLETE_MODE
+                    ),
+                    Map.of(
+                        "taskType", REVIEW_LISTING_DIR_LO_TASK,
+                        "completionMode", AUTO_COMPLETE_MODE
+                    ),
+                    Map.of(
+                        "taskType", REVIEW_LISTING_DIR_CASE_LISTED_LO_TASK,
+                        "completionMode", AUTO_COMPLETE_MODE
+                    ),
+                    Map.of(
+                        "taskType", REVIEW_WITHDRAWAL_REQ_LO_TASK,
+                        "completionMode", AUTO_COMPLETE_MODE
+                    ),
+                    Map.of(
+                        "taskType", REVIEW_WITHDRAWAL_REQ_CASE_LISTED_LO_TASK,
+                        "completionMode", AUTO_COMPLETE_MODE
+                    ),
+                    Map.of(
+                        "taskType", REVIEW_RULE27_REQ_LO_TASK,
+                        "completionMode", AUTO_COMPLETE_MODE
+                    ),
+                    Map.of(
+                        "taskType", REVIEW_RULE27_REQ_CASE_LISTED_LO_TASK,
+                        "completionMode", AUTO_COMPLETE_MODE
+                    ),
+                    Map.of(
+                        "taskType", REVIEW_LIST_CASE_LO_TASK,
+                        "completionMode", AUTO_COMPLETE_MODE
+                    ),
+                    Map.of(
+                        "taskType", REVIEW_OTHER_REQ_LO_TASK,
+                        "completionMode", AUTO_COMPLETE_MODE
+                    ),
+                    Map.of(
+                        "taskType", REVIEW_LIST_CASE_WITHIN_5DAYS_LO_TASK,
+                        "completionMode", AUTO_COMPLETE_MODE
+                    ),
+                    Map.of(
+                        "taskType", REVIEW_POSTPONEMENT_REQ_LO_TASK,
+                        "completionMode", AUTO_COMPLETE_MODE
+                    ),
+                    Map.of(
+                        "taskType", REVIEW_REINSTATEMENT_REQ_LO_TASK,
+                        "completionMode", AUTO_COMPLETE_MODE
+                    ),
+                    Map.of(
+                        "taskType", REVIEW_LIST_CASE_WITHIN_5DAYS_JUDGE_TASK,
+                        "completionMode", AUTO_COMPLETE_MODE
+                    ),
+                    Map.of(
+                        "taskType", REVIEW_POSTPONEMENT_REQ_JUDGE_TASK,
+                        "completionMode", AUTO_COMPLETE_MODE
+                    ),
+                    Map.of(
+                        "taskType", REVIEW_CORRECTIONS_REQ_TASK,
+                        "completionMode", AUTO_COMPLETE_MODE
+                    ),
+                    Map.of(
+                        "taskType", REVIEW_WRITTEN_REASONS_REQ_TASK,
+                        "completionMode", AUTO_COMPLETE_MODE
+                    ),
+                    Map.of(
+                        "taskType", REVIEW_REINSTATEMENT_REQ_JUDGE_TASK,
+                        "completionMode", AUTO_COMPLETE_MODE
+                    ),
+                    Map.of(
+                        "taskType", REVIEW_SET_ASIDE_REQ_TASK,
+                        "completionMode", AUTO_COMPLETE_MODE
+                    ),
+                    Map.of(
+                        "taskType", REVIEW_STAY_REQ_JUDGE_TASK,
+                        "completionMode", AUTO_COMPLETE_MODE
+                    ),
+                    Map.of(
+                        "taskType", REVIEW_STAY_REQ_CASE_LISTED_JUDGE_TASK,
+                        "completionMode", AUTO_COMPLETE_MODE
+                    ),
+                    Map.of(
+                        "taskType", REVIEW_NEW_CASE_PROVIDE_DIR_JUDGE_TASK,
+                        "completionMode", AUTO_COMPLETE_MODE
+                    ),
+                    Map.of(
+                        "taskType", REVIEW_OTHER_REQ_JUDGE_TASK,
+                        "completionMode", AUTO_COMPLETE_MODE
+                    ),
+                    Map.of(
+                        "taskType", REVIEW_WITHDRAWAL_REQ_JUDGE_TASK,
+                        "completionMode", AUTO_COMPLETE_MODE
+                    ),
+                    Map.of(
+                        "taskType", REVIEW_WITHDRAWAL_REQ_CASE_LISTED_JUDGE_TASK,
+                        "completionMode", AUTO_COMPLETE_MODE
+                    ),
+                    Map.of(
+                        "taskType", REVIEW_RULE27_REQ_JUDGE_TASK,
+                        "completionMode", AUTO_COMPLETE_MODE
+                    ),
+                    Map.of(
+                        "taskType", REVIEW_RULE27_REQ_CASE_LISTED_JUDGE_TASK,
+                        "completionMode", AUTO_COMPLETE_MODE
+                    ),
+                    Map.of(
+                        "taskType", REVIEW_LISTING_DIR_JUDGE_TASK,
+                        "completionMode", AUTO_COMPLETE_MODE
+                    ),
+                    Map.of(
+                        "taskType", REVIEW_LISTING_DIR_CASE_LISTED_JUDGE_TASK,
+                        "completionMode", AUTO_COMPLETE_MODE
+                    ),
+                    Map.of(
+                        "taskType", REVIEW_LIST_CASE_JUDGE_TASK,
+                        "completionMode", AUTO_COMPLETE_MODE
+                    ),
+                    Map.of(
+                        "taskType", REVIEW_STRIKE_OUT_REQ_JUDGE_TASK,
+                        "completionMode", AUTO_COMPLETE_MODE
+                    ),
+                    Map.of(
+                        "taskType", REVIEW_TIME_EXT_REQ_JUDGE_TASK,
+                        "completionMode", AUTO_COMPLETE_MODE
+                    ),
+                    Map.of(
+                        "taskType", CREATE_DUE_DATE,
+                        "completionMode", AUTO_COMPLETE_MODE
+                    ),
+                    Collections.emptyMap()
+                )
+            ),
+            Arguments.of(
                 "edit-case",
                 List.of(
                     Map.of(
@@ -485,7 +635,7 @@ class CamundaTaskCompletionTest extends DmnDecisionTableBaseUnitTest {
         DmnDecisionTableImpl logic = (DmnDecisionTableImpl) decision.getDecisionLogic();
         assertThat(logic.getInputs().size(), is(1));
         assertThat(logic.getOutputs().size(), is(2));
-        assertThat(logic.getRules().size(), is(65));
+        assertThat(logic.getRules().size(), is(101));
     }
 
     @ParameterizedTest(name = "event id: {0}")
