@@ -547,7 +547,7 @@ else 5000</text>
           <text>"description"</text>
         </outputEntry>
         <outputEntry id="LiteralExpression_0r3qzf3">
-          <text>"[Orders: Create draft](/cases/case-details/${[CASE_REFERENCE]}/trigger/create-draft-order)&lt;/br&gt;" + "[Orders: Create and send order](/cases/case-details/${[CASE_REFERENCE]}/trigger/create-and-send-order)&lt;/br&gt;"</text>
+          <text>"[Orders: Create draft](/cases/case-details/${[CASE_REFERENCE]}/trigger/create-draft-order)&lt;br/&gt;" + "[Orders: Create and send order](/cases/case-details/${[CASE_REFERENCE]}/trigger/create-and-send-order)&lt;br/&gt;"</text>
         </outputEntry>
         <outputEntry id="LiteralExpression_0yjve17">
           <text>true</text>
