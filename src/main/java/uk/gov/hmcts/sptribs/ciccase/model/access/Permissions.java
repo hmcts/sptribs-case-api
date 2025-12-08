@@ -20,6 +20,7 @@ public final class Permissions {
     public static final Set<Permission> READ_UPDATE = Set.of(R, U);
     public static final Set<Permission> READ_UPDATE_DELETE = Set.of(R, U, D);
     public static final Set<Permission> READ = Set.of(R);
+    public static final Set<Permission> DELETE = Set.of(D);
     public static final Set<Permission> UPDATE_DELETE = Set.of(U, D);
     public static final Set<Permission> CREATE_UPDATE = Set.of(C, U);
 
