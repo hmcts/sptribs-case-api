@@ -64,6 +64,6 @@ class GlobalSearchAccessTest {
                 entry(CITIZEN, U),
                 entry(ST_CIC_WA_CONFIG_USER, D),
                 entry(ST_CIC_WA_CONFIG_USER, U)
-                );
+            );
     }
 }
