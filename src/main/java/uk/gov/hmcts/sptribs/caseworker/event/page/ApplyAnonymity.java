@@ -27,16 +27,16 @@ public class ApplyAnonymity implements CcdPageConfiguration {
     @Override
     public void addTo(PageBuilder pageBuilder) {
         pageBuilder.page("caseworkerApplyAnonymity", this::midEvent)
-                .pageLabel("Anonymity")
-                .label("LabelCaseworkerApplyAnonymity", "")
-                .pageShowConditions(PageShowConditionsUtil.createAndSendOrderConditions())
-                .complex(CaseData::getCicCase)
-                    .readonly(CicCase::getFullName, "LabelCaseworkerApplyAnonymity!=\"\"")
-                    .readonly(CicCase::getAnonymisedAppellantName, "LabelCaseworkerApplyAnonymity!=\"\"")
-                    .mandatory(CicCase::getAnonymiseYesOrNo)
-                    .done()
-                .readonly(CaseData::getCurrentEvent, "LabelCaseworkerApplyAnonymity=\"HIDDEN\"")
-                .done();
+            .pageLabel("Anonymity")
+            .label("LabelCaseworkerApplyAnonymity", "")
+            .pageShowConditions(PageShowConditionsUtil.createAndSendOrderConditions())
+            .complex(CaseData::getCicCase)
+                .readonly(CicCase::getFullName, "LabelCaseworkerApplyAnonymity!=\"\"")
+                .readonly(CicCase::getAnonymisedAppellantName, "LabelCaseworkerApplyAnonymity!=\"\"")
+                .mandatory(CicCase::getAnonymiseYesOrNo)
+                .done()
+            .readonly(CaseData::getCurrentEvent, "LabelCaseworkerApplyAnonymity=\"HIDDEN\"")
+            .done();
     }
 
     public AboutToStartOrSubmitResponse<CaseData, State> midEvent(CaseDetails<CaseData, State> caseDetails,

@@ -62,6 +62,7 @@ public final class PageShowConditionsUtil {
 
     public static Map<String, String> createAndSendOrderConditions() {
         Map<String, String> map = new HashMap<>();
+        map.put("caseworkerApplyAnonymity", "cicCaseAnonymiseYesOrNo!=\"Yes\"");
         map.put("createDraftOrder", ORDER_EVENT_CREATE_DRAFT + " OR (" + ORDER_EVENT_CREATE_AND_SEND_NEW + ")");
         map.put("mainContent", ORDER_EVENT_CREATE_DRAFT + " OR " + ORDER_EVENT_EDIT_DRAFT
             + " OR (" + ORDER_EVENT_CREATE_AND_SEND_NEW + ")");
@@ -70,13 +71,8 @@ public final class PageShowConditionsUtil {
             + ") OR (" + ORDER_EVENT_CREATE_AND_SEND_NEW + ")");
         map.put("caseworkerSendOrderUploadOrder", "(" + ORDER_EVENT_SEND_ORDER + " AND " + ORDER_TYPE_UPLOAD_CONDITION
             + ") OR (" + ORDER_EVENT_CREATE_AND_SEND_UPLOAD + ")");
-        map.put("caseworkerApplyAnonymity", "cicCaseAnonymiseYesOrNo !=\"YES\"");
 
         return map;
     }
 
-    public static Map<String, String> applyAnonymityShowCondition() {
-        Map<String, String> map = new HashMap<>();
-        return map;
-    }
 }
