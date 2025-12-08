@@ -28,9 +28,11 @@ public class EditDraftOrder implements CcdPageConfiguration {
             .page("editDraftOrder", this::midEvent)
             .pageLabel("Edit order")
             .label("LabelEditDraftOrder", "Draft to be edited")
+            .readonly(CaseData::getCurrentEvent, ALWAYS_HIDE)
             .complex(CaseData::getCicCase)
             .mandatoryWithLabel(CicCase::getDraftOrderDynamicList, "Draft order to be edited")
-            .done()
+                .readonly(CicCase::getCreateAndSendIssuingTypes, ALWAYS_HIDE)
+                .done()
             .complex(CaseData::getDraftOrderContentCIC)
             // readonly below is required in order to be able to set the order template in midEvent below
             .readonly(DraftOrderContentCIC::getOrderTemplate, ALWAYS_HIDE)
