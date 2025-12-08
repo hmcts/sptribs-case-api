@@ -5,6 +5,7 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
+import uk.gov.hmcts.sptribs.caseworker.util.PageShowConditionsUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
@@ -28,6 +29,7 @@ public class ApplyAnonymity implements CcdPageConfiguration {
         pageBuilder.page("caseworkerApplyAnonymity", this::midEvent)
                 .pageLabel("Anonymity")
                 .label("LabelCaseworkerApplyAnonymity", "")
+                .pageShowConditions(PageShowConditionsUtil.createAndSendOrderConditions())
                 .complex(CaseData::getCicCase)
                     .readonly(CicCase::getFullName, "LabelCaseworkerApplyAnonymity!=\"\"")
                     .readonly(CicCase::getAnonymisedAppellantName, "LabelCaseworkerApplyAnonymity!=\"\"")

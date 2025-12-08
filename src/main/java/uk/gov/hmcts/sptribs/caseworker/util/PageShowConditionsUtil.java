@@ -70,7 +70,13 @@ public final class PageShowConditionsUtil {
             + ") OR (" + ORDER_EVENT_CREATE_AND_SEND_NEW + ")");
         map.put("caseworkerSendOrderUploadOrder", "(" + ORDER_EVENT_SEND_ORDER + " AND " + ORDER_TYPE_UPLOAD_CONDITION
             + ") OR (" + ORDER_EVENT_CREATE_AND_SEND_UPLOAD + ")");
+        map.put("caseworkerApplyAnonymity", "cicCaseAnonymiseYesOrNo !=\"YES\"");
 
+        return map;
+    }
+
+    public static Map<String, String> applyAnonymityShowCondition() {
+        Map<String, String> map = new HashMap<>();
         return map;
     }
 }
