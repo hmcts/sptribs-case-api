@@ -1,7 +1,7 @@
 package uk.gov.hmcts.sptribs.caseworker.event;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
@@ -52,9 +52,10 @@ import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_WA_CONFIG_USER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE;
 
-@Component
 @Slf4j
-public class CaseWorkerCreateDraftOrder implements CCDConfig<CaseData, State, UserRole> {
+@Component
+@RequiredArgsConstructor
+public class CaseworkerCreateDraftOrder implements CCDConfig<CaseData, State, UserRole> {
 
     private final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss", Locale.ENGLISH);
 
@@ -62,8 +63,7 @@ public class CaseWorkerCreateDraftOrder implements CCDConfig<CaseData, State, Us
     private static final CcdPageConfiguration draftOrderMainContentPage = new DraftOrderMainContentPage();
     private static final CcdPageConfiguration previewOrder = new PreviewDraftOrder();
 
-    @Autowired
-    private OrderService orderService;
+    private final OrderService orderService;
 
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
@@ -74,6 +74,7 @@ public class CaseWorkerCreateDraftOrder implements CCDConfig<CaseData, State, Us
                 .name("Orders: Create draft")
                 .description("Orders: Create draft")
                 .showSummary()
+                .aboutToStartCallback(this::aboutToStart)
                 .aboutToSubmitCallback(this::aboutToSubmit)
                 .submittedCallback(this::submitted)
                 .grant(CREATE_READ_UPDATE, SUPER_USER,
@@ -87,6 +88,15 @@ public class CaseWorkerCreateDraftOrder implements CCDConfig<CaseData, State, Us
         createDraftOrderAddDocumentFooter(pageBuilder);
         previewOrder.addTo(pageBuilder);
 
+    }
+
+    public AboutToStartOrSubmitResponse<CaseData, State> aboutToStart(CaseDetails<CaseData, State> caseDetails) {
+        CaseData data = caseDetails.getData();
+        data.setCurrentEvent(CASEWORKER_CREATE_DRAFT_ORDER);
+
+        return AboutToStartOrSubmitResponse.<CaseData, State>builder()
+            .data(data)
+            .build();
     }
 
     public AboutToStartOrSubmitResponse<CaseData, State> midEvent(CaseDetails<CaseData, State> details,
@@ -141,6 +151,7 @@ public class CaseWorkerCreateDraftOrder implements CCDConfig<CaseData, State, Us
 
         }
 
+        caseData.setCurrentEvent("");
         caseData.getCicCase().setOrderTemplateIssued(null);
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
