@@ -1,5 +1,6 @@
 package uk.gov.hmcts.sptribs.document.content;
 
+import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
 public final class DocmosisTemplateConstants {
@@ -19,6 +20,7 @@ public final class DocmosisTemplateConstants {
     public static final String HEARING_VENUE_NAME = "recordHearingVenueName";
     public static final String HEARING_DATE = "HearingDate";
     public static final String HEARING_TIME = "HearingTime";
+    public static final String ANONYMISATION_STATEMENT = "\n\nAnonymity applied in accordance with an order dated (%s).";
 
     public static final String ELIGIBILITY_MAIN_CONTENT = """
         1.     The appeal against the CICA’s Review decision dated…..under paragraph….. is successful. Mr/Mrs …… is eligible for \
@@ -153,5 +155,9 @@ public final class DocmosisTemplateConstants {
             rule 7(3) of the Rules and section 25 of the Tribunals, Courts and Enforcement Act 2007""";
 
     private DocmosisTemplateConstants() {
+    }
+
+    public static String generateAnonymisationStatement(LocalDate date) {
+        return ANONYMISATION_STATEMENT.formatted(date.toString());
     }
 }

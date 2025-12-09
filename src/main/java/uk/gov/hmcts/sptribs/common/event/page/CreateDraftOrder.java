@@ -2,6 +2,7 @@ package uk.gov.hmcts.sptribs.common.event.page;
 
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
+import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderContentCIC;
 import uk.gov.hmcts.sptribs.caseworker.util.EventUtil;
 import uk.gov.hmcts.sptribs.caseworker.util.PageShowConditionsUtil;
@@ -11,6 +12,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.OrderTemplate;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
+import uk.gov.hmcts.sptribs.document.content.DocmosisTemplateConstants;
 
 import static org.apache.commons.lang3.StringUtils.isEmpty;
 
@@ -42,7 +44,15 @@ public class CreateDraftOrder implements CcdPageConfiguration {
 
         final CaseData caseData = details.getData();
         final OrderTemplate order = caseData.getDraftOrderContentCIC().getOrderTemplate();
-        caseData.getDraftOrderContentCIC().setMainContent(EventUtil.getOrderMainContent(order));
+
+        StringBuilder orderMainContent = new StringBuilder(EventUtil.getOrderMainContent(order));
+
+        CicCase cicCase = caseData.getCicCase();
+        if (cicCase.getAnonymiseYesOrNo() != null && YesOrNo.YES.equals(cicCase.getAnonymiseYesOrNo())
+            && cicCase.getAnonymisedAppellantName() != null && cicCase.getAnonymisationDate() != null) {
+            orderMainContent.append(DocmosisTemplateConstants.generateAnonymisationStatement(cicCase.getAnonymisationDate()));
+        }
+        caseData.getDraftOrderContentCIC().setMainContent(orderMainContent.toString());
 
         if (isEmpty(caseData.getCicCase().getReferralTypeForWA())) {
             caseData.getCicCase().setReferralTypeForWA("");
