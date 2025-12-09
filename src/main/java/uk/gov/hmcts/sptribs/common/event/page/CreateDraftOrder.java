@@ -45,14 +45,7 @@ public class CreateDraftOrder implements CcdPageConfiguration {
         final CaseData caseData = details.getData();
         final OrderTemplate order = caseData.getDraftOrderContentCIC().getOrderTemplate();
 
-        StringBuilder orderMainContent = new StringBuilder(EventUtil.getOrderMainContent(order));
-
-        CicCase cicCase = caseData.getCicCase();
-        if (cicCase.getAnonymiseYesOrNo() != null && YesOrNo.YES.equals(cicCase.getAnonymiseYesOrNo())
-            && cicCase.getAnonymisedAppellantName() != null && cicCase.getAnonymisationDate() != null) {
-            orderMainContent.append(DocmosisTemplateConstants.generateAnonymisationStatement(cicCase.getAnonymisationDate()));
-        }
-        caseData.getDraftOrderContentCIC().setMainContent(orderMainContent.toString());
+        caseData.getDraftOrderContentCIC().setMainContent(EventUtil.getOrderMainContent(order));
 
         if (isEmpty(caseData.getCicCase().getReferralTypeForWA())) {
             caseData.getCicCase().setReferralTypeForWA("");
