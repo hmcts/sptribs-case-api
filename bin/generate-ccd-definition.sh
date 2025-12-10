@@ -7,7 +7,6 @@ definition_processor_version=latest
 definition_dir=${1}
 definition_output_file=${2}
 additionalParameters=${3-}
-definition_environment=${CCD_DEF_NAME:-${ENVIRONMENT:-dev}}
 
 definition_input_dir=${definition_dir}
 
@@ -15,7 +14,6 @@ if [[ ! -e ${definition_output_file} ]]; then
    touch ${definition_output_file}
 fi
 
-echo "Building XLSX for environment: ${definition_environment}"
 echo "Definition input directory: ${definition_input_dir}"
 echo "Definition output file: ${definition_output_file}"
 echo "Additional params: ${additionalParameters}"
