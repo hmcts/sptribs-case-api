@@ -11,6 +11,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_UPDATE_CASE_DATA;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SYSTEM_UPDATE;
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE_DELETE;
 
 @Slf4j
@@ -25,6 +26,6 @@ public class UpdateCaseDataEvent implements CCDConfig<CaseData, State, UserRole>
                 .name("Update Case Data")
                 .description("Update Case Data")
                 .retries(120, 120)
-                .grant(CREATE_READ_UPDATE_DELETE, SUPER_USER);
+                .grant(CREATE_READ_UPDATE_DELETE, SUPER_USER, SYSTEM_UPDATE);
     }
 }
