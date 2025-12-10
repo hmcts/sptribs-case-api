@@ -75,16 +75,6 @@ Generating the CCD JSON files will happen on every `./gradlew bootWithCcd` but y
 
     ./gradlew generateTypeScript
 
-### Generate Xlsx files for CCD definition
-
-First run:
-  `./gradlew -PccdEnvironment=<your-environment> generateCCDConfig`
-
-Then:
-  `./gradlew -PccdEnvironment=<your-environment> buildCCDXlsx`
-
-This creates a folder called `ccd-definition` in the build directory. The only relevant file is `ccd-CriminalInjuriesCompensation-<your-env>.xlsx`
-
 ### Using a Local version of the CCD-Config-Generator
 
 You can edit the `ccd-config generator` and test a local version by checking out the project, making changes and running the `publishToMavenLocal` gradle task
