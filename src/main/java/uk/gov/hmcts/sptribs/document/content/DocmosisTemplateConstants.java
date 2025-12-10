@@ -5,6 +5,7 @@ import java.time.format.DateTimeFormatter;
 
 public final class DocmosisTemplateConstants {
     public static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd MMM yyyy");
+    public static final DateTimeFormatter slashFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
     public static final String COMMA_SPACE = ", ";
 
@@ -20,7 +21,7 @@ public final class DocmosisTemplateConstants {
     public static final String HEARING_VENUE_NAME = "recordHearingVenueName";
     public static final String HEARING_DATE = "HearingDate";
     public static final String HEARING_TIME = "HearingTime";
-    public static final String ANONYMISATION_STATEMENT = "\n\nAnonymity applied in accordance with an order dated (%s).";
+    public static final String ANONYMISATION_STATEMENT = "\n\nAnonymity applied in accordance with an order dated %s.";
 
     public static final String ELIGIBILITY_MAIN_CONTENT = """
         1.     The appeal against the CICA’s Review decision dated…..under paragraph….. is successful. Mr/Mrs …… is eligible for \
@@ -158,6 +159,6 @@ public final class DocmosisTemplateConstants {
     }
 
     public static String generateAnonymisationStatement(LocalDate date) {
-        return ANONYMISATION_STATEMENT.formatted(date.toString());
+        return ANONYMISATION_STATEMENT.formatted(date.format(slashFormatter));
     }
 }
