@@ -47,79 +47,6 @@ ccd {
   caseEventServiceBus = true
 }
 
-def ccdEnvironment = (findProperty('ccdEnvironment') ?: System.getenv('CCD_ENVIRONMENT') ?: 'dev')
-  .toString()
-  .toLowerCase()
-
-def selectCcdEnvironmentConfig = { String environmentName ->
-  Map<String, String> defaults = [
-    ENVIRONMENT : environmentName,
-    CCD_DEF_NAME: environmentName,
-    CASE_API_URL: 'http://localhost:4013',
-    S2S_URL_BASE: 'aat'
-  ]
-
-  switch (environmentName) {
-    case 'aat':
-      return defaults + [
-        ENVIRONMENT               : 'aat',
-        CCD_DEF_NAME              : 'aat',
-        CASE_API_URL              : 'http://sptribs-case-api-aat.service.core-compute-aat.internal',
-        SERVICE_AUTH_PROVIDER_URL : 'http://rpe-service-auth-provider-aat.service.core-compute-aat.internal',
-        IDAM_API_URL_BASE         : 'https://idam-api.aat.platform.hmcts.net',
-        S2S_URL_BASE              : 'http://rpe-service-auth-provider-aat.service.core-compute-aat.internal',
-        FEE_API_URL               : 'http://fees-register-api-aat.service.core-compute-aat.internal',
-        CAMUNDA_BASE_URL          : 'http://camunda-api-aat.service.core-compute-aat.internal'
-      ]
-    case 'demo':
-      return defaults + [
-        ENVIRONMENT              : 'demo',
-        CCD_DEF_NAME             : 'demo',
-        CASE_API_URL             : 'http://sptribs-case-api-demo.service.core-compute-demo.internal',
-        IDAM_API_URL_BASE        : 'https://idam-api.demo.platform.hmcts.net',
-        S2S_URL_BASE             : 'http://rpe-service-auth-provider-demo.service.core-compute-demo.internal',
-        CAMUNDA_BASE_URL         : 'http://camunda-api-demo.service.core-compute-demo.internal',
-        CASE_API_DOCUMENT_DOWNLOAD_URL : 'http://manage-case.demo.platform.hmcts.net/'
-      ]
-    case 'perftest':
-      return defaults + [
-        ENVIRONMENT       : 'perftest',
-        CCD_DEF_NAME      : 'perftest',
-        CASE_API_URL      : 'http://sptribs-case-api-perftest.service.core-compute-perftest.internal',
-        IDAM_API_URL_BASE : 'https://idam-api.perftest.platform.hmcts.net',
-        S2S_URL_BASE      : 'http://rpe-service-auth-provider-perftest.service.core-compute-perftest.internal',
-        FEE_API_URL       : 'http://fees-register-api-demo.service.core-compute-demo.internal',
-        CAMUNDA_BASE_URL  : 'http://camunda-api-perftest.service.core-compute-perftest.internal'
-      ]
-    case 'ithc':
-      return defaults + [
-        ENVIRONMENT       : 'ithc',
-        CCD_DEF_NAME      : 'ithc',
-        CASE_API_URL      : 'http://sptribs-case-api-ithc.service.core-compute-ithc.internal',
-        IDAM_API_URL_BASE : 'https://idam-api.ithc.platform.hmcts.net',
-        S2S_URL_BASE      : 'http://rpe-service-auth-provider-ithc.service.core-compute-ithc.internal',
-        FEE_API_URL       : 'http://fees-register-api-demo.service.core-compute-ithc.internal',
-        CAMUNDA_BASE_URL  : 'http://camunda-api-ithc.service.core-compute-ithc.internal'
-      ]
-    case 'prod':
-      return defaults + [
-        ENVIRONMENT                     : 'prod',
-        CCD_DEF_NAME                    : 'prod',
-        CASE_API_URL                    : 'http://sptribs-case-api-prod.service.core-compute-prod.internal',
-        SERVICE_AUTH_PROVIDER_URL       : 'http://rpe-service-auth-provider-prod.service.core-compute-prod.internal',
-        IDAM_API_URL_BASE               : 'https://idam-api.platform.hmcts.net',
-        S2S_URL_BASE                    : 'http://rpe-service-auth-provider-prod.service.core-compute-prod.internal',
-        CAMUNDA_BASE_URL                : 'http://camunda-api-prod.service.core-compute-prod.internal',
-        CASE_API_DOCUMENT_DOWNLOAD_URL  : 'http://manage-case.platform.hmcts.net/',
-        DEFINITION_STORE_URL_BASE       : 'http://ccd-definition-store-api-prod.service.core-compute-prod.internal'
-      ]
-    default:
-      return defaults
-  }
-}
-
-def ccdEnvironmentSettings = selectCcdEnvironmentConfig(ccdEnvironment).findAll { it.value }
-
 project.tasks.named("generateCCDConfig") {
   environment 'SPRING_PROFILES_ACTIVE', 'config-gen'
   environment 'SPRING_FLYWAY_ENABLED', 'false'
@@ -127,7 +54,6 @@ project.tasks.named("generateCCDConfig") {
   environment 'SPRING_DATASOURCE_URL', 'jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;MODE=PostgreSQL'
   environment 'SPRING_DATASOURCE_USERNAME', 'sa'
   environment 'SPRING_DATASOURCE_PASSWORD', ''
-  environment ccdEnvironmentSettings
 }
 
 sourceSets {
@@ -237,8 +163,7 @@ task integration(type: Test) {
 // Invoked from CftLibConfig when booting with CCD.
 tasks.register('buildCCDXlsx', Exec) {
   group 'ccd tasks'
-  environment ccdEnvironmentSettings
-  commandLine './bin/ccd-build-definition.sh', ccdEnvironment
+  commandLine './bin/ccd-build-definition.sh'
   inputs.dir layout.buildDirectory.dir('definitions')
   outputs.dir layout.buildDirectory.dir('ccd-config')
 }
