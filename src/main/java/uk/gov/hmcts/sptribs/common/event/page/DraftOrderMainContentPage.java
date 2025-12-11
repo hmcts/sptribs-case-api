@@ -50,7 +50,7 @@ public class DraftOrderMainContentPage implements CcdPageConfiguration {
             .done();
     }
 
-    private AboutToStartOrSubmitResponse<CaseData, State> midEvent(CaseDetails<CaseData, State> caseDetails,
+    public AboutToStartOrSubmitResponse<CaseData, State> midEvent(CaseDetails<CaseData, State> caseDetails,
                                                                    CaseDetails<CaseData, State> caseDetailsBefore) {
         CaseData caseData = caseDetails.getData();
         CicCase cicCase = caseData.getCicCase();
