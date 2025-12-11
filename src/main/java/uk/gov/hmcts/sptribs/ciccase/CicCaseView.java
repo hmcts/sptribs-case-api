@@ -9,6 +9,7 @@ import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.common.repositories.CorrespondenceRepository;
+import uk.gov.hmcts.sptribs.document.model.DocumentType;
 import uk.gov.hmcts.sptribs.notification.model.Correspondence;
 import uk.gov.hmcts.sptribs.notification.persistence.CorrespondenceEntity;
 
@@ -41,6 +42,7 @@ public class CicCaseView implements CaseView<CriminalInjuriesCompensationData, S
                 .url(correspondenceEntity.getDocumentUrl())
                 .filename(correspondenceEntity.getDocumentFilename())
                 .binaryUrl(correspondenceEntity.getDocumentBinaryUrl())
+                .categoryId(DocumentType.CORRESPONDENCE.getCategory())
                 .build();
 
             Correspondence correspondence = Correspondence.builder()
