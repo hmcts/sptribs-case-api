@@ -20,12 +20,14 @@ import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderCIC;
 import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderContentCIC;
 import uk.gov.hmcts.sptribs.caseworker.model.Order;
 import uk.gov.hmcts.sptribs.caseworker.util.MessageUtil;
+import uk.gov.hmcts.sptribs.caseworker.util.PageShowConditionsUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.common.event.page.CreateDraftOrder;
+import uk.gov.hmcts.sptribs.common.event.page.CreateNewOrder;
 import uk.gov.hmcts.sptribs.common.event.page.DraftOrderMainContentPage;
 import uk.gov.hmcts.sptribs.common.event.page.PreviewDraftOrder;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
@@ -63,9 +65,9 @@ public class CaseworkerCreateAndSendOrder implements CCDConfig<CaseData, State, 
 
     private static final CcdPageConfiguration createSendIssuingSelect = new CreateAndSendOrderIssueSelect();
 
-    private static final CcdPageConfiguration createDraftOrder = new CreateDraftOrder();
+    private static final CreateDraftOrder createDraftOrder = new CreateDraftOrder(PageShowConditionsUtil.createAndSendOrderConditionsNew());
     private static final CcdPageConfiguration draftOrderMainContentPage = new DraftOrderMainContentPage();
-    private static final CcdPageConfiguration uploadOrder = new SendOrderUploadOrder();
+    private static final SendOrderUploadOrder uploadOrder = new SendOrderUploadOrder(PageShowConditionsUtil.createAndSendOrderConditionsNew());
     private static final CcdPageConfiguration orderDueDates = new SendOrderOrderDueDates();
     private static final CcdPageConfiguration previewOrder = new PreviewDraftOrder();
     private static final CcdPageConfiguration notifyParties = new SendOrderNotifyParties();
