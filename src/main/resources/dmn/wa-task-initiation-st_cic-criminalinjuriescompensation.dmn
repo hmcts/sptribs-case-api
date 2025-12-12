@@ -1933,7 +1933,7 @@
           <text>"Follow up noncompliance of directions"</text>
         </outputEntry>
         <outputEntry id="LiteralExpression_1mba0we">
-          <text>if (cicCaseFirstOrderDueDate != null and cicCaseFirstOrderDueDate != "" and date(cicCaseFirstOrderDueDate) &gt; today()) then (date(cicCaseFirstOrderDueDate)) else today()</text>
+          <text>if (cicCaseFirstOrderDueDate != null and cicCaseFirstOrderDueDate != "" and date(cicCaseFirstOrderDueDate) &gt; now()) then (date(cicCaseFirstOrderDueDate)) else now()</text>
         </outputEntry>
         <outputEntry id="LiteralExpression_0v6bouu">
           <text>1</text>
