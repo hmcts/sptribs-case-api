@@ -23,7 +23,7 @@
       </input>
       <output id="Output_1" label="Task Id" name="taskId" typeRef="string" biodi:width="320" />
       <output id="OutputClause_0p5fhhd" label="Task Name" name="name" typeRef="string" biodi:width="362" />
-      <output id="OutputClause_165p3r3" label="Delay Until" name="delayUntil" typeRef="json" />
+      <output id="OutputClause_165p3r3" label="Delay Until" name="delayUntil" typeRef="date" />
       <output id="OutputClause_0i6c6c2" label="Working Days Allowed" name="workingDaysAllowed" typeRef="integer" />
       <output id="OutputClause_10rno4c" label="Process Categories Identifiers" name="processCategories" typeRef="string" biodi:width="300" />
       <output id="OutputClause_1wziqr5" label="Work Type" name="workType" typeRef="string" />
