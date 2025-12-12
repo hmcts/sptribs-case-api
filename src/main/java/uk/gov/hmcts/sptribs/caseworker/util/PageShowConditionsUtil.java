@@ -17,6 +17,9 @@ public final class PageShowConditionsUtil {
     private static final String ORDER_TYPE_DRAFT_CONDITION = "cicCaseOrderIssuingType = \"DraftOrder\"";
     private static final String ORDER_TYPE_UPLOAD_CONDITION = "cicCaseOrderIssuingType = \"UploadOrder\"";
 
+    private static final String CREATE_AND_SEND_NEW = "cicCaseCreateAndSendIssuingTypes = \"NewOrder\"";
+    private static final String CREATE_AND_SEND_UPLOAD = "cicCaseCreateAndSendIssuingTypes = \"UploadOrder\"";
+
     private static final String ORDER_EVENT_CREATE_AND_SEND_NEW = "currentEvent = \"create-and-send-order\""
             + " AND cicCaseCreateAndSendIssuingTypes = \"NewOrder\"";
     private static final String ORDER_EVENT_CREATE_AND_SEND_UPLOAD = "currentEvent = \"create-and-send-order\" "
@@ -71,6 +74,27 @@ public final class PageShowConditionsUtil {
         map.put("caseworkerSendOrderUploadOrder", "(" + ORDER_EVENT_SEND_ORDER + " AND " + ORDER_TYPE_UPLOAD_CONDITION
             + ") OR (" + ORDER_EVENT_CREATE_AND_SEND_UPLOAD + ")");
 
+        return map;
+    }
+
+    public static Map<String, String> sendOrderConditions() {
+        Map<String, String> map = new HashMap<>();
+        //cover only select journey for send order event
+        //check issue draft or send upload
+        map.put("caseworkerSendOrderSelectDraftOrder", ORDER_TYPE_DRAFT_CONDITION);
+        map.put("caseworkerSendOrderUploadOrder", ORDER_TYPE_UPLOAD_CONDITION);
+
+        return map;
+    }
+
+    public static Map<String, String> createAndSendOrderConditionsNew() {
+        Map<String, String> map = new HashMap<>();
+        //cover only select
+        map.put("createDraftOrder", CREATE_AND_SEND_NEW);
+        map.put("mainContent", CREATE_AND_SEND_NEW);
+        map.put("draftOrderDocumentFooter", CREATE_AND_SEND_NEW);
+        map.put("caseworkerSendOrderSelectDraftOrder", CREATE_AND_SEND_NEW);
+        map.put("caseworkerSendOrderUploadOrder", CREATE_AND_SEND_UPLOAD);
         return map;
     }
 }

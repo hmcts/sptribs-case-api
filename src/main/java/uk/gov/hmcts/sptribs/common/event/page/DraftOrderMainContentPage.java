@@ -20,7 +20,7 @@ public class DraftOrderMainContentPage implements CcdPageConfiguration {
         pageBuilder
             .page("mainContent")
             .pageLabel("Edit order")
-            .pageShowConditions(PageShowConditionsUtil.createAndSendOrderConditions())
+//            .pageShowConditions(PageShowConditionsUtil.createAndSendOrderConditions())
             .label("EditDraftOrderMainContent", """
                 <hr>
                 <h3>Header</h3>

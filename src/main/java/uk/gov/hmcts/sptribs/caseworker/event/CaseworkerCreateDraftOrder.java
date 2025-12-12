@@ -29,6 +29,7 @@ import uk.gov.hmcts.sptribs.common.event.page.PreviewDraftOrder;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.UUID;
@@ -59,7 +60,7 @@ public class CaseworkerCreateDraftOrder implements CCDConfig<CaseData, State, Us
 
     private final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss", Locale.ENGLISH);
 
-    private static final CcdPageConfiguration createDraftOrder = new CreateDraftOrder();
+    private static final CreateDraftOrder createDraftOrder = new CreateDraftOrder(new HashMap<>());
     private static final CcdPageConfiguration draftOrderMainContentPage = new DraftOrderMainContentPage();
     private static final CcdPageConfiguration previewOrder = new PreviewDraftOrder();
 
