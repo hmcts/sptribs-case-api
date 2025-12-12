@@ -12,11 +12,17 @@ import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.document.model.CICDocument;
 
 import java.util.List;
+import java.util.Map;
 
 import static uk.gov.hmcts.sptribs.document.DocumentUtil.validateDocumentFormat;
 
 public class SendOrderUploadOrder implements CcdPageConfiguration {
 
+    private final Map<String, String> pageShowConditions;
+
+    public SendOrderUploadOrder(Map<String, String> pageShowConditions) {
+        this.pageShowConditions = pageShowConditions;
+    }
 
     @Override
     public void addTo(PageBuilder pageBuilder) {
@@ -24,7 +30,7 @@ public class SendOrderUploadOrder implements CcdPageConfiguration {
         pageBuilder.page(pageNameUploadOrder, this::midEvent)
             .pageLabel("Upload an order")
             .label("LabelPageNameUploadOrder","")
-            .pageShowConditions(PageShowConditionsUtil.createAndSendOrderConditions())
+            .pageShowConditions(this.pageShowConditions)
             .label("uploadMessage", "Upload a copy of the document you wish to be added to case file view")
             .label("uploadLimits", """
                 The order should be:

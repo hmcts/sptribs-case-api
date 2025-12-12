@@ -28,7 +28,7 @@ public class DraftOrderFooter implements CcdPageConfiguration {
     public void addTo(PageBuilder pageBuilder) {
         pageBuilder.page("draftOrderDocumentFooter", this::midEvent)
             .pageLabel("Document footer")
-            .pageShowConditions(PageShowConditionsUtil.createAndSendOrderConditions())
+            .pageShowConditions(PageShowConditionsUtil.createAndSendOrderConditionsNew())
             .label("draftOrderDocFooter",
                 """
                     Order Signature

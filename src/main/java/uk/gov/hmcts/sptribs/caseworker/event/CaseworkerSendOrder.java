@@ -23,6 +23,7 @@ import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderCIC;
 import uk.gov.hmcts.sptribs.caseworker.model.Order;
 import uk.gov.hmcts.sptribs.caseworker.model.OrderIssuingType;
 import uk.gov.hmcts.sptribs.caseworker.util.MessageUtil;
+import uk.gov.hmcts.sptribs.caseworker.util.PageShowConditionsUtil;
 import uk.gov.hmcts.sptribs.caseworker.util.SendOrderUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
@@ -64,8 +65,8 @@ import static uk.gov.hmcts.sptribs.document.DocumentUtil.updateCategoryToDocumen
 @RequiredArgsConstructor
 public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole> {
     private static final CcdPageConfiguration orderIssuingSelect = new SendOrderOrderIssuingSelect();
-    private static final CcdPageConfiguration uploadOrder = new SendOrderUploadOrder();
-    private static final CcdPageConfiguration draftOrder = new SendOrderAddDraftOrder();
+    private static final SendOrderUploadOrder uploadOrder = new SendOrderUploadOrder(PageShowConditionsUtil.sendOrderConditions());
+    private static final SendOrderAddDraftOrder draftOrder = new SendOrderAddDraftOrder(PageShowConditionsUtil.sendOrderConditions());
     private static final CcdPageConfiguration orderDueDates = new SendOrderOrderDueDates();
     private static final CcdPageConfiguration notifyParties = new SendOrderNotifyParties();
     private static final CcdPageConfiguration sendReminder = new SendOrderSendReminder();
