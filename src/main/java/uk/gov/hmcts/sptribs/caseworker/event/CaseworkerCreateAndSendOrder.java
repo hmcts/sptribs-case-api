@@ -9,26 +9,25 @@ import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.Event;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
+import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.event.page.ApplyAnonymity;
 import uk.gov.hmcts.sptribs.caseworker.event.page.CreateAndSendOrderIssueSelect;
 import uk.gov.hmcts.sptribs.caseworker.event.page.DraftOrderFooter;
 import uk.gov.hmcts.sptribs.caseworker.event.page.SendOrderNotifyParties;
 import uk.gov.hmcts.sptribs.caseworker.event.page.SendOrderOrderDueDates;
-import uk.gov.hmcts.sptribs.caseworker.event.page.SendOrderUploadOrder;
+import uk.gov.hmcts.sptribs.caseworker.event.page.SendUploadOrder;
 import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderCIC;
 import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderContentCIC;
 import uk.gov.hmcts.sptribs.caseworker.model.Order;
 import uk.gov.hmcts.sptribs.caseworker.util.MessageUtil;
-import uk.gov.hmcts.sptribs.caseworker.util.PageShowConditionsUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
-import uk.gov.hmcts.sptribs.common.event.page.CreateDraftOrder;
 import uk.gov.hmcts.sptribs.common.event.page.CreateNewOrder;
-import uk.gov.hmcts.sptribs.common.event.page.DraftOrderMainContentPage;
+import uk.gov.hmcts.sptribs.common.event.page.EditNewOrderContent;
 import uk.gov.hmcts.sptribs.common.event.page.PreviewDraftOrder;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
 import uk.gov.hmcts.sptribs.notification.dispatcher.NewOrderIssuedNotification;
@@ -65,9 +64,9 @@ public class CaseworkerCreateAndSendOrder implements CCDConfig<CaseData, State, 
 
     private static final CcdPageConfiguration createSendIssuingSelect = new CreateAndSendOrderIssueSelect();
 
-    private static final CreateDraftOrder createDraftOrder = new CreateDraftOrder(PageShowConditionsUtil.createAndSendOrderConditionsNew());
-    private static final CcdPageConfiguration draftOrderMainContentPage = new DraftOrderMainContentPage();
-    private static final SendOrderUploadOrder uploadOrder = new SendOrderUploadOrder(PageShowConditionsUtil.createAndSendOrderConditionsNew());
+    private static final CcdPageConfiguration createNewOrder = new CreateNewOrder();
+    private static final CcdPageConfiguration editNewOrderContent = new EditNewOrderContent();
+    private static final CcdPageConfiguration uploadOrder = new SendUploadOrder();
     private static final CcdPageConfiguration orderDueDates = new SendOrderOrderDueDates();
     private static final CcdPageConfiguration previewOrder = new PreviewDraftOrder();
     private static final CcdPageConfiguration notifyParties = new SendOrderNotifyParties();
@@ -95,8 +94,8 @@ public class CaseworkerCreateAndSendOrder implements CCDConfig<CaseData, State, 
         PageBuilder pageBuilder = new PageBuilder(eventBuilder);
         applyAnonymitySelect.addTo(pageBuilder);
         createSendIssuingSelect.addTo(pageBuilder);
-        createDraftOrder.addTo(pageBuilder);
-        draftOrderMainContentPage.addTo(pageBuilder);
+        createNewOrder.addTo(pageBuilder);
+        editNewOrderContent.addTo(pageBuilder);
         draftOrderFooter.addTo(pageBuilder);
         uploadOrder.addTo(pageBuilder);
 
@@ -107,7 +106,8 @@ public class CaseworkerCreateAndSendOrder implements CCDConfig<CaseData, State, 
 
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToStart(CaseDetails<CaseData, State> details) {
         final CaseData caseData = details.getData();
-        caseData.setCurrentEvent(CASEWORKER_CREATE_AND_SEND_ORDER);
+
+        updateAnonymityAlreadyApplied(caseData);
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
                 .data(caseData)
@@ -153,12 +153,22 @@ public class CaseworkerCreateAndSendOrder implements CCDConfig<CaseData, State, 
 
         caseData.getCicCase().setOrderDueDates(new ArrayList<>());
         caseData.getCicCase().setFirstOrderDueDate(caseData.getCicCase().calculateFirstDueDate());
-        caseData.setCurrentEvent("");
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
                 .data(caseData)
                 .state(details.getState())
                 .build();
+    }
+
+    private static void updateAnonymityAlreadyApplied(CaseData caseData) {
+        if (YesOrNo.YES.equals(caseData.getCicCase().getAnonymityAlreadyApplied())) {
+            //do nothing
+        } else if (YesOrNo.YES.equals(caseData.getCicCase().getAnonymiseYesOrNo())
+            && caseData.getCicCase().getAnonymisedAppellantName() != null) {
+            caseData.getCicCase().setAnonymityAlreadyApplied(YesOrNo.YES);
+        } else {
+            caseData.getCicCase().setAnonymityAlreadyApplied(YesOrNo.NO);
+        }
     }
 
     public SubmittedCallbackResponse submitted(CaseDetails<CaseData, State> details,

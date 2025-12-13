@@ -17,19 +17,20 @@ import static org.apache.commons.lang3.StringUtils.isEmpty;
 public class CreateNewOrder implements CcdPageConfiguration {
 
     private static final String NEVER_SHOW = "orderContentOrderTemplate=\"NEVER_SHOW\"";
+    private static final String NEW_ANONYMITY = "cicCaseAnonymityAlreadyApplied=\"No\" AND cicCaseAnonymiseYesOrNo=\"Yes\"";
 
     @Override
     public void addTo(PageBuilder pageBuilder) {
         pageBuilder
-                .page("createDraftOrder", this::midEvent)
+                .page("createNewOrder", this::midEvent)
                 .pageLabel("Create order")
                 .pageShowConditions(PageShowConditionsUtil.createAndSendOrderConditionsNew())
-                .label("LabelCreateDraftOrder", "")
+                .label("LabelCreateNewOrder", "")
                 .label("createDraftOrder", "Draft to be created")
                 .complex(CaseData::getDraftOrderContentCIC)
-                    .mandatory(DraftOrderContentCIC::getOrderTemplate)
+                    .mandatory(DraftOrderContentCIC::getOrderTemplate, "cicCaseAnonymityAlreadyApplied=\"Yes\"")
+                    .mandatory(DraftOrderContentCIC::getAnonymisationOrderTemplate, NEW_ANONYMITY)
                     .done()
-                .readonly(CaseData::getCurrentEvent)
                 .complex(CaseData::getCicCase)
                     .readonly(CicCase::getReferralTypeForWA, NEVER_SHOW)
                     .done()

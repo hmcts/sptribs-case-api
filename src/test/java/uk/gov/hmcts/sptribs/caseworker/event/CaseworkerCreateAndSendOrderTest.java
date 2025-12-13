@@ -80,14 +80,71 @@ class CaseworkerCreateAndSendOrderTest {
     }
 
     @Test
-    void  shouldSetCurrentEventInAboutToStartCallback() {
+    void shouldSetAnonymityAlreadyAppliedInAboutToStartCallback_AnonymityAlreadyAppliedIsNull() {
         final CaseData caseData = CaseData.builder().build();
         final CaseDetails<CaseData, State> details = new CaseDetails<>();
+        final CicCase cicCase = CicCase.builder()
+            .anonymiseYesOrNo(YesOrNo.YES)
+            .anonymityAlreadyApplied(null)
+            .anonymisedAppellantName("AA")
+            .build();
+        caseData.setCicCase(cicCase);
         details.setData(caseData);
 
         final var response = caseworkerCreateAndSendOrder.aboutToStart(details);
 
-        assertThat(response.getData().getCurrentEvent()).isEqualTo(CASEWORKER_CREATE_AND_SEND_ORDER);
+        assertThat(response.getData().getCicCase().getAnonymityAlreadyApplied()).isEqualTo(YesOrNo.YES);
+    }
+
+    @Test
+    void shouldSetAnonymityAlreadyAppliedInAboutToStartCallback_AnonymityAlreadyAppliedIsYes() {
+        final CaseData caseData = CaseData.builder().build();
+        final CaseDetails<CaseData, State> details = new CaseDetails<>();
+        final CicCase cicCase = CicCase.builder()
+            .anonymiseYesOrNo(YesOrNo.YES)
+            .anonymityAlreadyApplied(YesOrNo.YES)
+            .anonymisedAppellantName("AA")
+            .build();
+        caseData.setCicCase(cicCase);
+        details.setData(caseData);
+
+        final var response = caseworkerCreateAndSendOrder.aboutToStart(details);
+
+        assertThat(response.getData().getCicCase().getAnonymityAlreadyApplied()).isEqualTo(YesOrNo.YES);
+    }
+
+    @Test
+    void shouldSetAnonymityAlreadyAppliedInAboutToStartCallback_AnonymityAlreadyAppliedIsNo() {
+        final CaseData caseData = CaseData.builder().build();
+        final CaseDetails<CaseData, State> details = new CaseDetails<>();
+        final CicCase cicCase = CicCase.builder()
+            .anonymiseYesOrNo(YesOrNo.YES)
+            .anonymityAlreadyApplied(YesOrNo.NO)
+            .anonymisedAppellantName("AA")
+            .build();
+        caseData.setCicCase(cicCase);
+        details.setData(caseData);
+
+        final var response = caseworkerCreateAndSendOrder.aboutToStart(details);
+
+        assertThat(response.getData().getCicCase().getAnonymityAlreadyApplied()).isEqualTo(YesOrNo.YES);
+    }
+
+    @Test
+    void shouldSetAnonymityAlreadyAppliedInAboutToStartCallback_NoAnonymitySet() {
+        final CaseData caseData = CaseData.builder().build();
+        final CaseDetails<CaseData, State> details = new CaseDetails<>();
+        final CicCase cicCase = CicCase.builder()
+            .anonymiseYesOrNo(null)
+            .anonymityAlreadyApplied(YesOrNo.NO)
+            .anonymisedAppellantName(null)
+            .build();
+        caseData.setCicCase(cicCase);
+        details.setData(caseData);
+
+        final var response = caseworkerCreateAndSendOrder.aboutToStart(details);
+
+        assertThat(response.getData().getCicCase().getAnonymityAlreadyApplied()).isEqualTo(YesOrNo.NO);
     }
 
     @Test

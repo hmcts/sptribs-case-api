@@ -15,17 +15,16 @@ import java.util.List;
 
 import static uk.gov.hmcts.sptribs.document.DocumentUtil.validateDocumentFormat;
 
-public class SendOrderUploadOrder implements CcdPageConfiguration {
+public class SendUploadOrder implements CcdPageConfiguration {
 
     @Override
     public void addTo(PageBuilder pageBuilder) {
-        String pageNameUploadOrder = "caseworkerSendOrderUploadOrder";
-        pageBuilder.page(pageNameUploadOrder, this::midEvent)
-            .pageLabel("Upload an order")
-            .label("LabelPageNameUploadOrder","")
-            .pageShowConditions(PageShowConditionsUtil.sendOrderConditions())
-            .label("uploadMessage", "Upload a copy of the document you wish to be added to case file view")
-            .label("uploadLimits", """
+        pageBuilder.page("caseworkerSendUploadOrder", this::midEvent)
+                .pageLabel("Upload an order")
+                .label("LabelPageNameUploadOrder","")
+                .pageShowConditions(PageShowConditionsUtil.createAndSendOrderConditionsNew())
+                .label("uploadMessage", "Upload a copy of the document you wish to be added to case file view")
+                .label("uploadLimits", """
                 The order should be:
                  *  uploaded separately, not one large file
                  *  a maximum of 100MB in size (larger files must be split)
@@ -36,16 +35,15 @@ public class SendOrderUploadOrder implements CcdPageConfiguration {
 
                 Note: If the remove button is disabled, please refresh the page to remove attachments
                 """
-            )
-            .complex(CaseData::getCicCase)
+                )
+                .complex(CaseData::getCicCase)
                 .mandatory(CicCase::getOrderFile)
                 .done();
-
 
     }
 
     public AboutToStartOrSubmitResponse<CaseData, State> midEvent(CaseDetails<CaseData, State> details,
-                                                                   CaseDetails<CaseData, State> detailsBefore) {
+                                                                  CaseDetails<CaseData, State> detailsBefore) {
         final CaseData data = details.getData();
         List<ListValue<CICDocument>> uploadedDocuments = data.getCicCase().getOrderFile();
         final List<String> errors = validateDocumentFormat(uploadedDocuments);
@@ -53,8 +51,8 @@ public class SendOrderUploadOrder implements CcdPageConfiguration {
         data.getCicCase().setOrderTemplateIssued(data.getCicCase().getOrderFile().getFirst().getValue().getDocumentLink());
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
-            .data(data)
-            .errors(errors)
-            .build();
+                .data(data)
+                .errors(errors)
+                .build();
     }
 }

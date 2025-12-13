@@ -28,6 +28,8 @@ public final class PageShowConditionsUtil {
     private static final String ORDER_EVENT_EDIT_DRAFT = "currentEvent = \"caseworker-edit-draft-order\"";
     private static final String ORDER_EVENT_SEND_ORDER = "currentEvent = \"caseworker-send-order\"";
 
+    private static final String ANONYMITY_ALREADY_APPLIED = "cicCaseAnonymityAlreadyApplied!=\"Yes\"";
+
     private PageShowConditionsUtil() {
     }
 
@@ -79,22 +81,19 @@ public final class PageShowConditionsUtil {
 
     public static Map<String, String> sendOrderConditions() {
         Map<String, String> map = new HashMap<>();
-        //cover only select journey for send order event
-        //check issue draft or send upload
         map.put("caseworkerSendOrderSelectDraftOrder", ORDER_TYPE_DRAFT_CONDITION);
         map.put("caseworkerSendOrderUploadOrder", ORDER_TYPE_UPLOAD_CONDITION);
-
         return map;
     }
 
     public static Map<String, String> createAndSendOrderConditionsNew() {
         Map<String, String> map = new HashMap<>();
-        //cover only select
-        map.put("createDraftOrder", CREATE_AND_SEND_NEW);
-        map.put("mainContent", CREATE_AND_SEND_NEW);
+        map.put("caseworkerApplyAnonymity", ANONYMITY_ALREADY_APPLIED);
+        map.put("createNewOrder", CREATE_AND_SEND_NEW);
+        map.put("editNewOrderContent", CREATE_AND_SEND_NEW);
         map.put("draftOrderDocumentFooter", CREATE_AND_SEND_NEW);
         map.put("caseworkerSendOrderSelectDraftOrder", CREATE_AND_SEND_NEW);
-        map.put("caseworkerSendOrderUploadOrder", CREATE_AND_SEND_UPLOAD);
+        map.put("caseworkerSendUploadOrder", CREATE_AND_SEND_UPLOAD);
         return map;
     }
 }
