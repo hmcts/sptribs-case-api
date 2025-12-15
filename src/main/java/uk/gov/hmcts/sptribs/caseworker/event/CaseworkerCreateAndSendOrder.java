@@ -9,6 +9,7 @@ import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.Event;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
+import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.event.page.ApplyAnonymity;
 import uk.gov.hmcts.sptribs.caseworker.event.page.CreateAndSendOrderIssueSelect;
@@ -106,6 +107,12 @@ public class CaseworkerCreateAndSendOrder implements CCDConfig<CaseData, State, 
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToStart(CaseDetails<CaseData, State> details) {
         final CaseData caseData = details.getData();
         caseData.setCurrentEvent(CASEWORKER_CREATE_AND_SEND_ORDER);
+
+        if (YesOrNo.YES.equals(caseData.getCicCase().getAnonymiseYesOrNo()) && caseData.getCicCase().getAnonymisedAppellantName() != null) {
+            caseData.getCicCase().setAnonymityAlreadyApplied(YesOrNo.YES);
+        } else {
+            caseData.getCicCase().setAnonymityAlreadyApplied(YesOrNo.NO);
+        }
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
                 .data(caseData)

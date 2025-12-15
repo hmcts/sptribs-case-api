@@ -21,6 +21,7 @@ import java.util.stream.IntStream;
 public class EditDraftOrder implements CcdPageConfiguration {
 
     private static final String ALWAYS_HIDE = "cicCaseDraftOrderDynamicList = \"ALWAYS_HIDE\"";
+    private static final String HIDE_ON_THIS_PAGE = "LabelEditDraftOrder!=\"\"";
 
     @Override
     public void addTo(PageBuilder pageBuilder) {
@@ -32,6 +33,7 @@ public class EditDraftOrder implements CcdPageConfiguration {
             .complex(CaseData::getCicCase)
             .mandatoryWithLabel(CicCase::getDraftOrderDynamicList, "Draft order to be edited")
                 .readonly(CicCase::getCreateAndSendIssuingTypes, ALWAYS_HIDE)
+//                .readonly(CicCase::getAnonymityAlreadyApplied, HIDE_ON_THIS_PAGE)
                 .done()
             .complex(CaseData::getDraftOrderContentCIC)
             // readonly below is required in order to be able to set the order template in midEvent below
