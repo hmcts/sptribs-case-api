@@ -10,6 +10,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.CASEWORKER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.NON_RESPONDENT_USER;
+import static uk.gov.hmcts.sptribs.ciccase.search.CaseFieldsConstants.ANONYMISATION_DATE;
 import static uk.gov.hmcts.sptribs.ciccase.search.CaseFieldsConstants.ANONYMISED_APPELLANT_NAME;
 import static uk.gov.hmcts.sptribs.ciccase.search.CaseFieldsConstants.ANONYMISE_YES_OR_NO;
 import static uk.gov.hmcts.sptribs.ciccase.search.CaseFieldsConstants.ANONYMITY_DETAILS;
@@ -208,7 +209,8 @@ public class CaseTypeTab implements CCDConfig<CaseData, State, UserRole> {
             .field(APPLICANT_ADDRESS)
             .label(ANONYMITY_DETAILS, COND_APPLY_ANONYMITY, "### Anonymity Details")
             .field(ANONYMISE_YES_OR_NO)
-            .field(ANONYMISED_APPELLANT_NAME);
+            .field(ANONYMISED_APPELLANT_NAME)
+            .field(ANONYMISATION_DATE);
     }
 
     private void buildCasePartiesTab(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
