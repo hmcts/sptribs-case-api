@@ -62,6 +62,7 @@ public final class PageShowConditionsUtil {
 
     public static Map<String, String> createAndSendOrderConditions() {
         Map<String, String> map = new HashMap<>();
+        map.put("caseworkerApplyAnonymity", "cicCaseAnonymityAlreadyApplied!=\"Yes\"");
         map.put("createDraftOrder", ORDER_EVENT_CREATE_DRAFT + " OR (" + ORDER_EVENT_CREATE_AND_SEND_NEW + ")");
         map.put("mainContent", ORDER_EVENT_CREATE_DRAFT + " OR " + ORDER_EVENT_EDIT_DRAFT
             + " OR (" + ORDER_EVENT_CREATE_AND_SEND_NEW + ")");

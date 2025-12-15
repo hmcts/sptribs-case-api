@@ -103,6 +103,11 @@ public class CicCase {
     private YesOrNo anonymiseYesOrNo;
 
     @CCD(
+            access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private YesOrNo anonymityAlreadyApplied;
+
+    @CCD(
             label = "Anonymised Name",
             access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )

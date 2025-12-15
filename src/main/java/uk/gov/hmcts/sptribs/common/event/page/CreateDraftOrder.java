@@ -17,6 +17,7 @@ import static org.apache.commons.lang3.StringUtils.isEmpty;
 public class CreateDraftOrder implements CcdPageConfiguration {
 
     private static final String NEVER_SHOW = "orderContentOrderTemplate=\"NEVER_SHOW\"";
+    private static final String HIDE_ON_THIS_PAGE = "LabelCreateDraftOrder!=\"\"";
 
     @Override
     public void addTo(PageBuilder pageBuilder) {
@@ -29,10 +30,13 @@ public class CreateDraftOrder implements CcdPageConfiguration {
             .complex(CaseData::getDraftOrderContentCIC)
                 .mandatory(DraftOrderContentCIC::getOrderTemplate)
                 .done()
+                .mandatory(DraftOrderContentCIC::getGeneralDirectionsOnly)
+                .done()
             .readonly(CaseData::getCurrentEvent, NEVER_SHOW)
             .complex(CaseData::getCicCase)
                 .readonly(CicCase::getReferralTypeForWA, NEVER_SHOW)
                 .readonly(CicCase::getCreateAndSendIssuingTypes, NEVER_SHOW)
+//                .readonly(CicCase::getAnonymityAlreadyApplied, HIDE_ON_THIS_PAGE)
                 .done()
             .done();
     }

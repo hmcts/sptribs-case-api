@@ -17,6 +17,7 @@ import static uk.gov.hmcts.sptribs.document.DocumentUtil.validateDocumentFormat;
 
 public class SendOrderUploadOrder implements CcdPageConfiguration {
 
+    private static final String HIDE_ON_THIS_PAGE = "LabelPageNameUploadOrder=\"HIDDEN\"";
 
     @Override
     public void addTo(PageBuilder pageBuilder) {
@@ -40,6 +41,7 @@ public class SendOrderUploadOrder implements CcdPageConfiguration {
             )
             .complex(CaseData::getCicCase)
                 .mandatory(CicCase::getOrderFile)
+//                .readonly(CicCase::getAnonymityAlreadyApplied, HIDE_ON_THIS_PAGE)
                 .done()
             .readonly(CaseData::getCurrentEvent, "LabelPageNameUploadOrder=\"HIDDEN\"");
 

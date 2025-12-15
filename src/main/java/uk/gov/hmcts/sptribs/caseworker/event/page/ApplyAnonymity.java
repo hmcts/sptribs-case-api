@@ -4,9 +4,14 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
+import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
+import uk.gov.hmcts.sptribs.caseworker.model.CreateAndSendIssuingType;
+import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderCIC;
+import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderContentCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
+import uk.gov.hmcts.sptribs.ciccase.model.OrderTemplate;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
@@ -31,6 +36,7 @@ public class ApplyAnonymity implements CcdPageConfiguration {
                 .complex(CaseData::getCicCase)
                     .readonly(CicCase::getFullName, "LabelCaseworkerApplyAnonymity!=\"\"")
                     .readonly(CicCase::getAnonymisedAppellantName, "LabelCaseworkerApplyAnonymity!=\"\"")
+                    .readonly(CicCase::getAnonymityAlreadyApplied, "LabelCaseworkerApplyAnonymity!=\"\"")
                     .mandatory(CicCase::getAnonymiseYesOrNo)
                     .done()
                 .readonly(CaseData::getCurrentEvent, "LabelCaseworkerApplyAnonymity=\"HIDDEN\"")
@@ -49,13 +55,21 @@ public class ApplyAnonymity implements CcdPageConfiguration {
                 errors.add(FAILED_TO_ANONYMISE_CASE);
             }
             cicCase.setAnonymisedAppellantName(anonymisedName);
+        }
 
+        if (YesOrNo.NO.equals(cicCase.getAnonymityAlreadyApplied()) && YesOrNo.YES.equals(cicCase.getAnonymiseYesOrNo())) {
+            cicCase.setCreateAndSendIssuingTypes(CreateAndSendIssuingType.CREATE_AND_SEND_NEW_ORDER);
+
+            DraftOrderContentCIC draftOrderContentCIC = DraftOrderContentCIC.builder()
+                    .orderTemplate(OrderTemplate.CIC6_GENERAL_DIRECTIONS)
+                    .build();
+            caseData.setDraftOrderContentCIC(draftOrderContentCIC);
         }
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
-                .data(caseData)
-                .errors(errors)
-                .build();
+            .data(caseData)
+            .errors(errors)
+            .build();
     }
 }
 
