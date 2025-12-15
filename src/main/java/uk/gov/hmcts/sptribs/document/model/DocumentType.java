@@ -129,6 +129,10 @@ public enum DocumentType implements HasLabel {
     @JsonAlias({"TG Docs"})
     SUBMISSION_FROM_RESPONDENT("TG - Submission from respondent", "Submission from respondent", "TG"),
 
+    @JsonProperty("Correspondence documents")
+    @JsonAlias({"Correspondence Docs"})
+    CORRESPONDENCE("Correspondence documents", "Correspondence documents", "CD"),
+
     @JsonProperty("Other-TG")
     @JsonAlias({"TG Docs"})
     OTHER_GENERAL_EVIDENCE("TG - Other", "Other-TG", "TG"),
