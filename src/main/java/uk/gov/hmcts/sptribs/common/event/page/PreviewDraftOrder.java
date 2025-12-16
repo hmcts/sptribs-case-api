@@ -1,8 +1,6 @@
 package uk.gov.hmcts.sptribs.common.event.page;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.api.Event;
 import uk.gov.hmcts.ccd.sdk.api.FieldCollection;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
@@ -32,35 +30,34 @@ public class PreviewDraftOrder implements CcdPageConfiguration {
 
     @Override
     public void addTo(PageBuilder pageBuilder) {
-
         FieldCollection.FieldCollectionBuilder<CaseData, State, Event.EventBuilder<CaseData, UserRole, State>> fieldCollectionBuilder =
             pageBuilder
                 .page(pageId)
                 .pageLabel("Preview order")
                 .label("LabelPreviewOrdersDocuments", "");
 
-       if (eventId.equals(CASEWORKER_CREATE_DRAFT_ORDER) || eventId.equals(CASEWORKER_EDIT_DRAFT_ORDER)) {
-           fieldCollectionBuilder.complex(CaseData::getCicCase)
-               .readonly(CicCase::getOrderTemplateIssued)
-               .label("make Changes", """
-                   To make changes, choose ‘Previous’ and navigate back to the 'Edit Order' page.
-                   
-                   If you are happy, continue to the next screen.""")
-               .done();
-       } else if (eventId.equals(CASEWORKER_CREATE_AND_SEND_ORDER)) {
-           fieldCollectionBuilder
-               .complex(CaseData::getCicCase)
-               .readonly(CicCase::getOrderTemplateIssued)
-               .label("make Changes", """
-                   To make changes, choose ‘Previous’ and navigate back to the 'Edit Order' page.
-                   
-                   If you are happy, continue to the next screen.""", SHOW_CHANGE_DRAFT)
-               .label("changeUpload", """
-                   To change the document, choose ‘Previous’ and navigate back to the 'Upload an Order' page.
-                   
-                   If you are happy, continue to the next screen.""", SHOW_CHANGE_UPLOAD)
-               .done();
-       }
+        if (eventId.equals(CASEWORKER_CREATE_DRAFT_ORDER) || eventId.equals(CASEWORKER_EDIT_DRAFT_ORDER)) {
+            fieldCollectionBuilder.complex(CaseData::getCicCase)
+                .readonly(CicCase::getOrderTemplateIssued)
+                .label("make Changes", """
+                    To make changes, choose ‘Previous’ and navigate back to the 'Edit Order' page.
+                    
+                    If you are happy, continue to the next screen.""")
+                .done();
+        } else if (eventId.equals(CASEWORKER_CREATE_AND_SEND_ORDER)) {
+            fieldCollectionBuilder
+                .complex(CaseData::getCicCase)
+                .readonly(CicCase::getOrderTemplateIssued)
+                .label("make Changes", """
+                    To make changes, choose ‘Previous’ and navigate back to the 'Edit Order' page.
+                    
+                    If you are happy, continue to the next screen.""", SHOW_CHANGE_DRAFT)
+                .label("changeUpload", """
+                    To change the document, choose ‘Previous’ and navigate back to the 'Upload an Order' page.
+                    
+                    If you are happy, continue to the next screen.""", SHOW_CHANGE_UPLOAD)
+                .done();
+        }
     }
 }
 

@@ -68,7 +68,8 @@ public class CaseworkerCreateAndSendOrder implements CCDConfig<CaseData, State, 
     private static final CcdPageConfiguration editNewOrderContent = new EditNewOrderContent();
     private static final CcdPageConfiguration uploadOrder = new SendUploadOrder();
     private static final CcdPageConfiguration orderDueDates = new SendOrderOrderDueDates();
-    private static final CcdPageConfiguration previewOrder = new PreviewDraftOrder("previewCreateAndSendOrder", CASEWORKER_CREATE_AND_SEND_ORDER);
+    private static final CcdPageConfiguration previewOrder =
+        new PreviewDraftOrder("previewCreateAndSendOrder", CASEWORKER_CREATE_AND_SEND_ORDER);
     private static final CcdPageConfiguration notifyParties = new SendOrderNotifyParties();
 
     private final ApplyAnonymity applyAnonymitySelect;
