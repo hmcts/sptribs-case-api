@@ -1934,7 +1934,7 @@
         </outputEntry>
         <outputEntry id="LiteralExpression_1mba0we">
           <text>{
-"delayUntil": if (caseData.cicCaseFirstOrderDueDate != null and caseData.cicCaseFirstOrderDueDate != "") then (date(caseData.cicCaseFirstOrderDueDate)) else today()
+"delayUntil": if (caseData.cicCase.firstOrderDueDate != null and caseData.cicCase.firstOrderDueDate != "") then (date(caseData.cicCase.firstOrderDueDate)) else today()
 }</text>
         </outputEntry>
         <outputEntry id="LiteralExpression_0v6bouu">
