@@ -61,7 +61,7 @@ public class CaseworkerCreateDraftOrder implements CCDConfig<CaseData, State, Us
 
     private static final CcdPageConfiguration createDraftOrder = new CreateDraftOrder();
     private static final CcdPageConfiguration draftOrderMainContentPage = new DraftOrderMainContentPage();
-    private static final CcdPageConfiguration previewOrder = new PreviewDraftOrder();
+    private static final CcdPageConfiguration previewOrder = new PreviewDraftOrder("previewDraftOrderPage", CASEWORKER_CREATE_DRAFT_ORDER);
 
     private final OrderService orderService;
 

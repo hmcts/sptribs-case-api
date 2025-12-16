@@ -21,6 +21,7 @@ import static uk.gov.hmcts.sptribs.caseworker.util.ErrorConstants.FAILED_TO_ANON
 @Component
 public class ApplyAnonymity implements CcdPageConfiguration {
 
+    private static final String ALWAYS_HIDE = "LabelCaseworkerApplyAnonymity!=\"\"";
     private final AnonymisationService anonymisationService;
 
     @Override
@@ -29,8 +30,9 @@ public class ApplyAnonymity implements CcdPageConfiguration {
                 .pageLabel("Anonymity")
                 .label("LabelCaseworkerApplyAnonymity", "")
                 .complex(CaseData::getCicCase)
-                    .readonly(CicCase::getFullName, "LabelCaseworkerApplyAnonymity!=\"\"")
-                    .readonly(CicCase::getAnonymisedAppellantName, "LabelCaseworkerApplyAnonymity!=\"\"")
+                    .readonly(CicCase::getFullName, ALWAYS_HIDE)
+                    .readonly(CicCase::getAnonymisedAppellantName, ALWAYS_HIDE)
+                    .readonly(CicCase::getAnonymityAlreadyApplied, ALWAYS_HIDE)
                     .mandatory(CicCase::getAnonymiseYesOrNo)
                     .done()
                 .done();
