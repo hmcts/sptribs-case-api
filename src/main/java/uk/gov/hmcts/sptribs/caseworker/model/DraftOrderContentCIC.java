@@ -46,12 +46,4 @@ public class DraftOrderContentCIC {
         access = {CaseworkerAndSuperUserAccess.class}
     )
     private String orderSignature;
-
-    @CCD(
-        label = "Template",
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
-        typeOverride = FixedList
-    )
-    @JsonIgnore
-    private final Set<OrderTemplate> anonymisationOrderTemplate = Set.of(OrderTemplate.CIC6_GENERAL_DIRECTIONS);
 }
