@@ -23,7 +23,7 @@
       </input>
       <output id="Output_1" label="Task Id" name="taskId" typeRef="string" biodi:width="320" />
       <output id="OutputClause_0p5fhhd" label="Task Name" name="name" typeRef="string" biodi:width="362" />
-      <output id="OutputClause_165p3r3" label="Delay Until" name="delayUntil" typeRef="LocalDate" biodi:width="192" />
+      <output id="OutputClause_165p3r3" label="Delay Until" name="delayUntil" typeRef="json" biodi:width="192" />
       <output id="OutputClause_0i6c6c2" label="Working Days Allowed" name="workingDaysAllowed" typeRef="integer" />
       <output id="OutputClause_10rno4c" label="Process Categories Identifiers" name="processCategories" typeRef="string" biodi:width="300" />
       <output id="OutputClause_1wziqr5" label="Work Type" name="workType" typeRef="string" />
@@ -1933,7 +1933,9 @@
           <text>"Follow up noncompliance of directions"</text>
         </outputEntry>
         <outputEntry id="LiteralExpression_1mba0we">
-          <text>if (cicCaseFirstOrderDueDate != null and cicCaseFirstOrderDueDate != "" and date(cicCaseFirstOrderDueDate) &gt; today()) then (date(cicCaseFirstOrderDueDate)) else today()</text>
+          <text>{
+"delayUntil": if (cicCaseFirstOrderDueDate != null and cicCaseFirstOrderDueDate != "") then (date(cicCaseFirstOrderDueDate)) else today()
+}</text>
         </outputEntry>
         <outputEntry id="LiteralExpression_0v6bouu">
           <text>1</text>

@@ -1299,7 +1299,7 @@ class CamundaTaskWaInitiationTest extends DmnDecisionTableBaseUnitTest {
                     Map.of(
                         "taskId", FOLLOW_UP_NONCOMPLIANCE_OF_DIR_TASK,
                         "name", "Follow up noncompliance of directions",
-                        "delayUntil", LocalDate.now(),
+                        "delayUntil", Map.of("delayUntil", LocalDate.now()),
                         "workingDaysAllowed", 1,
                         "processCategories", PROCESS_CATEGORY_PROCESSING,
                         "workType", ROUTINE_WORK_TYPE,
