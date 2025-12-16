@@ -428,7 +428,7 @@ ccd:
                 index => "%{[index_id]}"
                 document_type => "_doc"
                 document_id => "%{case_data_id}"
-                version => "%{case_revision}"
+                version => "%{event_id}"
                 version_type => "external_gte"
                 timeout => 60
             }
