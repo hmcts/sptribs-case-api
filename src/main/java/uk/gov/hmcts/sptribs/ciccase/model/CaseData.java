@@ -536,6 +536,19 @@ public class CaseData {
     private RetiredFields retiredFields;
 
     @CCD(
+        label = "Do you want to delete a field from case data?",
+        access = {SuperUserOnlyAccess.class}
+    )
+    private YesNo deleteField;
+
+    @CCD(
+        label = "Enter the name of the field to delete",
+        hint = "Enter the exact field name as it appears in the case data (e.g., 'hyphenatedCaseRef', 'cicCaseFullName')",
+        access = {SuperUserOnlyAccess.class}
+    )
+    private String deleteFieldName;
+
+    @CCD(
         label = "Reindex cases modified since",
         access = {SuperUserOnlyAccess.class}
     )
