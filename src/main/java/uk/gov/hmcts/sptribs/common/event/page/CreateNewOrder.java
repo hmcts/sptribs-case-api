@@ -24,7 +24,7 @@ public class CreateNewOrder implements CcdPageConfiguration {
         pageBuilder
                 .page("createNewOrder", this::midEvent)
                 .pageLabel("Create order")
-                .pageShowConditions(PageShowConditionsUtil.createAndSendOrderConditionsNew())
+                .pageShowConditions(PageShowConditionsUtil.createAndSendOrderConditions())
                 .label("LabelCreateNewOrder", "")
                 .label("createDraftOrder", "Draft to be created")
                 .complex(CaseData::getDraftOrderContentCIC)

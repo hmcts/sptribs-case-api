@@ -13,7 +13,7 @@ public class EditNewOrderContent implements CcdPageConfiguration {
         pageBuilder
             .page("editNewOrderContent")
             .pageLabel("Edit order")
-            .pageShowConditions(PageShowConditionsUtil.createAndSendOrderConditionsNew())
+            .pageShowConditions(PageShowConditionsUtil.createAndSendOrderConditions())
             .label("EditDraftOrderMainContent", """
             <hr>
             <h3>Header</h3>

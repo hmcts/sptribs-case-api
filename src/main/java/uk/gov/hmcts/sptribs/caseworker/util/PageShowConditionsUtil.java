@@ -20,14 +20,6 @@ public final class PageShowConditionsUtil {
     private static final String CREATE_AND_SEND_NEW = "cicCaseCreateAndSendIssuingTypes = \"NewOrder\"";
     private static final String CREATE_AND_SEND_UPLOAD = "cicCaseCreateAndSendIssuingTypes = \"UploadOrder\"";
 
-    private static final String ORDER_EVENT_CREATE_AND_SEND_NEW = "currentEvent = \"create-and-send-order\""
-            + " AND cicCaseCreateAndSendIssuingTypes = \"NewOrder\"";
-    private static final String ORDER_EVENT_CREATE_AND_SEND_UPLOAD = "currentEvent = \"create-and-send-order\" "
-            + "AND cicCaseCreateAndSendIssuingTypes = \"UploadOrder\"";
-    private static final String ORDER_EVENT_CREATE_DRAFT = "currentEvent = \"create-draft-order\"";
-    private static final String ORDER_EVENT_EDIT_DRAFT = "currentEvent = \"caseworker-edit-draft-order\"";
-    private static final String ORDER_EVENT_SEND_ORDER = "currentEvent = \"caseworker-send-order\"";
-
     private static final String ANONYMITY_ALREADY_APPLIED = "cicCaseAnonymityAlreadyApplied!=\"Yes\"";
 
     private PageShowConditionsUtil() {
@@ -65,20 +57,6 @@ public final class PageShowConditionsUtil {
         return map;
     }
 
-    public static Map<String, String> createAndSendOrderConditions() {
-        Map<String, String> map = new HashMap<>();
-        map.put("createDraftOrder", ORDER_EVENT_CREATE_DRAFT + " OR (" + ORDER_EVENT_CREATE_AND_SEND_NEW + ")");
-        map.put("mainContent", ORDER_EVENT_CREATE_DRAFT + " OR " + ORDER_EVENT_EDIT_DRAFT
-            + " OR (" + ORDER_EVENT_CREATE_AND_SEND_NEW + ")");
-        map.put("draftOrderDocumentFooter", ORDER_EVENT_CREATE_AND_SEND_NEW);
-        map.put("caseworkerSendOrderSelectDraftOrder", "(" + ORDER_EVENT_SEND_ORDER + " AND " + ORDER_TYPE_DRAFT_CONDITION
-            + ") OR (" + ORDER_EVENT_CREATE_AND_SEND_NEW + ")");
-        map.put("caseworkerSendOrderUploadOrder", "(" + ORDER_EVENT_SEND_ORDER + " AND " + ORDER_TYPE_UPLOAD_CONDITION
-            + ") OR (" + ORDER_EVENT_CREATE_AND_SEND_UPLOAD + ")");
-
-        return map;
-    }
-
     public static Map<String, String> sendOrderConditions() {
         Map<String, String> map = new HashMap<>();
         map.put("caseworkerSendOrderSelectDraftOrder", ORDER_TYPE_DRAFT_CONDITION);
@@ -86,13 +64,12 @@ public final class PageShowConditionsUtil {
         return map;
     }
 
-    public static Map<String, String> createAndSendOrderConditionsNew() {
+    public static Map<String, String> createAndSendOrderConditions() {
         Map<String, String> map = new HashMap<>();
         map.put("caseworkerApplyAnonymity", ANONYMITY_ALREADY_APPLIED);
         map.put("createNewOrder", CREATE_AND_SEND_NEW);
         map.put("editNewOrderContent", CREATE_AND_SEND_NEW);
         map.put("draftOrderDocumentFooter", CREATE_AND_SEND_NEW);
-        map.put("caseworkerSendOrderSelectDraftOrder", CREATE_AND_SEND_NEW);
         map.put("caseworkerSendUploadOrder", CREATE_AND_SEND_UPLOAD);
         return map;
     }

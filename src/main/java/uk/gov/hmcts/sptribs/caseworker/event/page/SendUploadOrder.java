@@ -22,7 +22,7 @@ public class SendUploadOrder implements CcdPageConfiguration {
         pageBuilder.page("caseworkerSendUploadOrder", this::midEvent)
                 .pageLabel("Upload an order")
                 .label("LabelPageNameUploadOrder","")
-                .pageShowConditions(PageShowConditionsUtil.createAndSendOrderConditionsNew())
+                .pageShowConditions(PageShowConditionsUtil.createAndSendOrderConditions())
                 .label("uploadMessage", "Upload a copy of the document you wish to be added to case file view")
                 .label("uploadLimits", """
                 The order should be:
