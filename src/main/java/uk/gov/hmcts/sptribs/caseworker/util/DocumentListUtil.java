@@ -1,6 +1,7 @@
 package uk.gov.hmcts.sptribs.caseworker.util;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.springframework.util.CollectionUtils;
 import uk.gov.hmcts.ccd.sdk.type.DynamicList;
 import uk.gov.hmcts.ccd.sdk.type.DynamicListElement;
@@ -16,6 +17,7 @@ import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -236,5 +238,44 @@ public final class DocumentListUtil {
 
     public static List<ListValue<CaseworkerCICDocument>> getAllOrderDocuments(CicCase cicCase) {
         return buildListValues(getOrderDocuments(cicCase));
+    }
+
+    public static Optional<CaseworkerCICDocument> getCaseDocumentById(String id, CaseData caseData) {
+        var allDocuments = getAllCaseDocuments(caseData)
+            .stream().map(ListValue::getValue)
+            .toList();
+        return allDocuments.stream().filter(document -> document.getDocumentLink().getBinaryUrl().contains(id)).findFirst();
+    }
+
+    public static List<String> extractDocumentIds(List<DynamicListElement> elements) {
+        if (elements == null || elements.isEmpty()) {
+            return List.of();
+        }
+        return elements.stream()
+                .map(DocumentListUtil::extractDocumentId)
+                .flatMap(Optional::stream)
+                .collect(Collectors.toList());
+    }
+
+    private static Optional<String> extractDocumentId(DynamicListElement element) {
+        if (element == null || element.getLabel() == null) {
+            return Optional.empty();
+        }
+
+        String label = element.getLabel();
+        int open = label.lastIndexOf('(');
+        int close = label.lastIndexOf(')');
+
+        if (open < 0 || close <= open) {
+            return Optional.empty();
+        }
+
+        String url = label.substring(open + 1, close).trim();
+        if (Strings.CS.endsWith(url, "/binary")) {
+            url = org.apache.commons.lang3.StringUtils.substringBeforeLast(url, "/");
+        }
+
+        String documentId = org.apache.commons.lang3.StringUtils.substringAfterLast(url, "/");
+        return org.apache.commons.lang3.StringUtils.isEmpty(documentId) ? Optional.empty() : Optional.of(documentId);
     }
 }

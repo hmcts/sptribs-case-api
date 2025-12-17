@@ -7,21 +7,26 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.ccd.sdk.type.AddressGlobalUK;
+import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseIssue;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.ContactPreferenceType;
 import uk.gov.hmcts.sptribs.common.CommonConstants;
+import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
+import uk.gov.hmcts.sptribs.document.model.DocumentType;
 import uk.gov.hmcts.sptribs.notification.NotificationHelper;
 import uk.gov.hmcts.sptribs.notification.NotificationServiceCIC;
 import uk.gov.hmcts.sptribs.notification.TemplateName;
-import uk.gov.hmcts.sptribs.notification.dispatcher.CaseIssuedNotification;
 import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
 
+import java.time.LocalDate;
 import java.util.HashMap;
+import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
@@ -184,10 +189,24 @@ public class CaseIssuedNotificationTest {
     @Test
     void shouldNotifyRespondentOfCaseIssuedCitizenWithEmailWithAttachments() {
         //Given
+        Document document = Document.builder()
+                .filename("test file")
+                .url("test.url")
+                .binaryUrl("test.url/binary")
+                .build();
+        CaseworkerCICDocument cicDocument = CaseworkerCICDocument.builder()
+                .date(LocalDate.of(2025, 12, 11))
+                .documentCategory(DocumentType.APPLICATION_FOR_AN_EXTENSION_OF_TIME)
+                .documentEmailContent("description")
+                .documentLink(document)
+                .build();
+        List<CaseworkerCICDocument> selectedDocuments = List.of(cicDocument);
+
         final CaseData data = getMockCaseData();
         final CaseIssue caseIssue = CaseIssue.builder().documentList(getDynamicMultiSelectDocumentList()).build();
         data.setCaseIssue(caseIssue);
         data.getCicCase().setRepresentativeFullName("respFullName");
+
 
         //When
         when(notificationHelper.buildEmailNotificationRequest(any(), anyBoolean(), anyMap(), anyMap(), any(TemplateName.class)))
@@ -195,7 +214,7 @@ public class CaseIssuedNotificationTest {
         caseIssuedNotification.sendToRespondent(data, TEST_CASE_ID.toString());
 
         //Then
-        verify(notificationService).sendEmail(any(NotificationRequest.class), eq(TEST_CASE_ID.toString()));
+        verify(notificationService).sendEmail(any(NotificationRequest.class), anyList(), eq(TEST_CASE_ID.toString()));
         verify(notificationHelper).buildEmailNotificationRequest(
             data.getCicCase().getRespondentEmail(),
             true,

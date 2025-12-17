@@ -1,12 +1,13 @@
 package uk.gov.hmcts.sptribs.notification;
 
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.NullArgumentException;
 import org.apache.commons.lang.StringUtils;
 import org.json.JSONObject;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
 import uk.gov.hmcts.ccd.sdk.type.Document;
@@ -21,7 +22,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.NotificationResponse;
 import uk.gov.hmcts.sptribs.ciccase.model.NotificationType;
 import uk.gov.hmcts.sptribs.common.config.EmailTemplatesConfigCIC;
 import uk.gov.hmcts.sptribs.common.repositories.CorrespondenceRepository;
-import uk.gov.hmcts.sptribs.document.DocumentClient;
+import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.idam.IdamService;
 import uk.gov.hmcts.sptribs.notification.exception.NotificationException;
 import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
@@ -38,7 +39,9 @@ import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -47,9 +50,9 @@ import java.util.UUID;
 import static java.util.Collections.singletonList;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.DOC_AVAILABLE;
-import static uk.gov.hmcts.sptribs.common.config.ControllerConstants.BEARER_PREFIX;
 
 @Service
+@RequiredArgsConstructor
 @Slf4j
 public class NotificationServiceCIC {
 
@@ -65,8 +68,6 @@ public class NotificationServiceCIC {
 
     private final AuthTokenGenerator authTokenGenerator;
 
-    private final DocumentClient caseDocumentClient;
-
     private final CaseDocumentClientApi caseDocumentClientApi;
 
     private final PDFServiceClient pdfServiceClient;
@@ -75,26 +76,7 @@ public class NotificationServiceCIC {
 
     private static final int LAST_ADDRESS_LINE = 7;
 
-    @Autowired
-    public NotificationServiceCIC(NotificationClient notificationClient,
-                                  EmailTemplatesConfigCIC emailTemplatesConfig,
-                                  IdamService idamService, HttpServletRequest request,
-                                  AuthTokenGenerator authTokenGenerator,
-                                  DocumentClient caseDocumentClient,
-                                  CorrespondenceRepository correspondenceRepository,
-                                  CaseDocumentClientApi caseDocumentClientApi,
-                                  PDFServiceClient pdfServiceClient) {
-
-        this.notificationClient = notificationClient;
-        this.emailTemplatesConfig = emailTemplatesConfig;
-        this.idamService = idamService;
-        this.request = request;
-        this.authTokenGenerator = authTokenGenerator;
-        this.caseDocumentClient = caseDocumentClient;
-        this.correspondenceRepository = correspondenceRepository;
-        this.caseDocumentClientApi = caseDocumentClientApi;
-        this.pdfServiceClient = pdfServiceClient;
-    }
+    private static final long TWO_MEGABYTES = 2_048_000;
 
     public void saveEmailCorrespondence(String templateName,
                                         SendEmailResponse sendEmailResponse,
@@ -161,6 +143,12 @@ public class NotificationServiceCIC {
     }
 
     public NotificationResponse sendEmail(NotificationRequest notificationRequest, String caseReferenceNumber) {
+        return sendEmail(notificationRequest, Collections.emptyList(), caseReferenceNumber);
+    }
+
+    public NotificationResponse sendEmail(NotificationRequest notificationRequest,
+                                          List<CaseworkerCICDocument> selectedDocuments,
+                                          String caseReferenceNumber) {
         final SendEmailResponse sendEmailResponse;
         final String destinationAddress = notificationRequest.getDestinationAddress();
         final TemplateName template = notificationRequest.getTemplate();
@@ -171,7 +159,7 @@ public class NotificationServiceCIC {
 
         try {
             if (notificationRequest.isHasFileAttachments()) {
-                addAttachmentsToTemplateVars(templateVars, notificationRequest.getUploadedDocuments());
+                addAttachmentsToTemplateVars(templateVars, notificationRequest.getUploadedDocuments(), selectedDocuments);
             }
 
             String templateId = emailTemplatesConfig.getTemplatesCIC().get(template.name());
@@ -283,29 +271,45 @@ public class NotificationServiceCIC {
         }
     }
 
-    private void addAttachmentsToTemplateVars(Map<String, Object> templateVars, Map<String, String> uploadedDocuments) throws IOException {
+    private void addAttachmentsToTemplateVars(Map<String, Object> templateVars,
+                                              Map<String, String> uploadedDocuments,
+                                              List<CaseworkerCICDocument> selectedDocuments) throws IOException {
 
         final User user = idamService.retrieveUser(request.getHeader(AUTHORIZATION));
-        final String authorisation = user.getAuthToken().startsWith(BEARER_PREFIX)
-            ? user.getAuthToken() : BEARER_PREFIX + user.getAuthToken();
+        final String authorisation = user.getAuthToken();
         final String serviceAuthorization = authTokenGenerator.generate();
-        final String serviceAuthorizationLatest = serviceAuthorization.startsWith(BEARER_PREFIX)
-            ? serviceAuthorization.substring(7) : serviceAuthorization;
 
-        for (Map.Entry<String, String> document : uploadedDocuments.entrySet()) {
-            final String docName = document.getKey();
-            final String item = document.getValue();
+        for (Map.Entry<String, String> uploadDocumentEntry : uploadedDocuments.entrySet()) {
+            final String docName = uploadDocumentEntry.getKey();
+            final String item = uploadDocumentEntry.getValue();
 
             if (docName.contains(DOC_AVAILABLE)) {
                 templateVars.put(docName, item);
             } else {
                 if (StringUtils.isNotEmpty(item)) {
-                    byte[] uploadedDocument = caseDocumentClient
-                        .getDocumentBinary(authorisation, serviceAuthorizationLatest, UUID.fromString(item)).getBody();
+                    ResponseEntity<byte[]> documentBinaryResponse =
+                        caseDocumentClientApi.getDocumentBinary(authorisation, serviceAuthorization, UUID.fromString(item));
+                    if (!documentBinaryResponse.getStatusCode().is2xxSuccessful()) {
+                        throw new RuntimeException(String.format("Failed to get document binary for id %s", item));
+                    }
 
+                    byte[] uploadedDocument = documentBinaryResponse.getBody();
                     if (uploadedDocument != null) {
                         log.debug("Document available for: {}", docName);
-                        templateVars.put(docName, getJsonFileAttachment(uploadedDocument));
+
+                        if (uploadedDocument.length <= TWO_MEGABYTES) {
+                            templateVars.put(docName, getJsonFileAttachment(uploadedDocument));
+                        } else {
+                            CaseworkerCICDocument document = selectedDocuments.stream()
+                                .filter(doc -> doc.getDocumentLink().getBinaryUrl().contains(item))
+                                .findFirst()
+                                .orElseThrow(() -> new NotificationException(
+                                    new Exception(String.format("Unable to find document details for document id: %s", item))));
+
+                            String documentNotification = String.format("\nFilename: %s\nDescription: %s\nUpload Date: %s",
+                                document.getDocumentLink().getFilename(), document.getDocumentEmailContent(), document.getDate());
+                            templateVars.put(docName, documentNotification);
+                        }
                     } else {
                         templateVars.put(docName, "");
                     }
