@@ -645,6 +645,6 @@ public class DocumentListUtilTest {
     void shouldReturnEmptyListIfNoIdFound() {
         DynamicMultiSelectList dynamicMultiSelectList = DynamicMultiSelectList.builder().build();
         List<String> documentIds = DocumentListUtil.extractDocumentIds(dynamicMultiSelectList.getListItems());
-        assertThat(documentIds).hasSize(0).isEmpty();
+        assertThat(documentIds).isEmpty();
     }
 }

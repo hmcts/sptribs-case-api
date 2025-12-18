@@ -92,7 +92,7 @@ public class NotificationServiceCIC {
         }
 
         try {
-            Document correspondencePDF = this.getPDF(sendEmailResponse, null, longCaseRef, sentOn, sentFrom, sentTo, templateName);
+            Document correspondencePDF = getPDF(sendEmailResponse, null, longCaseRef, sentOn, sentFrom, sentTo, templateName);
             CorrespondenceEntity correspondence = CorrespondenceEntity.builder()
                 .id(sendEmailResponse.getNotificationId())
                 .eventType(templateName)
@@ -122,7 +122,7 @@ public class NotificationServiceCIC {
         final OffsetDateTime sentOn = OffsetDateTime.now(ZoneOffset.UTC);
         String sentFrom = "Criminal Injuries Compensation Tribunal";
         try {
-            Document correspondencePDF = this.getPDF(null, sendLetterResponse, longCaseRef, sentOn, sentFrom, sentTo, templateName);
+            Document correspondencePDF = getPDF(null, sendLetterResponse, longCaseRef, sentOn, sentFrom, sentTo, templateName);
             CorrespondenceEntity correspondence = CorrespondenceEntity.builder()
                 .id(sendLetterResponse.getNotificationId())
                 .eventType(templateName)
@@ -172,7 +172,7 @@ public class NotificationServiceCIC {
                     referenceId
                 );
 
-            this.saveEmailCorrespondence(
+            saveEmailCorrespondence(
                 templateName,
                 sendEmailResponse,
                 destinationAddress,
@@ -298,6 +298,8 @@ public class NotificationServiceCIC {
             ResponseEntity<byte[]> documentBinaryResponse =
                 caseDocumentClientApi.getDocumentBinary(authorisation, serviceAuthorization, UUID.fromString(item));
             if (!documentBinaryResponse.getStatusCode().is2xxSuccessful()) {
+                log.error("Response code {} received when fetching document binary for id {}",
+                    documentBinaryResponse.getStatusCode(), item);
                 throw new NotificationException(
                     new Exception(String.format("Failed to get document binary for id %s", item)));
             }
