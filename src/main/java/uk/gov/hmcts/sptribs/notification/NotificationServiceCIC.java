@@ -298,7 +298,8 @@ public class NotificationServiceCIC {
             ResponseEntity<byte[]> documentBinaryResponse =
                 caseDocumentClientApi.getDocumentBinary(authorisation, serviceAuthorization, UUID.fromString(item));
             if (!documentBinaryResponse.getStatusCode().is2xxSuccessful()) {
-                throw new RuntimeException(String.format("Failed to get document binary for id %s", item));
+                throw new NotificationException(
+                    new Exception(String.format("Failed to get document binary for id %s", item)));
             }
 
             byte[] uploadedDocument = documentBinaryResponse.getBody();
