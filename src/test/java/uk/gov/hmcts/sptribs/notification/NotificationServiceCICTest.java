@@ -40,8 +40,8 @@ import static java.util.Collections.singletonList;
 import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.doThrow;
@@ -71,16 +71,10 @@ public class NotificationServiceCICTest {
     private AuthTokenGenerator authTokenGenerator;
 
     @Mock
-    private CaseDataDocumentService caseDataDocumentService;
-
-    @Mock
     private CaseDocumentClientApi caseDocumentClientAPI;
 
     @Mock
     private CorrespondenceRepository correspondenceRepository;
-
-    @Mock
-    private DocumentClient caseDocumentClient;
 
     @Mock
     private NotificationClient notificationClient;
@@ -131,7 +125,7 @@ public class NotificationServiceCICTest {
         when(authTokenGenerator.generate()).thenReturn(TEST_SERVICE_AUTH_TOKEN);
 
         final byte[] sample = new byte[1];
-        when(caseDocumentClient.getDocumentBinary(anyString(), anyString(), any())).thenReturn(ResponseEntity.ok(sample));
+        when(caseDocumentClientAPI.getDocumentBinary(anyString(), anyString(), any(UUID.class))).thenReturn(ResponseEntity.ok(sample));
 
         when(notificationClient.sendEmail(
             eq(templateId),
@@ -204,7 +198,7 @@ public class NotificationServiceCICTest {
         when(emailTemplatesConfig.getTemplatesCIC()).thenReturn(templateNameMap);
         when(httpServletRequest.getHeader(AUTHORIZATION)).thenReturn(TEST_AUTHORIZATION_TOKEN);
         when(authTokenGenerator.generate()).thenReturn(TEST_SERVICE_AUTH_TOKEN);
-        when(caseDocumentClient.getDocumentBinary(anyString(), anyString(), any())).thenReturn(ResponseEntity.ok(null));
+        when(caseDocumentClientAPI.getDocumentBinary(anyString(), anyString(), any(UUID.class))).thenReturn(ResponseEntity.ok(null));
 
         when(notificationClient.sendEmail(
             eq(templateId),
@@ -280,7 +274,7 @@ public class NotificationServiceCICTest {
         when(emailTemplatesConfig.getTemplatesCIC()).thenReturn(templateNameMap);
         when(httpServletRequest.getHeader(AUTHORIZATION)).thenReturn(TEST_AUTHORIZATION_TOKEN);
         when(authTokenGenerator.generate()).thenReturn(TEST_SERVICE_AUTH_TOKEN);
-        when(caseDocumentClient.getDocumentBinary(anyString(), anyString(), any())).thenReturn(ResponseEntity.ok(null));
+        when(caseDocumentClientAPI.getDocumentBinary(anyString(), anyString(), any(UUID.class))).thenReturn(ResponseEntity.ok(null));
 
         when(notificationClient.sendEmail(
             eq(templateId),
@@ -466,7 +460,7 @@ public class NotificationServiceCICTest {
         assertThatThrownBy(() -> notificationService.sendEmail(request, testCaseRef))
             .isInstanceOf(NotificationException.class)
             .satisfies(e -> assertAll(
-                () -> assertTrue(e.getCause() instanceof IOException)
+                () -> assertInstanceOf(IOException.class, e.getCause())
             ));
 
         verify(notificationClient).sendEmail(
@@ -503,9 +497,9 @@ public class NotificationServiceCICTest {
         when(idamService.retrieveUser(any())).thenReturn(user);
         when(httpServletRequest.getHeader(AUTHORIZATION)).thenReturn(TEST_AUTHORIZATION_TOKEN);
         when(authTokenGenerator.generate()).thenReturn(TEST_SERVICE_AUTH_TOKEN);
-        when(caseDocumentClient.getDocumentBinary(anyString(), anyString(), any())).thenReturn(ResponseEntity.ok(sample));
+        when(caseDocumentClientAPI.getDocumentBinary(anyString(), anyString(), any())).thenReturn(ResponseEntity.ok(sample));
 
-        final byte[] newUploadDocument = caseDocumentClient.getDocumentBinary(anyString(),anyString(),any()).getBody();
+        final byte[] newUploadDocument = caseDocumentClientAPI.getDocumentBinary(anyString(),anyString(),any()).getBody();
         assertNotNull(newUploadDocument);
         mockStatic(NotificationClient.class);
         when(NotificationClient.prepareUpload(newUploadDocument)).thenThrow(NotificationClientException.class);
@@ -579,7 +573,7 @@ public class NotificationServiceCICTest {
         when(authTokenGenerator.generate()).thenReturn(TEST_SERVICE_AUTH_TOKEN);
 
         final byte[] sample = new byte[1];
-        when(caseDocumentClient.getDocumentBinary(anyString(), anyString(), any())).thenReturn(ResponseEntity.ok(sample));
+        when(caseDocumentClientAPI.getDocumentBinary(anyString(), anyString(), any(UUID.class))).thenReturn(ResponseEntity.ok(sample));
 
         when(notificationClient.sendEmail(
             eq(templateId),
@@ -742,5 +736,10 @@ public class NotificationServiceCICTest {
             eq(templateId),
             any(),
             any());
+    }
+
+    @Test
+    void shouldUseDocumentDetailsWhenFileIsOver2MBLimit() {
+
     }
 }

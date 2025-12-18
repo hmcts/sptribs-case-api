@@ -235,7 +235,7 @@ public class NotificationServiceCIC {
                 throw new NullArgumentException("Recipient address");
             }
 
-            this.saveLetterCorrespondence(
+            saveLetterCorrespondence(
                 templateName,
                 sendLetterResponse,
                 formattedAddress,
