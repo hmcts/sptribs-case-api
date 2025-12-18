@@ -306,7 +306,7 @@ public class NotificationServiceCIC {
                                 .orElseThrow(() -> new NotificationException(
                                     new Exception(String.format("Unable to find document details for document id: %s", item))));
 
-                            String documentNotification = String.format("\nFilename: %s\nDescription: %s\nUpload Date: %s",
+                            String documentNotification = String.format("%nFilename: %s%nDescription: %s%nUpload Date: %s",
                                 document.getDocumentLink().getFilename(), document.getDocumentEmailContent(), document.getDate());
                             templateVars.put(docName, documentNotification);
                         }

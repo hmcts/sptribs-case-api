@@ -252,9 +252,9 @@ public final class DocumentListUtil {
             return List.of();
         }
         return elements.stream()
-                .map(DocumentListUtil::extractDocumentId)
-                .flatMap(Optional::stream)
-                .collect(Collectors.toList());
+            .map(DocumentListUtil::extractDocumentId)
+            .flatMap(Optional::stream)
+            .toList();
     }
 
     private static Optional<String> extractDocumentId(DynamicListElement element) {

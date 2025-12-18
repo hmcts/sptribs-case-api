@@ -22,7 +22,6 @@ import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
 
 import java.time.LocalDate;
 import java.util.HashMap;
-import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
@@ -200,13 +199,11 @@ public class CaseIssuedNotificationTest {
                 .documentEmailContent("description")
                 .documentLink(document)
                 .build();
-        List<CaseworkerCICDocument> selectedDocuments = List.of(cicDocument);
 
         final CaseData data = getMockCaseData();
         final CaseIssue caseIssue = CaseIssue.builder().documentList(getDynamicMultiSelectDocumentList()).build();
         data.setCaseIssue(caseIssue);
         data.getCicCase().setRepresentativeFullName("respFullName");
-
 
         //When
         when(notificationHelper.buildEmailNotificationRequest(any(), anyBoolean(), anyMap(), anyMap(), any(TemplateName.class)))
