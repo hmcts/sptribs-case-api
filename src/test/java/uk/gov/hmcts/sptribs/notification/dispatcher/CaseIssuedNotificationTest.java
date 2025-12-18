@@ -222,7 +222,7 @@ public class CaseIssuedNotificationTest {
         data.getCicCase().setRepresentativeFullName("respFullName");
 
         //When
-        when(notificationHelper.buildDocumentList(eq(caseIssue.getDocumentList()), eq(5)))
+        when(notificationHelper.buildDocumentList(caseIssue.getDocumentList(), 5))
             .thenReturn(getDocumentUploadMap());
         when(notificationHelper.buildEmailNotificationRequest(any(), anyBoolean(), anyMap(), anyMap(), any(TemplateName.class)))
             .thenReturn(NotificationRequest.builder().build());
