@@ -23,10 +23,12 @@ import uk.gov.hmcts.sptribs.document.model.CICDocument;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID;
 
 @ExtendWith(MockitoExtension.class)
 public class DocumentListUtilTest {
@@ -259,7 +261,7 @@ public class DocumentListUtilTest {
         //Then
         assertThat(result).isNotNull();
         assertThat(result.getListItems().size()).isEqualTo(1);
-        assertThat(result.getListItems().get(0).getLabel()).isEqualTo("L - Linked docs--name.pdf");
+        assertThat(result.getListItems().getFirst().getLabel()).isEqualTo("L - Linked docs--name.pdf");
     }
 
     @Test
@@ -604,4 +606,45 @@ public class DocumentListUtilTest {
         assertThat(result).isEmpty(); // Should return empty list when no documents exist
     }
 
+    @Test
+    void shouldExtractDocumentIds() {
+        final Document document = Document.builder()
+            .filename("test file")
+            .url("test.url/documentId")
+            .binaryUrl("test.url/documentId/binary")
+            .build();
+        final CaseworkerCICDocument cicDocument = CaseworkerCICDocument.builder()
+            .date(LocalDate.of(2025, 12, 11))
+            .documentCategory(DocumentType.APPLICATION_FOR_AN_EXTENSION_OF_TIME)
+            .documentEmailContent("description")
+            .documentLink(document)
+            .build();
+        final List<ListValue<CaseworkerCICDocument>> applicantDocuments =
+            List.of(ListValue.<CaseworkerCICDocument>builder().value(cicDocument).build());
+
+        final CaseDetails<CaseData, State> caseDetails = CaseDetails.<CaseData, State>builder()
+            .data(CaseData.builder()
+                .cicCase(CicCase.builder()
+                    .fullName("Test Name")
+                    .caseNumber(TEST_CASE_ID.toString())
+                    .build())
+                .build())
+            .build();
+        final CaseData data = caseDetails.getData();
+        final CicCase cicCase = data.getCicCase();
+        cicCase.setApplicantDocumentsUploaded(applicantDocuments);
+
+        DynamicMultiSelectList dynamicMultiSelectList = DocumentListUtil.prepareDocumentList(data, "test.url");
+        dynamicMultiSelectList.setValue(dynamicMultiSelectList.getListItems());
+
+        List<String> documentIds = DocumentListUtil.extractDocumentIds(dynamicMultiSelectList.getListItems());
+        assertThat(documentIds).contains("documentId").hasSize(1);
+    }
+
+    @Test
+    void shouldReturnEmptyListIfNoIdFound() {
+        DynamicMultiSelectList dynamicMultiSelectList = DynamicMultiSelectList.builder().build();
+        List<String> documentIds = DocumentListUtil.extractDocumentIds(dynamicMultiSelectList.getListItems());
+        assertThat(documentIds).hasSize(0).isEmpty();
+    }
 }
