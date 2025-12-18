@@ -274,11 +274,6 @@ public class NotificationServiceCIC {
     private void addAttachmentsToTemplateVars(Map<String, Object> templateVars,
                                               Map<String, String> uploadedDocuments,
                                               List<CaseworkerCICDocument> selectedDocuments) throws IOException {
-
-        final User user = idamService.retrieveUser(request.getHeader(AUTHORIZATION));
-        final String authorisation = user.getAuthToken();
-        final String serviceAuthorization = authTokenGenerator.generate();
-
         for (Map.Entry<String, String> uploadDocumentEntry : uploadedDocuments.entrySet()) {
             final String docName = uploadDocumentEntry.getKey();
             final String item = uploadDocumentEntry.getValue();
@@ -286,39 +281,57 @@ public class NotificationServiceCIC {
             if (docName.contains(DOC_AVAILABLE)) {
                 templateVars.put(docName, item);
             } else {
-                if (StringUtils.isNotEmpty(item)) {
-                    ResponseEntity<byte[]> documentBinaryResponse =
-                        caseDocumentClientApi.getDocumentBinary(authorisation, serviceAuthorization, UUID.fromString(item));
-                    if (!documentBinaryResponse.getStatusCode().is2xxSuccessful()) {
-                        throw new RuntimeException(String.format("Failed to get document binary for id %s", item));
-                    }
-
-                    byte[] uploadedDocument = documentBinaryResponse.getBody();
-                    if (uploadedDocument != null) {
-                        log.debug("Document available for: {}", docName);
-
-                        if (uploadedDocument.length <= TWO_MEGABYTES) {
-                            templateVars.put(docName, getJsonFileAttachment(uploadedDocument));
-                        } else {
-                            CaseworkerCICDocument document = selectedDocuments.stream()
-                                .filter(doc -> doc.getDocumentLink().getBinaryUrl().contains(item))
-                                .findFirst()
-                                .orElseThrow(() -> new NotificationException(
-                                    new Exception(String.format("Unable to find document details for document id: %s", item))));
-
-                            String documentNotification = String.format("%nFilename: %s%nDescription: %s%nUpload Date: %s",
-                                document.getDocumentLink().getFilename(), document.getDocumentEmailContent(), document.getDate());
-                            templateVars.put(docName, documentNotification);
-                        }
-                    } else {
-                        templateVars.put(docName, "");
-                    }
-                } else {
-                    log.info("Document not available for: {}", docName);
-                    templateVars.put(docName, "");
-                }
+                addLinkOrDocumentDetails(templateVars, selectedDocuments, item, docName);
             }
         }
+    }
+
+    private void addLinkOrDocumentDetails(Map<String, Object> templateVars,
+                                          List<CaseworkerCICDocument> selectedDocuments,
+                                          String item,
+                                          String docName) {
+        final User user = idamService.retrieveUser(request.getHeader(AUTHORIZATION));
+        final String authorisation = user.getAuthToken();
+        final String serviceAuthorization = authTokenGenerator.generate();
+
+        if (StringUtils.isNotEmpty(item)) {
+            ResponseEntity<byte[]> documentBinaryResponse =
+                caseDocumentClientApi.getDocumentBinary(authorisation, serviceAuthorization, UUID.fromString(item));
+            if (!documentBinaryResponse.getStatusCode().is2xxSuccessful()) {
+                throw new RuntimeException(String.format("Failed to get document binary for id %s", item));
+            }
+
+            byte[] uploadedDocument = documentBinaryResponse.getBody();
+            if (uploadedDocument != null) {
+                log.debug("Document available for: {}", docName);
+
+                if (uploadedDocument.length <= TWO_MEGABYTES) {
+                    templateVars.put(docName, getJsonFileAttachment(uploadedDocument));
+                } else {
+                    addDocumentDetails(templateVars, selectedDocuments, item, docName);
+                }
+            } else {
+                templateVars.put(docName, "");
+            }
+        } else {
+            log.info("Document not available for: {}", docName);
+            templateVars.put(docName, "");
+        }
+    }
+
+    private static void addDocumentDetails(Map<String, Object> templateVars,
+                                           List<CaseworkerCICDocument> selectedDocuments,
+                                           String item,
+                                           String docName) {
+        CaseworkerCICDocument document = selectedDocuments.stream()
+            .filter(doc -> doc.getDocumentLink().getBinaryUrl().contains(item))
+            .findFirst()
+            .orElseThrow(() -> new NotificationException(
+                new Exception(String.format("Unable to find document details for document id: %s", item))));
+
+        String documentNotification = String.format("%nFilename: %s%nDescription: %s%nUpload Date: %s",
+            document.getDocumentLink().getFilename(), document.getDocumentEmailContent(), document.getDate());
+        templateVars.put(docName, documentNotification);
     }
 
     private JSONObject getJsonFileAttachment(byte[] fileContents) {
