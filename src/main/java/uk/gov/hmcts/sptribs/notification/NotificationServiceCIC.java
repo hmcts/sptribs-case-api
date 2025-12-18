@@ -273,7 +273,7 @@ public class NotificationServiceCIC {
 
     private void addAttachmentsToTemplateVars(Map<String, Object> templateVars,
                                               Map<String, String> uploadedDocuments,
-                                              List<CaseworkerCICDocument> selectedDocuments) throws IOException {
+                                              List<CaseworkerCICDocument> selectedDocuments) {
         for (Map.Entry<String, String> uploadDocumentEntry : uploadedDocuments.entrySet()) {
             final String docName = uploadDocumentEntry.getKey();
             final String item = uploadDocumentEntry.getValue();
