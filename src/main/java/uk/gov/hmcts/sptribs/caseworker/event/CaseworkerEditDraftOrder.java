@@ -54,7 +54,7 @@ public class CaseworkerEditDraftOrder implements CCDConfig<CaseData, State, User
 
     private static final CcdPageConfiguration editDraftOrder = new EditDraftOrder();
 
-    private static final CcdPageConfiguration previewOrder = new PreviewDraftOrder();
+    private static final CcdPageConfiguration previewOrder = new PreviewDraftOrder("previewEditOrder", CASEWORKER_EDIT_DRAFT_ORDER);
 
     private static final CcdPageConfiguration draftOrderEditMainContentPage = new DraftOrderMainContentPage();
 

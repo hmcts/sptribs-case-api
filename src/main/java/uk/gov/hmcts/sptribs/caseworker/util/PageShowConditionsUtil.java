@@ -14,16 +14,11 @@ public final class PageShowConditionsUtil {
     private static final String EDIT_SUMMARY_SHOW_WARNING_PAGE = " hearingSummaryExists != \"YES\"";
     private static final String EDIT_SUMMARY = "currentEvent != \"edit-hearing-summary\" OR  hearingSummaryExists = \"YES\"";
 
+    private static final String ORDER_TYPE_NEW = "cicCaseOrderIssuingType = \"NewOrder\"";
     private static final String ORDER_TYPE_DRAFT_CONDITION = "cicCaseOrderIssuingType = \"DraftOrder\"";
     private static final String ORDER_TYPE_UPLOAD_CONDITION = "cicCaseOrderIssuingType = \"UploadOrder\"";
 
-    private static final String ORDER_EVENT_CREATE_AND_SEND_NEW = "currentEvent = \"create-and-send-order\""
-            + " AND cicCaseCreateAndSendIssuingTypes = \"NewOrder\"";
-    private static final String ORDER_EVENT_CREATE_AND_SEND_UPLOAD = "currentEvent = \"create-and-send-order\" "
-            + "AND cicCaseCreateAndSendIssuingTypes = \"UploadOrder\"";
-    private static final String ORDER_EVENT_CREATE_DRAFT = "currentEvent = \"create-draft-order\"";
-    private static final String ORDER_EVENT_EDIT_DRAFT = "currentEvent = \"caseworker-edit-draft-order\"";
-    private static final String ORDER_EVENT_SEND_ORDER = "currentEvent = \"caseworker-send-order\"";
+    private static final String ANONYMITY_ALREADY_APPLIED = "cicCaseAnonymityAlreadyApplied!=\"Yes\"";
 
     private PageShowConditionsUtil() {
     }
@@ -60,17 +55,20 @@ public final class PageShowConditionsUtil {
         return map;
     }
 
+    public static Map<String, String> sendOrderConditions() {
+        Map<String, String> map = new HashMap<>();
+        map.put("caseworkerSendOrderSelectDraftOrder", ORDER_TYPE_DRAFT_CONDITION);
+        map.put("caseworkerSendOrderUploadOrder", ORDER_TYPE_UPLOAD_CONDITION);
+        return map;
+    }
+
     public static Map<String, String> createAndSendOrderConditions() {
         Map<String, String> map = new HashMap<>();
-        map.put("createDraftOrder", ORDER_EVENT_CREATE_DRAFT + " OR (" + ORDER_EVENT_CREATE_AND_SEND_NEW + ")");
-        map.put("mainContent", ORDER_EVENT_CREATE_DRAFT + " OR " + ORDER_EVENT_EDIT_DRAFT
-            + " OR (" + ORDER_EVENT_CREATE_AND_SEND_NEW + ")");
-        map.put("draftOrderDocumentFooter", ORDER_EVENT_CREATE_AND_SEND_NEW);
-        map.put("caseworkerSendOrderSelectDraftOrder", "(" + ORDER_EVENT_SEND_ORDER + " AND " + ORDER_TYPE_DRAFT_CONDITION
-            + ") OR (" + ORDER_EVENT_CREATE_AND_SEND_NEW + ")");
-        map.put("caseworkerSendOrderUploadOrder", "(" + ORDER_EVENT_SEND_ORDER + " AND " + ORDER_TYPE_UPLOAD_CONDITION
-            + ") OR (" + ORDER_EVENT_CREATE_AND_SEND_UPLOAD + ")");
-
+        map.put("caseworkerApplyAnonymity", ANONYMITY_ALREADY_APPLIED);
+        map.put("createNewOrder", ORDER_TYPE_NEW);
+        map.put("editNewOrderContent", ORDER_TYPE_NEW);
+        map.put("draftOrderDocumentFooter", ORDER_TYPE_NEW);
+        map.put("caseworkerSendUploadOrder", ORDER_TYPE_UPLOAD_CONDITION);
         return map;
     }
 }
