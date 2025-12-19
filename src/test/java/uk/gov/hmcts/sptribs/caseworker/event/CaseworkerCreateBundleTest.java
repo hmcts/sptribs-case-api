@@ -693,4 +693,136 @@ class CaseworkerCreateBundleTest {
         assertThat(responseData.getCaseBundles().getLast().getValue().getDateAndTime())
             .isNull();
     }
+
+    @Test
+    void shouldNotSetTimestampForOldBundlesWithoutTimestampEntryWhenCreatingNewBundle() {
+        final CaseData caseData = caseData();
+
+        String existingOldBundleUUID1 = UUID.randomUUID().toString();
+        String existingOldBundleUUID2 = UUID.randomUUID().toString();
+
+        // Old bundles that exist in the case but have no timestamp entry
+        final Bundle oldBundle1 = Bundle.builder()
+            .id(existingOldBundleUUID1)
+            .build();
+        final Bundle oldBundle2 = Bundle.builder()
+            .id(existingOldBundleUUID2)
+            .build();
+
+        // Set up beforeDetails with existing old bundles (simulating bundles created before timestamp workaround)
+        List<ListValue<Bundle>> existingBundles = new ArrayList<>();
+        existingBundles.add(ListValue.<Bundle>builder().id("1").value(oldBundle1).build());
+        existingBundles.add(ListValue.<Bundle>builder().id("2").value(oldBundle2).build());
+
+        CaseData beforeCaseData = caseData();
+        beforeCaseData.setCaseBundles(existingBundles);
+
+        CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        beforeDetails.setData(beforeCaseData);
+
+        // bundleIdsAndTimestamps is empty (no timestamps recorded for old bundles)
+        caseData.setCaseBundleIdsAndTimestamps(new ArrayList<>());
+
+        // API returns old bundles + new bundle (API wipes all timestamps)
+        List<ListValue<Bundle>> apiReturnedBundles = new ArrayList<>();
+        String newBundleUUID = UUID.randomUUID().toString();
+        apiReturnedBundles.add(ListValue.<Bundle>builder()
+            .id("1")
+            .value(Bundle.builder().id(existingOldBundleUUID1).build())
+            .build());
+        apiReturnedBundles.add(ListValue.<Bundle>builder()
+            .id("2")
+            .value(Bundle.builder().id(existingOldBundleUUID2).build())
+            .build());
+        apiReturnedBundles.add(ListValue.<Bundle>builder()
+            .id("3")
+            .value(Bundle.builder().id(newBundleUUID).build())
+            .build());
+
+        when(bundlingService.createBundle(any(BundleCallback.class))).thenReturn(List.of(oldBundle1, oldBundle2));
+        when(bundlingService.buildBundleListValues(anyList())).thenReturn(apiReturnedBundles);
+        when(bundlingService.getMultiBundleConfig()).thenCallRealMethod();
+        when(bundlingService.getMultiBundleConfigs()).thenCallRealMethod();
+
+        final List<ListValue<CaseworkerCICDocument>> documents = getCaseworkerCICDocumentList("test.pdf");
+        final CicCase cicCase = CicCase.builder().build();
+        cicCase.setApplicantDocumentsUploaded(documents);
+        caseData.setCicCase(cicCase);
+
+        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
+        updatedCaseDetails.setData(caseData);
+        updatedCaseDetails.setId(TEST_CASE_ID);
+        updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
+
+        when(clock.instant()).thenReturn(instant);
+        when(clock.getZone()).thenReturn(zoneId);
+
+        final AboutToStartOrSubmitResponse<CaseData, State> response =
+            caseworkerCreateBundle.aboutToSubmit(updatedCaseDetails, beforeDetails);
+
+        final CaseData responseData = response.getData();
+
+        // Verify only the new bundle has a timestamp
+        assertThat(responseData.getCaseBundles()).hasSize(3);
+
+        // New bundle should be first (sorted by timestamp descending, nulls last)
+        assertThat(responseData.getCaseBundles().getFirst().getValue().getId()).isEqualTo(newBundleUUID);
+        assertThat(responseData.getCaseBundles().getFirst().getValue().getDateAndTime())
+            .isEqualTo(LocalDateTime.ofInstant(instant, ZoneOffset.UTC));
+
+        // Old bundles should have null timestamps (backwards compatibility - not incorrectly set to new bundle's time)
+        assertThat(responseData.getCaseBundles().get(1).getValue().getId()).isEqualTo(existingOldBundleUUID1);
+        assertThat(responseData.getCaseBundles().get(1).getValue().getDateAndTime()).isNull();
+
+        assertThat(responseData.getCaseBundles().get(2).getValue().getId()).isEqualTo(existingOldBundleUUID2);
+        assertThat(responseData.getCaseBundles().get(2).getValue().getDateAndTime()).isNull();
+
+        // Only the new bundle should be recorded in bundleIdsAndTimestamps
+        assertThat(responseData.getCaseBundleIdsAndTimestamps()).hasSize(1);
+        assertThat(responseData.getCaseBundleIdsAndTimestamps().getFirst().getValue().getBundleId())
+            .isEqualTo(newBundleUUID);
+    }
+
+    @Test
+    void shouldHandleNullBundleIdsAndTimestampsGracefully() {
+        final CaseData caseData = caseData();
+
+        String newBundleUUID = UUID.randomUUID().toString();
+
+        caseData.setCaseBundleIdsAndTimestamps(null);
+
+        List<ListValue<Bundle>> apiReturnedBundles = new ArrayList<>();
+        apiReturnedBundles.add(ListValue.<Bundle>builder()
+            .id("1")
+            .value(Bundle.builder().id(newBundleUUID).build())
+            .build());
+
+        when(bundlingService.createBundle(any(BundleCallback.class))).thenReturn(List.of());
+        when(bundlingService.buildBundleListValues(anyList())).thenReturn(apiReturnedBundles);
+        when(bundlingService.getMultiBundleConfig()).thenCallRealMethod();
+        when(bundlingService.getMultiBundleConfigs()).thenCallRealMethod();
+
+        final List<ListValue<CaseworkerCICDocument>> documents = getCaseworkerCICDocumentList("test.pdf");
+        final CicCase cicCase = CicCase.builder().build();
+        cicCase.setApplicantDocumentsUploaded(documents);
+        caseData.setCicCase(cicCase);
+
+        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
+        updatedCaseDetails.setData(caseData);
+        updatedCaseDetails.setId(TEST_CASE_ID);
+        updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
+
+        when(clock.instant()).thenReturn(instant);
+        when(clock.getZone()).thenReturn(zoneId);
+
+        final AboutToStartOrSubmitResponse<CaseData, State> response =
+            caseworkerCreateBundle.aboutToSubmit(updatedCaseDetails, CaseDetails.<CaseData, State>builder().build());
+
+        final CaseData responseData = response.getData();
+
+        assertThat(responseData.getCaseBundles()).hasSize(1);
+        assertThat(responseData.getCaseBundles().getFirst().getValue().getDateAndTime())
+            .isEqualTo(LocalDateTime.ofInstant(instant, ZoneOffset.UTC));
+        assertThat(responseData.getCaseBundleIdsAndTimestamps()).hasSize(1);
+    }
 }

@@ -30,9 +30,12 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import static java.util.Collections.emptyList;
 import static uk.gov.hmcts.sptribs.caseworker.util.DocumentListUtil.getAllCaseDocumentsExcludingInitialCicaUpload;
@@ -108,7 +111,8 @@ public class CaseworkerCreateBundle implements CCDConfig<CaseData, State, UserRo
         final Callback callback = new Callback(details, beforeDetails, CREATE_BUNDLE, true);
         final BundleCallback bundleCallback = new BundleCallback(callback);
 
-        caseData.setCaseBundles(getConfiguredCaseBundles(caseData, bundleCallback));
+        List<ListValue<Bundle>> existingBundles = getExistingBundles(beforeDetails);
+        caseData.setCaseBundles(getConfiguredCaseBundles(caseData, bundleCallback, existingBundles));
 
         caseData.setMultiBundleConfiguration(null);
         caseData.setCaseDocuments(null);
@@ -158,50 +162,67 @@ public class CaseworkerCreateBundle implements CCDConfig<CaseData, State, UserRo
         return abstractCaseworkerCICDocumentList;
     }
 
-    private List<ListValue<Bundle>> getConfiguredCaseBundles(CaseData caseData, BundleCallback bundleCallback) {
+    private List<ListValue<Bundle>> getExistingBundles(CaseDetails<CaseData, State> beforeDetails) {
+        if (beforeDetails == null || beforeDetails.getData() == null) {
+            return emptyList();
+        }
+        return Optional.ofNullable(beforeDetails.getData().getCaseBundles()).orElse(emptyList());
+    }
+
+    private List<ListValue<Bundle>> getConfiguredCaseBundles(CaseData caseData,
+                                                             BundleCallback bundleCallback,
+                                                             List<ListValue<Bundle>> existingBundles) {
         List<ListValue<Bundle>> caseBundles = bundlingService.buildBundleListValues(bundlingService.createBundle(bundleCallback));
 
         if (caseBundles == null) {
             return null;
         }
 
-        ArrayList<String> bundleIds = new ArrayList<>();
-
-        List<ListValue<BundleIdAndTimestamp>> bundleIdsAndTimestamps = caseData.getCaseBundleIdsAndTimestamps();
+        List<ListValue<BundleIdAndTimestamp>> bundleIdsAndTimestamps =
+            Optional.ofNullable(caseData.getCaseBundleIdsAndTimestamps()).orElse(new ArrayList<>());
 
         Map<String, LocalDateTime> bundleIdToTimestampMap = new HashMap<>();
-
-        for (ListValue<BundleIdAndTimestamp> caseBundleIDAndTimestamp : bundleIdsAndTimestamps) {
-            bundleIds.add(caseBundleIDAndTimestamp.getValue().getBundleId());
-            bundleIdToTimestampMap.put(
-                caseBundleIDAndTimestamp.getValue().getBundleId(),
-                caseBundleIDAndTimestamp.getValue().getDateAndTime()
-            );
+        for (ListValue<BundleIdAndTimestamp> item : bundleIdsAndTimestamps) {
+            if (item != null && item.getValue() != null) {
+                String bundleId = item.getValue().getBundleId();
+                if (bundleId != null && !bundleIdToTimestampMap.containsKey(bundleId)) {
+                    bundleIdToTimestampMap.put(bundleId, item.getValue().getDateAndTime());
+                }
+            }
         }
+
+        Set<String> existingBundleIds = existingBundles.stream()
+            .map(bundle -> bundle.getValue().getId())
+            .collect(Collectors.toCollection(HashSet::new));
 
         for (ListValue<Bundle> caseBundle : caseBundles) {
-            String listValueID = "1";
-            if (!bundleIdsAndTimestamps.isEmpty()) {
-                listValueID = String.valueOf(bundleIdsAndTimestamps.size() + 1);
-            }
+            String bundleId = caseBundle.getValue().getId();
 
-            if (!bundleIds.contains(caseBundle.getValue().getId())) {
+            if (bundleIdToTimestampMap.containsKey(bundleId)) {
+                // Case 1: Bundle has a known timestamp in our stored data - restore it
+                caseBundle.getValue().setDateAndTime(bundleIdToTimestampMap.get(bundleId));
+            } else if (existingBundleIds.contains(bundleId)) {
+                // Case 2: Old bundle that existed before the timestamp workaround was implemented
+                // Leave timestamp as null for backwards compatibility
+                caseBundle.getValue().setDateAndTime(null);
+            } else {
+                // Case 3: Truly new bundle - set current timestamp and record it
+                LocalDateTime now = LocalDateTime.now(clock);
+                caseBundle.getValue().setDateAndTime(now);
+
+                String listValueId = String.valueOf(bundleIdsAndTimestamps.size() + 1);
                 BundleIdAndTimestamp bundleIdAndTimestamp = BundleIdAndTimestamp.builder()
-                    .bundleId(caseBundle.getValue().getId())
-                    .dateAndTime(LocalDateTime.now(clock))
+                    .bundleId(bundleId)
+                    .dateAndTime(now)
                     .build();
                 bundleIdsAndTimestamps.add(ListValue.<BundleIdAndTimestamp>builder()
-                    .id(listValueID)
+                    .id(listValueId)
                     .value(bundleIdAndTimestamp)
                     .build());
-                caseData.setCaseBundleIdsAndTimestamps(bundleIdsAndTimestamps);
-                caseBundle.getValue().setDateAndTime(bundleIdAndTimestamp.getDateAndTime());
-            } else {
-                caseBundle.getValue().setDateAndTime(
-                    bundleIdToTimestampMap.get(caseBundle.getValue().getId())
-                );
             }
         }
+
+        caseData.setCaseBundleIdsAndTimestamps(bundleIdsAndTimestamps);
 
         if (caseBundles.size() > 1) {
             caseBundles.sort(

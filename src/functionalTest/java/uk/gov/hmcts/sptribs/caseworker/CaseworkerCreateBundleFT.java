@@ -5,7 +5,11 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import uk.gov.hmcts.sptribs.testutil.FunctionalTestSuite;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
 import static net.javacrumbs.jsonunit.assertj.JsonAssertions.json;
@@ -34,5 +38,47 @@ public class CaseworkerCreateBundleFT extends FunctionalTestSuite {
         assertThatJson(response.asString())
             .when(IGNORING_EXTRA_FIELDS)
             .isEqualTo(json(expectedResponse(RESPONSE)));
+    }
+
+    @Test
+    public void shouldNotSetTimestampForOldBundlesWithoutTimestampEntryWhenCreatingNewBundle() throws Exception {
+
+        String existingOldBundleUUID = UUID.randomUUID().toString();
+
+        final Map<String, Object> caseDataBefore = caseData(REQUEST);
+        Map<String, Object> existingBundle = new HashMap<>();
+        existingBundle.put("id", "1");
+        Map<String, Object> bundleValue = new HashMap<>();
+        bundleValue.put("id", existingOldBundleUUID);
+        existingBundle.put("value", bundleValue);
+
+        List<Map<String, Object>> existingBundles = new ArrayList<>();
+        existingBundles.add(existingBundle);
+        caseDataBefore.put("caseBundles", existingBundles);
+
+        final Map<String, Object> caseData = caseData(REQUEST);
+        caseData.put("caseBundleIdsAndTimestamps", new ArrayList<>());
+
+        final Response response = triggerCallback(caseData, caseDataBefore, CREATE_BUNDLE, ABOUT_TO_SUBMIT_URL);
+
+        assertThat(response.getStatusCode()).isEqualTo(OK.value());
+        assertThatJson(response.asString())
+            .when(IGNORING_EXTRA_FIELDS)
+            .inPath("$.errors")
+            .isAbsent();
+    }
+
+    @Test
+    public void shouldHandleNullBundleIdsAndTimestampsGracefully() throws Exception {
+        final Map<String, Object> caseData = caseData(REQUEST);
+        caseData.remove("caseBundleIdsAndTimestamps");
+
+        final Response response = triggerCallback(caseData, CREATE_BUNDLE, ABOUT_TO_SUBMIT_URL);
+
+        assertThat(response.getStatusCode()).isEqualTo(OK.value());
+        assertThatJson(response.asString())
+            .when(IGNORING_EXTRA_FIELDS)
+            .inPath("$.errors")
+            .isAbsent();
     }
 }
