@@ -3,7 +3,6 @@ package uk.gov.hmcts.sptribs.caseworker.event.page;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.Strings;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
@@ -12,6 +11,7 @@ import uk.gov.hmcts.ccd.sdk.type.DynamicListElement;
 import uk.gov.hmcts.ccd.sdk.type.DynamicMultiSelectList;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.sptribs.caseworker.model.ContactPartiesDocuments;
+import uk.gov.hmcts.sptribs.caseworker.util.DocumentListUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
@@ -21,9 +21,7 @@ import uk.gov.hmcts.sptribs.services.cdam.CaseDocumentClientApi;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Component
 @Slf4j
@@ -72,7 +70,7 @@ public class ContactPartiesSelectDocument implements CcdPageConfiguration {
     }
 
     private void validateDocumentFileSizes(List<DynamicListElement> userSelection, List<String> errors) {
-        var docIds = extractDocumentIds(userSelection);
+        var docIds = DocumentListUtil.extractDocumentIds(userSelection);
 
         var systemUserAuth = idamService.retrieveSystemUpdateUserDetails().getAuthToken();
         var serviceAuth = authTokenGenerator.generate();
@@ -100,29 +98,6 @@ public class ContactPartiesSelectDocument implements CcdPageConfiguration {
         }
     }
 
-
-    private Optional<String> extractDocumentId(DynamicListElement element) {
-        if (element == null || element.getLabel() == null) {
-            return Optional.empty();
-        }
-
-        String label = element.getLabel();
-        int open = label.lastIndexOf('(');
-        int close = label.lastIndexOf(')');
-
-        if (open < 0 || close <= open) {
-            return Optional.empty();
-        }
-
-        String url = label.substring(open + 1, close).trim();
-        if (Strings.CS.endsWith(url, "/binary")) {
-            url = StringUtils.substringBeforeLast(url, "/");
-        }
-
-        String documentId = StringUtils.substringAfterLast(url, "/");
-        return StringUtils.isEmpty(documentId) ? Optional.empty() : Optional.of(documentId);
-    }
-
     private String extractDocumentDisplayName(String label) {
         if (StringUtils.isBlank(label)) {
             return label;
@@ -138,13 +113,4 @@ public class ContactPartiesSelectDocument implements CcdPageConfiguration {
         return label;
     }
 
-    private List<String> extractDocumentIds(List<DynamicListElement> elements) {
-        if (elements == null || elements.isEmpty()) {
-            return List.of();
-        }
-        return elements.stream()
-            .map(this::extractDocumentId)
-            .flatMap(Optional::stream)
-            .collect(Collectors.toList());
-    }
 }
