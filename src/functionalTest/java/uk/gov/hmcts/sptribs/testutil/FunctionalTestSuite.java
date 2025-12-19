@@ -232,6 +232,34 @@ public abstract class FunctionalTestSuite {
         return triggerCallback(request, url);
     }
 
+    protected Response triggerCallback(Map<String, Object> caseData, Map<String, Object> caseDataBefore,
+                                        String eventId, String url) throws IOException {
+        CallbackRequest request = CallbackRequest
+            .builder()
+            .eventId(eventId)
+            .caseDetailsBefore(
+                CaseDetails
+                    .builder()
+                    .id(1234567890123456L)
+                    .data(caseDataBefore)
+                    .createdDate(LOCAL_DATE_TIME)
+                    .caseTypeId(CcdServiceCode.ST_CIC.getCaseType().getCaseTypeName())
+                    .build()
+            )
+            .caseDetails(
+                CaseDetails
+                    .builder()
+                    .id(1234567890123456L)
+                    .data(caseData)
+                    .createdDate(LOCAL_DATE_TIME)
+                    .caseTypeId(CcdServiceCode.ST_CIC.getCaseType().getCaseTypeName())
+                    .build()
+            )
+            .build();
+
+        return triggerCallback(request, url);
+    }
+
     protected Response triggerCallback(CallbackRequest request, String url) {
         return RestAssured
             .given()
