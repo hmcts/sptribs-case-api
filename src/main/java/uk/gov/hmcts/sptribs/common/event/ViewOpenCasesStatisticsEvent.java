@@ -1,7 +1,7 @@
 package uk.gov.hmcts.sptribs.common.event;
 
-import lombok.SneakyThrows;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import org.postgresql.PGConnection;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
