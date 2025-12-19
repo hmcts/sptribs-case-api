@@ -148,25 +148,7 @@ public class NotificationServiceCICTest {
 
         when(pdfServiceClient.generateFromHtml(any(), any())).thenReturn(sample);
 
-        final Document.DocumentLink documentLink = new Document.DocumentLink();
-        documentLink.href = "dmstore-url/doc-id";
-        final Document.DocumentLink binaryDocumentLink = new Document.DocumentLink();
-        binaryDocumentLink.href = "dmstore-url/doc-id/binary";
-        final Document.Links links = new Document.Links();
-        links.self = documentLink;
-        links.binary = binaryDocumentLink;
-
-        final Document correspondencePDF = new Document();
-        correspondencePDF.setLinks(links);
-
-        final LocalDateTime testSentOn = LocalDateTime.now();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-y-HH-mm");
-        String filename = APPLICATION_RECEIVED.name() + "_" + TEST_CASE_ID + "_" + testSentOn.format(formatter) + ".pdf";
-        correspondencePDF.setOriginalDocumentName(filename);
-
-        UploadResponse expectedResponse = new UploadResponse();
-        expectedResponse.setDocuments(singletonList(correspondencePDF));
-
+        UploadResponse expectedResponse = uploadResponseWithSampleDocument();
         when(caseDocumentClientAPI.uploadDocuments(any(), any(), any())).thenReturn(expectedResponse);
 
         //When
@@ -223,25 +205,7 @@ public class NotificationServiceCICTest {
 
         when(pdfServiceClient.generateFromHtml(any(), any())).thenReturn(sample);
 
-        final Document.DocumentLink documentLink = new Document.DocumentLink();
-        documentLink.href = "dmstore-url/doc-id";
-        final Document.DocumentLink binaryDocumentLink = new Document.DocumentLink();
-        binaryDocumentLink.href = "dmstore-url/doc-id/binary";
-        final Document.Links links = new Document.Links();
-        links.self = documentLink;
-        links.binary = binaryDocumentLink;
-
-        final Document correspondencePDF = new Document();
-        correspondencePDF.setLinks(links);
-
-        final LocalDateTime testSentOn = LocalDateTime.now();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-y-HH-mm");
-        String filename = APPLICATION_RECEIVED.name() + "_" + TEST_CASE_ID + "_" + testSentOn.format(formatter) + ".pdf";
-        correspondencePDF.setOriginalDocumentName(filename);
-
-        UploadResponse expectedResponse = new UploadResponse();
-        expectedResponse.setDocuments(singletonList(correspondencePDF));
-
+        UploadResponse expectedResponse = uploadResponseWithSampleDocument();
         when(caseDocumentClientAPI.uploadDocuments(any(), any(), any())).thenReturn(expectedResponse);
 
         //When
@@ -365,25 +329,7 @@ public class NotificationServiceCICTest {
 
         when(pdfServiceClient.generateFromHtml(any(), any())).thenReturn(sample);
 
-        final Document.DocumentLink documentLink = new Document.DocumentLink();
-        documentLink.href = "dmstore-url/doc-id";
-        final Document.DocumentLink binaryDocumentLink = new Document.DocumentLink();
-        binaryDocumentLink.href = "dmstore-url/doc-id/binary";
-        final Document.Links links = new Document.Links();
-        links.self = documentLink;
-        links.binary = binaryDocumentLink;
-
-        final Document correspondencePDF = new Document();
-        correspondencePDF.setLinks(links);
-
-        final LocalDateTime testSentOn = LocalDateTime.now();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-y-HH-mm");
-        String filename = CASE_ISSUED_CITIZEN_POST.name() + "_" + TEST_CASE_ID + "_" + testSentOn.format(formatter) + ".pdf";
-        correspondencePDF.setOriginalDocumentName(filename);
-
-        UploadResponse expectedResponse = new UploadResponse();
-        expectedResponse.setDocuments(singletonList(correspondencePDF));
-
+        UploadResponse expectedResponse = uploadResponseWithSampleDocument();
         when(caseDocumentClientAPI.uploadDocuments(any(), any(), any())).thenReturn(expectedResponse);
 
         //When
@@ -852,24 +798,7 @@ public class NotificationServiceCICTest {
         final ResponseEntity<byte[]> sample = ResponseEntity.ok(new byte[1]);
         when(caseDocumentClientAPI.getDocumentBinary(anyString(), anyString(), any(UUID.class))).thenReturn(sample);
 
-        final Document.DocumentLink documentLink = new Document.DocumentLink();
-        documentLink.href = "dmstore-url/doc-id";
-        final Document.DocumentLink binaryDocumentLink = new Document.DocumentLink();
-        binaryDocumentLink.href = "dmstore-url/doc-id/binary";
-        final Document.Links links = new Document.Links();
-        links.self = documentLink;
-        links.binary = binaryDocumentLink;
-
-        final Document correspondencePDF = new Document();
-        correspondencePDF.setLinks(links);
-
-        final LocalDateTime testSentOn = LocalDateTime.now();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-y-HH-mm");
-        String filename = APPLICATION_RECEIVED.name() + "_" + TEST_CASE_ID + "_" + testSentOn.format(formatter) + ".pdf";
-        correspondencePDF.setOriginalDocumentName(filename);
-
-        UploadResponse expectedResponse = new UploadResponse();
-        expectedResponse.setDocuments(singletonList(correspondencePDF));
+        UploadResponse expectedResponse = uploadResponseWithSampleDocument();
 
         when(caseDocumentClientAPI.uploadDocuments(any(), any(), any())).thenReturn(expectedResponse);
 
@@ -990,7 +919,6 @@ public class NotificationServiceCICTest {
         when(sendEmailResponse.getNotificationId()).thenReturn(UUID.randomUUID());
 
         UploadResponse expectedResponse = uploadResponseWithSampleDocument();
-
         when(caseDocumentClientAPI.uploadDocuments(any(), any(), any())).thenReturn(expectedResponse);
 
         //When
