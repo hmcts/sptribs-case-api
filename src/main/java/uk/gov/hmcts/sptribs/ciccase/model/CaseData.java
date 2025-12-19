@@ -549,6 +549,15 @@ public class CaseData {
     private String deleteFieldName;
 
     @CCD(
+        label = "Case statistics (copy/paste)",
+        hint = "Copy and paste this into Excel (tab-separated values).",
+        typeOverride = TextArea,
+        access = {SuperUserOnlyAccess.class}
+    )
+    @External
+    private String openCasesStatisticsTsv;
+
+    @CCD(
         label = "Reindex cases modified since",
         access = {SuperUserOnlyAccess.class}
     )
