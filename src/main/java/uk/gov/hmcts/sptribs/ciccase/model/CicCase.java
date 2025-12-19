@@ -15,7 +15,6 @@ import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.ccd.sdk.type.DynamicList;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
-import uk.gov.hmcts.sptribs.caseworker.model.CreateAndSendIssuingType;
 import uk.gov.hmcts.sptribs.caseworker.model.DateModel;
 import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderCIC;
 import uk.gov.hmcts.sptribs.caseworker.model.Order;
@@ -39,6 +38,7 @@ import java.util.List;
 import java.util.Set;
 
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.Collection;
+import static uk.gov.hmcts.ccd.sdk.type.FieldType.DynamicRadioList;
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.Email;
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.FixedList;
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.MultiSelectList;
@@ -122,9 +122,16 @@ public class CicCase {
 
     @CCD(
         label = "How would you like to issue an order?",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
+        typeOverride = DynamicRadioList
+    )
+    private DynamicList orderIssuingDynamicRadioList;
+
+    @CCD(
+        label = "Template",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
-    private CreateAndSendIssuingType createAndSendIssuingTypes;
+    private DynamicList templateDynamicList;
 
     @CCD(
         label = "Draft order",

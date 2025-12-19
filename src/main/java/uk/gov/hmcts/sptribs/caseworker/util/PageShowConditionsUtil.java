@@ -14,11 +14,9 @@ public final class PageShowConditionsUtil {
     private static final String EDIT_SUMMARY_SHOW_WARNING_PAGE = " hearingSummaryExists != \"YES\"";
     private static final String EDIT_SUMMARY = "currentEvent != \"edit-hearing-summary\" OR  hearingSummaryExists = \"YES\"";
 
+    private static final String ORDER_TYPE_NEW = "cicCaseOrderIssuingType = \"NewOrder\"";
     private static final String ORDER_TYPE_DRAFT_CONDITION = "cicCaseOrderIssuingType = \"DraftOrder\"";
     private static final String ORDER_TYPE_UPLOAD_CONDITION = "cicCaseOrderIssuingType = \"UploadOrder\"";
-
-    private static final String CREATE_AND_SEND_NEW = "cicCaseCreateAndSendIssuingTypes = \"NewOrder\"";
-    private static final String CREATE_AND_SEND_UPLOAD = "cicCaseCreateAndSendIssuingTypes = \"UploadOrder\"";
 
     private static final String ANONYMITY_ALREADY_APPLIED = "cicCaseAnonymityAlreadyApplied!=\"Yes\"";
 
@@ -67,10 +65,10 @@ public final class PageShowConditionsUtil {
     public static Map<String, String> createAndSendOrderConditions() {
         Map<String, String> map = new HashMap<>();
         map.put("caseworkerApplyAnonymity", ANONYMITY_ALREADY_APPLIED);
-        map.put("createNewOrder", CREATE_AND_SEND_NEW);
-        map.put("editNewOrderContent", CREATE_AND_SEND_NEW);
-        map.put("draftOrderDocumentFooter", CREATE_AND_SEND_NEW);
-        map.put("caseworkerSendUploadOrder", CREATE_AND_SEND_UPLOAD);
+        map.put("createNewOrder", ORDER_TYPE_NEW);
+        map.put("editNewOrderContent", ORDER_TYPE_NEW);
+        map.put("draftOrderDocumentFooter", ORDER_TYPE_NEW);
+        map.put("caseworkerSendUploadOrder", ORDER_TYPE_UPLOAD_CONDITION);
         return map;
     }
 }

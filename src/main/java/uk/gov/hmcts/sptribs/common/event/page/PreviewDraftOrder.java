@@ -17,8 +17,8 @@ import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_EDI
 @Slf4j
 public class PreviewDraftOrder implements CcdPageConfiguration {
 
-    public static final String SHOW_CHANGE_DRAFT = "cicCaseCreateAndSendIssuingTypes=\"\" OR cicCaseCreateAndSendIssuingTypes=\"NewOrder\"";
-    public static final String SHOW_CHANGE_UPLOAD = "cicCaseCreateAndSendIssuingTypes=\"UploadOrder\"";
+    public static final String SHOW_CHANGE_DRAFT = "cicCaseOrderIssuingType=\"\" OR cicCaseOrderIssuingType=\"NewOrder\"";
+    public static final String SHOW_CHANGE_UPLOAD = "cicCaseOrderIssuingType=\"UploadOrder\"";
 
     private final String pageId;
     private final String eventId;

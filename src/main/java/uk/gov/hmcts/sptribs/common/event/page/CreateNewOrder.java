@@ -3,6 +3,7 @@ package uk.gov.hmcts.sptribs.common.event.page;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderContentCIC;
+import uk.gov.hmcts.sptribs.caseworker.util.DynamicListUtil;
 import uk.gov.hmcts.sptribs.caseworker.util.EventUtil;
 import uk.gov.hmcts.sptribs.caseworker.util.PageShowConditionsUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
@@ -16,8 +17,7 @@ import static org.apache.commons.lang3.StringUtils.isEmpty;
 
 public class CreateNewOrder implements CcdPageConfiguration {
 
-    private static final String NEVER_SHOW = "orderContentOrderTemplate=\"NEVER_SHOW\"";
-    private static final String NEW_ANONYMITY = "cicCaseAnonymityAlreadyApplied=\"No\" AND cicCaseAnonymiseYesOrNo=\"Yes\"";
+    public static final String HIDDEN = "LabelCreateNewOrder=\"HIDDEN\"";
 
     @Override
     public void addTo(PageBuilder pageBuilder) {
@@ -28,10 +28,11 @@ public class CreateNewOrder implements CcdPageConfiguration {
                 .label("LabelCreateNewOrder", "")
                 .label("createDraftOrder", "Draft to be created")
                 .complex(CaseData::getDraftOrderContentCIC)
-                    .mandatory(DraftOrderContentCIC::getOrderTemplate)
+                    .readonly(DraftOrderContentCIC::getOrderTemplate, HIDDEN)
                     .done()
                 .complex(CaseData::getCicCase)
-                    .readonly(CicCase::getReferralTypeForWA, NEVER_SHOW)
+                    .mandatory(CicCase::getTemplateDynamicList)
+                    .readonly(CicCase::getReferralTypeForWA, HIDDEN)
                     .done()
                 .done();
     }
@@ -40,8 +41,18 @@ public class CreateNewOrder implements CcdPageConfiguration {
                                                                   CaseDetails<CaseData, State> detailsBefore) {
 
         final CaseData caseData = details.getData();
-        final OrderTemplate order = caseData.getDraftOrderContentCIC().getOrderTemplate();
-        caseData.getDraftOrderContentCIC().setMainContent(EventUtil.getOrderMainContent(order));
+        final CicCase cicCase = caseData.getCicCase();
+
+        if (cicCase.getTemplateDynamicList() != null) {
+            OrderTemplate selectedValue = DynamicListUtil.getEnumFromUuid(
+                cicCase.getTemplateDynamicList().getValueCode(),
+                OrderTemplate.class);
+            DraftOrderContentCIC draftOrderContentCIC = DraftOrderContentCIC.builder()
+                .orderTemplate(selectedValue)
+                .mainContent(EventUtil.getOrderMainContent(selectedValue))
+                .build();
+            caseData.setDraftOrderContentCIC(draftOrderContentCIC);
+        }
 
         if (isEmpty(caseData.getCicCase().getReferralTypeForWA())) {
             caseData.getCicCase().setReferralTypeForWA("");
