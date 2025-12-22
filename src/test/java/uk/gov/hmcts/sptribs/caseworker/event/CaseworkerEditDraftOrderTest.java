@@ -38,9 +38,9 @@ import static uk.gov.hmcts.sptribs.testutil.TestEventConstants.CASEWORKER_EDIT_D
 
 
 @ExtendWith(MockitoExtension.class)
-class CaseWorkerEditDraftOrderTest {
+class CaseworkerEditDraftOrderTest {
     @InjectMocks
-    private CaseWorkerEditDraftOrder caseWorkerEditDraftOrder;
+    private CaseworkerEditDraftOrder caseworkerEditDraftOrder;
 
     @Mock
     private OrderService orderService;
@@ -50,7 +50,7 @@ class CaseWorkerEditDraftOrderTest {
 
         final ConfigBuilderImpl<CaseData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
 
-        caseWorkerEditDraftOrder.configure(configBuilder);
+        caseworkerEditDraftOrder.configure(configBuilder);
 
         assertThat(getEventsFrom(configBuilder).values())
             .extracting(Event::getId)
@@ -69,6 +69,17 @@ class CaseWorkerEditDraftOrderTest {
                 .extracting(Event::getGrants)
                 .extracting(map -> map.get(ST_CIC_WA_CONFIG_USER))
                 .contains(Permissions.CREATE_READ_UPDATE);
+    }
+
+    @Test
+    void aboutToStartShouldSetCurrentEvent() {
+        CaseDetails<CaseData, State> caseDetails = CaseDetails.<CaseData, State>builder()
+                .data(CaseData.builder().build())
+                .build();
+        AboutToStartOrSubmitResponse<CaseData, State> response = caseworkerEditDraftOrder.aboutToStart(caseDetails);
+
+        assertThat(response).isNotNull();
+        assertThat(response.getData().getCurrentEvent()).isEqualTo(CASEWORKER_EDIT_DRAFT_ORDER);
     }
 
     @Test
@@ -100,14 +111,14 @@ class CaseWorkerEditDraftOrderTest {
 
         //When
         AboutToStartOrSubmitResponse<CaseData, State> response =
-            caseWorkerEditDraftOrder.aboutToSubmit(updatedCaseDetails, beforeDetails);
+            caseworkerEditDraftOrder.aboutToSubmit(updatedCaseDetails, beforeDetails);
         assertThat(response).isNotNull();
         DraftOrderCIC updatedDraftOrder = response.getData()
-            .getCicCase().getDraftOrderCICList().get(0).getValue();
+            .getCicCase().getDraftOrderCICList().getFirst().getValue();
         assertThat(updatedDraftOrder.getDraftOrderContentCIC().getOrderTemplate()).isEqualTo(OrderTemplate.CIC6_GENERAL_DIRECTIONS);
         assertThat(updatedDraftOrder.getTemplateGeneratedDocument()).isNotNull();
 
-        SubmittedCallbackResponse draftCreatedResponse = caseWorkerEditDraftOrder.submitted(updatedCaseDetails, beforeDetails);
+        SubmittedCallbackResponse draftCreatedResponse = caseworkerEditDraftOrder.submitted(updatedCaseDetails, beforeDetails);
         //  Then
         assertThat(draftCreatedResponse).isNotNull();
     }

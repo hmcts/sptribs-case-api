@@ -56,7 +56,7 @@ public abstract class FunctionalTestSuite {
     private static final Logger log = LoggerFactory.getLogger(FunctionalTestSuite.class);
 
     protected static final ClassPathResource DRAFT_ORDER_FILE =
-            new ClassPathResource("files/DRAFT :Order--[Subject Name]--26-04-2024 10:09:12.pdf");
+        new ClassPathResource("files/DRAFT :Order--[Subject Name]--26-04-2024 10:09:12.pdf");
 
     @Value("${test-url}")
     protected String testUrl;
@@ -309,38 +309,38 @@ public abstract class FunctionalTestSuite {
         AppsConfig.AppsDetails details = AppsUtil.getExactAppsDetails(appsConfig, caseData.getDssCaseData());
 
         final StartEventResponse startEventResponse = coreCaseDataApi.startEventForCitizen(
-                citizenToken,
-                serviceAuthenticationGenerator.generate(),
-                userId,
-                details.getJurisdiction(),
-                details.getCaseType(),
-                String.valueOf(caseId),
-                eventId
+            citizenToken,
+            serviceAuthenticationGenerator.generate(),
+            userId,
+            details.getJurisdiction(),
+            details.getCaseType(),
+            String.valueOf(caseId),
+            eventId
         );
         final String eventToken = startEventResponse.getToken();
 
         final CaseDataContent caseDataContent = CaseDataContent.builder()
-                .data(convertDssCaseDataToRequest(caseData.getDssCaseData()))
-                .event(Event.builder().id(eventId).build())
-                .eventToken(eventToken)
-                .build();
+            .data(convertDssCaseDataToRequest(caseData.getDssCaseData()))
+            .event(Event.builder().id(eventId).build())
+            .eventToken(eventToken)
+            .build();
 
         return coreCaseDataApi.submitEventForCitizen(
-                citizenToken,
-                serviceAuthenticationGenerator.generate(),
-                userId,
-                details.getJurisdiction(),
-                details.getCaseType(),
-                String.valueOf(caseId),
-                true,
-                caseDataContent
+            citizenToken,
+            serviceAuthenticationGenerator.generate(),
+            userId,
+            details.getJurisdiction(),
+            details.getCaseType(),
+            String.valueOf(caseId),
+            true,
+            caseDataContent
         );
     }
 
     protected CaseData getCaseDataWithDssData() {
         return CaseData.builder()
-                .dssCaseData(getDssCaseData())
-                .build();
+            .dssCaseData(getDssCaseData())
+            .build();
     }
 
     protected DssCaseData getDssCaseData() {
@@ -413,7 +413,7 @@ public abstract class FunctionalTestSuite {
 
         try {
             ResponseEntity<Document> documentResponse =
-                    caseDocumentClientApi.getDocument(userToken, serviceToken, UUID.fromString(documentId));
+                caseDocumentClientApi.getDocument(userToken, serviceToken, UUID.fromString(documentId));
             return documentResponse.getStatusCode().is2xxSuccessful();
         } catch (FeignException.NotFound exception) {
             log.info("Document {} not found", documentId);
@@ -432,7 +432,7 @@ public abstract class FunctionalTestSuite {
             final String jurisdiction = appsConfig.getApps().getFirst().getJurisdiction();
             try {
                 final InMemoryMultipartFile inMemoryMultipartFile =
-                        new InMemoryMultipartFile(resource.getFilename(), resource.getContentAsByteArray());
+                    new InMemoryMultipartFile(resource.getFilename(), resource.getContentAsByteArray());
 
                 final DocumentUploadRequest documentUploadRequest =
                     new DocumentUploadRequest(Classification.RESTRICTED.toString(),
