@@ -10,7 +10,6 @@
     "cicCaseSelectedDocument": {},
     "closedDayCount": "",
     "contactParties": {},
-    "currentEvent": "caseworker-send-order",
     "dataVersion": 0,
     "editCicaCaseDetails": {},
     "firstHearingDate": "",
@@ -18,6 +17,19 @@
     "hyphenatedCaseRef": "1714-0484-2347-8720",
     "newCaseworkerCICDocument": [],
     "newCaseworkerCICDocumentUpload": [],
-    "stayIsCaseStayed": "No"
+    "stayIsCaseStayed": "No",
+    "cicCaseOrderIssuingDynamicRadioList": {
+      "value": {},
+      "list_items": [
+        {
+          "code": "${json-unit.any-string}",
+          "label": "Issue and send an existing draft"
+        },
+        {
+          "code": "${json-unit.any-string}",
+          "label": "Upload a new order from your computer"
+        }
+      ]
+    }
   }
 }
