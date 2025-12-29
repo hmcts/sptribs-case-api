@@ -47,17 +47,17 @@ public final class DynamicListUtil {
                                                                                T selectedOption) {
         List<DynamicListElement> listItems = availableOptions.stream()
             .map(enumItem -> DynamicListElement.builder()
-                .code(UUID.nameUUIDFromBytes(enumItem.name().getBytes()))              // Store the Enum.name() (e.g., "OPTION_A")
-                .label(labelFetcher.apply(enumItem)) // Get the human label
+                .code(UUID.nameUUIDFromBytes(enumItem.name().getBytes()))
+                .label(labelFetcher.apply(enumItem))
                 .build())
             .toList();
 
         DynamicListElement selectedElement = (selectedOption != null)
             ? DynamicListElement.builder()
-                .code(UUID.nameUUIDFromBytes(selectedOption.name().getBytes()))              // Store the Enum.name() (e.g., "OPTION_A")
+                .code(UUID.nameUUIDFromBytes(selectedOption.name().getBytes()))
                 .label(labelFetcher.apply(selectedOption))
                 .build()
-            : DynamicListElement.builder().build(); // Empty/Null selection
+            : DynamicListElement.builder().build();
 
         return DynamicList.builder()
             .listItems(listItems)
