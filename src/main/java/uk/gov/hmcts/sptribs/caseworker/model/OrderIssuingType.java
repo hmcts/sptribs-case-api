@@ -9,6 +9,9 @@ import uk.gov.hmcts.ccd.sdk.api.HasLabel;
 @Getter
 public enum OrderIssuingType implements HasLabel {
 
+    @JsonProperty("NewOrder")
+    CREATE_AND_SEND_NEW_ORDER("NewOrder", "Create and send a new order"),
+
     @JsonProperty("DraftOrder")
     ISSUE_AND_SEND_AN_EXISTING_DRAFT("DraftOrder", "Issue and send an existing draft"),
 

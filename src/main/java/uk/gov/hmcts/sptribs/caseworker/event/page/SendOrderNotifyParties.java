@@ -13,7 +13,7 @@ import java.util.List;
 
 public class SendOrderNotifyParties implements CcdPageConfiguration {
 
-    private static final String ALWAYS_HIDE = "cicCaseOrderIssuingType=\"NEVER_SHOW\"";
+    private static final String ALWAYS_HIDE = "cicCaseCaseWorkerSendOrderMessage=\"NEVER_SHOW\"";
     private static final String RECIPIENT_LABEL = "Order information recipient";
 
     @Override

@@ -111,10 +111,9 @@
   "hearingSummaryExists": "YES",
   "hearingList": [],
   "hyphenatedCaseRef": "1699-9545-8542-9659",
-  "currentEvent": "create-and-send-order",
   "cicCaseAnonymiseYesOrNo": "Yes",
   "cicCaseAnonymisedAppellantName": "AAC",
-  "cicCaseCreateAndSendIssuingTypes": "UploadOrder",
+  "cicCaseOrderIssuingType": "UploadOrder",
   "cicCaseOrderFile": [
     {
       "id": "1",
