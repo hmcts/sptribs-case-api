@@ -52,6 +52,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.access.DSSUpdateAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.DefaultAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.GlobalSearchAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.NonRespondentAccess;
+import uk.gov.hmcts.sptribs.ciccase.model.access.SuperUserOnlyAccess;
 import uk.gov.hmcts.sptribs.document.bundling.model.Bundle;
 import uk.gov.hmcts.sptribs.document.bundling.model.BundleIdAndTimestamp;
 import uk.gov.hmcts.sptribs.document.bundling.model.MultiBundleConfig;
@@ -533,6 +534,34 @@ public class CaseData {
     @CCD(access = {DefaultAccess.class})
     @JsonUnwrapped
     private RetiredFields retiredFields;
+
+    @CCD(
+        label = "Do you want to delete a field from case data?",
+        access = {SuperUserOnlyAccess.class}
+    )
+    private YesNo deleteField;
+
+    @CCD(
+        label = "Enter the name of the field to delete",
+        hint = "Enter the exact field name as it appears in the case data (e.g., 'hyphenatedCaseRef', 'cicCaseFullName')",
+        access = {SuperUserOnlyAccess.class}
+    )
+    private String deleteFieldName;
+
+    @CCD(
+        label = "Reindex cases modified since",
+        access = {SuperUserOnlyAccess.class}
+    )
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    @External
+    private LocalDate reindexCasesModifiedSince;
+
+    @CCD(
+        label = "Matching cases count",
+        access = {SuperUserOnlyAccess.class}
+    )
+    @External
+    private Long reindexCasesMatchingCount;
 
     public String getFirstHearingDate() {
 
