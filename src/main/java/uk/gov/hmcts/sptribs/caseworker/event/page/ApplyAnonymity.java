@@ -12,6 +12,7 @@ import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.common.service.AnonymisationService;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,15 +27,16 @@ public class ApplyAnonymity implements CcdPageConfiguration {
     @Override
     public void addTo(PageBuilder pageBuilder) {
         pageBuilder.page("caseworkerApplyAnonymity", this::midEvent)
-                .pageLabel("Anonymity")
-                .label("LabelCaseworkerApplyAnonymity", "")
-                .complex(CaseData::getCicCase)
-                    .readonly(CicCase::getFullName, "LabelCaseworkerApplyAnonymity!=\"\"")
-                    .readonly(CicCase::getAnonymisedAppellantName, "LabelCaseworkerApplyAnonymity!=\"\"")
-                    .mandatory(CicCase::getAnonymiseYesOrNo)
-                    .done()
-                .readonly(CaseData::getCurrentEvent, "LabelCaseworkerApplyAnonymity=\"HIDDEN\"")
-                .done();
+            .pageLabel("Anonymity")
+            .label("LabelCaseworkerApplyAnonymity", "")
+            .complex(CaseData::getCicCase)
+                .readonly(CicCase::getFullName, "LabelCaseworkerApplyAnonymity!=\"\"")
+                .readonly(CicCase::getAnonymisedAppellantName, "LabelCaseworkerApplyAnonymity!=\"\"")
+                .readonly(CicCase::getAnonymisationDate, "LabelCaseworkerApplyAnonymity!=\"\"")
+                .mandatory(CicCase::getAnonymiseYesOrNo)
+                .done()
+            .readonly(CaseData::getCurrentEvent, "LabelCaseworkerApplyAnonymity=\"HIDDEN\"")
+            .done();
     }
 
     public AboutToStartOrSubmitResponse<CaseData, State> midEvent(CaseDetails<CaseData, State> caseDetails,
@@ -49,13 +51,13 @@ public class ApplyAnonymity implements CcdPageConfiguration {
                 errors.add(FAILED_TO_ANONYMISE_CASE);
             }
             cicCase.setAnonymisedAppellantName(anonymisedName);
-
+            cicCase.setAnonymisationDate(LocalDate.now());
         }
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
-                .data(caseData)
-                .errors(errors)
-                .build();
+            .data(caseData)
+            .errors(errors)
+            .build();
     }
 }
 

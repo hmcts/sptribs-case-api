@@ -61,6 +61,7 @@ public final class CaseFieldsConstants {
     public static final String ANONYMITY_DETAILS = "anonymityDetails";
     public static final String ANONYMISE_YES_OR_NO = "cicCaseAnonymiseYesOrNo";
     public static final String ANONYMISED_APPELLANT_NAME = "cicCaseAnonymisedAppellantName";
+    public static final String ANONYMISATION_DATE = "cicCaseAnonymisationDate";
 
     //Conditions
     public static final String COND_REPRESENTATIVE_NOT_EMPTY = "cicCaseRepresentativeFullName!=\"\"";
