@@ -23,7 +23,7 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class CaseworkerUpdateAnonymity implements CCDConfig<CaseData, State, UserRole>{
+public class CaseworkerUpdateAnonymity implements CCDConfig<CaseData, State, UserRole> {
 
     private final ApplyAnonymity applyAnonymity;
 
