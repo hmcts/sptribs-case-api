@@ -63,11 +63,15 @@ public final class ConfigBuilderHelper {
             .categoryLabel("General evidence (TG)")
             .displayOrder(9)
             .build();
-
         configBuilder.categories(UserRole.SUPER_USER)
             .categoryID("DSS")
             .categoryLabel("Citizen generated case (DSS)")
             .displayOrder(10)
+            .build();
+        configBuilder.categories(UserRole.SUPER_USER)
+            .categoryID("CD")
+            .categoryLabel("Correspondence documents (CD)")
+            .displayOrder(11)
             .build();
     }
 

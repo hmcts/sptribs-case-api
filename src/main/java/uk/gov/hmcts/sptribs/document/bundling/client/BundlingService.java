@@ -19,6 +19,8 @@ import uk.gov.hmcts.sptribs.document.bundling.model.Callback;
 import uk.gov.hmcts.sptribs.document.bundling.model.MultiBundleConfig;
 import uk.gov.hmcts.sptribs.document.model.PageNumberFormat;
 
+import java.time.Clock;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -61,6 +63,9 @@ public class BundlingService {
 
     @Autowired
     private BundlingClient bundlingClient;
+
+    @Autowired
+    private Clock clock;
 
     public List<Bundle> createBundle(Callback callback) {
         BundleResponse response;
@@ -192,6 +197,7 @@ public class BundlingService {
             .stitchStatus(NEW)
             .description(MapUtils.getString(objectLinkedHashMap, DESCRIPTION, ""))
             .id(MapUtils.getString(objectLinkedHashMap, ID, ""))
+            .dateAndTime(LocalDateTime.now(clock))
             .title(MapUtils.getString(objectLinkedHashMap, TITLE, ""))
             .stitchedDocument(getStitchedDocument(objectLinkedHashMap))
             .paginationStyle(BundlePaginationStyle.valueOf(
