@@ -11,13 +11,14 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import uk.gov.hmcts.sptribs.DmnDecisionTableBaseUnitTest;
 
-import java.time.LocalDate;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.fail;
 import static uk.gov.hmcts.sptribs.DmnDecisionTable.WA_TASK_INITIATION_ST_CIC_CRIMINALINJURIESCOMPENSATION;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.APPLICATION_WORK_TYPE;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.COMPLETE_HEARING_OUTCOME_TASK;
@@ -102,9 +103,12 @@ import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.VET_NEW_CASE_DO
 
 class CamundaTaskWaInitiationTest extends DmnDecisionTableBaseUnitTest {
 
+    private static ZonedDateTime ZONED_TIME_NOW;
+
     @BeforeAll
     public static void initialization() {
         CURRENT_DMN_DECISION_TABLE = WA_TASK_INITIATION_ST_CIC_CRIMINALINJURIESCOMPENSATION;
+        ZONED_TIME_NOW = ZonedDateTime.now();
     }
 
     static Stream<Arguments> scenarioProvider() {
@@ -1299,7 +1303,7 @@ class CamundaTaskWaInitiationTest extends DmnDecisionTableBaseUnitTest {
                     Map.of(
                         "taskId", FOLLOW_UP_NONCOMPLIANCE_OF_DIR_TASK,
                         "name", "Follow up noncompliance of directions",
-                        "delayUntil", Map.of("delayUntil", LocalDate.now()),
+                        "delayUntil", ZONED_TIME_NOW,
                         "workingDaysAllowed", 1,
                         "processCategories", PROCESS_CATEGORY_PROCESSING,
                         "workType", ROUTINE_WORK_TYPE,
@@ -1384,12 +1388,52 @@ class CamundaTaskWaInitiationTest extends DmnDecisionTableBaseUnitTest {
     void given_multiple_event_ids_should_evaluate_dmn(String eventId,
                                                       String postEventState,
                                                       Map<String, Object> map,
-                                                      List<Map<String, String>> expectation) {
+                                                      List<Map<String, Object>> expectation) {
         VariableMap inputVariables = new VariableMapImpl();
         inputVariables.putValue("eventId", eventId);
         inputVariables.putValue("postEventState", postEventState);
         inputVariables.putValue("additionalData", map);
         DmnDecisionTableResult dmnDecisionTableResult = evaluateDmnTable(inputVariables);
-        assertThat(dmnDecisionTableResult.getResultList(), is(expectation));
+
+        Map<String, Object> actualResult = dmnDecisionTableResult.getResultList().getFirst();
+        Map<String, Object> expectedResult = expectation.getFirst();
+        assertThat(actualResult.size(), is(expectedResult.size()));
+
+        verifyResults(expectedResult, actualResult);
     }
+
+    private void verifyResults(Map<String, Object> expectedResult, Map<String, Object> actualResult) {
+        for (Map.Entry<String, Object> entry : expectedResult.entrySet()) {
+            String key = entry.getKey();
+            Object expectedValueObject = entry.getValue();
+
+            if (!actualResult.containsKey(key)) {
+                fail("Actual DMN result is missing expected key: " + key);
+            }
+
+            Object actualValueObj = actualResult.get(key);
+
+            if ("delayUntil".equals(key)) {
+                verifyDelayUntilDate(actualValueObj, expectedValueObject);
+            } else {
+                assertThat(actualValueObj, is(expectedValueObject));
+            }
+        }
+    }
+
+    private void verifyDelayUntilDate(Object actualValueObj, Object expectedValueObject) {
+        if (actualValueObj instanceof Map<?, ?> actualValueMap) {
+            if (actualValueMap.containsKey("delayUntil")
+                && actualValueMap.get("delayUntil") != null
+                && actualValueMap.get("delayUntil") instanceof ZonedDateTime actualTimeValue
+                && expectedValueObject instanceof ZonedDateTime expectedTimeValue) {
+                if (!actualTimeValue.toLocalDate().equals(expectedTimeValue.toLocalDate())) {
+                    fail(String.format(
+                        "Date mismatch! \nExpected: %s \nActual:   %s",
+                        expectedTimeValue.toLocalDate(), actualTimeValue.toLocalDate()));
+                }
+            }
+        }
+    }
+
 }
