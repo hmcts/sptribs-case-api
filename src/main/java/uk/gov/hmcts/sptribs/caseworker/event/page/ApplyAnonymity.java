@@ -16,6 +16,7 @@ import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.common.service.AnonymisationService;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
@@ -40,6 +41,7 @@ public class ApplyAnonymity implements CcdPageConfiguration {
                     .readonly(CicCase::getFullName, ALWAYS_HIDE)
                     .readonly(CicCase::getAnonymisedAppellantName, ALWAYS_HIDE)
                     .readonly(CicCase::getAnonymityAlreadyApplied, ALWAYS_HIDE)
+                    .readonly(CicCase::getAnonymisationDate, ALWAYS_HIDE)
                     .mandatory(CicCase::getAnonymiseYesOrNo)
                     .done()
                 .done();
@@ -57,6 +59,7 @@ public class ApplyAnonymity implements CcdPageConfiguration {
                 errors.add(FAILED_TO_ANONYMISE_CASE);
             }
             cicCase.setAnonymisedAppellantName(anonymisedName);
+            cicCase.setAnonymisationDate(LocalDate.now());
         }
 
         if (YesOrNo.NO.equals(cicCase.getAnonymityAlreadyApplied()) && YesOrNo.YES.equals(cicCase.getAnonymiseYesOrNo())) {
@@ -91,9 +94,9 @@ public class ApplyAnonymity implements CcdPageConfiguration {
         }
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
-                .data(caseData)
-                .errors(errors)
-                .build();
+            .data(caseData)
+            .errors(errors)
+            .build();
     }
 }
 

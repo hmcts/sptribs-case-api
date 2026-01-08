@@ -37,6 +37,7 @@ public class CreateDraftOrder implements CcdPageConfiguration {
 
         final CaseData caseData = details.getData();
         final OrderTemplate order = caseData.getDraftOrderContentCIC().getOrderTemplate();
+
         caseData.getDraftOrderContentCIC().setMainContent(EventUtil.getOrderMainContent(order));
 
         if (isEmpty(caseData.getCicCase().getReferralTypeForWA())) {

@@ -108,6 +108,13 @@ public class CicCase {
     )
     private String anonymisedAppellantName;
 
+    @CCD (
+        label = "Anonymisation Date",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private LocalDate anonymisationDate;
+
     @CCD(
         label = "Anonymised Name",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
