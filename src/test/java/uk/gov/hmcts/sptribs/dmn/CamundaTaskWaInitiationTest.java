@@ -103,12 +103,9 @@ import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.VET_NEW_CASE_DO
 
 class CamundaTaskWaInitiationTest extends DmnDecisionTableBaseUnitTest {
 
-    private static ZonedDateTime ZONED_TIME_NOW;
-
     @BeforeAll
     public static void initialization() {
         CURRENT_DMN_DECISION_TABLE = WA_TASK_INITIATION_ST_CIC_CRIMINALINJURIESCOMPENSATION;
-        ZONED_TIME_NOW = ZonedDateTime.now();
     }
 
     static Stream<Arguments> scenarioProvider() {
@@ -1303,7 +1300,7 @@ class CamundaTaskWaInitiationTest extends DmnDecisionTableBaseUnitTest {
                     Map.of(
                         "taskId", FOLLOW_UP_NONCOMPLIANCE_OF_DIR_TASK,
                         "name", "Follow up noncompliance of directions",
-                        "delayUntil", ZONED_TIME_NOW,
+                        "delayUntil", ZonedDateTime.now(),
                         "workingDaysAllowed", 1,
                         "processCategories", PROCESS_CATEGORY_PROCESSING,
                         "workType", ROUTINE_WORK_TYPE,
