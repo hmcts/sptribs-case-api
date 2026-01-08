@@ -3,7 +3,6 @@ package uk.gov.hmcts.sptribs.common.event.page;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderContentCIC;
-import uk.gov.hmcts.sptribs.caseworker.util.PageShowConditionsUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
@@ -13,14 +12,11 @@ import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 @Component
 public class DraftOrderMainContentPage implements CcdPageConfiguration {
 
-    private static final String NEVER_SHOW = "orderContentOrderTemplate=\"NEVER_SHOW\"";
-
     @Override
     public void addTo(PageBuilder pageBuilder) {
         pageBuilder
             .page("mainContent")
             .pageLabel("Edit order")
-            .pageShowConditions(PageShowConditionsUtil.createAndSendOrderConditions())
             .label("EditDraftOrderMainContent", """
                 <hr>
                 <h3>Header</h3>
@@ -40,7 +36,6 @@ public class DraftOrderMainContentPage implements CcdPageConfiguration {
                  You can preview this in the pdf document on the next screen.
                 <hr>
                 """)
-            .readonly(CaseData::getCurrentEvent, NEVER_SHOW)
             .done();
     }
 }
