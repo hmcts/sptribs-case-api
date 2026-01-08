@@ -36,6 +36,7 @@ public final class TestEventConstants {
     public static final String CHANGE_SECURITY_CLASS = "change-security-class";
     public static final String CASEWORKER_REFER_TO_JUDGE = "refer-to-judge";
     public static final String CASEWORKER_REFER_TO_LEGAL_OFFICER = "refer-to-legal-officer";
+    public static final String CASEWORKER_UPDATE_CASE_DATA = "update-case-data";
 
     public static final String CITIZEN_CIC_SUBMIT_CASE = "citizen-cic-submit-dss-application";
 
