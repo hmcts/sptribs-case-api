@@ -54,7 +54,7 @@ public class CaseworkerEditDraftOrder implements CCDConfig<CaseData, State, User
 
     private static final CcdPageConfiguration editDraftOrder = new EditDraftOrder();
 
-    private static final CcdPageConfiguration previewOrder = new PreviewDraftOrder();
+    private static final CcdPageConfiguration previewOrder = new PreviewDraftOrder("previewEditOrder", CASEWORKER_EDIT_DRAFT_ORDER);
 
     private static final CcdPageConfiguration draftOrderEditMainContentPage = new DraftOrderMainContentPage();
 
@@ -70,7 +70,6 @@ public class CaseworkerEditDraftOrder implements CCDConfig<CaseData, State, User
                 .forStates(CaseManagement, ReadyToList, AwaitingHearing, CaseStayed, CaseClosed)
                 .name("Orders: Edit draft")
                 .showSummary()
-                .aboutToStartCallback(this::aboutToStart)
                 .aboutToSubmitCallback(this::aboutToSubmit)
                 .submittedCallback(this::submitted)
                 .grant(CREATE_READ_UPDATE, SUPER_USER,
@@ -83,15 +82,6 @@ public class CaseworkerEditDraftOrder implements CCDConfig<CaseData, State, User
         draftOrderEditMainContentPage.addTo(pageBuilder);
         editDraftOrderAddDocumentFooter(pageBuilder);
         previewOrder.addTo(pageBuilder);
-    }
-
-    public AboutToStartOrSubmitResponse<CaseData, State> aboutToStart(CaseDetails<CaseData, State> caseDetails) {
-        CaseData data = caseDetails.getData();
-        data.setCurrentEvent(CASEWORKER_EDIT_DRAFT_ORDER);
-
-        return AboutToStartOrSubmitResponse.<CaseData, State>builder()
-            .data(data)
-            .build();
     }
 
     private void editDraftOrderAddDocumentFooter(PageBuilder pageBuilder) {
@@ -155,7 +145,6 @@ public class CaseworkerEditDraftOrder implements CCDConfig<CaseData, State, User
         caseData.setDraftOrderContentCIC(new DraftOrderContentCIC());
         caseData.getCicCase().getDraftOrderDynamicList().setValue(null);
         caseData.getCicCase().setOrderTemplateIssued(null);
-        caseData.setCurrentEvent("");
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)

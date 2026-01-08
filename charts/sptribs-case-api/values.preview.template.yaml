@@ -269,7 +269,7 @@ ccd:
       01_input.conf: |
         input  {
           jdbc {
-            jdbc_connection_string => "jdbc:postgresql://sptribs-preview.postgres.database.azure.com:5432/pr-${CHANGE_ID}-sptribs?sslmode=require"
+            jdbc_connection_string => "jdbc:postgresql://sptribs-preview.postgres.database.azure.com:5432/pr-${CHANGE_ID}-sptribs-case-api?sslmode=require"
             jdbc_user => "hmcts"
             jdbc_password_filepath => "/etc/logstash/secrets/PASSWORD"
             jdbc_validate_connection => true
@@ -281,7 +281,7 @@ ccd:
                 SELECT reference, case_revision
                 FROM ccd.es_queue
                 ORDER BY enqueued_at
-                LIMIT 1000
+                LIMIT 100
                 FOR UPDATE SKIP LOCKED
               ),
               deleted AS (
@@ -429,7 +429,7 @@ ccd:
                 document_type => "_doc"
                 document_id => "%{case_data_id}"
                 version => "%{case_revision}"
-                version_type => "external"
+                version_type => "external_gte"
                 timeout => 60
             }
         }

@@ -53,7 +53,7 @@ public class CaseworkerCreateAndSendOrderFT extends FunctionalTestSuite {
     private static final String CONFIRMATION_HEADER = "$.confirmation_header";
 
     @Test
-    public void shouldSetCurrentEventInAboutToStartCallback() throws Exception {
+    public void shouldSetOrderIssueTypesAndTemplatesInAboutToStartCallback() throws Exception {
         final Map<String, Object> caseData = caseData(ABOUT_TO_START_REQUEST);
 
         final Response response = triggerCallback(caseData, CASEWORKER_CREATE_AND_SEND_ORDER, ABOUT_TO_START_URL);

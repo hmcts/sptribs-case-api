@@ -41,7 +41,6 @@ import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_CRE
 import static uk.gov.hmcts.sptribs.ciccase.model.LanguagePreference.ENGLISH;
 import static uk.gov.hmcts.sptribs.ciccase.model.OrderTemplate.CIC3_RULE_27;
 import static uk.gov.hmcts.sptribs.ciccase.model.SchemeCic.Year2012;
-import static uk.gov.hmcts.sptribs.testutil.TestConstants.ABOUT_TO_START_URL;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.ABOUT_TO_SUBMIT_URL;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.AUTHORIZATION;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.CASE_DATA_CIC_ID;
@@ -94,29 +93,6 @@ public class CaseworkerCreateDraftOrderIT {
     @AfterAll
     static void tearDown() {
         IdamWireMock.stopAndReset();
-    }
-
-    @Test
-    void shouldAddCurrentEventInAboutToStart() throws Exception {
-        final CaseData caseData = caseData();
-
-        String response = mockMvc.perform(post(ABOUT_TO_START_URL)
-                .contentType(APPLICATION_JSON)
-                .header(SERVICE_AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
-                .header(AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
-                .content(objectMapper.writeValueAsString(
-                    callbackRequest(
-                        caseData,
-                        CASEWORKER_CREATE_DRAFT_ORDER)))
-                .accept(APPLICATION_JSON))
-            .andExpect(status().isOk())
-            .andReturn()
-            .getResponse()
-            .getContentAsString();
-
-        assertThatJson(response)
-                .inPath("$.data.currentEvent")
-                .isEqualTo("\"create-draft-order\"");
     }
 
     @Test
