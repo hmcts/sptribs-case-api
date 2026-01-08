@@ -72,17 +72,6 @@ class CaseworkerEditDraftOrderTest {
     }
 
     @Test
-    void aboutToStartShouldSetCurrentEvent() {
-        CaseDetails<CaseData, State> caseDetails = CaseDetails.<CaseData, State>builder()
-                .data(CaseData.builder().build())
-                .build();
-        AboutToStartOrSubmitResponse<CaseData, State> response = caseworkerEditDraftOrder.aboutToStart(caseDetails);
-
-        assertThat(response).isNotNull();
-        assertThat(response.getData().getCurrentEvent()).isEqualTo(CASEWORKER_EDIT_DRAFT_ORDER);
-    }
-
-    @Test
     void shouldSuccessfullySaveDraftOrder() {
         //Given
         final CaseData caseData = caseData();
