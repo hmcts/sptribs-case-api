@@ -10,8 +10,10 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import uk.gov.hmcts.sptribs.DmnDecisionTableBaseUnitTest;
+import uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants;
+import uk.gov.hmcts.sptribs.dmnutils.DelayUntilRequest;
 
-import java.time.ZonedDateTime;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
@@ -102,6 +104,15 @@ import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.STITCH_COLLATE_
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.VET_NEW_CASE_DOCUMENTS_TASK;
 
 class CamundaTaskWaInitiationTest extends DmnDecisionTableBaseUnitTest {
+
+    private static final DelayUntilRequest DELAY_UNTIL_REQUEST =
+        DelayUntilRequest.builder()
+            .delayUntil(LocalDate.now().toString())
+            .delayUntilNonWorkingCalendar(CamundaTaskConstants.DEFAULT_DUE_DATE_NON_WORKING_CALENDAR)
+            .delayUntilNonWorkingDaysOfWeek(CamundaTaskConstants.DEFAULT_DUE_DATE_WORKING_DAYS_OF_WEEK)
+            .delayUntilSkipNonWorkingDays(false)
+            .delayUntilMustBeWorkingDay("Next")
+            .build();
 
     @BeforeAll
     public static void initialization() {
@@ -1300,7 +1311,7 @@ class CamundaTaskWaInitiationTest extends DmnDecisionTableBaseUnitTest {
                     Map.of(
                         "taskId", FOLLOW_UP_NONCOMPLIANCE_OF_DIR_TASK,
                         "name", "Follow up noncompliance of directions",
-                        "delayUntil", ZonedDateTime.now(),
+                        "delayUntil", DELAY_UNTIL_REQUEST,
                         "workingDaysAllowed", 1,
                         "processCategories", PROCESS_CATEGORY_PROCESSING,
                         "workType", ROUTINE_WORK_TYPE,
@@ -1422,12 +1433,12 @@ class CamundaTaskWaInitiationTest extends DmnDecisionTableBaseUnitTest {
         if (actualValueObj instanceof Map<?, ?> actualValueMap) {
             if (actualValueMap.containsKey("delayUntil")
                 && actualValueMap.get("delayUntil") != null
-                && actualValueMap.get("delayUntil") instanceof ZonedDateTime actualTimeValue
-                && expectedValueObject instanceof ZonedDateTime expectedTimeValue) {
-                if (!actualTimeValue.toLocalDate().equals(expectedTimeValue.toLocalDate())) {
+                && actualValueMap.get("delayUntil") instanceof LocalDate actualTimeValue
+                && expectedValueObject instanceof DelayUntilRequest expectedTimeValue) {
+                if (!actualTimeValue.equals(LocalDate.parse(expectedTimeValue.getDelayUntil()))) {
                     fail(String.format(
                         "Date mismatch! \nExpected: %s \nActual:   %s",
-                        expectedTimeValue.toLocalDate(), actualTimeValue.toLocalDate()));
+                        expectedTimeValue.getDelayUntil(), actualTimeValue));
                 }
             }
         }

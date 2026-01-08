@@ -1934,7 +1934,9 @@
         </outputEntry>
         <outputEntry id="LiteralExpression_1mba0we">
           <text>{
-"delayUntil": if (additionalData.Data.cicCaseFirstOrderDueDate != null and additionalData.Data.cicCaseFirstOrderDueDate != "") then (date(additionalData.Data.cicCaseFirstOrderDueDate)) else now()
+"delayUntil": if (additionalData.Data.cicCaseFirstOrderDueDate != null and additionalData.Data.cicCaseFirstOrderDueDate != "") then (date(additionalData.Data.cicCaseFirstOrderDueDate) + duration("P1D")) else date(now()), "delayUntilNonWorkingCalendar":"https://www.gov.uk/bank-holidays/scotland.json, https://raw.githubusercontent.com/hmcts/sptribs-case-api/master/src/main/resources/dmn/privilege-calendar.json", "delayUntilNonWorkingDaysOfWeek": "SATURDAY,SUNDAY",
+"delayUntilSkipNonWorkingDays": false,
+"delayUntillMustBeWorkingDays": "Next"
 }</text>
         </outputEntry>
         <outputEntry id="LiteralExpression_0v6bouu">
