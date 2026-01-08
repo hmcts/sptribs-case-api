@@ -10,7 +10,6 @@
     "cicCaseSelectedDocument": {},
     "closedDayCount": "",
     "contactParties": {},
-    "currentEvent": "create-and-send-order",
     "dataVersion": 0,
     "editCicaCaseDetails": {},
     "firstHearingDate": "",
@@ -18,6 +17,52 @@
     "hyphenatedCaseRef": "1714-0484-2347-8720",
     "newCaseworkerCICDocument": [],
     "newCaseworkerCICDocumentUpload": [],
-    "stayIsCaseStayed": "No"
+    "stayIsCaseStayed": "No",
+    "cicCaseOrderIssuingDynamicRadioList": {
+      "value": {},
+      "list_items": [
+        {
+          "code": "${json-unit.any-string}",
+          "label": "Create and send a new order"
+        },
+        {
+          "code": "${json-unit.any-string}",
+          "label": "Upload a new order from your computer"
+        }
+      ]
+    },
+    "cicCaseTemplateDynamicList": {
+      "value": {},
+      "list_items": [
+        {
+          "code": "${json-unit.any-string}",
+          "label": "CIC3 - Rule 27"
+        },
+        {
+          "code": "${json-unit.any-string}",
+          "label": "CIC6 - General Directions"
+        },
+        {
+          "code": "${json-unit.any-string}",
+          "label": "CIC7 - ME Dmi Reports"
+        },
+        {
+          "code": "${json-unit.any-string}",
+          "label": "CIC8 - ME Joint Instruction"
+        },
+        {
+          "code": "${json-unit.any-string}",
+          "label": "CIC10 - Strike Out Warning"
+        },
+        {
+          "code": "${json-unit.any-string}",
+          "label": "CIC13 - Pro Forma Summons"
+        },
+        {
+          "code": "${json-unit.any-string}",
+          "label": "CIC14 – LO General Directions"
+        }
+      ]
+    }
   }
 }
