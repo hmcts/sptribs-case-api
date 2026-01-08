@@ -61,7 +61,7 @@ public class CaseworkerCreateDraftOrder implements CCDConfig<CaseData, State, Us
 
     private static final CcdPageConfiguration createDraftOrder = new CreateDraftOrder();
     private static final CcdPageConfiguration draftOrderMainContentPage = new DraftOrderMainContentPage();
-    private static final CcdPageConfiguration previewOrder = new PreviewDraftOrder();
+    private static final CcdPageConfiguration previewOrder = new PreviewDraftOrder("previewDraftOrderPage", CASEWORKER_CREATE_DRAFT_ORDER);
 
     private final OrderService orderService;
 
@@ -74,7 +74,6 @@ public class CaseworkerCreateDraftOrder implements CCDConfig<CaseData, State, Us
                 .name("Orders: Create draft")
                 .description("Orders: Create draft")
                 .showSummary()
-                .aboutToStartCallback(this::aboutToStart)
                 .aboutToSubmitCallback(this::aboutToSubmit)
                 .submittedCallback(this::submitted)
                 .grant(CREATE_READ_UPDATE, SUPER_USER,
@@ -88,15 +87,6 @@ public class CaseworkerCreateDraftOrder implements CCDConfig<CaseData, State, Us
         createDraftOrderAddDocumentFooter(pageBuilder);
         previewOrder.addTo(pageBuilder);
 
-    }
-
-    public AboutToStartOrSubmitResponse<CaseData, State> aboutToStart(CaseDetails<CaseData, State> caseDetails) {
-        CaseData data = caseDetails.getData();
-        data.setCurrentEvent(CASEWORKER_CREATE_DRAFT_ORDER);
-
-        return AboutToStartOrSubmitResponse.<CaseData, State>builder()
-            .data(data)
-            .build();
     }
 
     public AboutToStartOrSubmitResponse<CaseData, State> midEvent(CaseDetails<CaseData, State> details,
@@ -151,7 +141,6 @@ public class CaseworkerCreateDraftOrder implements CCDConfig<CaseData, State, Us
 
         }
 
-        caseData.setCurrentEvent("");
         caseData.getCicCase().setOrderTemplateIssued(null);
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
