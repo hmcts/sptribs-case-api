@@ -1,23 +1,14 @@
 {
   "data": {
+    "caseLinks": [],
     "allCaseworkerCICDocument": [],
     "allCaseworkerCICDocumentUpload": [],
-    "caseBundles": [],
-    "caseLinks": [],
-    "cicCaseRespondentEmail": "appeals.team@cica.gov.uk",
-    "cicCaseRespondentName": "Appeals team",
-    "cicCaseRespondentOrganisation": "CICA",
-    "cicCaseSelectedDocument": {},
-    "closedDayCount": "",
-    "contactParties": {},
-    "dataVersion": 0,
-    "editCicaCaseDetails": {},
-    "firstHearingDate": "",
-    "hearingList": [],
-    "hyphenatedCaseRef": "1714-0484-2347-8720",
     "newCaseworkerCICDocument": [],
     "newCaseworkerCICDocumentUpload": [],
-    "stayIsCaseStayed": "No",
+    "editCicaCaseDetails": {},
+    "contactParties": {},
+    "caseBundles": [],
+    "caseBundleIdsAndTimestamps": [],
     "cicCaseOrderIssuingDynamicRadioList": {
       "value": {},
       "list_items": [
@@ -30,6 +21,15 @@
           "label": "Upload a new order from your computer"
         }
       ]
-    }
+    },
+    "cicCaseRespondentName": "Appeals team",
+    "cicCaseRespondentOrganisation": "CICA",
+    "cicCaseRespondentEmail": "appeals.team@cica.gov.uk",
+    "stayIsCaseStayed": "No",
+    "hearingList": [],
+    "closedDayCount": "",
+    "firstHearingDate": "",
+    "dataVersion": 0,
+    "cicCaseSelectedDocument": {}
   }
 }
