@@ -87,11 +87,14 @@ public class CaseworkerSendOrderIT {
         IdamWireMock.stopAndReset();
     }
 
+    private static final String CASEWORKER_SEND_ORDER_ABOUT_TO_START_RESPONSE =
+        "classpath:responses/caseworker-send-order-about-to-start-response.json";
+
     private static final String CASEWORKER_SEND_ORDER_ABOUT_TO_SUBMIT_RESPONSE =
         "classpath:responses/caseworker-send-order-about-to-submit-response.json";
 
     @Test
-    void shouldAddCurrentEventInAboutToStart() throws Exception {
+    void shouldSetOrderIssueTypesAndTemplatesInAboutToStartCallback() throws Exception {
         final CaseData caseData = caseData();
 
         String response = mockMvc.perform(post(ABOUT_TO_START_URL)
@@ -109,8 +112,9 @@ public class CaseworkerSendOrderIT {
             .getContentAsString();
 
         assertThatJson(response)
-                .inPath("$.data.currentEvent")
-                .isEqualTo("\"caseworker-send-order\"");
+                .when(IGNORING_EXTRA_FIELDS)
+                .isEqualTo(json(expectedResponse(CASEWORKER_SEND_ORDER_ABOUT_TO_START_RESPONSE)));
+
     }
 
     @Test

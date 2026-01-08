@@ -36,7 +36,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.sptribs.testutil.IdamWireMock.ST_CIC_CASEWORKER;
 import static uk.gov.hmcts.sptribs.testutil.IdamWireMock.stubForIdamDetails;
-import static uk.gov.hmcts.sptribs.testutil.TestConstants.ABOUT_TO_START_URL;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.ABOUT_TO_SUBMIT_URL;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.AUTHORIZATION;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.CASEWORKER_USER_ID;
@@ -74,29 +73,6 @@ public class CaseworkerEditDraftOrderIT {
 
     @MockitoBean
     private WebMvcConfig webMvcConfig;
-
-    @Test
-    void shouldAddCurrentEventInAboutToStart() throws Exception {
-        final CaseData caseData = caseData();
-
-        String response = mockMvc.perform(post(ABOUT_TO_START_URL)
-            .contentType(APPLICATION_JSON)
-            .header(SERVICE_AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
-            .header(AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
-            .content(objectMapper.writeValueAsString(
-                callbackRequest(
-                    caseData,
-                    CASEWORKER_EDIT_DRAFT_ORDER)))
-            .accept(APPLICATION_JSON))
-            .andExpect(status().isOk())
-            .andReturn()
-            .getResponse()
-            .getContentAsString();
-
-        assertThatJson(response)
-                .inPath("$.data.currentEvent")
-                .isEqualTo("\"caseworker-edit-draft-order\"");
-    }
 
     @Test
     void shouldProcessDraftOrderInAboutToSubmit() throws Exception {

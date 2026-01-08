@@ -85,6 +85,9 @@ public class CaseworkerCreateAndSendOrderIT {
     @MockitoBean
     private NotificationServiceCIC notificationServiceCIC;
 
+    private static final String CASEWORKER_CREATE_AND_SEND_ORDER_ABOUT_TO_START_RESPONSE =
+            "classpath:responses/caseworker-create-and-send-order-about-to-start-response.json";
+
     private static final String CASEWORKER_CREATE_AND_SEND_ORDER_ABOUT_TO_SUBMIT_RESPONSE =
             "classpath:responses/caseworker-create-and-send-order-about-to-submit-response.json";
 
@@ -101,7 +104,7 @@ public class CaseworkerCreateAndSendOrderIT {
     }
 
     @Test
-    void shouldAddCurrentEventInAboutToStart() throws Exception {
+    void shouldSetOrderIssueTypesAndTemplatesInAboutToStartCallback() throws Exception {
         final CaseData caseData = caseData();
 
         String response = mockMvc.perform(post(ABOUT_TO_START_URL)
@@ -119,8 +122,8 @@ public class CaseworkerCreateAndSendOrderIT {
             .getContentAsString();
 
         assertThatJson(response)
-            .inPath("$.data.currentEvent")
-            .isEqualTo("\"create-and-send-order\"");
+            .when(IGNORING_EXTRA_FIELDS)
+            .isEqualTo(json(expectedResponse(CASEWORKER_CREATE_AND_SEND_ORDER_ABOUT_TO_START_RESPONSE)));
     }
 
     @Test
