@@ -40,6 +40,7 @@ import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocumentUpload;
 import uk.gov.hmcts.sptribs.notification.dispatcher.ApplicationReceivedNotification;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -133,6 +134,7 @@ public class CreateCase implements CCDConfig<CaseData, State, UserRole> {
         setIsRepresentativePresent(caseData);
         caseData.setSecurityClass(SecurityClass.PUBLIC);
         caseData.setCaseNameHmctsInternal(caseData.getCicCase().getFullName());
+        calculateAndSetIsCaseInTime(caseData);
 
         initialiseFlags(caseData);
         setDefaultCaseDetails(caseData);
@@ -162,6 +164,15 @@ public class CreateCase implements CCDConfig<CaseData, State, UserRole> {
         return SubmittedCallbackResponse.builder()
             .confirmationHeader(format("# Case Created %n## Case reference number: %n## %s", caseReference))
             .build();
+    }
+
+    private void calculateAndSetIsCaseInTime(CaseData data) {
+        LocalDate initialCicaDecisionDatePlus90Days = data.getCicCase().getInitialCicaDecisionDate().plusDays(90);
+        if (data.getCicCase().getCaseReceivedDate().isAfter(initialCicaDecisionDatePlus90Days)) {
+            data.getCicCase().setIsCaseInTime(YesOrNo.NO);
+        } else {
+            data.getCicCase().setIsCaseInTime(YesOrNo.YES);
+        }
     }
 
     private void setDefaultCaseDetails(CaseData data) {
