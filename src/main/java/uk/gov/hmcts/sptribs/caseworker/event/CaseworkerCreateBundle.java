@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
@@ -17,15 +18,24 @@ import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.document.bundling.client.BundlingService;
+import uk.gov.hmcts.sptribs.document.bundling.model.Bundle;
 import uk.gov.hmcts.sptribs.document.bundling.model.BundleCallback;
+import uk.gov.hmcts.sptribs.document.bundling.model.BundleIdAndTimestamp;
 import uk.gov.hmcts.sptribs.document.bundling.model.Callback;
 import uk.gov.hmcts.sptribs.document.model.AbstractCaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 
+import java.time.Clock;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import static java.util.Collections.emptyList;
 import static uk.gov.hmcts.sptribs.caseworker.util.DocumentListUtil.getAllCaseDocumentsExcludingInitialCicaUpload;
@@ -50,6 +60,9 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 public class CaseworkerCreateBundle implements CCDConfig<CaseData, State, UserRole> {
 
     private final BundlingService bundlingService;
+
+    @Autowired
+    private final Clock clock;
 
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
@@ -98,7 +111,8 @@ public class CaseworkerCreateBundle implements CCDConfig<CaseData, State, UserRo
         final Callback callback = new Callback(details, beforeDetails, CREATE_BUNDLE, true);
         final BundleCallback bundleCallback = new BundleCallback(callback);
 
-        caseData.setCaseBundles(bundlingService.buildBundleListValues(bundlingService.createBundle(bundleCallback)));
+        List<ListValue<Bundle>> existingBundles = getExistingBundles(beforeDetails);
+        caseData.setCaseBundles(getConfiguredCaseBundles(caseData, bundleCallback, existingBundles));
 
         caseData.setMultiBundleConfiguration(null);
         caseData.setCaseDocuments(null);
@@ -146,5 +160,79 @@ public class CaseworkerCreateBundle implements CCDConfig<CaseData, State, UserRo
         }
 
         return abstractCaseworkerCICDocumentList;
+    }
+
+    private List<ListValue<Bundle>> getExistingBundles(CaseDetails<CaseData, State> beforeDetails) {
+        if (beforeDetails == null || beforeDetails.getData() == null) {
+            return emptyList();
+        }
+        return Optional.ofNullable(beforeDetails.getData().getCaseBundles()).orElse(emptyList());
+    }
+
+    private List<ListValue<Bundle>> getConfiguredCaseBundles(CaseData caseData,
+                                                             BundleCallback bundleCallback,
+                                                             List<ListValue<Bundle>> existingBundles) {
+        List<ListValue<Bundle>> caseBundles = bundlingService.buildBundleListValues(bundlingService.createBundle(bundleCallback));
+
+        if (caseBundles == null) {
+            return null;
+        }
+
+        List<ListValue<BundleIdAndTimestamp>> bundleIdsAndTimestamps =
+            Optional.ofNullable(caseData.getCaseBundleIdsAndTimestamps()).orElse(new ArrayList<>());
+
+        Map<String, LocalDateTime> bundleIdToTimestampMap = new HashMap<>();
+        for (ListValue<BundleIdAndTimestamp> item : bundleIdsAndTimestamps) {
+            if (item != null && item.getValue() != null) {
+                String bundleId = item.getValue().getBundleId();
+                if (bundleId != null && !bundleIdToTimestampMap.containsKey(bundleId)) {
+                    bundleIdToTimestampMap.put(bundleId, item.getValue().getDateAndTime());
+                }
+            }
+        }
+
+        Set<String> existingBundleIds = existingBundles.stream()
+            .map(bundle -> bundle.getValue().getId())
+            .collect(Collectors.toCollection(HashSet::new));
+
+        for (ListValue<Bundle> caseBundle : caseBundles) {
+            String bundleId = caseBundle.getValue().getId();
+
+            if (bundleIdToTimestampMap.containsKey(bundleId)) {
+                // Case 1: Bundle has a known timestamp in our stored data - restore it
+                caseBundle.getValue().setDateAndTime(bundleIdToTimestampMap.get(bundleId));
+            } else if (existingBundleIds.contains(bundleId)) {
+                // Case 2: Old bundle that existed before the timestamp workaround was implemented
+                // Leave timestamp as null for backwards compatibility
+                caseBundle.getValue().setDateAndTime(null);
+            } else {
+                // Case 3: Truly new bundle - set current timestamp and record it
+                LocalDateTime now = LocalDateTime.now(clock);
+                caseBundle.getValue().setDateAndTime(now);
+
+                String listValueId = String.valueOf(bundleIdsAndTimestamps.size() + 1);
+                BundleIdAndTimestamp bundleIdAndTimestamp = BundleIdAndTimestamp.builder()
+                    .bundleId(bundleId)
+                    .dateAndTime(now)
+                    .build();
+                bundleIdsAndTimestamps.add(ListValue.<BundleIdAndTimestamp>builder()
+                    .id(listValueId)
+                    .value(bundleIdAndTimestamp)
+                    .build());
+            }
+        }
+
+        caseData.setCaseBundleIdsAndTimestamps(bundleIdsAndTimestamps);
+
+        if (caseBundles.size() > 1) {
+            caseBundles.sort(
+                Comparator.comparing(
+                    bundle -> bundle.getValue().getDateAndTime(),
+                    Comparator.nullsLast(Comparator.reverseOrder())
+                )
+            );
+        }
+
+        return caseBundles;
     }
 }

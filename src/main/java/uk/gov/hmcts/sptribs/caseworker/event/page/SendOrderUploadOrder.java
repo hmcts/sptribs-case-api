@@ -17,14 +17,13 @@ import static uk.gov.hmcts.sptribs.document.DocumentUtil.validateDocumentFormat;
 
 public class SendOrderUploadOrder implements CcdPageConfiguration {
 
-
     @Override
     public void addTo(PageBuilder pageBuilder) {
         String pageNameUploadOrder = "caseworkerSendOrderUploadOrder";
         pageBuilder.page(pageNameUploadOrder, this::midEvent)
             .pageLabel("Upload an order")
             .label("LabelPageNameUploadOrder","")
-            .pageShowConditions(PageShowConditionsUtil.createAndSendOrderConditions())
+            .pageShowConditions(PageShowConditionsUtil.sendOrderConditions())
             .label("uploadMessage", "Upload a copy of the document you wish to be added to case file view")
             .label("uploadLimits", """
                 The order should be:
@@ -40,8 +39,8 @@ public class SendOrderUploadOrder implements CcdPageConfiguration {
             )
             .complex(CaseData::getCicCase)
                 .mandatory(CicCase::getOrderFile)
-                .done()
-            .readonly(CaseData::getCurrentEvent, "LabelPageNameUploadOrder=\"HIDDEN\"");
+                .done();
+
 
     }
 

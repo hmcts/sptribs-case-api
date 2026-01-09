@@ -9,28 +9,33 @@ import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.Event;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
+import uk.gov.hmcts.ccd.sdk.type.DynamicList;
 import uk.gov.hmcts.ccd.sdk.type.FlagDetail;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.event.page.ApplyAnonymity;
-import uk.gov.hmcts.sptribs.caseworker.event.page.CreateAndSendOrderIssueSelect;
 import uk.gov.hmcts.sptribs.caseworker.event.page.DraftOrderFooter;
 import uk.gov.hmcts.sptribs.caseworker.event.page.SendOrderNotifyParties;
 import uk.gov.hmcts.sptribs.caseworker.event.page.SendOrderOrderDueDates;
-import uk.gov.hmcts.sptribs.caseworker.event.page.SendOrderUploadOrder;
+import uk.gov.hmcts.sptribs.caseworker.event.page.SendOrderOrderIssuingSelect;
+import uk.gov.hmcts.sptribs.caseworker.event.page.SendUploadOrder;
 import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderCIC;
 import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderContentCIC;
 import uk.gov.hmcts.sptribs.caseworker.model.Order;
+import uk.gov.hmcts.sptribs.caseworker.model.OrderIssuingType;
 import uk.gov.hmcts.sptribs.caseworker.util.CaseFlagsUtil;
+import uk.gov.hmcts.sptribs.caseworker.util.DynamicListUtil;
 import uk.gov.hmcts.sptribs.caseworker.util.MessageUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
+import uk.gov.hmcts.sptribs.ciccase.model.OrderTemplate;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
-import uk.gov.hmcts.sptribs.common.event.page.CreateDraftOrder;
-import uk.gov.hmcts.sptribs.common.event.page.DraftOrderMainContentPage;
+import uk.gov.hmcts.sptribs.common.event.page.CreateNewOrder;
+import uk.gov.hmcts.sptribs.common.event.page.EditNewOrderContentPage;
 import uk.gov.hmcts.sptribs.common.event.page.PreviewDraftOrder;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
 import uk.gov.hmcts.sptribs.notification.dispatcher.NewOrderIssuedNotification;
@@ -38,12 +43,13 @@ import uk.gov.hmcts.sptribs.notification.dispatcher.NewOrderIssuedNotification;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.UUID;
 
 import static java.lang.String.format;
-import static uk.gov.hmcts.sptribs.caseworker.model.CreateAndSendIssuingType.CREATE_AND_SEND_NEW_ORDER;
-import static uk.gov.hmcts.sptribs.caseworker.model.CreateAndSendIssuingType.UPLOAD_A_NEW_ORDER_FROM_YOUR_COMPUTER;
+import static uk.gov.hmcts.sptribs.caseworker.model.OrderIssuingType.CREATE_AND_SEND_NEW_ORDER;
+import static uk.gov.hmcts.sptribs.caseworker.model.OrderIssuingType.UPLOAD_A_NEW_ORDER_FROM_YOUR_COMPUTER;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_CREATE_AND_SEND_ORDER;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventUtil.getRecipients;
 import static uk.gov.hmcts.sptribs.caseworker.util.SendOrderUtil.updateCicCaseOrderList;
@@ -53,8 +59,6 @@ import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseStayed;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.ReadyToList;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_CASEWORKER;
-import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_HEARING_CENTRE_ADMIN;
-import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_HEARING_CENTRE_TEAM_LEADER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_JUDGE;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_CASEWORKER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_JUDGE;
@@ -68,13 +72,13 @@ import static uk.gov.hmcts.sptribs.document.DocumentUtil.updateCategoryToDocumen
 @RequiredArgsConstructor
 public class CaseworkerCreateAndSendOrder implements CCDConfig<CaseData, State, UserRole> {
 
-    private static final CcdPageConfiguration createSendIssuingSelect = new CreateAndSendOrderIssueSelect();
-
-    private static final CcdPageConfiguration createDraftOrder = new CreateDraftOrder();
-    private static final CcdPageConfiguration draftOrderMainContentPage = new DraftOrderMainContentPage();
-    private static final CcdPageConfiguration uploadOrder = new SendOrderUploadOrder();
+    private static final CcdPageConfiguration orderIssueSelect = new SendOrderOrderIssuingSelect();
+    private static final CcdPageConfiguration createNewOrder = new CreateNewOrder();
+    private static final CcdPageConfiguration editNewOrderContent = new EditNewOrderContentPage();
+    private static final CcdPageConfiguration uploadOrder = new SendUploadOrder();
     private static final CcdPageConfiguration orderDueDates = new SendOrderOrderDueDates();
-    private static final CcdPageConfiguration previewOrder = new PreviewDraftOrder();
+    private static final CcdPageConfiguration previewOrder =
+        new PreviewDraftOrder("previewCreateAndSendOrder", CASEWORKER_CREATE_AND_SEND_ORDER);
     private static final CcdPageConfiguration notifyParties = new SendOrderNotifyParties();
 
     private final ApplyAnonymity applyAnonymitySelect;
@@ -94,14 +98,13 @@ public class CaseworkerCreateAndSendOrder implements CCDConfig<CaseData, State, 
                 .aboutToSubmitCallback(this::aboutToSubmit)
                 .submittedCallback(this::submitted)
                 .grant(CREATE_READ_UPDATE, SUPER_USER,
-                    ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER, ST_CIC_HEARING_CENTRE_ADMIN,
-                    ST_CIC_HEARING_CENTRE_TEAM_LEADER, ST_CIC_SENIOR_JUDGE, ST_CIC_JUDGE, ST_CIC_WA_CONFIG_USER);
+                    ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER, ST_CIC_SENIOR_JUDGE, ST_CIC_JUDGE, ST_CIC_WA_CONFIG_USER);
 
         PageBuilder pageBuilder = new PageBuilder(eventBuilder);
         applyAnonymitySelect.addTo(pageBuilder);
-        createSendIssuingSelect.addTo(pageBuilder);
-        createDraftOrder.addTo(pageBuilder);
-        draftOrderMainContentPage.addTo(pageBuilder);
+        orderIssueSelect.addTo(pageBuilder);
+        createNewOrder.addTo(pageBuilder);
+        editNewOrderContent.addTo(pageBuilder);
         draftOrderFooter.addTo(pageBuilder);
         uploadOrder.addTo(pageBuilder);
 
@@ -112,7 +115,23 @@ public class CaseworkerCreateAndSendOrder implements CCDConfig<CaseData, State, 
 
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToStart(CaseDetails<CaseData, State> details) {
         final CaseData caseData = details.getData();
-        caseData.setCurrentEvent(CASEWORKER_CREATE_AND_SEND_ORDER);
+
+        updateAnonymityAlreadyApplied(caseData);
+
+        CicCase cicCase = caseData.getCicCase();
+        DynamicList orderIssueTypeOptions = DynamicListUtil.createDynamicListFromEnumSet(
+            EnumSet.of(
+                CREATE_AND_SEND_NEW_ORDER,
+                UPLOAD_A_NEW_ORDER_FROM_YOUR_COMPUTER),
+            OrderIssuingType::getLabel,
+            cicCase.getOrderIssuingType());
+        caseData.getCicCase().setOrderIssuingDynamicRadioList(orderIssueTypeOptions);
+
+        DynamicList orderTemplateOptions = DynamicListUtil.createDynamicListFromEnumSet(
+            EnumSet.allOf(OrderTemplate.class),
+            OrderTemplate::getLabel,
+            caseData.getDraftOrderContentCIC().getOrderTemplate());
+        caseData.getCicCase().setTemplateDynamicList(orderTemplateOptions);
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
@@ -124,7 +143,7 @@ public class CaseworkerCreateAndSendOrder implements CCDConfig<CaseData, State, 
         final CaseData caseData = details.getData();
 
         Order.OrderBuilder orderBuilder = Order.builder();
-        if (caseData.getCicCase().getCreateAndSendIssuingTypes().equals(CREATE_AND_SEND_NEW_ORDER)) {
+        if (caseData.getCicCase().getOrderIssuingType().equals(CREATE_AND_SEND_NEW_ORDER)) {
             DraftOrderCIC draftOrderCIC = DraftOrderCIC.builder()
                 .draftOrderContentCIC(caseData.getDraftOrderContentCIC())
                 .templateGeneratedDocument(caseData.getCicCase().getOrderTemplateIssued())
@@ -136,7 +155,7 @@ public class CaseworkerCreateAndSendOrder implements CCDConfig<CaseData, State, 
             caseData.getCicCase().setOrderTemplateIssued(null);
         }
 
-        if (caseData.getCicCase().getCreateAndSendIssuingTypes().equals(UPLOAD_A_NEW_ORDER_FROM_YOUR_COMPUTER)) {
+        if (caseData.getCicCase().getOrderIssuingType().equals(UPLOAD_A_NEW_ORDER_FROM_YOUR_COMPUTER)) {
             if (caseData.getCicCase().getOrderFile() != null) {
                 updateCategoryToDocument(caseData.getCicCase().getOrderFile(), DocumentType.TRIBUNAL_DIRECTION.getCategory());
             }
@@ -155,19 +174,29 @@ public class CaseworkerCreateAndSendOrder implements CCDConfig<CaseData, State, 
             applyAnonymityCaseFlag(caseData);
         }
 
-        caseData.getCicCase().setCreateAndSendIssuingTypes(null);
+        caseData.getCicCase().setOrderIssuingType(null);
         caseData.getCicCase().setOrderFile(null);
         caseData.getCicCase().setOrderTemplateIssued(null);
         caseData.getCicCase().setOrderReminderYesOrNo(null);
 
         caseData.getCicCase().setOrderDueDates(new ArrayList<>());
         caseData.getCicCase().setFirstOrderDueDate(caseData.getCicCase().calculateFirstDueDate());
-        caseData.setCurrentEvent("");
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
             .state(details.getState())
             .build();
+    }
+
+    private static void updateAnonymityAlreadyApplied(CaseData caseData) {
+        if (YesOrNo.YES.equals(caseData.getCicCase().getAnonymityAlreadyApplied())) {
+            //do nothing
+        } else if (YesOrNo.YES.equals(caseData.getCicCase().getAnonymiseYesOrNo())
+            && caseData.getCicCase().getAnonymisedAppellantName() != null) {
+            caseData.getCicCase().setAnonymityAlreadyApplied(YesOrNo.YES);
+        } else {
+            caseData.getCicCase().setAnonymityAlreadyApplied(YesOrNo.NO);
+        }
     }
 
     public SubmittedCallbackResponse submitted(CaseDetails<CaseData, State> details,
