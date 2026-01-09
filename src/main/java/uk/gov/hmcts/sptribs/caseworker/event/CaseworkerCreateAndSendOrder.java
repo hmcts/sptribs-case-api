@@ -32,7 +32,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.common.event.page.CreateNewOrder;
-import uk.gov.hmcts.sptribs.common.event.page.EditNewOrderContent;
+import uk.gov.hmcts.sptribs.common.event.page.EditNewOrderContentPage;
 import uk.gov.hmcts.sptribs.common.event.page.PreviewDraftOrder;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
 import uk.gov.hmcts.sptribs.notification.dispatcher.NewOrderIssuedNotification;
@@ -68,7 +68,7 @@ public class CaseworkerCreateAndSendOrder implements CCDConfig<CaseData, State, 
 
     private static final CcdPageConfiguration orderIssueSelect = new SendOrderOrderIssuingSelect();
     private static final CcdPageConfiguration createNewOrder = new CreateNewOrder();
-    private static final CcdPageConfiguration editNewOrderContent = new EditNewOrderContent();
+    private static final CcdPageConfiguration editNewOrderContent = new EditNewOrderContentPage();
     private static final CcdPageConfiguration uploadOrder = new SendUploadOrder();
     private static final CcdPageConfiguration orderDueDates = new SendOrderOrderDueDates();
     private static final CcdPageConfiguration previewOrder =
