@@ -10,58 +10,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.CASEWORKER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.NON_RESPONDENT_USER;
-import static uk.gov.hmcts.sptribs.ciccase.search.CaseFieldsConstants.APPLICANT_ADDRESS;
-import static uk.gov.hmcts.sptribs.ciccase.search.CaseFieldsConstants.APPLICANT_CONTACT_PREFERENCE;
-import static uk.gov.hmcts.sptribs.ciccase.search.CaseFieldsConstants.APPLICANT_DATE_OF_BIRTH;
-import static uk.gov.hmcts.sptribs.ciccase.search.CaseFieldsConstants.APPLICANT_DETAILS;
-import static uk.gov.hmcts.sptribs.ciccase.search.CaseFieldsConstants.APPLICANT_EMAIL;
-import static uk.gov.hmcts.sptribs.ciccase.search.CaseFieldsConstants.APPLICANT_NAME;
-import static uk.gov.hmcts.sptribs.ciccase.search.CaseFieldsConstants.APPLICANT_PHONE_NUMBER;
-import static uk.gov.hmcts.sptribs.ciccase.search.CaseFieldsConstants.CASE_CATEGORY;
-import static uk.gov.hmcts.sptribs.ciccase.search.CaseFieldsConstants.CASE_CICA_REFERENCE;
-import static uk.gov.hmcts.sptribs.ciccase.search.CaseFieldsConstants.CASE_CLAIM_LINKED;
-import static uk.gov.hmcts.sptribs.ciccase.search.CaseFieldsConstants.CASE_DETAILS;
-import static uk.gov.hmcts.sptribs.ciccase.search.CaseFieldsConstants.CASE_RECEIVED_DATE;
-import static uk.gov.hmcts.sptribs.ciccase.search.CaseFieldsConstants.CASE_REGION;
-import static uk.gov.hmcts.sptribs.ciccase.search.CaseFieldsConstants.CASE_STATE_LABEL;
-import static uk.gov.hmcts.sptribs.ciccase.search.CaseFieldsConstants.CASE_SUBCATEGORY;
-import static uk.gov.hmcts.sptribs.ciccase.search.CaseFieldsConstants.COND_ALWAYS_HIDE_STAY_REASON;
-import static uk.gov.hmcts.sptribs.ciccase.search.CaseFieldsConstants.COND_APPLICANT_FULL_NAME_NOT_EMPTY;
-import static uk.gov.hmcts.sptribs.ciccase.search.CaseFieldsConstants.COND_HEARING_LIST_NOT_ANY_AND_CANCELLATION_REASON_NOT_EMPTY;
-import static uk.gov.hmcts.sptribs.ciccase.search.CaseFieldsConstants.COND_HEARING_LIST_NOT_ANY_AND_CASE_POSTPONE_REASON_NOT_EMPTY;
-import static uk.gov.hmcts.sptribs.ciccase.search.CaseFieldsConstants.COND_HEARING_LIST_NOT_ANY_AND_HEARING_TYPE_NOT_EMPTY;
-import static uk.gov.hmcts.sptribs.ciccase.search.CaseFieldsConstants.COND_HEARING_LIST_NOT_ANY_AND_IS_FULL_PANEL_NOT_EMPTY;
-import static uk.gov.hmcts.sptribs.ciccase.search.CaseFieldsConstants.COND_IS_CASE_STAYED;
-import static uk.gov.hmcts.sptribs.ciccase.search.CaseFieldsConstants.COND_IS_NOT_CASE_STAYED;
-import static uk.gov.hmcts.sptribs.ciccase.search.CaseFieldsConstants.COND_REPRESENTATIVE_FULL_NAME_NOT_EMPTY;
-import static uk.gov.hmcts.sptribs.ciccase.search.CaseFieldsConstants.COND_REPRESENTATIVE_NOT_EMPTY;
-import static uk.gov.hmcts.sptribs.ciccase.search.CaseFieldsConstants.IS_STAYED;
-import static uk.gov.hmcts.sptribs.ciccase.search.CaseFieldsConstants.PANEL_COMPOSITION_DEFINED;
-import static uk.gov.hmcts.sptribs.ciccase.search.CaseFieldsConstants.REMOVE_STAY_ADDITIONAL_DETAIL;
-import static uk.gov.hmcts.sptribs.ciccase.search.CaseFieldsConstants.REMOVE_STAY_DETAILS;
-import static uk.gov.hmcts.sptribs.ciccase.search.CaseFieldsConstants.REMOVE_STAY_OTHER_DESCRIPTION;
-import static uk.gov.hmcts.sptribs.ciccase.search.CaseFieldsConstants.REMOVE_STAY_REASON;
-import static uk.gov.hmcts.sptribs.ciccase.search.CaseFieldsConstants.REPRESENTATIVE_ADDRESS;
-import static uk.gov.hmcts.sptribs.ciccase.search.CaseFieldsConstants.REPRESENTATIVE_CONTACT_PREFERENCE;
-import static uk.gov.hmcts.sptribs.ciccase.search.CaseFieldsConstants.REPRESENTATIVE_DETAILS;
-import static uk.gov.hmcts.sptribs.ciccase.search.CaseFieldsConstants.REPRESENTATIVE_EMAIL;
-import static uk.gov.hmcts.sptribs.ciccase.search.CaseFieldsConstants.REPRESENTATIVE_FULLNAME;
-import static uk.gov.hmcts.sptribs.ciccase.search.CaseFieldsConstants.REPRESENTATIVE_ORG;
-import static uk.gov.hmcts.sptribs.ciccase.search.CaseFieldsConstants.REPRESENTATIVE_PHONE_NUMBER;
-import static uk.gov.hmcts.sptribs.ciccase.search.CaseFieldsConstants.REPRESENTATIVE_PRESENT;
-import static uk.gov.hmcts.sptribs.ciccase.search.CaseFieldsConstants.REPRESENTATIVE_QUALIFIED;
-import static uk.gov.hmcts.sptribs.ciccase.search.CaseFieldsConstants.REPRESENTATIVE_REFERENCE;
-import static uk.gov.hmcts.sptribs.ciccase.search.CaseFieldsConstants.SCHEME;
-import static uk.gov.hmcts.sptribs.ciccase.search.CaseFieldsConstants.STAY_ADDITIONAL_DETAILS;
-import static uk.gov.hmcts.sptribs.ciccase.search.CaseFieldsConstants.STAY_DETAILS;
-import static uk.gov.hmcts.sptribs.ciccase.search.CaseFieldsConstants.STAY_EXPIRATION_DATE;
-import static uk.gov.hmcts.sptribs.ciccase.search.CaseFieldsConstants.STAY_FLAG_TYPE;
-import static uk.gov.hmcts.sptribs.ciccase.search.CaseFieldsConstants.STAY_REASON;
-import static uk.gov.hmcts.sptribs.ciccase.search.CaseFieldsConstants.SUBJECT_ADDRESS;
-import static uk.gov.hmcts.sptribs.ciccase.search.CaseFieldsConstants.SUBJECT_DATE_OF_BIRTH;
-import static uk.gov.hmcts.sptribs.ciccase.search.CaseFieldsConstants.SUBJECT_EMAIL;
-import static uk.gov.hmcts.sptribs.ciccase.search.CaseFieldsConstants.SUBJECT_NAME;
-import static uk.gov.hmcts.sptribs.ciccase.search.CaseFieldsConstants.SUBJECT_PHONE_NUMBER;
+import static uk.gov.hmcts.sptribs.ciccase.search.CaseFieldsConstants.*;
 
 @Component
 @Setter
@@ -116,6 +65,7 @@ public class CaseTypeTab implements CCDConfig<CaseData, State, UserRole> {
             .forRoles(CASEWORKER)
             .label(CASE_STATE_LABEL, null, "#### Case Status:  ${[STATE]}")
             .label(CASE_DETAILS, null, "### Case details")
+            .field(IS_CASE_IN_TIME)
             .field(SUBJECT_NAME)
             .field(SUBJECT_DATE_OF_BIRTH)
             .field(SUBJECT_EMAIL)
