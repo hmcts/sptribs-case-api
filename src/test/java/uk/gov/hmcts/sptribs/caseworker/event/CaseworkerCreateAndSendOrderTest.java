@@ -14,11 +14,11 @@ import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.event.page.ApplyAnonymity;
 import uk.gov.hmcts.sptribs.caseworker.event.page.DraftOrderFooter;
-import uk.gov.hmcts.sptribs.caseworker.model.CreateAndSendIssuingType;
 import uk.gov.hmcts.sptribs.caseworker.model.DateModel;
 import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderCIC;
 import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderContentCIC;
 import uk.gov.hmcts.sptribs.caseworker.model.Order;
+import uk.gov.hmcts.sptribs.caseworker.model.OrderIssuingType;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.OrderTemplate;
@@ -39,6 +39,8 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static uk.gov.hmcts.sptribs.caseworker.model.OrderIssuingType.CREATE_AND_SEND_NEW_ORDER;
+import static uk.gov.hmcts.sptribs.caseworker.model.OrderIssuingType.UPLOAD_A_NEW_ORDER_FROM_YOUR_COMPUTER;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_CREATE_AND_SEND_ORDER;
 import static uk.gov.hmcts.sptribs.ciccase.model.ApplicantCIC.APPLICANT_CIC;
 import static uk.gov.hmcts.sptribs.ciccase.model.RepresentativeCIC.REPRESENTATIVE;
@@ -80,14 +82,71 @@ class CaseworkerCreateAndSendOrderTest {
     }
 
     @Test
-    void  shouldSetCurrentEventInAboutToStartCallback() {
+    void shouldSetAnonymityAlreadyAppliedInAboutToStartCallback_AnonymityAlreadyAppliedIsNull() {
         final CaseData caseData = CaseData.builder().build();
         final CaseDetails<CaseData, State> details = new CaseDetails<>();
+        final CicCase cicCase = CicCase.builder()
+            .anonymiseYesOrNo(YesOrNo.YES)
+            .anonymityAlreadyApplied(null)
+            .anonymisedAppellantName("AA")
+            .build();
+        caseData.setCicCase(cicCase);
         details.setData(caseData);
 
         final var response = caseworkerCreateAndSendOrder.aboutToStart(details);
 
-        assertThat(response.getData().getCurrentEvent()).isEqualTo(CASEWORKER_CREATE_AND_SEND_ORDER);
+        assertThat(response.getData().getCicCase().getAnonymityAlreadyApplied()).isEqualTo(YesOrNo.YES);
+    }
+
+    @Test
+    void shouldSetAnonymityAlreadyAppliedInAboutToStartCallback_AnonymityAlreadyAppliedIsYes() {
+        final CaseData caseData = CaseData.builder().build();
+        final CaseDetails<CaseData, State> details = new CaseDetails<>();
+        final CicCase cicCase = CicCase.builder()
+            .anonymiseYesOrNo(YesOrNo.YES)
+            .anonymityAlreadyApplied(YesOrNo.YES)
+            .anonymisedAppellantName("AA")
+            .build();
+        caseData.setCicCase(cicCase);
+        details.setData(caseData);
+
+        final var response = caseworkerCreateAndSendOrder.aboutToStart(details);
+
+        assertThat(response.getData().getCicCase().getAnonymityAlreadyApplied()).isEqualTo(YesOrNo.YES);
+    }
+
+    @Test
+    void shouldSetAnonymityAlreadyAppliedInAboutToStartCallback_AnonymityAlreadyAppliedIsNo() {
+        final CaseData caseData = CaseData.builder().build();
+        final CaseDetails<CaseData, State> details = new CaseDetails<>();
+        final CicCase cicCase = CicCase.builder()
+            .anonymiseYesOrNo(YesOrNo.YES)
+            .anonymityAlreadyApplied(YesOrNo.NO)
+            .anonymisedAppellantName("AA")
+            .build();
+        caseData.setCicCase(cicCase);
+        details.setData(caseData);
+
+        final var response = caseworkerCreateAndSendOrder.aboutToStart(details);
+
+        assertThat(response.getData().getCicCase().getAnonymityAlreadyApplied()).isEqualTo(YesOrNo.YES);
+    }
+
+    @Test
+    void shouldSetAnonymityAlreadyAppliedInAboutToStartCallback_NoAnonymitySet() {
+        final CaseData caseData = CaseData.builder().build();
+        final CaseDetails<CaseData, State> details = new CaseDetails<>();
+        final CicCase cicCase = CicCase.builder()
+            .anonymiseYesOrNo(null)
+            .anonymityAlreadyApplied(YesOrNo.NO)
+            .anonymisedAppellantName(null)
+            .build();
+        caseData.setCicCase(cicCase);
+        details.setData(caseData);
+
+        final var response = caseworkerCreateAndSendOrder.aboutToStart(details);
+
+        assertThat(response.getData().getCicCase().getAnonymityAlreadyApplied()).isEqualTo(YesOrNo.NO);
     }
 
     @Test
@@ -107,7 +166,7 @@ class CaseworkerCreateAndSendOrderTest {
 
         final CaseData caseData = CaseData.builder()
                 .draftOrderContentCIC(draftOrderContentCIC)
-                .cicCase(getCicCase(CreateAndSendIssuingType.CREATE_AND_SEND_NEW_ORDER, YesOrNo.YES, "AAC", document))
+                .cicCase(getCicCase(CREATE_AND_SEND_NEW_ORDER, YesOrNo.YES, "AAC", document))
                 .build();
 
         caseData.setDraftOrderContentCIC(draftOrderContentCIC);
@@ -156,7 +215,7 @@ class CaseworkerCreateAndSendOrderTest {
                 .build();
 
         final CaseData caseData = CaseData.builder().build();
-        caseData.setCicCase(getCicCase(CreateAndSendIssuingType.CREATE_AND_SEND_NEW_ORDER, YesOrNo.NO, null, document));
+        caseData.setCicCase(getCicCase(CREATE_AND_SEND_NEW_ORDER, YesOrNo.NO, null, document));
         caseData.setDraftOrderContentCIC(draftOrderContentCIC);
 
         details.setData(caseData);
@@ -200,7 +259,7 @@ class CaseworkerCreateAndSendOrderTest {
             .build();
 
         final CaseData caseData = CaseData.builder().build();
-        CicCase cicCase1 = getCicCase(CreateAndSendIssuingType.UPLOAD_A_NEW_ORDER_FROM_YOUR_COMPUTER, YesOrNo.NO, null, null);
+        CicCase cicCase1 = getCicCase(UPLOAD_A_NEW_ORDER_FROM_YOUR_COMPUTER, YesOrNo.NO, null, null);
         List<ListValue<CICDocument>> orderFile = List.of(ListValue.<CICDocument>builder().value(cicDocument).build());
         cicCase1.setOrderFile(orderFile);
         caseData.setCicCase(cicCase1);
@@ -355,7 +414,7 @@ class CaseworkerCreateAndSendOrderTest {
         return caseDetails;
     }
 
-    private static CicCase getCicCase(CreateAndSendIssuingType issueType,
+    private static CicCase getCicCase(OrderIssuingType issueType,
                                       YesOrNo isAnonymised,
                                       String anonymisedName,
                                       Document document) {
@@ -365,7 +424,7 @@ class CaseworkerCreateAndSendOrderTest {
                 .build();
 
         return CicCase.builder()
-            .createAndSendIssuingTypes(issueType)
+            .orderIssuingType(issueType)
             .anonymiseYesOrNo(isAnonymised)
             .anonymisedAppellantName(anonymisedName)
             .orderTemplateIssued(document)
