@@ -27,10 +27,8 @@ public class CaseworkerEditDraftOrderFT extends FunctionalTestSuite {
         "classpath:request/casedata/ccd-callback-casedata-caseworker-edit-draft-order-mid-event.json";
     private static final String CALLBACK_REQUEST =
         "classpath:request/casedata/ccd-callback-casedata-caseworker-edit-draft-order-about-to-submit.json";
-
     private static final String RESPONSE_MID_EVENT = "classpath:responses/response-caseworker-edit-draft-order-mid-event.json";
     private static final String RESPONSE_ABOUT_TO_SUBMIT = "classpath:responses/response-caseworker-edit-draft-order-about-to-submit.json";
-
     private static final String CONFIRMATION_HEADER = "$.confirmation_header";
 
     @Test

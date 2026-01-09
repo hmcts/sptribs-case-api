@@ -14,6 +14,12 @@ public final class PageShowConditionsUtil {
     private static final String EDIT_SUMMARY_SHOW_WARNING_PAGE = " hearingSummaryExists != \"YES\"";
     private static final String EDIT_SUMMARY = "currentEvent != \"edit-hearing-summary\" OR  hearingSummaryExists = \"YES\"";
 
+    private static final String ORDER_TYPE_NEW = "cicCaseOrderIssuingType = \"NewOrder\"";
+    private static final String ORDER_TYPE_DRAFT_CONDITION = "cicCaseOrderIssuingType = \"DraftOrder\"";
+    private static final String ORDER_TYPE_UPLOAD_CONDITION = "cicCaseOrderIssuingType = \"UploadOrder\"";
+
+    private static final String ANONYMITY_ALREADY_APPLIED = "cicCaseAnonymityAlreadyApplied!=\"Yes\"";
+
     private PageShowConditionsUtil() {
     }
 
@@ -46,6 +52,23 @@ public final class PageShowConditionsUtil {
         map.put("hearingOutcome", EDIT_SUMMARY);
         map.put("hearingRecordingUpload", EDIT_SUMMARY);
         map.put("editHearingSummary", EDIT_SUMMARY_SHOW_WARNING_PAGE);
+        return map;
+    }
+
+    public static Map<String, String> sendOrderConditions() {
+        Map<String, String> map = new HashMap<>();
+        map.put("caseworkerSendOrderSelectDraftOrder", ORDER_TYPE_DRAFT_CONDITION);
+        map.put("caseworkerSendOrderUploadOrder", ORDER_TYPE_UPLOAD_CONDITION);
+        return map;
+    }
+
+    public static Map<String, String> createAndSendOrderConditions() {
+        Map<String, String> map = new HashMap<>();
+        map.put("caseworkerApplyAnonymity", ANONYMITY_ALREADY_APPLIED);
+        map.put("createNewOrder", ORDER_TYPE_NEW);
+        map.put("editNewOrderContent", ORDER_TYPE_NEW);
+        map.put("draftOrderDocumentFooter", ORDER_TYPE_NEW);
+        map.put("caseworkerSendUploadOrder", ORDER_TYPE_UPLOAD_CONDITION);
         return map;
     }
 }

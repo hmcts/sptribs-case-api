@@ -1,0 +1,69 @@
+{
+  "data": {
+    "caseLinks": [],
+    "allCaseworkerCICDocument": [],
+    "allCaseworkerCICDocumentUpload": [],
+    "newCaseworkerCICDocument": [],
+    "newCaseworkerCICDocumentUpload": [],
+    "editCicaCaseDetails": {},
+    "contactParties": {},
+    "caseBundles": [],
+    "caseBundleIdsAndTimestamps": [],
+    "cicCaseAnonymityAlreadyApplied": "No",
+    "cicCaseOrderIssuingDynamicRadioList": {
+      "value": {},
+      "list_items": [
+        {
+          "code": "${json-unit.any-string}",
+          "label": "Create and send a new order"
+        },
+        {
+          "code": "${json-unit.any-string}",
+          "label": "Upload a new order from your computer"
+        }
+      ]
+    },
+    "cicCaseTemplateDynamicList": {
+      "value": {},
+      "list_items": [
+        {
+          "code": "${json-unit.any-string}",
+          "label": "CIC3 - Rule 27"
+        },
+        {
+          "code": "${json-unit.any-string}",
+          "label": "CIC6 - General Directions"
+        },
+        {
+          "code": "${json-unit.any-string}",
+          "label": "CIC7 - ME Dmi Reports"
+        },
+        {
+          "code": "${json-unit.any-string}",
+          "label": "CIC8 - ME Joint Instruction"
+        },
+        {
+          "code": "${json-unit.any-string}",
+          "label": "CIC10 - Strike Out Warning"
+        },
+        {
+          "code": "${json-unit.any-string}",
+          "label": "CIC13 - Pro Forma Summons"
+        },
+        {
+          "code": "${json-unit.any-string}",
+          "label": "CIC14 – LO General Directions"
+        }
+      ]
+    },
+    "cicCaseRespondentName": "Appeals team",
+    "cicCaseRespondentOrganisation": "CICA",
+    "cicCaseRespondentEmail": "appeals.team@cica.gov.uk",
+    "stayIsCaseStayed": "No",
+    "hearingList": [],
+    "closedDayCount": "",
+    "firstHearingDate": "",
+    "dataVersion": 0,
+    "cicCaseSelectedDocument": {}
+  }
+}

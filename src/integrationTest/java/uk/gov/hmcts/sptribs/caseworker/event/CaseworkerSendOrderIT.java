@@ -45,6 +45,7 @@ import static uk.gov.hmcts.sptribs.ciccase.model.RepresentativeCIC.REPRESENTATIV
 import static uk.gov.hmcts.sptribs.ciccase.model.RespondentCIC.RESPONDENT;
 import static uk.gov.hmcts.sptribs.ciccase.model.SchemeCic.Year2012;
 import static uk.gov.hmcts.sptribs.ciccase.model.SubjectCIC.SUBJECT;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.ABOUT_TO_START_URL;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.ABOUT_TO_SUBMIT_URL;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.AUTHORIZATION;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.SERVICE_AUTHORIZATION;
@@ -86,13 +87,40 @@ public class CaseworkerSendOrderIT {
         IdamWireMock.stopAndReset();
     }
 
+    private static final String CASEWORKER_SEND_ORDER_ABOUT_TO_START_RESPONSE =
+        "classpath:responses/caseworker-send-order-about-to-start-response.json";
+
     private static final String CASEWORKER_SEND_ORDER_ABOUT_TO_SUBMIT_RESPONSE =
         "classpath:responses/caseworker-send-order-about-to-submit-response.json";
 
     @Test
+    void shouldSetOrderIssueTypesAndTemplatesInAboutToStartCallback() throws Exception {
+        final CaseData caseData = caseData();
+
+        String response = mockMvc.perform(post(ABOUT_TO_START_URL)
+            .contentType(APPLICATION_JSON)
+            .header(SERVICE_AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
+            .header(AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
+            .content(objectMapper.writeValueAsString(
+                callbackRequest(
+                    caseData,
+                    CASEWORKER_SEND_ORDER)))
+            .accept(APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andReturn()
+            .getResponse()
+            .getContentAsString();
+
+        assertThatJson(response)
+                .when(IGNORING_EXTRA_FIELDS)
+                .isEqualTo(json(expectedResponse(CASEWORKER_SEND_ORDER_ABOUT_TO_START_RESPONSE)));
+
+    }
+
+    @Test
     void shouldUpdateOrderRelatedDataOnAboutToSubmit() throws Exception {
         DateModel dateModel = DateModel.builder()
-            .dueDate(LocalDate.of(2024, 9, 04))
+            .dueDate(LocalDate.of(2024, 9, 4))
             .information("due date for test")
             .build();
 

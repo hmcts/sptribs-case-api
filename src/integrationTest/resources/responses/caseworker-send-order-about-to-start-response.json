@@ -1,0 +1,35 @@
+{
+  "data": {
+    "caseLinks": [],
+    "allCaseworkerCICDocument": [],
+    "allCaseworkerCICDocumentUpload": [],
+    "newCaseworkerCICDocument": [],
+    "newCaseworkerCICDocumentUpload": [],
+    "editCicaCaseDetails": {},
+    "contactParties": {},
+    "caseBundles": [],
+    "caseBundleIdsAndTimestamps": [],
+    "cicCaseOrderIssuingDynamicRadioList": {
+      "value": {},
+      "list_items": [
+        {
+          "code": "${json-unit.any-string}",
+          "label": "Issue and send an existing draft"
+        },
+        {
+          "code": "${json-unit.any-string}",
+          "label": "Upload a new order from your computer"
+        }
+      ]
+    },
+    "cicCaseRespondentName": "Appeals team",
+    "cicCaseRespondentOrganisation": "CICA",
+    "cicCaseRespondentEmail": "appeals.team@cica.gov.uk",
+    "stayIsCaseStayed": "No",
+    "hearingList": [],
+    "closedDayCount": "",
+    "firstHearingDate": "",
+    "dataVersion": 0,
+    "cicCaseSelectedDocument": {}
+  }
+}
