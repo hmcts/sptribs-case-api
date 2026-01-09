@@ -392,6 +392,19 @@ public class CicCase {
     private String cicaReferenceNumber;
 
     @CCD(
+        label = "Date of CICA initial review decision letter",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private LocalDate initialCicaDecisionDate;
+
+    @CCD(
+        label = "Is the case in time?",
+        access = {CaseworkerAccess.class}
+    )
+    private YesOrNo isCaseInTime;
+
+    @CCD(
         label = "Applicant's full name",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )

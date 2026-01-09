@@ -27,6 +27,7 @@ import uk.gov.hmcts.sptribs.common.event.page.ApplicantDetails;
 import uk.gov.hmcts.sptribs.common.event.page.CaseCategorisationDetails;
 import uk.gov.hmcts.sptribs.common.event.page.CaseUploadDocuments;
 import uk.gov.hmcts.sptribs.common.event.page.ContactPreferenceDetails;
+import uk.gov.hmcts.sptribs.common.event.page.DateOfInitialCicaDecision;
 import uk.gov.hmcts.sptribs.common.event.page.DateOfReceipt;
 import uk.gov.hmcts.sptribs.common.event.page.EditCicaCaseDetailsPage;
 import uk.gov.hmcts.sptribs.common.event.page.FurtherDetails;
@@ -39,6 +40,7 @@ import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocumentUpload;
 import uk.gov.hmcts.sptribs.notification.dispatcher.ApplicationReceivedNotification;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -65,6 +67,7 @@ public class CreateCase implements CCDConfig<CaseData, State, UserRole> {
 
     private static final CcdPageConfiguration categorisationDetails = new CaseCategorisationDetails();
     private static final CcdPageConfiguration cicaCaseDetails = new EditCicaCaseDetailsPage();
+    private static final CcdPageConfiguration dateOfInitialCicaDecision = new DateOfInitialCicaDecision();
     private static final CcdPageConfiguration dateOfReceipt = new DateOfReceipt();
     private static final CcdPageConfiguration selectParties = new SelectParties();
     private static final CcdPageConfiguration caseUploadDocuments = new CaseUploadDocuments();
@@ -104,6 +107,7 @@ public class CreateCase implements CCDConfig<CaseData, State, UserRole> {
 
         categorisationDetails.addTo(pageBuilder);
         cicaCaseDetails.addTo(pageBuilder);
+        dateOfInitialCicaDecision.addTo(pageBuilder);
         dateOfReceipt.addTo(pageBuilder);
         selectParties.addTo(pageBuilder);
         subjectDetails.addTo(pageBuilder);
@@ -130,6 +134,7 @@ public class CreateCase implements CCDConfig<CaseData, State, UserRole> {
         setIsRepresentativePresent(caseData);
         caseData.setSecurityClass(SecurityClass.PUBLIC);
         caseData.setCaseNameHmctsInternal(caseData.getCicCase().getFullName());
+        calculateAndSetIsCaseInTime(caseData);
 
         initialiseFlags(caseData);
         setDefaultCaseDetails(caseData);
@@ -159,6 +164,15 @@ public class CreateCase implements CCDConfig<CaseData, State, UserRole> {
         return SubmittedCallbackResponse.builder()
             .confirmationHeader(format("# Case Created %n## Case reference number: %n## %s", caseReference))
             .build();
+    }
+
+    private void calculateAndSetIsCaseInTime(CaseData data) {
+        LocalDate initialCicaDecisionDatePlus90Days = data.getCicCase().getInitialCicaDecisionDate().plusDays(90);
+        if (data.getCicCase().getCaseReceivedDate().isAfter(initialCicaDecisionDatePlus90Days)) {
+            data.getCicCase().setIsCaseInTime(YesOrNo.NO);
+        } else {
+            data.getCicCase().setIsCaseInTime(YesOrNo.YES);
+        }
     }
 
     private void setDefaultCaseDetails(CaseData data) {
