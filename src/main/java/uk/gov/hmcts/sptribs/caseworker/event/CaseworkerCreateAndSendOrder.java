@@ -10,6 +10,8 @@ import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.Event;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.ccd.sdk.type.DynamicList;
+import uk.gov.hmcts.ccd.sdk.type.FlagDetail;
+import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.event.page.ApplyAnonymity;
@@ -22,6 +24,7 @@ import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderCIC;
 import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderContentCIC;
 import uk.gov.hmcts.sptribs.caseworker.model.Order;
 import uk.gov.hmcts.sptribs.caseworker.model.OrderIssuingType;
+import uk.gov.hmcts.sptribs.caseworker.util.CaseFlagsUtil;
 import uk.gov.hmcts.sptribs.caseworker.util.DynamicListUtil;
 import uk.gov.hmcts.sptribs.caseworker.util.MessageUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
@@ -38,8 +41,11 @@ import uk.gov.hmcts.sptribs.document.model.DocumentType;
 import uk.gov.hmcts.sptribs.notification.dispatcher.NewOrderIssuedNotification;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.EnumSet;
+import java.util.List;
+import java.util.UUID;
 
 import static java.lang.String.format;
 import static uk.gov.hmcts.sptribs.caseworker.model.OrderIssuingType.CREATE_AND_SEND_NEW_ORDER;
@@ -129,8 +135,8 @@ public class CaseworkerCreateAndSendOrder implements CCDConfig<CaseData, State, 
         caseData.getCicCase().setTemplateDynamicList(orderTemplateOptions);
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
-                .data(caseData)
-                .build();
+            .data(caseData)
+            .build();
     }
 
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(CaseDetails<CaseData, State> details,
@@ -165,6 +171,10 @@ public class CaseworkerCreateAndSendOrder implements CCDConfig<CaseData, State, 
 
         updateCicCaseOrderList(caseData, order);
 
+        if (YesOrNo.YES.equals(caseData.getCicCase().getAnonymiseYesOrNo()) && caseData.getCicCase().getAnonymisedAppellantName() != null) {
+            applyAnonymityCaseFlag(caseData);
+        }
+
         caseData.getCicCase().setOrderIssuingType(null);
         caseData.getCicCase().setOrderFile(null);
         caseData.getCicCase().setOrderTemplateIssued(null);
@@ -174,9 +184,9 @@ public class CaseworkerCreateAndSendOrder implements CCDConfig<CaseData, State, 
         caseData.getCicCase().setFirstOrderDueDate(caseData.getCicCase().calculateFirstDueDate());
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
-                .data(caseData)
-                .state(details.getState())
-                .build();
+            .data(caseData)
+            .state(details.getState())
+            .build();
     }
 
     private static void updateAnonymityAlreadyApplied(CaseData caseData) {
@@ -196,14 +206,14 @@ public class CaseworkerCreateAndSendOrder implements CCDConfig<CaseData, State, 
             sendOrderNotification(details.getData().getHyphenatedCaseRef(), details.getData());
         } catch (Exception notificationException) {
             return SubmittedCallbackResponse.builder()
-                    .confirmationHeader(format("# Send order notification failed %n## Please resend the order"))
-                    .build();
+                .confirmationHeader(format("# Send order notification failed %n## Please resend the order"))
+                .build();
         }
 
         return SubmittedCallbackResponse.builder()
-                .confirmationHeader(format("# Order sent %n## %s",
-                        MessageUtil.generateSimpleMessage(details.getData().getCicCase())))
-                .build();
+            .confirmationHeader(format("# Order sent %n## %s",
+                MessageUtil.generateSimpleMessage(details.getData().getCicCase())))
+            .build();
     }
 
     private void sendOrderNotification(String caseNumber, CaseData caseData) {
@@ -223,5 +233,21 @@ public class CaseworkerCreateAndSendOrder implements CCDConfig<CaseData, State, 
             newOrderIssuedNotification.sendToApplicant(caseData, caseNumber);
         }
 
+    }
+
+    private void applyAnonymityCaseFlag(CaseData data) {
+        FlagDetail flagDetail = FlagDetail.builder()
+            .name("RRO (Restricted Reporting Order / Anonymisation)")
+            .path(List.of(ListValue.<String>builder().id(UUID.randomUUID().toString()).value("Case").build()))
+            .status("Active")
+            .nameCy("RRO (Gorchymyn Cyfyngiadau Adrodd / Anhysbys)")
+            .flagCode("CF0012")
+            .flagComment("Applied anonymity")
+            .dateTimeCreated(LocalDateTime.now())
+            .hearingRelevant(YesOrNo.YES)
+            .availableExternally(YesOrNo.NO)
+            .build();
+
+        CaseFlagsUtil.addFlag(data, flagDetail);
     }
 }
