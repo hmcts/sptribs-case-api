@@ -15,12 +15,12 @@ import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
-import uk.gov.hmcts.sptribs.caseworker.model.CreateAndSendIssuingType;
 import uk.gov.hmcts.sptribs.caseworker.model.DateModel;
 import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderContentCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.OrderTemplate;
+import uk.gov.hmcts.sptribs.ciccase.model.PartiesCIC;
 import uk.gov.hmcts.sptribs.common.config.WebMvcConfig;
 import uk.gov.hmcts.sptribs.document.DocAssemblyService;
 import uk.gov.hmcts.sptribs.idam.IdamService;
@@ -43,6 +43,7 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static uk.gov.hmcts.sptribs.caseworker.model.OrderIssuingType.CREATE_AND_SEND_NEW_ORDER;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_CREATE_AND_SEND_ORDER;
 import static uk.gov.hmcts.sptribs.ciccase.model.ApplicantCIC.APPLICANT_CIC;
 import static uk.gov.hmcts.sptribs.ciccase.model.ContactPreferenceType.EMAIL;
@@ -85,6 +86,9 @@ public class CaseworkerCreateAndSendOrderIT {
     @MockitoBean
     private NotificationServiceCIC notificationServiceCIC;
 
+    private static final String CASEWORKER_CREATE_AND_SEND_ORDER_ABOUT_TO_START_RESPONSE =
+            "classpath:responses/caseworker-create-and-send-order-about-to-start-response.json";
+
     private static final String CASEWORKER_CREATE_AND_SEND_ORDER_ABOUT_TO_SUBMIT_RESPONSE =
             "classpath:responses/caseworker-create-and-send-order-about-to-submit-response.json";
 
@@ -101,7 +105,7 @@ public class CaseworkerCreateAndSendOrderIT {
     }
 
     @Test
-    void shouldAddCurrentEventInAboutToStart() throws Exception {
+    void shouldSetOrderIssueTypesAndTemplatesInAboutToStartCallback() throws Exception {
         final CaseData caseData = caseData();
 
         String response = mockMvc.perform(post(ABOUT_TO_START_URL)
@@ -119,8 +123,8 @@ public class CaseworkerCreateAndSendOrderIT {
             .getContentAsString();
 
         assertThatJson(response)
-            .inPath("$.data.currentEvent")
-            .isEqualTo("\"create-and-send-order\"");
+            .when(IGNORING_EXTRA_FIELDS)
+            .isEqualTo(json(expectedResponse(CASEWORKER_CREATE_AND_SEND_ORDER_ABOUT_TO_START_RESPONSE)));
     }
 
     @Test
@@ -146,10 +150,11 @@ public class CaseworkerCreateAndSendOrderIT {
         final CaseData caseData = CaseData.builder()
             .draftOrderContentCIC(draftOrderContentCIC)
             .cicCase(CicCase.builder()
-                .createAndSendIssuingTypes(CreateAndSendIssuingType.CREATE_AND_SEND_NEW_ORDER)
+                .orderIssuingType(CREATE_AND_SEND_NEW_ORDER)
                 .anonymiseYesOrNo(YesOrNo.YES)
                 .anonymisedAppellantName("AAC")
                 .orderTemplateIssued(document)
+                .partiesCIC(Set.of(PartiesCIC.SUBJECT, PartiesCIC.REPRESENTATIVE, PartiesCIC.APPLICANT))
                 .notifyPartySubject(Set.of(SUBJECT))
                 .notifyPartyRespondent(Set.of(RESPONDENT))
                 .notifyPartyRepresentative(Set.of(REPRESENTATIVE))
