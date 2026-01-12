@@ -9,6 +9,8 @@ import uk.gov.hmcts.ccd.sdk.ConfigBuilderImpl;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.Event;
 import uk.gov.hmcts.ccd.sdk.type.Document;
+import uk.gov.hmcts.ccd.sdk.type.FlagDetail;
+import uk.gov.hmcts.ccd.sdk.type.Flags;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
@@ -19,9 +21,11 @@ import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderCIC;
 import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderContentCIC;
 import uk.gov.hmcts.sptribs.caseworker.model.Order;
 import uk.gov.hmcts.sptribs.caseworker.model.OrderIssuingType;
+import uk.gov.hmcts.sptribs.caseworker.util.CaseFlagsUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.OrderTemplate;
+import uk.gov.hmcts.sptribs.ciccase.model.PartiesCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.document.model.CICDocument;
@@ -29,10 +33,14 @@ import uk.gov.hmcts.sptribs.notification.dispatcher.NewOrderIssuedNotification;
 import uk.gov.hmcts.sptribs.notification.exception.NotificationException;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doThrow;
@@ -193,7 +201,7 @@ class CaseworkerCreateAndSendOrderTest {
         Order order = orderList.getFirst().getValue();
         assertThat(order).isEqualTo(expectedOrder);
 
-        final var submittedResponse = caseworkerCreateAndSendOrder.submitted(details, details);
+        final var submittedResponse = caseworkerCreateAndSendOrder.submitted(details, caseDetailsBefore());
         assertThat(submittedResponse.getConfirmationHeader()).contains("# Order sent");
     }
 
@@ -239,7 +247,122 @@ class CaseworkerCreateAndSendOrderTest {
         Order order = orderList.getFirst().getValue();
         assertThat(order).isEqualTo(expectedOrder);
 
-        final var submittedResponse = caseworkerCreateAndSendOrder.submitted(details, details);
+        final var submittedResponse = caseworkerCreateAndSendOrder.submitted(details, caseDetailsBefore());
+        assertThat(submittedResponse.getConfirmationHeader()).contains("# Order sent");
+    }
+
+    @Test
+    void shouldApplyAnonymisationCaseFlagWhenAnonymityIsApplied() {
+        DraftOrderContentCIC draftOrderContentCIC = DraftOrderContentCIC.builder()
+                .orderTemplate(OrderTemplate.CIC3_RULE_27)
+                .mainContent("Main order content sample")
+                .orderSignature("Supreme Judge Fudge")
+                .build();
+
+        Document document = Document.builder()
+                .categoryId("TD")
+                .filename("Order--[AAC]--09-05-2024 09:04:04.pdf")
+                .binaryUrl("url/documents/uuid/binary")
+                .url("url/documents/uuid")
+                .build();
+
+        final CaseData caseData = CaseData.builder()
+                .draftOrderContentCIC(draftOrderContentCIC)
+                .cicCase(getCicCase(CREATE_AND_SEND_NEW_ORDER, YesOrNo.YES, "AAC", document))
+                .build();
+
+        caseData.setDraftOrderContentCIC(draftOrderContentCIC);
+
+        final CaseDetails<CaseData, State> details = new CaseDetails<>();
+        details.setData(caseData);
+        final var response = caseworkerCreateAndSendOrder.aboutToSubmit(details, caseDetailsBefore());
+
+        assertThat(response).isNotNull();
+        assertThat(response.getData()).isNotNull();
+        assertThat(response.getData().getCaseFlags()).isNotNull();
+        assertThat(response.getData().getCaseFlags().getDetails()).hasSize(1);
+        assertThat(response.getData().getCaseFlags().getDetails().getFirst().getValue())
+            .hasFieldOrPropertyWithValue("name", getExpectedAnonymisationFlag().getName())
+            .hasFieldOrPropertyWithValue("flagCode", getExpectedAnonymisationFlag().getFlagCode())
+            .hasFieldOrPropertyWithValue("status", getExpectedAnonymisationFlag().getStatus());
+
+
+        final CicCase cicCase = response.getData().getCicCase();
+        assertThat(cicCase.getAnonymisedAppellantName()).isEqualTo("AAC");
+        assertThat(cicCase.getAnonymiseYesOrNo()).isEqualTo(YesOrNo.YES);
+
+        List<ListValue<Order>> orderList = cicCase.getOrderList();
+        assertThat(orderList).isNotNull().hasSize(1);
+
+        final DraftOrderCIC draftOrderCIC = DraftOrderCIC.builder()
+                .draftOrderContentCIC(draftOrderContentCIC)
+                .templateGeneratedDocument(document)
+                .build();
+        final Order expectedOrder = getExpectedOrder(draftOrderCIC, null);
+        Order order = orderList.getFirst().getValue();
+        assertThat(order).isEqualTo(expectedOrder);
+
+        final var submittedResponse = caseworkerCreateAndSendOrder.submitted(details,caseDetailsBefore());
+        assertThat(submittedResponse.getConfirmationHeader()).contains("# Order sent");
+    }
+
+    @Test
+    void shouldNotApplyAnonymisationCaseFlagWhenAnonymityFlagExists() {
+        DraftOrderContentCIC draftOrderContentCIC = DraftOrderContentCIC.builder()
+                .orderTemplate(OrderTemplate.CIC3_RULE_27)
+                .mainContent("Main order content sample")
+                .orderSignature("Supreme Judge Fudge")
+                .build();
+
+        Document document = Document.builder()
+                .categoryId("TD")
+                .filename("Order--[AAC]--09-05-2024 09:04:04.pdf")
+                .binaryUrl("url/documents/uuid/binary")
+                .url("url/documents/uuid")
+                .build();
+
+        List<ListValue<FlagDetail>> flagDetailsList = new ArrayList<>();
+        flagDetailsList.add(ListValue.<FlagDetail>builder().value(getExpectedAnonymisationFlag()).build());
+        Flags flags = Flags.builder()
+                .details(flagDetailsList)
+                .build();
+
+
+        final CaseData caseData = CaseData.builder()
+                .caseFlags(flags)
+                .draftOrderContentCIC(draftOrderContentCIC)
+                .cicCase(getCicCase(CREATE_AND_SEND_NEW_ORDER, YesOrNo.YES, "AAC", document))
+                .build();
+
+        caseData.setDraftOrderContentCIC(draftOrderContentCIC);
+
+        final CaseDetails<CaseData, State> details = new CaseDetails<>();
+        details.setData(caseData);
+        final var response = caseworkerCreateAndSendOrder.aboutToSubmit(details, caseDetailsBefore());
+
+        assertThat(response).isNotNull();
+        assertThat(response.getData()).isNotNull();
+        assertThat(response.getData().getCaseFlags()).isNotNull();
+        assertThat(response.getData().getCaseFlags().getDetails()).hasSize(1);
+        assertTrue(CaseFlagsUtil.caseFlagDetailsEquals(
+                response.getData().getCaseFlags().getDetails().getFirst().getValue(), getExpectedAnonymisationFlag()));
+
+        final CicCase cicCase = response.getData().getCicCase();
+        assertThat(cicCase.getAnonymisedAppellantName()).isEqualTo("AAC");
+        assertThat(cicCase.getAnonymiseYesOrNo()).isEqualTo(YesOrNo.YES);
+
+        List<ListValue<Order>> orderList = cicCase.getOrderList();
+        assertThat(orderList).isNotNull().hasSize(1);
+
+        final DraftOrderCIC draftOrderCIC = DraftOrderCIC.builder()
+                .draftOrderContentCIC(draftOrderContentCIC)
+                .templateGeneratedDocument(document)
+                .build();
+        final Order expectedOrder = getExpectedOrder(draftOrderCIC, null);
+        Order order = orderList.getFirst().getValue();
+        assertThat(order).isEqualTo(expectedOrder);
+
+        final var submittedResponse = caseworkerCreateAndSendOrder.submitted(details,caseDetailsBefore());
         assertThat(submittedResponse.getConfirmationHeader()).contains("# Order sent");
     }
 
@@ -283,7 +406,7 @@ class CaseworkerCreateAndSendOrderTest {
         assertThat(order).isEqualTo(expectedOrder);
         assertThat(order.getUploadedFile().getFirst().getValue().getDocumentLink().getCategoryId()).isEqualTo("TD");
 
-        final var submittedResponse = caseworkerCreateAndSendOrder.submitted(details, details);
+        final var submittedResponse = caseworkerCreateAndSendOrder.submitted(details, caseDetailsBefore());
         assertThat(submittedResponse.getConfirmationHeader()).contains("# Order sent");
     }
 
@@ -428,6 +551,7 @@ class CaseworkerCreateAndSendOrderTest {
             .anonymiseYesOrNo(isAnonymised)
             .anonymisedAppellantName(anonymisedName)
             .orderTemplateIssued(document)
+            .partiesCIC(Set.of(PartiesCIC.SUBJECT, PartiesCIC.REPRESENTATIVE))
             .notifyPartySubject(Set.of(SUBJECT))
             .notifyPartyRespondent(Set.of(RESPONDENT))
             .notifyPartyRepresentative(Set.of(REPRESENTATIVE))
@@ -453,4 +577,19 @@ class CaseworkerCreateAndSendOrderTest {
             .orderSentDate(LocalDate.now())
             .build();
     }
+
+    private FlagDetail getExpectedAnonymisationFlag() {
+        return FlagDetail.builder()
+            .name("RRO (Restricted Reporting Order / Anonymisation)")
+            .path(List.of(ListValue.<String>builder().id(UUID.randomUUID().toString()).value("Case").build()))
+            .status("Active")
+            .nameCy("RRO (Gorchymyn Cyfyngiadau Adrodd / Anhysbys)")
+            .flagCode("CF0012")
+            .flagComment("Applied anonymity")
+            .dateTimeCreated(LocalDateTime.now())
+            .hearingRelevant(YesOrNo.YES)
+            .availableExternally(YesOrNo.NO)
+            .build();
+    }
+
 }
