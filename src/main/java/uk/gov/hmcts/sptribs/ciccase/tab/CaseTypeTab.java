@@ -35,8 +35,8 @@ import static uk.gov.hmcts.sptribs.ciccase.search.CaseFieldsConstants.COND_IS_CA
 import static uk.gov.hmcts.sptribs.ciccase.search.CaseFieldsConstants.COND_IS_NOT_CASE_STAYED;
 import static uk.gov.hmcts.sptribs.ciccase.search.CaseFieldsConstants.COND_REPRESENTATIVE_FULL_NAME_NOT_EMPTY;
 import static uk.gov.hmcts.sptribs.ciccase.search.CaseFieldsConstants.COND_REPRESENTATIVE_NOT_EMPTY;
-import static uk.gov.hmcts.sptribs.ciccase.search.CaseFieldsConstants.IS_STAYED;
 import static uk.gov.hmcts.sptribs.ciccase.search.CaseFieldsConstants.IS_CASE_IN_TIME;
+import static uk.gov.hmcts.sptribs.ciccase.search.CaseFieldsConstants.IS_STAYED;
 import static uk.gov.hmcts.sptribs.ciccase.search.CaseFieldsConstants.PANEL_COMPOSITION_DEFINED;
 import static uk.gov.hmcts.sptribs.ciccase.search.CaseFieldsConstants.REMOVE_STAY_ADDITIONAL_DETAIL;
 import static uk.gov.hmcts.sptribs.ciccase.search.CaseFieldsConstants.REMOVE_STAY_DETAILS;
