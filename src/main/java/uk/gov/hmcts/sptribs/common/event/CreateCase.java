@@ -170,9 +170,9 @@ public class CreateCase implements CCDConfig<CaseData, State, UserRole> {
         LocalDate initialCicaDecisionDatePlus90Days = null;
         if (data.getCicCase().getInitialCicaDecisionDate() != null) {
             initialCicaDecisionDatePlus90Days = data.getCicCase().getInitialCicaDecisionDate().plusDays(90);
-        } else {
-            data.getCicCase().setIsCaseInTime(YesOrNo.YES);
         }
+
+        data.getCicCase().setIsCaseInTime(YesOrNo.YES);
 
         if (initialCicaDecisionDatePlus90Days != null
             && data.getCicCase().getCaseReceivedDate().isAfter(initialCicaDecisionDatePlus90Days)) {
