@@ -268,7 +268,7 @@ class CaseworkerCreateAndSendOrderTest {
 
         final CaseData caseData = CaseData.builder()
                 .draftOrderContentCIC(draftOrderContentCIC)
-                .cicCase(getCicCase(CreateAndSendIssuingType.CREATE_AND_SEND_NEW_ORDER, YesOrNo.YES, "AAC", document))
+                .cicCase(getCicCase(CREATE_AND_SEND_NEW_ORDER, YesOrNo.YES, "AAC", document))
                 .build();
 
         caseData.setDraftOrderContentCIC(draftOrderContentCIC);
@@ -331,7 +331,7 @@ class CaseworkerCreateAndSendOrderTest {
         final CaseData caseData = CaseData.builder()
                 .caseFlags(flags)
                 .draftOrderContentCIC(draftOrderContentCIC)
-                .cicCase(getCicCase(CreateAndSendIssuingType.CREATE_AND_SEND_NEW_ORDER, YesOrNo.YES, "AAC", document))
+                .cicCase(getCicCase(CREATE_AND_SEND_NEW_ORDER, YesOrNo.YES, "AAC", document))
                 .build();
 
         caseData.setDraftOrderContentCIC(draftOrderContentCIC);
