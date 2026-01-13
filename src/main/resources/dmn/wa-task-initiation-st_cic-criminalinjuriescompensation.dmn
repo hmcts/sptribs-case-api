@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<definitions xmlns="https://www.omg.org/spec/DMN/20191111/MODEL/" xmlns:camunda="http://camunda.org/schema/1.0/dmn" xmlns:biodi="http://bpmn.io/schema/dmn/biodi/2.0" xmlns:dmndi="https://www.omg.org/spec/DMN/20191111/DMNDI/" xmlns:dc="http://www.omg.org/spec/DMN/20180521/DC/" id="wa-initiation-definition" name="DRD" namespace="http://camunda.org/schema/1.0/dmn" exporter="Camunda Modeler" exporterVersion="5.25.0">
+<definitions xmlns="https://www.omg.org/spec/DMN/20191111/MODEL/" xmlns:camunda="http://camunda.org/schema/1.0/dmn" xmlns:biodi="http://bpmn.io/schema/dmn/biodi/2.0" xmlns:dmndi="https://www.omg.org/spec/DMN/20191111/DMNDI/" xmlns:dc="http://www.omg.org/spec/DMN/20180521/DC/" id="wa-initiation-definition" name="DRD" namespace="http://camunda.org/schema/1.0/dmn" exporter="Camunda Modeler" exporterVersion="5.41.0">
   <decision id="wa-task-initiation-st_cic-criminalinjuriescompensation" name="Task initiation DMN" camunda:historyTimeToLive="P90D">
     <decisionTable id="DecisionTable_0jtevuc" hitPolicy="COLLECT">
       <input id="Input_1" label="Event Id" camunda:inputVariable="eventId">
@@ -2134,6 +2134,38 @@ else
           <text>"routine_work"</text>
         </outputEntry>
         <outputEntry id="LiteralExpression_1ti4kd8">
+          <text>"ADMIN"</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_0fmaeba">
+        <inputEntry id="UnaryTests_1867dza">
+          <text>"create-and-send-order"</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_09utq7m">
+          <text>"CaseManagement"</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_1x1qih3">
+          <text></text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_1ibhlx6">
+          <text>"followUpNoncomplianceOfDirections"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_04bz33m">
+          <text>"Follow up noncompliance of directions"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_1keh5hu">
+          <text></text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_13s864s">
+          <text>1</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_0lxobiw">
+          <text>"Processing"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_0bfyh33">
+          <text>"routine_work"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_1n18dbx">
           <text>"ADMIN"</text>
         </outputEntry>
       </rule>
