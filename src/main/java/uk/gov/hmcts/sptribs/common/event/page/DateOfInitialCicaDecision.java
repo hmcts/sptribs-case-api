@@ -10,7 +10,7 @@ public class DateOfInitialCicaDecision implements CcdPageConfiguration {
     public void addTo(PageBuilder pageBuilder) {
         pageBuilder
             .page("initialDecisionDateObjects")
-            .pageLabel("When was the CICA initial review decision letter received?")
+            .pageLabel("Date of CICA initial review decision letter")
             .complex(CaseData::getCicCase)
             .mandatoryWithLabel(CicCase::getInitialCicaDecisionDate, "Date of CICA initial review decision letter")
             .done();
