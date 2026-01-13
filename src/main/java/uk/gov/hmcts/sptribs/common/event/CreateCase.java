@@ -29,6 +29,7 @@ import uk.gov.hmcts.sptribs.common.event.page.CaseCategorisationDetails;
 import uk.gov.hmcts.sptribs.common.event.page.CaseUploadDocuments;
 import uk.gov.hmcts.sptribs.common.event.page.ContactPreferenceDetails;
 import uk.gov.hmcts.sptribs.common.event.page.DateOfReceipt;
+import uk.gov.hmcts.sptribs.common.event.page.EditCicaCaseDetailsPage;
 import uk.gov.hmcts.sptribs.common.event.page.FurtherDetails;
 import uk.gov.hmcts.sptribs.common.event.page.RepresentativeDetails;
 import uk.gov.hmcts.sptribs.common.event.page.SelectParties;
@@ -64,6 +65,7 @@ import static uk.gov.hmcts.sptribs.document.DocumentUtil.updateUploadedDocumentC
 public class CreateCase implements CCDConfig<CaseData, State, UserRole> {
 
     private static final CcdPageConfiguration categorisationDetails = new CaseCategorisationDetails();
+    private static final CcdPageConfiguration cicaCaseDetails = new EditCicaCaseDetailsPage();
     private static final CcdPageConfiguration dateOfReceipt = new DateOfReceipt();
     private static final CcdPageConfiguration selectParties = new SelectParties();
     private static final CcdPageConfiguration caseUploadDocuments = new CaseUploadDocuments();
@@ -102,6 +104,7 @@ public class CreateCase implements CCDConfig<CaseData, State, UserRole> {
                 ST_CIC_HEARING_CENTRE_TEAM_LEADER, ST_CIC_SENIOR_JUDGE, SUPER_USER));
 
         categorisationDetails.addTo(pageBuilder);
+        cicaCaseDetails.addTo(pageBuilder);
         dateOfReceipt.addTo(pageBuilder);
         selectParties.addTo(pageBuilder);
         subjectDetails.addTo(pageBuilder);
