@@ -10,6 +10,7 @@ import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.ccd.sdk.type.DynamicList;
 import uk.gov.hmcts.ccd.sdk.type.DynamicListElement;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
+import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 import uk.gov.hmcts.sptribs.caseworker.model.Order;
 import uk.gov.hmcts.sptribs.caseworker.util.EventConstants;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
@@ -22,9 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.COLON;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.DOUBLE_HYPHEN;
-import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.DRAFT;
 
 @Service
 @Slf4j
@@ -50,7 +49,7 @@ public class OrderService {
                     orders.add(item);
                 } else {
                     String item = order.getId() + EventConstants.HYPHEN
-                        + order.getValue().getUploadedFile().get(0).getValue().getDocumentLink().getFilename();
+                        + order.getValue().getUploadedFile().getFirst().getValue().getDocumentLink().getFilename();
                     orders.add(item);
                 }
             }
@@ -70,7 +69,11 @@ public class OrderService {
 
     public CaseData generateOrderFile(CaseData caseData, Long caseId, String date) {
         String subjectName = caseData.getCicCase().getFullName();
-        final String filename = DRAFT + COLON + "Order" + DOUBLE_HYPHEN + "[" + subjectName + "]" + DOUBLE_HYPHEN + date;
+        if (caseData.getCicCase().getAnonymiseYesOrNo() != null && caseData.getCicCase().getAnonymiseYesOrNo().equals(YesOrNo.YES)
+            && caseData.getCicCase().getAnonymisedAppellantName() != null) {
+            subjectName = caseData.getCicCase().getAnonymisedAppellantName();
+        }
+        final String filename = "Order" + DOUBLE_HYPHEN + "[" + subjectName + "]" + DOUBLE_HYPHEN + date;
 
         Document generalOrderDocument = caseDataDocumentService.renderDocument(
             previewDraftOrderTemplateContent.apply(caseData, caseId),
