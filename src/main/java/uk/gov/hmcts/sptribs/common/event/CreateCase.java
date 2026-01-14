@@ -134,7 +134,7 @@ public class CreateCase implements CCDConfig<CaseData, State, UserRole> {
         setIsRepresentativePresent(caseData);
         caseData.setSecurityClass(SecurityClass.PUBLIC);
         caseData.setCaseNameHmctsInternal(caseData.getCicCase().getFullName());
-        calculateAndSetIsCaseInTime(caseData);
+        caseData.getCicCase().calculateAndSetIsCaseInTime(caseData);
 
         initialiseFlags(caseData);
         setDefaultCaseDetails(caseData);
@@ -164,20 +164,6 @@ public class CreateCase implements CCDConfig<CaseData, State, UserRole> {
         return SubmittedCallbackResponse.builder()
             .confirmationHeader(format("# Case Created %n## Case reference number: %n## %s", caseReference))
             .build();
-    }
-
-    private void calculateAndSetIsCaseInTime(CaseData data) {
-        LocalDate initialCicaDecisionDatePlus90Days = null;
-        if (data.getCicCase().getInitialCicaDecisionDate() != null) {
-            initialCicaDecisionDatePlus90Days = data.getCicCase().getInitialCicaDecisionDate().plusDays(90);
-        }
-
-        data.getCicCase().setIsCaseInTime(YesOrNo.YES);
-
-        if (initialCicaDecisionDatePlus90Days != null
-            && data.getCicCase().getCaseReceivedDate().isAfter(initialCicaDecisionDatePlus90Days)) {
-            data.getCicCase().setIsCaseInTime(YesOrNo.NO);
-        }
     }
 
     private void setDefaultCaseDetails(CaseData data) {

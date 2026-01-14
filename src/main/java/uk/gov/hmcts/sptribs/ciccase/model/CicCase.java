@@ -659,6 +659,20 @@ public class CicCase {
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate firstOrderDueDate;
 
+    public void calculateAndSetIsCaseInTime(CaseData data) {
+        LocalDate initialCicaDecisionDatePlus90Days = null;
+        if (data.getCicCase().getInitialCicaDecisionDate() != null) {
+            initialCicaDecisionDatePlus90Days = data.getCicCase().getInitialCicaDecisionDate().plusDays(90);
+        }
+
+        data.getCicCase().setIsCaseInTime(YesOrNo.YES);
+
+        if (initialCicaDecisionDatePlus90Days != null
+            && data.getCicCase().getCaseReceivedDate().isAfter(initialCicaDecisionDatePlus90Days)) {
+            data.getCicCase().setIsCaseInTime(YesOrNo.NO);
+        }
+    }
+
     private LocalDate findEarliestDate(List<ListValue<DateModel>> dueDateList, LocalDate compare) {
         LocalDate earliestDate = compare;
         for (ListValue<DateModel> dateModelListValue : dueDateList) {
