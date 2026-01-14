@@ -21,7 +21,6 @@ import uk.gov.hmcts.sptribs.testutil.IdamWireMock;
 
 import java.util.UUID;
 
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -66,14 +65,13 @@ class DocumentControllerIT {
     @Test
     void shouldDownloadDocumentSuccessfully() throws Exception {
         // Given
-        UUID documentId = UUID.randomUUID();
-        byte[] documentContent = "test document content".getBytes();
         String fileName = "test-document.pdf";
         String mimeType = "application/pdf";
 
         Document document = new Document();
         document.originalDocumentName = fileName;
         document.mimeType = mimeType;
+        UUID documentId = UUID.randomUUID();
 
         when(authTokenGenerator.generate()).thenReturn(TEST_SERVICE_AUTH_TOKEN);
         when(caseDocumentClientApi.getDocument(
@@ -81,6 +79,8 @@ class DocumentControllerIT {
             eq(TEST_SERVICE_AUTH_TOKEN),
             eq(documentId)
         )).thenReturn(ResponseEntity.ok(document));
+
+        byte[] documentContent = "test document content".getBytes();
         when(caseDocumentClientApi.getDocumentBinary(
             eq(TEST_AUTHORIZATION_TOKEN),
             eq(TEST_SERVICE_AUTH_TOKEN),
@@ -119,13 +119,13 @@ class DocumentControllerIT {
     @Test
     void shouldReturn500WhenDocumentBinaryNotFound() throws Exception {
         // Given
-        UUID documentId = UUID.randomUUID();
         String fileName = "test-document.pdf";
         String mimeType = "application/pdf";
 
         Document document = new Document();
         document.originalDocumentName = fileName;
         document.mimeType = mimeType;
+        UUID documentId = UUID.randomUUID();
 
         when(authTokenGenerator.generate()).thenReturn(TEST_SERVICE_AUTH_TOKEN);
         when(caseDocumentClientApi.getDocument(
@@ -180,8 +180,6 @@ class DocumentControllerIT {
     @Test
     void shouldDownloadDocumentWithDifferentMimeTypes() throws Exception {
         // Given
-        UUID documentId = UUID.randomUUID();
-        byte[] documentContent = "<html><body>Test</body></html>".getBytes();
         String fileName = "test-document.html";
         String mimeType = "text/html";
 
@@ -189,12 +187,16 @@ class DocumentControllerIT {
         document.originalDocumentName = fileName;
         document.mimeType = mimeType;
 
+        UUID documentId = UUID.randomUUID();
+
         when(authTokenGenerator.generate()).thenReturn(TEST_SERVICE_AUTH_TOKEN);
         when(caseDocumentClientApi.getDocument(
             eq(TEST_AUTHORIZATION_TOKEN),
             eq(TEST_SERVICE_AUTH_TOKEN),
             eq(documentId)
         )).thenReturn(ResponseEntity.ok(document));
+
+        byte[] documentContent = "<html><body>Test</body></html>".getBytes();
         when(caseDocumentClientApi.getDocumentBinary(
             eq(TEST_AUTHORIZATION_TOKEN),
             eq(TEST_SERVICE_AUTH_TOKEN),
@@ -211,5 +213,9 @@ class DocumentControllerIT {
             .andExpect(content().bytes(documentContent));
     }
 }
+
+
+
+
 
 
