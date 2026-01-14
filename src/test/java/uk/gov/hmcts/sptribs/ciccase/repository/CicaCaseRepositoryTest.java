@@ -12,6 +12,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import uk.gov.hmcts.sptribs.controllers.model.CicaCaseResponse;
 
+import java.sql.ResultSet;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -19,6 +20,7 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -49,17 +51,20 @@ class CicaCaseRepositoryTest {
     void shouldReturnCaseWhenFoundByCicaReference() {
         // Given
         String cicaReference = "X12345";
-        CicaCaseResponse expectedResponse = CicaCaseResponse.builder()
-            .id("1624351572550045")
-            .state("Submitted")
-            .data(Map.of())
-            .build();
+        String caseDataJson = "{\"testKey\":\"testValue\"}";
 
         when(namedParameterJdbcTemplate.query(
             sqlCaptor.capture(),
             paramsCaptor.capture(),
             rowMapperCaptor.capture()
-        )).thenReturn(List.of(expectedResponse));
+        )).thenAnswer(invocation -> {
+            ResultSet rs = mock(ResultSet.class);
+            when(rs.getObject("reference", Long.class)).thenReturn(1624351572550045L);
+            when(rs.getString("state")).thenReturn("Submitted");
+            when(rs.getString("case_data")).thenReturn(caseDataJson);
+            RowMapper<CicaCaseResponse> mapper = invocation.getArgument(2);
+            return List.of(mapper.mapRow(rs, 0));
+        });
 
         // When
         Optional<CicaCaseResponse> result = cicaCaseRepository.findByCicaReference(cicaReference);
@@ -68,10 +73,13 @@ class CicaCaseRepositoryTest {
         assertThat(result).isPresent();
         assertThat(result.get().getId()).isEqualTo("1624351572550045");
         assertThat(result.get().getState()).isEqualTo("Submitted");
+        assertThat(result.get().getData().get("testKey").asText()).isEqualTo("testValue");
 
         // Verify SQL contains expected elements
         assertThat(sqlCaptor.getValue()).contains("ccd.case_data");
-        assertThat(sqlCaptor.getValue()).contains("cicCaseCicaReferenceNumber");
+        assertThat(sqlCaptor.getValue()).contains("{editCicaCaseDetails,cicaReferenceNumber}");
+        assertThat(sqlCaptor.getValue()).contains("last_modified");
+        assertThat(sqlCaptor.getValue()).contains("LIMIT 1");
 
         // Verify params
         assertThat(paramsCaptor.getValue()).containsEntry("cicaReference", "X12345");
