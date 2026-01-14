@@ -56,7 +56,7 @@ public class WAFollowUpNoncomplianceOfDirectionsFT extends FunctionalTestSuite {
 
         ccdCaseCreator.createInitialStartEventAndSubmit(CASEWORKER_EDIT_CASE, ST_CIC_JURISDICTION, ST_CIC_CASE_TYPE, newCaseId, caseData);
         ccdCaseCreator.createInitialStartEventAndSubmit(CASEWORKER_CASE_BUILT, ST_CIC_JURISDICTION, ST_CIC_CASE_TYPE, newCaseId, caseData);
-        ccdCaseCreator.createInitialStartEventAndSubmit(CASEWORKER_SEND_ORDER, ST_CIC_JURISDICTION, ST_CIC_CASE_TYPE, newCaseId, caseData);
+        ccdCaseCreator.createInitialStartEventAndSubmitAdminEvent(CASEWORKER_SEND_ORDER, ST_CIC_JURISDICTION, ST_CIC_CASE_TYPE, newCaseId, caseData);
 
         await()
             .pollInterval(DEFAULT_POLL_INTERVAL_SECONDS, SECONDS)
