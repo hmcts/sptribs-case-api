@@ -10,6 +10,10 @@ import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.CASEWORKER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.NON_RESPONDENT_USER;
+import static uk.gov.hmcts.sptribs.ciccase.search.CaseFieldsConstants.ANONYMISATION_DATE;
+import static uk.gov.hmcts.sptribs.ciccase.search.CaseFieldsConstants.ANONYMISED_APPELLANT_NAME;
+import static uk.gov.hmcts.sptribs.ciccase.search.CaseFieldsConstants.ANONYMISE_YES_OR_NO;
+import static uk.gov.hmcts.sptribs.ciccase.search.CaseFieldsConstants.ANONYMITY_DETAILS;
 import static uk.gov.hmcts.sptribs.ciccase.search.CaseFieldsConstants.APPLICANT_ADDRESS;
 import static uk.gov.hmcts.sptribs.ciccase.search.CaseFieldsConstants.APPLICANT_CONTACT_PREFERENCE;
 import static uk.gov.hmcts.sptribs.ciccase.search.CaseFieldsConstants.APPLICANT_DATE_OF_BIRTH;
@@ -27,6 +31,7 @@ import static uk.gov.hmcts.sptribs.ciccase.search.CaseFieldsConstants.CASE_STATE
 import static uk.gov.hmcts.sptribs.ciccase.search.CaseFieldsConstants.CASE_SUBCATEGORY;
 import static uk.gov.hmcts.sptribs.ciccase.search.CaseFieldsConstants.COND_ALWAYS_HIDE_STAY_REASON;
 import static uk.gov.hmcts.sptribs.ciccase.search.CaseFieldsConstants.COND_APPLICANT_FULL_NAME_NOT_EMPTY;
+import static uk.gov.hmcts.sptribs.ciccase.search.CaseFieldsConstants.COND_APPLY_ANONYMITY;
 import static uk.gov.hmcts.sptribs.ciccase.search.CaseFieldsConstants.COND_HEARING_LIST_NOT_ANY_AND_CANCELLATION_REASON_NOT_EMPTY;
 import static uk.gov.hmcts.sptribs.ciccase.search.CaseFieldsConstants.COND_HEARING_LIST_NOT_ANY_AND_CASE_POSTPONE_REASON_NOT_EMPTY;
 import static uk.gov.hmcts.sptribs.ciccase.search.CaseFieldsConstants.COND_HEARING_LIST_NOT_ANY_AND_HEARING_TYPE_NOT_EMPTY;
@@ -201,7 +206,11 @@ public class CaseTypeTab implements CCDConfig<CaseData, State, UserRole> {
             .field(APPLICANT_PHONE_NUMBER)
             .field(APPLICANT_CONTACT_PREFERENCE, COND_APPLICANT_FULL_NAME_NOT_EMPTY)
             .field(APPLICANT_EMAIL)
-            .field(APPLICANT_ADDRESS);
+            .field(APPLICANT_ADDRESS)
+            .label(ANONYMITY_DETAILS, COND_APPLY_ANONYMITY, "### Anonymity Details")
+            .field(ANONYMISE_YES_OR_NO)
+            .field(ANONYMISED_APPELLANT_NAME)
+            .field(ANONYMISATION_DATE);
     }
 
     private void buildCasePartiesTab(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
