@@ -1387,6 +1387,14 @@ class CamundaTaskWaInitiationTest extends DmnDecisionTableBaseUnitTest {
                 Map.of("Data", Map.of("cicCaseAdminActionRequired", List.of("AdminActionRequired"))),
                 List.of(
                     Map.of(
+                        "taskId", FOLLOW_UP_NONCOMPLIANCE_OF_DIR_TASK,
+                        "name", "Follow up noncompliance of directions",
+                        "workingDaysAllowed", 1,
+                        "processCategories", PROCESS_CATEGORY_PROCESSING,
+                        "workType", ROUTINE_WORK_TYPE,
+                        "roleCategory", ROLE_CATEGORY_ADMIN
+                    ),
+                    Map.of(
                         "taskId", REVIEW_ORDER,
                         "name", "Review Order",
                         "workingDaysAllowed", 5,
@@ -1405,7 +1413,7 @@ class CamundaTaskWaInitiationTest extends DmnDecisionTableBaseUnitTest {
         DmnDecisionTableImpl logic = (DmnDecisionTableImpl) decision.getDecisionLogic();
         assertThat(logic.getInputs().size(), is(4));
         assertThat(logic.getOutputs().size(), is(7));
-        assertThat(logic.getRules().size(), is(65));
+        assertThat(logic.getRules().size(), is(66));
     }
 
     @ParameterizedTest(name = "event id: {0} post event state: {1} appeal type: {2}")
