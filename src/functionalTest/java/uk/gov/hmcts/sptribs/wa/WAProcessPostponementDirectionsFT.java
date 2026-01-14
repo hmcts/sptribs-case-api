@@ -71,7 +71,7 @@ public class WAProcessPostponementDirectionsFT extends FunctionalTestSuite {
         hearingCaseData.put("cicCaseReferralTypeForWA", "Postponement request");
         hearingCaseData.putAll(caseData(CASEWORKER_CREATE_DRAFT_ORDER_DATA));
         checkAndUpdateDraftOrderDocument(hearingCaseData);
-        ccdCaseCreator.createInitialStartEventAndSubmit(
+        ccdCaseCreator.createInitialStartEventAndSubmitAdminEvent(
             CASEWORKER_CREATE_DRAFT_ORDER, ST_CIC_JURISDICTION, ST_CIC_CASE_TYPE, newCaseId, hearingCaseData);
 
         await()
