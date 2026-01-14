@@ -56,11 +56,10 @@ public class DocumentController {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.valueOf(documentResponse.mimeType()));
         headers.set("original-file-name", documentResponse.fileName());
+        log.info("returning document now with name {}", documentResponse.fileName());
 
         return ResponseEntity.ok()
             .headers(headers)
             .body(documentResponse.file());
     }
 }
-
-

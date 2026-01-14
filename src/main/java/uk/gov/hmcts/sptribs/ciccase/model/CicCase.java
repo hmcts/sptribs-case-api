@@ -25,6 +25,7 @@ import uk.gov.hmcts.sptribs.caseworker.model.YesNo;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerAndSuperUserAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerWithCAAAccess;
+import uk.gov.hmcts.sptribs.ciccase.model.access.CitizenAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CollectionDefaultAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.DefaultAccess;
 import uk.gov.hmcts.sptribs.document.model.CICDocument;
@@ -396,6 +397,12 @@ public class CicCase {
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private String applicantFullName;
+
+    @CCD(
+        label = "Applicant's full name",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class, CitizenAccess.class}
+    )
+    private List<ListValue<CaseworkerCICDocument>> applicantDocuments;
 
     @CCD(
         label = "Applicant's address",

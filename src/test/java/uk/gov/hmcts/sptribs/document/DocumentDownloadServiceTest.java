@@ -38,9 +38,6 @@ class DocumentDownloadServiceTest {
     @Test
     void shouldDownloadDocumentSuccessfully() {
         // Given
-        UUID documentId = UUID.randomUUID();
-        String documentIdString = documentId.toString();
-        byte[] documentContent = "test document content".getBytes();
         String fileName = "test-document.pdf";
         String mimeType = "application/pdf";
 
@@ -48,11 +45,15 @@ class DocumentDownloadServiceTest {
         document.originalDocumentName = fileName;
         document.mimeType = mimeType;
 
+        UUID documentId = UUID.randomUUID();
         when(authTokenGenerator.generate()).thenReturn(TEST_SERVICE_AUTH_TOKEN);
         when(caseDocumentClientApi.getDocument(TEST_AUTHORIZATION_TOKEN, TEST_SERVICE_AUTH_TOKEN, documentId))
             .thenReturn(ResponseEntity.ok(document));
+        byte[] documentContent = "test document content".getBytes();
         when(caseDocumentClientApi.getDocumentBinary(TEST_AUTHORIZATION_TOKEN, TEST_SERVICE_AUTH_TOKEN, documentId))
             .thenReturn(ResponseEntity.ok(documentContent));
+
+        String documentIdString = documentId.toString();
 
         // When
         DownloadedDocumentResponse response = documentDownloadService.downloadDocument(
@@ -75,21 +76,21 @@ class DocumentDownloadServiceTest {
     @Test
     void shouldDownloadDocumentWithMimeTypeFromFileName() {
         // Given
-        UUID documentId = UUID.randomUUID();
-        String documentIdString = documentId.toString();
-        byte[] documentContent = "test document content".getBytes();
         String fileName = "test-document.pdf";
 
         Document document = new Document();
         document.originalDocumentName = fileName;
         document.mimeType = null;
 
+        UUID documentId = UUID.randomUUID();
         when(authTokenGenerator.generate()).thenReturn(TEST_SERVICE_AUTH_TOKEN);
         when(caseDocumentClientApi.getDocument(TEST_AUTHORIZATION_TOKEN, TEST_SERVICE_AUTH_TOKEN, documentId))
             .thenReturn(ResponseEntity.ok(document));
+        byte[] documentContent = "test document content".getBytes();
         when(caseDocumentClientApi.getDocumentBinary(TEST_AUTHORIZATION_TOKEN, TEST_SERVICE_AUTH_TOKEN, documentId))
             .thenReturn(ResponseEntity.ok(documentContent));
 
+        String documentIdString = documentId.toString();
         // When
         DownloadedDocumentResponse response = documentDownloadService.downloadDocument(
             TEST_AUTHORIZATION_TOKEN,
@@ -105,21 +106,22 @@ class DocumentDownloadServiceTest {
     @Test
     void shouldReturnOctetStreamForUnknownMimeType() {
         // Given
-        UUID documentId = UUID.randomUUID();
-        String documentIdString = documentId.toString();
-        byte[] documentContent = "test document content".getBytes();
         String fileName = "test-document.unknown";
 
         Document document = new Document();
         document.originalDocumentName = fileName;
         document.mimeType = null;
 
+        UUID documentId = UUID.randomUUID();
         when(authTokenGenerator.generate()).thenReturn(TEST_SERVICE_AUTH_TOKEN);
         when(caseDocumentClientApi.getDocument(TEST_AUTHORIZATION_TOKEN, TEST_SERVICE_AUTH_TOKEN, documentId))
             .thenReturn(ResponseEntity.ok(document));
+
+        byte[] documentContent = "test document content".getBytes();
         when(caseDocumentClientApi.getDocumentBinary(TEST_AUTHORIZATION_TOKEN, TEST_SERVICE_AUTH_TOKEN, documentId))
             .thenReturn(ResponseEntity.ok(documentContent));
 
+        String documentIdString = documentId.toString();
         // When
         DownloadedDocumentResponse response = documentDownloadService.downloadDocument(
             TEST_AUTHORIZATION_TOKEN,
@@ -167,20 +169,20 @@ class DocumentDownloadServiceTest {
     @Test
     void shouldThrowExceptionWhenDocumentBinaryNotFound() {
         // Given
-        UUID documentId = UUID.randomUUID();
-        String documentIdString = documentId.toString();
         String fileName = "test-document.pdf";
 
         Document document = new Document();
         document.originalDocumentName = fileName;
         document.mimeType = "application/pdf";
 
+        UUID documentId = UUID.randomUUID();
         when(authTokenGenerator.generate()).thenReturn(TEST_SERVICE_AUTH_TOKEN);
         when(caseDocumentClientApi.getDocument(TEST_AUTHORIZATION_TOKEN, TEST_SERVICE_AUTH_TOKEN, documentId))
             .thenReturn(ResponseEntity.ok(document));
         when(caseDocumentClientApi.getDocumentBinary(TEST_AUTHORIZATION_TOKEN, TEST_SERVICE_AUTH_TOKEN, documentId))
             .thenReturn(ResponseEntity.ok(null));
 
+        String documentIdString = documentId.toString();
         // When & Then
         assertThatThrownBy(() -> documentDownloadService.downloadDocument(
             TEST_AUTHORIZATION_TOKEN,
@@ -231,13 +233,12 @@ class DocumentDownloadServiceTest {
     @Test
     void shouldThrowExceptionWhenBinaryResponseIsNull() {
         // Given
-        UUID documentId = UUID.randomUUID();
-        String documentIdString = documentId.toString();
         String fileName = "test-document.pdf";
 
         Document document = new Document();
         document.originalDocumentName = fileName;
         document.mimeType = "application/pdf";
+        UUID documentId = UUID.randomUUID();
 
         when(authTokenGenerator.generate()).thenReturn(TEST_SERVICE_AUTH_TOKEN);
         when(caseDocumentClientApi.getDocument(TEST_AUTHORIZATION_TOKEN, TEST_SERVICE_AUTH_TOKEN, documentId))
@@ -245,6 +246,7 @@ class DocumentDownloadServiceTest {
         when(caseDocumentClientApi.getDocumentBinary(TEST_AUTHORIZATION_TOKEN, TEST_SERVICE_AUTH_TOKEN, documentId))
             .thenReturn(null);
 
+        String documentIdString = documentId.toString();
         // When & Then
         assertThatThrownBy(() -> documentDownloadService.downloadDocument(
             TEST_AUTHORIZATION_TOKEN,
@@ -254,5 +256,9 @@ class DocumentDownloadServiceTest {
             .hasMessageContaining("Failed to download document binary");
     }
 }
+
+
+
+
 
 
