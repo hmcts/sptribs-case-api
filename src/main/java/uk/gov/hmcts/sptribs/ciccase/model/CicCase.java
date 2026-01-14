@@ -153,6 +153,13 @@ public class CicCase {
     private List<ListValue<DateModel>> orderDueDates;
 
     @CCD(
+        typeOverride = MultiSelectList,
+        typeParameterOverride = "AdminAction",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private Set<AdminAction> adminActionRequired;
+
+    @CCD(
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private Document selectedOrder;
