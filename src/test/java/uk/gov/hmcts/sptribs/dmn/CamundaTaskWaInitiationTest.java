@@ -1483,7 +1483,7 @@ class CamundaTaskWaInitiationTest extends DmnDecisionTableBaseUnitTest {
 
     private DelayUntilRequest mapToDelayUntilRequest(Map<?, ?> map) {
         return DelayUntilRequest.builder()
-            .delayUntil(map.getOrDefault("delayUntil", null).toString())
+            .delayUntil((String) map.getOrDefault("delayUntil", null))
             .delayUntilOrigin(map.getOrDefault("delayUntilOrigin", null).toString())
             .delayUntilTime((String) map.getOrDefault("delayUntilTime", null))
             .delayUntilMustBeWorkingDay((String) map.getOrDefault("delayUntilMustBeWorkingDay", null))
