@@ -1,3 +1,23 @@
+spring:
+  flyway:
+    enabled: false
+  main:
+    allow-bean-definition-overriding: true
+  messages:
+    encoding: ISO-8859-1
+  autoconfigure:
+    exclude:
+      - com.azure.spring.cloud.autoconfigure.implementation.context.AzureTokenCredentialAutoConfiguration
+  datasource:
+    url: jdbc:tc:postgresql:16:///sptribs_case_api
+    username: test
+    password: test
+    driver-class-name: org.testcontainers.jdbc.ContainerDatabaseDriver
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+  jms:
+    servicebus:
+      enabled: false
 
 s2s:
   stub: true
@@ -7,4 +27,3 @@ core_case_data:
     url: http://localhost:4012
   search:
     page_size: 100
-

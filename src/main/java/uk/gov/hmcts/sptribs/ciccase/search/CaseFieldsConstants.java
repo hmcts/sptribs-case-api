@@ -58,6 +58,11 @@ public final class CaseFieldsConstants {
     public static final String REMOVE_STAY_OTHER_DESCRIPTION = "removeStayStayRemoveOtherDescription";
     public static final String REMOVE_STAY_ADDITIONAL_DETAIL = "removeStayAdditionalDetail";
 
+    public static final String ANONYMITY_DETAILS = "anonymityDetails";
+    public static final String ANONYMISE_YES_OR_NO = "cicCaseAnonymiseYesOrNo";
+    public static final String ANONYMISED_APPELLANT_NAME = "cicCaseAnonymisedAppellantName";
+    public static final String ANONYMISATION_DATE = "cicCaseAnonymisationDate";
+
     //Conditions
     public static final String COND_REPRESENTATIVE_NOT_EMPTY = "cicCaseRepresentativeFullName!=\"\"";
     public static final String COND_ALWAYS_HIDE_STAY_REASON = "stayStayReason=\"NEVER_SHOW\"";
@@ -73,6 +78,7 @@ public final class CaseFieldsConstants {
     public static final String COND_APPLICANT_FULL_NAME_NOT_EMPTY = "cicCaseApplicantFullName!=\"\"";
     public static final String COND_HEARING_LIST_NOT_ANY_AND_HEARING_TYPE_NOT_EMPTY = "hearingList!=\"*\" AND hearingType!=\"\"";
     public static final String COND_REPRESENTATIVE_FULL_NAME_NOT_EMPTY = "cicCaseRepresentativeFullName!=\"\"";
+    public static final String COND_APPLY_ANONYMITY = "cicCaseAnonymiseYesOrNo=\"Yes\" AND cicCaseAnonymisedAppellantName!=\"\"";
 
     // required for Checkstyle
     private CaseFieldsConstants() {

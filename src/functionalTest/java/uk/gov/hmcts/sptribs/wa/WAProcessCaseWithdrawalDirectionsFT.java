@@ -64,7 +64,7 @@ public class WAProcessCaseWithdrawalDirectionsFT extends FunctionalTestSuite {
         caseData.put("cicCaseReferralTypeForWA", "Withdrawal request");
         caseData.putAll(caseData(CASEWORKER_CREATE_DRAFT_ORDER_DATA));
         checkAndUpdateDraftOrderDocument(caseData);
-        ccdCaseCreator.createInitialStartEventAndSubmit(
+        ccdCaseCreator.createInitialStartEventAndSubmitAdminEvent(
             CASEWORKER_CREATE_DRAFT_ORDER, ST_CIC_JURISDICTION, ST_CIC_CASE_TYPE, newCaseId, caseData);
 
         await()
