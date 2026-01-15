@@ -85,7 +85,8 @@ public class CicSubmitCaseEventFT extends FunctionalTestSuite {
     @Test
     public void shouldRaiseErrorWhenNotificationExceptionFound() throws Exception {
         final Map<String, Object> caseData = caseData(REQUEST_MISSING_CASE_NUMBER);
-        final Response response = triggerCallback(caseData, CITIZEN_SUBMIT_CASE_EVENT_ID, SUBMITTED_URL);
+        final Response response =
+            triggerCallbackWithoutPersistedCase(caseData, CITIZEN_SUBMIT_CASE_EVENT_ID, SUBMITTED_URL);
 
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
         assertThatJson(response.asString())

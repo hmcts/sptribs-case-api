@@ -10,6 +10,7 @@ import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.Event;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
+import uk.gov.hmcts.sptribs.caseworker.event.page.ContactPartiesSelectDocument;
 import uk.gov.hmcts.sptribs.caseworker.event.page.RespondentPartiesToContact;
 import uk.gov.hmcts.sptribs.caseworker.model.ContactParties;
 import uk.gov.hmcts.sptribs.ciccase.model.ApplicantCIC;
@@ -46,6 +47,9 @@ class RespondentContactPartiesTest {
 
     @Mock
     private ContactPartiesNotification contactPartiesNotification;
+
+    @Mock
+    private ContactPartiesSelectDocument contactPartiesSelectDocument;
 
     @Test
     void shouldAddConfigurationToConfigBuilder() {

@@ -21,6 +21,7 @@ import uk.gov.hmcts.sptribs.caseworker.model.Order;
 import uk.gov.hmcts.sptribs.caseworker.model.OrderIssuingType;
 import uk.gov.hmcts.sptribs.caseworker.model.ReminderDays;
 import uk.gov.hmcts.sptribs.caseworker.model.YesNo;
+import uk.gov.hmcts.sptribs.caseworker.util.DynamicListUtil;
 import uk.gov.hmcts.sptribs.caseworker.util.MessageUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.ApplicantCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
@@ -38,6 +39,7 @@ import uk.gov.hmcts.sptribs.notification.dispatcher.NewOrderIssuedNotification;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -470,6 +472,25 @@ class CaseworkerSendOrderTest {
         assertThat(submitted.getConfirmationHeader()).contains("Order sent");
         assertThat(response).isNotNull();
         assertThat(response2.getData().getCicCase().getOrderList()).hasSize(2);
+    }
+
+    @Test
+    void aboutToStartShouldSetOrderIssuingTypes() {
+        CaseDetails<CaseData, State> caseDetails = CaseDetails.<CaseData, State>builder()
+                .data(CaseData.builder().build())
+                .build();
+        AboutToStartOrSubmitResponse<CaseData, State> response = caseworkerSendOrder.aboutToStart(caseDetails);
+
+        EnumSet<OrderIssuingType> expectedOrderIssuingTypes = EnumSet.of(
+                OrderIssuingType.UPLOAD_A_NEW_ORDER_FROM_YOUR_COMPUTER,
+                OrderIssuingType.ISSUE_AND_SEND_AN_EXISTING_DRAFT
+        );
+
+        DynamicList expectedDynamicList = DynamicListUtil.createDynamicListFromEnumSet(expectedOrderIssuingTypes,
+                OrderIssuingType::getLabel,
+                caseDetails.getData().getCicCase().getOrderIssuingType());
+        assertThat(response).isNotNull();
+        assertThat(response.getData().getCicCase().getOrderIssuingDynamicRadioList()).isEqualTo(expectedDynamicList);
     }
 
     @Test

@@ -1,23 +1,28 @@
 package uk.gov.hmcts.sptribs.notification.dispatcher;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseIssue;
+import uk.gov.hmcts.sptribs.caseworker.util.DocumentListUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.ContactPreferenceType;
 import uk.gov.hmcts.sptribs.ciccase.model.NotificationResponse;
 import uk.gov.hmcts.sptribs.common.CommonConstants;
+import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.notification.NotificationHelper;
 import uk.gov.hmcts.sptribs.notification.NotificationServiceCIC;
 import uk.gov.hmcts.sptribs.notification.PartiesNotification;
 import uk.gov.hmcts.sptribs.notification.TemplateName;
 import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
 
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
+@RequiredArgsConstructor
 @Component
 @Slf4j
 public class CaseIssuedNotification implements PartiesNotification {
@@ -27,12 +32,6 @@ public class CaseIssuedNotification implements PartiesNotification {
     private final NotificationHelper notificationHelper;
 
     private static final int DOC_ATTACH_LIMIT = 5;
-
-    @Autowired
-    public CaseIssuedNotification(NotificationServiceCIC notificationService, NotificationHelper notificationHelper) {
-        this.notificationService = notificationService;
-        this.notificationHelper = notificationHelper;
-    }
 
     @Override
     public void sendToSubject(final CaseData caseData, final String caseNumber) {
@@ -45,11 +44,11 @@ public class CaseIssuedNotification implements PartiesNotification {
             // Send Email
             notificationResponse = sendEmailNotification(templateVarsSubject,
                 cicCase.getEmail(),
-                TemplateName.CASE_ISSUED_CITIZEN_EMAIL);
+                TemplateName.CASE_ISSUED_CITIZEN_EMAIL, caseNumber);
         } else {
             notificationHelper.addAddressTemplateVars(cicCase.getAddress(), templateVarsSubject);
             //SEND POST
-            notificationResponse = sendLetterNotification(templateVarsSubject);
+            notificationResponse = sendLetterNotification(templateVarsSubject, caseNumber);
         }
 
         cicCase.setSubjectLetterNotifyList(notificationResponse);
@@ -65,10 +64,10 @@ public class CaseIssuedNotification implements PartiesNotification {
         if (caseData.getCicCase().getApplicantContactDetailsPreference() == ContactPreferenceType.EMAIL) {
             // Send Email
             notificationResponse = sendEmailNotification(templateVarsApplicant,
-                cicCase.getApplicantEmailAddress(), TemplateName.CASE_ISSUED_CITIZEN_EMAIL);
+                cicCase.getApplicantEmailAddress(), TemplateName.CASE_ISSUED_CITIZEN_EMAIL, caseNumber);
         } else {
             notificationHelper.addAddressTemplateVars(cicCase.getApplicantAddress(), templateVarsApplicant);
-            notificationResponse = sendLetterNotification(templateVarsApplicant);
+            notificationResponse = sendLetterNotification(templateVarsApplicant, caseNumber);
         }
 
         cicCase.setAppNotificationResponse(notificationResponse);
@@ -84,10 +83,10 @@ public class CaseIssuedNotification implements PartiesNotification {
         if (cicCase.getRepresentativeContactDetailsPreference() == ContactPreferenceType.EMAIL) {
             // Send Email
             notificationResponse = sendEmailNotification(templateVarsRepresentative,
-                cicCase.getRepresentativeEmailAddress(), TemplateName.CASE_ISSUED_CITIZEN_EMAIL);
+                cicCase.getRepresentativeEmailAddress(), TemplateName.CASE_ISSUED_CITIZEN_EMAIL, caseNumber);
         } else {
             notificationHelper.addAddressTemplateVars(cicCase.getRepresentativeAddress(), templateVarsRepresentative);
-            notificationResponse = sendLetterNotification(templateVarsRepresentative);
+            notificationResponse = sendLetterNotification(templateVarsRepresentative, caseNumber);
         }
 
         cicCase.setRepNotificationResponse(notificationResponse);
@@ -102,41 +101,49 @@ public class CaseIssuedNotification implements PartiesNotification {
         final NotificationResponse notificationResponse;
         if (ObjectUtils.isNotEmpty(caseData.getCaseIssue().getDocumentList())) {
             final Map<String, String> uploadedDocuments = getUploadedDocuments(caseData);
-
+            final List<CaseworkerCICDocument> selectedDocuments = getSelectedDocuments(caseData);
             // Send Email
             notificationResponse = sendEmailNotificationWithAttachment(cicCase.getRespondentEmail(),
                 templateVarsRespondent,
-                uploadedDocuments);
+                uploadedDocuments,
+                selectedDocuments,
+                caseNumber);
             cicCase.setSubjectLetterNotifyList(notificationResponse);
         } else {
             notificationResponse = sendEmailNotification(templateVarsRespondent,
-                cicCase.getRespondentEmail(), TemplateName.CASE_ISSUED_RESPONDENT_EMAIL);
+                cicCase.getRespondentEmail(), TemplateName.CASE_ISSUED_RESPONDENT_EMAIL, caseNumber);
             cicCase.setResNotificationResponse(notificationResponse);
         }
     }
 
     private NotificationResponse sendEmailNotification(final Map<String, Object> templateVars, String toEmail,
-                                                       TemplateName emailTemplateName) {
+                                                       TemplateName emailTemplateName, String caseReferenceNumber) {
         return notificationService.sendEmail(
             notificationHelper.buildEmailNotificationRequest(toEmail,
                 templateVars,
-                emailTemplateName));
+                emailTemplateName),
+            caseReferenceNumber);
     }
 
-    private NotificationResponse sendEmailNotificationWithAttachment(String toEmail, final Map<String, Object> templateVars,
-                                                                     Map<String, String> uploadedDocuments) {
+    private NotificationResponse sendEmailNotificationWithAttachment(String toEmail,
+                                                                     final Map<String, Object> templateVars,
+                                                                     Map<String, String> uploadedDocuments,
+                                                                     List<CaseworkerCICDocument> selectedDocuments,
+                                                                     String caseReferenceNumber) {
         return notificationService.sendEmail(
             notificationHelper.buildEmailNotificationRequest(toEmail,
                 true,
                 uploadedDocuments,
                 templateVars,
-                TemplateName.CASE_ISSUED_RESPONDENT_EMAIL));
+                TemplateName.CASE_ISSUED_RESPONDENT_EMAIL),
+            selectedDocuments,
+            caseReferenceNumber);
     }
 
-    private NotificationResponse sendLetterNotification(Map<String, Object> templateVarsLetter) {
+    private NotificationResponse sendLetterNotification(Map<String, Object> templateVarsLetter, String caseReferenceNumber) {
         final NotificationRequest letterRequest = notificationHelper.buildLetterNotificationRequest(templateVarsLetter,
             TemplateName.CASE_ISSUED_CITIZEN_POST);
-        return notificationService.sendLetter(letterRequest);
+        return notificationService.sendLetter(letterRequest, caseReferenceNumber);
     }
 
     private Map<String, String> getUploadedDocuments(CaseData caseData) {
@@ -144,4 +151,11 @@ public class CaseIssuedNotification implements PartiesNotification {
         return notificationHelper.buildDocumentList(caseIssue.getDocumentList(), DOC_ATTACH_LIMIT);
     }
 
+    private List<CaseworkerCICDocument> getSelectedDocuments(CaseData caseData) {
+        var selectedDocIds = DocumentListUtil.extractDocumentIds(caseData.getCaseIssue().getDocumentList().getValue());
+        return selectedDocIds.stream().map(id -> DocumentListUtil.getCaseDocumentById(id, caseData))
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .toList();
+    }
 }

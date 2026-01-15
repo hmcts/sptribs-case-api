@@ -11,6 +11,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
+import uk.gov.hmcts.ccd.sdk.External;
 import uk.gov.hmcts.ccd.sdk.api.CCD;
 import uk.gov.hmcts.ccd.sdk.type.CaseLink;
 import uk.gov.hmcts.ccd.sdk.type.ComponentLauncher;
@@ -46,15 +47,18 @@ import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerAndSuperUserAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerRASValidationAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerWithCAAAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CitizenAccess;
-import uk.gov.hmcts.sptribs.ciccase.model.access.CollectionDefaultAccess;
+import uk.gov.hmcts.sptribs.ciccase.model.access.CollectionCreateUpdateOnlyAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.DSSUpdateAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.DefaultAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.GlobalSearchAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.NonRespondentAccess;
+import uk.gov.hmcts.sptribs.ciccase.model.access.SuperUserOnlyAccess;
 import uk.gov.hmcts.sptribs.document.bundling.model.Bundle;
+import uk.gov.hmcts.sptribs.document.bundling.model.BundleIdAndTimestamp;
 import uk.gov.hmcts.sptribs.document.bundling.model.MultiBundleConfig;
 import uk.gov.hmcts.sptribs.document.model.AbstractCaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
+import uk.gov.hmcts.sptribs.notification.model.Correspondence;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -108,6 +112,7 @@ public class CaseData {
         access = {GlobalSearchAccess.class}
     )
     @SuppressWarnings("MemberName") // Field name is case-sensitive in CCD
+    @JsonProperty("SearchCriteria")
     private SearchCriteria SearchCriteria;
 
     @CCD(
@@ -185,6 +190,13 @@ public class CaseData {
     )
     private List<ListValue<Bundle>> caseBundles = new ArrayList<>();
 
+    @Builder.Default
+    @CCD(
+        label = "Bundles",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private List<ListValue<BundleIdAndTimestamp>> caseBundleIdsAndTimestamps = new ArrayList<>();
+
     @JsonUnwrapped(prefix = "cicCase")
     @Builder.Default
     @CCD(
@@ -249,7 +261,7 @@ public class CaseData {
         label = "Initial CICA Documents",
         typeOverride = Collection,
         typeParameterOverride = "CaseworkerCICDocument",
-        access = {CollectionDefaultAccess.class}
+        access = {CollectionCreateUpdateOnlyAccess.class}
     )
     private List<ListValue<CaseworkerCICDocument>> initialCicaDocuments;
 
@@ -257,7 +269,7 @@ public class CaseData {
         label = "Further Document Uploads",
         typeOverride = Collection,
         typeParameterOverride = "CaseworkerCICDocument",
-        access = {CollectionDefaultAccess.class}
+        access = {CollectionCreateUpdateOnlyAccess.class}
     )
     private List<ListValue<CaseworkerCICDocument>> furtherUploadedDocuments;
 
@@ -333,6 +345,15 @@ public class CaseData {
         access = {CaseworkerAndSuperUserAccess.class}
     )
     private String note;
+
+    @CCD(
+        label = "Correspondence",
+        typeOverride = Collection,
+        typeParameterOverride = "Correspondence",
+        access = {NonRespondentAccess.class}
+    )
+    @External
+    private List<ListValue<Correspondence>> correspondence;
 
     @CCD(
         label = "Case number",
@@ -513,6 +534,34 @@ public class CaseData {
     @CCD(access = {DefaultAccess.class})
     @JsonUnwrapped
     private RetiredFields retiredFields;
+
+    @CCD(
+        label = "Do you want to delete a field from case data?",
+        access = {SuperUserOnlyAccess.class}
+    )
+    private YesNo deleteField;
+
+    @CCD(
+        label = "Enter the name of the field to delete",
+        hint = "Enter the exact field name as it appears in the case data (e.g., 'hyphenatedCaseRef', 'cicCaseFullName')",
+        access = {SuperUserOnlyAccess.class}
+    )
+    private String deleteFieldName;
+
+    @CCD(
+        label = "Reindex cases modified since",
+        access = {SuperUserOnlyAccess.class}
+    )
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    @External
+    private LocalDate reindexCasesModifiedSince;
+
+    @CCD(
+        label = "Matching cases count",
+        access = {SuperUserOnlyAccess.class}
+    )
+    @External
+    private Long reindexCasesMatchingCount;
 
     public String getFirstHearingDate() {
 

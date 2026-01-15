@@ -1,9 +1,9 @@
 package uk.gov.hmcts.sptribs.caseworker.event;
 
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
@@ -53,16 +53,16 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 @Component
 @Slf4j
 @Setter
-public class CaseWorkerContactParties implements CCDConfig<CaseData, State, UserRole> {
+@RequiredArgsConstructor
+public class CaseworkerContactParties implements CCDConfig<CaseData, State, UserRole> {
 
     @Value("${case-api.url}")
     private String baseUrl;
 
     private static final CcdPageConfiguration partiesToContact = new PartiesToContact();
-    private static final CcdPageConfiguration contactPartiesSelectDocument = new ContactPartiesSelectDocument();
+    private final ContactPartiesSelectDocument contactPartiesSelectDocument;
 
-    @Autowired
-    private ContactPartiesNotification contactPartiesNotification;
+    private final ContactPartiesNotification contactPartiesNotification;
 
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {

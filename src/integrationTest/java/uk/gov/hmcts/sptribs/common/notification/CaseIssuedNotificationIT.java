@@ -10,11 +10,15 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.ccd.sdk.type.AddressGlobalUK;
+import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.ccd.sdk.type.DynamicListElement;
 import uk.gov.hmcts.ccd.sdk.type.DynamicMultiSelectList;
+import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseIssue;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
+import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
+import uk.gov.hmcts.sptribs.document.model.DocumentType;
 import uk.gov.hmcts.sptribs.notification.NotificationServiceCIC;
 import uk.gov.hmcts.sptribs.notification.dispatcher.CaseIssuedNotification;
 import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
@@ -25,6 +29,7 @@ import java.util.Map;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.sptribs.ciccase.model.ContactPreferenceType.EMAIL;
 import static uk.gov.hmcts.sptribs.ciccase.model.ContactPreferenceType.POST;
@@ -74,7 +79,7 @@ public class CaseIssuedNotificationIT {
 
         caseIssuedNotification.sendToSubject(data, TEST_CASE_ID.toString());
 
-        verify(notificationServiceCIC).sendEmail(notificationRequestCaptor.capture());
+        verify(notificationServiceCIC).sendEmail(notificationRequestCaptor.capture(), eq(TEST_CASE_ID.toString()));
 
         NotificationRequest notificationRequest = notificationRequestCaptor.getValue();
 
@@ -111,7 +116,7 @@ public class CaseIssuedNotificationIT {
 
         caseIssuedNotification.sendToSubject(data, TEST_CASE_ID.toString());
 
-        verify(notificationServiceCIC).sendLetter(notificationRequestCaptor.capture());
+        verify(notificationServiceCIC).sendLetter(notificationRequestCaptor.capture(), eq(TEST_CASE_ID.toString()));
 
         NotificationRequest notificationRequest = notificationRequestCaptor.getValue();
 
@@ -141,7 +146,7 @@ public class CaseIssuedNotificationIT {
 
         caseIssuedNotification.sendToApplicant(data, TEST_CASE_ID.toString());
 
-        verify(notificationServiceCIC).sendEmail(notificationRequestCaptor.capture());
+        verify(notificationServiceCIC).sendEmail(notificationRequestCaptor.capture(), eq(TEST_CASE_ID.toString()));
 
         NotificationRequest notificationRequest = notificationRequestCaptor.getValue();
 
@@ -179,7 +184,7 @@ public class CaseIssuedNotificationIT {
 
         caseIssuedNotification.sendToApplicant(data, TEST_CASE_ID.toString());
 
-        verify(notificationServiceCIC).sendLetter(notificationRequestCaptor.capture());
+        verify(notificationServiceCIC).sendLetter(notificationRequestCaptor.capture(), eq(TEST_CASE_ID.toString()));
 
         NotificationRequest notificationRequest = notificationRequestCaptor.getValue();
 
@@ -209,7 +214,7 @@ public class CaseIssuedNotificationIT {
 
         caseIssuedNotification.sendToRepresentative(data, TEST_CASE_ID.toString());
 
-        verify(notificationServiceCIC).sendEmail(notificationRequestCaptor.capture());
+        verify(notificationServiceCIC).sendEmail(notificationRequestCaptor.capture(), eq(TEST_CASE_ID.toString()));
 
         NotificationRequest notificationRequest = notificationRequestCaptor.getValue();
 
@@ -247,7 +252,7 @@ public class CaseIssuedNotificationIT {
 
         caseIssuedNotification.sendToRepresentative(data, TEST_CASE_ID.toString());
 
-        verify(notificationServiceCIC).sendLetter(notificationRequestCaptor.capture());
+        verify(notificationServiceCIC).sendLetter(notificationRequestCaptor.capture(), eq(TEST_CASE_ID.toString()));
 
         NotificationRequest notificationRequest = notificationRequestCaptor.getValue();
 
@@ -277,7 +282,7 @@ public class CaseIssuedNotificationIT {
 
         caseIssuedNotification.sendToRespondent(data, TEST_CASE_ID.toString());
 
-        verify(notificationServiceCIC).sendEmail(notificationRequestCaptor.capture());
+        verify(notificationServiceCIC).sendEmail(notificationRequestCaptor.capture(), eq(TEST_CASE_ID.toString()));
 
         NotificationRequest notificationRequest = notificationRequestCaptor.getValue();
 
@@ -300,6 +305,21 @@ public class CaseIssuedNotificationIT {
             .label(documentLabel)
             .code(UUID.randomUUID())
             .build();
+        final Document document = Document.builder()
+            .categoryId("A")
+            .filename("Document 1.pdf")
+            .binaryUrl("http://exui.net/documents/5e32a0d2-9b37-4548-b007-b9b2eb580d0a/binary")
+            .url("http://exui.net/documents/5e32a0d2-9b37-4548-b007-b9b2eb580d0a")
+            .build();
+
+        final CaseworkerCICDocument cicDocument = CaseworkerCICDocument.builder()
+            .documentLink(document)
+            .documentEmailContent("Description")
+            .documentCategory(DocumentType.EVIDENCE_CORRESPONDENCE_FROM_THE_APPELLANT)
+            .build();
+        final List<ListValue<CaseworkerCICDocument>> applicantCaseDocuments =
+            List.of(ListValue.<CaseworkerCICDocument>builder().value(cicDocument).build());
+        final List<CaseworkerCICDocument> selectedDocuments = List.of(cicDocument);
 
         final List<DynamicListElement> listItems = new ArrayList<>();
         listItems.add(listItem);
@@ -313,6 +333,7 @@ public class CaseIssuedNotificationIT {
                 .fullName("Subject Name")
                 .respondentName("Respondent Name")
                 .respondentEmail("test@email.com")
+                .applicantDocumentsUploaded(applicantCaseDocuments)
                 .build())
             .caseIssue(CaseIssue.builder()
                 .documentList(documentList)
@@ -329,7 +350,7 @@ public class CaseIssuedNotificationIT {
 
         caseIssuedNotification.sendToRespondent(data, TEST_CASE_ID.toString());
 
-        verify(notificationServiceCIC).sendEmail(notificationRequestCaptor.capture());
+        verify(notificationServiceCIC).sendEmail(notificationRequestCaptor.capture(), eq(selectedDocuments), eq(TEST_CASE_ID.toString()));
 
         NotificationRequest notificationRequest = notificationRequestCaptor.getValue();
 

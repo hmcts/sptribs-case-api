@@ -3,6 +3,7 @@ package uk.gov.hmcts.sptribs.caseworker.service;
 import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -10,6 +11,7 @@ import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.ccd.sdk.type.DynamicList;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
+import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderCIC;
 import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderContentCIC;
@@ -68,8 +70,8 @@ class OrderServiceTest {
 
         assertThat(regionList).isNotNull();
         assertThat(regionList.getListItems()).isNotNull();
-        assertThat(regionList.getListItems().get(0)).isNotNull();
-        assertThat(regionList.getListItems().get(0).getLabel()).contains(OrderTemplate.CIC7_ME_DMI_REPORTS.name());
+        assertThat(regionList.getListItems().getFirst()).isNotNull();
+        assertThat(regionList.getListItems().getFirst().getLabel()).contains(OrderTemplate.CIC7_ME_DMI_REPORTS.name());
     }
 
     @Test
@@ -122,8 +124,8 @@ class OrderServiceTest {
 
         assertThat(regionList).isNotNull();
         assertThat(regionList.getListItems()).isNotNull();
-        assertThat(regionList.getListItems().get(0)).isNotNull();
-        assertThat(regionList.getListItems().get(0).getLabel()).contains("12345");
+        assertThat(regionList.getListItems().getFirst()).isNotNull();
+        assertThat(regionList.getListItems().getFirst().getLabel()).contains("12345");
 
     }
 
@@ -132,17 +134,28 @@ class OrderServiceTest {
         final CaseDetails<CaseData, State> details = new CaseDetails<>();
         details.setId(12345L);
         final CaseData caseData = CaseData.builder().build();
-        final CicCase cicCase = CicCase.builder().fullName("Jane Smith").build();
+        final CicCase cicCase = CicCase.builder()
+            .fullName("Jane Smith")
+            .anonymiseYesOrNo(YesOrNo.NO)
+            .build();
         caseData.setCicCase(cicCase);
+
         final DraftOrderContentCIC orderContentCIC =
             DraftOrderContentCIC.builder().orderTemplate(OrderTemplate.CIC6_GENERAL_DIRECTIONS).build();
         caseData.setDraftOrderContentCIC(orderContentCIC);
         details.setData(caseData);
 
-        final Document expectedDocument = Document.builder().filename("testDraft.pdf").build();
-        when(caseDataDocumentService.renderDocument(anyMap(), anyLong(), anyString(), any(), anyString(), any()))
+        final String expectedFileName = "Order--[Jane Smith]--24-01-2024";
+        final Document expectedDocument = Document.builder().filename(expectedFileName + ".pdf").build();
+        final ArgumentCaptor<String> stringArgumentCaptor = ArgumentCaptor.forClass(String.class);
+
+        when(caseDataDocumentService.renderDocument(anyMap(), anyLong(), anyString(), any(), stringArgumentCaptor.capture(), any()))
             .thenReturn(expectedDocument);
+
         final CaseData result = orderService.generateOrderFile(caseData, details.getId(), "24-01-2024");
+
+        String capturedString = stringArgumentCaptor.getValue();
+        assertThat(capturedString).isEqualTo(expectedFileName);
 
         assertThat(result).isNotNull();
         assertThat(result.getCicCase()).isNotNull();
@@ -150,5 +163,39 @@ class OrderServiceTest {
         assertThat(result.getCicCase().getOrderTemplateIssued()).isEqualTo(expectedDocument);
     }
 
+    @Test
+    void shouldGenerateAnonymisedOrderFile() {
+        final CaseDetails<CaseData, State> details = new CaseDetails<>();
+        details.setId(12345L);
+        final CaseData caseData = CaseData.builder().build();
+        final CicCase cicCase = CicCase.builder()
+            .fullName("Jane Smith")
+            .anonymiseYesOrNo(YesOrNo.YES)
+            .anonymisedAppellantName("Anonymised Name")
+            .build();
+        caseData.setCicCase(cicCase);
+
+        final DraftOrderContentCIC orderContentCIC =
+            DraftOrderContentCIC.builder().orderTemplate(OrderTemplate.CIC6_GENERAL_DIRECTIONS).build();
+        caseData.setDraftOrderContentCIC(orderContentCIC);
+        details.setData(caseData);
+
+        final String expectedFileName = "Order--[Anonymised Name]--24-01-2024";
+        final Document expectedDocument = Document.builder().filename(expectedFileName + ".pdf").build();
+        final ArgumentCaptor<String> stringArgumentCaptor = ArgumentCaptor.forClass(String.class);
+
+        when(caseDataDocumentService.renderDocument(anyMap(), anyLong(), anyString(), any(), stringArgumentCaptor.capture(), any()))
+            .thenReturn(expectedDocument);
+
+        final CaseData result = orderService.generateOrderFile(caseData, details.getId(), "24-01-2024");
+
+        String capturedString = stringArgumentCaptor.getValue();
+        assertThat(capturedString).isEqualTo(expectedFileName);
+
+        assertThat(result).isNotNull();
+        assertThat(result.getCicCase()).isNotNull();
+        assertThat(result.getCicCase().getOrderTemplateIssued()).isNotNull();
+        assertThat(result.getCicCase().getOrderTemplateIssued()).isEqualTo(expectedDocument);
+    }
 
 }
