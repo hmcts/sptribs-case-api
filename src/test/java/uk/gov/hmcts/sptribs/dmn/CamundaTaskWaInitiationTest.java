@@ -108,7 +108,8 @@ class CamundaTaskWaInitiationTest extends DmnDecisionTableBaseUnitTest {
 
     private static final DelayUntilRequest DELAY_UNTIL_REQUEST =
         DelayUntilRequest.builder()
-            .delayUntil(LocalDate.now().toString())
+            .delayUntilOrigin(LocalDate.now().toString())
+            .delayUntilIntervalDays(1)
             .delayUntilNonWorkingCalendar(CamundaTaskConstants.DEFAULT_DUE_DATE_NON_WORKING_CALENDAR)
             .delayUntilNonWorkingDaysOfWeek(CamundaTaskConstants.DEFAULT_DUE_DATE_WORKING_DAYS_OF_WEEK)
             .delayUntilSkipNonWorkingDays(false)
@@ -1470,17 +1471,26 @@ class CamundaTaskWaInitiationTest extends DmnDecisionTableBaseUnitTest {
 
     private void verifyDelayUntilDate(Object actualValueObj, Object expectedValueObject) {
         if (actualValueObj instanceof Map<?, ?> actualValueMap) {
-            if (actualValueMap.containsKey("delayUntil")
-                && actualValueMap.get("delayUntil") != null
-                && actualValueMap.get("delayUntil") instanceof LocalDate actualTimeValue
-                && expectedValueObject instanceof DelayUntilRequest expectedTimeValue) {
-                if (!actualTimeValue.equals(LocalDate.parse(expectedTimeValue.getDelayUntil()))) {
-                    fail(String.format(
-                        "Date mismatch! \nExpected: %s \nActual:   %s",
-                        expectedTimeValue.getDelayUntil(), actualTimeValue));
-                }
+            DelayUntilRequest delayUntilRequest = mapToDelayUntilRequest(actualValueMap);
+            if (expectedValueObject instanceof DelayUntilRequest expectedDelayUntilRequest
+                && !delayUntilRequest.equals(expectedDelayUntilRequest)) {
+                fail(String.format(
+                    "DelayUntilRequest mismatch! \nExpected: %s \nActual:   %s",
+                    delayUntilRequest, expectedDelayUntilRequest));
             }
         }
     }
 
+    private DelayUntilRequest mapToDelayUntilRequest(Map<?, ?> map) {
+        return DelayUntilRequest.builder()
+            .delayUntil(map.getOrDefault("delayUntil", null).toString())
+            .delayUntilOrigin(map.getOrDefault("delayUntilOrigin", null).toString())
+            .delayUntilTime((String) map.getOrDefault("delayUntilTime", null))
+            .delayUntilMustBeWorkingDay((String) map.getOrDefault("delayUntilMustBeWorkingDay", null))
+            .delayUntilSkipNonWorkingDays((Boolean) map.getOrDefault("delayUntilSkipNonWorkingDays", null))
+            .delayUntilIntervalDays(Integer.parseInt(map.getOrDefault("delayUntilIntervalDays", null).toString()))
+            .delayUntilNonWorkingCalendar((String) map.getOrDefault("delayUntilNonWorkingCalendar", null))
+            .delayUntilNonWorkingDaysOfWeek((String) map.getOrDefault("delayUntilNonWorkingDaysOfWeek", null))
+            .build();
+    }
 }
