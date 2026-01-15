@@ -48,6 +48,9 @@ public class XuiTest extends CftlibTest {
 
     @BeforeAll
     void launchBrowser() {
+
+
+        //test
         playwright = Playwright.create();
         final BrowserType.LaunchOptions launchOptions = getenv("CI") == null
             ? new BrowserType.LaunchOptions().setHeadless(false).setSlowMo(50)
