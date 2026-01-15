@@ -405,6 +405,66 @@
           <text>false</text>
         </outputEntry>
       </rule>
+      <rule id="DecisionRule_0aihfny">
+        <description>"Access Request for CTSC can be approved by Hearing Centre Team Leader"</description>
+        <inputEntry id="UnaryTests_1k93o34">
+          <text>"reviewSpecificAccessRequestCTSC"</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_1hz1l4d">
+          <text></text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_1h884gr">
+          <text></text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_0frc1c2">
+          <text>"hearing-centre-team-leader"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_0dchiik">
+          <text>"Read,Own,Claim,Manage,Assign,Unassign,Complete,Cancel"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_16z67l7">
+          <text>"CTSC"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_0e3gtwo">
+          <text></text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_1yoji79">
+          <text></text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_0qg4nj3">
+          <text>false</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_1sbe7cd">
+        <description>"Access Request for CTSC can be approved by Regional Hearing Centre Team Leader"</description>
+        <inputEntry id="UnaryTests_05ax3g1">
+          <text>"reviewSpecificAccessRequestCTSC"</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_0euzjnf">
+          <text></text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_07drlyw">
+          <text></text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_0e6udrb">
+          <text>"regional-centre-team-leader"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_0wlg8gg">
+          <text>"Read,Own,Claim,Manage,Assign,Unassign,Complete,Cancel"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_1cigz0r">
+          <text>"CTSC"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_18l5gp1">
+          <text></text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_1n0m4ge">
+          <text></text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_0sj1t6k">
+          <text>false</text>
+        </outputEntry>
+      </rule>
       <rule id="DecisionRule_1frfqlq">
         <inputEntry id="UnaryTests_05pthd9">
           <text>"processCaseWithdrawalDirections","processRule27Decision","processListingDirections","processDirectionsReListedCase","processDirectionsReListedCaseWithin5Days","processSetAsideDirections","processCorrections","processDirectionsReturned","processTimeExtensionDirectionsReturned","processReinstatementDecisionNotice","processOtherDirectionsReturned","processWrittenReasons","processStrikeOutDirectionsReturned","processStayDirections","issueDecisionNotice","completeHearingOutcome","issueCaseToRespondent","vetNewCaseDocuments","followUpNoncomplianceOfDirections","registerNewCase","stitchCollateHearingBundle","processPostponementDirections","processFurtherEvidence","createDueDate","issueDueDate","processListingDirectionsListed","processCaseWithdrawalDirectionsListed","processStayDirectionsListed","processRule27DecisionListed","reviewOrder"</text>
