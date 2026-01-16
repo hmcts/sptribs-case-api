@@ -2,6 +2,7 @@ package uk.gov.hmcts.sptribs.document.content;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 
 import java.util.Map;
@@ -24,7 +25,10 @@ public class PreviewDraftOrderTemplateContent {
 
         Map<String, Object> templateContent = getCommonFields(caseData, ccdCaseReference);
 
-        if (caseData.getCicCase().useApplicantNameForSubject()) {
+        if (caseData.getCicCase().getAnonymiseYesOrNo() != null && caseData.getCicCase().getAnonymiseYesOrNo().equals(YesOrNo.YES)
+            && caseData.getCicCase().getAnonymisedAppellantName() != null) {
+            templateContent.put(SUBJECT_FULL_NAME, caseData.getCicCase().getAnonymisedAppellantName());
+        } else if (caseData.getCicCase().useApplicantNameForSubject()) {
             templateContent.put(SUBJECT_FULL_NAME, caseData.getCicCase().getApplicantFullName());
         } else {
             templateContent.put(SUBJECT_FULL_NAME, caseData.getCicCase().getFullName());
