@@ -16,6 +16,7 @@ import uk.gov.hmcts.sptribs.dmnutils.DelayUntilRequest;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Stream;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -108,7 +109,12 @@ class CamundaTaskWaInitiationTest extends DmnDecisionTableBaseUnitTest {
 
     private static final DelayUntilRequest DELAY_UNTIL_REQUEST =
         DelayUntilRequest.builder()
-            .delayUntilOrigin(LocalDate.now().toString())
+            .delayUntil(LocalDate.now().toString())
+            .build();
+
+    private static final DelayUntilRequest DELAY_UNTIL_HOLIDAY_REQUEST =
+        DelayUntilRequest.builder()
+            .delayUntilOrigin(LocalDate.of(2026, 4, 2).toString())
             .delayUntilIntervalDays(1)
             .delayUntilNonWorkingCalendar(CamundaTaskConstants.DEFAULT_DUE_DATE_NON_WORKING_CALENDAR)
             .delayUntilNonWorkingDaysOfWeek(CamundaTaskConstants.DEFAULT_DUE_DATE_WORKING_DAYS_OF_WEEK)
@@ -1321,6 +1327,23 @@ class CamundaTaskWaInitiationTest extends DmnDecisionTableBaseUnitTest {
                     )
                 )
             ),
+            //test due date of send order
+            Arguments.of(
+                "caseworker-send-order",
+                "CaseManagement",
+                Map.of("Data", Map.of("cicCaseFirstOrderDueDate", "2026-04-02")),
+                List.of(
+                    Map.of(
+                        "taskId", FOLLOW_UP_NONCOMPLIANCE_OF_DIR_TASK,
+                        "name", "Follow up noncompliance of directions",
+                        "delayUntil", DELAY_UNTIL_HOLIDAY_REQUEST,
+                        "workingDaysAllowed", 1,
+                        "processCategories", PROCESS_CATEGORY_PROCESSING,
+                        "workType", ROUTINE_WORK_TYPE,
+                        "roleCategory", ROLE_CATEGORY_ADMIN
+                    )
+                )
+            ),
             Arguments.of(
                 "citizen-cic-dss-update-case",
                 "*",
@@ -1381,6 +1404,23 @@ class CamundaTaskWaInitiationTest extends DmnDecisionTableBaseUnitTest {
                     )
                 )
             ),
+            //test due date of create and send order
+            Arguments.of(
+                "create-and-send-order",
+                "CaseManagement",
+                Map.of("Data", Map.of("cicCaseFirstOrderDueDate", "2026-04-02")),
+                List.of(
+                    Map.of(
+                        "taskId", FOLLOW_UP_NONCOMPLIANCE_OF_DIR_TASK,
+                        "name", "Follow up noncompliance of directions",
+                        "delayUntil", DELAY_UNTIL_HOLIDAY_REQUEST,
+                        "workingDaysAllowed", 1,
+                        "processCategories", PROCESS_CATEGORY_PROCESSING,
+                        "workType", ROUTINE_WORK_TYPE,
+                        "roleCategory", ROLE_CATEGORY_ADMIN
+                    )
+                )
+            ),
             Arguments.of(
                 "create-and-send-order",
                 "CaseManagement",
@@ -1389,7 +1429,7 @@ class CamundaTaskWaInitiationTest extends DmnDecisionTableBaseUnitTest {
                     Map.of(
                         "taskId", FOLLOW_UP_NONCOMPLIANCE_OF_DIR_TASK,
                         "name", "Follow up noncompliance of directions",
-                        "delayUntil", DELAY_UNTIL_REQUEST,
+                        "delayUntil", "",
                         "workingDaysAllowed", 1,
                         "processCategories", PROCESS_CATEGORY_PROCESSING,
                         "workType", ROUTINE_WORK_TYPE,
@@ -1464,19 +1504,31 @@ class CamundaTaskWaInitiationTest extends DmnDecisionTableBaseUnitTest {
                     "DelayUntilRequest mismatch! \nExpected: %s \nActual:   %s",
                     delayUntilRequest, expectedDelayUntilRequest));
             }
+        } else {
+            fail("Actual DMN result 'delayUntil' is not of expected type Map<?, ?>");
         }
     }
 
-    private DelayUntilRequest mapToDelayUntilRequest(Map<?, ?> map) {
+    private static DelayUntilRequest mapToDelayUntilRequest(Map<?, ?> map) {
         return DelayUntilRequest.builder()
-            .delayUntil((String) map.getOrDefault("delayUntil", null))
-            .delayUntilOrigin(map.getOrDefault("delayUntilOrigin", null).toString())
-            .delayUntilTime((String) map.getOrDefault("delayUntilTime", null))
-            .delayUntilMustBeWorkingDay((String) map.getOrDefault("delayUntilMustBeWorkingDay", null))
-            .delayUntilSkipNonWorkingDays((Boolean) map.getOrDefault("delayUntilSkipNonWorkingDays", null))
-            .delayUntilIntervalDays(Integer.parseInt(map.getOrDefault("delayUntilIntervalDays", null).toString()))
-            .delayUntilNonWorkingCalendar((String) map.getOrDefault("delayUntilNonWorkingCalendar", null))
-            .delayUntilNonWorkingDaysOfWeek((String) map.getOrDefault("delayUntilNonWorkingDaysOfWeek", null))
-            .build();
+                .delayUntil(Objects.toString(map.get("delayUntil"), null))
+                .delayUntilOrigin(Objects.toString(map.get("delayUntilOrigin"), null))
+                .delayUntilTime(Objects.toString(map.get("delayUntilTime"), null))
+                .delayUntilMustBeWorkingDay(Objects.toString(map.get("delayUntilMustBeWorkingDay"), null))
+                .delayUntilSkipNonWorkingDays((Boolean) map.get("delayUntilSkipNonWorkingDays"))
+                .delayUntilIntervalDays(parseInteger(map.get("delayUntilIntervalDays")))
+                .delayUntilNonWorkingCalendar(Objects.toString(map.get("delayUntilNonWorkingCalendar"), null))
+                .delayUntilNonWorkingDaysOfWeek(Objects.toString(map.get("delayUntilNonWorkingDaysOfWeek"), null))
+                .build();
     }
+
+    private static Integer parseInteger(Object value) {
+        if (value == null) return null;
+        try {
+            return Integer.parseInt(value.toString());
+        } catch (NumberFormatException e) {
+            return null;
+        }
+    }
+
 }
