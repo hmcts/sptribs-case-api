@@ -13,6 +13,7 @@ import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.ASYNC_STITCH_COMPLETE;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
+import static uk.gov.hmcts.sptribs.ciccase.model.State.ReadyToList;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_CASEWORKER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_HEARING_CENTRE_ADMIN;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_HEARING_CENTRE_TEAM_LEADER;
@@ -33,7 +34,7 @@ public class CaseworkerBundleStitchComplete implements CCDConfig<CaseData, State
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         new PageBuilder(configBuilder
             .event(ASYNC_STITCH_COMPLETE)
-            .forStates(CaseManagement, AwaitingHearing)
+            .forStates(CaseManagement, AwaitingHearing, ReadyToList)
             .name("Bundle: Async Stitching Comp")
             .description("Bundle: Async Stitching Comp")
             .showCondition(ALWAYS_HIDE)
