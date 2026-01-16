@@ -1511,19 +1511,21 @@ class CamundaTaskWaInitiationTest extends DmnDecisionTableBaseUnitTest {
 
     private static DelayUntilRequest mapToDelayUntilRequest(Map<?, ?> map) {
         return DelayUntilRequest.builder()
-                .delayUntil(Objects.toString(map.get("delayUntil"), null))
-                .delayUntilOrigin(Objects.toString(map.get("delayUntilOrigin"), null))
-                .delayUntilTime(Objects.toString(map.get("delayUntilTime"), null))
-                .delayUntilMustBeWorkingDay(Objects.toString(map.get("delayUntilMustBeWorkingDay"), null))
-                .delayUntilSkipNonWorkingDays((Boolean) map.get("delayUntilSkipNonWorkingDays"))
-                .delayUntilIntervalDays(parseInteger(map.get("delayUntilIntervalDays")))
-                .delayUntilNonWorkingCalendar(Objects.toString(map.get("delayUntilNonWorkingCalendar"), null))
-                .delayUntilNonWorkingDaysOfWeek(Objects.toString(map.get("delayUntilNonWorkingDaysOfWeek"), null))
-                .build();
+            .delayUntil(Objects.toString(map.get("delayUntil"), null))
+            .delayUntilOrigin(Objects.toString(map.get("delayUntilOrigin"), null))
+            .delayUntilTime(Objects.toString(map.get("delayUntilTime"), null))
+            .delayUntilMustBeWorkingDay(Objects.toString(map.get("delayUntilMustBeWorkingDay"), null))
+            .delayUntilSkipNonWorkingDays((Boolean) map.get("delayUntilSkipNonWorkingDays"))
+            .delayUntilIntervalDays(parseInteger(map.get("delayUntilIntervalDays")))
+            .delayUntilNonWorkingCalendar(Objects.toString(map.get("delayUntilNonWorkingCalendar"), null))
+            .delayUntilNonWorkingDaysOfWeek(Objects.toString(map.get("delayUntilNonWorkingDaysOfWeek"), null))
+            .build();
     }
 
     private static Integer parseInteger(Object value) {
-        if (value == null) return null;
+        if (value == null) {
+            return null;
+        }
         try {
             return Integer.parseInt(value.toString());
         } catch (NumberFormatException e) {
