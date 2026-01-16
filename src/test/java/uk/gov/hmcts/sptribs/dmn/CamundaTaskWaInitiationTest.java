@@ -10,13 +10,18 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import uk.gov.hmcts.sptribs.DmnDecisionTableBaseUnitTest;
+import uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants;
+import uk.gov.hmcts.sptribs.dmnutils.DelayUntilRequest;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Stream;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.fail;
 import static uk.gov.hmcts.sptribs.DmnDecisionTable.WA_TASK_INITIATION_ST_CIC_CRIMINALINJURIESCOMPENSATION;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.APPLICATION_WORK_TYPE;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.COMPLETE_HEARING_OUTCOME_TASK;
@@ -101,6 +106,21 @@ import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.STITCH_COLLATE_
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.VET_NEW_CASE_DOCUMENTS_TASK;
 
 class CamundaTaskWaInitiationTest extends DmnDecisionTableBaseUnitTest {
+
+    private static final DelayUntilRequest DELAY_UNTIL_REQUEST =
+        DelayUntilRequest.builder()
+            .delayUntil(LocalDate.now().toString())
+            .build();
+
+    private static final DelayUntilRequest DELAY_UNTIL_HOLIDAY_REQUEST =
+        DelayUntilRequest.builder()
+            .delayUntilOrigin(LocalDate.of(2026, 4, 2).toString())
+            .delayUntilIntervalDays(1)
+            .delayUntilNonWorkingCalendar(CamundaTaskConstants.DEFAULT_DUE_DATE_NON_WORKING_CALENDAR)
+            .delayUntilNonWorkingDaysOfWeek(CamundaTaskConstants.DEFAULT_DUE_DATE_WORKING_DAYS_OF_WEEK)
+            .delayUntilSkipNonWorkingDays(false)
+            .delayUntilMustBeWorkingDay("Next")
+            .build();
 
     @BeforeAll
     public static void initialization() {
@@ -1299,6 +1319,7 @@ class CamundaTaskWaInitiationTest extends DmnDecisionTableBaseUnitTest {
                     Map.of(
                         "taskId", FOLLOW_UP_NONCOMPLIANCE_OF_DIR_TASK,
                         "name", "Follow up noncompliance of directions",
+                        "delayUntil", DELAY_UNTIL_REQUEST,
                         "workingDaysAllowed", 1,
                         "processCategories", PROCESS_CATEGORY_PROCESSING,
                         "workType", ROUTINE_WORK_TYPE,
@@ -1306,14 +1327,16 @@ class CamundaTaskWaInitiationTest extends DmnDecisionTableBaseUnitTest {
                     )
                 )
             ),
+            //test due date of send order
             Arguments.of(
-                "create-and-send-order",
+                "caseworker-send-order",
                 "CaseManagement",
-                null,
+                Map.of("Data", Map.of("cicCaseFirstOrderDueDate", "2026-04-02")),
                 List.of(
                     Map.of(
                         "taskId", FOLLOW_UP_NONCOMPLIANCE_OF_DIR_TASK,
                         "name", "Follow up noncompliance of directions",
+                        "delayUntil", DELAY_UNTIL_HOLIDAY_REQUEST,
                         "workingDaysAllowed", 1,
                         "processCategories", PROCESS_CATEGORY_PROCESSING,
                         "workType", ROUTINE_WORK_TYPE,
@@ -1381,6 +1404,23 @@ class CamundaTaskWaInitiationTest extends DmnDecisionTableBaseUnitTest {
                     )
                 )
             ),
+            //test due date of create and send order
+            Arguments.of(
+                "create-and-send-order",
+                "CaseManagement",
+                Map.of("Data", Map.of("cicCaseFirstOrderDueDate", "2026-04-02")),
+                List.of(
+                    Map.of(
+                        "taskId", FOLLOW_UP_NONCOMPLIANCE_OF_DIR_TASK,
+                        "name", "Follow up noncompliance of directions",
+                        "delayUntil", DELAY_UNTIL_HOLIDAY_REQUEST,
+                        "workingDaysAllowed", 1,
+                        "processCategories", PROCESS_CATEGORY_PROCESSING,
+                        "workType", ROUTINE_WORK_TYPE,
+                        "roleCategory", ROLE_CATEGORY_ADMIN
+                    )
+                )
+            ),
             Arguments.of(
                 "create-and-send-order",
                 "CaseManagement",
@@ -1389,6 +1429,7 @@ class CamundaTaskWaInitiationTest extends DmnDecisionTableBaseUnitTest {
                     Map.of(
                         "taskId", FOLLOW_UP_NONCOMPLIANCE_OF_DIR_TASK,
                         "name", "Follow up noncompliance of directions",
+                        "delayUntil", "",
                         "workingDaysAllowed", 1,
                         "processCategories", PROCESS_CATEGORY_PROCESSING,
                         "workType", ROUTINE_WORK_TYPE,
@@ -1413,7 +1454,7 @@ class CamundaTaskWaInitiationTest extends DmnDecisionTableBaseUnitTest {
         DmnDecisionTableImpl logic = (DmnDecisionTableImpl) decision.getDecisionLogic();
         assertThat(logic.getInputs().size(), is(4));
         assertThat(logic.getOutputs().size(), is(7));
-        assertThat(logic.getRules().size(), is(66));
+        assertThat(logic.getRules().size(), is(65));
     }
 
     @ParameterizedTest(name = "event id: {0} post event state: {1} appeal type: {2}")
@@ -1421,12 +1462,75 @@ class CamundaTaskWaInitiationTest extends DmnDecisionTableBaseUnitTest {
     void given_multiple_event_ids_should_evaluate_dmn(String eventId,
                                                       String postEventState,
                                                       Map<String, Object> map,
-                                                      List<Map<String, String>> expectation) {
+                                                      List<Map<String, Object>> expectation) {
         VariableMap inputVariables = new VariableMapImpl();
         inputVariables.putValue("eventId", eventId);
         inputVariables.putValue("postEventState", postEventState);
         inputVariables.putValue("additionalData", map);
         DmnDecisionTableResult dmnDecisionTableResult = evaluateDmnTable(inputVariables);
-        assertThat(dmnDecisionTableResult.getResultList(), is(expectation));
+
+        Map<String, Object> actualResult = dmnDecisionTableResult.getResultList().getFirst();
+        Map<String, Object> expectedResult = expectation.getFirst();
+        assertThat(actualResult.size(), is(expectedResult.size()));
+
+        verifyResults(expectedResult, actualResult);
     }
+
+    private void verifyResults(Map<String, Object> expectedResult, Map<String, Object> actualResult) {
+        for (Map.Entry<String, Object> entry : expectedResult.entrySet()) {
+            String key = entry.getKey();
+            Object expectedValueObject = entry.getValue();
+
+            if (!actualResult.containsKey(key)) {
+                fail("Actual DMN result is missing expected key: " + key);
+            }
+
+            Object actualValueObj = actualResult.get(key);
+
+            if ("delayUntil".equals(key)) {
+                verifyDelayUntilDate(actualValueObj, expectedValueObject);
+            } else {
+                assertThat(actualValueObj, is(expectedValueObject));
+            }
+        }
+    }
+
+    private void verifyDelayUntilDate(Object actualValueObj, Object expectedValueObject) {
+        if (actualValueObj instanceof Map<?, ?> actualValueMap) {
+            DelayUntilRequest delayUntilRequest = mapToDelayUntilRequest(actualValueMap);
+            if (expectedValueObject instanceof DelayUntilRequest expectedDelayUntilRequest
+                && !delayUntilRequest.equals(expectedDelayUntilRequest)) {
+                fail(String.format(
+                    "DelayUntilRequest mismatch! \nExpected: %s \nActual:   %s",
+                    delayUntilRequest, expectedDelayUntilRequest));
+            }
+        } else {
+            fail("Actual DMN result 'delayUntil' is not of expected type Map<?, ?>");
+        }
+    }
+
+    private static DelayUntilRequest mapToDelayUntilRequest(Map<?, ?> map) {
+        return DelayUntilRequest.builder()
+            .delayUntil(Objects.toString(map.get("delayUntil"), null))
+            .delayUntilOrigin(Objects.toString(map.get("delayUntilOrigin"), null))
+            .delayUntilTime(Objects.toString(map.get("delayUntilTime"), null))
+            .delayUntilMustBeWorkingDay(Objects.toString(map.get("delayUntilMustBeWorkingDay"), null))
+            .delayUntilSkipNonWorkingDays((Boolean) map.get("delayUntilSkipNonWorkingDays"))
+            .delayUntilIntervalDays(parseInteger(map.get("delayUntilIntervalDays")))
+            .delayUntilNonWorkingCalendar(Objects.toString(map.get("delayUntilNonWorkingCalendar"), null))
+            .delayUntilNonWorkingDaysOfWeek(Objects.toString(map.get("delayUntilNonWorkingDaysOfWeek"), null))
+            .build();
+    }
+
+    private static Integer parseInteger(Object value) {
+        if (value == null) {
+            return null;
+        }
+        try {
+            return Integer.parseInt(value.toString());
+        } catch (NumberFormatException e) {
+            return null;
+        }
+    }
+
 }
