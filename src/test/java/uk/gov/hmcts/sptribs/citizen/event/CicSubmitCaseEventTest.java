@@ -192,14 +192,14 @@ class CicSubmitCaseEventTest {
         final AboutToStartOrSubmitResponse<CaseData, State> response =
             cicSubmitCaseEvent.aboutToSubmit(updatedCaseDetails, beforeDetails);
 
-        assertThat(response.getData().getCicCase().getApplicantDocumentsUploaded().get(0).getValue().getDocumentEmailContent())
+        assertThat(response.getData().getCicCase().getApplicantDocumentsUploaded().getFirst().getValue().getDocumentEmailContent())
             .isEqualTo(genericTestDocumentRelevance1);
         assertThat(response.getData().getCicCase().getApplicantDocumentsUploaded().get(1).getValue().getDocumentEmailContent())
             .isEqualTo(genericTestDocumentRelevance2);
-        assertThat(response.getData().getMessages().get(0).getValue().getMessage()).isEqualTo(genericAdditionalInformation);
-        assertThat(response.getData().getMessages().get(0).getValue().getDateReceived())
+        assertThat(response.getData().getMessages().getFirst().getValue().getMessage()).isEqualTo(genericAdditionalInformation);
+        assertThat(response.getData().getMessages().getFirst().getValue().getDateReceived())
             .isEqualTo(LocalDate.now());
-        assertThat(response.getData().getMessages().get(0).getValue().getReceivedFrom())
+        assertThat(response.getData().getMessages().getFirst().getValue().getReceivedFrom())
             .isEqualTo(TestDataHelper.getUser().getUserDetails().getFullName());
     }
 
