@@ -245,4 +245,7 @@ caseinfo:
 wa_task_monitor_api:
   url: ${TASK_MONITOR_API_URL:http://wa-task-monitor-aat.service.core-compute-aat.internal}
 wa_task_management_api:
-  url: ${TASK_MANAGEMENT_API_URL:http://wa-task-management-api-aat.service.core-compute-aat.internal}
+  url: ${TASK_MANAGEMENT_API_URL:http://localhost:8087}
+task-management:
+  api:
+    url: ${TASK_MANAGEMENT_API_URL:http://localhost:8087}

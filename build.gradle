@@ -331,6 +331,8 @@ dependencies {
 // uncomment for local version
 // implementation group: 'com.github.hmcts', name: 'ccd-config-generator', version: 'DEV-SNAPSHOT'
 
+  implementation 'com.github.hmcts:task-management:DEV-SNAPSHOT'
+
   implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: versions.jackson
   implementation group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: versions.jackson
   implementation group: 'com.fasterxml.jackson.core', name: 'jackson-annotations', version: versions.jackson
