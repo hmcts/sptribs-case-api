@@ -21,6 +21,7 @@ import java.util.stream.Stream;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.fail;
 import static uk.gov.hmcts.sptribs.DmnDecisionTable.WA_TASK_INITIATION_ST_CIC_CRIMINALINJURIESCOMPENSATION;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.APPLICATION_WORK_TYPE;
@@ -106,11 +107,6 @@ import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.STITCH_COLLATE_
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.VET_NEW_CASE_DOCUMENTS_TASK;
 
 class CamundaTaskWaInitiationTest extends DmnDecisionTableBaseUnitTest {
-
-    private static final DelayUntilRequest DELAY_UNTIL_REQUEST =
-        DelayUntilRequest.builder()
-            .delayUntil(LocalDate.now().toString())
-            .build();
 
     private static final DelayUntilRequest DELAY_UNTIL_HOLIDAY_REQUEST =
         DelayUntilRequest.builder()
@@ -1314,23 +1310,6 @@ class CamundaTaskWaInitiationTest extends DmnDecisionTableBaseUnitTest {
             Arguments.of(
                 "caseworker-send-order",
                 "CaseManagement",
-                null,
-                List.of(
-                    Map.of(
-                        "taskId", FOLLOW_UP_NONCOMPLIANCE_OF_DIR_TASK,
-                        "name", "Follow up noncompliance of directions",
-                        "delayUntil", DELAY_UNTIL_REQUEST,
-                        "workingDaysAllowed", 1,
-                        "processCategories", PROCESS_CATEGORY_PROCESSING,
-                        "workType", ROUTINE_WORK_TYPE,
-                        "roleCategory", ROLE_CATEGORY_ADMIN
-                    )
-                )
-            ),
-            //test due date of send order
-            Arguments.of(
-                "caseworker-send-order",
-                "CaseManagement",
                 Map.of("Data", Map.of("cicCaseFirstOrderDueDate", "2026-04-02")),
                 List.of(
                     Map.of(
@@ -1427,9 +1406,27 @@ class CamundaTaskWaInitiationTest extends DmnDecisionTableBaseUnitTest {
                 Map.of("Data", Map.of("cicCaseAdminActionRequired", List.of("AdminActionRequired"))),
                 List.of(
                     Map.of(
+                        "taskId", REVIEW_ORDER,
+                        "name", "Review Order",
+                        "workingDaysAllowed", 5,
+                        "processCategories", PROCESS_CATEGORY_DECISION,
+                        "workType", DECISION_WORK_TYPE,
+                        "roleCategory", ROLE_CATEGORY_ADMIN
+                    )
+                )
+            ),
+            Arguments.of(
+                "create-and-send-order",
+                "CaseManagement",
+                Map.of("Data",
+                    Map.of(
+                        "cicCaseAdminActionRequired", List.of("AdminActionRequired"),
+                        "cicCaseFirstOrderDueDate", "2026-04-02")),
+                List.of(
+                    Map.of(
                         "taskId", FOLLOW_UP_NONCOMPLIANCE_OF_DIR_TASK,
                         "name", "Follow up noncompliance of directions",
-                        "delayUntil", "",
+                        "delayUntil", DELAY_UNTIL_HOLIDAY_REQUEST,
                         "workingDaysAllowed", 1,
                         "processCategories", PROCESS_CATEGORY_PROCESSING,
                         "workType", ROUTINE_WORK_TYPE,
@@ -1452,12 +1449,12 @@ class CamundaTaskWaInitiationTest extends DmnDecisionTableBaseUnitTest {
     void if_this_test_fails_needs_updating_with_your_changes() {
         //The purpose of this test is to prevent adding new rows without being tested
         DmnDecisionTableImpl logic = (DmnDecisionTableImpl) decision.getDecisionLogic();
-        assertThat(logic.getInputs().size(), is(4));
+        assertThat(logic.getInputs().size(), is(5));
         assertThat(logic.getOutputs().size(), is(7));
         assertThat(logic.getRules().size(), is(65));
     }
 
-    @ParameterizedTest(name = "event id: {0} post event state: {1} appeal type: {2}")
+    @ParameterizedTest(name = "event id: {0} post event state: {1} additional data: {2}")
     @MethodSource("scenarioProvider")
     void given_multiple_event_ids_should_evaluate_dmn(String eventId,
                                                       String postEventState,
@@ -1469,11 +1466,17 @@ class CamundaTaskWaInitiationTest extends DmnDecisionTableBaseUnitTest {
         inputVariables.putValue("additionalData", map);
         DmnDecisionTableResult dmnDecisionTableResult = evaluateDmnTable(inputVariables);
 
-        Map<String, Object> actualResult = dmnDecisionTableResult.getResultList().getFirst();
-        Map<String, Object> expectedResult = expectation.getFirst();
-        assertThat(actualResult.size(), is(expectedResult.size()));
+        if (eventId.equals("caseworker-send-order") || eventId.equals("create-and-send-order")) {
+            assertNotNull(eventId);
+        }
+        assertThat(dmnDecisionTableResult.getResultList().size(), is(expectation.size()));
+        for (int i = 0; i < expectation.size(); i++) {
+            Map<String, Object> actualResult = dmnDecisionTableResult.getResultList().get(i);
+            Map<String, Object> expectedResult = expectation.get(i);
+            assertThat(actualResult.size(), is(expectedResult.size()));
 
-        verifyResults(expectedResult, actualResult);
+            verifyResults(expectedResult, actualResult);
+        }
     }
 
     private void verifyResults(Map<String, Object> expectedResult, Map<String, Object> actualResult) {
