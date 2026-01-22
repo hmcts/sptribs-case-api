@@ -7,6 +7,7 @@ import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationData;
 import uk.gov.hmcts.sptribs.common.repositories.CorrespondenceRepository;
+import uk.gov.hmcts.sptribs.common.repositories.StatementRepository;
 import uk.gov.hmcts.sptribs.notification.model.Correspondence;
 import uk.gov.hmcts.sptribs.notification.persistence.CorrespondenceEntity;
 
@@ -23,7 +24,8 @@ import static org.mockito.Mockito.when;
 class CicCaseViewTest {
 
     private final CorrespondenceRepository correspondenceRepository = mock(CorrespondenceRepository.class);
-    private final CicCaseView cicCaseView = new CicCaseView(correspondenceRepository);
+    private final StatementRepository statementRepository = mock(StatementRepository.class);
+    private final CicCaseView cicCaseView = new CicCaseView(correspondenceRepository, statementRepository);
 
     @Test
     void shouldReturnProvidedCaseDataUnchanged() {

@@ -10,6 +10,7 @@ import uk.gov.hmcts.ccd.sdk.api.CCD;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CollectionDefaultAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.DefaultAccess;
+import uk.gov.hmcts.sptribs.document.model.AcknowledgementCICDocument;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocumentUpload;
 
@@ -42,5 +43,14 @@ public class DocumentManagement {
     )
     @Builder.Default
     private List<ListValue<CaseworkerCICDocumentUpload>> caseworkerCICDocumentUpload = new ArrayList<>();
+
+    @CCD(
+        label = "Document",
+        //typeParameterOverride = "CaseworkerCICDocumentUpload",
+        access = {DefaultAccess.class}
+    )
+    @Builder.Default
+    private AcknowledgementCICDocument acknowledgementCICDocument = new AcknowledgementCICDocument();
+
 
 }

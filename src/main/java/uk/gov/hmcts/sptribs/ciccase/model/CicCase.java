@@ -10,23 +10,9 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.util.CollectionUtils;
 import uk.gov.hmcts.ccd.sdk.api.CCD;
-import uk.gov.hmcts.ccd.sdk.type.AddressGlobalUK;
-import uk.gov.hmcts.ccd.sdk.type.Document;
-import uk.gov.hmcts.ccd.sdk.type.DynamicList;
-import uk.gov.hmcts.ccd.sdk.type.ListValue;
-import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
-import uk.gov.hmcts.sptribs.caseworker.model.DateModel;
-import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderCIC;
-import uk.gov.hmcts.sptribs.caseworker.model.Order;
-import uk.gov.hmcts.sptribs.caseworker.model.OrderIssuingType;
-import uk.gov.hmcts.sptribs.caseworker.model.ReinstateReason;
-import uk.gov.hmcts.sptribs.caseworker.model.ReminderDays;
-import uk.gov.hmcts.sptribs.caseworker.model.YesNo;
-import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerAccess;
-import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerAndSuperUserAccess;
-import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerWithCAAAccess;
-import uk.gov.hmcts.sptribs.ciccase.model.access.CollectionDefaultAccess;
-import uk.gov.hmcts.sptribs.ciccase.model.access.DefaultAccess;
+import uk.gov.hmcts.ccd.sdk.type.*;
+import uk.gov.hmcts.sptribs.caseworker.model.*;
+import uk.gov.hmcts.sptribs.ciccase.model.access.*;
 import uk.gov.hmcts.sptribs.document.model.CICDocument;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocumentUpload;
@@ -37,12 +23,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import static uk.gov.hmcts.ccd.sdk.type.FieldType.Collection;
-import static uk.gov.hmcts.ccd.sdk.type.FieldType.DynamicRadioList;
-import static uk.gov.hmcts.ccd.sdk.type.FieldType.Email;
-import static uk.gov.hmcts.ccd.sdk.type.FieldType.FixedList;
-import static uk.gov.hmcts.ccd.sdk.type.FieldType.MultiSelectList;
-import static uk.gov.hmcts.ccd.sdk.type.FieldType.TextArea;
+import static uk.gov.hmcts.ccd.sdk.type.FieldType.*;
 
 @Data
 @AllArgsConstructor
@@ -133,6 +114,13 @@ public class CicCase {
         typeOverride = DynamicRadioList
     )
     private DynamicList orderIssuingDynamicRadioList;
+
+    @CCD(
+        label = "Select which party the statement is from?",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+        //typeOverride = DynamicRadioList
+    )
+    private DynamicList whichPartyStatementDynamicRadioList;
 
     @CCD(
         label = "Template",
