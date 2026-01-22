@@ -6,10 +6,7 @@ import org.apache.commons.lang3.ObjectUtils;
 import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
-import uk.gov.hmcts.sptribs.document.model.CICDocument;
-import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
-import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocumentUpload;
-import uk.gov.hmcts.sptribs.document.model.DocumentInfo;
+import uk.gov.hmcts.sptribs.document.model.*;
 
 import java.time.Clock;
 import java.time.LocalDate;
@@ -85,6 +82,15 @@ public final class DocumentUtil {
                 .ifPresent(x -> errors.add(DOCUMENT_VALIDATION_MESSAGE));
         }
 
+        return errors;
+    }
+
+    public static List<String> validateAcknowledgementCICDocumentFormat(AcknowledgementCICDocument doc) {
+        final List<String> errors = new ArrayList<>();
+        if (doc.isDocumentValid()) {
+            return errors;
+        }
+        errors.add(DOCUMENT_VALIDATION_MESSAGE);
         return errors;
     }
 
@@ -168,6 +174,25 @@ public final class DocumentUtil {
         }
 
         return documentList;
+    }
+
+    public static CaseworkerCICDocument convertToCICDocumentUpload(CaseworkerCICDocumentUpload uploadedDocument, Boolean addDate) {
+        LocalDate date;
+
+        if (addDate) {
+            Clock clock = Clock.systemDefaultZone();
+            date = LocalDate.now(clock);
+        } else {
+            date = null;
+        }
+
+       return CaseworkerCICDocument.builder()
+            .documentCategory(uploadedDocument.getDocumentCategory())
+            .documentEmailContent(uploadedDocument.getDocumentEmailContent())
+            .documentLink(uploadedDocument.getDocumentLink())
+            .date(date)
+            .build();
+
     }
 
     public static List<ListValue<CaseworkerCICDocumentUpload>> convertToCaseworkerCICDocument(
