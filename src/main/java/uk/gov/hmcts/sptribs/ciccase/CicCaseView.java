@@ -109,7 +109,7 @@ public class CicCaseView implements CaseView<CriminalInjuriesCompensationData, S
             listValueIndex++;
         }
 
-        blobCase.setStatements(statements);
+        blobCase.setStatement(statements);
 
     }
 }
