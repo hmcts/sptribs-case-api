@@ -267,7 +267,7 @@ public class CaseTypeTab implements CCDConfig<CaseData, State, UserRole> {
             .label("Case Documents", null, "#### Case Documents")
             .field("cicCaseApplicantDocumentsUploaded")
             .field("allCaseworkerCICDocument")
-            .field(CaseData::getStatements);
+            .field(CaseData::getStatement);
     }
 
     private void buildCorrespondenceTab(ConfigBuilder<CaseData, State, UserRole> configBuilder) {

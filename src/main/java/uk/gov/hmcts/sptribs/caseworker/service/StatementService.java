@@ -1,6 +1,8 @@
 package uk.gov.hmcts.sptribs.caseworker.service;
 
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.exception.ConstraintViolationException;
+import org.postgresql.util.PSQLException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
@@ -44,11 +46,10 @@ public class StatementService {
                 .documentBinaryUrl(statementDoc.getBinaryUrl())
                 .build();
            statementRepository.save(statement);
-        } catch (RestClientException e) {
-            log.error("Failed to store pdf document", e);
-            throw e;
+        } catch (ConstraintViolationException data) {
+            log.error("duplicate key exception", data);
+            throw data;
         }
-
     }
 
 

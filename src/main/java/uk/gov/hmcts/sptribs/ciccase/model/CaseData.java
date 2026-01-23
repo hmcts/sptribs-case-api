@@ -359,10 +359,11 @@ public class CaseData {
     @CCD(
         label = "Acknowledgement Statements",
         typeOverride = Collection,
+        typeParameterOverride = "Statement",
         access = {NonRespondentAccess.class}
     )
     @External
-    private List<ListValue<Statement>> statements;
+    private List<ListValue<Statement>> statement;
 
     @CCD(
         label = "Case number",
