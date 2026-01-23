@@ -5,9 +5,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import uk.gov.hmcts.ccd.sdk.type.Document;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 class CaseworkerCICDocumentTest {
 
@@ -116,5 +114,15 @@ class CaseworkerCICDocumentTest {
             .build();
 
         assertEquals(DocumentType.DSS_TRIBUNAL_FORM, document.getDocumentCategory());
+    }
+
+    @Test
+    void shouldReturnNullDocumentCategoryIfCategoryIdDoesNotExistForGetDocumentCategoryOfDocumentLink() {
+        CaseworkerCICDocument document = CaseworkerCICDocument.builder()
+            .documentCategory(DocumentType.LINKED_DOCS)
+            .documentLink(Document.builder().filename("test.pdf").categoryId("Does not exist in DocumentType").build())
+            .build();
+
+        assertNull(document.getDocumentCategory());
     }
 }
