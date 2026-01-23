@@ -57,7 +57,11 @@ public class CaseworkerCICDocument {
                                  @JsonProperty("documentEmailContent") String documentEmailContent,
                                  @JsonProperty("documentLink") Document documentLink,
                                  @JsonProperty("date") LocalDate date) {
-        this.documentCategory = documentCategory;
+        if (documentLink == null || documentLink.getCategoryId() == null || documentLink.getCategoryId().equals(documentCategory.getCategory())) {
+            this.documentCategory = documentCategory;
+        } else {
+            this.documentCategory = this.getDocumentCategoryOfDocumentLink(documentLink);
+        }
         this.documentEmailContent = documentEmailContent;
         this.documentLink = documentLink;
         this.date = date;
@@ -75,5 +79,16 @@ public class CaseworkerCICDocument {
     @JsonIgnore
     public boolean isValidBundleDocument() {
         return isValidDocument(this.documentLink.getFilename(),"pdf,txt,xlsx,docx,doc,xls,jpg,jpeg,tiff,bmp,gif,svg,png");
+    }
+
+    @JsonIgnore
+    public DocumentType getDocumentCategoryOfDocumentLink(Document documentLink) {
+        String categoryId = documentLink.getCategoryId();
+        for (DocumentType documentType : DocumentType.values()) {
+            if (documentType.getCategory().equals(categoryId)) {
+                return documentType;
+            }
+        }
+        return null;
     }
 }
