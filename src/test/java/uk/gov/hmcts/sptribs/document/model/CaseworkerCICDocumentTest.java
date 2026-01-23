@@ -1,11 +1,11 @@
 package uk.gov.hmcts.sptribs.document.model;
 
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import uk.gov.hmcts.ccd.sdk.type.Document;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 class CaseworkerCICDocumentTest {
 
@@ -104,5 +104,15 @@ class CaseworkerCICDocumentTest {
             .build();
 
         assertFalse(document.isValidBundleDocument());
+    }
+
+    @Test
+    void shouldGetDocumentCategoryOfDocumentLink() {
+        CaseworkerCICDocument document = CaseworkerCICDocument.builder()
+            .documentCategory(DocumentType.LINKED_DOCS)
+            .documentLink(Document.builder().filename("test.pdf").categoryId("DSS").build())
+            .build();
+
+        assertEquals(DocumentType.DSS_TRIBUNAL_FORM, document.getDocumentCategory());
     }
 }
