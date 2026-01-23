@@ -57,7 +57,9 @@ public class CaseworkerCICDocument {
                                  @JsonProperty("documentEmailContent") String documentEmailContent,
                                  @JsonProperty("documentLink") Document documentLink,
                                  @JsonProperty("date") LocalDate date) {
-        if (documentLink == null || documentLink.getCategoryId() == null || documentLink.getCategoryId().equals(documentCategory.getCategory())) {
+        if (documentLink == null
+            || documentLink.getCategoryId() == null
+            || documentLink.getCategoryId().equals(documentCategory.getCategory())) {
             this.documentCategory = documentCategory;
         } else {
             this.documentCategory = this.getDocumentCategoryOfDocumentLink(documentLink);
