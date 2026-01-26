@@ -20,8 +20,8 @@ public final class CaseDocumentListUtil {
         if (!CollectionUtils.isEmpty(documents)) {
             for (ListValue<CaseworkerCICDocument> document : documents) {
                 if (selectedDocumentLink.getUrl().equals(document.getValue().getDocumentLink().getUrl())) {
+                    document.getValue().getDocumentLink().setCategoryId(selectedDocumentCategory.getCategory());
                     document.getValue().setDocumentCategory(selectedDocumentCategory);
-                    document.getValue().getDocumentLink().setCategoryId(selectedDocumentLink.getCategoryId());
                     document.getValue().setDocumentEmailContent(selectedDocumentEmailContent);
                 }
             }
