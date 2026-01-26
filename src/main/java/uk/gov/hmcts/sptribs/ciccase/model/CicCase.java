@@ -377,7 +377,7 @@ public class CicCase {
     private String respondentEmail = "appeals.team@cica.gov.uk";
 
     @CCD(
-        label = "Alternative Respondent email  ",
+        label = "Alternative Respondent email",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     @Builder.Default
