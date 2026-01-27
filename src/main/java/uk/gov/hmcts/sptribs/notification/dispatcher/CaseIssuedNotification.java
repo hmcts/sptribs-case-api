@@ -18,6 +18,7 @@ import uk.gov.hmcts.sptribs.notification.PartiesNotification;
 import uk.gov.hmcts.sptribs.notification.TemplateName;
 import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -98,6 +99,13 @@ public class CaseIssuedNotification implements PartiesNotification {
         final Map<String, Object> templateVarsRespondent = notificationHelper.getRespondentCommonVars(caseNumber, caseData);
         templateVarsRespondent.put(CommonConstants.CIC_CASE_RESPONDENT_NAME, caseData.getCicCase().getRespondentName());
 
+        //TODO update date condition
+        LocalDate today = LocalDate.now();
+        LocalDate creationDate = LocalDate.of(2026, 1, 1);
+        templateVarsRespondent.put(CommonConstants.CIC_BUNDLE_DUE_DATE_TEXT,
+            today.isAfter(creationDate.plusDays(42))
+                ? buildTimeString(true) : buildTimeString(false));
+
         final NotificationResponse notificationResponse;
         if (ObjectUtils.isNotEmpty(caseData.getCaseIssue().getDocumentList())) {
             final Map<String, String> uploadedDocuments = getUploadedDocuments(caseData);
@@ -111,8 +119,19 @@ public class CaseIssuedNotification implements PartiesNotification {
             cicCase.setSubjectLetterNotifyList(notificationResponse);
         } else {
             notificationResponse = sendEmailNotification(templateVarsRespondent,
-                cicCase.getRespondentEmail(), TemplateName.CASE_ISSUED_RESPONDENT_EMAIL, caseNumber);
+                cicCase.getRespondentEmail(), TemplateName.CASE_ISSUED_RESPONDENT_EMAIL_UPDATED, caseNumber);
             cicCase.setResNotificationResponse(notificationResponse);
+        }
+    }
+
+    private String buildTimeString(boolean isOutOfTimeRange) {
+
+        if (isOutOfTimeRange) {
+            return "Out of time appeal - You should provide the tribunal with a case bundle by (date of issuance +42 days). " +
+                "Do not issue to the Subject/Applicant/Representative until we notify you the appeal has been admitted.";
+        } else {
+            return "You should provide the tribunal and the " +
+                "Subject/Applicant/Representative with a case bundle by (date of issuance +42 days)";
         }
     }
 
@@ -135,7 +154,7 @@ public class CaseIssuedNotification implements PartiesNotification {
                 true,
                 uploadedDocuments,
                 templateVars,
-                TemplateName.CASE_ISSUED_RESPONDENT_EMAIL),
+                TemplateName.CASE_ISSUED_RESPONDENT_EMAIL_UPDATED),
             selectedDocuments,
             caseReferenceNumber);
     }
