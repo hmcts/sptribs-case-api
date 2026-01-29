@@ -113,7 +113,7 @@ public class CaseIssuedNotification implements PartiesNotification {
             final Map<String, String> uploadedDocuments = getUploadedDocuments(caseData);
             final List<CaseworkerCICDocument> selectedDocuments = getSelectedDocuments(caseData);
             // Send Email
-            notificationResponse = sendEmailNotificationWithAttachment(cicCase.getRespondentEmail(),
+            notificationResponse = sendEmailNotificationWithAttachment(cicCase.getAlternativeRespondentEmail(),
                 templateVarsRespondent,
                 uploadedDocuments,
                 selectedDocuments,
@@ -121,7 +121,7 @@ public class CaseIssuedNotification implements PartiesNotification {
             cicCase.setSubjectLetterNotifyList(notificationResponse);
         } else {
             notificationResponse = sendEmailNotification(templateVarsRespondent,
-                cicCase.getRespondentEmail(), TemplateName.CASE_ISSUED_RESPONDENT_EMAIL_UPDATED, caseNumber);
+                cicCase.getAlternativeRespondentEmail(), TemplateName.CASE_ISSUED_RESPONDENT_EMAIL_UPDATED, caseNumber);
             cicCase.setResNotificationResponse(notificationResponse);
         }
     }

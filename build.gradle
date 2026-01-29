@@ -420,7 +420,7 @@ dependencies {
   functionalTestImplementation group: 'org.projectlombok', name: 'lombok', version: versions.lombok
   functionalTestAnnotationProcessor group: 'org.projectlombok', name: 'lombok', version: versions.lombok
 
-  contractTestImplementation group: 'au.com.dius.pact.consumer', name: 'junit5', version: '4.6.18'
+  contractTestImplementation group: 'au.com.dius.pact.consumer', name: 'junit5', version: '4.6.19'
 
   contractTestImplementation sourceSets.main.runtimeClasspath
   contractTestImplementation sourceSets.test.runtimeClasspath

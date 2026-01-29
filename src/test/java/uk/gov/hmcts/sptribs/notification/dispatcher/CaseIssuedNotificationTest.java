@@ -189,7 +189,7 @@ public class CaseIssuedNotificationTest {
         //Then
         verify(notificationService).sendEmail(any(NotificationRequest.class), eq(TEST_CASE_ID.toString()));
         verify(notificationHelper).buildEmailNotificationRequest(
-            data.getCicCase().getRespondentEmail(),
+            data.getCicCase().getAlternativeRespondentEmail(),
             expectedMap,
             TemplateName.CASE_ISSUED_RESPONDENT_EMAIL_UPDATED);
     }
@@ -243,7 +243,7 @@ public class CaseIssuedNotificationTest {
         //Then
         verify(notificationService).sendEmail(any(NotificationRequest.class), eq(List.of(cicDocument)), eq(TEST_CASE_ID.toString()));
         verify(notificationHelper).buildEmailNotificationRequest(
-            data.getCicCase().getRespondentEmail(),
+            data.getCicCase().getAlternativeRespondentEmail(),
             true,
             getDocumentUploadMap(),
             expectedMap,
