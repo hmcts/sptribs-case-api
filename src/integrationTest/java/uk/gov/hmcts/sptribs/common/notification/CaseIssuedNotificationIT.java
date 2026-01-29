@@ -35,6 +35,7 @@ import static uk.gov.hmcts.sptribs.ciccase.model.ContactPreferenceType.EMAIL;
 import static uk.gov.hmcts.sptribs.ciccase.model.ContactPreferenceType.POST;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.ADDRESS_LINE_1;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.ADDRESS_LINE_7;
+import static uk.gov.hmcts.sptribs.common.CommonConstants.CIC_BUNDLE_DUE_DATE_TEXT;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.CIC_CASE_NUMBER;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.CIC_CASE_RESPONDENT_NAME;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.CIC_CASE_SUBJECT_NAME;
@@ -43,7 +44,7 @@ import static uk.gov.hmcts.sptribs.common.CommonConstants.TRIBUNAL_NAME;
 import static uk.gov.hmcts.sptribs.common.ccd.CcdCaseType.CIC;
 import static uk.gov.hmcts.sptribs.notification.TemplateName.CASE_ISSUED_CITIZEN_EMAIL;
 import static uk.gov.hmcts.sptribs.notification.TemplateName.CASE_ISSUED_CITIZEN_POST;
-import static uk.gov.hmcts.sptribs.notification.TemplateName.CASE_ISSUED_RESPONDENT_EMAIL;
+import static uk.gov.hmcts.sptribs.notification.TemplateName.CASE_ISSUED_RESPONDENT_EMAIL_UPDATED;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID;
 
 @ExtendWith(SpringExtension.class)
@@ -277,7 +278,9 @@ public class CaseIssuedNotificationIT {
             CIC_CASE_NUMBER, TEST_CASE_ID.toString(),
             CIC_CASE_SUBJECT_NAME, "Subject Name",
             CONTACT_NAME, "Respondent Name",
-            CIC_CASE_RESPONDENT_NAME, "Respondent Name"
+            CIC_CASE_RESPONDENT_NAME, "Respondent Name",
+            CIC_BUNDLE_DUE_DATE_TEXT, "You should provide the tribunal and the Subject/Applicant/Representative "
+                + "with a case bundle by 2026-02-12"
         );
 
         caseIssuedNotification.sendToRespondent(data, TEST_CASE_ID.toString());
@@ -289,7 +292,7 @@ public class CaseIssuedNotificationIT {
         assertThat(notificationRequest.getDestinationAddress())
             .isEqualTo("test@email.com");
         assertThat(notificationRequest.getTemplate())
-            .isEqualTo(CASE_ISSUED_RESPONDENT_EMAIL);
+            .isEqualTo(CASE_ISSUED_RESPONDENT_EMAIL_UPDATED);
         assertThat(notificationRequest.getTemplateVars())
             .containsAllEntriesOf(expectedTemplateVars);
         assertThat(notificationRequest.getUploadedDocuments())
@@ -345,7 +348,9 @@ public class CaseIssuedNotificationIT {
             CIC_CASE_NUMBER, TEST_CASE_ID.toString(),
             CIC_CASE_SUBJECT_NAME, "Subject Name",
             CONTACT_NAME, "Respondent Name",
-            CIC_CASE_RESPONDENT_NAME, "Respondent Name"
+            CIC_CASE_RESPONDENT_NAME, "Respondent Name",
+            CIC_BUNDLE_DUE_DATE_TEXT, "You should provide the tribunal and the Subject/Applicant/Representative "
+                + "with a case bundle by 2026-02-12"
         );
 
         caseIssuedNotification.sendToRespondent(data, TEST_CASE_ID.toString());
@@ -357,7 +362,7 @@ public class CaseIssuedNotificationIT {
         assertThat(notificationRequest.getDestinationAddress())
             .isEqualTo("test@email.com");
         assertThat(notificationRequest.getTemplate())
-            .isEqualTo(CASE_ISSUED_RESPONDENT_EMAIL);
+            .isEqualTo(CASE_ISSUED_RESPONDENT_EMAIL_UPDATED);
         assertThat(notificationRequest.getTemplateVars())
             .containsAllEntriesOf(expectedTemplateVars);
         assertThat(notificationRequest.getUploadedDocuments())

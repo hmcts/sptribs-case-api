@@ -25,6 +25,7 @@ import uk.gov.hmcts.sptribs.notification.TemplateName;
 import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
 
 import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -174,6 +175,11 @@ public class CaseIssuedNotificationTest {
         final CaseData data = getMockCaseData();
         data.getCicCase().setRepresentativeFullName("respFullName");
         data.getCicCase().setRespondentEmail("testRespondentEmail@outlook.com");
+        Map<String, Object> expectedMap = new HashMap<>();
+        expectedMap.put(CommonConstants.CIC_CASE_RESPONDENT_NAME,data.getCicCase().getRespondentName());
+        //need to test both options here
+        expectedMap.put(CommonConstants.CIC_BUNDLE_DUE_DATE_TEXT,
+            "You should provide the tribunal and the Subject/Applicant/Representative with a case bundle by 2026-02-12");
 
         //When
         when(notificationHelper.buildEmailNotificationRequest(any(), anyMap(), any(TemplateName.class)))
@@ -184,8 +190,8 @@ public class CaseIssuedNotificationTest {
         verify(notificationService).sendEmail(any(NotificationRequest.class), eq(TEST_CASE_ID.toString()));
         verify(notificationHelper).buildEmailNotificationRequest(
             data.getCicCase().getRespondentEmail(),
-            Map.of(CommonConstants.CIC_CASE_RESPONDENT_NAME,data.getCicCase().getRespondentName()),
-            TemplateName.CASE_ISSUED_RESPONDENT_EMAIL);
+            expectedMap,
+            TemplateName.CASE_ISSUED_RESPONDENT_EMAIL_UPDATED);
     }
 
     @Test
@@ -221,6 +227,12 @@ public class CaseIssuedNotificationTest {
         data.setCaseIssue(caseIssue);
         data.getCicCase().setRepresentativeFullName("respFullName");
 
+        Map<String, Object> expectedMap = new HashMap<>();
+        expectedMap.put(CommonConstants.CIC_CASE_RESPONDENT_NAME,data.getCicCase().getRespondentName());
+        //need to test both options here
+        expectedMap.put(CommonConstants.CIC_BUNDLE_DUE_DATE_TEXT,
+            "You should provide the tribunal and the Subject/Applicant/Representative with a case bundle by 2026-02-12");
+
         //When
         when(notificationHelper.buildDocumentList(caseIssue.getDocumentList(), 5))
             .thenReturn(getDocumentUploadMap());
@@ -234,8 +246,8 @@ public class CaseIssuedNotificationTest {
             data.getCicCase().getRespondentEmail(),
             true,
             getDocumentUploadMap(),
-            Map.of(CommonConstants.CIC_CASE_RESPONDENT_NAME,data.getCicCase().getRespondentName()),
-            TemplateName.CASE_ISSUED_RESPONDENT_EMAIL);
+            expectedMap,
+            TemplateName.CASE_ISSUED_RESPONDENT_EMAIL_UPDATED);
 
     }
 

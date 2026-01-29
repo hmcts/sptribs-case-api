@@ -130,11 +130,11 @@ public class CaseIssuedNotification implements PartiesNotification {
 
         //probs need to format date better
         if (isOutOfTimeRange) {
-            return String.format("Out of time appeal - You should provide the tribunal with a case bundle by %s. " +
-                "Do not issue to the Subject/Applicant/Representative until we notify you the appeal has been admitted.", dueDate);
+            return String.format("Out of time appeal - You should provide the tribunal with a case bundle by %s. "
+                + "Do not issue to the Subject/Applicant/Representative until we notify you the appeal has been admitted.", dueDate);
         } else {
-            return String.format("You should provide the tribunal and the " +
-                "Subject/Applicant/Representative with a case bundle by %s", dueDate);
+            return String.format("You should provide the tribunal and the "
+                + "Subject/Applicant/Representative with a case bundle by %s", dueDate);
         }
     }
 
