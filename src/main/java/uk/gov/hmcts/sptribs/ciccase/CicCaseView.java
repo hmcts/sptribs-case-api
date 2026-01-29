@@ -59,6 +59,8 @@ public class CicCaseView implements CaseView<CriminalInjuriesCompensationData, S
             correspondences.add(correspondenceListValue);
         }
 
+        blobCase.getCicCase().setApplicantDocuments(blobCase.getCicCase().getApplicantDocumentsUploaded());
+
         blobCase.setCorrespondence(correspondences);
         return blobCase;
     }
