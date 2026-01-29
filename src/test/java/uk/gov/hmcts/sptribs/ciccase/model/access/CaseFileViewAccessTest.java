@@ -20,7 +20,7 @@ import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_WA_CONFIG_USER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SYSTEM_UPDATE;
 
-public class CaseFileViewAccessTest {
+class CaseFileViewAccessTest {
     @Test
     void shouldGrantCaseFileViewAccess() {
         //When
