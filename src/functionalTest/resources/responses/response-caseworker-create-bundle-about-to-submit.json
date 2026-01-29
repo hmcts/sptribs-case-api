@@ -103,7 +103,9 @@
       }
     ],
     "caseNumber": "1234567890123456",
+    "cicCaseAlternativeRespondentEmail": "notice.appeals@cica.gov.uk",
     "schemeLabel": "1996",
+    "stayIsCaseStayed": "No",
     "bundleConfiguration": {
       "value": "st_cic_bundle_all_case.yaml"
     }
