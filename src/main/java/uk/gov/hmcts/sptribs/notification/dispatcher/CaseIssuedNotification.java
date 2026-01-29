@@ -33,6 +33,7 @@ public class CaseIssuedNotification implements PartiesNotification {
     private final NotificationHelper notificationHelper;
 
     private static final int DOC_ATTACH_LIMIT = 5;
+    private static final int NUMBER_OF_DAYS_IN_WINDOW = 42;
 
     @Override
     public void sendToSubject(final CaseData caseData, final String caseNumber) {
@@ -101,10 +102,11 @@ public class CaseIssuedNotification implements PartiesNotification {
 
         //TODO update date condition
         LocalDate today = LocalDate.now();
-        LocalDate creationDate = LocalDate.of(2026, 1, 1);
+        //dummy date for now
+        LocalDate dueDate = LocalDate.of(2026, 1, 1).plusDays(NUMBER_OF_DAYS_IN_WINDOW);
         templateVarsRespondent.put(CommonConstants.CIC_BUNDLE_DUE_DATE_TEXT,
-            today.isAfter(creationDate.plusDays(42))
-                ? buildTimeString(true) : buildTimeString(false));
+            today.isAfter(dueDate)
+                ? buildTimeString(true, dueDate) : buildTimeString(false, dueDate));
 
         final NotificationResponse notificationResponse;
         if (ObjectUtils.isNotEmpty(caseData.getCaseIssue().getDocumentList())) {
@@ -124,14 +126,15 @@ public class CaseIssuedNotification implements PartiesNotification {
         }
     }
 
-    private String buildTimeString(boolean isOutOfTimeRange) {
+    private String buildTimeString(boolean isOutOfTimeRange, LocalDate dueDate) {
 
+        //probs need to format date better
         if (isOutOfTimeRange) {
-            return "Out of time appeal - You should provide the tribunal with a case bundle by (date of issuance +42 days). " +
-                "Do not issue to the Subject/Applicant/Representative until we notify you the appeal has been admitted.";
+            return String.format("Out of time appeal - You should provide the tribunal with a case bundle by %s. " +
+                "Do not issue to the Subject/Applicant/Representative until we notify you the appeal has been admitted.", dueDate);
         } else {
-            return "You should provide the tribunal and the " +
-                "Subject/Applicant/Representative with a case bundle by (date of issuance +42 days)";
+            return String.format("You should provide the tribunal and the " +
+                "Subject/Applicant/Representative with a case bundle by %s", dueDate);
         }
     }
 
