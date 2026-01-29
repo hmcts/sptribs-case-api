@@ -41,6 +41,7 @@ import static java.util.Collections.emptyList;
 import static uk.gov.hmcts.sptribs.caseworker.util.DocumentListUtil.getAllCaseDocumentsExcludingInitialCicaUpload;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CREATE_BUNDLE;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
+import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseClosed;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.ReadyToList;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_CASEWORKER;
@@ -69,7 +70,7 @@ public class CaseworkerCreateBundle implements CCDConfig<CaseData, State, UserRo
         Event.EventBuilder<CaseData, UserRole, State> eventBuilder =
             configBuilder
                 .event(CREATE_BUNDLE)
-                .forStates(CaseManagement, AwaitingHearing, ReadyToList)
+                .forStates(CaseManagement, AwaitingHearing, ReadyToList, CaseClosed)
                 .name("Bundle: Create a bundle")
                 .description("Bundle: Create a bundle")
                 .showSummary()
