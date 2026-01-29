@@ -277,7 +277,7 @@ dependencyManagement {
     }
 
     //CVE-2022-31692, CVE-2022-31690
-    dependencySet(group: 'org.springframework.security', version: '6.5.4'){
+    dependencySet(group: 'org.springframework.security', version: '6.5.7'){
       entry 'spring-security-core'
       entry 'spring-security-acl'
       entry 'spring-security-aspects'
