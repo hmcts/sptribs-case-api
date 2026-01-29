@@ -268,7 +268,7 @@ public class CaseIssuedNotificationIT {
             .cicCase(CicCase.builder()
                 .fullName("Subject Name")
                 .respondentName("Respondent Name")
-                .respondentEmail("test@email.com")
+                .alternativeRespondentEmail("test@email.com")
                 .build())
             .build();
 
@@ -332,7 +332,7 @@ public class CaseIssuedNotificationIT {
             .cicCase(CicCase.builder()
                 .fullName("Subject Name")
                 .respondentName("Respondent Name")
-                .respondentEmail("test@email.com")
+                .alternativeRespondentEmail("test@email.com")
                 .applicantDocumentsUploaded(applicantCaseDocuments)
                 .build())
             .caseIssue(CaseIssue.builder()
