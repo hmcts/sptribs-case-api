@@ -446,6 +446,19 @@ public class CicCase {
     private String cicaReferenceNumber;
 
     @CCD(
+        label = "Date of CICA initial review decision letter",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private LocalDate initialCicaDecisionDate;
+
+    @CCD(
+        label = "Is the case in time?",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private YesOrNo isCaseInTime;
+
+    @CCD(
         label = "Applicant's full name",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
@@ -699,6 +712,20 @@ public class CicCase {
     )
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate firstOrderDueDate;
+
+    public void calculateAndSetIsCaseInTime(CaseData data) {
+        LocalDate initialCicaDecisionDatePlus90Days = null;
+        if (data.getCicCase().getInitialCicaDecisionDate() != null) {
+            initialCicaDecisionDatePlus90Days = data.getCicCase().getInitialCicaDecisionDate().plusDays(90);
+        }
+
+        data.getCicCase().setIsCaseInTime(YesOrNo.YES);
+
+        if (initialCicaDecisionDatePlus90Days != null
+            && data.getCicCase().getCaseReceivedDate().isAfter(initialCicaDecisionDatePlus90Days)) {
+            data.getCicCase().setIsCaseInTime(YesOrNo.NO);
+        }
+    }
 
     private LocalDate findEarliestDate(List<ListValue<DateModel>> dueDateList, LocalDate compare) {
         LocalDate earliestDate = compare;

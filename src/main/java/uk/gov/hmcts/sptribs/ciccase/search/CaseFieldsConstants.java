@@ -21,6 +21,7 @@ public final class CaseFieldsConstants {
     public static final String CASE_STATE_LABEL = "LabelState";
     public static final String CASE_RECEIVED_DATE = "cicCaseCaseReceivedDate";
     public static final String CASE_CLAIM_LINKED = "cicCaseClaimLinkedToCic";
+    public static final String IS_CASE_IN_TIME = "cicCaseIsCaseInTime";
     public static final String DUE_DATE = "cicCaseFirstOrderDueDate";
     public static final String SCHEME = "cicCaseSchemeCic";
     public static final String LAST_MODIFIED_DATE = "[LAST_MODIFIED_DATE]";
