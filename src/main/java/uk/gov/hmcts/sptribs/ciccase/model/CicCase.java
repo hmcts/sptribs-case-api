@@ -38,6 +38,7 @@ import java.util.List;
 import java.util.Set;
 
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.Collection;
+import static uk.gov.hmcts.ccd.sdk.type.FieldType.DynamicRadioList;
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.Email;
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.FixedList;
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.MultiSelectList;
@@ -96,10 +97,48 @@ public class CicCase {
     private Set<ContactPartiesCIC> contactPartiesCIC;
 
     @CCD(
+        label = "Apply anonymity to the case?",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private YesOrNo anonymiseYesOrNo;
+
+    @CCD(
+        label = "Anonymised Name",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private String anonymisedAppellantName;
+
+    @CCD (
+        label = "Anonymisation Date",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private LocalDate anonymisationDate;
+
+    @CCD(
+        label = "Anonymised Name",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private YesOrNo anonymityAlreadyApplied;
+
+    @CCD(
         label = "How would you like to issue an order?",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private OrderIssuingType orderIssuingType;
+
+    @CCD(
+        label = "How would you like to issue an order?",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class},
+        typeOverride = DynamicRadioList
+    )
+    private DynamicList orderIssuingDynamicRadioList;
+
+    @CCD(
+        label = "Template",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private DynamicList templateDynamicList;
 
     @CCD(
         label = "Draft order",
@@ -112,6 +151,13 @@ public class CicCase {
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private List<ListValue<DateModel>> orderDueDates;
+
+    @CCD(
+        typeOverride = MultiSelectList,
+        typeParameterOverride = "AdminAction",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private Set<AdminAction> adminActionRequired;
 
     @CCD(
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
@@ -329,6 +375,14 @@ public class CicCase {
     )
     @Builder.Default
     private String respondentEmail = "appeals.team@cica.gov.uk";
+
+    @CCD(
+        label = "Alternative Respondent email",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    @Builder.Default
+    private String alternativeRespondentEmail = "notice.appeals@cica.gov.uk";
+
 
     @CCD(
         label = "Subject's full name",

@@ -57,6 +57,7 @@ import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.REVIEW_LIST_CAS
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.REVIEW_LIST_CASE_WITHIN_5DAYS_LO_TASK;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.REVIEW_NEW_CASE_PROVIDE_DIR_JUDGE_TASK;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.REVIEW_NEW_CASE_PROVIDE_DIR_LO_TASK;
+import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.REVIEW_ORDER;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.REVIEW_OTHER_REQ_JUDGE_TASK;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.REVIEW_OTHER_REQ_LO_TASK;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.REVIEW_POSTPONEMENT_REQ_JUDGE_TASK;
@@ -368,6 +369,10 @@ class CamundaTaskTypesTest extends DmnDecisionTableBaseUnitTest {
             Map.of(
                 "taskTypeId", ISSUE_DUE_DATE,
                 "taskTypeName", "Issue due date"
+            ),
+            Map.of(
+                "taskTypeId", REVIEW_ORDER,
+                "taskTypeName", "Review Order"
             )
         );
         return Stream.of(
@@ -383,7 +388,7 @@ class CamundaTaskTypesTest extends DmnDecisionTableBaseUnitTest {
         DmnDecisionTableImpl logic = (DmnDecisionTableImpl) decision.getDecisionLogic();
         assertThat(logic.getInputs().size(), is(1));
         assertThat(logic.getOutputs().size(), is(2));
-        assertThat(logic.getRules().size(), is(68));
+        assertThat(logic.getRules().size(), is(69));
     }
 
     @ParameterizedTest(name = "retrieve all task type data")

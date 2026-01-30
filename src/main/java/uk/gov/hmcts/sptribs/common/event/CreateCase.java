@@ -17,6 +17,7 @@ import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseManagementLocation;
 import uk.gov.hmcts.sptribs.caseworker.model.SecurityClass;
 import uk.gov.hmcts.sptribs.caseworker.model.YesNo;
+import uk.gov.hmcts.sptribs.caseworker.util.CaseFlagsUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
@@ -28,6 +29,7 @@ import uk.gov.hmcts.sptribs.common.event.page.CaseCategorisationDetails;
 import uk.gov.hmcts.sptribs.common.event.page.CaseUploadDocuments;
 import uk.gov.hmcts.sptribs.common.event.page.ContactPreferenceDetails;
 import uk.gov.hmcts.sptribs.common.event.page.DateOfReceipt;
+import uk.gov.hmcts.sptribs.common.event.page.EditCicaCaseDetailsPage;
 import uk.gov.hmcts.sptribs.common.event.page.FurtherDetails;
 import uk.gov.hmcts.sptribs.common.event.page.RepresentativeDetails;
 import uk.gov.hmcts.sptribs.common.event.page.SelectParties;
@@ -51,6 +53,7 @@ import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_HEARING_CENTRE_
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_HEARING_CENTRE_TEAM_LEADER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_CASEWORKER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_JUDGE;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE;
 import static uk.gov.hmcts.sptribs.constants.CommonConstants.ST_CIC_WA_CASE_BASE_LOCATION;
 import static uk.gov.hmcts.sptribs.constants.CommonConstants.ST_CIC_WA_CASE_MANAGEMENT_CATEGORY;
@@ -62,6 +65,7 @@ import static uk.gov.hmcts.sptribs.document.DocumentUtil.updateUploadedDocumentC
 public class CreateCase implements CCDConfig<CaseData, State, UserRole> {
 
     private static final CcdPageConfiguration categorisationDetails = new CaseCategorisationDetails();
+    private static final CcdPageConfiguration cicaCaseDetails = new EditCicaCaseDetailsPage();
     private static final CcdPageConfiguration dateOfReceipt = new DateOfReceipt();
     private static final CcdPageConfiguration selectParties = new SelectParties();
     private static final CcdPageConfiguration caseUploadDocuments = new CaseUploadDocuments();
@@ -97,9 +101,10 @@ public class CreateCase implements CCDConfig<CaseData, State, UserRole> {
             .submittedCallback(this::submitted)
             .grant(CREATE_READ_UPDATE,
                 ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER, ST_CIC_HEARING_CENTRE_ADMIN,
-                ST_CIC_HEARING_CENTRE_TEAM_LEADER, ST_CIC_SENIOR_JUDGE));
+                ST_CIC_HEARING_CENTRE_TEAM_LEADER, ST_CIC_SENIOR_JUDGE, SUPER_USER));
 
         categorisationDetails.addTo(pageBuilder);
+        cicaCaseDetails.addTo(pageBuilder);
         dateOfReceipt.addTo(pageBuilder);
         selectParties.addTo(pageBuilder);
         subjectDetails.addTo(pageBuilder);
@@ -127,7 +132,7 @@ public class CreateCase implements CCDConfig<CaseData, State, UserRole> {
         caseData.setSecurityClass(SecurityClass.PUBLIC);
         caseData.setCaseNameHmctsInternal(caseData.getCicCase().getFullName());
 
-        initialiseFlags(caseData);
+        CaseFlagsUtil.initialiseFlags(caseData);
         setDefaultCaseDetails(caseData);
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()

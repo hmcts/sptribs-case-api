@@ -30,6 +30,8 @@ def secrets = [
     secret('idam-secret', 'OAUTH2_CLIENT_SECRET'),
     secret('idam-solicitor-username', 'IDAM_SOLICITOR_USERNAME'),
     secret('idam-solicitor-password', 'IDAM_SOLICITOR_PASSWORD'),
+    secret('caseworker-user', 'IDAM_CASEWORKER_USERNAME'),
+    secret('caseworker-password', 'IDAM_CASEWORKER_PASSWORD'),
     secret('citizen-user', 'IDAM_CITIZEN_USERNAME'),
     secret('citizen-password', 'IDAM_CITIZEN_PASSWORD')
   ]

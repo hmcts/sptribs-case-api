@@ -1,7 +1,7 @@
 package uk.gov.hmcts.sptribs.caseworker.event;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
@@ -22,8 +22,11 @@ import uk.gov.hmcts.sptribs.caseworker.event.page.SendOrderUploadOrder;
 import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderCIC;
 import uk.gov.hmcts.sptribs.caseworker.model.Order;
 import uk.gov.hmcts.sptribs.caseworker.model.OrderIssuingType;
+import uk.gov.hmcts.sptribs.caseworker.util.DynamicListUtil;
 import uk.gov.hmcts.sptribs.caseworker.util.MessageUtil;
+import uk.gov.hmcts.sptribs.caseworker.util.SendOrderUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
@@ -33,6 +36,7 @@ import uk.gov.hmcts.sptribs.notification.dispatcher.NewOrderIssuedNotification;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -58,8 +62,9 @@ import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_WA_CONFIG_USER;
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE;
 import static uk.gov.hmcts.sptribs.document.DocumentUtil.updateCategoryToDocument;
 
-@Component
 @Slf4j
+@Component
+@RequiredArgsConstructor
 public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole> {
     private static final CcdPageConfiguration orderIssuingSelect = new SendOrderOrderIssuingSelect();
     private static final CcdPageConfiguration uploadOrder = new SendOrderUploadOrder();
@@ -70,8 +75,7 @@ public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole>
 
     private static final int ORDER_TIMESTAMP_WITH_EXTENSION = 2; //dd-MM-yyyy HH:mm:ss.pdf
 
-    @Autowired
-    private NewOrderIssuedNotification newOrderIssuedNotification;
+    private final NewOrderIssuedNotification newOrderIssuedNotification;
 
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
@@ -92,14 +96,31 @@ public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole>
                     .name("Orders: Send order")
                     .description("Orders: Send order")
                     .showSummary()
+                    .aboutToStartCallback(this::aboutToStart)
                     .aboutToSubmitCallback(this::aboutToSubmit)
                     .submittedCallback(this::submitted)
                     .grant(CREATE_READ_UPDATE,
-                        ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER, ST_CIC_HEARING_CENTRE_ADMIN,
-                        ST_CIC_HEARING_CENTRE_TEAM_LEADER, ST_CIC_SENIOR_JUDGE, ST_CIC_JUDGE, ST_CIC_WA_CONFIG_USER)
+                        ST_CIC_HEARING_CENTRE_ADMIN, ST_CIC_HEARING_CENTRE_TEAM_LEADER, ST_CIC_WA_CONFIG_USER)
+                    .grantHistoryOnly(ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER, ST_CIC_JUDGE, ST_CIC_SENIOR_JUDGE)
                     .publishToCamunda();
 
         return new PageBuilder(eventBuilder);
+    }
+
+    public AboutToStartOrSubmitResponse<CaseData, State> aboutToStart(CaseDetails<CaseData, State> caseDetails) {
+        CaseData data = caseDetails.getData();
+        CicCase cicCase = data.getCicCase();
+
+        DynamicList availableOptions = DynamicListUtil.createDynamicListFromEnumSet(
+            EnumSet.of(OrderIssuingType.ISSUE_AND_SEND_AN_EXISTING_DRAFT, OrderIssuingType.UPLOAD_A_NEW_ORDER_FROM_YOUR_COMPUTER),
+            OrderIssuingType::getLabel,
+            cicCase.getOrderIssuingType());
+
+        cicCase.setOrderIssuingDynamicRadioList(availableOptions);
+
+        return AboutToStartOrSubmitResponse.<CaseData, State>builder()
+            .data(data)
+            .build();
     }
 
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(final CaseDetails<CaseData, State> details,
@@ -136,7 +157,7 @@ public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole>
             }
         }
 
-        updateCicCaseOrderList(caseData, order);
+        SendOrderUtil.updateCicCaseOrderList(caseData, order);
 
         caseData.getCicCase().setOrderIssuingType(null);
         caseData.getCicCase().setOrderFile(null);
@@ -198,33 +219,7 @@ public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole>
             .build();
     }
 
-    private void updateCicCaseOrderList(CaseData caseData, Order order) {
-        if (CollectionUtils.isEmpty(caseData.getCicCase().getOrderList())) {
-            List<ListValue<Order>> listValues = new ArrayList<>();
 
-            ListValue<Order> listValue = ListValue
-                .<Order>builder()
-                .id("1")
-                .value(order)
-                .build();
-
-            listValues.add(listValue);
-
-            caseData.getCicCase().setOrderList(listValues);
-        } else {
-            AtomicInteger listValueIndex = new AtomicInteger(0);
-            ListValue<Order> listValue = ListValue
-                .<Order>builder()
-                .value(order)
-                .build();
-
-            // always add new order as first element so that it is displayed on top
-            caseData.getCicCase().getOrderList().addFirst(listValue);
-
-            caseData.getCicCase().getOrderList().forEach(
-                orderListValue -> orderListValue.setId(String.valueOf(listValueIndex.incrementAndGet())));
-        }
-    }
 
     private void sendOrderNotification(String caseNumber, CaseData caseData) {
         if (!CollectionUtils.isEmpty(caseData.getCicCase().getNotifyPartySubject())) {

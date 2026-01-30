@@ -13,7 +13,9 @@ public class SendOrderOrderDueDates implements CcdPageConfiguration {
         pageBuilder.page("caseworkerSendOrderOrderDueDates")
             .pageLabel("Add a due date")
             .complex(CaseData::getCicCase)
-            .optional(CicCase::getOrderDueDates)
+                .optional(CicCase::getOrderDueDates)
+                .optional(CicCase::getAdminActionRequired)
+                .readonly(CicCase::getFirstOrderDueDate, "cicCaseOrderDueDates=\"HIDDEN\"")
             .done();
     }
 }

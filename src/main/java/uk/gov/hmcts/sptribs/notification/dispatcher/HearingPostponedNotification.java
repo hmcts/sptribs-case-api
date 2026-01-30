@@ -37,10 +37,10 @@ public class HearingPostponedNotification implements PartiesNotification {
 
         final NotificationResponse hearingNotifyResponse;
         if (cicCase.getContactPreferenceType() == ContactPreferenceType.EMAIL) {
-            hearingNotifyResponse = sendEmailNotification(cicCase.getEmail(), templateVars);
+            hearingNotifyResponse = sendEmailNotification(cicCase.getEmail(), templateVars, caseNumber);
         } else {
             notificationHelper.addAddressTemplateVars(cicCase.getAddress(), templateVars);
-            hearingNotifyResponse = sendLetterNotification(templateVars);
+            hearingNotifyResponse = sendLetterNotification(templateVars, caseNumber);
         }
 
         cicCase.setSubjectNotifyList(hearingNotifyResponse);
@@ -55,10 +55,10 @@ public class HearingPostponedNotification implements PartiesNotification {
         final NotificationResponse hearingNotifyResponse;
         if (cicCase.getRepresentativeContactDetailsPreference() == ContactPreferenceType.EMAIL) {
             hearingNotifyResponse =
-                sendEmailNotification(cicCase.getRepresentativeEmailAddress(), templateVars);
+                sendEmailNotification(cicCase.getRepresentativeEmailAddress(), templateVars, caseNumber);
         } else {
             notificationHelper.addAddressTemplateVars(cicCase.getRepresentativeAddress(), templateVars);
-            hearingNotifyResponse = sendLetterNotification(templateVars);
+            hearingNotifyResponse = sendLetterNotification(templateVars, caseNumber);
         }
 
         cicCase.setRepNotificationResponse(hearingNotifyResponse);
@@ -71,23 +71,25 @@ public class HearingPostponedNotification implements PartiesNotification {
         final Map<String, Object> respondentTemplateVars = notificationHelper.getRespondentCommonVars(caseNumber, caseData);
         notificationHelper.addHearingPostponedTemplateVars(cicCase, respondentTemplateVars);
 
-        final NotificationResponse hearingNotifyResponse = sendEmailNotification(cicCase.getRespondentEmail(), respondentTemplateVars);
+        final NotificationResponse hearingNotifyResponse = sendEmailNotification(cicCase.getRespondentEmail(),
+            respondentTemplateVars, caseNumber);
         cicCase.setResNotificationResponse(hearingNotifyResponse);
     }
 
-    private NotificationResponse sendEmailNotification(final String destinationAddress, final Map<String, Object> templateVars) {
+    private NotificationResponse sendEmailNotification(final String destinationAddress,
+                                                       final Map<String, Object> templateVars, String caseReferenceNumber) {
         final NotificationRequest request = notificationHelper.buildEmailNotificationRequest(
             destinationAddress,
             templateVars,
             TemplateName.HEARING_POSTPONED_EMAIL);
-        return notificationService.sendEmail(request);
+        return notificationService.sendEmail(request, caseReferenceNumber);
     }
 
-    private NotificationResponse sendLetterNotification(Map<String, Object> templateVarsLetter) {
+    private NotificationResponse sendLetterNotification(Map<String, Object> templateVarsLetter, String caseReferenceNumber) {
         final NotificationRequest letterRequest = notificationHelper.buildLetterNotificationRequest(
             templateVarsLetter,
             TemplateName.HEARING_POSTPONED_POST);
-        return notificationService.sendLetter(letterRequest);
+        return notificationService.sendLetter(letterRequest, caseReferenceNumber);
     }
 
 }

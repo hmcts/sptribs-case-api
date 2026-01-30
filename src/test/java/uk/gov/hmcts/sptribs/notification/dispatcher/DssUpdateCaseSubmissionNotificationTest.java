@@ -58,7 +58,7 @@ class DssUpdateCaseSubmissionNotificationTest {
 
         dssUpdateCaseSubmissionNotification.sendToApplicant(caseData, caseReference);
 
-        verify(notificationService).sendEmail(notificationRequest);
+        verify(notificationService).sendEmail(notificationRequest, caseReference);
     }
 
     @Test
@@ -83,6 +83,6 @@ class DssUpdateCaseSubmissionNotificationTest {
 
         dssUpdateCaseSubmissionNotification.sendToTribunal(caseData, String.valueOf(TEST_CASE_ID));
 
-        verify(notificationService).sendEmail(notificationRequest);
+        verify(notificationService).sendEmail(notificationRequest, String.valueOf(TEST_CASE_ID));
     }
 }

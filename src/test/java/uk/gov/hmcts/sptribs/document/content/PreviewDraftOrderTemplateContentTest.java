@@ -5,12 +5,15 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
+import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
+import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderContentCIC;
 import uk.gov.hmcts.sptribs.caseworker.model.HearingSummary;
 import uk.gov.hmcts.sptribs.caseworker.model.Listing;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseSubcategory;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.HearingState;
+import uk.gov.hmcts.sptribs.ciccase.model.OrderTemplate;
 import uk.gov.hmcts.sptribs.ciccase.model.SchemeCic;
 
 import java.time.LocalDate;
@@ -204,8 +207,116 @@ class PreviewDraftOrderTemplateContentTest {
             .contains(entry(HEARING_DATE, LocalDate.now().format(formatter)));
     }
 
+    @Test
+    void shouldSuccessfullyPreviewAnonymisedDraftOrderContent() {
+        CaseData caseData = buildCaseData();
+        caseData.getCicCase().setAnonymiseYesOrNo(YesOrNo.YES);
+        caseData.getCicCase().setAnonymisedAppellantName("Anonymised Name");
+        final HearingSummary summary = HearingSummary.builder()
+            .memberList(getMembers())
+            .subjectName("John Smith")
+            .build();
+        final Listing listing = Listing.builder()
+            .date(LocalDate.now())
+            .hearingTime("11::00")
+            .hearingStatus(HearingState.Complete)
+            .summary(summary)
+            .build();
+        final ListValue<Listing> listingListValue = new ListValue<>();
+        listingListValue.setValue(listing);
+        caseData.setHearingList(List.of(listingListValue));
+
+        Map<String, Object> result = previewDraftOrderTemplateContent.apply(caseData, TEST_CASE_ID);
+
+        assertThat(result)
+            .contains(entry("cicCaseSchemeCic", SchemeCic.Year1996.getLabel()))
+            .contains(entry(HEARING_DATE, LocalDate.now().format(formatter)))
+            .contains(entry(SUBJECT_FULL_NAME, "Anonymised Name"));
+    }
+
+    @Test
+    void shouldNotUseAnonymisedNameDraftOrderContent() {
+        CaseData caseData = buildCaseData();
+        caseData.getCicCase().setAnonymiseYesOrNo(YesOrNo.NO);
+        caseData.getCicCase().setAnonymisedAppellantName("Anonymised Name");
+        final HearingSummary summary = HearingSummary.builder()
+            .memberList(getMembers())
+            .subjectName("John Smith")
+            .build();
+        final Listing listing = Listing.builder()
+            .date(LocalDate.now())
+            .hearingTime("11::00")
+            .hearingStatus(HearingState.Complete)
+            .summary(summary)
+            .build();
+        final ListValue<Listing> listingListValue = new ListValue<>();
+        listingListValue.setValue(listing);
+        caseData.setHearingList(List.of(listingListValue));
+
+        Map<String, Object> result = previewDraftOrderTemplateContent.apply(caseData, TEST_CASE_ID);
+
+        assertThat(result)
+            .contains(entry("cicCaseSchemeCic", SchemeCic.Year1996.getLabel()))
+            .contains(entry(HEARING_DATE, LocalDate.now().format(formatter)))
+            .contains(entry(SUBJECT_FULL_NAME, "John Smith"));
+    }
+
+    @Test
+    void shouldAddAnonymityParagraphWhenAnonymityHasBeenApplied() {
+        String expectedMainContent = "test content";
+        DraftOrderContentCIC contentCIC = DraftOrderContentCIC.builder()
+                .orderTemplate(OrderTemplate.CIC7_ME_DMI_REPORTS)
+                .mainContent(expectedMainContent)
+                .build();
+
+        LocalDate date = LocalDate.of(2025, 12, 12);
+        CicCase cicCase = CicCase.builder()
+                .anonymiseYesOrNo(YesOrNo.YES)
+                .anonymisationDate(date)
+                .anonymisedAppellantName("Anonymised Name")
+                .build();
+
+        CaseData caseData = CaseData.builder()
+                .draftOrderContentCIC(contentCIC)
+                .cicCase(cicCase)
+                .build();
+
+        Map<String, Object> result = previewDraftOrderTemplateContent.apply(caseData, TEST_CASE_ID);
+
+        String expectedStatement = DocmosisTemplateConstants.generateAnonymisationStatement(date);
+        String expectedMainBody = expectedMainContent + expectedStatement;
+
+        assertThat(result.get(DocmosisTemplateConstants.MAIN_CONTENT)).isEqualTo(expectedMainBody);
+    }
+
+    @Test
+    void shouldNotAddAnonymityParagraphWhenAnonymityHasNotBeenApplied() {
+        String expectedMainContent = "test content";
+        DraftOrderContentCIC contentCIC = DraftOrderContentCIC.builder()
+                .orderTemplate(OrderTemplate.CIC7_ME_DMI_REPORTS)
+                .mainContent(expectedMainContent)
+                .build();
+
+        CicCase cicCase = CicCase.builder()
+                .anonymiseYesOrNo(YesOrNo.NO)
+                .build();
+
+        CaseData caseData = CaseData.builder()
+                .draftOrderContentCIC(contentCIC)
+                .cicCase(cicCase)
+                .build();
+
+        Map<String, Object> result = previewDraftOrderTemplateContent.apply(caseData, TEST_CASE_ID);
+
+        assertThat(result.get(DocmosisTemplateConstants.MAIN_CONTENT)).isEqualTo(expectedMainContent);
+    }
+
     private CaseData buildCaseData() {
-        final CicCase cicCase = CicCase.builder().fullName("John Smith").schemeCic(SchemeCic.Year1996).build();
+        final CicCase cicCase = CicCase.builder()
+            .fullName("John Smith")
+            .schemeCic(SchemeCic.Year1996)
+            .anonymiseYesOrNo(YesOrNo.NO)
+            .build();
 
         return CaseData.builder()
             .cicCase(cicCase)
@@ -218,7 +329,9 @@ class PreviewDraftOrderTemplateContentTest {
                 .fullName("John Smith")
                 .applicantFullName("Jane Doe")
                 .caseSubcategory(caseSubcategory)
-                .schemeCic(SchemeCic.Year1996).build();
+                .schemeCic(SchemeCic.Year1996)
+                .anonymiseYesOrNo(YesOrNo.NO)
+                .build();
 
             return CaseData.builder()
                 .cicCase(cicCase)
@@ -227,7 +340,9 @@ class PreviewDraftOrderTemplateContentTest {
             final CicCase cicCase = CicCase.builder()
                 .fullName("John Smith")
                 .caseSubcategory(caseSubcategory)
-                .schemeCic(SchemeCic.Year1996).build();
+                .schemeCic(SchemeCic.Year1996)
+                .anonymiseYesOrNo(YesOrNo.NO)
+                .build();
 
             return CaseData.builder()
                 .cicCase(cicCase)

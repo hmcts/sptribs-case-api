@@ -7,6 +7,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 
+
 @Slf4j
 @Component
 public class DraftOrderMainContentPage implements CcdPageConfiguration {
@@ -27,8 +28,8 @@ public class DraftOrderMainContentPage implements CcdPageConfiguration {
                 Enter text in the box below. This will be added into the centre of the generated order document.
                 """)
             .complex(CaseData::getDraftOrderContentCIC)
-            .mandatory(DraftOrderContentCIC::getMainContent)
-            .done()
+                .mandatory(DraftOrderContentCIC::getMainContent)
+                .done()
             .label("footer", """
                 <h3>Footer</h3>
                  The footer will be automatically generated.
@@ -37,6 +38,4 @@ public class DraftOrderMainContentPage implements CcdPageConfiguration {
                 """)
             .done();
     }
-
-
 }

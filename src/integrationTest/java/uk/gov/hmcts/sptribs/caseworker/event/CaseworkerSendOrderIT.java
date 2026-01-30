@@ -8,7 +8,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -30,6 +29,7 @@ import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
 import static net.javacrumbs.jsonunit.assertj.JsonAssertions.json;
 import static net.javacrumbs.jsonunit.core.Option.IGNORING_EXTRA_FIELDS;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -45,12 +45,15 @@ import static uk.gov.hmcts.sptribs.ciccase.model.RepresentativeCIC.REPRESENTATIV
 import static uk.gov.hmcts.sptribs.ciccase.model.RespondentCIC.RESPONDENT;
 import static uk.gov.hmcts.sptribs.ciccase.model.SchemeCic.Year2012;
 import static uk.gov.hmcts.sptribs.ciccase.model.SubjectCIC.SUBJECT;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.ABOUT_TO_START_URL;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.ABOUT_TO_SUBMIT_URL;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.AUTHORIZATION;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.SERVICE_AUTHORIZATION;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.SUBMITTED_URL;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_AUTHORIZATION_TOKEN;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID_HYPHENATED;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.callbackRequest;
+import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.caseData;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getCICDocumentList;
 import static uk.gov.hmcts.sptribs.testutil.TestResourceUtil.expectedResponse;
 
@@ -58,7 +61,6 @@ import static uk.gov.hmcts.sptribs.testutil.TestResourceUtil.expectedResponse;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
 @ContextConfiguration(initializers = {IdamWireMock.PropertiesInitializer.class})
-@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class CaseworkerSendOrderIT {
 
     @Autowired
@@ -85,13 +87,40 @@ public class CaseworkerSendOrderIT {
         IdamWireMock.stopAndReset();
     }
 
+    private static final String CASEWORKER_SEND_ORDER_ABOUT_TO_START_RESPONSE =
+        "classpath:responses/caseworker-send-order-about-to-start-response.json";
+
     private static final String CASEWORKER_SEND_ORDER_ABOUT_TO_SUBMIT_RESPONSE =
         "classpath:responses/caseworker-send-order-about-to-submit-response.json";
 
     @Test
+    void shouldSetOrderIssueTypesAndTemplatesInAboutToStartCallback() throws Exception {
+        final CaseData caseData = caseData();
+
+        String response = mockMvc.perform(post(ABOUT_TO_START_URL)
+            .contentType(APPLICATION_JSON)
+            .header(SERVICE_AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
+            .header(AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
+            .content(objectMapper.writeValueAsString(
+                callbackRequest(
+                    caseData,
+                    CASEWORKER_SEND_ORDER)))
+            .accept(APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andReturn()
+            .getResponse()
+            .getContentAsString();
+
+        assertThatJson(response)
+                .when(IGNORING_EXTRA_FIELDS)
+                .isEqualTo(json(expectedResponse(CASEWORKER_SEND_ORDER_ABOUT_TO_START_RESPONSE)));
+
+    }
+
+    @Test
     void shouldUpdateOrderRelatedDataOnAboutToSubmit() throws Exception {
         DateModel dateModel = DateModel.builder()
-            .dueDate(LocalDate.of(2024, 9, 04))
+            .dueDate(LocalDate.of(2024, 9, 4))
             .information("due date for test")
             .build();
 
@@ -138,8 +167,10 @@ public class CaseworkerSendOrderIT {
 
     @Test
     void shouldSuccessfullyDispatchEmailsOnSubmitted() throws Exception {
-        final CaseData caseData = CaseData.builder()
-            .cicCase(CicCase.builder()
+        final CaseData caseData = caseData();
+        caseData.setHyphenatedCaseRef(TEST_CASE_ID_HYPHENATED);
+        caseData.setCicCase(
+            CicCase.builder()
                 .notifyPartySubject(Set.of(SUBJECT))
                 .notifyPartyRespondent(Set.of(RESPONDENT))
                 .notifyPartyRepresentative(Set.of(REPRESENTATIVE))
@@ -156,8 +187,7 @@ public class CaseworkerSendOrderIT {
                 .applicantFullName("Applicant Name")
                 .applicantEmailAddress("applicant@test.com")
                 .build()
-            )
-            .build();
+        );
 
         String response = mockMvc.perform(post(SUBMITTED_URL)
             .contentType(APPLICATION_JSON)
@@ -179,7 +209,7 @@ public class CaseworkerSendOrderIT {
             .isString()
             .contains("# Order sent \n## A notification has been sent to: Subject, Respondent, Representative, Applicant");
 
-        verify(notificationServiceCIC, times(4)).sendEmail(any());
+        verify(notificationServiceCIC, times(4)).sendEmail(any(), eq(TEST_CASE_ID_HYPHENATED));
         verifyNoMoreInteractions(notificationServiceCIC);
     }
 

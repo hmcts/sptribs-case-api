@@ -1,7 +1,7 @@
 package uk.gov.hmcts.sptribs.caseworker.event;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
@@ -52,18 +52,18 @@ import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_WA_CONFIG_USER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE;
 
-@Component
 @Slf4j
-public class CaseWorkerCreateDraftOrder implements CCDConfig<CaseData, State, UserRole> {
+@Component
+@RequiredArgsConstructor
+public class CaseworkerCreateDraftOrder implements CCDConfig<CaseData, State, UserRole> {
 
     private final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss", Locale.ENGLISH);
 
     private static final CcdPageConfiguration createDraftOrder = new CreateDraftOrder();
     private static final CcdPageConfiguration draftOrderMainContentPage = new DraftOrderMainContentPage();
-    private static final CcdPageConfiguration previewOrder = new PreviewDraftOrder();
+    private static final CcdPageConfiguration previewOrder = new PreviewDraftOrder("previewDraftOrderPage", CASEWORKER_CREATE_DRAFT_ORDER);
 
-    @Autowired
-    private OrderService orderService;
+    private final OrderService orderService;
 
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
@@ -77,8 +77,8 @@ public class CaseWorkerCreateDraftOrder implements CCDConfig<CaseData, State, Us
                 .aboutToSubmitCallback(this::aboutToSubmit)
                 .submittedCallback(this::submitted)
                 .grant(CREATE_READ_UPDATE, SUPER_USER,
-                    ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER, ST_CIC_HEARING_CENTRE_ADMIN,
-                    ST_CIC_HEARING_CENTRE_TEAM_LEADER, ST_CIC_SENIOR_JUDGE, ST_CIC_JUDGE, ST_CIC_WA_CONFIG_USER)
+                    ST_CIC_HEARING_CENTRE_ADMIN, ST_CIC_HEARING_CENTRE_TEAM_LEADER, ST_CIC_WA_CONFIG_USER)
+                .grantHistoryOnly(ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER, ST_CIC_JUDGE, ST_CIC_SENIOR_JUDGE)
                 .publishToCamunda();
 
         PageBuilder pageBuilder = new PageBuilder(eventBuilder);
@@ -134,7 +134,7 @@ public class CaseWorkerCreateDraftOrder implements CCDConfig<CaseData, State, Us
                 .value(draftOrderCIC)
                 .build();
 
-            caseData.getCicCase().getDraftOrderCICList().add(0, listValue);
+            caseData.getCicCase().getDraftOrderCICList().addFirst(listValue);
 
             caseData.getCicCase().getDraftOrderCICList().forEach(
                 draftOrderListValue -> draftOrderListValue.setId(String.valueOf(listValueIndex.incrementAndGet())));
