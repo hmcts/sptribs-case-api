@@ -1,0 +1,131 @@
+{
+  "allCaseworkerCICDocument": [
+    {
+      "id": "c340d45a-7909-466b-bee9-ec07742cc59c",
+      "value": {
+        "documentCategory": "Mental Health records",
+        "documentEmailContent": "A test doc",
+        "documentLink": {
+          "document_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/5dabdd89-42e4-4294-8d67-a7aae560e6b6",
+          "document_filename": "Test-Letter-V2 3.pdf",
+          "document_binary_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/5dabdd89-42e4-4294-8d67-a7aae560e6b6/binary",
+          "category_id": "C"
+        }
+      }
+    },
+    {
+      "id": "051e0fee-5229-4574-bdd0-c27ae8f91bed",
+      "value": {
+        "documentCategory": "Application for review",
+        "documentEmailContent": "test",
+        "documentLink": {
+          "document_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/328c674f-59c3-418a-b76b-78f2cc52d21a",
+          "document_filename": "sample4.m4a",
+          "document_binary_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/328c674f-59c3-418a-b76b-78f2cc52d21a/binary",
+          "category_id": "A"
+        }
+      }
+    }
+  ],
+  "newCaseworkerCICDocument": [],
+  "editCicaCaseDetails": {},
+  "securityClass": "PUBLIC",
+  "caseBundles": [],
+  "cicCaseOrderDueDates": [],
+  "cicCaseOrderDocumentList": [],
+  "cicCaseCaseCategory": "Assessment",
+  "cicCaseCaseSubcategory": "Fatal",
+  "cicCaseCaseReceivedDate": "2023-01-01",
+  "cicCasePartiesCIC": [
+    "SubjectCIC",
+    "RepresentativeCIC",
+    "ApplicantCIC"
+  ],
+  "cicCaseSubjectCIC": [],
+  "cicCaseApplicantCIC": [
+    "ApplicantCIC"
+  ],
+  "cicCaseRepresentativeCIC": [
+    "RepresentativeCIC"
+  ],
+  "cicCaseNotifyPartyApplicant": [],
+  "cicCaseNotifyPartySubject": [],
+  "cicCaseNotifyPartyRepresentative": [
+    "RepresentativeCIC"
+  ],
+  "cicCaseNotifyPartyRespondent": [],
+  "cicCaseRespondentName": "Appeals team",
+  "cicCaseRespondentOrganisation": "CICA",
+  "cicCaseRespondentEmail": "appeals.team@cica.gov.uk",
+  "cicCaseFullName": "Test Tester",
+  "cicCaseAddress": {
+    "AddressLine1": "1 Rse Way",
+    "AddressLine2": "",
+    "AddressLine3": "",
+    "PostTown": "London",
+    "County": "",
+    "PostCode": "SW11 1PD",
+    "Country": "United Kingdom"
+  },
+  "cicCaseEmail": "st-test1@mailinator.com",
+  "cicCaseDateOfBirth": "1990-01-01",
+  "cicCaseContactPreferenceType": "Email",
+  "cicCaseSchemeCic": "Preference",
+  "cicCaseRegionCIC": "Midlands",
+  "cicCaseApplicantFullName": "Test Test",
+  "cicCaseApplicantAddress": {
+    "AddressLine1": "1 Rse Way",
+    "AddressLine2": "",
+    "AddressLine3": "",
+    "PostTown": "London",
+    "County": "",
+    "PostCode": "SW11 1PD",
+    "Country": "United Kingdom"
+  },
+  "cicCaseApplicantPhoneNumber": "0764646346356",
+  "cicCaseApplicantDateOfBirth": "1980-01-01",
+  "cicCaseApplicantContactDetailsPreference": "Post",
+  "cicCaseRepresentativeFullName": "Resp Respondent",
+  "cicCaseRepresentativeAddress": {
+    "AddressLine1": "1 Rse Way",
+    "AddressLine2": "",
+    "AddressLine3": "",
+    "PostTown": "London",
+    "County": "",
+    "PostCode": "SW11 1PD",
+    "Country": "United Kingdom"
+  },
+  "cicCaseRepresentativePhoneNumber": "0745435345356",
+  "cicCaseRepresentativeContactDetailsPreference": "Post",
+  "cicCaseIsRepresentativeQualified": "No",
+  "cicCaseFormReceivedInTime": "Yes",
+  "cicCaseClaimLinkedToCic": "No",
+  "cicCaseCompensationClaimLinkCIC": "No",
+  "cicCaseIsRepresentativePresent": "Yes",
+  "cicCaseApplicantDocumentsUploaded": [],
+  "cicCaseReinstateDocuments": [],
+  "cicCaseDecisionDocumentList": [],
+  "cicCaseRemovedDocumentList": [],
+  "cicCaseFinalDecisionDocumentList": [],
+  "stayIsCaseStayed": "No",
+  "hearingSummaryExists": "YES",
+  "hearingList": [],
+  "hyphenatedCaseRef": "1699-9545-8542-9659",
+  "cicCaseAnonymiseYesOrNo": "Yes",
+  "cicCaseAnonymisedAppellantName": "AAC",
+  "cicCaseOrderIssuingType": "UploadOrder",
+  "cicCaseOrderFile": [
+    {
+      "id": "1",
+      "value": {
+        "documentEmailContent": "Test",
+        "documentLink": {
+          "document_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/c42d2333-b4c6-4065-a528-3cff9a0cd932",
+          "document_filename": "test.pdf",
+          "document_binary_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/c42d2333-b4c6-4065-a528-3cff9a0cd932/binary",
+          "category_id": "TD"
+        }
+      }
+    }
+  ]
+}

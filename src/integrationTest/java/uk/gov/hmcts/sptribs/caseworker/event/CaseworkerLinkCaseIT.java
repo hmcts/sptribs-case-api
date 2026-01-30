@@ -8,7 +8,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -25,6 +24,7 @@ import java.util.Set;
 
 import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -40,14 +40,15 @@ import static uk.gov.hmcts.sptribs.testutil.TestConstants.AUTHORIZATION;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.SERVICE_AUTHORIZATION;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.SUBMITTED_URL;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_AUTHORIZATION_TOKEN;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID_HYPHENATED;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.callbackRequest;
+import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.caseData;
 import static uk.gov.hmcts.sptribs.testutil.TestEventConstants.CASEWORKER_LINK_CASE;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
 @ContextConfiguration(initializers = {IdamWireMock.PropertiesInitializer.class})
-@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class CaseworkerLinkCaseIT {
     private static final String CONFIRMATION_HEADER = "$.confirmation_header";
 
@@ -75,8 +76,9 @@ public class CaseworkerLinkCaseIT {
 
     @Test
     void shouldReturnConfirmationMessageIfNotificationsDispatchedOnSubmitted() throws Exception {
-        final CaseData caseData = CaseData.builder()
-            .cicCase(CicCase.builder()
+        final CaseData caseData = caseData();
+        caseData.setHyphenatedCaseRef(TEST_CASE_ID_HYPHENATED);
+        caseData.setCicCase(CicCase.builder()
                 .notifyPartySubject(Set.of(SUBJECT))
                 .notifyPartyRepresentative(Set.of(REPRESENTATIVE))
                 .notifyPartyApplicant(Set.of(APPLICANT_CIC))
@@ -93,8 +95,7 @@ public class CaseworkerLinkCaseIT {
                 .applicantCIC(Set.of(APPLICANT_CIC))
                 .representativeCIC(Set.of(REPRESENTATIVE))
                 .build()
-            )
-            .build();
+        );
 
         String response = mockMvc.perform(post(SUBMITTED_URL)
                 .contentType(APPLICATION_JSON)
@@ -116,14 +117,15 @@ public class CaseworkerLinkCaseIT {
             .isString()
             .contains("# Case Link created \n");
 
-        verify(notificationServiceCIC, times(3)).sendEmail(any());
+        verify(notificationServiceCIC, times(3)).sendEmail(any(), eq(TEST_CASE_ID_HYPHENATED));
         verifyNoMoreInteractions(notificationServiceCIC);
     }
 
     @Test
     void shouldReturnErrorMessageIfNotificationsFailOnSubmitted() throws Exception {
-        final CaseData caseData = CaseData.builder()
-            .cicCase(CicCase.builder()
+        final CaseData caseData = caseData();
+        caseData.setHyphenatedCaseRef(TEST_CASE_ID_HYPHENATED);
+        caseData.setCicCase(CicCase.builder()
                 .notifyPartySubject(Set.of(SUBJECT))
                 .notifyPartyRepresentative(Set.of(REPRESENTATIVE))
                 .notifyPartyApplicant(Set.of(APPLICANT_CIC))
@@ -134,10 +136,10 @@ public class CaseworkerLinkCaseIT {
                 .applicantCIC(Set.of(APPLICANT_CIC))
                 .representativeCIC(Set.of(REPRESENTATIVE))
                 .build()
-            )
-            .build();
+        );
 
-        when(notificationServiceCIC.sendEmail(any())).thenThrow(new NotificationException(new NotificationClientException("")));
+        when(notificationServiceCIC.sendEmail(any(), eq(TEST_CASE_ID_HYPHENATED)))
+            .thenThrow(new NotificationException(new NotificationClientException("")));
 
         String response = mockMvc.perform(post(SUBMITTED_URL)
                 .contentType(APPLICATION_JSON)
@@ -159,7 +161,7 @@ public class CaseworkerLinkCaseIT {
             .isString()
             .contains("# Case Link notification failed \n## Please resend the notification");
 
-        verify(notificationServiceCIC, times(1)).sendEmail(any());
+        verify(notificationServiceCIC, times(1)).sendEmail(any(), eq(TEST_CASE_ID_HYPHENATED));
         verifyNoMoreInteractions(notificationServiceCIC);
     }
 

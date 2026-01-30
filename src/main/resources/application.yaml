@@ -6,6 +6,9 @@ case-flags:
     hmctsid: ${SUPPLEMENTARY_DATA_HMCTSID:BBA2}
 
 management:
+  health:
+    elasticsearch:
+      enabled: false
   endpoint:
     health:
       show-details: "always"
@@ -26,7 +29,24 @@ spring:
     multipart:
       max-file-size: 500MB
       max-request-size: 500MB
-
+  datasource:
+    url: jdbc:postgresql://${POSTGRES_HOST:localhost}:${POSTGRES_PORT:6432}/${POSTGRES_NAME:sptribs}${POSTGRES_CONNECTION_OPTIONS:}
+    username: ${POSTGRES_USERNAME:postgres}
+    password: ${POSTGRES_PASSWORD:postgres}
+  jms:
+    servicebus:
+      enabled: true
+      connection-string: ${AZURE_SERVICE_BUS_CONNECTION_STRING:${AZURE_SERVICE_BUS_PREVIEW_CONNECTION_STRING:dummy}}
+      pricing-tier: standard
+      pool:
+        enabled: true
+  cloud:
+    azure:
+      credential:
+        managed-identity-enabled: true
+        client-id: 34df67df-77f4-4c8d-9e89-d59a86ef9ffe
+  autoconfigure:
+    exclude: com.azure.spring.cloud.autoconfigure.implementation.context.AzureTokenCredentialAutoConfiguration
 logging:
   level:
     root: info
@@ -39,6 +59,17 @@ springdoc:
 azure:
   application-insights:
     instrumentation-key: ${app-insights-instrumentation-key:00000000-0000-0000-0000-000000000000}
+
+ccd:
+  servicebus:
+    destination: ${CCD_SERVICEBUS_DESTINATION:${AZURE_SERVICE_BUS_TOPIC_NAME:ccd-case-events-aat}}
+    scheduler-enabled: ${SPTRIBS_SERVICEBUS_SCHEDULER_ENABLED:true}
+    batch-size: ${SPTRIBS_SERVICEBUS_BATCH_SIZE:50}
+    published-retention-days: ${SPTRIBS_SERVICEBUS_PUBLISHED_RETENTION_DAYS:7}
+    schedule: ${SPTRIBS_SERVICEBUS_SCHEDULE:*/10 * * * * *}
+pdf:
+  api:
+    url: ${PDF_API_URL:http://localhost:5500}
 
 uk:
   gov:

@@ -386,7 +386,7 @@ class CaseworkerEditCaseTest {
     }
 
     @Test
-    void shouldSuccessfullyInitialiseFlagsScenarioWIthRepresentative() {
+    void shouldSuccessfullyInitialiseFlagsScenarioWithRepresentative() {
         //Given
         final CaseData afterData = caseData();
         final CaseData beforeData = caseData();

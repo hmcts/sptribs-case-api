@@ -1,4 +1,16 @@
-
+java:
+  secrets:
+    AZURE_SERVICE_BUS_CONNECTION_STRING:
+      secretRef: sptribs-sb-preview
+      key: connectionString
+    AZURE_SERVICE_BUS_PREVIEW_CONNECTION_STRING:
+      secretRef: sptribs-sb-preview
+      key: connectionString
+  environment:
+    SPRING_JMS_SERVICEBUS_ENABLED: true
+    SPTRIBS_SERVICEBUS_SCHEDULER_ENABLED: true
+    AZURE_SERVICE_BUS_TOPIC_NAME: ${SERVICE_NAME}-asb-ccd-case-events
+    AZURE_SERVICE_BUS_SUBSCRIPTION_NAME: ${SERVICE_NAME}-asb-ccd-case-events
 
 servicebus:
   enabled: true
@@ -26,6 +38,7 @@ postgresql:
       - name: "pr-${CHANGE_ID}-role_assignment"
       - name: "pr-${CHANGE_ID}-user-profile"
       - name: "pr-${CHANGE_ID}-emstitch"
+      - name: "pr-${CHANGE_ID}-sptribs"
       - name: "pr-${CHANGE_ID}-camunda"
       - name: "pr-${CHANGE_ID}-cft_task_db"
       - name: "pr-${CHANGE_ID}-wa_workflow_api"
@@ -93,29 +106,6 @@ wa:
     postgresql:
       enabled: false
 
-ccd-message-publisher:
-  java:
-    ingressHost: ccd-message-publisher-${SERVICE_FQDN}
-    releaseNameOverride: ${SERVICE_NAME}-ccd-message-publisher
-    keyVaults:
-      ccd:
-        secrets:
-          - name: AppInsightsInstrumentationKey
-            alias: azure.application-insights.instrumentation-key
-    environment:
-      DATA_STORE_DB_HOST: sptribs-preview.postgres.database.azure.com
-      DATA_STORE_DB_NAME: "pr-${CHANGE_ID}-data-store"
-      DATA_STORE_DB_USERNAME: ${CCD_GLOBAL_POSTGRES_USERNAME_PREVIEW}
-      DATA_STORE_DB_OPTIONS: "?stringtype=unspecified&reWriteBatchedInserts=true&sslmode=require"
-      CCD_CASE_EVENTS_DESTINATION: "${SERVICE_NAME}-asb-ccd-case-events"
-    secrets:
-      SERVICE_BUS_CONNECTION_STRING:
-        secretRef: sptribs-sb-preview
-        key: connectionString
-      DATA_STORE_DB_PASSWORD:
-        secretRef: "{{ .Values.global.postgresSecret }}"
-        key: PASSWORD
-
 am-org-role-mapping-service:
   enabled: true
   java:
@@ -178,4 +168,3 @@ xui-webapp:
       SERVICES_WORK_ALLOCATION_TASK_API: http://{{ .Release.Name }}-wa-task-management-api
       SERVICES_ROLE_ASSIGNMENT_MAPPING_API: http://{{ .Release.Name }}-am-org-role-mapping-service
       WA_SUPPORTED_JURISDICTIONS: ST_CIC
-

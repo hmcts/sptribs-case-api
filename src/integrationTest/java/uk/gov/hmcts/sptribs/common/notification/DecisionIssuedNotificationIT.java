@@ -22,6 +22,7 @@ import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.sptribs.caseworker.model.NoticeOption.UPLOAD_FROM_COMPUTER;
 import static uk.gov.hmcts.sptribs.ciccase.model.ContactPreferenceType.EMAIL;
@@ -78,7 +79,7 @@ public class DecisionIssuedNotificationIT {
 
         decisionIssuedNotification.sendToSubject(data, TEST_CASE_ID.toString());
 
-        verify(notificationServiceCIC).sendEmail(notificationRequestCaptor.capture());
+        verify(notificationServiceCIC).sendEmail(notificationRequestCaptor.capture(), eq(TEST_CASE_ID.toString()));
 
         NotificationRequest notificationRequest = notificationRequestCaptor.getValue();
 
@@ -118,7 +119,7 @@ public class DecisionIssuedNotificationIT {
 
         decisionIssuedNotification.sendToSubject(data, TEST_CASE_ID.toString());
 
-        verify(notificationServiceCIC).sendLetter(notificationRequestCaptor.capture());
+        verify(notificationServiceCIC).sendLetter(notificationRequestCaptor.capture(), eq(TEST_CASE_ID.toString()));
 
         NotificationRequest notificationRequest = notificationRequestCaptor.getValue();
 
@@ -160,7 +161,7 @@ public class DecisionIssuedNotificationIT {
 
         decisionIssuedNotification.sendToRepresentative(data, TEST_CASE_ID.toString());
 
-        verify(notificationServiceCIC).sendEmail(notificationRequestCaptor.capture());
+        verify(notificationServiceCIC).sendEmail(notificationRequestCaptor.capture(), eq(TEST_CASE_ID.toString()));
 
         NotificationRequest notificationRequest = notificationRequestCaptor.getValue();
 
@@ -202,7 +203,7 @@ public class DecisionIssuedNotificationIT {
 
         decisionIssuedNotification.sendToRepresentative(data, TEST_CASE_ID.toString());
 
-        verify(notificationServiceCIC).sendLetter(notificationRequestCaptor.capture());
+        verify(notificationServiceCIC).sendLetter(notificationRequestCaptor.capture(), eq(TEST_CASE_ID.toString()));
 
         NotificationRequest notificationRequest = notificationRequestCaptor.getValue();
 
@@ -243,7 +244,7 @@ public class DecisionIssuedNotificationIT {
 
         decisionIssuedNotification.sendToRespondent(data, TEST_CASE_ID.toString());
 
-        verify(notificationServiceCIC).sendEmail(notificationRequestCaptor.capture());
+        verify(notificationServiceCIC).sendEmail(notificationRequestCaptor.capture(), eq(TEST_CASE_ID.toString()));
 
         NotificationRequest notificationRequest = notificationRequestCaptor.getValue();
 
@@ -292,7 +293,7 @@ public class DecisionIssuedNotificationIT {
 
         decisionIssuedNotification.sendToApplicant(data, TEST_CASE_ID.toString());
 
-        verify(notificationServiceCIC).sendEmail(notificationRequestCaptor.capture());
+        verify(notificationServiceCIC).sendEmail(notificationRequestCaptor.capture(), eq(TEST_CASE_ID.toString()));
 
         NotificationRequest notificationRequest = notificationRequestCaptor.getValue();
 
@@ -334,7 +335,7 @@ public class DecisionIssuedNotificationIT {
 
         decisionIssuedNotification.sendToApplicant(data, TEST_CASE_ID.toString());
 
-        verify(notificationServiceCIC).sendLetter(notificationRequestCaptor.capture());
+        verify(notificationServiceCIC).sendLetter(notificationRequestCaptor.capture(), eq(TEST_CASE_ID.toString()));
 
         NotificationRequest notificationRequest = notificationRequestCaptor.getValue();
 

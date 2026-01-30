@@ -20,9 +20,9 @@ import static uk.gov.hmcts.sptribs.notification.TemplateName.UPDATE_RECEIVED_CIC
 @Slf4j
 public class DssUpdateCaseSubmissionNotification implements PartiesNotification {
 
-    private NotificationServiceCIC notificationService;
+    private final NotificationServiceCIC notificationService;
 
-    private NotificationHelper notificationHelper;
+    private final NotificationHelper notificationHelper;
 
     @Autowired
     public DssUpdateCaseSubmissionNotification(NotificationServiceCIC notificationService, NotificationHelper notificationHelper) {
@@ -39,7 +39,7 @@ public class DssUpdateCaseSubmissionNotification implements PartiesNotification 
             templateVars,
                 UPDATE_RECEIVED);
 
-        notificationService.sendEmail(request);
+        notificationService.sendEmail(request, caseNumber);
     }
 
     @Override
@@ -50,6 +50,6 @@ public class DssUpdateCaseSubmissionNotification implements PartiesNotification 
             templateVars,
                 UPDATE_RECEIVED_CIC);
 
-        notificationService.sendEmail(request);
+        notificationService.sendEmail(request, caseNumber);
     }
 }

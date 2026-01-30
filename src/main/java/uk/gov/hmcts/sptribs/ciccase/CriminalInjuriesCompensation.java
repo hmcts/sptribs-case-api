@@ -14,6 +14,9 @@ import uk.gov.hmcts.sptribs.common.ccd.CcdServiceCode;
 
 import java.util.List;
 
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.RESPONDENT_CIC;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_RESPONDENT;
+
 @Component
 @Slf4j
 public class CriminalInjuriesCompensation implements CCDConfig<CriminalInjuriesCompensationData, State, UserRole> {
@@ -33,14 +36,14 @@ public class CriminalInjuriesCompensation implements CCDConfig<CriminalInjuriesC
         configBuilder.jurisdiction(CcdJurisdiction.CRIMINAL_INJURIES_COMPENSATION.getJurisdictionId(),
             CcdJurisdiction.CRIMINAL_INJURIES_COMPENSATION.getJurisdictionName(), CcdServiceCode.ST_CIC.getCcdServiceDescription());
 
-        configBuilder.omitHistoryForRoles(UserRole.ST_CIC_RESPONDENT, UserRole.RESPONDENT_CIC);
+        configBuilder.omitHistoryForRoles(ST_CIC_RESPONDENT, RESPONDENT_CIC);
 
         ConfigBuilderHelper.configure(configBuilder, cfgs);
 
         ConfigBuilderHelper.configureWithTestEvent(configBuilder);
 
         // to shutter the service within xui uncomment this line
-        // configBuilder.shutterService();
+        //configBuilder.shutterService();
         log.info("Building definition for " + System.getenv().getOrDefault("ENVIRONMENT", ""));
     }
 }

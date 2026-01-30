@@ -41,4 +41,9 @@ public interface CaseDocumentClientApi {
     ResponseEntity<Document> getDocument(@RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation,
                                             @RequestHeader(SERVICE_AUTHORIZATION) String serviceAuth,
                                             @PathVariable(DOCUMENT_ID) UUID documentId);
+
+    @GetMapping(value = "/cases/documents/{documentId}/binary")
+    ResponseEntity<byte[]> getDocumentBinary(@RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation,
+                                            @RequestHeader(SERVICE_AUTHORIZATION) String serviceAuth,
+                                            @PathVariable(DOCUMENT_ID) UUID documentId);
 }

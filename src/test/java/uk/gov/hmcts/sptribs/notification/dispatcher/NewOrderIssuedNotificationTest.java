@@ -35,6 +35,7 @@ import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.TRIBUNAL_ORDER;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getCICDocumentList;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getCICDocumentListWithUrl;
 
@@ -66,10 +67,10 @@ public class NewOrderIssuedNotificationTest {
             .thenReturn(NotificationRequest.builder().build());
         when(notificationHelper.getSubjectCommonVars(any(), any(CaseData.class))).thenReturn(new HashMap<>());
 
-        newOrderIssuedNotification.sendToSubject(data, "CN1");
+        newOrderIssuedNotification.sendToSubject(data, TEST_CASE_ID.toString());
 
         //Then
-        verify(notificationService).sendEmail(any(NotificationRequest.class));
+        verify(notificationService).sendEmail(any(NotificationRequest.class), eq(TEST_CASE_ID.toString()));
         verify(notificationHelper).buildEmailNotificationRequest(
             eq(data.getCicCase().getEmail()),
             eq(true),
@@ -98,7 +99,7 @@ public class NewOrderIssuedNotificationTest {
             .thenReturn(NotificationRequest.builder().build());
         when(notificationHelper.getSubjectCommonVars(any(), any(CaseData.class))).thenReturn(new HashMap<>());
 
-        newOrderIssuedNotification.sendToSubject(data, "CN1");
+        newOrderIssuedNotification.sendToSubject(data, TEST_CASE_ID.toString());
 
         final ArgumentCaptor<Map<String, String>> argument =
             ArgumentCaptor.forClass(new TypeLiteral<Map<String, String>>() {}.getRawType());
@@ -106,7 +107,7 @@ public class NewOrderIssuedNotificationTest {
             argument.capture(), eq(new HashMap<>()), eq(TemplateName.NEW_ORDER_ISSUED_EMAIL));
         assertThat(argument.getValue())
             .containsEntry(TRIBUNAL_ORDER, recentOrder.getUploadedFile().get(0).getValue().getDocumentLink().getFilename());
-        verify(notificationService).sendEmail(any(NotificationRequest.class));
+        verify(notificationService).sendEmail(any(NotificationRequest.class), eq(TEST_CASE_ID.toString()));
 
     }
 
@@ -125,10 +126,10 @@ public class NewOrderIssuedNotificationTest {
             .thenReturn(NotificationRequest.builder().build());
         when(notificationHelper.getSubjectCommonVars(any(), any(CaseData.class))).thenReturn(new HashMap<>());
         doNothing().when(notificationHelper).addAddressTemplateVars(any(AddressGlobalUK.class), anyMap());
-        newOrderIssuedNotification.sendToSubject(data, "CN1");
+        newOrderIssuedNotification.sendToSubject(data, TEST_CASE_ID.toString());
 
         //Then
-        verify(notificationService).sendLetter(any(NotificationRequest.class));
+        verify(notificationService).sendLetter(any(NotificationRequest.class), eq(TEST_CASE_ID.toString()));
         verify(notificationHelper).buildLetterNotificationRequest(
             new HashMap<>(),
             TemplateName.NEW_ORDER_ISSUED_POST);
@@ -153,7 +154,7 @@ public class NewOrderIssuedNotificationTest {
         when(notificationHelper.buildEmailNotificationRequest(any(), anyBoolean(), anyMap(), anyMap(), any(TemplateName.class)))
             .thenReturn(NotificationRequest.builder().build());
         when(notificationHelper.getRespondentCommonVars(any(), any(CaseData.class))).thenReturn(new HashMap<>());
-        newOrderIssuedNotification.sendToRespondent(data, "CN1");
+        newOrderIssuedNotification.sendToRespondent(data, TEST_CASE_ID.toString());
 
         //Then
         final ArgumentCaptor<Map<String, String>> argument =
@@ -162,7 +163,7 @@ public class NewOrderIssuedNotificationTest {
             argument.capture(), eq(new HashMap<>()), eq(TemplateName.NEW_ORDER_ISSUED_EMAIL));
         assertThat(argument.getValue())
             .containsEntry(TRIBUNAL_ORDER, recentOrder.getUploadedFile().get(0).getValue().getDocumentLink().getFilename());
-        verify(notificationService).sendEmail(any(NotificationRequest.class));
+        verify(notificationService).sendEmail(any(NotificationRequest.class), eq(TEST_CASE_ID.toString()));
     }
 
 
@@ -191,7 +192,7 @@ public class NewOrderIssuedNotificationTest {
             .thenReturn(NotificationRequest.builder().build());
         when(notificationHelper.getRepresentativeCommonVars(any(), any(CaseData.class))).thenReturn(new HashMap<>());
 
-        newOrderIssuedNotification.sendToRepresentative(data, "CN1");
+        newOrderIssuedNotification.sendToRepresentative(data, TEST_CASE_ID.toString());
 
         //Then
         final ArgumentCaptor<Map<String, String>> argument =
@@ -200,7 +201,7 @@ public class NewOrderIssuedNotificationTest {
             argument.capture(), eq(new HashMap<>()), eq(TemplateName.NEW_ORDER_ISSUED_EMAIL));
         assertThat(argument.getValue())
             .containsEntry(TRIBUNAL_ORDER, recentOrder.getDraftOrder().getTemplateGeneratedDocument().getFilename());
-        verify(notificationService).sendEmail(any(NotificationRequest.class));
+        verify(notificationService).sendEmail(any(NotificationRequest.class), eq(TEST_CASE_ID.toString()));
     }
 
     @Test
@@ -216,10 +217,10 @@ public class NewOrderIssuedNotificationTest {
             .thenReturn(NotificationRequest.builder().build());
         when(notificationHelper.getRepresentativeCommonVars(any(), any(CaseData.class))).thenReturn(new HashMap<>());
         doNothing().when(notificationHelper).addAddressTemplateVars(any(), anyMap());
-        newOrderIssuedNotification.sendToRepresentative(data, "CN1");
+        newOrderIssuedNotification.sendToRepresentative(data, TEST_CASE_ID.toString());
 
         //Then
-        verify(notificationService).sendLetter(any(NotificationRequest.class));
+        verify(notificationService).sendLetter(any(NotificationRequest.class), eq(TEST_CASE_ID.toString()));
         verify(notificationHelper).buildLetterNotificationRequest(
             new HashMap<>(),
             TemplateName.NEW_ORDER_ISSUED_POST);
@@ -247,14 +248,14 @@ public class NewOrderIssuedNotificationTest {
             .thenReturn(NotificationRequest.builder().build());
         when(notificationHelper.getApplicantCommonVars(any(), any(CaseData.class))).thenReturn(new HashMap<>());
 
-        newOrderIssuedNotification.sendToApplicant(data, "CN1");
+        newOrderIssuedNotification.sendToApplicant(data, TEST_CASE_ID.toString());
 
         //Then
         ArgumentCaptor<Map<String, String>> argument = ArgumentCaptor.forClass(new TypeLiteral<Map<String, String>>() {}.getRawType());
         verify(notificationHelper).buildEmailNotificationRequest(eq(data.getCicCase().getApplicantEmailAddress()), eq(true),
             argument.capture(), eq(new HashMap<>()), eq(TemplateName.NEW_ORDER_ISSUED_EMAIL));
         assertThat(argument.getValue().get(TRIBUNAL_ORDER)).isNull();
-        verify(notificationService).sendEmail(any(NotificationRequest.class));
+        verify(notificationService).sendEmail(any(NotificationRequest.class), eq(TEST_CASE_ID.toString()));
     }
 
     @Test
@@ -271,10 +272,10 @@ public class NewOrderIssuedNotificationTest {
             .thenReturn(NotificationRequest.builder().build());
         when(notificationHelper.getApplicantCommonVars(any(), any(CaseData.class))).thenReturn(new HashMap<>());
 
-        newOrderIssuedNotification.sendToApplicant(data, "CN1");
+        newOrderIssuedNotification.sendToApplicant(data, TEST_CASE_ID.toString());
 
         //Then
-        verify(notificationService).sendEmail(any(NotificationRequest.class));
+        verify(notificationService).sendEmail(any(NotificationRequest.class), eq(TEST_CASE_ID.toString()));
         verify(notificationHelper).buildEmailNotificationRequest(
             eq(data.getCicCase().getApplicantEmailAddress()),
             eq(true),
@@ -297,10 +298,10 @@ public class NewOrderIssuedNotificationTest {
             .thenReturn(NotificationRequest.builder().build());
         when(notificationHelper.getApplicantCommonVars(any(), any(CaseData.class))).thenReturn(new HashMap<>());
         doNothing().when(notificationHelper).addAddressTemplateVars(any(AddressGlobalUK.class), anyMap());
-        newOrderIssuedNotification.sendToApplicant(data, "CN1");
+        newOrderIssuedNotification.sendToApplicant(data, TEST_CASE_ID.toString());
 
         //Then
-        verify(notificationService).sendLetter(any(NotificationRequest.class));
+        verify(notificationService).sendLetter(any(NotificationRequest.class), eq(TEST_CASE_ID.toString()));
         verify(notificationHelper).buildLetterNotificationRequest(
             new HashMap<>(),
             TemplateName.NEW_ORDER_ISSUED_POST);
@@ -308,7 +309,7 @@ public class NewOrderIssuedNotificationTest {
 
     private CaseData getMockCaseData() {
         CicCase cicCase = CicCase.builder()
-            .fullName("fullName").caseNumber("CN1")
+            .fullName("fullName").caseNumber(TEST_CASE_ID.toString())
             .build();
 
         return CaseData.builder()

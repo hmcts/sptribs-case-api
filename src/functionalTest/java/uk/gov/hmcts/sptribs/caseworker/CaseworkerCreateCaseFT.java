@@ -1,5 +1,6 @@
 package uk.gov.hmcts.sptribs.caseworker;
 
+import io.restassured.path.json.JsonPath;
 import io.restassured.response.Response;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -46,9 +47,11 @@ public class CaseworkerCreateCaseFT extends FunctionalTestSuite {
         final Response response = triggerCallback(caseData, CASEWORKER_CREATE_CASE_EVENT_ID, SUBMITTED_URL);
 
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
-        assertThatJson(response.asString())
-            .inPath(CONFIRMATION_HEADER)
-            .isEqualTo("# Case Created \\n## Case reference number: \\n## 1234-5678-9012-3456");
+        final String confirmationHeader = JsonPath.from(response.asString()).getString("confirmation_header");
+        assertThat(confirmationHeader)
+            .as("confirmation header should contain the generated case reference")
+            .contains("# Case Created", "## Case reference number:")
+            .matches("(?s).*##\\s*[0-9]{4}-[0-9]{4}-[0-9]{4}-[0-9]{4}.*");
     }
 
     @Test

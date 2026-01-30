@@ -1,7 +1,7 @@
 package uk.gov.hmcts.sptribs.caseworker.event;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
@@ -45,6 +45,7 @@ import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_WA_CONFIG_USER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE;
 
+@RequiredArgsConstructor
 @Component
 @Slf4j
 public class CaseworkerIssueCase implements CCDConfig<CaseData, State, UserRole> {
@@ -55,8 +56,7 @@ public class CaseworkerIssueCase implements CCDConfig<CaseData, State, UserRole>
     private static final CcdPageConfiguration issueCaseNotifyParties = new IssueCaseNotifyParties();
     private static final CcdPageConfiguration issueCaseSelectDocument = new IssueCaseSelectDocument();
 
-    @Autowired
-    private CaseIssuedNotification caseIssuedNotification;
+    private final CaseIssuedNotification caseIssuedNotification;
 
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
