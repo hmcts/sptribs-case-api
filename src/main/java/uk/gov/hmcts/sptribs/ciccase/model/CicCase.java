@@ -446,7 +446,7 @@ public class CicCase {
 
     @CCD(
         label = "Is the case in time?",
-        access = {CaseworkerAccess.class}
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private YesOrNo isCaseInTime;
 
