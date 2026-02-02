@@ -28,7 +28,7 @@ class CaseFileViewAccessTest {
         final SetMultimap<HasRole, Permission> grants = new CaseFileViewAccess().getGrants();
         //Then
         assertThat(grants)
-            .hasSize(11)
+            .hasSize(22)
             .contains(
                 entry(CREATOR, C),
                 entry(CREATOR, R),
