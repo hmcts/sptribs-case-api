@@ -23,17 +23,17 @@ public class CaseFileViewAccess implements HasAccessControl {
     @Override
     public SetMultimap<HasRole, Permission> getGrants() {
         SetMultimap<HasRole, Permission> grants = HashMultimap.create();
-        grants.putAll(CREATOR, Permissions.CREATE_READ);
-        grants.putAll(ST_CIC_CASEWORKER, Permissions.CREATE_READ);
-        grants.putAll(ST_CIC_SENIOR_CASEWORKER, Permissions.CREATE_READ);
-        grants.putAll(ST_CIC_HEARING_CENTRE_ADMIN, Permissions.CREATE_READ);
-        grants.putAll(ST_CIC_HEARING_CENTRE_TEAM_LEADER, Permissions.CREATE_READ);
-        grants.putAll(ST_CIC_SENIOR_JUDGE, Permissions.CREATE_READ);
-        grants.putAll(ST_CIC_WA_CONFIG_USER, Permissions.CREATE_READ);
-        grants.putAll(ST_CIC_JUDGE, Permissions.CREATE_READ);
-        grants.putAll(ST_CIC_RESPONDENT, Permissions.CREATE_READ);
-        grants.putAll(SYSTEM_UPDATE, Permissions.CREATE_READ);
-        grants.putAll(SUPER_USER, Permissions.CREATE_READ);
+        grants.putAll(CREATOR, Permissions.READ);
+        grants.putAll(ST_CIC_CASEWORKER, Permissions.READ);
+        grants.putAll(ST_CIC_SENIOR_CASEWORKER, Permissions.READ);
+        grants.putAll(ST_CIC_HEARING_CENTRE_ADMIN, Permissions.READ);
+        grants.putAll(ST_CIC_HEARING_CENTRE_TEAM_LEADER, Permissions.READ);
+        grants.putAll(ST_CIC_SENIOR_JUDGE, Permissions.READ);
+        grants.putAll(ST_CIC_WA_CONFIG_USER, Permissions.READ);
+        grants.putAll(ST_CIC_JUDGE, Permissions.READ);
+        grants.putAll(ST_CIC_RESPONDENT, Permissions.READ);
+        grants.putAll(SYSTEM_UPDATE, Permissions.READ);
+        grants.putAll(SUPER_USER, Permissions.READ);
 
         return grants;
     }
