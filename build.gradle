@@ -376,6 +376,8 @@ dependencies {
   implementation 'org.camunda.bpm:camunda-external-task-client:7.24.0'
   implementation group: 'org.postgresql', name: 'postgresql', version: '42.7.8'
   implementation 'org.flywaydb:flyway-database-postgresql:11.3.1'
+  implementation group: 'net.javacrumbs.shedlock', name: 'shedlock-provider-jdbc-template', version: '6.10.0'
+  implementation group: 'net.javacrumbs.shedlock', name: 'shedlock-spring', version: '6.10.0'
   annotationProcessor group: 'org.projectlombok', name: 'lombok', version: versions.lombok
   testImplementation group: 'com.github.hmcts', name: 'fortify-client', version: '1.4.10', classifier: 'all'
 
