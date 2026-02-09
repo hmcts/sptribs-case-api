@@ -714,16 +714,16 @@ public class CicCase {
     private LocalDate firstOrderDueDate;
 
     public void calculateAndSetIsCaseInTime(CaseData data) {
+        data.getCicCase().setIsCaseInTime(YesOrNo.NO);
+
         LocalDate initialCicaDecisionDatePlus90Days = null;
         if (data.getCicCase().getInitialCicaDecisionDate() != null) {
             initialCicaDecisionDatePlus90Days = data.getCicCase().getInitialCicaDecisionDate().plusDays(90);
         }
 
-        data.getCicCase().setIsCaseInTime(YesOrNo.YES);
-
         if (initialCicaDecisionDatePlus90Days != null
-            && data.getCicCase().getCaseReceivedDate().isAfter(initialCicaDecisionDatePlus90Days)) {
-            data.getCicCase().setIsCaseInTime(YesOrNo.NO);
+            && !data.getCicCase().getCaseReceivedDate().isAfter(initialCicaDecisionDatePlus90Days)) {
+            data.getCicCase().setIsCaseInTime(YesOrNo.YES);
         }
     }
 
