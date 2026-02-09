@@ -40,6 +40,7 @@ import uk.gov.hmcts.sptribs.caseworker.model.ReferToLegalOfficer;
 import uk.gov.hmcts.sptribs.caseworker.model.RemoveCaseStay;
 import uk.gov.hmcts.sptribs.caseworker.model.SecurityClass;
 import uk.gov.hmcts.sptribs.caseworker.model.YesNo;
+import uk.gov.hmcts.sptribs.ciccase.model.access.CaseFileViewAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseFlagsAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseLinksDefaultAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerAccess;
@@ -382,7 +383,7 @@ public class CaseData {
 
     @CCD(
         label = "Case file view",
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+        access = {CaseFileViewAccess.class}
     )
     private ComponentLauncher caseFileView1;
 
