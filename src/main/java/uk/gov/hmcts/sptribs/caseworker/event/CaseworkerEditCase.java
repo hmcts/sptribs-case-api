@@ -18,6 +18,7 @@ import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.common.event.page.ApplicantDetails;
 import uk.gov.hmcts.sptribs.common.event.page.CaseCategorisationDetails;
 import uk.gov.hmcts.sptribs.common.event.page.ContactPreferenceDetails;
+import uk.gov.hmcts.sptribs.common.event.page.DateOfInitialCicaDecision;
 import uk.gov.hmcts.sptribs.common.event.page.DateOfReceipt;
 import uk.gov.hmcts.sptribs.common.event.page.EditCicaCaseDetailsPage;
 import uk.gov.hmcts.sptribs.common.event.page.FurtherDetails;
@@ -49,6 +50,7 @@ public class CaseworkerEditCase implements CCDConfig<CaseData, State, UserRole> 
 
     private final CcdPageConfiguration editCaseCategorisationDetails = new CaseCategorisationDetails();
     private final CcdPageConfiguration editCicaCaseDetailsPage = new EditCicaCaseDetailsPage();
+    private static final CcdPageConfiguration dateOfInitialCicaDecision = new DateOfInitialCicaDecision();
     private static final CcdPageConfiguration dateOfReceipt = new DateOfReceipt();
     private final CcdPageConfiguration editSelectedPartiesDetails = new SelectParties();
     private final CcdPageConfiguration editSubjectDetails = new SubjectDetails();
@@ -69,6 +71,7 @@ public class CaseworkerEditCase implements CCDConfig<CaseData, State, UserRole> 
         final PageBuilder pageBuilder = addEventConfig(configBuilder);
         editCaseCategorisationDetails.addTo(pageBuilder);
         editCicaCaseDetailsPage.addTo(pageBuilder);
+        dateOfInitialCicaDecision.addTo(pageBuilder);
         dateOfReceipt.addTo(pageBuilder);
         editSelectedPartiesDetails.addTo(pageBuilder);
         editSubjectDetails.addTo(pageBuilder);

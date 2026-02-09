@@ -9,6 +9,7 @@ import uk.gov.hmcts.ccd.sdk.ConfigBuilderImpl;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.Event;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
+import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.model.YesNo;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
@@ -19,6 +20,7 @@ import uk.gov.hmcts.sptribs.common.service.SubmissionService;
 import uk.gov.hmcts.sptribs.notification.dispatcher.ApplicationReceivedNotification;
 import uk.gov.hmcts.sptribs.notification.exception.NotificationException;
 
+import java.time.LocalDate;
 import java.util.Set;
 
 import static java.util.Collections.emptySet;
@@ -243,5 +245,65 @@ class CreateCaseTest {
         createCase.submitted(caseDetails, caseDetails);
 
         verifyNoInteractions(applicationReceivedNotification);
+    }
+
+    @Test
+    void shouldCalculateAndSetIsCaseInTimeAsYesForInitialCicaDecisionDateEqualToCaseReceivedDate() {
+        final CaseData caseData = caseData();
+        caseData.getCicCase().setFullName("Test Full Name");
+        caseData.getCicCase().setCaseReceivedDate(LocalDate.now());
+        caseData.getCicCase().setInitialCicaDecisionDate(LocalDate.now());
+
+        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+        caseDetails.setData(caseData);
+        caseDetails.setState(Submitted);
+
+        when(submissionService.submitApplication(caseDetails)).thenReturn(caseDetails);
+
+        AboutToStartOrSubmitResponse<CaseData, State> result =
+            createCase.aboutToSubmit(caseDetails, caseDetails);
+
+        assertThat(result.getData().getCicCase().getInitialCicaDecisionDate()).isEqualTo(LocalDate.now());
+        assertThat(result.getData().getCicCase().getIsCaseInTime()).isEqualTo(YesOrNo.YES);
+    }
+
+    @Test
+    void shouldCalculateAndSetIsCaseInTimeAsYesForCaseReceivedDateEqualTo90DaysFromInitialCicaDecisionDate() {
+        final CaseData caseData = caseData();
+        caseData.getCicCase().setFullName("Test Full Name");
+        caseData.getCicCase().setCaseReceivedDate(LocalDate.now().plusDays(90));
+        caseData.getCicCase().setInitialCicaDecisionDate(LocalDate.now());
+
+        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+        caseDetails.setData(caseData);
+        caseDetails.setState(Submitted);
+
+        when(submissionService.submitApplication(caseDetails)).thenReturn(caseDetails);
+
+        AboutToStartOrSubmitResponse<CaseData, State> result =
+            createCase.aboutToSubmit(caseDetails, caseDetails);
+
+        assertThat(result.getData().getCicCase().getInitialCicaDecisionDate()).isEqualTo(LocalDate.now());
+        assertThat(result.getData().getCicCase().getIsCaseInTime()).isEqualTo(YesOrNo.YES);
+    }
+
+    @Test
+    void shouldCalculateAndSetIsCaseInTimeAsNoForCaseReceivedDateGreaterThan90DaysFromInitialCicaDecisionDate() {
+        final CaseData caseData = caseData();
+        caseData.getCicCase().setFullName("Test Full Name");
+        caseData.getCicCase().setCaseReceivedDate(LocalDate.now().plusDays(91));
+        caseData.getCicCase().setInitialCicaDecisionDate(LocalDate.now());
+
+        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+        caseDetails.setData(caseData);
+        caseDetails.setState(Submitted);
+
+        when(submissionService.submitApplication(caseDetails)).thenReturn(caseDetails);
+
+        AboutToStartOrSubmitResponse<CaseData, State> result =
+            createCase.aboutToSubmit(caseDetails, caseDetails);
+
+        assertThat(result.getData().getCicCase().getInitialCicaDecisionDate()).isEqualTo(LocalDate.now());
+        assertThat(result.getData().getCicCase().getIsCaseInTime()).isEqualTo(YesOrNo.NO);
     }
 }

@@ -40,6 +40,7 @@ import static uk.gov.hmcts.sptribs.ciccase.search.CaseFieldsConstants.COND_IS_CA
 import static uk.gov.hmcts.sptribs.ciccase.search.CaseFieldsConstants.COND_IS_NOT_CASE_STAYED;
 import static uk.gov.hmcts.sptribs.ciccase.search.CaseFieldsConstants.COND_REPRESENTATIVE_FULL_NAME_NOT_EMPTY;
 import static uk.gov.hmcts.sptribs.ciccase.search.CaseFieldsConstants.COND_REPRESENTATIVE_NOT_EMPTY;
+import static uk.gov.hmcts.sptribs.ciccase.search.CaseFieldsConstants.IS_CASE_IN_TIME;
 import static uk.gov.hmcts.sptribs.ciccase.search.CaseFieldsConstants.IS_STAYED;
 import static uk.gov.hmcts.sptribs.ciccase.search.CaseFieldsConstants.PANEL_COMPOSITION_DEFINED;
 import static uk.gov.hmcts.sptribs.ciccase.search.CaseFieldsConstants.REMOVE_STAY_ADDITIONAL_DETAIL;
@@ -121,6 +122,7 @@ public class CaseTypeTab implements CCDConfig<CaseData, State, UserRole> {
             .forRoles(CASEWORKER)
             .label(CASE_STATE_LABEL, null, "#### Case Status:  ${[STATE]}")
             .label(CASE_DETAILS, null, "### Case details")
+            .field(IS_CASE_IN_TIME)
             .field(SUBJECT_NAME)
             .field(SUBJECT_DATE_OF_BIRTH)
             .field(SUBJECT_EMAIL)
