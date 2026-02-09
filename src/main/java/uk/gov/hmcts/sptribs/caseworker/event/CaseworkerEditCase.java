@@ -104,6 +104,7 @@ public class CaseworkerEditCase implements CCDConfig<CaseData, State, UserRole> 
         }
 
         CaseFlagsUtil.updateOrInitialiseFlags(data);
+        data.getCicCase().calculateAndSetIsCaseInTime(data);
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(data)
