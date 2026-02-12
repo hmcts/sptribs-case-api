@@ -406,8 +406,8 @@ dependencies {
   testAnnotationProcessor group: 'org.projectlombok', name: 'lombok', version: versions.lombok
   integrationTestImplementation sourceSets.main.runtimeClasspath
   integrationTestImplementation sourceSets.test.runtimeClasspath
-  integrationTestImplementation group: 'org.testcontainers', name: 'junit-jupiter', version: '1.21.3'
-  integrationTestImplementation group: 'org.testcontainers', name: 'postgresql', version: '1.21.3'
+  integrationTestImplementation group: 'org.testcontainers', name: 'junit-jupiter', version: '1.21.4'
+  integrationTestImplementation group: 'org.testcontainers', name: 'postgresql', version: '1.21.4'
 
   functionalTestImplementation sourceSets.main.runtimeClasspath
   functionalTestImplementation sourceSets.test.runtimeClasspath
