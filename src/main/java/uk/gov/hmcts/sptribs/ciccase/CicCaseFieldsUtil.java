@@ -22,7 +22,8 @@ import java.util.Set;
 
 public final class CicCaseFieldsUtil {
 
-    private CicCaseFieldsUtil() {}
+    private CicCaseFieldsUtil() {
+    }
 
     public static void calculateAndSetIsCaseInTime(CaseData data) {
         data.getCicCase().setIsCaseInTime(YesOrNo.NO);
