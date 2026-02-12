@@ -43,7 +43,7 @@ public class BankHolidayConfiguration {
 
     @Bean
     public Encoder feignEncoder() {
-        HttpMessageConverter jacksonConverter =
+        HttpMessageConverter<Object> jacksonConverter =
                 new MappingJackson2HttpMessageConverter(objectMapper);
         ObjectFactory<HttpMessageConverters> objectFactory =
                 () -> new HttpMessageConverters(jacksonConverter);
