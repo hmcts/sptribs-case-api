@@ -9,6 +9,7 @@ import uk.gov.hmcts.ccd.sdk.type.AddressGlobalUK;
 import uk.gov.hmcts.ccd.sdk.type.DynamicListElement;
 import uk.gov.hmcts.ccd.sdk.type.DynamicMultiSelectList;
 import uk.gov.hmcts.sptribs.caseworker.model.Listing;
+import uk.gov.hmcts.sptribs.ciccase.CicCaseFieldsUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.HearingFormat;
@@ -203,7 +204,7 @@ public class NotificationHelper {
     }
 
     public void addHearingPostponedTemplateVars(CicCase cicCase, Map<String, Object> templateVars) {
-        final String selectedHearingDateTime = cicCase.getSelectedHearingToCancel();
+        final String selectedHearingDateTime = CicCaseFieldsUtil.getSelectedHearingToCancel(cicCase.getHearingList());
         final String[] hearingDateTimeArr = (selectedHearingDateTime != null)
             ? selectedHearingDateTime.split(SPACE + HYPHEN + SPACE) : null;
         final int arrayLength = hearingDateTimeArr != null ? hearingDateTimeArr.length : 0;

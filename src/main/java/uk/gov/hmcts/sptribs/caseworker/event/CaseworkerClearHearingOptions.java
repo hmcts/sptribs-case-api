@@ -6,6 +6,7 @@ import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.sptribs.caseworker.model.Listing;
+import uk.gov.hmcts.sptribs.ciccase.CicCaseFieldsUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
@@ -49,7 +50,7 @@ public class CaseworkerClearHearingOptions implements CCDConfig<CaseData, State,
         listing.setHearingFormat(null);
         listing.setShortNotice(null);
 
-        caseData.getCicCase().setFirstOrderDueDate(caseData.getCicCase().calculateFirstDueDate());
+        caseData.getCicCase().setFirstOrderDueDate(CicCaseFieldsUtil.calculateFirstDueDate(caseData.getCicCase().getOrderList()));
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)

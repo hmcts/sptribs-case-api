@@ -9,6 +9,7 @@ import uk.gov.hmcts.ccd.sdk.api.Event;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.util.CaseFlagsUtil;
+import uk.gov.hmcts.sptribs.ciccase.CicCaseFieldsUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.PartiesCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
@@ -88,12 +89,12 @@ public class CaseworkerEditCase implements CCDConfig<CaseData, State, UserRole> 
 
         if (checkNull(beforeData) && beforeData.getCicCase().getPartiesCIC().contains(PartiesCIC.REPRESENTATIVE)
             && checkNull(data) && !data.getCicCase().getPartiesCIC().contains(PartiesCIC.REPRESENTATIVE)) {
-            data.getCicCase().removeRepresentative();
+            CicCaseFieldsUtil.removeRepresentative(data);
         }
 
         if (checkNull(beforeData) && beforeData.getCicCase().getPartiesCIC().contains(PartiesCIC.APPLICANT)
             && checkNull(data) && !data.getCicCase().getPartiesCIC().contains(PartiesCIC.APPLICANT)) {
-            data.getCicCase().removeApplicant();
+            CicCaseFieldsUtil.removeApplicant(data);
         }
 
         CaseDetails<CaseData, State> submittedDetails = submissionService.submitApplication(details);
@@ -104,7 +105,7 @@ public class CaseworkerEditCase implements CCDConfig<CaseData, State, UserRole> 
         }
 
         CaseFlagsUtil.updateOrInitialiseFlags(data);
-        data.getCicCase().calculateAndSetIsCaseInTime(data);
+        CicCaseFieldsUtil.calculateAndSetIsCaseInTime(data);
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(data)

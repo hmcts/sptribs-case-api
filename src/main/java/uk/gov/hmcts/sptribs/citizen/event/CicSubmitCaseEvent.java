@@ -18,6 +18,7 @@ import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.reform.idam.client.models.User;
 import uk.gov.hmcts.sptribs.caseworker.util.DocumentManagementUtil;
 import uk.gov.hmcts.sptribs.caseworker.util.MessageUtil;
+import uk.gov.hmcts.sptribs.ciccase.CicCaseFieldsUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.ContactPreferenceType;
 import uk.gov.hmcts.sptribs.ciccase.model.DssCaseData;
@@ -184,7 +185,7 @@ public class CicSubmitCaseEvent implements CCDConfig<CaseData, State, UserRole> 
 
     private CaseData getCaseData(final CaseData caseData, final DssCaseData dssCaseData) {
         caseData.getCicCase().setCaseReceivedDate(LocalDate.now());
-        caseData.getCicCase().calculateAndSetIsCaseInTime(caseData);
+        CicCaseFieldsUtil.calculateAndSetIsCaseInTime(caseData);
         caseData.getCicCase().setFullName(dssCaseData.getSubjectFullName());
         caseData.getCicCase().setDateOfBirth(dssCaseData.getSubjectDateOfBirth());
         caseData.getCicCase().setEmail(dssCaseData.getSubjectEmailAddress());

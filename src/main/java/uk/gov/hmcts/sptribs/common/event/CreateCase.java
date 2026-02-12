@@ -18,6 +18,7 @@ import uk.gov.hmcts.sptribs.caseworker.model.CaseManagementLocation;
 import uk.gov.hmcts.sptribs.caseworker.model.SecurityClass;
 import uk.gov.hmcts.sptribs.caseworker.model.YesNo;
 import uk.gov.hmcts.sptribs.caseworker.util.CaseFlagsUtil;
+import uk.gov.hmcts.sptribs.ciccase.CicCaseFieldsUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
@@ -134,7 +135,7 @@ public class CreateCase implements CCDConfig<CaseData, State, UserRole> {
         setIsRepresentativePresent(caseData);
         caseData.setSecurityClass(SecurityClass.PUBLIC);
         caseData.setCaseNameHmctsInternal(caseData.getCicCase().getFullName());
-        caseData.getCicCase().calculateAndSetIsCaseInTime(caseData);
+        CicCaseFieldsUtil.calculateAndSetIsCaseInTime(caseData);
 
         CaseFlagsUtil.initialiseFlags(caseData);
         setDefaultCaseDetails(caseData);

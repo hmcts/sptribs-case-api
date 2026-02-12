@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.ccd.sdk.type.AddressGlobalUK;
@@ -12,6 +13,8 @@ import uk.gov.hmcts.ccd.sdk.type.DynamicListElement;
 import uk.gov.hmcts.ccd.sdk.type.DynamicMultiSelectList;
 import uk.gov.hmcts.sptribs.caseworker.model.EditCicaCaseDetails;
 import uk.gov.hmcts.sptribs.caseworker.model.Listing;
+import uk.gov.hmcts.sptribs.caseworker.util.EventUtil;
+import uk.gov.hmcts.sptribs.ciccase.CicCaseFieldsUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.HearingFormat;
@@ -36,6 +39,7 @@ import java.util.UUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.HYPHEN;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.SPACE;
@@ -425,7 +429,7 @@ public class NotificationHelperTest {
     @Test
     void shouldAddHearingPostponedTemplateVarsWithNull() {
         final Map<String, Object> templateVars = new HashMap<>();
-        when(cicCaseMock.getSelectedHearingToCancel()).thenReturn(null);
+        when(CicCaseFieldsUtil.getSelectedHearingToCancel(cicCaseMock.getHearingList())).thenReturn(null);
 
         notificationHelper.addHearingPostponedTemplateVars(cicCaseMock, templateVars);
 
@@ -440,10 +444,16 @@ public class NotificationHelperTest {
 
         final String invalidFormat = "13/04/2024";
 
-        when(cicCaseMock.getSelectedHearingToCancel()).thenReturn(invalidFormat);
+        final DynamicList mockHearingList = getDynamicList();
+        when(cicCaseMock.getHearingList()).thenReturn(mockHearingList);
 
-        assertThrows(StringIndexOutOfBoundsException.class, () ->
-            notificationHelper.addHearingPostponedTemplateVars(cicCaseMock, templateVars));
+        try (MockedStatic<CicCaseFieldsUtil> mockedCicCaseFieldsUtilStatic = Mockito.mockStatic(CicCaseFieldsUtil.class)) {
+            mockedCicCaseFieldsUtilStatic.when(() -> CicCaseFieldsUtil.getSelectedHearingToCancel(mockHearingList))
+                .thenReturn(invalidFormat);
+
+            assertThrows(StringIndexOutOfBoundsException.class, () ->
+                notificationHelper.addHearingPostponedTemplateVars(cicCaseMock, templateVars));
+        }
 
         assertNull(templateVars.get(HEARING_DATE));
         assertNull(templateVars.get(HEARING_TIME));
