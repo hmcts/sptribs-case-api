@@ -387,6 +387,8 @@ dependencies {
     exclude(module: 'android-json')
   }
 
+  testRuntimeOnly group: 'org.junit.platform', name: 'junit-platform-launcher'
+
   testImplementation group: 'com.jayway.awaitility', name: 'awaitility', version: '1.7.0'
   testImplementation group: 'com.github.stefanbirkner', name: 'system-lambda', version: '1.2.1'
   testImplementation group: 'org.assertj', name: 'assertj-core', version: '3.27.7'
