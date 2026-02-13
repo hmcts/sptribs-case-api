@@ -195,7 +195,7 @@ checkstyle {
 }
 
 pmd {
-  toolVersion = "7.18.0"
+  toolVersion = "7.21.0"
   sourceSets = [sourceSets.main]
   reportsDir = file("$project.buildDir/reports/pmd")
   // https://github.com/pmd/pmd/issues/876
@@ -277,7 +277,7 @@ dependencyManagement {
     }
 
     //CVE-2022-31692, CVE-2022-31690
-    dependencySet(group: 'org.springframework.security', version: '6.5.4'){
+    dependencySet(group: 'org.springframework.security', version: '6.5.7'){
       entry 'spring-security-core'
       entry 'spring-security-acl'
       entry 'spring-security-aspects'
@@ -302,7 +302,7 @@ dependencyManagement {
 
     //Override spring-security-rsa version and update org.bouncycastle:bcpkix-jdk18on for CVE-2023-33202
     dependency group:'org.springframework.security', name: 'spring-security-rsa', version: '1.1.5'
-    dependency group: 'org.bouncycastle', name: 'bcpkix-jdk18on', version: '1.82'
+    dependency group: 'org.bouncycastle', name: 'bcpkix-jdk18on', version: '1.83'
     dependency group: 'org.camunda.connect', name: 'camunda-connect-connectors-all', version: '7.24.0'
 
     dependencySet(group: 'commons-fileupload', version: '1.6.0') {
@@ -365,11 +365,11 @@ dependencies {
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-validation', version: versions.springBoot
   implementation group: 'org.springframework.retry', name: 'spring-retry', version: '2.0.12'
   implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-netflix-hystrix', version: '2.2.10.RELEASE'
-  implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-bootstrap', version: '4.3.0'
-  implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-openfeign', version: '4.3.0'
+  implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-bootstrap', version: '4.3.1'
+  implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-openfeign', version: '4.3.1'
   implementation group: 'org.springframework.data', name: 'spring-data-commons', version: '3.5.8'
   implementation group: 'uk.gov.service.notify', name: 'notifications-java-client', version: '5.2.1-RELEASE'
-  implementation group: 'com.launchdarkly', name: 'launchdarkly-java-server-sdk', version: '7.10.2'
+  implementation group: 'com.launchdarkly', name: 'launchdarkly-java-server-sdk', version: '7.12.0'
   implementation group: 'org.apache.commons', name: 'commons-collections4', version: '4.5.0'
   implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.20.0'
   implementation group: 'com.github.ben-manes.caffeine', name: 'caffeine', version: '3.2.3'
@@ -391,13 +391,13 @@ dependencies {
   testImplementation group: 'com.github.stefanbirkner', name: 'system-lambda', version: '1.2.1'
   testImplementation group: 'org.assertj', name: 'assertj-core', version: '3.27.7'
   testImplementation group: 'org.assertj', name: 'assertj-guava', version: '3.27.7'
-  testImplementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-contract-stub-runner', version: '4.3.0'
+  testImplementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-contract-stub-runner', version: '4.3.1'
   testImplementation group: 'org.projectlombok', name: 'lombok', version: versions.lombok
   testImplementation group: 'org.mockito', name: 'mockito-inline', version: '5.2.0'
-  testImplementation group: 'io.github.openfeign', name: 'feign-jackson', version: '13.6'
+  testImplementation group: 'io.github.openfeign', name: 'feign-jackson', version: '13.8'
   testImplementation group: 'io.rest-assured', name: 'rest-assured'
   testImplementation group: 'org.apache.pdfbox', name: 'pdfbox', version: '3.0.6'
-  testImplementation group: 'com.microsoft.playwright', name: 'playwright', version: '1.56.0'
+  testImplementation group: 'com.microsoft.playwright', name: 'playwright', version: '1.58.0'
   testImplementation group: 'org.camunda.bpm.dmn', name: 'camunda-engine-dmn', version: "${versions.camunda}"
   testImplementation group: 'org.camunda.bpm', name: 'camunda-engine-plugin-spin', version: "${versions.camunda}"
   testImplementation group: 'org.camunda.bpm.assert', name: 'camunda-bpm-assert', version: '15.0.0'
@@ -406,8 +406,8 @@ dependencies {
   testAnnotationProcessor group: 'org.projectlombok', name: 'lombok', version: versions.lombok
   integrationTestImplementation sourceSets.main.runtimeClasspath
   integrationTestImplementation sourceSets.test.runtimeClasspath
-  integrationTestImplementation group: 'org.testcontainers', name: 'junit-jupiter', version: '1.21.3'
-  integrationTestImplementation group: 'org.testcontainers', name: 'postgresql', version: '1.21.3'
+  integrationTestImplementation group: 'org.testcontainers', name: 'junit-jupiter', version: '1.21.4'
+  integrationTestImplementation group: 'org.testcontainers', name: 'postgresql', version: '1.21.4'
 
   functionalTestImplementation sourceSets.main.runtimeClasspath
   functionalTestImplementation sourceSets.test.runtimeClasspath
@@ -427,7 +427,7 @@ dependencies {
 
   // Provides fast-reload of just the sptribs service.
   cftlibImplementation 'org.springframework.boot:spring-boot-devtools'
-  cftlibTestImplementation 'com.microsoft.playwright:playwright:1.56.0'
+  cftlibTestImplementation 'com.microsoft.playwright:playwright:1.58.0'
   cftlibTestImplementation 'org.junit-pioneer:junit-pioneer:2.3.0'
   cftlibTestImplementation 'io.github.artsok:rerunner-jupiter:2.1.6'
 }
