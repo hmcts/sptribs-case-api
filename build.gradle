@@ -302,7 +302,7 @@ dependencyManagement {
 
     //Override spring-security-rsa version and update org.bouncycastle:bcpkix-jdk18on for CVE-2023-33202
     dependency group:'org.springframework.security', name: 'spring-security-rsa', version: '1.1.5'
-    dependency group: 'org.bouncycastle', name: 'bcpkix-jdk18on', version: '1.82'
+    dependency group: 'org.bouncycastle', name: 'bcpkix-jdk18on', version: '1.83'
     dependency group: 'org.camunda.connect', name: 'camunda-connect-connectors-all', version: '7.24.0'
 
     dependencySet(group: 'commons-fileupload', version: '1.6.0') {
@@ -397,7 +397,7 @@ dependencies {
   testImplementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-contract-stub-runner', version: '4.3.1'
   testImplementation group: 'org.projectlombok', name: 'lombok', version: versions.lombok
   testImplementation group: 'org.mockito', name: 'mockito-inline', version: '5.2.0'
-  testImplementation group: 'io.github.openfeign', name: 'feign-jackson', version: '13.6'
+  testImplementation group: 'io.github.openfeign', name: 'feign-jackson', version: '13.8'
   testImplementation group: 'io.rest-assured', name: 'rest-assured'
   testImplementation group: 'org.apache.pdfbox', name: 'pdfbox', version: '3.0.6'
   testImplementation group: 'com.microsoft.playwright', name: 'playwright', version: '1.58.0'
