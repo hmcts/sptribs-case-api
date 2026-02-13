@@ -375,7 +375,7 @@ dependencies {
   implementation group: 'com.github.ben-manes.caffeine', name: 'caffeine', version: '3.2.3'
   implementation 'org.camunda.bpm:camunda-external-task-client:7.24.0'
   implementation group: 'org.postgresql', name: 'postgresql', version: '42.7.10'
-  implementation 'org.flywaydb:flyway-database-postgresql:11.3.1'
+  implementation 'org.flywaydb:flyway-database-postgresql:11.20.3'
   annotationProcessor group: 'org.projectlombok', name: 'lombok', version: versions.lombok
   testImplementation group: 'com.github.hmcts', name: 'fortify-client', version: '1.4.10', classifier: 'all'
 
