@@ -369,7 +369,7 @@ dependencies {
   implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-openfeign', version: '4.3.1'
   implementation group: 'org.springframework.data', name: 'spring-data-commons', version: '3.5.8'
   implementation group: 'uk.gov.service.notify', name: 'notifications-java-client', version: '5.2.1-RELEASE'
-  implementation group: 'com.launchdarkly', name: 'launchdarkly-java-server-sdk', version: '7.10.2'
+  implementation group: 'com.launchdarkly', name: 'launchdarkly-java-server-sdk', version: '7.12.0'
   implementation group: 'org.apache.commons', name: 'commons-collections4', version: '4.5.0'
   implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.20.0'
   implementation group: 'com.github.ben-manes.caffeine', name: 'caffeine', version: '3.2.3'
