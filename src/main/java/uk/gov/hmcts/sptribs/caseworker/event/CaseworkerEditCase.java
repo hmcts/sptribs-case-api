@@ -9,6 +9,7 @@ import uk.gov.hmcts.ccd.sdk.api.Event;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.util.CaseFlagsUtil;
+import uk.gov.hmcts.sptribs.ciccase.CicCaseFieldsUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.PartiesCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
@@ -18,6 +19,7 @@ import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.common.event.page.ApplicantDetails;
 import uk.gov.hmcts.sptribs.common.event.page.CaseCategorisationDetails;
 import uk.gov.hmcts.sptribs.common.event.page.ContactPreferenceDetails;
+import uk.gov.hmcts.sptribs.common.event.page.DateOfInitialCicaDecision;
 import uk.gov.hmcts.sptribs.common.event.page.DateOfReceipt;
 import uk.gov.hmcts.sptribs.common.event.page.EditCicaCaseDetailsPage;
 import uk.gov.hmcts.sptribs.common.event.page.FurtherDetails;
@@ -49,6 +51,7 @@ public class CaseworkerEditCase implements CCDConfig<CaseData, State, UserRole> 
 
     private final CcdPageConfiguration editCaseCategorisationDetails = new CaseCategorisationDetails();
     private final CcdPageConfiguration editCicaCaseDetailsPage = new EditCicaCaseDetailsPage();
+    private static final CcdPageConfiguration dateOfInitialCicaDecision = new DateOfInitialCicaDecision();
     private static final CcdPageConfiguration dateOfReceipt = new DateOfReceipt();
     private final CcdPageConfiguration editSelectedPartiesDetails = new SelectParties();
     private final CcdPageConfiguration editSubjectDetails = new SubjectDetails();
@@ -69,6 +72,7 @@ public class CaseworkerEditCase implements CCDConfig<CaseData, State, UserRole> 
         final PageBuilder pageBuilder = addEventConfig(configBuilder);
         editCaseCategorisationDetails.addTo(pageBuilder);
         editCicaCaseDetailsPage.addTo(pageBuilder);
+        dateOfInitialCicaDecision.addTo(pageBuilder);
         dateOfReceipt.addTo(pageBuilder);
         editSelectedPartiesDetails.addTo(pageBuilder);
         editSubjectDetails.addTo(pageBuilder);
@@ -85,12 +89,12 @@ public class CaseworkerEditCase implements CCDConfig<CaseData, State, UserRole> 
 
         if (checkNull(beforeData) && beforeData.getCicCase().getPartiesCIC().contains(PartiesCIC.REPRESENTATIVE)
             && checkNull(data) && !data.getCicCase().getPartiesCIC().contains(PartiesCIC.REPRESENTATIVE)) {
-            data.getCicCase().removeRepresentative();
+            CicCaseFieldsUtil.removeRepresentative(data);
         }
 
         if (checkNull(beforeData) && beforeData.getCicCase().getPartiesCIC().contains(PartiesCIC.APPLICANT)
             && checkNull(data) && !data.getCicCase().getPartiesCIC().contains(PartiesCIC.APPLICANT)) {
-            data.getCicCase().removeApplicant();
+            CicCaseFieldsUtil.removeApplicant(data);
         }
 
         CaseDetails<CaseData, State> submittedDetails = submissionService.submitApplication(details);
@@ -101,6 +105,7 @@ public class CaseworkerEditCase implements CCDConfig<CaseData, State, UserRole> 
         }
 
         CaseFlagsUtil.updateOrInitialiseFlags(data);
+        CicCaseFieldsUtil.calculateAndSetIsCaseInTime(data);
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(data)
