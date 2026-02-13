@@ -11,6 +11,7 @@ import uk.gov.hmcts.ccd.sdk.api.Event;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.ccd.sdk.type.DynamicMultiSelectList;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
+import uk.gov.hmcts.sptribs.bankholidays.service.BankHolidayService;
 import uk.gov.hmcts.sptribs.caseworker.event.page.IssueCaseNotifyParties;
 import uk.gov.hmcts.sptribs.caseworker.event.page.IssueCaseSelectDocument;
 import uk.gov.hmcts.sptribs.caseworker.util.DocumentListUtil;
@@ -22,8 +23,11 @@ import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.notification.dispatcher.CaseIssuedNotification;
 
+import java.time.DayOfWeek;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import static java.lang.String.format;
 import static org.springframework.util.CollectionUtils.isEmpty;
@@ -52,6 +56,11 @@ public class CaseworkerIssueCase implements CCDConfig<CaseData, State, UserRole>
 
     @Value("${case-api.url}")
     private String baseUrl;
+
+    private final BankHolidayService bankHolidayService;
+
+    @Value("${bank-holidays.api.url}")
+    private String bankHolidayUrl;
 
     private static final CcdPageConfiguration issueCaseNotifyParties = new IssueCaseNotifyParties();
     private static final CcdPageConfiguration issueCaseSelectDocument = new IssueCaseSelectDocument();
@@ -95,6 +104,15 @@ public class CaseworkerIssueCase implements CCDConfig<CaseData, State, UserRole>
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(final CaseDetails<CaseData, State> details,
                                                                        final CaseDetails<CaseData, State> beforeDetails) {
         final CaseData caseData = details.getData();
+        final CicCase cicCase = caseData.getCicCase();
+
+        Set<LocalDate> bankHolidays = bankHolidayService
+            .getScottishBankHolidays(bankHolidayUrl)
+            .getDates();
+        LocalDate dueDate = LocalDate.now().plusDays(42);
+        LocalDate verifiedDueDate = isWorkingDay(dueDate, bankHolidays) ? dueDate : getNextWorkingDay(dueDate, bankHolidays);
+        cicCase.setRespondentBundleDueDate(verifiedDueDate);
+        
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
             .state(details.getState())
@@ -151,5 +169,19 @@ public class CaseworkerIssueCase implements CCDConfig<CaseData, State, UserRole>
                 )
                 .build();
         }
+    }
+
+    public LocalDate getNextWorkingDay(LocalDate date, Set<LocalDate> bankHolidays) {
+        LocalDate updatedDate = date.plusDays(1);
+        return isWorkingDay(updatedDate,bankHolidays) ? updatedDate : getNextWorkingDay(updatedDate, bankHolidays);
+    }
+
+    public boolean isWorkingDay(LocalDate date, Set<LocalDate> bankHolidays) {
+        return !isWeekend(date) && !bankHolidays.contains(date);
+    }
+
+    private boolean isWeekend(LocalDate date) {
+        return date.getDayOfWeek() == DayOfWeek.SATURDAY
+                || date.getDayOfWeek() == DayOfWeek.SUNDAY;
     }
 }

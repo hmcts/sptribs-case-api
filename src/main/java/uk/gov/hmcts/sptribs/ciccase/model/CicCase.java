@@ -121,6 +121,13 @@ public class CicCase {
     )
     private YesOrNo anonymityAlreadyApplied;
 
+    @CCD (
+        label = "Respondent Bundle Due Date",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private LocalDate respondentBundleDueDate;
+
     @CCD(
         label = "How would you like to issue an order?",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}

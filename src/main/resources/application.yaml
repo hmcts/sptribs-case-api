@@ -242,6 +242,10 @@ caseinfo:
       caseTypeOfApplication:
         - CIC
 
+bank-holidays:
+  api:
+    url: 'https://www.gov.uk/bank-holidays/scotland.json'
+
 wa_task_monitor_api:
   url: ${TASK_MONITOR_API_URL:http://wa-task-monitor-aat.service.core-compute-aat.internal}
 wa_task_management_api:
