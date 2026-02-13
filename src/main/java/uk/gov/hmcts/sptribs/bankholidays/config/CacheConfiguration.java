@@ -14,12 +14,12 @@ import java.util.concurrent.TimeUnit;
 @EnableCaching
 public class CacheConfiguration {
 
-        @Bean
-        public CacheManager bankHolidayCacheManager() {
-            CaffeineCacheManager manager = new CaffeineCacheManager("scottish_bank_holiday_cache");
-            manager.setCaffeine(Caffeine.newBuilder()
-                    .expireAfterWrite(24, TimeUnit.HOURS)
-                    .maximumSize(1));
-            return manager;
-        }
+    @Bean
+    public CacheManager bankHolidayCacheManager() {
+        CaffeineCacheManager manager = new CaffeineCacheManager("scottish_bank_holiday_cache");
+        manager.setCaffeine(Caffeine.newBuilder()
+            .expireAfterWrite(24, TimeUnit.HOURS)
+            .maximumSize(1));
+        return manager;
+    }
 }
