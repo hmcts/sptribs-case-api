@@ -370,7 +370,7 @@ dependencies {
   implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-openfeign', version: '4.3.1'
   implementation group: 'org.springframework.data', name: 'spring-data-commons', version: '3.5.8'
   implementation group: 'uk.gov.service.notify', name: 'notifications-java-client', version: '5.2.1-RELEASE'
-  implementation group: 'com.launchdarkly', name: 'launchdarkly-java-server-sdk', version: '7.10.2'
+  implementation group: 'com.launchdarkly', name: 'launchdarkly-java-server-sdk', version: '7.12.0'
   implementation group: 'org.apache.commons', name: 'commons-collections4', version: '4.5.0'
   implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.20.0'
   implementation group: 'com.github.ben-manes.caffeine', name: 'caffeine', version: '3.2.3'
@@ -400,7 +400,7 @@ dependencies {
   testImplementation group: 'io.github.openfeign', name: 'feign-jackson', version: '13.6'
   testImplementation group: 'io.rest-assured', name: 'rest-assured'
   testImplementation group: 'org.apache.pdfbox', name: 'pdfbox', version: '3.0.6'
-  testImplementation group: 'com.microsoft.playwright', name: 'playwright', version: '1.56.0'
+  testImplementation group: 'com.microsoft.playwright', name: 'playwright', version: '1.58.0'
   testImplementation group: 'org.camunda.bpm.dmn', name: 'camunda-engine-dmn', version: "${versions.camunda}"
   testImplementation group: 'org.camunda.bpm', name: 'camunda-engine-plugin-spin', version: "${versions.camunda}"
   testImplementation group: 'org.camunda.bpm.assert', name: 'camunda-bpm-assert', version: '15.0.0'
@@ -409,8 +409,8 @@ dependencies {
   testAnnotationProcessor group: 'org.projectlombok', name: 'lombok', version: versions.lombok
   integrationTestImplementation sourceSets.main.runtimeClasspath
   integrationTestImplementation sourceSets.test.runtimeClasspath
-  integrationTestImplementation group: 'org.testcontainers', name: 'junit-jupiter', version: '1.21.3'
-  integrationTestImplementation group: 'org.testcontainers', name: 'postgresql', version: '1.21.3'
+  integrationTestImplementation group: 'org.testcontainers', name: 'junit-jupiter', version: '1.21.4'
+  integrationTestImplementation group: 'org.testcontainers', name: 'postgresql', version: '1.21.4'
 
   functionalTestImplementation sourceSets.main.runtimeClasspath
   functionalTestImplementation sourceSets.test.runtimeClasspath
@@ -430,7 +430,7 @@ dependencies {
 
   // Provides fast-reload of just the sptribs service.
   cftlibImplementation 'org.springframework.boot:spring-boot-devtools'
-  cftlibTestImplementation 'com.microsoft.playwright:playwright:1.56.0'
+  cftlibTestImplementation 'com.microsoft.playwright:playwright:1.58.0'
   cftlibTestImplementation 'org.junit-pioneer:junit-pioneer:2.3.0'
   cftlibTestImplementation 'io.github.artsok:rerunner-jupiter:2.1.6'
 }
