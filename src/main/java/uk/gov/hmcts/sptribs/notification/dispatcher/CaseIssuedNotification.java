@@ -18,6 +18,7 @@ import uk.gov.hmcts.sptribs.notification.PartiesNotification;
 import uk.gov.hmcts.sptribs.notification.TemplateName;
 import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -32,6 +33,7 @@ public class CaseIssuedNotification implements PartiesNotification {
     private final NotificationHelper notificationHelper;
 
     private static final int DOC_ATTACH_LIMIT = 5;
+    private static final int NUMBER_OF_DAYS_IN_WINDOW = 42;
 
     @Override
     public void sendToSubject(final CaseData caseData, final String caseNumber) {
@@ -98,6 +100,14 @@ public class CaseIssuedNotification implements PartiesNotification {
         final Map<String, Object> templateVarsRespondent = notificationHelper.getRespondentCommonVars(caseNumber, caseData);
         templateVarsRespondent.put(CommonConstants.CIC_CASE_RESPONDENT_NAME, caseData.getCicCase().getRespondentName());
 
+        //TODO update date condition
+        LocalDate today = LocalDate.now();
+        //dummy date for now
+        LocalDate dueDate = LocalDate.of(2026, 1, 1).plusDays(NUMBER_OF_DAYS_IN_WINDOW);
+        templateVarsRespondent.put(CommonConstants.CIC_BUNDLE_DUE_DATE_TEXT,
+            today.isAfter(dueDate)
+                ? buildTimeString(true, dueDate) : buildTimeString(false, dueDate));
+
         final NotificationResponse notificationResponse;
         if (ObjectUtils.isNotEmpty(caseData.getCaseIssue().getDocumentList())) {
             final Map<String, String> uploadedDocuments = getUploadedDocuments(caseData);
@@ -111,8 +121,20 @@ public class CaseIssuedNotification implements PartiesNotification {
             cicCase.setSubjectLetterNotifyList(notificationResponse);
         } else {
             notificationResponse = sendEmailNotification(templateVarsRespondent,
-                cicCase.getAlternativeRespondentEmail(), TemplateName.CASE_ISSUED_RESPONDENT_EMAIL, caseNumber);
+                cicCase.getAlternativeRespondentEmail(), TemplateName.CASE_ISSUED_RESPONDENT_EMAIL_UPDATED, caseNumber);
             cicCase.setResNotificationResponse(notificationResponse);
+        }
+    }
+
+    private String buildTimeString(boolean isOutOfTimeRange, LocalDate dueDate) {
+
+        //probs need to format date better
+        if (isOutOfTimeRange) {
+            return String.format("Out of time appeal - You should provide the tribunal with a case bundle by %s. "
+                + "Do not issue to the Subject/Applicant/Representative until we notify you the appeal has been admitted.", dueDate);
+        } else {
+            return String.format("You should provide the tribunal and the "
+                + "Subject/Applicant/Representative with a case bundle by %s", dueDate);
         }
     }
 
@@ -135,7 +157,7 @@ public class CaseIssuedNotification implements PartiesNotification {
                 true,
                 uploadedDocuments,
                 templateVars,
-                TemplateName.CASE_ISSUED_RESPONDENT_EMAIL),
+                TemplateName.CASE_ISSUED_RESPONDENT_EMAIL_UPDATED),
             selectedDocuments,
             caseReferenceNumber);
     }
