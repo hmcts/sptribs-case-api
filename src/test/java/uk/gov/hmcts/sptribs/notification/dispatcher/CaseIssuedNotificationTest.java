@@ -183,7 +183,7 @@ public class CaseIssuedNotificationTest {
         //Then
         verify(notificationService).sendEmail(any(NotificationRequest.class), eq(TEST_CASE_ID.toString()));
         verify(notificationHelper).buildEmailNotificationRequest(
-            data.getCicCase().getRespondentEmail(),
+            data.getCicCase().getAlternativeRespondentEmail(),
             Map.of(CommonConstants.CIC_CASE_RESPONDENT_NAME,data.getCicCase().getRespondentName()),
             TemplateName.CASE_ISSUED_RESPONDENT_EMAIL);
     }
@@ -231,7 +231,7 @@ public class CaseIssuedNotificationTest {
         //Then
         verify(notificationService).sendEmail(any(NotificationRequest.class), eq(List.of(cicDocument)), eq(TEST_CASE_ID.toString()));
         verify(notificationHelper).buildEmailNotificationRequest(
-            data.getCicCase().getRespondentEmail(),
+            data.getCicCase().getAlternativeRespondentEmail(),
             true,
             getDocumentUploadMap(),
             Map.of(CommonConstants.CIC_CASE_RESPONDENT_NAME,data.getCicCase().getRespondentName()),

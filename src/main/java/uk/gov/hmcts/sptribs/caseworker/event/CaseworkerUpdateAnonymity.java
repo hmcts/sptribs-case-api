@@ -15,8 +15,12 @@ import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_UPDATE_ANONYMITY;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_CASEWORKER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_HEARING_CENTRE_ADMIN;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_HEARING_CENTRE_TEAM_LEADER;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_JUDGE;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_CASEWORKER;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_JUDGE;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_WA_CONFIG_USER;
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE;
 
@@ -30,16 +34,17 @@ public class CaseworkerUpdateAnonymity implements CCDConfig<CaseData, State, Use
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         Event.EventBuilder<CaseData, UserRole, State> eventBuilder =
-                configBuilder
-                        .event(CASEWORKER_UPDATE_ANONYMITY)
-                        .forAllStates()
-                        .name("Update Anonymity")
-                        .description("Update Anonymity")
-                        .showSummary()
-                        .aboutToSubmitCallback(this::aboutToSubmit)
-                        .grant(CREATE_READ_UPDATE,
-                            ST_CIC_HEARING_CENTRE_ADMIN, ST_CIC_HEARING_CENTRE_TEAM_LEADER, ST_CIC_WA_CONFIG_USER)
-                        .publishToCamunda();
+            configBuilder
+                .event(CASEWORKER_UPDATE_ANONYMITY)
+                .forAllStates()
+                .name("Update Anonymity")
+                .description("Update Anonymity")
+                .showSummary()
+                .aboutToSubmitCallback(this::aboutToSubmit)
+                .grant(CREATE_READ_UPDATE,
+                    ST_CIC_HEARING_CENTRE_ADMIN, ST_CIC_HEARING_CENTRE_TEAM_LEADER, ST_CIC_WA_CONFIG_USER)
+                .grantHistoryOnly(ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER, ST_CIC_JUDGE, ST_CIC_SENIOR_JUDGE)
+                .publishToCamunda();
 
         PageBuilder pageBuilder = new PageBuilder(eventBuilder);
         applyAnonymity.addTo(pageBuilder);

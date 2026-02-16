@@ -1324,7 +1324,7 @@ class CamundaTaskWaConfigurationTest extends DmnDecisionTableBaseUnitTest {
                     .expectedValue(DUE_DATE_INTERVAL_DAYS, "2", true)
                     .expectedValue(
                         DESCRIPTION,
-                        "[Orders: Create and send order](/cases/case-details/${[CASE_REFERENCE]}/trigger/create-and-send-order)",
+                        "[Orders: Create draft](/cases/case-details/${[CASE_REFERENCE]}/trigger/create-draft-order)",
                         true
                     )
                     .build()
@@ -1363,7 +1363,7 @@ class CamundaTaskWaConfigurationTest extends DmnDecisionTableBaseUnitTest {
         DmnDecisionTableImpl logic = (DmnDecisionTableImpl) decision.getDecisionLogic();
         assertThat(logic.getInputs().size(), is(2));
         assertThat(logic.getOutputs().size(), is(3));
-        assertEquals(44, logic.getRules().size());
+        assertEquals(45, logic.getRules().size());
     }
 
     @ParameterizedTest(name = "task type: {0} case data: {1}")

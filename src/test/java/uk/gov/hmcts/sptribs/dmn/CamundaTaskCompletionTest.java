@@ -551,10 +551,6 @@ class CamundaTaskCompletionTest extends DmnDecisionTableBaseUnitTest {
                         "taskType", REVIEW_TIME_EXT_REQ_JUDGE_TASK,
                         "completionMode", AUTO_COMPLETE_MODE
                     ),
-                    Map.of(
-                        "taskType", CREATE_DUE_DATE,
-                        "completionMode", AUTO_COMPLETE_MODE
-                    ),
                     Collections.emptyMap()
                 )
             ),
@@ -635,7 +631,7 @@ class CamundaTaskCompletionTest extends DmnDecisionTableBaseUnitTest {
         DmnDecisionTableImpl logic = (DmnDecisionTableImpl) decision.getDecisionLogic();
         assertThat(logic.getInputs().size(), is(1));
         assertThat(logic.getOutputs().size(), is(2));
-        assertThat(logic.getRules().size(), is(101));
+        assertThat(logic.getRules().size(), is(100));
     }
 
     @ParameterizedTest(name = "event id: {0}")
