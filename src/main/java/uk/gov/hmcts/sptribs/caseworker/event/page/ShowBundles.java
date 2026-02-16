@@ -40,13 +40,12 @@ public class ShowBundles implements CcdPageConfiguration {
                                                                   CaseDetails<CaseData, State> detailsBefore) {
         final CaseData data = details.getData();
         final CaseData oldData = detailsBefore.getData();
-//        if (ObjectUtils.isEmpty(data.getRemovedCaseBundlesList())) {
-//            List<ListValue<Bundle>> removedBundlesList = new ArrayList<>();
-//            data.setRemovedCaseBundlesList(removedBundlesList);
-//        }
+        //        if (ObjectUtils.isEmpty(data.getRemovedCaseBundlesList())) {
+        //            List<ListValue<Bundle>> removedBundlesList = new ArrayList<>();
+        //            data.setRemovedCaseBundlesList(removedBundlesList);
+        //        }
         final List<String> errors = new ArrayList<>();
 
-        // if there are bundles in the old data and there are no more bundles in the new data, or there are less bundles in the new data than the old data. . .
         if (!CollectionUtils.isEmpty(oldData.getCaseBundles())
             && (CollectionUtils.isEmpty(data.getCaseBundles())
             || data.getCaseBundles().size() < oldData.getCaseBundles().size())) {
