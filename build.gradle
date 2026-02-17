@@ -318,7 +318,7 @@ repositories {
 }
 
 def versions = [
-  camunda           : '7.23.0',
+  camunda           : '7.24.0',
   jackson           : '2.16.0',
   lombok            : '1.18.42',
   pact              : '4.1.34',
