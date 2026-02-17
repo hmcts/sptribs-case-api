@@ -235,7 +235,8 @@ public class CaseData {
         label = "Due Date",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
-    private List<ListValue<DateModel>> orderDueDates;
+    @Builder.Default
+    private List<ListValue<DateModel>> orderDueDates = new ArrayList<>();
 
     @CCD(
         label = "Scheme Label",

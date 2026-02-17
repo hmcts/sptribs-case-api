@@ -12,7 +12,7 @@ public class AmendOrderDueDates implements CcdPageConfiguration {
         pageBuilder.page("caseworkerAmendDueDateEditDueDate")
             .pageLabel("Amend due dates")
             .list(CaseData::getOrderDueDates)
-            .optionalWithLabel(DateModel::getDueDateOptions, "Please choose the updated due date or add a new custom date")
+            .mandatoryWithLabel(DateModel::getDueDateOptions, "Please choose the updated due date or add a new custom date")
             .optional(DateModel::getUpdatedDueDate, "orderDueDates.dueDateOptions=\"Other\"")
             .readonlyWithLabel(DateModel::getDueDate, "Previous Due Date (This is the previous due date chosen)")
             .optional(DateModel::getOrderMarkAsCompleted);

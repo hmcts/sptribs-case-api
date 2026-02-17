@@ -69,13 +69,13 @@ public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole>
     private static final CcdPageConfiguration orderIssuingSelect = new SendOrderOrderIssuingSelect();
     private static final CcdPageConfiguration uploadOrder = new SendOrderUploadOrder();
     private static final CcdPageConfiguration draftOrder = new SendOrderAddDraftOrder();
-    private static final CcdPageConfiguration orderDueDates = new SendOrderOrderDueDates();
     private static final CcdPageConfiguration notifyParties = new SendOrderNotifyParties();
     private static final CcdPageConfiguration sendReminder = new SendOrderSendReminder();
 
     private static final int ORDER_TIMESTAMP_WITH_EXTENSION = 2; //dd-MM-yyyy HH:mm:ss.pdf
 
     private final NewOrderIssuedNotification newOrderIssuedNotification;
+    private final SendOrderOrderDueDates orderDueDates;
 
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {

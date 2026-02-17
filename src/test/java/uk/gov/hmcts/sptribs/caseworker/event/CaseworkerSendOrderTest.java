@@ -14,6 +14,7 @@ import uk.gov.hmcts.ccd.sdk.type.DynamicList;
 import uk.gov.hmcts.ccd.sdk.type.DynamicListElement;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
+import uk.gov.hmcts.sptribs.caseworker.event.page.SendOrderOrderDueDates;
 import uk.gov.hmcts.sptribs.caseworker.model.DateModel;
 import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderCIC;
 import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderContentCIC;
@@ -75,6 +76,9 @@ class CaseworkerSendOrderTest {
 
     @Mock
     private NewOrderIssuedNotification newOrderIssuedNotification;
+
+    @Mock
+    private SendOrderOrderDueDates orderDueDates;
 
     @Test
     void shouldAddPublishToCamundaWhenWAIsEnabled() {

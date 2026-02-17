@@ -1,5 +1,7 @@
 package uk.gov.hmcts.sptribs.caseworker.event.page;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
@@ -10,10 +12,19 @@ import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 
+import java.time.Clock;
 import java.time.LocalDate;
 import java.util.List;
 
+@Component
 public class SendOrderOrderDueDates implements CcdPageConfiguration {
+
+    private final Clock clock;
+
+    @Autowired
+    public SendOrderOrderDueDates(Clock clock) {
+        this.clock = clock;
+    }
 
     @Override
     public void addTo(PageBuilder pageBuilder) {
@@ -39,9 +50,8 @@ public class SendOrderOrderDueDates implements CcdPageConfiguration {
 
             Long dueDateOffset = listValue.getValue().getDueDateOptions().getAmount();
 
-            //if not other
             if (dueDateOffset != null) {
-                listValue.getValue().setDueDate((LocalDate.now().plusDays(dueDateOffset)));
+                listValue.getValue().setDueDate((LocalDate.now(clock).plusDays(dueDateOffset)));
             }
 
         }

@@ -699,7 +699,7 @@ public class CicCase {
         for (ListValue<DateModel> dateModelListValue : dueDateList) {
             if ((dateModelListValue.getValue().getOrderMarkAsCompleted() == null
                 || !dateModelListValue.getValue().getOrderMarkAsCompleted().contains(GetAmendDateAsCompleted.MARKASCOMPLETED))
-                && dateModelListValue.getValue().getDueDate().isBefore(compare)) {
+                && dateModelListValue.getValue().getDueDate().isBefore(earliestDate)) {
                 earliestDate = dateModelListValue.getValue().getDueDate();
             }
         }

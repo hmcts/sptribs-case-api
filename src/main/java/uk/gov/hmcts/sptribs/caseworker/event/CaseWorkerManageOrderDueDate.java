@@ -23,6 +23,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 
+import java.time.Clock;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -52,8 +53,14 @@ public class CaseWorkerManageOrderDueDate implements CCDConfig<CaseData, State, 
     private static final CcdPageConfiguration manageSelectOrderTemplates = new ManageSelectOrders();
     private static final CcdPageConfiguration amendOrderDueDates = new AmendOrderDueDates();
 
+    private final OrderService orderService;
+    private final Clock clock;
+
     @Autowired
-    private OrderService orderService;
+    public CaseWorkerManageOrderDueDate(OrderService orderService, Clock clock) {
+        this.orderService = orderService;
+        this.clock = clock;
+    }
 
     @Override
     public void configure(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
@@ -123,7 +130,7 @@ public class CaseWorkerManageOrderDueDate implements CCDConfig<CaseData, State, 
             Long dueDateOffset = listValue.getValue().getDueDateOptions().getAmount();
 
             if (dueDateOffset != null) {
-                listValue.getValue().setDueDate((LocalDate.now().plusDays(dueDateOffset)));
+                listValue.getValue().setDueDate((LocalDate.now(clock).plusDays(dueDateOffset)));
             } else {
                 listValue.getValue().setDueDate(listValue.getValue().getUpdatedDueDate());
             }

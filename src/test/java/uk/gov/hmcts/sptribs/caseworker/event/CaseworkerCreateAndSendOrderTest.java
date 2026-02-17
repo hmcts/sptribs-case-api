@@ -16,6 +16,7 @@ import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.event.page.ApplyAnonymity;
 import uk.gov.hmcts.sptribs.caseworker.event.page.DraftOrderFooter;
+import uk.gov.hmcts.sptribs.caseworker.event.page.SendOrderOrderDueDates;
 import uk.gov.hmcts.sptribs.caseworker.model.DateModel;
 import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderCIC;
 import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderContentCIC;
@@ -73,11 +74,14 @@ class CaseworkerCreateAndSendOrderTest {
     private DraftOrderFooter draftOrderFooter;
 
     @Mock
+    private SendOrderOrderDueDates orderDueDates;
+
+    @Mock
     private NewOrderIssuedNotification newOrderIssuedNotification;
 
     private DateModel dateModel = DateModel.builder()
         .dueDate(LocalDate.of(2026, 1, 2))
-        .build();;
+        .build();
 
     @Test
     void shouldAddConfigurationToConfigBuilder() {
