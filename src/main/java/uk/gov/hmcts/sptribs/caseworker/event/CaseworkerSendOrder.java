@@ -135,7 +135,7 @@ public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole>
         String selectedDynamicDraft = null;
         final Order order = Order.builder()
             .uploadedFile(caseData.getCicCase().getOrderFile())
-            .dueDateList(caseData.getCicCase().getOrderDueDates())
+            .dueDateList(caseData.getOrderDueDates())
             .parties(getRecipients(caseData.getCicCase()))
             .orderSentDate(LocalDate.now())
             .reminderDay(caseData.getCicCase().getOrderReminderDays()).build();
@@ -194,7 +194,7 @@ public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole>
             caseData.getCicCase().setDraftOrderCICList(draftList);
         }
 
-        caseData.getCicCase().setOrderDueDates(new ArrayList<>());
+        caseData.setOrderDueDates(new ArrayList<>());
         caseData.getCicCase().setFirstOrderDueDate(caseData.getCicCase().calculateFirstDueDate());
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()

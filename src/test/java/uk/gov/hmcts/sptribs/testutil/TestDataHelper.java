@@ -273,7 +273,6 @@ public class TestDataHelper {
     public static List<ListValue<DateModel>> getDueDateList() {
         DateModel date = DateModel.builder()
             .dueDate(LocalDate.of(2024, 9, 5))
-            .information(HEARING_TIME)
             .orderMarkAsCompleted(Set.of(MARKASCOMPLETED))
             .build();
         List<ListValue<DateModel>> list = new ArrayList<>();

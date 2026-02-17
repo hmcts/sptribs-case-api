@@ -13,6 +13,7 @@ import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.event.page.AmendOrderDueDates;
 import uk.gov.hmcts.sptribs.caseworker.event.page.ManageSelectOrders;
+import uk.gov.hmcts.sptribs.caseworker.model.DateModel;
 import uk.gov.hmcts.sptribs.caseworker.model.Order;
 import uk.gov.hmcts.sptribs.caseworker.service.OrderService;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
@@ -22,6 +23,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -92,21 +94,43 @@ public class CaseWorkerManageOrderDueDate implements CCDConfig<CaseData, State, 
         final String selectedOrder = caseData.getCicCase().getOrderDynamicList().getValue().getLabel();
         final String id = getId(selectedOrder);
         final List<ListValue<Order>> orderList = caseData.getCicCase().getOrderList();
+
+        updateDueDate(caseData);
+
         for (ListValue<Order> orderListValue : orderList) {
             if (id != null && id.equals(orderListValue.getId())) {
                 Order order = orderListValue.getValue();
-                order.setDueDateList(cicCase.getOrderDueDates());
+                order.setDueDateList(caseData.getOrderDueDates());
                 orderListValue.setValue(order);
                 break;
             }
         }
         caseData.getCicCase().setOrderList(orderList);
-        cicCase.setOrderDueDates(new ArrayList<>());
+        caseData.setOrderDueDates(new ArrayList<>());
         cicCase.setFirstOrderDueDate(cicCase.calculateFirstDueDate());
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .state(details.getState())
             .data(caseData)
             .build();
+    }
+
+
+    private void updateDueDate(CaseData caseData) {
+        List<ListValue<DateModel>> dueDates = caseData.getOrderDueDates();
+
+        for (ListValue<DateModel> listValue : dueDates) {
+
+            Long dueDateOffset = listValue.getValue().getDueDateOptions().getAmount();
+
+            if (dueDateOffset != null) {
+                listValue.getValue().setDueDate((LocalDate.now().plusDays(dueDateOffset)));
+            } else {
+                listValue.getValue().setDueDate(listValue.getValue().getUpdatedDueDate());
+            }
+
+            listValue.getValue().setUpdatedDueDate(null);
+
+        }
     }
 
     public SubmittedCallbackResponse submitted(CaseDetails<CaseData, State> details,

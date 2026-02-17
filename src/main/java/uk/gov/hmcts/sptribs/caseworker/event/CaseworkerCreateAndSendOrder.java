@@ -166,8 +166,9 @@ public class CaseworkerCreateAndSendOrder implements CCDConfig<CaseData, State, 
             orderBuilder.uploadedFile(caseData.getCicCase().getOrderFile());
         }
 
+        //set another datemodel object in order to display in tabs
         final Order order = orderBuilder
-            .dueDateList(caseData.getCicCase().getOrderDueDates())
+            .dueDateList(caseData.getOrderDueDates())
             .parties(getRecipients(caseData.getCicCase()))
             .orderSentDate(LocalDate.now())
             .build();
@@ -183,7 +184,7 @@ public class CaseworkerCreateAndSendOrder implements CCDConfig<CaseData, State, 
         caseData.getCicCase().setOrderTemplateIssued(null);
         caseData.getCicCase().setOrderReminderYesOrNo(null);
 
-        caseData.getCicCase().setOrderDueDates(new ArrayList<>());
+        caseData.setOrderDueDates(new ArrayList<>());
         caseData.getCicCase().setFirstOrderDueDate(caseData.getCicCase().calculateFirstDueDate());
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
