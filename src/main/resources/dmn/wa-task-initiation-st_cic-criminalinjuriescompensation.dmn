@@ -2489,7 +2489,7 @@ else
           <text>"create-and-send-order"</text>
         </inputEntry>
         <inputEntry id="UnaryTests_1ue5wmb">
-          <text>"CaseManagement"</text>
+          <text>"CaseManagement", "ReadyToList"</text>
         </inputEntry>
         <inputEntry id="UnaryTests_1se0l2b">
           <text></text>
