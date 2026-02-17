@@ -16,6 +16,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.document.bundling.model.Bundle;
+import uk.gov.hmcts.sptribs.document.bundling.model.BundleIdAndTimestamp;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,6 +32,7 @@ import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_CASEWORK
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_JUDGE;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE;
+import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.READ_UPDATE_DELETE;
 
 @Component
 @Slf4j
@@ -49,7 +51,7 @@ public class CaseworkerEditBundle implements CCDConfig<CaseData, State, UserRole
             .description("Bundle: Edit a bundle")
             .aboutToSubmitCallback(this::aboutToSubmit)
             .submittedCallback(this::submitted)
-            .grant(CREATE_READ_UPDATE, SUPER_USER,
+            .grant(READ_UPDATE_DELETE, SUPER_USER,
                 ST_CIC_CASEWORKER,
                 ST_CIC_SENIOR_CASEWORKER,
                 ST_CIC_HEARING_CENTRE_ADMIN,
@@ -68,13 +70,21 @@ public class CaseworkerEditBundle implements CCDConfig<CaseData, State, UserRole
 
         final CaseData caseData = details.getData();
 
-        List<String> idsOfBundlesToBeRemoved = new ArrayList<>();
+        List<String> idsOfBundleIdsAndTimestampsToBeRemoved = new ArrayList<>();
         for (ListValue<Bundle> bundleToBeRemoved : caseData.getRemovedCaseBundlesList()) {
-            idsOfBundlesToBeRemoved.add(bundleToBeRemoved.getValue().getId());
+            idsOfBundleIdsAndTimestampsToBeRemoved.add(bundleToBeRemoved.getValue().getId());
         }
-        caseData.getCaseBundleIdsAndTimestamps().removeIf(
-            bundleIdAndTimestamp ->
-                idsOfBundlesToBeRemoved.contains(bundleIdAndTimestamp.getValue().getBundleId()));
+
+        List<ListValue<BundleIdAndTimestamp>> bundleIdsAndTimestampsToRemove = new ArrayList<>();
+        for (ListValue<BundleIdAndTimestamp> bundleIdAndTimestamp : caseData.getCaseBundleIdsAndTimestamps()) {
+            if (idsOfBundleIdsAndTimestampsToBeRemoved.contains(bundleIdAndTimestamp.getValue().getBundleId())) {
+                bundleIdsAndTimestampsToRemove.add(bundleIdAndTimestamp);
+            }
+        }
+
+        for (ListValue<BundleIdAndTimestamp> bundleIdAndTimestampToRemove : bundleIdsAndTimestampsToRemove) {
+            caseData.getCaseBundleIdsAndTimestamps().remove(bundleIdAndTimestampToRemove);
+        }
 
         List<ListValue<Bundle>> listValues = new ArrayList<>();
         caseData.setRemovedCaseBundlesList(listValues);
