@@ -31,7 +31,7 @@ import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_JUDGE;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_CASEWORKER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_JUDGE;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
-import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.READ_UPDATE_DELETE;
+import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE_DELETE;
 
 @Component
 @Slf4j
@@ -50,7 +50,7 @@ public class CaseworkerEditBundle implements CCDConfig<CaseData, State, UserRole
             .description("Bundle: Amend bundle")
             .aboutToSubmitCallback(this::aboutToSubmit)
             .submittedCallback(this::submitted)
-            .grant(READ_UPDATE_DELETE, SUPER_USER,
+            .grant(CREATE_READ_UPDATE_DELETE, SUPER_USER,
                 ST_CIC_CASEWORKER,
                 ST_CIC_SENIOR_CASEWORKER,
                 ST_CIC_HEARING_CENTRE_ADMIN,
