@@ -387,6 +387,8 @@ dependencies {
     exclude(module: 'android-json')
   }
 
+  testRuntimeOnly group: 'org.junit.platform', name: 'junit-platform-launcher'
+
   testImplementation group: 'com.jayway.awaitility', name: 'awaitility', version: '1.7.0'
   testImplementation group: 'com.github.stefanbirkner', name: 'system-lambda', version: '1.2.1'
   testImplementation group: 'org.assertj', name: 'assertj-core', version: '3.27.7'
@@ -420,7 +422,7 @@ dependencies {
   functionalTestImplementation group: 'org.projectlombok', name: 'lombok', version: versions.lombok
   functionalTestAnnotationProcessor group: 'org.projectlombok', name: 'lombok', version: versions.lombok
 
-  contractTestImplementation group: 'au.com.dius.pact.consumer', name: 'junit5', version: '4.6.19'
+  contractTestImplementation group: 'au.com.dius.pact.consumer', name: 'junit5', version: '4.6.20'
 
   contractTestImplementation sourceSets.main.runtimeClasspath
   contractTestImplementation sourceSets.test.runtimeClasspath
