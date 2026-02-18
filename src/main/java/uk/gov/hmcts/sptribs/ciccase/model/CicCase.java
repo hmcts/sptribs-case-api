@@ -1,14 +1,12 @@
 package uk.gov.hmcts.sptribs.ciccase.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.util.CollectionUtils;
 import uk.gov.hmcts.ccd.sdk.api.CCD;
 import uk.gov.hmcts.ccd.sdk.type.AddressGlobalUK;
 import uk.gov.hmcts.ccd.sdk.type.Document;
@@ -33,7 +31,6 @@ import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocumentUpload;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
 
 import java.time.LocalDate;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -145,6 +142,12 @@ public class CicCase {
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private List<ListValue<DraftOrderCIC>> draftOrderCICList;
+
+    @CCD(
+        label = "Due Date",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private List<ListValue<DateModel>> orderDueDates;
 
     @CCD(
         typeOverride = MultiSelectList,
@@ -440,6 +443,19 @@ public class CicCase {
     private String cicaReferenceNumber;
 
     @CCD(
+        label = "Date of CICA initial review decision letter",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private LocalDate initialCicaDecisionDate;
+
+    @CCD(
+        label = "Is the case in time?",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private YesOrNo isCaseInTime;
+
+    @CCD(
         label = "Applicant's full name",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
@@ -699,7 +715,7 @@ public class CicCase {
         for (ListValue<DateModel> dateModelListValue : dueDateList) {
             if ((dateModelListValue.getValue().getOrderMarkAsCompleted() == null
                 || !dateModelListValue.getValue().getOrderMarkAsCompleted().contains(GetAmendDateAsCompleted.MARKASCOMPLETED))
-                && dateModelListValue.getValue().getDueDate().isBefore(earliestDate)) {
+                && dateModelListValue.getValue().getDueDate().isBefore(compare)) {
                 earliestDate = dateModelListValue.getValue().getDueDate();
             }
         }
