@@ -26,8 +26,8 @@
             {
               "id": "e514ab08-a87b-4173-bb1e-55e02bf01d6f",
               "value": {
+                "dueDateOptions": "Other",
                 "dueDate": "2025-01-01",
-                "information": "Lorem ipsum additional information",
                 "orderMarkAsCompleted": []
               }
             }
