@@ -42,6 +42,7 @@
       "value": {
         "dueDateOptions": "Other",
         "dueDate": "2025-01-01",
+        "updatedDueDate": "2026-01-01",
         "orderMarkAsCompleted": []
       },
       "id": "e514ab08-a87b-4173-bb1e-55e02bf01d6f"
