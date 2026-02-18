@@ -31,7 +31,10 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_CREATE_AND_SEND_ORDER;
-import static uk.gov.hmcts.sptribs.testutil.TestConstants.*;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.AUTHORIZATION;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.ORDER_DUE_DATES_MID_EVENT_URL;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.SERVICE_AUTHORIZATION;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_AUTHORIZATION_TOKEN;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.callbackRequest;
 import static uk.gov.hmcts.sptribs.testutil.TestResourceUtil.expectedResponse;
 
