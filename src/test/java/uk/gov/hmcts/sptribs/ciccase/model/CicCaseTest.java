@@ -6,6 +6,7 @@ import org.junit.jupiter.params.provider.EnumSource;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.sptribs.caseworker.model.DateModel;
 import uk.gov.hmcts.sptribs.caseworker.model.Order;
+import uk.gov.hmcts.sptribs.ciccase.CicCaseFieldsUtil;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -41,8 +42,12 @@ class CicCaseTest {
             .hearingNotificationParties(parties)
             .build();
 
+        final CaseData data = CaseData.builder()
+            .cicCase(cicCase)
+            .build();
+
         //When
-        cicCase.removeRepresentative();
+        CicCaseFieldsUtil.removeRepresentative(data);
         //Then
         assertThat(cicCase.getRepresentativeFullName()).isEmpty();
     }
@@ -63,8 +68,12 @@ class CicCaseTest {
             .hearingNotificationParties(parties)
             .build();
 
+        final CaseData data = CaseData.builder()
+            .cicCase(cicCase)
+            .build();
+
         //When
-        cicCase.removeApplicant();
+        CicCaseFieldsUtil.removeApplicant(data);
         //Then
         assertThat(cicCase.getApplicantFullName()).isEmpty();
     }
@@ -107,7 +116,7 @@ class CicCaseTest {
             .build();
 
         //When
-        LocalDate result = cicCase.calculateFirstDueDate();
+        LocalDate result = CicCaseFieldsUtil.calculateFirstDueDate(cicCase.getOrderList());
 
         //Then
         assertThat(result).isEqualTo(now);
@@ -127,9 +136,13 @@ class CicCaseTest {
 
         if (caseSubcategory == CaseSubcategory.FATAL
             || caseSubcategory == CaseSubcategory.MINOR) {
-            assertThat(caseData.getCicCase().useApplicantNameForSubject()).isTrue();
+            assertThat(CicCaseFieldsUtil.useApplicantNameForSubject(
+                caseData.getCicCase().getCaseSubcategory(), caseData.getCicCase().getApplicantFullName()
+            )).isTrue();
         } else {
-            assertThat(caseData.getCicCase().useApplicantNameForSubject()).isFalse();
+            assertThat(CicCaseFieldsUtil.useApplicantNameForSubject(
+                caseData.getCicCase().getCaseSubcategory(), caseData.getCicCase().getApplicantFullName()
+            )).isFalse();
         }
 
         final CicCase cicCaseNoApplicantName = CicCase.builder()
@@ -142,7 +155,9 @@ class CicCaseTest {
 
         if (caseSubcategory == CaseSubcategory.FATAL
             || caseSubcategory == CaseSubcategory.MINOR) {
-            assertThat(caseDataNoApplicantName.getCicCase().useApplicantNameForSubject()).isFalse();
+            assertThat(CicCaseFieldsUtil.useApplicantNameForSubject(
+                caseDataNoApplicantName.getCicCase().getCaseSubcategory(), caseDataNoApplicantName.getCicCase().getApplicantFullName()
+            )).isFalse();
         }
     }
 }
