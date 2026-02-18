@@ -17,7 +17,7 @@
       "valueCode": "962aaa12-af98-4cfa-86b2-46e4f0ec241d",
       "valueLabel": "1-CIC3_RULE_27"
     },
-    "cicCaseOrderDueDates": [],
+    "orderDueDates": [],
     "cicCaseOrderList": [
       {
         "id": "1",
