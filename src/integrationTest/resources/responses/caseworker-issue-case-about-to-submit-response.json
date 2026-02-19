@@ -9,7 +9,7 @@
     "contactParties" : { },
     "caseBundles" : [ ],
     "caseBundleIdsAndTimestamps" : [ ],
-    "cicCaseRespondentBundleDueDate" : "2026-04-02",
+    "cicCaseRespondentBundleDueDate" : "${json-unit.any-string}",
     "cicCaseRespondentName" : "Appeals team",
     "cicCaseRespondentOrganisation" : "CICA",
     "cicCaseRespondentEmail" : "appeals.team@cica.gov.uk",
