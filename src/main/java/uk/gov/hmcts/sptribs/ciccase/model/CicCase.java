@@ -1,14 +1,12 @@
 package uk.gov.hmcts.sptribs.ciccase.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.util.CollectionUtils;
 import uk.gov.hmcts.ccd.sdk.api.CCD;
 import uk.gov.hmcts.ccd.sdk.type.AddressGlobalUK;
 import uk.gov.hmcts.ccd.sdk.type.Document;
@@ -33,7 +31,6 @@ import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocumentUpload;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
 
 import java.time.LocalDate;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -446,6 +443,19 @@ public class CicCase {
     private String cicaReferenceNumber;
 
     @CCD(
+        label = "Date of CICA initial review decision letter",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private LocalDate initialCicaDecisionDate;
+
+    @CCD(
+        label = "Is the case in time?",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private YesOrNo isCaseInTime;
+
+    @CCD(
         label = "Applicant's full name",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
@@ -699,91 +709,4 @@ public class CicCase {
     )
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate firstOrderDueDate;
-
-    private LocalDate findEarliestDate(List<ListValue<DateModel>> dueDateList, LocalDate compare) {
-        LocalDate earliestDate = compare;
-        for (ListValue<DateModel> dateModelListValue : dueDateList) {
-            if ((dateModelListValue.getValue().getOrderMarkAsCompleted() == null
-                || !dateModelListValue.getValue().getOrderMarkAsCompleted().contains(GetAmendDateAsCompleted.MARKASCOMPLETED))
-                && dateModelListValue.getValue().getDueDate().isBefore(compare)) {
-                earliestDate = dateModelListValue.getValue().getDueDate();
-            }
-        }
-        return earliestDate;
-    }
-
-    public LocalDate calculateFirstDueDate() {
-        LocalDate compare = LocalDate.MAX;
-
-        if (!CollectionUtils.isEmpty(orderList)) {
-            for (ListValue<Order> orderListValue : orderList) {
-                if (!CollectionUtils.isEmpty(orderListValue.getValue().getDueDateList())) {
-                    compare = findEarliestDate(orderListValue.getValue().getDueDateList(), compare);
-                }
-            }
-
-            if (compare.isBefore(LocalDate.MAX)) {
-                return compare;
-            }
-        }
-
-        return null;
-    }
-
-    @JsonIgnore
-    public String getSelectedHearingToCancel() {
-        return this.getHearingList() != null ? this.getHearingList().getValue().getLabel() : null;
-    }
-
-    public void removeRepresentative() {
-        if (representativeCIC != null) {
-            representativeCIC = new HashSet<>();
-        }
-        if (notifyPartyRepresentative != null) {
-            notifyPartyRepresentative = new HashSet<>();
-        }
-        if (hearingNotificationParties != null) {
-            hearingNotificationParties.remove(NotificationParties.REPRESENTATIVE);
-        }
-
-        if (contactPartiesCIC != null) {
-            Set<ContactPartiesCIC> temp = new HashSet<>();
-            for (ContactPartiesCIC partyCIC : contactPartiesCIC) {
-                if (partyCIC != ContactPartiesCIC.REPRESENTATIVETOCONTACT) {
-                    temp.add(partyCIC);
-                }
-            }
-            contactPartiesCIC = temp;
-        }
-
-        representativeFullName = "";
-        representativeOrgName = "";
-        representativeReference = "";
-        representativeAddress = new AddressGlobalUK();
-        representativePhoneNumber = "";
-        representativeEmailAddress = "";
-    }
-
-    public void removeApplicant() {
-        if (applicantCIC != null) {
-            applicantCIC = new HashSet<>();
-        }
-        if (notifyPartyApplicant != null) {
-            notifyPartyApplicant = new HashSet<>();
-        }
-        if (hearingNotificationParties != null) {
-            hearingNotificationParties.remove(NotificationParties.APPLICANT);
-        }
-
-        applicantFullName = "";
-        applicantAddress = new AddressGlobalUK();
-        applicantPhoneNumber = "";
-        applicantEmailAddress = "";
-    }
-
-    public boolean useApplicantNameForSubject() {
-        return (caseSubcategory == CaseSubcategory.FATAL
-            || caseSubcategory == CaseSubcategory.MINOR)
-            && (applicantFullName != null);
-    }
 }
