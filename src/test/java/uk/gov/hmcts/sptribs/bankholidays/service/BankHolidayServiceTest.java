@@ -56,7 +56,7 @@ class BankHolidayServiceTest {
 
             when(mockBuilder.decoder(any())).thenReturn(mockBuilder);
             when(mockBuilder.encoder(any())).thenReturn(mockBuilder);
-            when(mockBuilder.target(eq(BankHolidaysApi.class), eq(testUrl))).thenReturn(bankHolidaysApi);
+            when(mockBuilder.target(BankHolidaysApi.class, testUrl)).thenReturn(bankHolidaysApi);
             when(bankHolidaysApi.retrieveAll()).thenReturn(mockResponse);
 
             BankHolidayResponse result = bankHolidayService.getScottishBankHolidays(testUrl);
@@ -78,8 +78,7 @@ class BankHolidayServiceTest {
 
             when(mockBuilder.decoder(any())).thenReturn(mockBuilder);
             when(mockBuilder.encoder(any())).thenReturn(mockBuilder);
-            when(mockBuilder.target(eq(BankHolidaysApi.class), eq(testUrl)))
-                    .thenReturn(bankHolidaysApi);
+            when(mockBuilder.target(BankHolidaysApi.class, testUrl)).thenReturn(bankHolidaysApi);
             when(bankHolidaysApi.retrieveAll()).thenReturn(mockResponse);
 
             BankHolidayResponse result = bankHolidayService.getScottishBankHolidays(testUrl);
@@ -105,7 +104,7 @@ class BankHolidayServiceTest {
 
             when(mockBuilder.decoder(any())).thenReturn(mockBuilder);
             when(mockBuilder.encoder(any())).thenReturn(mockBuilder);
-            when(mockBuilder.target(eq(BankHolidaysApi.class), eq(customUrl))).thenReturn(bankHolidaysApi);
+            when(mockBuilder.target(BankHolidaysApi.class, customUrl)).thenReturn(bankHolidaysApi);
             when(bankHolidaysApi.retrieveAll()).thenReturn(mockResponse);
 
             bankHolidayService.getScottishBankHolidays(customUrl);
@@ -124,7 +123,7 @@ class BankHolidayServiceTest {
 
             when(mockBuilder.decoder(feignDecoder)).thenReturn(mockBuilder);
             when(mockBuilder.encoder(feignEncoder)).thenReturn(mockBuilder);
-            when(mockBuilder.target(eq(BankHolidaysApi.class), eq(testUrl))).thenReturn(bankHolidaysApi);
+            when(mockBuilder.target(BankHolidaysApi.class, testUrl)).thenReturn(bankHolidaysApi);
             when(bankHolidaysApi.retrieveAll()).thenReturn(mockResponse);
 
             bankHolidayService.getScottishBankHolidays(testUrl);
