@@ -1,9 +1,6 @@
 package uk.gov.hmcts.sptribs.caseworker.event;
 
-import lombok.AllArgsConstructor;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
@@ -67,12 +64,6 @@ public class CaseworkerIssueCase implements CCDConfig<CaseData, State, UserRole>
 
     private static final CcdPageConfiguration issueCaseNotifyParties = new IssueCaseNotifyParties();
     private static final CcdPageConfiguration issueCaseSelectDocument = new IssueCaseSelectDocument();
-
-//    @Autowired
-//    public CaseworkerIssueCase ( CaseIssuedNotification caseIssuedNotification, BankHolidayService bankHolidayService) {
-//        this.caseIssuedNotification = caseIssuedNotification;
-//        this.bankHolidayService = bankHolidayService;
-//    }
 
     public CaseworkerIssueCase(
             CaseIssuedNotification caseIssuedNotification,
