@@ -1,7 +1,9 @@
 package uk.gov.hmcts.sptribs.caseworker.event;
 
+import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
@@ -49,23 +51,40 @@ import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_WA_CONFIG_USER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE;
 
-@RequiredArgsConstructor
 @Component
 @Slf4j
 public class CaseworkerIssueCase implements CCDConfig<CaseData, State, UserRole> {
 
-    @Value("${case-api.url}")
-    private String baseUrl;
+    private final CaseIssuedNotification caseIssuedNotification;
 
     private final BankHolidayService bankHolidayService;
 
     @Value("${bank-holidays.api.url}")
-    private String bankHolidayUrl;
+    private final String bankHolidayUrl;
+
+    @Value("${case-api.url}")
+    private final String baseUrl;
 
     private static final CcdPageConfiguration issueCaseNotifyParties = new IssueCaseNotifyParties();
     private static final CcdPageConfiguration issueCaseSelectDocument = new IssueCaseSelectDocument();
 
-    private final CaseIssuedNotification caseIssuedNotification;
+//    @Autowired
+//    public CaseworkerIssueCase ( CaseIssuedNotification caseIssuedNotification, BankHolidayService bankHolidayService) {
+//        this.caseIssuedNotification = caseIssuedNotification;
+//        this.bankHolidayService = bankHolidayService;
+//    }
+
+    public CaseworkerIssueCase(
+            CaseIssuedNotification caseIssuedNotification,
+            BankHolidayService bankHolidayService,
+            @Value("${bank-holidays.api.url}") String bankHolidayUrl,
+            @Value("${case-api.url}") String baseUrl
+    ) {
+        this.bankHolidayService = bankHolidayService;
+        this.caseIssuedNotification = caseIssuedNotification;
+        this.bankHolidayUrl = bankHolidayUrl;
+        this.baseUrl = baseUrl;
+    }
 
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {

@@ -16,7 +16,7 @@ public class BankHolidayResponse {
 
     public Set<LocalDate> getDates() {
         return events.stream()
-                .map(BankHolidayEvent::getDate)
-                .collect(Collectors.toSet());
+            .map(BankHolidayEvent::getDate)
+            .collect(Collectors.toSet());
     }
 }

@@ -30,23 +30,23 @@ public class BankHolidayConfiguration {
     @Bean
     public Decoder feignDecoder() {
         MappingJackson2HttpMessageConverter jacksonConverter =
-                new MappingJackson2HttpMessageConverter(objectMapper);
+            new MappingJackson2HttpMessageConverter(objectMapper);
         jacksonConverter.setSupportedMediaTypes(Arrays.asList(
-                APPLICATION_JSON,
-                new MediaType("application", "*+json"),
-                TEXT_PLAIN
+            APPLICATION_JSON,
+            new MediaType("application", "*+json"),
+            TEXT_PLAIN
         ));
         ObjectFactory<HttpMessageConverters> objectFactory =
-                () -> new HttpMessageConverters(jacksonConverter);
+            () -> new HttpMessageConverters(jacksonConverter);
         return new ResponseEntityDecoder(new SpringDecoder(objectFactory));
     }
 
     @Bean
     public Encoder feignEncoder() {
         HttpMessageConverter<Object> jacksonConverter =
-                new MappingJackson2HttpMessageConverter(objectMapper);
+            new MappingJackson2HttpMessageConverter(objectMapper);
         ObjectFactory<HttpMessageConverters> objectFactory =
-                () -> new HttpMessageConverters(jacksonConverter);
+            () -> new HttpMessageConverters(jacksonConverter);
         return new SpringEncoder(objectFactory);
     }
 }
