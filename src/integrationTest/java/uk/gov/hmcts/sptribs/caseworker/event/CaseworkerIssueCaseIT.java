@@ -12,6 +12,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseIssue;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
@@ -96,7 +97,7 @@ class CaseworkerIssueCaseIT {
 
         stubForIdamDetails(TEST_AUTHORIZATION_TOKEN, CASEWORKER_USER_ID, ST_CIC_CASEWORKER);
 
-        mockMvc.perform(post(ABOUT_TO_SUBMIT_URL)
+        MvcResult result = mockMvc.perform(post(ABOUT_TO_SUBMIT_URL)
                 .contentType(APPLICATION_JSON)
                 .header(SERVICE_AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
                 .header(AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
@@ -107,9 +108,10 @@ class CaseworkerIssueCaseIT {
                 .accept(APPLICATION_JSON))
             .andExpect(
                 status().isOk())
-            .andExpect(
-                content().json(expectedResponse(CASEWORKER_ISSUE_CASE_RESPONSE))
-            );
+            .andReturn();
+
+        String actualResponse = result.getResponse().getContentAsString();
+        assertThatJson(actualResponse).isEqualTo(expectedResponse(CASEWORKER_ISSUE_CASE_RESPONSE));
     }
 
     @Test
