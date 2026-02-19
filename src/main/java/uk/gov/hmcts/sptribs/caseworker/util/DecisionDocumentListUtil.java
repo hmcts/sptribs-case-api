@@ -121,4 +121,14 @@ public  final class DecisionDocumentListUtil {
             }
         }
     }
+
+    public static void removeFurtherUploadedDocument(CaseData caseData, ListValue<CaseworkerCICDocument> cicDocumentListValue) {
+
+        if (caseData.getFurtherUploadedDocuments() != null) {
+            caseData.getFurtherUploadedDocuments().removeIf(listValue ->
+                cicDocumentListValue.getValue().getDocumentLink().equals(listValue.getValue().getDocumentLink())
+            );
+        }
+    }
+
 }
