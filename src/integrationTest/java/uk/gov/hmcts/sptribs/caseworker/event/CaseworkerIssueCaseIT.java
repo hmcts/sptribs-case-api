@@ -59,9 +59,9 @@ import static uk.gov.hmcts.sptribs.testutil.TestResourceUtil.expectedResponse;
 class CaseworkerIssueCaseIT {
 
     private static final String CASEWORKER_ISSUE_CASE_RESPONSE =
-        "classpath:responses/caseworker-issue-case-response.json";
+        "classpath:responses/caseworker-issue-case-about-to-submit-response.json";
     private static final String CASEWORKER_ISSUE_CASE_ABOUT_TO_START_RESPONSE =
-        "classpath:responses/caseworker-issue-case-response.json";
+        "classpath:responses/caseworker-issue-case-about-to-start-response.json";
 
     private static final String CONFIRMATION_HEADER = "$.confirmation_header";
 
@@ -90,7 +90,7 @@ class CaseworkerIssueCaseIT {
 
 
     @Test
-    void shouldSuccessfullyAIssueCase() throws Exception {
+    void shouldSuccessfullyIssueCase() throws Exception {
         final CaseData caseData = caseData();
         caseData.setCaseIssue(new CaseIssue());
 
