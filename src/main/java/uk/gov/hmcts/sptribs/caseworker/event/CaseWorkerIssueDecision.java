@@ -31,6 +31,7 @@ import uk.gov.hmcts.sptribs.document.content.DecisionTemplateContent;
 import uk.gov.hmcts.sptribs.document.model.CICDocument;
 import uk.gov.hmcts.sptribs.notification.dispatcher.DecisionIssuedNotification;
 import uk.gov.hmcts.sptribs.taskmanagement.TaskManagementService;
+import uk.gov.hmcts.sptribs.taskmanagement.model.TaskType;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -155,7 +156,7 @@ public class CaseWorkerIssueDecision implements CCDConfig<CaseData, State, UserR
         }
 
         taskManagementService.enqueueCompletionTasks(
-            List.of(uk.gov.hmcts.sptribs.taskmanagement.TaskType.issueDecisionNotice),
+            List.of(TaskType.issueDecisionNotice),
             details.getId()
         );
 

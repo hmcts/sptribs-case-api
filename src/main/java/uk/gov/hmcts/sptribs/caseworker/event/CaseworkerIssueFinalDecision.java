@@ -56,7 +56,7 @@ import static uk.gov.hmcts.sptribs.document.DocumentConstants.FINAL_DECISION_ANN
 import static uk.gov.hmcts.sptribs.document.DocumentConstants.FINAL_DECISION_ANNEX_TEMPLATE_ID;
 import static uk.gov.hmcts.sptribs.document.DocumentConstants.FINAL_DECISION_FILE;
 import static uk.gov.hmcts.sptribs.document.DocumentUtil.validateDecisionDocumentFormat;
-import static uk.gov.hmcts.sptribs.taskmanagement.TaskType.issueDecisionNotice;
+import static uk.gov.hmcts.sptribs.taskmanagement.model.TaskType.issueDecisionNotice;
 
 @Component
 @Slf4j

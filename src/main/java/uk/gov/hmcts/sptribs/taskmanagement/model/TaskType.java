@@ -1,19 +1,19 @@
-package uk.gov.hmcts.sptribs.taskmanagement;
+package uk.gov.hmcts.sptribs.taskmanagement.model;
 
 import lombok.Getter;
 
 import java.util.List;
 import java.util.stream.Stream;
 
-import static uk.gov.hmcts.sptribs.taskmanagement.ProcessCategoryIdentifiers.Amendment;
-import static uk.gov.hmcts.sptribs.taskmanagement.ProcessCategoryIdentifiers.Application;
-import static uk.gov.hmcts.sptribs.taskmanagement.ProcessCategoryIdentifiers.Decision;
-import static uk.gov.hmcts.sptribs.taskmanagement.ProcessCategoryIdentifiers.Hearing;
-import static uk.gov.hmcts.sptribs.taskmanagement.ProcessCategoryIdentifiers.HearingBundle;
-import static uk.gov.hmcts.sptribs.taskmanagement.ProcessCategoryIdentifiers.HearingCompletion;
-import static uk.gov.hmcts.sptribs.taskmanagement.ProcessCategoryIdentifiers.IssueCase;
-import static uk.gov.hmcts.sptribs.taskmanagement.ProcessCategoryIdentifiers.None;
-import static uk.gov.hmcts.sptribs.taskmanagement.ProcessCategoryIdentifiers.Processing;
+import static uk.gov.hmcts.sptribs.taskmanagement.model.ProcessCategoryIdentifiers.Amendment;
+import static uk.gov.hmcts.sptribs.taskmanagement.model.ProcessCategoryIdentifiers.Application;
+import static uk.gov.hmcts.sptribs.taskmanagement.model.ProcessCategoryIdentifiers.Decision;
+import static uk.gov.hmcts.sptribs.taskmanagement.model.ProcessCategoryIdentifiers.Hearing;
+import static uk.gov.hmcts.sptribs.taskmanagement.model.ProcessCategoryIdentifiers.HearingBundle;
+import static uk.gov.hmcts.sptribs.taskmanagement.model.ProcessCategoryIdentifiers.HearingCompletion;
+import static uk.gov.hmcts.sptribs.taskmanagement.model.ProcessCategoryIdentifiers.IssueCase;
+import static uk.gov.hmcts.sptribs.taskmanagement.model.ProcessCategoryIdentifiers.None;
+import static uk.gov.hmcts.sptribs.taskmanagement.model.ProcessCategoryIdentifiers.Processing;
 import static uk.gov.hmcts.sptribs.taskmanagement.TaskConstants.COMPLETE_HEARING_OUTCOME_DESCRIPTION;
 import static uk.gov.hmcts.sptribs.taskmanagement.TaskConstants.CREATE_DUE_DATE_DESCRIPTION;
 import static uk.gov.hmcts.sptribs.taskmanagement.TaskConstants.EMPTY_DESCRIPTION;

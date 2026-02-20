@@ -25,7 +25,7 @@ import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.notification.dispatcher.HearingPostponedNotification;
 import uk.gov.hmcts.sptribs.taskmanagement.TaskManagementService;
-import uk.gov.hmcts.sptribs.taskmanagement.TaskType;
+import uk.gov.hmcts.sptribs.taskmanagement.model.TaskType;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -44,8 +44,8 @@ import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_JUDGE;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_WA_CONFIG_USER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE;
-import static uk.gov.hmcts.sptribs.taskmanagement.ProcessCategoryIdentifiers.HearingBundle;
-import static uk.gov.hmcts.sptribs.taskmanagement.ProcessCategoryIdentifiers.HearingCompletion;
+import static uk.gov.hmcts.sptribs.taskmanagement.model.ProcessCategoryIdentifiers.HearingBundle;
+import static uk.gov.hmcts.sptribs.taskmanagement.model.ProcessCategoryIdentifiers.HearingCompletion;
 
 @Component
 @Slf4j

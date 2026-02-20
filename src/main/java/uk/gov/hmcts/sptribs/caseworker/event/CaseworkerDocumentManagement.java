@@ -45,8 +45,8 @@ import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE;
 import static uk.gov.hmcts.sptribs.document.DocumentUtil.convertToCaseworkerCICDocumentUpload;
 import static uk.gov.hmcts.sptribs.document.DocumentUtil.uploadDocument;
-import static uk.gov.hmcts.sptribs.taskmanagement.TaskType.followUpNoncomplianceOfDirections;
-import static uk.gov.hmcts.sptribs.taskmanagement.TaskType.processFurtherEvidence;
+import static uk.gov.hmcts.sptribs.taskmanagement.model.TaskType.followUpNoncomplianceOfDirections;
+import static uk.gov.hmcts.sptribs.taskmanagement.model.TaskType.processFurtherEvidence;
 
 @Component
 @Slf4j

@@ -20,7 +20,7 @@ import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_WA_CONFIG_USER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SYSTEM_UPDATE;
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE;
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE_DELETE;
-import static uk.gov.hmcts.sptribs.taskmanagement.TaskType.completeHearingOutcome;
+import static uk.gov.hmcts.sptribs.taskmanagement.model.TaskType.completeHearingOutcome;
 
 @Component
 public class SystemTriggerCompleteHearingOutcome implements CCDConfig<CaseData, State, UserRole> {

@@ -17,7 +17,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.taskmanagement.TaskManagementService;
-import uk.gov.hmcts.sptribs.taskmanagement.TaskType;
+import uk.gov.hmcts.sptribs.taskmanagement.model.TaskType;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -38,31 +38,32 @@ import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_JUDGE;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_WA_CONFIG_USER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE;
-import static uk.gov.hmcts.sptribs.taskmanagement.ProcessCategoryIdentifiers.IssueCase;
-import static uk.gov.hmcts.sptribs.taskmanagement.TaskType.followUpNoncomplianceOfDirections;
-import static uk.gov.hmcts.sptribs.taskmanagement.TaskType.processFurtherEvidence;
-import static uk.gov.hmcts.sptribs.taskmanagement.TaskType.reviewListCaseLO;
-import static uk.gov.hmcts.sptribs.taskmanagement.TaskType.reviewListCaseWithin5DaysLO;
-import static uk.gov.hmcts.sptribs.taskmanagement.TaskType.reviewListingDirectionsCaseListedLO;
-import static uk.gov.hmcts.sptribs.taskmanagement.TaskType.reviewListingDirectionsLO;
-import static uk.gov.hmcts.sptribs.taskmanagement.TaskType.reviewNewCaseAndProvideDirectionsLO;
-import static uk.gov.hmcts.sptribs.taskmanagement.TaskType.reviewOtherRequestLO;
-import static uk.gov.hmcts.sptribs.taskmanagement.TaskType.reviewPostponementRequestLO;
-import static uk.gov.hmcts.sptribs.taskmanagement.TaskType.reviewReinstatementRequestLO;
-import static uk.gov.hmcts.sptribs.taskmanagement.TaskType.reviewRule27RequestCaseListedLO;
-import static uk.gov.hmcts.sptribs.taskmanagement.TaskType.reviewRule27RequestLO;
-import static uk.gov.hmcts.sptribs.taskmanagement.TaskType.reviewStayRequestCaseListedLO;
-import static uk.gov.hmcts.sptribs.taskmanagement.TaskType.reviewStayRequestLO;
-import static uk.gov.hmcts.sptribs.taskmanagement.TaskType.reviewStrikeOutRequestLO;
-import static uk.gov.hmcts.sptribs.taskmanagement.TaskType.reviewTimeExtensionRequestLO;
-import static uk.gov.hmcts.sptribs.taskmanagement.TaskType.reviewWithdrawalRequestCaseListedLO;
-import static uk.gov.hmcts.sptribs.taskmanagement.TaskType.reviewWithdrawalRequestLO;
+import static uk.gov.hmcts.sptribs.taskmanagement.model.ProcessCategoryIdentifiers.IssueCase;
+import static uk.gov.hmcts.sptribs.taskmanagement.model.TaskType.followUpNoncomplianceOfDirections;
+import static uk.gov.hmcts.sptribs.taskmanagement.model.TaskType.processFurtherEvidence;
+import static uk.gov.hmcts.sptribs.taskmanagement.model.TaskType.reviewListCaseLO;
+import static uk.gov.hmcts.sptribs.taskmanagement.model.TaskType.reviewListCaseWithin5DaysLO;
+import static uk.gov.hmcts.sptribs.taskmanagement.model.TaskType.reviewListingDirectionsCaseListedLO;
+import static uk.gov.hmcts.sptribs.taskmanagement.model.TaskType.reviewListingDirectionsLO;
+import static uk.gov.hmcts.sptribs.taskmanagement.model.TaskType.reviewNewCaseAndProvideDirectionsLO;
+import static uk.gov.hmcts.sptribs.taskmanagement.model.TaskType.reviewOtherRequestLO;
+import static uk.gov.hmcts.sptribs.taskmanagement.model.TaskType.reviewPostponementRequestLO;
+import static uk.gov.hmcts.sptribs.taskmanagement.model.TaskType.reviewReinstatementRequestLO;
+import static uk.gov.hmcts.sptribs.taskmanagement.model.TaskType.reviewRule27RequestCaseListedLO;
+import static uk.gov.hmcts.sptribs.taskmanagement.model.TaskType.reviewRule27RequestLO;
+import static uk.gov.hmcts.sptribs.taskmanagement.model.TaskType.reviewStayRequestCaseListedLO;
+import static uk.gov.hmcts.sptribs.taskmanagement.model.TaskType.reviewStayRequestLO;
+import static uk.gov.hmcts.sptribs.taskmanagement.model.TaskType.reviewStrikeOutRequestLO;
+import static uk.gov.hmcts.sptribs.taskmanagement.model.TaskType.reviewTimeExtensionRequestLO;
+import static uk.gov.hmcts.sptribs.taskmanagement.model.TaskType.reviewWithdrawalRequestCaseListedLO;
+import static uk.gov.hmcts.sptribs.taskmanagement.model.TaskType.reviewWithdrawalRequestLO;
 
 @Component
 @Slf4j
 public class CaseWorkerReferToLegalOfficer implements CCDConfig<CaseData, State, UserRole> {
     private static final List<TaskType> CANCELLABLE_TASKS =
         TaskType.getTaskTypesFromProcessCategoryIdentifiers(List.of(IssueCase));
+
     private static final String NEW_CASE = "New case";
     private static final String TIME_EXTENSION_REQUEST = "Time extension request";
     private static final String STRIKE_OUT_REQUEST = "Strike out request";

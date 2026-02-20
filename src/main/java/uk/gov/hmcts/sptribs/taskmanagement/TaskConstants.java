@@ -1,42 +1,44 @@
 package uk.gov.hmcts.sptribs.taskmanagement;
 
+import uk.gov.hmcts.sptribs.taskmanagement.model.TaskType;
+
 import java.util.Set;
 
-import static uk.gov.hmcts.sptribs.taskmanagement.TaskType.reviewCorrectionsRequest;
-import static uk.gov.hmcts.sptribs.taskmanagement.TaskType.reviewListCaseJudge;
-import static uk.gov.hmcts.sptribs.taskmanagement.TaskType.reviewListCaseLO;
-import static uk.gov.hmcts.sptribs.taskmanagement.TaskType.reviewListCaseWithin5DaysJudge;
-import static uk.gov.hmcts.sptribs.taskmanagement.TaskType.reviewListCaseWithin5DaysLO;
-import static uk.gov.hmcts.sptribs.taskmanagement.TaskType.reviewListingDirectionsCaseListedJudge;
-import static uk.gov.hmcts.sptribs.taskmanagement.TaskType.reviewListingDirectionsCaseListedLO;
-import static uk.gov.hmcts.sptribs.taskmanagement.TaskType.reviewListingDirectionsJudge;
-import static uk.gov.hmcts.sptribs.taskmanagement.TaskType.reviewListingDirectionsLO;
-import static uk.gov.hmcts.sptribs.taskmanagement.TaskType.reviewNewCaseAndProvideDirectionsJudge;
-import static uk.gov.hmcts.sptribs.taskmanagement.TaskType.reviewNewCaseAndProvideDirectionsLO;
-import static uk.gov.hmcts.sptribs.taskmanagement.TaskType.reviewOtherRequestJudge;
-import static uk.gov.hmcts.sptribs.taskmanagement.TaskType.reviewOtherRequestLO;
-import static uk.gov.hmcts.sptribs.taskmanagement.TaskType.reviewPostponementRequestJudge;
-import static uk.gov.hmcts.sptribs.taskmanagement.TaskType.reviewPostponementRequestLO;
-import static uk.gov.hmcts.sptribs.taskmanagement.TaskType.reviewReinstatementRequestJudge;
-import static uk.gov.hmcts.sptribs.taskmanagement.TaskType.reviewReinstatementRequestLO;
-import static uk.gov.hmcts.sptribs.taskmanagement.TaskType.reviewRule27RequestCaseListedJudge;
-import static uk.gov.hmcts.sptribs.taskmanagement.TaskType.reviewRule27RequestCaseListedLO;
-import static uk.gov.hmcts.sptribs.taskmanagement.TaskType.reviewRule27RequestJudge;
-import static uk.gov.hmcts.sptribs.taskmanagement.TaskType.reviewRule27RequestLO;
-import static uk.gov.hmcts.sptribs.taskmanagement.TaskType.reviewSetAsideRequest;
-import static uk.gov.hmcts.sptribs.taskmanagement.TaskType.reviewStayRequestCaseListedJudge;
-import static uk.gov.hmcts.sptribs.taskmanagement.TaskType.reviewStayRequestCaseListedLO;
-import static uk.gov.hmcts.sptribs.taskmanagement.TaskType.reviewStayRequestJudge;
-import static uk.gov.hmcts.sptribs.taskmanagement.TaskType.reviewStayRequestLO;
-import static uk.gov.hmcts.sptribs.taskmanagement.TaskType.reviewStrikeOutRequestJudge;
-import static uk.gov.hmcts.sptribs.taskmanagement.TaskType.reviewStrikeOutRequestLO;
-import static uk.gov.hmcts.sptribs.taskmanagement.TaskType.reviewTimeExtensionRequestJudge;
-import static uk.gov.hmcts.sptribs.taskmanagement.TaskType.reviewTimeExtensionRequestLO;
-import static uk.gov.hmcts.sptribs.taskmanagement.TaskType.reviewWithdrawalRequestCaseListedJudge;
-import static uk.gov.hmcts.sptribs.taskmanagement.TaskType.reviewWithdrawalRequestCaseListedLO;
-import static uk.gov.hmcts.sptribs.taskmanagement.TaskType.reviewWithdrawalRequestJudge;
-import static uk.gov.hmcts.sptribs.taskmanagement.TaskType.reviewWithdrawalRequestLO;
-import static uk.gov.hmcts.sptribs.taskmanagement.TaskType.reviewWrittenReasonsRequest;
+import static uk.gov.hmcts.sptribs.taskmanagement.model.TaskType.reviewCorrectionsRequest;
+import static uk.gov.hmcts.sptribs.taskmanagement.model.TaskType.reviewListCaseJudge;
+import static uk.gov.hmcts.sptribs.taskmanagement.model.TaskType.reviewListCaseLO;
+import static uk.gov.hmcts.sptribs.taskmanagement.model.TaskType.reviewListCaseWithin5DaysJudge;
+import static uk.gov.hmcts.sptribs.taskmanagement.model.TaskType.reviewListCaseWithin5DaysLO;
+import static uk.gov.hmcts.sptribs.taskmanagement.model.TaskType.reviewListingDirectionsCaseListedJudge;
+import static uk.gov.hmcts.sptribs.taskmanagement.model.TaskType.reviewListingDirectionsCaseListedLO;
+import static uk.gov.hmcts.sptribs.taskmanagement.model.TaskType.reviewListingDirectionsJudge;
+import static uk.gov.hmcts.sptribs.taskmanagement.model.TaskType.reviewListingDirectionsLO;
+import static uk.gov.hmcts.sptribs.taskmanagement.model.TaskType.reviewNewCaseAndProvideDirectionsJudge;
+import static uk.gov.hmcts.sptribs.taskmanagement.model.TaskType.reviewNewCaseAndProvideDirectionsLO;
+import static uk.gov.hmcts.sptribs.taskmanagement.model.TaskType.reviewOtherRequestJudge;
+import static uk.gov.hmcts.sptribs.taskmanagement.model.TaskType.reviewOtherRequestLO;
+import static uk.gov.hmcts.sptribs.taskmanagement.model.TaskType.reviewPostponementRequestJudge;
+import static uk.gov.hmcts.sptribs.taskmanagement.model.TaskType.reviewPostponementRequestLO;
+import static uk.gov.hmcts.sptribs.taskmanagement.model.TaskType.reviewReinstatementRequestJudge;
+import static uk.gov.hmcts.sptribs.taskmanagement.model.TaskType.reviewReinstatementRequestLO;
+import static uk.gov.hmcts.sptribs.taskmanagement.model.TaskType.reviewRule27RequestCaseListedJudge;
+import static uk.gov.hmcts.sptribs.taskmanagement.model.TaskType.reviewRule27RequestCaseListedLO;
+import static uk.gov.hmcts.sptribs.taskmanagement.model.TaskType.reviewRule27RequestJudge;
+import static uk.gov.hmcts.sptribs.taskmanagement.model.TaskType.reviewRule27RequestLO;
+import static uk.gov.hmcts.sptribs.taskmanagement.model.TaskType.reviewSetAsideRequest;
+import static uk.gov.hmcts.sptribs.taskmanagement.model.TaskType.reviewStayRequestCaseListedJudge;
+import static uk.gov.hmcts.sptribs.taskmanagement.model.TaskType.reviewStayRequestCaseListedLO;
+import static uk.gov.hmcts.sptribs.taskmanagement.model.TaskType.reviewStayRequestJudge;
+import static uk.gov.hmcts.sptribs.taskmanagement.model.TaskType.reviewStayRequestLO;
+import static uk.gov.hmcts.sptribs.taskmanagement.model.TaskType.reviewStrikeOutRequestJudge;
+import static uk.gov.hmcts.sptribs.taskmanagement.model.TaskType.reviewStrikeOutRequestLO;
+import static uk.gov.hmcts.sptribs.taskmanagement.model.TaskType.reviewTimeExtensionRequestJudge;
+import static uk.gov.hmcts.sptribs.taskmanagement.model.TaskType.reviewTimeExtensionRequestLO;
+import static uk.gov.hmcts.sptribs.taskmanagement.model.TaskType.reviewWithdrawalRequestCaseListedJudge;
+import static uk.gov.hmcts.sptribs.taskmanagement.model.TaskType.reviewWithdrawalRequestCaseListedLO;
+import static uk.gov.hmcts.sptribs.taskmanagement.model.TaskType.reviewWithdrawalRequestJudge;
+import static uk.gov.hmcts.sptribs.taskmanagement.model.TaskType.reviewWithdrawalRequestLO;
+import static uk.gov.hmcts.sptribs.taskmanagement.model.TaskType.reviewWrittenReasonsRequest;
 
 public final class TaskConstants {
 
@@ -48,6 +50,10 @@ public final class TaskConstants {
     public static final String DEFAULT_TASK_SYSTEM = "SELF";
     public static final int MAJOR_PRIORITY = 5000;
     public static final int MINOR_PRIORITY = 500;
+
+    public static final String GLASGOW_TRIBUNALS_CENTRE = "Glasgow Tribunals Centre";
+    public static final String CRIMINAL_INJURIES_COMPENSATION = "Criminal Injuries Compensation";
+    public static final String CIC_CASE_TYPE = "CriminalInjuriesCompensation";
 
     public static final String EMPTY_DESCRIPTION = "";
     public static final String SEND_ORDER_DESCRIPTION =
@@ -93,6 +99,9 @@ public final class TaskConstants {
             + "(/cases/case-details/${[CASE_REFERENCE]}/trigger/refer-to-legal-officer)"
             + "<br/>"
             + "[Case: Contact parties](/cases/case-details/${[CASE_REFERENCE]}/trigger/contact-parties)";
+
+    public static final String RULE_27_DESCRIPTION =
+        "[Orders: Send order](/cases/case-details/${[CASE_REFERENCE]}/trigger/caseworker-send-order)";
 
 
     public static final Set<TaskType> REVIEW_REQUESTS_TASKS = Set.of(

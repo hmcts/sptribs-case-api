@@ -53,7 +53,7 @@ import static uk.gov.hmcts.sptribs.document.DocumentConstants.CLOSE_CASE_TYPE;
 import static uk.gov.hmcts.sptribs.document.DocumentConstants.DOC_MGMT_TYPE;
 import static uk.gov.hmcts.sptribs.document.DocumentConstants.HEARING_SUMMARY_TYPE;
 import static uk.gov.hmcts.sptribs.document.DocumentConstants.REINSTATE_TYPE;
-import static uk.gov.hmcts.sptribs.taskmanagement.TaskType.processFurtherEvidence;
+import static uk.gov.hmcts.sptribs.taskmanagement.model.TaskType.processFurtherEvidence;
 
 @Component
 @Slf4j

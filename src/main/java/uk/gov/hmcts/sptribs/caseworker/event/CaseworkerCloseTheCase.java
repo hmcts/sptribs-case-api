@@ -34,7 +34,7 @@ import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocumentUpload;
 import uk.gov.hmcts.sptribs.judicialrefdata.JudicialService;
 import uk.gov.hmcts.sptribs.notification.dispatcher.CaseWithdrawnNotification;
 import uk.gov.hmcts.sptribs.taskmanagement.TaskManagementService;
-import uk.gov.hmcts.sptribs.taskmanagement.TaskType;
+import uk.gov.hmcts.sptribs.taskmanagement.model.TaskType;
 
 import java.util.Arrays;
 import java.util.List;

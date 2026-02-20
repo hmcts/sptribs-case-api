@@ -46,8 +46,8 @@ import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_WA_CONFIG_USER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE;
 import static uk.gov.hmcts.sptribs.document.DocumentUtil.uploadRecFile;
-import static uk.gov.hmcts.sptribs.taskmanagement.TaskType.completeHearingOutcome;
-import static uk.gov.hmcts.sptribs.taskmanagement.TaskType.issueDecisionNotice;
+import static uk.gov.hmcts.sptribs.taskmanagement.model.TaskType.completeHearingOutcome;
+import static uk.gov.hmcts.sptribs.taskmanagement.model.TaskType.issueDecisionNotice;
 
 @Component
 @Slf4j

@@ -29,8 +29,8 @@ import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_JUDGE;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_WA_CONFIG_USER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE;
-import static uk.gov.hmcts.sptribs.taskmanagement.TaskType.issueCaseToRespondent;
-import static uk.gov.hmcts.sptribs.taskmanagement.TaskType.vetNewCaseDocuments;
+import static uk.gov.hmcts.sptribs.taskmanagement.model.TaskType.issueCaseToRespondent;
+import static uk.gov.hmcts.sptribs.taskmanagement.model.TaskType.vetNewCaseDocuments;
 
 @Component
 @Slf4j

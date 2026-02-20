@@ -1,4 +1,4 @@
-package uk.gov.hmcts.sptribs.taskmanagement;
+package uk.gov.hmcts.sptribs.taskmanagement.model;
 
 import lombok.Getter;
 import uk.gov.hmcts.ccd.sdk.taskmanagement.model.TaskPermission;
@@ -9,20 +9,20 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
-import static uk.gov.hmcts.sptribs.taskmanagement.RoleCategory.ADMIN;
-import static uk.gov.hmcts.sptribs.taskmanagement.RoleCategory.JUDICIAL;
-import static uk.gov.hmcts.sptribs.taskmanagement.RoleCategory.LEGAL_OPERATIONS;
-import static uk.gov.hmcts.sptribs.taskmanagement.TaskOperation.Assign;
-import static uk.gov.hmcts.sptribs.taskmanagement.TaskOperation.Cancel;
-import static uk.gov.hmcts.sptribs.taskmanagement.TaskOperation.Claim;
-import static uk.gov.hmcts.sptribs.taskmanagement.TaskOperation.Complete;
-import static uk.gov.hmcts.sptribs.taskmanagement.TaskOperation.Execute;
-import static uk.gov.hmcts.sptribs.taskmanagement.TaskOperation.Manage;
-import static uk.gov.hmcts.sptribs.taskmanagement.TaskOperation.Own;
-import static uk.gov.hmcts.sptribs.taskmanagement.TaskOperation.Read;
-import static uk.gov.hmcts.sptribs.taskmanagement.TaskOperation.Unassign;
-import static uk.gov.hmcts.sptribs.taskmanagement.TaskOperation.Unclaim;
-import static uk.gov.hmcts.sptribs.taskmanagement.TaskOperation.UnclaimAssign;
+import static uk.gov.hmcts.sptribs.taskmanagement.model.RoleCategory.ADMIN;
+import static uk.gov.hmcts.sptribs.taskmanagement.model.RoleCategory.JUDICIAL;
+import static uk.gov.hmcts.sptribs.taskmanagement.model.RoleCategory.LEGAL_OPERATIONS;
+import static uk.gov.hmcts.sptribs.taskmanagement.model.TaskOperation.Assign;
+import static uk.gov.hmcts.sptribs.taskmanagement.model.TaskOperation.Cancel;
+import static uk.gov.hmcts.sptribs.taskmanagement.model.TaskOperation.Claim;
+import static uk.gov.hmcts.sptribs.taskmanagement.model.TaskOperation.Complete;
+import static uk.gov.hmcts.sptribs.taskmanagement.model.TaskOperation.Execute;
+import static uk.gov.hmcts.sptribs.taskmanagement.model.TaskOperation.Manage;
+import static uk.gov.hmcts.sptribs.taskmanagement.model.TaskOperation.Own;
+import static uk.gov.hmcts.sptribs.taskmanagement.model.TaskOperation.Read;
+import static uk.gov.hmcts.sptribs.taskmanagement.model.TaskOperation.Unassign;
+import static uk.gov.hmcts.sptribs.taskmanagement.model.TaskOperation.Unclaim;
+import static uk.gov.hmcts.sptribs.taskmanagement.model.TaskOperation.UnclaimAssign;
 
 @Getter
 public enum TaskAccess {

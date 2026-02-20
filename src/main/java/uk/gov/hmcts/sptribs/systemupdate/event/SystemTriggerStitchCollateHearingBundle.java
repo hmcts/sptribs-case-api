@@ -20,7 +20,7 @@ import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_WA_CONFIG_USER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SYSTEM_UPDATE;
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE;
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE_DELETE;
-import static uk.gov.hmcts.sptribs.taskmanagement.TaskType.stitchCollateHearingBundle;
+import static uk.gov.hmcts.sptribs.taskmanagement.model.TaskType.stitchCollateHearingBundle;
 
 @Component
 public class SystemTriggerStitchCollateHearingBundle implements CCDConfig<CaseData, State, UserRole> {

@@ -47,7 +47,7 @@ import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SYSTEM_UPDATE;
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE;
 import static uk.gov.hmcts.sptribs.document.DocumentUtil.convertToCaseworkerCICDocumentUpload;
 import static uk.gov.hmcts.sptribs.document.DocumentUtil.uploadDocument;
-import static uk.gov.hmcts.sptribs.taskmanagement.TaskType.processFurtherEvidence;
+import static uk.gov.hmcts.sptribs.taskmanagement.model.TaskType.processFurtherEvidence;
 
 @Component
 @Slf4j

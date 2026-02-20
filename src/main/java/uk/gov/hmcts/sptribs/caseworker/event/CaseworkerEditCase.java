@@ -28,7 +28,7 @@ import uk.gov.hmcts.sptribs.common.event.page.SelectParties;
 import uk.gov.hmcts.sptribs.common.event.page.SubjectDetails;
 import uk.gov.hmcts.sptribs.common.service.SubmissionService;
 import uk.gov.hmcts.sptribs.taskmanagement.TaskManagementService;
-import uk.gov.hmcts.sptribs.taskmanagement.TaskType;
+import uk.gov.hmcts.sptribs.taskmanagement.model.TaskType;
 
 import java.util.List;
 
@@ -49,9 +49,9 @@ import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_JUDGE;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_WA_CONFIG_USER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE;
-import static uk.gov.hmcts.sptribs.taskmanagement.TaskType.processFurtherEvidence;
-import static uk.gov.hmcts.sptribs.taskmanagement.TaskType.registerNewCase;
-import static uk.gov.hmcts.sptribs.taskmanagement.TaskType.vetNewCaseDocuments;
+import static uk.gov.hmcts.sptribs.taskmanagement.model.TaskType.processFurtherEvidence;
+import static uk.gov.hmcts.sptribs.taskmanagement.model.TaskType.registerNewCase;
+import static uk.gov.hmcts.sptribs.taskmanagement.model.TaskType.vetNewCaseDocuments;
 
 @Component
 public class CaseworkerEditCase implements CCDConfig<CaseData, State, UserRole> {

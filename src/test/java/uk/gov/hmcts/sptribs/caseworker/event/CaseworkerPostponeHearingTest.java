@@ -31,7 +31,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.access.Permissions;
 import uk.gov.hmcts.sptribs.notification.dispatcher.HearingPostponedNotification;
 import uk.gov.hmcts.sptribs.notification.exception.NotificationException;
 import uk.gov.hmcts.sptribs.taskmanagement.TaskManagementService;
-import uk.gov.hmcts.sptribs.taskmanagement.TaskType;
+import uk.gov.hmcts.sptribs.taskmanagement.model.TaskType;
 
 import java.time.LocalDate;
 import java.util.HashSet;

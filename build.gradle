@@ -245,7 +245,8 @@ def sonarExclusions = [
   '**/uk/gov/hmcts/sptribs/ciccase/model/UserRolesForAccessProfiles.java',
   '**/uk/gov/hmcts/sptribs/common/config/**',
   '**/uk/gov/hmcts/sptribs/common/event/UpdateCaseDataEvent.java',
-  '**/uk/gov/hmcts/sptribs/common/service/CaseDataFieldService.java'
+  '**/uk/gov/hmcts/sptribs/common/service/CaseDataFieldService.java',
+  '**/uk/gov/hmcts/sptribs/taskmanagement/model/**'
 ]
 
 sonarqube {

@@ -1,4 +1,4 @@
-package uk.gov.hmcts.sptribs.taskmanagement;
+package uk.gov.hmcts.sptribs.taskmanagement.model;
 
 public enum WorkType {
     ROUTINE_WORK,
