@@ -15,7 +15,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-import static uk.gov.hmcts.sptribs.caseworker.util.DocumentManagementUtil.EMPTY_DOCUMENT;
 import static uk.gov.hmcts.sptribs.caseworker.util.DocumentManagementUtil.addToRemovedDocuments;
 
 public final class OrderDocumentListUtil {
@@ -79,10 +78,12 @@ public final class OrderDocumentListUtil {
 
         //if we are removing all the order docs then remove whole order?
         CicCase cicCase = data.getCicCase();
-        cicCase.getOrderList().removeIf(order ->
-            removeDocumentAndCheckIfOrderEmpty(order,
-                cicDocumentListValue.getValue().getDocumentLink())
-        );
+        if (cicCase.getOrderList() != null) {
+            cicCase.getOrderList().removeIf(order ->
+                removeDocumentAndCheckIfOrderEmpty(order,
+                    cicDocumentListValue.getValue().getDocumentLink())
+            );
+        }
 
     }
 
