@@ -33,11 +33,14 @@ import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
 import uk.gov.hmcts.sptribs.notification.dispatcher.NewOrderIssuedNotification;
+import uk.gov.hmcts.sptribs.taskmanagement.TaskManagementService;
+import uk.gov.hmcts.sptribs.taskmanagement.TaskType;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static java.lang.String.format;
@@ -61,6 +64,27 @@ import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_JUDGE;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_WA_CONFIG_USER;
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE;
 import static uk.gov.hmcts.sptribs.document.DocumentUtil.updateCategoryToDocument;
+import static uk.gov.hmcts.sptribs.taskmanagement.TaskType.followUpNoncomplianceOfDirections;
+import static uk.gov.hmcts.sptribs.taskmanagement.TaskType.issueDueDate;
+import static uk.gov.hmcts.sptribs.taskmanagement.TaskType.processCaseWithdrawalDirections;
+import static uk.gov.hmcts.sptribs.taskmanagement.TaskType.processCaseWithdrawalDirectionsListed;
+import static uk.gov.hmcts.sptribs.taskmanagement.TaskType.processCorrections;
+import static uk.gov.hmcts.sptribs.taskmanagement.TaskType.processDirectionsReListedCase;
+import static uk.gov.hmcts.sptribs.taskmanagement.TaskType.processDirectionsReListedCaseWithin5Days;
+import static uk.gov.hmcts.sptribs.taskmanagement.TaskType.processDirectionsReturned;
+import static uk.gov.hmcts.sptribs.taskmanagement.TaskType.processListingDirections;
+import static uk.gov.hmcts.sptribs.taskmanagement.TaskType.processListingDirectionsListed;
+import static uk.gov.hmcts.sptribs.taskmanagement.TaskType.processOtherDirectionsReturned;
+import static uk.gov.hmcts.sptribs.taskmanagement.TaskType.processPostponementDirections;
+import static uk.gov.hmcts.sptribs.taskmanagement.TaskType.processReinstatementDecisionNotice;
+import static uk.gov.hmcts.sptribs.taskmanagement.TaskType.processRule27Decision;
+import static uk.gov.hmcts.sptribs.taskmanagement.TaskType.processRule27DecisionListed;
+import static uk.gov.hmcts.sptribs.taskmanagement.TaskType.processSetAsideDirections;
+import static uk.gov.hmcts.sptribs.taskmanagement.TaskType.processStayDirections;
+import static uk.gov.hmcts.sptribs.taskmanagement.TaskType.processStayDirectionsListed;
+import static uk.gov.hmcts.sptribs.taskmanagement.TaskType.processStrikeOutDirectionsReturned;
+import static uk.gov.hmcts.sptribs.taskmanagement.TaskType.processTimeExtensionDirectionsReturned;
+import static uk.gov.hmcts.sptribs.taskmanagement.TaskType.processWrittenReasons;
 
 @Slf4j
 @Component
@@ -75,7 +99,19 @@ public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole>
 
     private static final int ORDER_TIMESTAMP_WITH_EXTENSION = 2; //dd-MM-yyyy HH:mm:ss.pdf
 
+    private static final Set<TaskType> COMPLETABLE_TASKS = Set.of(
+        processCaseWithdrawalDirections, processCaseWithdrawalDirectionsListed,
+        processRule27Decision, processRule27DecisionListed, processListingDirections,
+        processListingDirectionsListed, processDirectionsReListedCase,
+        processDirectionsReListedCaseWithin5Days, processSetAsideDirections, processCorrections,
+        processDirectionsReturned, processPostponementDirections,
+        processTimeExtensionDirectionsReturned, processReinstatementDecisionNotice,
+        processOtherDirectionsReturned, processWrittenReasons, processStrikeOutDirectionsReturned,
+        processStayDirections, processStayDirectionsListed, issueDueDate
+    );
+
     private final NewOrderIssuedNotification newOrderIssuedNotification;
+    private final TaskManagementService taskManagementService;
 
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
@@ -101,8 +137,7 @@ public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole>
                     .submittedCallback(this::submitted)
                     .grant(CREATE_READ_UPDATE,
                         ST_CIC_HEARING_CENTRE_ADMIN, ST_CIC_HEARING_CENTRE_TEAM_LEADER, ST_CIC_WA_CONFIG_USER)
-                    .grantHistoryOnly(ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER, ST_CIC_JUDGE, ST_CIC_SENIOR_JUDGE)
-                    .publishToCamunda();
+                    .grantHistoryOnly(ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER, ST_CIC_JUDGE, ST_CIC_SENIOR_JUDGE);
 
         return new PageBuilder(eventBuilder);
     }
@@ -197,6 +232,13 @@ public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole>
         caseData.getCicCase().setOrderDueDates(new ArrayList<>());
         caseData.getCicCase().setFirstOrderDueDate(caseData.getCicCase().calculateFirstDueDate());
 
+        taskManagementService.enqueueCompletionTasks(COMPLETABLE_TASKS.stream().toList(), details.getId());
+        taskManagementService.enqueueInitiationTasks(
+            getInitiationTaskTypes(details.getState()),
+            caseData,
+            details.getId()
+        );
+
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
             .state(details.getState())
@@ -238,5 +280,12 @@ public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole>
             newOrderIssuedNotification.sendToApplicant(caseData, caseNumber);
         }
 
+    }
+
+    private List<TaskType> getInitiationTaskTypes(State state) {
+        if (state == CaseManagement) {
+            return List.of(followUpNoncomplianceOfDirections);
+        }
+        return List.of();
     }
 }

@@ -31,6 +31,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.document.model.CICDocument;
 import uk.gov.hmcts.sptribs.notification.dispatcher.NewOrderIssuedNotification;
 import uk.gov.hmcts.sptribs.notification.exception.NotificationException;
+import uk.gov.hmcts.sptribs.taskmanagement.TaskManagementService;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -74,6 +75,9 @@ class CaseworkerCreateAndSendOrderTest {
 
     @Mock
     private NewOrderIssuedNotification newOrderIssuedNotification;
+
+    @Mock
+    private TaskManagementService taskManagementService;
 
     @Test
     void shouldAddConfigurationToConfigBuilder() {
@@ -181,6 +185,7 @@ class CaseworkerCreateAndSendOrderTest {
 
         final CaseDetails<CaseData, State> details = new CaseDetails<>();
         details.setData(caseData);
+        details.setId(TEST_CASE_ID);
         final var response = caseworkerCreateAndSendOrder.aboutToSubmit(details, caseDetailsBefore());
 
         assertThat(response).isNotNull();
@@ -227,6 +232,7 @@ class CaseworkerCreateAndSendOrderTest {
         caseData.setDraftOrderContentCIC(draftOrderContentCIC);
 
         details.setData(caseData);
+        details.setId(TEST_CASE_ID);
 
         final var response = caseworkerCreateAndSendOrder.aboutToSubmit(details, caseDetailsBefore());
 
@@ -275,6 +281,7 @@ class CaseworkerCreateAndSendOrderTest {
 
         final CaseDetails<CaseData, State> details = new CaseDetails<>();
         details.setData(caseData);
+        details.setId(TEST_CASE_ID);
         final var response = caseworkerCreateAndSendOrder.aboutToSubmit(details, caseDetailsBefore());
 
         assertThat(response).isNotNull();
@@ -338,6 +345,7 @@ class CaseworkerCreateAndSendOrderTest {
 
         final CaseDetails<CaseData, State> details = new CaseDetails<>();
         details.setData(caseData);
+        details.setId(TEST_CASE_ID);
         final var response = caseworkerCreateAndSendOrder.aboutToSubmit(details, caseDetailsBefore());
 
         assertThat(response).isNotNull();
@@ -388,6 +396,7 @@ class CaseworkerCreateAndSendOrderTest {
         caseData.setCicCase(cicCase1);
 
         details.setData(caseData);
+        details.setId(TEST_CASE_ID);
 
         final var response = caseworkerCreateAndSendOrder.aboutToSubmit(details, caseDetailsBefore());
 

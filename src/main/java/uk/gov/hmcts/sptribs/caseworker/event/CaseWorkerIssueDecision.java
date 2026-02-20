@@ -30,9 +30,11 @@ import uk.gov.hmcts.sptribs.document.CaseDataDocumentService;
 import uk.gov.hmcts.sptribs.document.content.DecisionTemplateContent;
 import uk.gov.hmcts.sptribs.document.model.CICDocument;
 import uk.gov.hmcts.sptribs.notification.dispatcher.DecisionIssuedNotification;
+import uk.gov.hmcts.sptribs.taskmanagement.TaskManagementService;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 import static java.lang.String.format;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_ISSUE_DECISION;
@@ -74,6 +76,9 @@ public class CaseWorkerIssueDecision implements CCDConfig<CaseData, State, UserR
     @Autowired
     private HttpServletRequest request;
 
+    @Autowired
+    private TaskManagementService taskManagementService;
+
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         Event.EventBuilder<CaseData, UserRole, State> eventBuilder =
@@ -88,8 +93,7 @@ public class CaseWorkerIssueDecision implements CCDConfig<CaseData, State, UserR
                 .submittedCallback(this::submitted)
                 .grant(CREATE_READ_UPDATE, SUPER_USER,
                     ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER, ST_CIC_HEARING_CENTRE_ADMIN,
-                    ST_CIC_HEARING_CENTRE_TEAM_LEADER, ST_CIC_SENIOR_JUDGE, ST_CIC_JUDGE, ST_CIC_WA_CONFIG_USER)
-                .publishToCamunda();
+                    ST_CIC_HEARING_CENTRE_TEAM_LEADER, ST_CIC_SENIOR_JUDGE, ST_CIC_JUDGE, ST_CIC_WA_CONFIG_USER);
 
         final PageBuilder pageBuilder = new PageBuilder(eventBuilder);
         issueDecisionNotice.addTo(pageBuilder);
@@ -149,6 +153,11 @@ public class CaseWorkerIssueDecision implements CCDConfig<CaseData, State, UserR
         if (decisionDocument != null && decisionDocument.getDocumentLink() != null) {
             decisionDocument.getDocumentLink().setCategoryId("TD");
         }
+
+        taskManagementService.enqueueCompletionTasks(
+            List.of(uk.gov.hmcts.sptribs.taskmanagement.TaskType.issueDecisionNotice),
+            details.getId()
+        );
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)

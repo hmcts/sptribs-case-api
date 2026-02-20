@@ -18,6 +18,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.ciccase.model.access.Permissions;
 import uk.gov.hmcts.sptribs.common.service.AuditEventService;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
+import uk.gov.hmcts.sptribs.taskmanagement.TaskManagementService;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -42,6 +43,9 @@ class RespondentDocumentManagementTest {
     @Mock
     private AuditEventService auditEventService;
 
+    @Mock
+    private TaskManagementService taskManagementService;
+
     @Test
     void shouldAddPublishToCamundaWhenWAIsEnabled() {
 
@@ -52,10 +56,6 @@ class RespondentDocumentManagementTest {
         assertThat(getEventsFrom(configBuilder).values())
             .extracting(Event::getId)
             .contains(RESPONDENT_DOCUMENT_MANAGEMENT);
-
-        assertThat(getEventsFrom(configBuilder).values())
-                .extracting(Event::isPublishToCamunda)
-                .contains(true);
 
         assertThat(getEventsFrom(configBuilder).values())
                 .extracting(Event::getGrants)

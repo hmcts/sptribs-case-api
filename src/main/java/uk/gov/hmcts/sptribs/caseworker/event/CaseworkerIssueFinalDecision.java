@@ -30,6 +30,7 @@ import uk.gov.hmcts.sptribs.document.CaseDataDocumentService;
 import uk.gov.hmcts.sptribs.document.content.FinalDecisionTemplateContent;
 import uk.gov.hmcts.sptribs.document.model.CICDocument;
 import uk.gov.hmcts.sptribs.notification.dispatcher.CaseFinalDecisionIssuedNotification;
+import uk.gov.hmcts.sptribs.taskmanagement.TaskManagementService;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -55,6 +56,7 @@ import static uk.gov.hmcts.sptribs.document.DocumentConstants.FINAL_DECISION_ANN
 import static uk.gov.hmcts.sptribs.document.DocumentConstants.FINAL_DECISION_ANNEX_TEMPLATE_ID;
 import static uk.gov.hmcts.sptribs.document.DocumentConstants.FINAL_DECISION_FILE;
 import static uk.gov.hmcts.sptribs.document.DocumentUtil.validateDecisionDocumentFormat;
+import static uk.gov.hmcts.sptribs.taskmanagement.TaskType.issueDecisionNotice;
 
 @Component
 @Slf4j
@@ -84,6 +86,9 @@ public class CaseworkerIssueFinalDecision implements CCDConfig<CaseData, State, 
     @Autowired
     private CaseFinalDecisionIssuedNotification caseFinalDecisionIssuedNotification;
 
+    @Autowired
+    private TaskManagementService taskManagementService;
+
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         Event.EventBuilder<CaseData, UserRole, State> eventBuilder =
@@ -98,8 +103,7 @@ public class CaseworkerIssueFinalDecision implements CCDConfig<CaseData, State, 
                 .submittedCallback(this::submitted)
                 .grant(CREATE_READ_UPDATE, SUPER_USER,
                     ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER, ST_CIC_HEARING_CENTRE_ADMIN,
-                    ST_CIC_HEARING_CENTRE_TEAM_LEADER, ST_CIC_SENIOR_JUDGE, ST_CIC_JUDGE, ST_CIC_WA_CONFIG_USER)
-                .publishToCamunda();
+                    ST_CIC_HEARING_CENTRE_TEAM_LEADER, ST_CIC_SENIOR_JUDGE, ST_CIC_JUDGE, ST_CIC_WA_CONFIG_USER);
 
         PageBuilder pageBuilder = new PageBuilder(eventBuilder);
         issueFinalDecisionNotice.addTo(pageBuilder);
@@ -203,6 +207,8 @@ public class CaseworkerIssueFinalDecision implements CCDConfig<CaseData, State, 
         if (finalDecisionDocument != null) {
             finalDecisionDocument.getDocumentLink().setCategoryId("TD");
         }
+
+        taskManagementService.enqueueCompletionTasks(List.of(issueDecisionNotice), details.getId());
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)

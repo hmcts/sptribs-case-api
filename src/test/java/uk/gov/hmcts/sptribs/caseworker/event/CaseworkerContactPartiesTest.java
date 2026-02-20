@@ -28,6 +28,7 @@ import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
 import uk.gov.hmcts.sptribs.notification.dispatcher.ContactPartiesNotification;
 import uk.gov.hmcts.sptribs.notification.exception.NotificationException;
+import uk.gov.hmcts.sptribs.taskmanagement.TaskManagementService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -63,6 +64,9 @@ class CaseworkerContactPartiesTest {
     @Mock
     private ContactPartiesSelectDocument contactPartiesSelectDocument;
 
+    @Mock
+    private TaskManagementService taskManagementService;
+
     @Test
     void shouldAddPublishToCamundaWhenWAIsEnabled() {
 
@@ -73,10 +77,6 @@ class CaseworkerContactPartiesTest {
         assertThat(getEventsFrom(configBuilder).values())
             .extracting(Event::getId)
             .contains(CASEWORKER_CONTACT_PARTIES);
-
-        assertThat(getEventsFrom(configBuilder).values())
-                .extracting(Event::isPublishToCamunda)
-                .contains(true);
 
         assertThat(getEventsFrom(configBuilder).values())
                 .extracting(Event::getGrants)
@@ -325,4 +325,3 @@ class CaseworkerContactPartiesTest {
         assertThat(response.getData().getCicCase().getNotifyPartyMessage()).isEqualTo("");
     }
 }
-

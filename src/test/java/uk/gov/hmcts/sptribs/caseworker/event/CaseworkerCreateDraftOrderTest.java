@@ -23,6 +23,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.OrderTemplate;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.ciccase.model.access.Permissions;
+import uk.gov.hmcts.sptribs.taskmanagement.TaskManagementService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -47,6 +48,9 @@ class CaseworkerCreateDraftOrderTest {
     @Mock
     private OrderService orderService;
 
+    @Mock
+    private TaskManagementService taskManagementService;
+
     @Test
     void shouldAddPublishToCamundaWhenWAIsEnabled() {
 
@@ -57,10 +61,6 @@ class CaseworkerCreateDraftOrderTest {
         assertThat(getEventsFrom(configBuilder).values())
             .extracting(Event::getId)
             .contains(CASEWORKER_CREATE_DRAFT_ORDER);
-
-        assertThat(getEventsFrom(configBuilder).values())
-            .extracting(Event::isPublishToCamunda)
-            .contains(true);
 
         assertThat(getEventsFrom(configBuilder).values())
                 .extracting(Event::getGrants)
@@ -221,4 +221,3 @@ class CaseworkerCreateDraftOrderTest {
                 .isEqualTo(existingDraftOrderCIC.getDraftOrderContentCIC());
     }
 }
-

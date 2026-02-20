@@ -30,6 +30,7 @@ import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocumentUpload;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
 import uk.gov.hmcts.sptribs.judicialrefdata.JudicialService;
 import uk.gov.hmcts.sptribs.notification.dispatcher.CaseWithdrawnNotification;
+import uk.gov.hmcts.sptribs.taskmanagement.TaskManagementService;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -69,6 +70,9 @@ class CaseWorkerCloseTheCaseTest {
     @Mock
     private CaseWithdrawnNotification caseWithdrawnNotification;
 
+    @Mock
+    private TaskManagementService taskManagementService;
+
     @Test
     void shouldAddPublishToCamundaWhenWAIsEnabled() {
 
@@ -79,10 +83,6 @@ class CaseWorkerCloseTheCaseTest {
         assertThat(getEventsFrom(configBuilder).values())
             .extracting(Event::getId)
             .contains(CASEWORKER_CLOSE_THE_CASE);
-
-        assertThat(getEventsFrom(configBuilder).values())
-                .extracting(Event::isPublishToCamunda)
-                .contains(true);
 
         assertThat(getEventsFrom(configBuilder).values())
                 .extracting(Event::getGrants)

@@ -20,6 +20,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.ciccase.model.access.Permissions;
+import uk.gov.hmcts.sptribs.taskmanagement.TaskManagementService;
 
 import java.util.List;
 import java.util.UUID;
@@ -42,6 +43,9 @@ class CaseWorkerManageOrderDueDatesTest {
     @Mock
     private OrderService orderService;
 
+    @Mock
+    private TaskManagementService taskManagementService;
+
     @Test
     void shouldAddPublishToCamundaWhenWAIsEnabled() {
         final ConfigBuilderImpl<CaseData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
@@ -51,10 +55,6 @@ class CaseWorkerManageOrderDueDatesTest {
         assertThat(getEventsFrom(configBuilder).values())
             .extracting(Event::getId)
             .contains(CASEWORKER_AMEND_DUE_DATE);
-
-        assertThat(getEventsFrom(configBuilder).values())
-                .extracting(Event::isPublishToCamunda)
-                .contains(true);
 
         assertThat(getEventsFrom(configBuilder).values())
                 .extracting(Event::getGrants)
@@ -128,4 +128,3 @@ class CaseWorkerManageOrderDueDatesTest {
     }
 
 }
-

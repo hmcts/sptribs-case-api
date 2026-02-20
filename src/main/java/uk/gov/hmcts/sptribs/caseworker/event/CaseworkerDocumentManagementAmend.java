@@ -2,6 +2,7 @@ package uk.gov.hmcts.sptribs.caseworker.event;
 
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
@@ -21,6 +22,9 @@ import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
+import uk.gov.hmcts.sptribs.taskmanagement.TaskManagementService;
+
+import java.util.List;
 
 import static uk.gov.hmcts.sptribs.caseworker.util.CaseDocumentListUtil.updateCaseDocumentList;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_DOCUMENT_MANAGEMENT_AMEND;
@@ -49,6 +53,7 @@ import static uk.gov.hmcts.sptribs.document.DocumentConstants.CLOSE_CASE_TYPE;
 import static uk.gov.hmcts.sptribs.document.DocumentConstants.DOC_MGMT_TYPE;
 import static uk.gov.hmcts.sptribs.document.DocumentConstants.HEARING_SUMMARY_TYPE;
 import static uk.gov.hmcts.sptribs.document.DocumentConstants.REINSTATE_TYPE;
+import static uk.gov.hmcts.sptribs.taskmanagement.TaskType.processFurtherEvidence;
 
 @Component
 @Slf4j
@@ -57,6 +62,9 @@ public class CaseworkerDocumentManagementAmend implements CCDConfig<CaseData, St
 
     private static final CcdPageConfiguration selectDocuments = new DocumentManagementSelectDocuments();
     private static final CcdPageConfiguration amendDocuments = new DocumentManagementAmendDocuments();
+
+    @Autowired
+    private TaskManagementService taskManagementService;
 
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         Event.EventBuilder<CaseData, UserRole, State> eventBuilder =
@@ -82,8 +90,7 @@ public class CaseworkerDocumentManagementAmend implements CCDConfig<CaseData, St
                 .grantHistoryOnly(ST_CIC_JUDGE)
                 .aboutToStartCallback(this::aboutToStart)
                 .aboutToSubmitCallback(this::aboutToSubmit)
-                .submittedCallback(this::submitted)
-                .publishToCamunda();
+                .submittedCallback(this::submitted);
 
         PageBuilder pageBuilder = new PageBuilder(eventBuilder);
         selectDocuments.addTo(pageBuilder);
@@ -176,6 +183,8 @@ public class CaseworkerDocumentManagementAmend implements CCDConfig<CaseData, St
         cicCase.setSelectedDocumentCategory(null);
         cicCase.setSelectedDocumentEmailContent(null);
         cicCase.setSelectedDocumentLink(null);
+        taskManagementService.enqueueCompletionTasks(List.of(processFurtherEvidence), details.getId());
+
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(data)
             .build();

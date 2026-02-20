@@ -30,6 +30,8 @@ import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.ciccase.model.access.Permissions;
 import uk.gov.hmcts.sptribs.notification.dispatcher.HearingPostponedNotification;
 import uk.gov.hmcts.sptribs.notification.exception.NotificationException;
+import uk.gov.hmcts.sptribs.taskmanagement.TaskManagementService;
+import uk.gov.hmcts.sptribs.taskmanagement.TaskType;
 
 import java.time.LocalDate;
 import java.util.HashSet;
@@ -40,6 +42,8 @@ import static java.lang.String.format;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.argThat;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.times;
@@ -66,6 +70,9 @@ class CaseworkerPostponeHearingTest {
     @Mock
     private HearingPostponedNotification hearingPostponedNotification;
 
+    @Mock
+    private TaskManagementService taskManagementService;
+
     @InjectMocks
     private PostponeHearingNotifyParties postponeHearingNotifyParties;
 
@@ -79,10 +86,6 @@ class CaseworkerPostponeHearingTest {
         assertThat(getEventsFrom(configBuilder).values())
             .extracting(Event::getId)
             .contains(CASEWORKER_POSTPONE_HEARING);
-
-        assertThat(getEventsFrom(configBuilder).values())
-                .extracting(Event::isPublishToCamunda)
-                .contains(true);
 
         assertThat(getEventsFrom(configBuilder).values())
                 .extracting(Event::getGrants)
@@ -166,6 +169,13 @@ class CaseworkerPostponeHearingTest {
         verify(hearingPostponedNotification, times(1)).sendToSubject(caseData, caseData.getHyphenatedCaseRef());
         verify(hearingPostponedNotification, times(1)).sendToRespondent(caseData, caseData.getHyphenatedCaseRef());
         verify(hearingPostponedNotification, times(1)).sendToRepresentative(caseData, caseData.getHyphenatedCaseRef());
+
+        verify(taskManagementService).enqueueCancellationTasks(
+            argThat(taskTypes -> taskTypes.containsAll(
+                Set.of(TaskType.completeHearingOutcome, TaskType.stitchCollateHearingBundle)
+            ) && taskTypes.size() == 2),
+            eq(TEST_CASE_ID)
+        );
     }
 
     @ParameterizedTest

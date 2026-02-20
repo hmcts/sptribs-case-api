@@ -25,6 +25,8 @@ import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.common.event.page.CreateDraftOrder;
 import uk.gov.hmcts.sptribs.common.event.page.DraftOrderMainContentPage;
 import uk.gov.hmcts.sptribs.common.event.page.PreviewDraftOrder;
+import uk.gov.hmcts.sptribs.taskmanagement.TaskManagementService;
+import uk.gov.hmcts.sptribs.taskmanagement.TaskType;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -33,6 +35,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Stream;
 
 import static org.springframework.util.CollectionUtils.isEmpty;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_CREATE_DRAFT_ORDER;
@@ -51,6 +54,28 @@ import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_JUDGE;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_WA_CONFIG_USER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE;
+import static uk.gov.hmcts.sptribs.taskmanagement.TaskType.createDueDate;
+import static uk.gov.hmcts.sptribs.taskmanagement.TaskType.issueDueDate;
+import static uk.gov.hmcts.sptribs.taskmanagement.TaskType.processCaseWithdrawalDirections;
+import static uk.gov.hmcts.sptribs.taskmanagement.TaskType.processCaseWithdrawalDirectionsListed;
+import static uk.gov.hmcts.sptribs.taskmanagement.TaskType.processCorrections;
+import static uk.gov.hmcts.sptribs.taskmanagement.TaskType.processDirectionsReListedCase;
+import static uk.gov.hmcts.sptribs.taskmanagement.TaskType.processDirectionsReListedCaseWithin5Days;
+import static uk.gov.hmcts.sptribs.taskmanagement.TaskType.processDirectionsReturned;
+import static uk.gov.hmcts.sptribs.taskmanagement.TaskType.processListingDirections;
+import static uk.gov.hmcts.sptribs.taskmanagement.TaskType.processListingDirectionsListed;
+import static uk.gov.hmcts.sptribs.taskmanagement.TaskType.processOtherDirectionsReturned;
+import static uk.gov.hmcts.sptribs.taskmanagement.TaskType.processPostponementDirections;
+import static uk.gov.hmcts.sptribs.taskmanagement.TaskType.processReinstatementDecisionNotice;
+import static uk.gov.hmcts.sptribs.taskmanagement.TaskType.processRule27Decision;
+import static uk.gov.hmcts.sptribs.taskmanagement.TaskType.processRule27DecisionListed;
+import static uk.gov.hmcts.sptribs.taskmanagement.TaskType.processSetAsideDirections;
+import static uk.gov.hmcts.sptribs.taskmanagement.TaskType.processStayDirections;
+import static uk.gov.hmcts.sptribs.taskmanagement.TaskType.processStayDirectionsListed;
+import static uk.gov.hmcts.sptribs.taskmanagement.TaskType.processStrikeOutDirectionsReturned;
+import static uk.gov.hmcts.sptribs.taskmanagement.TaskType.processTimeExtensionDirectionsReturned;
+import static uk.gov.hmcts.sptribs.taskmanagement.TaskType.processWrittenReasons;
+import static uk.gov.hmcts.sptribs.taskmanagement.TaskType.reviewOrder;
 
 @Slf4j
 @Component
@@ -58,12 +83,34 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 public class CaseworkerCreateDraftOrder implements CCDConfig<CaseData, State, UserRole> {
 
     private final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss", Locale.ENGLISH);
+    private static final List<TaskType> COMPLETABLE_TASKS = Stream
+        .of(TaskType.values())
+        .filter(taskType -> taskType.name().startsWith("review")
+            && !taskType.name().startsWith("reviewSpecificAccess")
+            && taskType != reviewOrder)
+        .toList();
+    private static final String WITHDRAWAL_REQUEST = "Withdrawal request";
+    private static final String RULE_27_REQUEST = "Rule 27 request";
+    private static final String LISTING_DIRECTIONS = "Listing directions";
+    private static final String LISTED_CASE = "Listed case";
+    private static final String LISTED_CASE_WITHIN_5_DAYS = "Listed case (within 5 days)";
+    private static final String SET_ASIDE_REQUEST = "Set aside request";
+    private static final String CORRECTIONS = "Corrections";
+    private static final String NEW_CASE = "New case";
+    private static final String POSTPONEMENT_REQUEST = "Postponement request";
+    private static final String TIME_EXTENSION_REQUEST = "Time extension request";
+    private static final String REINSTATEMENT_REQUEST = "Reinstatement request";
+    private static final String OTHER = "Other";
+    private static final String WRITTEN_REASONS_REQUEST = "Written reasons request";
+    private static final String STRIKE_OUT_REQUEST = "Strike out request";
+    private static final String STAY_REQUEST = "Stay request";
 
     private static final CcdPageConfiguration createDraftOrder = new CreateDraftOrder();
     private static final CcdPageConfiguration draftOrderMainContentPage = new DraftOrderMainContentPage();
     private static final CcdPageConfiguration previewOrder = new PreviewDraftOrder("previewDraftOrderPage", CASEWORKER_CREATE_DRAFT_ORDER);
 
     private final OrderService orderService;
+    private final TaskManagementService taskManagementService;
 
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
@@ -78,8 +125,7 @@ public class CaseworkerCreateDraftOrder implements CCDConfig<CaseData, State, Us
                 .submittedCallback(this::submitted)
                 .grant(CREATE_READ_UPDATE, SUPER_USER,
                     ST_CIC_HEARING_CENTRE_ADMIN, ST_CIC_HEARING_CENTRE_TEAM_LEADER, ST_CIC_WA_CONFIG_USER)
-                .grantHistoryOnly(ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER, ST_CIC_JUDGE, ST_CIC_SENIOR_JUDGE)
-                .publishToCamunda();
+                .grantHistoryOnly(ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER, ST_CIC_JUDGE, ST_CIC_SENIOR_JUDGE);
 
         PageBuilder pageBuilder = new PageBuilder(eventBuilder);
         createDraftOrder.addTo(pageBuilder);
@@ -143,6 +189,16 @@ public class CaseworkerCreateDraftOrder implements CCDConfig<CaseData, State, Us
 
         caseData.getCicCase().setOrderTemplateIssued(null);
 
+        taskManagementService.enqueueCompletionTasks(
+            Stream.concat(COMPLETABLE_TASKS.stream(), Stream.of(createDueDate)).toList(),
+            details.getId()
+        );
+        taskManagementService.enqueueInitiationTasks(
+            getInitiationTaskTypes(details.getState(), caseData),
+            caseData,
+            details.getId()
+        );
+
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .state(details.getState())
             .data(caseData)
@@ -182,5 +238,94 @@ public class CaseworkerCreateDraftOrder implements CCDConfig<CaseData, State, Us
 
         DynamicListElement element = DynamicListElement.builder().label(templateNamePlusCurrentDate).code(UUID.randomUUID()).build();
         orderTemplateDynamicList.getListItems().add(element);
+    }
+
+    private List<TaskType> getInitiationTaskTypes(State state, CaseData caseData) {
+        String referralType = caseData.getCicCase().getReferralTypeForWA();
+        if (state == CaseManagement && (referralType == null || referralType.isBlank())) {
+            return List.of(issueDueDate);
+        }
+
+        if (WITHDRAWAL_REQUEST.equals(referralType)) {
+            if (state == AwaitingHearing) {
+                return List.of(processCaseWithdrawalDirectionsListed);
+            }
+            if (state == CaseManagement || state == ReadyToList) {
+                return List.of(processCaseWithdrawalDirections);
+            }
+        }
+
+        if (RULE_27_REQUEST.equals(referralType)) {
+            if (state == AwaitingHearing) {
+                return List.of(processRule27DecisionListed);
+            }
+            if (state == CaseManagement || state == ReadyToList) {
+                return List.of(processRule27Decision);
+            }
+        }
+
+        if (LISTING_DIRECTIONS.equals(referralType)) {
+            if (state == CaseManagement) {
+                return List.of(processListingDirections);
+            }
+            if (state == ReadyToList) {
+                return List.of(processListingDirectionsListed);
+            }
+        }
+
+        if (LISTED_CASE.equals(referralType) && state == AwaitingHearing) {
+            return List.of(processDirectionsReListedCase);
+        }
+
+        if (LISTED_CASE_WITHIN_5_DAYS.equals(referralType) && state == AwaitingHearing) {
+            return List.of(processDirectionsReListedCaseWithin5Days);
+        }
+
+        if (SET_ASIDE_REQUEST.equals(referralType) && state == CaseClosed) {
+            return List.of(processSetAsideDirections);
+        }
+
+        if (CORRECTIONS.equals(referralType) && state == CaseClosed) {
+            return List.of(processCorrections);
+        }
+
+        if (NEW_CASE.equals(referralType) && (state == CaseManagement || state == ReadyToList)) {
+            return List.of(processDirectionsReturned);
+        }
+
+        if (POSTPONEMENT_REQUEST.equals(referralType) && state == AwaitingHearing) {
+            return List.of(processPostponementDirections);
+        }
+
+        if (TIME_EXTENSION_REQUEST.equals(referralType) && (state == CaseManagement || state == ReadyToList)) {
+            return List.of(processTimeExtensionDirectionsReturned);
+        }
+
+        if (REINSTATEMENT_REQUEST.equals(referralType) && state == CaseClosed) {
+            return List.of(processReinstatementDecisionNotice);
+        }
+
+        if (OTHER.equals(referralType)) {
+            return List.of(processOtherDirectionsReturned);
+        }
+
+        if (WRITTEN_REASONS_REQUEST.equals(referralType) && state == CaseClosed) {
+            return List.of(processWrittenReasons);
+        }
+
+        if (STRIKE_OUT_REQUEST.equals(referralType) && (state == CaseManagement || state == ReadyToList)) {
+            return List.of(processStrikeOutDirectionsReturned);
+        }
+
+        if (STAY_REQUEST.equals(referralType)) {
+            if (state == AwaitingHearing) {
+                return List.of(processStayDirectionsListed);
+            }
+            if (state == CaseManagement || state == ReadyToList) {
+                return List.of(processStayDirections);
+            }
+        }
+
+        return List.of();
     }
 }
