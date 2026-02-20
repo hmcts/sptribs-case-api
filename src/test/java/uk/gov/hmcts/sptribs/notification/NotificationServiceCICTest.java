@@ -9,6 +9,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestClientException;
@@ -564,7 +565,7 @@ public class NotificationServiceCICTest {
     @Test
     void shouldThrowIOExceptionWhenServiceFailsToGetPDFByteArrayOfEmailCorrespondence()
         throws NotificationClientException {
-        try (var mockedIoUtils = mockStatic(IOUtils.class)) {
+        try (MockedStatic<IOUtils> mockedIoUtils = mockStatic(IOUtils.class)) {
             //Given
             final String templateId = UUID.randomUUID().toString();
             final Map<String, String> templateNameMap = Map.of(APPLICATION_RECEIVED.name(), templateId);
@@ -615,7 +616,7 @@ public class NotificationServiceCICTest {
     @Test
     void shouldThrowIOExceptionExceptionWhenServiceFailsToGetPDFByteArrayOfLetterCorrespondence()
         throws NotificationClientException {
-        try (var mockedIoUtils = mockStatic(IOUtils.class)) {
+        try (MockedStatic<IOUtils> mockedIoUtils = mockStatic(IOUtils.class)) {
             //Given
             final String templateId = UUID.randomUUID().toString();
             final Map<String, String> templateVars = new HashMap<>(Map.of(CASE_ISSUED_CITIZEN_POST.name(), templateId));

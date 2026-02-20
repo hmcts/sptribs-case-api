@@ -2,6 +2,7 @@ package uk.gov.hmcts.sptribs.document.content;
 
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
+import uk.gov.hmcts.sptribs.ciccase.CicCaseFieldsUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 
 import java.util.Map;
@@ -28,7 +29,9 @@ public class DecisionTemplateContent {
         if (caseData.getCicCase().getAnonymiseYesOrNo() != null && caseData.getCicCase().getAnonymiseYesOrNo().equals(YesOrNo.YES)
                 && caseData.getCicCase().getAnonymisedAppellantName() != null) {
             templateContent.put(SUBJECT_FULL_NAME, caseData.getCicCase().getAnonymisedAppellantName());
-        } else if (caseData.getCicCase().useApplicantNameForSubject()) {
+        } else if (CicCaseFieldsUtil.useApplicantNameForSubject(
+            caseData.getCicCase().getCaseSubcategory(), caseData.getCicCase().getApplicantFullName()
+        )) {
             templateContent.put(SUBJECT_FULL_NAME, caseData.getCicCase().getApplicantFullName());
         } else {
             templateContent.put(SUBJECT_FULL_NAME, caseData.getLatestCompletedHearing().getSummary().getSubjectName());
