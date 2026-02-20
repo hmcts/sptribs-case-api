@@ -95,7 +95,7 @@ public class OrderDocumentListUtilTest {
 
 
         //When
-        CicCase result = OrderDocumentListUtil.removeOrderDoc(cicCase, cicCaseOld);
+        CicCase result = OrderDocumentListUtil.addOrderDocsToUploadedFiles(cicCase, cicCaseOld);
 
         //Then
         assertThat(result).isNotNull();
