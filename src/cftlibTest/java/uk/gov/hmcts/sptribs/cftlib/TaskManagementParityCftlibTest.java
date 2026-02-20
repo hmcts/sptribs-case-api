@@ -24,8 +24,8 @@ import uk.gov.hmcts.reform.idam.client.IdamClient;
 import uk.gov.hmcts.rse.ccd.lib.test.CftlibTest;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
-import uk.gov.hmcts.sptribs.taskmanagement.model.ProcessCategoryIdentifiers;
 import uk.gov.hmcts.sptribs.taskmanagement.TaskManagementService;
+import uk.gov.hmcts.sptribs.taskmanagement.model.ProcessCategoryIdentifiers;
 import uk.gov.hmcts.sptribs.taskmanagement.model.TaskType;
 
 import java.io.IOException;

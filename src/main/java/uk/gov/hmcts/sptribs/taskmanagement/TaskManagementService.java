@@ -16,16 +16,6 @@ import java.time.ZoneOffset;
 import java.util.List;
 import java.util.UUID;
 
-import static uk.gov.hmcts.sptribs.taskmanagement.model.TaskAccess.CTSC;
-import static uk.gov.hmcts.sptribs.taskmanagement.model.TaskAccess.CTSC_TEAM_LEADER;
-import static uk.gov.hmcts.sptribs.taskmanagement.model.TaskAccess.HEARING_CENTRE_ADMIN;
-import static uk.gov.hmcts.sptribs.taskmanagement.model.TaskAccess.HEARING_CENTRE_TEAM_LEADER;
-import static uk.gov.hmcts.sptribs.taskmanagement.model.TaskAccess.JUDGE;
-import static uk.gov.hmcts.sptribs.taskmanagement.model.TaskAccess.REGIONAL_CENTRE_ADMIN;
-import static uk.gov.hmcts.sptribs.taskmanagement.model.TaskAccess.REGIONAL_CENTRE_TEAM_LEADER;
-import static uk.gov.hmcts.sptribs.taskmanagement.model.TaskAccess.SENIOR_JUDGE;
-import static uk.gov.hmcts.sptribs.taskmanagement.model.TaskAccess.SENIOR_TRIBUNAL_CASEWORKER;
-import static uk.gov.hmcts.sptribs.taskmanagement.model.TaskAccess.TRIBUNAL_CASEWORKER;
 import static uk.gov.hmcts.sptribs.taskmanagement.TaskConstants.CIC_CASE_TYPE;
 import static uk.gov.hmcts.sptribs.taskmanagement.TaskConstants.CRIMINAL_INJURIES_COMPENSATION;
 import static uk.gov.hmcts.sptribs.taskmanagement.TaskConstants.DEFAULT_EXECUTION_TYPE;
@@ -39,6 +29,16 @@ import static uk.gov.hmcts.sptribs.taskmanagement.TaskConstants.JURISDICTION;
 import static uk.gov.hmcts.sptribs.taskmanagement.TaskConstants.LEGAL_OPERATIONS_TASKS;
 import static uk.gov.hmcts.sptribs.taskmanagement.TaskConstants.MAJOR_PRIORITY;
 import static uk.gov.hmcts.sptribs.taskmanagement.TaskConstants.MINOR_PRIORITY;
+import static uk.gov.hmcts.sptribs.taskmanagement.model.TaskAccess.CTSC;
+import static uk.gov.hmcts.sptribs.taskmanagement.model.TaskAccess.CTSC_TEAM_LEADER;
+import static uk.gov.hmcts.sptribs.taskmanagement.model.TaskAccess.HEARING_CENTRE_ADMIN;
+import static uk.gov.hmcts.sptribs.taskmanagement.model.TaskAccess.HEARING_CENTRE_TEAM_LEADER;
+import static uk.gov.hmcts.sptribs.taskmanagement.model.TaskAccess.JUDGE;
+import static uk.gov.hmcts.sptribs.taskmanagement.model.TaskAccess.REGIONAL_CENTRE_ADMIN;
+import static uk.gov.hmcts.sptribs.taskmanagement.model.TaskAccess.REGIONAL_CENTRE_TEAM_LEADER;
+import static uk.gov.hmcts.sptribs.taskmanagement.model.TaskAccess.SENIOR_JUDGE;
+import static uk.gov.hmcts.sptribs.taskmanagement.model.TaskAccess.SENIOR_TRIBUNAL_CASEWORKER;
+import static uk.gov.hmcts.sptribs.taskmanagement.model.TaskAccess.TRIBUNAL_CASEWORKER;
 
 @Service
 @RequiredArgsConstructor

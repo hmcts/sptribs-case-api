@@ -5,15 +5,6 @@ import lombok.Getter;
 import java.util.List;
 import java.util.stream.Stream;
 
-import static uk.gov.hmcts.sptribs.taskmanagement.model.ProcessCategoryIdentifiers.Amendment;
-import static uk.gov.hmcts.sptribs.taskmanagement.model.ProcessCategoryIdentifiers.Application;
-import static uk.gov.hmcts.sptribs.taskmanagement.model.ProcessCategoryIdentifiers.Decision;
-import static uk.gov.hmcts.sptribs.taskmanagement.model.ProcessCategoryIdentifiers.Hearing;
-import static uk.gov.hmcts.sptribs.taskmanagement.model.ProcessCategoryIdentifiers.HearingBundle;
-import static uk.gov.hmcts.sptribs.taskmanagement.model.ProcessCategoryIdentifiers.HearingCompletion;
-import static uk.gov.hmcts.sptribs.taskmanagement.model.ProcessCategoryIdentifiers.IssueCase;
-import static uk.gov.hmcts.sptribs.taskmanagement.model.ProcessCategoryIdentifiers.None;
-import static uk.gov.hmcts.sptribs.taskmanagement.model.ProcessCategoryIdentifiers.Processing;
 import static uk.gov.hmcts.sptribs.taskmanagement.TaskConstants.COMPLETE_HEARING_OUTCOME_DESCRIPTION;
 import static uk.gov.hmcts.sptribs.taskmanagement.TaskConstants.CREATE_DUE_DATE_DESCRIPTION;
 import static uk.gov.hmcts.sptribs.taskmanagement.TaskConstants.EMPTY_DESCRIPTION;
@@ -26,6 +17,15 @@ import static uk.gov.hmcts.sptribs.taskmanagement.TaskConstants.REVIEW_REQUESTS_
 import static uk.gov.hmcts.sptribs.taskmanagement.TaskConstants.SEND_ORDER_DESCRIPTION;
 import static uk.gov.hmcts.sptribs.taskmanagement.TaskConstants.STITCH_COLLATE_BUNDLE_DESCRIPTION;
 import static uk.gov.hmcts.sptribs.taskmanagement.TaskConstants.VET_NEW_CASE_DOCUMENTS_DESCRIPTION;
+import static uk.gov.hmcts.sptribs.taskmanagement.model.ProcessCategoryIdentifiers.Amendment;
+import static uk.gov.hmcts.sptribs.taskmanagement.model.ProcessCategoryIdentifiers.Application;
+import static uk.gov.hmcts.sptribs.taskmanagement.model.ProcessCategoryIdentifiers.Decision;
+import static uk.gov.hmcts.sptribs.taskmanagement.model.ProcessCategoryIdentifiers.Hearing;
+import static uk.gov.hmcts.sptribs.taskmanagement.model.ProcessCategoryIdentifiers.HearingBundle;
+import static uk.gov.hmcts.sptribs.taskmanagement.model.ProcessCategoryIdentifiers.HearingCompletion;
+import static uk.gov.hmcts.sptribs.taskmanagement.model.ProcessCategoryIdentifiers.IssueCase;
+import static uk.gov.hmcts.sptribs.taskmanagement.model.ProcessCategoryIdentifiers.None;
+import static uk.gov.hmcts.sptribs.taskmanagement.model.ProcessCategoryIdentifiers.Processing;
 
 @Getter
 public enum TaskType {
@@ -292,4 +292,3 @@ public enum TaskType {
             .toList();
     }
 }
-
