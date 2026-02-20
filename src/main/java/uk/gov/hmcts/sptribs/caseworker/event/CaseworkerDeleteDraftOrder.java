@@ -95,7 +95,7 @@ public class CaseworkerDeleteDraftOrder implements CCDConfig<CaseData, State, Us
                                                   CaseDetails<CaseData, State> beforeDetails) {
 
         return SubmittedCallbackResponse.builder()
-            .confirmationHeader("# Draft order deleted")
+            .confirmationHeader("# Draft order deleted.")
             .build();
     }
 }
