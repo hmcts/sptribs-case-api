@@ -20,7 +20,11 @@ public final class DocumentRemoveListUtil {
         addDecisionDocumentsForRemoval(caseData, oldData);
         addFinalDecisionDocumentsForRemoval(caseData, oldData);
         final CicCase cic = caseData.getCicCase();
+        //whys this happening in mid event?? this seems to be removing from the order too not just adding to remove lists..
+        // i think move to the about to submit call back
         removeOrderDoc(cic, oldData.getCicCase());
+        //---------
+
         if (!CollectionUtils.isEmpty(oldData.getAllDocManagement().getCaseworkerCICDocument())
             && (CollectionUtils.isEmpty(caseData.getAllDocManagement().getCaseworkerCICDocument())
             || caseData.getAllDocManagement().getCaseworkerCICDocument().size()

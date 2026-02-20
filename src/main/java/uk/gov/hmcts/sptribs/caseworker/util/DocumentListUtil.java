@@ -278,4 +278,13 @@ public final class DocumentListUtil {
         String documentId = org.apache.commons.lang3.StringUtils.substringAfterLast(url, "/");
         return org.apache.commons.lang3.StringUtils.isEmpty(documentId) ? Optional.empty() : Optional.of(documentId);
     }
+
+    public static void removeFurtherUploadedDocument(CaseData caseData, ListValue<CaseworkerCICDocument> cicDocumentListValue) {
+
+        if (caseData.getFurtherUploadedDocuments() != null) {
+            caseData.getFurtherUploadedDocuments().removeIf(listValue ->
+                cicDocumentListValue.getValue().getDocumentLink().equals(listValue.getValue().getDocumentLink())
+            );
+        }
+    }
 }

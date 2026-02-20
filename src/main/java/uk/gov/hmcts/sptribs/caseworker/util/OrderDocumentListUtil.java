@@ -83,6 +83,9 @@ public final class OrderDocumentListUtil {
     }
 
     public static void manageUploadedFiles(ListValue<Order> orderListValue, ListValue<CaseworkerCICDocument> cicDocumentListValue) {
+       // from new orderListValue
+        //from old cicDocumentListValue
+
         if (!CollectionUtils.isEmpty(orderListValue.getValue().getUploadedFile())) {
             for (int i = 0; i < orderListValue.getValue().getUploadedFile().size(); i++) {
                 ListValue<CICDocument> file = orderListValue.getValue().getUploadedFile().get(i);
