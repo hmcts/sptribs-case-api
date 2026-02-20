@@ -40,8 +40,8 @@ import uk.gov.hmcts.sptribs.common.event.page.EditNewOrderContentPage;
 import uk.gov.hmcts.sptribs.common.event.page.PreviewDraftOrder;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
 import uk.gov.hmcts.sptribs.notification.dispatcher.NewOrderIssuedNotification;
+import uk.gov.hmcts.sptribs.taskmanagement.TaskInitiationResolver;
 import uk.gov.hmcts.sptribs.taskmanagement.TaskManagementService;
-import uk.gov.hmcts.sptribs.taskmanagement.model.TaskType;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -49,7 +49,6 @@ import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Stream;
 
 import static java.lang.String.format;
 import static uk.gov.hmcts.sptribs.caseworker.model.OrderIssuingType.CREATE_AND_SEND_NEW_ORDER;
@@ -57,7 +56,6 @@ import static uk.gov.hmcts.sptribs.caseworker.model.OrderIssuingType.UPLOAD_A_NE
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_CREATE_AND_SEND_ORDER;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventUtil.getRecipients;
 import static uk.gov.hmcts.sptribs.caseworker.util.SendOrderUtil.updateCicCaseOrderList;
-import static uk.gov.hmcts.sptribs.ciccase.model.AdminAction.ADMIN_ACTION_REQUIRED;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseClosed;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
@@ -73,20 +71,12 @@ import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_WA_CONFIG_USER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE;
 import static uk.gov.hmcts.sptribs.document.DocumentUtil.updateCategoryToDocument;
-import static uk.gov.hmcts.sptribs.taskmanagement.model.TaskType.followUpNoncomplianceOfDirections;
-import static uk.gov.hmcts.sptribs.taskmanagement.model.TaskType.reviewOrder;
+import static uk.gov.hmcts.sptribs.taskmanagement.TaskTypeCollections.REVIEW_TASKS_TO_COMPLETE;
 
 @Slf4j
 @Component
 @RequiredArgsConstructor
 public class CaseworkerCreateAndSendOrder implements CCDConfig<CaseData, State, UserRole> {
-    private static final List<TaskType> COMPLETABLE_TASKS = Stream
-        .of(TaskType.values())
-        .filter(taskType -> taskType.name().startsWith("review")
-            && !taskType.name().startsWith("reviewSpecificAccess")
-            && taskType != reviewOrder)
-        .toList();
-
     private static final CcdPageConfiguration orderIssueSelect = new SendOrderOrderIssuingSelect();
     private static final CcdPageConfiguration createNewOrder = new CreateNewOrder();
     private static final CcdPageConfiguration editNewOrderContent = new EditNewOrderContentPage();
@@ -200,11 +190,18 @@ public class CaseworkerCreateAndSendOrder implements CCDConfig<CaseData, State, 
         caseData.getCicCase().setFirstOrderDueDate(CicCaseFieldsUtil.calculateFirstDueDate(caseData.getCicCase().getOrderList()));
 
         taskManagementService.enqueueCompletionTasks(
-            COMPLETABLE_TASKS,
+            REVIEW_TASKS_TO_COMPLETE,
             details.getId()
         );
-        taskManagementService.enqueueInitiationTasks(getInitiationTaskTypes(details.getState(), caseData), caseData,
-            details.getId());
+        taskManagementService.enqueueInitiationTasks(
+            TaskInitiationResolver.createAndSendOrderInitiationTasks(
+                details.getState(),
+                caseData.getCicCase().getFirstOrderDueDate(),
+                caseData.getCicCase().getAdminActionRequired()
+            ),
+            caseData,
+            details.getId()
+        );
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
@@ -274,16 +271,4 @@ public class CaseworkerCreateAndSendOrder implements CCDConfig<CaseData, State, 
         CaseFlagsUtil.addFlag(data, flagDetail);
     }
 
-    private List<TaskType> getInitiationTaskTypes(State state, CaseData caseData) {
-        List<TaskType> taskTypes = new ArrayList<>();
-        if (state == CaseManagement && caseData.getCicCase().getFirstOrderDueDate() != null) {
-            taskTypes.add(followUpNoncomplianceOfDirections);
-        }
-
-        if (caseData.getCicCase().getAdminActionRequired() != null
-            && caseData.getCicCase().getAdminActionRequired().contains(ADMIN_ACTION_REQUIRED)) {
-            taskTypes.add(reviewOrder);
-        }
-        return taskTypes;
-    }
 }

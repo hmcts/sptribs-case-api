@@ -22,6 +22,7 @@ import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderContentCIC;
 import uk.gov.hmcts.sptribs.caseworker.model.Order;
 import uk.gov.hmcts.sptribs.caseworker.model.OrderIssuingType;
 import uk.gov.hmcts.sptribs.caseworker.util.CaseFlagsUtil;
+import uk.gov.hmcts.sptribs.ciccase.model.AdminAction;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.OrderTemplate;
@@ -44,6 +45,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.argThat;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -56,6 +59,8 @@ import static uk.gov.hmcts.sptribs.ciccase.model.RepresentativeCIC.REPRESENTATIV
 import static uk.gov.hmcts.sptribs.ciccase.model.RespondentCIC.RESPONDENT;
 import static uk.gov.hmcts.sptribs.ciccase.model.SchemeCic.Year2012;
 import static uk.gov.hmcts.sptribs.ciccase.model.SubjectCIC.SUBJECT;
+import static uk.gov.hmcts.sptribs.taskmanagement.model.TaskType.followUpNoncomplianceOfDirections;
+import static uk.gov.hmcts.sptribs.taskmanagement.model.TaskType.reviewOrder;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigBuilder;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.getEventsFrom;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID;
@@ -537,6 +542,33 @@ class CaseworkerCreateAndSendOrderTest {
         verify(newOrderIssuedNotification, times(1)).sendToRepresentative(any(CaseData.class), anyString());
         verify(newOrderIssuedNotification, times(1)).sendToRespondent(any(CaseData.class), anyString());
         verify(newOrderIssuedNotification, times(1)).sendToApplicant(any(CaseData.class), anyString());
+    }
+
+    @Test
+    void shouldEnqueueInitiationTasksForCaseManagementWhenDueDateAndAdminActionPresent() {
+        final CaseDetails<CaseData, State> details = new CaseDetails<>();
+        final CaseData caseData = CaseData.builder().build();
+        CicCase cicCase = getCicCase(CREATE_AND_SEND_NEW_ORDER, YesOrNo.NO, null,
+            Document.builder().filename("order.pdf").build());
+        cicCase.setAdminActionRequired(Set.of(AdminAction.ADMIN_ACTION_REQUIRED));
+        caseData.setCicCase(cicCase);
+        caseData.setDraftOrderContentCIC(DraftOrderContentCIC.builder().orderTemplate(OrderTemplate.CIC3_RULE_27).build());
+
+        details.setData(caseData);
+        details.setId(TEST_CASE_ID);
+        details.setState(State.CaseManagement);
+
+        caseworkerCreateAndSendOrder.aboutToSubmit(details, caseDetailsBefore());
+
+        verify(taskManagementService).enqueueInitiationTasks(
+            eq(List.of(followUpNoncomplianceOfDirections, reviewOrder)),
+            eq(caseData),
+            eq(TEST_CASE_ID)
+        );
+        verify(taskManagementService).enqueueCompletionTasks(
+            argThat(taskTypes -> !taskTypes.isEmpty()),
+            eq(TEST_CASE_ID)
+        );
     }
 
     private CaseDetails<CaseData, State> caseDetailsBefore() {

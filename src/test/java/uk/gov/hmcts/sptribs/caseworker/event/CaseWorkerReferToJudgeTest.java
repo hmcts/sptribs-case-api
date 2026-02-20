@@ -20,8 +20,15 @@ import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.ciccase.model.access.Permissions;
 import uk.gov.hmcts.sptribs.taskmanagement.TaskManagementService;
 
+import java.util.List;
+
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_WA_CONFIG_USER;
+import static uk.gov.hmcts.sptribs.taskmanagement.TaskTypeCollections.ISSUE_CASE_CANCELLABLE_TASKS;
+import static uk.gov.hmcts.sptribs.taskmanagement.TaskTypeCollections.REFERRAL_COMPLETABLE_TASKS;
+import static uk.gov.hmcts.sptribs.taskmanagement.model.TaskType.reviewStayRequestCaseListedJudge;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigBuilder;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.getEventsFrom;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID;
@@ -110,6 +117,26 @@ public class CaseWorkerReferToJudgeTest {
 
         assertThat(response1).isNotNull();
         assertThat(response1.getData().getCicCase().getReferralTypeForWA()).isEqualTo(referralReason.getLabel());
+    }
+
+    @Test
+    void shouldEnqueueTaskManagementActionsForAwaitingHearingStayRequest() {
+        final CaseDetails<CaseData, State> updatedCaseDetails = getCaseDetails();
+        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        updatedCaseDetails.setState(State.AwaitingHearing);
+        updatedCaseDetails.getData().setReferToJudge(ReferToJudge.builder()
+            .referralReason(ReferralReason.STAY_REQUEST)
+            .build());
+
+        caseWorkerReferToJudge.aboutToSubmit(updatedCaseDetails, beforeDetails);
+
+        verify(taskManagementService).enqueueCancellationTasks(ISSUE_CASE_CANCELLABLE_TASKS, TEST_CASE_ID);
+        verify(taskManagementService).enqueueCompletionTasks(REFERRAL_COMPLETABLE_TASKS, TEST_CASE_ID);
+        verify(taskManagementService).enqueueInitiationTasks(
+            eq(List.of(reviewStayRequestCaseListedJudge)),
+            eq(updatedCaseDetails.getData()),
+            eq(TEST_CASE_ID)
+        );
     }
 
     private CaseDetails<CaseData, State> getCaseDetails() {
