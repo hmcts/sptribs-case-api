@@ -144,12 +144,6 @@ public class CicCase {
     private List<ListValue<DraftOrderCIC>> draftOrderCICList;
 
     @CCD(
-        label = "Due Date",
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
-    )
-    private List<ListValue<DateModel>> orderDueDates;
-
-    @CCD(
         typeOverride = MultiSelectList,
         typeParameterOverride = "AdminAction",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
