@@ -597,6 +597,12 @@ class TaskManagementParityCftlibTest extends CftlibTest {
                 State.ReadyToList,
                 Map.of("cicCaseAdminActionRequired", List.of("AdminActionRequired")),
                 List.of(TaskType.reviewOrder)
+            ),
+            arguments(
+                "create-and-send-order with AdminActionRequired in AwaitingHearing initiates reviewOrder",
+                State.AwaitingHearing,
+                Map.of("cicCaseAdminActionRequired", List.of("AdminActionRequired")),
+                List.of(TaskType.reviewOrder)
             )
         );
     }

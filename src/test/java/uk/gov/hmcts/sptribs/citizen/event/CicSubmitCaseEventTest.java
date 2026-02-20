@@ -192,14 +192,14 @@ class CicSubmitCaseEventTest {
         final AboutToStartOrSubmitResponse<CaseData, State> response =
             cicSubmitCaseEvent.aboutToSubmit(updatedCaseDetails, beforeDetails);
 
-        assertThat(response.getData().getCicCase().getApplicantDocumentsUploaded().get(0).getValue().getDocumentEmailContent())
+        assertThat(response.getData().getCicCase().getApplicantDocumentsUploaded().getFirst().getValue().getDocumentEmailContent())
             .isEqualTo(genericTestDocumentRelevance1);
         assertThat(response.getData().getCicCase().getApplicantDocumentsUploaded().get(1).getValue().getDocumentEmailContent())
             .isEqualTo(genericTestDocumentRelevance2);
-        assertThat(response.getData().getMessages().get(0).getValue().getMessage()).isEqualTo(genericAdditionalInformation);
-        assertThat(response.getData().getMessages().get(0).getValue().getDateReceived())
+        assertThat(response.getData().getMessages().getFirst().getValue().getMessage()).isEqualTo(genericAdditionalInformation);
+        assertThat(response.getData().getMessages().getFirst().getValue().getDateReceived())
             .isEqualTo(LocalDate.now());
-        assertThat(response.getData().getMessages().get(0).getValue().getReceivedFrom())
+        assertThat(response.getData().getMessages().getFirst().getValue().getReceivedFrom())
             .isEqualTo(TestDataHelper.getUser().getUserDetails().getFullName());
     }
 
@@ -238,9 +238,10 @@ class CicSubmitCaseEventTest {
         assertThat(response.getData().getDssCaseData().getOtherInfoDocuments()).isEmpty();
         assertThat(response.getData().getCicCase().getApplicantDocumentsUploaded()).hasSize(3);
         assertThat(response.getData().getCicCase().getRepresentativeContactDetailsPreference()).isEqualTo(ContactPreferenceType.EMAIL);
-        assertThat(response.getData().getCicCase().getApplicantDocumentsUploaded().get(0).getValue().getDocumentCategory())
+        assertThat(response.getData().getCicCase().getApplicantDocumentsUploaded().getFirst().getValue().getDocumentCategory())
             .isEqualTo(DocumentType.DSS_OTHER);
-        assertThat(response.getData().getCicCase().getApplicantDocumentsUploaded().get(0).getValue().getDate()).isEqualTo(LocalDate.now());
+        assertThat(response.getData().getCicCase().getApplicantDocumentsUploaded().getFirst().getValue().getDate())
+            .isEqualTo(LocalDate.now());
         assertThat(response.getData().getCicCase().getApplicantDocumentsUploaded().get(1).getValue().getDocumentCategory())
             .isEqualTo(DocumentType.DSS_SUPPORTING);
         assertThat(response.getData().getCicCase().getApplicantDocumentsUploaded().get(1).getValue().getDate()).isEqualTo(LocalDate.now());

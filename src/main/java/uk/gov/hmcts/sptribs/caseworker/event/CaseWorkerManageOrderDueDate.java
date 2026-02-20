@@ -15,6 +15,7 @@ import uk.gov.hmcts.sptribs.caseworker.event.page.AmendOrderDueDates;
 import uk.gov.hmcts.sptribs.caseworker.event.page.ManageSelectOrders;
 import uk.gov.hmcts.sptribs.caseworker.model.Order;
 import uk.gov.hmcts.sptribs.caseworker.service.OrderService;
+import uk.gov.hmcts.sptribs.ciccase.CicCaseFieldsUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
@@ -106,9 +107,8 @@ public class CaseWorkerManageOrderDueDate implements CCDConfig<CaseData, State, 
         }
         caseData.getCicCase().setOrderList(orderList);
         cicCase.setOrderDueDates(new ArrayList<>());
-        cicCase.setFirstOrderDueDate(cicCase.calculateFirstDueDate());
+        cicCase.setFirstOrderDueDate(CicCaseFieldsUtil.calculateFirstDueDate(caseData.getCicCase().getOrderList()));
         taskManagementService.enqueueCompletionTasks(List.of(followUpNoncomplianceOfDirections), details.getId());
-
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .state(details.getState())
             .data(caseData)
