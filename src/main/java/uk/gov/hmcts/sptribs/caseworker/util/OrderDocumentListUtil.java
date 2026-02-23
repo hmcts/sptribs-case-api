@@ -64,11 +64,16 @@ public final class OrderDocumentListUtil {
     public static CicCase addOrderDocsToUploadedFiles(CicCase cicCase, CicCase oldCicCase) {
         List<ListValue<CaseworkerCICDocument>> wholeOrderDocList = DocumentListUtil.getAllOrderDocuments(oldCicCase);
 
-        if (wholeOrderDocList.size() > cicCase.getOrderDocumentList().size()) {
-            for (ListValue<CaseworkerCICDocument> cicDocumentListValue : wholeOrderDocList) {
-                if (!cicCase.getOrderDocumentList().contains(cicDocumentListValue)) {
-                    addToRemovedDocuments(cicCase, cicDocumentListValue.getValue());
-                }
+        List<CaseworkerCICDocument> currentDocs = cicCase.getOrderDocumentList()
+            .stream()
+            .map(ListValue::getValue)
+            .toList();
+
+        for (ListValue<CaseworkerCICDocument> listValue : wholeOrderDocList) {
+            CaseworkerCICDocument document = listValue.getValue();
+
+            if (!currentDocs.contains(document)) {
+                addToRemovedDocuments(cicCase, document);
             }
         }
         return cicCase;

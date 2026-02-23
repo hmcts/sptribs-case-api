@@ -11,6 +11,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.document.model.CICDocument;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
+import uk.gov.hmcts.sptribs.document.model.DocumentType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -60,23 +61,19 @@ public class OrderDocumentListUtilTest {
     }
 
     @Test
-    void shouldRemoveOrderDocs() {
+    void givenOneOrderWith2Docs_whenAddOrderDocsToUploadedFiles_thenAdd1File() {
         //Given
-        ListValue<CICDocument> cicDocumentListValue = buildCicDocumentListValue("url1", "url1", "name1");
-        ListValue<Order> orderListValue = buildOrderListValue(List.of(cicDocumentListValue));
-        ListValue<Order> orderListValueOld = buildOrderListValue(get2DocumentCiC());
-        ListValue<Order> orderListValueOld2 = buildOrderListValue(get2DocumentCiC());
+        ListValue<CICDocument> cicDocumentListValue1 = buildCicDocumentListValue("url1", "url1", "name1");
+        //delete the one below
+        ListValue<CICDocument> cicDocumentListValue2 = buildCicDocumentListValue("url2", "url2", "name2");
+        List<ListValue<CICDocument>> cicDocumentListValuesOld = new ArrayList<>();
+        cicDocumentListValuesOld.add(cicDocumentListValue1);
+        cicDocumentListValuesOld.add(cicDocumentListValue2);
+        ListValue<Order> orderListValue = buildOrderListValue(cicDocumentListValuesOld);
 
         List<ListValue<Order>> orderList = new ArrayList<>();
-        orderList.add(orderListValueOld);
-        orderList.add(orderListValueOld2);
-        CicCase cicCase = CicCase.builder()
-            .orderDocumentList(getDocument())
-            .orderList(List.of(orderListValue))
-            .decisionDocumentList(new ArrayList<>())
-            .finalDecisionDocumentList(new ArrayList<>())
-            .applicantDocumentsUploaded(getDocument())
-            .build();
+        orderList.add(orderListValue);
+
         CicCase cicCaseOld = CicCase.builder()
             .decisionDocumentList(get2Document())
             .orderList(orderList)
@@ -86,11 +83,27 @@ public class OrderDocumentListUtilTest {
             .build();
 
 
+        List<ListValue<CaseworkerCICDocument>> cicDocumentListValuesNew = new ArrayList<>();
+        ListValue<CaseworkerCICDocument> caseworkerCICDocumentListValue1 =
+            buildCaseworkerCicDocumentListValue("url1", "url1", "name1");
+        cicDocumentListValuesNew.add(caseworkerCICDocumentListValue1);
+
+        CicCase cicCase = CicCase.builder()
+            .orderDocumentList(cicDocumentListValuesNew)
+            .orderList(orderList)
+            .decisionDocumentList(new ArrayList<>())
+            .finalDecisionDocumentList(new ArrayList<>())
+            .applicantDocumentsUploaded(getDocument())
+            .build();
+
+
         //When
         CicCase result = OrderDocumentListUtil.addOrderDocsToUploadedFiles(cicCase, cicCaseOld);
 
         //Then
         assertThat(result).isNotNull();
+        assertThat(result.getRemovedDocumentList().size() == 1).isTrue();
+        assertThat(result.getRemovedDocumentList().getFirst().getValue().getDocumentLink().getUrl().equals("url1"));
     }
 
     @Test
@@ -263,6 +276,7 @@ public class OrderDocumentListUtilTest {
 
     private ListValue<CaseworkerCICDocument> buildCaseworkerCicDocumentListValue(String url, String binary, String filename) {
         CaseworkerCICDocument document = CaseworkerCICDocument.builder()
+            .documentCategory(DocumentType.TRIBUNAL_DIRECTION)
             .documentLink(Document.builder().url(url).binaryUrl(binary).filename(filename).build()).build();
         ListValue<CaseworkerCICDocument> caseworkerCICDocumentListValue = new ListValue<>();
         caseworkerCICDocumentListValue.setValue(document);
