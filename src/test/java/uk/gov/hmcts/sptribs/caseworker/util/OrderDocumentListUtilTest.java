@@ -18,7 +18,6 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.get2Document;
-import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.get2DocumentCiC;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getDocument;
 
 @ExtendWith(MockitoExtension.class)
