@@ -92,7 +92,7 @@ public final class OrderDocumentListUtil {
         List<ListValue<CICDocument>> uploadedFiles = order.getValue().getUploadedFile();
 
         if (CollectionUtils.isEmpty(uploadedFiles)) {
-            return false;
+            return true;
         }
 
         uploadedFiles.removeIf(file -> Objects.equals(documentLink, file.getValue().getDocumentLink()));
