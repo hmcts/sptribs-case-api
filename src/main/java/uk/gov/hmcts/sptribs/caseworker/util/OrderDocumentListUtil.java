@@ -76,7 +76,6 @@ public final class OrderDocumentListUtil {
 
     public static void removeNonDraftOrder(CaseData data, ListValue<CaseworkerCICDocument> cicDocumentListValue) {
 
-        //if we are removing all the order docs then remove whole order?
         CicCase cicCase = data.getCicCase();
         if (cicCase.getOrderList() != null) {
             cicCase.getOrderList().removeIf(order ->
