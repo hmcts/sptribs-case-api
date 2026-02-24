@@ -193,12 +193,6 @@ public class CaseData {
 
     @Builder.Default
     @CCD(
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class, CaseworkerAndSuperUserAccess.class}
-    )
-    private List<ListValue<Bundle>> removedCaseBundlesList = new ArrayList<>();
-
-    @Builder.Default
-    @CCD(
         label = "Bundle IDs and Timestamps",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
