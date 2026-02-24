@@ -129,7 +129,7 @@ public class OrderDocumentListUtilTest {
             buildCaseworkerCicDocumentListValue("url1", "url1", "name1"));
 
         //then
-        assertThat(caseData.getCicCase().getOrderList().isEmpty()).isTrue();
+        assertThat(caseData.getCicCase().getOrderList()).isEmpty();
 
     }
 
