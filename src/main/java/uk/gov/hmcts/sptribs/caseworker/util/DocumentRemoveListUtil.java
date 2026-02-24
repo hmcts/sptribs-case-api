@@ -7,7 +7,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import static uk.gov.hmcts.sptribs.caseworker.util.DecisionDocumentListUtil.addDecisionDocumentsForRemoval;
 import static uk.gov.hmcts.sptribs.caseworker.util.DecisionDocumentListUtil.addFinalDecisionDocumentsForRemoval;
 import static uk.gov.hmcts.sptribs.caseworker.util.DocumentManagementUtil.checkLists;
-import static uk.gov.hmcts.sptribs.caseworker.util.OrderDocumentListUtil.addOrderDocsToUploadedFiles;
+import static uk.gov.hmcts.sptribs.caseworker.util.OrderDocumentListUtil.addOrderDocsForRemoval;
 
 
 public final class DocumentRemoveListUtil {
@@ -20,7 +20,7 @@ public final class DocumentRemoveListUtil {
         addDecisionDocumentsForRemoval(caseData, oldData);
         addFinalDecisionDocumentsForRemoval(caseData, oldData);
         final CicCase cic = caseData.getCicCase();
-        addOrderDocsToUploadedFiles(cic, oldData.getCicCase());
+        addOrderDocsForRemoval(cic, oldData.getCicCase());
         if (!CollectionUtils.isEmpty(oldData.getAllDocManagement().getCaseworkerCICDocument())
             && (CollectionUtils.isEmpty(caseData.getAllDocManagement().getCaseworkerCICDocument())
             || caseData.getAllDocManagement().getCaseworkerCICDocument().size()

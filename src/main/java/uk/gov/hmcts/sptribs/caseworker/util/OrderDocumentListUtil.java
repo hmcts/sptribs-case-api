@@ -61,7 +61,7 @@ public final class OrderDocumentListUtil {
     }
 
 
-    public static CicCase addOrderDocsToUploadedFiles(CicCase cicCase, CicCase oldCicCase) {
+    public static CicCase addOrderDocsForRemoval(CicCase cicCase, CicCase oldCicCase) {
         List<ListValue<CaseworkerCICDocument>> wholeOrderDocList = DocumentListUtil.getAllOrderDocuments(oldCicCase);
 
         List<CaseworkerCICDocument> currentDocs = cicCase.getOrderDocumentList()

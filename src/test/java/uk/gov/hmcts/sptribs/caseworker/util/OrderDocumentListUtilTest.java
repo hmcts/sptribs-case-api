@@ -60,7 +60,7 @@ public class OrderDocumentListUtilTest {
     }
 
     @Test
-    void givenOneOrderWith2Docs_whenAddOrderDocsToUploadedFiles_thenAdd1File() {
+    void givenOneOrderWith2Docs_whenAddOrderDocsForRemoval_thenAdd1File() {
         //Given
         ListValue<CICDocument> cicDocumentListValue1 = buildCicDocumentListValue("url1", "url1", "name1");
         //delete the one below
@@ -97,12 +97,12 @@ public class OrderDocumentListUtilTest {
 
 
         //When
-        CicCase result = OrderDocumentListUtil.addOrderDocsToUploadedFiles(cicCase, cicCaseOld);
+        CicCase result = OrderDocumentListUtil.addOrderDocsForRemoval(cicCase, cicCaseOld);
 
         //Then
         assertThat(result).isNotNull();
-        assertThat(result.getRemovedDocumentList().size() == 1).isTrue();
-        assertThat(result.getRemovedDocumentList().getFirst().getValue().getDocumentLink().getUrl().equals("url1"));
+        assertThat(result.getRemovedDocumentList().size()).isSameAs(1);
+        assertThat(result.getRemovedDocumentList().getFirst().getValue().getDocumentLink().getUrl()).isSameAs("url2");
     }
 
     @Test
@@ -157,7 +157,7 @@ public class OrderDocumentListUtilTest {
             buildCaseworkerCicDocumentListValue("url2", "url2", "name2"));
 
         //then
-        assertThat(caseData.getCicCase().getOrderList().size() == 1).isTrue();
+        assertThat(caseData.getCicCase().getOrderList().size()).isSameAs(1);
 
     }
 
@@ -187,8 +187,8 @@ public class OrderDocumentListUtilTest {
             buildCaseworkerCicDocumentListValue("url1", "url1", "name1"));
 
         //then
-        assertThat(caseData.getCicCase().getOrderList().size() == 1).isTrue();
-        assertThat(caseData.getCicCase().getOrderList().getFirst().getValue().getUploadedFile().size() == 1).isTrue();
+        assertThat(caseData.getCicCase().getOrderList().size()).isSameAs(1);
+        assertThat(caseData.getCicCase().getOrderList().getFirst().getValue().getUploadedFile().size()).isSameAs(1);
 
     }
 
@@ -217,7 +217,7 @@ public class OrderDocumentListUtilTest {
             buildCaseworkerCicDocumentListValue("url1", "url1", "name1"));
 
         //then
-        assertThat(caseData.getCicCase().getOrderList().isEmpty()).isTrue();
+        assertThat(caseData.getCicCase().getOrderList()).isEmpty();
 
     }
 
@@ -238,7 +238,7 @@ public class OrderDocumentListUtilTest {
             buildCaseworkerCicDocumentListValue("url1", "url1", "name1"));
 
         //then
-        assertThat(caseData.getCicCase().getOrderList() == null).isTrue();
+        assertThat(caseData.getCicCase().getOrderList()).isNull();
     }
 
     @Test
@@ -262,7 +262,7 @@ public class OrderDocumentListUtilTest {
             buildCaseworkerCicDocumentListValue("url1", "url1", "name1"));
 
         //then
-        assertThat(caseData.getCicCase().getOrderList().isEmpty()).isTrue();
+        assertThat(caseData.getCicCase().getOrderList()).isEmpty();
     }
 
     private ListValue<CICDocument> buildCicDocumentListValue(String url, String binary, String filename) {
