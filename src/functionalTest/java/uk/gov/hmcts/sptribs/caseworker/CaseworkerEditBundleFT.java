@@ -9,7 +9,6 @@ import java.util.Map;
 
 import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
 import static net.javacrumbs.jsonunit.assertj.JsonAssertions.json;
-import static net.javacrumbs.jsonunit.core.Option.IGNORING_ARRAY_ORDER;
 import static net.javacrumbs.jsonunit.core.Option.IGNORING_EXTRA_FIELDS;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.HttpStatus.OK;
@@ -41,7 +40,6 @@ public class CaseworkerEditBundleFT extends FunctionalTestSuite {
 
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
         assertThatJson(response.asString())
-            .when(IGNORING_ARRAY_ORDER)
             .when(IGNORING_EXTRA_FIELDS)
             .isEqualTo(json(expectedResponse(RESPONSE_ABOUT_TO_START)));
     }
@@ -54,7 +52,6 @@ public class CaseworkerEditBundleFT extends FunctionalTestSuite {
 
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
         assertThatJson(response.asString())
-            .when(IGNORING_ARRAY_ORDER)
             .when(IGNORING_EXTRA_FIELDS)
             .isEqualTo(json(expectedResponse(RESPONSE_ABOUT_TO_SUBMIT)));
     }
