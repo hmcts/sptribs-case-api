@@ -128,20 +128,20 @@ public class CaseworkerRemoveBundlesIT {
                 .dateAndTime(bundleTimestamp1)
                 .build())
             .build(),
-        ListValue.<BundleIdAndTimestamp>builder()
-            .id("2")
-            .value(BundleIdAndTimestamp.builder()
-                .bundleId(bundleUUID2)
-                .dateAndTime(bundleTimestamp2)
-                .build())
-            .build(),
-        ListValue.<BundleIdAndTimestamp>builder()
-            .id("3")
-            .value(BundleIdAndTimestamp.builder()
-                .bundleId(bundleUUID3)
-                .dateAndTime(bundleTimestamp3)
-                .build())
-            .build()
+            ListValue.<BundleIdAndTimestamp>builder()
+                .id("2")
+                .value(BundleIdAndTimestamp.builder()
+                    .bundleId(bundleUUID2)
+                    .dateAndTime(bundleTimestamp2)
+                    .build())
+                .build(),
+            ListValue.<BundleIdAndTimestamp>builder()
+                .id("3")
+                .value(BundleIdAndTimestamp.builder()
+                    .bundleId(bundleUUID3)
+                    .dateAndTime(bundleTimestamp3)
+                    .build())
+                .build()
         );
 
         caseData.setCaseBundleIdsAndTimestamps(bundleIdAndTimestamps);
@@ -209,6 +209,5 @@ public class CaseworkerRemoveBundlesIT {
         assertThat(caseDataAfterAboutToSubmit.getCaseBundleIdsAndTimestamps().getFirst().getId()).isEqualTo("1");
         assertThat(caseDataAfterAboutToSubmit.getCaseBundleIdsAndTimestamps().getFirst().getValue().getBundleId()).isEqualTo(bundleUUID3);
         assertThat(caseDataAfterAboutToSubmit.getCicCase().getRemoveBundlesList().getValue() == null);
-
     }
 }
