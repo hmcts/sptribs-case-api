@@ -31,7 +31,7 @@ class CaseworkerRemoveBundlesTest {
     private CaseworkerRemoveBundles caseworkerRemoveBundles;
 
     @Test
-    public void shouldSuccessfullyDeleteBundlesOnAboutToSubmit() {
+    void shouldSuccessfullyDeleteBundlesOnAboutToSubmit() {
         //Given
         String bundleUUID1 = UUID.randomUUID().toString();
         String bundleUUID2 = UUID.randomUUID().toString();
@@ -140,7 +140,7 @@ class CaseworkerRemoveBundlesTest {
             caseworkerRemoveBundles.aboutToSubmit(updatedCaseDetails, CaseDetails.<CaseData, State>builder().build());
 
         //Then
-        assertThat(response.getData().getCaseBundles().size()).isEqualTo(1);
+        assertThat(response.getData().getCaseBundles()).hasSize(1);
         assertThat(response.getData().getCicCase().getRemoveBundlesList().getListItems()).isNull();
         assertThat(response.getData().getCicCase().getRemoveBundlesList().getValue()).isNull();
     }
