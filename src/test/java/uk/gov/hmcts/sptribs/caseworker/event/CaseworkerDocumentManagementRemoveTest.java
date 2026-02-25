@@ -101,16 +101,20 @@ public class CaseworkerDocumentManagementRemoveTest {
             .documentLink(Document.builder().url("url1").binaryUrl("url1").filename("name1").build()).build();
         ListValue<CICDocument> cicDocumentListValue = new ListValue<>();
         cicDocumentListValue.setValue(document);
-        Order order = Order.builder().uploadedFile(List.of(cicDocumentListValue)).build();
+        List<ListValue<CICDocument>> cicDocumentList = new ArrayList<>();
+        cicDocumentList.add(cicDocumentListValue);
+        Order order = Order.builder().uploadedFile(cicDocumentList).build();
         ListValue<Order> orderListValue = new ListValue<>();
         orderListValue.setValue(order);
+        List<ListValue<Order>> orderList = new ArrayList<>();
+        orderList.add(orderListValue);
 
         updatedCaseDetails.setState(State.CaseManagement);
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
         CicCase cicCase = CicCase.builder()
             .orderDocumentList(getDocument())
-            .orderList(List.of(orderListValue))
+            .orderList(orderList)
             .decisionDocumentList(new ArrayList<>())
             .finalDecisionDocumentList(new ArrayList<>())
             .applicantDocumentsUploaded(getDocument())
@@ -134,11 +138,11 @@ public class CaseworkerDocumentManagementRemoveTest {
         orderListValueOld.setValue(orderOld);
         ListValue<Order> orderListValueOld2 = new ListValue<>();
         orderListValueOld2.setValue(orderOld2);
-        List<ListValue<Order>> orderList = new ArrayList<>();
-        orderList.add(orderListValueOld);
-        orderList.add(orderListValueOld2);
+        List<ListValue<Order>> oldOrderList = new ArrayList<>();
+        oldOrderList.add(orderListValueOld);
+        oldOrderList.add(orderListValueOld2);
         CicCase cicCaseOld = CicCase.builder()
-            .orderList(orderList)
+            .orderList(oldOrderList)
             .decisionDocumentList(get2Document())
             .finalDecisionDocumentList(get2Document())
             .applicantDocumentsUploaded(get2Document())
@@ -177,16 +181,20 @@ public class CaseworkerDocumentManagementRemoveTest {
             .documentLink(Document.builder().url("url1").binaryUrl("url1").filename("name1").build()).build();
         ListValue<CICDocument> cicDocumentListValue = new ListValue<>();
         cicDocumentListValue.setValue(document);
-        Order order = Order.builder().uploadedFile(List.of(cicDocumentListValue)).build();
+        List<ListValue<CICDocument>> cicDocumentList = new ArrayList<>();
+        cicDocumentList.add(cicDocumentListValue);
+        Order order = Order.builder().uploadedFile(cicDocumentList).build();
         ListValue<Order> orderListValue = new ListValue<>();
         orderListValue.setValue(order);
+        List<ListValue<Order>> orderList = new ArrayList<>();
+        orderList.add(orderListValue);
 
         updatedCaseDetails.setState(State.CaseManagement);
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
         CicCase cicCase = CicCase.builder()
             .orderDocumentList(getDocument())
-            .orderList(List.of(orderListValue))
+            .orderList(orderList)
             .decisionDocumentList(new ArrayList<>())
             .finalDecisionDocumentList(new ArrayList<>())
             .applicantDocumentsUploaded(getDocument())
