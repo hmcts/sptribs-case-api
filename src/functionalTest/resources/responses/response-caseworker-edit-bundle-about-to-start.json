@@ -1,0 +1,294 @@
+{
+  "data": {
+    "caseBundles": [
+      {
+        "id": "1",
+        "value": {
+          "id": "${json-unit.any-string}",
+          "dateAndTime": "2024-06-11T12:00:00.000",
+          "title": "CIC Bundle",
+          "description": "",
+          "fileName": "1-cicBundle.pdf",
+          "folders": [
+            {
+              "id": "37",
+              "value": {
+                "name": "General evidence",
+                "sortIndex": 8
+              }
+            },
+            {
+              "id": "38",
+              "value": {
+                "name": "Direction - decision notices",
+                "sortIndex": 7
+              }
+            },
+            {
+              "id": "39",
+              "value": {
+                "name": "Witness Statements",
+                "sortIndex": 6
+              }
+            },
+            {
+              "id": "40",
+              "value": {
+                "name": "Linked documents",
+                "sortIndex": 5
+              }
+            },
+            {
+              "id": "41",
+              "value": {
+                "name": "Other evidence",
+                "sortIndex": 4
+              }
+            },
+            {
+              "id": "42",
+              "value": {
+                "name": "Financial records",
+                "sortIndex": 3
+              }
+            },
+            {
+              "id": "43",
+              "value": {
+                "name": "Medical records",
+                "sortIndex": 2
+              }
+            },
+            {
+              "id": "44",
+              "value": {
+                "name": "Police evidence",
+                "sortIndex": 1
+              }
+            },
+            {
+              "id": "45",
+              "value": {
+                "name": "Application Documents",
+                "documents": [
+                  {
+                    "id": "1",
+                    "value": {
+                      "name": "sample_file.pdf",
+                      "description": "",
+                      "sortIndex": 0
+                    }
+                  }
+                ],
+                "sortIndex": 0
+              }
+            }
+          ],
+          "paginationStyle": "bottomCenter",
+          "pageNumberFormat": "numberOfPages",
+          "stitchingFailureMessage": "",
+          "stitchStatus": ""
+        }
+      },
+      {
+        "id": "2",
+        "value": {
+          "id": "${json-unit.any-string}",
+          "dateAndTime": "2024-06-10T12:00:00.000",
+          "title": "CIC Bundle",
+          "description": "",
+          "fileName": "2-cicBundle.pdf",
+          "folders": [
+            {
+              "id": "37",
+              "value": {
+                "name": "General evidence",
+                "sortIndex": 8
+              }
+            },
+            {
+              "id": "38",
+              "value": {
+                "name": "Direction - decision notices",
+                "sortIndex": 7
+              }
+            },
+            {
+              "id": "39",
+              "value": {
+                "name": "Witness Statements",
+                "sortIndex": 6
+              }
+            },
+            {
+              "id": "40",
+              "value": {
+                "name": "Linked documents",
+                "sortIndex": 5
+              }
+            },
+            {
+              "id": "41",
+              "value": {
+                "name": "Other evidence",
+                "sortIndex": 4
+              }
+            },
+            {
+              "id": "42",
+              "value": {
+                "name": "Financial records",
+                "sortIndex": 3
+              }
+            },
+            {
+              "id": "43",
+              "value": {
+                "name": "Medical records",
+                "sortIndex": 2
+              }
+            },
+            {
+              "id": "44",
+              "value": {
+                "name": "Police evidence",
+                "sortIndex": 1
+              }
+            },
+            {
+              "id": "45",
+              "value": {
+                "name": "Application Documents",
+                "documents": [
+                  {
+                    "id": "1",
+                    "value": {
+                      "name": "sample_file.pdf",
+                      "description": "",
+                      "sortIndex": 0
+                    }
+                  }
+                ],
+                "sortIndex": 0
+              }
+            }
+          ],
+          "paginationStyle": "bottomCenter",
+          "pageNumberFormat": "numberOfPages",
+          "stitchingFailureMessage": "",
+          "stitchStatus": ""
+        }
+      },
+      {
+        "id": "3",
+        "value": {
+          "id": "${json-unit.any-string}",
+          "dateAndTime": "2024-06-09T12:00:00.000",
+          "title": "CIC Bundle",
+          "description": "",
+          "fileName": "3-cicBundle.pdf",
+          "folders": [
+            {
+              "id": "37",
+              "value": {
+                "name": "General evidence",
+                "sortIndex": 8
+              }
+            },
+            {
+              "id": "38",
+              "value": {
+                "name": "Direction - decision notices",
+                "sortIndex": 7
+              }
+            },
+            {
+              "id": "39",
+              "value": {
+                "name": "Witness Statements",
+                "sortIndex": 6
+              }
+            },
+            {
+              "id": "40",
+              "value": {
+                "name": "Linked documents",
+                "sortIndex": 5
+              }
+            },
+            {
+              "id": "41",
+              "value": {
+                "name": "Other evidence",
+                "sortIndex": 4
+              }
+            },
+            {
+              "id": "42",
+              "value": {
+                "name": "Financial records",
+                "sortIndex": 3
+              }
+            },
+            {
+              "id": "43",
+              "value": {
+                "name": "Medical records",
+                "sortIndex": 2
+              }
+            },
+            {
+              "id": "44",
+              "value": {
+                "name": "Police evidence",
+                "sortIndex": 1
+              }
+            },
+            {
+              "id": "45",
+              "value": {
+                "name": "Application Documents",
+                "documents": [
+                  {
+                    "id": "1",
+                    "value": {
+                      "name": "sample_file.pdf",
+                      "description": "",
+                      "sortIndex": 0
+                    }
+                  }
+                ],
+                "sortIndex": 0
+              }
+            }
+          ],
+          "paginationStyle": "bottomCenter",
+          "pageNumberFormat": "numberOfPages",
+          "stitchingFailureMessage": "",
+          "stitchStatus": ""
+        }
+      }
+    ],
+    "cicCaseRespondentName": "Appeals team",
+    "cicCaseRespondentOrganisation": "CICA",
+    "cicCaseRespondentEmail": "appeals.team@cica.gov.uk",
+    "stayIsCaseStayed": "No",
+    "hyphenatedCaseRef": "1714-0484-2347-8720",
+    "cicCaseAmendBundleList": {
+      "list_items": [
+        {
+          "code": "${json-unit.any-string}",
+          "label": "2024-06-11T12:00 -- 1-cicBundle.pdf"
+        },
+        {
+          "code": "${json-unit.any-string}",
+          "label": "2024-06-10T12:00 -- 2-cicBundle.pdf"
+        },
+        {
+          "code": "${json-unit.any-string}",
+          "label": "2024-06-09T12:00 -- 3-cicBundle.pdf"
+        }
+      ]
+    }
+  }
+}

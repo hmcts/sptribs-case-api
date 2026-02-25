@@ -15,15 +15,36 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.HttpStatus.OK;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.EDIT_BUNDLE;
 import static uk.gov.hmcts.sptribs.testutil.CaseDataUtil.caseData;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.ABOUT_TO_START_URL;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.ABOUT_TO_SUBMIT_URL;
 import static uk.gov.hmcts.sptribs.testutil.TestResourceUtil.expectedResponse;
 
 @SpringBootTest
 public class CaseworkerEditBundleFT extends FunctionalTestSuite {
+
+    private static final String REQUEST_ABOUT_TO_START =
+        "classpath:request/casedata/ccd-callback-casedata-caseworker-edit-bundle-about-to-start.json";
+
+    private static final String RESPONSE_ABOUT_TO_START = "classpath:responses/response-caseworker-edit-bundle-about-to-start.json";
+
+
     private static final String REQUEST_ABOUT_TO_SUBMIT =
         "classpath:request/casedata/ccd-callback-casedata-caseworker-edit-bundle-about-to-submit.json";
 
     private static final String RESPONSE_ABOUT_TO_SUBMIT = "classpath:responses/response-caseworker-edit-bundle-about-to-submit.json";
+
+    @Test
+    public void shouldReturnCorrectBundleWhenAboutToStartCallbackIsInvoked() throws Exception {
+        final Map<String, Object> caseData = caseData(REQUEST_ABOUT_TO_START);
+
+        final Response response = triggerCallback(caseData, EDIT_BUNDLE, ABOUT_TO_START_URL);
+
+        assertThat(response.getStatusCode()).isEqualTo(OK.value());
+        assertThatJson(response.asString())
+            .when(IGNORING_ARRAY_ORDER)
+            .when(IGNORING_EXTRA_FIELDS)
+            .isEqualTo(json(expectedResponse(RESPONSE_ABOUT_TO_START)));
+    }
 
     @Test
     public void shouldReturnCorrectBundleWhenAboutToSubmitCallbackIsInvoked() throws Exception {

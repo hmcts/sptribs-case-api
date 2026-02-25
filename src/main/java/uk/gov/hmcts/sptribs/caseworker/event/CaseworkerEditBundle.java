@@ -13,7 +13,6 @@ import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.event.page.SelectBundle;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
-import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
@@ -102,10 +101,8 @@ public class CaseworkerEditBundle implements CCDConfig<CaseData, State, UserRole
     ) {
 
         final CaseData caseData = details.getData();
-        CicCase cicCase = caseData.getCicCase();
 
-        DynamicMultiSelectList bundleList = cicCase.getAmendBundleList();
-        List<DynamicListElement> selectedBundleLabels = bundleList.getValue();
+        List<DynamicListElement> selectedBundleLabels = caseData.getCicCase().getAmendBundleList().getValue();
 
         // if there were no bundles to amend...
         if (selectedBundleLabels.isEmpty()) {

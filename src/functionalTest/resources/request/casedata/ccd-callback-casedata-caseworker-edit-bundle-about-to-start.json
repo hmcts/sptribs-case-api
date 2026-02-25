@@ -1,320 +1,270 @@
 {
   "hyphenatedCaseRef": "1714-0484-2347-8720",
-  "caseBundleIdsAndTimestamps": [
-    {
-      "id": "1",
-      "value": {
-        "bundleId": "1",
-        "dateAndTime": "2024-06-11T12:00:00.000"
-      }
-    },
-    {
-      "id": "2",
-      "value": {
-        "bundleId": "2",
-        "dateAndTime": "2024-06-10T12:00:00.000"
-      }
-    },
-    {
-      "id": "3",
-      "value": {
-        "bundleId": "3",
-        "dateAndTime": "2024-06-09T12:00:00.000"
-      }
-    }
-  ],
   "caseBundles": [
     {
-      "id": "1",
       "value": {
-        "id": "1",
-        "dateAndTime": "2024-06-11T12:00:00.000",
+        "id": "${json-unit.any-string}",
         "title": "CIC Bundle",
         "description": "",
         "fileName": "1-cicBundle.pdf",
+        "dateAndTime": "2024-06-11T12:00:00.000",
         "folders": [
           {
-            "id": "37",
             "value": {
               "name": "General evidence",
               "sortIndex": 8
-            }
+            },
+            "id": "37"
           },
           {
-            "id": "38",
             "value": {
               "name": "Direction - decision notices",
               "sortIndex": 7
-            }
+            },
+            "id": "38"
           },
           {
-            "id": "39",
             "value": {
               "name": "Witness Statements",
               "sortIndex": 6
-            }
+            },
+            "id": "39"
           },
           {
-            "id": "40",
             "value": {
               "name": "Linked documents",
               "sortIndex": 5
-            }
+            },
+            "id": "40"
           },
           {
-            "id": "41",
             "value": {
               "name": "Other evidence",
               "sortIndex": 4
-            }
+            },
+            "id": "41"
           },
           {
-            "id": "42",
             "value": {
               "name": "Financial records",
               "sortIndex": 3
-            }
+            },
+            "id": "42"
           },
           {
-            "id": "43",
             "value": {
               "name": "Medical records",
               "sortIndex": 2
-            }
+            },
+            "id": "43"
           },
           {
-            "id": "44",
             "value": {
               "name": "Police evidence",
               "sortIndex": 1
-            }
+            },
+            "id": "44"
           },
           {
-            "id": "45",
             "value": {
               "name": "Application Documents",
               "documents": [
                 {
-                  "id": "1",
                   "value": {
                     "name": "sample_file.pdf",
                     "description": "",
                     "sortIndex": 0
-                  }
+                  },
+                  "id": "1"
                 }
               ],
               "sortIndex": 0
-            }
+            },
+            "id": "45"
           }
         ],
         "paginationStyle": "bottomCenter",
         "pageNumberFormat": "numberOfPages",
         "stitchingFailureMessage": "",
         "stitchStatus": ""
-      }
-    },
-    {
-      "id": "2",
+      },
+      "id": "1"
+    }, {
       "value": {
-        "id": "2",
-        "dateAndTime": "2024-06-10T12:00:00.000",
+        "id": "${json-unit.any-string}",
         "title": "CIC Bundle",
         "description": "",
         "fileName": "2-cicBundle.pdf",
+        "dateAndTime": "2024-06-10T12:00:00.000",
         "folders": [
           {
-            "id": "37",
             "value": {
               "name": "General evidence",
               "sortIndex": 8
-            }
+            },
+            "id": "37"
           },
           {
-            "id": "38",
             "value": {
               "name": "Direction - decision notices",
               "sortIndex": 7
-            }
+            },
+            "id": "38"
           },
           {
-            "id": "39",
             "value": {
               "name": "Witness Statements",
               "sortIndex": 6
-            }
+            },
+            "id": "39"
           },
           {
-            "id": "40",
             "value": {
               "name": "Linked documents",
               "sortIndex": 5
-            }
+            },
+            "id": "40"
           },
           {
-            "id": "41",
             "value": {
               "name": "Other evidence",
               "sortIndex": 4
-            }
+            },
+            "id": "41"
           },
           {
-            "id": "42",
             "value": {
               "name": "Financial records",
               "sortIndex": 3
-            }
+            },
+            "id": "42"
           },
           {
-            "id": "43",
             "value": {
               "name": "Medical records",
               "sortIndex": 2
-            }
+            },
+            "id": "43"
           },
           {
-            "id": "44",
             "value": {
               "name": "Police evidence",
               "sortIndex": 1
-            }
+            },
+            "id": "44"
           },
           {
-            "id": "45",
             "value": {
               "name": "Application Documents",
               "documents": [
                 {
-                  "id": "1",
                   "value": {
                     "name": "sample_file.pdf",
                     "description": "",
                     "sortIndex": 0
-                  }
+                  },
+                  "id": "1"
                 }
               ],
               "sortIndex": 0
-            }
+            },
+            "id": "45"
           }
         ],
         "paginationStyle": "bottomCenter",
         "pageNumberFormat": "numberOfPages",
         "stitchingFailureMessage": "",
         "stitchStatus": ""
-      }
-    },
-    {
-      "id": "3",
+      },
+      "id": "2"
+    }, {
       "value": {
-        "id": "3",
-        "dateAndTime": "2024-06-09T12:00:00.000",
+        "id": "${json-unit.any-string}",
         "title": "CIC Bundle",
         "description": "",
         "fileName": "3-cicBundle.pdf",
+        "dateAndTime": "2024-06-09T12:00:00.000",
         "folders": [
           {
-            "id": "37",
             "value": {
               "name": "General evidence",
               "sortIndex": 8
-            }
+            },
+            "id": "37"
           },
           {
-            "id": "38",
             "value": {
               "name": "Direction - decision notices",
               "sortIndex": 7
-            }
+            },
+            "id": "38"
           },
           {
-            "id": "39",
             "value": {
               "name": "Witness Statements",
               "sortIndex": 6
-            }
+            },
+            "id": "39"
           },
           {
-            "id": "40",
             "value": {
               "name": "Linked documents",
               "sortIndex": 5
-            }
+            },
+            "id": "40"
           },
           {
-            "id": "41",
             "value": {
               "name": "Other evidence",
               "sortIndex": 4
-            }
+            },
+            "id": "41"
           },
           {
-            "id": "42",
             "value": {
               "name": "Financial records",
               "sortIndex": 3
-            }
+            },
+            "id": "42"
           },
           {
-            "id": "43",
             "value": {
               "name": "Medical records",
               "sortIndex": 2
-            }
+            },
+            "id": "43"
           },
           {
-            "id": "44",
             "value": {
               "name": "Police evidence",
               "sortIndex": 1
-            }
+            },
+            "id": "44"
           },
           {
-            "id": "45",
             "value": {
               "name": "Application Documents",
               "documents": [
                 {
-                  "id": "1",
                   "value": {
                     "name": "sample_file.pdf",
                     "description": "",
                     "sortIndex": 0
-                  }
+                  },
+                  "id": "1"
                 }
               ],
               "sortIndex": 0
-            }
+            },
+            "id": "45"
           }
         ],
         "paginationStyle": "bottomCenter",
         "pageNumberFormat": "numberOfPages",
         "stitchingFailureMessage": "",
         "stitchStatus": ""
-      }
+      },
+      "id": "3"
     }
-  ],
-  "cicCaseAmendBundleList": {
-    "list_items": [
-      {
-        "code": "18b88d33-9da8-4ee0-946d-de71d33e4d6f",
-        "label": "2024-06-11T12:00 -- 1-cicBundle.pdf"
-      },
-      {
-        "code": "60441279-18cc-4310-8a9f-04d18c37f775",
-        "label": "2024-06-10T12:00 -- 2-cicBundle.pdf"
-      },
-      {
-        "code": "1af50f2d-ea7b-48b9-b86d-567c9aa8421b",
-        "label": "2024-06-09T12:00 -- 3-cicBundle.pdf"
-      }
-    ], "value": [
-      {
-        "code": "18b88d33-9da8-4ee0-946d-de71d33e4d6f",
-        "label": "2024-06-11T12:00 -- 1-cicBundle.pdf"
-      },
-      {
-        "code": "60441279-18cc-4310-8a9f-04d18c37f775",
-        "label": "2024-06-10T12:00 -- 2-cicBundle.pdf"
-      }
-    ]
-  }
+  ]
 }
