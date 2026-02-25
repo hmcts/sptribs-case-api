@@ -15,7 +15,7 @@ public class SelectBundle implements CcdPageConfiguration {
             .label("LabelSelectBundle", "")
             .label("LabelSelectBundleWarning", "")
             .complex(CaseData::getCicCase)
-            .mandatory(CicCase::getAmendBundleList)
+            .mandatory(CicCase::getRemoveBundlesList)
             .done();
     }
 }

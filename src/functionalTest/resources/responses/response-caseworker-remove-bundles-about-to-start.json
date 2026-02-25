@@ -274,7 +274,7 @@
     "cicCaseRespondentEmail": "appeals.team@cica.gov.uk",
     "stayIsCaseStayed": "No",
     "hyphenatedCaseRef": "1714-0484-2347-8720",
-    "cicCaseAmendBundleList": {
+    "cicCaseRemoveBundlesList": {
       "list_items": [
         {
           "code": "${json-unit.any-string}",

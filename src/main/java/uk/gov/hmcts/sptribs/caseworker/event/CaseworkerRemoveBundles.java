@@ -25,7 +25,7 @@ import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.DOUBLE_HYPHEN;
-import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.EDIT_BUNDLE;
+import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.REMOVE_BUNDLES;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_CASEWORKER;
@@ -40,7 +40,7 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 @Component
 @Slf4j
 @Setter
-public class CaseworkerEditBundle implements CCDConfig<CaseData, State, UserRole> {
+public class CaseworkerRemoveBundles implements CCDConfig<CaseData, State, UserRole> {
 
 
     private static final SelectBundle selectBundle = new SelectBundle();
@@ -48,10 +48,10 @@ public class CaseworkerEditBundle implements CCDConfig<CaseData, State, UserRole
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         PageBuilder pageBuilder = new PageBuilder(configBuilder
-            .event(EDIT_BUNDLE)
+            .event(REMOVE_BUNDLES)
             .forStates(CaseManagement, AwaitingHearing)
-            .name("Bundle: Amend bundle")
-            .description("Bundle: Amend bundle")
+            .name("Bundle: Remove bundles")
+            .description("Bundle: Remove bundles")
             .showSummary()
             .aboutToStartCallback(this::aboutToStart)
             .aboutToSubmitCallback(this::aboutToSubmit)
@@ -87,7 +87,7 @@ public class CaseworkerEditBundle implements CCDConfig<CaseData, State, UserRole
             .listItems(dynamicListElements)
             .build();
 
-        cicCase.setAmendBundleList(bundleList);
+        cicCase.setRemoveBundlesList(bundleList);
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
@@ -102,9 +102,9 @@ public class CaseworkerEditBundle implements CCDConfig<CaseData, State, UserRole
 
         final CaseData caseData = details.getData();
 
-        List<DynamicListElement> selectedBundleLabels = caseData.getCicCase().getAmendBundleList().getValue();
+        List<DynamicListElement> selectedBundleLabels = caseData.getCicCase().getRemoveBundlesList().getValue();
 
-        // if there were no bundles to amend...
+        // if there were no bundles to remove...
         if (selectedBundleLabels.isEmpty()) {
             return AboutToStartOrSubmitResponse.<CaseData, State>builder()
                 .data(caseData)
@@ -150,7 +150,7 @@ public class CaseworkerEditBundle implements CCDConfig<CaseData, State, UserRole
 
         fixListValueIds(caseData.getCaseBundles(), caseData.getCaseBundleIdsAndTimestamps());
 
-        caseData.getCicCase().setAmendBundleList(new DynamicMultiSelectList());
+        caseData.getCicCase().setRemoveBundlesList(new DynamicMultiSelectList());
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)

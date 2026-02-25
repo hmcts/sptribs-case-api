@@ -1,0 +1,46 @@
+{
+  "data": {
+    "caseBundles": [
+      {
+        "id": "1",
+        "value": {
+          "id": "${json-unit.any-string}",
+          "dateAndTime": "${json-unit.any-string}",
+          "fileName": "1-cicBundle.pdf"
+        }
+      },
+      {
+        "id": "2",
+        "value": {
+          "id": "${json-unit.any-string}",
+          "dateAndTime": "${json-unit.any-string}",
+          "fileName": "2-cicBundle.pdf"
+        }
+      },
+      {
+        "id": "3",
+        "value": {
+          "id": "${json-unit.any-string}",
+          "dateAndTime": "${json-unit.any-string}",
+          "fileName": "3-cicBundle.pdf"
+        }
+      }
+    ],
+    "cicCaseRemoveBundlesList": {
+      "list_items": [
+        {
+          "code": "${json-unit.any-string}",
+          "label": "${json-unit.any-string}"
+        },
+        {
+          "code": "${json-unit.any-string}",
+          "label": "${json-unit.any-string}"
+        },
+        {
+          "code": "${json-unit.any-string}",
+          "label": "${json-unit.any-string}"
+        }
+      ]
+    }
+  }
+}

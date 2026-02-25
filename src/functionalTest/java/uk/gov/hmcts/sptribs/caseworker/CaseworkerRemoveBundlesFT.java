@@ -12,31 +12,31 @@ import static net.javacrumbs.jsonunit.assertj.JsonAssertions.json;
 import static net.javacrumbs.jsonunit.core.Option.IGNORING_EXTRA_FIELDS;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.HttpStatus.OK;
-import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.EDIT_BUNDLE;
+import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.REMOVE_BUNDLES;
 import static uk.gov.hmcts.sptribs.testutil.CaseDataUtil.caseData;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.ABOUT_TO_START_URL;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.ABOUT_TO_SUBMIT_URL;
 import static uk.gov.hmcts.sptribs.testutil.TestResourceUtil.expectedResponse;
 
 @SpringBootTest
-public class CaseworkerEditBundleFT extends FunctionalTestSuite {
+public class CaseworkerRemoveBundlesFT extends FunctionalTestSuite {
 
     private static final String REQUEST_ABOUT_TO_START =
-        "classpath:request/casedata/ccd-callback-casedata-caseworker-edit-bundle-about-to-start.json";
+        "classpath:request/casedata/ccd-callback-casedata-caseworker-remove-bundles-about-to-start.json";
 
-    private static final String RESPONSE_ABOUT_TO_START = "classpath:responses/response-caseworker-edit-bundle-about-to-start.json";
+    private static final String RESPONSE_ABOUT_TO_START = "classpath:responses/response-caseworker-remove-bundles-about-to-start.json";
 
 
     private static final String REQUEST_ABOUT_TO_SUBMIT =
-        "classpath:request/casedata/ccd-callback-casedata-caseworker-edit-bundle-about-to-submit.json";
+        "classpath:request/casedata/ccd-callback-casedata-caseworker-remove-bundles-about-to-submit.json";
 
-    private static final String RESPONSE_ABOUT_TO_SUBMIT = "classpath:responses/response-caseworker-edit-bundle-about-to-submit.json";
+    private static final String RESPONSE_ABOUT_TO_SUBMIT = "classpath:responses/response-caseworker-remove-bundles-about-to-submit.json";
 
     @Test
     public void shouldReturnCorrectBundleWhenAboutToStartCallbackIsInvoked() throws Exception {
         final Map<String, Object> caseData = caseData(REQUEST_ABOUT_TO_START);
 
-        final Response response = triggerCallback(caseData, EDIT_BUNDLE, ABOUT_TO_START_URL);
+        final Response response = triggerCallback(caseData, REMOVE_BUNDLES, ABOUT_TO_START_URL);
 
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
         assertThatJson(response.asString())
@@ -48,7 +48,7 @@ public class CaseworkerEditBundleFT extends FunctionalTestSuite {
     public void shouldReturnCorrectBundleWhenAboutToSubmitCallbackIsInvoked() throws Exception {
         final Map<String, Object> caseData = caseData(REQUEST_ABOUT_TO_SUBMIT);
 
-        final Response response = triggerCallback(caseData, EDIT_BUNDLE, ABOUT_TO_SUBMIT_URL);
+        final Response response = triggerCallback(caseData, REMOVE_BUNDLES, ABOUT_TO_SUBMIT_URL);
 
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
         assertThatJson(response.asString())

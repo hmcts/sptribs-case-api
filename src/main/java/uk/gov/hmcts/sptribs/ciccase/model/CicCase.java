@@ -191,7 +191,7 @@ public class CicCase {
         typeParameterOverride = "DynamicList",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
-    private DynamicMultiSelectList amendBundleList;
+    private DynamicMultiSelectList removeBundlesList;
 
     @CCD(
         label = "Amended Document",
