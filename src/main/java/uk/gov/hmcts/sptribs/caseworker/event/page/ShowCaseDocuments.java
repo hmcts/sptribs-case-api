@@ -62,6 +62,7 @@ public class ShowCaseDocuments implements CcdPageConfiguration {
         if (CollectionUtils.isEmpty(newCaseData.getCicCase().getRemovedDocumentList())) {
             errors.add("Please remove at least one document to continue");
         }
+
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(newCaseData)
             .errors(errors)
