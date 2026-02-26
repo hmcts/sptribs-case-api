@@ -104,13 +104,6 @@ public class CaseworkerRemoveBundles implements CCDConfig<CaseData, State, UserR
 
         List<DynamicListElement> selectedBundleLabels = caseData.getCicCase().getRemoveBundlesList().getValue();
 
-        // if there were no bundles to remove...
-        if (selectedBundleLabels.isEmpty()) {
-            return AboutToStartOrSubmitResponse.<CaseData, State>builder()
-                .data(caseData)
-                .build();
-        }
-
         // get the timestamps of the bundles to be deleted from the labels of the selected bundles
         List<String> timestampsOfBundlesToDelete = new ArrayList<>();
         for (DynamicListElement selectedBundleLabel : selectedBundleLabels) {
