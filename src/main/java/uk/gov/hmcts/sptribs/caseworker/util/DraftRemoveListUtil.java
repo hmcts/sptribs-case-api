@@ -1,0 +1,137 @@
+package uk.gov.hmcts.sptribs.caseworker.util;
+
+import org.springframework.util.CollectionUtils;
+import uk.gov.hmcts.ccd.sdk.type.DynamicList;
+import uk.gov.hmcts.ccd.sdk.type.DynamicListElement;
+import uk.gov.hmcts.ccd.sdk.type.ListValue;
+import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderCIC;
+import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.IntStream;
+
+import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.DOUBLE_HYPHEN;
+
+
+public final class DraftRemoveListUtil {
+
+    private DraftRemoveListUtil() {
+
+    }
+
+    public static CaseData setDraftListForRemoval(CaseData caseData, CaseData oldData) {
+
+        List<ListValue<DraftOrderCIC>> draftOrderList = oldData.getCicCase().getDraftOrderCICList();
+
+        if (draftOrderList.size() > caseData.getCicCase().getDraftOrderCICList().size()) {
+            for (ListValue<DraftOrderCIC> cicDraftOrder : draftOrderList) {
+                if (!caseData.getCicCase().getDraftOrderCICList().contains(cicDraftOrder)) {
+                    addToRemovedDraftOrdersList(caseData.getCicCase(), cicDraftOrder.getValue());
+                }
+            }
+        }
+
+
+        return caseData;
+    }
+
+    public static void addToRemovedDraftOrdersList(CicCase cicCase, DraftOrderCIC draftOrderCIC) {
+        if (CollectionUtils.isEmpty(cicCase.getRemovedDraftList())) {
+            List<ListValue<DraftOrderCIC>> listValues = new ArrayList<>();
+
+            ListValue<DraftOrderCIC> listValue = ListValue
+                .<DraftOrderCIC>builder()
+                .id("1")
+                .value(draftOrderCIC)
+                .build();
+
+            listValues.add(listValue);
+
+            cicCase.setRemovedDraftList(listValues);
+        } else {
+            AtomicInteger listValueIndex = new AtomicInteger(0);
+            ListValue<DraftOrderCIC> listValue = ListValue
+                .<DraftOrderCIC>builder()
+                .value(draftOrderCIC)
+                .build();
+
+            cicCase.getRemovedDraftList().add(0, listValue); // always add new note as first element so that it is displayed on top
+
+            cicCase.getRemovedDraftList().forEach(
+                removedFileListValue -> removedFileListValue.setId(String.valueOf(listValueIndex.incrementAndGet())));
+
+        }
+    }
+
+    public static CicCase repopulateDynamicDraftList(CicCase cicCase) {
+
+        DynamicList dynamicDraftList = DynamicList.builder()
+            .listItems(new ArrayList<>())
+            .build();
+
+        if (cicCase.getDraftOrderCICList().isEmpty()) {
+            cicCase.setDraftOrderDynamicList(null);
+            return cicCase;
+        }
+
+            //DynamicDraftList is in reverse order to DraftOrderCICList
+            IntStream.iterate(cicCase.getDraftOrderCICList().size() - 1, i -> i >= 0, i -> i - 1)
+                .mapToObj(cicCase.getDraftOrderCICList()::get)
+                .map(draftOrderCIC ->
+                    DynamicListElement.builder()
+                        .label(generateDraftLabelName(draftOrderCIC.getValue()))
+                        .code(generateUUIDFromDraftURL(draftOrderCIC.getValue().getTemplateGeneratedDocument().getUrl()))
+                        .build()
+                )
+                .forEach(dynamicDraftList.getListItems()::add);
+
+
+        cicCase.setDraftOrderDynamicList(dynamicDraftList);
+        return cicCase;
+    }
+
+    private static String generateDraftLabelName(DraftOrderCIC draftOrderCIC) {
+
+        String filename = draftOrderCIC.getTemplateGeneratedDocument().getFilename();
+        String draftOrderTemplateLabel = draftOrderCIC.getDraftOrderContentCIC().getOrderTemplate().getLabel();
+
+        String draftLabelValue = draftOrderTemplateLabel + DOUBLE_HYPHEN + extractDateFromFileName(filename) + DOUBLE_HYPHEN + "draft.pdf";
+
+
+        return draftLabelValue;
+    }
+
+
+    private static String extractDateFromFileName(String filename) {
+
+        Pattern dateTimePattern = Pattern.compile("--(\\d{2}-\\d{2}-\\d{4} \\d{2}:\\d{2}:\\d{2})\\.pdf$");
+
+        Matcher m = dateTimePattern.matcher(filename);
+
+        if (!m.find()) {
+            throw new IllegalArgumentException("No timestamp found in filename: " + filename);
+        }
+        return m.group(1);
+    }
+
+    private static UUID generateUUIDFromDraftURL(String url) {
+
+        Pattern urlUUIDPattern = Pattern.compile("/documents/([0-9a-fA-F\\-]{36})(?:/|$)");
+
+        Matcher matcher = urlUUIDPattern.matcher(url);
+
+        if (!matcher.find()) {
+            throw new IllegalArgumentException("No document UUID found in url: " + url);
+
+        }
+
+            return UUID.fromString(matcher.group(1));
+    }
+
+}

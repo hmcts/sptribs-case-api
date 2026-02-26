@@ -142,7 +142,7 @@ public class CicCase {
 
     @CCD(
         label = "Draft order",
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+        access = {CollectionDefaultAccess.class}
     )
     private List<ListValue<DraftOrderCIC>> draftOrderCICList;
 
@@ -620,6 +620,11 @@ public class CicCase {
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class, CaseworkerAndSuperUserAccess.class}
     )
     private List<ListValue<CaseworkerCICDocument>> removedDocumentList;
+
+    @CCD(
+        access = {CollectionDefaultAccess.class, CaseworkerWithCAAAccess.class, CaseworkerAndSuperUserAccess.class}
+    )
+    private List<ListValue<DraftOrderCIC>> removedDraftList;
 
     @CCD(
         label = "Final Decision Documents",

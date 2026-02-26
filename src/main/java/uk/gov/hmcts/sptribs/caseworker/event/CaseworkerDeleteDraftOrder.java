@@ -8,18 +8,22 @@ import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.Event;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
-import uk.gov.hmcts.ccd.sdk.type.DynamicList;
+import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
+import uk.gov.hmcts.sptribs.caseworker.event.page.ShowDraftOrders;
+import uk.gov.hmcts.sptribs.caseworker.event.page.ShowRemovedDraftOrders;
+import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
-import uk.gov.hmcts.sptribs.common.event.page.DeleteDraftOrder;
 
-import java.util.UUID;
-import java.util.stream.IntStream;
+import java.util.ArrayList;
+import java.util.List;
 
+import static uk.gov.hmcts.sptribs.caseworker.util.DraftRemoveListUtil.repopulateDynamicDraftList;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_DELETE_DRAFT_ORDER;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseClosed;
@@ -41,7 +45,8 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 @RequiredArgsConstructor
 public class CaseworkerDeleteDraftOrder implements CCDConfig<CaseData, State, UserRole> {
 
-    private static final CcdPageConfiguration deleteDraftOrder = new DeleteDraftOrder();
+    private static final CcdPageConfiguration showDraftOrders = new ShowDraftOrders();
+    private static final ShowRemovedDraftOrders showRemovedDraftOrders = new ShowRemovedDraftOrders();
 
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
@@ -50,7 +55,6 @@ public class CaseworkerDeleteDraftOrder implements CCDConfig<CaseData, State, Us
                 .event(CASEWORKER_DELETE_DRAFT_ORDER)
                 .forStates(CaseManagement, ReadyToList, AwaitingHearing, CaseStayed, CaseClosed)
                 .name("Orders: Delete Draft Order")
-                .showSummary()
                 .aboutToSubmitCallback(this::aboutToSubmit)
                 .submittedCallback(this::submitted)
                 .grant(CREATE_READ_UPDATE, SUPER_USER,
@@ -59,7 +63,8 @@ public class CaseworkerDeleteDraftOrder implements CCDConfig<CaseData, State, Us
                 .publishToCamunda();
 
         PageBuilder pageBuilder = new PageBuilder(eventBuilder);
-        deleteDraftOrder.addTo(pageBuilder);
+        showDraftOrders.addTo(pageBuilder);
+        showRemovedDraftOrders.addTo(pageBuilder);
     }
 
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(
@@ -68,22 +73,13 @@ public class CaseworkerDeleteDraftOrder implements CCDConfig<CaseData, State, Us
     ) {
 
         CaseData caseData = details.getData();
-        DynamicList dynamicList = caseData.getCicCase().getDraftOrderDynamicList();
+        CicCase cicCase = repopulateDynamicDraftList(caseData.getCicCase());
 
-        int listSize = dynamicList.getListItems().size();
-        UUID code = dynamicList.getValue().getCode();
+        caseData.setCicCase(cicCase);
 
-        IntStream.range(0, listSize)
-            .filter(i -> code.equals(dynamicList.getListItems().get(i).getCode()))
-            .findFirst()
-            .ifPresent(index -> {
-                // draftOrderCICList is in reverse order
-                caseData.getCicCase().getDraftOrderCICList().remove(listSize - 1 - index);
+        List<ListValue<DraftOrderCIC>> listValues = new ArrayList<>();
+        caseData.getCicCase().setRemovedDraftList(listValues);
 
-            });
-
-        caseData.getCicCase().getDraftOrderDynamicList().getListItems().remove(dynamicList.getValue());
-        caseData.getCicCase().getDraftOrderDynamicList().setValue(null);
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
