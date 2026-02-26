@@ -241,7 +241,8 @@ class CaseworkerRemoveBundlesTest {
             caseworkerRemoveBundles.aboutToStart(updatedCaseDetails);
 
         //Then
-        assertThat(response.getData().getCicCase().getRemoveBundlesList().getListItems().size()).isEqualTo(3);
+        assertThat(response.getData().getCicCase().getRemoveBundlesList().getListItems())
+            .hasSize(3);
         assertThat(response.getData().getCicCase().getRemoveBundlesList().getListItems().getFirst().getLabel())
             .isEqualTo(bundleTimestamp1 + " -- 1-cicBundle.pdf");
         assertThat(response.getData().getCicCase().getRemoveBundlesList().getListItems().get(1).getLabel())
