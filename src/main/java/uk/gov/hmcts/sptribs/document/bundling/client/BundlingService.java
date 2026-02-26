@@ -67,7 +67,7 @@ public class BundlingService {
     @Autowired
     private Clock clock;
 
-    public List<Bundle> createBundle(Callback callback) {
+    public List<Bundle> createBundle(Callback callback, String caseId) {
         BundleResponse response;
         try {
             response = bundlingClient.createBundle(
@@ -75,8 +75,7 @@ public class BundlingService {
                 httpServletRequest.getHeader(AUTHORIZATION),
                 callback);
 
-            return getBundleFromResponse((List<LinkedHashMap<String, Object>>) response.getData().get(CASE_BUNDLES),
-                String.valueOf(response.getData().get("caseId")));
+            return getBundleFromResponse((List<LinkedHashMap<String, Object>>) response.getData().get(CASE_BUNDLES), caseId);
         } catch (FeignException exception) {
             log.error("Unable to create bundle {}",
                 exception.getMessage());

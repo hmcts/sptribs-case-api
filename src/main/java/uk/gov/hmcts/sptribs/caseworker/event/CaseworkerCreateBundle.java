@@ -113,7 +113,7 @@ public class CaseworkerCreateBundle implements CCDConfig<CaseData, State, UserRo
         final BundleCallback bundleCallback = new BundleCallback(callback);
 
         List<ListValue<Bundle>> existingBundles = getExistingBundles(beforeDetails);
-        caseData.setCaseBundles(getConfiguredCaseBundles(caseData, bundleCallback, existingBundles));
+        caseData.setCaseBundles(getConfiguredCaseBundles(caseData, bundleCallback, existingBundles, details.getId().toString()));
 
         caseData.setMultiBundleConfiguration(null);
         caseData.setCaseDocuments(null);
@@ -172,8 +172,11 @@ public class CaseworkerCreateBundle implements CCDConfig<CaseData, State, UserRo
 
     private List<ListValue<Bundle>> getConfiguredCaseBundles(CaseData caseData,
                                                              BundleCallback bundleCallback,
-                                                             List<ListValue<Bundle>> existingBundles) {
-        List<ListValue<Bundle>> caseBundles = bundlingService.buildBundleListValues(bundlingService.createBundle(bundleCallback));
+                                                             List<ListValue<Bundle>> existingBundles,
+                                                             String caseId) {
+        List<ListValue<Bundle>> caseBundles = bundlingService.buildBundleListValues(
+            bundlingService.createBundle(bundleCallback, caseId)
+        );
 
         if (caseBundles == null) {
             return null;
