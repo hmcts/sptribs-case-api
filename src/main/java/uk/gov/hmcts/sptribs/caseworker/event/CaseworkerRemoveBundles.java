@@ -11,7 +11,7 @@ import uk.gov.hmcts.ccd.sdk.type.DynamicListElement;
 import uk.gov.hmcts.ccd.sdk.type.DynamicMultiSelectList;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
-import uk.gov.hmcts.sptribs.caseworker.event.page.SelectBundle;
+import uk.gov.hmcts.sptribs.caseworker.event.page.SelectBundles;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
@@ -43,7 +43,7 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 public class CaseworkerRemoveBundles implements CCDConfig<CaseData, State, UserRole> {
 
 
-    private static final SelectBundle selectBundle = new SelectBundle();
+    private static final SelectBundles selectBundles = new SelectBundles();
 
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
@@ -65,7 +65,7 @@ public class CaseworkerRemoveBundles implements CCDConfig<CaseData, State, UserR
                 SUPER_USER,
                 ST_CIC_JUDGE));
 
-        selectBundle.addTo(pageBuilder);
+        selectBundles.addTo(pageBuilder);
     }
 
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToStart(CaseDetails<CaseData, State> details) {

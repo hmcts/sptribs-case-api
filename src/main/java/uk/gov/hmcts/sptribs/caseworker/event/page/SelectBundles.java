@@ -5,7 +5,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 
-public class SelectBundle implements CcdPageConfiguration {
+public class SelectBundles implements CcdPageConfiguration {
 
     @Override
     public void addTo(PageBuilder pageBuilder) {
