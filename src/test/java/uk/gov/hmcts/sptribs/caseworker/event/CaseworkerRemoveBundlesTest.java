@@ -129,11 +129,28 @@ class CaseworkerRemoveBundlesTest {
     }
 
     @Test
+    void shouldSuccessfullyPrepareBundleLabelsOnAboutToStart() {
+        //When
+        AboutToStartOrSubmitResponse<CaseData, State> response =
+            caseworkerRemoveBundles.aboutToStart(updatedCaseDetails);
+
+        //Then
+        assertThat(response.getData().getCicCase().getRemoveBundlesList().getListItems())
+            .hasSize(3);
+        assertThat(response.getData().getCicCase().getRemoveBundlesList().getListItems().getFirst().getLabel())
+            .isEqualTo(caseData.getCaseBundles().getFirst().getValue().getDateAndTime() + " -- 1-cicBundle.pdf");
+        assertThat(response.getData().getCicCase().getRemoveBundlesList().getListItems().get(1).getLabel())
+            .isEqualTo(caseData.getCaseBundles().get(1).getValue().getDateAndTime() + " -- 2-cicBundle.pdf");
+        assertThat(response.getData().getCicCase().getRemoveBundlesList().getListItems().get(2).getLabel())
+            .isEqualTo(caseData.getCaseBundles().get(2).getValue().getDateAndTime() + " -- 3-cicBundle.pdf");
+        assertThat(response.getData().getCicCase().getRemoveBundlesList().getValue()).isNull();
+    }
+
+    @Test
     void shouldSuccessfullyDeleteBundlesOnAboutToSubmit() {
         //Given
         UUID dynamicListElementCode1 = UUID.randomUUID();
         UUID dynamicListElementCode2 = UUID.randomUUID();
-        UUID dynamicListElementCode3 = UUID.randomUUID();
 
         List<DynamicListElement> removeBundleLabels = List.of(
             DynamicListElement.builder()
@@ -145,7 +162,7 @@ class CaseworkerRemoveBundlesTest {
                 .label(caseData.getCaseBundles().get(1).getValue().getDateAndTime() + " -- 2-cicBundle.pdf")
                 .build(),
             DynamicListElement.builder()
-                .code(dynamicListElementCode3)
+                .code(UUID.randomUUID())
                 .label(caseData.getCaseBundles().get(2).getValue().getDateAndTime() + " -- 3-cicBundle.pdf")
                 .build()
         );
@@ -178,24 +195,6 @@ class CaseworkerRemoveBundlesTest {
         //Then
         assertThat(response.getData().getCaseBundles()).hasSize(1);
         assertThat(response.getData().getCicCase().getRemoveBundlesList().getListItems()).isNull();
-        assertThat(response.getData().getCicCase().getRemoveBundlesList().getValue()).isNull();
-    }
-
-    @Test
-    void shouldSuccessfullyPrepareBundleLabelsOnAboutToStart() {
-        //When
-        AboutToStartOrSubmitResponse<CaseData, State> response =
-            caseworkerRemoveBundles.aboutToStart(updatedCaseDetails);
-
-        //Then
-        assertThat(response.getData().getCicCase().getRemoveBundlesList().getListItems())
-            .hasSize(3);
-        assertThat(response.getData().getCicCase().getRemoveBundlesList().getListItems().getFirst().getLabel())
-            .isEqualTo(caseData.getCaseBundles().getFirst().getValue().getDateAndTime() + " -- 1-cicBundle.pdf");
-        assertThat(response.getData().getCicCase().getRemoveBundlesList().getListItems().get(1).getLabel())
-            .isEqualTo(caseData.getCaseBundles().get(1).getValue().getDateAndTime() + " -- 2-cicBundle.pdf");
-        assertThat(response.getData().getCicCase().getRemoveBundlesList().getListItems().get(2).getLabel())
-            .isEqualTo(caseData.getCaseBundles().get(2).getValue().getDateAndTime() + " -- 3-cicBundle.pdf");
         assertThat(response.getData().getCicCase().getRemoveBundlesList().getValue()).isNull();
     }
 
