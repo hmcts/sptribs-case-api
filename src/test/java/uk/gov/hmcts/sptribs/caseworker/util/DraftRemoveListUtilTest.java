@@ -8,29 +8,15 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.ccd.sdk.type.DynamicList;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
-import uk.gov.hmcts.sptribs.caseworker.model.CaseIssueDecision;
-import uk.gov.hmcts.sptribs.caseworker.model.CaseIssueFinalDecision;
-import uk.gov.hmcts.sptribs.caseworker.model.CloseCase;
-import uk.gov.hmcts.sptribs.caseworker.model.DocumentManagement;
 import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderCIC;
 import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderContentCIC;
-import uk.gov.hmcts.sptribs.caseworker.model.HearingSummary;
-import uk.gov.hmcts.sptribs.caseworker.model.Listing;
-import uk.gov.hmcts.sptribs.caseworker.model.Order;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.OrderTemplate;
-import uk.gov.hmcts.sptribs.document.model.CICDocument;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.caseData;
-import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.get2Document;
-import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getDocument;
 
 @ExtendWith(MockitoExtension.class)
 public class DraftRemoveListUtilTest {
@@ -111,7 +97,7 @@ public class DraftRemoveListUtilTest {
 
         CaseData result = DraftRemoveListUtil.setDraftListForRemoval(caseDataNew, caseDataOld);
 
-        Assertions.assertEquals(1 ,result.getCicCase().getRemovedDraftList().size());
+        Assertions.assertEquals(1, result.getCicCase().getRemovedDraftList().size());
     }
 
     @Test
@@ -122,8 +108,10 @@ public class DraftRemoveListUtilTest {
 
         Assertions.assertEquals(2, result.getDraftOrderDynamicList().getListItems().size());
         //DynamicList Order should be inverse of draftOrderCICList
-        Assertions.assertEquals("CIC3 - Rule 27--25-02-2026 15:47:25--draft.pdf", result.getDraftOrderDynamicList().getListItems().getFirst().getLabel());
-        Assertions.assertEquals(UUID.fromString("a57d1138-1f8d-4aeb-b5ad-3681aba68748"), result.getDraftOrderDynamicList().getListItems().getFirst().getCode());
+        Assertions.assertEquals("CIC3 - Rule 27--25-02-2026 15:47:25--draft.pdf",
+            result.getDraftOrderDynamicList().getListItems().getFirst().getLabel());
+        Assertions.assertEquals(UUID.fromString("a57d1138-1f8d-4aeb-b5ad-3681aba68748"),
+            result.getDraftOrderDynamicList().getListItems().getFirst().getCode());
 
     }
 }

@@ -14,7 +14,6 @@ import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.IntStream;
 
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.DOUBLE_HYPHEN;
 
@@ -85,16 +84,20 @@ public final class DraftRemoveListUtil {
         for (int i = draftOrderList.size() - 1; i >= 0; i--) {
             ListValue<DraftOrderCIC> draftOrderCIC = draftOrderList.get(i);
 
-            DynamicListElement element =  DynamicListElement.builder()
-                .label(generateDraftLabelName(draftOrderCIC.getValue()))
-                .code(generateUuidFromDraftURL(draftOrderCIC.getValue().getTemplateGeneratedDocument().getUrl()))
-                .build();
+            DynamicListElement element = createDynamicListElement(draftOrderCIC);
 
             dynamicDraftList.getListItems().add(element);
         }
 
         cicCase.setDraftOrderDynamicList(dynamicDraftList);
         return cicCase;
+    }
+
+    private static DynamicListElement createDynamicListElement(ListValue<DraftOrderCIC> draftOrderCIC) {
+        return DynamicListElement.builder()
+            .label(generateDraftLabelName(draftOrderCIC.getValue()))
+            .code(generateUuidFromDraftURL(draftOrderCIC.getValue().getTemplateGeneratedDocument().getUrl()))
+            .build();
     }
 
     private static String generateDraftLabelName(DraftOrderCIC draftOrderCIC) {
