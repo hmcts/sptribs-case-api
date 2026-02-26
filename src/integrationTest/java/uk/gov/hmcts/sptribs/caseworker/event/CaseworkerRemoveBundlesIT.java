@@ -208,6 +208,6 @@ public class CaseworkerRemoveBundlesIT {
         assertThat(caseDataAfterAboutToSubmit.getCaseBundleIdsAndTimestamps()).hasSize(1);
         assertThat(caseDataAfterAboutToSubmit.getCaseBundleIdsAndTimestamps().getFirst().getId()).isEqualTo("1");
         assertThat(caseDataAfterAboutToSubmit.getCaseBundleIdsAndTimestamps().getFirst().getValue().getBundleId()).isEqualTo(bundleUUID3);
-        assertThat(caseDataAfterAboutToSubmit.getCicCase().getRemoveBundlesList().getValue() == null);
+        assertThat(caseDataAfterAboutToSubmit.getCicCase().getRemoveBundlesList().getValue()).isNull();
     }
 }

@@ -188,12 +188,19 @@ class CaseworkerRemoveBundlesTest {
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
 
+        String bundleUUID3 = caseData.getCaseBundles().get(2).getValue().getId();
+
         //When
         AboutToStartOrSubmitResponse<CaseData, State> response =
             caseworkerRemoveBundles.aboutToSubmit(updatedCaseDetails, CaseDetails.<CaseData, State>builder().build());
 
         //Then
         assertThat(response.getData().getCaseBundles()).hasSize(1);
+        assertThat(response.getData().getCaseBundles().getFirst().getId()).isEqualTo("1");
+        assertThat(response.getData().getCaseBundles().getFirst().getValue().getId()).isEqualTo(bundleUUID3);
+        assertThat(response.getData().getCaseBundleIdsAndTimestamps()).hasSize(1);
+        assertThat(response.getData().getCaseBundleIdsAndTimestamps().getFirst().getId()).isEqualTo("1");
+        assertThat(response.getData().getCaseBundleIdsAndTimestamps().getFirst().getValue().getBundleId()).isEqualTo(bundleUUID3);
         assertThat(response.getData().getCicCase().getRemoveBundlesList().getListItems()).isNull();
         assertThat(response.getData().getCicCase().getRemoveBundlesList().getValue()).isNull();
     }
