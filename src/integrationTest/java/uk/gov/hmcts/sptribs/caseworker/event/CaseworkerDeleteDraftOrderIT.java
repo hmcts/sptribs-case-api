@@ -1,4 +1,4 @@
- package uk.gov.hmcts.sptribs.caseworker.event;
+package uk.gov.hmcts.sptribs.caseworker.event;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.AfterAll;
@@ -33,7 +33,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_DELETE_DRAFT_ORDER_MULTI;
+import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_DELETE_DRAFT_ORDER;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.ABOUT_TO_SUBMIT_URL;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.AUTHORIZATION;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.SERVICE_AUTHORIZATION;
@@ -41,7 +41,6 @@ import static uk.gov.hmcts.sptribs.testutil.TestConstants.SUBMITTED_URL;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_AUTHORIZATION_TOKEN;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.callbackRequest;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.caseData;
-import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getCaseworkerCICDocumentList;
 import static uk.gov.hmcts.sptribs.testutil.TestResourceUtil.expectedResponse;
 
 @ExtendWith(SpringExtension.class)
@@ -130,7 +129,7 @@ public class CaseworkerDeleteDraftOrderIT {
             .content(objectMapper.writeValueAsString(
                 callbackRequest(
                     caseData,
-                    CASEWORKER_DELETE_DRAFT_ORDER_MULTI)))
+                    CASEWORKER_DELETE_DRAFT_ORDER)))
             .accept(APPLICATION_JSON))
             .andExpect(
                 status().isOk())
@@ -162,7 +161,7 @@ public class CaseworkerDeleteDraftOrderIT {
             .content(objectMapper.writeValueAsString(
                 callbackRequest(
                     caseData,
-                    CASEWORKER_DELETE_DRAFT_ORDER_MULTI)))
+                    CASEWORKER_DELETE_DRAFT_ORDER)))
             .accept(APPLICATION_JSON))
             .andExpect(
                 status().isOk())
@@ -181,7 +180,7 @@ public class CaseworkerDeleteDraftOrderIT {
             .content(objectMapper.writeValueAsString(
                 callbackRequest(
                     caseData(),
-                    CASEWORKER_DELETE_DRAFT_ORDER_MULTI)))
+                    CASEWORKER_DELETE_DRAFT_ORDER)))
             .accept(APPLICATION_JSON))
             .andExpect(
                 status().isOk())

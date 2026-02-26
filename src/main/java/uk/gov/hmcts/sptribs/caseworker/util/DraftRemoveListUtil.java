@@ -80,16 +80,16 @@ public final class DraftRemoveListUtil {
             return cicCase;
         }
 
-            //DynamicDraftList is in reverse order to DraftOrderCICList
-            IntStream.iterate(cicCase.getDraftOrderCICList().size() - 1, i -> i >= 0, i -> i - 1)
-                .mapToObj(cicCase.getDraftOrderCICList()::get)
-                .map(draftOrderCIC ->
-                    DynamicListElement.builder()
-                        .label(generateDraftLabelName(draftOrderCIC.getValue()))
-                        .code(generateUUIDFromDraftURL(draftOrderCIC.getValue().getTemplateGeneratedDocument().getUrl()))
-                        .build()
-                )
-                .forEach(dynamicDraftList.getListItems()::add);
+        //DynamicDraftList is in reverse order to DraftOrderCICList
+        IntStream.iterate(cicCase.getDraftOrderCICList().size() - 1, i -> i >= 0, i -> i - 1)
+            .mapToObj(cicCase.getDraftOrderCICList()::get)
+            .map(draftOrderCIC ->
+                DynamicListElement.builder()
+                    .label(generateDraftLabelName(draftOrderCIC.getValue()))
+                    .code(generateUuidFromDraftURL(draftOrderCIC.getValue().getTemplateGeneratedDocument().getUrl()))
+                    .build()
+            )
+            .forEach(dynamicDraftList.getListItems()::add);
 
 
         cicCase.setDraftOrderDynamicList(dynamicDraftList);
@@ -120,18 +120,17 @@ public final class DraftRemoveListUtil {
         return m.group(1);
     }
 
-    private static UUID generateUUIDFromDraftURL(String url) {
+    private static UUID generateUuidFromDraftURL(String url) {
 
-        Pattern urlUUIDPattern = Pattern.compile("/documents/([0-9a-fA-F\\-]{36})(?:/|$)");
+        Pattern urlUuidPattern = Pattern.compile("/documents/([0-9a-fA-F\\-]{36})(?:/|$)");
 
-        Matcher matcher = urlUUIDPattern.matcher(url);
+        Matcher matcher = urlUuidPattern.matcher(url);
 
         if (!matcher.find()) {
-            throw new IllegalArgumentException("No document UUID found in url: " + url);
-
+            return UUID.randomUUID();
         }
 
-            return UUID.fromString(matcher.group(1));
+        return UUID.fromString(matcher.group(1));
     }
 
 }
