@@ -104,7 +104,7 @@ public class CaseworkerDeleteDraftOrderIT {
 
         final CicCase cicCase = CicCase.builder()
             .draftOrderCICList(new ArrayList<>(List.of(lv)))
-            .removedDraftList(new ArrayList<>(List.of(lv))) // will be cleared by aboutToSubmit
+            .removedDraftList(new ArrayList<>(List.of(lv)))
             .draftOrderDynamicList(DynamicList.builder()
                 .listItems(new ArrayList<>())
                 .build())

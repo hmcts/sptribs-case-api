@@ -37,7 +37,6 @@ public final class DraftRemoveListUtil {
             }
         }
 
-
         return caseData;
     }
 
@@ -80,17 +79,19 @@ public final class DraftRemoveListUtil {
             return cicCase;
         }
 
-        //DynamicDraftList is in reverse order to DraftOrderCICList
-        IntStream.iterate(cicCase.getDraftOrderCICList().size() - 1, i -> i >= 0, i -> i - 1)
-            .mapToObj(cicCase.getDraftOrderCICList()::get)
-            .map(draftOrderCIC ->
-                DynamicListElement.builder()
-                    .label(generateDraftLabelName(draftOrderCIC.getValue()))
-                    .code(generateUuidFromDraftURL(draftOrderCIC.getValue().getTemplateGeneratedDocument().getUrl()))
-                    .build()
-            )
-            .forEach(dynamicDraftList.getListItems()::add);
+        List<ListValue<DraftOrderCIC>> draftOrderList = cicCase.getDraftOrderCICList();
 
+        //DynamicDraftList is in reverse order to DraftOrderCICList
+        for (int i = draftOrderList.size() - 1; i >= 0; i--) {
+            ListValue<DraftOrderCIC> draftOrderCIC = draftOrderList.get(i);
+
+            DynamicListElement element =  DynamicListElement.builder()
+                .label(generateDraftLabelName(draftOrderCIC.getValue()))
+                .code(generateUuidFromDraftURL(draftOrderCIC.getValue().getTemplateGeneratedDocument().getUrl()))
+                .build();
+
+            dynamicDraftList.getListItems().add(element);
+        }
 
         cicCase.setDraftOrderDynamicList(dynamicDraftList);
         return cicCase;
