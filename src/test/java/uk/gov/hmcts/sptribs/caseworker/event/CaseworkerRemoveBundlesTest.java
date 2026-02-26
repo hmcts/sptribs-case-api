@@ -183,10 +183,7 @@ class CaseworkerRemoveBundlesTest {
             .value(selectedRemoveBundleLabels)
             .build());
 
-        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
         updatedCaseDetails.setData(caseData);
-        updatedCaseDetails.setId(TEST_CASE_ID);
-        updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
 
         String bundleUUID3 = caseData.getCaseBundles().get(2).getValue().getId();
 

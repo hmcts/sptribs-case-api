@@ -80,8 +80,7 @@ public class CaseworkerRemoveBundlesIT {
     }
 
     @Test
-    void shouldRemoveAllBundlesAndBundleDataForAllBundlesSelectedForDeletionOnAboutToSubmit()
-        throws Exception {
+    void shouldRemoveAllBundlesAndBundleDataForAllBundlesSelectedForDeletionOnAboutToSubmit() throws Exception {
 
         String bundleUUID1 = UUID.randomUUID().toString();
         String bundleUUID2 = UUID.randomUUID().toString();
