@@ -116,13 +116,10 @@ class CaseworkerRemoveBundlesTest {
 
     @Test
     void shouldAddConfigurationToConfigBuilder() {
-        //Given
         final ConfigBuilderImpl<CaseData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
 
-        //When
         caseworkerRemoveBundles.configure(configBuilder);
 
-        //Then
         assertThat(getEventsFrom(configBuilder).values())
             .extracting(Event::getId)
             .contains(REMOVE_BUNDLES);
@@ -130,11 +127,9 @@ class CaseworkerRemoveBundlesTest {
 
     @Test
     void shouldSuccessfullyPrepareBundleLabelsOnAboutToStart() {
-        //When
         AboutToStartOrSubmitResponse<CaseData, State> response =
             caseworkerRemoveBundles.aboutToStart(updatedCaseDetails);
 
-        //Then
         assertThat(response.getData().getCicCase().getRemoveBundlesList().getListItems())
             .hasSize(3);
         assertThat(response.getData().getCicCase().getRemoveBundlesList().getListItems().getFirst().getLabel())
@@ -148,7 +143,6 @@ class CaseworkerRemoveBundlesTest {
 
     @Test
     void shouldSuccessfullyDeleteBundlesOnAboutToSubmit() {
-        //Given
         UUID dynamicListElementCode1 = UUID.randomUUID();
         UUID dynamicListElementCode2 = UUID.randomUUID();
 
@@ -187,11 +181,9 @@ class CaseworkerRemoveBundlesTest {
 
         String bundleUUID3 = caseData.getCaseBundles().get(2).getValue().getId();
 
-        //When
         AboutToStartOrSubmitResponse<CaseData, State> response =
             caseworkerRemoveBundles.aboutToSubmit(updatedCaseDetails, CaseDetails.<CaseData, State>builder().build());
 
-        //Then
         assertThat(response.getData().getCaseBundles()).hasSize(1);
         assertThat(response.getData().getCaseBundles().getFirst().getId()).isEqualTo("1");
         assertThat(response.getData().getCaseBundles().getFirst().getValue().getId()).isEqualTo(bundleUUID3);

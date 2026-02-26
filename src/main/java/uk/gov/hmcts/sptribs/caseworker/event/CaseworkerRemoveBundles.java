@@ -104,14 +104,12 @@ public class CaseworkerRemoveBundles implements CCDConfig<CaseData, State, UserR
 
         List<DynamicListElement> selectedBundleLabels = caseData.getCicCase().getRemoveBundlesList().getValue();
 
-        // get the timestamps of the bundles to be deleted from the labels of the selected bundles
         List<String> timestampsOfBundlesToDelete = new ArrayList<>();
         for (DynamicListElement selectedBundleLabel : selectedBundleLabels) {
             String bundleTimestamp = selectedBundleLabel.getLabel().split(DOUBLE_HYPHEN)[0].trim();
             timestampsOfBundlesToDelete.add(bundleTimestamp);
         }
 
-        // search the bundles by their timestamp for the ones to delete
         List<ListValue<Bundle>> allBundles = caseData.getCaseBundles();
         List<ListValue<Bundle>> selectedBundlesToDelete = new ArrayList<>();
         for (ListValue<Bundle> bundleListValue : allBundles) {
@@ -123,20 +121,17 @@ public class CaseworkerRemoveBundles implements CCDConfig<CaseData, State, UserR
         List<String> idsOfBundlesToBeRemoved = new ArrayList<>();
         List<ListValue<BundleIdAndTimestamp>> idsAndTimestampsOfBundlesToBeRemoved = new ArrayList<>();
 
-        // delete selected bundles and save their ids so that they can be removed from the list of bundle ids and timestamps
         for (ListValue<Bundle> bundle : selectedBundlesToDelete) {
             idsOfBundlesToBeRemoved.add(bundle.getValue().getId());
             caseData.getCaseBundles().remove(bundle);
         }
 
-        // search, by their ids, the ids and timestamps of the bundles to be removed
         for (ListValue<BundleIdAndTimestamp> bundleIdAndTimestamp : caseData.getCaseBundleIdsAndTimestamps()) {
             if (idsOfBundlesToBeRemoved.contains(bundleIdAndTimestamp.getValue().getBundleId())) {
                 idsAndTimestampsOfBundlesToBeRemoved.add(bundleIdAndTimestamp);
             }
         }
 
-        // delete the ids and timestamps of the bundles to be removed
         for (ListValue<BundleIdAndTimestamp> bundleIdAndTimestampToBeRemoved : idsAndTimestampsOfBundlesToBeRemoved) {
             caseData.getCaseBundleIdsAndTimestamps().remove(bundleIdAndTimestampToBeRemoved);
         }
@@ -150,7 +145,6 @@ public class CaseworkerRemoveBundles implements CCDConfig<CaseData, State, UserR
             .build();
     }
 
-    // make sure list value IDs are sequential starting from 1 after deletion of bundles so that there are no collection ID dupes
     public void fixListValueIds(List<ListValue<Bundle>> bundles, List<ListValue<BundleIdAndTimestamp>> bundleIdAndTimestamps) {
         final AtomicInteger listValueIndex = new AtomicInteger(0);
         for (ListValue<Bundle> bundle : bundles) {

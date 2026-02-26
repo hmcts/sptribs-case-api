@@ -33,7 +33,7 @@ public class CaseworkerRemoveBundlesFT extends FunctionalTestSuite {
     private static final String RESPONSE_ABOUT_TO_SUBMIT = "classpath:responses/response-caseworker-remove-bundles-about-to-submit.json";
 
     @Test
-    public void shouldReturnCorrectBundleWhenAboutToStartCallbackIsInvoked() throws Exception {
+    public void shouldInitialiseRemoveBundlesListWhenAboutToStartCallbackIsInvoked() throws Exception {
         final Map<String, Object> caseData = caseData(REQUEST_ABOUT_TO_START);
 
         final Response response = triggerCallback(caseData, REMOVE_BUNDLES, ABOUT_TO_START_URL);

@@ -90,7 +90,6 @@ public class CaseworkerRemoveBundlesIT {
         final LocalDateTime bundleTimestamp2 = LocalDateTime.now().minusDays(1);
         final LocalDateTime bundleTimestamp3 = LocalDateTime.now().minusDays(2);
 
-
         final CaseData caseData = caseData();
         List<ListValue<Bundle>> existingBundles = new ArrayList<>();
         existingBundles.add(ListValue.<Bundle>builder()
@@ -142,7 +141,6 @@ public class CaseworkerRemoveBundlesIT {
                     .build())
                 .build()
         );
-
         caseData.setCaseBundleIdsAndTimestamps(bundleIdAndTimestamps);
 
         String aboutToStartResponse = mockMvc.perform(post(ABOUT_TO_START_URL)
@@ -163,23 +161,23 @@ public class CaseworkerRemoveBundlesIT {
         HashMap<String, Object> aboutToStartResponseMap = objectMapper.readValue(aboutToStartResponse, TYPE_REFERENCE);
         CaseData caseDataAfterAboutToStart = objectMapper.convertValue(aboutToStartResponseMap.get("data"), CaseData.class);
 
-        List<DynamicListElement> removeBundleLabels = caseDataAfterAboutToStart.getCicCase().getRemoveBundlesList().getListItems();
+        List<DynamicListElement> removeBundlesLabels = caseDataAfterAboutToStart.getCicCase().getRemoveBundlesList().getListItems();
 
-        assertThat(removeBundleLabels).hasSize(3);
+        assertThat(removeBundlesLabels).hasSize(3);
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS");
 
-        assertThat(removeBundleLabels.getFirst().getLabel())
+        assertThat(removeBundlesLabels.getFirst().getLabel())
             .isEqualTo(bundleTimestamp1.format(formatter) + " -- " + "1-cicBundle.pdf");
-        assertThat(removeBundleLabels.get(1).getLabel())
+        assertThat(removeBundlesLabels.get(1).getLabel())
             .isEqualTo(bundleTimestamp2.format(formatter) + " -- " + "2-cicBundle.pdf");
-        assertThat(removeBundleLabels.get(2).getLabel())
+        assertThat(removeBundlesLabels.get(2).getLabel())
             .isEqualTo(bundleTimestamp3.format(formatter) + " -- " + "3-cicBundle.pdf");
 
 
         List<DynamicListElement> value = new ArrayList<>();
-        value.add(removeBundleLabels.getFirst());
-        value.add(removeBundleLabels.get(1));
+        value.add(removeBundlesLabels.getFirst());
+        value.add(removeBundlesLabels.get(1));
 
         caseDataAfterAboutToStart.getCicCase().getRemoveBundlesList().setValue(value);
 
