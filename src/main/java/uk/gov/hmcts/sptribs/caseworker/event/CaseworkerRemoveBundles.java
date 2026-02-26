@@ -50,6 +50,7 @@ public class CaseworkerRemoveBundles implements CCDConfig<CaseData, State, UserR
         PageBuilder pageBuilder = new PageBuilder(configBuilder
             .event(REMOVE_BUNDLES)
             .forStates(CaseManagement, AwaitingHearing)
+            .showCondition("caseBundles!=\"[]\"")
             .name("Bundle: Remove bundles")
             .description("Bundle: Remove bundles")
             .showSummary()
