@@ -8,7 +8,9 @@
           "dateAndTime": "2024-06-09T12:00:00.000",
           "title": "CIC Bundle",
           "description": "",
-          "fileName": "3-cicBundle.pdf",
+          "stitchedDocument": {
+            "document_filename": "3-cicBundle.pdf"
+          },
           "folders": [
             {
               "id": "37",
