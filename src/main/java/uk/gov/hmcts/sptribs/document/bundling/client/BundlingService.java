@@ -216,10 +216,14 @@ public class BundlingService {
 
         LinkedHashMap<String, Object> stitchedDocMap = (LinkedHashMap<String, Object>) objectLinkedHashMap.get(STITCHED_DOCUMENT);
 
+        String stitchedDocumentFilename = MapUtils.getString(stitchedDocMap, DOCUMENT_FILENAME, "").contains(caseId)
+            ? MapUtils.getString(stitchedDocMap, DOCUMENT_FILENAME, "")
+            : caseId + MapUtils.getString(stitchedDocMap, DOCUMENT_FILENAME, "");
+
         return Document.builder()
             .url(MapUtils.getString(stitchedDocMap, DOCUMENT_URL, ""))
             .binaryUrl(MapUtils.getString(stitchedDocMap, DOCUMENT_BINARY_URL, ""))
-            .filename(caseId + MapUtils.getString(stitchedDocMap, DOCUMENT_FILENAME, ""))
+            .filename(stitchedDocumentFilename)
             .build();
     }
 
