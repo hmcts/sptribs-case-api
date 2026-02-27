@@ -28,11 +28,18 @@ public final class DraftRemoveListUtil {
 
         List<ListValue<DraftOrderCIC>> draftOrderList = oldData.getCicCase().getDraftOrderCICList();
 
-        if (draftOrderList.size() > caseData.getCicCase().getDraftOrderCICList().size()) {
-            for (ListValue<DraftOrderCIC> cicDraftOrder : draftOrderList) {
-                if (!caseData.getCicCase().getDraftOrderCICList().contains(cicDraftOrder)) {
-                    addToRemovedDraftOrdersList(caseData.getCicCase(), cicDraftOrder.getValue());
-                }
+        CicCase cicCase = caseData.getCicCase();
+
+        List<DraftOrderCIC> currentDrafts = cicCase.getDraftOrderCICList()
+            .stream()
+            .map(ListValue::getValue)
+            .toList();
+
+        for (ListValue<DraftOrderCIC> listValue : draftOrderList) {
+            DraftOrderCIC draftOrder = listValue.getValue();
+
+            if (!currentDrafts.contains(draftOrder)) {
+                addToRemovedDraftOrdersList(cicCase, draftOrder);
             }
         }
 

@@ -19,14 +19,18 @@ import java.util.List;
 import java.util.UUID;
 
 @ExtendWith(MockitoExtension.class)
-public class DraftRemoveListUtilTest {
+class DraftRemoveListUtilTest {
 
     CaseData caseDataNew = new CaseData();
     CaseData caseDataOld = new CaseData();
+    ListValue<DraftOrderCIC> lv1 = new ListValue<>();
+    ListValue<DraftOrderCIC> lv2 = new ListValue<>();
+    ListValue<DraftOrderCIC> lv3 = new ListValue<>();
+    ListValue<DraftOrderCIC> lv4 = new ListValue<>();
 
 
     @BeforeEach
-    void setUp() {
+    public void setUp() {
 
         final Document document = Document.builder()
             .url("test/documents/a57d1138-1f8d-4aeb-b5ad-3681aba68747")
@@ -37,6 +41,13 @@ public class DraftRemoveListUtilTest {
 
         final Document document2 = Document.builder()
             .url("test/documents/a57d1138-1f8d-4aeb-b5ad-3681aba68748")
+            .filename("Order--[test]--25-02-2026 15:47:25.pdf")
+            .binaryUrl("test")
+            .categoryId("TD")
+            .build();
+
+        final Document document3 = Document.builder()
+            .url("test/documents/test")
             .filename("Order--[test]--25-02-2026 15:47:25.pdf")
             .binaryUrl("test")
             .categoryId("TD")
@@ -58,35 +69,31 @@ public class DraftRemoveListUtilTest {
             .draftOrderContentCIC(content)
             .build();
 
+        final DraftOrderCIC draftOrder3 = DraftOrderCIC.builder()
+            .templateGeneratedDocument(document3)
+            .draftOrderContentCIC(content)
+            .build();
 
-        final ListValue<DraftOrderCIC> lv = ListValue.<DraftOrderCIC>builder()
+
+        lv1 = ListValue.<DraftOrderCIC>builder()
             .id("1")
             .value(draftOrder)
             .build();
 
-        final ListValue<DraftOrderCIC> lv2 = ListValue.<DraftOrderCIC>builder()
+        lv2 = ListValue.<DraftOrderCIC>builder()
             .id("2")
             .value(draftOrder)
             .build();
 
-        final ListValue<DraftOrderCIC> lv3 = ListValue.<DraftOrderCIC>builder()
+        lv3 = ListValue.<DraftOrderCIC>builder()
             .id("3")
             .value(draftOrder2)
             .build();
 
-        caseDataOld.setCicCase(CicCase.builder()
-            .draftOrderCICList(new ArrayList<>(List.of(lv, lv2, lv3)))
-            .draftOrderDynamicList(DynamicList.builder()
-                .listItems(new ArrayList<>())
-                .build())
-            .build());
-
-        caseDataNew.setCicCase(CicCase.builder()
-            .draftOrderCICList(new ArrayList<>(List.of(lv, lv3)))
-            .draftOrderDynamicList(DynamicList.builder()
-                .listItems(new ArrayList<>())
-                .build())
-            .build());
+        lv4 = ListValue.<DraftOrderCIC>builder()
+            .id("4")
+            .value(draftOrder3)
+            .build();
 
     }
 
@@ -94,6 +101,19 @@ public class DraftRemoveListUtilTest {
     @Test
     void shouldCorrectlyPopulateDraftRemovalList() {
 
+        caseDataOld.setCicCase(CicCase.builder()
+            .draftOrderCICList(new ArrayList<>(List.of(lv1, lv3)))
+            .draftOrderDynamicList(DynamicList.builder()
+                .listItems(new ArrayList<>())
+                .build())
+            .build());
+
+        caseDataNew.setCicCase(CicCase.builder()
+            .draftOrderCICList(new ArrayList<>(List.of(lv1)))
+            .draftOrderDynamicList(DynamicList.builder()
+                .listItems(new ArrayList<>())
+                .build())
+            .build());
 
         CaseData result = DraftRemoveListUtil.setDraftListForRemoval(caseDataNew, caseDataOld);
 
@@ -101,7 +121,67 @@ public class DraftRemoveListUtilTest {
     }
 
     @Test
+    void shouldNotPopulateIfDraftOrderValueIsSame() {
+        caseDataOld.setCicCase(CicCase.builder()
+            .draftOrderCICList(new ArrayList<>(List.of(lv1, lv2)))
+            .draftOrderDynamicList(DynamicList.builder()
+                .listItems(new ArrayList<>())
+                .build())
+            .build());
+
+        caseDataNew.setCicCase(CicCase.builder()
+            .draftOrderCICList(new ArrayList<>(List.of(lv1)))
+            .draftOrderDynamicList(DynamicList.builder()
+                .listItems(new ArrayList<>())
+                .build())
+            .build());
+
+
+        CaseData result = DraftRemoveListUtil.setDraftListForRemoval(caseDataNew, caseDataOld);
+
+        Assertions.assertNull(result.getCicCase().getRemovedDraftList());
+    }
+
+    @Test
+    void newRemovedDraftOrdersShouldBePlacedOnTopOfList() {
+        caseDataOld.setCicCase(CicCase.builder()
+            .draftOrderCICList(new ArrayList<>(List.of(lv1, lv3, lv4)))
+            .draftOrderDynamicList(DynamicList.builder()
+                .listItems(new ArrayList<>())
+                .build())
+            .build());
+
+        caseDataNew.setCicCase(CicCase.builder()
+            .draftOrderCICList(new ArrayList<>(List.of(lv1)))
+            .draftOrderDynamicList(DynamicList.builder()
+                .listItems(new ArrayList<>())
+                .build())
+            .build());
+
+
+        CaseData result = DraftRemoveListUtil.setDraftListForRemoval(caseDataNew, caseDataOld);
+
+        Assertions.assertEquals(lv4.getValue(), result.getCicCase().getRemovedDraftList().getFirst().getValue());
+    }
+
+
+    @Test
     void shouldCorrectlyRepopulateDraftDynamicList() {
+
+        caseDataOld.setCicCase(CicCase.builder()
+            .draftOrderCICList(new ArrayList<>(List.of(lv1, lv3, lv4)))
+            .draftOrderDynamicList(DynamicList.builder()
+                .listItems(new ArrayList<>())
+                .build())
+            .build());
+
+        caseDataNew.setCicCase(CicCase.builder()
+            .draftOrderCICList(new ArrayList<>(List.of(lv1, lv3)))
+            .draftOrderDynamicList(DynamicList.builder()
+                .listItems(new ArrayList<>())
+                .build())
+            .build());
+
 
         CicCase result = DraftRemoveListUtil.repopulateDynamicDraftList(caseDataNew.getCicCase());
 
@@ -114,4 +194,54 @@ public class DraftRemoveListUtilTest {
             result.getDraftOrderDynamicList().getListItems().getFirst().getCode());
 
     }
+
+    @Test
+    void shouldReturnNullDynamicListIfDraftOrderCICListIsEmpty() {
+
+        caseDataOld.setCicCase(CicCase.builder()
+            .draftOrderCICList(new ArrayList<>(List.of(lv1)))
+            .draftOrderDynamicList(DynamicList.builder()
+                .listItems(new ArrayList<>())
+                .build())
+            .build());
+
+        caseDataNew.setCicCase(CicCase.builder()
+            .draftOrderCICList(new ArrayList<>(List.of()))
+            .draftOrderDynamicList(DynamicList.builder()
+                .listItems(new ArrayList<>())
+                .build())
+            .build());
+
+
+        CicCase result = DraftRemoveListUtil.repopulateDynamicDraftList(caseDataNew.getCicCase());
+
+
+        Assertions.assertNull(result.getRemovedDraftList());
+
+    }
+
+    @Test
+    void shouldSetUuidToRandomIfRegexMatchesNoPattern() {
+
+        caseDataOld.setCicCase(CicCase.builder()
+            .draftOrderCICList(new ArrayList<>(List.of(lv1, lv4)))
+            .draftOrderDynamicList(DynamicList.builder()
+                .listItems(new ArrayList<>())
+                .build())
+            .build());
+
+        caseDataNew.setCicCase(CicCase.builder()
+            .draftOrderCICList(new ArrayList<>(List.of(lv4)))
+            .draftOrderDynamicList(DynamicList.builder()
+                .listItems(new ArrayList<>())
+                .build())
+            .build());
+
+
+        CicCase result = DraftRemoveListUtil.repopulateDynamicDraftList(caseDataNew.getCicCase());
+
+        Assertions.assertNotNull(result.getDraftOrderDynamicList().getListItems().getFirst().getCode());
+
+    }
+
 }

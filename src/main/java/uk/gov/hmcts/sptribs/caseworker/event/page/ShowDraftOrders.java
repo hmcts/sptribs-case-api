@@ -27,7 +27,7 @@ public class ShowDraftOrders implements CcdPageConfiguration {
             .pageLabel("Show draft documents")
             .label("LabelShowDraftDocuments", "")
             .complex(CaseData::getCicCase)
-            .readonlyWithLabel(CicCase::getDraftOrderCICList, "Draft order to be deleted")
+            .readonlyWithLabel(CicCase::getDraftOrderCICList, "Draft orders")
             .done();
     }
 

@@ -45,7 +45,7 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 @RequiredArgsConstructor
 public class CaseworkerDeleteDraftOrder implements CCDConfig<CaseData, State, UserRole> {
 
-    private static final CcdPageConfiguration showDraftOrders = new ShowDraftOrders();
+    static final CcdPageConfiguration showDraftOrders = new ShowDraftOrders();
     private static final ShowRemovedDraftOrders showRemovedDraftOrders = new ShowRemovedDraftOrders();
 
     @Override
