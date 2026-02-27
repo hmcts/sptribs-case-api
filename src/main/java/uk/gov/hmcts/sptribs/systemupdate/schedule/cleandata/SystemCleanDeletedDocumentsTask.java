@@ -1,8 +1,8 @@
 package uk.gov.hmcts.sptribs.systemupdate.schedule.cleandata;
 
 import lombok.extern.slf4j.Slf4j;
-import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.idam.client.models.User;
@@ -16,9 +16,6 @@ import uk.gov.hmcts.sptribs.systemupdate.service.CcdUpdateService;
 import java.time.LocalDate;
 import java.util.List;
 
-import static org.elasticsearch.index.query.QueryBuilders.boolQuery;
-import static org.elasticsearch.index.query.QueryBuilders.matchQuery;
-import static org.elasticsearch.index.query.QueryBuilders.rangeQuery;
 import static uk.gov.hmcts.sptribs.systemupdate.event.SystemCleanDeletedDocumentsCase.SYSTEM_CLEAN_DELETED_DOCUMENTS;
 
 @Component
@@ -49,15 +46,12 @@ public class SystemCleanDeletedDocumentsTask implements Runnable {
     }
 
     @Override
+    @Scheduled(cron = "0 * * * * *")
     public void run() {
         final User user = idamService.retrieveSystemUpdateUserDetails();
         final String serviceAuth = authTokenGenerator.generate();
 
         try {
-            final BoolQueryBuilder query = boolQuery()
-                .must(matchQuery("state", "DSS_Draft"))
-                .filter(rangeQuery("last_modified").lte(LocalDate.now().minusDays(30)));
-
 
             //date probs needs formatting
             final List<Long> caseIdsToUpdate = caseEventRepository.getListOfCasesByEventTypeAndDate(CASE_EVENT_ID, DELETE_FROM_DATE.toString());
@@ -68,6 +62,7 @@ public class SystemCleanDeletedDocumentsTask implements Runnable {
                 triggerSystemClearInactiveDssDraftCase(user, serviceAuth, caseId);
             }
 
+            //redo logs
             log.info("System clear inactive Dss Draft cases scheduled task complete.");
         } catch (final CcdSearchCaseException e) {
             log.error("System clear inactive Dss Draft cases scheduled task stopped after search error", e);
@@ -83,6 +78,7 @@ public class SystemCleanDeletedDocumentsTask implements Runnable {
         try {
             log.info("System Clear Inactive Dss Draft Cases Event for Case {}", caseId);
             ccdUpdateService.submitEvent(caseId, SYSTEM_CLEAN_DELETED_DOCUMENTS, user, serviceAuth);
+            //redo errors and logs
         } catch (final CcdManagementException e) {
             log.error("Submit event failed for case id: {}, continuing to next case", caseId);
         } catch (final IllegalArgumentException e) {
