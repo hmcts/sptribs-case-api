@@ -67,7 +67,7 @@ public class BundlingService {
     @Autowired
     private Clock clock;
 
-    public List<Bundle> createBundle(Callback callback, String caseId) {
+    public List<Bundle> createBundle(Callback callback) {
         BundleResponse response;
         try {
             response = bundlingClient.createBundle(
@@ -75,7 +75,7 @@ public class BundlingService {
                 httpServletRequest.getHeader(AUTHORIZATION),
                 callback);
 
-            return getBundleFromResponse((List<LinkedHashMap<String, Object>>) response.getData().get(CASE_BUNDLES), caseId);
+            return getBundleFromResponse((List<LinkedHashMap<String, Object>>) response.getData().get(CASE_BUNDLES));
         } catch (FeignException exception) {
             log.error("Unable to create bundle {}",
                 exception.getMessage());
@@ -151,12 +151,12 @@ public class BundlingService {
         return newList;
     }
 
-    private List<Bundle> getBundleFromResponse(List<LinkedHashMap<String, Object>> response, String caseId) {
+    private List<Bundle> getBundleFromResponse(List<LinkedHashMap<String, Object>> response) {
         List<Bundle> bundleList = new ArrayList<>();
         Optional.ofNullable(response).ifPresent(list ->
             list.forEach(res -> {
                 LinkedHashMap<String, Object> objectLinkedHashMap = (LinkedHashMap<String, Object>) res.get(VALUE);
-                Bundle bundle = buildBundle(objectLinkedHashMap, caseId);
+                Bundle bundle = buildBundle(objectLinkedHashMap);
 
                 bundle.setFolders(buildBundleFolderListValues(buildBundleFolders(objectLinkedHashMap)));
                 if (objectLinkedHashMap.get(DOCUMENTS) != null) {
@@ -192,14 +192,14 @@ public class BundlingService {
         return folders;
     }
 
-    private Bundle buildBundle(LinkedHashMap<String, Object> objectLinkedHashMap, String caseId) {
+    private Bundle buildBundle(LinkedHashMap<String, Object> objectLinkedHashMap) {
         return Bundle.builder()
             .stitchStatus(NEW)
             .description(MapUtils.getString(objectLinkedHashMap, DESCRIPTION, ""))
             .id(MapUtils.getString(objectLinkedHashMap, ID, ""))
             .dateAndTime(LocalDateTime.now(clock))
             .title(MapUtils.getString(objectLinkedHashMap, TITLE, ""))
-            .stitchedDocument(getStitchedDocument(objectLinkedHashMap, caseId))
+            .stitchedDocument(getStitchedDocument(objectLinkedHashMap))
             .paginationStyle(BundlePaginationStyle.valueOf(
                 MapUtils.getObject(objectLinkedHashMap, PAGINATION_STYLE, BundlePaginationStyle.off).toString()))
             .pageNumberFormat(PageNumberFormat.valueOf(
@@ -209,21 +209,17 @@ public class BundlingService {
             .build();
     }
 
-    private Document getStitchedDocument(LinkedHashMap<String, Object> objectLinkedHashMap, String caseId) {
+    private Document getStitchedDocument(LinkedHashMap<String, Object> objectLinkedHashMap) {
         if (ObjectUtils.isEmpty(objectLinkedHashMap.get(STITCHED_DOCUMENT))) {
             return null;
         }
 
         LinkedHashMap<String, Object> stitchedDocMap = (LinkedHashMap<String, Object>) objectLinkedHashMap.get(STITCHED_DOCUMENT);
 
-        String stitchedDocumentFilename = MapUtils.getString(stitchedDocMap, DOCUMENT_FILENAME, "").contains(caseId)
-            ? MapUtils.getString(stitchedDocMap, DOCUMENT_FILENAME, "")
-            : caseId + MapUtils.getString(stitchedDocMap, DOCUMENT_FILENAME, "");
-
         return Document.builder()
             .url(MapUtils.getString(stitchedDocMap, DOCUMENT_URL, ""))
             .binaryUrl(MapUtils.getString(stitchedDocMap, DOCUMENT_BINARY_URL, ""))
-            .filename("teststringfilename")
+            .filename(MapUtils.getString(stitchedDocMap, DOCUMENT_FILENAME, ""))
             .build();
     }
 

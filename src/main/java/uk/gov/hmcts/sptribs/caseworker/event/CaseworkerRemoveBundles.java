@@ -78,9 +78,7 @@ public class CaseworkerRemoveBundles implements CCDConfig<CaseData, State, UserR
         for (ListValue<Bundle> bundle : caseData.getCaseBundles())  {
             DynamicListElement dynamicListElement = new DynamicListElement();
             dynamicListElement.setCode(UUID.randomUUID());
-            dynamicListElement.setLabel(
-                bundle.getValue().getDateAndTime() + " -- " + bundle.getValue().getStitchedDocument().getFilename()
-            );
+            dynamicListElement.setLabel(bundle.getValue().getDateAndTime() + " -- " + bundle.getValue().getFileName());
 
             dynamicListElements.add(dynamicListElement);
         }

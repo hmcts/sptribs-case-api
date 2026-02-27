@@ -158,7 +158,7 @@ public class BundlingServiceTest {
 
         final Callback callback = new Callback(updatedCaseDetails, beforeCaseDetails, CREATE_BUNDLE, true);
         final BundleCallback bundleCallback = new BundleCallback(callback);
-        final List<Bundle> result = bundlingService.createBundle(bundleCallback, updatedCaseDetails.getId().toString());
+        final List<Bundle> result = bundlingService.createBundle(bundleCallback);
 
         verify(bundlingClient).createBundle(any(), any(), any());
         assertThat(result).hasSize(1);
@@ -179,7 +179,7 @@ public class BundlingServiceTest {
         final Callback callback = new Callback(updatedCaseDetails, beforeCaseDetails, CREATE_BUNDLE, true);
         final BundleCallback bundleCallback = new BundleCallback(callback);
 
-        final List<Bundle> result = bundlingService.createBundle(bundleCallback, updatedCaseDetails.getId().toString());
+        final List<Bundle> result = bundlingService.createBundle(bundleCallback);
 
         verify(bundlingClient).createBundle(any(), any(), any());
         assertThat(result).isNull();
@@ -225,7 +225,7 @@ public class BundlingServiceTest {
         final Callback callback = new Callback(updatedCaseDetails, beforeCaseDetails, CREATE_BUNDLE, true);
         final BundleCallback bundleCallback = new BundleCallback(callback);
 
-        final List<Bundle> result = bundlingService.createBundle(bundleCallback, updatedCaseDetails.getId().toString());
+        final List<Bundle> result = bundlingService.createBundle(bundleCallback);
         final List<ListValue<Bundle>> resultList = bundlingService.buildBundleListValues(result);
 
         verify(bundlingClient).createBundle(any(), any(), any());
@@ -248,7 +248,7 @@ public class BundlingServiceTest {
         final Callback callback = new Callback(updatedCaseDetails, beforeCaseDetails, CREATE_BUNDLE, true);
         final BundleCallback bundleCallback = new BundleCallback(callback);
 
-        final List<Bundle> result = bundlingService.createBundle(bundleCallback, updatedCaseDetails.getId().toString());
+        final List<Bundle> result = bundlingService.createBundle(bundleCallback);
         final List<ListValue<Bundle>> resultList = bundlingService.buildBundleListValues(result);
 
         verify(bundlingClient).createBundle(any(), any(), any());
@@ -381,7 +381,7 @@ public class BundlingServiceTest {
 
         final Document stitchedDocument = Document.builder()
             .url("http://url/documents/id")
-            .filename(TEST_CASE_ID + "test.pdf")
+            .filename("test.pdf")
             .binaryUrl("http://url/documents/id")
             .build();
 

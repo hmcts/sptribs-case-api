@@ -9,7 +9,6 @@ import uk.gov.hmcts.ccd.sdk.ConfigBuilderImpl;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.Event;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
-import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.ccd.sdk.type.DynamicListElement;
 import uk.gov.hmcts.ccd.sdk.type.DynamicMultiSelectList;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
@@ -59,24 +58,13 @@ class CaseworkerRemoveBundlesTest {
         final LocalDateTime bundleTimestamp2 = LocalDateTime.now().minusDays(1);
         final LocalDateTime bundleTimestamp3 = LocalDateTime.now().minusDays(2);
 
-        Document stitchedDocument1 = Document.builder()
-            .filename("1-cicBundle.pdf")
-            .build();
-        Document stitchedDocument2 = Document.builder()
-            .filename("2-cicBundle.pdf")
-            .build();
-        Document stitchedDocument3 = Document.builder()
-            .filename("3-cicBundle.pdf")
-            .build();
-
-
         List<ListValue<Bundle>> existingBundles = new ArrayList<>();
         existingBundles.add(ListValue.<Bundle>builder()
             .id("1")
             .value(Bundle.builder()
                 .id(bundleUUID1)
                 .dateAndTime(bundleTimestamp1)
-                .stitchedDocument(stitchedDocument1)
+                .fileName("1-cicBundle.pdf")
                 .build())
             .build());
         existingBundles.add(ListValue.<Bundle>builder()
@@ -84,7 +72,7 @@ class CaseworkerRemoveBundlesTest {
             .value(Bundle.builder()
                 .id(bundleUUID2)
                 .dateAndTime(bundleTimestamp2)
-                .stitchedDocument(stitchedDocument2)
+                .fileName("2-cicBundle.pdf")
                 .build())
             .build());
         existingBundles.add(ListValue.<Bundle>builder()
@@ -92,7 +80,7 @@ class CaseworkerRemoveBundlesTest {
             .value(Bundle.builder()
                 .id(bundleUUID3)
                 .dateAndTime(bundleTimestamp3)
-                .stitchedDocument(stitchedDocument3)
+                .fileName("3-cicBundle.pdf")
                 .build())
             .build());
 
