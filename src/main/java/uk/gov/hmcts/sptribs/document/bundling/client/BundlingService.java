@@ -223,7 +223,7 @@ public class BundlingService {
         return Document.builder()
             .url(MapUtils.getString(stitchedDocMap, DOCUMENT_URL, ""))
             .binaryUrl(MapUtils.getString(stitchedDocMap, DOCUMENT_BINARY_URL, ""))
-            .filename(stitchedDocumentFilename)
+            .filename("teststringfilename")
             .build();
     }
 
