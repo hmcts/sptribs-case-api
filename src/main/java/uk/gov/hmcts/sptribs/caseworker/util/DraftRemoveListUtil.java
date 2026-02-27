@@ -112,10 +112,7 @@ public final class DraftRemoveListUtil {
         String filename = draftOrderCIC.getTemplateGeneratedDocument().getFilename();
         String draftOrderTemplateLabel = draftOrderCIC.getDraftOrderContentCIC().getOrderTemplate().getLabel();
 
-        String draftLabelValue = draftOrderTemplateLabel + DOUBLE_HYPHEN + extractDateFromFileName(filename) + DOUBLE_HYPHEN + "draft.pdf";
-
-
-        return draftLabelValue;
+        return draftOrderTemplateLabel + DOUBLE_HYPHEN + extractDateFromFileName(filename) + DOUBLE_HYPHEN + "draft.pdf";
     }
 
 

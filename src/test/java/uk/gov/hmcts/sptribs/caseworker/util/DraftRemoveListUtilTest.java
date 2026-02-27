@@ -1,7 +1,7 @@
 package uk.gov.hmcts.sptribs.caseworker.util;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -30,7 +30,7 @@ class DraftRemoveListUtilTest {
 
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
 
         final Document document = Document.builder()
             .url("test/documents/a57d1138-1f8d-4aeb-b5ad-3681aba68747")
