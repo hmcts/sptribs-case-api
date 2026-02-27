@@ -7,10 +7,15 @@ import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.Event;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
+import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
+import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 
+import java.util.List;
+
+import static uk.gov.hmcts.sptribs.caseworker.util.DocumentManagementUtil.addToRemovedDocuments;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_WA_CONFIG_USER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SYSTEM_UPDATE;
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE;
@@ -30,10 +35,7 @@ public class SystemCleanDeletedDocumentsCase implements CCDConfig<CaseData, Stat
             .name("Clean deleted documents")
             .description("Clean deleted documents that are stuck in further documents")
             .aboutToSubmitCallback(this::aboutToSubmit)
-            .grant(CREATE_READ_UPDATE_DELETE, SYSTEM_UPDATE)
-            // ????
-            .publishToCamunda()
-            .grant(CREATE_READ_UPDATE, ST_CIC_WA_CONFIG_USER);
+            .grant(CREATE_READ_UPDATE_DELETE, SYSTEM_UPDATE);
     }
 
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(CaseDetails<CaseData, State> caseDetails,
@@ -45,6 +47,21 @@ public class SystemCleanDeletedDocumentsCase implements CCDConfig<CaseData, Stat
 
         final CaseData caseData = caseDetails.getData();
         //clean logic here::::
+
+        List<ListValue<CaseworkerCICDocument>> allUploadedDocs =
+            caseData.getAllDocManagement().getCaseworkerCICDocument();
+
+        List<ListValue<CaseworkerCICDocument>> furtherDocs =
+            caseData.getFurtherUploadedDocuments();
+
+        furtherDocs.removeIf(furtherDoc ->
+            allUploadedDocs.stream()
+                .noneMatch(allDoc ->
+                    allDoc.getValue().getDocumentLink().getUrl()
+                        .equals(furtherDoc.getValue().getDocumentLink().getUrl())
+                )
+        );
+
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)

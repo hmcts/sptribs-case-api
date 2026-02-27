@@ -5,13 +5,12 @@ import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
-import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.idam.client.models.User;
 import uk.gov.hmcts.sptribs.idam.IdamService;
+import uk.gov.hmcts.sptribs.systemupdate.repository.CaseEventRepository;
 import uk.gov.hmcts.sptribs.systemupdate.service.CcdConflictException;
 import uk.gov.hmcts.sptribs.systemupdate.service.CcdManagementException;
 import uk.gov.hmcts.sptribs.systemupdate.service.CcdSearchCaseException;
-import uk.gov.hmcts.sptribs.systemupdate.service.CcdSearchService;
 import uk.gov.hmcts.sptribs.systemupdate.service.CcdUpdateService;
 
 import java.time.LocalDate;
@@ -20,13 +19,15 @@ import java.util.List;
 import static org.elasticsearch.index.query.QueryBuilders.boolQuery;
 import static org.elasticsearch.index.query.QueryBuilders.matchQuery;
 import static org.elasticsearch.index.query.QueryBuilders.rangeQuery;
-import static uk.gov.hmcts.sptribs.systemupdate.event.SystemClearInactiveDssDraftCase.SYSTEM_CLEAR_INACTIVE_DSS_DRAFT_CASE;
+import static uk.gov.hmcts.sptribs.systemupdate.event.SystemCleanDeletedDocumentsCase.SYSTEM_CLEAN_DELETED_DOCUMENTS;
 
 @Component
 @Slf4j
 public class SystemCleanDeletedDocumentsTask implements Runnable {
 
-    private final CcdSearchService ccdSearchService;
+
+    private static final String CASE_EVENT_ID = "caseworker-remove-document";
+    private static final LocalDate DELETE_FROM_DATE = LocalDate.of(2025,10,1);
 
     private final CcdUpdateService ccdUpdateService;
 
@@ -34,15 +35,17 @@ public class SystemCleanDeletedDocumentsTask implements Runnable {
 
     private final AuthTokenGenerator authTokenGenerator;
 
+    private final CaseEventRepository caseEventRepository;
+
     @Autowired
-    public SystemCleanDeletedDocumentsTask(CcdSearchService ccdSearchService,
-                                                CcdUpdateService ccdUpdateService,
+    public SystemCleanDeletedDocumentsTask(CcdUpdateService ccdUpdateService,
                                                 IdamService idamService,
-                                                AuthTokenGenerator authTokenGenerator) {
-        this.ccdSearchService = ccdSearchService;
+                                                AuthTokenGenerator authTokenGenerator,
+                                           CaseEventRepository caseEventRepository) {
         this.ccdUpdateService = ccdUpdateService;
         this.idamService = idamService;
         this.authTokenGenerator = authTokenGenerator;
+        this.caseEventRepository = caseEventRepository;
     }
 
     @Override
@@ -55,11 +58,14 @@ public class SystemCleanDeletedDocumentsTask implements Runnable {
                 .must(matchQuery("state", "DSS_Draft"))
                 .filter(rangeQuery("last_modified").lte(LocalDate.now().minusDays(30)));
 
-            final List<CaseDetails> inactiveCasesInDssDraftState =
-                ccdSearchService.searchForAllCasesWithQuery(query, user, serviceAuth);
-            log.info("Cases:" + inactiveCasesInDssDraftState.size());
-            for (final CaseDetails caseDetails : inactiveCasesInDssDraftState) {
-                triggerSystemClearInactiveDssDraftCase(user, serviceAuth, caseDetails);
+
+            //date probs needs formatting
+            final List<Long> caseIdsToUpdate = caseEventRepository.getListOfCasesByEventTypeAndDate(CASE_EVENT_ID, DELETE_FROM_DATE.toString());
+
+            //log.info("Cases:" + inactiveCasesInDssDraftState.size());
+            for (final Long caseId : caseIdsToUpdate) {
+                //rename method
+                triggerSystemClearInactiveDssDraftCase(user, serviceAuth, caseId);
             }
 
             log.info("System clear inactive Dss Draft cases scheduled task complete.");
@@ -73,14 +79,14 @@ public class SystemCleanDeletedDocumentsTask implements Runnable {
 
     }
 
-    private void triggerSystemClearInactiveDssDraftCase(User user, String serviceAuth, CaseDetails caseDetails) {
+    private void triggerSystemClearInactiveDssDraftCase(User user, String serviceAuth, Long caseId) {
         try {
-            log.info("System Clear Inactive Dss Draft Cases Event for Case {}", caseDetails.getId());
-            ccdUpdateService.submitEvent(caseDetails.getId(), SYSTEM_CLEAR_INACTIVE_DSS_DRAFT_CASE, user, serviceAuth);
+            log.info("System Clear Inactive Dss Draft Cases Event for Case {}", caseId);
+            ccdUpdateService.submitEvent(caseId, SYSTEM_CLEAN_DELETED_DOCUMENTS, user, serviceAuth);
         } catch (final CcdManagementException e) {
-            log.error("Submit event failed for case id: {}, continuing to next case", caseDetails.getId());
+            log.error("Submit event failed for case id: {}, continuing to next case", caseId);
         } catch (final IllegalArgumentException e) {
-            log.error("Deserialization failed for case id: {}, continuing to next case", caseDetails.getId());
+            log.error("Deserialization failed for case id: {}, continuing to next case", caseId);
         }
     }
 
