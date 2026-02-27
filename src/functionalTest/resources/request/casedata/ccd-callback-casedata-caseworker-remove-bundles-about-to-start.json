@@ -6,7 +6,9 @@
         "id": "${json-unit.any-string}",
         "title": "CIC Bundle",
         "description": "",
-        "fileName": "1-cicBundle.pdf",
+        "stitchedDocument": {
+          "document_filename": "1-cicBundle.pdf"
+        },
         "dateAndTime": "2024-06-11T12:00:00.000",
         "folders": [
           {
@@ -94,7 +96,9 @@
         "id": "${json-unit.any-string}",
         "title": "CIC Bundle",
         "description": "",
-        "fileName": "2-cicBundle.pdf",
+        "stitchedDocument": {
+          "document_filename": "2-cicBundle.pdf"
+        },
         "dateAndTime": "2024-06-10T12:00:00.000",
         "folders": [
           {
@@ -182,7 +186,9 @@
         "id": "${json-unit.any-string}",
         "title": "CIC Bundle",
         "description": "",
-        "fileName": "3-cicBundle.pdf",
+        "stitchedDocument": {
+          "document_filename": "3-cicBundle.pdf"
+        },
         "dateAndTime": "2024-06-09T12:00:00.000",
         "folders": [
           {

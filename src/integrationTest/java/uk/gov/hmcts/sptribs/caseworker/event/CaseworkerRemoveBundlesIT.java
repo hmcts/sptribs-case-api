@@ -13,6 +13,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
+import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.ccd.sdk.type.DynamicListElement;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
@@ -90,6 +91,16 @@ public class CaseworkerRemoveBundlesIT {
         final LocalDateTime bundleTimestamp2 = LocalDateTime.now().minusDays(1);
         final LocalDateTime bundleTimestamp3 = LocalDateTime.now().minusDays(2);
 
+        Document stitchedDocument1 = Document.builder()
+            .filename("1-cicBundle.pdf")
+            .build();
+        Document stitchedDocument2 = Document.builder()
+            .filename("2-cicBundle.pdf")
+            .build();
+        Document stitchedDocument3 = Document.builder()
+            .filename("3-cicBundle.pdf")
+            .build();
+
         final CaseData caseData = caseData();
         List<ListValue<Bundle>> existingBundles = new ArrayList<>();
         existingBundles.add(ListValue.<Bundle>builder()
@@ -97,7 +108,7 @@ public class CaseworkerRemoveBundlesIT {
             .value(Bundle.builder()
                 .id(bundleUUID1)
                 .dateAndTime(bundleTimestamp1)
-                .fileName("1-cicBundle.pdf")
+                .stitchedDocument(stitchedDocument1)
                 .build())
             .build());
         existingBundles.add(ListValue.<Bundle>builder()
@@ -105,7 +116,7 @@ public class CaseworkerRemoveBundlesIT {
             .value(Bundle.builder()
                 .id(bundleUUID2)
                 .dateAndTime(bundleTimestamp2)
-                .fileName("2-cicBundle.pdf")
+                .stitchedDocument(stitchedDocument2)
                 .build())
             .build());
         existingBundles.add(ListValue.<Bundle>builder()
@@ -113,7 +124,7 @@ public class CaseworkerRemoveBundlesIT {
             .value(Bundle.builder()
                 .id(bundleUUID3)
                 .dateAndTime(bundleTimestamp3)
-                .fileName("3-cicBundle.pdf")
+                .stitchedDocument(stitchedDocument3)
                 .build())
             .build());
         caseData.setCaseBundles(existingBundles);

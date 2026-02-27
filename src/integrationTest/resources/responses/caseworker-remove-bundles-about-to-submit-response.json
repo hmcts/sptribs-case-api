@@ -6,7 +6,9 @@
         "value": {
           "id": "${json-unit.any-string}",
           "dateAndTime": "${json-unit.any-string}",
-          "fileName": "3-cicBundle.pdf"
+          "stitchedDocument": {
+            "document_filename": "3-cicBundle.pdf"
+          }
         }
       }
     ],
