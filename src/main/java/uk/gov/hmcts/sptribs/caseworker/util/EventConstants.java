@@ -51,6 +51,7 @@ public final class EventConstants {
     public static final String CASEWORKER_UPDATE_CASE_DATA = "update-case-data";
     public static final String CASEWORKER_UPDATE_ANONYMITY = "caseworker-update-anonymity";
     public static final String SUPERUSER_REINDEX_CASES = "superuser-reindex-cases";
+    public static final String SUPERUSER_VIEW_OPEN_CASES_STATISTICS = "superuser-view-open-cases-statistics";
     public static final String CHANGE_SECURITY_CLASS = "change-security-class";
     public static final String CASEWORKER_REFER_TO_JUDGE = "refer-to-judge";
     public static final String CREATE_BUNDLE = "createBundle";
