@@ -1,7 +1,5 @@
 package uk.gov.hmcts.sptribs.systemupdate.repository;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.launchdarkly.shaded.kotlin.collections.EmptyList;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -22,7 +20,7 @@ public class CaseEventRepository {
     private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
     private static final String SELECT_LIST_OF_CASE_IDS_BY_EVENT_TYPE_AND_DATE = "SELECT DISTINCT case_data_id from ccd.case_event " +
-        "WHERE event_id = :caseEventId AND created_date >= :createdDate AND jsonb_exists(data::jsonb, 'furtherUploadedDocuments')"";
+        "WHERE event_id = :caseEventId AND created_date >= :createdDate AND jsonb_exists(data::jsonb, 'furtherUploadedDocuments')";
 
     @Autowired
     public CaseEventRepository(NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
