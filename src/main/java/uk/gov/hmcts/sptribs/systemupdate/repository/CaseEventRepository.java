@@ -2,9 +2,11 @@ package uk.gov.hmcts.sptribs.systemupdate.repository;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 
@@ -41,8 +43,9 @@ public class CaseEventRepository {
                 (rs, rowNum) -> rs.getLong("id")
             );
 
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+        } catch (DataAccessException dataAccessException) {
+            throw new RuntimeException("Error whilst retrieving case events to clean further documents",
+                dataAccessException);
         }
 
 
