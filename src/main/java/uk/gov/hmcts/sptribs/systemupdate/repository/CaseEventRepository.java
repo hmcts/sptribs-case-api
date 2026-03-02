@@ -22,9 +22,9 @@ public class CaseEventRepository {
 
     private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
-    private static final String SELECT_LIST_OF_CASE_IDS_BY_EVENT_TYPE_AND_DATE = "SELECT DISTINCT REFERENCE FROM ccd.case_data where id " +
-        "in (SELECT DISTINCT case_data_id from ccd.case_event WHERE event_id = :caseEventId AND created_date >= :createdDate " +
-        "AND data -> 'furtherUploadedDocuments'= '[]'::jsonb)";
+    private static final String SELECT_LIST_OF_CASE_IDS_BY_EVENT_TYPE_AND_DATE = "SELECT DISTINCT REFERENCE FROM ccd.case_data cd " +
+        "where cd.id in (SELECT DISTINCT case_data_id from ccd.case_event WHERE event_id = :caseEventId AND created_date >= :createdDate) " +
+        "AND jsonb_array_length(cd.data -> 'furtherUploadedDocuments') > 0";
 
     @Autowired
     public CaseEventRepository(NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
