@@ -270,6 +270,16 @@ class CaseworkerRemoveBundlesTest {
 
         assertThat(response.getErrors()).hasSize(1);
         assertThat(response.getErrors().getFirst()).isEqualTo("Select at least one bundle to remove");
+
+        caseData.getCicCase().setRemoveBundlesList(DynamicMultiSelectList.builder()
+            .listItems(removeBundleLabels)
+            .value(removeBundleLabels)
+            .build());
+
+        AboutToStartOrSubmitResponse<CaseData, State> successResponse =
+            selectBundles.midEvent(updatedCaseDetails, beforeDetails);
+
+        assertThat(successResponse.getErrors()).hasSize(0);
     }
 
 }
