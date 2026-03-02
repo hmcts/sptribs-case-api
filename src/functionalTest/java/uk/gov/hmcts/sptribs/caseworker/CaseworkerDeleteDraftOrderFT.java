@@ -34,7 +34,7 @@ public class CaseworkerDeleteDraftOrderFT extends FunctionalTestSuite {
 
 
     @Test
-    public void shouldReturnEmptyDocumentListsWhenAboutToSubmitCallbackIsInvoked() throws Exception {
+    public void shouldReturnEmptyDraftListWhenAboutToSubmitCallbackIsInvoked() throws Exception {
         final Map<String, Object> caseData = caseData(EXISTING_DRAFT_ORDER_CIC_LIST_ABOUT_TO_START);
 
         final Response response = triggerCallback(caseData, CASEWORKER_DELETE_DRAFT_ORDER, ABOUT_TO_SUBMIT_URL);
@@ -47,13 +47,13 @@ public class CaseworkerDeleteDraftOrderFT extends FunctionalTestSuite {
     }
 
     @Test
-    public void shouldReturnDraftOrderCreatedConfirmationInSubmittedCallback() throws Exception {
+    public void shouldReturnDraftOrderDeletedConfirmationInSubmittedCallback() throws Exception {
         final Map<String, Object> caseData = caseData(SUBMITTED_REQUEST);
         final Response response = triggerCallback(caseData, CASEWORKER_DELETE_DRAFT_ORDER, SUBMITTED_URL);
 
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
         assertThatJson(response.asString())
             .inPath(CONFIRMATION_HEADER)
-            .isEqualTo("# Draft order created.");
+            .isEqualTo("# Draft order deleted.");
     }
 }
