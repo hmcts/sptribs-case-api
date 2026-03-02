@@ -14,6 +14,7 @@ import uk.gov.hmcts.ccd.sdk.type.DynamicListElement;
 import uk.gov.hmcts.ccd.sdk.type.DynamicMultiSelectList;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
+import uk.gov.hmcts.sptribs.caseworker.event.page.SelectBundles;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
@@ -38,6 +39,9 @@ class CaseworkerRemoveBundlesTest {
 
     @InjectMocks
     private CaseworkerRemoveBundles caseworkerRemoveBundles;
+
+    @InjectMocks
+    private SelectBundles selectBundles;
 
     private CaseData caseData;
 
@@ -211,6 +215,42 @@ class CaseworkerRemoveBundlesTest {
 
         SubmittedCallbackResponse response = caseworkerRemoveBundles.submitted(updatedCaseDetails, beforeDetails);
         assertThat(response.getConfirmationHeader()).isEqualTo("# Case Updated");
+    }
+
+    @Test
+    void shouldReturnErrorWhenNoBundlesSelectedForDeletion() {
+        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+
+        UUID dynamicListElementCode1 = UUID.randomUUID();
+        UUID dynamicListElementCode2 = UUID.randomUUID();
+
+        List<DynamicListElement> removeBundleLabels = List.of(
+            DynamicListElement.builder()
+                .code(dynamicListElementCode1)
+                .label(caseData.getCaseBundles().getFirst().getValue().getDateAndTime() + " -- 1-cicBundle.pdf")
+                .build(),
+            DynamicListElement.builder()
+                .code(dynamicListElementCode2)
+                .label(caseData.getCaseBundles().get(1).getValue().getDateAndTime() + " -- 2-cicBundle.pdf")
+                .build(),
+            DynamicListElement.builder()
+                .code(UUID.randomUUID())
+                .label(caseData.getCaseBundles().get(2).getValue().getDateAndTime() + " -- 3-cicBundle.pdf")
+                .build()
+        );
+
+        caseData.getCicCase().setRemoveBundlesList(DynamicMultiSelectList.builder()
+            .listItems(removeBundleLabels)
+            .value(new ArrayList<>())
+            .build());
+
+        updatedCaseDetails.setData(caseData);
+
+        AboutToStartOrSubmitResponse<CaseData, State> response =
+            selectBundles.midEvent(updatedCaseDetails, beforeDetails);
+
+        assertThat(response.getErrors()).hasSize(1);
+        assertThat(response.getErrors().getFirst()).isEqualTo("Select at least one bundle to remove");
     }
 
 }
