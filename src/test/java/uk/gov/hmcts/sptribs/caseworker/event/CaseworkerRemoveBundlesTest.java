@@ -279,7 +279,7 @@ class CaseworkerRemoveBundlesTest {
         AboutToStartOrSubmitResponse<CaseData, State> successResponse =
             selectBundles.midEvent(updatedCaseDetails, beforeDetails);
 
-        assertThat(successResponse.getErrors()).hasSize(0);
+        assertThat(successResponse.getErrors()).isEmpty();
     }
 
 }
