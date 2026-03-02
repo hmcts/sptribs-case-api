@@ -7,6 +7,7 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 
@@ -21,15 +22,16 @@ public class CaseEventRepository {
 
     private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
-    private static final String SELECT_LIST_OF_CASE_IDS_BY_EVENT_TYPE_AND_DATE = "SELECT DISTINCT case_data_id from ccd.case_event " +
-        "WHERE event_id = :caseEventId AND created_date >= :createdDate AND jsonb_exists(data::jsonb, 'furtherUploadedDocuments')";
+    private static final String SELECT_LIST_OF_CASE_IDS_BY_EVENT_TYPE_AND_DATE = "SELECT DISTINCT REFERENCE FROM ccd.case_data where id " +
+        "in (SELECT DISTINCT case_data_id from ccd.case_event WHERE event_id = :caseEventId AND created_date >= :createdDate " +
+        "AND jsonb_exists(data::jsonb, 'furtherUploadedDocuments'))";
 
     @Autowired
     public CaseEventRepository(NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
         this.namedParameterJdbcTemplate = namedParameterJdbcTemplate;
     }
 
-    public List<Long> getListOfCasesByEventTypeAndDate(String caseEventId, String createdDate) {
+    public List<Long> getListOfCasesByEventTypeAndDate(String caseEventId, LocalDate createdDate) {
 
         List<Long> results;
         var params = Map.of(
@@ -40,7 +42,7 @@ public class CaseEventRepository {
         try {
             results = namedParameterJdbcTemplate.query(SELECT_LIST_OF_CASE_IDS_BY_EVENT_TYPE_AND_DATE,
                 params,
-                (rs, rowNum) -> rs.getLong("id")
+                (rs, rowNum) -> rs.getLong("reference")
             );
 
         } catch (DataAccessException dataAccessException) {

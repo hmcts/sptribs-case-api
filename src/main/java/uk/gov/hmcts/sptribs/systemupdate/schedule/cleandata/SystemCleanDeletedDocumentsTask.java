@@ -53,8 +53,7 @@ public class SystemCleanDeletedDocumentsTask implements Runnable {
 
         try {
 
-            //date probs needs formatting
-            final List<Long> caseIdsToUpdate = caseEventRepository.getListOfCasesByEventTypeAndDate(CASE_EVENT_ID, DELETE_FROM_DATE.toString());
+            final List<Long> caseIdsToUpdate = caseEventRepository.getListOfCasesByEventTypeAndDate(CASE_EVENT_ID, DELETE_FROM_DATE);
 
             log.info("Cases:{}", caseIdsToUpdate.size());
             for (final Long caseId : caseIdsToUpdate) {
