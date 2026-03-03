@@ -27,7 +27,7 @@ public class SystemCleanDeletedDocumentsCase implements CCDConfig<CaseData, Stat
 
     @Override
     public void configure(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
-        Event.EventBuilder<CaseData, UserRole, State> eventBuilder = configBuilder
+        configBuilder
             .event(SYSTEM_CLEAN_DELETED_DOCUMENTS)
             .forAllStates()
             .name("Clean deleted documents")

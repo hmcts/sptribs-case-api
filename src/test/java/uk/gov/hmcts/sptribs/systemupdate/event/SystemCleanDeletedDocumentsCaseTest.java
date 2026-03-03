@@ -77,8 +77,8 @@ class SystemCleanDeletedDocumentsCaseTest {
             systemCleanDeletedDocumentsCase.aboutToSubmit(updatedCaseDetails, beforeDetails);
 
         //then
-        assertThat(response.getData().getFurtherUploadedDocuments().size()).isEqualTo(response.getData()
-            .getAllDocManagement().getCaseworkerCICDocument().size());
+        assertThat(response.getData().getFurtherUploadedDocuments()).hasSameSizeAs(response.getData()
+            .getAllDocManagement().getCaseworkerCICDocument());
 
     }
 
@@ -173,8 +173,8 @@ class SystemCleanDeletedDocumentsCaseTest {
 
 
         //then
-        assertThat(response.getData().getFurtherUploadedDocuments().size()).isEqualTo(response.getData()
-            .getAllDocManagement().getCaseworkerCICDocument().size());
+        assertThat(response.getData().getFurtherUploadedDocuments()).hasSameSizeAs(response.getData()
+            .getAllDocManagement().getCaseworkerCICDocument());
 
     }
 
