@@ -11,9 +11,9 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Class to query the case event table
- * we should move to more appropriate place after this cleanup iis done
- *
+ * Service responsible for querying the case_event table.
+ * TODO: Relocate this class to a more appropriate package
+ * once the cleanup/refactoring is complete.
  */
 @Repository
 @Slf4j
@@ -21,9 +21,9 @@ public class CaseEventRepository {
 
     private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
-    private static final String SELECT_LIST_OF_CASE_IDS_BY_EVENT_TYPE_AND_DATE = "SELECT DISTINCT REFERENCE FROM ccd.case_data cd " +
-        "where cd.id in (SELECT DISTINCT case_data_id from ccd.case_event WHERE event_id = :caseEventId AND created_date >= :createdDate) " +
-        "AND jsonb_array_length(cd.data -> 'furtherUploadedDocuments') > 0";
+    private static final String SELECT_LIST_OF_CASE_IDS_BY_EVENT_TYPE_AND_DATE = "SELECT DISTINCT REFERENCE FROM ccd.case_data cd where "
+        + "cd.id in (SELECT DISTINCT case_data_id from ccd.case_event WHERE event_id = :caseEventId AND created_date >= :createdDate) "
+        + "AND jsonb_array_length(cd.data -> 'furtherUploadedDocuments') > 0";
 
     @Autowired
     public CaseEventRepository(NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
@@ -51,8 +51,8 @@ public class CaseEventRepository {
 
 
         if (results.isEmpty()) {
-             log.info("No results found for caseEventId = {}", caseEventId);
-             return results;
+            log.info("No results found for caseEventId = {}", caseEventId);
+            return results;
         }
 
         return results;

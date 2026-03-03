@@ -58,7 +58,7 @@ public class SystemCleanDeletedDocumentsCase implements CCDConfig<CaseData, Stat
             getCaseworkerCICDocumentsToRemove(allUploadedDocs, furtherDocs);
 
         if (caseworkerCICDocumentsToRemove.isEmpty()) {
-           return returnEarly(caseDetails, caseData);
+            return returnEarly(caseDetails, caseData);
         }
 
         String deletedDocsString = caseworkerCICDocumentsToRemove.stream()
@@ -75,7 +75,9 @@ public class SystemCleanDeletedDocumentsCase implements CCDConfig<CaseData, Stat
             .build();
     }
 
-    private List<ListValue<CaseworkerCICDocument>> getCaseworkerCICDocumentsToRemove(List<ListValue<CaseworkerCICDocument>> allUploadedDocs, List<ListValue<CaseworkerCICDocument>> furtherDocs) {
+    private List<ListValue<CaseworkerCICDocument>> getCaseworkerCICDocumentsToRemove(
+        List<ListValue<CaseworkerCICDocument>> allUploadedDocs,
+        List<ListValue<CaseworkerCICDocument>> furtherDocs) {
         return furtherDocs.stream()
             .filter(furtherDoc -> {
                 String furtherUrl = furtherDoc.getValue().getDocumentLink().getUrl();
@@ -88,8 +90,8 @@ public class SystemCleanDeletedDocumentsCase implements CCDConfig<CaseData, Stat
     }
 
     private AboutToStartOrSubmitResponse<CaseData, State> returnEarly(CaseDetails<CaseData, State> caseDetails, CaseData caseData) {
-        log.info("Clean deleted documents event cleaned no documents" +
-            " for caseId = {}", caseDetails.getId());
+        log.info("Clean deleted documents event cleaned no documents"
+            + " for caseId = {}", caseDetails.getId());
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
