@@ -132,10 +132,11 @@ public class CaseworkerDocumentManagementRemoveIT {
     }
 
     @Test
-    void shouldClearRemovedDocumentListOnAboutToSubmit() throws Exception {
+    void shouldClearRemovedDocumentListAndOrderDocumentListOnAboutToSubmit() throws Exception {
         final CaseData caseData = CaseData.builder()
             .cicCase(CicCase.builder()
                 .removedDocumentList(getCaseworkerCICDocumentList())
+                .orderDocumentList(getCaseworkerCICDocumentList())
                 .build()
             )
             .build();
@@ -157,6 +158,11 @@ public class CaseworkerDocumentManagementRemoveIT {
 
         assertThatJson(response)
             .inPath("$.data.cicCaseRemovedDocumentList")
+            .isArray()
+            .isEmpty();
+
+        assertThatJson(response)
+            .inPath("$.data.cicCaseOrderDocumentList")
             .isArray()
             .isEmpty();
     }
