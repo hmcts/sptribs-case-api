@@ -1,53 +1,26 @@
 {
-  "caseLinks": [],
-  "allDocManagement": {
-    "caseworkerCICDocument": [],
-    "caseworkerCICDocumentUpload": []
-  },
-  "newDocManagement": {
-    "caseworkerCICDocument": [],
-    "caseworkerCICDocumentUpload": []
-  },
-  "editCicaCaseDetails": {},
-  "draftOrderContentCIC": {},
-  "contactParties": {},
-  "caseBundles": [],
-  "caseBundleIdsAndTimestamps": [],
-  "cicCase": {
-    "draftOrderDynamicList": {
-      "listItems": []
-    },
-    "draftOrderCICList": [],
-    "respondentName": "Appeals team",
-    "respondentOrganisation": "CICA",
-    "respondentEmail": "appeals.team@cica.gov.uk",
-    "alternativeRespondentEmail": "notice.appeals@cica.gov.uk",
-    "removedDraftList": []
-  },
-  "notifications": {},
-  "caseStay": {
-    "isCaseStayed": "NO"
-  },
-  "caseBuilt": {},
-  "listing": {
-    "summary": {}
-  },
-  "nextListedHearing": {
-    "summary": {}
-  },
-  "latestCompletedHearing": {
-    "summary": {}
-  },
-  "hearingList": [],
-  "removeCaseStay": {},
-  "closedDayCount": "",
-  "caseIssue": {},
-  "contactPartiesDocuments": {},
-  "caseIssueDecision": {},
-  "caseIssueFinalDecision": {},
-  "closeCase": {},
-  "referToJudge": {},
-  "referToLegalOfficer": {},
-  "dssCaseData": {},
-  "firstHearingDate": ""
+  "data": {
+    "allCaseworkerCICDocument": [],
+    "allCaseworkerCICDocumentUpload": [],
+    "caseBundleIdsAndTimestamps": [],
+    "caseBundles": [],
+    "caseLinks": [],
+    "cicCaseAlternativeRespondentEmail": "notice.appeals@cica.gov.uk",
+    "cicCaseDraftOrderCICList": [],
+    "cicCaseDraftOrderDynamicList" : { },
+    "cicCaseRemovedDraftList": [],
+    "cicCaseRespondentEmail": "appeals.team@cica.gov.uk",
+    "cicCaseRespondentName": "Appeals team",
+    "cicCaseRespondentOrganisation": "CICA",
+    "cicCaseSelectedDocument": {},
+    "closedDayCount": "",
+    "contactParties": {},
+    "dataVersion": 0,
+    "editCicaCaseDetails": {},
+    "firstHearingDate": "",
+    "hearingList": [],
+    "newCaseworkerCICDocument": [],
+    "newCaseworkerCICDocumentUpload": [],
+    "stayIsCaseStayed": "No"
+  }
 }
