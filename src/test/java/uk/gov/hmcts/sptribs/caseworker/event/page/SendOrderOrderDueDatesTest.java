@@ -25,7 +25,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public class SendOrderOrderDueDatesTest {
+class SendOrderOrderDueDatesTest {
 
     @Mock
     private DueDateOptions dueDateOptions;
