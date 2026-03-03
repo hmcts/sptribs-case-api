@@ -120,12 +120,13 @@ public final class DraftRemoveListUtil {
 
         Pattern dateTimePattern = Pattern.compile("--(\\d{2}-\\d{2}-\\d{4} \\d{2}:\\d{2}:\\d{2})\\.pdf$");
 
-        Matcher m = dateTimePattern.matcher(filename);
+        Matcher matcher = dateTimePattern.matcher(filename);
 
-        if (!m.find()) {
-            throw new IllegalArgumentException("No timestamp found in filename: " + filename);
+        if (matcher.find()) {
+            return matcher.group(1);
         }
-        return m.group(1);
+
+        throw new IllegalArgumentException("Filename does not contain valid timestamp: " + filename);
     }
 
     private static UUID generateUuidFromDraftURL(String url) {
@@ -134,11 +135,11 @@ public final class DraftRemoveListUtil {
 
         Matcher matcher = urlUuidPattern.matcher(url);
 
-        if (!matcher.find()) {
-            return UUID.randomUUID();
+        if (matcher.find()) {
+            return UUID.fromString(matcher.group(1));
         }
 
-        return UUID.fromString(matcher.group(1));
+        return UUID.randomUUID();
     }
 
 }
