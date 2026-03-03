@@ -46,7 +46,7 @@ public class SystemCleanDeletedDocumentsTask implements Runnable {
     }
 
     @Override
-    @Scheduled(cron = "0 * * * * *")
+//    @Scheduled(cron = "0 * * * * *")
     public void run() {
         final User user = idamService.retrieveSystemUpdateUserDetails();
         final String serviceAuth = authTokenGenerator.generate();
