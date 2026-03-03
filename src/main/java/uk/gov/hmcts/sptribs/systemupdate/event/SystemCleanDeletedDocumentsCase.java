@@ -50,26 +50,25 @@ public class SystemCleanDeletedDocumentsCase implements CCDConfig<CaseData, Stat
         List<ListValue<CaseworkerCICDocument>> furtherDocs =
             caseData.getFurtherUploadedDocuments();
 
+        if (furtherDocs == null || furtherDocs.isEmpty()) {
+            return returnEarly(caseDetails, caseData);
+        }
+
         List<ListValue<CaseworkerCICDocument>> caseworkerCICDocumentsToRemove =
             getCaseworkerCICDocumentsToRemove(allUploadedDocs, furtherDocs);
 
         if (caseworkerCICDocumentsToRemove.isEmpty()) {
-            log.info("Clean deleted documents event cleaned no documents" +
-                " for caseId = {}", caseDetails.getId());
-
-            return AboutToStartOrSubmitResponse.<CaseData, State>builder()
-                .data(caseData)
-                .build();
+           return returnEarly(caseDetails, caseData);
         }
 
         String deletedDocsString = caseworkerCICDocumentsToRemove.stream()
             .map(document -> document.getValue().getDocumentLink().getFilename())
             .collect(Collectors.joining(", "));
 
+        furtherDocs.removeAll(caseworkerCICDocumentsToRemove);
+
         log.info("Clean deleted documents event cleared the following documents {} for caseId = {}",
             deletedDocsString, caseDetails.getId());
-
-        furtherDocs.removeAll(caseworkerCICDocumentsToRemove);
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
@@ -86,5 +85,14 @@ public class SystemCleanDeletedDocumentsCase implements CCDConfig<CaseData, Stat
                     .noneMatch(furtherUrl::equals);
             })
             .toList();
+    }
+
+    private AboutToStartOrSubmitResponse<CaseData, State> returnEarly(CaseDetails<CaseData, State> caseDetails, CaseData caseData) {
+        log.info("Clean deleted documents event cleaned no documents" +
+            " for caseId = {}", caseDetails.getId());
+
+        return AboutToStartOrSubmitResponse.<CaseData, State>builder()
+            .data(caseData)
+            .build();
     }
 }
