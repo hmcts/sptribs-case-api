@@ -24,6 +24,7 @@ public class CaseworkerDeleteDraftOrderFT extends FunctionalTestSuite {
 
     private static final String EXISTING_DRAFT_ORDER_CIC_LIST_ABOUT_TO_START =
         "classpath:request/casedata/ccd-callback-casedata-caseworker-delete-draft-order-about-to-start.json";
+
     private static final String EXISTING_DRAFT_ORDER_CIC_LIST_ABOUT_TO_SUBMIT_RESPONSE =
         "classpath:responses/response-caseworker-delete-draft-order-about-to-submit.json";
 
@@ -34,7 +35,7 @@ public class CaseworkerDeleteDraftOrderFT extends FunctionalTestSuite {
 
 
     @Test
-    public void shouldReturnEmptyDraftListWhenAboutToSubmitCallbackIsInvoked() throws Exception {
+    public void shouldReturnEmptyRemovedDraftListWhenAboutToSubmitCallbackIsInvoked() throws Exception {
         final Map<String, Object> caseData = caseData(EXISTING_DRAFT_ORDER_CIC_LIST_ABOUT_TO_START);
 
         final Response response = triggerCallback(caseData, CASEWORKER_DELETE_DRAFT_ORDER, ABOUT_TO_SUBMIT_URL);
