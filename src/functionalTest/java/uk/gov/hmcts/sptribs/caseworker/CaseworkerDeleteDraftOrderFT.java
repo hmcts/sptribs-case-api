@@ -25,7 +25,7 @@ public class CaseworkerDeleteDraftOrderFT extends FunctionalTestSuite {
     private static final String EXISTING_DRAFT_ORDER_CIC_LIST_ABOUT_TO_START =
         "classpath:request/casedata/ccd-callback-casedata-caseworker-delete-draft-order-about-to-start.json";
     private static final String EXISTING_DRAFT_ORDER_CIC_LIST_ABOUT_TO_SUBMIT_RESPONSE =
-        "classpath:resources/responses/response-caseworker-delete-draft-order-about-to-submit.json";
+        "classpath:responses/response-caseworker-delete-draft-order-about-to-submit.json";
 
     private static final String SUBMITTED_REQUEST =
         "classpath:request/casedata/ccd-callback-casedata-general.json";
