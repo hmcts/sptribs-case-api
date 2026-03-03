@@ -19,6 +19,7 @@ import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 import uk.gov.hmcts.sptribs.caseworker.model.CloseCase;
 import uk.gov.hmcts.sptribs.caseworker.model.CloseReason;
 import uk.gov.hmcts.sptribs.caseworker.model.DateModel;
+import uk.gov.hmcts.sptribs.caseworker.model.DueDateOptions;
 import uk.gov.hmcts.sptribs.caseworker.model.HearingSummary;
 import uk.gov.hmcts.sptribs.caseworker.model.Listing;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
@@ -272,8 +273,8 @@ public class TestDataHelper {
 
     public static List<ListValue<DateModel>> getDueDateList() {
         DateModel date = DateModel.builder()
+            .dueDateOptions(DueDateOptions.OTHER)
             .dueDate(LocalDate.of(2024, 9, 5))
-            .information(HEARING_TIME)
             .orderMarkAsCompleted(Set.of(MARKASCOMPLETED))
             .build();
         List<ListValue<DateModel>> list = new ArrayList<>();

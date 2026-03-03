@@ -8,6 +8,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.context.annotation.Bean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -17,6 +19,7 @@ import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 import uk.gov.hmcts.sptribs.caseworker.model.DateModel;
 import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderContentCIC;
+import uk.gov.hmcts.sptribs.caseworker.model.DueDateOptions;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.OrderTemplate;
@@ -27,7 +30,9 @@ import uk.gov.hmcts.sptribs.idam.IdamService;
 import uk.gov.hmcts.sptribs.notification.NotificationServiceCIC;
 import uk.gov.hmcts.sptribs.testutil.IdamWireMock;
 
+import java.time.Clock;
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.List;
 import java.util.Set;
 
@@ -94,6 +99,20 @@ public class CaseworkerCreateAndSendOrderIT {
 
     private static final String CONFIRMATION_HEADER = "$.confirmation_header";
 
+    @TestConfiguration
+    static class FixedClockConfig {
+
+        @Bean
+        public Clock clock() {
+            return Clock.fixed(
+                LocalDate.of(2026, 7, 15)
+                    .atStartOfDay(ZoneId.systemDefault())
+                    .toInstant(),
+                ZoneId.systemDefault()
+            );
+        }
+    }
+
     @BeforeAll
     static void setUp() {
         IdamWireMock.start();
@@ -130,8 +149,8 @@ public class CaseworkerCreateAndSendOrderIT {
     @Test
     void shouldUpdateOrdersWithNewAnonymousOrderAboutToSubmit() throws Exception {
         DateModel dateModel = DateModel.builder()
-            .dueDate(LocalDate.of(2026, 1, 2))
-            .information("due date for test")
+            .dueDate(LocalDate.of(2026, 11, 12))
+            .dueDateOptions(DueDateOptions.DAY_COUNT_120)
             .build();
 
         DraftOrderContentCIC draftOrderContentCIC = DraftOrderContentCIC.builder()
@@ -159,12 +178,12 @@ public class CaseworkerCreateAndSendOrderIT {
                 .notifyPartyRespondent(Set.of(RESPONDENT))
                 .notifyPartyRepresentative(Set.of(REPRESENTATIVE))
                 .notifyPartyApplicant(Set.of(APPLICANT_CIC))
-                .orderDueDates(List.of(ListValue.<DateModel>builder().value(dateModel).build()))
                 .fullName("Test Name")
                 .schemeCic(Year2012)
                 .orderTemplateIssued(document)
                 .build()
             )
+            .orderDueDates(List.of(ListValue.<DateModel>builder().value(dateModel).build()))
             .build();
 
         String response = mockMvc.perform(post(ABOUT_TO_SUBMIT_URL)
