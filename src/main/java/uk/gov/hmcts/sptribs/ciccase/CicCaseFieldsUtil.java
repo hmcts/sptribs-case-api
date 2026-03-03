@@ -57,16 +57,20 @@ public final class CicCaseFieldsUtil {
         return null;
     }
 
-    private static LocalDate findEarliestDate(List<ListValue<DateModel>> dueDateList, LocalDate compare) {
-        LocalDate earliestDate = compare;
-        for (ListValue<DateModel> dateModelListValue : dueDateList) {
-            if ((dateModelListValue.getValue().getOrderMarkAsCompleted() == null
-                || !dateModelListValue.getValue().getOrderMarkAsCompleted().contains(GetAmendDateAsCompleted.MARKASCOMPLETED))
-                && dateModelListValue.getValue().getDueDate().isBefore(earliestDate)) {
-                earliestDate = dateModelListValue.getValue().getDueDate();
-            }
-        }
-        return earliestDate;
+    private static LocalDate findEarliestDate(List<ListValue<DateModel>> dueDateList, LocalDate currentEarliest) {
+        return dueDateList.stream()
+            .map(ListValue::getValue)
+            .filter(CicCaseFieldsUtil::isNotMarkedAsCompleted)
+            .map(DateModel::getDueDate)
+            .filter(date -> date.isBefore(currentEarliest))
+            .min(LocalDate::compareTo)
+            .orElse(currentEarliest);
+    }
+
+    private static boolean isNotMarkedAsCompleted(DateModel model) {
+        Set<GetAmendDateAsCompleted> status = model.getOrderMarkAsCompleted();
+        return status == null
+            || !status.contains(GetAmendDateAsCompleted.MARKASCOMPLETED);
     }
 
     public static String getSelectedHearingToCancel(DynamicList hearingList) {

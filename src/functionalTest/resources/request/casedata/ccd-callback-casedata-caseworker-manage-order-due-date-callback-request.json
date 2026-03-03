@@ -42,6 +42,7 @@
       "value": {
         "dueDateOptions": "Other",
         "dueDate": "2025-01-01",
+        "information": "Lorem ipsum additional information",
         "updatedDueDate": "2026-01-01",
         "orderMarkAsCompleted": []
       },
@@ -58,6 +59,7 @@
               "value": {
                 "dueDateOptions": "Other",
                 "dueDate": "2025-01-01",
+                "information": "Lorem ipsum information",
                 "orderMarkAsCompleted": []
               }
             }

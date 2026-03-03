@@ -231,11 +231,11 @@ public class CaseData {
     )
     private String subjectRepFullName;
 
+    @Builder.Default
     @CCD(
         label = "Due Date",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
-    @Builder.Default
     private List<ListValue<DateModel>> orderDueDates = new ArrayList<>();
 
     @CCD(

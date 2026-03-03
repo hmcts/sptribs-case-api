@@ -1,6 +1,6 @@
 package uk.gov.hmcts.sptribs.caseworker.event.page;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
@@ -17,14 +17,10 @@ import java.time.LocalDate;
 import java.util.List;
 
 @Component
+@RequiredArgsConstructor
 public class SendOrderOrderDueDates implements CcdPageConfiguration {
 
     private final Clock clock;
-
-    @Autowired
-    public SendOrderOrderDueDates(Clock clock) {
-        this.clock = clock;
-    }
 
     @Override
     public void addTo(PageBuilder pageBuilder) {

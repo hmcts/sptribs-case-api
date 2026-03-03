@@ -1,7 +1,7 @@
 package uk.gov.hmcts.sptribs.caseworker.event;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
@@ -49,6 +49,7 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 
 @Component
 @Slf4j
+@RequiredArgsConstructor
 public class CaseWorkerManageOrderDueDate implements CCDConfig<CaseData, State, UserRole> {
 
     private static final CcdPageConfiguration manageSelectOrderTemplates = new ManageSelectOrders();
@@ -56,12 +57,6 @@ public class CaseWorkerManageOrderDueDate implements CCDConfig<CaseData, State, 
 
     private final OrderService orderService;
     private final Clock clock;
-
-    @Autowired
-    public CaseWorkerManageOrderDueDate(OrderService orderService, Clock clock) {
-        this.orderService = orderService;
-        this.clock = clock;
-    }
 
     @Override
     public void configure(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
