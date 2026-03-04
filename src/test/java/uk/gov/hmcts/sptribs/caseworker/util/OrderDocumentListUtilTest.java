@@ -278,7 +278,7 @@ public class OrderDocumentListUtilTest {
 
         //When
         OrderDocumentListUtil.removeNonDraftOrder(caseData,
-           caseworkerCICDocumentToBeRemoved);
+            caseworkerCICDocumentToBeRemoved);
 
         //then
         assertThat(caseData.getCicCase().getOrderList()).isEmpty();
@@ -301,7 +301,7 @@ public class OrderDocumentListUtilTest {
 
         //When
         OrderDocumentListUtil.removeNonDraftOrder(caseData,
-           caseworkerCICDocumentToBeRemoved);
+            caseworkerCICDocumentToBeRemoved);
 
         //then
         assertThat(caseData.getCicCase().getOrderList()).isNull();
