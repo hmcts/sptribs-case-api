@@ -119,7 +119,7 @@ public final class OrderDocumentListUtil {
             order.getValue().setDraftOrder(null);
         }
 
-        return CollectionUtils.isEmpty(userUploadedFiles)
+        return userUploadedFiles.isEmpty()
             && order.getValue().getDraftOrder() == null;
     }
 
