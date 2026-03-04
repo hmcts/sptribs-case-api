@@ -98,7 +98,6 @@ public final class OrderDocumentListUtil {
             ? order.getValue().getUploadedFile()
             : Collections.emptyList();
 
-
         DraftOrderCIC draftOrder = order.getValue().getDraftOrder();
 
         Document preGeneratedDocument = draftOrder != null
