@@ -13,6 +13,7 @@ import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -94,23 +95,27 @@ public final class OrderDocumentListUtil {
 
     private static boolean removeDocumentAndCheckIfOrderEmpty(ListValue<Order> order, Document documentLink) {
 
-        List<ListValue<CICDocument>> userUploadedFiles = order.getValue().getUploadedFile();
+        List<ListValue<CICDocument>> userUploadedFiles = order.getValue().getUploadedFile() != null
+            ? order.getValue().getUploadedFile()
+            : Collections.emptyList();
+
+
         DraftOrderCIC draftOrder = order.getValue().getDraftOrder();
 
         Document preGeneratedDocument = draftOrder != null
             ? draftOrder.getTemplateGeneratedDocument()
             : null;
 
-        if (CollectionUtils.isEmpty(userUploadedFiles) && preGeneratedDocument == null) {
+        if (userUploadedFiles.isEmpty() && preGeneratedDocument == null) {
             return true;
         }
 
-        if (!CollectionUtils.isEmpty(userUploadedFiles)) {
+        if (!userUploadedFiles.isEmpty()) {
             userUploadedFiles.removeIf(file ->
-                Objects.equals(documentLink, file.getValue().getDocumentLink()));
+                documentLink.equals(file.getValue().getDocumentLink()));
         }
 
-        if (preGeneratedDocument != null && Objects.equals(preGeneratedDocument, documentLink)) {
+        if (preGeneratedDocument != null && preGeneratedDocument.equals(documentLink)) {
             order.getValue().setDraftOrder(null);
         }
 
