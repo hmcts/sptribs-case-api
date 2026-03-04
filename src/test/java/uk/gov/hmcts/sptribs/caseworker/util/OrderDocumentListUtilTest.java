@@ -161,8 +161,10 @@ public class OrderDocumentListUtilTest {
 
         //then
         assertThat(caseData.getCicCase().getOrderList()).isEmpty();
-        assertThat(caseData.getCicCase().getApplicantDocumentsUploaded().equals(caseDocuments));
-        assertThat(caseData.getCicCase().getFinalDecisionDocumentList().equals(caseDocuments));
+        assertThat(caseData.getCicCase().getApplicantDocumentsUploaded())
+            .containsExactlyInAnyOrderElementsOf(caseDocuments);
+        assertThat(caseData.getCicCase().getFinalDecisionDocumentList())
+            .containsExactlyInAnyOrderElementsOf(caseDocuments);
 
     }
 
