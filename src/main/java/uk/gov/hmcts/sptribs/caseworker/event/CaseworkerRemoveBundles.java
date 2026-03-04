@@ -109,41 +109,16 @@ public class CaseworkerRemoveBundles implements CCDConfig<CaseData, State, UserR
         final CaseData caseData = details.getData();
 
         List<DynamicListElement> selectedBundleLabels = caseData.getCicCase().getRemoveBundlesList().getValue();
-
-        List<String> timestampsOfBundlesToDelete = new ArrayList<>();
-        for (DynamicListElement selectedBundleLabel : selectedBundleLabels) {
-            String bundleTimestamp = selectedBundleLabel.getLabel().split(DOUBLE_HYPHEN)[0].trim();
-            timestampsOfBundlesToDelete.add(bundleTimestamp);
-        }
-
+        List<String> timestampsOfBundlesToDelete = collectTimestampsOfBundlesToDelete(selectedBundleLabels);
         List<ListValue<Bundle>> allBundles = caseData.getCaseBundles();
-        List<ListValue<Bundle>> selectedBundlesToDelete = new ArrayList<>();
-        for (ListValue<Bundle> bundleListValue : allBundles) {
-            if (timestampsOfBundlesToDelete.contains(bundleListValue.getValue().getDateAndTime().toString())) {
-                selectedBundlesToDelete.add(bundleListValue);
-            }
-        }
 
-        List<String> idsOfBundlesToBeRemoved = new ArrayList<>();
-        List<ListValue<BundleIdAndTimestamp>> idsAndTimestampsOfBundlesToBeRemoved = new ArrayList<>();
+        allBundles.removeIf(bundleListValue ->
+            timestampsOfBundlesToDelete.contains(bundleListValue.getValue().getDateAndTime().toString()));
 
-        for (ListValue<Bundle> bundle : selectedBundlesToDelete) {
-            idsOfBundlesToBeRemoved.add(bundle.getValue().getId());
-            caseData.getCaseBundles().remove(bundle);
-        }
+        caseData.getCaseBundleIdsAndTimestamps().removeIf(bundleIdAndTimestampListValue ->
+            timestampsOfBundlesToDelete.contains(bundleIdAndTimestampListValue.getValue().getDateAndTime().toString()));
 
-        for (ListValue<BundleIdAndTimestamp> bundleIdAndTimestamp : caseData.getCaseBundleIdsAndTimestamps()) {
-            if (idsOfBundlesToBeRemoved.contains(bundleIdAndTimestamp.getValue().getBundleId())) {
-                idsAndTimestampsOfBundlesToBeRemoved.add(bundleIdAndTimestamp);
-            }
-        }
-
-        for (ListValue<BundleIdAndTimestamp> bundleIdAndTimestampToBeRemoved : idsAndTimestampsOfBundlesToBeRemoved) {
-            caseData.getCaseBundleIdsAndTimestamps().remove(bundleIdAndTimestampToBeRemoved);
-        }
-
-        fixListValueIds(caseData.getCaseBundles(), caseData.getCaseBundleIdsAndTimestamps());
-
+        fixListValueIds(allBundles, caseData.getCaseBundleIdsAndTimestamps());
         caseData.getCicCase().setRemoveBundlesList(new DynamicMultiSelectList());
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
@@ -157,6 +132,15 @@ public class CaseworkerRemoveBundles implements CCDConfig<CaseData, State, UserR
             bundleIdAndTimestamps.get(listValueIndex.get()).setId(String.valueOf(listValueIndex.incrementAndGet()));
             bundle.setId(String.valueOf(listValueIndex));
         }
+    }
+
+    public List<String> collectTimestampsOfBundlesToDelete(List<DynamicListElement> selectedBundleLabels) {
+        List<String> timestampsOfBundlesToDelete = new ArrayList<>();
+        for (DynamicListElement selectedBundleLabel : selectedBundleLabels) {
+            String bundleTimestamp = selectedBundleLabel.getLabel().split(DOUBLE_HYPHEN)[0].trim();
+            timestampsOfBundlesToDelete.add(bundleTimestamp);
+        }
+        return timestampsOfBundlesToDelete;
     }
 
     public SubmittedCallbackResponse submitted(CaseDetails<CaseData, State> details,
