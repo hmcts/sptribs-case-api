@@ -126,12 +126,11 @@ public class CaseworkerRemoveBundles implements CCDConfig<CaseData, State, UserR
             .build();
     }
 
-    public void fixListValueIds(List<ListValue<Bundle>> bundles, List<ListValue<BundleIdAndTimestamp>> bundleIdAndTimestamps) {
-        final AtomicInteger listValueIndex = new AtomicInteger(0);
-        for (ListValue<Bundle> bundle : bundles) {
-            bundleIdAndTimestamps.get(listValueIndex.get()).setId(String.valueOf(listValueIndex.incrementAndGet()));
-            bundle.setId(String.valueOf(listValueIndex));
-        }
+    public SubmittedCallbackResponse submitted(CaseDetails<CaseData, State> details,
+                                               CaseDetails<CaseData, State> beforeDetails) {
+        return SubmittedCallbackResponse.builder()
+            .confirmationHeader("# Case Updated")
+            .build();
     }
 
     public List<String> collectTimestampsOfBundlesToDelete(List<DynamicListElement> selectedBundleLabels) {
@@ -143,10 +142,11 @@ public class CaseworkerRemoveBundles implements CCDConfig<CaseData, State, UserR
         return timestampsOfBundlesToDelete;
     }
 
-    public SubmittedCallbackResponse submitted(CaseDetails<CaseData, State> details,
-                                               CaseDetails<CaseData, State> beforeDetails) {
-        return SubmittedCallbackResponse.builder()
-            .confirmationHeader("# Case Updated")
-            .build();
+    public void fixListValueIds(List<ListValue<Bundle>> bundles, List<ListValue<BundleIdAndTimestamp>> bundleIdAndTimestamps) {
+        final AtomicInteger listValueIndex = new AtomicInteger(0);
+        for (ListValue<Bundle> bundle : bundles) {
+            bundleIdAndTimestamps.get(listValueIndex.get()).setId(String.valueOf(listValueIndex.incrementAndGet()));
+            bundle.setId(String.valueOf(listValueIndex));
+        }
     }
 }
