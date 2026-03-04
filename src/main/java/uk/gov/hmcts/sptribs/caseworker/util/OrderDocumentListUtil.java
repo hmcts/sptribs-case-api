@@ -4,6 +4,7 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
+import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderCIC;
 import uk.gov.hmcts.sptribs.caseworker.model.Order;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
@@ -93,15 +94,28 @@ public final class OrderDocumentListUtil {
 
     private static boolean removeDocumentAndCheckIfOrderEmpty(ListValue<Order> order, Document documentLink) {
 
-        List<ListValue<CICDocument>> uploadedFiles = order.getValue().getUploadedFile();
+        List<ListValue<CICDocument>> userUploadedFiles = order.getValue().getUploadedFile();
+        DraftOrderCIC draftOrder = order.getValue().getDraftOrder();
 
-        if (CollectionUtils.isEmpty(uploadedFiles)) {
+        Document preGeneratedDocument = draftOrder != null
+            ? draftOrder.getTemplateGeneratedDocument()
+            : null;
+
+        if (CollectionUtils.isEmpty(userUploadedFiles) && preGeneratedDocument == null) {
             return true;
         }
 
-        uploadedFiles.removeIf(file -> Objects.equals(documentLink, file.getValue().getDocumentLink()));
+        if (!CollectionUtils.isEmpty(userUploadedFiles)) {
+            userUploadedFiles.removeIf(file ->
+                Objects.equals(documentLink, file.getValue().getDocumentLink()));
+        }
 
-        return uploadedFiles.isEmpty();
+        if (preGeneratedDocument != null && Objects.equals(preGeneratedDocument, documentLink)) {
+            order.getValue().setDraftOrder(null);
+        }
+
+        return CollectionUtils.isEmpty(userUploadedFiles)
+            && order.getValue().getDraftOrder() == null;
     }
 
 }

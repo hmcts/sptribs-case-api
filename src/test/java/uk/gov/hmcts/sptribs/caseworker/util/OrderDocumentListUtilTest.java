@@ -6,6 +6,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderCIC;
+import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderContentCIC;
 import uk.gov.hmcts.sptribs.caseworker.model.Order;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
@@ -130,6 +131,56 @@ public class OrderDocumentListUtilTest {
 
         //then
         assertThat(caseData.getCicCase().getOrderList()).isEmpty();
+
+    }
+
+    @Test
+    void givenOrderListWith1PreGeneratedDoc_whenRemoveNonDraftOrder_thenRemoveDocAndClearOrder() {
+        //Given
+        ListValue<Order> orderListValue = buildOrderListValueWithDraftOrder("url1", "url1", "name1");
+        List<ListValue<Order>> ordersList = new ArrayList<>();
+        ordersList.add(orderListValue);
+
+        CaseData caseData = CaseData.builder().cicCase(CicCase.builder()
+                .orderDocumentList(getDocument())
+                .orderList(ordersList)
+                .decisionDocumentList(new ArrayList<>())
+                .finalDecisionDocumentList(new ArrayList<>())
+                .applicantDocumentsUploaded(getDocument())
+                .build())
+            .build();
+
+        //When
+        OrderDocumentListUtil.removeNonDraftOrder(caseData,
+            buildCaseworkerCicDocumentListValue("url1", "url1", "name1"));
+
+        //then
+        assertThat(caseData.getCicCase().getOrderList()).isEmpty();
+
+    }
+
+    @Test
+    void givenOrderListWith1PreGeneratedDoc_whenRemoveNonDraftOrder_thenDoNotRemove() {
+        //Given
+        ListValue<Order> orderListValue = buildOrderListValueWithDraftOrder("url1", "url1", "name1");
+        List<ListValue<Order>> ordersList = new ArrayList<>();
+        ordersList.add(orderListValue);
+
+        CaseData caseData = CaseData.builder().cicCase(CicCase.builder()
+                .orderDocumentList(getDocument())
+                .orderList(ordersList)
+                .decisionDocumentList(new ArrayList<>())
+                .finalDecisionDocumentList(new ArrayList<>())
+                .applicantDocumentsUploaded(getDocument())
+                .build())
+            .build();
+
+        //When
+        OrderDocumentListUtil.removeNonDraftOrder(caseData,
+            buildCaseworkerCicDocumentListValue("url2", "url2", "name2"));
+
+        //then
+        assertThat(caseData.getCicCase().getOrderList().size()).isSameAs(1);
 
     }
 
@@ -284,6 +335,22 @@ public class OrderDocumentListUtilTest {
 
     private ListValue<Order> buildOrderListValue(List<ListValue<CICDocument>> cicDocumentListValues) {
         Order order = Order.builder().uploadedFile(cicDocumentListValues).build();
+        ListValue<Order> orderListValue = new ListValue<>();
+        orderListValue.setValue(order);
+        return orderListValue;
+    }
+
+    private ListValue<Order> buildOrderListValueWithDraftOrder(String url, String binary, String filename) {
+
+        DraftOrderCIC draftOrder = DraftOrderCIC.builder()
+            .templateGeneratedDocument(Document.builder().url(url).binaryUrl(binary).filename(filename).build())
+            .draftOrderContentCIC(DraftOrderContentCIC.builder().build())
+            .build();
+
+        Order order = Order.builder()
+            .draftOrder(draftOrder)
+            .build();
+
         ListValue<Order> orderListValue = new ListValue<>();
         orderListValue.setValue(order);
         return orderListValue;
