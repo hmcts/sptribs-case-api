@@ -42,6 +42,7 @@ class SystemCleanDeletedDocumentsTaskTest {
 
     private User user;
     private final Long caseId1 = 101L;
+    private final Long caseId2 = 202L;
 
     private static final String CASE_EVENT_ID = "caseworker-remove-document";
     private static final LocalDate DELETE_FROM_DATE = LocalDate.of(2025,10,1);
@@ -59,7 +60,6 @@ class SystemCleanDeletedDocumentsTaskTest {
     void whenCleanDeletedDocumentsTask_thenSuccessfullyCleanDocs() {
 
         //given
-        Long caseId2 = 202L;
         when(caseEventRepository.getListOfCasesByEventTypeAndDate(CASE_EVENT_ID, DELETE_FROM_DATE))
             .thenReturn(List.of(caseId1, caseId2));
         //when
@@ -71,7 +71,7 @@ class SystemCleanDeletedDocumentsTaskTest {
     }
 
     @Test
-    void whenCleanDeletedDocumentsTask_thenEmptyListFromRepositoryAndDoNothing() {
+    void whenCleanDeletedDocumentsTaskAndRepositoryReturnsNoCases_thenNothingCleaned() {
 
         //given
         when(caseEventRepository.getListOfCasesByEventTypeAndDate(CASE_EVENT_ID, DELETE_FROM_DATE))
@@ -83,7 +83,7 @@ class SystemCleanDeletedDocumentsTaskTest {
     }
 
     @Test
-    void whenCleanDeletedDocumentsTask_thenHandleRuntimeException() {
+    void whenCleanDeletedDocumentsTaskAndRepositoryThrowsRuntimeException_thenHandleExceptionAndNoCasesCleaned() {
 
         // given
         doThrow(new RuntimeException("exception"))
@@ -97,11 +97,11 @@ class SystemCleanDeletedDocumentsTaskTest {
     }
 
     @Test
-    void whenCleanDeletedDocumentsTask_thenHandleCcdManagementException() {
+    void whenCleanDeletedDocumentsTaskAndUpdateServiceThrowsCCDManagementException_thenHandleExceptionAndProcessNextCase() {
 
         //given
         when(caseEventRepository.getListOfCasesByEventTypeAndDate(CASE_EVENT_ID, DELETE_FROM_DATE))
-            .thenReturn(List.of(caseId1));
+            .thenReturn(List.of(caseId1, caseId2));
 
         doThrow(new CcdManagementException("exception", new RuntimeException()))
             .when(ccdUpdateService)
@@ -109,15 +109,17 @@ class SystemCleanDeletedDocumentsTaskTest {
 
         //when + then
         assertDoesNotThrow(() -> systemCleanDeletedDocumentsTask.run());
+        verify(ccdUpdateService).submitEvent(caseId1, SYSTEM_CLEAN_DELETED_DOCUMENTS, user, SERVICE_AUTHORIZATION);
+        verify(ccdUpdateService).submitEvent(caseId2, SYSTEM_CLEAN_DELETED_DOCUMENTS, user, SERVICE_AUTHORIZATION);
 
     }
 
     @Test
-    void whenCleanDeletedDocumentsTask_thenHandleIllegalArgumentException() {
+    void whenCleanDeletedDocumentsTaskAndUpdateServiceThrowsIllegalArgumentException_thenHandleExceptionAndMoveToNextCase() {
 
         //given
         when(caseEventRepository.getListOfCasesByEventTypeAndDate(CASE_EVENT_ID, DELETE_FROM_DATE))
-            .thenReturn(List.of(caseId1));
+            .thenReturn(List.of(caseId1, caseId2));
 
         doThrow(new IllegalArgumentException("exception"))
             .when(ccdUpdateService)
@@ -125,6 +127,9 @@ class SystemCleanDeletedDocumentsTaskTest {
 
         //when + then
         assertDoesNotThrow(() -> systemCleanDeletedDocumentsTask.run());
+        verify(ccdUpdateService).submitEvent(caseId1, SYSTEM_CLEAN_DELETED_DOCUMENTS, user, SERVICE_AUTHORIZATION);
+        verify(ccdUpdateService).submitEvent(caseId2, SYSTEM_CLEAN_DELETED_DOCUMENTS, user, SERVICE_AUTHORIZATION);
+
 
     }
 

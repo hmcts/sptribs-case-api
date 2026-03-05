@@ -13,6 +13,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SYSTEM_UPDATE;
@@ -38,62 +39,75 @@ public class SystemCleanDeletedDocumentsCase implements CCDConfig<CaseData, Stat
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(CaseDetails<CaseData, State> caseDetails,
                                                                        CaseDetails<CaseData, State> beforeDetails) {
 
-        log.info("Clean deleted documents event about to clear stuck documents for caseId = {}",
-            caseDetails.getId());
+        Long caseId = caseDetails.getId();
+        log.info("Clean deleted documents event about to clear stuck documents for caseId = {}", caseId);
 
-        final CaseData caseData = caseDetails.getData();
-
-        List<ListValue<CaseworkerCICDocument>> allUploadedDocs =
-            caseData.getAllDocManagement().getCaseworkerCICDocument();
-
-        List<ListValue<CaseworkerCICDocument>> furtherDocs =
-            caseData.getFurtherUploadedDocuments();
+        CaseData caseData = caseDetails.getData();
+        List<ListValue<CaseworkerCICDocument>> furtherDocs = caseData.getFurtherUploadedDocuments();
 
         if (furtherDocs == null || furtherDocs.isEmpty()) {
             return returnEarly(caseDetails, caseData);
         }
 
-        List<ListValue<CaseworkerCICDocument>> caseworkerCICDocumentsToRemove =
-            getCaseworkerCICDocumentsToRemove(allUploadedDocs, furtherDocs);
+        List<ListValue<CaseworkerCICDocument>> allDocs =
+            caseData.getAllDocManagement().getCaseworkerCICDocument();
 
-        if (caseworkerCICDocumentsToRemove.isEmpty()) {
+        List<ListValue<CaseworkerCICDocument>> docsToRemove =
+            findDocumentsToRemove(allDocs, furtherDocs);
+
+        if (docsToRemove.isEmpty()) {
             return returnEarly(caseDetails, caseData);
         }
 
-        String deletedDocsString = caseworkerCICDocumentsToRemove.stream()
-            .map(document -> document.getValue().getDocumentLink().getFilename())
-            .collect(Collectors.joining(", "));
+        logDeletedDocuments(caseId, docsToRemove);
 
-        furtherDocs.removeAll(caseworkerCICDocumentsToRemove);
-
-        log.info("Clean deleted documents event cleared the following documents {} for caseId = {}",
-            deletedDocsString, caseDetails.getId());
+        furtherDocs.removeAll(docsToRemove);
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
             .build();
     }
 
-    private List<ListValue<CaseworkerCICDocument>> getCaseworkerCICDocumentsToRemove(
-        List<ListValue<CaseworkerCICDocument>> allUploadedDocs,
+    private List<ListValue<CaseworkerCICDocument>> findDocumentsToRemove(
+        List<ListValue<CaseworkerCICDocument>> allDocs,
         List<ListValue<CaseworkerCICDocument>> furtherDocs) {
-        return furtherDocs.stream()
-            .filter(furtherDoc -> {
-                String furtherUrl = furtherDoc.getValue().getDocumentLink().getUrl();
 
-                return allUploadedDocs.stream()
-                    .map(doc -> doc.getValue().getDocumentLink().getUrl())
-                    .noneMatch(furtherUrl::equals);
-            })
+        Set<String> uploadedUrls = allDocs.stream()
+            .map(this::getUrl)
+            .collect(Collectors.toSet());
+
+        return furtherDocs.stream()
+            .filter(doc -> !uploadedUrls.contains(getUrl(doc)))
             .toList();
     }
 
+    private void logDeletedDocuments(Long caseId,
+                                     List<ListValue<CaseworkerCICDocument>> docs) {
+
+        String filenames = docs.stream()
+            .map(this::getFilename)
+            .collect(Collectors.joining(", "));
+
+        log.info(
+            "Clean deleted documents event cleared the following documents {} for caseId = {}",
+            filenames,
+            caseId
+        );
+    }
+
     private AboutToStartOrSubmitResponse<CaseData, State> returnEarly(CaseDetails<CaseData, State> caseDetails, CaseData caseData) {
-        log.info("Clean deleted documents event cleaned no documents"
-            + " for caseId = {}", caseDetails.getId());
+        log.info("Clean deleted documents event found no further documents to clean for caseId = {}", caseDetails.getId());
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
             .build();
+    }
+
+    private String getUrl(ListValue<CaseworkerCICDocument> documentListValue) {
+        return documentListValue.getValue().getDocumentLink().getUrl();
+    }
+
+    private String getFilename(ListValue<CaseworkerCICDocument> documentListValue) {
+        return documentListValue.getValue().getDocumentLink().getFilename();
     }
 }
