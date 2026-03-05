@@ -19,8 +19,11 @@ import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 import uk.gov.hmcts.sptribs.caseworker.model.CloseCase;
 import uk.gov.hmcts.sptribs.caseworker.model.CloseReason;
 import uk.gov.hmcts.sptribs.caseworker.model.DateModel;
+import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderCIC;
+import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderContentCIC;
 import uk.gov.hmcts.sptribs.caseworker.model.HearingSummary;
 import uk.gov.hmcts.sptribs.caseworker.model.Listing;
+import uk.gov.hmcts.sptribs.caseworker.model.Order;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.DssCaseData;
@@ -658,4 +661,46 @@ public class TestDataHelper {
 
         return hearingList;
     }
+
+    public static ListValue<CICDocument> buildCicDocumentListValue(String url, String binary, String filename) {
+        CICDocument document = CICDocument.builder()
+            .documentLink(Document.builder().url(url).binaryUrl(binary).filename(filename).build()).build();
+        ListValue<CICDocument> cicDocumentListValue = new ListValue<>();
+        cicDocumentListValue.setValue(document);
+        return cicDocumentListValue;
+    }
+
+    public static ListValue<CaseworkerCICDocument> buildCaseworkerCicDocumentListValue(String url, String binary, String filename) {
+        CaseworkerCICDocument document = CaseworkerCICDocument.builder()
+            .documentCategory(DocumentType.TRIBUNAL_DIRECTION)
+            .documentLink(Document.builder().url(url).binaryUrl(binary).filename(filename).build()).build();
+        ListValue<CaseworkerCICDocument> caseworkerCICDocumentListValue = new ListValue<>();
+        caseworkerCICDocumentListValue.setValue(document);
+        return caseworkerCICDocumentListValue;
+    }
+
+    public static ListValue<Order> buildOrderListValue(List<ListValue<CICDocument>> cicDocumentListValues) {
+        Order order = Order.builder().uploadedFile(cicDocumentListValues).build();
+        ListValue<Order> orderListValue = new ListValue<>();
+        orderListValue.setValue(order);
+        return orderListValue;
+    }
+
+    public static ListValue<Order> buildOrderListValueWithDraftOrder(String url, String binary, String filename) {
+
+        DraftOrderCIC draftOrder = DraftOrderCIC.builder()
+            .templateGeneratedDocument(Document.builder().url(url).binaryUrl(binary).filename(filename).build())
+            .draftOrderContentCIC(DraftOrderContentCIC.builder().build())
+            .build();
+
+        Order order = Order.builder()
+            .draftOrder(draftOrder)
+            .build();
+
+        ListValue<Order> orderListValue = new ListValue<>();
+        orderListValue.setValue(order);
+        return orderListValue;
+    }
+
+
 }

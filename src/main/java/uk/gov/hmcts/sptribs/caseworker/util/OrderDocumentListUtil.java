@@ -4,16 +4,18 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
+import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderCIC;
 import uk.gov.hmcts.sptribs.caseworker.model.Order;
+import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.document.model.CICDocument;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
-import static uk.gov.hmcts.sptribs.caseworker.util.DocumentManagementUtil.EMPTY_DOCUMENT;
 import static uk.gov.hmcts.sptribs.caseworker.util.DocumentManagementUtil.addToRemovedDocuments;
 
 public final class OrderDocumentListUtil {
@@ -60,39 +62,63 @@ public final class OrderDocumentListUtil {
     }
 
 
-    public static CicCase removeOrderDoc(CicCase cicCase, CicCase oldCicCase) {
+    public static CicCase addOrderDocsForRemoval(CicCase cicCase, CicCase oldCicCase) {
         List<ListValue<CaseworkerCICDocument>> wholeOrderDocList = DocumentListUtil.getAllOrderDocuments(oldCicCase);
 
-        if (wholeOrderDocList.size() > cicCase.getOrderDocumentList().size()) {
-            for (ListValue<CaseworkerCICDocument> cicDocumentListValue : wholeOrderDocList) {
-                if (!cicCase.getOrderDocumentList().contains(cicDocumentListValue)) {
-                    for (ListValue<Order> orderListValue : cicCase.getOrderList()) {
-                        if (orderListValue.getValue().getDraftOrder() != null
-                            && cicDocumentListValue.getValue().getDocumentLink()
-                            .equals(orderListValue.getValue().getDraftOrder().getTemplateGeneratedDocument())) {
-                            orderListValue.getValue().getDraftOrder().setTemplateGeneratedDocument(null);
-                        } else {
-                            manageUploadedFiles(orderListValue, cicDocumentListValue);
-                        }
-                    }
-                    addToRemovedDocuments(cicCase, cicDocumentListValue.getValue());
-                }
+        List<CaseworkerCICDocument> currentDocs = cicCase.getOrderDocumentList()
+            .stream()
+            .map(ListValue::getValue)
+            .toList();
+
+        for (ListValue<CaseworkerCICDocument> listValue : wholeOrderDocList) {
+            CaseworkerCICDocument document = listValue.getValue();
+
+            if (!currentDocs.contains(document)) {
+                addToRemovedDocuments(cicCase, document);
             }
         }
         return cicCase;
     }
 
-    public static void manageUploadedFiles(ListValue<Order> orderListValue, ListValue<CaseworkerCICDocument> cicDocumentListValue) {
-        if (!CollectionUtils.isEmpty(orderListValue.getValue().getUploadedFile())) {
-            for (int i = 0; i < orderListValue.getValue().getUploadedFile().size(); i++) {
-                ListValue<CICDocument> file = orderListValue.getValue().getUploadedFile().get(i);
-                if (file.getValue().getDocumentLink() != null && file.getValue().getDocumentLink()
-                    .equals(cicDocumentListValue.getValue().getDocumentLink())) {
-                    orderListValue.getValue().getUploadedFile().get(i).setValue(EMPTY_DOCUMENT);
+    public static void removeNonDraftOrder(CaseData data, ListValue<CaseworkerCICDocument> cicDocumentListValue) {
 
-                }
-            }
+        CicCase cicCase = data.getCicCase();
+        if (cicCase.getOrderList() != null) {
+            cicCase.getOrderList().removeIf(order ->
+                removeDocumentAndCheckIfOrderEmpty(order,
+                    cicDocumentListValue.getValue().getDocumentLink())
+            );
         }
+
+    }
+
+    private static boolean removeDocumentAndCheckIfOrderEmpty(ListValue<Order> order, Document documentLink) {
+
+        List<ListValue<CICDocument>> userUploadedFiles = order.getValue().getUploadedFile() != null
+            ? order.getValue().getUploadedFile()
+            : Collections.emptyList();
+
+        DraftOrderCIC draftOrder = order.getValue().getDraftOrder();
+
+        Document preGeneratedDocument = draftOrder != null
+            ? draftOrder.getTemplateGeneratedDocument()
+            : null;
+
+        if (userUploadedFiles.isEmpty() && preGeneratedDocument == null) {
+            return true;
+        }
+
+        if (!userUploadedFiles.isEmpty()) {
+            userUploadedFiles.removeIf(file ->
+                documentLink.equals(file.getValue().getDocumentLink()));
+        }
+
+        if (preGeneratedDocument != null && preGeneratedDocument.equals(documentLink)) {
+            order.getValue().setDraftOrder(null);
+        }
+
+        return userUploadedFiles.isEmpty()
+            && order.getValue().getDraftOrder() == null;
     }
 
 }
