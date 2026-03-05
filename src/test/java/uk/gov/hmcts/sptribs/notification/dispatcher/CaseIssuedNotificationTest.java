@@ -175,6 +175,8 @@ public class CaseIssuedNotificationTest {
         final CaseData data = getMockCaseData();
         data.getCicCase().setRepresentativeFullName("respFullName");
         data.getCicCase().setRespondentEmail("testRespondentEmail@outlook.com");
+        data.getCicCase().setRespondentBundleDueDate(LocalDate.now().minusDays(43));
+
         Map<String, Object> expectedMap = new HashMap<>();
         expectedMap.put(CommonConstants.CIC_CASE_RESPONDENT_NAME,data.getCicCase().getRespondentName());
         //need to test both options here

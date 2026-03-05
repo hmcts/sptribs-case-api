@@ -18,6 +18,7 @@ import uk.gov.hmcts.sptribs.notification.PartiesNotification;
 import uk.gov.hmcts.sptribs.notification.TemplateName;
 import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -101,8 +102,8 @@ public class CaseIssuedNotification implements PartiesNotification {
 
         //TODO update date condition
         LocalDate today = LocalDate.now();
-        //dummy date for now
-        LocalDate dueDate = LocalDate.of(2026, 1, 1).plusDays(NUMBER_OF_DAYS_IN_WINDOW);
+
+        LocalDate dueDate = cicCase.getRespondentBundleDueDate();
         templateVarsRespondent.put(CommonConstants.CIC_BUNDLE_DUE_DATE_TEXT,
             today.isAfter(dueDate)
                 ? buildTimeString(true, dueDate) : buildTimeString(false, dueDate));
