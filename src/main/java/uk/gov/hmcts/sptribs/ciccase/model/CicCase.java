@@ -632,7 +632,7 @@ public class CicCase {
     private List<ListValue<CaseworkerCICDocument>> removedDocumentList;
 
     @CCD(
-        access = {CollectionDefaultAccess.class, CaseworkerWithCAAAccess.class, CaseworkerAndSuperUserAccess.class}
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class, CaseworkerAndSuperUserAccess.class}
     )
     private List<ListValue<DraftOrderCIC>> removedDraftList;
 

@@ -81,7 +81,7 @@ public final class DraftRemoveListUtil {
             .build();
 
         if (cicCase.getDraftOrderCICList().isEmpty()) {
-            cicCase.setDraftOrderDynamicList(new DynamicList());
+            cicCase.setDraftOrderDynamicList(null);
             return cicCase;
         }
 

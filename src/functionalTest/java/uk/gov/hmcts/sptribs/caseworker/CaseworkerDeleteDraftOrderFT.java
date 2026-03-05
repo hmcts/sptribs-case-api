@@ -48,7 +48,7 @@ public class CaseworkerDeleteDraftOrderFT extends FunctionalTestSuite {
     }
 
     @Test
-    public void shouldReturnEmptyDynamicDraftListWhenAboutToSubmitCallbackIsInvoked() throws Exception {
+    public void shouldReturnNullDynamicDraftListWhenAboutToSubmitCallbackIsInvoked() throws Exception {
         final Map<String, Object> caseData = caseData(EXISTING_DRAFT_ORDER_CIC_LIST_ABOUT_TO_START);
 
         final Response response = triggerCallback(caseData, CASEWORKER_DELETE_DRAFT_ORDER, ABOUT_TO_SUBMIT_URL);

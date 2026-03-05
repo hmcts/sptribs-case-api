@@ -215,7 +215,7 @@ class DraftRemoveListUtilTest {
 
         CicCase result = DraftRemoveListUtil.repopulateDynamicDraftList(caseDataNew.getCicCase());
 
-        Assertions.assertNull(result.getDraftOrderDynamicList().getListItems());
+        Assertions.assertNull(result.getDraftOrderDynamicList());
     }
 
     @Test

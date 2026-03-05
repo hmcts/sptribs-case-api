@@ -121,6 +121,6 @@ class CaseworkerDeleteDraftOrderTest {
         assertThat(midResponse).isNotNull();
         assertThat(response).isNotNull();
         assertThat(deleteDraftOrderResponse).isNotNull();
-        assertThat(response.getData().getCicCase().getDraftOrderDynamicList().getListItems()).isNull();
+        assertThat(response.getData().getCicCase().getDraftOrderDynamicList()).isNull();
     }
 }
