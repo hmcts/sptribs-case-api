@@ -332,7 +332,7 @@ dependencies {
 // uncomment for local version
 // implementation group: 'com.github.hmcts', name: 'ccd-config-generator', version: 'DEV-SNAPSHOT'
 //  implementation 'com.github.hmcts:task-management:DEV-SNAPSHOT'
-  implementation 'com.github.hmcts:task-management:task-mgmt'
+  implementation 'com.github.hmcts:task-management:tmdpc-25-task-querying'
 
   implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: versions.jackson
   implementation group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: versions.jackson
