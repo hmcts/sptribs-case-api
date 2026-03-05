@@ -109,6 +109,16 @@ configurations {
   cftlibTestRuntime.extendsFrom testRuntime
 }
 
+configurations.configureEach {
+  resolutionStrategy.eachDependency { details ->
+    if (details.requested.group == 'com.github.hmcts'
+        && details.requested.name == 'decentralised-runtime') {
+      details.useVersion 'tmdpc-25-task-querying'
+      details.because 'Ensure task outbox Flyway migration from matching task-management branch is used'
+    }
+  }
+}
+
 tasks.withType(JavaCompile) {
   options.compilerArgs << "-Xlint:unchecked" << "-Werror"
 }
@@ -333,6 +343,7 @@ dependencies {
 // implementation group: 'com.github.hmcts', name: 'ccd-config-generator', version: 'DEV-SNAPSHOT'
 //  implementation 'com.github.hmcts:task-management:DEV-SNAPSHOT'
   implementation 'com.github.hmcts:task-management:tmdpc-25-task-querying'
+  implementation 'com.github.hmcts:decentralised-runtime:tmdpc-25-task-querying'
 
   implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: versions.jackson
   implementation group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: versions.jackson
@@ -554,12 +565,6 @@ tasks.withType(CftlibExec).configureEach {
   environment 'RSE_LIB_ADDITIONAL_DATABASES', 'sptribs'
   environment 'CCD_DECENTRALISED_CASE-TYPE-SERVICE-URLS_CriminalInjuriesCompensation', 'http://localhost:4013'
   environment 'SPRING_JMS_SERVICEBUS_ENABLED', 'false'
-  environment 'IDAM_API_BASEURL', 'http://localhost:5062'
-  environment 'IDAM_URL', 'http://localhost:5062'
-  environment 'OPEN_ID_IDAM_URL', 'http://localhost:5062'
-  environment 'IDAM_SYSTEM_UPDATE_USERNAME', 'TEST_CASE_WORKER_USER@mailinator.com'
-  environment 'IDAM_SYSTEM_UPDATE_PASSWORD', 'password'
-  environment 'RSE_LIB_STUB_AUTH_OUTBOUND', 'false'
   environment 'TASK_MANAGEMENT_EXCLUSIVE_CLIENTS',
       'wa_task_management_api,wa_task_monitor,wa_case_event_handler,wa_workflow_api,nfdiv_case_api,sptribs_case_api'
   environment 'TASK_MANAGEMENT_PRIVILEGED_CLIENTS',
