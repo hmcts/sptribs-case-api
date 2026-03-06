@@ -1,11 +1,11 @@
 package uk.gov.hmcts.sptribs.systemupdate.schedule.cleandata;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.test.util.ReflectionTestUtils;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.idam.client.models.User;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
@@ -49,17 +49,11 @@ class SystemCleanDeletedDocumentsTaskTest {
     public static final String SYSTEM_CLEAN_DELETED_DOCUMENTS = "system-clean-deleted-documents";
 
 
-    @BeforeEach
-    void setUp() {
-        user = new User(SYSTEM_UPDATE_AUTH_TOKEN, UserDetails.builder().build());
-        when(idamService.retrieveSystemUpdateUserDetails()).thenReturn(user);
-        when(authTokenGenerator.generate()).thenReturn(SERVICE_AUTHORIZATION);
-    }
-
     @Test
     void whenCleanDeletedDocumentsTask_thenSuccessfullyCleanDocs() {
 
         //given
+        initMocks();
         when(caseEventRepository.getListOfCasesByEventTypeAndDate(CASE_EVENT_ID, DELETE_FROM_DATE))
             .thenReturn(List.of(caseId1, caseId2));
         //when
@@ -74,6 +68,7 @@ class SystemCleanDeletedDocumentsTaskTest {
     void whenCleanDeletedDocumentsTaskAndRepositoryReturnsNoCases_thenNothingCleaned() {
 
         //given
+        initMocks();
         when(caseEventRepository.getListOfCasesByEventTypeAndDate(CASE_EVENT_ID, DELETE_FROM_DATE))
             .thenReturn(Collections.emptyList());
         //when
@@ -83,9 +78,34 @@ class SystemCleanDeletedDocumentsTaskTest {
     }
 
     @Test
+    void whenCleanDeletedDocumentsTaskAndFlagIsFalse_thenNothingCleaned() {
+
+        //given
+        ReflectionTestUtils.setField(systemCleanDeletedDocumentsTask, "cleanDeletedDocumentsEnabled", false);
+        //when
+        systemCleanDeletedDocumentsTask.run();
+        //then
+        verifyNoInteractions(caseEventRepository);
+        verifyNoInteractions(ccdUpdateService);
+    }
+
+    @Test
+    void whenCleanDeletedDocumentsTaskWithTestCaseId_thenSuccessfullyCleanDocsForTestCaseId() {
+
+        //given
+        initMocks();
+        ReflectionTestUtils.setField(systemCleanDeletedDocumentsTask, "cleanDeletedDocumentsTestCaseReference", "12345");
+        //when
+        systemCleanDeletedDocumentsTask.run();
+        //then
+        verify(ccdUpdateService).submitEvent(12345L, SYSTEM_CLEAN_DELETED_DOCUMENTS, user, SERVICE_AUTHORIZATION);
+    }
+
+    @Test
     void whenCleanDeletedDocumentsTaskAndRepositoryThrowsRuntimeException_thenHandleExceptionAndNoCasesCleaned() {
 
         // given
+        initMocks();
         doThrow(new RuntimeException("exception"))
             .when(caseEventRepository)
             .getListOfCasesByEventTypeAndDate(CASE_EVENT_ID, DELETE_FROM_DATE);
@@ -100,6 +120,7 @@ class SystemCleanDeletedDocumentsTaskTest {
     void whenCleanDeletedDocumentsTaskAndUpdateServiceThrowsCCDManagementException_thenHandleExceptionAndProcessNextCase() {
 
         //given
+        initMocks();
         when(caseEventRepository.getListOfCasesByEventTypeAndDate(CASE_EVENT_ID, DELETE_FROM_DATE))
             .thenReturn(List.of(caseId1, caseId2));
 
@@ -118,6 +139,7 @@ class SystemCleanDeletedDocumentsTaskTest {
     void whenCleanDeletedDocumentsTaskAndUpdateServiceThrowsIllegalArgumentException_thenHandleExceptionAndMoveToNextCase() {
 
         //given
+        initMocks();
         when(caseEventRepository.getListOfCasesByEventTypeAndDate(CASE_EVENT_ID, DELETE_FROM_DATE))
             .thenReturn(List.of(caseId1, caseId2));
 
@@ -130,7 +152,14 @@ class SystemCleanDeletedDocumentsTaskTest {
         verify(ccdUpdateService).submitEvent(caseId1, SYSTEM_CLEAN_DELETED_DOCUMENTS, user, SERVICE_AUTHORIZATION);
         verify(ccdUpdateService).submitEvent(caseId2, SYSTEM_CLEAN_DELETED_DOCUMENTS, user, SERVICE_AUTHORIZATION);
 
+    }
 
+    private void initMocks() {
+        user = new User(SYSTEM_UPDATE_AUTH_TOKEN, UserDetails.builder().build());
+        when(idamService.retrieveSystemUpdateUserDetails()).thenReturn(user);
+        when(authTokenGenerator.generate()).thenReturn(SERVICE_AUTHORIZATION);
+        ReflectionTestUtils.setField(systemCleanDeletedDocumentsTask, "cleanDeletedDocumentsTestCaseReference", "");
+        ReflectionTestUtils.setField(systemCleanDeletedDocumentsTask, "cleanDeletedDocumentsEnabled", true);
     }
 
 

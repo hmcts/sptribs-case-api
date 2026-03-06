@@ -2,7 +2,7 @@ package uk.gov.hmcts.sptribs.systemupdate.schedule.cleandata;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.idam.client.models.User;
@@ -32,6 +32,12 @@ public class SystemCleanDeletedDocumentsTask implements Runnable {
 
     private final CaseEventRepository caseEventRepository;
 
+    @Value("${feature.clean-deleted-documents-task.caseReference}")
+    private String cleanDeletedDocumentsTestCaseReference;
+
+    @Value("${feature.clean-deleted-documents-task.enabled}")
+    private boolean cleanDeletedDocumentsEnabled;
+
     @Autowired
     public SystemCleanDeletedDocumentsTask(CcdUpdateService ccdUpdateService,
                                                 IdamService idamService,
@@ -44,14 +50,26 @@ public class SystemCleanDeletedDocumentsTask implements Runnable {
     }
 
     @Override
-    @Scheduled(cron = "0 * * * * *")
     public void run() {
+
+        if (!cleanDeletedDocumentsEnabled) {
+            log.info("Clean deleted documents task is not enabled");
+            return;
+        }
+
         final User user = idamService.retrieveSystemUpdateUserDetails();
         final String serviceAuth = authTokenGenerator.generate();
 
         try {
 
-            final List<Long> caseIdsToUpdate = caseEventRepository.getListOfCasesByEventTypeAndDate(CASE_EVENT_ID, DELETE_FROM_DATE);
+            final List<Long> caseIdsToUpdate;
+
+            if (cleanDeletedDocumentsTestCaseReference != null && !cleanDeletedDocumentsTestCaseReference.isEmpty()) {
+                Long caseIdToUpdate = Long.valueOf(cleanDeletedDocumentsTestCaseReference);
+                caseIdsToUpdate = List.of(caseIdToUpdate);
+            } else {
+                caseIdsToUpdate = caseEventRepository.getListOfCasesByEventTypeAndDate(CASE_EVENT_ID, DELETE_FROM_DATE);
+            }
 
             if (caseIdsToUpdate.isEmpty()) {
                 log.info("Nothing to update");
