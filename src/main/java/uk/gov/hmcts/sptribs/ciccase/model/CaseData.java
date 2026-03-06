@@ -193,7 +193,7 @@ public class CaseData {
 
     @Builder.Default
     @CCD(
-        label = "Bundles",
+        label = "Bundle IDs and Timestamps",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private List<ListValue<BundleIdAndTimestamp>> caseBundleIdsAndTimestamps = new ArrayList<>();
