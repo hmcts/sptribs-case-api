@@ -2,6 +2,7 @@ package uk.gov.hmcts.sptribs.systemupdate.schedule.cleandata;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.idam.client.models.User;
@@ -43,6 +44,7 @@ public class SystemCleanDeletedDocumentsTask implements Runnable {
     }
 
     @Override
+    @Scheduled(cron = "0 * * * * *")
     public void run() {
         final User user = idamService.retrieveSystemUpdateUserDetails();
         final String serviceAuth = authTokenGenerator.generate();
