@@ -110,6 +110,7 @@ class SystemCleanDeletedDocumentsCaseTest {
 
         //then
         assertThat(response.getData().getFurtherUploadedDocuments()).isNull();
+        assertThat(response.getData().getAllDocManagement().getCaseworkerCICDocument()).isEqualTo(expectedAllDocs);
 
     }
 
@@ -141,6 +142,7 @@ class SystemCleanDeletedDocumentsCaseTest {
 
         //then
         assertThat(response.getData().getFurtherUploadedDocuments()).isEmpty();
+        assertThat(response.getData().getAllDocManagement().getCaseworkerCICDocument()).isEqualTo(expectedAllDocs);
 
     }
 
