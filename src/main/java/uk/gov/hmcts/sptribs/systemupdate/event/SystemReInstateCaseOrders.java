@@ -21,15 +21,15 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 @Slf4j
 public class SystemReInstateCaseOrders implements CCDConfig<CaseData, State, UserRole> {
 
-    public static final String SYSTEM_REPLACE_ORDERS = "system-replace-orders";
+    public static final String SYSTEM_RECOVER_ORDERS = "system-recover-orders";
 
     @Override
     public void configure(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         configBuilder
-            .event(SYSTEM_REPLACE_ORDERS)
+            .event(SYSTEM_RECOVER_ORDERS)
             .forAllStates()
-            .name("Repopulate missing orders ")
-            .description("Replace orders that are missing in cicCase")
+            .name("Repopulate missing orders")
+            .description("Recover orders that are missing in cicCase")
             .aboutToSubmitCallback(this::aboutToSubmit)
             .grant(CREATE_READ_UPDATE_DELETE, SYSTEM_UPDATE);
     }
