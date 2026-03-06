@@ -109,6 +109,16 @@ configurations {
   cftlibTestRuntime.extendsFrom testRuntime
 }
 
+configurations.configureEach {
+  resolutionStrategy.eachDependency { details ->
+    if (details.requested.group == 'com.github.hmcts'
+        && details.requested.name == 'decentralised-runtime') {
+      details.useVersion 'tmdpc-25-task-querying'
+      details.because 'Ensure task outbox Flyway migration from matching task-management branch is used'
+    }
+  }
+}
+
 tasks.withType(JavaCompile) {
   options.compilerArgs << "-Xlint:unchecked" << "-Werror"
 }
@@ -245,7 +255,8 @@ def sonarExclusions = [
   '**/uk/gov/hmcts/sptribs/ciccase/model/UserRolesForAccessProfiles.java',
   '**/uk/gov/hmcts/sptribs/common/config/**',
   '**/uk/gov/hmcts/sptribs/common/event/UpdateCaseDataEvent.java',
-  '**/uk/gov/hmcts/sptribs/common/service/CaseDataFieldService.java'
+  '**/uk/gov/hmcts/sptribs/common/service/CaseDataFieldService.java',
+  '**/uk/gov/hmcts/sptribs/taskmanagement/model/**'
 ]
 
 sonarqube {
@@ -330,6 +341,9 @@ def versions = [
 dependencies {
 // uncomment for local version
 // implementation group: 'com.github.hmcts', name: 'ccd-config-generator', version: 'DEV-SNAPSHOT'
+//  implementation 'com.github.hmcts:task-management:DEV-SNAPSHOT'
+  implementation 'com.github.hmcts:task-management:tmdpc-25-task-querying'
+  implementation 'com.github.hmcts:decentralised-runtime:tmdpc-25-task-querying'
 
   implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: versions.jackson
   implementation group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: versions.jackson
@@ -430,6 +444,7 @@ dependencies {
 
   // Provides fast-reload of just the sptribs service.
   cftlibImplementation 'org.springframework.boot:spring-boot-devtools'
+  cftlibTestImplementation sourceSets.test.runtimeClasspath
   cftlibTestImplementation 'com.microsoft.playwright:playwright:1.58.0'
   cftlibTestImplementation 'org.junit-pioneer:junit-pioneer:2.3.0'
   cftlibTestImplementation 'io.github.artsok:rerunner-jupiter:2.1.6'
@@ -525,10 +540,57 @@ ccd {
   configDir = file('build/definitions')
 }
 
+def localRseCftLibDir = file('../rse-cft-lib')
+def localWaTaskManagementApiDir = file("${localRseCftLibDir}/projects/wa-task-management-api")
+def localCftLibPublishingInit = file("${localRseCftLibDir}/cftlib/buildSrc/configurePublishing.gradle")
+def localWaPublishingFixInit = file("$rootDir/gradle/wa-publish-fix.init.gradle")
+def localWaM2Jar = file("${System.properties['user.home']}/.m2/repository/com/github/hmcts/rse-cft-lib/wa-task-management-api/0.19.2017/wa-task-management-api-0.19.2017.jar")
+
+tasks.register('publishLocalWaTaskManagementApiToMavenLocal', Exec) {
+  group = 'ccd tasks'
+  description = 'Publishes local WA task-management-api for cftlib (if ../rse-cft-lib is present)'
+  onlyIf {
+    localWaTaskManagementApiDir.exists() && localCftLibPublishingInit.exists() && localWaPublishingFixInit.exists()
+  }
+  workingDir localWaTaskManagementApiDir
+  commandLine './gradlew', '--no-daemon',
+      '-I', localCftLibPublishingInit.absolutePath,
+      '-I', localWaPublishingFixInit.absolutePath,
+      'publishToMavenLocal'
+  environment 'RELEASE_VERSION', '0.19.2017'
+}
+
 tasks.withType(CftlibExec).configureEach {
+  dependsOn tasks.named('publishLocalWaTaskManagementApiToMavenLocal')
   environment 'RSE_LIB_ADDITIONAL_DATABASES', 'sptribs'
   environment 'CCD_DECENTRALISED_CASE-TYPE-SERVICE-URLS_CriminalInjuriesCompensation', 'http://localhost:4013'
   environment 'SPRING_JMS_SERVICEBUS_ENABLED', 'false'
+  environment 'TASK_MANAGEMENT_EXCLUSIVE_CLIENTS',
+      'wa_task_management_api,wa_task_monitor,wa_case_event_handler,wa_workflow_api,nfdiv_case_api,sptribs_case_api'
+  environment 'TASK_MANAGEMENT_PRIVILEGED_CLIENTS',
+      'wa_task_management_api,xui_webapp,ccd_case_disposer,sptribs_case_api'
+  doFirst {
+    def waManifest = file("$buildDir/cftlib/wa-task-management-api")
+    if (waManifest.exists() && localWaM2Jar.exists()) {
+      def lines = waManifest.readLines()
+      if (lines.size() > 1) {
+        lines[1] = localWaM2Jar.absolutePath
+        waManifest.text = lines.join(System.lineSeparator()) + System.lineSeparator()
+      }
+    }
+
+    def selectClass = project.findProperty('cftlibSelectClass')
+    if (name == 'cftlibTest' && selectClass) {
+      def libTestManifest = file("$buildDir/cftlib/libTest")
+      if (libTestManifest.exists()) {
+        def lines = libTestManifest.readLines()
+        if (!lines.isEmpty()) {
+          lines[0] = "org.junit.platform.console.ConsoleLauncher --select-class=${selectClass}"
+          libTestManifest.text = lines.join(System.lineSeparator()) + System.lineSeparator()
+        }
+      }
+    }
+  }
 }
 
 bootWithCCD {
@@ -573,13 +635,11 @@ cftlibTest {
   environment 'CASE_DOCUMENT_AM_API_ATTACH_DOCUMENT_ENABLED', 'false'
   environment 'CASE_DATA_STORE_BASEURL', 'http://localhost:4452'
   environment 'ROLE_ASSIGNMENT_URL', 'http://localhost:4096'
+  environment 'TASK_MANAGEMENT_API_URL', 'http://localhost:8087'
+  environment 'TASK_MONITOR_API_URL', 'http://localhost:8087'
+  environment 'WA_S2S_AUTHORIZED_SERVICES', 'ccd,ccd_data,ccd_gw,ccd_ps,iac,wa_task_management_api,xui_webapp,wa_task_monitor,camunda_bpm,wa_workflow_api,wa_case_event_handler,ccd_case_disposer,civil_service,sscs,sptribs_case_api'
   environment 'CCD_S2S_AUTHORISED_SERVICES_CASE_USER_ROLES', 'sptribs_case_api'
   environment 'DATA_STORE_S2S_AUTHORISED_SERVICES', 'ccd_gw,fpl_case_service,ccd_data,ccd_ps,sptribs_frontend,xui_webapp,sptribs_case_api,ccd_case_document_am_api,am_role_assignment_service'
-}
-
-// exclude the logback binding is coming in via cftlib
-configurations.cftlibTestImplementation {
-  exclude group: 'ch.qos.logback', module: 'logback-classic'
 }
 
 tasks.register('installChromium', JavaExec) {
@@ -591,11 +651,6 @@ tasks.register('installChromium', JavaExec) {
 }
 
 tasks.cftlibTest.dependsOn(installChromium)
-
-// exclude the logback binding is coming in via cftlib
-configurations.testImplementation {
-  exclude group: 'ch.qos.logback', module: 'logback-classic'
-}
 
 tasks.named("processContractTestResources") {
   duplicatesStrategy = 'include'

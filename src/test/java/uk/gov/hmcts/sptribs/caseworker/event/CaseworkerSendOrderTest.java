@@ -36,6 +36,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.ciccase.model.access.Permissions;
 import uk.gov.hmcts.sptribs.document.model.CICDocument;
 import uk.gov.hmcts.sptribs.notification.dispatcher.NewOrderIssuedNotification;
+import uk.gov.hmcts.sptribs.taskmanagement.TaskManagementService;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -76,6 +77,9 @@ class CaseworkerSendOrderTest {
     @Mock
     private NewOrderIssuedNotification newOrderIssuedNotification;
 
+    @Mock
+    private TaskManagementService taskManagementService;
+
     @Test
     void shouldAddPublishToCamundaWhenWAIsEnabled() {
 
@@ -86,10 +90,6 @@ class CaseworkerSendOrderTest {
         assertThat(getEventsFrom(configBuilder).values())
             .extracting(Event::getId)
             .contains(CASEWORKER_SEND_ORDER);
-
-        assertThat(getEventsFrom(configBuilder).values())
-                .extracting(Event::isPublishToCamunda)
-                .contains(true);
 
         assertThat(getEventsFrom(configBuilder).values())
                 .extracting(Event::getGrants)
@@ -628,6 +628,7 @@ class CaseworkerSendOrderTest {
             .cicCase(cicCase)
             .build();
         caseDetails.setData(caseData);
+        caseDetails.setId(TEST_CASE_ID);
 
         // When
         final AboutToStartOrSubmitResponse<CaseData, State> response = caseworkerSendOrder.aboutToSubmit(caseDetails, caseDetails);

@@ -30,11 +30,23 @@ public class CftLibConfig implements CFTLibConfigurer {
     @Override
     public void configure(CFTLib lib) throws Exception {
 
-        List<String> roleList = List.of("caseworker",
+        List<String> roleList = List.of(
+            "caseworker",
             "caseworker-st_cic",
             "caseworker-st_cic-caseworker",
+            "caseworker-st_cic-senior-caseworker",
+            "caseworker-st_cic-hearing-centre-admin",
+            "caseworker-st_cic-hearing-centre-team-leader",
+            "caseworker-st_cic-senior-judge",
+            "caseworker-st_cic-judge",
+            "caseworker-st_cic-respondent",
+            "caseworker-wa-task-configuration",
+            "caseworker-sptribs-systemupdate",
+            "caseworker-sptribs-superuser",
+            "citizen",
             "pui-case-manager",
-            "jrd-admin");
+            "jrd-admin"
+        );
 
         Map<String, List<String>> users = Map.of(
             "TEST_CASE_WORKER_USER@mailinator.com", roleList,

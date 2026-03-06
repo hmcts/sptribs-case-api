@@ -23,14 +23,20 @@ import uk.gov.hmcts.sptribs.ciccase.model.OrderTemplate;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.ciccase.model.access.Permissions;
+import uk.gov.hmcts.sptribs.taskmanagement.TaskManagementService;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.argThat;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.DOUBLE_HYPHEN;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_WA_CONFIG_USER;
+import static uk.gov.hmcts.sptribs.taskmanagement.model.TaskType.createDueDate;
+import static uk.gov.hmcts.sptribs.taskmanagement.model.TaskType.issueDueDate;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigBuilder;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.getEventsFrom;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID;
@@ -47,6 +53,9 @@ class CaseworkerCreateDraftOrderTest {
     @Mock
     private OrderService orderService;
 
+    @Mock
+    private TaskManagementService taskManagementService;
+
     @Test
     void shouldAddPublishToCamundaWhenWAIsEnabled() {
 
@@ -57,10 +66,6 @@ class CaseworkerCreateDraftOrderTest {
         assertThat(getEventsFrom(configBuilder).values())
             .extracting(Event::getId)
             .contains(CASEWORKER_CREATE_DRAFT_ORDER);
-
-        assertThat(getEventsFrom(configBuilder).values())
-            .extracting(Event::isPublishToCamunda)
-            .contains(true);
 
         assertThat(getEventsFrom(configBuilder).values())
                 .extracting(Event::getGrants)
@@ -220,5 +225,28 @@ class CaseworkerCreateDraftOrderTest {
         assertThat(response.getData().getCicCase().getDraftOrderCICList().get(1).getValue().getDraftOrderContentCIC())
                 .isEqualTo(existingDraftOrderCIC.getDraftOrderContentCIC());
     }
-}
 
+    @Test
+    void shouldEnqueueIssueDueDateWhenDraftOrderCreatedInCaseManagementWithBlankReferral() {
+        final CaseDetails<CaseData, State> details = new CaseDetails<>();
+        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        final CaseData caseData = caseData();
+
+        caseData.getCicCase().setOrderTemplateIssued(Document.builder().filename("a--b--02-02-2002 11:11:11.pdf").build());
+        caseData.setDraftOrderContentCIC(DraftOrderContentCIC.builder()
+            .orderTemplate(OrderTemplate.CIC6_GENERAL_DIRECTIONS)
+            .build());
+
+        details.setData(caseData);
+        details.setId(TEST_CASE_ID);
+        details.setState(State.CaseManagement);
+
+        caseworkerCreateDraftOrder.aboutToSubmit(details, beforeDetails);
+
+        verify(taskManagementService).enqueueInitiationTasks(List.of(issueDueDate), caseData, TEST_CASE_ID);
+        verify(taskManagementService).enqueueCompletionTasks(
+            argThat(taskTypes -> taskTypes.contains(createDueDate)),
+            eq(TEST_CASE_ID)
+        );
+    }
+}

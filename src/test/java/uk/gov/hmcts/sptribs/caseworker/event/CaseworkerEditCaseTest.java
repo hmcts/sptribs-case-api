@@ -23,6 +23,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.SubjectCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.ciccase.model.access.Permissions;
 import uk.gov.hmcts.sptribs.common.service.SubmissionService;
+import uk.gov.hmcts.sptribs.taskmanagement.TaskManagementService;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -49,9 +50,12 @@ class CaseworkerEditCaseTest {
     @Mock
     private SubmissionService submissionService;
 
+    @Mock
+    private TaskManagementService taskManagementService;
+
     @BeforeEach
     public void setUp() {
-        caseworkerEditCase = new CaseworkerEditCase(submissionService);
+        caseworkerEditCase = new CaseworkerEditCase(submissionService, taskManagementService);
     }
 
     @Test
@@ -64,10 +68,6 @@ class CaseworkerEditCaseTest {
         assertThat(getEventsFrom(configBuilder).values())
             .extracting(Event::getId)
             .contains(CASEWORKER_EDIT_CASE);
-
-        assertThat(getEventsFrom(configBuilder).values())
-            .extracting(Event::isPublishToCamunda)
-            .contains(true);
 
         assertThat(getEventsFrom(configBuilder).values())
                 .extracting(Event::getGrants)

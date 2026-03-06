@@ -28,6 +28,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.ciccase.model.access.Permissions;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocumentUpload;
 import uk.gov.hmcts.sptribs.judicialrefdata.JudicialService;
+import uk.gov.hmcts.sptribs.taskmanagement.TaskManagementService;
 
 import java.util.List;
 import java.util.Set;
@@ -38,6 +39,7 @@ import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_WA_CONFIG_USER;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigBuilder;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.getEventsFrom;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getCaseworkerCICDocumentUploadList;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getDynamicList;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getRecordListing;
@@ -58,6 +60,9 @@ class CaseworkerCreateHearingSummaryTest {
     @Mock
     private JudicialService judicialService;
 
+    @Mock
+    private TaskManagementService taskManagementService;
+
     @Test
     void shouldAddPublishToCamundaWhenWAIsEnabled() {
 
@@ -68,10 +73,6 @@ class CaseworkerCreateHearingSummaryTest {
         assertThat(getEventsFrom(configBuilder).values())
             .extracting(Event::getId)
             .contains(CASEWORKER_CREATE_HEARING_SUMMARY);
-
-        assertThat(getEventsFrom(configBuilder).values())
-            .extracting(Event::isPublishToCamunda)
-            .contains(true);
 
         assertThat(getEventsFrom(configBuilder).values())
                 .extracting(Event::getGrants)
@@ -129,6 +130,7 @@ class CaseworkerCreateHearingSummaryTest {
         recordListing.setSummary(hearingSummary);
 
         updatedCaseDetails.setData(caseData);
+        updatedCaseDetails.setId(TEST_CASE_ID);
         final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
         when(recordListHelper.saveSummary(any())).thenReturn(recordListing);
         when(judicialService.populateJudicialId(any())).thenReturn("personal_code");
