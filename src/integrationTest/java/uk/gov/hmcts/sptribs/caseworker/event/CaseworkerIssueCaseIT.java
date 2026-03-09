@@ -20,6 +20,7 @@ import uk.gov.hmcts.sptribs.common.config.WebMvcConfig;
 import uk.gov.hmcts.sptribs.notification.NotificationServiceCIC;
 import uk.gov.hmcts.sptribs.testutil.IdamWireMock;
 
+import java.time.LocalDate;
 import java.util.Set;
 
 import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
@@ -160,6 +161,7 @@ class CaseworkerIssueCaseIT {
                 .respondentEmail("respondent@test.com")
                 .applicantFullName("Applicant Name")
                 .applicantEmailAddress("applicant@test.com")
+                .respondentBundleDueDate(LocalDate.now())
                 .build()
         );
 

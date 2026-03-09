@@ -23,6 +23,7 @@ import uk.gov.hmcts.sptribs.notification.NotificationServiceCIC;
 import uk.gov.hmcts.sptribs.notification.dispatcher.CaseIssuedNotification;
 import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -264,12 +265,14 @@ public class CaseIssuedNotificationIT {
     }
 
     @Test
-    void shouldSendEmailToRespondent() {
+    void shouldSendEmailToRespondentDateInTime() {
+        LocalDate today = LocalDate.now();
         final CaseData data = CaseData.builder()
             .cicCase(CicCase.builder()
                 .fullName("Subject Name")
                 .respondentName("Respondent Name")
                 .alternativeRespondentEmail("test@email.com")
+                .respondentBundleDueDate(today)
                 .build())
             .build();
 
@@ -280,7 +283,46 @@ public class CaseIssuedNotificationIT {
             CONTACT_NAME, "Respondent Name",
             CIC_CASE_RESPONDENT_NAME, "Respondent Name",
             CIC_BUNDLE_DUE_DATE_TEXT, "You should provide the tribunal and the Subject/Applicant/Representative "
-                + "with a case bundle by 2026-02-12"
+                + "with a case bundle by " + today
+        );
+
+        caseIssuedNotification.sendToRespondent(data, TEST_CASE_ID.toString());
+
+        verify(notificationServiceCIC).sendEmail(notificationRequestCaptor.capture(), eq(TEST_CASE_ID.toString()));
+
+        NotificationRequest notificationRequest = notificationRequestCaptor.getValue();
+
+        assertThat(notificationRequest.getDestinationAddress())
+            .isEqualTo("test@email.com");
+        assertThat(notificationRequest.getTemplate())
+            .isEqualTo(CASE_ISSUED_RESPONDENT_EMAIL_UPDATED);
+        assertThat(notificationRequest.getTemplateVars())
+            .containsAllEntriesOf(expectedTemplateVars);
+        assertThat(notificationRequest.getUploadedDocuments())
+            .isNull();
+    }
+
+    @Test
+    void shouldSendEmailToRespondentDateOutOfTime() {
+        LocalDate outOfTimeDate = LocalDate.now().minusDays(50);
+        final CaseData data = CaseData.builder()
+            .cicCase(CicCase.builder()
+                .fullName("Subject Name")
+                .respondentName("Respondent Name")
+                .alternativeRespondentEmail("test@email.com")
+                .respondentBundleDueDate(outOfTimeDate)
+                .build())
+            .build();
+
+        final Map<String, Object> expectedTemplateVars = Map.of(
+            TRIBUNAL_NAME, CIC,
+            CIC_CASE_NUMBER, TEST_CASE_ID.toString(),
+            CIC_CASE_SUBJECT_NAME, "Subject Name",
+            CONTACT_NAME, "Respondent Name",
+            CIC_CASE_RESPONDENT_NAME, "Respondent Name",
+            CIC_BUNDLE_DUE_DATE_TEXT, "Out of time appeal - You should provide the tribunal with a case bundle by "
+                + outOfTimeDate
+                + ". Do not issue to the Subject/Applicant/Representative until we notify you the appeal has been admitted."
         );
 
         caseIssuedNotification.sendToRespondent(data, TEST_CASE_ID.toString());
@@ -331,12 +373,14 @@ public class CaseIssuedNotificationIT {
         documentList.setListItems(listItems);
         documentList.setValue(listItems);
 
+        LocalDate today = LocalDate.now();
         final CaseData data = CaseData.builder()
             .cicCase(CicCase.builder()
                 .fullName("Subject Name")
                 .respondentName("Respondent Name")
                 .alternativeRespondentEmail("test@email.com")
                 .applicantDocumentsUploaded(applicantCaseDocuments)
+                .respondentBundleDueDate(today)
                 .build())
             .caseIssue(CaseIssue.builder()
                 .documentList(documentList)
@@ -350,7 +394,7 @@ public class CaseIssuedNotificationIT {
             CONTACT_NAME, "Respondent Name",
             CIC_CASE_RESPONDENT_NAME, "Respondent Name",
             CIC_BUNDLE_DUE_DATE_TEXT, "You should provide the tribunal and the Subject/Applicant/Representative "
-                + "with a case bundle by 2026-02-12"
+                + "with a case bundle by " + today
         );
 
         caseIssuedNotification.sendToRespondent(data, TEST_CASE_ID.toString());

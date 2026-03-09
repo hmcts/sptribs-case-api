@@ -235,8 +235,8 @@ public class CaseIssuedNotificationTest {
         expectedMap.put(CommonConstants.CIC_CASE_RESPONDENT_NAME,data.getCicCase().getRespondentName());
         //need to test both options here
         expectedMap.put(CommonConstants.CIC_BUNDLE_DUE_DATE_TEXT,
-            "Out of time appeal - You should provide the tribunal with a case bundle by 2026-02-12." +
-                " Do not issue to the Subject/Applicant/Representative until we notify you the appeal has been admitted.");
+            "Out of time appeal - You should provide the tribunal with a case bundle by 2026-02-12."
+                + " Do not issue to the Subject/Applicant/Representative until we notify you the appeal has been admitted.");
 
         //When
         when(notificationHelper.buildDocumentList(caseIssue.getDocumentList(), 5))
