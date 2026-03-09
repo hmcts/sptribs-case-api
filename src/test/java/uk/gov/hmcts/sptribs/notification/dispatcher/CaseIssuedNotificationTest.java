@@ -175,13 +175,14 @@ public class CaseIssuedNotificationTest {
         final CaseData data = getMockCaseData();
         data.getCicCase().setRepresentativeFullName("respFullName");
         data.getCicCase().setRespondentEmail("testRespondentEmail@outlook.com");
-        data.getCicCase().setRespondentBundleDueDate(LocalDate.now().minusDays(43));
+        LocalDate today = LocalDate.now();
+        data.getCicCase().setRespondentBundleDueDate(today);
 
         Map<String, Object> expectedMap = new HashMap<>();
         expectedMap.put(CommonConstants.CIC_CASE_RESPONDENT_NAME,data.getCicCase().getRespondentName());
         //need to test both options here
         expectedMap.put(CommonConstants.CIC_BUNDLE_DUE_DATE_TEXT,
-            "You should provide the tribunal and the Subject/Applicant/Representative with a case bundle by 2026-02-12");
+            "You should provide the tribunal and the Subject/Applicant/Representative with a case bundle by " + today);
 
         //When
         when(notificationHelper.buildEmailNotificationRequest(any(), anyMap(), any(TemplateName.class)))
@@ -192,7 +193,7 @@ public class CaseIssuedNotificationTest {
         verify(notificationService).sendEmail(any(NotificationRequest.class), eq(TEST_CASE_ID.toString()));
         verify(notificationHelper).buildEmailNotificationRequest(
             data.getCicCase().getAlternativeRespondentEmail(),
-            Map.of(CommonConstants.CIC_CASE_RESPONDENT_NAME,data.getCicCase().getRespondentName()),
+            expectedMap,
             TemplateName.CASE_ISSUED_RESPONDENT_EMAIL_UPDATED);
     }
 
@@ -218,6 +219,7 @@ public class CaseIssuedNotificationTest {
         final CaseData data = caseDetails.getData();
         final CicCase cicCase = data.getCicCase();
         cicCase.setApplicantDocumentsUploaded(applicantDocuments);
+        cicCase.setRespondentBundleDueDate(LocalDate.of(2026,02,12));
 
         DynamicMultiSelectList dynamicMultiSelectList = DocumentListUtil.prepareDocumentList(data, "test.url");
         dynamicMultiSelectList.setValue(dynamicMultiSelectList.getListItems());
@@ -233,7 +235,8 @@ public class CaseIssuedNotificationTest {
         expectedMap.put(CommonConstants.CIC_CASE_RESPONDENT_NAME,data.getCicCase().getRespondentName());
         //need to test both options here
         expectedMap.put(CommonConstants.CIC_BUNDLE_DUE_DATE_TEXT,
-            "You should provide the tribunal and the Subject/Applicant/Representative with a case bundle by 2026-02-12");
+            "Out of time appeal - You should provide the tribunal with a case bundle by 2026-02-12." +
+                " Do not issue to the Subject/Applicant/Representative until we notify you the appeal has been admitted.");
 
         //When
         when(notificationHelper.buildDocumentList(caseIssue.getDocumentList(), 5))

@@ -100,7 +100,6 @@ public class CaseIssuedNotification implements PartiesNotification {
         final Map<String, Object> templateVarsRespondent = notificationHelper.getRespondentCommonVars(caseNumber, caseData);
         templateVarsRespondent.put(CommonConstants.CIC_CASE_RESPONDENT_NAME, caseData.getCicCase().getRespondentName());
 
-        //TODO update date condition
         LocalDate today = LocalDate.now();
 
         LocalDate dueDate = cicCase.getRespondentBundleDueDate();
