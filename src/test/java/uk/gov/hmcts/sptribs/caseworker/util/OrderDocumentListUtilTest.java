@@ -11,12 +11,15 @@ import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.document.model.CICDocument;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
-import uk.gov.hmcts.sptribs.document.model.DocumentType;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.buildCaseworkerCicDocumentListValue;
+import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.buildCicDocumentListValue;
+import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.buildOrderListValue;
+import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.buildOrderListValueWithDraftOrder;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.get2Document;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getDocument;
 
@@ -116,7 +119,6 @@ public class OrderDocumentListUtilTest {
         ordersList.add(orderListValue);
 
         CaseData caseData = CaseData.builder().cicCase(CicCase.builder()
-                .orderDocumentList(getDocument())
                 .orderList(ordersList)
                 .decisionDocumentList(new ArrayList<>())
                 .finalDecisionDocumentList(new ArrayList<>())
@@ -124,12 +126,72 @@ public class OrderDocumentListUtilTest {
                 .build())
             .build();
 
+        ListValue<CaseworkerCICDocument> caseworkerCICDocumentToBeRemoved
+            = buildCaseworkerCicDocumentListValue("url1", "url1", "name1");
+
         //When
-        OrderDocumentListUtil.removeNonDraftOrder(caseData,
-            buildCaseworkerCicDocumentListValue("url1", "url1", "name1"));
+        OrderDocumentListUtil.removeNonDraftOrder(caseData, caseworkerCICDocumentToBeRemoved);
 
         //then
         assertThat(caseData.getCicCase().getOrderList()).isEmpty();
+
+    }
+
+    @Test
+    void givenOrderWithOnly1PreGeneratedDoc_whenRemovingNonDraftOrder_thenDeletesDocAndClearsOrder() {
+        //Given
+        ListValue<Order> orderListValue = buildOrderListValueWithDraftOrder("url1", "url1", "name1");
+        List<ListValue<Order>> ordersList = new ArrayList<>();
+        ordersList.add(orderListValue);
+
+        List<ListValue<CaseworkerCICDocument>> caseDocuments = getDocument();
+
+        CaseData caseData = CaseData.builder().cicCase(CicCase.builder()
+                .orderList(ordersList)
+                .finalDecisionDocumentList(caseDocuments)
+                .applicantDocumentsUploaded(caseDocuments)
+                .build())
+            .build();
+
+        ListValue<CaseworkerCICDocument> caseworkerCICDocumentToBeRemoved
+            = buildCaseworkerCicDocumentListValue("url1", "url1", "name1");
+
+        //When
+        OrderDocumentListUtil.removeNonDraftOrder(caseData, caseworkerCICDocumentToBeRemoved);
+
+        //then
+        assertThat(caseData.getCicCase().getOrderList()).isEmpty();
+        assertThat(caseData.getCicCase().getApplicantDocumentsUploaded())
+            .containsExactlyInAnyOrderElementsOf(caseDocuments);
+        assertThat(caseData.getCicCase().getFinalDecisionDocumentList())
+            .containsExactlyInAnyOrderElementsOf(caseDocuments);
+
+    }
+
+    @Test
+    void givenOrderListWithOnly1PreGeneratedDoc_whenRemoveNonDraftOrder_thenDoNotRemoveAsDocsAreDifferent() {
+        //Given
+        ListValue<Order> orderListValue = buildOrderListValueWithDraftOrder("url1", "url1", "name1");
+        List<ListValue<Order>> ordersList = new ArrayList<>();
+        ordersList.add(orderListValue);
+
+        CaseData caseData = CaseData.builder().cicCase(CicCase.builder()
+                .orderList(ordersList)
+                .decisionDocumentList(new ArrayList<>())
+                .finalDecisionDocumentList(new ArrayList<>())
+                .applicantDocumentsUploaded(getDocument())
+                .build())
+            .build();
+
+        ListValue<CaseworkerCICDocument> nonOrderCaseworkerCICDocumentToBeRemoved
+            = buildCaseworkerCicDocumentListValue("url2", "url2", "name2");
+
+        //When
+        OrderDocumentListUtil.removeNonDraftOrder(caseData, nonOrderCaseworkerCICDocumentToBeRemoved);
+
+        //then
+        assertThat(caseData.getCicCase().getOrderList()).hasSize(1);
+        assertThat(caseData.getCicCase().getOrderList()).isEqualTo(ordersList);
 
     }
 
@@ -144,7 +206,6 @@ public class OrderDocumentListUtilTest {
         ordersList.add(orderListValue);
 
         CaseData caseData = CaseData.builder().cicCase(CicCase.builder()
-                .orderDocumentList(getDocument())
                 .orderList(ordersList)
                 .decisionDocumentList(new ArrayList<>())
                 .finalDecisionDocumentList(new ArrayList<>())
@@ -152,12 +213,14 @@ public class OrderDocumentListUtilTest {
                 .build())
             .build();
 
+        ListValue<CaseworkerCICDocument> caseworkerCICDocumentToBeRemoved
+            = buildCaseworkerCicDocumentListValue("url2", "url2", "name2");
+
         //When
-        OrderDocumentListUtil.removeNonDraftOrder(caseData,
-            buildCaseworkerCicDocumentListValue("url2", "url2", "name2"));
+        OrderDocumentListUtil.removeNonDraftOrder(caseData, caseworkerCICDocumentToBeRemoved);
 
         //then
-        assertThat(caseData.getCicCase().getOrderList().size()).isSameAs(1);
+        assertThat(caseData.getCicCase().getOrderList()).hasSize(1);
 
     }
 
@@ -174,7 +237,6 @@ public class OrderDocumentListUtilTest {
         ordersList.add(orderListValue);
 
         CaseData caseData = CaseData.builder().cicCase(CicCase.builder()
-                .orderDocumentList(getDocument())
                 .orderList(ordersList)
                 .decisionDocumentList(new ArrayList<>())
                 .finalDecisionDocumentList(new ArrayList<>())
@@ -182,12 +244,14 @@ public class OrderDocumentListUtilTest {
                 .build())
             .build();
 
+        ListValue<CaseworkerCICDocument> caseworkerCICDocumentToBeRemoved
+            = buildCaseworkerCicDocumentListValue("url1", "url1", "name1");
+
         //When
-        OrderDocumentListUtil.removeNonDraftOrder(caseData,
-            buildCaseworkerCicDocumentListValue("url1", "url1", "name1"));
+        OrderDocumentListUtil.removeNonDraftOrder(caseData, caseworkerCICDocumentToBeRemoved);
 
         //then
-        assertThat(caseData.getCicCase().getOrderList().size()).isSameAs(1);
+        assertThat(caseData.getCicCase().getOrderList()).hasSize(1);
         assertThat(caseData.getCicCase().getOrderList().getFirst().getValue().getUploadedFile().size()).isSameAs(1);
 
     }
@@ -204,7 +268,6 @@ public class OrderDocumentListUtilTest {
         ordersList.add(orderListValue);
 
         CaseData caseData = CaseData.builder().cicCase(CicCase.builder()
-                .orderDocumentList(getDocument())
                 .orderList(ordersList)
                 .decisionDocumentList(new ArrayList<>())
                 .finalDecisionDocumentList(new ArrayList<>())
@@ -212,9 +275,12 @@ public class OrderDocumentListUtilTest {
                 .build())
             .build();
 
+        ListValue<CaseworkerCICDocument> caseworkerCICDocumentToBeRemoved
+            = buildCaseworkerCicDocumentListValue("url1", "url1", "name1");
+
         //When
         OrderDocumentListUtil.removeNonDraftOrder(caseData,
-            buildCaseworkerCicDocumentListValue("url1", "url1", "name1"));
+            caseworkerCICDocumentToBeRemoved);
 
         //then
         assertThat(caseData.getCicCase().getOrderList()).isEmpty();
@@ -226,16 +292,18 @@ public class OrderDocumentListUtilTest {
         //Given
 
         CaseData caseData = CaseData.builder().cicCase(CicCase.builder()
-                .orderDocumentList(getDocument())
                 .decisionDocumentList(new ArrayList<>())
                 .finalDecisionDocumentList(new ArrayList<>())
                 .applicantDocumentsUploaded(getDocument())
                 .build())
             .build();
 
+        ListValue<CaseworkerCICDocument> caseworkerCICDocumentToBeRemoved
+            = buildCaseworkerCicDocumentListValue("url1", "url1", "name1");
+
         //When
         OrderDocumentListUtil.removeNonDraftOrder(caseData,
-            buildCaseworkerCicDocumentListValue("url1", "url1", "name1"));
+            caseworkerCICDocumentToBeRemoved);
 
         //then
         assertThat(caseData.getCicCase().getOrderList()).isNull();
@@ -249,7 +317,6 @@ public class OrderDocumentListUtilTest {
         ordersList.add(orderListValue);
 
         CaseData caseData = CaseData.builder().cicCase(CicCase.builder()
-                .orderDocumentList(getDocument())
                 .orderList(ordersList)
                 .decisionDocumentList(new ArrayList<>())
                 .finalDecisionDocumentList(new ArrayList<>())
@@ -257,35 +324,14 @@ public class OrderDocumentListUtilTest {
                 .build())
             .build();
 
+        ListValue<CaseworkerCICDocument> caseworkerCICDocumentToBeRemoved
+            = buildCaseworkerCicDocumentListValue("url1", "url1", "name1");
+
         //When
-        OrderDocumentListUtil.removeNonDraftOrder(caseData,
-            buildCaseworkerCicDocumentListValue("url1", "url1", "name1"));
+        OrderDocumentListUtil.removeNonDraftOrder(caseData, caseworkerCICDocumentToBeRemoved);
 
         //then
         assertThat(caseData.getCicCase().getOrderList()).isEmpty();
     }
 
-    private ListValue<CICDocument> buildCicDocumentListValue(String url, String binary, String filename) {
-        CICDocument document = CICDocument.builder()
-            .documentLink(Document.builder().url(url).binaryUrl(binary).filename(filename).build()).build();
-        ListValue<CICDocument> cicDocumentListValue = new ListValue<>();
-        cicDocumentListValue.setValue(document);
-        return cicDocumentListValue;
-    }
-
-    private ListValue<CaseworkerCICDocument> buildCaseworkerCicDocumentListValue(String url, String binary, String filename) {
-        CaseworkerCICDocument document = CaseworkerCICDocument.builder()
-            .documentCategory(DocumentType.TRIBUNAL_DIRECTION)
-            .documentLink(Document.builder().url(url).binaryUrl(binary).filename(filename).build()).build();
-        ListValue<CaseworkerCICDocument> caseworkerCICDocumentListValue = new ListValue<>();
-        caseworkerCICDocumentListValue.setValue(document);
-        return caseworkerCICDocumentListValue;
-    }
-
-    private ListValue<Order> buildOrderListValue(List<ListValue<CICDocument>> cicDocumentListValues) {
-        Order order = Order.builder().uploadedFile(cicDocumentListValues).build();
-        ListValue<Order> orderListValue = new ListValue<>();
-        orderListValue.setValue(order);
-        return orderListValue;
-    }
 }
