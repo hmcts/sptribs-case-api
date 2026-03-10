@@ -10,7 +10,6 @@ import uk.gov.hmcts.sptribs.ciccase.CicCaseFieldsUtil;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.temporal.TemporalUnit;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
