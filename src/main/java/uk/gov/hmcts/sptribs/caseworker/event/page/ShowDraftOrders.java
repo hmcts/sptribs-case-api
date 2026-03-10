@@ -23,11 +23,11 @@ public class ShowDraftOrders implements CcdPageConfiguration {
     @Override
     public void addTo(PageBuilder pageBuilder) {
         pageBuilder
-            .page("showCaseDocuments", this::midEvent)
-            .pageLabel("Show draft documents")
-            .label("LabelShowDraftDocuments", "")
+            .page("showDraftOrders", this::midEvent)
+            .pageLabel("Show draft orders")
+            .label("LabelShowDraftOrders", "")
             .complex(CaseData::getCicCase)
-            .readonlyWithLabel(CicCase::getDraftOrderCICList, "Draft orders")
+            .readonly(CicCase::getDraftOrderCICList)
             .done();
     }
 
@@ -43,7 +43,7 @@ public class ShowDraftOrders implements CcdPageConfiguration {
 
         final List<String> errors = new ArrayList<>();
         if (CollectionUtils.isEmpty(newCaseData.getCicCase().getRemovedDraftList())) {
-            errors.add("Please remove at least one document to continue");
+            errors.add("Please remove at least one draft to continue");
         }
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(newCaseData)

@@ -113,14 +113,15 @@ class CaseworkerDeleteDraftOrderTest {
         //When
         AboutToStartOrSubmitResponse<CaseData, State> midResponse =
             showDraftOrders.midEvent(updatedCaseDetails, beforeDetails);
+
+        assertThat(midResponse.getData().getCicCase().getRemovedDraftList().size()).isEqualTo(1);
+
         AboutToStartOrSubmitResponse<CaseData, State> response =
             caseworkerDeleteDraftOrder.aboutToSubmit(updatedCaseDetails, beforeDetails);
         SubmittedCallbackResponse deleteDraftOrderResponse = caseworkerDeleteDraftOrder.submitted(updatedCaseDetails, beforeDetails);
 
-        //Then
-        assertThat(midResponse).isNotNull();
         assertThat(response).isNotNull();
-        assertThat(deleteDraftOrderResponse).isNotNull();
+        assertThat(deleteDraftOrderResponse.getConfirmationHeader()).isEqualTo("# Draft order deleted.");
         assertThat(response.getData().getCicCase().getDraftOrderDynamicList()).isNull();
     }
 }

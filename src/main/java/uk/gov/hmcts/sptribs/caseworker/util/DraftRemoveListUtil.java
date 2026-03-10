@@ -46,7 +46,7 @@ public final class DraftRemoveListUtil {
         return caseData;
     }
 
-    public static void addToRemovedDraftOrdersList(CicCase cicCase, DraftOrderCIC draftOrderCIC) {
+    private static void addToRemovedDraftOrdersList(CicCase cicCase, DraftOrderCIC draftOrderCIC) {
         if (CollectionUtils.isEmpty(cicCase.getRemovedDraftList())) {
             List<ListValue<DraftOrderCIC>> listValues = new ArrayList<>();
 
