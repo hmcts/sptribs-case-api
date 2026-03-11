@@ -27,7 +27,7 @@ public class ShowDraftOrders implements CcdPageConfiguration {
             .pageLabel("Show draft orders")
             .label("LabelShowDraftOrders", "")
             .complex(CaseData::getCicCase)
-            .readonly(CicCase::getDraftOrderCICList)
+            .readonlyWithLabel(CicCase::getDraftOrderCICList, "Draft orders")
             .done();
     }
 
