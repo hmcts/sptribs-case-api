@@ -15,7 +15,8 @@
             {
               "value": {
                 "dueDate": "2026-09-04",
-                "dueDateOptions": "Other"
+                "dueDateOptions": "Other",
+                "information": "due date for test"
               }
             }
           ],

@@ -9,7 +9,8 @@
             {
               "value": {
                 "dueDate": "2026-11-12",
-                "dueDateOptions": "120 days"
+                "dueDateOptions": "120 days",
+                "information": "due date for test"
               }
             }
           ],

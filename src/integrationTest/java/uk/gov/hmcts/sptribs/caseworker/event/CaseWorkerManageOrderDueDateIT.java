@@ -159,6 +159,7 @@ public class CaseWorkerManageOrderDueDateIT {
 
         DateModel orderDueDate = DateModel.builder()
             .dueDateOptions(DueDateOptions.DAY_COUNT_120)
+            .information("information")
             .build();
 
         ListValue<DateModel> dueDateListValue = new ListValue<>();

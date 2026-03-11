@@ -9,7 +9,6 @@ import uk.gov.hmcts.sptribs.caseworker.model.Order;
 import uk.gov.hmcts.sptribs.ciccase.CicCaseFieldsUtil;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -82,13 +81,13 @@ class CicCaseTest {
     @Test
     void given3OrdersWith4DueDates_thenShouldCalculateFirstOrderDueDate() {
         //When
-        LocalDateTime threeHoursFromNow = LocalDateTime.now().plusHours(3);
-        DateModel dateModel1 = DateModel.builder().dueDate(threeHoursFromNow.toLocalDate()).build();
+        LocalDate threeDaysFromNow = LocalDate.now().plusDays(3L);
+        DateModel dateModel1 = DateModel.builder().dueDate(threeDaysFromNow).build();
         ListValue<DateModel> dateModelListValue1 = new ListValue<>();
         dateModelListValue1.setValue(dateModel1);
 
-        LocalDateTime oneHourFromNow = LocalDateTime.now().plusHours(1);
-        DateModel dateModel2 = DateModel.builder().dueDate(oneHourFromNow.toLocalDate()).build();
+        LocalDate oneWeekFromNow = LocalDate.now().plusWeeks(1L);
+        DateModel dateModel2 = DateModel.builder().dueDate(oneWeekFromNow).build();
         ListValue<DateModel> dateModelListValue2 = new ListValue<>();
         dateModelListValue2.setValue(dateModel2);
 
@@ -98,8 +97,8 @@ class CicCaseTest {
         List<ListValue<Order>> orderList = new ArrayList<>();
         orderList.add(orderListValue1);
 
-        LocalDate tomorrow = LocalDate.now().plusDays(1);
-        DateModel dateModel3 = DateModel.builder().dueDate(tomorrow).build();
+        LocalDate twoWeeksFromNow = LocalDate.now().plusWeeks(2);
+        DateModel dateModel3 = DateModel.builder().dueDate(twoWeeksFromNow).build();
         ListValue<DateModel> dateModelListValue3 = new ListValue<>();
         dateModelListValue3.setValue(dateModel3);
         ListValue<Order> orderListValue2 = new ListValue<>();
@@ -126,7 +125,7 @@ class CicCaseTest {
         LocalDate result = CicCaseFieldsUtil.calculateFirstDueDate(cicCase.getOrderList());
 
         //Then
-        assertThat(result).isEqualTo(oneHourFromNow.toLocalDate());
+        assertThat(result).isEqualTo(threeDaysFromNow);
     }
 
     @Test

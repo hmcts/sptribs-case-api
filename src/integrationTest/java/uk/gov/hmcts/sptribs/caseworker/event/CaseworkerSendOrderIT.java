@@ -141,6 +141,7 @@ public class CaseworkerSendOrderIT {
         DateModel dateModel = DateModel.builder()
             .dueDateOptions(DueDateOptions.OTHER)
             .dueDate(LocalDate.of(2026, 9, 4))
+            .information("due date for test")
             .build();
 
         final CaseData caseData = CaseData.builder()

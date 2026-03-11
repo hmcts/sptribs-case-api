@@ -151,6 +151,7 @@ public class CaseworkerCreateAndSendOrderIT {
         DateModel dateModel = DateModel.builder()
             .dueDate(LocalDate.of(2026, 11, 12))
             .dueDateOptions(DueDateOptions.DAY_COUNT_120)
+            .information("due date for test")
             .build();
 
         DraftOrderContentCIC draftOrderContentCIC = DraftOrderContentCIC.builder()
