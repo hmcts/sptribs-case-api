@@ -84,6 +84,8 @@ public class CaseworkerIssueCase implements CCDConfig<CaseData, State, UserRole>
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToStart(CaseDetails<CaseData, State> details) {
         final CaseData caseData = details.getData();
 
+
+        //probs update this so we have name and description in .....
         DynamicMultiSelectList documentList = DocumentListUtil.prepareDocumentList(caseData, baseUrl);
         caseData.getCaseIssue().setDocumentList(documentList);
 
