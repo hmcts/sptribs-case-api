@@ -88,7 +88,7 @@ public class TaskManagementService {
             .externalTaskId(UUID.randomUUID().toString())
             .name(taskType.getName())
             .type(taskType.name())
-            .title("")
+            .title(taskType.getName())
             .created(OffsetDateTime.now())
             .executionType(DEFAULT_EXECUTION_TYPE)
             .taskSystem(DEFAULT_TASK_SYSTEM)

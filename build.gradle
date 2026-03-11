@@ -565,6 +565,11 @@ tasks.withType(CftlibExec).configureEach {
   environment 'RSE_LIB_ADDITIONAL_DATABASES', 'sptribs'
   environment 'CCD_DECENTRALISED_CASE-TYPE-SERVICE-URLS_CriminalInjuriesCompensation', 'http://localhost:4013'
   environment 'SPRING_JMS_SERVICEBUS_ENABLED', 'false'
+  // The IDAM simulator authorizes /api/v1/users requests only when the token subject exists in simulator memory.
+  // Default data-store system user is not present there, which causes 401s in cftlib parity tests.
+  // Keep explicit env override support for local/custom setups.
+  environment 'IDAM_DATA_STORE_SYSTEM_USER_USERNAME',
+      System.getenv('IDAM_DATA_STORE_SYSTEM_USER_USERNAME') ?: 'TEST_CASE_WORKER_USER@mailinator.com'
   environment 'TASK_MANAGEMENT_EXCLUSIVE_CLIENTS',
       'wa_task_management_api,wa_task_monitor,wa_case_event_handler,wa_workflow_api,nfdiv_case_api,sptribs_case_api'
   environment 'TASK_MANAGEMENT_PRIVILEGED_CLIENTS',
