@@ -35,8 +35,11 @@ import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_WA_CONFIG_USER;
+import static uk.gov.hmcts.sptribs.taskmanagement.model.TaskType.completeHearingOutcome;
+import static uk.gov.hmcts.sptribs.taskmanagement.model.TaskType.issueDecisionNotice;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigBuilder;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.getEventsFrom;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID;
@@ -149,6 +152,8 @@ class CaseworkerCreateHearingSummaryTest {
             .isNull();
         assertThat(response.getData().getListing().getSummary().getRecFileUpload()).hasSize(0);
         assertThat(response.getData().getListing().getSummary().getRecFile()).hasSize(0);
+        verify(taskManagementService).enqueueCompletionTasks(List.of(completeHearingOutcome), TEST_CASE_ID);
+        verify(taskManagementService).enqueueInitiationTasks(List.of(issueDecisionNotice), caseData, TEST_CASE_ID);
     }
 
     @Test

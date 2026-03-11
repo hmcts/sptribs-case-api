@@ -15,10 +15,14 @@ import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.ciccase.model.access.Permissions;
 import uk.gov.hmcts.sptribs.taskmanagement.TaskManagementService;
 
+import java.util.List;
+
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.sptribs.caseworker.model.YesNo.YES;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_WA_CONFIG_USER;
 import static uk.gov.hmcts.sptribs.systemupdate.event.SystemTriggerStitchCollateHearingBundle.SYSTEM_TRIGGER_STITCH_COLLATE_HEARING_BUNDLE;
+import static uk.gov.hmcts.sptribs.taskmanagement.model.TaskType.stitchCollateHearingBundle;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigBuilder;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.getEventsFrom;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID;
@@ -64,5 +68,6 @@ class SystemTriggerStitchCollateHearingBundleTest {
             .aboutToSubmit(caseDetails, caseDetails);
 
         assertThat(response.getData().getStitchHearingBundleTask()).isEqualTo(YES);
+        verify(taskManagementService).enqueueInitiationTasks(List.of(stitchCollateHearingBundle), caseData, TEST_CASE_ID);
     }
 }

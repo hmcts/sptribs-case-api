@@ -47,11 +47,15 @@ import java.util.UUID;
 
 import static java.lang.String.format;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.COLON;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.DOUBLE_HYPHEN;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.DRAFT;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.SENT;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_WA_CONFIG_USER;
+import static uk.gov.hmcts.sptribs.taskmanagement.model.TaskType.followUpNoncomplianceOfDirections;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigBuilder;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.getEventsFrom;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.SOLICITOR_ADDRESS;
@@ -150,6 +154,7 @@ class CaseworkerSendOrderTest {
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
         final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
         updatedCaseDetails.setData(caseData);
+        updatedCaseDetails.setState(State.CaseManagement);
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
 
@@ -164,6 +169,8 @@ class CaseworkerSendOrderTest {
         final Order order = response.getData().getCicCase().getOrderList().getFirst().getValue();
         assertThat(order.getDueDateList().getFirst().getValue().getDueDate()).isNotNull();
         assertThat(order.getUploadedFile()).isNotNull();
+        verify(taskManagementService).enqueueCompletionTasks(anyList(), eq(TEST_CASE_ID));
+        verify(taskManagementService).enqueueInitiationTasks(List.of(followUpNoncomplianceOfDirections), caseData, TEST_CASE_ID);
     }
 
     @Test

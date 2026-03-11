@@ -34,9 +34,11 @@ import java.util.List;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_DOCUMENT_MANAGEMENT_AMEND;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_WA_CONFIG_USER;
 import static uk.gov.hmcts.sptribs.document.model.DocumentType.APPLICATION_FORM;
+import static uk.gov.hmcts.sptribs.taskmanagement.model.TaskType.processFurtherEvidence;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigBuilder;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.getEventsFrom;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID;
@@ -126,6 +128,7 @@ class CaseworkerDocumentManagementAmendTest {
             .getApplicantDocumentsUploaded().getFirst()
             .getValue().getDocumentCategory()).isEqualTo(APPLICATION_FORM);
         assertThat(documentMgmtResponse).isNotNull();
+        verify(taskManagementService).enqueueCompletionTasks(List.of(processFurtherEvidence), TEST_CASE_ID);
     }
 
     @Test

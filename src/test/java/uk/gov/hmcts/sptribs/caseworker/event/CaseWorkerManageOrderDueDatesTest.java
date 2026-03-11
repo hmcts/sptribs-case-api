@@ -26,7 +26,9 @@ import java.util.List;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_WA_CONFIG_USER;
+import static uk.gov.hmcts.sptribs.taskmanagement.model.TaskType.followUpNoncomplianceOfDirections;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigBuilder;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.getEventsFrom;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID;
@@ -95,6 +97,7 @@ class CaseWorkerManageOrderDueDatesTest {
         //Then
         assertThat(draftCreatedResponse).isNotNull();
         assertThat(response).isNotNull();
+        verify(taskManagementService).enqueueCompletionTasks(List.of(followUpNoncomplianceOfDirections), TEST_CASE_ID);
 
     }
 

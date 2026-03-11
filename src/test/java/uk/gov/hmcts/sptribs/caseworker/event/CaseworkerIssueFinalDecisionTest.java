@@ -33,11 +33,14 @@ import uk.gov.hmcts.sptribs.document.model.CICDocument;
 import uk.gov.hmcts.sptribs.notification.dispatcher.CaseFinalDecisionIssuedNotification;
 import uk.gov.hmcts.sptribs.taskmanagement.TaskManagementService;
 
+import java.util.List;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseClosed;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_WA_CONFIG_USER;
+import static uk.gov.hmcts.sptribs.taskmanagement.model.TaskType.issueDecisionNotice;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigBuilder;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.getEventsFrom;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID;
@@ -146,6 +149,7 @@ class CaseworkerIssueFinalDecisionTest {
         //Then
         assertThat(response.getState())
             .isEqualTo(CaseClosed);
+        verify(taskManagementService).enqueueCompletionTasks(List.of(issueDecisionNotice), TEST_CASE_ID);
     }
 
     @Test
