@@ -173,6 +173,36 @@
           <text>false</text>
         </outputEntry>
       </rule>
+      <rule id="DecisionRule_1slcoc9">
+        <description>"Access Request for Legal Ops"</description>
+        <inputEntry id="UnaryTests_1fpbd9t">
+          <text>"reviewSpecificAccessRequestLegalOps"</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_0pzfros">
+          <text></text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_1ta1ljy">
+          <text></text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_0iz2g2n">
+          <text>"senior-tribunal-caseworker"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_1673pdj">
+          <text>"Read,Own,Claim,Manage,Assign,Unassign,Complete,Cancel"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_0r5iyig">
+          <text>"LEGAL_OPERATIONS"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_1io0v3u">
+          <text></text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_0y35jbx">
+          <text>1</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_0p46nfh">
+          <text>false</text>
+        </outputEntry>
+      </rule>
     </decisionTable>
   </decision>
   <dmndi:DMNDI>

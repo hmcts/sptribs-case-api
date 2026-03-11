@@ -88,7 +88,7 @@ class CamundaTaskWaPermissionTest extends DmnDecisionTableBaseUnitTest {
         assertThat(logic.getOutputs().size(), is(7));
         assertThatOutputContainInOrder(outputColumnIds, logic.getOutputs());
         //Rules
-        assertThat(logic.getRules().size(), is(15));
+        assertThat(logic.getRules().size(), is(6));
     }
 
     @ParameterizedTest(name = "task type: {0} case data: {1}")
@@ -152,84 +152,12 @@ class CamundaTaskWaPermissionTest extends DmnDecisionTableBaseUnitTest {
         );
     }
 
-    private static Map<String, Object> regionalCentreAdminPermissions() {
-        return Map.of(
-            "name", "regional-centre-admin",
-            "value", "Read,Own,Claim,Unclaim,Manage,Complete",
-            "roleCategory", ROLE_CATEGORY_ADMIN,
-            "assignmentPriority", 1,
-            "autoAssignable", false
-        );
-    }
-
-    private static Map<String, Object> regionalCentreTeamLeaderPermissions() {
-        return Map.of(
-            "name", "regional-centre-team-leader",
-            "value", "Read,Own,Claim,Unclaim,Manage,UnclaimAssign,Assign,Unassign,Cancel,Complete",
-            "roleCategory", ROLE_CATEGORY_ADMIN,
-            "assignmentPriority", 2,
-            "autoAssignable", false
-        );
-    }
-
-    private static Map<String, Object> hearingCentreAdminPermissions() {
-        return Map.of(
-            "name", "hearing-centre-admin",
-            "value", "Read,Own,Claim,Unclaim,Manage,Complete",
-            "roleCategory", ROLE_CATEGORY_ADMIN,
-            "assignmentPriority", 1,
-            "autoAssignable", false
-        );
-    }
-
-    private static Map<String, Object> hearingCentreTeamLeaderPermissions() {
-        return Map.of(
-            "name", "hearing-centre-team-leader",
-            "value", "Read,Own,Claim,Unclaim,Manage,UnclaimAssign,Assign,Unassign,Cancel,Complete",
-            "roleCategory", ROLE_CATEGORY_ADMIN,
-            "assignmentPriority", 2,
-            "autoAssignable", false
-        );
-    }
-
     private static Map<String, Object> seniorTribunalCaseworkerPermissions() {
         return Map.of(
             "name", "senior-tribunal-caseworker",
             "value", "Read,Own,Claim,Manage,Assign,Unassign,Complete,Cancel",
             "roleCategory", ROLE_CATEGORY_LO,
             "assignmentPriority", 1,
-            "autoAssignable", false
-        );
-    }
-
-    private static Map<String, Object> tribunalCaseworkerPermissions() {
-        return Map.of(
-            "name", "tribunal-caseworker",
-            "value", "Read,Own,Claim,Assign,Unassign,Complete,Cancel",
-            "roleCategory", ROLE_CATEGORY_LO,
-            "assignmentPriority", 2,
-            "autoAssignable", false
-        );
-    }
-
-    private static Map<String, Object> seniorJudgePermissions() {
-        return Map.of(
-            "name", "senior-judge",
-            "value", "Read,Execute,Claim,Manage,Assign,Unassign,Complete,Cancel",
-            "roleCategory", ROLE_CATEGORY_JUDICIAL,
-            "authorisations", "328",
-            "assignmentPriority", 1,
-            "autoAssignable", false
-        );
-    }
-
-    private static Map<String, Object> judgePermissions() {
-        return Map.of(
-            "name", "judge",
-            "value", "Read,Own,Claim,Assign,Unassign,Complete,Cancel",
-            "roleCategory", ROLE_CATEGORY_JUDICIAL,
-            "authorisations", "328",
-            "assignmentPriority", 2,
             "autoAssignable", false
         );
     }
@@ -271,25 +199,4 @@ class CamundaTaskWaPermissionTest extends DmnDecisionTableBaseUnitTest {
             "autoAssignable", false
         );
     }
-
-    private static Map<String, Object> ctscPermissions() {
-        return Map.of(
-            "name", "ctsc",
-            "value", "Read,Own,Claim,Unclaim,Manage,Complete",
-            "roleCategory", ROLE_CATEGORY_CTSC,
-            "assignmentPriority", 1,
-            "autoAssignable", false
-        );
-    }
-
-    private static Map<String, Object> ctscTeamLeaderPermissions() {
-        return Map.of(
-            "name", "ctsc-team-leader",
-            "value", "Read,Own,Claim,Unclaim,Manage,UnclaimAssign,Assign,Unassign,Cancel,Complete",
-            "roleCategory", ROLE_CATEGORY_CTSC,
-            "assignmentPriority", 2,
-            "autoAssignable", false
-        );
-    }
-
 }
