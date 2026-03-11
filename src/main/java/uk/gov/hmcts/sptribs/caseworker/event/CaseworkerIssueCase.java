@@ -52,6 +52,8 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 @Slf4j
 public class CaseworkerIssueCase implements CCDConfig<CaseData, State, UserRole> {
 
+    private static final int ALLOWED_RESPONSE_TIME_DAYS = 42;
+
     private final CaseIssuedNotification caseIssuedNotification;
 
     private final BankHolidayService bankHolidayService;
@@ -119,7 +121,7 @@ public class CaseworkerIssueCase implements CCDConfig<CaseData, State, UserRole>
         Set<LocalDate> bankHolidays = bankHolidayService
             .getScottishBankHolidays(bankHolidayUrl)
             .getDates();
-        LocalDate dueDate = LocalDate.now().plusDays(42);
+        LocalDate dueDate = LocalDate.now().plusDays(ALLOWED_RESPONSE_TIME_DAYS);
         LocalDate verifiedDueDate = isWorkingDay(dueDate, bankHolidays) ? dueDate : getNextWorkingDay(dueDate, bankHolidays);
         cicCase.setRespondentBundleDueDate(verifiedDueDate);
         
