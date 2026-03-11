@@ -229,6 +229,9 @@ feature:
   migrate-global-search-task:
     enabled: ${GLOBAL_SEARCH_MIGRATION_ENABLED:false}
     caseReference: ${GLOBAL_SEARCH_MIGRATION_TEST_CASE_REF:}
+  clean-deleted-documents-task:
+    enabled: ${CLEAN_DELETED_DOCUMENTS_ENABLED:false}
+    caseReference: ${CLEAN_DELETED_DOCUMENTS_TEST_CASE_REF:}
 
 caseinfo:
   apps:
