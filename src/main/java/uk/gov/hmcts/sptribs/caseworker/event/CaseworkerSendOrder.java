@@ -94,7 +94,6 @@ public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole>
     private static final CcdPageConfiguration orderIssuingSelect = new SendOrderOrderIssuingSelect();
     private static final CcdPageConfiguration uploadOrder = new SendOrderUploadOrder();
     private static final CcdPageConfiguration draftOrder = new SendOrderAddDraftOrder();
-    private static final CcdPageConfiguration orderDueDates = new SendOrderOrderDueDates();
     private static final CcdPageConfiguration notifyParties = new SendOrderNotifyParties();
     private static final CcdPageConfiguration sendReminder = new SendOrderSendReminder();
 
@@ -113,6 +112,7 @@ public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole>
 
     private final NewOrderIssuedNotification newOrderIssuedNotification;
     private final TaskManagementService taskManagementService;
+    private final SendOrderOrderDueDates orderDueDates;
 
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
@@ -171,7 +171,7 @@ public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole>
         String selectedDynamicDraft = null;
         final Order order = Order.builder()
             .uploadedFile(caseData.getCicCase().getOrderFile())
-            .dueDateList(caseData.getCicCase().getOrderDueDates())
+            .dueDateList(caseData.getOrderDueDates())
             .parties(getRecipients(caseData.getCicCase()))
             .orderSentDate(LocalDate.now())
             .reminderDay(caseData.getCicCase().getOrderReminderDays()).build();
@@ -230,7 +230,7 @@ public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole>
             caseData.getCicCase().setDraftOrderCICList(draftList);
         }
 
-        caseData.getCicCase().setOrderDueDates(new ArrayList<>());
+        caseData.setOrderDueDates(new ArrayList<>());
         caseData.getCicCase().setFirstOrderDueDate(CicCaseFieldsUtil.calculateFirstDueDate(caseData.getCicCase().getOrderList()));
 
         taskManagementService.enqueueCompletionTasks(COMPLETABLE_TASKS.stream().toList(), details.getId());

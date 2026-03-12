@@ -16,6 +16,7 @@ import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.event.page.ApplyAnonymity;
 import uk.gov.hmcts.sptribs.caseworker.event.page.DraftOrderFooter;
+import uk.gov.hmcts.sptribs.caseworker.event.page.SendOrderOrderDueDates;
 import uk.gov.hmcts.sptribs.caseworker.model.DateModel;
 import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderCIC;
 import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderContentCIC;
@@ -79,10 +80,17 @@ class CaseworkerCreateAndSendOrderTest {
     private DraftOrderFooter draftOrderFooter;
 
     @Mock
+    private SendOrderOrderDueDates orderDueDates;
+
+    @Mock
     private NewOrderIssuedNotification newOrderIssuedNotification;
 
     @Mock
     private TaskManagementService taskManagementService;
+
+    private DateModel dateModel = DateModel.builder()
+        .dueDate(LocalDate.of(2026, 1, 2))
+        .build();
 
     @Test
     void shouldAddConfigurationToConfigBuilder() {
@@ -183,6 +191,7 @@ class CaseworkerCreateAndSendOrderTest {
 
         final CaseData caseData = CaseData.builder()
                 .draftOrderContentCIC(draftOrderContentCIC)
+                .orderDueDates(List.of(ListValue.<DateModel>builder().value(dateModel).build()))
                 .cicCase(getCicCase(CREATE_AND_SEND_NEW_ORDER, YesOrNo.YES, "AAC", document))
                 .build();
 
@@ -234,6 +243,7 @@ class CaseworkerCreateAndSendOrderTest {
 
         final CaseData caseData = CaseData.builder().build();
         caseData.setCicCase(getCicCase(CREATE_AND_SEND_NEW_ORDER, YesOrNo.NO, null, document));
+        caseData.setOrderDueDates(List.of(ListValue.<DateModel>builder().value(dateModel).build()));
         caseData.setDraftOrderContentCIC(draftOrderContentCIC);
 
         details.setData(caseData);
@@ -280,6 +290,7 @@ class CaseworkerCreateAndSendOrderTest {
         final CaseData caseData = CaseData.builder()
                 .draftOrderContentCIC(draftOrderContentCIC)
                 .cicCase(getCicCase(CREATE_AND_SEND_NEW_ORDER, YesOrNo.YES, "AAC", document))
+                .orderDueDates(List.of(ListValue.<DateModel>builder().value(dateModel).build()))
                 .build();
 
         caseData.setDraftOrderContentCIC(draftOrderContentCIC);
@@ -344,6 +355,7 @@ class CaseworkerCreateAndSendOrderTest {
                 .caseFlags(flags)
                 .draftOrderContentCIC(draftOrderContentCIC)
                 .cicCase(getCicCase(CREATE_AND_SEND_NEW_ORDER, YesOrNo.YES, "AAC", document))
+                .orderDueDates(List.of(ListValue.<DateModel>builder().value(dateModel).build()))
                 .build();
 
         caseData.setDraftOrderContentCIC(draftOrderContentCIC);
@@ -399,6 +411,7 @@ class CaseworkerCreateAndSendOrderTest {
         List<ListValue<CICDocument>> orderFile = List.of(ListValue.<CICDocument>builder().value(cicDocument).build());
         cicCase1.setOrderFile(orderFile);
         caseData.setCicCase(cicCase1);
+        caseData.setOrderDueDates(List.of(ListValue.<DateModel>builder().value(dateModel).build()));
 
         details.setData(caseData);
         details.setId(TEST_CASE_ID);
@@ -582,11 +595,6 @@ class CaseworkerCreateAndSendOrderTest {
                                       YesOrNo isAnonymised,
                                       String anonymisedName,
                                       Document document) {
-        DateModel dateModel = DateModel.builder()
-                .dueDate(LocalDate.of(2026, 1, 2))
-                .information("due date for test")
-                .build();
-
         return CicCase.builder()
             .orderIssuingType(issueType)
             .anonymiseYesOrNo(isAnonymised)
@@ -597,7 +605,6 @@ class CaseworkerCreateAndSendOrderTest {
             .notifyPartyRespondent(Set.of(RESPONDENT))
             .notifyPartyRepresentative(Set.of(REPRESENTATIVE))
             .notifyPartyApplicant(Set.of(APPLICANT_CIC))
-            .orderDueDates(List.of(ListValue.<DateModel>builder().value(dateModel).build()))
             .fullName("Test Name")
             .schemeCic(Year2012)
             .build();
@@ -612,7 +619,6 @@ class CaseworkerCreateAndSendOrderTest {
                 ListValue.<DateModel>builder()
                     .value(DateModel.builder()
                         .dueDate(LocalDate.of(2026, 1, 2))
-                        .information("due date for test")
                         .build())
                     .build()))
             .orderSentDate(LocalDate.now())

@@ -31,7 +31,7 @@
   "editCicaCaseDetails": {},
   "securityClass": "PUBLIC",
   "caseBundles": [],
-  "cicCaseOrderDueDates": [],
+  "orderDueDates": [],
   "cicCaseOrderDocumentList": [],
   "cicCaseCaseCategory": "Assessment",
   "cicCaseCaseSubcategory": "Fatal",
