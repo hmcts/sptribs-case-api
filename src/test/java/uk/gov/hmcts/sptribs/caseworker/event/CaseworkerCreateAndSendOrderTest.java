@@ -41,6 +41,7 @@ import java.util.Set;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -376,6 +377,22 @@ class CaseworkerCreateAndSendOrderTest {
 
         final var submittedResponse = caseworkerCreateAndSendOrder.submitted(details,caseDetailsBefore());
         assertThat(submittedResponse.getConfirmationHeader()).contains("# Order sent");
+    }
+
+    @Test
+    void shouldCompareFlagDetailsWithNullFlagComment() {
+       //given
+        FlagDetail flagDetail = getExpectedAnonymisationFlag();
+
+        FlagDetail flagDetail2 = getExpectedAnonymisationFlag();
+        flagDetail2.setFlagComment(null);
+
+        //when
+        boolean result = CaseFlagsUtil.caseFlagDetailsEquals(flagDetail, flagDetail2);
+
+
+        //then
+        assertFalse(result);
     }
 
     @Test
