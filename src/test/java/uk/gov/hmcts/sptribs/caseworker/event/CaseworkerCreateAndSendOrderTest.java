@@ -565,6 +565,7 @@ class CaseworkerCreateAndSendOrderTest {
             Document.builder().filename("order.pdf").build());
         cicCase.setAdminActionRequired(Set.of(AdminAction.ADMIN_ACTION_REQUIRED));
         caseData.setCicCase(cicCase);
+        caseData.setOrderDueDates(List.of(ListValue.<DateModel>builder().value(dateModel).build()));
         caseData.setDraftOrderContentCIC(DraftOrderContentCIC.builder().orderTemplate(OrderTemplate.CIC3_RULE_27).build());
 
         details.setData(caseData);
@@ -572,14 +573,14 @@ class CaseworkerCreateAndSendOrderTest {
         details.setState(State.CaseManagement);
 
         caseworkerCreateAndSendOrder.aboutToSubmit(details, caseDetailsBefore());
-
+        
+        verify(taskManagementService).enqueueCompletionTasks(
+            argThat(taskTypes -> !taskTypes.isEmpty()),
+            eq(TEST_CASE_ID)
+        );
         verify(taskManagementService).enqueueInitiationTasks(
             eq(List.of(followUpNoncomplianceOfDirections, reviewOrder)),
             eq(caseData),
-            eq(TEST_CASE_ID)
-        );
-        verify(taskManagementService).enqueueCompletionTasks(
-            argThat(taskTypes -> !taskTypes.isEmpty()),
             eq(TEST_CASE_ID)
         );
     }

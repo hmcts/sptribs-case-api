@@ -66,7 +66,7 @@ class CaseWorkerManageOrderDueDatesTest {
     @BeforeEach
     void setUp() {
         caseWorkerManageOrderDueDate =
-            new CaseWorkerManageOrderDueDate(orderService, fixedClock);
+            new CaseWorkerManageOrderDueDate(orderService, fixedClock, taskManagementService);
     }
 
 

@@ -60,8 +60,7 @@ public class CaseWorkerManageOrderDueDate implements CCDConfig<CaseData, State, 
     private final OrderService orderService;
     private final Clock clock;
 
-    @Autowired
-    private TaskManagementService taskManagementService;
+    private final TaskManagementService taskManagementService;
 
     @Override
     public void configure(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
