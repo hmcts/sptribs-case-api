@@ -111,10 +111,13 @@ configurations {
 
 configurations.configureEach {
   resolutionStrategy.eachDependency { details ->
-    if (details.requested.group == 'com.github.hmcts'
-        && details.requested.name == 'decentralised-runtime') {
-      details.useVersion 'task-mgmt-40.1-46b69557'
-      details.because 'Ensure task outbox Flyway migration from matching task-management branch is used'
+    if (details.requested.group == 'com.github.hmcts') {
+      if (details.requested.name == 'decentralised-runtime'
+          || details.requested.name == 'task-management'
+          || details.requested.name == 'ccd-config-generator') {
+        details.useVersion 'task-mgmt-40.1-46b69557'
+        details.because 'Ensure task-management, decentralised-runtime and ccd-config-generator stay aligned'
+      }
     }
   }
 }
@@ -344,6 +347,7 @@ dependencies {
 //  implementation 'com.github.hmcts:task-management:DEV-SNAPSHOT'
   implementation 'com.github.hmcts:task-management:task-mgmt-40.1-46b69557'
   implementation 'com.github.hmcts:decentralised-runtime:task-mgmt-40.1-46b69557'
+  implementation 'com.github.hmcts:ccd-config-generator:task-mgmt-40.1-46b69557'
 
   implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: versions.jackson
   implementation group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: versions.jackson
@@ -446,6 +450,8 @@ dependencies {
   cftlibImplementation 'org.springframework.boot:spring-boot-devtools'
   cftlibTestImplementation sourceSets.test.runtimeClasspath
   cftlibTestImplementation 'com.github.hmcts:task-management:task-mgmt-40.1-46b69557'
+  cftlibTestImplementation 'com.github.hmcts:decentralised-runtime:task-mgmt-40.1-46b69557'
+  cftlibTestImplementation 'com.github.hmcts:ccd-config-generator:task-mgmt-40.1-46b69557'
   cftlibTestImplementation 'com.microsoft.playwright:playwright:1.58.0'
   cftlibTestImplementation 'org.junit-pioneer:junit-pioneer:2.3.0'
   cftlibTestImplementation 'io.github.artsok:rerunner-jupiter:2.1.6'
@@ -546,12 +552,16 @@ def localWaTaskManagementApiDir = file("${localRseCftLibDir}/projects/wa-task-ma
 def localCftLibPublishingInit = file("${localRseCftLibDir}/cftlib/buildSrc/configurePublishing.gradle")
 def localWaPublishingFixInit = file("$rootDir/gradle/wa-publish-fix.init.gradle")
 def localWaM2Jar = file("${System.properties['user.home']}/.m2/repository/com/github/hmcts/rse-cft-lib/wa-task-management-api/0.19.2017/wa-task-management-api-0.19.2017.jar")
+def useLocalWaTaskManagementApi = (project.findProperty('useLocalWaTaskManagementApi') ?: 'false').toString().toBoolean()
 
 tasks.register('publishLocalWaTaskManagementApiToMavenLocal', Exec) {
   group = 'ccd tasks'
   description = 'Publishes local WA task-management-api for cftlib (if ../rse-cft-lib is present)'
   onlyIf {
-    localWaTaskManagementApiDir.exists() && localCftLibPublishingInit.exists() && localWaPublishingFixInit.exists()
+    useLocalWaTaskManagementApi
+        && localWaTaskManagementApiDir.exists()
+        && localCftLibPublishingInit.exists()
+        && localWaPublishingFixInit.exists()
   }
   workingDir localWaTaskManagementApiDir
   commandLine './gradlew', '--no-daemon',
@@ -577,7 +587,7 @@ tasks.withType(CftlibExec).configureEach {
       'wa_task_management_api,xui_webapp,ccd_case_disposer,sptribs_case_api'
   doFirst {
     def waManifest = file("$buildDir/cftlib/wa-task-management-api")
-    if (waManifest.exists() && localWaM2Jar.exists()) {
+    if (useLocalWaTaskManagementApi && waManifest.exists() && localWaM2Jar.exists()) {
       def lines = waManifest.readLines()
       if (lines.size() > 1) {
         lines[1] = localWaM2Jar.absolutePath
