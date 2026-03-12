@@ -12,6 +12,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseIssue;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
@@ -19,6 +20,7 @@ import uk.gov.hmcts.sptribs.common.config.WebMvcConfig;
 import uk.gov.hmcts.sptribs.notification.NotificationServiceCIC;
 import uk.gov.hmcts.sptribs.testutil.IdamWireMock;
 
+import java.time.LocalDate;
 import java.util.Set;
 
 import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
@@ -59,9 +61,9 @@ import static uk.gov.hmcts.sptribs.testutil.TestResourceUtil.expectedResponse;
 class CaseworkerIssueCaseIT {
 
     private static final String CASEWORKER_ISSUE_CASE_RESPONSE =
-        "classpath:responses/caseworker-issue-case-response.json";
+        "classpath:responses/caseworker-issue-case-about-to-submit-response.json";
     private static final String CASEWORKER_ISSUE_CASE_ABOUT_TO_START_RESPONSE =
-        "classpath:responses/caseworker-issue-case-response.json";
+        "classpath:responses/caseworker-issue-case-about-to-start-response.json";
 
     private static final String CONFIRMATION_HEADER = "$.confirmation_header";
 
@@ -90,13 +92,13 @@ class CaseworkerIssueCaseIT {
 
 
     @Test
-    void shouldSuccessfullyAIssueCase() throws Exception {
+    void shouldSuccessfullyIssueCase() throws Exception {
         final CaseData caseData = caseData();
         caseData.setCaseIssue(new CaseIssue());
 
         stubForIdamDetails(TEST_AUTHORIZATION_TOKEN, CASEWORKER_USER_ID, ST_CIC_CASEWORKER);
 
-        mockMvc.perform(post(ABOUT_TO_SUBMIT_URL)
+        MvcResult result = mockMvc.perform(post(ABOUT_TO_SUBMIT_URL)
                 .contentType(APPLICATION_JSON)
                 .header(SERVICE_AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
                 .header(AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
@@ -107,9 +109,10 @@ class CaseworkerIssueCaseIT {
                 .accept(APPLICATION_JSON))
             .andExpect(
                 status().isOk())
-            .andExpect(
-                content().json(expectedResponse(CASEWORKER_ISSUE_CASE_RESPONSE))
-            );
+            .andReturn();
+
+        String actualResponse = result.getResponse().getContentAsString();
+        assertThatJson(actualResponse).isEqualTo(expectedResponse(CASEWORKER_ISSUE_CASE_RESPONSE));
     }
 
     @Test
@@ -158,6 +161,7 @@ class CaseworkerIssueCaseIT {
                 .respondentEmail("respondent@test.com")
                 .applicantFullName("Applicant Name")
                 .applicantEmailAddress("applicant@test.com")
+                .respondentBundleDueDate(LocalDate.now())
                 .build()
         );
 
