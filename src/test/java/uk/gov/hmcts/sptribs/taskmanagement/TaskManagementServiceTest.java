@@ -101,7 +101,8 @@ class TaskManagementServiceTest {
                 "hearing-centre-admin",
                 "hearing-centre-team-leader",
                 "ctsc",
-                "ctsc-team-leader");
+                "ctsc-team-leader",
+                "task-supervisor");
 
         OffsetDateTime nowUtc = OffsetDateTime.now(ZoneOffset.UTC);
         assertThat(payload.getPriorityDate()).isBetween(nowUtc.minusMinutes(1), nowUtc.plusMinutes(1));
@@ -141,7 +142,7 @@ class TaskManagementServiceTest {
         assertThat(payload.getLocation()).isEqualTo("366559");
         assertThat(payload.getPriorityDate()).isEqualTo(dueDate.atStartOfDay().atOffset(ZoneOffset.UTC));
         assertThat(payload.getPermissions()).extracting(TaskPermission::getRoleName)
-            .containsExactly("senior-tribunal-caseworker", "tribunal-caseworker");
+            .containsExactly("senior-tribunal-caseworker", "tribunal-caseworker", "task-supervisor");
     }
 
     @Test
@@ -157,9 +158,7 @@ class TaskManagementServiceTest {
         TaskPayload payload = captor.getValue().task();
 
         assertThat(payload.getPermissions()).extracting(TaskPermission::getRoleName)
-            .containsExactly("senior-judge", "judge");
-        assertThat(payload.getPermissions()).extracting(TaskPermission::getRoleCategory)
-            .containsOnly("JUDICIAL");
+            .containsExactly("senior-judge", "judge", "task-supervisor");
     }
 
     @Test

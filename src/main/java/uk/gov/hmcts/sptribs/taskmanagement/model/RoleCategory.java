@@ -4,7 +4,12 @@ public enum RoleCategory {
     JUDICIAL,
     ADMIN,
     CTSC,
-    LEGAL_OPERATIONS
+    LEGAL_OPERATIONS,
+    NONE;
+
+    public String getName() {
+        return this == NONE ? this.name() : null;
+    }
 }
 
 

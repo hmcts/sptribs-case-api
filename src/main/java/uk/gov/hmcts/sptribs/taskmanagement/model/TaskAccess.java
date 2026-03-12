@@ -6,12 +6,12 @@ import uk.gov.hmcts.ccd.sdk.taskmanagement.model.TaskPermission;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Locale;
 import java.util.Set;
 
 import static uk.gov.hmcts.sptribs.taskmanagement.model.RoleCategory.ADMIN;
 import static uk.gov.hmcts.sptribs.taskmanagement.model.RoleCategory.JUDICIAL;
 import static uk.gov.hmcts.sptribs.taskmanagement.model.RoleCategory.LEGAL_OPERATIONS;
+import static uk.gov.hmcts.sptribs.taskmanagement.model.RoleCategory.NONE;
 import static uk.gov.hmcts.sptribs.taskmanagement.model.TaskOperation.Assign;
 import static uk.gov.hmcts.sptribs.taskmanagement.model.TaskOperation.Cancel;
 import static uk.gov.hmcts.sptribs.taskmanagement.model.TaskOperation.Claim;
@@ -28,7 +28,7 @@ import static uk.gov.hmcts.sptribs.taskmanagement.model.TaskOperation.UnclaimAss
 public enum TaskAccess {
     TASK_SUPERVISOR(
         Set.of(Read,Own,Claim,Unclaim,Manage,UnclaimAssign,Assign,Unassign,Cancel,Complete),
-        null, false, 1,
+        NONE, false, null,
         Authorisations.NONE),
     REGIONAL_CENTRE_ADMIN(
         Set.of(Read,Own,Claim,Unclaim,Manage,Complete), ADMIN,
@@ -91,14 +91,14 @@ public enum TaskAccess {
     private final Set<TaskOperation> permissions;
     private final RoleCategory roleCategory;
     private final boolean autoAssignable;
-    private final int assignmentPriority;
+    private final Integer assignmentPriority;
     private final Authorisations authorisations;
 
     TaskAccess(
         Set<TaskOperation> permissions,
         RoleCategory roleCategory,
         boolean autoAssignable,
-        int assignmentPriority,
+        Integer assignmentPriority,
         Authorisations authorisations
     ) {
         this.permissions = permissions;
@@ -110,7 +110,7 @@ public enum TaskAccess {
 
     public TaskPermission toTaskPermission() {
         String roleName = name()
-            .toLowerCase(Locale.UK)
+            .toLowerCase()
             .replace("_specific_access", "")
             .replace('_', '-');
         List<String> authorisationsList = authorisations == Authorisations.NONE
@@ -119,7 +119,7 @@ public enum TaskAccess {
 
         return TaskPermission.builder()
             .roleName(roleName)
-            .roleCategory(roleCategory.name())
+            .roleCategory(roleCategory.getName())
             .permissions(permissions.stream()
                 .sorted(Comparator.comparingInt(Enum::ordinal))
                 .map(TaskOperation::name)

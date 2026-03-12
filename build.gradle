@@ -113,7 +113,7 @@ configurations.configureEach {
   resolutionStrategy.eachDependency { details ->
     if (details.requested.group == 'com.github.hmcts'
         && details.requested.name == 'decentralised-runtime') {
-      details.useVersion 'tmdpc-25-task-querying'
+      details.useVersion 'task-mgmt-40.1-46b69557'
       details.because 'Ensure task outbox Flyway migration from matching task-management branch is used'
     }
   }
@@ -342,8 +342,8 @@ dependencies {
 // uncomment for local version
 // implementation group: 'com.github.hmcts', name: 'ccd-config-generator', version: 'DEV-SNAPSHOT'
 //  implementation 'com.github.hmcts:task-management:DEV-SNAPSHOT'
-  implementation 'com.github.hmcts:task-management:tmdpc-25-task-querying'
-  implementation 'com.github.hmcts:decentralised-runtime:tmdpc-25-task-querying'
+  implementation 'com.github.hmcts:task-management:task-mgmt-40.1-46b69557'
+  implementation 'com.github.hmcts:decentralised-runtime:task-mgmt-40.1-46b69557'
 
   implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: versions.jackson
   implementation group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: versions.jackson
@@ -445,6 +445,7 @@ dependencies {
   // Provides fast-reload of just the sptribs service.
   cftlibImplementation 'org.springframework.boot:spring-boot-devtools'
   cftlibTestImplementation sourceSets.test.runtimeClasspath
+  cftlibTestImplementation 'com.github.hmcts:task-management:task-mgmt-40.1-46b69557'
   cftlibTestImplementation 'com.microsoft.playwright:playwright:1.58.0'
   cftlibTestImplementation 'org.junit-pioneer:junit-pioneer:2.3.0'
   cftlibTestImplementation 'io.github.artsok:rerunner-jupiter:2.1.6'
