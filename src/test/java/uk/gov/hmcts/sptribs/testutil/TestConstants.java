@@ -65,6 +65,7 @@ public final class TestConstants {
         "/callbacks/mid-event?page=issueFinalDecisionSelectTemplate";
     public static final String AMEND_DUE_DATA_SELECT_ORDER_MID_EVENT_URL =
         "/callbacks/mid-event?page=caseworkerAmendDueDateSelectOrder";
+    public static final String REMOVE_BUNDLES_MID_EVENT_URL = "/callbacks/mid-event?page=selectBundles";
 
     public static final String REFER_TO_JUDGE_REASON_MID_EVENT_URL = "/callbacks/mid-event?page=referToJudgeReason";
 
