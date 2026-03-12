@@ -381,7 +381,7 @@ class CaseworkerCreateAndSendOrderTest {
 
     @Test
     void shouldCompareFlagDetailsWithNullFlagComment() {
-       //given
+        //given
         FlagDetail flagDetail = getExpectedAnonymisationFlag();
 
         FlagDetail flagDetail2 = getExpectedAnonymisationFlag();
@@ -389,7 +389,6 @@ class CaseworkerCreateAndSendOrderTest {
 
         //when
         boolean result = CaseFlagsUtil.caseFlagDetailsEquals(flagDetail, flagDetail2);
-
 
         //then
         assertFalse(result);
