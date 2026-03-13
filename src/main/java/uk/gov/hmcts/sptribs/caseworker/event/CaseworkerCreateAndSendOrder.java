@@ -40,6 +40,8 @@ import uk.gov.hmcts.sptribs.common.event.page.EditNewOrderContentPage;
 import uk.gov.hmcts.sptribs.common.event.page.PreviewDraftOrder;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
 import uk.gov.hmcts.sptribs.notification.dispatcher.NewOrderIssuedNotification;
+import uk.gov.hmcts.sptribs.taskmanagement.TaskInitiationResolver;
+import uk.gov.hmcts.sptribs.taskmanagement.TaskManagementService;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -69,6 +71,7 @@ import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_WA_CONFIG_USER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE;
 import static uk.gov.hmcts.sptribs.document.DocumentUtil.updateCategoryToDocument;
+import static uk.gov.hmcts.sptribs.taskmanagement.TaskTypeCollections.REVIEW_TASKS_TO_COMPLETE;
 
 @Slf4j
 @Component
@@ -86,6 +89,7 @@ public class CaseworkerCreateAndSendOrder implements CCDConfig<CaseData, State, 
     private final ApplyAnonymity applyAnonymitySelect;
     private final DraftOrderFooter draftOrderFooter;
     private final NewOrderIssuedNotification newOrderIssuedNotification;
+    private final TaskManagementService taskManagementService;
     private final SendOrderOrderDueDates orderDueDates;
 
     @Override
@@ -102,8 +106,7 @@ public class CaseworkerCreateAndSendOrder implements CCDConfig<CaseData, State, 
                 .submittedCallback(this::submitted)
                 .grant(CREATE_READ_UPDATE, SUPER_USER,
                     ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER, ST_CIC_SENIOR_JUDGE, ST_CIC_JUDGE, ST_CIC_WA_CONFIG_USER)
-                .grantHistoryOnly(ST_CIC_HEARING_CENTRE_ADMIN, ST_CIC_HEARING_CENTRE_TEAM_LEADER)
-                .publishToCamunda();
+                .grantHistoryOnly(ST_CIC_HEARING_CENTRE_ADMIN, ST_CIC_HEARING_CENTRE_TEAM_LEADER);
 
         PageBuilder pageBuilder = new PageBuilder(eventBuilder);
         applyAnonymitySelect.addTo(pageBuilder);
@@ -187,6 +190,20 @@ public class CaseworkerCreateAndSendOrder implements CCDConfig<CaseData, State, 
         caseData.setOrderDueDates(new ArrayList<>());
         caseData.getCicCase().setFirstOrderDueDate(CicCaseFieldsUtil.calculateFirstDueDate(caseData.getCicCase().getOrderList()));
 
+        taskManagementService.enqueueCompletionTasks(
+            REVIEW_TASKS_TO_COMPLETE,
+            details.getId()
+        );
+        taskManagementService.enqueueInitiationTasks(
+            TaskInitiationResolver.createAndSendOrderInitiationTasks(
+                details.getState(),
+                caseData.getCicCase().getFirstOrderDueDate(),
+                caseData.getCicCase().getAdminActionRequired()
+            ),
+            caseData,
+            details.getId()
+        );
+
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
             .state(details.getState())
@@ -254,4 +271,5 @@ public class CaseworkerCreateAndSendOrder implements CCDConfig<CaseData, State, 
 
         CaseFlagsUtil.addFlag(data, flagDetail);
     }
+
 }

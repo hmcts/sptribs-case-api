@@ -24,6 +24,7 @@ import uk.gov.hmcts.sptribs.document.bundling.model.BundleIdAndTimestamp;
 import uk.gov.hmcts.sptribs.document.bundling.model.Callback;
 import uk.gov.hmcts.sptribs.document.model.AbstractCaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
+import uk.gov.hmcts.sptribs.taskmanagement.TaskManagementService;
 
 import java.time.Clock;
 import java.time.LocalDateTime;
@@ -53,6 +54,7 @@ import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_JUDGE;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_WA_CONFIG_USER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE;
+import static uk.gov.hmcts.sptribs.taskmanagement.model.TaskType.stitchCollateHearingBundle;
 
 @Component
 @Slf4j
@@ -61,6 +63,7 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 public class CaseworkerCreateBundle implements CCDConfig<CaseData, State, UserRole> {
 
     private final BundlingService bundlingService;
+    private final TaskManagementService taskManagementService;
 
     @Autowired
     private final Clock clock;
@@ -78,8 +81,7 @@ public class CaseworkerCreateBundle implements CCDConfig<CaseData, State, UserRo
                 .grant(CREATE_READ_UPDATE, SUPER_USER,
                     ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER, ST_CIC_HEARING_CENTRE_ADMIN,
                     ST_CIC_HEARING_CENTRE_TEAM_LEADER, ST_CIC_WA_CONFIG_USER)
-                .grantHistoryOnly(ST_CIC_SENIOR_JUDGE, ST_CIC_JUDGE)
-                .publishToCamunda();
+                .grantHistoryOnly(ST_CIC_SENIOR_JUDGE, ST_CIC_JUDGE);
 
         new PageBuilder(eventBuilder)
                 .page("createBundle")
@@ -118,6 +120,7 @@ public class CaseworkerCreateBundle implements CCDConfig<CaseData, State, UserRo
         caseData.setMultiBundleConfiguration(null);
         caseData.setCaseDocuments(null);
         caseData.setFurtherCaseDocuments(null);
+        taskManagementService.enqueueCompletionTasks(List.of(stitchCollateHearingBundle), details.getId());
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)

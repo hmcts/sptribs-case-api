@@ -26,6 +26,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.SubjectCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.ciccase.model.access.Permissions;
 import uk.gov.hmcts.sptribs.notification.dispatcher.CancelHearingNotification;
+import uk.gov.hmcts.sptribs.taskmanagement.TaskManagementService;
 import uk.gov.hmcts.sptribs.testutil.TestEventConstants;
 
 import java.time.LocalDate;
@@ -36,14 +37,18 @@ import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_WA_CONFIG_USER;
+import static uk.gov.hmcts.sptribs.taskmanagement.model.TaskType.completeHearingOutcome;
+import static uk.gov.hmcts.sptribs.taskmanagement.model.TaskType.stitchCollateHearingBundle;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigBuilder;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.getEventsFrom;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.HEARING_DATE_1;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.HEARING_TIME;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.SOLICITOR_ADDRESS;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.SUBJECT_ADDRESS;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_SOLICITOR_EMAIL;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_SUBJECT_EMAIL;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getAdditionalHearingDates;
@@ -62,6 +67,9 @@ class CaseworkerCancelHearingTest {
     @Mock
     private CancelHearingNotification cancelHearingNotification;
 
+    @Mock
+    private TaskManagementService taskManagementService;
+
     @Test
     void shouldAddPublishToCamundaWhenWAIsEnabled() {
 
@@ -72,10 +80,6 @@ class CaseworkerCancelHearingTest {
         assertThat(getEventsFrom(configBuilder).values())
             .extracting(Event::getId)
             .contains(CASEWORKER_CANCEL_HEARING);
-
-        assertThat(getEventsFrom(configBuilder).values())
-                .extracting(Event::isPublishToCamunda)
-                .contains(true);
 
         assertThat(getEventsFrom(configBuilder).values())
                 .extracting(Event::getGrants)
@@ -132,6 +136,7 @@ class CaseworkerCancelHearingTest {
         final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
         updatedCaseDetails.setData(caseData);
         updatedCaseDetails.setState(State.AwaitingOutcome);
+        updatedCaseDetails.setId(TEST_CASE_ID);
 
         //When
         AboutToStartOrSubmitResponse<CaseData, State> response =
@@ -141,6 +146,10 @@ class CaseworkerCancelHearingTest {
         //Then
         assertThat(cancelled).isNotNull();
         assertThat(response).isNotNull();
+        verify(taskManagementService).enqueueCancellationTasks(
+            List.of(completeHearingOutcome, stitchCollateHearingBundle),
+            TEST_CASE_ID
+        );
     }
 
     @Test
@@ -170,6 +179,7 @@ class CaseworkerCancelHearingTest {
         final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
         updatedCaseDetails.setData(caseData);
         updatedCaseDetails.setState(State.AwaitingOutcome);
+        updatedCaseDetails.setId(TEST_CASE_ID);
 
         //When
         AboutToStartOrSubmitResponse<CaseData, State> response =
@@ -209,6 +219,7 @@ class CaseworkerCancelHearingTest {
         final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
         updatedCaseDetails.setData(caseData);
         updatedCaseDetails.setState(State.AwaitingOutcome);
+        updatedCaseDetails.setId(TEST_CASE_ID);
 
         //When
         AboutToStartOrSubmitResponse<CaseData, State> response =

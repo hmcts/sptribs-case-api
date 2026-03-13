@@ -68,10 +68,6 @@ class CaseworkerAddNoteTest {
             .contains(CASEWORKER_ADD_NOTE);
 
         assertThat(getEventsFrom(configBuilder).values())
-                .extracting(Event::isPublishToCamunda)
-                .contains(true);
-
-        assertThat(getEventsFrom(configBuilder).values())
                 .extracting(Event::getGrants)
                 .extracting(map -> map.containsKey(ST_CIC_WA_CONFIG_USER))
                 .contains(true);

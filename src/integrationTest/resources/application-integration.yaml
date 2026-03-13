@@ -8,8 +8,9 @@ spring:
   autoconfigure:
     exclude:
       - com.azure.spring.cloud.autoconfigure.implementation.context.AzureTokenCredentialAutoConfiguration
+      - uk.gov.hmcts.ccd.sdk.taskmanagement.TaskManagementAutoConfiguration
   datasource:
-    url: jdbc:tc:postgresql:16:///sptribs_case_api
+    url: jdbc:tc:postgresql:16:///sptribs_case_api?TC_INITSCRIPT=init-task-outbox.sql
     username: test
     password: test
     driver-class-name: org.testcontainers.jdbc.ContainerDatabaseDriver

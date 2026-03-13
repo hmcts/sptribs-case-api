@@ -25,6 +25,7 @@ import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
 import uk.gov.hmcts.sptribs.notification.dispatcher.CaseIssuedNotification;
 import uk.gov.hmcts.sptribs.notification.exception.NotificationException;
+import uk.gov.hmcts.sptribs.taskmanagement.TaskManagementService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,11 +33,14 @@ import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.sptribs.ciccase.model.ApplicantCIC.APPLICANT_CIC;
 import static uk.gov.hmcts.sptribs.ciccase.model.RepresentativeCIC.REPRESENTATIVE;
 import static uk.gov.hmcts.sptribs.ciccase.model.RespondentCIC.RESPONDENT;
 import static uk.gov.hmcts.sptribs.ciccase.model.SubjectCIC.SUBJECT;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_WA_CONFIG_USER;
+import static uk.gov.hmcts.sptribs.taskmanagement.model.TaskType.createDueDate;
+import static uk.gov.hmcts.sptribs.taskmanagement.model.TaskType.issueCaseToRespondent;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigBuilder;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.getEventsFrom;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.SOLICITOR_ADDRESS;
@@ -63,6 +67,9 @@ class CaseworkerIssueCaseTest {
     @Mock
     private CaseIssuedNotification caseIssuedNotification;
 
+    @Mock
+    private TaskManagementService taskManagementService;
+
     @Test
     void shouldAddPublishToCamundaWhenWAIsEnabled() {
 
@@ -73,10 +80,6 @@ class CaseworkerIssueCaseTest {
         assertThat(getEventsFrom(configBuilder).values())
             .extracting(Event::getId)
             .contains(CASEWORKER_ISSUE_CASE);
-
-        assertThat(getEventsFrom(configBuilder).values())
-                .extracting(Event::isPublishToCamunda)
-                .contains(true);
 
         assertThat(getEventsFrom(configBuilder).values())
                 .extracting(Event::getGrants)
@@ -128,6 +131,9 @@ class CaseworkerIssueCaseTest {
         assertThat(submittedResponse).isNotNull();
         assertThat(submittedResponse.getConfirmationHeader())
             .contains("# Case issued \n##  This case has now been issued.");
+
+        verify(taskManagementService).enqueueCompletionTasks(List.of(issueCaseToRespondent), TEST_CASE_ID);
+        verify(taskManagementService).enqueueInitiationTasks(List.of(createDueDate), caseData, TEST_CASE_ID);
     }
 
 

@@ -22,6 +22,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.ciccase.model.access.Permissions;
+import uk.gov.hmcts.sptribs.taskmanagement.TaskManagementService;
 
 import java.time.Clock;
 import java.time.LocalDate;
@@ -33,7 +34,9 @@ import java.util.UUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_WA_CONFIG_USER;
+import static uk.gov.hmcts.sptribs.taskmanagement.model.TaskType.followUpNoncomplianceOfDirections;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigBuilder;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.getEventsFrom;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID;
@@ -48,6 +51,9 @@ class CaseWorkerManageOrderDueDatesTest {
     @Mock
     private OrderService orderService;
 
+    @Mock
+    private TaskManagementService taskManagementService;
+
     private final Clock fixedClock = Clock.fixed(
         LocalDate.of(2026, 7, 15)
             .atStartOfDay(ZoneId.systemDefault())
@@ -60,7 +66,7 @@ class CaseWorkerManageOrderDueDatesTest {
     @BeforeEach
     void setUp() {
         caseWorkerManageOrderDueDate =
-            new CaseWorkerManageOrderDueDate(orderService, fixedClock);
+            new CaseWorkerManageOrderDueDate(orderService, fixedClock, taskManagementService);
     }
 
 
@@ -73,10 +79,6 @@ class CaseWorkerManageOrderDueDatesTest {
         assertThat(getEventsFrom(configBuilder).values())
             .extracting(Event::getId)
             .contains(CASEWORKER_AMEND_DUE_DATE);
-
-        assertThat(getEventsFrom(configBuilder).values())
-                .extracting(Event::isPublishToCamunda)
-                .contains(true);
 
         assertThat(getEventsFrom(configBuilder).values())
                 .extracting(Event::getGrants)
@@ -117,6 +119,7 @@ class CaseWorkerManageOrderDueDatesTest {
         //Then
         assertThat(draftCreatedResponse).isNotNull();
         assertThat(response).isNotNull();
+        verify(taskManagementService).enqueueCompletionTasks(List.of(followUpNoncomplianceOfDirections), TEST_CASE_ID);
 
     }
 
@@ -224,4 +227,3 @@ class CaseWorkerManageOrderDueDatesTest {
 
 
 }
-

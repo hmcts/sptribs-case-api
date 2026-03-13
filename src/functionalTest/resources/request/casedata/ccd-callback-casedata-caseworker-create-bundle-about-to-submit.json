@@ -8,6 +8,8 @@
         "documentCategory": "ApplicationForm",
         "documentEmailContent": "Lorem ipsum",
         "documentLink": {
+          "document_url": "http://localhost/documents/11111111-1111-1111-1111-111111111111",
+          "document_binary_url": "http://localhost/documents/11111111-1111-1111-1111-111111111111/binary",
           "document_filename": "pdf.pdf"
         }
       }

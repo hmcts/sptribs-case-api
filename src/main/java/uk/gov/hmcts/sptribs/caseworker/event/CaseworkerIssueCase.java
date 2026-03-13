@@ -21,6 +21,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.notification.dispatcher.CaseIssuedNotification;
+import uk.gov.hmcts.sptribs.taskmanagement.TaskManagementService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -44,6 +45,8 @@ import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_JUDGE;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_WA_CONFIG_USER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE;
+import static uk.gov.hmcts.sptribs.taskmanagement.model.TaskType.createDueDate;
+import static uk.gov.hmcts.sptribs.taskmanagement.model.TaskType.issueCaseToRespondent;
 
 @RequiredArgsConstructor
 @Component
@@ -57,6 +60,7 @@ public class CaseworkerIssueCase implements CCDConfig<CaseData, State, UserRole>
     private static final CcdPageConfiguration issueCaseSelectDocument = new IssueCaseSelectDocument();
 
     private final CaseIssuedNotification caseIssuedNotification;
+    private final TaskManagementService taskManagementService;
 
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
@@ -73,8 +77,7 @@ public class CaseworkerIssueCase implements CCDConfig<CaseData, State, UserRole>
                 .grant(CREATE_READ_UPDATE, SUPER_USER,
                     ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER, ST_CIC_HEARING_CENTRE_ADMIN,
                     ST_CIC_HEARING_CENTRE_TEAM_LEADER, ST_CIC_SENIOR_JUDGE, ST_CIC_WA_CONFIG_USER)
-                .grantHistoryOnly(ST_CIC_JUDGE)
-                .publishToCamunda();
+                .grantHistoryOnly(ST_CIC_JUDGE);
 
         PageBuilder pageBuilder = new PageBuilder(eventBuilder);
         issueCaseSelectDocument.addTo(pageBuilder);
@@ -92,9 +95,15 @@ public class CaseworkerIssueCase implements CCDConfig<CaseData, State, UserRole>
             .build();
     }
 
-    public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(final CaseDetails<CaseData, State> details,
-                                                                       final CaseDetails<CaseData, State> beforeDetails) {
+    public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(
+        final CaseDetails<CaseData, State> details,
+        final CaseDetails<CaseData, State> beforeDetails
+    ) {
         final CaseData caseData = details.getData();
+
+        taskManagementService.enqueueCompletionTasks(List.of(issueCaseToRespondent), details.getId());
+        taskManagementService.enqueueInitiationTasks(List.of(createDueDate), caseData, details.getId());
+
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
             .state(details.getState())

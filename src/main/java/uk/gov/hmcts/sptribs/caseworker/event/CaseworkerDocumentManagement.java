@@ -18,6 +18,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocumentUpload;
+import uk.gov.hmcts.sptribs.taskmanagement.TaskManagementService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -44,6 +45,8 @@ import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE;
 import static uk.gov.hmcts.sptribs.document.DocumentUtil.convertToCaseworkerCICDocumentUpload;
 import static uk.gov.hmcts.sptribs.document.DocumentUtil.uploadDocument;
+import static uk.gov.hmcts.sptribs.taskmanagement.model.TaskType.followUpNoncomplianceOfDirections;
+import static uk.gov.hmcts.sptribs.taskmanagement.model.TaskType.processFurtherEvidence;
 
 @Component
 @Slf4j
@@ -52,6 +55,7 @@ import static uk.gov.hmcts.sptribs.document.DocumentUtil.uploadDocument;
 public class CaseworkerDocumentManagement implements CCDConfig<CaseData, State, UserRole> {
 
     private final UploadCaseDocuments uploadCaseDocuments = new UploadCaseDocuments();
+    private final TaskManagementService taskManagementService;
 
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         Event.EventBuilder<CaseData, UserRole, State> eventBuilder =
@@ -75,8 +79,7 @@ public class CaseworkerDocumentManagement implements CCDConfig<CaseData, State, 
                     ST_CIC_HEARING_CENTRE_TEAM_LEADER, ST_CIC_SENIOR_JUDGE, ST_CIC_WA_CONFIG_USER)
                 .grantHistoryOnly(ST_CIC_JUDGE)
                 .aboutToSubmitCallback(this::aboutToSubmit)
-                .submittedCallback(this::submitted)
-                .publishToCamunda();
+                .submittedCallback(this::submitted);
 
         PageBuilder pageBuilder = new PageBuilder(eventBuilder);
         uploadCaseDocuments.addTo(pageBuilder);
@@ -100,6 +103,9 @@ public class CaseworkerDocumentManagement implements CCDConfig<CaseData, State, 
                 caseData.getFurtherUploadedDocuments().addAll(documents);
             }
         }
+
+        taskManagementService.enqueueCompletionTasks(List.of(followUpNoncomplianceOfDirections), details.getId());
+        taskManagementService.enqueueInitiationTasks(List.of(processFurtherEvidence), caseData, details.getId());
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)

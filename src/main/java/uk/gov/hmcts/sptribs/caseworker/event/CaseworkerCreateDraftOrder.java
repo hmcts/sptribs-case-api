@@ -25,6 +25,8 @@ import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.common.event.page.CreateDraftOrder;
 import uk.gov.hmcts.sptribs.common.event.page.DraftOrderMainContentPage;
 import uk.gov.hmcts.sptribs.common.event.page.PreviewDraftOrder;
+import uk.gov.hmcts.sptribs.taskmanagement.TaskInitiationResolver;
+import uk.gov.hmcts.sptribs.taskmanagement.TaskManagementService;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -33,6 +35,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Stream;
 
 import static org.springframework.util.CollectionUtils.isEmpty;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_CREATE_DRAFT_ORDER;
@@ -51,6 +54,8 @@ import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_JUDGE;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_WA_CONFIG_USER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE;
+import static uk.gov.hmcts.sptribs.taskmanagement.TaskTypeCollections.REVIEW_TASKS_TO_COMPLETE;
+import static uk.gov.hmcts.sptribs.taskmanagement.model.TaskType.createDueDate;
 
 @Slf4j
 @Component
@@ -58,12 +63,12 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 public class CaseworkerCreateDraftOrder implements CCDConfig<CaseData, State, UserRole> {
 
     private final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss", Locale.ENGLISH);
-
     private static final CcdPageConfiguration createDraftOrder = new CreateDraftOrder();
     private static final CcdPageConfiguration draftOrderMainContentPage = new DraftOrderMainContentPage();
     private static final CcdPageConfiguration previewOrder = new PreviewDraftOrder("previewDraftOrderPage", CASEWORKER_CREATE_DRAFT_ORDER);
 
     private final OrderService orderService;
+    private final TaskManagementService taskManagementService;
 
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
@@ -78,8 +83,7 @@ public class CaseworkerCreateDraftOrder implements CCDConfig<CaseData, State, Us
                 .submittedCallback(this::submitted)
                 .grant(CREATE_READ_UPDATE, SUPER_USER,
                     ST_CIC_HEARING_CENTRE_ADMIN, ST_CIC_HEARING_CENTRE_TEAM_LEADER, ST_CIC_WA_CONFIG_USER)
-                .grantHistoryOnly(ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER, ST_CIC_JUDGE, ST_CIC_SENIOR_JUDGE)
-                .publishToCamunda();
+                .grantHistoryOnly(ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER, ST_CIC_JUDGE, ST_CIC_SENIOR_JUDGE);
 
         PageBuilder pageBuilder = new PageBuilder(eventBuilder);
         createDraftOrder.addTo(pageBuilder);
@@ -143,6 +147,19 @@ public class CaseworkerCreateDraftOrder implements CCDConfig<CaseData, State, Us
 
         caseData.getCicCase().setOrderTemplateIssued(null);
 
+        taskManagementService.enqueueCompletionTasks(
+            Stream.concat(REVIEW_TASKS_TO_COMPLETE.stream(), Stream.of(createDueDate)).toList(),
+            details.getId()
+        );
+        taskManagementService.enqueueInitiationTasks(
+            TaskInitiationResolver.createDraftOrderInitiationTasks(
+                details.getState(),
+                caseData.getCicCase().getReferralTypeForWA()
+            ),
+            caseData,
+            details.getId()
+        );
+
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .state(details.getState())
             .data(caseData)
@@ -183,4 +200,5 @@ public class CaseworkerCreateDraftOrder implements CCDConfig<CaseData, State, Us
         DynamicListElement element = DynamicListElement.builder().label(templateNamePlusCurrentDate).code(UUID.randomUUID()).build();
         orderTemplateDynamicList.getListItems().add(element);
     }
+
 }

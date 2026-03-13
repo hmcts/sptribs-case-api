@@ -32,6 +32,7 @@ import uk.gov.hmcts.sptribs.document.model.CitizenCICDocument;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
 import uk.gov.hmcts.sptribs.idam.IdamService;
 import uk.gov.hmcts.sptribs.notification.exception.NotificationException;
+import uk.gov.hmcts.sptribs.taskmanagement.TaskManagementService;
 import uk.gov.hmcts.sptribs.testutil.TestDataHelper;
 import uk.gov.hmcts.sptribs.util.AppsUtil;
 
@@ -47,6 +48,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_WA_CONFIG_USER;
+import static uk.gov.hmcts.sptribs.taskmanagement.model.TaskType.registerNewCase;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigBuilder;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.getEventsFrom;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.CASE_DATA_CIC_ID;
@@ -84,6 +86,9 @@ class CicSubmitCaseEventTest {
     @Mock
     private IdamService idamService;
 
+    @Mock
+    private TaskManagementService taskManagementService;
+
     private AutoCloseable autoCloseableMocks;
 
     @BeforeEach
@@ -115,10 +120,6 @@ class CicSubmitCaseEventTest {
             .extracting(Event::getId)
             .contains(AppsUtil.getExactAppsDetailsByCaseType(appsConfig, CommonConstants.ST_CIC_CASE_TYPE).getEventIds()
                 .getSubmitEvent());
-
-        assertThat(getEventsFrom(configBuilder).values())
-                .extracting(Event::isPublishToCamunda)
-                .contains(true);
 
         assertThat(getEventsFrom(configBuilder).values())
                 .extracting(Event::getGrants)
@@ -256,6 +257,7 @@ class CicSubmitCaseEventTest {
         assertThat(response.getData().getRepresentativeFlags().getPartyName()).isEqualTo(TEST_SOLICITOR_NAME);
         assertThat(response.getData().getRepresentativeFlags().getRoleOnCase()).isEqualTo("Representative");
         assertThat(response.getData().getCaseNameHmctsInternal()).isEqualTo(TEST_FIRST_NAME);
+        verify(taskManagementService).enqueueInitiationTasks(List.of(registerNewCase), response.getData(), TEST_CASE_ID);
     }
 
     @Test

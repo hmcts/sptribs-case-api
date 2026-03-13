@@ -5,6 +5,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.ccd.sdk.ConfigBuilderImpl;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
@@ -18,11 +19,18 @@ import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.ciccase.model.access.Permissions;
+import uk.gov.hmcts.sptribs.taskmanagement.TaskManagementService;
 
 import java.time.LocalDate;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_WA_CONFIG_USER;
+import static uk.gov.hmcts.sptribs.taskmanagement.TaskTypeCollections.ISSUE_CASE_CANCELLABLE_TASKS;
+import static uk.gov.hmcts.sptribs.taskmanagement.TaskTypeCollections.REFERRAL_COMPLETABLE_TASKS;
+import static uk.gov.hmcts.sptribs.taskmanagement.model.TaskType.reviewStayRequestCaseListedLO;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigBuilder;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.getEventsFrom;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID;
@@ -36,6 +44,9 @@ class CaseWorkerReferToLegalOfficerTest {
     @InjectMocks
     private CaseWorkerReferToLegalOfficer caseWorkerReferToLegalOfficer;
 
+    @Mock
+    private TaskManagementService taskManagementService;
+
     @Test
     void shouldAddPublishToCamundaWhenWAIsEnabled() {
 
@@ -46,10 +57,6 @@ class CaseWorkerReferToLegalOfficerTest {
         assertThat(getEventsFrom(configBuilder).values())
             .extracting(Event::getId)
             .contains(CASEWORKER_REFER_TO_LEGAL_OFFICER);
-
-        assertThat(getEventsFrom(configBuilder).values())
-                .extracting(Event::isPublishToCamunda)
-                .contains(true);
 
         assertThat(getEventsFrom(configBuilder).values())
                 .extracting(Event::getGrants)
@@ -128,6 +135,26 @@ class CaseWorkerReferToLegalOfficerTest {
 
         assertThat(response1).isNotNull();
         assertThat(response1.getData().getCicCase().getReferralTypeForWA()).isNull();
+    }
+
+    @Test
+    void shouldEnqueueTaskManagementActionsForAwaitingHearingStayRequest() {
+        final CaseDetails<CaseData, State> updatedCaseDetails = getCaseDetails();
+        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        updatedCaseDetails.setState(State.AwaitingHearing);
+        updatedCaseDetails.getData().setReferToLegalOfficer(ReferToLegalOfficer.builder()
+            .referralReason(ReferralReason.STAY_REQUEST)
+            .build());
+
+        caseWorkerReferToLegalOfficer.aboutToSubmit(updatedCaseDetails, beforeDetails);
+
+        verify(taskManagementService).enqueueCancellationTasks(ISSUE_CASE_CANCELLABLE_TASKS, TEST_CASE_ID);
+        verify(taskManagementService).enqueueCompletionTasks(REFERRAL_COMPLETABLE_TASKS, TEST_CASE_ID);
+        verify(taskManagementService).enqueueInitiationTasks(
+            eq(List.of(reviewStayRequestCaseListedLO)),
+            eq(updatedCaseDetails.getData()),
+            eq(TEST_CASE_ID)
+        );
     }
 
     private CaseDetails<CaseData, State> getCaseDetails() {

@@ -18,6 +18,7 @@ import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.common.service.AuditEventService;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocumentUpload;
+import uk.gov.hmcts.sptribs.taskmanagement.TaskManagementService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -46,6 +47,7 @@ import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SYSTEM_UPDATE;
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE;
 import static uk.gov.hmcts.sptribs.document.DocumentUtil.convertToCaseworkerCICDocumentUpload;
 import static uk.gov.hmcts.sptribs.document.DocumentUtil.uploadDocument;
+import static uk.gov.hmcts.sptribs.taskmanagement.model.TaskType.processFurtherEvidence;
 
 @Component
 @Slf4j
@@ -55,6 +57,7 @@ public class RespondentDocumentManagement implements CCDConfig<CaseData, State, 
     private static final boolean DATE_INCLUDED = true;
     private final UploadCaseDocuments uploadCaseDocuments = new UploadCaseDocuments();
     private final AuditEventService auditEventService;
+    private final TaskManagementService taskManagementService;
 
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
@@ -84,8 +87,7 @@ public class RespondentDocumentManagement implements CCDConfig<CaseData, State, 
                     ST_CIC_JUDGE,
                     SYSTEM_UPDATE)
                 .aboutToSubmitCallback(this::aboutToSubmit)
-                .submittedCallback(this::submitted)
-                .publishToCamunda();
+                .submittedCallback(this::submitted);
 
         PageBuilder pageBuilder = new PageBuilder(eventBuilder);
         uploadCaseDocuments.addTo(pageBuilder);
@@ -112,6 +114,8 @@ public class RespondentDocumentManagement implements CCDConfig<CaseData, State, 
                 caseData.setInitialCicaDocuments(documents);
             }
         }
+
+        taskManagementService.enqueueInitiationTasks(List.of(processFurtherEvidence), caseData, details.getId());
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
