@@ -1,7 +1,5 @@
 package uk.gov.hmcts.sptribs.taskmanagement.model;
 
-import org.apache.commons.lang.StringUtils;
-
 public enum RoleCategory {
     JUDICIAL,
     ADMIN,
@@ -10,7 +8,7 @@ public enum RoleCategory {
     NONE;
 
     public String getName() {
-        return this != NONE ? this.name() : StringUtils.EMPTY;
+        return this != NONE ? this.name() : null;
     }
 }
 
