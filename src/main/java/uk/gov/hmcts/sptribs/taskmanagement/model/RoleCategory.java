@@ -10,7 +10,7 @@ public enum RoleCategory {
     NONE;
 
     public String getName() {
-        return this == NONE ? this.name() : StringUtils.EMPTY;
+        return this != NONE ? this.name() : StringUtils.EMPTY;
     }
 }
 
