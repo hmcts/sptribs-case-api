@@ -395,6 +395,19 @@ class CaseworkerCreateAndSendOrderTest {
     }
 
     @Test
+    void shouldCompareFlagDetailsWithNullFields() {
+        //given
+        FlagDetail flagDetail = getExpectedAnonymisationFlag();
+        FlagDetail flagDetail2 = FlagDetail.builder().build();
+
+        //when
+        boolean result = CaseFlagsUtil.caseFlagDetailsEquals(flagDetail, flagDetail2);
+
+        //then
+        assertFalse(result);
+    }
+
+    @Test
     void shouldSuccessfullySendUploadedOrder() {
         final CaseDetails<CaseData, State> details = new CaseDetails<>();
 
