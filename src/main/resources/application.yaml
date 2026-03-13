@@ -78,6 +78,7 @@ uk:
         sptribskey: ${UK_GOV_NOTIFY_API_KEY_1:dummy}
         baseUrl: https://api.notifications.service.gov.uk
       email:
+        documentDescriptionEnabled: ${DOCUMENT_DESCRIPTION_ENABLED:true}
         templateVars:
           signInProfessionalUsersUrl: ${NOTIFY_TEMPLATE_SIGN_IN_PROFESSIONAL_USERS_URL:https://manage-case.aat.platform.hmcts.net/cases/case-details/}
           respondentName: 'Appeals Team'

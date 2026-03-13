@@ -7,6 +7,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.NullArgumentException;
 import org.apache.commons.lang.StringUtils;
 import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
@@ -77,6 +78,9 @@ public class NotificationServiceCIC {
     private static final int LAST_ADDRESS_LINE = 7;
 
     private static final long TWO_MEGABYTES = 2_048_000;
+
+    @Value("${uk.gov.notify.email.documentDescriptionEnabled}")
+    private boolean documentDescriptionEnabled;
 
     public void saveEmailCorrespondence(String templateName,
                                         SendEmailResponse sendEmailResponse,
@@ -278,6 +282,7 @@ public class NotificationServiceCIC {
             final String docName = uploadDocumentEntry.getKey();
             final String item = uploadDocumentEntry.getValue();
 
+            //TODO for CASE_ISSUED_RESPONDENT_EMAIL add doc name plus description
             if (docName.contains(DOC_AVAILABLE)) {
                 templateVars.put(docName, item);
             } else {
@@ -290,11 +295,19 @@ public class NotificationServiceCIC {
                                           List<CaseworkerCICDocument> selectedDocuments,
                                           String item,
                                           String docName) {
-        final User user = idamService.retrieveUser(request.getHeader(AUTHORIZATION));
-        final String authorisation = user.getAuthToken();
-        final String serviceAuthorization = authTokenGenerator.generate();
 
         if (StringUtils.isNotEmpty(item)) {
+
+            if (documentDescriptionEnabled) {
+                addDocumentNameAndDescription(templateVars, selectedDocuments, item, docName);
+                return;
+            }
+
+            final User user = idamService.retrieveUser(request.getHeader(AUTHORIZATION));
+            final String authorisation = user.getAuthToken();
+            final String serviceAuthorization = authTokenGenerator.generate();
+
+
             ResponseEntity<byte[]> documentBinaryResponse =
                 caseDocumentClientApi.getDocumentBinary(authorisation, serviceAuthorization, UUID.fromString(item));
             if (!documentBinaryResponse.getStatusCode().is2xxSuccessful()) {
@@ -326,16 +339,43 @@ public class NotificationServiceCIC {
                                            List<CaseworkerCICDocument> selectedDocuments,
                                            String item,
                                            String docName) {
-        CaseworkerCICDocument document = selectedDocuments.stream()
-            .filter(doc -> doc.getDocumentLink().getBinaryUrl().contains(item))
-            .findFirst()
-            .orElseThrow(() -> new NotificationException(
-                new Exception(String.format("Unable to find document details for document id: %s", item))));
+
+        CaseworkerCICDocument document = getcaseworkerCICDocument(selectedDocuments, item);
 
         String documentNotification = String.format("%nFilename: %s%nDescription: %s%nUpload Date: %s",
             document.getDocumentLink().getFilename(), document.getDocumentEmailContent(), document.getDate());
         templateVars.put(docName, documentNotification);
     }
+
+    private static void addDocumentNameAndDescription(Map<String, Object> templateVars,
+                                           List<CaseworkerCICDocument> selectedDocuments,
+                                           String item,
+                                           String docName) {
+        CaseworkerCICDocument document = getcaseworkerCICDocument(selectedDocuments, item);
+
+        String filename = Objects.requireNonNull(
+            document.getDocumentLink().getFilename(),
+            "Filename must not be null"
+        );
+
+        String description = Objects.toString(document.getDocumentEmailContent(), "");
+
+        String documentNotification = """
+        Filename: %s
+        Description: %s
+        """.formatted(filename, description);
+
+        templateVars.put(docName, documentNotification);
+    }
+
+    private static CaseworkerCICDocument getcaseworkerCICDocument(List<CaseworkerCICDocument> selectedDocuments,  String item) {
+        return selectedDocuments.stream()
+            .filter(doc -> doc.getDocumentLink().getBinaryUrl().contains(item))
+            .findFirst()
+            .orElseThrow(() -> new NotificationException(
+                new Exception(String.format("Unable to find document details for document id: %s", item))));
+    }
+
 
     private JSONObject getJsonFileAttachment(byte[] fileContents) {
         JSONObject jsonObject = null;
