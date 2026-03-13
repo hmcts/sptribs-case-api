@@ -38,6 +38,7 @@ import static uk.gov.hmcts.sptribs.taskmanagement.model.TaskAccess.REGIONAL_CENT
 import static uk.gov.hmcts.sptribs.taskmanagement.model.TaskAccess.REGIONAL_CENTRE_TEAM_LEADER;
 import static uk.gov.hmcts.sptribs.taskmanagement.model.TaskAccess.SENIOR_JUDGE;
 import static uk.gov.hmcts.sptribs.taskmanagement.model.TaskAccess.SENIOR_TRIBUNAL_CASEWORKER;
+import static uk.gov.hmcts.sptribs.taskmanagement.model.TaskAccess.TASK_SUPERVISOR;
 import static uk.gov.hmcts.sptribs.taskmanagement.model.TaskAccess.TRIBUNAL_CASEWORKER;
 
 @Service
@@ -125,11 +126,11 @@ public class TaskManagementService {
 
     private List<TaskAccess> getTaskAccess(TaskType taskType) {
         if (LEGAL_OPERATIONS_TASKS.contains(taskType)) {
-            return List.of(SENIOR_TRIBUNAL_CASEWORKER, TRIBUNAL_CASEWORKER);
+            return List.of(SENIOR_TRIBUNAL_CASEWORKER, TRIBUNAL_CASEWORKER, TASK_SUPERVISOR);
         }
 
         if (JUDICIAL_TASKS.contains(taskType)) {
-            return List.of(SENIOR_JUDGE, JUDGE);
+            return List.of(SENIOR_JUDGE, JUDGE, TASK_SUPERVISOR);
         }
 
         return List.of(
@@ -138,7 +139,8 @@ public class TaskManagementService {
             HEARING_CENTRE_ADMIN,
             HEARING_CENTRE_TEAM_LEADER,
             CTSC,
-            CTSC_TEAM_LEADER
+            CTSC_TEAM_LEADER,
+            TASK_SUPERVISOR
         );
     }
 
