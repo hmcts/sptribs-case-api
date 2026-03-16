@@ -21,7 +21,15 @@ import static uk.gov.hmcts.ccd.sdk.type.FieldType.TextArea;
 @AllArgsConstructor
 @Builder
 public class DateModel {
+
     @CCD(
+        label = "Please choose the due date or add custom date?",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private DueDateOptions dueDateOptions;
+
+    @CCD(
+        label = "Due Date",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     @JsonFormat(pattern = "yyyy-MM-dd")
@@ -41,4 +49,12 @@ public class DateModel {
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private Set<GetAmendDateAsCompleted> orderMarkAsCompleted;
+
+    @CCD(
+        label = "Updated Due Date",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private LocalDate updatedDueDate;
+
 }
