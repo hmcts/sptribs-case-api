@@ -12,8 +12,13 @@ import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+
+import static uk.gov.hmcts.sptribs.ciccase.model.GetAmendDateAsCompleted.MARKASCOMPLETED;
 
 public class AmendOrderDueDates implements CcdPageConfiguration {
+
+    public static final String MISSING_DUE_DATE = "Updated due date cannot be empty for Other option";
 
     @Override
     public void addTo(PageBuilder pageBuilder) {
@@ -42,8 +47,9 @@ public class AmendOrderDueDates implements CcdPageConfiguration {
             }
 
             if (dateModel.getDueDateOptions().equals(DueDateOptions.OTHER)
-                && dateModel.getUpdatedDueDate() == null) {
-                errors.add("Updated due date cannot be null for Other option");
+                && dateModel.getUpdatedDueDate() == null && !dateModel.getOrderMarkAsCompleted().equals(Set.of(MARKASCOMPLETED))) {
+                dateModel.setUpdatedDueDate(dateModel.getDueDate());
+                errors.add(MISSING_DUE_DATE);
             }
 
         }
