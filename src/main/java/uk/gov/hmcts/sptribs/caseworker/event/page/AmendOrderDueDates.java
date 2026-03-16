@@ -43,7 +43,7 @@ public class AmendOrderDueDates implements CcdPageConfiguration {
 
             if (dateModel.getDueDateOptions().equals(DueDateOptions.OTHER)
                 && dateModel.getUpdatedDueDate() == null) {
-                errors.add("Updated due date cannot be null");
+                errors.add("Updated due date cannot be null for Other option");
             }
 
         }
