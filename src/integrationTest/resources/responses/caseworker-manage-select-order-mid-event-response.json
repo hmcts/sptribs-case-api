@@ -6,12 +6,12 @@
       },
       "valueLabel": "0-Draft"
     },
-    "cicCaseOrderDueDates": [
+    "orderDueDates": [
       {
         "id": "0",
         "value": {
+          "dueDateOptions": "Other",
           "dueDate": "2024-09-05",
-          "information": "11:00",
           "orderMarkAsCompleted": [
             "Mark as completed"
           ]
@@ -26,8 +26,8 @@
             {
               "id": "0",
               "value": {
+                "dueDateOptions": "Other",
                 "dueDate": "2024-09-05",
-                "information": "11:00",
                 "orderMarkAsCompleted": [
                   "Mark as completed"
                 ]

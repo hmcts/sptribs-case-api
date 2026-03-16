@@ -37,11 +37,13 @@
     "valueCode": "962aaa12-af98-4cfa-86b2-46e4f0ec241d",
     "valueLabel": "1-CIC3_RULE_27"
   },
-  "cicCaseOrderDueDates": [
+  "orderDueDates": [
     {
       "value": {
+        "dueDateOptions": "Other",
         "dueDate": "2025-01-01",
         "information": "Lorem ipsum additional information",
+        "updatedDueDate": "2026-01-01",
         "orderMarkAsCompleted": []
       },
       "id": "e514ab08-a87b-4173-bb1e-55e02bf01d6f"
@@ -55,6 +57,7 @@
             {
               "id": "33b567cb-a291-4002-a119-30f23c46675d",
               "value": {
+                "dueDateOptions": "Other",
                 "dueDate": "2025-01-01",
                 "information": "Lorem ipsum information",
                 "orderMarkAsCompleted": []

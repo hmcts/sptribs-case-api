@@ -32,7 +32,7 @@
     "editCicaCaseDetails": {},
     "securityClass": "PUBLIC",
     "caseBundles": [],
-    "cicCaseOrderDueDates": [],
+    "orderDueDates": [],
     "cicCaseOrderList": [
       {
         "id": "1",
