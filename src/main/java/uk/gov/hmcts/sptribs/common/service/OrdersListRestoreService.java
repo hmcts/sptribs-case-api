@@ -1,18 +1,20 @@
 package uk.gov.hmcts.sptribs.common.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.sptribs.common.dtos.OrdersListRestoreCandidate;
+import uk.gov.hmcts.ccd.sdk.type.ListValue;
+import uk.gov.hmcts.sptribs.caseworker.model.Order;
+import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.common.dtos.RemoveEventWithPrecedingData;
 import uk.gov.hmcts.sptribs.common.repositories.CaseEventRepository;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Stream;
+
+import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_DOCUMENT_MANAGEMENT_REMOVE;
 
 @Slf4j
 @Service
@@ -20,59 +22,55 @@ import java.util.List;
 public class OrdersListRestoreService {
 
     private final CaseEventRepository caseEventRepository;
-    private final ObjectMapper objectMapper;
 
-    public List<OrdersListRestoreCandidate> findCasesRequiringRestore(
-            String caseEventId, LocalDate startDate, LocalDate endDate) {
+    public CaseData restoreOrdersList(Long reference, CaseData currentData, LocalDate startDate, LocalDate endDate) {
 
-        return caseEventRepository
-                .getRemoveEventsWithPrecedingData(caseEventId, startDate, endDate)
-                .stream()
-                .map(this::buildRestoreCandidate)
-                .filter(candidate -> !candidate.getRemovedEntries().isEmpty())
-                .peek(candidate -> log.info(
-                        "Case {} has {} removed ordersList entries to restore",
-                        candidate.getCaseDataId(),
-                        candidate.getRemovedEntries().size()))
-                .toList();
-    }
+        List<RemoveEventWithPrecedingData> removeEvents = caseEventRepository
+            .getRemoveEventsWithPrecedingData(reference, CASEWORKER_DOCUMENT_MANAGEMENT_REMOVE, startDate, endDate);
 
-    private OrdersListRestoreCandidate buildRestoreCandidate(RemoveEventWithPrecedingData event) {
-        List<JsonNode> before = parseOrdersList(event.getOrdersBeforeJson(), event.getCaseDataId());
-        List<JsonNode> after = parseOrdersList(event.getOrdersAfterJson(), event.getCaseDataId());
-
-        return OrdersListRestoreCandidate.builder()
-                .caseDataId(event.getCaseDataId())
-                .removeEventDate(event.getRemoveEventDate())
-                .ordersBefore(before)
-                .ordersAfter(after)
-                .removedEntries(findRemovedEntries(before, after))
-                .build();
-    }
-
-    private List<JsonNode> parseOrdersList(String json, Long caseDataId) {
-        if (json == null) {
-            log.warn("Null ordersList JSON for case {}, treating as empty", caseDataId);
-            return List.of();
+        if (removeEvents.isEmpty()) {
+            log.info("No remove events found for reference={}, nothing to restore", reference);
+            return currentData;
         }
-        try {
-            JsonNode node = objectMapper.readTree(json);
-            if (!node.isArray()) {
-                log.warn("ordersList for case {} is not an array, treating as empty", caseDataId);
-                return List.of();
-            }
-            List<JsonNode> entries = new ArrayList<>();
-            node.forEach(entries::add);
-            return entries;
-        } catch (JsonProcessingException e) {
-            log.error("Failed to parse ordersList JSON for case {}", caseDataId, e);
-            return List.of();
+
+        List<ListValue<Order>> currentOrdersList = currentData.getCicCase().getOrderList();
+
+        List<ListValue<Order>> restoredOrdersList = removeEvents.stream()
+            .sorted(Comparator.comparing(RemoveEventWithPrecedingData::getCurrentEventDate))
+            .filter(event -> hasOrdersList(event.getPrecedingEventData()))
+            .flatMap(event -> findRemovedEntries(event).stream())
+            .filter(entry -> !currentOrdersList.contains(entry))
+            .distinct()
+            .toList();
+
+        if (restoredOrdersList.isEmpty()) {
+            log.info("No missing entries found for reference={}, nothing to restore", reference);
+            return currentData;
         }
+
+        log.info("Restoring {} ordersList entries for reference={}",
+            restoredOrdersList.size(), reference);
+
+        List<ListValue<Order>> mergedOrdersList = Stream.concat(
+            currentOrdersList.stream(),
+            restoredOrdersList.stream()
+        ).toList();
+
+        currentData.getCicCase().setOrderList(mergedOrdersList);
+        return currentData;
     }
 
-    private List<JsonNode> findRemovedEntries(List<JsonNode> before, List<JsonNode> after) {
+    private List<ListValue<Order>> findRemovedEntries(RemoveEventWithPrecedingData event) {
+        List<ListValue<Order>> before = event.getPrecedingEventData().getCicCase().getOrderList();
+        List<ListValue<Order>> after = event.getCurrentEventData().getCicCase().getOrderList();
         return before.stream()
-                .filter(entry -> !after.contains(entry))  // JsonNode.equals() is deep
-                .toList();
+            .filter(entry -> !after.contains(entry))
+            .toList();
+    }
+
+    private boolean hasOrdersList(CaseData data) {
+        return data != null
+            && data.getCicCase().getOrderList() != null
+            && !data.getCicCase().getOrderList().isEmpty();
     }
 }

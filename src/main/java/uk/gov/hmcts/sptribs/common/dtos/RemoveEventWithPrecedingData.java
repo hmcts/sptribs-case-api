@@ -2,15 +2,19 @@ package uk.gov.hmcts.sptribs.common.dtos;
 
 import lombok.Builder;
 import lombok.Data;
+import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 
 import java.time.LocalDateTime;
 
-//TODO think about where to place these DTO classes
 @Data
 @Builder
 public class RemoveEventWithPrecedingData {
     private Long caseDataId;
-    private LocalDateTime removeEventDate;
-    private String ordersAfterJson;   // raw jsonb string from remove event
-    private String ordersBeforeJson;  // raw jsonb string from preceding event, nullable
+    private Long reference;
+    private String currentEvent;
+    private LocalDateTime currentEventDate;
+    private CaseData currentEventData;
+    private String precedingEventId;
+    private LocalDateTime precedingEventDate;
+    private CaseData precedingEventData;
 }
