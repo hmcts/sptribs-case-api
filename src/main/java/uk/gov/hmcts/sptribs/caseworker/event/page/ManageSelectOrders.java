@@ -33,7 +33,6 @@ public class ManageSelectOrders implements CcdPageConfiguration {
                                                                   CaseDetails<CaseData, State> detailsBefore) {
 
         final CaseData data = details.getData();
-        final CicCase cicCase = data.getCicCase();
         final List<String> errors = new ArrayList<>();
         final String selectedOrder = data.getCicCase().getOrderDynamicList().getValue().getLabel();
         final String id = getId(selectedOrder);
@@ -42,7 +41,7 @@ public class ManageSelectOrders implements CcdPageConfiguration {
         if (CollectionUtils.isNotEmpty(orderList)) {
             for (ListValue<Order> orderListValue : orderList) {
                 if (id != null && id.equals(orderListValue.getId())) {
-                    cicCase.setOrderDueDates(orderListValue.getValue().getDueDateList());
+                    data.setOrderDueDates(orderListValue.getValue().getDueDateList());
                     break;
                 }
             }
