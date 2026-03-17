@@ -14,11 +14,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import static uk.gov.hmcts.sptribs.caseworker.util.ErrorConstants.MISSING_DUE_DATE;
 import static uk.gov.hmcts.sptribs.ciccase.model.GetAmendDateAsCompleted.MARKASCOMPLETED;
 
 public class AmendOrderDueDates implements CcdPageConfiguration {
-
-    public static final String MISSING_DUE_DATE = "Updated due date cannot be empty for Other option";
 
     @Override
     public void addTo(PageBuilder pageBuilder) {
@@ -34,7 +33,6 @@ public class AmendOrderDueDates implements CcdPageConfiguration {
     public AboutToStartOrSubmitResponse<CaseData, State> midEvent(CaseDetails<CaseData, State> details,
                                                                   CaseDetails<CaseData, State> detailsBefore) {
 
-        //handle old cases (before radio buttons)
         List<ListValue<DateModel>> dueDates = details.getData().getOrderDueDates();
         final List<String> errors = new ArrayList<>();
 

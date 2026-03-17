@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Set;
 
 import static org.camunda.bpm.model.xml.test.assertions.ModelAssertions.assertThat;
+import static uk.gov.hmcts.sptribs.caseworker.util.ErrorConstants.MISSING_DUE_DATE;
 import static uk.gov.hmcts.sptribs.ciccase.model.GetAmendDateAsCompleted.MARKASCOMPLETED;
 
 @ExtendWith(MockitoExtension.class)
@@ -29,7 +30,7 @@ class AmendOrderDueDatesTest {
     private AmendOrderDueDates amendOrderDueDates;
 
     @Test
-    void whenDueDateOptionsNullAndOtherSelected_thenSetUpdatedDueDateAsPrevious() {
+    void whenDueDateOptionsNull_thenSetUpdatedDueDateAsPrevious() {
         //given
         List<ListValue<DateModel>> dateModels = new ArrayList<>();
 
@@ -115,7 +116,7 @@ class AmendOrderDueDatesTest {
         AboutToStartOrSubmitResponse<CaseData, State> response = amendOrderDueDates.midEvent(caseDetails, caseDetails);
 
         //then
-        assertThat(response.getErrors().getFirst()).isEqualTo("Updated due date cannot be empty for Other option");
+        assertThat(response.getErrors().getFirst()).isEqualTo(MISSING_DUE_DATE);
 
     }
 
