@@ -8,6 +8,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.context.annotation.Bean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -15,13 +17,16 @@ import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.sptribs.caseworker.model.DateModel;
+import uk.gov.hmcts.sptribs.caseworker.model.DueDateOptions;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.common.config.WebMvcConfig;
 import uk.gov.hmcts.sptribs.notification.NotificationServiceCIC;
 import uk.gov.hmcts.sptribs.testutil.IdamWireMock;
 
+import java.time.Clock;
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.List;
 import java.util.Set;
 
@@ -77,6 +82,20 @@ public class CaseworkerSendOrderIT {
 
     private static final String CONFIRMATION_HEADER = "$.confirmation_header";
 
+    @TestConfiguration
+    static class FixedClockConfig {
+
+        @Bean
+        public Clock clock() {
+            return Clock.fixed(
+                LocalDate.of(2026, 7, 15)
+                    .atStartOfDay(ZoneId.systemDefault())
+                    .toInstant(),
+                ZoneId.systemDefault()
+            );
+        }
+    }
+
     @BeforeAll
     static void setUp() {
         IdamWireMock.start();
@@ -120,7 +139,8 @@ public class CaseworkerSendOrderIT {
     @Test
     void shouldUpdateOrderRelatedDataOnAboutToSubmit() throws Exception {
         DateModel dateModel = DateModel.builder()
-            .dueDate(LocalDate.of(2024, 9, 4))
+            .dueDateOptions(DueDateOptions.OTHER)
+            .dueDate(LocalDate.of(2026, 9, 4))
             .information("due date for test")
             .build();
 
@@ -132,7 +152,6 @@ public class CaseworkerSendOrderIT {
                 .notifyPartyRepresentative(Set.of(REPRESENTATIVE))
                 .notifyPartyApplicant(Set.of(APPLICANT_CIC))
                 .orderReminderDays(DAY_COUNT_7)
-                .orderDueDates(List.of(ListValue.<DateModel>builder().value(dateModel).build()))
                 .fullName("Test Name")
                 .schemeCic(Year2012)
                 .orderTemplateIssued(Document.builder()
@@ -143,6 +162,7 @@ public class CaseworkerSendOrderIT {
                     .build())
                 .build()
             )
+            .orderDueDates(List.of(ListValue.<DateModel>builder().value(dateModel).build()))
             .build();
 
         String response = mockMvc.perform(post(ABOUT_TO_SUBMIT_URL)

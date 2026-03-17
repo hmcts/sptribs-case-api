@@ -41,6 +41,7 @@
       ]
     },
     "firstHearingDate": "",
+    "cicCaseRespondentBundleDueDate": "${json-unit.any-string}",
     "dataVersion": 0
   }
 }

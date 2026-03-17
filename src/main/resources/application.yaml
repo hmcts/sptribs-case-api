@@ -229,6 +229,9 @@ feature:
   migrate-global-search-task:
     enabled: ${GLOBAL_SEARCH_MIGRATION_ENABLED:false}
     caseReference: ${GLOBAL_SEARCH_MIGRATION_TEST_CASE_REF:}
+  clean-deleted-documents-task:
+    enabled: ${CLEAN_DELETED_DOCUMENTS_ENABLED:false}
+    caseReference: ${CLEAN_DELETED_DOCUMENTS_TEST_CASE_REF:}
 
 caseinfo:
   apps:
@@ -241,6 +244,10 @@ caseinfo:
         submitEvent: citizen-cic-submit-dss-application
       caseTypeOfApplication:
         - CIC
+
+bank-holidays:
+  api:
+    url: 'https://www.gov.uk/bank-holidays/scotland.json'
 
 wa_task_monitor_api:
   url: ${TASK_MONITOR_API_URL:http://wa-task-monitor-aat.service.core-compute-aat.internal}

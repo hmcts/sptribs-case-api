@@ -123,14 +123,19 @@ public final class CaseFlagsUtil {
     private static class CaseFlagDetailsComparator implements Comparator<FlagDetail> {
         @Override
         public int compare(FlagDetail flagDetail1, FlagDetail flagDetail2) {
-            return Comparator.comparing(FlagDetail::getName)
-                    .thenComparing(FlagDetail::getStatus)
-                    .thenComparing(FlagDetail::getNameCy)
-                    .thenComparing(FlagDetail::getFlagCode)
-                    .thenComparing(FlagDetail::getFlagComment)
-                    .thenComparing(FlagDetail::getHearingRelevant)
-                    .thenComparing(FlagDetail::getAvailableExternally)
-                    .compare(flagDetail1, flagDetail2);
+            return Comparator.comparing(FlagDetail::getName,
+                    Comparator.nullsFirst(String::compareTo))
+                .thenComparing(FlagDetail::getStatus,
+                    Comparator.nullsFirst(String::compareTo))
+                .thenComparing(FlagDetail::getNameCy,
+                    Comparator.nullsFirst(String::compareTo))
+                .thenComparing(FlagDetail::getFlagCode,
+                    Comparator.nullsFirst(String::compareTo))
+                .thenComparing(FlagDetail::getFlagComment,
+                    Comparator.nullsFirst(String::compareTo))
+                .thenComparing(FlagDetail::getHearingRelevant)
+                .thenComparing(FlagDetail::getAvailableExternally)
+                .compare(flagDetail1, flagDetail2);
         }
     }
 }

@@ -8,6 +8,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.context.annotation.Bean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -16,6 +18,7 @@ import uk.gov.hmcts.ccd.sdk.type.DynamicList;
 import uk.gov.hmcts.ccd.sdk.type.DynamicListElement;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.sptribs.caseworker.model.DateModel;
+import uk.gov.hmcts.sptribs.caseworker.model.DueDateOptions;
 import uk.gov.hmcts.sptribs.caseworker.model.Order;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
@@ -23,7 +26,9 @@ import uk.gov.hmcts.sptribs.common.config.WebMvcConfig;
 import uk.gov.hmcts.sptribs.document.model.CICDocument;
 import uk.gov.hmcts.sptribs.testutil.IdamWireMock;
 
+import java.time.Clock;
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -56,6 +61,20 @@ public class CaseWorkerManageOrderDueDateIT {
     private static final String CASEWORKER_MANAGE_ORDER_DUE_DATE_ABOUT_TO_SUBMIT_RESPONSE =
         "classpath:responses/caseworker-manage-order-due-date-about-to-submit-response.json";
     private static final String CONFIRMATION_HEADER = "$.confirmation_header";
+
+    @TestConfiguration
+    static class FixedClockConfig {
+
+        @Bean
+        public Clock clock() {
+            return Clock.fixed(
+                LocalDate.of(2026, 7, 15)
+                    .atStartOfDay(ZoneId.systemDefault())
+                    .toInstant(),
+                ZoneId.systemDefault()
+            );
+        }
+    }
 
     @Autowired
     private MockMvc mockMvc;
@@ -139,7 +158,7 @@ public class CaseWorkerManageOrderDueDateIT {
         list.add(orderListValue);
 
         DateModel orderDueDate = DateModel.builder()
-            .dueDate(LocalDate.of(2024, 5, 11))
+            .dueDateOptions(DueDateOptions.DAY_COUNT_120)
             .information("information")
             .build();
 
@@ -152,11 +171,11 @@ public class CaseWorkerManageOrderDueDateIT {
         CicCase cicCase = CicCase.builder()
             .orderList(list)
             .orderDynamicList(dynamicList)
-            .orderDueDates(dueDateList)
             .build();
 
         CaseData caseData = CaseData.builder()
             .cicCase(cicCase)
+            .orderDueDates(dueDateList)
             .build();
 
         mockMvc.perform(post(ABOUT_TO_SUBMIT_URL)
