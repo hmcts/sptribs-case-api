@@ -45,11 +45,8 @@ public class SystemRestoreOrders implements CCDConfig<CaseData, State, UserRole>
 
         ordersListRestoreService.restoreOrdersList(reference, caseData, LocalDate.of(2026, 2, 24), LocalDate.now());
 
-
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
             .build();
     }
-
-
 }

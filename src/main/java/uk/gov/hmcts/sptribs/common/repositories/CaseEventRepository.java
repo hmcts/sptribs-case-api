@@ -86,7 +86,7 @@ public class CaseEventRepository {
         var params = Map.of(
                 CASE_EVENT_ID, caseEventId,
                 START_DATE, startDate,
-                END_DATE, endDate
+                END_DATE, endDate.plusDays(1)
         );
 
         try {
@@ -111,7 +111,7 @@ public class CaseEventRepository {
                 REFERENCE, reference,
                 CASE_EVENT_ID, caseEventId,
                 START_DATE, startDate,
-                END_DATE, endDate
+                END_DATE, endDate.plusDays(1)
         );
 
         try {
