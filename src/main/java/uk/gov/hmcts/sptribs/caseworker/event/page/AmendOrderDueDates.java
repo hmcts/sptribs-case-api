@@ -47,9 +47,13 @@ public class AmendOrderDueDates implements CcdPageConfiguration {
             }
 
             if (dateModel.getDueDateOptions().equals(DueDateOptions.OTHER)
-                && dateModel.getUpdatedDueDate() == null && !dateModel.getOrderMarkAsCompleted().equals(Set.of(MARKASCOMPLETED))) {
-                dateModel.setUpdatedDueDate(dateModel.getDueDate());
-                errors.add(MISSING_DUE_DATE);
+                && dateModel.getUpdatedDueDate() == null) {
+
+                if (dateModel.getOrderMarkAsCompleted().equals(Set.of(MARKASCOMPLETED))) {
+                    dateModel.setUpdatedDueDate(dateModel.getDueDate());
+                } else {
+                    errors.add(MISSING_DUE_DATE);
+                }
             }
 
         }
