@@ -1,4 +1,4 @@
-package uk.gov.hmcts.sptribs.common.dtos;
+package uk.gov.hmcts.sptribs.common.dto;
 
 import lombok.Builder;
 import lombok.Data;

@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.sptribs.caseworker.model.Order;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
-import uk.gov.hmcts.sptribs.common.dtos.RemoveEventWithPrecedingData;
+import uk.gov.hmcts.sptribs.common.dto.RemoveEventWithPrecedingData;
 import uk.gov.hmcts.sptribs.common.repositories.CaseEventRepository;
 
 import java.time.LocalDate;
@@ -23,14 +23,14 @@ public class OrdersListRestoreService {
 
     private final CaseEventRepository caseEventRepository;
 
-    public CaseData restoreOrdersList(Long reference, CaseData currentData, LocalDate startDate, LocalDate endDate) {
+    public void restoreOrdersList(Long reference, CaseData currentData, LocalDate startDate, LocalDate endDate) {
 
         List<RemoveEventWithPrecedingData> removeEvents = caseEventRepository
             .getRemoveEventsWithPrecedingData(reference, CASEWORKER_DOCUMENT_MANAGEMENT_REMOVE, startDate, endDate);
 
         if (removeEvents.isEmpty()) {
             log.info("No remove events found for reference={}, nothing to restore", reference);
-            return currentData;
+            return;
         }
 
         List<ListValue<Order>> currentOrdersList = currentData.getCicCase().getOrderList();
@@ -45,7 +45,7 @@ public class OrdersListRestoreService {
 
         if (restoredOrdersList.isEmpty()) {
             log.info("No missing entries found for reference={}, nothing to restore", reference);
-            return currentData;
+            return;
         }
 
         log.info("Restoring {} ordersList entries for reference={}",
@@ -57,7 +57,6 @@ public class OrdersListRestoreService {
         ).toList();
 
         currentData.getCicCase().setOrderList(mergedOrdersList);
-        return currentData;
     }
 
     private List<ListValue<Order>> findRemovedEntries(RemoveEventWithPrecedingData event) {

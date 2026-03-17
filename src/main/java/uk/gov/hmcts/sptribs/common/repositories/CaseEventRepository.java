@@ -8,7 +8,8 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
-import uk.gov.hmcts.sptribs.common.dtos.RemoveEventWithPrecedingData;
+import uk.gov.hmcts.sptribs.common.dto.RemoveEventWithPrecedingData;
+import uk.gov.hmcts.sptribs.common.repositories.exception.CaseEventRepositoryException;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -22,6 +23,12 @@ import java.util.Map;
 @Slf4j
 public class CaseEventRepository {
 
+    public static final String CASE_EVENT_ID = "caseEventId";
+    public static final String CREATED_DATE = "createdDate";
+    public static final String START_DATE = "startDate";
+    public static final String END_DATE = "endDate";
+    public static final String REFERENCE = "reference";
+    public static final String CASE_DATA_ID = "case_data_id";
     private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
     private final ObjectMapper objectMapper;
 
@@ -47,21 +54,22 @@ public class CaseEventRepository {
 
         List<Long> results;
         var params = Map.of(
-            "caseEventId", caseEventId,
-            "createdDate", createdDate
+                CASE_EVENT_ID, caseEventId,
+                CREATED_DATE, createdDate
         );
 
         try {
             results = namedParameterJdbcTemplate.query(SELECT_LIST_OF_CASE_IDS_BY_EVENT_TYPE_AND_DATE,
                 params,
-                (rs, rowNum) -> rs.getLong("reference")
+                (rs, rowNum) -> rs.getLong(REFERENCE)
             );
 
         } catch (DataAccessException dataAccessException) {
-            throw new RuntimeException("Error whilst retrieving case events to clean further documents",
-                dataAccessException);
+            log.error("Failed to retrieve affected cases for eventId = {} after {}",
+                caseEventId, createdDate, dataAccessException);
+            throw new CaseEventRepositoryException(
+                "Error whilst retrieving case events to clean further documents", dataAccessException);
         }
-
 
         if (results.isEmpty()) {
             log.info("No results found for caseEventId = {}", caseEventId);
@@ -76,20 +84,22 @@ public class CaseEventRepository {
 
         List<Long> results;
         var params = Map.of(
-            "caseEventId", caseEventId,
-            "startDate", startDate,
-            "endDate", endDate
+                CASE_EVENT_ID, caseEventId,
+                START_DATE, startDate,
+                END_DATE, endDate
         );
 
         try {
             results = namedParameterJdbcTemplate.query(SELECT_LIST_OF_CASE_IDS_BY_EVENT_ID_DURING_DATE_RANGE,
                 params,
-                (rs, rowNum) -> rs.getLong("reference")
+                (rs, rowNum) -> rs.getLong(REFERENCE)
             );
 
         } catch (DataAccessException dataAccessException) {
-            throw new RuntimeException("Error whilst retrieving case events to clean further documents",
-                dataAccessException);
+            log.error("Failed to retrieve list of affected cases for eventId = {} between {} and {}",
+                    caseEventId, startDate, endDate, dataAccessException);
+            throw new CaseEventRepositoryException(
+                    "Failed to retrieve affected cases for eventID = " + caseEventId, dataAccessException);
         }
         return results;
     }
@@ -98,10 +108,10 @@ public class CaseEventRepository {
         Long reference, String caseEventId, LocalDate startDate, LocalDate endDate) {
 
         var params = Map.of(
-            "reference", reference,
-            "caseEventId", caseEventId,
-            "startDate", startDate,
-            "endDate", endDate
+                REFERENCE, reference,
+                CASE_EVENT_ID, caseEventId,
+                START_DATE, startDate,
+                END_DATE, endDate
         );
 
         try {
@@ -109,15 +119,15 @@ public class CaseEventRepository {
                 SELECT_REMOVE_EVENTS_WITH_PRECEDING_DATA,
                 params,
                 (rs, rowNum) -> RemoveEventWithPrecedingData.builder()
-                    .caseDataId(rs.getLong("case_data_id"))
+                    .caseDataId(rs.getLong(CASE_DATA_ID))
                     .currentEvent(rs.getString("event_id"))
                     .currentEventDate(rs.getTimestamp("created_date").toLocalDateTime())
-                    .currentEventData(parseEventData(rs.getString("data"), rs.getLong("case_data_id")))
+                    .currentEventData(parseEventData(rs.getString("data"), rs.getLong(CASE_DATA_ID)))
                     .precedingEventId(rs.getString("prev_event"))
                     .precedingEventDate(rs.getTimestamp("prev_date") != null
                         ? rs.getTimestamp("prev_date").toLocalDateTime()
                         : null)
-                    .precedingEventData(parseEventData(rs.getString("prev_data"), rs.getLong("case_data_id")))
+                    .precedingEventData(parseEventData(rs.getString("prev_data"), rs.getLong(CASE_DATA_ID)))
                     .build()
             );
 
@@ -128,8 +138,11 @@ public class CaseEventRepository {
 
             return results;
 
-        } catch (DataAccessException e) {
-            throw new RuntimeException("Error retrieving remove events with preceding data", e);
+        } catch (DataAccessException dataAccessException) {
+            log.error("Failed to retrieve remove events for reference={} between {} and {}",
+                reference, startDate, endDate, dataAccessException);
+            throw new CaseEventRepositoryException(
+                "Failed to retrieve remove events for reference=" + reference, dataAccessException);
         }
     }
 

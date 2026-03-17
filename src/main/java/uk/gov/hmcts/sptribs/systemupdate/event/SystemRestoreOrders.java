@@ -7,15 +7,12 @@ import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
-import uk.gov.hmcts.ccd.sdk.type.ListValue;
-import uk.gov.hmcts.sptribs.caseworker.model.Order;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.service.OrdersListRestoreService;
 
 import java.time.LocalDate;
-import java.util.List;
 
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_CASEWORKER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SYSTEM_UPDATE;
@@ -44,16 +41,13 @@ public class SystemRestoreOrders implements CCDConfig<CaseData, State, UserRole>
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(CaseDetails<CaseData, State> caseDetails,
                                                                        CaseDetails<CaseData, State> beforeDetails) {
         CaseData caseData = caseDetails.getData();
-        List<ListValue<Order>> currentOrders = caseData.getCicCase().getOrderList();
-
         Long reference = caseDetails.getId();
 
-        CaseData caseData1 = ordersListRestoreService.restoreOrdersList(
-            reference, caseData, LocalDate.of(2026, 2, 24), LocalDate.now());
+        ordersListRestoreService.restoreOrdersList(reference, caseData, LocalDate.of(2026, 2, 24), LocalDate.now());
 
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
-            .data(caseData1)
+            .data(caseData)
             .build();
     }
 
