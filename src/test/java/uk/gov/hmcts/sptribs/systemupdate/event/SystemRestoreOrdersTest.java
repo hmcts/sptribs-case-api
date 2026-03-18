@@ -43,6 +43,10 @@ class SystemRestoreOrdersTest {
     @Mock
     private OrdersListRestoreService ordersListRestoreService;
 
+    private static final LocalDate START_FROM_DATE = LocalDate.of(2026, 2, 24);
+
+    private static final LocalDate END_TO_DATE = LocalDate.of(2026, 3, 5);
+
     @Test
     void shouldAddConfigurationToConfigBuilder() {
         //Given
@@ -74,8 +78,8 @@ class SystemRestoreOrdersTest {
         verify(ordersListRestoreService).restoreOrdersList(
             eq(12345L),
             eq(caseData),
-            eq(LocalDate.of(2026, 2, 24)),
-            eq(LocalDate.now())
+            eq(START_FROM_DATE),
+            eq(END_TO_DATE)
         );
     }
 

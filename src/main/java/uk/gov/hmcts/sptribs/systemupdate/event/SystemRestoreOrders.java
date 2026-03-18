@@ -14,7 +14,6 @@ import uk.gov.hmcts.sptribs.common.service.OrdersListRestoreService;
 
 import java.time.LocalDate;
 
-import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_CASEWORKER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SYSTEM_UPDATE;
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE_DELETE;
 
@@ -24,6 +23,10 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 public class SystemRestoreOrders implements CCDConfig<CaseData, State, UserRole> {
 
     public static final String SYSTEM_RESTORE_ORDERS = "system-restore-orders";
+
+    private static final LocalDate START_FROM_DATE = LocalDate.of(2026, 2, 24);
+
+    private static final LocalDate END_TO_DATE = LocalDate.of(2026, 3, 5);
 
     private final OrdersListRestoreService ordersListRestoreService;
 
@@ -35,7 +38,7 @@ public class SystemRestoreOrders implements CCDConfig<CaseData, State, UserRole>
             .name("Repopulate missing orders")
             .description("Recover orders that are missing in cicCase")
             .aboutToSubmitCallback(this::aboutToSubmit)
-            .grant(CREATE_READ_UPDATE_DELETE, SYSTEM_UPDATE, ST_CIC_SENIOR_CASEWORKER);
+            .grant(CREATE_READ_UPDATE_DELETE, SYSTEM_UPDATE);
     }
 
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(CaseDetails<CaseData, State> caseDetails,
@@ -43,7 +46,7 @@ public class SystemRestoreOrders implements CCDConfig<CaseData, State, UserRole>
         CaseData caseData = caseDetails.getData();
         Long reference = caseDetails.getId();
 
-        ordersListRestoreService.restoreOrdersList(reference, caseData, LocalDate.of(2026, 2, 24), LocalDate.now());
+        ordersListRestoreService.restoreOrdersList(reference, caseData, START_FROM_DATE, END_TO_DATE);
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
