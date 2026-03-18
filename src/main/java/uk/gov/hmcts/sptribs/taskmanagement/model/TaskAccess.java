@@ -27,7 +27,7 @@ import static uk.gov.hmcts.sptribs.taskmanagement.model.TaskOperation.UnclaimAss
 @Getter
 public enum TaskAccess {
     TASK_SUPERVISOR(
-        Set.of(Read,Own,Claim,Unclaim,Manage,UnclaimAssign,Assign,Unassign,Cancel,Complete),
+        Set.of(Read,Claim,Unclaim,Manage,UnclaimAssign,Assign,Unassign,Cancel,Complete),
         NONE, false, null,
         Authorisations.NONE),
     REGIONAL_CENTRE_ADMIN(
