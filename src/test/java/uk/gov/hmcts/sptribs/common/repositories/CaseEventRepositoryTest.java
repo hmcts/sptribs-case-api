@@ -41,7 +41,7 @@ class CaseEventRepositoryTest {
 
     private static final String CASE_EVENT_ID = "caseworker-remove-document";
     private static final LocalDate START_DATE = LocalDate.of(2026, 2, 24);
-    private static final LocalDate END_DATE = LocalDate.of(2026, 3, 5);
+    private static final LocalDate END_DATE = LocalDate.of(2026, 3, 6);
     private static final Long REFERENCE = 12345L;
 
     @Nested

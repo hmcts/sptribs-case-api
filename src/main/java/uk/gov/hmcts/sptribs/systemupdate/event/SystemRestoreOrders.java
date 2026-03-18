@@ -26,7 +26,7 @@ public class SystemRestoreOrders implements CCDConfig<CaseData, State, UserRole>
 
     private static final LocalDate START_FROM_DATE = LocalDate.of(2026, 2, 24);
 
-    private static final LocalDate END_TO_DATE = LocalDate.of(2026, 3, 5);
+    private static final LocalDate END_TO_DATE = LocalDate.of(2026, 3, 6);
 
     private final OrdersListRestoreService ordersListRestoreService;
 
