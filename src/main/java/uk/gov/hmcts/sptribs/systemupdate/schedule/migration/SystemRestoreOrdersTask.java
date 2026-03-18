@@ -12,6 +12,7 @@ import uk.gov.hmcts.sptribs.systemupdate.service.CcdManagementException;
 import uk.gov.hmcts.sptribs.systemupdate.service.CcdUpdateService;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_DOCUMENT_MANAGEMENT_REMOVE;
@@ -49,31 +50,30 @@ public class SystemRestoreOrdersTask implements Runnable {
             log.info("User name: {}", user.getUserDetails().getEmail());
             log.info("User roles: {}", String.join(",", user.getUserDetails().getRoles()));
 
+            final List<Long> caseIdsToUpdate = new ArrayList<>();
             try {
-                final List<Long> caseIdsToUpdate;
-
                 if (restoreOrdersTestCaseReference != null && !restoreOrdersTestCaseReference.isEmpty()) {
                     Long caseIdToUpdate = Long.valueOf(restoreOrdersTestCaseReference);
-                    caseIdsToUpdate = List.of(caseIdToUpdate);
+                    caseIdsToUpdate.add(caseIdToUpdate);
                 } else {
-                    caseIdsToUpdate = caseEventRepository.getListOfCasesByEventIdDuringDateRange(
-                        CASEWORKER_DOCUMENT_MANAGEMENT_REMOVE, START_FROM_DATE, END_TO_DATE);
+                    caseIdsToUpdate.addAll(caseEventRepository.getListOfCasesByEventIdDuringDateRange(
+                        CASEWORKER_DOCUMENT_MANAGEMENT_REMOVE, START_FROM_DATE, END_TO_DATE));
                 }
-
-                if (caseIdsToUpdate.isEmpty()) {
-                    log.info("Nothing to update");
-                    return;
-                }
-
-                log.info("Cases:{}", caseIdsToUpdate.size());
-                for (final Long caseId : caseIdsToUpdate) {
-                    triggerSystemRestoreOrdersEvent(user, serviceAuth, caseId);
-                }
-
-                log.info("System restore orders task complete.");
             } catch (final RuntimeException e) {
                 log.error("System restore orders task stopped after search error", e);
             }
+
+            if (caseIdsToUpdate.isEmpty()) {
+                log.info("Nothing to update");
+                return;
+            }
+            log.info("Cases:{}", caseIdsToUpdate.size());
+            for (final Long caseId : caseIdsToUpdate) {
+                triggerSystemRestoreOrdersEvent(user, serviceAuth, caseId);
+            }
+
+            log.info("System restore orders task complete.");
+
         }
     }
 
