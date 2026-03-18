@@ -1,0 +1,36 @@
+{
+  "data" : {
+    "caseLinks" : [ ],
+    "allCaseworkerCICDocument" : [ ],
+    "allCaseworkerCICDocumentUpload" : [ ],
+    "newCaseworkerCICDocument" : [ ],
+    "newCaseworkerCICDocumentUpload" : [ ],
+    "editCicaCaseDetails" : { },
+    "contactParties" : { },
+    "caseBundles" : [ ],
+    "caseBundleIdsAndTimestamps" : [ ],
+    "cicCaseOrderList" : [ {
+      "value" : {
+        "draftOrder" : {
+          "templateGeneratedDocument" : {
+            "document_url" : "url1",
+            "document_filename" : "name1",
+            "document_binary_url" : "url1"
+          }
+        }
+      }
+    } ],
+    "cicCaseRespondentName" : "Appeals team",
+    "cicCaseRespondentOrganisation" : "CICA",
+    "cicCaseRespondentEmail" : "appeals.team@cica.gov.uk",
+    "cicCaseAlternativeRespondentEmail" : "notice.appeals@cica.gov.uk",
+    "cicCaseRemovedDocumentList" : [ ],
+    "furtherUploadedDocuments" : [ ],
+    "stayIsCaseStayed" : "No",
+    "hearingList" : [ ],
+    "closedDayCount" : "",
+    "firstHearingDate" : "",
+    "dataVersion" : 0,
+    "cicCaseSelectedDocument" : { }
+  }
+}

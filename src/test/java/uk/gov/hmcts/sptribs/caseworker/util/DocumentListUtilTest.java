@@ -647,4 +647,83 @@ public class DocumentListUtilTest {
         List<String> documentIds = DocumentListUtil.extractDocumentIds(dynamicMultiSelectList.getListItems());
         assertThat(documentIds).isEmpty();
     }
+
+
+    @Test
+    void givenCicDoc_whenRemoveFurtherUploadedDocument_thenRemoveIfExists() {
+        //given
+
+        final CaseData caseData = CaseData.builder().build();
+        List<ListValue<CaseworkerCICDocument>> furtherUploadedDocsList = new ArrayList<>();
+        CaseworkerCICDocument doc = CaseworkerCICDocument.builder()
+            .documentCategory(DocumentType.LINKED_DOCS)
+            .documentLink(Document.builder().url("url").binaryUrl("url").filename("name").build())
+            .build();
+        ListValue<CaseworkerCICDocument> documentListValue = new ListValue<>();
+        documentListValue.setValue(doc);
+        furtherUploadedDocsList.add(documentListValue);
+
+        caseData.setFurtherUploadedDocuments(furtherUploadedDocsList);
+
+        //when
+        DocumentListUtil.removeFurtherUploadedDocument(caseData, documentListValue);
+
+
+        //then
+        assertThat(caseData.getFurtherUploadedDocuments()).isEmpty();
+
+    }
+
+    @Test
+    void givenCicDoc_whenRemoveFurtherUploadedDocument_thenNoMatchAndDontRemove() {
+        //given
+
+        final CaseData caseData = CaseData.builder().build();
+        List<ListValue<CaseworkerCICDocument>> furtherUploadedDocsList = new ArrayList<>();
+        CaseworkerCICDocument doc = CaseworkerCICDocument.builder()
+            .documentCategory(DocumentType.LINKED_DOCS)
+            .documentLink(Document.builder().url("url").binaryUrl("url").filename("name").build())
+            .build();
+        ListValue<CaseworkerCICDocument> documentListValue = new ListValue<>();
+        documentListValue.setValue(doc);
+        furtherUploadedDocsList.add(documentListValue);
+
+        caseData.setFurtherUploadedDocuments(furtherUploadedDocsList);
+
+        CaseworkerCICDocument differentDocument = CaseworkerCICDocument.builder()
+            .documentCategory(DocumentType.LINKED_DOCS)
+            .documentLink(Document.builder().url("url123").binaryUrl("url123").filename("name123").build())
+            .build();
+
+        ListValue<CaseworkerCICDocument> differentDocumentListValue = new ListValue<>();
+        differentDocumentListValue.setValue(differentDocument);
+
+        //when
+        DocumentListUtil.removeFurtherUploadedDocument(caseData, differentDocumentListValue);
+
+
+        //then
+        assertThat(caseData.getFurtherUploadedDocuments()).isEqualTo(List.of(documentListValue));
+
+    }
+
+    @Test
+    void givenCicDocAndNullOrders_whenRemoveFurtherUploadedDocument_thenDoNothing() {
+        //given
+        final CaseData caseData = CaseData.builder().build();
+
+        CaseworkerCICDocument doc = CaseworkerCICDocument.builder()
+            .documentCategory(DocumentType.LINKED_DOCS)
+            .documentLink(Document.builder().url("url").binaryUrl("url").filename("name").build())
+            .build();
+        ListValue<CaseworkerCICDocument> documentListValue = new ListValue<>();
+        documentListValue.setValue(doc);
+
+        //when
+        DocumentListUtil.removeFurtherUploadedDocument(caseData, documentListValue);
+
+
+        //then
+        assertThat(caseData.getFurtherUploadedDocuments()).isNull();
+    }
 }

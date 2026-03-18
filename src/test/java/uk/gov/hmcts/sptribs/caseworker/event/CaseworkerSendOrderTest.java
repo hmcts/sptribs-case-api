@@ -14,6 +14,7 @@ import uk.gov.hmcts.ccd.sdk.type.DynamicList;
 import uk.gov.hmcts.ccd.sdk.type.DynamicListElement;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
+import uk.gov.hmcts.sptribs.caseworker.event.page.SendOrderOrderDueDates;
 import uk.gov.hmcts.sptribs.caseworker.model.DateModel;
 import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderCIC;
 import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderContentCIC;
@@ -76,6 +77,9 @@ class CaseworkerSendOrderTest {
     @Mock
     private NewOrderIssuedNotification newOrderIssuedNotification;
 
+    @Mock
+    private SendOrderOrderDueDates orderDueDates;
+
     @Test
     void shouldAddPublishToCamundaWhenWAIsEnabled() {
 
@@ -105,7 +109,7 @@ class CaseworkerSendOrderTest {
     @Test
     void shouldSuccessfullySendOrderWithEmail() {
         //Given
-        final DateModel dateModel = DateModel.builder().dueDate(LocalDate.now()).information("inf").build();
+        final DateModel dateModel = DateModel.builder().dueDate(LocalDate.now()).build();
         final ListValue<DateModel> dates = new ListValue<>();
         dates.setValue(dateModel);
         final DraftOrderCIC draftOrderCIC = DraftOrderCIC.builder()
@@ -140,12 +144,12 @@ class CaseworkerSendOrderTest {
             .notifyPartyApplicant(Set.of(ApplicantCIC.APPLICANT_CIC))
             .orderIssuingType(OrderIssuingType.UPLOAD_A_NEW_ORDER_FROM_YOUR_COMPUTER)
             .orderFile(List.of(documentListValue))
-            .orderDueDates(List.of(dates))
             .orderReminderYesOrNo(YesNo.YES)
             .orderReminderDays(ReminderDays.DAY_COUNT_1)
             .orderIssuingType(OrderIssuingType.ISSUE_AND_SEND_AN_EXISTING_DRAFT)
             .build();
         final CaseData caseData = caseData();
+        caseData.setOrderDueDates(List.of(dates));
         caseData.setCicCase(cicCase);
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
         final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
@@ -169,7 +173,7 @@ class CaseworkerSendOrderTest {
     @Test
     void shouldSuccessfullyUpdateFileNameForDraftOrderWhenDraftColonPrefix() {
         //Given
-        final DateModel dateModel = DateModel.builder().dueDate(LocalDate.now()).information("inf").build();
+        final DateModel dateModel = DateModel.builder().dueDate(LocalDate.now()).build();
         final ListValue<DateModel> dates = new ListValue<>();
         dates.setValue(dateModel);
         final DraftOrderCIC draftOrderCIC = DraftOrderCIC.builder()
@@ -204,12 +208,12 @@ class CaseworkerSendOrderTest {
             .notifyPartyApplicant(Set.of(ApplicantCIC.APPLICANT_CIC))
             .orderIssuingType(OrderIssuingType.UPLOAD_A_NEW_ORDER_FROM_YOUR_COMPUTER)
             .orderFile(List.of(documentListValue))
-            .orderDueDates(List.of(dates))
             .orderReminderYesOrNo(YesNo.YES)
             .orderReminderDays(ReminderDays.DAY_COUNT_1)
             .orderIssuingType(OrderIssuingType.ISSUE_AND_SEND_AN_EXISTING_DRAFT)
             .build();
         final CaseData caseData = caseData();
+        caseData.setOrderDueDates(List.of(dates));
         caseData.setCicCase(cicCase);
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
         final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
@@ -234,7 +238,7 @@ class CaseworkerSendOrderTest {
     @Test
     void shouldSuccessfullyUpdateFileNameForDraftOrderWhenDraftColonPrefixIsNotPresent() {
         //Given
-        final DateModel dateModel = DateModel.builder().dueDate(LocalDate.now()).information("inf").build();
+        final DateModel dateModel = DateModel.builder().dueDate(LocalDate.now()).build();
         final ListValue<DateModel> dates = new ListValue<>();
         dates.setValue(dateModel);
         final DraftOrderCIC draftOrderCIC = DraftOrderCIC.builder()
@@ -269,12 +273,12 @@ class CaseworkerSendOrderTest {
             .notifyPartyApplicant(Set.of(ApplicantCIC.APPLICANT_CIC))
             .orderIssuingType(OrderIssuingType.UPLOAD_A_NEW_ORDER_FROM_YOUR_COMPUTER)
             .orderFile(List.of(documentListValue))
-            .orderDueDates(List.of(dates))
             .orderReminderYesOrNo(YesNo.YES)
             .orderReminderDays(ReminderDays.DAY_COUNT_1)
             .orderIssuingType(OrderIssuingType.ISSUE_AND_SEND_AN_EXISTING_DRAFT)
             .build();
         final CaseData caseData = caseData();
+        caseData.setOrderDueDates(List.of(dates));
         caseData.setCicCase(cicCase);
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
         final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
@@ -299,7 +303,7 @@ class CaseworkerSendOrderTest {
     @Test
     void shouldSuccessfullySendOrderWithPost() {
         //Given
-        final DateModel dateModel = DateModel.builder().dueDate(LocalDate.now()).information("inf").build();
+        final DateModel dateModel = DateModel.builder().dueDate(LocalDate.now()).build();
         final ListValue<DateModel> dates = new ListValue<>();
         dates.setValue(dateModel);
         final DraftOrderCIC draftOrderCIC = DraftOrderCIC.builder()
@@ -325,13 +329,13 @@ class CaseworkerSendOrderTest {
             .notifyPartyRespondent(Set.of(RespondentCIC.RESPONDENT))
             .notifyPartySubject(Set.of(SubjectCIC.SUBJECT))
             .orderIssuingType(OrderIssuingType.ISSUE_AND_SEND_AN_EXISTING_DRAFT)
-            .orderDueDates(List.of(dates))
             .orderReminderYesOrNo(YesNo.YES)
             .orderReminderDays(ReminderDays.DAY_COUNT_1)
             .draftOrderDynamicList(getDraftOrderList())
             .orderFile(documentList)
             .build();
         final CaseData caseData = caseData();
+        caseData.setOrderDueDates(List.of(dates));
         caseData.setCicCase(cicCase);
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
         final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
@@ -356,7 +360,7 @@ class CaseworkerSendOrderTest {
     @Test
     void shouldSuccessfullySendOrderWithOnlyPost() {
         //Given
-        final DateModel dateModel = DateModel.builder().dueDate(LocalDate.now()).information("inf").build();
+        final DateModel dateModel = DateModel.builder().dueDate(LocalDate.now()).build();
         final ListValue<DateModel> dates = new ListValue<>();
         dates.setValue(dateModel);
         final DraftOrderCIC draftOrderCIC = DraftOrderCIC.builder()
@@ -381,13 +385,13 @@ class CaseworkerSendOrderTest {
             .notifyPartyRepresentative(Set.of(RepresentativeCIC.REPRESENTATIVE))
             .notifyPartySubject(Set.of(SubjectCIC.SUBJECT))
             .orderIssuingType(OrderIssuingType.ISSUE_AND_SEND_AN_EXISTING_DRAFT)
-            .orderDueDates(List.of(dates))
             .orderReminderYesOrNo(YesNo.YES)
             .orderReminderDays(ReminderDays.DAY_COUNT_1)
             .orderFile(documentList)
             .build();
         final CaseData caseData = caseData();
         caseData.setCicCase(cicCase);
+        caseData.setOrderDueDates(List.of(dates));
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
         final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
         updatedCaseDetails.setData(caseData);
@@ -411,7 +415,7 @@ class CaseworkerSendOrderTest {
     @Test
     void shouldSuccessfullySendOrderMultiple() {
         //Given
-        final DateModel dateModel = DateModel.builder().dueDate(LocalDate.now()).information("inf").build();
+        final DateModel dateModel = DateModel.builder().dueDate(LocalDate.now()).build();
         final ListValue<DateModel> dates = new ListValue<>();
         dates.setValue(dateModel);
         final DraftOrderCIC firstDraftOrder = DraftOrderCIC.builder()
@@ -447,12 +451,12 @@ class CaseworkerSendOrderTest {
             .notifyPartyRepresentative(Set.of(RepresentativeCIC.REPRESENTATIVE))
             .notifyPartySubject(Set.of(SubjectCIC.SUBJECT))
             .orderIssuingType(OrderIssuingType.ISSUE_AND_SEND_AN_EXISTING_DRAFT)
-            .orderDueDates(List.of(dates))
             .orderReminderYesOrNo(YesNo.YES)
             .orderReminderDays(ReminderDays.DAY_COUNT_1)
             .orderFile(documentList)
             .build();
         final CaseData caseData = caseData();
+        caseData.setOrderDueDates(List.of(dates));
         caseData.setCicCase(cicCase);
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
         final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
@@ -495,7 +499,7 @@ class CaseworkerSendOrderTest {
 
     @Test
     void shouldOnlySendOneOrderWhenMultipleDraftsExist() {
-        final DateModel dateModel = DateModel.builder().dueDate(LocalDate.now()).information("inf").build();
+        final DateModel dateModel = DateModel.builder().dueDate(LocalDate.now()).build();
         final ListValue<DateModel> dates = new ListValue<>();
         dates.setValue(dateModel);
         DraftOrderContentCIC draftOrderContentCIC = DraftOrderContentCIC.builder()
@@ -558,12 +562,12 @@ class CaseworkerSendOrderTest {
                 .notifyPartySubject(Set.of(SubjectCIC.SUBJECT))
                 .notifyPartyApplicant(Set.of(ApplicantCIC.APPLICANT_CIC))
                 .orderFile(List.of(documentListValue))
-                .orderDueDates(List.of(dates))
                 .orderReminderYesOrNo(YesNo.YES)
                 .orderReminderDays(ReminderDays.DAY_COUNT_1)
                 .orderIssuingType(OrderIssuingType.ISSUE_AND_SEND_AN_EXISTING_DRAFT)
                 .build();
         final CaseData caseData = caseData();
+        caseData.setOrderDueDates(List.of(dates));
         caseData.setCicCase(cicCase);
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
         final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();

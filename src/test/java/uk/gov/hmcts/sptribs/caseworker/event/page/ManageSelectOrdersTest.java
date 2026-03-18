@@ -58,8 +58,8 @@ public class ManageSelectOrdersTest {
         caseDetails.setData(caseData);
 
         final AboutToStartOrSubmitResponse<CaseData, State> response = manageSelectOrders.midEvent(caseDetails, caseDetails);
-        assertNotNull(cicCase.getOrderDueDates());
-        assertThat(cicCase.getOrderDueDates()).isEqualTo(List.of(mockListValueDateModel));
+        assertNotNull(caseData.getOrderDueDates());
+        assertThat(caseData.getOrderDueDates()).isEqualTo(List.of(mockListValueDateModel));
         assertThat(response.getErrors()).isEmpty();
     }
 
