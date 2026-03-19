@@ -76,10 +76,10 @@ class SystemRestoreOrdersTest {
         systemRestoreOrders.aboutToSubmit(caseDetails, null);
 
         verify(ordersListRestoreService).restoreOrdersList(
-            eq(12345L),
-            eq(caseData),
-            eq(START_FROM_DATE),
-            eq(END_TO_DATE)
+            12345L,
+            caseData,
+            START_FROM_DATE,
+            END_TO_DATE
         );
     }
 
