@@ -11,6 +11,7 @@ public final class ErrorConstants {
     public static final String INCOMPATIBLE_REFERRAL_REASON = "The case state is incompatible with the selected referral reason";
     public static final String FAILED_TO_ANONYMISE_CASE = "Failed to generate an anonymised name for the case";
     public static final String MISSING_DUE_DATE = "Updated due date cannot be empty for Other option";
+    public static final String EMPTY_DATE_MODEL = "Please select an option from the list before continuing";
 
     private ErrorConstants() {
 

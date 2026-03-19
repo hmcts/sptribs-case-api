@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import static uk.gov.hmcts.sptribs.caseworker.util.ErrorConstants.EMPTY_DATE_MODEL;
 import static uk.gov.hmcts.sptribs.caseworker.util.ErrorConstants.MISSING_DUE_DATE;
 import static uk.gov.hmcts.sptribs.ciccase.model.GetAmendDateAsCompleted.MARKASCOMPLETED;
 
@@ -36,24 +37,30 @@ public class AmendOrderDueDates implements CcdPageConfiguration {
         List<ListValue<DateModel>> dueDates = details.getData().getOrderDueDates();
         final List<String> errors = new ArrayList<>();
 
-        for (ListValue<DateModel> listValue : dueDates) {
-            DateModel dateModel = listValue.getValue();
+        if (dueDates == null || dueDates.isEmpty()) {
+            errors.add(EMPTY_DATE_MODEL);
 
-            if (dateModel.getDueDateOptions() == null) {
-                dateModel.setDueDateOptions(DueDateOptions.OTHER);
-                dateModel.setUpdatedDueDate(dateModel.getDueDate());
-            }
+        } else {
 
-            if (dateModel.getDueDateOptions().equals(DueDateOptions.OTHER)
-                && dateModel.getUpdatedDueDate() == null) {
+            for (ListValue<DateModel> listValue : dueDates) {
+                DateModel dateModel = listValue.getValue();
 
-                if (dateModel.getOrderMarkAsCompleted().equals(Set.of(MARKASCOMPLETED))) {
+                if (dateModel.getDueDateOptions() == null) {
+                    dateModel.setDueDateOptions(DueDateOptions.OTHER);
                     dateModel.setUpdatedDueDate(dateModel.getDueDate());
-                } else {
-                    errors.add(MISSING_DUE_DATE);
                 }
-            }
 
+                if (dateModel.getDueDateOptions().equals(DueDateOptions.OTHER)
+                    && dateModel.getUpdatedDueDate() == null) {
+
+                    if (dateModel.getOrderMarkAsCompleted().equals(Set.of(MARKASCOMPLETED))) {
+                        dateModel.setUpdatedDueDate(dateModel.getDueDate());
+                    } else {
+                        errors.add(MISSING_DUE_DATE);
+                    }
+                }
+
+            }
         }
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()

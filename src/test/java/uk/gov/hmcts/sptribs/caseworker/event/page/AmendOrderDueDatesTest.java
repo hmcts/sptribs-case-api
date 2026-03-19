@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Set;
 
 import static org.camunda.bpm.model.xml.test.assertions.ModelAssertions.assertThat;
+import static uk.gov.hmcts.sptribs.caseworker.util.ErrorConstants.EMPTY_DATE_MODEL;
 import static uk.gov.hmcts.sptribs.caseworker.util.ErrorConstants.MISSING_DUE_DATE;
 import static uk.gov.hmcts.sptribs.ciccase.model.GetAmendDateAsCompleted.MARKASCOMPLETED;
 
@@ -150,6 +151,36 @@ class AmendOrderDueDatesTest {
         assertThat(actualDateModel.getDueDateOptions()).isEqualTo(DueDateOptions.DAY_COUNT_120);
         assertThat(response.getErrors()).isEmpty();
     }
+
+    @Test
+    void whenDateModelEmpty_thenAddErrorToResponse() {
+        //given
+        List<ListValue<DateModel>> dateModels = new ArrayList<>();
+
+        CaseDetails<CaseData, State> caseDetails = buildCaseDetails(dateModels);
+
+        //when
+        AboutToStartOrSubmitResponse<CaseData, State> response = amendOrderDueDates.midEvent(caseDetails, caseDetails);
+
+        //then
+        assertThat(response.getErrors().getFirst()).isEqualTo(EMPTY_DATE_MODEL);
+
+    }
+
+    @Test
+    void whenDateModelNull_thenAddErrorToResponse() {
+        //given
+
+        CaseDetails<CaseData, State> caseDetails = buildCaseDetails(null);
+
+        //when
+        AboutToStartOrSubmitResponse<CaseData, State> response = amendOrderDueDates.midEvent(caseDetails, caseDetails);
+
+        //then
+        assertThat(response.getErrors().getFirst()).isEqualTo(EMPTY_DATE_MODEL);
+
+    }
+
 
 
     private CaseDetails<CaseData, State> buildCaseDetails(List<ListValue<DateModel>> dateModels) {
