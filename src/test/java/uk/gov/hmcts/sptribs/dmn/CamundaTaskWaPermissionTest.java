@@ -24,11 +24,9 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static uk.gov.hmcts.sptribs.DmnDecisionTable.WA_TASK_PERMISSIONS_ST_CIC_CRIMINALINJURIESCOMPENSATION;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.COMPLETE_HEARING_OUTCOME_TASK;
-import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.CREATE_DUE_DATE;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.FOLLOW_UP_NONCOMPLIANCE_OF_DIR_TASK;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.ISSUE_CASE_TO_RESPONDENT_TASK;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.ISSUE_DECISION_NOTICE_TASK;
-import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.ISSUE_DUE_DATE;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.PROCESS_CASE_WITHDRAWAL_DIR_LISTED_TASK;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.PROCESS_CASE_WITHDRAWAL_DIR_TASK;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.PROCESS_CORRECTIONS_TASK;
@@ -429,16 +427,6 @@ class CamundaTaskWaPermissionTest extends DmnDecisionTableBaseUnitTest {
             ),
             Arguments.of(
                 STITCH_COLLATE_HEARING_BUNDLE_TASK,
-                DUMMY_CASE_DATA,
-                defaultAdminAndCtscTaskPermissions()
-            ),
-            Arguments.of(
-                CREATE_DUE_DATE,
-                DUMMY_CASE_DATA,
-                defaultAdminAndCtscTaskPermissions()
-            ),
-            Arguments.of(
-                ISSUE_DUE_DATE,
                 DUMMY_CASE_DATA,
                 defaultAdminAndCtscTaskPermissions()
             ),
