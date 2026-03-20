@@ -161,7 +161,7 @@ class CaseworkerIssueCaseIT {
                 .respondentEmail("respondent@test.com")
                 .applicantFullName("Applicant Name")
                 .applicantEmailAddress("applicant@test.com")
-                .respondentBundleDueDate(LocalDate.now())
+                .respondentBundleDueDate(LocalDate.now().plusDays(1))
                 .build()
         );
 

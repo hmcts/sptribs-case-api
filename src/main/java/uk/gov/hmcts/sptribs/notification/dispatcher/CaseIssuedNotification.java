@@ -33,7 +33,6 @@ public class CaseIssuedNotification implements PartiesNotification {
     private final NotificationHelper notificationHelper;
 
     private static final int DOC_ATTACH_LIMIT = 5;
-    private static final int NUMBER_OF_DAYS_IN_WINDOW = 42;
 
     @Override
     public void sendToSubject(final CaseData caseData, final String caseNumber) {
@@ -127,7 +126,6 @@ public class CaseIssuedNotification implements PartiesNotification {
 
     private String buildTimeString(boolean isOutOfTimeRange, LocalDate dueDate) {
 
-        //probs need to format date better
         if (isOutOfTimeRange) {
             return String.format("Out of time appeal - You should provide the tribunal with a case bundle by %s. "
                 + "Do not issue to the Subject/Applicant/Representative until we notify you the appeal has been admitted.", dueDate);

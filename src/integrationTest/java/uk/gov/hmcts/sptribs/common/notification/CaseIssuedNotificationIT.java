@@ -342,7 +342,7 @@ public class CaseIssuedNotificationIT {
     }
 
     @Test
-    void shouldSendEmailToRespondentWithDocument() {
+    void shouldSendEmailToRespondentWithDocumentDateInTime() {
         final String documentLabel =
             "[Document 1.pdf A - First decision](http://exui.net/documents/5e32a0d2-9b37-4548-b007-b9b2eb580d0a/binary)";
         final DynamicListElement listItem = DynamicListElement
@@ -395,6 +395,78 @@ public class CaseIssuedNotificationIT {
             CIC_CASE_RESPONDENT_NAME, "Respondent Name",
             CIC_BUNDLE_DUE_DATE_TEXT, "You should provide the tribunal and the Subject/Applicant/Representative "
                 + "with a case bundle by " + today
+        );
+
+        caseIssuedNotification.sendToRespondent(data, TEST_CASE_ID.toString());
+
+        verify(notificationServiceCIC).sendEmail(notificationRequestCaptor.capture(), eq(selectedDocuments), eq(TEST_CASE_ID.toString()));
+
+        NotificationRequest notificationRequest = notificationRequestCaptor.getValue();
+
+        assertThat(notificationRequest.getDestinationAddress())
+            .isEqualTo("test@email.com");
+        assertThat(notificationRequest.getTemplate())
+            .isEqualTo(CASE_ISSUED_RESPONDENT_EMAIL_UPDATED);
+        assertThat(notificationRequest.getTemplateVars())
+            .containsAllEntriesOf(expectedTemplateVars);
+        assertThat(notificationRequest.getUploadedDocuments())
+            .isNotNull();
+    }
+
+    @Test
+    void shouldSendEmailToRespondentWithDocumentDateOutOfTime() {
+        final String documentLabel =
+            "[Document 1.pdf A - First decision](http://exui.net/documents/5e32a0d2-9b37-4548-b007-b9b2eb580d0a/binary)";
+        final DynamicListElement listItem = DynamicListElement
+            .builder()
+            .label(documentLabel)
+            .code(UUID.randomUUID())
+            .build();
+        final Document document = Document.builder()
+            .categoryId("A")
+            .filename("Document 1.pdf")
+            .binaryUrl("http://exui.net/documents/5e32a0d2-9b37-4548-b007-b9b2eb580d0a/binary")
+            .url("http://exui.net/documents/5e32a0d2-9b37-4548-b007-b9b2eb580d0a")
+            .build();
+
+        final CaseworkerCICDocument cicDocument = CaseworkerCICDocument.builder()
+            .documentLink(document)
+            .documentEmailContent("Description")
+            .documentCategory(DocumentType.EVIDENCE_CORRESPONDENCE_FROM_THE_APPELLANT)
+            .build();
+        final List<ListValue<CaseworkerCICDocument>> applicantCaseDocuments =
+            List.of(ListValue.<CaseworkerCICDocument>builder().value(cicDocument).build());
+        final List<CaseworkerCICDocument> selectedDocuments = List.of(cicDocument);
+
+        final List<DynamicListElement> listItems = new ArrayList<>();
+        listItems.add(listItem);
+
+        final DynamicMultiSelectList documentList = new DynamicMultiSelectList();
+        documentList.setListItems(listItems);
+        documentList.setValue(listItems);
+
+        LocalDate todayMinusOne = LocalDate.now().minusDays(1);
+        final CaseData data = CaseData.builder()
+            .cicCase(CicCase.builder()
+                .fullName("Subject Name")
+                .respondentName("Respondent Name")
+                .alternativeRespondentEmail("test@email.com")
+                .applicantDocumentsUploaded(applicantCaseDocuments)
+                .respondentBundleDueDate(todayMinusOne)
+                .build())
+            .caseIssue(CaseIssue.builder()
+                .documentList(documentList)
+                .build())
+            .build();
+
+        final Map<String, Object> expectedTemplateVars = Map.of(
+            TRIBUNAL_NAME, CIC,
+            CIC_CASE_NUMBER, TEST_CASE_ID.toString(),
+            CIC_CASE_SUBJECT_NAME, "Subject Name",
+            CONTACT_NAME, "Respondent Name",
+            CIC_CASE_RESPONDENT_NAME, "Respondent Name",
+            CIC_BUNDLE_DUE_DATE_TEXT, "Out of time appeal - You should provide the tribunal with a case bundle by "
+                + todayMinusOne + ". Do not issue to the Subject/Applicant/Representative until we notify you the appeal has been admitted."
         );
 
         caseIssuedNotification.sendToRespondent(data, TEST_CASE_ID.toString());
