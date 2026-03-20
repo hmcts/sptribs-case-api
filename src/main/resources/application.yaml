@@ -234,6 +234,9 @@ feature:
   clean-deleted-documents-task:
     enabled: ${CLEAN_DELETED_DOCUMENTS_ENABLED:false}
     caseReference: ${CLEAN_DELETED_DOCUMENTS_TEST_CASE_REF:}
+  restore-orders-task:
+    enabled: ${RESTORE_ORDERS_TASK_ENABLED:false}
+    caseReference: ${RESTORE_ORDERS_TASK_TEST_CASE_REF:}
 
 caseinfo:
   apps:
