@@ -249,7 +249,6 @@ def sonarExclusions = [
   '**/uk/gov/hmcts/sptribs/common/event/UpdateCaseDataEvent.java',
   '**/uk/gov/hmcts/sptribs/common/service/CaseDataFieldService.java'
 ]
-
 sonarqube {
   properties {
     property "sonar.projectName", "sptribs :: sptribs-case-api"

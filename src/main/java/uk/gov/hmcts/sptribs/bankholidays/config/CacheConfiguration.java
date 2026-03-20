@@ -14,11 +14,13 @@ import java.util.concurrent.TimeUnit;
 @EnableCaching
 public class CacheConfiguration {
 
+    private static final int SIX_MONTHS = 6 * 30;
+
     @Bean
     public CacheManager bankHolidayCacheManager() {
         CaffeineCacheManager manager = new CaffeineCacheManager("scottish_bank_holiday_cache");
         manager.setCaffeine(Caffeine.newBuilder()
-            .expireAfterWrite(24, TimeUnit.HOURS)
+            .expireAfterWrite(SIX_MONTHS, TimeUnit.DAYS)
             .maximumSize(1));
         return manager;
     }

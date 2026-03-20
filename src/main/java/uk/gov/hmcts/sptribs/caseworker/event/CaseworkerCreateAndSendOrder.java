@@ -79,7 +79,6 @@ public class CaseworkerCreateAndSendOrder implements CCDConfig<CaseData, State, 
     private static final CcdPageConfiguration createNewOrder = new CreateNewOrder();
     private static final CcdPageConfiguration editNewOrderContent = new EditNewOrderContentPage();
     private static final CcdPageConfiguration uploadOrder = new SendUploadOrder();
-    private static final CcdPageConfiguration orderDueDates = new SendOrderOrderDueDates();
     private static final CcdPageConfiguration previewOrder =
         new PreviewDraftOrder("previewCreateAndSendOrder", CASEWORKER_CREATE_AND_SEND_ORDER);
     private static final CcdPageConfiguration notifyParties = new SendOrderNotifyParties();
@@ -87,6 +86,7 @@ public class CaseworkerCreateAndSendOrder implements CCDConfig<CaseData, State, 
     private final ApplyAnonymity applyAnonymitySelect;
     private final DraftOrderFooter draftOrderFooter;
     private final NewOrderIssuedNotification newOrderIssuedNotification;
+    private final SendOrderOrderDueDates orderDueDates;
 
     @Override
     public void configure(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
@@ -168,7 +168,7 @@ public class CaseworkerCreateAndSendOrder implements CCDConfig<CaseData, State, 
         }
 
         final Order order = orderBuilder
-            .dueDateList(caseData.getCicCase().getOrderDueDates())
+            .dueDateList(caseData.getOrderDueDates())
             .parties(getRecipients(caseData.getCicCase()))
             .orderSentDate(LocalDate.now())
             .build();
@@ -184,7 +184,7 @@ public class CaseworkerCreateAndSendOrder implements CCDConfig<CaseData, State, 
         caseData.getCicCase().setOrderTemplateIssued(null);
         caseData.getCicCase().setOrderReminderYesOrNo(null);
 
-        caseData.getCicCase().setOrderDueDates(new ArrayList<>());
+        caseData.setOrderDueDates(new ArrayList<>());
         caseData.getCicCase().setFirstOrderDueDate(CicCaseFieldsUtil.calculateFirstDueDate(caseData.getCicCase().getOrderList()));
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
