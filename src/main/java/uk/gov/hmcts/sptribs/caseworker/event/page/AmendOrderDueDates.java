@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import static org.apache.commons.collections4.CollectionUtils.isEmpty;
 import static uk.gov.hmcts.sptribs.caseworker.util.ErrorConstants.EMPTY_DATE_MODEL;
 import static uk.gov.hmcts.sptribs.caseworker.util.ErrorConstants.MISSING_DUE_DATE;
 import static uk.gov.hmcts.sptribs.ciccase.model.GetAmendDateAsCompleted.MARKASCOMPLETED;
@@ -62,10 +63,6 @@ public class AmendOrderDueDates implements CcdPageConfiguration {
                 errors.add(MISSING_DUE_DATE);
             }
         }
-    }
-
-    private boolean isEmpty(List<?> list) {
-        return list == null || list.isEmpty();
     }
 
     private AboutToStartOrSubmitResponse<CaseData, State> buildResponse(
