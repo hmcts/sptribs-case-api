@@ -98,6 +98,7 @@ public class CicaCaseController {
     ) {
         log.info("Received request to get case by CICA reference: {}", cicaReference);
 
+        //update to ccd ref and do a call to idamiapi to get user details ...
         CicaCaseResponse response = cicaCaseService.getCaseByCicaReference(cicaReference);
 
         log.info("Successfully retrieved case with CICA reference: {}", cicaReference);
