@@ -37,31 +37,40 @@ public class AmendOrderDueDates implements CcdPageConfiguration {
         List<ListValue<DateModel>> dueDates = details.getData().getOrderDueDates();
         final List<String> errors = new ArrayList<>();
 
-        if (dueDates == null || dueDates.isEmpty()) {
+        if (isEmpty(dueDates)) {
             errors.add(EMPTY_DATE_MODEL);
+            return buildResponse(details, errors);
+        }
 
-        } else {
+        dueDates.forEach(dateModelListValue -> processDateModel(dateModelListValue.getValue(), errors));
 
-            for (ListValue<DateModel> listValue : dueDates) {
-                DateModel dateModel = listValue.getValue();
+        return buildResponse(details, errors);
+    }
 
-                if (dateModel.getDueDateOptions() == null) {
-                    dateModel.setDueDateOptions(DueDateOptions.OTHER);
-                    dateModel.setUpdatedDueDate(dateModel.getDueDate());
-                }
+    private void processDateModel(DateModel dateModel, List<String> errors) {
+        if (dateModel.getDueDateOptions() == null) {
+            dateModel.setDueDateOptions(DueDateOptions.OTHER);
+            dateModel.setUpdatedDueDate(dateModel.getDueDate());
+        }
 
-                if (dateModel.getDueDateOptions().equals(DueDateOptions.OTHER)
-                    && dateModel.getUpdatedDueDate() == null) {
+        if (dateModel.getDueDateOptions().equals(DueDateOptions.OTHER)
+            && dateModel.getUpdatedDueDate() == null) {
 
-                    if (dateModel.getOrderMarkAsCompleted().equals(Set.of(MARKASCOMPLETED))) {
-                        dateModel.setUpdatedDueDate(dateModel.getDueDate());
-                    } else {
-                        errors.add(MISSING_DUE_DATE);
-                    }
-                }
-
+            if (dateModel.getOrderMarkAsCompleted().equals(Set.of(MARKASCOMPLETED))) {
+                dateModel.setUpdatedDueDate(dateModel.getDueDate());
+            } else {
+                errors.add(MISSING_DUE_DATE);
             }
         }
+    }
+
+    private boolean isEmpty(List<?> list) {
+        return list == null || list.isEmpty();
+    }
+
+    private AboutToStartOrSubmitResponse<CaseData, State> buildResponse(
+        CaseDetails<CaseData, State> details,
+        List<String> errors) {
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(details.getData())
