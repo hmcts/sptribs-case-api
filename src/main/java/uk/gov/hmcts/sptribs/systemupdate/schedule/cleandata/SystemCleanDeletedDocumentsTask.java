@@ -6,8 +6,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.idam.client.models.User;
+import uk.gov.hmcts.sptribs.common.repositories.CaseEventRepository;
 import uk.gov.hmcts.sptribs.idam.IdamService;
-import uk.gov.hmcts.sptribs.systemupdate.repository.CaseEventRepository;
 import uk.gov.hmcts.sptribs.systemupdate.service.CcdManagementException;
 import uk.gov.hmcts.sptribs.systemupdate.service.CcdUpdateService;
 
@@ -100,6 +100,4 @@ public class SystemCleanDeletedDocumentsTask implements Runnable {
             log.error("Deserialization failed for case id: {}, continuing to next case", caseId);
         }
     }
-
-
 }
