@@ -19,7 +19,7 @@ public class SelectBundles implements CcdPageConfiguration {
         pageBuilder.page("selectBundles", this::midEvent)
             .pageLabel("Select bundles to delete")
             .complex(CaseData::getCicCase)
-            .optional(CicCase::getRemoveBundlesList, "","","", "", "")
+            .optional(CicCase::getRemoveBundlesList)
             .done();
     }
 
