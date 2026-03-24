@@ -60,13 +60,15 @@ public class CaseworkerRemoveBundles implements CCDConfig<CaseData, State, UserR
             .aboutToSubmitCallback(this::aboutToSubmit)
             .submittedCallback(this::submitted)
             .grant(CREATE_READ_UPDATE,
-                ST_CIC_CASEWORKER,
-                ST_CIC_SENIOR_CASEWORKER,
                 ST_CIC_HEARING_CENTRE_ADMIN,
                 ST_CIC_HEARING_CENTRE_TEAM_LEADER,
+                SUPER_USER)
+            .grantHistoryOnly(
+                ST_CIC_CASEWORKER,
+                ST_CIC_SENIOR_CASEWORKER,
                 ST_CIC_SENIOR_JUDGE,
-                SUPER_USER,
-                ST_CIC_JUDGE));
+                ST_CIC_JUDGE
+                ));
 
         selectBundles.addTo(pageBuilder);
     }
