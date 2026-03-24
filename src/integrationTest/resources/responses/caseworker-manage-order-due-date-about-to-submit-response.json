@@ -1,5 +1,6 @@
 {
   "data": {
+    "orderDueDates": [],
     "cicCaseOrderDynamicList": {
       "value": {
         "label": "testId"
@@ -11,7 +12,6 @@
       ],
       "valueLabel": "testId"
     },
-    "cicCaseOrderDueDates": [],
     "cicCaseOrderList": [
       {
         "id": "testId",
@@ -19,7 +19,8 @@
           "dueDateList": [
             {
               "value": {
-                "dueDate": "2024-05-11",
+                "dueDate": "2026-11-12",
+                "dueDateOptions": "120 days",
                 "information": "information"
               }
             }
@@ -37,6 +38,6 @@
         }
       }
     ],
-    "cicCaseFirstOrderDueDate": "2024-05-11"
+    "cicCaseFirstOrderDueDate": "2026-11-12"
   }
 }

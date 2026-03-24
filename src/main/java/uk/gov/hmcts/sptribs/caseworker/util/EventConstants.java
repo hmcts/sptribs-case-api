@@ -23,6 +23,7 @@ public final class EventConstants {
     public static final String CASEWORKER_CREATE_DRAFT_ORDER = "create-draft-order";
     public static final String CASEWORKER_CREATE_AND_SEND_ORDER = "create-and-send-order";
     public static final String CASEWORKER_CREATE_HEARING_SUMMARY = "create-hearing-summary";
+    public static final String CASEWORKER_DELETE_DRAFT_ORDER = "caseworker-delete-draft-order";
     public static final String CASEWORKER_EDIT_HEARING_SUMMARY = "edit-hearing-summary";
     public static final String CASEWORKER_EDIT_CASE = "edit-case";
     public static final String CASEWORKER_EDIT_DRAFT_ORDER = "caseworker-edit-draft-order";

@@ -87,6 +87,4 @@ public class OrderService {
         caseData.getCicCase().setOrderTemplateIssued(generalOrderDocument);
         return caseData;
     }
-
-
 }
