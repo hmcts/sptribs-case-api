@@ -13,7 +13,6 @@ import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.ccd.sdk.type.DynamicList;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
-import uk.gov.hmcts.sptribs.caseworker.model.DateModel;
 import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderCIC;
 import uk.gov.hmcts.sptribs.caseworker.model.Order;
 import uk.gov.hmcts.sptribs.caseworker.model.OrderIssuingType;
@@ -118,6 +117,13 @@ public class CicCase {
     )
     private YesOrNo anonymityAlreadyApplied;
 
+    @CCD (
+        label = "CICA Bundle Due Date",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private LocalDate respondentBundleDueDate;
+
     @CCD(
         label = "How would you like to issue an order?",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
@@ -139,15 +145,9 @@ public class CicCase {
 
     @CCD(
         label = "Draft order",
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+        access = {CollectionDefaultAccess.class}
     )
     private List<ListValue<DraftOrderCIC>> draftOrderCICList;
-
-    @CCD(
-        label = "Due Date",
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
-    )
-    private List<ListValue<DateModel>> orderDueDates;
 
     @CCD(
         typeOverride = MultiSelectList,
@@ -632,6 +632,11 @@ public class CicCase {
     private List<ListValue<CaseworkerCICDocument>> removedDocumentList;
 
     @CCD(
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private List<ListValue<DraftOrderCIC>> removedDraftList;
+
+    @CCD(
         label = "Final Decision Documents",
         access = {CollectionDefaultAccess.class, CaseworkerAndSuperUserAccess.class}
     )
@@ -709,4 +714,5 @@ public class CicCase {
     )
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate firstOrderDueDate;
+
 }

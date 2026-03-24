@@ -4,6 +4,7 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
+import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderCIC;
 import uk.gov.hmcts.sptribs.caseworker.model.Order;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
@@ -12,8 +13,8 @@ import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 
 import static uk.gov.hmcts.sptribs.caseworker.util.DocumentManagementUtil.addToRemovedDocuments;
 
@@ -93,15 +94,31 @@ public final class OrderDocumentListUtil {
 
     private static boolean removeDocumentAndCheckIfOrderEmpty(ListValue<Order> order, Document documentLink) {
 
-        List<ListValue<CICDocument>> uploadedFiles = order.getValue().getUploadedFile();
+        List<ListValue<CICDocument>> userUploadedFiles = order.getValue().getUploadedFile() != null
+            ? order.getValue().getUploadedFile()
+            : Collections.emptyList();
 
-        if (CollectionUtils.isEmpty(uploadedFiles)) {
+        DraftOrderCIC draftOrder = order.getValue().getDraftOrder();
+
+        Document preGeneratedDocument = draftOrder != null
+            ? draftOrder.getTemplateGeneratedDocument()
+            : null;
+
+        if (userUploadedFiles.isEmpty() && preGeneratedDocument == null) {
             return true;
         }
 
-        uploadedFiles.removeIf(file -> Objects.equals(documentLink, file.getValue().getDocumentLink()));
+        if (!userUploadedFiles.isEmpty()) {
+            userUploadedFiles.removeIf(file ->
+                documentLink.equals(file.getValue().getDocumentLink()));
+        }
 
-        return uploadedFiles.isEmpty();
+        if (preGeneratedDocument != null && preGeneratedDocument.equals(documentLink)) {
+            order.getValue().setDraftOrder(null);
+        }
+
+        return userUploadedFiles.isEmpty()
+            && order.getValue().getDraftOrder() == null;
     }
 
 }

@@ -6,7 +6,7 @@
       "document_binary_url": "TestUrl/binary",
       "category_id": "CIC"
     },
-    "cicCaseOrderDueDates": [],
+    "orderDueDates": [],
     "cicCaseOrderList": [
       {
         "id": "1",
@@ -14,7 +14,8 @@
           "dueDateList": [
             {
               "value": {
-                "dueDate": "${json-unit.any-string}",
+                "dueDate": "2026-09-04",
+                "dueDateOptions": "Other",
                 "information": "due date for test"
               }
             }
