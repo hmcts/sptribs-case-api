@@ -135,7 +135,7 @@ public class CaseworkerRemoveBundles implements CCDConfig<CaseData, State, UserR
             .build();
     }
 
-    public List<String> collectTimestampsOfBundlesToDelete(List<DynamicListElement> selectedBundleLabels) {
+    private List<String> collectTimestampsOfBundlesToDelete(List<DynamicListElement> selectedBundleLabels) {
         List<String> timestampsOfBundlesToDelete = new ArrayList<>();
         for (DynamicListElement selectedBundleLabel : selectedBundleLabels) {
             String bundleTimestamp = selectedBundleLabel.getLabel().split(DOUBLE_HYPHEN)[0].trim();
@@ -144,7 +144,7 @@ public class CaseworkerRemoveBundles implements CCDConfig<CaseData, State, UserR
         return timestampsOfBundlesToDelete;
     }
 
-    public void fixListValueIds(List<ListValue<Bundle>> bundles, List<ListValue<BundleIdAndTimestamp>> bundleIdAndTimestamps) {
+    private void fixListValueIds(List<ListValue<Bundle>> bundles, List<ListValue<BundleIdAndTimestamp>> bundleIdAndTimestamps) {
         final AtomicInteger listValueIndex = new AtomicInteger(0);
         for (ListValue<Bundle> bundle : bundles) {
             bundleIdAndTimestamps.get(listValueIndex.get()).setId(String.valueOf(listValueIndex.incrementAndGet()));
