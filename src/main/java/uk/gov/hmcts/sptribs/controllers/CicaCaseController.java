@@ -99,8 +99,6 @@ public class CicaCaseController {
     ) {
         log.info("Received request to get case by CICA reference: {}", cicaReference);
 
-        //IdamClient
-
         CicaCaseResponse response = cicaCaseService.getCaseByCicaReference(cicaReference);
 
         log.info("Successfully retrieved case with CICA reference: {}", cicaReference);
