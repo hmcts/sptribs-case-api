@@ -1,7 +1,7 @@
 package uk.gov.hmcts.sptribs.caseworker.event;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
@@ -13,8 +13,10 @@ import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.event.page.AmendOrderDueDates;
 import uk.gov.hmcts.sptribs.caseworker.event.page.ManageSelectOrders;
+import uk.gov.hmcts.sptribs.caseworker.model.DateModel;
 import uk.gov.hmcts.sptribs.caseworker.model.Order;
 import uk.gov.hmcts.sptribs.caseworker.service.OrderService;
+import uk.gov.hmcts.sptribs.ciccase.CicCaseFieldsUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
@@ -22,6 +24,8 @@ import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 
+import java.time.Clock;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -45,13 +49,14 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 
 @Component
 @Slf4j
+@RequiredArgsConstructor
 public class CaseWorkerManageOrderDueDate implements CCDConfig<CaseData, State, UserRole> {
 
     private static final CcdPageConfiguration manageSelectOrderTemplates = new ManageSelectOrders();
     private static final CcdPageConfiguration amendOrderDueDates = new AmendOrderDueDates();
 
-    @Autowired
-    private OrderService orderService;
+    private final OrderService orderService;
+    private final Clock clock;
 
     @Override
     public void configure(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
@@ -92,21 +97,43 @@ public class CaseWorkerManageOrderDueDate implements CCDConfig<CaseData, State, 
         final String selectedOrder = caseData.getCicCase().getOrderDynamicList().getValue().getLabel();
         final String id = getId(selectedOrder);
         final List<ListValue<Order>> orderList = caseData.getCicCase().getOrderList();
+
+        updateDueDate(caseData);
+
         for (ListValue<Order> orderListValue : orderList) {
             if (id != null && id.equals(orderListValue.getId())) {
                 Order order = orderListValue.getValue();
-                order.setDueDateList(cicCase.getOrderDueDates());
+                order.setDueDateList(caseData.getOrderDueDates());
                 orderListValue.setValue(order);
                 break;
             }
         }
         caseData.getCicCase().setOrderList(orderList);
-        cicCase.setOrderDueDates(new ArrayList<>());
-        cicCase.setFirstOrderDueDate(cicCase.calculateFirstDueDate());
+        caseData.setOrderDueDates(new ArrayList<>());
+        cicCase.setFirstOrderDueDate(CicCaseFieldsUtil.calculateFirstDueDate(caseData.getCicCase().getOrderList()));
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .state(details.getState())
             .data(caseData)
             .build();
+    }
+
+
+    private void updateDueDate(CaseData caseData) {
+        List<ListValue<DateModel>> dueDates = caseData.getOrderDueDates();
+
+        for (ListValue<DateModel> listValue : dueDates) {
+
+            Long dueDateOffset = listValue.getValue().getDueDateOptions().getAmount();
+
+            if (dueDateOffset != null) {
+                listValue.getValue().setDueDate((LocalDate.now(clock).plusDays(dueDateOffset)));
+            } else {
+                listValue.getValue().setDueDate(listValue.getValue().getUpdatedDueDate());
+            }
+
+            listValue.getValue().setUpdatedDueDate(null);
+
+        }
     }
 
     public SubmittedCallbackResponse submitted(CaseDetails<CaseData, State> details,

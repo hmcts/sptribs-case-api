@@ -24,6 +24,7 @@ import uk.gov.hmcts.sptribs.common.config.WebMvcConfig;
 import uk.gov.hmcts.sptribs.document.model.CICDocument;
 import uk.gov.hmcts.sptribs.testutil.IdamWireMock;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
@@ -41,6 +42,7 @@ import static uk.gov.hmcts.sptribs.testutil.TestConstants.AUTHORIZATION;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.SERVICE_AUTHORIZATION;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.SUBMITTED_URL;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_AUTHORIZATION_TOKEN;
+import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.buildOrderListValueWithDraftOrder;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.callbackRequest;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.caseData;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getCICDocumentList;
@@ -64,6 +66,9 @@ public class CaseworkerDocumentManagementRemoveIT {
 
     private static final String CASEWORKER_DOCUMENT_MANAGEMENT_REMOVE_ABOUT_TO_START_RESPONSE =
         "classpath:responses/caseworker-document-management-remove-about-to-start-response.json";
+
+    private static final String CASEWORKER_DOCUMENT_MANAGEMENT_REMOVE_ABOUT_TO_SUBMIT_RESPONSE =
+        "classpath:responses/caseworker-document-management-remove-about-to-submit-response.json";
 
     private static final String CONFIRMATION_HEADER = "$.confirmation_header";
 
@@ -159,6 +164,48 @@ public class CaseworkerDocumentManagementRemoveIT {
             .inPath("$.data.cicCaseRemovedDocumentList")
             .isArray()
             .isEmpty();
+    }
+
+    @Test
+    void givenFurtherDocumentToDelete_thenOrderDocumentsNotEffected() throws Exception {
+
+        ListValue<Order> orderListValue = buildOrderListValueWithDraftOrder("url1", "url1", "name1");
+        List<ListValue<Order>> ordersList = new ArrayList<>();
+        ordersList.add(orderListValue);
+
+
+        final CaseData caseData = CaseData.builder()
+            .cicCase(CicCase.builder()
+                .removedDocumentList(getCaseworkerCICDocumentList())
+                .orderList(ordersList)
+                .build()
+            )
+            .furtherUploadedDocuments(getCaseworkerCICDocumentList())
+            .build();
+
+        String response = mockMvc.perform(post(ABOUT_TO_SUBMIT_URL)
+                .contentType(APPLICATION_JSON)
+                .header(SERVICE_AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
+                .header(AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
+                .content(objectMapper.writeValueAsString(
+                    callbackRequest(
+                        caseData,
+                        CASEWORKER_DOCUMENT_MANAGEMENT_REMOVE)))
+                .accept(APPLICATION_JSON))
+            .andExpect(
+                status().isOk())
+            .andReturn()
+            .getResponse()
+            .getContentAsString();
+
+        assertThatJson(response)
+            .inPath("$.data.furtherUploadedDocuments")
+            .isArray()
+            .isEmpty();
+
+        assertThatJson(response)
+            .when(IGNORING_EXTRA_FIELDS)
+            .isEqualTo(json(expectedResponse(CASEWORKER_DOCUMENT_MANAGEMENT_REMOVE_ABOUT_TO_SUBMIT_RESPONSE)));
     }
 
     @Test
