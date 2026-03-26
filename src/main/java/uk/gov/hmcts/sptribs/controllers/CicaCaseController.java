@@ -19,8 +19,12 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import uk.gov.hmcts.reform.idam.client.IdamClient;
+import uk.gov.hmcts.reform.idam.client.models.User;
+import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 import uk.gov.hmcts.sptribs.ciccase.service.CicaCaseService;
 import uk.gov.hmcts.sptribs.controllers.model.CicaCaseResponse;
+import uk.gov.hmcts.sptribs.idam.IdamService;
 
 import static uk.gov.hmcts.sptribs.common.config.ControllerConstants.AUTHORIZATION;
 import static uk.gov.hmcts.sptribs.common.config.ControllerConstants.SERVICE_AUTHORIZATION;
@@ -34,6 +38,7 @@ import static uk.gov.hmcts.sptribs.common.config.ControllerConstants.SERVICE_AUT
 public class CicaCaseController {
 
     private final CicaCaseService cicaCaseService;
+    private final IdamService idamService;
 
     @GetMapping(value = "/{cicaReference}", produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(
@@ -97,6 +102,17 @@ public class CicaCaseController {
         String cicaReference
     ) {
         log.info("Received request to get case by CICA reference: {}", cicaReference);
+
+
+        User user = idamService.retrieveUser(authorisation);
+
+        //do we want to show a dashboard of nothing or actually give them a message
+        // saying they cant see because email is not in case, etc
+        System.out.println(user.getUserDetails().getEmail());
+
+        //check db with cica number and check the case data if the email exists in there.
+
+        //if true return required docs, if false return auth error.
 
         CicaCaseResponse response = cicaCaseService.getCaseByCicaReference(cicaReference);
 
