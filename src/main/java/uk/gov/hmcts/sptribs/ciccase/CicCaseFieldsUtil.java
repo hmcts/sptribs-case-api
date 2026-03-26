@@ -80,11 +80,11 @@ public final class CicCaseFieldsUtil {
     public static void removeRepresentative(CaseData data) {
         Set<RepresentativeCIC> representativeCIC = data.getCicCase().getRepresentativeCIC();
         if (representativeCIC != null) {
-            representativeCIC = new HashSet<>();
+            data.getCicCase().setRepresentativeCIC(new HashSet<>());
         }
         Set<RepresentativeCIC> notifyPartyRepresentative = data.getCicCase().getNotifyPartyRepresentative();
         if (notifyPartyRepresentative != null) {
-            notifyPartyRepresentative = new HashSet<>();
+            data.getCicCase().setNotifyPartyRepresentative(new HashSet<>());
         }
         Set<NotificationParties> hearingNotificationParties = data.getCicCase().getHearingNotificationParties();
         if (hearingNotificationParties != null) {
@@ -98,7 +98,7 @@ public final class CicCaseFieldsUtil {
                     temp.add(partyCIC);
                 }
             }
-            contactPartiesCIC = temp;
+            data.getCicCase().setContactPartiesCIC(temp);
         }
 
         data.getCicCase().setRepresentativeFullName("");
@@ -112,11 +112,11 @@ public final class CicCaseFieldsUtil {
     public static void removeApplicant(CaseData data) {
         Set<ApplicantCIC> applicantCIC = data.getCicCase().getApplicantCIC();
         if (applicantCIC != null) {
-            applicantCIC = new HashSet<>();
+            data.getCicCase().setApplicantCIC(new HashSet<>());
         }
         Set<ApplicantCIC> notifyPartyApplicant = data.getCicCase().getNotifyPartyApplicant();
         if (notifyPartyApplicant != null) {
-            notifyPartyApplicant = new HashSet<>();
+            data.getCicCase().setNotifyPartyApplicant(new HashSet<>());
         }
         Set<NotificationParties> hearingNotificationParties = data.getCicCase().getHearingNotificationParties();
         if (hearingNotificationParties != null) {
