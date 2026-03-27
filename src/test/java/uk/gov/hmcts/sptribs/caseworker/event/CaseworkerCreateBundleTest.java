@@ -71,9 +71,6 @@ class CaseworkerCreateBundleTest {
     @Mock
     private Clock clock;
 
-    @Captor
-    private ArgumentCaptor<BundleCallback> bundleRequestCaptor;
-
     @Test
     void shouldAddPublishToCamundaWhenWAIsEnabled() {
 
@@ -86,18 +83,18 @@ class CaseworkerCreateBundleTest {
             .contains(CREATE_BUNDLE);
 
         assertThat(getEventsFrom(configBuilder).values())
-                .extracting(Event::isPublishToCamunda)
-                .contains(true);
+            .extracting(Event::isPublishToCamunda)
+            .contains(true);
 
         assertThat(getEventsFrom(configBuilder).values())
-                .extracting(Event::getGrants)
-                .extracting(map -> map.containsKey(ST_CIC_WA_CONFIG_USER))
-                .contains(true);
+            .extracting(Event::getGrants)
+            .extracting(map -> map.containsKey(ST_CIC_WA_CONFIG_USER))
+            .contains(true);
 
         assertThat(getEventsFrom(configBuilder).values())
-                .extracting(Event::getGrants)
-                .extracting(map -> map.get(ST_CIC_WA_CONFIG_USER))
-                .contains(Permissions.CREATE_READ_UPDATE);
+            .extracting(Event::getGrants)
+            .extracting(map -> map.get(ST_CIC_WA_CONFIG_USER))
+            .contains(Permissions.CREATE_READ_UPDATE);
     }
 
     @Test
@@ -260,8 +257,8 @@ class CaseworkerCreateBundleTest {
 
         final CaseData responseData = response.getData();
         assertThat(responseData)
-                .isNotNull()
-                .isEqualTo(caseDetails.getData());
+            .isNotNull()
+            .isEqualTo(caseDetails.getData());
         assertThat(responseData.getCaseBundles()).isNotNull();
         assertThat(responseData.getCaseDocuments()).isNull();
         assertThat(responseData.getMultiBundleConfiguration()).isNull();
@@ -318,7 +315,7 @@ class CaseworkerCreateBundleTest {
             final CaseData dataAtMockTime = callbackAtMockTime.getCaseDetails().getData();
             // Should use old logic - documents should be in caseDocuments
             assertThat(dataAtMockTime.getCaseDocuments()).hasSize(4);
-            // furtherCaseDocuments should be null as no Cica Upload date
+            // furtherCaseDocuments should have the additional documents
             assertThat(dataAtMockTime.getFurtherCaseDocuments()).hasSize(4);
             assertThat(dataAtMockTime.getBundleConfiguration()).isEqualTo(MULTI_BUNDLE_CONFIG);
             assertThat(dataAtMockTime.getMultiBundleConfiguration()).isEqualTo(List.of(MULTI_BUNDLE_CONFIG));
@@ -334,8 +331,8 @@ class CaseworkerCreateBundleTest {
 
         final CaseData responseData = response.getData();
         assertThat(responseData)
-                .isNotNull()
-                .isEqualTo(caseDetails.getData());
+            .isNotNull()
+            .isEqualTo(caseDetails.getData());
         assertThat(responseData.getCaseBundles()).isNotNull();
         assertThat(responseData.getCaseDocuments()).isNull();
         assertThat(responseData.getMultiBundleConfiguration()).isNull();
