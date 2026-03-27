@@ -1,7 +1,10 @@
 package uk.gov.hmcts.sptribs.caseworker.event;
 
+import org.jspecify.annotations.NonNull;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -10,6 +13,7 @@ import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.Event;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
+import uk.gov.hmcts.sptribs.caseworker.model.DocumentManagement;
 import uk.gov.hmcts.sptribs.caseworker.model.YesNo;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
@@ -22,9 +26,11 @@ import uk.gov.hmcts.sptribs.document.bundling.model.BundleCallback;
 import uk.gov.hmcts.sptribs.document.bundling.model.BundleIdAndTimestamp;
 import uk.gov.hmcts.sptribs.document.bundling.model.MultiBundleConfig;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
+import uk.gov.hmcts.sptribs.document.model.DocumentType;
 
 import java.time.Clock;
 import java.time.Instant;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
@@ -43,6 +49,7 @@ import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.getEventsFrom;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.LOCAL_DATE_TIME;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.caseData;
+import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getCaseworkerCICDocument;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getCaseworkerCICDocumentList;
 import static uk.gov.hmcts.sptribs.testutil.TestEventConstants.CREATE_BUNDLE;
 
@@ -63,6 +70,9 @@ class CaseworkerCreateBundleTest {
 
     @Mock
     private Clock clock;
+
+    @Captor
+    private ArgumentCaptor<BundleCallback> bundleRequestCaptor;
 
     @Test
     void shouldAddPublishToCamundaWhenWAIsEnabled() {
@@ -196,6 +206,153 @@ class CaseworkerCreateBundleTest {
         //i.e. not in their respective child objects as well (CicCase.applicantDocumentsUploaded)
         assertThat(responseData.getCaseDocuments()).isNull();
         assertThat(responseData.getMultiBundleConfiguration()).isNull();
+    }
+
+    @Test
+    void shouldSuccessfullyCreateBundleWithNewOrderEnabled_noCicaUploadDate() {
+        final CaseData caseData = caseData();
+        caseData.setNewBundleOrderEnabled(YesNo.YES);
+
+        final CicCase cicCase = CicCase.builder()
+            .initialCicaDecisionDate(null)
+            .build();
+
+        LocalDate applicantDocsDate = LocalDate.of(2026, 1, 10);
+        List<ListValue<CaseworkerCICDocument>> allApplicantDocs = setApplicantDocsForDate(applicantDocsDate);
+
+        cicCase.setApplicantDocumentsUploaded(allApplicantDocs);
+
+        final List<ListValue<CaseworkerCICDocument>> caseworkerDocs =
+            getCaseworkerCICDocumentList("caseworkerDoc.docx");
+        DocumentManagement documentManagement = DocumentManagement.builder().caseworkerCICDocument(caseworkerDocs).build();
+
+        caseData.setAllDocManagement(documentManagement);
+        caseData.setCicCase(cicCase);
+
+        CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+        caseDetails.setId(TEST_CASE_ID);
+        caseDetails.setCreatedDate(LOCAL_DATE_TIME);
+        caseDetails.setData(caseData);
+
+        final Bundle bundle = Bundle.builder().build();
+        when(bundlingService.getMultiBundleConfig()).thenCallRealMethod();
+        when(bundlingService.getMultiBundleConfigs()).thenCallRealMethod();
+
+        when(bundlingService.createBundle(any(BundleCallback.class))).thenAnswer(callback -> {
+            final BundleCallback callbackAtMockTime = (BundleCallback) callback.getArguments()[0];
+
+            final CaseData dataAtMockTime = callbackAtMockTime.getCaseDetails().getData();
+            // Should use old logic - documents should be in caseDocuments
+            assertThat(dataAtMockTime.getCaseDocuments()).hasSize(4);
+            // furtherCaseDocuments should be null as no Cica Upload date
+            assertThat(dataAtMockTime.getFurtherCaseDocuments()).isNull();
+            assertThat(dataAtMockTime.getBundleConfiguration()).isEqualTo(MULTI_BUNDLE_CONFIG);
+            assertThat(dataAtMockTime.getMultiBundleConfiguration()).isEqualTo(List.of(MULTI_BUNDLE_CONFIG));
+            return List.of(bundle);
+        });
+
+        AboutToStartOrSubmitResponse<CaseData, State> response =
+            caseworkerCreateBundle.aboutToSubmit(caseDetails, CaseDetails.<CaseData, State>builder().build());
+
+        verify(bundlingService).getMultiBundleConfig();
+        verify(bundlingService).getMultiBundleConfigs();
+        verify(bundlingService).buildBundleListValues(anyList());
+
+        final CaseData responseData = response.getData();
+        assertThat(responseData)
+                .isNotNull()
+                .isEqualTo(caseDetails.getData());
+        assertThat(responseData.getCaseBundles()).isNotNull();
+        assertThat(responseData.getCaseDocuments()).isNull();
+        assertThat(responseData.getMultiBundleConfiguration()).isNull();
+    }
+
+    @Test
+    void shouldSuccessfullyCreateBundleWithNewOrderEnabled_FurtherUploadsAfterCicaUploadDate() {
+        final CaseData caseData = caseData();
+        caseData.setNewBundleOrderEnabled(YesNo.YES);
+        caseData.setInitialCicaUploadDate(LocalDate.of(2026, 2, 10));
+
+        final CicCase cicCase = CicCase.builder().build();
+
+        LocalDate applicantDocsDate = LocalDate.of(2026, 1, 10);
+        List<ListValue<CaseworkerCICDocument>> allApplicantDocs = setApplicantDocsForDate(applicantDocsDate);
+
+        LocalDate additionalApplicantDocsDate = LocalDate.of(2026, 2, 12);
+        final ListValue<CaseworkerCICDocument> tribunalForm2 =
+            getCaseworkerCICDocument("tribunalForm2.pdf", DocumentType.DSS_TRIBUNAL_FORM, additionalApplicantDocsDate);
+        final ListValue<CaseworkerCICDocument> supportingDocs2 =
+            getCaseworkerCICDocument("supportingDoc2.docx", DocumentType.DSS_SUPPORTING, additionalApplicantDocsDate);
+        final ListValue<CaseworkerCICDocument> otherDocs2 =
+            getCaseworkerCICDocument("otherDoc2.txt", DocumentType.DSS_OTHER, additionalApplicantDocsDate);
+        allApplicantDocs.add(tribunalForm2);
+        allApplicantDocs.add(supportingDocs2);
+        allApplicantDocs.add(otherDocs2);
+
+        cicCase.setApplicantDocumentsUploaded(allApplicantDocs);
+
+        LocalDate caseworkerUploadDate = LocalDate.of(2026, 1, 20);
+        final List<ListValue<CaseworkerCICDocument>> caseworkerDocs =
+            getCaseworkerCICDocumentList("caseworkerDoc.docx", DocumentType.LINKED_DOCS, caseworkerUploadDate);
+        DocumentManagement documentManagement = DocumentManagement.builder().caseworkerCICDocument(caseworkerDocs).build();
+
+        LocalDate additionalCaseworkerUploadDate = LocalDate.of(2026, 2, 14);
+        final ListValue<CaseworkerCICDocument> extraCaseworkerDoc =
+            getCaseworkerCICDocument("caseworkerDoc2.docx", DocumentType.LINKED_DOCS, additionalCaseworkerUploadDate);
+        caseworkerDocs.add(extraCaseworkerDoc);
+        caseData.setAllDocManagement(documentManagement);
+        caseData.setCicCase(cicCase);
+
+        CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+        caseDetails.setId(TEST_CASE_ID);
+        caseDetails.setCreatedDate(LOCAL_DATE_TIME);
+        caseDetails.setData(caseData);
+
+        final Bundle bundle = Bundle.builder().build();
+        when(bundlingService.getMultiBundleConfig()).thenCallRealMethod();
+        when(bundlingService.getMultiBundleConfigs()).thenCallRealMethod();
+
+        when(bundlingService.createBundle(any(BundleCallback.class))).thenAnswer(callback -> {
+            final BundleCallback callbackAtMockTime = (BundleCallback) callback.getArguments()[0];
+
+            final CaseData dataAtMockTime = callbackAtMockTime.getCaseDetails().getData();
+            // Should use old logic - documents should be in caseDocuments
+            assertThat(dataAtMockTime.getCaseDocuments()).hasSize(4);
+            // furtherCaseDocuments should be null as no Cica Upload date
+            assertThat(dataAtMockTime.getFurtherCaseDocuments()).hasSize(4);
+            assertThat(dataAtMockTime.getBundleConfiguration()).isEqualTo(MULTI_BUNDLE_CONFIG);
+            assertThat(dataAtMockTime.getMultiBundleConfiguration()).isEqualTo(List.of(MULTI_BUNDLE_CONFIG));
+            return List.of(bundle);
+        });
+
+        AboutToStartOrSubmitResponse<CaseData, State> response =
+            caseworkerCreateBundle.aboutToSubmit(caseDetails, CaseDetails.<CaseData, State>builder().build());
+
+        verify(bundlingService).getMultiBundleConfig();
+        verify(bundlingService).getMultiBundleConfigs();
+        verify(bundlingService).buildBundleListValues(anyList());
+
+        final CaseData responseData = response.getData();
+        assertThat(responseData)
+                .isNotNull()
+                .isEqualTo(caseDetails.getData());
+        assertThat(responseData.getCaseBundles()).isNotNull();
+        assertThat(responseData.getCaseDocuments()).isNull();
+        assertThat(responseData.getMultiBundleConfiguration()).isNull();
+    }
+
+    private static @NonNull List<ListValue<CaseworkerCICDocument>> setApplicantDocsForDate(LocalDate date) {
+        final ListValue<CaseworkerCICDocument> tribunalForm =
+            getCaseworkerCICDocument("tribunalForm.pdf", DocumentType.DSS_TRIBUNAL_FORM, date);
+        final ListValue<CaseworkerCICDocument> supportingDocs =
+            getCaseworkerCICDocument("supportingDoc.docx", DocumentType.DSS_SUPPORTING, date);
+        final ListValue<CaseworkerCICDocument> otherDocs =
+            getCaseworkerCICDocument("otherDoc.txt", DocumentType.DSS_OTHER, date);
+        List<ListValue<CaseworkerCICDocument>> allApplicantDocs = new ArrayList<>();
+        allApplicantDocs.add(tribunalForm);
+        allApplicantDocs.add(supportingDocs);
+        allApplicantDocs.add(otherDocs);
+        return allApplicantDocs;
     }
 
     @Test
