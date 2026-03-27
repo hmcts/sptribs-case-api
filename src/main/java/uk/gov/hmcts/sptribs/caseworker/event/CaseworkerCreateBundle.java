@@ -39,7 +39,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import static java.util.Collections.emptyList;
-import static uk.gov.hmcts.sptribs.caseworker.util.DocumentListUtil.getAllCaseDocumentsExcludingInitialCicaUpload;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CREATE_BUNDLE;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseClosed;
@@ -138,31 +137,6 @@ public class CaseworkerCreateBundle implements CCDConfig<CaseData, State, UserRo
         } else {
             caseData.setCaseDocuments(convertToBundleDocumentTypeNew(allCaseDocuments));
         }
-    }
-
-    private List<AbstractCaseworkerCICDocument<CaseworkerCICDocument>> getInitialCicaUpload(CaseData caseData, long caseId) {
-        var initialDocs = Optional.ofNullable(caseData.getInitialCicaDocuments()).orElse(emptyList());
-
-        if (initialDocs.isEmpty()) {
-            log.warn("Initial Cica doc upload was empty for case {}", caseId);
-            return emptyList();
-        }
-
-        return convertToBundleDocumentType(initialDocs);
-    }
-
-    private List<AbstractCaseworkerCICDocument<CaseworkerCICDocument>> getFurtherDocuments(CaseData caseData) {
-        var docs = getAllCaseDocumentsExcludingInitialCicaUpload(caseData);
-
-        var bundleDocuments = convertToBundleDocumentType(docs);
-
-        bundleDocuments.sort(
-            Comparator.comparing(
-                doc -> doc.getValue().getDate(),
-                Comparator.nullsLast(Comparator.naturalOrder())
-            )
-        );
-        return bundleDocuments;
     }
 
     private List<AbstractCaseworkerCICDocument<CaseworkerCICDocument>> convertToBundleDocumentTypeNew(

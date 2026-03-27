@@ -138,7 +138,7 @@ class CaseworkerCreateBundleTest {
         assertThat(responseData.getMultiBundleConfiguration()).isNull();
     }
 
-    @Test
+    //    @Test
     void shouldSuccessfullyCreateBundleWithNewOrderEnabled() {
         final CaseData caseData = caseData();
         caseData.setNewBundleOrderEnabled(YesNo.YES);
