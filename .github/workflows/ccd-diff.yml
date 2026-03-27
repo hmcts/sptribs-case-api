@@ -2,14 +2,17 @@ name: Diff CCD definition
 
 on:
   pull_request:
-    types: [labeled]
-
+    types:
+      - synchronize
+      - labeled
     branches:
       - master
 
 jobs:
   build:
-    if: ${{ github.event.label.name == 'enable_ccd_diff' }}
+    if: |
+      (github.event.action == 'labeled' && github.event.label.name == 'enable_ccd_diff') ||
+      (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'enable_ccd_diff'))
     runs-on: ubuntu-latest
     strategy:
       matrix:
