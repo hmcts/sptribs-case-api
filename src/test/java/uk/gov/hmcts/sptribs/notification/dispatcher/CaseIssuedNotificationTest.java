@@ -193,7 +193,7 @@ public class CaseIssuedNotificationTest {
         verify(notificationHelper).buildEmailNotificationRequest(
             data.getCicCase().getAlternativeRespondentEmail(),
             expectedMap,
-            TemplateName.CASE_ISSUED_RESPONDENT_EMAIL_UPDATED);
+            TemplateName.CASE_ISSUED_RESPONDENT_EMAIL);
     }
 
     @Test
@@ -222,7 +222,7 @@ public class CaseIssuedNotificationTest {
         verify(notificationHelper).buildEmailNotificationRequest(
             data.getCicCase().getAlternativeRespondentEmail(),
             expectedMap,
-            TemplateName.CASE_ISSUED_RESPONDENT_EMAIL_UPDATED);
+            TemplateName.CASE_ISSUED_RESPONDENT_EMAIL);
     }
 
 
@@ -281,7 +281,7 @@ public class CaseIssuedNotificationTest {
             true,
             getDocumentUploadMap(),
             expectedMap,
-            TemplateName.CASE_ISSUED_RESPONDENT_EMAIL_UPDATED);
+            TemplateName.CASE_ISSUED_RESPONDENT_EMAIL);
 
     }
 
@@ -340,7 +340,7 @@ public class CaseIssuedNotificationTest {
             true,
             getDocumentUploadMap(),
             expectedMap,
-            TemplateName.CASE_ISSUED_RESPONDENT_EMAIL_UPDATED);
+            TemplateName.CASE_ISSUED_RESPONDENT_EMAIL);
 
     }
 

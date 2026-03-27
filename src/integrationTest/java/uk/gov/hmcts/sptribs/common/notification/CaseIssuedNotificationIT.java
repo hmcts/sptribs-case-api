@@ -45,7 +45,7 @@ import static uk.gov.hmcts.sptribs.common.CommonConstants.TRIBUNAL_NAME;
 import static uk.gov.hmcts.sptribs.common.ccd.CcdCaseType.CIC;
 import static uk.gov.hmcts.sptribs.notification.TemplateName.CASE_ISSUED_CITIZEN_EMAIL;
 import static uk.gov.hmcts.sptribs.notification.TemplateName.CASE_ISSUED_CITIZEN_POST;
-import static uk.gov.hmcts.sptribs.notification.TemplateName.CASE_ISSUED_RESPONDENT_EMAIL_UPDATED;
+import static uk.gov.hmcts.sptribs.notification.TemplateName.CASE_ISSUED_RESPONDENT_EMAIL;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID;
 
 @ExtendWith(SpringExtension.class)
@@ -295,7 +295,7 @@ public class CaseIssuedNotificationIT {
         assertThat(notificationRequest.getDestinationAddress())
             .isEqualTo("test@email.com");
         assertThat(notificationRequest.getTemplate())
-            .isEqualTo(CASE_ISSUED_RESPONDENT_EMAIL_UPDATED);
+            .isEqualTo(CASE_ISSUED_RESPONDENT_EMAIL);
         assertThat(notificationRequest.getTemplateVars())
             .containsAllEntriesOf(expectedTemplateVars);
         assertThat(notificationRequest.getUploadedDocuments())
@@ -334,7 +334,7 @@ public class CaseIssuedNotificationIT {
         assertThat(notificationRequest.getDestinationAddress())
             .isEqualTo("test@email.com");
         assertThat(notificationRequest.getTemplate())
-            .isEqualTo(CASE_ISSUED_RESPONDENT_EMAIL_UPDATED);
+            .isEqualTo(CASE_ISSUED_RESPONDENT_EMAIL);
         assertThat(notificationRequest.getTemplateVars())
             .containsAllEntriesOf(expectedTemplateVars);
         assertThat(notificationRequest.getUploadedDocuments())
@@ -406,7 +406,7 @@ public class CaseIssuedNotificationIT {
         assertThat(notificationRequest.getDestinationAddress())
             .isEqualTo("test@email.com");
         assertThat(notificationRequest.getTemplate())
-            .isEqualTo(CASE_ISSUED_RESPONDENT_EMAIL_UPDATED);
+            .isEqualTo(CASE_ISSUED_RESPONDENT_EMAIL);
         assertThat(notificationRequest.getTemplateVars())
             .containsAllEntriesOf(expectedTemplateVars);
         assertThat(notificationRequest.getUploadedDocuments())
@@ -478,7 +478,7 @@ public class CaseIssuedNotificationIT {
         assertThat(notificationRequest.getDestinationAddress())
             .isEqualTo("test@email.com");
         assertThat(notificationRequest.getTemplate())
-            .isEqualTo(CASE_ISSUED_RESPONDENT_EMAIL_UPDATED);
+            .isEqualTo(CASE_ISSUED_RESPONDENT_EMAIL);
         assertThat(notificationRequest.getTemplateVars())
             .containsAllEntriesOf(expectedTemplateVars);
         assertThat(notificationRequest.getUploadedDocuments())

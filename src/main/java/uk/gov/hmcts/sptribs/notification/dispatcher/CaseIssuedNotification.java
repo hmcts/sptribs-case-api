@@ -23,6 +23,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import static uk.gov.hmcts.sptribs.notification.EmailRespondentResponsesConstants.IN_TIME_RESPONSE;
+import static uk.gov.hmcts.sptribs.notification.EmailRespondentResponsesConstants.OUT_OF_TIME_RESPONSE;
+
 @RequiredArgsConstructor
 @Component
 @Slf4j
@@ -119,7 +122,7 @@ public class CaseIssuedNotification implements PartiesNotification {
             cicCase.setSubjectLetterNotifyList(notificationResponse);
         } else {
             notificationResponse = sendEmailNotification(templateVarsRespondent,
-                cicCase.getAlternativeRespondentEmail(), TemplateName.CASE_ISSUED_RESPONDENT_EMAIL_UPDATED, caseNumber);
+                cicCase.getAlternativeRespondentEmail(), TemplateName.CASE_ISSUED_RESPONDENT_EMAIL, caseNumber);
             cicCase.setResNotificationResponse(notificationResponse);
         }
     }
@@ -127,11 +130,9 @@ public class CaseIssuedNotification implements PartiesNotification {
     private String buildTimeString(boolean isOutOfTimeRange, LocalDate dueDate) {
 
         if (isOutOfTimeRange) {
-            return String.format("Out of time appeal - You should provide the tribunal with a case bundle by %s. "
-                + "Do not issue to the Subject/Applicant/Representative until we notify you the appeal has been admitted.", dueDate);
+            return String.format(OUT_OF_TIME_RESPONSE, dueDate);
         } else {
-            return String.format("You should provide the tribunal and the "
-                + "Subject/Applicant/Representative with a case bundle by %s", dueDate);
+            return String.format(IN_TIME_RESPONSE, dueDate);
         }
     }
 
@@ -154,7 +155,7 @@ public class CaseIssuedNotification implements PartiesNotification {
                 true,
                 uploadedDocuments,
                 templateVars,
-                TemplateName.CASE_ISSUED_RESPONDENT_EMAIL_UPDATED),
+                TemplateName.CASE_ISSUED_RESPONDENT_EMAIL),
             selectedDocuments,
             caseReferenceNumber);
     }
