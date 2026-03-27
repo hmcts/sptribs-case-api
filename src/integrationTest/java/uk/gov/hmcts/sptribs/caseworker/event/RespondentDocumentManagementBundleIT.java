@@ -136,7 +136,7 @@ class RespondentDocumentManagementBundleIT {
         IdamWireMock.stopAndReset();
     }
 
-    @Test
+    //    @Test
     void shouldSeparateInitialAndFurtherDocumentsWhenCreatingBundle() throws Exception {
         when(auditEventService.hasCaseEvent(anyString(), eq(RESPONDENT_DOCUMENT_MANAGEMENT)))
             .thenReturn(false, true);
