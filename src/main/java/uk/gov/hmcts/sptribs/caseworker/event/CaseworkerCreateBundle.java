@@ -26,6 +26,7 @@ import uk.gov.hmcts.sptribs.document.model.AbstractCaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 
 import java.time.Clock;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -95,8 +96,7 @@ public class CaseworkerCreateBundle implements CCDConfig<CaseData, State, UserRo
         final List<ListValue<CaseworkerCICDocument>> documentListValues = DocumentListUtil.getAllCaseDocuments(caseData);
 
         if (caseData.isBundleOrderEnabled()) {
-            caseData.setCaseDocuments(getInitialCicaUpload(caseData, details.getId()));
-            caseData.setFurtherCaseDocuments(getFurtherDocuments(caseData));
+            setCaseBundleRequestDocuments(caseData);
         } else {
             var cicDocumentList = convertToBundleDocumentType(documentListValues);
             caseData.setCaseDocuments(cicDocumentList);
@@ -124,6 +124,22 @@ public class CaseworkerCreateBundle implements CCDConfig<CaseData, State, UserRo
             .build();
     }
 
+    private void setCaseBundleRequestDocuments(CaseData caseData) {
+        var allCaseDocuments = DocumentListUtil.getAllCaseDocuments(caseData).stream().map(ListValue::getValue).toList();
+        Optional<LocalDate> cicaUploadDate = Optional.ofNullable(caseData.getInitialCicaUploadDate());
+
+        if (cicaUploadDate.isPresent()) {
+            Map<Boolean, List<CaseworkerCICDocument>> partitioned = allCaseDocuments.stream()
+                .collect(Collectors.partitioningBy(doc ->
+                    !doc.getDate().isAfter(cicaUploadDate.get())));
+
+            caseData.setCaseDocuments(convertToBundleDocumentTypeNew(partitioned.get(true)));
+            caseData.setFurtherCaseDocuments(convertToBundleDocumentTypeNew(partitioned.get(false)));
+        } else {
+            caseData.setCaseDocuments(convertToBundleDocumentTypeNew(allCaseDocuments));
+        }
+    }
+
     private List<AbstractCaseworkerCICDocument<CaseworkerCICDocument>> getInitialCicaUpload(CaseData caseData, long caseId) {
         var initialDocs = Optional.ofNullable(caseData.getInitialCicaDocuments()).orElse(emptyList());
 
@@ -147,6 +163,12 @@ public class CaseworkerCreateBundle implements CCDConfig<CaseData, State, UserRo
             )
         );
         return bundleDocuments;
+    }
+
+    private List<AbstractCaseworkerCICDocument<CaseworkerCICDocument>> convertToBundleDocumentTypeNew(
+            List<CaseworkerCICDocument> docs) {
+
+        return docs.stream().filter(CaseworkerCICDocument::isValidBundleDocument).map(AbstractCaseworkerCICDocument::new).toList();
     }
 
     private List<AbstractCaseworkerCICDocument<CaseworkerCICDocument>> convertToBundleDocumentType(

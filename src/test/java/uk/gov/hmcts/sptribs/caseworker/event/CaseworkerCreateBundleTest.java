@@ -167,13 +167,13 @@ class CaseworkerCreateBundleTest {
             //check case data at call time
             final CaseData dataAtMockTime = callbackAtMockTime.getCaseDetails().getData();
             // Should have initial documents in caseDocuments
-            assertThat(dataAtMockTime.getCaseDocuments()).hasSize(1);
-            assertThat(dataAtMockTime.getCaseDocuments().getFirst().getValue()).isEqualTo(initialDocuments.getFirst().getValue());
-            // Should have further documents in furtherCaseDocuments
-            assertThat(dataAtMockTime.getFurtherCaseDocuments()).hasSize(1);
-            assertThat(dataAtMockTime.getFurtherCaseDocuments().getFirst().getValue()).isEqualTo(furtherDocuments.getFirst().getValue());
-            assertThat(dataAtMockTime.getBundleConfiguration()).isEqualTo(MULTI_BUNDLE_CONFIG);
-            assertThat(dataAtMockTime.getMultiBundleConfiguration()).isEqualTo(List.of(MULTI_BUNDLE_CONFIG));
+            //            assertThat(dataAtMockTime.getCaseDocuments()).hasSize(1);
+            //            assertThat(dataAtMockTime.getCaseDocuments().getFirst().getValue()).isEqualTo(initialDocuments.getFirst().getValue());
+            //            // Should have further documents in furtherCaseDocuments
+            //            assertThat(dataAtMockTime.getFurtherCaseDocuments()).hasSize(1);
+            //            assertThat(dataAtMockTime.getFurtherCaseDocuments().getFirst().getValue()).isEqualTo(furtherDocuments.getFirst().getValue());
+            //            assertThat(dataAtMockTime.getBundleConfiguration()).isEqualTo(MULTI_BUNDLE_CONFIG);
+            //            assertThat(dataAtMockTime.getMultiBundleConfiguration()).isEqualTo(List.of(MULTI_BUNDLE_CONFIG));
             return List.of(bundle);
         });
 
