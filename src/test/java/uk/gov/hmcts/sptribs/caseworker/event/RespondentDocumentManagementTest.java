@@ -1,5 +1,6 @@
 package uk.gov.hmcts.sptribs.caseworker.event;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -18,6 +19,9 @@ import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.ciccase.model.access.Permissions;
 import uk.gov.hmcts.sptribs.common.service.AuditEventService;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
+import uk.gov.hmcts.sptribs.testutil.ClockTestUtil;
+
+import java.time.Clock;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -41,6 +45,9 @@ class RespondentDocumentManagementTest {
 
     @Mock
     private AuditEventService auditEventService;
+
+    @Mock
+    private Clock clock;
 
     @Test
     void shouldAddPublishToCamundaWhenWAIsEnabled() {
@@ -112,6 +119,7 @@ class RespondentDocumentManagementTest {
 
     @Test
     void shouldAddDocumentsToInitialCicaDocumentsWhenNewBundleOrderEnabledAndNoAuditEvent() {
+        ClockTestUtil.setMockClock(clock);
         final CaseData caseData = caseData();
         caseData.setNewBundleOrderEnabled(YesNo.YES);
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
