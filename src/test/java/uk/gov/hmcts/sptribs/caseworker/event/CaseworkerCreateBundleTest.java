@@ -59,11 +59,11 @@ class CaseworkerCreateBundleTest {
 
     private final Map<String, LocalDateTime> testBundleTimestamps = new HashMap<>();
 
-    private LocalDateTime currentDateTime;
+    private LocalDateTime mockCurrentDateTime;
 
     @BeforeEach
     void setUp() {
-        currentDateTime = LocalDateTime.now(Clock.fixed(
+        mockCurrentDateTime = LocalDateTime.now(Clock.fixed(
             instant,
             ZoneOffset.UTC));
 
@@ -81,8 +81,8 @@ class CaseworkerCreateBundleTest {
             ZoneOffset.UTC)).minusHours(3));
 
         // check for dst
-        if (LocalDateTime.now().getHour() == (currentDateTime.getHour() + 1)) {
-            currentDateTime = currentDateTime.plusHours(1);
+        if (LocalDateTime.now().getHour() == (mockCurrentDateTime.getHour() + 1)) {
+            mockCurrentDateTime = mockCurrentDateTime.plusHours(1);
 
             testBundleTimestamps.replace("timestampYears", LocalDateTime.now(Clock.fixed(
                 instant,
@@ -424,7 +424,7 @@ class CaseworkerCreateBundleTest {
         assertThat(responseData.getCaseBundles()).hasSize((1));
 
         assertThat(responseData.getCaseBundles().getFirst().getValue().getDateAndTime())
-            .isEqualTo(currentDateTime);
+            .isEqualTo(mockCurrentDateTime);
     }
 
     @Test
@@ -550,7 +550,7 @@ class CaseworkerCreateBundleTest {
                 .id("5")
                 .value(BundleIdAndTimestamp.builder()
                     .bundleId(testListValueBundles.getLast().getValue().getId())
-                    .dateAndTime(currentDateTime)
+                    .dateAndTime(mockCurrentDateTime)
                     .build())
                 .build()
         );
@@ -566,7 +566,7 @@ class CaseworkerCreateBundleTest {
             .hasSize(updatedCaseDetails.getData().getCaseBundleIdsAndTimestamps().size());
 
         assertThat(responseData.getCaseBundles().getFirst().getValue().getDateAndTime())
-            .isEqualTo(currentDateTime);
+            .isEqualTo(mockCurrentDateTime);
         assertThat(responseData.getCaseBundles().get(1).getValue().getDateAndTime())
             .isEqualTo(testBundleTimestamps.get("timestampHours"));
         assertThat(responseData.getCaseBundles().get(2).getValue().getDateAndTime())
@@ -700,7 +700,7 @@ class CaseworkerCreateBundleTest {
                 .id("5")
                 .value(BundleIdAndTimestamp.builder()
                     .bundleId(testListValueBundles.getLast().getValue().getId())
-                    .dateAndTime(currentDateTime)
+                    .dateAndTime(mockCurrentDateTime)
                     .build())
                 .build()
         );
@@ -716,7 +716,7 @@ class CaseworkerCreateBundleTest {
             .hasSize(updatedCaseDetails.getData().getCaseBundleIdsAndTimestamps().size());
 
         assertThat(responseData.getCaseBundles().getFirst().getValue().getDateAndTime())
-            .isEqualTo(currentDateTime);
+            .isEqualTo(mockCurrentDateTime);
         assertThat(responseData.getCaseBundles().get(1).getValue().getDateAndTime())
             .isEqualTo(testBundleTimestamps.get("timestampMonths"));
         assertThat(responseData.getCaseBundles().get(2).getValue().getDateAndTime())
@@ -801,7 +801,7 @@ class CaseworkerCreateBundleTest {
         // New bundle should be first (sorted by timestamp descending, nulls last)
         assertThat(responseData.getCaseBundles().getFirst().getValue().getId()).isEqualTo(newBundleUUID);
         assertThat(responseData.getCaseBundles().getFirst().getValue().getDateAndTime())
-            .isEqualTo(currentDateTime);
+            .isEqualTo(mockCurrentDateTime);
 
         // Old bundles should have null timestamps (backwards compatibility - not incorrectly set to new bundle's time)
         assertThat(responseData.getCaseBundles().get(1).getValue().getId()).isEqualTo(existingOldBundleUUID1);
@@ -855,7 +855,7 @@ class CaseworkerCreateBundleTest {
 
         assertThat(responseData.getCaseBundles()).hasSize(1);
         assertThat(responseData.getCaseBundles().getFirst().getValue().getDateAndTime())
-            .isEqualTo(currentDateTime);
+            .isEqualTo(mockCurrentDateTime);
         assertThat(responseData.getCaseBundleIdsAndTimestamps()).hasSize(1);
     }
 }
