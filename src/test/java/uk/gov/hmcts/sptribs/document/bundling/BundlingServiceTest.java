@@ -320,7 +320,7 @@ public class BundlingServiceTest {
             .id("")
             .dateAndTime(LocalDateTime.now(Clock.fixed(
                 instant,
-                ZoneOffset.UTC)))
+                zoneId)))
             .description("")
             .title("")
             .stitchingFailureMessage("")
@@ -332,7 +332,7 @@ public class BundlingServiceTest {
             .id("")
             .dateAndTime(LocalDateTime.now(Clock.fixed(
                 instant,
-                ZoneOffset.UTC)))
+                zoneId)))
             .description("")
             .title("")
             .stitchingFailureMessage("")
@@ -491,7 +491,7 @@ public class BundlingServiceTest {
             .id("1")
             .dateAndTime(LocalDateTime.now(Clock.fixed(
                 instant,
-                ZoneOffset.UTC)))
+                zoneId)))
             .title("")
             .description("")
             .stitchedDocument(stitchedDocument)
