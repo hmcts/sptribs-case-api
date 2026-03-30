@@ -12,7 +12,6 @@ import uk.gov.hmcts.sptribs.notification.persistence.CorrespondenceEntity;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.UUID;
 
