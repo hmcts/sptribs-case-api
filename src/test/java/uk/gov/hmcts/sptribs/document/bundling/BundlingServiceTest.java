@@ -34,7 +34,6 @@ import java.time.Clock;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -320,7 +319,7 @@ public class BundlingServiceTest {
             .id("")
             .dateAndTime(LocalDateTime.now(Clock.fixed(
                 instant,
-                ZoneOffset.UTC)))
+                ZoneId.of("Europe/London"))))
             .description("")
             .title("")
             .stitchingFailureMessage("")
@@ -332,7 +331,7 @@ public class BundlingServiceTest {
             .id("")
             .dateAndTime(LocalDateTime.now(Clock.fixed(
                 instant,
-                ZoneOffset.UTC)))
+                ZoneId.of("Europe/London"))))
             .description("")
             .title("")
             .stitchingFailureMessage("")
@@ -491,7 +490,7 @@ public class BundlingServiceTest {
             .id("1")
             .dateAndTime(LocalDateTime.now(Clock.fixed(
                 instant,
-                ZoneOffset.UTC)))
+                    ZoneId.of("Europe/London"))))
             .title("")
             .description("")
             .stitchedDocument(stitchedDocument)

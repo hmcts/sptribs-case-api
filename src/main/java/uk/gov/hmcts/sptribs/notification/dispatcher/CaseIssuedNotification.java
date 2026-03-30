@@ -12,6 +12,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.ContactPreferenceType;
 import uk.gov.hmcts.sptribs.ciccase.model.NotificationResponse;
 import uk.gov.hmcts.sptribs.common.CommonConstants;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
+import uk.gov.hmcts.sptribs.notification.EmailRespondentResponses;
 import uk.gov.hmcts.sptribs.notification.NotificationHelper;
 import uk.gov.hmcts.sptribs.notification.NotificationServiceCIC;
 import uk.gov.hmcts.sptribs.notification.PartiesNotification;
@@ -23,8 +24,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import static uk.gov.hmcts.sptribs.notification.EmailRespondentResponsesConstants.IN_TIME_RESPONSE;
-import static uk.gov.hmcts.sptribs.notification.EmailRespondentResponsesConstants.OUT_OF_TIME_RESPONSE;
+import static uk.gov.hmcts.sptribs.notification.EmailRespondentResponses.IN_TIME_RESPONSE;
+import static uk.gov.hmcts.sptribs.notification.EmailRespondentResponses.OUT_OF_TIME_RESPONSE;
 
 @RequiredArgsConstructor
 @Component
@@ -128,12 +129,11 @@ public class CaseIssuedNotification implements PartiesNotification {
     }
 
     private String buildTimeString(boolean isOutOfTimeRange, LocalDate dueDate) {
+        EmailRespondentResponses response = isOutOfTimeRange
+            ? OUT_OF_TIME_RESPONSE
+            : IN_TIME_RESPONSE;
 
-        if (isOutOfTimeRange) {
-            return String.format(OUT_OF_TIME_RESPONSE, dueDate);
-        } else {
-            return String.format(IN_TIME_RESPONSE, dueDate);
-        }
+        return response.format(dueDate);
     }
 
     private NotificationResponse sendEmailNotification(final Map<String, Object> templateVars, String toEmail,

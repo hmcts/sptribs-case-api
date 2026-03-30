@@ -379,7 +379,7 @@ class CaseworkerCreateBundleTest {
         assertThat(responseData.getCaseBundles()).hasSize((1));
 
         assertThat(responseData.getCaseBundles().getFirst().getValue().getDateAndTime())
-            .isEqualTo(LocalDateTime.ofInstant(instant, ZoneOffset.UTC));
+            .isEqualTo(LocalDateTime.ofInstant(instant, ZoneId.of("Europe/London")));
     }
 
     @Test
@@ -529,7 +529,7 @@ class CaseworkerCreateBundleTest {
             .hasSize(updatedCaseDetails.getData().getCaseBundleIdsAndTimestamps().size());
 
         assertThat(responseData.getCaseBundles().getFirst().getValue().getDateAndTime())
-            .isEqualTo(LocalDateTime.ofInstant(instant, ZoneOffset.UTC));
+            .isEqualTo(LocalDateTime.ofInstant(instant, ZoneId.of("Europe/London")));
         assertThat(responseData.getCaseBundles().get(1).getValue().getDateAndTime())
             .isEqualTo(LocalDateTime.now(Clock.fixed(instant, ZoneOffset.UTC)).minusHours(3));
         assertThat(responseData.getCaseBundles().get(2).getValue().getDateAndTime())
@@ -683,7 +683,7 @@ class CaseworkerCreateBundleTest {
             .hasSize(updatedCaseDetails.getData().getCaseBundleIdsAndTimestamps().size());
 
         assertThat(responseData.getCaseBundles().getFirst().getValue().getDateAndTime())
-            .isEqualTo(LocalDateTime.ofInstant(instant, ZoneOffset.UTC));
+            .isEqualTo(LocalDateTime.ofInstant(instant, ZoneId.of("Europe/London")));
         assertThat(responseData.getCaseBundles().get(1).getValue().getDateAndTime())
             .isEqualTo(LocalDateTime.now(Clock.fixed(instant,ZoneOffset.UTC)).minusMonths(3));
         assertThat(responseData.getCaseBundles().get(2).getValue().getDateAndTime())
@@ -768,7 +768,7 @@ class CaseworkerCreateBundleTest {
         // New bundle should be first (sorted by timestamp descending, nulls last)
         assertThat(responseData.getCaseBundles().getFirst().getValue().getId()).isEqualTo(newBundleUUID);
         assertThat(responseData.getCaseBundles().getFirst().getValue().getDateAndTime())
-            .isEqualTo(LocalDateTime.ofInstant(instant, ZoneOffset.UTC));
+            .isEqualTo(LocalDateTime.ofInstant(instant, ZoneId.of("Europe/London")));
 
         // Old bundles should have null timestamps (backwards compatibility - not incorrectly set to new bundle's time)
         assertThat(responseData.getCaseBundles().get(1).getValue().getId()).isEqualTo(existingOldBundleUUID1);
@@ -822,7 +822,7 @@ class CaseworkerCreateBundleTest {
 
         assertThat(responseData.getCaseBundles()).hasSize(1);
         assertThat(responseData.getCaseBundles().getFirst().getValue().getDateAndTime())
-            .isEqualTo(LocalDateTime.ofInstant(instant, ZoneOffset.UTC));
+            .isEqualTo(LocalDateTime.ofInstant(instant, ZoneId.of("Europe/London")));
         assertThat(responseData.getCaseBundleIdsAndTimestamps()).hasSize(1);
     }
 }
