@@ -47,7 +47,8 @@ public class CicCaseView implements CaseView<CriminalInjuriesCompensationData, S
                 .build();
 
             Correspondence correspondence = Correspondence.builder()
-                .sentOn(correspondenceEntity.getSentOn().atZoneSameInstant(ZoneId.systemDefault()).format(DateTimeFormatter.ofPattern("d MMM yyyy HH:mm")))
+                .sentOn(correspondenceEntity.getSentOn().atZoneSameInstant(ZoneId.systemDefault())
+                    .format(DateTimeFormatter.ofPattern("d MMM yyyy HH:mm")))
                 .from(correspondenceEntity.getSentFrom())
                 .to(correspondenceEntity.getSentTo())
                 .documentUrl(correspondenceDocument)
