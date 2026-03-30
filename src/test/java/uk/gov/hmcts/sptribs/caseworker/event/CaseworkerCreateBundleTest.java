@@ -62,7 +62,7 @@ class CaseworkerCreateBundleTest {
     private BundlingService bundlingService;
 
     @Mock
-    private Clock clock = Clock.fixed(instant, ZoneId.of("Europe/London"));
+    private Clock clock;
 
     @Test
     void shouldAddPublishToCamundaWhenWAIsEnabled() {
@@ -822,7 +822,7 @@ class CaseworkerCreateBundleTest {
 
         assertThat(responseData.getCaseBundles()).hasSize(1);
         assertThat(responseData.getCaseBundles().getFirst().getValue().getDateAndTime())
-            .isEqualTo(LocalDateTime.ofInstant(instant, zoneId));
+            .isEqualTo(LocalDateTime.ofInstant(instant, ZoneId.of("Europe/London")));
         assertThat(responseData.getCaseBundleIdsAndTimestamps()).hasSize(1);
     }
 }

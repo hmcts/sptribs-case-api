@@ -135,7 +135,7 @@ tasks.withType(Test) {
 test {
   failFast = true
   useJUnitPlatform()
-  jvmArgs = ['--add-opens=java.base/java.lang.reflect=ALL-UNNAMED','--add-opens=java.base/java.util=ALL-UNNAMED']
+  jvmArgs = ['--add-opens=java.base/java.lang.reflect=ALL-UNNAMED','--add-opens=java.base/java.util=ALL-UNNAMED', '-Duser.timezone=Europe/London']
 }
 
 tasks.register('functional', Test) {
