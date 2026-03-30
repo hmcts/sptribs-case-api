@@ -62,7 +62,7 @@ class CaseworkerCreateBundleTest {
     private BundlingService bundlingService;
 
     @Mock
-    private Clock clock;
+    private Clock clock = Clock.fixed(instant, ZoneId.of("Europe/London"));
 
     @Test
     void shouldAddPublishToCamundaWhenWAIsEnabled() {
