@@ -1,6 +1,5 @@
 package uk.gov.hmcts.sptribs.caseworker.event;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -28,11 +27,8 @@ import java.time.Clock;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.time.ZoneOffset;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -56,48 +52,6 @@ class CaseworkerCreateBundleTest {
 
     private static final Instant instant = Instant.now();
     private static final ZoneId zoneId = ZoneId.systemDefault();
-
-    private final Map<String, LocalDateTime> testBundleTimestamps = new HashMap<>();
-
-    private LocalDateTime mockCurrentDateTime;
-
-    @BeforeEach
-    void setUp() {
-        mockCurrentDateTime = LocalDateTime.now(Clock.fixed(
-            instant,
-            ZoneOffset.UTC));
-
-        testBundleTimestamps.put("timestampYears", LocalDateTime.now(Clock.fixed(
-            instant,
-            ZoneOffset.UTC)).minusYears(3));
-        testBundleTimestamps.put("timestampMonths", LocalDateTime.now(Clock.fixed(
-            instant,
-            ZoneOffset.UTC)).minusMonths(3));
-        testBundleTimestamps.put("timestampDays", LocalDateTime.now(Clock.fixed(
-            instant,
-            ZoneOffset.UTC)).minusDays(3));
-        testBundleTimestamps.put("timestampHours", LocalDateTime.now(Clock.fixed(
-            instant,
-            ZoneOffset.UTC)).minusHours(3));
-
-        // check for dst
-        if (LocalDateTime.now().getHour() == (mockCurrentDateTime.getHour() + 1)) {
-            mockCurrentDateTime = mockCurrentDateTime.plusHours(1);
-
-            testBundleTimestamps.replace("timestampYears", LocalDateTime.now(Clock.fixed(
-                instant,
-                ZoneOffset.UTC)).minusYears(3).plusHours(1));
-            testBundleTimestamps.replace("timestampMonths", LocalDateTime.now(Clock.fixed(
-                instant,
-                ZoneOffset.UTC)).minusMonths(3).plusHours(1));
-            testBundleTimestamps.replace("timestampDays", LocalDateTime.now(Clock.fixed(
-                instant,
-                ZoneOffset.UTC)).minusDays(3).plusHours(1));
-            testBundleTimestamps.replace("timestampHours", LocalDateTime.now(Clock.fixed(
-                instant,
-                ZoneOffset.UTC)).minusHours(2));
-        }
-    }
 
 
     @InjectMocks
@@ -424,7 +378,7 @@ class CaseworkerCreateBundleTest {
         assertThat(responseData.getCaseBundles()).hasSize((1));
 
         assertThat(responseData.getCaseBundles().getFirst().getValue().getDateAndTime())
-            .isEqualTo(mockCurrentDateTime);
+            .isEqualTo(LocalDateTime.ofInstant(instant, zoneId));
     }
 
     @Test
@@ -437,19 +391,27 @@ class CaseworkerCreateBundleTest {
         String testBundleUUID4 = UUID.randomUUID().toString();
 
         final Bundle bundle1 = Bundle.builder()
-            .dateAndTime(testBundleTimestamps.get("timestampYears"))
+            .dateAndTime(LocalDateTime.now(Clock.fixed(
+                instant,
+                zoneId)).minusYears(3))
             .id(testBundleUUID1)
             .build();
         final Bundle bundle2 = Bundle.builder()
-            .dateAndTime(testBundleTimestamps.get("timestampMonths"))
+            .dateAndTime(LocalDateTime.now(Clock.fixed(
+                instant,
+                zoneId)).minusMonths(3))
             .id(testBundleUUID2)
             .build();
         final Bundle bundle3 = Bundle.builder()
-            .dateAndTime(testBundleTimestamps.get("timestampDays"))
+            .dateAndTime(LocalDateTime.now(Clock.fixed(
+                instant,
+                zoneId)).minusDays(3))
             .id(testBundleUUID3)
             .build();
         final Bundle bundle4 = Bundle.builder()
-            .dateAndTime(testBundleTimestamps.get("timestampHours"))
+            .dateAndTime(LocalDateTime.now(Clock.fixed(
+                instant,
+                zoneId)).minusHours(3))
             .id(testBundleUUID4)
             .build();
 
@@ -550,7 +512,7 @@ class CaseworkerCreateBundleTest {
                 .id("5")
                 .value(BundleIdAndTimestamp.builder()
                     .bundleId(testListValueBundles.getLast().getValue().getId())
-                    .dateAndTime(mockCurrentDateTime)
+                    .dateAndTime(LocalDateTime.ofInstant(instant, zoneId))
                     .build())
                 .build()
         );
@@ -566,15 +528,15 @@ class CaseworkerCreateBundleTest {
             .hasSize(updatedCaseDetails.getData().getCaseBundleIdsAndTimestamps().size());
 
         assertThat(responseData.getCaseBundles().getFirst().getValue().getDateAndTime())
-            .isEqualTo(mockCurrentDateTime);
+            .isEqualTo(LocalDateTime.ofInstant(instant, zoneId));
         assertThat(responseData.getCaseBundles().get(1).getValue().getDateAndTime())
-            .isEqualTo(testBundleTimestamps.get("timestampHours"));
+            .isEqualTo(LocalDateTime.now(Clock.fixed(instant, zoneId)).minusHours(3));
         assertThat(responseData.getCaseBundles().get(2).getValue().getDateAndTime())
-            .isEqualTo(testBundleTimestamps.get("timestampDays"));
+            .isEqualTo(LocalDateTime.now(Clock.fixed(instant, zoneId)).minusDays(3));
         assertThat(responseData.getCaseBundles().get(3).getValue().getDateAndTime())
-            .isEqualTo(testBundleTimestamps.get("timestampMonths"));
+            .isEqualTo(LocalDateTime.now(Clock.fixed(instant, zoneId)).minusMonths(3));
         assertThat(responseData.getCaseBundles().getLast().getValue().getDateAndTime())
-            .isEqualTo(testBundleTimestamps.get("timestampYears"));
+            .isEqualTo(LocalDateTime.now(Clock.fixed(instant,zoneId)).minusYears(3));
     }
 
     @Test
@@ -587,11 +549,15 @@ class CaseworkerCreateBundleTest {
         String testBundleUUID4 = UUID.randomUUID().toString();
 
         final Bundle bundle1 = Bundle.builder()
-            .dateAndTime(testBundleTimestamps.get("timestampYears"))
+            .dateAndTime(LocalDateTime.now(Clock.fixed(
+                instant,
+                zoneId)).minusYears(3))
             .id(testBundleUUID1)
             .build();
         final Bundle bundle2 = Bundle.builder()
-            .dateAndTime(testBundleTimestamps.get("timestampMonths"))
+            .dateAndTime(LocalDateTime.now(Clock.fixed(
+                instant,
+                zoneId)).minusMonths(3))
             .id(testBundleUUID2)
             .build();
         final Bundle bundle3 = Bundle.builder()
@@ -700,7 +666,7 @@ class CaseworkerCreateBundleTest {
                 .id("5")
                 .value(BundleIdAndTimestamp.builder()
                     .bundleId(testListValueBundles.getLast().getValue().getId())
-                    .dateAndTime(mockCurrentDateTime)
+                    .dateAndTime(LocalDateTime.ofInstant(instant, zoneId))
                     .build())
                 .build()
         );
@@ -716,11 +682,11 @@ class CaseworkerCreateBundleTest {
             .hasSize(updatedCaseDetails.getData().getCaseBundleIdsAndTimestamps().size());
 
         assertThat(responseData.getCaseBundles().getFirst().getValue().getDateAndTime())
-            .isEqualTo(mockCurrentDateTime);
+            .isEqualTo(LocalDateTime.ofInstant(instant, zoneId));
         assertThat(responseData.getCaseBundles().get(1).getValue().getDateAndTime())
-            .isEqualTo(testBundleTimestamps.get("timestampMonths"));
+            .isEqualTo(LocalDateTime.now(Clock.fixed(instant,zoneId)).minusMonths(3));
         assertThat(responseData.getCaseBundles().get(2).getValue().getDateAndTime())
-            .isEqualTo(testBundleTimestamps.get("timestampYears"));
+            .isEqualTo(LocalDateTime.now(Clock.fixed(instant,zoneId)).minusYears(3));
         assertThat(responseData.getCaseBundles().get(3).getValue().getDateAndTime())
             .isNull();
         assertThat(responseData.getCaseBundles().getLast().getValue().getDateAndTime())
@@ -801,7 +767,7 @@ class CaseworkerCreateBundleTest {
         // New bundle should be first (sorted by timestamp descending, nulls last)
         assertThat(responseData.getCaseBundles().getFirst().getValue().getId()).isEqualTo(newBundleUUID);
         assertThat(responseData.getCaseBundles().getFirst().getValue().getDateAndTime())
-            .isEqualTo(mockCurrentDateTime);
+            .isEqualTo(LocalDateTime.ofInstant(instant, zoneId));
 
         // Old bundles should have null timestamps (backwards compatibility - not incorrectly set to new bundle's time)
         assertThat(responseData.getCaseBundles().get(1).getValue().getId()).isEqualTo(existingOldBundleUUID1);
@@ -855,7 +821,7 @@ class CaseworkerCreateBundleTest {
 
         assertThat(responseData.getCaseBundles()).hasSize(1);
         assertThat(responseData.getCaseBundles().getFirst().getValue().getDateAndTime())
-            .isEqualTo(mockCurrentDateTime);
+            .isEqualTo(LocalDateTime.ofInstant(instant, zoneId));
         assertThat(responseData.getCaseBundleIdsAndTimestamps()).hasSize(1);
     }
 }
