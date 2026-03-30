@@ -137,6 +137,7 @@ test {
   useJUnitPlatform()
   jvmArgs = ['--add-opens=java.base/java.lang.reflect=ALL-UNNAMED','--add-opens=java.base/java.util=ALL-UNNAMED']
 }
+
 tasks.register('functional', Test) {
   description = "Runs functional tests"
   group = "Verification"
