@@ -471,12 +471,6 @@ public class CicCase {
     private String applicantFullName;
 
     @CCD(
-        label = "Applicant's full name",
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class, CitizenAccess.class}
-    )
-    private List<ListValue<CaseworkerCICDocument>> applicantDocuments;
-
-    @CCD(
         label = "Applicant's address",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
