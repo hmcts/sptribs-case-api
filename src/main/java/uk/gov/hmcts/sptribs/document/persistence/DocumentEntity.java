@@ -54,16 +54,20 @@ public class DocumentEntity {
             return false;
         }
         Class<?> documentEntityObjectEffectiveClass =
-            documentEntityObject instanceof HibernateProxy ? ((HibernateProxy) documentEntityObject)
-                                                                   .getHibernateLazyInitializer().getPersistentClass() : documentEntityObject.getClass();
-        Class<?> thisEffectiveClass = this instanceof HibernateProxy ? ((HibernateProxy) this)
-                                                                       .getHibernateLazyInitializer().getPersistentClass() : this.getClass();
+            documentEntityObject instanceof HibernateProxy
+                ? ((HibernateProxy) documentEntityObject).getHibernateLazyInitializer().getPersistentClass()
+                : documentEntityObject.getClass();
+        Class<?> thisEffectiveClass = this instanceof HibernateProxy
+            ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass()
+            : this.getClass();
         if (thisEffectiveClass != documentEntityObjectEffectiveClass) {
             return false;
         }
-        uk.gov.hmcts.sptribs.document.persistence.DocumentEntity that = (uk.gov.hmcts.sptribs.document.persistence.DocumentEntity) documentEntityObject;
+        uk.gov.hmcts.sptribs.document.persistence.DocumentEntity that
+            = (uk.gov.hmcts.sptribs.document.persistence.DocumentEntity) documentEntityObject;
         return getId() != null && Objects.equals(getId(), that.getId())
-            && getCaseReferenceNumber() != null && Objects.equals(getCaseReferenceNumber(), that.getCaseReferenceNumber());
+            && getCaseReferenceNumber() != null
+            && Objects.equals(getCaseReferenceNumber(), that.getCaseReferenceNumber());
     }
 
     @Override

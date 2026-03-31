@@ -22,7 +22,8 @@ public class DocumentEntityId implements Serializable {
             return false;
         }
 
-        uk.gov.hmcts.sptribs.document.persistence.DocumentEntityId that = (uk.gov.hmcts.sptribs.document.persistence.DocumentEntityId) o;
+        uk.gov.hmcts.sptribs.document.persistence.DocumentEntityId that
+            = (uk.gov.hmcts.sptribs.document.persistence.DocumentEntityId) o;
         return id.equals(that.id) && caseReferenceNumber.equals(that.caseReferenceNumber);
     }
 
