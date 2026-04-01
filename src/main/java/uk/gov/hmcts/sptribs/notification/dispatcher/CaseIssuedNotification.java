@@ -20,6 +20,7 @@ import uk.gov.hmcts.sptribs.notification.TemplateName;
 import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -130,7 +131,10 @@ public class CaseIssuedNotification implements PartiesNotification {
             ? IN_TIME_RESPONSE
             : OUT_OF_TIME_RESPONSE;
 
-        return response.format(dueDate);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        String formattedDate = dueDate.format(formatter);
+
+        return response.format(formattedDate);
     }
 
     private NotificationResponse sendEmailNotification(final Map<String, Object> templateVars, String toEmail,

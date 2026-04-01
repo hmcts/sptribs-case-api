@@ -1,7 +1,5 @@
 package uk.gov.hmcts.sptribs.notification;
 
-import java.time.LocalDate;
-
 public enum EmailRespondentResponses {
 
     OUT_OF_TIME_RESPONSE(
@@ -19,7 +17,7 @@ public enum EmailRespondentResponses {
         this.template = template;
     }
 
-    public String format(LocalDate date) {
+    public String format(String date) {
         return String.format(template, date);
     }
 }

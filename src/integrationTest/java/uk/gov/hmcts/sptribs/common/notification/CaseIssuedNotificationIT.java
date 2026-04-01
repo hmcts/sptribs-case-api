@@ -25,6 +25,7 @@ import uk.gov.hmcts.sptribs.notification.dispatcher.CaseIssuedNotification;
 import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -267,7 +268,10 @@ public class CaseIssuedNotificationIT {
 
     @Test
     void shouldSendEmailToRespondentDateInTime() {
+
         LocalDate today = LocalDate.now();
+        String todayFormatted = today.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+
         final CaseData data = CaseData.builder()
             .cicCase(CicCase.builder()
                 .fullName("Subject Name")
@@ -285,7 +289,7 @@ public class CaseIssuedNotificationIT {
             CONTACT_NAME, "Respondent Name",
             CIC_CASE_RESPONDENT_NAME, "Respondent Name",
             CIC_BUNDLE_DUE_DATE_TEXT, "You should provide the tribunal and the Subject/Applicant/Representative "
-                + "with a case bundle by " + today
+                + "with a case bundle by " + todayFormatted
         );
 
         caseIssuedNotification.sendToRespondent(data, TEST_CASE_ID.toString());
@@ -308,6 +312,8 @@ public class CaseIssuedNotificationIT {
     void shouldSendEmailToRespondentDateOutOfTime() {
 
         LocalDate today = LocalDate.now();
+        String todayFormatted = today.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+
         final CaseData data = CaseData.builder()
             .cicCase(CicCase.builder()
                 .fullName("Subject Name")
@@ -325,7 +331,7 @@ public class CaseIssuedNotificationIT {
             CONTACT_NAME, "Respondent Name",
             CIC_CASE_RESPONDENT_NAME, "Respondent Name",
             CIC_BUNDLE_DUE_DATE_TEXT, "Out of time appeal - You should provide the tribunal with a case bundle by "
-                + today
+                + todayFormatted
                 + ". Do not issue to the Subject/Applicant/Representative until we notify you the appeal has been admitted."
         );
 
@@ -378,6 +384,8 @@ public class CaseIssuedNotificationIT {
         documentList.setValue(listItems);
 
         LocalDate today = LocalDate.now();
+        String todayFormatted = today.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+
         final CaseData data = CaseData.builder()
             .cicCase(CicCase.builder()
                 .fullName("Subject Name")
@@ -399,7 +407,7 @@ public class CaseIssuedNotificationIT {
             CONTACT_NAME, "Respondent Name",
             CIC_CASE_RESPONDENT_NAME, "Respondent Name",
             CIC_BUNDLE_DUE_DATE_TEXT, "You should provide the tribunal and the Subject/Applicant/Representative "
-                + "with a case bundle by " + today
+                + "with a case bundle by " + todayFormatted
         );
 
         caseIssuedNotification.sendToRespondent(data, TEST_CASE_ID.toString());
@@ -451,6 +459,8 @@ public class CaseIssuedNotificationIT {
         documentList.setValue(listItems);
 
         LocalDate today = LocalDate.now();
+        String todayFormatted = today.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+
         final CaseData data = CaseData.builder()
             .cicCase(CicCase.builder()
                 .fullName("Subject Name")
@@ -472,7 +482,8 @@ public class CaseIssuedNotificationIT {
             CONTACT_NAME, "Respondent Name",
             CIC_CASE_RESPONDENT_NAME, "Respondent Name",
             CIC_BUNDLE_DUE_DATE_TEXT, "Out of time appeal - You should provide the tribunal with a case bundle by "
-                + today + ". Do not issue to the Subject/Applicant/Representative until we notify you the appeal has been admitted."
+                + todayFormatted
+                + ". Do not issue to the Subject/Applicant/Representative until we notify you the appeal has been admitted."
         );
 
         caseIssuedNotification.sendToRespondent(data, TEST_CASE_ID.toString());

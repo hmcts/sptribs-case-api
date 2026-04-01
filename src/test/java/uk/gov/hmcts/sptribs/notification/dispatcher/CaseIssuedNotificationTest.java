@@ -26,6 +26,7 @@ import uk.gov.hmcts.sptribs.notification.TemplateName;
 import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -50,6 +51,7 @@ public class CaseIssuedNotificationTest {
     private CaseIssuedNotification caseIssuedNotification;
 
     public static final LocalDate TODAY = LocalDate.now();
+    public static final String TODAY_FORMATTED = TODAY.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
 
     @Test
     void shouldNotifySubjectOfCaseIssuedCitizenWithEmail() {
@@ -185,7 +187,7 @@ public class CaseIssuedNotificationTest {
         Map<String, Object> expectedMap = new HashMap<>();
         expectedMap.put(CommonConstants.CIC_CASE_RESPONDENT_NAME,data.getCicCase().getRespondentName());
         expectedMap.put(CommonConstants.CIC_BUNDLE_DUE_DATE_TEXT,
-            "You should provide the tribunal and the Subject/Applicant/Representative with a case bundle by " + TODAY);
+            "You should provide the tribunal and the Subject/Applicant/Representative with a case bundle by " + TODAY_FORMATTED);
 
         //When
         when(notificationHelper.buildEmailNotificationRequest(any(), anyMap(), any(TemplateName.class)))
@@ -214,7 +216,7 @@ public class CaseIssuedNotificationTest {
         expectedMap.put(CommonConstants.CIC_CASE_RESPONDENT_NAME,data.getCicCase().getRespondentName());
         expectedMap.put(CommonConstants.CIC_BUNDLE_DUE_DATE_TEXT,
             "Out of time appeal - You should provide the tribunal with a case bundle by "
-                + TODAY
+                + TODAY_FORMATTED
                 + ". Do not issue to the Subject/Applicant/Representative until we notify you the appeal has been admitted.");
 
         //When
@@ -273,7 +275,7 @@ public class CaseIssuedNotificationTest {
         expectedMap.put(CommonConstants.CIC_CASE_RESPONDENT_NAME,data.getCicCase().getRespondentName());
         expectedMap.put(CommonConstants.CIC_BUNDLE_DUE_DATE_TEXT,
             "You should provide the tribunal and the Subject/Applicant/Representative with a case bundle by "
-                + TODAY);
+                + TODAY_FORMATTED);
 
         //When
         when(notificationHelper.buildDocumentList(caseIssue.getDocumentList(), 5))
@@ -332,7 +334,7 @@ public class CaseIssuedNotificationTest {
         Map<String, Object> expectedMap = new HashMap<>();
         expectedMap.put(CommonConstants.CIC_CASE_RESPONDENT_NAME,data.getCicCase().getRespondentName());
         expectedMap.put(CommonConstants.CIC_BUNDLE_DUE_DATE_TEXT,
-            "Out of time appeal - You should provide the tribunal with a case bundle by " + TODAY
+            "Out of time appeal - You should provide the tribunal with a case bundle by " + TODAY_FORMATTED
                 + ". Do not issue to the Subject/Applicant/Representative until we notify you the appeal has been admitted.");
 
         //When
