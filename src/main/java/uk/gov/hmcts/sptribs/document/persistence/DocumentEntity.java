@@ -13,6 +13,7 @@ import lombok.Setter;
 import lombok.ToString;
 import org.hibernate.proxy.HibernateProxy;
 
+import java.time.OffsetDateTime;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -32,6 +33,9 @@ public class DocumentEntity {
 
     @Id
     private Long caseReferenceNumber;
+
+    @Column(name = "saved_at", nullable = false)
+    private OffsetDateTime savedAt;
 
     @Column(name = "document_url", nullable = false)
     private String documentUrl;
