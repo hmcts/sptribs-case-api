@@ -105,7 +105,7 @@ public class CaseIssuedNotification implements PartiesNotification {
 
         LocalDate dueDate = cicCase.getRespondentBundleDueDate();
         templateVarsRespondent.put(CommonConstants.CIC_BUNDLE_DUE_DATE_TEXT,
-         (cicCase.getIsCaseInTime()).toBoolean() ? buildTimeString(true, dueDate) : buildTimeString(false, dueDate));
+            cicCase.getIsCaseInTime().toBoolean() ? buildTimeString(true, dueDate) : buildTimeString(false, dueDate));
 
         final NotificationResponse notificationResponse;
         if (ObjectUtils.isNotEmpty(caseData.getCaseIssue().getDocumentList())) {

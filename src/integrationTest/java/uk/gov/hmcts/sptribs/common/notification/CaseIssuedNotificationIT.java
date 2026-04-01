@@ -14,6 +14,7 @@ import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.ccd.sdk.type.DynamicListElement;
 import uk.gov.hmcts.ccd.sdk.type.DynamicMultiSelectList;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
+import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseIssue;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
@@ -273,6 +274,7 @@ public class CaseIssuedNotificationIT {
                 .respondentName("Respondent Name")
                 .alternativeRespondentEmail("test@email.com")
                 .respondentBundleDueDate(today)
+                .isCaseInTime(YesOrNo.YES)
                 .build())
             .build();
 
@@ -304,13 +306,15 @@ public class CaseIssuedNotificationIT {
 
     @Test
     void shouldSendEmailToRespondentDateOutOfTime() {
-        LocalDate outOfTimeDate = LocalDate.now().minusDays(50);
+
+        LocalDate today = LocalDate.now();
         final CaseData data = CaseData.builder()
             .cicCase(CicCase.builder()
                 .fullName("Subject Name")
                 .respondentName("Respondent Name")
                 .alternativeRespondentEmail("test@email.com")
-                .respondentBundleDueDate(outOfTimeDate)
+                .respondentBundleDueDate(today)
+                .isCaseInTime(YesOrNo.NO)
                 .build())
             .build();
 
@@ -321,7 +325,7 @@ public class CaseIssuedNotificationIT {
             CONTACT_NAME, "Respondent Name",
             CIC_CASE_RESPONDENT_NAME, "Respondent Name",
             CIC_BUNDLE_DUE_DATE_TEXT, "Out of time appeal - You should provide the tribunal with a case bundle by "
-                + outOfTimeDate
+                + today
                 + ". Do not issue to the Subject/Applicant/Representative until we notify you the appeal has been admitted."
         );
 
@@ -381,6 +385,7 @@ public class CaseIssuedNotificationIT {
                 .alternativeRespondentEmail("test@email.com")
                 .applicantDocumentsUploaded(applicantCaseDocuments)
                 .respondentBundleDueDate(today)
+                .isCaseInTime(YesOrNo.YES)
                 .build())
             .caseIssue(CaseIssue.builder()
                 .documentList(documentList)
@@ -445,14 +450,15 @@ public class CaseIssuedNotificationIT {
         documentList.setListItems(listItems);
         documentList.setValue(listItems);
 
-        LocalDate todayMinusOne = LocalDate.now().minusDays(1);
+        LocalDate today = LocalDate.now();
         final CaseData data = CaseData.builder()
             .cicCase(CicCase.builder()
                 .fullName("Subject Name")
                 .respondentName("Respondent Name")
                 .alternativeRespondentEmail("test@email.com")
                 .applicantDocumentsUploaded(applicantCaseDocuments)
-                .respondentBundleDueDate(todayMinusOne)
+                .respondentBundleDueDate(today)
+                .isCaseInTime(YesOrNo.NO)
                 .build())
             .caseIssue(CaseIssue.builder()
                 .documentList(documentList)
@@ -466,7 +472,7 @@ public class CaseIssuedNotificationIT {
             CONTACT_NAME, "Respondent Name",
             CIC_CASE_RESPONDENT_NAME, "Respondent Name",
             CIC_BUNDLE_DUE_DATE_TEXT, "Out of time appeal - You should provide the tribunal with a case bundle by "
-                + todayMinusOne + ". Do not issue to the Subject/Applicant/Representative until we notify you the appeal has been admitted."
+                + today + ". Do not issue to the Subject/Applicant/Representative until we notify you the appeal has been admitted."
         );
 
         caseIssuedNotification.sendToRespondent(data, TEST_CASE_ID.toString());
