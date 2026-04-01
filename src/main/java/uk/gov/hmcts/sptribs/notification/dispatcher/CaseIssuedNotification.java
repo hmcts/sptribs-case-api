@@ -103,12 +103,9 @@ public class CaseIssuedNotification implements PartiesNotification {
         final Map<String, Object> templateVarsRespondent = notificationHelper.getRespondentCommonVars(caseNumber, caseData);
         templateVarsRespondent.put(CommonConstants.CIC_CASE_RESPONDENT_NAME, caseData.getCicCase().getRespondentName());
 
-        LocalDate today = LocalDate.now();
-
         LocalDate dueDate = cicCase.getRespondentBundleDueDate();
         templateVarsRespondent.put(CommonConstants.CIC_BUNDLE_DUE_DATE_TEXT,
-            today.isAfter(dueDate)
-                ? buildTimeString(true, dueDate) : buildTimeString(false, dueDate));
+         (cicCase.getIsCaseInTime()).toBoolean() ? buildTimeString(true, dueDate) : buildTimeString(false, dueDate));
 
         final NotificationResponse notificationResponse;
         if (ObjectUtils.isNotEmpty(caseData.getCaseIssue().getDocumentList())) {
@@ -128,10 +125,10 @@ public class CaseIssuedNotification implements PartiesNotification {
         }
     }
 
-    private String buildTimeString(boolean isOutOfTimeRange, LocalDate dueDate) {
-        EmailRespondentResponses response = isOutOfTimeRange
-            ? OUT_OF_TIME_RESPONSE
-            : IN_TIME_RESPONSE;
+    private String buildTimeString(boolean isInTime, LocalDate dueDate) {
+        EmailRespondentResponses response = isInTime
+            ? IN_TIME_RESPONSE
+            : OUT_OF_TIME_RESPONSE;
 
         return response.format(dueDate);
     }

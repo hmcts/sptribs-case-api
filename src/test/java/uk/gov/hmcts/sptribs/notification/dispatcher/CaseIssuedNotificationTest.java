@@ -10,6 +10,7 @@ import uk.gov.hmcts.ccd.sdk.type.AddressGlobalUK;
 import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.ccd.sdk.type.DynamicMultiSelectList;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
+import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseIssue;
 import uk.gov.hmcts.sptribs.caseworker.util.DocumentListUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
@@ -47,6 +48,8 @@ public class CaseIssuedNotificationTest {
 
     @InjectMocks
     private CaseIssuedNotification caseIssuedNotification;
+
+    public static final LocalDate TODAY = LocalDate.now();
 
     @Test
     void shouldNotifySubjectOfCaseIssuedCitizenWithEmail() {
@@ -175,13 +178,14 @@ public class CaseIssuedNotificationTest {
         final CaseData data = getMockCaseData();
         data.getCicCase().setRepresentativeFullName("respFullName");
         data.getCicCase().setRespondentEmail("testRespondentEmail@outlook.com");
-        LocalDate today = LocalDate.now();
-        data.getCicCase().setRespondentBundleDueDate(today);
+
+        data.getCicCase().setRespondentBundleDueDate(TODAY);
+        data.getCicCase().setIsCaseInTime(YesOrNo.YES);
 
         Map<String, Object> expectedMap = new HashMap<>();
         expectedMap.put(CommonConstants.CIC_CASE_RESPONDENT_NAME,data.getCicCase().getRespondentName());
         expectedMap.put(CommonConstants.CIC_BUNDLE_DUE_DATE_TEXT,
-            "You should provide the tribunal and the Subject/Applicant/Representative with a case bundle by " + today);
+            "You should provide the tribunal and the Subject/Applicant/Representative with a case bundle by " + TODAY);
 
         //When
         when(notificationHelper.buildEmailNotificationRequest(any(), anyMap(), any(TemplateName.class)))
@@ -202,14 +206,15 @@ public class CaseIssuedNotificationTest {
         final CaseData data = getMockCaseData();
         data.getCicCase().setRepresentativeFullName("respFullName");
         data.getCicCase().setRespondentEmail("testRespondentEmail@outlook.com");
-        LocalDate todayMinusOne = LocalDate.now().minusDays(1);
-        data.getCicCase().setRespondentBundleDueDate(todayMinusOne);
+
+        data.getCicCase().setRespondentBundleDueDate(TODAY);
+        data.getCicCase().setIsCaseInTime(YesOrNo.NO);
 
         Map<String, Object> expectedMap = new HashMap<>();
         expectedMap.put(CommonConstants.CIC_CASE_RESPONDENT_NAME,data.getCicCase().getRespondentName());
         expectedMap.put(CommonConstants.CIC_BUNDLE_DUE_DATE_TEXT,
             "Out of time appeal - You should provide the tribunal with a case bundle by "
-                + todayMinusOne
+                + TODAY
                 + ". Do not issue to the Subject/Applicant/Representative until we notify you the appeal has been admitted.");
 
         //When
@@ -248,8 +253,11 @@ public class CaseIssuedNotificationTest {
         final CaseData data = caseDetails.getData();
         final CicCase cicCase = data.getCicCase();
         cicCase.setApplicantDocumentsUploaded(applicantDocuments);
-        LocalDate today = LocalDate.now();
-        cicCase.setRespondentBundleDueDate(today);
+
+
+        cicCase.setRespondentBundleDueDate(TODAY);
+        data.getCicCase().setIsCaseInTime(YesOrNo.YES);
+
 
         DynamicMultiSelectList dynamicMultiSelectList = DocumentListUtil.prepareDocumentList(data, "test.url");
         dynamicMultiSelectList.setValue(dynamicMultiSelectList.getListItems());
@@ -265,7 +273,7 @@ public class CaseIssuedNotificationTest {
         expectedMap.put(CommonConstants.CIC_CASE_RESPONDENT_NAME,data.getCicCase().getRespondentName());
         expectedMap.put(CommonConstants.CIC_BUNDLE_DUE_DATE_TEXT,
             "You should provide the tribunal and the Subject/Applicant/Representative with a case bundle by "
-                + today);
+                + TODAY);
 
         //When
         when(notificationHelper.buildDocumentList(caseIssue.getDocumentList(), 5))
@@ -307,8 +315,9 @@ public class CaseIssuedNotificationTest {
         final CaseData data = caseDetails.getData();
         final CicCase cicCase = data.getCicCase();
         cicCase.setApplicantDocumentsUploaded(applicantDocuments);
-        LocalDate todayMinusOne = LocalDate.now().minusDays(1);
-        cicCase.setRespondentBundleDueDate(todayMinusOne);
+
+        data.getCicCase().setRespondentBundleDueDate(TODAY);
+        data.getCicCase().setIsCaseInTime(YesOrNo.NO);
 
         DynamicMultiSelectList dynamicMultiSelectList = DocumentListUtil.prepareDocumentList(data, "test.url");
         dynamicMultiSelectList.setValue(dynamicMultiSelectList.getListItems());
@@ -323,7 +332,7 @@ public class CaseIssuedNotificationTest {
         Map<String, Object> expectedMap = new HashMap<>();
         expectedMap.put(CommonConstants.CIC_CASE_RESPONDENT_NAME,data.getCicCase().getRespondentName());
         expectedMap.put(CommonConstants.CIC_BUNDLE_DUE_DATE_TEXT,
-            "Out of time appeal - You should provide the tribunal with a case bundle by " + todayMinusOne
+            "Out of time appeal - You should provide the tribunal with a case bundle by " + TODAY
                 + ". Do not issue to the Subject/Applicant/Representative until we notify you the appeal has been admitted.");
 
         //When
