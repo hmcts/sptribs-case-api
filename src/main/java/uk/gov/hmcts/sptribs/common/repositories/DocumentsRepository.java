@@ -9,7 +9,7 @@ import java.util.List;
 
 @Repository
 public interface DocumentsRepository extends JpaRepository<DocumentEntity, DocumentEntityId> {
-    List<DocumentEntity> findAllByCaseReferenceNumberOrderByCategoryIdAsc(Long caseReferenceNumber);
+    List<DocumentEntity> findAllByCaseReferenceNumberOrderBySavedAtDesc(Long caseReferenceNumber);
 
     List<DocumentEntity> findAllByDocumentBinaryUrl(String documentBinaryUrl);
 }
