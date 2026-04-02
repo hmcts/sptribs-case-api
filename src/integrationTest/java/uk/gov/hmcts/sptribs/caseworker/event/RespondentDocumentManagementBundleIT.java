@@ -151,7 +151,7 @@ class RespondentDocumentManagementBundleIT {
 
         CaseData afterFirstRun = triggerAboutToSubmit(RESPONDENT_DOCUMENT_MANAGEMENT, caseData);
         afterFirstRun.setNewBundleOrderEnabled(YesNo.YES);
-        assertThat(afterFirstRun.getInitialCicaDocuments()).hasSize(2);
+        assertThat(afterFirstRun.getInitialCaseDocuments()).hasSize(2);
 
         afterFirstRun.getNewDocManagement().setCaseworkerCICDocumentUpload(
             createUploads(
@@ -263,8 +263,8 @@ class RespondentDocumentManagementBundleIT {
         if (data.getNewDocManagement().getCaseworkerCICDocumentUpload() == null) {
             data.getNewDocManagement().setCaseworkerCICDocumentUpload(new ArrayList<>());
         }
-        if (data.getInitialCicaDocuments() == null) {
-            data.setInitialCicaDocuments(new ArrayList<>());
+        if (data.getInitialCaseDocuments() == null) {
+            data.setInitialCaseDocuments(new ArrayList<>());
         }
         if (data.getFurtherUploadedDocuments() == null) {
             data.setFurtherUploadedDocuments(new ArrayList<>());

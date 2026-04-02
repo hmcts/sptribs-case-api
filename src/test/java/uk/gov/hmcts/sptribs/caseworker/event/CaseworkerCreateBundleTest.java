@@ -149,7 +149,7 @@ class CaseworkerCreateBundleTest {
 
         // Set up initial CICA documents
         final List<ListValue<CaseworkerCICDocument>> initialDocuments = getCaseworkerCICDocumentList("initial.pdf");
-        caseData.setInitialCicaDocuments(initialDocuments);
+        caseData.setInitialCaseDocuments(initialDocuments);
 
         // Set up further uploaded documents
         final List<ListValue<CaseworkerCICDocument>> furtherDocuments = getCaseworkerCICDocumentList("further.pdf");
@@ -203,17 +203,16 @@ class CaseworkerCreateBundleTest {
     }
 
     @Test
-    void shouldSuccessfullyCreateBundleWithNewOrderEnabled_noCicaUploadDate() {
+    void shouldSuccessfullyCreateBundleWithNewOrderEnabled_noInitialDocuments_null() {
         final CaseData caseData = caseData();
         caseData.setNewBundleOrderEnabled(YesNo.YES);
+        caseData.setInitialCaseDocuments(null);
 
         final CicCase cicCase = CicCase.builder()
-            .initialCicaDecisionDate(null)
             .build();
 
         LocalDate applicantDocsDate = LocalDate.of(2026, 1, 10);
         List<ListValue<CaseworkerCICDocument>> allApplicantDocs = setApplicantDocsForDate(applicantDocsDate);
-
         cicCase.setApplicantDocumentsUploaded(allApplicantDocs);
 
         final List<ListValue<CaseworkerCICDocument>> caseworkerDocs =
@@ -238,7 +237,7 @@ class CaseworkerCreateBundleTest {
             final CaseData dataAtMockTime = callbackAtMockTime.getCaseDetails().getData();
             // Should use old logic - documents should be in caseDocuments
             assertThat(dataAtMockTime.getCaseDocuments()).hasSize(4);
-            // furtherCaseDocuments should be null as no Cica Upload date
+            // furtherCaseDocuments should be null as no initial doc set
             assertThat(dataAtMockTime.getFurtherCaseDocuments()).isNull();
             assertThat(dataAtMockTime.getBundleConfiguration()).isEqualTo(MULTI_BUNDLE_CONFIG);
             assertThat(dataAtMockTime.getMultiBundleConfiguration()).isEqualTo(List.of(MULTI_BUNDLE_CONFIG));
@@ -265,12 +264,13 @@ class CaseworkerCreateBundleTest {
     void shouldSuccessfullyCreateBundleWithNewOrderEnabled_FurtherUploadsAfterCicaUploadDate() {
         final CaseData caseData = caseData();
         caseData.setNewBundleOrderEnabled(YesNo.YES);
-        caseData.setInitialCicaUploadDate(LocalDate.of(2026, 2, 10));
 
         final CicCase cicCase = CicCase.builder().build();
 
         LocalDate applicantDocsDate = LocalDate.of(2026, 1, 10);
         List<ListValue<CaseworkerCICDocument>> allApplicantDocs = setApplicantDocsForDate(applicantDocsDate);
+        List<ListValue<CaseworkerCICDocument>> initialDocuments = new ArrayList<>(allApplicantDocs);
+        caseData.setInitialCaseDocuments(initialDocuments);
 
         LocalDate additionalApplicantDocsDate = LocalDate.of(2026, 2, 12);
         final ListValue<CaseworkerCICDocument> tribunalForm2 =
@@ -311,9 +311,9 @@ class CaseworkerCreateBundleTest {
 
             final CaseData dataAtMockTime = callbackAtMockTime.getCaseDetails().getData();
             // Should use old logic - documents should be in caseDocuments
-            assertThat(dataAtMockTime.getCaseDocuments()).hasSize(4);
+            assertThat(dataAtMockTime.getCaseDocuments()).hasSize(3);
             // furtherCaseDocuments should have the additional documents
-            assertThat(dataAtMockTime.getFurtherCaseDocuments()).hasSize(4);
+            assertThat(dataAtMockTime.getFurtherCaseDocuments()).hasSize(5);
             assertThat(dataAtMockTime.getBundleConfiguration()).isEqualTo(MULTI_BUNDLE_CONFIG);
             assertThat(dataAtMockTime.getMultiBundleConfiguration()).isEqualTo(List.of(MULTI_BUNDLE_CONFIG));
             return List.of(bundle);

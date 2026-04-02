@@ -270,16 +270,10 @@ public class CaseData {
         label = "Initial CICA Documents",
         typeOverride = Collection,
         typeParameterOverride = "CaseworkerCICDocument",
+        hint = "Initial case documents up to and including CICA initial submission",
         access = {CollectionCreateUpdateOnlyAccess.class}
     )
-    private List<ListValue<CaseworkerCICDocument>> initialCicaDocuments;
-
-    @CCD(
-        label = "Initial CICA Upload Date",
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
-    )
-    @JsonFormat(pattern = "yyyy-MM-dd")
-    private LocalDate initialCicaUploadDate;
+    private List<ListValue<CaseworkerCICDocument>> initialCaseDocuments;
 
     @CCD(
         label = "Further Document Uploads",

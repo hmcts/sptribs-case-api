@@ -366,7 +366,7 @@ public class DocumentListUtilTest {
         ListValue<CaseworkerCICDocument> initialDocListValue = new ListValue<>();
         initialDocListValue.setValue(initialDoc);
         initialDocs.add(initialDocListValue);
-        caseData.setInitialCicaDocuments(initialDocs);
+        caseData.setInitialCaseDocuments(initialDocs);
 
         // Set up other documents that should be included
         List<ListValue<CaseworkerCICDocument>> applicantDocs = new ArrayList<>();
@@ -422,7 +422,7 @@ public class DocumentListUtilTest {
         ListValue<CaseworkerCICDocument> initialDocListValue = new ListValue<>();
         initialDocListValue.setValue(initialDoc);
         initialDocs.add(initialDocListValue);
-        caseData.setInitialCicaDocuments(initialDocs);
+        caseData.setInitialCaseDocuments(initialDocs);
 
         // Set up other documents that should be included
         List<ListValue<CaseworkerCICDocument>> applicantDocs = new ArrayList<>();
@@ -474,7 +474,7 @@ public class DocumentListUtilTest {
         ListValue<CaseworkerCICDocument> initialDocListValue = new ListValue<>();
         initialDocListValue.setValue(initialDoc);
         initialDocs.add(initialDocListValue);
-        caseData.setInitialCicaDocuments(initialDocs);
+        caseData.setInitialCaseDocuments(initialDocs);
 
         // Set up other documents that should be included
         List<ListValue<CaseworkerCICDocument>> applicantDocs = new ArrayList<>();
@@ -546,7 +546,7 @@ public class DocumentListUtilTest {
         ListValue<CaseworkerCICDocument> initialDocListValue = new ListValue<>();
         initialDocListValue.setValue(initialDoc);
         initialDocs.add(initialDocListValue);
-        caseData.setInitialCicaDocuments(initialDocs);
+        caseData.setInitialCaseDocuments(initialDocs);
 
         // Set up other documents that should be included
         List<ListValue<CaseworkerCICDocument>> applicantDocs = new ArrayList<>();
@@ -593,7 +593,7 @@ public class DocumentListUtilTest {
 
         // Set all document lists to null/empty
         caseData.setFurtherUploadedDocuments(null);
-        caseData.setInitialCicaDocuments(null);
+        caseData.setInitialCaseDocuments(null);
 
         CicCase cicCase = CicCase.builder().build();
         caseData.setCicCase(cicCase);

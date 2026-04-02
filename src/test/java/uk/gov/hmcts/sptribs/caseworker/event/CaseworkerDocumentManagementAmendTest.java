@@ -344,7 +344,7 @@ class CaseworkerDocumentManagementAmendTest {
         final List<ListValue<CaseworkerCICDocument>> docMgmtDocs = getCaseworkerCICDocumentListWithUrl("doc-mgmt.pdf",
             testDocument.getUrl());
 
-        caseData.setInitialCicaDocuments(initialDocs);
+        caseData.setInitialCaseDocuments(initialDocs);
         caseData.setFurtherUploadedDocuments(furtherDocs);
         caseData.getAllDocManagement().setCaseworkerCICDocument(docMgmtDocs);
 
@@ -377,10 +377,10 @@ class CaseworkerDocumentManagementAmendTest {
             .getValue().getDocumentEmailContent()).isEqualTo(UPDATED_EMAIL_CONTENT);
 
         // Should also update initial CICA documents when new bundle order is enabled
-        assertThat(aboutToSubmitResponse.getData().getInitialCicaDocuments().getFirst().getValue()).isNotNull();
-        assertThat(aboutToSubmitResponse.getData().getInitialCicaDocuments().getFirst()
+        assertThat(aboutToSubmitResponse.getData().getInitialCaseDocuments().getFirst().getValue()).isNotNull();
+        assertThat(aboutToSubmitResponse.getData().getInitialCaseDocuments().getFirst()
             .getValue().getDocumentCategory()).isEqualTo(APPLICATION_FORM);
-        assertThat(aboutToSubmitResponse.getData().getInitialCicaDocuments().getFirst()
+        assertThat(aboutToSubmitResponse.getData().getInitialCaseDocuments().getFirst()
             .getValue().getDocumentEmailContent()).isEqualTo(UPDATED_EMAIL_CONTENT);
 
         // Should also update further uploaded documents when new bundle order is enabled
@@ -406,7 +406,7 @@ class CaseworkerDocumentManagementAmendTest {
         final List<ListValue<CaseworkerCICDocument>> docMgmtDocs = getCaseworkerCICDocumentListWithUrl("doc-mgmt.pdf",
             testDocument.getUrl());
 
-        caseData.setInitialCicaDocuments(initialDocs);
+        caseData.setInitialCaseDocuments(initialDocs);
         caseData.setFurtherUploadedDocuments(furtherDocs);
         caseData.getAllDocManagement().setCaseworkerCICDocument(docMgmtDocs);
 
@@ -439,7 +439,7 @@ class CaseworkerDocumentManagementAmendTest {
             .getValue().getDocumentEmailContent()).isEqualTo(UPDATED_EMAIL_CONTENT);
 
         // Should NOT update initial CICA documents when new bundle order is disabled
-        assertThat(aboutToSubmitResponse.getData().getInitialCicaDocuments().getFirst()
+        assertThat(aboutToSubmitResponse.getData().getInitialCaseDocuments().getFirst()
             .getValue().getDocumentEmailContent()).isEqualTo("some email content"); // Original value
 
         // Should NOT update further uploaded documents when new bundle order is disabled

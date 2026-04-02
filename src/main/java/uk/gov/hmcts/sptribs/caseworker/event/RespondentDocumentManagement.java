@@ -20,10 +20,11 @@ import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocumentUpload;
 
 import java.time.Clock;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+import static uk.gov.hmcts.sptribs.caseworker.util.DocumentListUtil.addToExistingDocumentList;
+import static uk.gov.hmcts.sptribs.caseworker.util.DocumentListUtil.getAllCaseDocuments;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.RESPONDENT_DOCUMENT_MANAGEMENT;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingOutcome;
@@ -106,14 +107,10 @@ public class RespondentDocumentManagement implements CCDConfig<CaseData, State, 
 
         if (caseData.isBundleOrderEnabled()) {
             if (auditEventService.hasCaseEvent(String.valueOf(details.getId()), RESPONDENT_DOCUMENT_MANAGEMENT)) {
-                if (caseData.getFurtherUploadedDocuments() == null) {
-                    caseData.setFurtherUploadedDocuments(documents);
-                } else {
-                    caseData.getFurtherUploadedDocuments().addAll(documents);
-                }
+                caseData.setFurtherUploadedDocuments(addToExistingDocumentList(caseData.getFurtherUploadedDocuments(), documents));
             } else {
-                caseData.setInitialCicaDocuments(documents);
-                caseData.setInitialCicaUploadDate(LocalDate.now(clock));
+                documents = getAllCaseDocuments(caseData);
+                caseData.setInitialCaseDocuments(addToExistingDocumentList(caseData.getInitialCaseDocuments(), documents));
             }
         }
 

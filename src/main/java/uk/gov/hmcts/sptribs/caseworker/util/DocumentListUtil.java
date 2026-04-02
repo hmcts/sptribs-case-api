@@ -90,6 +90,12 @@ public final class DocumentListUtil {
             .build();
     }
 
+    public static List<CaseworkerCICDocument> extractDocumentsFromListValues(List<ListValue<CaseworkerCICDocument>> listValues) {
+        return CollectionUtils.isEmpty(listValues)
+            ? new ArrayList<>()
+            : listValues.stream().map(ListValue::getValue).toList();
+    }
+
     private static List<DynamicListElement> getDynamicListElements(List<CaseworkerCICDocument> docList, String fileType) {
         return docList
             .stream()
@@ -161,6 +167,15 @@ public final class DocumentListUtil {
             .build();
     }
 
+    public static List<ListValue<CaseworkerCICDocument>> addToExistingDocumentList(
+            List<ListValue<CaseworkerCICDocument>> existing,
+            List<ListValue<CaseworkerCICDocument>> toAdd) {
+        if (CollectionUtils.isEmpty(existing)) {
+            return toAdd;
+        }
+        existing.addAll(toAdd);
+        return existing;
+    }
 
     private static void createDocumentList(String apiUrl, List<DynamicListElement> dynamicListElements, CaseworkerCICDocument doc) {
         String documentId = StringUtils.substringAfterLast(doc.getDocumentLink().getUrl(),
