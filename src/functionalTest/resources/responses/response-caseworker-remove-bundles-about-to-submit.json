@@ -4,9 +4,13 @@
       {
         "id": "1",
         "value": {
-          "id": "f1b4c0d5-bb1b-4063-90e1-6d13c5e5bc9e",
+          "id": "3",
+          "dateAndTime": "2024-06-09T12:00:00.000",
           "title": "CIC Bundle",
           "description": "",
+          "stitchedDocument": {
+            "document_filename": "3-cicBundle.pdf"
+          },
           "folders": [
             {
               "id": "37",
@@ -89,10 +93,6 @@
         }
       }
     ],
-    "cicCaseRespondentName": "Appeals team",
-    "cicCaseRespondentOrganisation": "CICA",
-    "cicCaseRespondentEmail": "appeals.team@cica.gov.uk",
-    "stayIsCaseStayed": "No",
-    "hyphenatedCaseRef": "1714-0484-2347-8720"
+    "cicCaseRemoveBundlesList": {}
   }
 }

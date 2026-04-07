@@ -14,6 +14,7 @@ public final class TestEventConstants {
     public static final String CASEWORKER_CLOSE_THE_CASE = "caseworker-close-the-case";
     public static final String CASEWORKER_CONTACT_PARTIES = "contact-parties";
     public static final String CASEWORKER_CREATE_DRAFT_ORDER = "create-draft-order";
+    public static final String CASEWORKER_DELETE_DRAFT_ORDER = "caseworker-delete-draft-order";
     public static final String CASEWORKER_EDIT_CICA_CASE_DETAILS = "caseworker-edit-cica-case-details";
     public static final String CASEWORKER_CREATE_HEARING_SUMMARY = "create-hearing-summary";
     public static final String CASEWORKER_EDIT_HEARING_SUMMARY = "edit-hearing-summary";
@@ -42,7 +43,7 @@ public final class TestEventConstants {
 
     public static final String CREATE_BUNDLE = "createBundle";
     public static final String STITCH_BUNDLE = "stitchBundle";
-    public static final String EDIT_BUNDLE = "editBundle";
+    public static final String REMOVE_BUNDLES = "removeBundles";
     public static final String CLONE_BUNDLE = "cloneBundle";
     public static final String ASYNC_STITCH_COMPLETE = "asyncStitchingComplete";
 

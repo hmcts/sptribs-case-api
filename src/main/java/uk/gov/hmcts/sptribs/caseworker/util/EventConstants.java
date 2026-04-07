@@ -23,6 +23,7 @@ public final class EventConstants {
     public static final String CASEWORKER_CREATE_DRAFT_ORDER = "create-draft-order";
     public static final String CASEWORKER_CREATE_AND_SEND_ORDER = "create-and-send-order";
     public static final String CASEWORKER_CREATE_HEARING_SUMMARY = "create-hearing-summary";
+    public static final String CASEWORKER_DELETE_DRAFT_ORDER = "caseworker-delete-draft-order";
     public static final String CASEWORKER_EDIT_HEARING_SUMMARY = "edit-hearing-summary";
     public static final String CASEWORKER_EDIT_CASE = "edit-case";
     public static final String CASEWORKER_EDIT_DRAFT_ORDER = "caseworker-edit-draft-order";
@@ -55,7 +56,7 @@ public final class EventConstants {
     public static final String CASEWORKER_REFER_TO_JUDGE = "refer-to-judge";
     public static final String CREATE_BUNDLE = "createBundle";
     public static final String ASYNC_STITCH_COMPLETE = "asyncStitchingComplete";
-    public static final String EDIT_BUNDLE = "editBundle";
+    public static final String REMOVE_BUNDLES = "removeBundles";
     public static final String CLONE_BUNDLE = "cloneBundle";
 
     public static final String CITIZEN_CIC_CREATE_CASE = "citizen-cic-create-dss-application";

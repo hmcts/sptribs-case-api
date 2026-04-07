@@ -247,6 +247,8 @@ if (System.getenv("CI") == null) {
 project.tasks['sonarqube'].dependsOn jacocoTestReport
 
 def sonarExclusions = [
+  '**/uk/gov/hmcts/sptribs/bankholidays/config/**',
+  '**/uk/gov/hmcts/sptribs/bankholidays/model/**',
   '**/uk/gov/hmcts/sptribs/common/ccd/**',
   '**/uk/gov/hmcts/sptribs/common/model/Status.java',
   '**/uk/gov/hmcts/sptribs/ciccase/model/accessprofile/**',
@@ -261,7 +263,6 @@ def sonarExclusions = [
   '**/uk/gov/hmcts/sptribs/common/service/CaseDataFieldService.java',
   '**/uk/gov/hmcts/sptribs/taskmanagement/model/**'
 ]
-
 sonarqube {
   properties {
     property "sonar.projectName", "sptribs :: sptribs-case-api"
@@ -379,6 +380,7 @@ dependencies {
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-actuator'
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-aop'
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-json'
+  implementation group: 'org.springframework.boot', name: 'spring-boot-starter-cache'
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-data-jpa'
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-validation', version: versions.springBoot
   implementation group: 'org.springframework.retry', name: 'spring-retry', version: '2.0.12'

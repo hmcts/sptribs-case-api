@@ -281,7 +281,9 @@ public class CaseTypeTab implements CCDConfig<CaseData, State, UserRole> {
         configBuilder.tab("cicaDetails", "CICA Details")
             .forRoles(CASEWORKER)
             .label("CICA Details", null, "#### CICA Details")
-            .field(CaseData::getEditCicaCaseDetails);
+            .field(CaseData::getEditCicaCaseDetails)
+            .label("CICA Bundle Due Date", null, "#### CICA Bundle Due Date")
+            .field("cicCaseRespondentBundleDueDate");
     }
 
     private void buildHearing(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
