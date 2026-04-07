@@ -1,16 +1,12 @@
 package uk.gov.hmcts.sptribs.taskmanagement;
 
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import uk.gov.hmcts.sptribs.ciccase.model.AdminAction;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.taskmanagement.model.TaskType;
 
-import java.time.LocalDate;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -33,7 +29,6 @@ import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseClosed;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.ReadyToList;
-import static uk.gov.hmcts.sptribs.taskmanagement.model.TaskType.followUpNoncomplianceOfDirections;
 import static uk.gov.hmcts.sptribs.taskmanagement.model.TaskType.issueDueDate;
 import static uk.gov.hmcts.sptribs.taskmanagement.model.TaskType.processCaseWithdrawalDirections;
 import static uk.gov.hmcts.sptribs.taskmanagement.model.TaskType.processCaseWithdrawalDirectionsListed;
@@ -64,7 +59,6 @@ import static uk.gov.hmcts.sptribs.taskmanagement.model.TaskType.reviewListingDi
 import static uk.gov.hmcts.sptribs.taskmanagement.model.TaskType.reviewListingDirectionsLO;
 import static uk.gov.hmcts.sptribs.taskmanagement.model.TaskType.reviewNewCaseAndProvideDirectionsJudge;
 import static uk.gov.hmcts.sptribs.taskmanagement.model.TaskType.reviewNewCaseAndProvideDirectionsLO;
-import static uk.gov.hmcts.sptribs.taskmanagement.model.TaskType.reviewOrder;
 import static uk.gov.hmcts.sptribs.taskmanagement.model.TaskType.reviewOtherRequestJudge;
 import static uk.gov.hmcts.sptribs.taskmanagement.model.TaskType.reviewOtherRequestLO;
 import static uk.gov.hmcts.sptribs.taskmanagement.model.TaskType.reviewPostponementRequestJudge;
@@ -111,24 +105,6 @@ class TaskInitiationResolverTest {
     void shouldResolveReferToLegalOfficerInitiationTasks(State state, String referralType, List<TaskType> expected) {
         assertThat(TaskInitiationResolver.referToLegalOfficerInitiationTasks(state, referralType))
             .containsExactlyElementsOf(expected);
-    }
-
-    @Test
-    void shouldResolveCreateAndSendOrderInitiationTasks() {
-        LocalDate dueDate = LocalDate.of(2026, 2, 1);
-
-        assertThat(TaskInitiationResolver.createAndSendOrderInitiationTasks(
-            CaseManagement, dueDate, Set.of(AdminAction.ADMIN_ACTION_REQUIRED)))
-            .containsExactly(followUpNoncomplianceOfDirections, reviewOrder);
-
-        assertThat(TaskInitiationResolver.createAndSendOrderInitiationTasks(
-            ReadyToList, dueDate, Set.of(AdminAction.ADMIN_ACTION_REQUIRED)))
-            .containsExactly(reviewOrder);
-
-        assertThat(TaskInitiationResolver.createAndSendOrderInitiationTasks(CaseManagement, dueDate, null))
-            .containsExactly(followUpNoncomplianceOfDirections);
-
-        assertThat(TaskInitiationResolver.createAndSendOrderInitiationTasks(CaseManagement, null, null)).isEmpty();
     }
 
     private static Stream<Arguments> createDraftOrderInitiationCases() {

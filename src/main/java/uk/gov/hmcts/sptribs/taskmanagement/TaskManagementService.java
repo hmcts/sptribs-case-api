@@ -3,6 +3,8 @@ package uk.gov.hmcts.sptribs.taskmanagement;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.ccd.sdk.taskmanagement.TaskOutboxService;
+import uk.gov.hmcts.ccd.sdk.taskmanagement.delay.DelayUntilRequest;
+import uk.gov.hmcts.ccd.sdk.taskmanagement.delay.DelayUntilResolver;
 import uk.gov.hmcts.ccd.sdk.taskmanagement.model.TaskPayload;
 import uk.gov.hmcts.ccd.sdk.taskmanagement.model.TaskPermission;
 import uk.gov.hmcts.ccd.sdk.taskmanagement.model.outbox.TerminateTaskOutboxPayload;
@@ -11,6 +13,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.taskmanagement.model.TaskAccess;
 import uk.gov.hmcts.sptribs.taskmanagement.model.TaskType;
 
+import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.List;
@@ -46,6 +49,7 @@ import static uk.gov.hmcts.sptribs.taskmanagement.model.TaskAccess.TRIBUNAL_CASE
 public class TaskManagementService {
 
     private final TaskOutboxService taskOutboxService;
+    private final DelayUntilResolver delayUntilResolver;
 
     public void enqueueInitiationTasks(List<TaskType> taskTypes, CaseData caseData, long caseId) {
         if (taskTypes == null || taskTypes.isEmpty()) {
@@ -56,6 +60,21 @@ public class TaskManagementService {
             .distinct()
             .map(taskType -> new TaskCreateRequest(getTaskPayload(taskType, caseData, caseId)))
             .forEach(taskOutboxService::enqueueTaskCreateRequest);
+    }
+
+    public void enqueueInitiationTasksWithDelay(List<TaskType> taskTypes,
+                                                CaseData caseData,
+                                                long caseId,
+                                                DelayUntilRequest delayUntilRequest) {
+        if (taskTypes == null || taskTypes.isEmpty()) {
+            return;
+        }
+        LocalDateTime delayUntilDate = delayUntilResolver.resolve(delayUntilRequest);
+
+        taskTypes.stream()
+            .distinct()
+            .map(taskType -> new TaskCreateRequest(getTaskPayload(taskType, caseData, caseId)))
+            .forEach(taskCreateRequest -> taskOutboxService.enqueueTaskCreateRequest(taskCreateRequest, delayUntilDate));
     }
 
     public void enqueueCompletionTasks(List<TaskType> taskTypes, long caseId) {

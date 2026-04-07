@@ -1,13 +1,9 @@
 package uk.gov.hmcts.sptribs.taskmanagement;
 
-import uk.gov.hmcts.sptribs.ciccase.model.AdminAction;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.taskmanagement.model.TaskType;
 
-import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 import static uk.gov.hmcts.sptribs.caseworker.model.ReferralReason.CORRECTIONS;
 import static uk.gov.hmcts.sptribs.caseworker.model.ReferralReason.LISTED_CASE;
@@ -24,12 +20,10 @@ import static uk.gov.hmcts.sptribs.caseworker.model.ReferralReason.STRIKE_OUT_RE
 import static uk.gov.hmcts.sptribs.caseworker.model.ReferralReason.TIME_EXTENSION_REQUEST;
 import static uk.gov.hmcts.sptribs.caseworker.model.ReferralReason.WITHDRAWAL_REQUEST;
 import static uk.gov.hmcts.sptribs.caseworker.model.ReferralReason.WRITTEN_REASONS_REQUEST;
-import static uk.gov.hmcts.sptribs.ciccase.model.AdminAction.ADMIN_ACTION_REQUIRED;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseClosed;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.ReadyToList;
-import static uk.gov.hmcts.sptribs.taskmanagement.model.TaskType.followUpNoncomplianceOfDirections;
 import static uk.gov.hmcts.sptribs.taskmanagement.model.TaskType.issueDueDate;
 import static uk.gov.hmcts.sptribs.taskmanagement.model.TaskType.processCaseWithdrawalDirections;
 import static uk.gov.hmcts.sptribs.taskmanagement.model.TaskType.processCaseWithdrawalDirectionsListed;
@@ -61,7 +55,6 @@ import static uk.gov.hmcts.sptribs.taskmanagement.model.TaskType.reviewListingDi
 import static uk.gov.hmcts.sptribs.taskmanagement.model.TaskType.reviewListingDirectionsLO;
 import static uk.gov.hmcts.sptribs.taskmanagement.model.TaskType.reviewNewCaseAndProvideDirectionsJudge;
 import static uk.gov.hmcts.sptribs.taskmanagement.model.TaskType.reviewNewCaseAndProvideDirectionsLO;
-import static uk.gov.hmcts.sptribs.taskmanagement.model.TaskType.reviewOrder;
 import static uk.gov.hmcts.sptribs.taskmanagement.model.TaskType.reviewOtherRequestJudge;
 import static uk.gov.hmcts.sptribs.taskmanagement.model.TaskType.reviewOtherRequestLO;
 import static uk.gov.hmcts.sptribs.taskmanagement.model.TaskType.reviewPostponementRequestJudge;
@@ -313,21 +306,5 @@ public final class TaskInitiationResolver {
             return List.of(reviewOtherRequestLO);
         }
         return List.of();
-    }
-
-    public static List<TaskType> createAndSendOrderInitiationTasks(
-        State state,
-        LocalDate firstOrderDueDate,
-        Set<AdminAction> adminActionRequired
-    ) {
-        List<TaskType> taskTypes = new ArrayList<>();
-        if (state == CaseManagement && firstOrderDueDate != null) {
-            taskTypes.add(followUpNoncomplianceOfDirections);
-        }
-
-        if (adminActionRequired != null && adminActionRequired.contains(ADMIN_ACTION_REQUIRED)) {
-            taskTypes.add(reviewOrder);
-        }
-        return taskTypes;
     }
 }

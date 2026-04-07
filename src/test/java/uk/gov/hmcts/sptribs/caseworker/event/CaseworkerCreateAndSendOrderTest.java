@@ -8,6 +8,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.ccd.sdk.ConfigBuilderImpl;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.Event;
+import uk.gov.hmcts.ccd.sdk.taskmanagement.delay.DelayUntilRequest;
 import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.ccd.sdk.type.FlagDetail;
 import uk.gov.hmcts.ccd.sdk.type.Flags;
@@ -608,9 +609,22 @@ class CaseworkerCreateAndSendOrderTest {
             eq(TEST_CASE_ID)
         );
         verify(taskManagementService).enqueueInitiationTasks(
-            eq(List.of(followUpNoncomplianceOfDirections, reviewOrder)),
+            eq(List.of(reviewOrder)),
             eq(caseData),
             eq(TEST_CASE_ID)
+        );
+        verify(taskManagementService).enqueueInitiationTasksWithDelay(
+            eq(List.of(followUpNoncomplianceOfDirections)),
+            eq(caseData),
+            eq(TEST_CASE_ID),
+            argThat((DelayUntilRequest request) ->
+                request.getDelayUntilOrigin().equals(caseData.getCicCase().getFirstOrderDueDate().toString())
+                    && request.getDelayUntilIntervalDays().equals(1)
+                    && request.getDelayUntilNonWorkingCalendar().equals(CaseworkerCreateAndSendOrder.CALENDAR_URLS)
+                    && request.getDelayUntilNonWorkingDaysOfWeek().equals(CaseworkerCreateAndSendOrder.NON_WORKING_DAYS_OF_WEEK)
+                    && request.getDelayUntilSkipNonWorkingDays().equals(Boolean.FALSE)
+                    && request.getDelayUntilMustBeWorkingDay().equals(CaseworkerCreateAndSendOrder.NEXT)
+            )
         );
     }
 

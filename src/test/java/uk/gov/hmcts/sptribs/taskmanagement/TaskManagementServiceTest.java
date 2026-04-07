@@ -7,6 +7,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.ccd.sdk.taskmanagement.TaskOutboxService;
+import uk.gov.hmcts.ccd.sdk.taskmanagement.delay.DelayUntilRequest;
+import uk.gov.hmcts.ccd.sdk.taskmanagement.delay.DelayUntilResolver;
 import uk.gov.hmcts.ccd.sdk.taskmanagement.model.TaskPayload;
 import uk.gov.hmcts.ccd.sdk.taskmanagement.model.TaskPermission;
 import uk.gov.hmcts.ccd.sdk.taskmanagement.model.outbox.TerminateTaskOutboxPayload;
@@ -19,6 +21,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.taskmanagement.model.TaskType;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.List;
@@ -30,6 +33,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class TaskManagementServiceTest {
@@ -38,6 +42,9 @@ class TaskManagementServiceTest {
 
     @Mock
     private TaskOutboxService taskOutboxService;
+
+    @Mock
+    private DelayUntilResolver delayUntilResolver;
 
     @InjectMocks
     private TaskManagementService taskManagementService;
@@ -50,6 +57,18 @@ class TaskManagementServiceTest {
         taskManagementService.enqueueInitiationTasks(List.of(), caseData, CASE_ID);
 
         verifyNoInteractions(taskOutboxService);
+    }
+
+    @Test
+    void shouldIgnoreNullOrEmptyDelayedInitiationTasks() {
+        CaseData caseData = CaseData.builder().build();
+        DelayUntilRequest delayUntilRequest = DelayUntilRequest.builder().delayUntilOrigin("2026-01-02").build();
+
+        taskManagementService.enqueueInitiationTasksWithDelay(null, caseData, CASE_ID, delayUntilRequest);
+        taskManagementService.enqueueInitiationTasksWithDelay(List.of(), caseData, CASE_ID, delayUntilRequest);
+
+        verifyNoInteractions(taskOutboxService);
+        verifyNoInteractions(delayUntilResolver);
     }
 
     @Test
@@ -70,6 +89,34 @@ class TaskManagementServiceTest {
         List<TaskCreateRequest> requests = captor.getAllValues();
         assertThat(requests).extracting(request -> request.task().getType())
             .containsExactly("registerNewCase", "reviewSetAsideRequest");
+    }
+
+    @Test
+    void shouldEnqueueDistinctDelayedInitiationTasksUsingResolvedDelayDate() {
+        CaseData caseData = CaseData.builder()
+            .caseNameHmctsInternal("Case name")
+            .build();
+        DelayUntilRequest delayUntilRequest = DelayUntilRequest.builder()
+            .delayUntilOrigin("2026-01-02")
+            .delayUntilIntervalDays(1)
+            .build();
+        LocalDateTime delayUntilDateTime = LocalDateTime.of(2026, 1, 5, 9, 0);
+        when(delayUntilResolver.resolve(delayUntilRequest)).thenReturn(delayUntilDateTime);
+
+        taskManagementService.enqueueInitiationTasksWithDelay(
+            List.of(TaskType.registerNewCase, TaskType.registerNewCase, TaskType.reviewSetAsideRequest),
+            caseData,
+            CASE_ID,
+            delayUntilRequest
+        );
+
+        ArgumentCaptor<TaskCreateRequest> requestCaptor = ArgumentCaptor.forClass(TaskCreateRequest.class);
+        ArgumentCaptor<LocalDateTime> delayCaptor = ArgumentCaptor.forClass(LocalDateTime.class);
+        verify(taskOutboxService, times(2)).enqueueTaskCreateRequest(requestCaptor.capture(), delayCaptor.capture());
+
+        assertThat(requestCaptor.getAllValues()).extracting(request -> request.task().getType())
+            .containsExactly("registerNewCase", "reviewSetAsideRequest");
+        assertThat(delayCaptor.getAllValues()).containsOnly(delayUntilDateTime);
     }
 
     @Test
