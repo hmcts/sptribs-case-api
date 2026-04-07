@@ -30,7 +30,7 @@ plugins {
   id 'io.spring.dependency-management' version '1.1.7'
   id 'org.springframework.boot' version '3.5.10'
   id 'com.github.ben-manes.versions' version '0.50.0'
-  id 'hmcts.ccd.sdk' version '6.6.2'
+  id 'hmcts.ccd.sdk' version 'task-management-test-20260407-083043'
   id "au.com.dius.pact" version "4.3.10"
   id 'com.github.hmcts.rse-cft-lib' version '0.19.2017'
 }
@@ -109,18 +109,18 @@ configurations {
   cftlibTestRuntime.extendsFrom testRuntime
 }
 
-configurations.configureEach {
-  resolutionStrategy.eachDependency { details ->
-    if (details.requested.group == 'com.github.hmcts') {
-      if (details.requested.name == 'decentralised-runtime'
-          || details.requested.name == 'task-management'
-          || details.requested.name == 'ccd-config-generator') {
-        details.useVersion 'task-mgmt-40.1-46b69557'
-        details.because 'Ensure task-management, decentralised-runtime and ccd-config-generator stay aligned'
-      }
-    }
-  }
-}
+//configurations.configureEach {
+//  resolutionStrategy.eachDependency { details ->
+//    if (details.requested.group == 'com.github.hmcts') {
+//      if (details.requested.name == 'decentralised-runtime'
+//          || details.requested.name == 'task-management'
+//          || details.requested.name == 'ccd-config-generator') {
+//        details.useVersion 'task-mgmt-40.1-46b69557'
+//        details.because 'Ensure task-management, decentralised-runtime and ccd-config-generator stay aligned'
+//      }
+//    }
+//  }
+//}
 
 tasks.withType(JavaCompile) {
   options.compilerArgs << "-Xlint:unchecked" << "-Werror"
@@ -346,9 +346,9 @@ dependencies {
 // uncomment for local version
 // implementation group: 'com.github.hmcts', name: 'ccd-config-generator', version: 'DEV-SNAPSHOT'
 //  implementation 'com.github.hmcts:task-management:DEV-SNAPSHOT'
-  implementation 'com.github.hmcts:task-management:task-mgmt-40.1-46b69557'
-  implementation 'com.github.hmcts:decentralised-runtime:task-mgmt-40.1-46b69557'
-  implementation 'com.github.hmcts:ccd-config-generator:task-mgmt-40.1-46b69557'
+  implementation 'com.github.hmcts:task-management:task-management-test-20260407-083043'
+  //  implementation 'com.github.hmcts:decentralised-runtime:task-mgmt-40.1-46b69557'
+//  implementation 'com.github.hmcts:ccd-config-generator:task-mgmt-40.1-46b69557'
 
   implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: versions.jackson
   implementation group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: versions.jackson
@@ -451,9 +451,9 @@ dependencies {
   // Provides fast-reload of just the sptribs service.
   cftlibImplementation 'org.springframework.boot:spring-boot-devtools'
   cftlibTestImplementation sourceSets.test.runtimeClasspath
-  cftlibTestImplementation 'com.github.hmcts:task-management:task-mgmt-40.1-46b69557'
-  cftlibTestImplementation 'com.github.hmcts:decentralised-runtime:task-mgmt-40.1-46b69557'
-  cftlibTestImplementation 'com.github.hmcts:ccd-config-generator:task-mgmt-40.1-46b69557'
+  cftlibTestImplementation 'com.github.hmcts:task-management:task-management-test-20260407-083043'
+//  cftlibTestImplementation 'com.github.hmcts:decentralised-runtime:task-mgmt-40.1-46b69557'
+//  cftlibTestImplementation 'com.github.hmcts:ccd-config-generator:task-mgmt-40.1-46b69557'
   cftlibTestImplementation 'com.microsoft.playwright:playwright:1.58.0'
   cftlibTestImplementation 'org.junit-pioneer:junit-pioneer:2.3.0'
   cftlibTestImplementation 'io.github.artsok:rerunner-jupiter:2.1.6'

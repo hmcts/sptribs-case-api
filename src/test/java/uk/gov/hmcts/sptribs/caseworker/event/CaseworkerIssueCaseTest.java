@@ -95,7 +95,8 @@ class CaseworkerIssueCaseTest {
 
     @BeforeEach
     void setUp() {
-        caseworkerIssueCase = new CaseworkerIssueCase(caseIssuedNotification, bankHolidayService, bankHolidayUrl, baseUrl);
+        caseworkerIssueCase =
+            new CaseworkerIssueCase(caseIssuedNotification, bankHolidayService, bankHolidayUrl, baseUrl, taskManagementService);
 
         Mockito.reset(bankHolidayService, caseIssuedNotification);
     }
@@ -109,10 +110,6 @@ class CaseworkerIssueCaseTest {
         assertThat(getEventsFrom(configBuilder).values())
             .extracting(Event::getId)
             .contains(CASEWORKER_ISSUE_CASE);
-
-        assertThat(getEventsFrom(configBuilder).values())
-            .extracting(Event::isPublishToCamunda)
-            .contains(true);
 
         assertThat(getEventsFrom(configBuilder).values())
             .extracting(Event::getGrants)
@@ -318,6 +315,7 @@ class CaseworkerIssueCaseTest {
                 .build();
         CaseDetails<CaseData, State> details = new CaseDetails<>();
         details.setData(caseData);
+        details.setId(TEST_CASE_ID);
 
         when(bankHolidayService.getScottishBankHolidays(anyString())).thenReturn(getBankHolidayResponse());
 
