@@ -175,7 +175,7 @@ class CaseworkerCreateBundleTest {
             final BundleCallback callbackAtMockTime = (BundleCallback) callback.getArguments()[0];
 
             final CaseData dataAtMockTime = callbackAtMockTime.getCaseDetails().getData();
-            // Should use old logic - documents should be in caseDocuments
+            // All documents should be in caseDocuments
             assertThat(dataAtMockTime.getCaseDocuments()).hasSize(4);
             // furtherCaseDocuments should be null as no initial doc set
             assertThat(dataAtMockTime.getFurtherCaseDocuments()).isNull();
@@ -250,7 +250,7 @@ class CaseworkerCreateBundleTest {
             final BundleCallback callbackAtMockTime = (BundleCallback) callback.getArguments()[0];
 
             final CaseData dataAtMockTime = callbackAtMockTime.getCaseDetails().getData();
-            // Should use old logic - documents should be in caseDocuments
+            // Initial documents should be in caseDocuments
             assertThat(dataAtMockTime.getCaseDocuments()).hasSize(3);
             // furtherCaseDocuments should have the additional documents
             assertThat(dataAtMockTime.getFurtherCaseDocuments()).hasSize(5);
