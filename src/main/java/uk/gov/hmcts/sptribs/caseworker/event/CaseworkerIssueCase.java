@@ -133,7 +133,6 @@ public class CaseworkerIssueCase implements CCDConfig<CaseData, State, UserRole>
         LocalDate verifiedDueDate = isWorkingDay(dueDate, bankHolidays) ? dueDate : getNextWorkingDay(dueDate, bankHolidays);
         cicCase.setRespondentBundleDueDate(verifiedDueDate);
 
-
         taskManagementService.enqueueCompletionTasks(List.of(issueCaseToRespondent), details.getId());
         taskManagementService.enqueueInitiationTasks(List.of(createDueDate), caseData, details.getId());
 
