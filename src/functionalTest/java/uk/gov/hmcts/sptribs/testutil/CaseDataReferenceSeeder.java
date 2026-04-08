@@ -12,12 +12,24 @@ import java.sql.SQLException;
 @Slf4j
 public class CaseDataReferenceSeeder {
 
-    private static final String SPTRIBS_JDBC_URL =
-        System.getenv().getOrDefault("FT_SPTRIBS_JDBC_URL", "jdbc:postgresql://localhost:6432/sptribs");
-    private static final String SPTRIBS_DB_USER =
-        System.getenv().getOrDefault("FT_SPTRIBS_DB_USER", "postgres");
-    private static final String SPTRIBS_DB_PASSWORD =
-        System.getenv().getOrDefault("FT_SPTRIBS_DB_PASSWORD", "");
+    private static final String SPTRIBS_JDBC_URL = System.getenv().getOrDefault(
+        "FT_SPTRIBS_JDBC_URL",
+        String.format(
+            "jdbc:postgresql://%s:%s/%s%s",
+            System.getenv().getOrDefault("POSTGRES_HOST", "localhost"),
+            System.getenv().getOrDefault("POSTGRES_PORT", "6432"),
+            System.getenv().getOrDefault("POSTGRES_NAME", "sptribs"),
+            System.getenv().getOrDefault("POSTGRES_CONNECTION_OPTIONS", "")
+        )
+    );
+    private static final String SPTRIBS_DB_USER = System.getenv().getOrDefault(
+        "FT_SPTRIBS_DB_USER",
+        System.getenv().getOrDefault("POSTGRES_USERNAME", "postgres")
+    );
+    private static final String SPTRIBS_DB_PASSWORD = System.getenv().getOrDefault(
+        "FT_SPTRIBS_DB_PASSWORD",
+        System.getenv().getOrDefault("POSTGRES_PASSWORD", "postgres")
+    );
 
     private static final String UPSERT_CASE_DATA = """
         INSERT INTO ccd.case_data
