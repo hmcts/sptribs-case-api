@@ -83,6 +83,13 @@ Then uncomment the dependency in `build.gradle` like so:
   implementation group: 'com.github.hmcts', name: 'ccd-config-generator', version: 'DEV-SNAPSHOT'
 ```
 
+### GitHub Labels
+On a pull request you can add the following labels:
+- `enable_keep_helm` - to keep the deployment in the preview environment for testing after the pipeline has finished
+- `pr-values:wa` - use the `values.wa.preview.template.yaml` to deploy with Work Allocation pods
+- `pr-values:wa-ft-tests` - run the Work Allocation Functional tests (requires the above)
+- `enable_ccd_diff` - runs the `ccd-diff` workflow to show changes to the CCD definition
+
 ### Crons
 
 You can manually run a cron task from the cli:
