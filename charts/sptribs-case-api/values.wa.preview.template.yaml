@@ -75,7 +75,7 @@ wa:
   wa-task-management-api:
     java:
       ingressHost: wa-task-management-api-${SERVICE_FQDN}
-      image: 'hmctspublic.azurecr.io/wa/task-management-api:pr-1598'
+      image: 'hmctsprod.azurecr.io/wa/task-management-api:pr-1598'
       environment:
         ALLOWED_CASE_TYPES: wacasetype,criminalinjuriescompensation
         ALLOWED_JURISDICTIONS: wa,st_cic
