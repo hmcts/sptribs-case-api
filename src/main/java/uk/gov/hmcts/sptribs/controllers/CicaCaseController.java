@@ -38,11 +38,11 @@ public class CicaCaseController {
     private final CicaCaseService cicaCaseService;
     private final IdamService idamService;
 
-    @GetMapping(value = "/{cicaReference}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/{ccdReference}", produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(
-        summary = "Get case by CICA reference",
-        description = "Retrieves a case by its CICA (Criminal Injuries Compensation Authority) reference number. "
-            + "Reference numbers must start with X or G followed by digits (e.g., X12345, G98765)."
+        summary = "Get case by CCD reference",
+        description = "Retrieves a case by its CCD (Criminal case data) reference number. "
+            + "Reference numbers must be 16 digits long."
     )
     @ApiResponses(value = {
         @ApiResponse(
@@ -55,7 +55,7 @@ public class CicaCaseController {
             ),
         @ApiResponse(
             responseCode = "400",
-            description = "Invalid CICA reference format",
+            description = "Invalid CCD reference format",
             content = @Content
             ),
         @ApiResponse(
@@ -70,7 +70,7 @@ public class CicaCaseController {
             ),
         @ApiResponse(
             responseCode = "404",
-            description = "No case found with the given CICA reference",
+            description = "No case found with the given CCD reference",
             content = @Content
             ),
         @ApiResponse(
@@ -79,7 +79,7 @@ public class CicaCaseController {
             content = @Content
             )
     })
-    public ResponseEntity<CicaCaseResponse> getCaseByCicaReference(
+    public ResponseEntity<CicaCaseResponse> getCaseByCCDReference(
         @RequestHeader(AUTHORIZATION)
         @Parameter(description = "User's IDAM access token", required = true)
         String authorisation,
@@ -89,21 +89,19 @@ public class CicaCaseController {
         String serviceAuthorisation,
 
         @PathVariable
-        @NotBlank(message = "CICA reference cannot be blank")
-        @Pattern(regexp = "^[XGxg]\\d+$", message = "CICA reference must start with X or G followed by digits")
+        @NotBlank(message = "CCD reference cannot be blank")
+        @Pattern(regexp = "^\\d{16}$", message = "CCD reference must be 16 digits long")
         @Parameter(
-            description = "The CICA reference number (e.g., X12345 or G98765). "
-                + "Reference numbers always begin with the letter X or G.",
+            description = "The CCD reference number. ",
             required = true,
-            example = "X12345"
+            example = "1740-1387-0445-3399"
         )
-        String cicaReference
+        String ccdReference
     ) {
-        log.info("Received request to get case by CICA reference: {}", cicaReference);
+        log.info("Received request to get case by CCD reference: {}", ccdReference);
 
 
         User user = idamService.retrieveUser(authorisation);
-
         //do we want to show a dashboard of nothing or actually give them a message
         // saying they cant see because email is not in case, etc
         System.out.println(user.getUserDetails().getEmail());
@@ -112,9 +110,9 @@ public class CicaCaseController {
 
         //if true return required docs, if false return auth error.
 
-        CicaCaseResponse response = cicaCaseService.getCaseByCicaReference(cicaReference);
+        CicaCaseResponse response = cicaCaseService.getCaseByCCDReference(ccdReference);
 
-        log.info("Successfully retrieved case with CICA reference: {}", cicaReference);
+        log.info("Successfully retrieved case with CCD reference: {}", ccdReference);
         return ResponseEntity.ok(response);
     }
 }
