@@ -22,11 +22,9 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static uk.gov.hmcts.sptribs.DmnDecisionTable.WA_TASK_COMPLETION_ST_CIC_CRIMINALINJURIESCOMPENSATION;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.AUTO_COMPLETE_MODE;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.COMPLETE_HEARING_OUTCOME_TASK;
-import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.CREATE_DUE_DATE;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.FOLLOW_UP_NONCOMPLIANCE_OF_DIR_TASK;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.ISSUE_CASE_TO_RESPONDENT_TASK;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.ISSUE_DECISION_NOTICE_TASK;
-import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.ISSUE_DUE_DATE;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.PROCESS_CASE_WITHDRAWAL_DIR_LISTED_TASK;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.PROCESS_CASE_WITHDRAWAL_DIR_TASK;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.PROCESS_CORRECTIONS_TASK;
@@ -172,10 +170,6 @@ class CamundaTaskCompletionTest extends DmnDecisionTableBaseUnitTest {
                     ),
                     Map.of(
                         "taskType", PROCESS_STAY_DIR_LISTED_TASK,
-                        "completionMode", AUTO_COMPLETE_MODE
-                    ),
-                    Map.of(
-                        "taskType", ISSUE_DUE_DATE,
                         "completionMode", AUTO_COMPLETE_MODE
                     ),
                     Collections.emptyMap()
@@ -399,10 +393,6 @@ class CamundaTaskCompletionTest extends DmnDecisionTableBaseUnitTest {
                     ),
                     Map.of(
                         "taskType", REVIEW_TIME_EXT_REQ_JUDGE_TASK,
-                        "completionMode", AUTO_COMPLETE_MODE
-                    ),
-                    Map.of(
-                        "taskType", CREATE_DUE_DATE,
                         "completionMode", AUTO_COMPLETE_MODE
                     ),
                     Collections.emptyMap()
@@ -631,7 +621,7 @@ class CamundaTaskCompletionTest extends DmnDecisionTableBaseUnitTest {
         DmnDecisionTableImpl logic = (DmnDecisionTableImpl) decision.getDecisionLogic();
         assertThat(logic.getInputs().size(), is(1));
         assertThat(logic.getOutputs().size(), is(2));
-        assertThat(logic.getRules().size(), is(100));
+        assertThat(logic.getRules().size(), is(98));
     }
 
     @ParameterizedTest(name = "event id: {0}")
