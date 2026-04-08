@@ -14,6 +14,7 @@ import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.ccd.sdk.type.DynamicListElement;
 import uk.gov.hmcts.ccd.sdk.type.DynamicMultiSelectList;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
+import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseIssue;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
@@ -23,6 +24,8 @@ import uk.gov.hmcts.sptribs.notification.NotificationServiceCIC;
 import uk.gov.hmcts.sptribs.notification.dispatcher.CaseIssuedNotification;
 import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -35,6 +38,7 @@ import static uk.gov.hmcts.sptribs.ciccase.model.ContactPreferenceType.EMAIL;
 import static uk.gov.hmcts.sptribs.ciccase.model.ContactPreferenceType.POST;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.ADDRESS_LINE_1;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.ADDRESS_LINE_7;
+import static uk.gov.hmcts.sptribs.common.CommonConstants.CIC_BUNDLE_DUE_DATE_TEXT;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.CIC_CASE_NUMBER;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.CIC_CASE_RESPONDENT_NAME;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.CIC_CASE_SUBJECT_NAME;
@@ -263,12 +267,18 @@ public class CaseIssuedNotificationIT {
     }
 
     @Test
-    void shouldSendEmailToRespondent() {
+    void shouldSendEmailToRespondentDateInTime() {
+
+        LocalDate today = LocalDate.now();
+        String todayFormatted = today.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+
         final CaseData data = CaseData.builder()
             .cicCase(CicCase.builder()
                 .fullName("Subject Name")
                 .respondentName("Respondent Name")
                 .alternativeRespondentEmail("test@email.com")
+                .respondentBundleDueDate(today)
+                .isCaseInTime(YesOrNo.YES)
                 .build())
             .build();
 
@@ -277,7 +287,9 @@ public class CaseIssuedNotificationIT {
             CIC_CASE_NUMBER, TEST_CASE_ID.toString(),
             CIC_CASE_SUBJECT_NAME, "Subject Name",
             CONTACT_NAME, "Respondent Name",
-            CIC_CASE_RESPONDENT_NAME, "Respondent Name"
+            CIC_CASE_RESPONDENT_NAME, "Respondent Name",
+            CIC_BUNDLE_DUE_DATE_TEXT, "You should provide the tribunal and the Subject/Applicant/Representative "
+                + "with a case bundle by " + todayFormatted
         );
 
         caseIssuedNotification.sendToRespondent(data, TEST_CASE_ID.toString());
@@ -297,7 +309,50 @@ public class CaseIssuedNotificationIT {
     }
 
     @Test
-    void shouldSendEmailToRespondentWithDocument() {
+    void shouldSendEmailToRespondentDateOutOfTime() {
+
+        LocalDate today = LocalDate.now();
+        String todayFormatted = today.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+
+        final CaseData data = CaseData.builder()
+            .cicCase(CicCase.builder()
+                .fullName("Subject Name")
+                .respondentName("Respondent Name")
+                .alternativeRespondentEmail("test@email.com")
+                .respondentBundleDueDate(today)
+                .isCaseInTime(YesOrNo.NO)
+                .build())
+            .build();
+
+        final Map<String, Object> expectedTemplateVars = Map.of(
+            TRIBUNAL_NAME, CIC,
+            CIC_CASE_NUMBER, TEST_CASE_ID.toString(),
+            CIC_CASE_SUBJECT_NAME, "Subject Name",
+            CONTACT_NAME, "Respondent Name",
+            CIC_CASE_RESPONDENT_NAME, "Respondent Name",
+            CIC_BUNDLE_DUE_DATE_TEXT, "Out of time appeal - You should provide the tribunal with a case bundle by "
+                + todayFormatted
+                + ". Do not issue to the Subject/Applicant/Representative until we notify you the appeal has been admitted."
+        );
+
+        caseIssuedNotification.sendToRespondent(data, TEST_CASE_ID.toString());
+
+        verify(notificationServiceCIC).sendEmail(notificationRequestCaptor.capture(), eq(TEST_CASE_ID.toString()));
+
+        NotificationRequest notificationRequest = notificationRequestCaptor.getValue();
+
+        assertThat(notificationRequest.getDestinationAddress())
+            .isEqualTo("test@email.com");
+        assertThat(notificationRequest.getTemplate())
+            .isEqualTo(CASE_ISSUED_RESPONDENT_EMAIL);
+        assertThat(notificationRequest.getTemplateVars())
+            .containsAllEntriesOf(expectedTemplateVars);
+        assertThat(notificationRequest.getUploadedDocuments())
+            .isNull();
+    }
+
+    @Test
+    void shouldSendEmailToRespondentWithDocumentDateInTime() {
         final String documentLabel =
             "[Document 1.pdf A - First decision](http://exui.net/documents/5e32a0d2-9b37-4548-b007-b9b2eb580d0a/binary)";
         final DynamicListElement listItem = DynamicListElement
@@ -328,12 +383,17 @@ public class CaseIssuedNotificationIT {
         documentList.setListItems(listItems);
         documentList.setValue(listItems);
 
+        LocalDate today = LocalDate.now();
+        String todayFormatted = today.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+
         final CaseData data = CaseData.builder()
             .cicCase(CicCase.builder()
                 .fullName("Subject Name")
                 .respondentName("Respondent Name")
                 .alternativeRespondentEmail("test@email.com")
                 .applicantDocumentsUploaded(applicantCaseDocuments)
+                .respondentBundleDueDate(today)
+                .isCaseInTime(YesOrNo.YES)
                 .build())
             .caseIssue(CaseIssue.builder()
                 .documentList(documentList)
@@ -345,7 +405,85 @@ public class CaseIssuedNotificationIT {
             CIC_CASE_NUMBER, TEST_CASE_ID.toString(),
             CIC_CASE_SUBJECT_NAME, "Subject Name",
             CONTACT_NAME, "Respondent Name",
-            CIC_CASE_RESPONDENT_NAME, "Respondent Name"
+            CIC_CASE_RESPONDENT_NAME, "Respondent Name",
+            CIC_BUNDLE_DUE_DATE_TEXT, "You should provide the tribunal and the Subject/Applicant/Representative "
+                + "with a case bundle by " + todayFormatted
+        );
+
+        caseIssuedNotification.sendToRespondent(data, TEST_CASE_ID.toString());
+
+        verify(notificationServiceCIC).sendEmail(notificationRequestCaptor.capture(), eq(selectedDocuments), eq(TEST_CASE_ID.toString()));
+
+        NotificationRequest notificationRequest = notificationRequestCaptor.getValue();
+
+        assertThat(notificationRequest.getDestinationAddress())
+            .isEqualTo("test@email.com");
+        assertThat(notificationRequest.getTemplate())
+            .isEqualTo(CASE_ISSUED_RESPONDENT_EMAIL);
+        assertThat(notificationRequest.getTemplateVars())
+            .containsAllEntriesOf(expectedTemplateVars);
+        assertThat(notificationRequest.getUploadedDocuments())
+            .isNotNull();
+    }
+
+    @Test
+    void shouldSendEmailToRespondentWithDocumentDateOutOfTime() {
+        final String documentLabel =
+            "[Document 1.pdf A - First decision](http://exui.net/documents/5e32a0d2-9b37-4548-b007-b9b2eb580d0a/binary)";
+        final DynamicListElement listItem = DynamicListElement
+            .builder()
+            .label(documentLabel)
+            .code(UUID.randomUUID())
+            .build();
+        final Document document = Document.builder()
+            .categoryId("A")
+            .filename("Document 1.pdf")
+            .binaryUrl("http://exui.net/documents/5e32a0d2-9b37-4548-b007-b9b2eb580d0a/binary")
+            .url("http://exui.net/documents/5e32a0d2-9b37-4548-b007-b9b2eb580d0a")
+            .build();
+
+        final CaseworkerCICDocument cicDocument = CaseworkerCICDocument.builder()
+            .documentLink(document)
+            .documentEmailContent("Description")
+            .documentCategory(DocumentType.EVIDENCE_CORRESPONDENCE_FROM_THE_APPELLANT)
+            .build();
+        final List<ListValue<CaseworkerCICDocument>> applicantCaseDocuments =
+            List.of(ListValue.<CaseworkerCICDocument>builder().value(cicDocument).build());
+        final List<CaseworkerCICDocument> selectedDocuments = List.of(cicDocument);
+
+        final List<DynamicListElement> listItems = new ArrayList<>();
+        listItems.add(listItem);
+
+        final DynamicMultiSelectList documentList = new DynamicMultiSelectList();
+        documentList.setListItems(listItems);
+        documentList.setValue(listItems);
+
+        LocalDate today = LocalDate.now();
+        String todayFormatted = today.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+
+        final CaseData data = CaseData.builder()
+            .cicCase(CicCase.builder()
+                .fullName("Subject Name")
+                .respondentName("Respondent Name")
+                .alternativeRespondentEmail("test@email.com")
+                .applicantDocumentsUploaded(applicantCaseDocuments)
+                .respondentBundleDueDate(today)
+                .isCaseInTime(YesOrNo.NO)
+                .build())
+            .caseIssue(CaseIssue.builder()
+                .documentList(documentList)
+                .build())
+            .build();
+
+        final Map<String, Object> expectedTemplateVars = Map.of(
+            TRIBUNAL_NAME, CIC,
+            CIC_CASE_NUMBER, TEST_CASE_ID.toString(),
+            CIC_CASE_SUBJECT_NAME, "Subject Name",
+            CONTACT_NAME, "Respondent Name",
+            CIC_CASE_RESPONDENT_NAME, "Respondent Name",
+            CIC_BUNDLE_DUE_DATE_TEXT, "Out of time appeal - You should provide the tribunal with a case bundle by "
+                + todayFormatted
+                + ". Do not issue to the Subject/Applicant/Representative until we notify you the appeal has been admitted."
         );
 
         caseIssuedNotification.sendToRespondent(data, TEST_CASE_ID.toString());
