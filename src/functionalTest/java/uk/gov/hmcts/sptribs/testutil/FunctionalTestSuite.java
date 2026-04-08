@@ -85,9 +85,6 @@ public abstract class FunctionalTestSuite {
     @Autowired
     protected AppsConfig appsConfig;
 
-    @Autowired
-    protected CaseDataReferenceSeeder caseDataReferenceSeeder;
-
     protected static final String EVENT_PARAM = "event";
     protected static final String UPDATE = "UPDATE";
     protected static final String UPDATE_CASE = "UPDATE_CASE";
@@ -265,10 +262,10 @@ public abstract class FunctionalTestSuite {
 
     protected Response triggerCallback(CallbackRequest request, String url) {
         if (request.getCaseDetails() != null && request.getCaseDetails().getId() != null) {
-            caseDataReferenceSeeder.ensureCaseDataReferenceExists(request.getCaseDetails().getId());
+            seedCaseReferenceInApp(request.getCaseDetails().getId());
         }
         if (request.getCaseDetailsBefore() != null && request.getCaseDetailsBefore().getId() != null) {
-            caseDataReferenceSeeder.ensureCaseDataReferenceExists(request.getCaseDetailsBefore().getId());
+            seedCaseReferenceInApp(request.getCaseDetailsBefore().getId());
         }
 
         return RestAssured
@@ -281,6 +278,22 @@ public abstract class FunctionalTestSuite {
             .body(request)
             .when()
             .post(url);
+    }
+
+    private void seedCaseReferenceInApp(long caseReference) {
+        Response response = RestAssured
+            .given()
+            .relaxedHTTPSValidation()
+            .baseUri(testUrl)
+            .header(SERVICE_AUTHORIZATION, serviceAuthenticationGenerator.generateCcdDataToken())
+            .header(AUTHORIZATION, idamTokenGenerator.generateIdamTokenForSolicitor())
+            .when()
+            .post("/testing-support/seed-case-reference/{caseReference}", caseReference);
+
+        if (response.getStatusCode() >= 300) {
+            throw new IllegalStateException("Unable to seed case reference in app. Status: "
+                + response.getStatusCode() + ", body: " + response.asString());
+        }
     }
 
     protected Response triggerCallbackWithoutPersistedCase(Map<String, Object> caseData, String eventId, String url)
