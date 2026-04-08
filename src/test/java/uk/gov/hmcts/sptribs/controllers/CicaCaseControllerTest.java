@@ -39,10 +39,10 @@ class CicaCaseControllerTest {
         // Given
         String cicaReference = "X12345";
         CicaCaseResponse expectedResponse = createCicaCaseResponse(cicaReference);
-        when(cicaCaseService.getCaseByCicaReference(cicaReference)).thenReturn(expectedResponse);
+        when(cicaCaseService.getCaseByCCDReference(cicaReference)).thenReturn(expectedResponse);
 
         // When
-        ResponseEntity<CicaCaseResponse> response = cicaCaseController.getCaseByCicaReference(
+        ResponseEntity<CicaCaseResponse> response = cicaCaseController.getCaseByCCDReference(
             TEST_AUTHORIZATION,
             TEST_SERVICE_AUTHORIZATION,
             cicaReference
@@ -53,7 +53,7 @@ class CicaCaseControllerTest {
         assertThat(response.getBody()).isEqualTo(expectedResponse);
         assertThat(response.getBody().getId()).isEqualTo("1624351572550045");
         assertThat(response.getBody().getState()).isEqualTo("Submitted");
-        verify(cicaCaseService).getCaseByCicaReference(cicaReference);
+        verify(cicaCaseService).getCaseByCCDReference(cicaReference);
     }
 
     @Test
@@ -61,10 +61,10 @@ class CicaCaseControllerTest {
         // Given
         String cicaReference = "G98765";
         CicaCaseResponse expectedResponse = createCicaCaseResponse(cicaReference);
-        when(cicaCaseService.getCaseByCicaReference(cicaReference)).thenReturn(expectedResponse);
+        when(cicaCaseService.getCaseByCCDReference(cicaReference)).thenReturn(expectedResponse);
 
         // When
-        ResponseEntity<CicaCaseResponse> response = cicaCaseController.getCaseByCicaReference(
+        ResponseEntity<CicaCaseResponse> response = cicaCaseController.getCaseByCCDReference(
             TEST_AUTHORIZATION,
             TEST_SERVICE_AUTHORIZATION,
             cicaReference
@@ -73,18 +73,18 @@ class CicaCaseControllerTest {
         // Then
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody()).isNotNull();
-        verify(cicaCaseService).getCaseByCicaReference(cicaReference);
+        verify(cicaCaseService).getCaseByCCDReference(cicaReference);
     }
 
     @Test
     void shouldPropagateExceptionWhenCaseNotFound() {
         // Given
         String cicaReference = "X99999";
-        when(cicaCaseService.getCaseByCicaReference(cicaReference))
+        when(cicaCaseService.getCaseByCCDReference(cicaReference))
             .thenThrow(new CaseNotFoundException("No case found with CICA reference: X99999"));
 
         // When / Then
-        assertThatThrownBy(() -> cicaCaseController.getCaseByCicaReference(
+        assertThatThrownBy(() -> cicaCaseController.getCaseByCCDReference(
             TEST_AUTHORIZATION,
             TEST_SERVICE_AUTHORIZATION,
             cicaReference
@@ -97,11 +97,11 @@ class CicaCaseControllerTest {
     void shouldPropagateExceptionWhenInvalidReferenceFormat() {
         // Given
         String cicaReference = "invalid";
-        when(cicaCaseService.getCaseByCicaReference(cicaReference))
+        when(cicaCaseService.getCaseByCCDReference(cicaReference))
             .thenThrow(new IllegalArgumentException("Invalid CICA reference format"));
 
         // When / Then
-        assertThatThrownBy(() -> cicaCaseController.getCaseByCicaReference(
+        assertThatThrownBy(() -> cicaCaseController.getCaseByCCDReference(
             TEST_AUTHORIZATION,
             TEST_SERVICE_AUTHORIZATION,
             cicaReference
@@ -115,10 +115,10 @@ class CicaCaseControllerTest {
         // Given
         String cicaReference = "x12345";
         CicaCaseResponse expectedResponse = createCicaCaseResponse("X12345");
-        when(cicaCaseService.getCaseByCicaReference(cicaReference)).thenReturn(expectedResponse);
+        when(cicaCaseService.getCaseByCCDReference(cicaReference)).thenReturn(expectedResponse);
 
         // When
-        ResponseEntity<CicaCaseResponse> response = cicaCaseController.getCaseByCicaReference(
+        ResponseEntity<CicaCaseResponse> response = cicaCaseController.getCaseByCCDReference(
             TEST_AUTHORIZATION,
             TEST_SERVICE_AUTHORIZATION,
             cicaReference
@@ -127,7 +127,7 @@ class CicaCaseControllerTest {
         // Then
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody()).isNotNull();
-        verify(cicaCaseService).getCaseByCicaReference(cicaReference);
+        verify(cicaCaseService).getCaseByCCDReference(cicaReference);
     }
 
     private CicaCaseResponse createCicaCaseResponse(String cicaReference) {
