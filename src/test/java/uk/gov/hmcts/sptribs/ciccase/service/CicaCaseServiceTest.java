@@ -9,7 +9,6 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import uk.gov.hmcts.sptribs.ciccase.repository.CicaCaseRepository;
 import uk.gov.hmcts.sptribs.controllers.model.CicaCaseResponse;
 import uk.gov.hmcts.sptribs.exception.CaseNotFoundException;
 
@@ -42,7 +41,7 @@ class CicaCaseServiceTest {
         when(cicaCaseRepository.findByCicaReference(cicaReference)).thenReturn(Optional.of(expectedResponse));
 
         // When
-        CicaCaseResponse actualResponse = cicaCaseService.getCaseByCicaReference(cicaReference);
+        CicaCaseResponse actualResponse = cicaCaseService.getCaseByCCDReference(cicaReference);
 
         // Then
         assertThat(actualResponse).isEqualTo(expectedResponse);
@@ -57,7 +56,7 @@ class CicaCaseServiceTest {
         when(cicaCaseRepository.findByCicaReference(cicaReference)).thenReturn(Optional.of(expectedResponse));
 
         // When
-        CicaCaseResponse actualResponse = cicaCaseService.getCaseByCicaReference(cicaReference);
+        CicaCaseResponse actualResponse = cicaCaseService.getCaseByCCDReference(cicaReference);
 
         // Then
         assertThat(actualResponse).isEqualTo(expectedResponse);
@@ -72,7 +71,7 @@ class CicaCaseServiceTest {
         when(cicaCaseRepository.findByCicaReference(cicaReference)).thenReturn(Optional.of(expectedResponse));
 
         // When
-        CicaCaseResponse actualResponse = cicaCaseService.getCaseByCicaReference(cicaReference);
+        CicaCaseResponse actualResponse = cicaCaseService.getCaseByCCDReference(cicaReference);
 
         // Then
         assertThat(actualResponse).isEqualTo(expectedResponse);
@@ -86,7 +85,7 @@ class CicaCaseServiceTest {
         when(cicaCaseRepository.findByCicaReference(cicaReference)).thenReturn(Optional.empty());
 
         // When / Then
-        assertThatThrownBy(() -> cicaCaseService.getCaseByCicaReference(cicaReference))
+        assertThatThrownBy(() -> cicaCaseService.getCaseByCCDReference(cicaReference))
             .isExactlyInstanceOf(CaseNotFoundException.class)
             .hasMessageContaining("No case found with CICA reference: X99999");
     }
@@ -94,7 +93,7 @@ class CicaCaseServiceTest {
     @Test
     void shouldThrowIllegalArgumentExceptionWhenCicaReferenceIsNull() {
         // When / Then
-        assertThatThrownBy(() -> cicaCaseService.getCaseByCicaReference(null))
+        assertThatThrownBy(() -> cicaCaseService.getCaseByCCDReference(null))
             .isExactlyInstanceOf(IllegalArgumentException.class)
             .hasMessageContaining("CICA reference cannot be null or empty");
 
@@ -104,7 +103,7 @@ class CicaCaseServiceTest {
     @Test
     void shouldThrowIllegalArgumentExceptionWhenCicaReferenceIsEmpty() {
         // When / Then
-        assertThatThrownBy(() -> cicaCaseService.getCaseByCicaReference(""))
+        assertThatThrownBy(() -> cicaCaseService.getCaseByCCDReference(""))
             .isExactlyInstanceOf(IllegalArgumentException.class)
             .hasMessageContaining("CICA reference cannot be null or empty");
 
@@ -114,7 +113,7 @@ class CicaCaseServiceTest {
     @Test
     void shouldThrowIllegalArgumentExceptionWhenCicaReferenceIsBlank() {
         // When / Then
-        assertThatThrownBy(() -> cicaCaseService.getCaseByCicaReference("   "))
+        assertThatThrownBy(() -> cicaCaseService.getCaseByCCDReference("   "))
             .isExactlyInstanceOf(IllegalArgumentException.class)
             .hasMessageContaining("CICA reference cannot be null or empty");
 
@@ -125,7 +124,7 @@ class CicaCaseServiceTest {
     @ValueSource(strings = {"12345", "A12345", "XYZ", "X", "G", "X1234A", "123X456"})
     void shouldThrowIllegalArgumentExceptionWhenCicaReferenceHasInvalidFormat(String invalidReference) {
         // When / Then
-        assertThatThrownBy(() -> cicaCaseService.getCaseByCicaReference(invalidReference))
+        assertThatThrownBy(() -> cicaCaseService.getCaseByCCDReference(invalidReference))
             .isExactlyInstanceOf(IllegalArgumentException.class)
             .hasMessageContaining("Invalid CICA reference format");
 
@@ -140,7 +139,7 @@ class CicaCaseServiceTest {
         when(cicaCaseRepository.findByCicaReference(validReference)).thenReturn(Optional.of(expectedResponse));
 
         // When
-        CicaCaseResponse actualResponse = cicaCaseService.getCaseByCicaReference(validReference);
+        CicaCaseResponse actualResponse = cicaCaseService.getCaseByCCDReference(validReference);
 
         // Then
         assertThat(actualResponse).isNotNull();
