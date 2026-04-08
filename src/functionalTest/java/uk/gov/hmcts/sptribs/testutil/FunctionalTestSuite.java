@@ -139,6 +139,7 @@ public abstract class FunctionalTestSuite {
         CaseDetails createdCase = createCaseInCcd();
         CaseData formatter = CaseData.builder().build();
         caseData.put("hyphenatedCaseRef", formatter.formatCaseRef(createdCase.getId()));
+        caseData.putIfAbsent("caseNameHmctsInternal", "FT-" + createdCase.getId());
         return createdCase.getId();
     }
 
@@ -261,6 +262,9 @@ public abstract class FunctionalTestSuite {
     }
 
     protected Response triggerCallback(CallbackRequest request, String url) {
+        ensureCaseNameHmctsInternal(request.getCaseDetails());
+        ensureCaseNameHmctsInternal(request.getCaseDetailsBefore());
+
         if (request.getCaseDetails() != null && request.getCaseDetails().getId() != null) {
             seedCaseReferenceInApp(request.getCaseDetails().getId());
         }
@@ -294,6 +298,13 @@ public abstract class FunctionalTestSuite {
             throw new IllegalStateException("Unable to seed case reference in app. Status: "
                 + response.getStatusCode() + ", body: " + response.asString());
         }
+    }
+
+    private void ensureCaseNameHmctsInternal(CaseDetails caseDetails) {
+        if (caseDetails == null || caseDetails.getId() == null || caseDetails.getData() == null) {
+            return;
+        }
+        caseDetails.getData().putIfAbsent("caseNameHmctsInternal", "FT-" + caseDetails.getId());
     }
 
     protected Response triggerCallbackWithoutPersistedCase(Map<String, Object> caseData, String eventId, String url)
