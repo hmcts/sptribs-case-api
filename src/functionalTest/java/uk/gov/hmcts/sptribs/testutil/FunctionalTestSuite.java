@@ -85,6 +85,9 @@ public abstract class FunctionalTestSuite {
     @Autowired
     protected AppsConfig appsConfig;
 
+    @Autowired
+    protected CaseDataReferenceSeeder caseDataReferenceSeeder;
+
     protected static final String EVENT_PARAM = "event";
     protected static final String UPDATE = "UPDATE";
     protected static final String UPDATE_CASE = "UPDATE_CASE";
@@ -261,6 +264,13 @@ public abstract class FunctionalTestSuite {
     }
 
     protected Response triggerCallback(CallbackRequest request, String url) {
+        if (request.getCaseDetails() != null && request.getCaseDetails().getId() != null) {
+            caseDataReferenceSeeder.ensureCaseDataReferenceExists(request.getCaseDetails().getId());
+        }
+        if (request.getCaseDetailsBefore() != null && request.getCaseDetailsBefore().getId() != null) {
+            caseDataReferenceSeeder.ensureCaseDataReferenceExists(request.getCaseDetailsBefore().getId());
+        }
+
         return RestAssured
             .given()
             .relaxedHTTPSValidation()
