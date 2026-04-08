@@ -143,7 +143,12 @@ public class CaseworkerCreateBundle implements CCDConfig<CaseData, State, UserRo
         if (CollectionUtils.isEmpty(initialDocuments)) {
             return new ArrayList<>(allDocuments);
         }
-        return allDocuments.stream().filter(doc -> !initialDocuments.contains(doc)).toList();
+        return allDocuments.stream().filter(doc -> !initialDocuments.contains(doc))
+            .sorted(Comparator.comparing(
+                CaseworkerCICDocument::getDate,
+                Comparator.nullsLast(Comparator.naturalOrder())
+            ))
+            .collect(Collectors.toCollection(ArrayList::new));
     }
 
     private List<AbstractCaseworkerCICDocument<CaseworkerCICDocument>> convertToBundleDocumentType(List<CaseworkerCICDocument> docs) {
