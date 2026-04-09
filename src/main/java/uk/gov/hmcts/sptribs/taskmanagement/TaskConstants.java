@@ -98,48 +98,6 @@ public final class TaskConstants {
             + "<br/>"
             + "[Case: Contact parties](/cases/case-details/${[CASE_REFERENCE]}/trigger/contact-parties)";
 
-    public static final String RULE_27_DESCRIPTION =
-        "[Orders: Send order](/cases/case-details/${[CASE_REFERENCE]}/trigger/caseworker-send-order)";
-
-
-    public static final Set<TaskType> REVIEW_REQUESTS_TASKS = Set.of(
-        reviewNewCaseAndProvideDirectionsLO,
-        reviewTimeExtensionRequestLO,
-        reviewStrikeOutRequestLO,
-        reviewStayRequestLO,
-        reviewStayRequestCaseListedLO,
-        reviewListingDirectionsLO,
-        reviewListingDirectionsCaseListedLO,
-        reviewWithdrawalRequestLO,
-        reviewRule27RequestLO,
-        reviewListCaseLO,
-        reviewOtherRequestLO,
-        reviewListCaseWithin5DaysLO,
-        reviewPostponementRequestLO,
-        reviewReinstatementRequestLO,
-        reviewListCaseWithin5DaysJudge,
-        reviewPostponementRequestJudge,
-        reviewCorrectionsRequest,
-        reviewWrittenReasonsRequest,
-        reviewReinstatementRequestJudge,
-        reviewSetAsideRequest,
-        reviewStayRequestJudge,
-        reviewNewCaseAndProvideDirectionsJudge,
-        reviewOtherRequestJudge,
-        reviewWithdrawalRequestJudge,
-        reviewRule27RequestJudge,
-        reviewListingDirectionsJudge,
-        reviewListingDirectionsCaseListedJudge,
-        reviewListCaseJudge,
-        reviewStrikeOutRequestJudge,
-        reviewTimeExtensionRequestJudge,
-        reviewRule27RequestCaseListedLO,
-        reviewWithdrawalRequestCaseListedLO,
-        reviewWithdrawalRequestCaseListedJudge,
-        reviewStayRequestCaseListedJudge,
-        reviewRule27RequestCaseListedJudge
-    );
-
     public static final Set<TaskType> LEGAL_OPERATIONS_TASKS = Set.of(
         reviewNewCaseAndProvideDirectionsLO,
         reviewTimeExtensionRequestLO,
