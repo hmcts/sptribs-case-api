@@ -114,7 +114,7 @@ Short name</description>
           <text></text>
         </inputEntry>
         <inputEntry id="UnaryTests_1o9uf1g">
-          <text>"processCaseWithdrawalDirections","processRule27Decision","processListingDirections","processListingDirectionsListed","processDirectionsReListedCase","processDirectionsReListedCaseWithin5Days","processSetAsideDirections","processCorrections","processDirectionsReturned","processPostponementDirections","processTimeExtensionDirectionsReturned","processReinstatementDecisionNotice","processOtherDirectionsReturned","processWrittenReasons","processStrikeOutDirectionsReturned","processStayDirections","issueDecisionNotice","completeHearingOutcome","issueCaseToRespondent","reviewNewCaseAndProvideDirectionsLO","reviewTimeExtensionRequestLO","reviewStrikeOutRequestLO","reviewStayRequestLO","reviewStayRequestCaseListedLO","reviewListingDirectionsLO","reviewListingDirectionsCaseListedLO","reviewWithdrawalRequestLO","reviewRule27RequestLO","reviewListCaseLO","vetNewCaseDocuments","reviewOtherRequestLO","reviewListCaseWithin5DaysLO","reviewPostponementRequestLO","reviewReinstatementRequestLO","reviewListCaseWithin5DaysJudge","reviewPostponementRequestJudge","reviewCorrectionsRequest","reviewWrittenReasonsRequest","reviewReinstatementRequestJudge","reviewSetAsideRequest","reviewStayRequestJudge","reviewNewCaseAndProvideDirectionsJudge","reviewOtherRequestJudge","reviewWithdrawalRequestJudge","reviewRule27RequestJudge","reviewListingDirectionsJudge","reviewListingDirectionsCaseListedJudge","reviewListCaseJudge","reviewStrikeOutRequestJudge","reviewTimeExtensionRequestJudge","reviewSpecificAccessRequestJudiciary","reviewSpecificAccessRequestLegalOps","reviewSpecificAccessRequestAdmin","reviewSpecificAccessRequestCTSC","followUpNoncomplianceOfDirections","registerNewCase","processFurtherEvidence","stitchCollateHearingBundle","createDueDate","issueDueDate","reviewRule27RequestCaseListedLO","reviewWithdrawalRequestCaseListedLO","reviewWithdrawalRequestCaseListedJudge","processCaseWithdrawalDirectionsListed","reviewStayRequestCaseListedJudge","processStayDirectionsListed","reviewRule27RequestCaseListedJudge","processRule27DecisionListed","reviewOrder"</text>
+          <text>"processCaseWithdrawalDirections","processRule27Decision","processListingDirections","processListingDirectionsListed","processDirectionsReListedCase","processDirectionsReListedCaseWithin5Days","processSetAsideDirections","processCorrections","processDirectionsReturned","processPostponementDirections","processTimeExtensionDirectionsReturned","processReinstatementDecisionNotice","processOtherDirectionsReturned","processWrittenReasons","processStrikeOutDirectionsReturned","processStayDirections","issueDecisionNotice","completeHearingOutcome","issueCaseToRespondent","reviewNewCaseAndProvideDirectionsLO","reviewTimeExtensionRequestLO","reviewStrikeOutRequestLO","reviewStayRequestLO","reviewStayRequestCaseListedLO","reviewListingDirectionsLO","reviewListingDirectionsCaseListedLO","reviewWithdrawalRequestLO","reviewRule27RequestLO","reviewListCaseLO","vetNewCaseDocuments","reviewOtherRequestLO","reviewListCaseWithin5DaysLO","reviewPostponementRequestLO","reviewReinstatementRequestLO","reviewListCaseWithin5DaysJudge","reviewPostponementRequestJudge","reviewCorrectionsRequest","reviewWrittenReasonsRequest","reviewReinstatementRequestJudge","reviewSetAsideRequest","reviewStayRequestJudge","reviewNewCaseAndProvideDirectionsJudge","reviewOtherRequestJudge","reviewWithdrawalRequestJudge","reviewRule27RequestJudge","reviewListingDirectionsJudge","reviewListingDirectionsCaseListedJudge","reviewListCaseJudge","reviewStrikeOutRequestJudge","reviewTimeExtensionRequestJudge","reviewSpecificAccessRequestJudiciary","reviewSpecificAccessRequestLegalOps","reviewSpecificAccessRequestAdmin","reviewSpecificAccessRequestCTSC","followUpNoncomplianceOfDirections","registerNewCase","processFurtherEvidence","stitchCollateHearingBundle","reviewRule27RequestCaseListedLO","reviewWithdrawalRequestCaseListedLO","reviewWithdrawalRequestCaseListedJudge","processCaseWithdrawalDirectionsListed","reviewStayRequestCaseListedJudge","processStayDirectionsListed","reviewRule27RequestCaseListedJudge","processRule27DecisionListed","reviewOrder"</text>
         </inputEntry>
         <outputEntry id="LiteralExpression_1vuc06b">
           <text>"majorPriority"</text>
@@ -133,7 +133,7 @@ else 5000</text>
           <text></text>
         </inputEntry>
         <inputEntry id="UnaryTests_0ge5t9c">
-          <text>"processCaseWithdrawalDirections","processRule27Decision","processListingDirections","processListingDirectionsListed","processDirectionsReListedCase","processDirectionsReListedCaseWithin5Days","processSetAsideDirections","processCorrections","processDirectionsReturned","processPostponementDirections","processTimeExtensionDirectionsReturned","processReinstatementDecisionNotice","processOtherDirectionsReturned","processWrittenReasons","processStrikeOutDirectionsReturned","processStayDirections","issueDecisionNotice","completeHearingOutcome","issueCaseToRespondent","reviewNewCaseAndProvideDirectionsLO","reviewTimeExtensionRequestLO","reviewStrikeOutRequestLO","reviewStayRequestLO","reviewStayRequestCaseListedLO","reviewListingDirectionsLO","reviewListingDirectionsCaseListedLO","reviewWithdrawalRequestLO","reviewRule27RequestLO","reviewListCaseLO","vetNewCaseDocuments","reviewOtherRequestLO","reviewListCaseWithin5DaysLO","reviewPostponementRequestLO","reviewReinstatementRequestLO","reviewListCaseWithin5DaysJudge","reviewPostponementRequestJudge","reviewCorrectionsRequest","reviewWrittenReasonsRequest","reviewReinstatementRequestJudge","reviewSetAsideRequest","reviewStayRequestJudge","reviewNewCaseAndProvideDirectionsJudge","reviewOtherRequestJudge","reviewWithdrawalRequestJudge","reviewRule27RequestJudge","reviewListingDirectionsJudge","reviewListingDirectionsCaseListedJudge","reviewListCaseJudge","reviewStrikeOutRequestJudge","reviewTimeExtensionRequestJudge","reviewSpecificAccessRequestJudiciary","reviewSpecificAccessRequestLegalOps","reviewSpecificAccessRequestAdmin","reviewSpecificAccessRequestCTSC","followUpNoncomplianceOfDirections","registerNewCase","processFurtherEvidence","stitchCollateHearingBundle","createDueDate","issueDueDate","reviewRule27RequestCaseListedLO","reviewWithdrawalRequestCaseListedLO","reviewWithdrawalRequestCaseListedJudge","processCaseWithdrawalDirectionsListed","reviewStayRequestCaseListedJudge","processStayDirectionsListed","reviewRule27RequestCaseListedJudge","processRule27DecisionListed","reviewOrder"</text>
+          <text>"processCaseWithdrawalDirections","processRule27Decision","processListingDirections","processListingDirectionsListed","processDirectionsReListedCase","processDirectionsReListedCaseWithin5Days","processSetAsideDirections","processCorrections","processDirectionsReturned","processPostponementDirections","processTimeExtensionDirectionsReturned","processReinstatementDecisionNotice","processOtherDirectionsReturned","processWrittenReasons","processStrikeOutDirectionsReturned","processStayDirections","issueDecisionNotice","completeHearingOutcome","issueCaseToRespondent","reviewNewCaseAndProvideDirectionsLO","reviewTimeExtensionRequestLO","reviewStrikeOutRequestLO","reviewStayRequestLO","reviewStayRequestCaseListedLO","reviewListingDirectionsLO","reviewListingDirectionsCaseListedLO","reviewWithdrawalRequestLO","reviewRule27RequestLO","reviewListCaseLO","vetNewCaseDocuments","reviewOtherRequestLO","reviewListCaseWithin5DaysLO","reviewPostponementRequestLO","reviewReinstatementRequestLO","reviewListCaseWithin5DaysJudge","reviewPostponementRequestJudge","reviewCorrectionsRequest","reviewWrittenReasonsRequest","reviewReinstatementRequestJudge","reviewSetAsideRequest","reviewStayRequestJudge","reviewNewCaseAndProvideDirectionsJudge","reviewOtherRequestJudge","reviewWithdrawalRequestJudge","reviewRule27RequestJudge","reviewListingDirectionsJudge","reviewListingDirectionsCaseListedJudge","reviewListCaseJudge","reviewStrikeOutRequestJudge","reviewTimeExtensionRequestJudge","reviewSpecificAccessRequestJudiciary","reviewSpecificAccessRequestLegalOps","reviewSpecificAccessRequestAdmin","reviewSpecificAccessRequestCTSC","followUpNoncomplianceOfDirections","registerNewCase","processFurtherEvidence","stitchCollateHearingBundle","reviewRule27RequestCaseListedLO","reviewWithdrawalRequestCaseListedLO","reviewWithdrawalRequestCaseListedJudge","processCaseWithdrawalDirectionsListed","reviewStayRequestCaseListedJudge","processStayDirectionsListed","reviewRule27RequestCaseListedJudge","processRule27DecisionListed","reviewOrder"</text>
         </inputEntry>
         <outputEntry id="LiteralExpression_1qbzk71">
           <text>"minorPriority"</text>
@@ -184,7 +184,7 @@ else 5000</text>
           <text></text>
         </inputEntry>
         <inputEntry id="UnaryTests_0t4gfyx">
-          <text>"processOtherDirectionsReturned","processRule27Decision","processCaseWithdrawalDirections","processListingDirections","processListingDirectionsListed","processDirectionsReListedCase","processStrikeOutDirectionsReturned","processStayDirections","issueCaseToRespondent","followUpNoncomplianceOfDirections","processFurtherEvidence","processSetAsideDirections","processDirectionsReturned","processPostponementDirections","processTimeExtensionDirectionsReturned","processReinstatementDecisionNotice","processWrittenReasons","createDueDate","issueDueDate","processCaseWithdrawalDirectionsListed","processStayDirectionsListed","processRule27DecisionListed"</text>
+          <text>"processOtherDirectionsReturned","processRule27Decision","processCaseWithdrawalDirections","processListingDirections","processListingDirectionsListed","processDirectionsReListedCase","processStrikeOutDirectionsReturned","processStayDirections","issueCaseToRespondent","followUpNoncomplianceOfDirections","processFurtherEvidence","processSetAsideDirections","processDirectionsReturned","processPostponementDirections","processTimeExtensionDirectionsReturned","processReinstatementDecisionNotice","processWrittenReasons","processCaseWithdrawalDirectionsListed","processStayDirectionsListed","processRule27DecisionListed"</text>
         </inputEntry>
         <outputEntry id="LiteralExpression_15pmpia">
           <text>"workType"</text>
@@ -286,7 +286,7 @@ else 5000</text>
           <text></text>
         </inputEntry>
         <inputEntry id="UnaryTests_055g5ba">
-          <text>"processRule27Decision","processCaseWithdrawalDirections","processListingDirections","processListingDirectionsListed","processDirectionsReListedCase","processDirectionsReListedCaseWithin5Days","processSetAsideDirections","processCorrections","processDirectionsReturned","processPostponementDirections","processTimeExtensionDirectionsReturned","processReinstatementDecisionNotice","processOtherDirectionsReturned","processWrittenReasons","processStrikeOutDirectionsReturned","processStayDirections","issueDecisionNotice","completeHearingOutcome","issueCaseToRespondent","vetNewCaseDocuments","reviewSpecificAccessRequestAdmin","followUpNoncomplianceOfDirections","registerNewCase","processFurtherEvidence","stitchCollateHearingBundle","createDueDate","issueDueDate","processCaseWithdrawalDirectionsListed","processStayDirectionsListed","processRule27DecisionListed","reviewOrder"</text>
+          <text>"processRule27Decision","processCaseWithdrawalDirections","processListingDirections","processListingDirectionsListed","processDirectionsReListedCase","processDirectionsReListedCaseWithin5Days","processSetAsideDirections","processCorrections","processDirectionsReturned","processPostponementDirections","processTimeExtensionDirectionsReturned","processReinstatementDecisionNotice","processOtherDirectionsReturned","processWrittenReasons","processStrikeOutDirectionsReturned","processStayDirections","issueDecisionNotice","completeHearingOutcome","issueCaseToRespondent","vetNewCaseDocuments","reviewSpecificAccessRequestAdmin","followUpNoncomplianceOfDirections","registerNewCase","processFurtherEvidence","stitchCollateHearingBundle","processCaseWithdrawalDirectionsListed","processStayDirectionsListed","processRule27DecisionListed","reviewOrder"</text>
         </inputEntry>
         <outputEntry id="LiteralExpression_1ubz0s5">
           <text>"roleCategory"</text>
@@ -371,7 +371,7 @@ else 5000</text>
           <text></text>
         </inputEntry>
         <inputEntry id="UnaryTests_046d7dy">
-          <text>"issueCaseToRespondent","reviewSetAsideRequest","reviewSpecificAccessRequestJudiciary","reviewSpecificAccessRequestLegalOps","reviewSpecificAccessRequestAdmin","reviewSpecificAccessRequestCTSC","createDueDate","issueDueDate"</text>
+          <text>"issueCaseToRespondent","reviewSetAsideRequest","reviewSpecificAccessRequestJudiciary","reviewSpecificAccessRequestLegalOps","reviewSpecificAccessRequestAdmin","reviewSpecificAccessRequestCTSC"</text>
         </inputEntry>
         <outputEntry id="LiteralExpression_1ni750t">
           <text>"dueDateIntervalDays"</text>
@@ -456,7 +456,7 @@ else 5000</text>
           <text></text>
         </inputEntry>
         <inputEntry id="UnaryTests_1cuepcw">
-          <text>"processCaseWithdrawalDirections","processRule27Decision","processListingDirections","processListingDirectionsListed","processDirectionsReListedCase","processDirectionsReListedCaseWithin5Days","processSetAsideDirections","processCorrections","processDirectionsReturned","processPostponementDirections","processTimeExtensionDirectionsReturned","processReinstatementDecisionNotice","processOtherDirectionsReturned","processWrittenReasons","processStrikeOutDirectionsReturned","processStayDirections","issueDueDate","processCaseWithdrawalDirectionsListed","processStayDirectionsListed","processRule27DecisionListed"</text>
+          <text>"processCaseWithdrawalDirections","processRule27Decision","processListingDirections","processListingDirectionsListed","processDirectionsReListedCase","processDirectionsReListedCaseWithin5Days","processSetAsideDirections","processCorrections","processDirectionsReturned","processPostponementDirections","processTimeExtensionDirectionsReturned","processReinstatementDecisionNotice","processOtherDirectionsReturned","processWrittenReasons","processStrikeOutDirectionsReturned","processStayDirections","processCaseWithdrawalDirectionsListed","processStayDirectionsListed","processRule27DecisionListed"</text>
         </inputEntry>
         <outputEntry id="LiteralExpression_0em2bsa">
           <text>"description"</text>
@@ -533,23 +533,6 @@ else 5000</text>
           <text>"[Case: Build case](/cases/case-details/${[CASE_REFERENCE]}/trigger/caseworker-case-built)"</text>
         </outputEntry>
         <outputEntry id="LiteralExpression_14akn1n">
-          <text>true</text>
-        </outputEntry>
-      </rule>
-      <rule id="DecisionRule_0ewlwmy">
-        <inputEntry id="UnaryTests_0dp060f">
-          <text></text>
-        </inputEntry>
-        <inputEntry id="UnaryTests_19rvkyj">
-          <text>"createDueDate"</text>
-        </inputEntry>
-        <outputEntry id="LiteralExpression_1tzt7zn">
-          <text>"description"</text>
-        </outputEntry>
-        <outputEntry id="LiteralExpression_024uvzb">
-          <text>"[Orders: Create draft](/cases/case-details/${[CASE_REFERENCE]}/trigger/create-draft-order)"</text>
-        </outputEntry>
-        <outputEntry id="LiteralExpression_0c6uf95">
           <text>true</text>
         </outputEntry>
       </rule>
