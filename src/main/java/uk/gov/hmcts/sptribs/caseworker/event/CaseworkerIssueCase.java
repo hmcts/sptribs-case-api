@@ -124,7 +124,7 @@ public class CaseworkerIssueCase implements CCDConfig<CaseData, State, UserRole>
         LocalDate dueDate = LocalDate.now().plusDays(ALLOWED_RESPONSE_TIME_DAYS);
         LocalDate verifiedDueDate = isWorkingDay(dueDate, bankHolidays) ? dueDate : getNextWorkingDay(dueDate, bankHolidays);
         cicCase.setRespondentBundleDueDate(verifiedDueDate);
-        
+
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
             .state(details.getState())
