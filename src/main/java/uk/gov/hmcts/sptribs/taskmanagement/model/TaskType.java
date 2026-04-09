@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.stream.Stream;
 
 import static uk.gov.hmcts.sptribs.taskmanagement.TaskConstants.COMPLETE_HEARING_OUTCOME_DESCRIPTION;
-import static uk.gov.hmcts.sptribs.taskmanagement.TaskConstants.CREATE_DUE_DATE_DESCRIPTION;
 import static uk.gov.hmcts.sptribs.taskmanagement.TaskConstants.EMPTY_DESCRIPTION;
 import static uk.gov.hmcts.sptribs.taskmanagement.TaskConstants.FOLLOW_UP_NONCOMPLIANCE_DESCRIPTION;
 import static uk.gov.hmcts.sptribs.taskmanagement.TaskConstants.ISSUE_CASE_TO_RESPONDENT_DESCRIPTION;
@@ -248,12 +247,6 @@ public enum TaskType {
         RoleCategory.ADMIN.name()),
     stitchCollateHearingBundle("Stitch/collate hearing bundle", HearingBundle, 1, STITCH_COLLATE_BUNDLE_DESCRIPTION,
         WorkType.HEARING_WORK.getLowerCaseName(),
-        RoleCategory.ADMIN.name()),
-    createDueDate("Create due date", IssueCase, 2, CREATE_DUE_DATE_DESCRIPTION,
-        WorkType.ROUTINE_WORK.getLowerCaseName(),
-        RoleCategory.ADMIN.name()),
-    issueDueDate("Issue due date", IssueCase, 2, SEND_ORDER_DESCRIPTION,
-        WorkType.ROUTINE_WORK.getLowerCaseName(),
         RoleCategory.ADMIN.name()),
     reviewOrder("Review Order", Decision, 5, EMPTY_DESCRIPTION,
         WorkType.DECISION_MAKING_WORK.getLowerCaseName(),

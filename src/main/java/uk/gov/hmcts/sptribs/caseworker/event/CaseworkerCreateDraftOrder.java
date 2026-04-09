@@ -35,7 +35,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Stream;
 
 import static org.springframework.util.CollectionUtils.isEmpty;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_CREATE_DRAFT_ORDER;
@@ -55,7 +54,6 @@ import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_WA_CONFIG_USER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE;
 import static uk.gov.hmcts.sptribs.taskmanagement.TaskTypeCollections.REVIEW_TASKS_TO_COMPLETE;
-import static uk.gov.hmcts.sptribs.taskmanagement.model.TaskType.createDueDate;
 
 @Slf4j
 @Component
@@ -148,7 +146,7 @@ public class CaseworkerCreateDraftOrder implements CCDConfig<CaseData, State, Us
         caseData.getCicCase().setOrderTemplateIssued(null);
 
         taskManagementService.enqueueCompletionTasks(
-            Stream.concat(REVIEW_TASKS_TO_COMPLETE.stream(), Stream.of(createDueDate)).toList(),
+            REVIEW_TASKS_TO_COMPLETE,
             details.getId()
         );
         taskManagementService.enqueueInitiationTasks(

@@ -52,7 +52,6 @@ import static uk.gov.hmcts.sptribs.ciccase.model.RepresentativeCIC.REPRESENTATIV
 import static uk.gov.hmcts.sptribs.ciccase.model.RespondentCIC.RESPONDENT;
 import static uk.gov.hmcts.sptribs.ciccase.model.SubjectCIC.SUBJECT;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_WA_CONFIG_USER;
-import static uk.gov.hmcts.sptribs.taskmanagement.model.TaskType.createDueDate;
 import static uk.gov.hmcts.sptribs.taskmanagement.model.TaskType.issueCaseToRespondent;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigBuilder;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.getEventsFrom;
@@ -167,7 +166,6 @@ class CaseworkerIssueCaseTest {
             .contains("# Case issued \n##  This case has now been issued.");
 
         verify(taskManagementService).enqueueCompletionTasks(List.of(issueCaseToRespondent), TEST_CASE_ID);
-        verify(taskManagementService).enqueueInitiationTasks(List.of(createDueDate), caseData, TEST_CASE_ID);
     }
 
     @Test

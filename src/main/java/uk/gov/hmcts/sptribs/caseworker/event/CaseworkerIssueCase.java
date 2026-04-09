@@ -48,7 +48,6 @@ import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_JUDGE;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_WA_CONFIG_USER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE;
-import static uk.gov.hmcts.sptribs.taskmanagement.model.TaskType.createDueDate;
 import static uk.gov.hmcts.sptribs.taskmanagement.model.TaskType.issueCaseToRespondent;
 
 @Component
@@ -134,7 +133,6 @@ public class CaseworkerIssueCase implements CCDConfig<CaseData, State, UserRole>
         cicCase.setRespondentBundleDueDate(verifiedDueDate);
 
         taskManagementService.enqueueCompletionTasks(List.of(issueCaseToRespondent), details.getId());
-        taskManagementService.enqueueInitiationTasks(List.of(createDueDate), caseData, details.getId());
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)

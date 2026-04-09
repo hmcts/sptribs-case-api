@@ -66,7 +66,6 @@ import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_WA_CONFIG_USER;
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE;
 import static uk.gov.hmcts.sptribs.document.DocumentUtil.updateCategoryToDocument;
 import static uk.gov.hmcts.sptribs.taskmanagement.model.TaskType.followUpNoncomplianceOfDirections;
-import static uk.gov.hmcts.sptribs.taskmanagement.model.TaskType.issueDueDate;
 import static uk.gov.hmcts.sptribs.taskmanagement.model.TaskType.processCaseWithdrawalDirections;
 import static uk.gov.hmcts.sptribs.taskmanagement.model.TaskType.processCaseWithdrawalDirectionsListed;
 import static uk.gov.hmcts.sptribs.taskmanagement.model.TaskType.processCorrections;
@@ -107,7 +106,7 @@ public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole>
         processDirectionsReturned, processPostponementDirections,
         processTimeExtensionDirectionsReturned, processReinstatementDecisionNotice,
         processOtherDirectionsReturned, processWrittenReasons, processStrikeOutDirectionsReturned,
-        processStayDirections, processStayDirectionsListed, issueDueDate
+        processStayDirections, processStayDirectionsListed
     );
 
     private final NewOrderIssuedNotification newOrderIssuedNotification;

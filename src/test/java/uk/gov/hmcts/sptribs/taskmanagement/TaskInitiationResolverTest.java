@@ -29,7 +29,6 @@ import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseClosed;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.ReadyToList;
-import static uk.gov.hmcts.sptribs.taskmanagement.model.TaskType.issueDueDate;
 import static uk.gov.hmcts.sptribs.taskmanagement.model.TaskType.processCaseWithdrawalDirections;
 import static uk.gov.hmcts.sptribs.taskmanagement.model.TaskType.processCaseWithdrawalDirectionsListed;
 import static uk.gov.hmcts.sptribs.taskmanagement.model.TaskType.processCorrections;
@@ -109,8 +108,8 @@ class TaskInitiationResolverTest {
 
     private static Stream<Arguments> createDraftOrderInitiationCases() {
         return Stream.of(
-            Arguments.of(CaseManagement, null, List.of(issueDueDate)),
-            Arguments.of(CaseManagement, " ", List.of(issueDueDate)),
+            Arguments.of(CaseManagement, null, List.of()),
+            Arguments.of(CaseManagement, " ", List.of()),
             Arguments.of(AwaitingHearing, WITHDRAWAL_REQUEST.getLabel(), List.of(processCaseWithdrawalDirectionsListed)),
             Arguments.of(ReadyToList, WITHDRAWAL_REQUEST.getLabel(), List.of(processCaseWithdrawalDirections)),
             Arguments.of(AwaitingHearing, RULE_27_REQUEST.getLabel(), List.of(processRule27DecisionListed)),

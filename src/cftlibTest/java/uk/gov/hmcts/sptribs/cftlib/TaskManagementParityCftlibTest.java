@@ -69,8 +69,7 @@ class TaskManagementParityCftlibTest extends CftlibTest {
             && !taskType.name().startsWith("reviewSpecificAccess")
             && taskType != TaskType.reviewOrder)
         .toList();
-    private static final List<TaskType> CREATE_DRAFT_ORDER_COMPLETABLE_TASKS =
-        Stream.concat(REVIEW_TASKS_EXCLUDING_REVIEW_ORDER.stream(), Stream.of(TaskType.createDueDate)).toList();
+    private static final List<TaskType> CREATE_DRAFT_ORDER_COMPLETABLE_TASKS = REVIEW_TASKS_EXCLUDING_REVIEW_ORDER;
     private static final List<TaskType> CREATE_AND_SEND_ORDER_COMPLETABLE_TASKS = REVIEW_TASKS_EXCLUDING_REVIEW_ORDER;
     private static final List<TaskType> SEND_ORDER_COMPLETABLE_TASKS = List.of(
         TaskType.processCaseWithdrawalDirections,
@@ -91,8 +90,7 @@ class TaskManagementParityCftlibTest extends CftlibTest {
         TaskType.processWrittenReasons,
         TaskType.processStrikeOutDirectionsReturned,
         TaskType.processStayDirections,
-        TaskType.processStayDirectionsListed,
-        TaskType.issueDueDate
+        TaskType.processStayDirectionsListed
     );
     private static final List<TaskType> REFERRAL_COMPLETABLE_TASKS =
         List.of(TaskType.followUpNoncomplianceOfDirections, TaskType.processFurtherEvidence);
@@ -199,13 +197,13 @@ class TaskManagementParityCftlibTest extends CftlibTest {
     }
 
     @Test
-    void caseworkerIssueCase_shouldCompleteIssueCaseTaskAndInitiateCreateDueDateTask() {
+    void caseworkerIssueCase_shouldCompleteIssueCaseTask() {
         runEventAndAssert(
             "caseworker-issue-case",
             CASEWORKER_USER,
             State.CaseManagement,
             Map.of(),
-            List.of(TaskType.createDueDate),
+            List.of(),
             List.of(TaskType.issueCaseToRespondent),
             List.of(),
             List.of(TaskType.issueCaseToRespondent)
@@ -625,10 +623,10 @@ class TaskManagementParityCftlibTest extends CftlibTest {
     private Stream<Arguments> createDraftOrderScenarios() {
         return Stream.of(
             arguments(
-                "create-draft-order CaseManagement with blank referral initiates issueDueDate",
+                "create-draft-order CaseManagement with blank referral does not initiate tasks",
                 State.CaseManagement,
                 referralOverlay(""),
-                List.of(TaskType.issueDueDate)
+                List.of()
             ),
             arguments(
                 "create-draft-order AwaitingHearing withdrawal request initiates processCaseWithdrawalDirectionsListed",

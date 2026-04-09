@@ -24,7 +24,6 @@ import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseClosed;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.ReadyToList;
-import static uk.gov.hmcts.sptribs.taskmanagement.model.TaskType.issueDueDate;
 import static uk.gov.hmcts.sptribs.taskmanagement.model.TaskType.processCaseWithdrawalDirections;
 import static uk.gov.hmcts.sptribs.taskmanagement.model.TaskType.processCaseWithdrawalDirectionsListed;
 import static uk.gov.hmcts.sptribs.taskmanagement.model.TaskType.processCorrections;
@@ -86,10 +85,6 @@ public final class TaskInitiationResolver {
     }
 
     public static List<TaskType> createDraftOrderInitiationTasks(State state, String referralType) {
-        if (state == CaseManagement && (referralType == null || referralType.isBlank())) {
-            return List.of(issueDueDate);
-        }
-
         if (WITHDRAWAL_REQUEST.getLabel().equals(referralType)) {
             if (state == AwaitingHearing) {
                 return List.of(processCaseWithdrawalDirectionsListed);

@@ -69,8 +69,6 @@ public final class TaskConstants {
         "[Case: Issue to respondent](/cases/case-details/${[CASE_REFERENCE]}/trigger/caseworker-issue-case)";
     public static final String VET_NEW_CASE_DOCUMENTS_DESCRIPTION =
         "[Case: Build case](/cases/case-details/${[CASE_REFERENCE]}/trigger/caseworker-case-built)";
-    public static final String CREATE_DUE_DATE_DESCRIPTION =
-        "[Orders: Create draft](/cases/case-details/${[CASE_REFERENCE]}/trigger/create-draft-order)";
     public static final String REVIEW_REQUESTS_DESCRIPTION =
         "[Orders: Create and send order](/cases/case-details/${[CASE_REFERENCE]}/trigger/create-and-send-order)";
     public static final String FOLLOW_UP_NONCOMPLIANCE_DESCRIPTION =
