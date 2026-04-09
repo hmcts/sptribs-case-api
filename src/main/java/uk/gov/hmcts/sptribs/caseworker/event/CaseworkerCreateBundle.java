@@ -13,7 +13,9 @@ import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.Event;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
+import uk.gov.hmcts.sptribs.caseworker.util.DocumentListUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
@@ -24,6 +26,8 @@ import uk.gov.hmcts.sptribs.document.bundling.model.BundleIdAndTimestamp;
 import uk.gov.hmcts.sptribs.document.bundling.model.Callback;
 import uk.gov.hmcts.sptribs.document.model.AbstractCaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
+import uk.gov.hmcts.sptribs.notification.dispatcher.BundleCreatedNotification;
+import uk.gov.hmcts.sptribs.notification.dispatcher.CaseIssuedNotification;
 
 import java.time.Clock;
 import java.time.LocalDateTime;
@@ -37,10 +41,17 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static java.lang.String.format;
 import static java.util.Collections.emptyList;
 import static uk.gov.hmcts.sptribs.caseworker.util.DocumentListUtil.extractDocumentsFromListValues;
 import static uk.gov.hmcts.sptribs.caseworker.util.DocumentListUtil.getAllCaseDocuments;
+import static org.springframework.util.CollectionUtils.isEmpty;
+import static uk.gov.hmcts.sptribs.caseworker.util.DocumentListUtil.getAllCaseDocumentsExcludingInitialCicaUpload;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CREATE_BUNDLE;
+import static uk.gov.hmcts.sptribs.caseworker.util.MessageUtil.generateSimpleErrorMessage;
+import static uk.gov.hmcts.sptribs.caseworker.util.MessageUtil.generateSimpleMessage;
+import static uk.gov.hmcts.sptribs.ciccase.model.NotificationParties.REPRESENTATIVE;
+import static uk.gov.hmcts.sptribs.ciccase.model.NotificationParties.RESPONDENT;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseClosed;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
@@ -63,8 +74,13 @@ public class CaseworkerCreateBundle implements CCDConfig<CaseData, State, UserRo
 
     private final BundlingService bundlingService;
 
+    private final CaseIssuedNotification caseIssuedNotification;
+
     @Autowired
     private final Clock clock;
+
+    @Autowired
+    private BundleCreatedNotification bundleCreatedNotification;
 
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
@@ -119,11 +135,53 @@ public class CaseworkerCreateBundle implements CCDConfig<CaseData, State, UserRo
         caseData.setCaseDocuments(null);
         caseData.setFurtherCaseDocuments(null);
 
+        sendBundleCreationNotification(caseData.getCaseNumber(), caseData);
+
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
             .build();
     }
 
+    public SubmittedCallbackResponse submitted(CaseDetails<CaseData, State> details,
+                                               CaseDetails<CaseData, State> beforeDetails) {
+
+        final CaseData data = details.getData();
+        final CicCase cicCase = data.getCicCase();
+        final String caseNumber = data.getHyphenatedCaseRef();
+        final List<String> errors = new ArrayList<>();
+
+        if (!isEmpty(cicCase.getNotifyPartyRepresentative())) {
+            try {
+                caseIssuedNotification.sendToRepresentative(details.getData(), caseNumber);
+            } catch (Exception notificationException) {
+                errors.add(REPRESENTATIVE.getLabel());
+            }
+        }
+        if (!isEmpty(cicCase.getNotifyPartyRespondent())) {
+            try {
+                caseIssuedNotification.sendToRespondent(details.getData(), caseNumber);
+            } catch (Exception notificationException) {
+                errors.add(RESPONDENT.getLabel());
+            }
+        }
+
+        if (isEmpty(errors)) {
+            return SubmittedCallbackResponse.builder()
+                .confirmationHeader(format("# Bundle created. %n## %s",
+                    generateSimpleMessage(details.getData().getCicCase())))
+                .build();
+        } else {
+            return SubmittedCallbackResponse.builder()
+                .confirmationHeader(
+                    format("# Bundle creation notification failed %n## %s %n## Please resend the notification.",
+                        generateSimpleErrorMessage(errors))
+                )
+                .build();
+        }
+    }
+
+    private List<AbstractCaseworkerCICDocument<CaseworkerCICDocument>> getInitialCicaUpload(CaseData caseData, long caseId) {
+        var initialDocs = Optional.ofNullable(caseData.getInitialCicaDocuments()).orElse(emptyList());
     private void setCaseBundleRequestDocuments(CaseData caseData, List<CaseworkerCICDocument> allDocuments) {
         List<CaseworkerCICDocument> initialDocuments = extractDocumentsFromListValues(caseData.getInitialCicaDocuments());
 
@@ -228,5 +286,15 @@ public class CaseworkerCreateBundle implements CCDConfig<CaseData, State, UserRo
         }
 
         return caseBundles;
+    }
+
+    private void sendBundleCreationNotification(String caseNumber, CaseData data) {
+
+        if (!CollectionUtils.isEmpty(data.getCicCase().getNotifyPartyRepresentative())) {
+            bundleCreatedNotification.sendToRepresentative(data, caseNumber);
+        }
+        if (!CollectionUtils.isEmpty(data.getCicCase().getNotifyPartyApplicant())) {
+            bundleCreatedNotification.sendToApplicant(data, caseNumber);
+        }
     }
 }
