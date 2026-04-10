@@ -4,8 +4,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.sptribs.common.repositories.CaseDataRepository;
-import uk.gov.hmcts.sptribs.controllers.model.CicaCaseResponse;
+import uk.gov.hmcts.sptribs.common.repositories.model.CicaCaseEntity;
 import uk.gov.hmcts.sptribs.exception.CaseNotFoundException;
+import uk.gov.hmcts.sptribs.exception.UnauthorisedCaseAccessException;
 
 import java.util.regex.Pattern;
 
@@ -22,20 +23,22 @@ public class CicaCaseService {
      * Retrieves a case by CCD reference number.
      *
      * @param ccdReference the CCD reference number.
+     * @param userEmail the email of the user.
      * @return the case details
      * @throws CaseNotFoundException if no case is found with the given reference
      * @throws IllegalArgumentException if the reference format is invalid
+     * @throws UnauthorisedCaseAccessException if the email is not in the case
      */
-    public CicaCaseResponse getCaseByCCDReference(String ccdReference) {
+    public CicaCaseEntity getCaseByCCDReference(String ccdReference, String userEmail) {
         log.info("Looking up case by CCD reference: {}", ccdReference);
 
         validateCCDReferenceFormat(ccdReference);
+        if (!caseDataRepository.checkCaseExists(ccdReference)) {
+            throw new CaseNotFoundException("No case found with CCD reference: " + ccdReference);
+        }
 
-        return caseDataRepository.findByCCDReferenceAndEmail(ccdReference)
-            .orElseThrow(() -> {
-                log.warn("No case found for CCD reference: {}", ccdReference);
-                return new CaseNotFoundException("No case found with CCD reference: " + ccdReference);
-            });
+        return caseDataRepository.findCase(ccdReference, userEmail).orElseThrow(() -> new UnauthorisedCaseAccessException(
+            "User is not authorised to access case: " + ccdReference));
     }
 
     private void validateCCDReferenceFormat(String ccdReference) {

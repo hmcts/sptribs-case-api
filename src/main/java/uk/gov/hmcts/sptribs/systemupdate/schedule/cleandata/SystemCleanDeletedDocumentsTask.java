@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.idam.client.models.User;
-import uk.gov.hmcts.sptribs.common.repositories.CaseEventRepository;
+import uk.gov.hmcts.sptribs.common.repositories.impl.CaseEventRepositoryImpl;
 import uk.gov.hmcts.sptribs.idam.IdamService;
 import uk.gov.hmcts.sptribs.systemupdate.service.CcdManagementException;
 import uk.gov.hmcts.sptribs.systemupdate.service.CcdUpdateService;
@@ -30,7 +30,7 @@ public class SystemCleanDeletedDocumentsTask implements Runnable {
 
     private final AuthTokenGenerator authTokenGenerator;
 
-    private final CaseEventRepository caseEventRepository;
+    private final CaseEventRepositoryImpl caseEventRepositoryImpl;
 
     @Value("${feature.clean-deleted-documents-task.caseReference}")
     private String cleanDeletedDocumentsTestCaseReference;
@@ -42,11 +42,11 @@ public class SystemCleanDeletedDocumentsTask implements Runnable {
     public SystemCleanDeletedDocumentsTask(CcdUpdateService ccdUpdateService,
                                                 IdamService idamService,
                                                 AuthTokenGenerator authTokenGenerator,
-                                           CaseEventRepository caseEventRepository) {
+                                           CaseEventRepositoryImpl caseEventRepositoryImpl) {
         this.ccdUpdateService = ccdUpdateService;
         this.idamService = idamService;
         this.authTokenGenerator = authTokenGenerator;
-        this.caseEventRepository = caseEventRepository;
+        this.caseEventRepositoryImpl = caseEventRepositoryImpl;
     }
 
     @Override
@@ -68,7 +68,7 @@ public class SystemCleanDeletedDocumentsTask implements Runnable {
                 Long caseIdToUpdate = Long.valueOf(cleanDeletedDocumentsTestCaseReference);
                 caseIdsToUpdate = List.of(caseIdToUpdate);
             } else {
-                caseIdsToUpdate = caseEventRepository.getListOfCasesByEventTypeAndDate(CASE_EVENT_ID, DELETE_FROM_DATE);
+                caseIdsToUpdate = caseEventRepositoryImpl.getListOfCasesByEventTypeAndDate(CASE_EVENT_ID, DELETE_FROM_DATE);
             }
 
             if (caseIdsToUpdate.isEmpty()) {

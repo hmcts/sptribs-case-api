@@ -10,7 +10,7 @@ import uk.gov.hmcts.sptribs.caseworker.util.DocumentRemoveListUtil;
 import uk.gov.hmcts.sptribs.caseworker.util.SendOrderUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.common.dto.RemoveEventWithPrecedingData;
-import uk.gov.hmcts.sptribs.common.repositories.CaseEventRepository;
+import uk.gov.hmcts.sptribs.common.repositories.impl.CaseEventRepositoryImpl;
 import uk.gov.hmcts.sptribs.document.model.CICDocument;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 
@@ -27,11 +27,11 @@ import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_DOC
 @RequiredArgsConstructor
 public class OrdersListRestoreService {
 
-    private final CaseEventRepository caseEventRepository;
+    private final CaseEventRepositoryImpl caseEventRepositoryImpl;
 
     public void restoreOrdersList(Long reference, CaseData currentData, LocalDate startDate, LocalDate endDate) {
 
-        List<RemoveEventWithPrecedingData> removeEvents = caseEventRepository
+        List<RemoveEventWithPrecedingData> removeEvents = caseEventRepositoryImpl
             .getRemoveEventsWithPrecedingData(reference, CASEWORKER_DOCUMENT_MANAGEMENT_REMOVE, startDate, endDate);
 
         if (removeEvents.isEmpty()) {

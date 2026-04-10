@@ -17,6 +17,7 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.common.dto.RemoveEventWithPrecedingData;
 import uk.gov.hmcts.sptribs.common.repositories.exception.CaseEventRepositoryException;
+import uk.gov.hmcts.sptribs.common.repositories.impl.CaseEventRepositoryImpl;
 
 import java.sql.ResultSet;
 import java.sql.Timestamp;
@@ -33,7 +34,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class CaseEventRepositoryTest {
+class CaseEventRepositoryImplTest {
 
     @Mock
     private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
@@ -42,7 +43,7 @@ class CaseEventRepositoryTest {
     private ObjectMapper objectMapper;
 
     @InjectMocks
-    private CaseEventRepository caseEventRepository;
+    private CaseEventRepositoryImpl caseEventRepositoryImpl;
 
     private static final String CASE_EVENT_ID = "caseworker-remove-document";
     private static final LocalDate START_DATE = LocalDate.of(2026, 2, 24);
@@ -58,7 +59,7 @@ class CaseEventRepositoryTest {
                 anyString(), anyMap(), ArgumentMatchers.<RowMapper<Long>>any()))
                 .thenReturn(List.of(111L, 222L));
 
-            List<Long> results = caseEventRepository.getListOfCasesByEventTypeAndDate(CASE_EVENT_ID, START_DATE);
+            List<Long> results = caseEventRepositoryImpl.getListOfCasesByEventTypeAndDate(CASE_EVENT_ID, START_DATE);
 
             assertThat(results).hasSize(2).containsExactly(111L, 222L);
         }
@@ -69,7 +70,7 @@ class CaseEventRepositoryTest {
                 anyString(), anyMap(), ArgumentMatchers.<RowMapper<Long>>any()))
                 .thenReturn(List.of());
 
-            List<Long> results = caseEventRepository.getListOfCasesByEventTypeAndDate(CASE_EVENT_ID, START_DATE);
+            List<Long> results = caseEventRepositoryImpl.getListOfCasesByEventTypeAndDate(CASE_EVENT_ID, START_DATE);
 
             assertThat(results).isEmpty();
         }
@@ -80,7 +81,7 @@ class CaseEventRepositoryTest {
                 anyString(), anyMap(), ArgumentMatchers.<RowMapper<Long>>any()))
                 .thenThrow(new DataAccessResourceFailureException("DB error"));
 
-            assertThatThrownBy(() -> caseEventRepository.getListOfCasesByEventTypeAndDate(
+            assertThatThrownBy(() -> caseEventRepositoryImpl.getListOfCasesByEventTypeAndDate(
                 CASE_EVENT_ID, START_DATE))
                 .isInstanceOf(CaseEventRepositoryException.class)
                 .hasMessageContaining("Error whilst retrieving case events to clean further documents")
@@ -97,7 +98,7 @@ class CaseEventRepositoryTest {
                 anyString(), anyMap(), ArgumentMatchers.<RowMapper<Long>>any()))
                 .thenReturn(List.of(111L, 222L, 333L));
 
-            List<Long> results = caseEventRepository.getListOfCasesByEventIdDuringDateRange(CASE_EVENT_ID, START_DATE, END_DATE);
+            List<Long> results = caseEventRepositoryImpl.getListOfCasesByEventIdDuringDateRange(CASE_EVENT_ID, START_DATE, END_DATE);
 
             assertThat(results).hasSize(3).containsExactly(111L, 222L, 333L);
         }
@@ -110,7 +111,7 @@ class CaseEventRepositoryTest {
                 anyString(), paramsCaptor.capture(), ArgumentMatchers.<RowMapper<Long>>any()))
                 .thenReturn(List.of());
 
-            caseEventRepository.getListOfCasesByEventIdDuringDateRange(CASE_EVENT_ID, START_DATE, END_DATE);
+            caseEventRepositoryImpl.getListOfCasesByEventIdDuringDateRange(CASE_EVENT_ID, START_DATE, END_DATE);
 
             assertThat(paramsCaptor.getValue()).containsEntry("endDate", END_DATE.plusDays(1));
         }
@@ -121,7 +122,7 @@ class CaseEventRepositoryTest {
                 anyString(), anyMap(), ArgumentMatchers.<RowMapper<Long>>any()))
                 .thenReturn(List.of());
 
-            List<Long> results = caseEventRepository.getListOfCasesByEventIdDuringDateRange(CASE_EVENT_ID, START_DATE, END_DATE);
+            List<Long> results = caseEventRepositoryImpl.getListOfCasesByEventIdDuringDateRange(CASE_EVENT_ID, START_DATE, END_DATE);
 
             assertThat(results).isEmpty();
         }
@@ -132,7 +133,7 @@ class CaseEventRepositoryTest {
                 anyString(), anyMap(), ArgumentMatchers.<RowMapper<Long>>any()))
                 .thenThrow(new DataAccessResourceFailureException("DB error"));
 
-            assertThatThrownBy(() -> caseEventRepository.getListOfCasesByEventIdDuringDateRange(CASE_EVENT_ID, START_DATE, END_DATE))
+            assertThatThrownBy(() -> caseEventRepositoryImpl.getListOfCasesByEventIdDuringDateRange(CASE_EVENT_ID, START_DATE, END_DATE))
                 .isInstanceOf(CaseEventRepositoryException.class)
                 .hasMessageContaining("Failed to retrieve affected cases for eventID")
                 .hasCauseInstanceOf(DataAccessResourceFailureException.class);
@@ -160,7 +161,7 @@ class CaseEventRepositoryTest {
                 ArgumentMatchers.<RowMapper<RemoveEventWithPrecedingData>>any()))
                     .thenReturn(expectedResults);
 
-            List<RemoveEventWithPrecedingData> results = caseEventRepository
+            List<RemoveEventWithPrecedingData> results = caseEventRepositoryImpl
                     .getRemoveEventsWithPrecedingData(REFERENCE, CASE_EVENT_ID, START_DATE, END_DATE);
 
             assertThat(results).hasSize(1);
@@ -189,7 +190,7 @@ class CaseEventRepositoryTest {
                 .thenReturn(List.of(firstEvent, secondEvent));
 
             List<RemoveEventWithPrecedingData> results =
-                caseEventRepository.getRemoveEventsWithPrecedingData(REFERENCE, CASE_EVENT_ID, START_DATE, END_DATE);
+                caseEventRepositoryImpl.getRemoveEventsWithPrecedingData(REFERENCE, CASE_EVENT_ID, START_DATE, END_DATE);
 
             assertThat(results).hasSize(2);
         }
@@ -203,7 +204,7 @@ class CaseEventRepositoryTest {
                 .thenReturn(List.of());
 
             List<RemoveEventWithPrecedingData> results =
-                caseEventRepository.getRemoveEventsWithPrecedingData(REFERENCE, CASE_EVENT_ID, START_DATE, END_DATE);
+                caseEventRepositoryImpl.getRemoveEventsWithPrecedingData(REFERENCE, CASE_EVENT_ID, START_DATE, END_DATE);
 
             assertThat(results).isEmpty();
         }
@@ -217,7 +218,7 @@ class CaseEventRepositoryTest {
                 paramsCaptor.capture(),
                 ArgumentMatchers.<RowMapper<RemoveEventWithPrecedingData>>any())).thenReturn(List.of());
 
-            caseEventRepository.getRemoveEventsWithPrecedingData(REFERENCE, CASE_EVENT_ID, START_DATE, END_DATE);
+            caseEventRepositoryImpl.getRemoveEventsWithPrecedingData(REFERENCE, CASE_EVENT_ID, START_DATE, END_DATE);
 
             assertThat(paramsCaptor.getValue())
                 .containsEntry("endDate", END_DATE.plusDays(1))
@@ -233,7 +234,7 @@ class CaseEventRepositoryTest {
                 ArgumentMatchers.<RowMapper<RemoveEventWithPrecedingData>>any()))
                 .thenThrow(new DataAccessResourceFailureException("DB error"));
 
-            assertThatThrownBy(() -> caseEventRepository.getRemoveEventsWithPrecedingData(REFERENCE, CASE_EVENT_ID, START_DATE, END_DATE))
+            assertThatThrownBy(() -> caseEventRepositoryImpl.getRemoveEventsWithPrecedingData(REFERENCE, CASE_EVENT_ID, START_DATE, END_DATE))
                 .isInstanceOf(CaseEventRepositoryException.class)
                 .hasMessageContaining("Failed to retrieve remove events for reference=")
                 .hasCauseInstanceOf(DataAccessResourceFailureException.class);
@@ -255,7 +256,7 @@ class CaseEventRepositoryTest {
                 ArgumentMatchers.anyMap(),
                 ArgumentMatchers.<RowMapper<RemoveEventWithPrecedingData>>any())).thenReturn(List.of(eventWithNullPreceding));
 
-            List<RemoveEventWithPrecedingData> results = caseEventRepository
+            List<RemoveEventWithPrecedingData> results = caseEventRepositoryImpl
                 .getRemoveEventsWithPrecedingData(REFERENCE, CASE_EVENT_ID, START_DATE, END_DATE);
 
             assertThat(results.getFirst().getPrecedingEventId()).isNull();
@@ -283,7 +284,7 @@ class CaseEventRepositoryTest {
                 ArgumentMatchers.anyMap(),
                 mapperCaptor.capture())).thenReturn(List.of());
 
-            caseEventRepository.getListOfCasesByEventTypeAndDate(CASE_EVENT_ID, START_DATE);
+            caseEventRepositoryImpl.getListOfCasesByEventTypeAndDate(CASE_EVENT_ID, START_DATE);
 
             Long result = mapperCaptor.getValue().mapRow(rs, 0);
 
@@ -301,7 +302,7 @@ class CaseEventRepositoryTest {
                 ArgumentMatchers.anyMap(),
                 mapperCaptor.capture())).thenReturn(List.of());
 
-            caseEventRepository.getListOfCasesByEventIdDuringDateRange(CASE_EVENT_ID, START_DATE, END_DATE);
+            caseEventRepositoryImpl.getListOfCasesByEventIdDuringDateRange(CASE_EVENT_ID, START_DATE, END_DATE);
 
             Long result = mapperCaptor.getValue().mapRow(rs, 0);
 
@@ -328,7 +329,7 @@ class CaseEventRepositoryTest {
                 ArgumentMatchers.anyMap(),
                 mapperCaptor.capture())).thenReturn(List.of());
 
-            caseEventRepository.getRemoveEventsWithPrecedingData(REFERENCE, CASE_EVENT_ID, START_DATE, END_DATE);
+            caseEventRepositoryImpl.getRemoveEventsWithPrecedingData(REFERENCE, CASE_EVENT_ID, START_DATE, END_DATE);
 
             RemoveEventWithPrecedingData result = mapperCaptor.getValue().mapRow(rs, 0);
 
@@ -359,7 +360,7 @@ class CaseEventRepositoryTest {
                 ArgumentMatchers.anyMap(),
                 mapperCaptor.capture())).thenReturn(List.of());
 
-            caseEventRepository.getRemoveEventsWithPrecedingData(REFERENCE, CASE_EVENT_ID, START_DATE, END_DATE);
+            caseEventRepositoryImpl.getRemoveEventsWithPrecedingData(REFERENCE, CASE_EVENT_ID, START_DATE, END_DATE);
 
             RemoveEventWithPrecedingData result = mapperCaptor.getValue().mapRow(rs, 0);
 
@@ -396,7 +397,7 @@ class CaseEventRepositoryTest {
                 ArgumentMatchers.anyMap(),
                 mapperCaptor.capture())).thenReturn(List.of());
 
-            caseEventRepository.getRemoveEventsWithPrecedingData(REFERENCE, CASE_EVENT_ID, START_DATE, END_DATE);
+            caseEventRepositoryImpl.getRemoveEventsWithPrecedingData(REFERENCE, CASE_EVENT_ID, START_DATE, END_DATE);
 
             RemoveEventWithPrecedingData result = mapperCaptor.getValue().mapRow(rs, 0);
 
@@ -425,7 +426,7 @@ class CaseEventRepositoryTest {
                 ArgumentMatchers.anyMap(),
                 mapperCaptor.capture())).thenReturn(List.of());
 
-            caseEventRepository.getRemoveEventsWithPrecedingData(REFERENCE, CASE_EVENT_ID, START_DATE, END_DATE);
+            caseEventRepositoryImpl.getRemoveEventsWithPrecedingData(REFERENCE, CASE_EVENT_ID, START_DATE, END_DATE);
 
             RemoveEventWithPrecedingData result = mapperCaptor.getValue().mapRow(rs, 0);
 
@@ -450,7 +451,7 @@ class CaseEventRepositoryTest {
                 ArgumentMatchers.anyMap(),
                 mapperCaptor.capture())).thenReturn(List.of());
 
-            caseEventRepository.getRemoveEventsWithPrecedingData(REFERENCE, CASE_EVENT_ID, START_DATE, END_DATE);
+            caseEventRepositoryImpl.getRemoveEventsWithPrecedingData(REFERENCE, CASE_EVENT_ID, START_DATE, END_DATE);
 
             RemoveEventWithPrecedingData result = mapperCaptor.getValue().mapRow(rs, 0);
 

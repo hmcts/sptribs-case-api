@@ -16,7 +16,7 @@ import uk.gov.hmcts.sptribs.caseworker.util.SendOrderUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.common.dto.RemoveEventWithPrecedingData;
-import uk.gov.hmcts.sptribs.common.repositories.CaseEventRepository;
+import uk.gov.hmcts.sptribs.common.repositories.impl.CaseEventRepositoryImpl;
 import uk.gov.hmcts.sptribs.document.model.CICDocument;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 
@@ -41,14 +41,14 @@ class OrdersListRestoreServiceTest {
     private OrdersListRestoreService ordersListRestoreService;
 
     @Mock
-    private CaseEventRepository caseEventRepository;
+    private CaseEventRepositoryImpl caseEventRepositoryImpl;
 
     @Nested
     class WhenNoRemoveEventsFound {
 
         @Test
         void shouldReturnEarlyWhenNoRemoveEventsFound() {
-            when(caseEventRepository.getRemoveEventsWithPrecedingData(
+            when(caseEventRepositoryImpl.getRemoveEventsWithPrecedingData(
                 REFERENCE, CASEWORKER_DOCUMENT_MANAGEMENT_REMOVE, START_DATE, END_DATE))
                 .thenReturn(List.of());
 
@@ -85,7 +85,7 @@ class OrdersListRestoreServiceTest {
                 .precedingEventData(precedingData)
                 .build();
 
-            when(caseEventRepository.getRemoveEventsWithPrecedingData(
+            when(caseEventRepositoryImpl.getRemoveEventsWithPrecedingData(
                 REFERENCE, CASEWORKER_DOCUMENT_MANAGEMENT_REMOVE, START_DATE, END_DATE))
                 .thenReturn(List.of(event));
 
@@ -118,7 +118,7 @@ class OrdersListRestoreServiceTest {
                 .precedingEventData(precedingData)
                 .build();
 
-            when(caseEventRepository.getRemoveEventsWithPrecedingData(
+            when(caseEventRepositoryImpl.getRemoveEventsWithPrecedingData(
                     REFERENCE, CASEWORKER_DOCUMENT_MANAGEMENT_REMOVE, START_DATE, END_DATE))
                     .thenReturn(List.of(event));
 
@@ -150,7 +150,7 @@ class OrdersListRestoreServiceTest {
                 .precedingEventData(precedingData)
                 .build();
 
-            when(caseEventRepository.getRemoveEventsWithPrecedingData(
+            when(caseEventRepositoryImpl.getRemoveEventsWithPrecedingData(
                     REFERENCE, CASEWORKER_DOCUMENT_MANAGEMENT_REMOVE, START_DATE, END_DATE))
                     .thenReturn(List.of(event));
 
@@ -180,7 +180,7 @@ class OrdersListRestoreServiceTest {
                 .precedingEventData(precedingData)
                 .build();
 
-            when(caseEventRepository.getRemoveEventsWithPrecedingData(
+            when(caseEventRepositoryImpl.getRemoveEventsWithPrecedingData(
                 REFERENCE, CASEWORKER_DOCUMENT_MANAGEMENT_REMOVE, START_DATE, END_DATE))
                 .thenReturn(List.of(event));
 
@@ -208,7 +208,7 @@ class OrdersListRestoreServiceTest {
                 .precedingEventData(precedingData)
                 .build();
 
-            when(caseEventRepository.getRemoveEventsWithPrecedingData(
+            when(caseEventRepositoryImpl.getRemoveEventsWithPrecedingData(
                 REFERENCE, CASEWORKER_DOCUMENT_MANAGEMENT_REMOVE, START_DATE, END_DATE))
                 .thenReturn(List.of(event));
 
@@ -251,7 +251,7 @@ class OrdersListRestoreServiceTest {
                 .precedingEventData(precedingDataSecond)
                 .build();
 
-            when(caseEventRepository.getRemoveEventsWithPrecedingData(
+            when(caseEventRepositoryImpl.getRemoveEventsWithPrecedingData(
                 REFERENCE, CASEWORKER_DOCUMENT_MANAGEMENT_REMOVE, START_DATE, END_DATE))
                 .thenReturn(List.of(secondEvent, firstEvent)); // intentionally out of order
 

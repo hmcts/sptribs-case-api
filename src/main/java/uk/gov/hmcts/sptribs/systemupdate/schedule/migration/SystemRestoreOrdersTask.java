@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.idam.client.models.User;
-import uk.gov.hmcts.sptribs.common.repositories.CaseEventRepository;
+import uk.gov.hmcts.sptribs.common.repositories.impl.CaseEventRepositoryImpl;
 import uk.gov.hmcts.sptribs.idam.IdamService;
 import uk.gov.hmcts.sptribs.systemupdate.service.CcdManagementException;
 import uk.gov.hmcts.sptribs.systemupdate.service.CcdUpdateService;
@@ -29,7 +29,7 @@ public class SystemRestoreOrdersTask implements Runnable {
 
     private final AuthTokenGenerator authTokenGenerator;
 
-    private final CaseEventRepository caseEventRepository;
+    private final CaseEventRepositoryImpl caseEventRepositoryImpl;
 
     private final CcdUpdateService ccdUpdateService;
 
@@ -56,7 +56,7 @@ public class SystemRestoreOrdersTask implements Runnable {
                     Long caseIdToUpdate = Long.valueOf(restoreOrdersTestCaseReference);
                     caseIdsToUpdate.add(caseIdToUpdate);
                 } else {
-                    caseIdsToUpdate.addAll(caseEventRepository.getListOfCasesByEventIdDuringDateRange(
+                    caseIdsToUpdate.addAll(caseEventRepositoryImpl.getListOfCasesByEventIdDuringDateRange(
                         CASEWORKER_DOCUMENT_MANAGEMENT_REMOVE, START_FROM_DATE, END_TO_DATE));
                 }
             } catch (final RuntimeException e) {
