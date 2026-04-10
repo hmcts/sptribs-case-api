@@ -66,8 +66,4 @@ public class CicCaseView implements CaseView<CriminalInjuriesCompensationData, S
         }
         return correspondences;
     }
-
-    private void saveDocuments(CriminalInjuriesCompensationData blobCase) {
-
-    }
 }

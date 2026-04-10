@@ -38,6 +38,8 @@ import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.common.event.page.CreateNewOrder;
 import uk.gov.hmcts.sptribs.common.event.page.EditNewOrderContentPage;
 import uk.gov.hmcts.sptribs.common.event.page.PreviewDraftOrder;
+import uk.gov.hmcts.sptribs.common.repositories.DocumentsRepository;
+import uk.gov.hmcts.sptribs.document.DocumentUtil;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
 import uk.gov.hmcts.sptribs.notification.dispatcher.NewOrderIssuedNotification;
 
@@ -74,7 +76,6 @@ import static uk.gov.hmcts.sptribs.document.DocumentUtil.updateCategoryToDocumen
 @Component
 @RequiredArgsConstructor
 public class CaseworkerCreateAndSendOrder implements CCDConfig<CaseData, State, UserRole> {
-
     private static final CcdPageConfiguration orderIssueSelect = new SendOrderOrderIssuingSelect();
     private static final CcdPageConfiguration createNewOrder = new CreateNewOrder();
     private static final CcdPageConfiguration editNewOrderContent = new EditNewOrderContentPage();
@@ -87,6 +88,8 @@ public class CaseworkerCreateAndSendOrder implements CCDConfig<CaseData, State, 
     private final DraftOrderFooter draftOrderFooter;
     private final NewOrderIssuedNotification newOrderIssuedNotification;
     private final SendOrderOrderDueDates orderDueDates;
+    private final DocumentsRepository documentsRepository;
+
 
     @Override
     public void configure(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
@@ -156,6 +159,12 @@ public class CaseworkerCreateAndSendOrder implements CCDConfig<CaseData, State, 
 
             orderBuilder.draftOrder(draftOrderCIC);
 
+            DocumentUtil.buildAndSaveNewDocumentEntity(
+                draftOrderCIC.getTemplateGeneratedDocument(),
+                documentsRepository,
+                Long.parseLong(caseData.getCaseNumber())
+            );
+
             caseData.setDraftOrderContentCIC(new DraftOrderContentCIC());
             caseData.getCicCase().setOrderTemplateIssued(null);
         }
@@ -165,6 +174,12 @@ public class CaseworkerCreateAndSendOrder implements CCDConfig<CaseData, State, 
                 updateCategoryToDocument(caseData.getCicCase().getOrderFile(), DocumentType.TRIBUNAL_DIRECTION.getCategory());
             }
             orderBuilder.uploadedFile(caseData.getCicCase().getOrderFile());
+
+            DocumentUtil.buildAndSaveNewDocumentEntity(
+                caseData.getCicCase().getOrderFile().getFirst().getValue().getDocumentLink(),
+                documentsRepository,
+                Long.parseLong(caseData.getCaseNumber())
+            );
         }
 
         final Order order = orderBuilder

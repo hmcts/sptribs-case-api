@@ -12,7 +12,6 @@ import uk.gov.hmcts.ccd.sdk.ConfigBuilderImpl;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.Event;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
-import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.sptribs.cdam.model.Document;
 import uk.gov.hmcts.sptribs.cdam.model.UploadResponse;
@@ -20,6 +19,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.config.AppsConfig;
+import uk.gov.hmcts.sptribs.common.repositories.DocumentsRepository;
 import uk.gov.hmcts.sptribs.common.service.CcdSupplementaryDataService;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
@@ -65,6 +65,9 @@ public class CreateTestCaseTest {
 
     @Mock
     private CcdSupplementaryDataService ccdSupplementaryDataService;
+
+    @Mock
+    private DocumentsRepository documentsRepository;
 
     @Test
     void shouldAddConfigurationToConfigBuilder() {
@@ -117,8 +120,6 @@ public class CreateTestCaseTest {
             .documentCategory(DocumentType.APPLICATION_FORM)
             .documentEmailContent("This is a test document uploaded during create case journey")
             .build();
-        final ListValue<CaseworkerCICDocument> expectedCICDocumentListValue =
-            ListValue.<CaseworkerCICDocument>builder().value(expectedCICDocument).build();
 
         UploadResponse expectedResponse = new UploadResponse();
         expectedResponse.setDocuments(expectedDocuments);

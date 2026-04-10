@@ -25,6 +25,8 @@ import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.common.event.page.CreateDraftOrder;
 import uk.gov.hmcts.sptribs.common.event.page.DraftOrderMainContentPage;
 import uk.gov.hmcts.sptribs.common.event.page.PreviewDraftOrder;
+import uk.gov.hmcts.sptribs.common.repositories.DocumentsRepository;
+import uk.gov.hmcts.sptribs.document.DocumentUtil;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -64,6 +66,7 @@ public class CaseworkerCreateDraftOrder implements CCDConfig<CaseData, State, Us
     private static final CcdPageConfiguration previewOrder = new PreviewDraftOrder("previewDraftOrderPage", CASEWORKER_CREATE_DRAFT_ORDER);
 
     private final OrderService orderService;
+    private final DocumentsRepository documentsRepository;
 
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
@@ -112,6 +115,12 @@ public class CaseworkerCreateDraftOrder implements CCDConfig<CaseData, State, Us
             .draftOrderContentCIC(caseData.getDraftOrderContentCIC())
             .templateGeneratedDocument(caseData.getCicCase().getOrderTemplateIssued())
             .build();
+
+        DocumentUtil.buildAndSaveNewDocumentEntity(
+            draftOrderCIC.getTemplateGeneratedDocument(),
+            documentsRepository,
+            Long.parseLong(caseData.getCaseNumber())
+        );
 
         caseData.setDraftOrderContentCIC(new DraftOrderContentCIC());
 

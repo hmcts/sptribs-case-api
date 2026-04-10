@@ -6,15 +6,18 @@ import org.apache.commons.lang3.ObjectUtils;
 import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.common.repositories.DocumentsRepository;
 import uk.gov.hmcts.sptribs.document.model.CICDocument;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocumentUpload;
 import uk.gov.hmcts.sptribs.document.model.DocumentInfo;
+import uk.gov.hmcts.sptribs.document.persistence.DocumentEntity;
 
 import java.time.Clock;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import static java.util.Locale.ROOT;
 import static org.apache.commons.lang3.StringUtils.substringAfterLast;
@@ -201,4 +204,16 @@ public final class DocumentUtil {
         return fileExtension != null && validExtensions.contains(fileExtension.toLowerCase(ROOT));
     }
 
+    public static void buildAndSaveNewDocumentEntity(Document document, DocumentsRepository documentsRepository, Long caseReferenceNumber) {
+        if (documentsRepository.findAllByDocumentBinaryUrl(document.getBinaryUrl()).isEmpty()) {
+            documentsRepository.saveAndFlush(DocumentEntity.builder()
+                .id(UUID.randomUUID())
+                .caseReferenceNumber(caseReferenceNumber)
+                .documentUrl(document.getUrl())
+                .documentFilename(document.getFilename())
+                .documentBinaryUrl(document.getBinaryUrl())
+                .categoryId(document.getCategoryId())
+                .build());
+        }
+    }
 }

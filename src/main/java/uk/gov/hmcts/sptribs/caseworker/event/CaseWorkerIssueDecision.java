@@ -1,6 +1,7 @@
 package uk.gov.hmcts.sptribs.caseworker.event;
 
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -26,7 +27,9 @@ import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
+import uk.gov.hmcts.sptribs.common.repositories.DocumentsRepository;
 import uk.gov.hmcts.sptribs.document.CaseDataDocumentService;
+import uk.gov.hmcts.sptribs.document.DocumentUtil;
 import uk.gov.hmcts.sptribs.document.content.DecisionTemplateContent;
 import uk.gov.hmcts.sptribs.document.model.CICDocument;
 import uk.gov.hmcts.sptribs.notification.dispatcher.DecisionIssuedNotification;
@@ -50,6 +53,7 @@ import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE;
 import static uk.gov.hmcts.sptribs.document.DocumentConstants.DECISION_FILE;
 
+@AllArgsConstructor
 @Component
 @Slf4j
 public class CaseWorkerIssueDecision implements CCDConfig<CaseData, State, UserRole> {
@@ -73,6 +77,8 @@ public class CaseWorkerIssueDecision implements CCDConfig<CaseData, State, UserR
 
     @Autowired
     private HttpServletRequest request;
+
+    private final DocumentsRepository documentsRepository;
 
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
@@ -148,6 +154,11 @@ public class CaseWorkerIssueDecision implements CCDConfig<CaseData, State, UserR
 
         if (decisionDocument != null && decisionDocument.getDocumentLink() != null) {
             decisionDocument.getDocumentLink().setCategoryId("TD");
+            DocumentUtil.buildAndSaveNewDocumentEntity(
+                decisionDocument.getDocumentLink(),
+                documentsRepository,
+                Long.parseLong(caseData.getCaseNumber())
+            );
         }
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()

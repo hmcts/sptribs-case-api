@@ -17,6 +17,7 @@ import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.DssCaseData;
 import uk.gov.hmcts.sptribs.common.config.WebMvcConfig;
+import uk.gov.hmcts.sptribs.common.repositories.DocumentsRepository;
 import uk.gov.hmcts.sptribs.idam.IdamService;
 import uk.gov.hmcts.sptribs.notification.NotificationServiceCIC;
 import uk.gov.hmcts.sptribs.notification.exception.NotificationException;
@@ -73,6 +74,9 @@ public class CicDssUpdateCaseEventIT {
     @MockitoBean
     private NotificationServiceCIC notificationServiceCIC;
 
+    @MockitoBean
+    private DocumentsRepository documentsRepository;
+
     private static final String CONFIRMATION_HEADER = "$.confirmation_header";
 
     @BeforeAll
@@ -93,6 +97,7 @@ public class CicDssUpdateCaseEventIT {
             .additionalInformation("Additional information added in DDS Update Case")
             .build();
         caseData.setDssCaseData(dssCaseData);
+        caseData.setCaseNumber(TEST_CASE_ID.toString());
 
         final User user = new User(
             TEST_AUTHORIZATION_TOKEN,

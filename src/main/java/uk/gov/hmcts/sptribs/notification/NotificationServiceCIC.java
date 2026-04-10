@@ -22,6 +22,8 @@ import uk.gov.hmcts.sptribs.ciccase.model.NotificationResponse;
 import uk.gov.hmcts.sptribs.ciccase.model.NotificationType;
 import uk.gov.hmcts.sptribs.common.config.EmailTemplatesConfigCIC;
 import uk.gov.hmcts.sptribs.common.repositories.CorrespondenceRepository;
+import uk.gov.hmcts.sptribs.common.repositories.DocumentsRepository;
+import uk.gov.hmcts.sptribs.document.DocumentUtil;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.idam.IdamService;
 import uk.gov.hmcts.sptribs.notification.exception.NotificationException;
@@ -57,6 +59,8 @@ import static uk.gov.hmcts.sptribs.common.CommonConstants.DOC_AVAILABLE;
 public class NotificationServiceCIC {
 
     private final CorrespondenceRepository correspondenceRepository;
+
+    private final DocumentsRepository documentsRepository;
 
     private final NotificationClient notificationClient;
 
@@ -442,6 +446,8 @@ public class NotificationServiceCIC {
             uploadedPDF.setBinaryUrl(uploadResponse.getDocuments().getFirst().links.binary.href);
             uploadedPDF.setFilename(correspondenceDocumentFilename);
             uploadedPDF.setUrl(uploadResponse.getDocuments().getFirst().links.self.href);
+
+            DocumentUtil.buildAndSaveNewDocumentEntity(uploadedPDF, documentsRepository, longCaseRef);
 
             return uploadedPDF;
         } catch (RestClientException e) {

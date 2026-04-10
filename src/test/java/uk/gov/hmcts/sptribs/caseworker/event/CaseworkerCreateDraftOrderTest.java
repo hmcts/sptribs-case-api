@@ -23,6 +23,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.OrderTemplate;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.ciccase.model.access.Permissions;
+import uk.gov.hmcts.sptribs.common.repositories.DocumentsRepository;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -46,6 +47,9 @@ class CaseworkerCreateDraftOrderTest {
 
     @Mock
     private OrderService orderService;
+
+    @Mock
+    private DocumentsRepository documentsRepository;
 
     @Test
     void shouldAddPublishToCamundaWhenWAIsEnabled() {
@@ -84,6 +88,7 @@ class CaseworkerCreateDraftOrderTest {
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
         final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
 
+        caseData.setCaseNumber(TEST_CASE_ID.toString());
         updatedCaseDetails.setData(caseData);
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
@@ -149,6 +154,7 @@ class CaseworkerCreateDraftOrderTest {
         final DraftOrderContentCIC orderContentCIC = DraftOrderContentCIC.builder()
             .orderTemplate(OrderTemplate.CIC7_ME_DMI_REPORTS).build();
         caseData.setDraftOrderContentCIC(orderContentCIC);
+        caseData.setCaseNumber(TEST_CASE_ID.toString());
         updatedCaseDetails.setData(caseData);
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
@@ -186,6 +192,7 @@ class CaseworkerCreateDraftOrderTest {
         final DraftOrderContentCIC orderContentCIC = DraftOrderContentCIC.builder()
                 .orderTemplate(OrderTemplate.CIC7_ME_DMI_REPORTS).build();
         caseData.setDraftOrderContentCIC(orderContentCIC);
+        caseData.setCaseNumber(TEST_CASE_ID.toString());
         updatedCaseDetails.setData(caseData);
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);

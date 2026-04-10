@@ -36,8 +36,10 @@ import uk.gov.hmcts.sptribs.common.event.page.FurtherDetails;
 import uk.gov.hmcts.sptribs.common.event.page.RepresentativeDetails;
 import uk.gov.hmcts.sptribs.common.event.page.SelectParties;
 import uk.gov.hmcts.sptribs.common.event.page.SubjectDetails;
+import uk.gov.hmcts.sptribs.common.repositories.DocumentsRepository;
 import uk.gov.hmcts.sptribs.common.service.CcdSupplementaryDataService;
 import uk.gov.hmcts.sptribs.common.service.SubmissionService;
+import uk.gov.hmcts.sptribs.document.DocumentUtil;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocumentUpload;
 import uk.gov.hmcts.sptribs.notification.dispatcher.ApplicationReceivedNotification;
@@ -65,7 +67,6 @@ import static uk.gov.hmcts.sptribs.document.DocumentUtil.updateUploadedDocumentC
 @Slf4j
 @Component
 public class CreateCase implements CCDConfig<CaseData, State, UserRole> {
-
     private static final CcdPageConfiguration categorisationDetails = new CaseCategorisationDetails();
     private static final CcdPageConfiguration cicaCaseDetails = new EditCicaCaseDetailsPage();
     private static final CcdPageConfiguration dateOfInitialCicaDecision = new DateOfInitialCicaDecision();
@@ -84,13 +85,17 @@ public class CreateCase implements CCDConfig<CaseData, State, UserRole> {
 
     private final ApplicationReceivedNotification applicationReceivedNotification;
 
+    private final DocumentsRepository documentsRepository;
+
     @Autowired
     public CreateCase(SubmissionService submissionService,
                       CcdSupplementaryDataService ccdSupplementaryDataService,
-                      ApplicationReceivedNotification applicationReceivedNotification) {
+                      ApplicationReceivedNotification applicationReceivedNotification,
+                      DocumentsRepository documentsRepository) {
         this.submissionService = submissionService;
         this.ccdSupplementaryDataService = ccdSupplementaryDataService;
         this.applicationReceivedNotification = applicationReceivedNotification;
+        this.documentsRepository = documentsRepository;
     }
 
     @Override
@@ -132,6 +137,14 @@ public class CreateCase implements CCDConfig<CaseData, State, UserRole> {
         caseData.getCicCase().setCaseDocumentsUpload(new ArrayList<>());
 
         caseData.getCicCase().setApplicantDocumentsUploaded(documents);
+        for (ListValue<CaseworkerCICDocument> document : documents) {
+            DocumentUtil.buildAndSaveNewDocumentEntity(
+                document.getValue().getDocumentLink(),
+                documentsRepository,
+                Long.parseLong(caseData.getCaseNumber())
+            );
+        }
+
         setIsRepresentativePresent(caseData);
         caseData.setSecurityClass(SecurityClass.PUBLIC);
         caseData.setCaseNameHmctsInternal(caseData.getCicCase().getFullName());
