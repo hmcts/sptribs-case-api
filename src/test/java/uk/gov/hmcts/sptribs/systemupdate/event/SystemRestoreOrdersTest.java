@@ -16,7 +16,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.repositories.exception.CaseEventRepositoryException;
-import uk.gov.hmcts.sptribs.common.service.OrdersListRestoreService;
+import uk.gov.hmcts.sptribs.common.service.CaseDataRestoreService;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -40,7 +40,7 @@ class SystemRestoreOrdersTest {
     private SystemRestoreOrders systemRestoreOrders;
 
     @Mock
-    private OrdersListRestoreService ordersListRestoreService;
+    private CaseDataRestoreService ordersListRestoreService;
 
     private static final LocalDate START_FROM_DATE = LocalDate.of(2026, 2, 24);
 

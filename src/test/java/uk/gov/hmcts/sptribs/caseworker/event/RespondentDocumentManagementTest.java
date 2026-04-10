@@ -131,8 +131,8 @@ class RespondentDocumentManagementTest {
         AboutToStartOrSubmitResponse<CaseData, State> response =
             respondentDocumentManagement.aboutToSubmit(updatedCaseDetails, beforeDetails);
 
-        assertThat(response.getData().getInitialCaseDocuments()).hasSize(1);
-        assertThat(response.getData().getInitialCaseDocuments().getFirst().getValue().getDocumentLink().getFilename())
+        assertThat(response.getData().getInitialCicaDocuments()).hasSize(1);
+        assertThat(response.getData().getInitialCicaDocuments().getFirst().getValue().getDocumentLink().getFilename())
             .isEqualTo("file.pdf");
         assertThat(response.getData().getFurtherUploadedDocuments()).isNull();
     }
@@ -161,7 +161,7 @@ class RespondentDocumentManagementTest {
         assertThat(response.getData().getFurtherUploadedDocuments()).hasSize(1);
         assertThat(response.getData().getFurtherUploadedDocuments().getFirst().getValue().getDocumentLink().getFilename())
             .isEqualTo("file.pdf");
-        assertThat(response.getData().getInitialCaseDocuments()).isNull();
+        assertThat(response.getData().getInitialCicaDocuments()).isNull();
     }
 
     @Test
@@ -214,7 +214,7 @@ class RespondentDocumentManagementTest {
         AboutToStartOrSubmitResponse<CaseData, State> response =
             respondentDocumentManagement.aboutToSubmit(updatedCaseDetails, beforeDetails);
 
-        assertThat(response.getData().getInitialCaseDocuments()).isNull();
+        assertThat(response.getData().getInitialCicaDocuments()).isNull();
         assertThat(response.getData().getFurtherUploadedDocuments()).isNull();
     }
 }

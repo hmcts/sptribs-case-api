@@ -125,7 +125,7 @@ public class CaseworkerCreateBundle implements CCDConfig<CaseData, State, UserRo
     }
 
     private void setCaseBundleRequestDocuments(CaseData caseData, List<CaseworkerCICDocument> allDocuments) {
-        List<CaseworkerCICDocument> initialDocuments = extractDocumentsFromListValues(caseData.getInitialCaseDocuments());
+        List<CaseworkerCICDocument> initialDocuments = extractDocumentsFromListValues(caseData.getInitialCicaDocuments());
 
         if (!CollectionUtils.isEmpty(initialDocuments)) {
             caseData.setCaseDocuments(convertToBundleDocumentType(initialDocuments));

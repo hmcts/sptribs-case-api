@@ -31,14 +31,14 @@ import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.sptribs.testutil.TestEventConstants.CASEWORKER_DOCUMENT_MANAGEMENT_REMOVE;
 
 @ExtendWith(MockitoExtension.class)
-class OrdersListRestoreServiceTest {
+class CaseDataRestoreServiceTest {
 
     private static final Long REFERENCE = 12345L;
     private static final LocalDate START_DATE = LocalDate.of(2026, 2, 24);
     private static final LocalDate END_DATE = LocalDate.of(2026, 3, 5);
 
     @InjectMocks
-    private OrdersListRestoreService ordersListRestoreService;
+    private CaseDataRestoreService ordersListRestoreService;
 
     @Mock
     private CaseEventRepository caseEventRepository;

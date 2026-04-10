@@ -108,7 +108,7 @@ public class RespondentDocumentManagement implements CCDConfig<CaseData, State, 
                 caseData.setFurtherUploadedDocuments(addToExistingDocumentList(caseData.getFurtherUploadedDocuments(), documents));
             } else {
                 documents = getAllCaseDocuments(caseData);
-                caseData.setInitialCaseDocuments(addToExistingDocumentList(caseData.getInitialCaseDocuments(), documents));
+                caseData.setInitialCicaDocuments(addToExistingDocumentList(caseData.getInitialCicaDocuments(), documents));
             }
         }
 

@@ -273,7 +273,7 @@ public class CaseData {
         hint = "Initial case documents up to and including CICA initial submission",
         access = {CollectionCreateUpdateOnlyAccess.class}
     )
-    private List<ListValue<CaseworkerCICDocument>> initialCaseDocuments;
+    private List<ListValue<CaseworkerCICDocument>> initialCicaDocuments;
 
     @CCD(
         label = "Further Document Uploads",

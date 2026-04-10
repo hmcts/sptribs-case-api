@@ -146,7 +146,7 @@ class CaseworkerCreateBundleTest {
     void shouldSuccessfullyCreateBundleWithNewOrderEnabled_noInitialDocuments_null() {
         final CaseData caseData = caseData();
         caseData.setNewBundleOrderEnabled(YesNo.YES);
-        caseData.setInitialCaseDocuments(null);
+        caseData.setInitialCicaDocuments(null);
 
         final CicCase cicCase = CicCase.builder()
             .build();
@@ -210,7 +210,7 @@ class CaseworkerCreateBundleTest {
         LocalDate applicantDocsDate = LocalDate.of(2026, 1, 10);
         List<ListValue<CaseworkerCICDocument>> allApplicantDocs = setApplicantDocsForDate(applicantDocsDate);
         List<ListValue<CaseworkerCICDocument>> initialDocuments = new ArrayList<>(allApplicantDocs);
-        caseData.setInitialCaseDocuments(initialDocuments);
+        caseData.setInitialCicaDocuments(initialDocuments);
 
         LocalDate additionalApplicantDocsDate = LocalDate.of(2026, 2, 12);
         final ListValue<CaseworkerCICDocument> tribunalForm2 =
