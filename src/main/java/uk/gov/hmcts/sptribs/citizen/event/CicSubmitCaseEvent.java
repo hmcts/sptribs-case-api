@@ -31,6 +31,8 @@ import uk.gov.hmcts.sptribs.ciccase.model.SubjectCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.CcdCaseType;
 import uk.gov.hmcts.sptribs.common.config.AppsConfig;
+import uk.gov.hmcts.sptribs.common.repositories.DocumentsRepository;
+import uk.gov.hmcts.sptribs.document.DocumentUtil;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.document.model.CitizenCICDocument;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
@@ -73,6 +75,8 @@ public class CicSubmitCaseEvent implements CCDConfig<CaseData, State, UserRole> 
     private IdamService idamService;
     private AppsConfig appsConfig;
     private DssApplicationReceivedNotification dssApplicationReceivedNotification;
+
+    private DocumentsRepository documentsRepository;
 
     @Autowired
     public CicSubmitCaseEvent(HttpServletRequest request, IdamService idamService, AppsConfig appsConfig,
@@ -297,7 +301,16 @@ public class CicSubmitCaseEvent implements CCDConfig<CaseData, State, UserRole> 
             }
         }
 
-        caseData.getCicCase().setApplicantDocumentsUploaded(DocumentManagementUtil.buildListValues(docList));
+        List<ListValue<CaseworkerCICDocument>> applicantDocs = DocumentManagementUtil.buildListValues(docList);
+
+        caseData.getCicCase().setApplicantDocumentsUploaded(applicantDocs);
+        for (ListValue<CaseworkerCICDocument> document : applicantDocs) {
+            DocumentUtil.buildAndSaveNewDocumentEntity(
+                document.getValue().getDocumentLink(),
+                documentsRepository,
+                Long.parseLong(caseData.getCaseNumber())
+            );
+        }
         dssCaseData.setTribunalFormDocuments(new ArrayList<>());
         dssCaseData.setSupportingDocuments(new ArrayList<>());
         dssCaseData.setOtherInfoDocuments(new ArrayList<>());

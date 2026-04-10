@@ -25,6 +25,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.SubjectCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.ciccase.model.access.Permissions;
+import uk.gov.hmcts.sptribs.common.repositories.DocumentsRepository;
 import uk.gov.hmcts.sptribs.document.CaseDataDocumentService;
 import uk.gov.hmcts.sptribs.document.DocumentConstants;
 import uk.gov.hmcts.sptribs.document.content.DocmosisTemplateConstants;
@@ -39,6 +40,7 @@ import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseClosed;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_WA_CONFIG_USER;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigBuilder;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.getEventsFrom;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.caseData;
 import static uk.gov.hmcts.sptribs.testutil.TestEventConstants.CASEWORKER_ISSUE_FINAL_DECISION;
 
@@ -56,6 +58,9 @@ class CaseworkerIssueFinalDecisionTest {
 
     @Mock
     private CaseFinalDecisionIssuedNotification caseFinalDecisionIssuedNotification;
+
+    @Mock
+    private DocumentsRepository documentsRepository;
 
     @InjectMocks
     private IssueFinalDecisionSelectTemplate issueFinalDecisionSelectTemplate;
@@ -136,6 +141,7 @@ class CaseworkerIssueFinalDecisionTest {
             .build();
         caseIssueFinalDecision.setDocument(document);
         caseData.setCaseIssueFinalDecision(caseIssueFinalDecision);
+        caseData.setCaseNumber(TEST_CASE_ID.toString());
         details.setData(caseData);
 
         //When

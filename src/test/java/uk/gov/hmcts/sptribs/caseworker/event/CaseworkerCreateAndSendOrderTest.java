@@ -29,6 +29,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.OrderTemplate;
 import uk.gov.hmcts.sptribs.ciccase.model.PartiesCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
+import uk.gov.hmcts.sptribs.common.repositories.DocumentsRepository;
 import uk.gov.hmcts.sptribs.document.model.CICDocument;
 import uk.gov.hmcts.sptribs.notification.dispatcher.NewOrderIssuedNotification;
 import uk.gov.hmcts.sptribs.notification.exception.NotificationException;
@@ -79,6 +80,9 @@ class CaseworkerCreateAndSendOrderTest {
 
     @Mock
     private NewOrderIssuedNotification newOrderIssuedNotification;
+
+    @Mock
+    private DocumentsRepository documentsRepository;
 
     private DateModel dateModel = DateModel.builder()
         .dueDate(LocalDate.of(2026, 1, 2))
@@ -190,6 +194,7 @@ class CaseworkerCreateAndSendOrderTest {
         caseData.setDraftOrderContentCIC(draftOrderContentCIC);
 
         final CaseDetails<CaseData, State> details = new CaseDetails<>();
+        caseData.setCaseNumber(TEST_CASE_ID.toString());
         details.setData(caseData);
         final var response = caseworkerCreateAndSendOrder.aboutToSubmit(details, caseDetailsBefore());
 
@@ -237,6 +242,7 @@ class CaseworkerCreateAndSendOrderTest {
         caseData.setOrderDueDates(List.of(ListValue.<DateModel>builder().value(dateModel).build()));
         caseData.setDraftOrderContentCIC(draftOrderContentCIC);
 
+        caseData.setCaseNumber(TEST_CASE_ID.toString());
         details.setData(caseData);
 
         final var response = caseworkerCreateAndSendOrder.aboutToSubmit(details, caseDetailsBefore());
@@ -286,6 +292,7 @@ class CaseworkerCreateAndSendOrderTest {
         caseData.setDraftOrderContentCIC(draftOrderContentCIC);
 
         final CaseDetails<CaseData, State> details = new CaseDetails<>();
+        caseData.setCaseNumber(TEST_CASE_ID.toString());
         details.setData(caseData);
         final var response = caseworkerCreateAndSendOrder.aboutToSubmit(details, caseDetailsBefore());
 
@@ -350,6 +357,7 @@ class CaseworkerCreateAndSendOrderTest {
         caseData.setDraftOrderContentCIC(draftOrderContentCIC);
 
         final CaseDetails<CaseData, State> details = new CaseDetails<>();
+        caseData.setCaseNumber(TEST_CASE_ID.toString());
         details.setData(caseData);
         final var response = caseworkerCreateAndSendOrder.aboutToSubmit(details, caseDetailsBefore());
 
@@ -429,6 +437,7 @@ class CaseworkerCreateAndSendOrderTest {
         caseData.setCicCase(cicCase1);
         caseData.setOrderDueDates(List.of(ListValue.<DateModel>builder().value(dateModel).build()));
 
+        caseData.setCaseNumber(TEST_CASE_ID.toString());
         details.setData(caseData);
 
         final var response = caseworkerCreateAndSendOrder.aboutToSubmit(details, caseDetailsBefore());

@@ -16,6 +16,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.ciccase.model.access.Permissions;
+import uk.gov.hmcts.sptribs.common.repositories.DocumentsRepository;
 import uk.gov.hmcts.sptribs.common.service.AuditEventService;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
 
@@ -41,6 +42,9 @@ class RespondentDocumentManagementTest {
 
     @Mock
     private AuditEventService auditEventService;
+
+    @Mock
+    private DocumentsRepository documentsRepository;
 
     @Test
     void shouldAddPublishToCamundaWhenWAIsEnabled() {
@@ -78,6 +82,7 @@ class RespondentDocumentManagementTest {
             .build();
         caseData.setNewDocManagement(documentManagement);
 
+        caseData.setCaseNumber(TEST_CASE_ID.toString());
         beforeDetails.setData(caseData);
         updatedCaseDetails.setData(caseData);
         updatedCaseDetails.setState(State.CaseManagement);
@@ -120,6 +125,7 @@ class RespondentDocumentManagementTest {
             .caseworkerCICDocumentUpload(getCaseworkerCICDocumentUploadList("file.pdf"))
             .build();
         caseData.setNewDocManagement(documentManagement);
+        caseData.setCaseNumber(TEST_CASE_ID.toString());
         beforeDetails.setData(caseData);
         updatedCaseDetails.setData(caseData);
         updatedCaseDetails.setState(State.CaseManagement);
@@ -147,6 +153,7 @@ class RespondentDocumentManagementTest {
             .caseworkerCICDocumentUpload(getCaseworkerCICDocumentUploadList("file.pdf"))
             .build();
         caseData.setNewDocManagement(documentManagement);
+        caseData.setCaseNumber(TEST_CASE_ID.toString());
         beforeDetails.setData(caseData);
         updatedCaseDetails.setData(caseData);
         updatedCaseDetails.setState(State.CaseManagement);
@@ -177,6 +184,7 @@ class RespondentDocumentManagementTest {
             .caseworkerCICDocumentUpload(getCaseworkerCICDocumentUploadList("new-file.pdf"))
             .build();
         caseData.setNewDocManagement(documentManagement);
+        caseData.setCaseNumber(TEST_CASE_ID.toString());
         beforeDetails.setData(caseData);
         updatedCaseDetails.setData(caseData);
         updatedCaseDetails.setState(State.CaseManagement);
@@ -205,6 +213,7 @@ class RespondentDocumentManagementTest {
             .caseworkerCICDocumentUpload(getCaseworkerCICDocumentUploadList("file.pdf"))
             .build();
         caseData.setNewDocManagement(documentManagement);
+        caseData.setCaseNumber(TEST_CASE_ID.toString());
         beforeDetails.setData(caseData);
         updatedCaseDetails.setData(caseData);
         updatedCaseDetails.setState(State.CaseManagement);

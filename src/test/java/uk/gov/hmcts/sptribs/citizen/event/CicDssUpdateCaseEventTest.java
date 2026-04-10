@@ -19,6 +19,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.DssMessage;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.ciccase.model.access.Permissions;
+import uk.gov.hmcts.sptribs.common.repositories.DocumentsRepository;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.idam.IdamService;
 import uk.gov.hmcts.sptribs.notification.dispatcher.DssUpdateCaseSubmissionNotification;
@@ -54,6 +55,9 @@ class CicDssUpdateCaseEventTest {
 
     @Mock
     private IdamService idamService;
+
+    @Mock
+    private DocumentsRepository documentsRepository;
 
     @InjectMocks
     private CicDssUpdateCaseEvent cicDssUpdateCaseEvent;
@@ -111,6 +115,7 @@ class CicDssUpdateCaseEventTest {
             .build();
 
         final CaseDetails<CaseData, State> details = new CaseDetails<>();
+        caseData.setCaseNumber(TEST_CASE_ID.toString());
         details.setData(caseData);
 
         when(request.getHeader(AUTHORIZATION)).thenReturn(TEST_AUTHORIZATION_TOKEN);
@@ -158,6 +163,7 @@ class CicDssUpdateCaseEventTest {
         caseData.getDssCaseData().setAdditionalInformation("");
 
         final CaseDetails<CaseData, State> details = new CaseDetails<>();
+        caseData.setCaseNumber(TEST_CASE_ID.toString());
         details.setData(caseData);
         AboutToStartOrSubmitResponse<CaseData, State> response =
             cicDssUpdateCaseEvent.aboutToSubmit(details, details);
@@ -202,6 +208,7 @@ class CicDssUpdateCaseEventTest {
         caseData.getDssCaseData().setAdditionalInformation(null);
 
         final CaseDetails<CaseData, State> details = new CaseDetails<>();
+        caseData.setCaseNumber(TEST_CASE_ID.toString());
         details.setData(caseData);
         AboutToStartOrSubmitResponse<CaseData, State> response =
             cicDssUpdateCaseEvent.aboutToSubmit(details, details);
@@ -231,6 +238,7 @@ class CicDssUpdateCaseEventTest {
             .build();
 
         final CaseDetails<CaseData, State> details = new CaseDetails<>();
+        caseData.setCaseNumber(TEST_CASE_ID.toString());
         details.setData(caseData);
 
         when(request.getHeader(AUTHORIZATION)).thenReturn(TEST_AUTHORIZATION_TOKEN);

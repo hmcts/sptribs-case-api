@@ -21,6 +21,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.DecisionTemplate;
 import uk.gov.hmcts.sptribs.ciccase.model.LanguagePreference;
 import uk.gov.hmcts.sptribs.common.config.WebMvcConfig;
+import uk.gov.hmcts.sptribs.common.repositories.DocumentsRepository;
 import uk.gov.hmcts.sptribs.document.CaseDataDocumentService;
 import uk.gov.hmcts.sptribs.document.model.CICDocument;
 import uk.gov.hmcts.sptribs.idam.IdamService;
@@ -56,6 +57,7 @@ import static uk.gov.hmcts.sptribs.testutil.TestConstants.ISSUE_DECISION_MID_EVE
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.SERVICE_AUTHORIZATION;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.SUBMITTED_URL;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_AUTHORIZATION_TOKEN;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID_HYPHENATED;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.callbackRequest;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.caseData;
@@ -91,6 +93,9 @@ public class CaseWorkerIssueDecisionIT {
     @MockitoBean
     private CaseDataDocumentService caseDataDocumentService;
 
+    @MockitoBean
+    private DocumentsRepository documentsRepository;
+
     @BeforeAll
     static void setUp() {
         IdamWireMock.start();
@@ -104,6 +109,7 @@ public class CaseWorkerIssueDecisionIT {
     @Test
     void shouldClearDecisionSignatureInAboutToStart() throws Exception {
         final CaseData caseData = caseData();
+        caseData.setCaseNumber(TEST_CASE_ID.toString());
 
         String response = mockMvc.perform(post(ABOUT_TO_START_URL)
                 .contentType(APPLICATION_JSON)
@@ -202,6 +208,7 @@ public class CaseWorkerIssueDecisionIT {
             .build();
 
         final CaseData caseData = CaseData.builder()
+            .caseNumber(TEST_CASE_ID.toString())
             .caseIssueDecision(caseIssueDecision)
             .build();
 

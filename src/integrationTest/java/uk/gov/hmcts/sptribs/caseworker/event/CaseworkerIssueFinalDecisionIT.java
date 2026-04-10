@@ -22,6 +22,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.DecisionTemplate;
 import uk.gov.hmcts.sptribs.ciccase.model.LanguagePreference;
 import uk.gov.hmcts.sptribs.common.config.WebMvcConfig;
+import uk.gov.hmcts.sptribs.common.repositories.DocumentsRepository;
 import uk.gov.hmcts.sptribs.document.CaseDataDocumentService;
 import uk.gov.hmcts.sptribs.document.model.CICDocument;
 import uk.gov.hmcts.sptribs.idam.IdamService;
@@ -58,6 +59,7 @@ import static uk.gov.hmcts.sptribs.testutil.TestConstants.ISSUE_FINAL_DECISION_M
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.ISSUE_FINAL_DECISION_UPLOAD_MID_EVENT_URL;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.SUBMITTED_URL;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_AUTHORIZATION_TOKEN;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID_HYPHENATED;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.callbackRequest;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.caseData;
@@ -94,6 +96,9 @@ public class CaseworkerIssueFinalDecisionIT {
 
     @MockitoBean
     private NotificationServiceCIC notificationServiceCIC;
+
+    @MockitoBean
+    private DocumentsRepository documentsRepository;
 
     @BeforeAll
     static void setUp() {
@@ -237,6 +242,7 @@ public class CaseworkerIssueFinalDecisionIT {
 
         final CaseData caseData = CaseData.builder()
             .caseIssueFinalDecision(caseIssueFinalDecision)
+            .caseNumber(TEST_CASE_ID.toString())
             .build();
 
         mockMvc.perform(MockMvcRequestBuilders.post(ABOUT_TO_SUBMIT_URL)

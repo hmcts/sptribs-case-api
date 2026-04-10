@@ -30,7 +30,9 @@ import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.common.config.AppsConfig;
+import uk.gov.hmcts.sptribs.common.repositories.DocumentsRepository;
 import uk.gov.hmcts.sptribs.common.service.CcdSupplementaryDataService;
+import uk.gov.hmcts.sptribs.document.DocumentUtil;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
 import uk.gov.hmcts.sptribs.services.cdam.CaseDocumentClientApi;
@@ -72,19 +74,23 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
     private final HttpServletRequest httpServletRequest;
     private final CaseDocumentClientApi caseDocumentClientApi;
 
+    private final DocumentsRepository documentsRepository;
+
     @Autowired
     public CreateTestCase(ObjectMapper objectMapper,
                           CcdSupplementaryDataService ccdSupplementaryDataService,
                           CaseDocumentClientApi caseDocumentClientApi,
                           AppsConfig appsConfig,
                           AuthTokenGenerator authTokenGenerator,
-                          HttpServletRequest httpServletRequest) {
+                          HttpServletRequest httpServletRequest,
+                          DocumentsRepository documentsRepository) {
         this.objectMapper = objectMapper;
         this.ccdSupplementaryDataService = ccdSupplementaryDataService;
         this.caseDocumentClientApi = caseDocumentClientApi;
         this.appsConfig = appsConfig;
         this.authTokenGenerator = authTokenGenerator;
         this.httpServletRequest = httpServletRequest;
+        this.documentsRepository = documentsRepository;
     }
 
     @Override
@@ -121,7 +127,7 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
             Charset.defaultCharset()
         );
         final CaseData caseData = objectMapper.readValue(json, CaseData.class);
-        uploadTestDocumentAndUpdateCaseData(caseData);
+        uploadTestDocumentAndUpdateCaseData(caseData, details.getId());
         caseData.setHyphenatedCaseRef(caseData.formatCaseRef(details.getId()));
         setDefaultCaseDetails(caseData);
 
@@ -177,7 +183,7 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
         );
     }
 
-    private void uploadTestDocumentAndUpdateCaseData(CaseData caseData) {
+    private void uploadTestDocumentAndUpdateCaseData(CaseData caseData, Long caseNumber) {
         final UploadResponse uploadResponse = uploadApplicantDocument();
 
         if (uploadResponse != null) {
@@ -190,6 +196,14 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
             testDocumentListValue.setValue(caseworkerCICDocument);
 
             caseData.getCicCase().setApplicantDocumentsUploaded(List.of(testDocumentListValue));
+
+            for (ListValue<CaseworkerCICDocument> document : List.of(testDocumentListValue)) {
+                DocumentUtil.buildAndSaveNewDocumentEntity(
+                    document.getValue().getDocumentLink(),
+                    documentsRepository,
+                    caseNumber
+                );
+            }
         }
 
     }

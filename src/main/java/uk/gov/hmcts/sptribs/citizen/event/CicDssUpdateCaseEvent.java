@@ -1,6 +1,7 @@
 package uk.gov.hmcts.sptribs.citizen.event;
 
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -19,6 +20,8 @@ import uk.gov.hmcts.sptribs.ciccase.model.DssCaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.DssMessage;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
+import uk.gov.hmcts.sptribs.common.repositories.DocumentsRepository;
+import uk.gov.hmcts.sptribs.document.DocumentUtil;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.document.model.CitizenCICDocument;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
@@ -54,6 +57,7 @@ import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SYSTEM_UPDATE;
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE;
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE_DELETE;
 
+@AllArgsConstructor
 @Slf4j
 @Component
 public class CicDssUpdateCaseEvent implements CCDConfig<CaseData, State, UserRole> {
@@ -71,6 +75,8 @@ public class CicDssUpdateCaseEvent implements CCDConfig<CaseData, State, UserRol
 
     @Autowired
     private Clock clock;
+
+    private final DocumentsRepository documentsRepository;
 
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
@@ -160,7 +166,13 @@ public class CicDssUpdateCaseEvent implements CCDConfig<CaseData, State, UserRol
                 : Stream.concat(
                     caseData.getCicCase().getApplicantDocumentsUploaded().stream(), documentListUpdated.stream()).toList();
         caseData.getCicCase().setApplicantDocumentsUploaded(applicantDocumentsUploaded);
-
+        for (ListValue<CaseworkerCICDocument> document : documentListUpdated) {
+            DocumentUtil.buildAndSaveNewDocumentEntity(
+                document.getValue().getDocumentLink(),
+                documentsRepository,
+                Long.parseLong(caseData.getCaseNumber())
+            );
+        }
         dssCaseData.setOtherInfoDocuments(new ArrayList<>());
         dssCaseData.setAdditionalInformation(null);
         caseData.setDssCaseData(dssCaseData);

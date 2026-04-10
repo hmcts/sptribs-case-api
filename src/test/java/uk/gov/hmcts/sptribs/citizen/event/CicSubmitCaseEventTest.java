@@ -27,6 +27,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.ciccase.model.access.Permissions;
 import uk.gov.hmcts.sptribs.common.config.AppsConfig;
+import uk.gov.hmcts.sptribs.common.repositories.DocumentsRepository;
 import uk.gov.hmcts.sptribs.constants.CommonConstants;
 import uk.gov.hmcts.sptribs.document.model.CitizenCICDocument;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
@@ -83,6 +84,9 @@ class CicSubmitCaseEventTest {
 
     @Mock
     private IdamService idamService;
+
+    @Mock
+    private DocumentsRepository documentsRepository;
 
     private AutoCloseable autoCloseableMocks;
 
@@ -182,6 +186,7 @@ class CicSubmitCaseEventTest {
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
+        caseData.setCaseNumber(TEST_CASE_ID.toString());
         updatedCaseDetails.setData(caseData);
 
         when(request.getHeader(AUTHORIZATION)).thenReturn(TEST_AUTHORIZATION_TOKEN);
@@ -225,6 +230,7 @@ class CicSubmitCaseEventTest {
         final CaseData caseData = caseData();
         caseData.setCicCase(cicCase);
         caseData.setDssCaseData(dssCaseData);
+        caseData.setCaseNumber(TEST_CASE_ID.toString());
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
         final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
         updatedCaseDetails.setId(TEST_CASE_ID);

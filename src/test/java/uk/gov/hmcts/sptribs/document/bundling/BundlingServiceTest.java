@@ -18,6 +18,7 @@ import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
+import uk.gov.hmcts.sptribs.common.repositories.DocumentsRepository;
 import uk.gov.hmcts.sptribs.document.bundling.client.BundleResponse;
 import uk.gov.hmcts.sptribs.document.bundling.client.BundlingClient;
 import uk.gov.hmcts.sptribs.document.bundling.client.BundlingService;
@@ -107,6 +108,9 @@ public class BundlingServiceTest {
     @Mock
     private Clock clock;
 
+    @Mock
+    private DocumentsRepository documentsRepository;
+
     private CaseData caseData;
 
     private CaseDetails<CaseData, State> updatedCaseDetails;
@@ -157,7 +161,7 @@ public class BundlingServiceTest {
 
         final Callback callback = new Callback(updatedCaseDetails, beforeCaseDetails, CREATE_BUNDLE, true);
         final BundleCallback bundleCallback = new BundleCallback(callback);
-        final List<Bundle> result = bundlingService.createBundle(bundleCallback);
+        final List<Bundle> result = bundlingService.createBundle(bundleCallback, TEST_CASE_ID);
 
         verify(bundlingClient).createBundle(any(), any(), any());
         assertThat(result).hasSize(1);
@@ -178,7 +182,7 @@ public class BundlingServiceTest {
         final Callback callback = new Callback(updatedCaseDetails, beforeCaseDetails, CREATE_BUNDLE, true);
         final BundleCallback bundleCallback = new BundleCallback(callback);
 
-        final List<Bundle> result = bundlingService.createBundle(bundleCallback);
+        final List<Bundle> result = bundlingService.createBundle(bundleCallback, TEST_CASE_ID);
 
         verify(bundlingClient).createBundle(any(), any(), any());
         assertThat(result).isNull();
@@ -224,7 +228,7 @@ public class BundlingServiceTest {
         final Callback callback = new Callback(updatedCaseDetails, beforeCaseDetails, CREATE_BUNDLE, true);
         final BundleCallback bundleCallback = new BundleCallback(callback);
 
-        final List<Bundle> result = bundlingService.createBundle(bundleCallback);
+        final List<Bundle> result = bundlingService.createBundle(bundleCallback, TEST_CASE_ID);
         final List<ListValue<Bundle>> resultList = bundlingService.buildBundleListValues(result);
 
         verify(bundlingClient).createBundle(any(), any(), any());
@@ -247,7 +251,7 @@ public class BundlingServiceTest {
         final Callback callback = new Callback(updatedCaseDetails, beforeCaseDetails, CREATE_BUNDLE, true);
         final BundleCallback bundleCallback = new BundleCallback(callback);
 
-        final List<Bundle> result = bundlingService.createBundle(bundleCallback);
+        final List<Bundle> result = bundlingService.createBundle(bundleCallback, TEST_CASE_ID);
         final List<ListValue<Bundle>> resultList = bundlingService.buildBundleListValues(result);
 
         verify(bundlingClient).createBundle(any(), any(), any());
