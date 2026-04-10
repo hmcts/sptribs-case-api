@@ -1,4 +1,4 @@
-package uk.gov.hmcts.sptribs.common.repositories;
+package uk.gov.hmcts.sptribs.common.repositories.impl;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -21,7 +21,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 @Repository
 @Slf4j
-public class CaseEventRepository {
+public class CaseEventRepositoryImpl {
 
     public static final String CASE_EVENT_ID = "caseEventId";
     public static final String CREATED_DATE = "createdDate";
