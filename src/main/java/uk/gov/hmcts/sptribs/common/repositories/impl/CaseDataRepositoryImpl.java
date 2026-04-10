@@ -1,0 +1,97 @@
+package uk.gov.hmcts.sptribs.common.repositories.impl;
+
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.stereotype.Repository;
+import uk.gov.hmcts.sptribs.common.repositories.CaseDataRepository;
+import uk.gov.hmcts.sptribs.common.repositories.model.CicaCaseEntity;
+
+import java.sql.ResultSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+
+/**
+ * Repository responsible for querying the case_data table.
+ */
+@RequiredArgsConstructor
+@Repository
+@Slf4j
+public class CaseDataRepositoryImpl implements CaseDataRepository {
+
+    private static final TypeReference<Map<String, JsonNode>> JSON_NODE_MAP = new TypeReference<>() { };
+    private static final String CASE_TYPE = "CriminalInjuriesCompensation";
+    private static final String JURISDICTION = "ST_CIC";
+    private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
+    private final ObjectMapper objectMapper;
+
+    private static final String CHECK_CASE_EXISTS_AND_CORRECT_STATE =
+        "SELECT 1 FROM ccd.case_data c " +
+            "WHERE c.case_type_id = :caseType AND c.jurisdiction = :jurisdiction " +
+            "AND c.reference = :ccdReference " +
+            "AND c.state IN :validStates";
+
+    private static final String SELECT_CASE_DATA_BY_CCD_REF_AND_EMAIL =
+        "SELECT c.id, c.reference, c.state, c.data::text AS case_data, c.last_modified " +
+            "FROM ccd.case_data c " +
+            "WHERE c.case_type_id = :caseType AND c.jurisdiction = :jurisdiction " +
+            "AND c.reference = :ccdReference " +
+            "AND ( c.data #>> '{cicCaseEmail}' = :userEmail " +
+            "OR jsonb_path_exists(c.data, '$.searchCriteria.SearchParties[*] ? (@.EmailAddress == $email)', " +
+            "jsonb_build_object('email', :userEmail)))" +
+            "ORDER BY c.last_modified DESC LIMIT 1";
+
+    @Override
+    public boolean checkCaseExists(String ccdReference) {
+        log.info("Searching for case with CCD reference: {}", ccdReference);
+
+        var params = Map.of(
+            "ccdReference", ccdReference,
+            "caseType", CASE_TYPE,
+            "jurisdiction", JURISDICTION
+        );
+
+        return namedParameterJdbcTemplate.queryForObject(CHECK_CASE_EXISTS_AND_CORRECT_STATE, params, Integer.class) != null;
+    }
+
+    @Override
+    public Optional<CicaCaseEntity> findCase(String ccdReference, String userEmail) {
+        log.info("Checking case has correct email for CCD reference: {}", ccdReference);
+
+        var params = Map.of(
+            "ccdReference", ccdReference,
+            "caseType", CASE_TYPE,
+            "jurisdiction", JURISDICTION,
+            "userEmail", userEmail
+        );
+
+        List<CicaCaseEntity> results = namedParameterJdbcTemplate.query(
+            SELECT_CASE_DATA_BY_CCD_REF_AND_EMAIL,
+            params,
+            (rs, rowNum) -> mapToCicaCaseEntity(rs)
+        );
+
+        log.info("Email matched for CCD reference: {}", ccdReference);
+        return Optional.ofNullable(results.getFirst());
+    }
+
+    @SneakyThrows
+    private CicaCaseEntity mapToCicaCaseEntity(ResultSet rs) {
+        Long reference = rs.getObject("reference", Long.class);
+        String state = rs.getString("state");
+        String caseDataJson = rs.getString("case_data");
+
+        Map<String, JsonNode> caseData = objectMapper.readValue(caseDataJson, JSON_NODE_MAP);
+
+        return CicaCaseEntity.builder()
+            .id(String.valueOf(reference))
+            .state(state)
+            .data(caseData)
+            .build();
+    }
+}

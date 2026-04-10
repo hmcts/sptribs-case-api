@@ -9,7 +9,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.idam.client.models.User;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
-import uk.gov.hmcts.sptribs.common.repositories.CaseEventRepository;
+import uk.gov.hmcts.sptribs.common.repositories.impl.CaseEventRepositoryImpl;
 import uk.gov.hmcts.sptribs.idam.IdamService;
 import uk.gov.hmcts.sptribs.systemupdate.service.CcdManagementException;
 import uk.gov.hmcts.sptribs.systemupdate.service.CcdUpdateService;
@@ -36,7 +36,7 @@ class SystemCleanDeletedDocumentsTaskTest {
     @Mock
     private AuthTokenGenerator authTokenGenerator;
     @Mock
-    private CaseEventRepository caseEventRepository;
+    private CaseEventRepositoryImpl caseEventRepositoryImpl;
     @InjectMocks
     private SystemCleanDeletedDocumentsTask systemCleanDeletedDocumentsTask;
 
@@ -54,7 +54,7 @@ class SystemCleanDeletedDocumentsTaskTest {
 
         //given
         initMocks();
-        when(caseEventRepository.getListOfCasesByEventTypeAndDate(CASE_EVENT_ID, DELETE_FROM_DATE))
+        when(caseEventRepositoryImpl.getListOfCasesByEventTypeAndDate(CASE_EVENT_ID, DELETE_FROM_DATE))
             .thenReturn(List.of(caseId1, caseId2));
         //when
         systemCleanDeletedDocumentsTask.run();
@@ -69,7 +69,7 @@ class SystemCleanDeletedDocumentsTaskTest {
 
         //given
         initMocks();
-        when(caseEventRepository.getListOfCasesByEventTypeAndDate(CASE_EVENT_ID, DELETE_FROM_DATE))
+        when(caseEventRepositoryImpl.getListOfCasesByEventTypeAndDate(CASE_EVENT_ID, DELETE_FROM_DATE))
             .thenReturn(Collections.emptyList());
         //when
         systemCleanDeletedDocumentsTask.run();
@@ -85,7 +85,7 @@ class SystemCleanDeletedDocumentsTaskTest {
         //when
         systemCleanDeletedDocumentsTask.run();
         //then
-        verifyNoInteractions(caseEventRepository);
+        verifyNoInteractions(caseEventRepositoryImpl);
         verifyNoInteractions(ccdUpdateService);
     }
 
@@ -107,7 +107,7 @@ class SystemCleanDeletedDocumentsTaskTest {
         // given
         initMocks();
         doThrow(new RuntimeException("exception"))
-            .when(caseEventRepository)
+            .when(caseEventRepositoryImpl)
             .getListOfCasesByEventTypeAndDate(CASE_EVENT_ID, DELETE_FROM_DATE);
 
         // when + then
@@ -121,7 +121,7 @@ class SystemCleanDeletedDocumentsTaskTest {
 
         //given
         initMocks();
-        when(caseEventRepository.getListOfCasesByEventTypeAndDate(CASE_EVENT_ID, DELETE_FROM_DATE))
+        when(caseEventRepositoryImpl.getListOfCasesByEventTypeAndDate(CASE_EVENT_ID, DELETE_FROM_DATE))
             .thenReturn(List.of(caseId1, caseId2));
 
         doThrow(new CcdManagementException("exception", new RuntimeException()))
@@ -140,7 +140,7 @@ class SystemCleanDeletedDocumentsTaskTest {
 
         //given
         initMocks();
-        when(caseEventRepository.getListOfCasesByEventTypeAndDate(CASE_EVENT_ID, DELETE_FROM_DATE))
+        when(caseEventRepositoryImpl.getListOfCasesByEventTypeAndDate(CASE_EVENT_ID, DELETE_FROM_DATE))
             .thenReturn(List.of(caseId1, caseId2));
 
         doThrow(new IllegalArgumentException("exception"))
