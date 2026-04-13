@@ -95,7 +95,7 @@ public class CicaCaseController {
         @Parameter(
             description = "The CCD reference number. ",
             required = true,
-            example = "1740-1387-0445-3399"
+            example = "1740138704453399"
         )
         String ccdReference
     ) {
