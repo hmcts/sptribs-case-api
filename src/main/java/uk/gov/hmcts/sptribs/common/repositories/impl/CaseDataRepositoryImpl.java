@@ -8,6 +8,7 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
+import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.common.repositories.CaseDataRepository;
 import uk.gov.hmcts.sptribs.common.repositories.model.CicaCaseEntity;
 
@@ -15,6 +16,12 @@ import java.sql.ResultSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+
+import static uk.gov.hmcts.sptribs.ciccase.model.State.DSS_Draft;
+import static uk.gov.hmcts.sptribs.ciccase.model.State.DSS_Expired;
+import static uk.gov.hmcts.sptribs.ciccase.model.State.DSS_Submitted;
+import static uk.gov.hmcts.sptribs.ciccase.model.State.Draft;
+import static uk.gov.hmcts.sptribs.ciccase.model.State.Submitted;
 
 /**
  * Repository responsible for querying the case_data table.
@@ -27,6 +34,8 @@ public class CaseDataRepositoryImpl implements CaseDataRepository {
     private static final TypeReference<Map<String, JsonNode>> JSON_NODE_MAP = new TypeReference<>() { };
     private static final String CASE_TYPE = "CriminalInjuriesCompensation";
     private static final String JURISDICTION = "ST_CIC";
+    private static final List<String> INVALID_STATES = List.of(Draft.getName(), DSS_Draft.getName(),
+        DSS_Expired.getName());
     private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
     private final ObjectMapper objectMapper;
 
@@ -34,7 +43,7 @@ public class CaseDataRepositoryImpl implements CaseDataRepository {
         "SELECT 1 FROM ccd.case_data c " +
             "WHERE c.case_type_id = :caseType AND c.jurisdiction = :jurisdiction " +
             "AND c.reference = :ccdReference " +
-            "AND c.state IN :validStates";
+            "AND c.state NOT IN (:invalidStates)";
 
     private static final String SELECT_CASE_DATA_BY_CCD_REF_AND_EMAIL =
         "SELECT c.id, c.reference, c.state, c.data::text AS case_data, c.last_modified " +
@@ -51,9 +60,10 @@ public class CaseDataRepositoryImpl implements CaseDataRepository {
         log.info("Searching for case with CCD reference: {}", ccdReference);
 
         var params = Map.of(
-            "ccdReference", ccdReference,
+            "ccdReference", Long.valueOf(ccdReference),
             "caseType", CASE_TYPE,
-            "jurisdiction", JURISDICTION
+            "jurisdiction", JURISDICTION,
+            "invalidStates", INVALID_STATES
         );
 
         return namedParameterJdbcTemplate.queryForObject(CHECK_CASE_EXISTS_AND_CORRECT_STATE, params, Integer.class) != null;
@@ -64,7 +74,7 @@ public class CaseDataRepositoryImpl implements CaseDataRepository {
         log.info("Checking case has correct email for CCD reference: {}", ccdReference);
 
         var params = Map.of(
-            "ccdReference", ccdReference,
+            "ccdReference", Long.valueOf(ccdReference),
             "caseType", CASE_TYPE,
             "jurisdiction", JURISDICTION,
             "userEmail", userEmail
