@@ -33,6 +33,7 @@ public class CicaCaseService {
         log.info("Looking up case by CCD reference: {}", ccdReference);
 
         validateCCDReferenceFormat(ccdReference);
+
         if (!caseDataRepository.checkCaseExists(ccdReference)) {
             throw new CaseNotFoundException("No case found with CCD reference: " + ccdReference);
         }
