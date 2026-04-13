@@ -40,7 +40,7 @@ public class CicCreateCaseEventFT extends FunctionalTestSuite {
             .isEqualTo(json(expectedResponse(RESPONSE)));
     }
 
-    @Disabled("Skipped to unblock WA - New case needs to be created before updating supplementary data")
+//    @Disabled("Skipped to unblock WA - New case needs to be created before updating supplementary data")
     @Test
     public void shouldReceiveNotificationWhenSubmittedCallbackIsInvoked() throws Exception {
         final Map<String, Object> caseData = caseData(REQUEST);
