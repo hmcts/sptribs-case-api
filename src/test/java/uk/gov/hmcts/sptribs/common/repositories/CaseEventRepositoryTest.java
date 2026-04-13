@@ -476,6 +476,7 @@ class CaseEventRepositoryTest {
 
             assertThat(result).isEqualTo(999L);
         }
+
         @Test
         void shouldMapResultSetToCaseDataViaParseEventData() throws Exception {
             String validJson = "{\"cicCase\": {}}";
