@@ -279,9 +279,9 @@ class CaseEventRepositoryTest {
                         .thenThrow(new DataAccessResourceFailureException("DB error"));
 
                 assertThatThrownBy(() -> caseEventRepository.getFirstEventDataForCase(REFERENCE, CASE_EVENT_ID))
-                        .isInstanceOf(CaseEventRepositoryException.class)
-                        .hasMessageContaining("Failed to retrieve first event data for reference=")
-                        .hasCauseInstanceOf(DataAccessResourceFailureException.class);
+                    .isInstanceOf(CaseEventRepositoryException.class)
+                    .hasMessageContaining("Failed to retrieve first event data for reference=")
+                    .hasCauseInstanceOf(DataAccessResourceFailureException.class);
             }
         }
 
