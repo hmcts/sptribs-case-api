@@ -47,7 +47,7 @@ public class CicCreateCaseEventFT extends FunctionalTestSuite {
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
         assertThatJson(response.asString())
             .inPath(CONFIRMATION_HEADER)
-            .isEqualTo("# Application Created \\n##");
+            .isEqualTo("# Application Created ##");
     }
 
 }
