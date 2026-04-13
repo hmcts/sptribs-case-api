@@ -50,11 +50,11 @@ public class SystemMigrateInitialCaseDocumentsTask implements Runnable {
                     caseIdsToUpdate.addAll(caseEventRepository.getCasesWithEvent(RESPONDENT_DOCUMENT_MANAGEMENT));
                 }
             } catch (final RuntimeException e) {
-                log.error("System restore orders task stopped after search error", e);
+                log.error("System migrate initial case documents task stopped after search error", e);
             }
 
             if (caseIdsToUpdate.isEmpty()) {
-                log.info("Nothing to update");
+                log.info("No cases to update");
                 return;
             }
             log.info("Cases:{}", caseIdsToUpdate.size());
@@ -62,7 +62,7 @@ public class SystemMigrateInitialCaseDocumentsTask implements Runnable {
                 triggerSystemRestoreOrdersEvent(user, serviceAuth, caseId);
             }
 
-            log.info("System restore orders task complete.");
+            log.info("System migrate initial case documents task complete.");
 
         }
     }
