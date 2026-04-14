@@ -32,6 +32,7 @@ public class CicaCaseService {
     public CicaCaseEntity getCaseByCCDReference(String ccdReference, String userEmail) {
         log.info("Looking up case by CCD reference: {}", ccdReference);
 
+        //why do we need this now endpoint is doing it
         validateCCDReferenceFormat(ccdReference);
 
         if (!caseDataRepository.checkCaseExists(ccdReference)) {

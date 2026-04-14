@@ -48,12 +48,21 @@ public class CaseDataRepositoryImpl implements CaseDataRepository {
     private static final String SELECT_CASE_DATA_BY_CCD_REF_AND_EMAIL =
         "SELECT c.id, c.reference, c.state, c.data::text AS case_data, c.last_modified " +
             "FROM ccd.case_data c " +
-            "WHERE c.case_type_id = :caseType AND c.jurisdiction = :jurisdiction " +
+            "WHERE c.case_type_id = :caseType " +
+            "AND c.jurisdiction = :jurisdiction " +
             "AND c.reference = :ccdReference " +
-            "AND ( c.data #>> '{cicCaseEmail}' = :userEmail " +
-            "OR jsonb_path_exists(c.data, '$.searchCriteria.SearchParties[*] ? (@.EmailAddress == $email)', " +
-            "jsonb_build_object('email', :userEmail)))" +
-            "ORDER BY c.last_modified DESC LIMIT 1";
+            "AND ( " +
+            "  c.data #>> '{cicCaseEmail}' = :userEmail " +
+            "  OR EXISTS ( " +
+            "    SELECT 1 " +
+            "    FROM jsonb_array_elements( " +
+            "      COALESCE(c.data->'SearchCriteria'->'SearchParties', '[]'::jsonb) " +
+            "    ) sp " +
+            "    WHERE sp->'value'->>'EmailAddress' = :userEmail " +
+            "  ) " +
+            ") " +
+            "ORDER BY c.last_modified DESC " +
+            "LIMIT 1";
 
     @Override
     public boolean checkCaseExists(String ccdReference) {
@@ -87,7 +96,7 @@ public class CaseDataRepositoryImpl implements CaseDataRepository {
         );
 
         log.info("Email matched for CCD reference: {}", ccdReference);
-        return Optional.ofNullable(results.getFirst());
+        return results.stream().findFirst();
     }
 
     @SneakyThrows
