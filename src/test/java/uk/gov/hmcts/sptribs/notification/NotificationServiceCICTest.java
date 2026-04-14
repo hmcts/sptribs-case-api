@@ -169,6 +169,7 @@ public class NotificationServiceCICTest {
         verify(sendEmailResponse, times(3)).getNotificationId();
         verify(sendEmailResponse, times(2)).getReference();
         verify(correspondenceRepository, times(1)).save(any());
+        verify(documentsRepository, times(1)).save(any());
     }
 
     @Test
@@ -751,6 +752,7 @@ public class NotificationServiceCICTest {
         verify(sendEmailResponse, times(3)).getNotificationId();
         verify(sendEmailResponse, times(2)).getReference();
         verify(correspondenceRepository, times(1)).save(any());
+        verify(documentsRepository, times(1)).save(any());
     }
 
     @Test
@@ -827,6 +829,7 @@ public class NotificationServiceCICTest {
         verify(sendEmailResponse, times(3)).getNotificationId();
         verify(sendEmailResponse, times(2)).getReference();
         verify(correspondenceRepository, times(1)).save(any());
+        verify(documentsRepository, times(1)).save(any());
     }
 
     @Test
@@ -951,6 +954,7 @@ public class NotificationServiceCICTest {
         verify(sendEmailResponse, times(3)).getNotificationId();
         verify(sendEmailResponse, times(2)).getReference();
         verify(correspondenceRepository, times(1)).save(any());
+        verify(documentsRepository, times(1)).save(any());
     }
 
     @Test

@@ -206,7 +206,7 @@ public final class DocumentUtil {
 
     public static void buildAndSaveNewDocumentEntity(Document document, DocumentsRepository documentsRepository, Long caseReferenceNumber) {
         if (documentsRepository.findAllByDocumentBinaryUrl(document.getBinaryUrl()).isEmpty()) {
-            documentsRepository.saveAndFlush(DocumentEntity.builder()
+            documentsRepository.save(DocumentEntity.builder()
                 .id(UUID.randomUUID())
                 .caseReferenceNumber(caseReferenceNumber)
                 .documentUrl(document.getUrl())

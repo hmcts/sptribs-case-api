@@ -21,6 +21,10 @@ import uk.gov.hmcts.sptribs.common.repositories.DocumentsRepository;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_WA_CONFIG_USER;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigBuilder;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.getEventsFrom;
@@ -106,6 +110,8 @@ public class CaseworkerDocumentManagementTest {
         AboutToStartOrSubmitResponse<CaseData, State> response =
             caseworkerDocumentManagement.aboutToSubmit(updatedCaseDetails, beforeDetails);
 
+        verify(documentsRepository, times(1)).save(any());
+
         assertThat(response.getData().getNewDocManagement().getCaseworkerCICDocument()).isEmpty();
         assertThat(response.getData().getNewDocManagement().getCaseworkerCICDocumentUpload()).isEmpty();
         assertThat(response.getData().getAllDocManagement().getCaseworkerCICDocument()).hasSize(1);
@@ -149,6 +155,8 @@ public class CaseworkerDocumentManagementTest {
         AboutToStartOrSubmitResponse<CaseData, State> response =
             caseworkerDocumentManagement.aboutToSubmit(updatedCaseDetails, beforeDetails);
 
+        verify(documentsRepository, times(1)).save(any());
+
         assertThat(response.getData().getFurtherUploadedDocuments()).hasSize(1);
         assertThat(response.getData().getFurtherUploadedDocuments().getFirst().getValue().getDocumentLink().getFilename())
             .isEqualTo("file.pdf");
@@ -177,6 +185,8 @@ public class CaseworkerDocumentManagementTest {
         AboutToStartOrSubmitResponse<CaseData, State> response =
             caseworkerDocumentManagement.aboutToSubmit(updatedCaseDetails, beforeDetails);
 
+        verify(documentsRepository, times(1)).save(any());
+
         assertThat(response.getData().getFurtherUploadedDocuments()).hasSize(2);
         assertThat(response.getData().getFurtherUploadedDocuments().get(0).getValue().getDocumentLink().getFilename())
             .isEqualTo("existing.pdf");
@@ -203,6 +213,8 @@ public class CaseworkerDocumentManagementTest {
 
         AboutToStartOrSubmitResponse<CaseData, State> response =
             caseworkerDocumentManagement.aboutToSubmit(updatedCaseDetails, beforeDetails);
+
+        verify(documentsRepository, times(1)).save(any());
 
         assertThat(response.getData().getFurtherUploadedDocuments()).isNull();
     }

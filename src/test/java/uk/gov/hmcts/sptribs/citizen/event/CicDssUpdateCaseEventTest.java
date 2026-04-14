@@ -31,7 +31,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
@@ -123,6 +125,8 @@ class CicDssUpdateCaseEventTest {
         AboutToStartOrSubmitResponse<CaseData, State> response =
             cicDssUpdateCaseEvent.aboutToSubmit(details, details);
 
+        verify(documentsRepository, times(2)).save(any());
+
         assertThat(response.getData().getCicCase().getApplicantDocumentsUploaded()).isNotEmpty();
         assertThat(response.getData().getCicCase().getApplicantDocumentsUploaded()).hasSize(3);
         assertThat(response.getData().getCicCase().getApplicantDocumentsUploaded().get(1).getValue().getDate())
@@ -167,6 +171,8 @@ class CicDssUpdateCaseEventTest {
         details.setData(caseData);
         AboutToStartOrSubmitResponse<CaseData, State> response =
             cicDssUpdateCaseEvent.aboutToSubmit(details, details);
+
+        verify(documentsRepository, times(2)).save(any());
 
         assertThat(response.getData().getCicCase().getApplicantDocumentsUploaded()).isNotEmpty();
         assertThat(response.getData().getCicCase().getApplicantDocumentsUploaded()).hasSize(3);
@@ -213,6 +219,8 @@ class CicDssUpdateCaseEventTest {
         AboutToStartOrSubmitResponse<CaseData, State> response =
             cicDssUpdateCaseEvent.aboutToSubmit(details, details);
 
+        verify(documentsRepository, times(2)).save(any());
+
         assertThat(response.getData().getCicCase().getApplicantDocumentsUploaded()).isNotEmpty();
         assertThat(response.getData().getCicCase().getApplicantDocumentsUploaded()).hasSize(3);
         assertThat(response.getData().getCicCase().getApplicantDocumentsUploaded().get(1).getValue().getDate())
@@ -246,6 +254,8 @@ class CicDssUpdateCaseEventTest {
 
         AboutToStartOrSubmitResponse<CaseData, State> response =
             cicDssUpdateCaseEvent.aboutToSubmit(details, details);
+
+        verify(documentsRepository, times(2)).save(any());
 
         assertThat(response.getData().getCicCase().getApplicantDocumentsUploaded()).isNotEmpty();
         assertThat(response.getData().getCicCase().getApplicantDocumentsUploaded()).hasSize(2);

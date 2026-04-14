@@ -30,6 +30,9 @@ import java.util.List;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.DOUBLE_HYPHEN;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_WA_CONFIG_USER;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigBuilder;
@@ -107,6 +110,8 @@ class CaseworkerCreateDraftOrderTest {
         SubmittedCallbackResponse draftCreatedResponse = caseworkerCreateDraftOrder.submitted(updatedCaseDetails, beforeDetails);
 
         //  Then
+        verify(documentsRepository, times(1)).save(any());
+
         assertThat(response).isNotNull();
         CaseData responseData = response.getData();
         assertThat(responseData.getCicCase().getDraftOrderCICList()).hasSize(1);
@@ -178,6 +183,8 @@ class CaseworkerCreateDraftOrderTest {
         AboutToStartOrSubmitResponse<CaseData, State> response2 =
             caseworkerCreateDraftOrder.aboutToSubmit(updatedCaseDetails, beforeDetails);
         //  Then
+        verify(documentsRepository, times(2)).save(any());
+
         assertThat(response2).isNotNull();
     }
 
@@ -217,6 +224,8 @@ class CaseworkerCreateDraftOrderTest {
 
         final AboutToStartOrSubmitResponse<CaseData, State> response =
                 caseworkerCreateDraftOrder.aboutToSubmit(updatedCaseDetails, beforeDetails);
+
+        verify(documentsRepository, times(1)).save(any());
 
         assertThat(response).isNotNull();
         assertThat(response.getData()).isNotNull();

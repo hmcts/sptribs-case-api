@@ -44,6 +44,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
@@ -197,6 +198,8 @@ class CicSubmitCaseEventTest {
         final AboutToStartOrSubmitResponse<CaseData, State> response =
             cicSubmitCaseEvent.aboutToSubmit(updatedCaseDetails, beforeDetails);
 
+        verify(documentsRepository, times(4)).save(any());
+
         assertThat(response.getData().getCicCase().getApplicantDocumentsUploaded().getFirst().getValue().getDocumentEmailContent())
             .isEqualTo(genericTestDocumentRelevance1);
         assertThat(response.getData().getCicCase().getApplicantDocumentsUploaded().get(1).getValue().getDocumentEmailContent())
@@ -239,6 +242,8 @@ class CicSubmitCaseEventTest {
 
         final AboutToStartOrSubmitResponse<CaseData, State> response =
             cicSubmitCaseEvent.aboutToSubmit(updatedCaseDetails, beforeDetails);
+
+        verify(documentsRepository, times(3)).save(any());
 
         assertThat(response).isNotNull();
         assertThat(response.getData().getDssCaseData().getOtherInfoDocuments()).isEmpty();
