@@ -33,7 +33,7 @@ dependencies:
     condition: idam-pr.enabled
   - name: ccd-case-document-am-api
     version: 1.7.14
-    repository: 'https://hmctsprod.azurecr.io/helm/v1/repo/'
+    repository: 'oci://hmctsprod.azurecr.io/helm'
     condition: ccd-case-document-am-api.enabled
   - name: em-ccdorc
     version: 2.1.0
