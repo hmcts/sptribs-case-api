@@ -198,6 +198,8 @@ class CaseworkerCreateAndSendOrderTest {
         details.setData(caseData);
         final var response = caseworkerCreateAndSendOrder.aboutToSubmit(details, caseDetailsBefore());
 
+        verify(documentsRepository, times(1)).save(any());
+
         assertThat(response).isNotNull();
         assertThat(response.getData()).isNotNull();
 
@@ -247,6 +249,8 @@ class CaseworkerCreateAndSendOrderTest {
 
         final var response = caseworkerCreateAndSendOrder.aboutToSubmit(details, caseDetailsBefore());
 
+        verify(documentsRepository, times(1)).save(any());
+
         assertThat(response).isNotNull();
         assertThat(response.getData()).isNotNull();
 
@@ -295,6 +299,8 @@ class CaseworkerCreateAndSendOrderTest {
         caseData.setCaseNumber(TEST_CASE_ID.toString());
         details.setData(caseData);
         final var response = caseworkerCreateAndSendOrder.aboutToSubmit(details, caseDetailsBefore());
+
+        verify(documentsRepository, times(1)).save(any());
 
         assertThat(response).isNotNull();
         assertThat(response.getData()).isNotNull();
@@ -360,6 +366,8 @@ class CaseworkerCreateAndSendOrderTest {
         caseData.setCaseNumber(TEST_CASE_ID.toString());
         details.setData(caseData);
         final var response = caseworkerCreateAndSendOrder.aboutToSubmit(details, caseDetailsBefore());
+
+        verify(documentsRepository, times(1)).save(any());
 
         assertThat(response).isNotNull();
         assertThat(response.getData()).isNotNull();
@@ -441,6 +449,8 @@ class CaseworkerCreateAndSendOrderTest {
         details.setData(caseData);
 
         final var response = caseworkerCreateAndSendOrder.aboutToSubmit(details, caseDetailsBefore());
+
+        verify(documentsRepository, times(1)).save(any());
 
         assertThat(response).isNotNull();
         assertThat(response.getData()).isNotNull();

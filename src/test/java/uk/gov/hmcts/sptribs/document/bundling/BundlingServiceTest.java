@@ -44,7 +44,9 @@ import java.util.stream.Stream;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CREATE_BUNDLE;
@@ -164,12 +166,17 @@ public class BundlingServiceTest {
         final List<Bundle> result = bundlingService.createBundle(bundleCallback, TEST_CASE_ID);
 
         verify(bundlingClient).createBundle(any(), any(), any());
+
+        if (expectedBundle.getStitchedDocument() != null) {
+            verify(documentsRepository, times(1)).save(any());
+        }
+
         assertThat(result).hasSize(1);
-        assertThat(result.get(0)).isNotNull();
-        assertThat(result.get(0)).isEqualTo(expectedBundle);
-        assertThat(result.get(0).getDocuments()).isEqualTo(expectedBundle.getDocuments());
-        assertThat(result.get(0).getFolders()).isEqualTo(expectedBundle.getFolders());
-        assertThat(result.get(0).getStitchedDocument()).isEqualTo(expectedBundle.getStitchedDocument());
+        assertThat(result.getFirst()).isNotNull();
+        assertThat(result.getFirst()).isEqualTo(expectedBundle);
+        assertThat(result.getFirst().getDocuments()).isEqualTo(expectedBundle.getDocuments());
+        assertThat(result.getFirst().getFolders()).isEqualTo(expectedBundle.getFolders());
+        assertThat(result.getFirst().getStitchedDocument()).isEqualTo(expectedBundle.getStitchedDocument());
     }
 
     @Test
@@ -185,6 +192,7 @@ public class BundlingServiceTest {
         final List<Bundle> result = bundlingService.createBundle(bundleCallback, TEST_CASE_ID);
 
         verify(bundlingClient).createBundle(any(), any(), any());
+        verifyNoInteractions(documentsRepository);
         assertThat(result).isNull();
     }
 
@@ -193,8 +201,8 @@ public class BundlingServiceTest {
         final List<MultiBundleConfig> result = bundlingService.getMultiBundleConfigs();
 
         assertThat(result).hasSize(1);
-        assertThat(result.get(0)).isNotNull();
-        assertThat(result.get(0).getValue()).isEqualTo(BUNDLE_FILE_NAME);
+        assertThat(result.getFirst()).isNotNull();
+        assertThat(result.getFirst().getValue()).isEqualTo(BUNDLE_FILE_NAME);
     }
 
     @Test
@@ -232,6 +240,15 @@ public class BundlingServiceTest {
         final List<ListValue<Bundle>> resultList = bundlingService.buildBundleListValues(result);
 
         verify(bundlingClient).createBundle(any(), any(), any());
+
+        int numberOfStitchedDocuments = 0;
+        for (Bundle exepectedBundle : expectedBundles) {
+            if (exepectedBundle.getStitchedDocument() != null) {
+                numberOfStitchedDocuments++;
+            }
+        }
+        verify(documentsRepository, times(numberOfStitchedDocuments)).save(any());
+
         assertThat(result).hasSize(expectedBundles.size()).containsAll(expectedBundles);
         assertThat(resultList.stream().map(ListValue::getValue).toList()).containsAll(expectedBundles);
     }
@@ -255,6 +272,7 @@ public class BundlingServiceTest {
         final List<ListValue<Bundle>> resultList = bundlingService.buildBundleListValues(result);
 
         verify(bundlingClient).createBundle(any(), any(), any());
+        verifyNoInteractions(documentsRepository);
         assertThat(result).isEmpty();
         assertThat(resultList).isNull();
     }
@@ -263,6 +281,7 @@ public class BundlingServiceTest {
     void shouldReturnNullWhenNoBundleFolders() {
         final List<BundleFolder> bundleFolderList = Collections.emptyList();
         final List<ListValue<BundleFolder>> resultList = bundlingService.buildBundleFolderListValues(bundleFolderList);
+        verifyNoInteractions(documentsRepository);
         assertThat(resultList).isNull();
     }
 
@@ -270,6 +289,7 @@ public class BundlingServiceTest {
     void shouldReturnNullWhenNoBundleDocuments() {
         final List<BundleDocument> bundleDocumentList = Collections.emptyList();
         final List<ListValue<BundleDocument>> resultList = bundlingService.buildBundleDocumentListValues(bundleDocumentList);
+        verifyNoInteractions(documentsRepository);
         assertThat(resultList).isNull();
     }
 

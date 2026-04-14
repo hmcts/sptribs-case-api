@@ -36,6 +36,10 @@ import uk.gov.hmcts.sptribs.notification.dispatcher.CaseFinalDecisionIssuedNotif
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseClosed;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_WA_CONFIG_USER;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigBuilder;
@@ -148,6 +152,8 @@ class CaseworkerIssueFinalDecisionTest {
         AboutToStartOrSubmitResponse<CaseData, State> response = issueFinalDecision.aboutToSubmit(details, beforeDetails);
 
         //Then
+        verify(documentsRepository, times(1)).save(any());
+
         assertThat(response.getState())
             .isEqualTo(CaseClosed);
     }
@@ -171,6 +177,8 @@ class CaseworkerIssueFinalDecisionTest {
         AboutToStartOrSubmitResponse<CaseData, State> response = issueFinalDecision.uploadDocumentMidEvent(caseDetails, caseDetails);
 
         //Then
+        verifyNoInteractions(documentsRepository);
+
         assertThat(response.getErrors()).contains(DocumentConstants.DOCUMENT_VALIDATION_MESSAGE);
     }
 

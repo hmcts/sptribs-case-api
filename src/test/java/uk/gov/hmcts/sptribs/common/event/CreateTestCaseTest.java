@@ -32,6 +32,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
@@ -128,6 +129,8 @@ public class CreateTestCaseTest {
         when(caseDocumentClientApi.uploadDocuments(any(), any(), any())).thenReturn(expectedResponse);
 
         AboutToStartOrSubmitResponse<CaseData, State> response = createTestCase.aboutToSubmit(caseDetails, caseDetails);
+
+        verify(documentsRepository, times(1)).save(any());
 
         assertThat(response.getState()).isEqualTo(CaseManagement);
         assertThat(response.getData().getHyphenatedCaseRef()).isEqualTo(TEST_CASE_ID_HYPHENATED);
