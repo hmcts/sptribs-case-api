@@ -39,7 +39,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
-import java.time.ZoneOffset;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Collections;
 import java.util.HashMap;
@@ -88,7 +88,7 @@ public class NotificationServiceCIC {
                                         String caseReferenceNumber) throws IOException, RestClientException {
 
         Long longCaseRef = Long.parseLong(caseReferenceNumber.replace("-", ""));
-        final OffsetDateTime sentOn = OffsetDateTime.now(ZoneOffset.UTC);
+        final OffsetDateTime sentOn = OffsetDateTime.now(ZoneId.systemDefault());
         String sentFrom = "Criminal Injuries Compensation Tribunal";
 
         if (sendEmailResponse.getFromEmail().isPresent()) {
@@ -123,7 +123,7 @@ public class NotificationServiceCIC {
                                          String caseReferenceNumber) throws IOException, RestClientException {
 
         Long longCaseRef = Long.parseLong(caseReferenceNumber.replace("-", ""));
-        final OffsetDateTime sentOn = OffsetDateTime.now(ZoneOffset.UTC);
+        final OffsetDateTime sentOn = OffsetDateTime.now(ZoneId.systemDefault());
         String sentFrom = "Criminal Injuries Compensation Tribunal";
         try {
             Document correspondencePDF = getPDF(null, sendLetterResponse, longCaseRef, sentOn, sentFrom, sentTo, templateName);
