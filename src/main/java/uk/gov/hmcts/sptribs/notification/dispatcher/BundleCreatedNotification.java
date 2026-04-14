@@ -18,9 +18,6 @@ import java.util.Map;
 @Slf4j
 public class BundleCreatedNotification implements PartiesNotification {
 
-    private static final String YES = "yes";
-    private static final String NO = "no";
-
     private final NotificationServiceCIC notificationService;
 
     private final NotificationHelper notificationHelper;
@@ -37,8 +34,7 @@ public class BundleCreatedNotification implements PartiesNotification {
         final Map<String, Object> templateVarsApplicant = notificationHelper.getApplicantCommonVars(caseNumber, caseData);
         templateVarsApplicant.put(CommonConstants.CIC_CASE_APPLICANT_NAME, cicCase.getApplicantFullName());
 
-        //NEED TO ADD CORRECT DASHBOARD LINK
-        templateVarsApplicant.put(CommonConstants.DASHBOARD_LINK, "Dashboard Link");
+        templateVarsApplicant.put(CommonConstants.DASHBOARD, CommonConstants.DASHBOARD_LINK);
 
         final NotificationResponse notificationResponse;
 
@@ -54,8 +50,7 @@ public class BundleCreatedNotification implements PartiesNotification {
         final Map<String, Object> templateVarsRepresentative = notificationHelper.getRepresentativeCommonVars(caseNumber, caseData);
         templateVarsRepresentative.put(CommonConstants.CIC_CASE_REPRESENTATIVE_NAME, cicCase.getRepresentativeFullName());
 
-        //NEED TO ADD CORRECT DASHBOARD LINK
-        templateVarsRepresentative.put(CommonConstants.DASHBOARD_LINK, "Dashboard Link");
+        templateVarsRepresentative.put(CommonConstants.DASHBOARD, CommonConstants.DASHBOARD_LINK);
 
         final NotificationResponse notificationResponse;
 

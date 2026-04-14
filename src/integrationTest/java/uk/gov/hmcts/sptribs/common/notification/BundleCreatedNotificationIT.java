@@ -24,7 +24,7 @@ import static uk.gov.hmcts.sptribs.ciccase.model.ContactPreferenceType.EMAIL;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.CIC_CASE_APPLICANT_NAME;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.CIC_CASE_NUMBER;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.CIC_CASE_REPRESENTATIVE_NAME;
-import static uk.gov.hmcts.sptribs.common.CommonConstants.DASHBOARD_LINK;
+import static uk.gov.hmcts.sptribs.common.CommonConstants.DASHBOARD;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.TRIBUNAL_NAME;
 import static uk.gov.hmcts.sptribs.common.ccd.CcdCaseType.CIC;
 import static uk.gov.hmcts.sptribs.notification.TemplateName.BUNDLE_CREATED_EMAIL;
@@ -68,7 +68,7 @@ public class BundleCreatedNotificationIT {
                 TRIBUNAL_NAME, CIC,
                 CIC_CASE_NUMBER, TEST_CASE_ID.toString(),
                 CIC_CASE_REPRESENTATIVE_NAME, "Representative Name",
-                DASHBOARD_LINK, "Dashboard Link"
+                DASHBOARD, "http://special-tribunals.service.gov.uk/cic-update"
             ));
     }
 
@@ -97,7 +97,7 @@ public class BundleCreatedNotificationIT {
                 TRIBUNAL_NAME, CIC,
                 CIC_CASE_NUMBER, TEST_CASE_ID.toString(),
                 CIC_CASE_APPLICANT_NAME, "Applicant Name",
-                DASHBOARD_LINK, "Dashboard Link"
+                DASHBOARD, "http://special-tribunals.service.gov.uk/cic-update"
             ));
     }
 
