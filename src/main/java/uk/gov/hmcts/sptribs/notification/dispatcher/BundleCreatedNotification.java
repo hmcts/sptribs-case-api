@@ -60,6 +60,22 @@ public class BundleCreatedNotification implements PartiesNotification {
         cicCase.setRepNotificationResponse(notificationResponse);
     }
 
+    @Override
+    public void sendToRespondent(final CaseData caseData, final String caseNumber) {
+        final CicCase cicCase = caseData.getCicCase();
+        final Map<String, Object> templateVarsRespondent = notificationHelper.getRespondentCommonVars(caseNumber, caseData);
+        templateVarsRespondent.put(CommonConstants.CIC_CASE_RESPONDENT_NAME, cicCase.getRespondentName());
+
+        templateVarsRespondent.put(CommonConstants.DASHBOARD, CommonConstants.DASHBOARD_LINK);
+
+        final NotificationResponse notificationResponse;
+
+        notificationResponse = sendEmailNotification(templateVarsRespondent,
+            cicCase.getRespondentEmail(), TemplateName.BUNDLE_CREATED_EMAIL, caseNumber);
+
+        cicCase.setResNotificationResponse(notificationResponse);
+    }
+
     private NotificationResponse sendEmailNotification(final Map<String, Object> templateVars, String toEmail,
                                                        TemplateName emailTemplateName, String caseReferenceNumber) {
         return notificationService.sendEmail(

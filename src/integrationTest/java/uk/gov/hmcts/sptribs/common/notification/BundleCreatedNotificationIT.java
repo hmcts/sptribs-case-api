@@ -24,6 +24,8 @@ import static uk.gov.hmcts.sptribs.ciccase.model.ContactPreferenceType.EMAIL;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.CIC_CASE_APPLICANT_NAME;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.CIC_CASE_NUMBER;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.CIC_CASE_REPRESENTATIVE_NAME;
+import static uk.gov.hmcts.sptribs.common.CommonConstants.CIC_CASE_RESPONDENT_NAME;
+import static uk.gov.hmcts.sptribs.common.CommonConstants.CONTACT_NAME;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.DASHBOARD;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.TRIBUNAL_NAME;
 import static uk.gov.hmcts.sptribs.common.ccd.CcdCaseType.CIC;
@@ -97,6 +99,35 @@ public class BundleCreatedNotificationIT {
                 TRIBUNAL_NAME, CIC,
                 CIC_CASE_NUMBER, TEST_CASE_ID.toString(),
                 CIC_CASE_APPLICANT_NAME, "Applicant Name",
+                DASHBOARD, "http://special-tribunals.service.gov.uk/cic-update"
+            ));
+    }
+
+    @Test
+    void shouldSendEmailToRespondent() {
+        final CaseData data = CaseData.builder()
+            .cicCase(CicCase.builder()
+                .contactPreferenceType(EMAIL)
+                .respondentName("Respondent Name")
+                .respondentEmail("respondent@email.com")
+                .build())
+            .build();
+
+        bundleCreatedNotification.sendToRespondent(data, TEST_CASE_ID.toString());
+
+        verify(notificationServiceCIC).sendEmail(notificationRequestCaptor.capture(), eq(TEST_CASE_ID.toString()));
+
+        NotificationRequest notificationRequest = notificationRequestCaptor.getValue();
+
+        assertThat(notificationRequest.getDestinationAddress())
+            .isEqualTo("respondent@email.com");
+        assertThat(notificationRequest.getTemplate())
+            .isEqualTo(BUNDLE_CREATED_EMAIL);
+        assertThat(notificationRequest.getTemplateVars())
+            .containsAllEntriesOf(Map.of(
+                TRIBUNAL_NAME, CIC,
+                CIC_CASE_NUMBER, TEST_CASE_ID.toString(),
+                CONTACT_NAME, "Respondent Name",
                 DASHBOARD, "http://special-tribunals.service.gov.uk/cic-update"
             ));
     }

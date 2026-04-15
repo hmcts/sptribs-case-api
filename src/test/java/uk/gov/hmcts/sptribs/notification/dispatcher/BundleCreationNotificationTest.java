@@ -37,7 +37,7 @@ public class BundleCreationNotificationTest {
     void shouldNotifyApplicantThatBundleIsCreated() {
         //Given
         final CaseData data = getMockCaseData();
-        data.getCicCase().setApplicantEmailAddress("testrepr@outlook.com");
+        data.getCicCase().setApplicantEmailAddress("testapp@outlook.com");
 
         //When
         when(notificationHelper.buildEmailNotificationRequest(any(), anyMap(), any(TemplateName.class)))
@@ -71,6 +71,27 @@ public class BundleCreationNotificationTest {
         verify(notificationService).sendEmail(any(NotificationRequest.class), eq(TEST_CASE_ID.toString()));
         verify(notificationHelper).buildEmailNotificationRequest(
             eq(data.getCicCase().getRepresentativeEmailAddress()),
+            anyMap(),
+            eq(TemplateName.BUNDLE_CREATED_EMAIL));
+    }
+
+    @Test
+    void shouldNotifyRespondentThatBundleIsCreated() {
+        //Given
+        final CaseData data = getMockCaseData();
+        data.getCicCase().setRespondentEmail("testresp@outlook.com");
+
+        //When
+        when(notificationHelper.buildEmailNotificationRequest(any(), anyMap(), any(TemplateName.class)))
+            .thenReturn(NotificationRequest.builder().build());
+        when(notificationHelper.getRespondentCommonVars(any(), any(CaseData.class))).thenReturn(new HashMap<>());
+
+        bundleCreatedNotification.sendToRespondent(data, TEST_CASE_ID.toString());
+
+        //Then
+        verify(notificationService).sendEmail(any(NotificationRequest.class), eq(TEST_CASE_ID.toString()));
+        verify(notificationHelper).buildEmailNotificationRequest(
+            eq(data.getCicCase().getRespondentEmail()),
             anyMap(),
             eq(TemplateName.BUNDLE_CREATED_EMAIL));
     }

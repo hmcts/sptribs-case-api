@@ -92,6 +92,7 @@ public class CaseworkerCreateBundle implements CCDConfig<CaseData, State, UserRo
                 .description("Bundle: Create a bundle")
                 .showSummary()
                 .aboutToSubmitCallback(this::aboutToSubmit)
+                .submittedCallback(this::submitted)
                 .grant(CREATE_READ_UPDATE, SUPER_USER,
                     ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER, ST_CIC_HEARING_CENTRE_ADMIN,
                     ST_CIC_HEARING_CENTRE_TEAM_LEADER, ST_CIC_WA_CONFIG_USER)
@@ -290,10 +291,14 @@ public class CaseworkerCreateBundle implements CCDConfig<CaseData, State, UserRo
 
     private void sendBundleCreationNotification(String caseNumber, CaseData data) {
 
+        if (!CollectionUtils.isEmpty(data.getCicCase().getNotifyPartyRespondent())) {
+            bundleCreatedNotification.sendToRespondent(data, caseNumber);
+        }
         if (!CollectionUtils.isEmpty(data.getCicCase().getNotifyPartyRepresentative())) {
             bundleCreatedNotification.sendToRepresentative(data, caseNumber);
         }
-        if (!CollectionUtils.isEmpty(data.getCicCase().getNotifyPartyApplicant())) {
+        if (CollectionUtils.isEmpty(data.getCicCase().getNotifyPartyRepresentative())
+            && !CollectionUtils.isEmpty(data.getCicCase().getNotifyPartyApplicant())) {
             bundleCreatedNotification.sendToApplicant(data, caseNumber);
         }
     }
