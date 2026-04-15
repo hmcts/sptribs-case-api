@@ -49,7 +49,7 @@ import static org.springframework.util.CollectionUtils.isEmpty;
 import static uk.gov.hmcts.sptribs.caseworker.util.DocumentListUtil.getAllCaseDocumentsExcludingInitialCicaUpload;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CREATE_BUNDLE;
 import static uk.gov.hmcts.sptribs.caseworker.util.MessageUtil.generateSimpleErrorMessage;
-import static uk.gov.hmcts.sptribs.caseworker.util.MessageUtil.generateSimpleMessage;
+import static uk.gov.hmcts.sptribs.caseworker.util.MessageUtil.generateSimpleMessageBundleCreation;
 import static uk.gov.hmcts.sptribs.ciccase.model.NotificationParties.APPLICANT;
 import static uk.gov.hmcts.sptribs.ciccase.model.NotificationParties.REPRESENTATIVE;
 import static uk.gov.hmcts.sptribs.ciccase.model.NotificationParties.RESPONDENT;
@@ -177,7 +177,7 @@ public class CaseworkerCreateBundle implements CCDConfig<CaseData, State, UserRo
         if (isEmpty(errors)) {
             return SubmittedCallbackResponse.builder()
                 .confirmationHeader(format("# Bundle created. %n## %s",
-                    generateSimpleMessage(details.getData().getCicCase())))
+                    generateSimpleMessageBundleCreation(details.getData().getCicCase())))
                 .build();
         } else {
             return SubmittedCallbackResponse.builder()

@@ -16,9 +16,11 @@ import static net.javacrumbs.jsonunit.assertj.JsonAssertions.json;
 import static net.javacrumbs.jsonunit.core.Option.IGNORING_EXTRA_FIELDS;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.HttpStatus.OK;
+import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_ISSUE_CASE;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CREATE_BUNDLE;
 import static uk.gov.hmcts.sptribs.testutil.CaseDataUtil.caseData;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.ABOUT_TO_SUBMIT_URL;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.SUBMITTED_URL;
 import static uk.gov.hmcts.sptribs.testutil.TestResourceUtil.expectedResponse;
 
 @SpringBootTest
@@ -28,6 +30,11 @@ public class CaseworkerCreateBundleFT extends FunctionalTestSuite {
         "classpath:request/casedata/ccd-callback-casedata-caseworker-create-bundle-about-to-submit.json";
     private static final String RESPONSE =
         "classpath:responses/response-caseworker-create-bundle-about-to-submit.json";
+
+    private static final String CALLBACK_REQUEST =
+        "classpath:request/casedata/ccd-callback-casedata-caseworker-create-bundle-about-to-start.json";
+
+    private static final String CONFIRMATION_HEADER = "$.confirmation_header";
 
     @Test
     public void shouldCreateBundleInAboutToSubmitCallback() throws Exception {
@@ -80,5 +87,18 @@ public class CaseworkerCreateBundleFT extends FunctionalTestSuite {
             .when(IGNORING_EXTRA_FIELDS)
             .inPath("$.errors")
             .isAbsent();
+    }
+
+    @Test
+    public void shouldBeSuccessfulWhenSubmittedCallbackIsInvoked() throws Exception {
+        final Map<String, Object> caseData = caseData(CALLBACK_REQUEST);
+
+        final Response response = triggerCallback(caseData, CASEWORKER_ISSUE_CASE, SUBMITTED_URL);
+
+        assertThat(response.getStatusCode()).isEqualTo(OK.value());
+        assertThatJson(response.asString())
+            .inPath(CONFIRMATION_HEADER)
+            .isString()
+            .contains("# Case issued \n##  This case has now been issued. \n## A notification has been sent to");
     }
 }
