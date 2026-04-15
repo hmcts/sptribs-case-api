@@ -60,22 +60,6 @@ public final class MessageUtil {
         return message.substring(0, message.length() - 2);
     }
 
-    public static String generateSimpleMessageBundleCreation(final CicCase cicCase) {
-        final StringBuilder message = new StringBuilder(100);
-        message.append("A notification has been sent to: ");
-
-        if (!(cicCase.getRepNotificationResponse() == null)) {
-            message.append(REPRESENTATIVE + COMMA_SPACE);
-        }
-        if (!(cicCase.getResNotificationResponse() == null)) {
-            message.append(RESPONDENT + COMMA_SPACE);
-        }
-        if (!(cicCase.getAppNotificationResponse() == null)) {
-            message.append(APPLICANT + COMMA_SPACE);
-        }
-        return message.substring(0, message.length() - 2);
-    }
-
     public static String generateSimpleMessage(Set<NotificationParties> notificationParties) {
         final StringBuilder message = new StringBuilder(100);
         message.append("A notification has been sent to: ");
@@ -123,6 +107,22 @@ public final class MessageUtil {
         message.append("A notification could not be sent to: ");
         errors.forEach(e -> message.append(e).append(COMMA_SPACE));
 
+        return message.substring(0, message.length() - 2);
+    }
+
+    public static String generateSimpleMessageBundleCreation(final CicCase cicCase) {
+        final StringBuilder message = new StringBuilder(100);
+        message.append("A notification has been sent to: ");
+
+        if (!(cicCase.getRepNotificationResponse() == null)) {
+            message.append(REPRESENTATIVE + COMMA_SPACE);
+        }
+        if (!(cicCase.getResNotificationResponse() == null)) {
+            message.append(RESPONDENT + COMMA_SPACE);
+        }
+        if (!(cicCase.getAppNotificationResponse() == null)) {
+            message.append(APPLICANT + COMMA_SPACE);
+        }
         return message.substring(0, message.length() - 2);
     }
 }
