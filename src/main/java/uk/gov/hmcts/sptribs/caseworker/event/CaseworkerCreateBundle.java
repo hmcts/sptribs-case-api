@@ -166,7 +166,7 @@ public class CaseworkerCreateBundle implements CCDConfig<CaseData, State, UserRo
             }
         }
         if (CollectionUtils.isEmpty(data.getCicCase().getNotifyPartyRepresentative())
-            && !CollectionUtils.isEmpty(data.getCicCase().getNotifyPartyApplicant())) {
+            && !CollectionUtils.isEmpty(data.getCicCase().getApplicantCIC())) {
             try {
                 bundleCreatedNotification.sendToApplicant(data, caseNumber);
             } catch (Exception notificationException) {

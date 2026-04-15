@@ -30,10 +30,10 @@ public class CaseworkerCreateBundleFT extends FunctionalTestSuite {
         "classpath:request/casedata/ccd-callback-casedata-caseworker-create-bundle-about-to-submit.json";
     private static final String RESPONSE =
         "classpath:responses/response-caseworker-create-bundle-about-to-submit.json";
-
     private static final String CALLBACK_REQUEST =
         "classpath:request/casedata/ccd-callback-casedata-caseworker-create-bundle-about-to-start.json";
-
+    private static final String SUBMITTED_FAILURE_REQUEST =
+        "classpath:request/casedata/ccd-callback-casedata-caseworker-create-bundle-about-to-start-failure.json";
     private static final String CONFIRMATION_HEADER = "$.confirmation_header";
 
     @Test
@@ -99,6 +99,22 @@ public class CaseworkerCreateBundleFT extends FunctionalTestSuite {
         assertThatJson(response.asString())
             .inPath(CONFIRMATION_HEADER)
             .isString()
-            .contains("# Case issued \n##  This case has now been issued. \n## A notification has been sent to");
+            .contains("# Bundle created. \n## A notification has been sent to");
+    }
+
+    @Test
+    public void shouldReturnFailureMessageWhenEmailCouldNotSendWhenSubmittedCallbackIsInvoked() throws Exception {
+        final Map<String, Object> caseData = caseData(SUBMITTED_FAILURE_REQUEST);
+
+        final Response response = triggerCallback(caseData, CASEWORKER_ISSUE_CASE, SUBMITTED_URL);
+
+        assertThat(response.getStatusCode()).isEqualTo(OK.value());
+        assertThatJson(response.asString())
+            .inPath(CONFIRMATION_HEADER)
+            .isString()
+            .isEqualTo("""
+                # Bundle creation failed\s
+                ## A notification could not be sent to: Representative\s
+                ## Please resend the notification.""");
     }
 }
