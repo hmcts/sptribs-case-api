@@ -93,7 +93,7 @@ public class CaseworkerCreateBundleFT extends FunctionalTestSuite {
     public void shouldBeSuccessfulWhenSubmittedCallbackIsInvoked() throws Exception {
         final Map<String, Object> caseData = caseData(CALLBACK_REQUEST);
 
-        final Response response = triggerCallback(caseData, CASEWORKER_ISSUE_CASE, SUBMITTED_URL);
+        final Response response = triggerCallback(caseData, CREATE_BUNDLE, SUBMITTED_URL);
 
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
         assertThatJson(response.asString())
@@ -106,7 +106,7 @@ public class CaseworkerCreateBundleFT extends FunctionalTestSuite {
     public void shouldReturnFailureMessageWhenEmailCouldNotSendWhenSubmittedCallbackIsInvoked() throws Exception {
         final Map<String, Object> caseData = caseData(SUBMITTED_FAILURE_REQUEST);
 
-        final Response response = triggerCallback(caseData, CASEWORKER_ISSUE_CASE, SUBMITTED_URL);
+        final Response response = triggerCallback(caseData, CREATE_BUNDLE, SUBMITTED_URL);
 
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
         assertThatJson(response.asString())
