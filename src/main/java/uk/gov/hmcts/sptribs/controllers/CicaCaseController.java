@@ -19,11 +19,10 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import uk.gov.hmcts.reform.idam.client.models.User;
 import uk.gov.hmcts.sptribs.ciccase.service.CicaCaseService;
 import uk.gov.hmcts.sptribs.common.repositories.model.CicaCaseEntity;
 import uk.gov.hmcts.sptribs.controllers.model.CicaCaseResponse;
-import uk.gov.hmcts.sptribs.idam.IdamService;
+import uk.gov.hmcts.sptribs.mapper.CicaCaseMapper;
 
 import static uk.gov.hmcts.sptribs.common.config.ControllerConstants.AUTHORIZATION;
 import static uk.gov.hmcts.sptribs.common.config.ControllerConstants.SERVICE_AUTHORIZATION;
@@ -37,7 +36,7 @@ import static uk.gov.hmcts.sptribs.common.config.ControllerConstants.SERVICE_AUT
 public class CicaCaseController {
 
     private final CicaCaseService cicaCaseService;
-    private final IdamService idamService;
+    private final CicaCaseMapper cicaCaseMapper;
 
     @GetMapping(value = "/{ccdReference}", produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(
@@ -101,20 +100,15 @@ public class CicaCaseController {
     ) {
         log.info("Received request to get case by CCD reference: {}", ccdReference);
 
-        User user = idamService.retrieveUser(authorisation);
+        CicaCaseEntity cicaCaseEntity = cicaCaseService.getCaseByCCDReference(ccdReference, authorisation);
 
-        CicaCaseEntity cicaCaseEntity = cicaCaseService.getCaseByCCDReference(ccdReference, user.getUserDetails().getEmail());
-
-        //move to helper or converter
-        CicaCaseResponse response = CicaCaseResponse.builder()
-            .id(cicaCaseEntity.getId())
-            .state(cicaCaseEntity.getState())
-            .data(cicaCaseEntity.getData())
-            .build();
+        CicaCaseResponse response = cicaCaseMapper.toResponse(cicaCaseEntity);
 
         log.info("Successfully retrieved case with CCD reference: {}", ccdReference);
         return ResponseEntity.ok(response);
     }
+
+
 }
 
 
