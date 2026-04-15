@@ -7,7 +7,7 @@
   "cicCaseRespondentName": "Appeals team",
   "cicCaseRespondentOrganisation": "CICA",
   "cicCaseFullName": "Test Tester",
-  "cicCaseEmail": "test@email.com",
+  "cicCaseEmail": null,
   "cicCaseContactPreferenceType": "Email",
   "cicCaseApplicantDocumentsUploaded": [
     {
