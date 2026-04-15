@@ -50,6 +50,7 @@ import static uk.gov.hmcts.sptribs.caseworker.util.DocumentListUtil.getAllCaseDo
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CREATE_BUNDLE;
 import static uk.gov.hmcts.sptribs.caseworker.util.MessageUtil.generateSimpleErrorMessage;
 import static uk.gov.hmcts.sptribs.caseworker.util.MessageUtil.generateSimpleMessage;
+import static uk.gov.hmcts.sptribs.ciccase.model.NotificationParties.APPLICANT;
 import static uk.gov.hmcts.sptribs.ciccase.model.NotificationParties.REPRESENTATIVE;
 import static uk.gov.hmcts.sptribs.ciccase.model.NotificationParties.RESPONDENT;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
@@ -100,9 +101,9 @@ public class CaseworkerCreateBundle implements CCDConfig<CaseData, State, UserRo
                 .publishToCamunda();
 
         new PageBuilder(eventBuilder)
-                .page("createBundle")
-                .pageLabel("Create a bundle")
-                .done();
+            .page("createBundle")
+            .pageLabel("Create a bundle")
+            .done();
     }
 
     @SneakyThrows
@@ -136,7 +137,6 @@ public class CaseworkerCreateBundle implements CCDConfig<CaseData, State, UserRo
         caseData.setCaseDocuments(null);
         caseData.setFurtherCaseDocuments(null);
 
-        sendBundleCreationNotification(caseData.getCaseNumber(), caseData);
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
@@ -151,18 +151,26 @@ public class CaseworkerCreateBundle implements CCDConfig<CaseData, State, UserRo
         final String caseNumber = data.getHyphenatedCaseRef();
         final List<String> errors = new ArrayList<>();
 
-        if (!isEmpty(cicCase.getNotifyPartyRepresentative())) {
+        if (!CollectionUtils.isEmpty(data.getCicCase().getNotifyPartyRespondent())) {
             try {
-                caseIssuedNotification.sendToRepresentative(details.getData(), caseNumber);
+                bundleCreatedNotification.sendToRespondent(data, caseNumber);
+            } catch (Exception notificationException) {
+                errors.add(RESPONDENT.getLabel());
+            }
+        }
+        if (!CollectionUtils.isEmpty(data.getCicCase().getNotifyPartyRepresentative())) {
+            try {
+                bundleCreatedNotification.sendToRepresentative(data, caseNumber);
             } catch (Exception notificationException) {
                 errors.add(REPRESENTATIVE.getLabel());
             }
         }
-        if (!isEmpty(cicCase.getNotifyPartyRespondent())) {
+        if (CollectionUtils.isEmpty(data.getCicCase().getNotifyPartyRepresentative())
+            && !CollectionUtils.isEmpty(data.getCicCase().getNotifyPartyApplicant())) {
             try {
-                caseIssuedNotification.sendToRespondent(details.getData(), caseNumber);
+                bundleCreatedNotification.sendToApplicant(data, caseNumber);
             } catch (Exception notificationException) {
-                errors.add(RESPONDENT.getLabel());
+                errors.add(APPLICANT.getLabel());
             }
         }
 
@@ -287,19 +295,5 @@ public class CaseworkerCreateBundle implements CCDConfig<CaseData, State, UserRo
         }
 
         return caseBundles;
-    }
-
-    private void sendBundleCreationNotification(String caseNumber, CaseData data) {
-
-        if (!CollectionUtils.isEmpty(data.getCicCase().getNotifyPartyRespondent())) {
-            bundleCreatedNotification.sendToRespondent(data, caseNumber);
-        }
-        if (!CollectionUtils.isEmpty(data.getCicCase().getNotifyPartyRepresentative())) {
-            bundleCreatedNotification.sendToRepresentative(data, caseNumber);
-        }
-        if (CollectionUtils.isEmpty(data.getCicCase().getNotifyPartyRepresentative())
-            && !CollectionUtils.isEmpty(data.getCicCase().getNotifyPartyApplicant())) {
-            bundleCreatedNotification.sendToApplicant(data, caseNumber);
-        }
     }
 }
