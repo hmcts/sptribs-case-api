@@ -40,7 +40,7 @@ public class CaseDataRepositoryImpl implements CaseDataRepository {
     private final ObjectMapper objectMapper;
 
     private static final String CHECK_CASE_EXISTS_AND_CORRECT_STATE =
-        "SELECT 1 FROM ccd.case_data c " +
+        "SELECT COUNT(*) FROM ccd.case_data c " +
             "WHERE c.case_type_id = :caseType AND c.jurisdiction = :jurisdiction " +
             "AND c.reference = :ccdReference " +
             "AND c.state NOT IN (:invalidStates)";
@@ -75,7 +75,13 @@ public class CaseDataRepositoryImpl implements CaseDataRepository {
             "invalidStates", INVALID_STATES
         );
 
-        return namedParameterJdbcTemplate.queryForObject(CHECK_CASE_EXISTS_AND_CORRECT_STATE, params, Integer.class) != null;
+        Integer count = namedParameterJdbcTemplate.queryForObject(
+            CHECK_CASE_EXISTS_AND_CORRECT_STATE,
+            params,
+            Integer.class
+        );
+
+        return count != null && count > 0;
     }
 
     @Override
