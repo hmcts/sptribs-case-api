@@ -20,6 +20,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.document.bundling.model.Bundle;
 import uk.gov.hmcts.sptribs.document.bundling.model.BundleIdAndTimestamp;
+import uk.gov.hmcts.sptribs.document.model.DocumentType;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -65,12 +66,15 @@ class CaseworkerRemoveBundlesTest {
 
         Document stitchedDocument1 = Document.builder()
             .filename("1-cicBundle.pdf")
+            .categoryId(DocumentType.BUNDLE.getCategory())
             .build();
         Document stitchedDocument2 = Document.builder()
             .filename("2-cicBundle.pdf")
+            .categoryId(DocumentType.BUNDLE.getCategory())
             .build();
         Document stitchedDocument3 = Document.builder()
             .filename("3-cicBundle.pdf")
+            .categoryId(DocumentType.BUNDLE.getCategory())
             .build();
 
         List<ListValue<Bundle>> existingBundles = new ArrayList<>();
