@@ -73,7 +73,6 @@ public class CicSubmitCaseEvent implements CCDConfig<CaseData, State, UserRole> 
     private final IdamService idamService;
     private final AppsConfig appsConfig;
     private final DssApplicationReceivedNotification dssApplicationReceivedNotification;
-
     private final DocumentsRepository documentsRepository;
 
     @Autowired

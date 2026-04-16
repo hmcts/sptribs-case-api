@@ -1,7 +1,6 @@
 package uk.gov.hmcts.sptribs.caseworker.event;
 
 import jakarta.servlet.http.HttpServletRequest;
-import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -59,7 +58,6 @@ import static uk.gov.hmcts.sptribs.document.DocumentConstants.FINAL_DECISION_ANN
 import static uk.gov.hmcts.sptribs.document.DocumentConstants.FINAL_DECISION_FILE;
 import static uk.gov.hmcts.sptribs.document.DocumentUtil.validateDecisionDocumentFormat;
 
-@AllArgsConstructor
 @Component
 @Slf4j
 public class CaseworkerIssueFinalDecision implements CCDConfig<CaseData, State, UserRole> {
@@ -88,7 +86,8 @@ public class CaseworkerIssueFinalDecision implements CCDConfig<CaseData, State, 
     @Autowired
     private CaseFinalDecisionIssuedNotification caseFinalDecisionIssuedNotification;
 
-    private final DocumentsRepository documentsRepository;
+    @Autowired
+    private DocumentsRepository documentsRepository;
 
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
