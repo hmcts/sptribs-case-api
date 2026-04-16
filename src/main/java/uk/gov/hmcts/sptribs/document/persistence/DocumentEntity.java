@@ -2,8 +2,9 @@ package uk.gov.hmcts.sptribs.document.persistence;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.IdClass;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -15,7 +16,6 @@ import org.hibernate.proxy.HibernateProxy;
 
 import java.time.OffsetDateTime;
 import java.util.Objects;
-import java.util.UUID;
 
 @Entity
 @Table(name = "case_documents")
@@ -23,19 +23,20 @@ import java.util.UUID;
 @Setter
 @ToString
 @RequiredArgsConstructor
-@Builder
 @AllArgsConstructor
-@IdClass(DocumentEntityId.class)
+@Builder
 public class DocumentEntity {
 
     @Id
-    private UUID id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int id;
 
-    @Id
+    @Column(name = "case_reference_number", nullable = false)
     private Long caseReferenceNumber;
 
+    @Builder.Default
     @Column(name = "saved_at", nullable = false)
-    private OffsetDateTime savedAt;
+    private OffsetDateTime savedAt =  OffsetDateTime.now();
 
     @Column(name = "document_url", nullable = false)
     private String documentUrl;
@@ -57,26 +58,21 @@ public class DocumentEntity {
         if (documentEntityObject == null) {
             return false;
         }
-        Class<?> documentEntityObjectEffectiveClass =
-            documentEntityObject instanceof HibernateProxy
-                ? ((HibernateProxy) documentEntityObject).getHibernateLazyInitializer().getPersistentClass()
-                : documentEntityObject.getClass();
+        Class<?> documentEntityObjectEffectiveClass = documentEntityObject instanceof HibernateProxy
+            ? ((HibernateProxy) documentEntityObject).getHibernateLazyInitializer().getPersistentClass() : documentEntityObject.getClass();
         Class<?> thisEffectiveClass = this instanceof HibernateProxy
-            ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass()
-            : this.getClass();
+            ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass() : this.getClass();
         if (thisEffectiveClass != documentEntityObjectEffectiveClass) {
             return false;
         }
-        uk.gov.hmcts.sptribs.document.persistence.DocumentEntity that
-            = (uk.gov.hmcts.sptribs.document.persistence.DocumentEntity) documentEntityObject;
-        return getId() != null && Objects.equals(getId(), that.getId())
-            && getCaseReferenceNumber() != null
-            && Objects.equals(getCaseReferenceNumber(), that.getCaseReferenceNumber());
+        DocumentEntity that = (DocumentEntity) documentEntityObject;
+        return Objects.equals(getId(), that.getId());
     }
 
     @Override
     public final int hashCode() {
-        return Objects.hash(id, caseReferenceNumber);
+        return this instanceof HibernateProxy
+            ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass().hashCode() : getClass().hashCode();
     }
 }
 

@@ -3,13 +3,11 @@ package uk.gov.hmcts.sptribs.citizen.event;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import jakarta.servlet.http.HttpServletRequest;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.ccd.sdk.ConfigBuilderImpl;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
@@ -89,12 +87,8 @@ class CicSubmitCaseEventTest {
     @Mock
     private DocumentsRepository documentsRepository;
 
-    private AutoCloseable autoCloseableMocks;
-
     @BeforeEach
     public void setUp() {
-        autoCloseableMocks = MockitoAnnotations.openMocks(this);
-
         cicAppDetail = new AppsConfig.AppsDetails();
         cicAppDetail.setCaseType(CommonConstants.ST_CIC_CASE_TYPE);
         cicAppDetail.setJurisdiction(CommonConstants.ST_CIC_JURISDICTION);
@@ -103,11 +97,6 @@ class CicSubmitCaseEventTest {
         eventsConfig.setSubmitEvent(CITIZEN_CIC_SUBMIT_CASE);
 
         cicAppDetail.setEventIds(eventsConfig);
-    }
-
-    @AfterEach
-    public void tearDown() throws Exception {
-        autoCloseableMocks.close();
     }
 
     @Test
