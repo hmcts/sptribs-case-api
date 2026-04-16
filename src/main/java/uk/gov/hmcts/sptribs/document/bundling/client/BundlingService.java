@@ -2,7 +2,6 @@ package uk.gov.hmcts.sptribs.document.bundling.client;
 
 import feign.FeignException;
 import jakarta.servlet.http.HttpServletRequest;
-import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.MapUtils;
 import org.springframework.beans.factory.annotation.Autowired;
