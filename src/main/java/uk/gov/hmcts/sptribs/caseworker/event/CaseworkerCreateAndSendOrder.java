@@ -76,7 +76,7 @@ import static uk.gov.hmcts.sptribs.document.DocumentUtil.updateCategoryToDocumen
 @Component
 @RequiredArgsConstructor
 public class CaseworkerCreateAndSendOrder implements CCDConfig<CaseData, State, UserRole> {
-    
+
     private static final CcdPageConfiguration orderIssueSelect = new SendOrderOrderIssuingSelect();
     private static final CcdPageConfiguration createNewOrder = new CreateNewOrder();
     private static final CcdPageConfiguration editNewOrderContent = new EditNewOrderContentPage();
@@ -163,7 +163,8 @@ public class CaseworkerCreateAndSendOrder implements CCDConfig<CaseData, State, 
             DocumentUtil.buildAndSaveNewDocumentEntity(
                 draftOrderCIC.getTemplateGeneratedDocument(),
                 documentsRepository,
-                Long.parseLong(caseData.getCaseNumber())
+                Long.parseLong(caseData.getCaseNumber()),
+                true
             );
 
             caseData.setDraftOrderContentCIC(new DraftOrderContentCIC());
@@ -179,7 +180,8 @@ public class CaseworkerCreateAndSendOrder implements CCDConfig<CaseData, State, 
             DocumentUtil.buildAndSaveNewDocumentEntity(
                 caseData.getCicCase().getOrderFile().getFirst().getValue().getDocumentLink(),
                 documentsRepository,
-                Long.parseLong(caseData.getCaseNumber())
+                Long.parseLong(caseData.getCaseNumber()),
+                false
             );
         }
 

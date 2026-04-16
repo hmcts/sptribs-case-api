@@ -233,7 +233,8 @@ public class BundlingService {
         DocumentUtil.buildAndSaveNewDocumentEntity(
             stitchedDocument,
             documentsRepository,
-            caseNumber
+            caseNumber,
+            false
         );
 
         return stitchedDocument;

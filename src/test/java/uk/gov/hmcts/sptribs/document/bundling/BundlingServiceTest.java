@@ -29,6 +29,7 @@ import uk.gov.hmcts.sptribs.document.bundling.model.BundleFolder;
 import uk.gov.hmcts.sptribs.document.bundling.model.BundlePaginationStyle;
 import uk.gov.hmcts.sptribs.document.bundling.model.Callback;
 import uk.gov.hmcts.sptribs.document.bundling.model.MultiBundleConfig;
+import uk.gov.hmcts.sptribs.document.model.DocumentType;
 import uk.gov.hmcts.sptribs.document.model.PageNumberFormat;
 
 import java.time.Clock;
@@ -406,6 +407,7 @@ public class BundlingServiceTest {
             .url("http://url/documents/id")
             .filename("test.pdf")
             .binaryUrl("http://url/documents/id")
+            .categoryId(DocumentType.BUNDLE.getCategory())
             .build();
 
         BUNDLE_NULL_FOLDER_DOCUMENT_NULL_DOCUMENTS =

@@ -119,7 +119,8 @@ public class CaseworkerCreateDraftOrder implements CCDConfig<CaseData, State, Us
         DocumentUtil.buildAndSaveNewDocumentEntity(
             draftOrderCIC.getTemplateGeneratedDocument(),
             documentsRepository,
-            Long.parseLong(caseData.getCaseNumber())
+            Long.parseLong(caseData.getCaseNumber()),
+            true
         );
 
         caseData.setDraftOrderContentCIC(new DraftOrderContentCIC());

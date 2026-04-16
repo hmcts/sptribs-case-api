@@ -157,7 +157,8 @@ public class CaseWorkerIssueDecision implements CCDConfig<CaseData, State, UserR
             DocumentUtil.buildAndSaveNewDocumentEntity(
                 decisionDocument.getDocumentLink(),
                 documentsRepository,
-                Long.parseLong(caseData.getCaseNumber())
+                Long.parseLong(caseData.getCaseNumber()),
+                false
             );
         }
 

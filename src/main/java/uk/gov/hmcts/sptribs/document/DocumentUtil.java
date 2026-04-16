@@ -203,7 +203,10 @@ public final class DocumentUtil {
         return fileExtension != null && validExtensions.contains(fileExtension.toLowerCase(ROOT));
     }
 
-    public static void buildAndSaveNewDocumentEntity(Document document, DocumentsRepository documentsRepository, Long caseReferenceNumber) {
+    public static void buildAndSaveNewDocumentEntity(Document document,
+                                                     DocumentsRepository documentsRepository,
+                                                     Long caseReferenceNumber,
+                                                     boolean isDraft) {
         if (documentsRepository.findAllByDocumentBinaryUrl(document.getBinaryUrl()).isEmpty()) {
             documentsRepository.save(DocumentEntity.builder()
                 .caseReferenceNumber(caseReferenceNumber)
@@ -211,6 +214,7 @@ public final class DocumentUtil {
                 .documentFilename(document.getFilename())
                 .documentBinaryUrl(document.getBinaryUrl())
                 .categoryId(document.getCategoryId())
+                .isDraft(isDraft)
                 .build());
         }
     }

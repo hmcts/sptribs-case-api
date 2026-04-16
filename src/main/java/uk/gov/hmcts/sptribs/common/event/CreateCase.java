@@ -67,7 +67,7 @@ import static uk.gov.hmcts.sptribs.document.DocumentUtil.updateUploadedDocumentC
 @Slf4j
 @Component
 public class CreateCase implements CCDConfig<CaseData, State, UserRole> {
-    
+
     private static final CcdPageConfiguration categorisationDetails = new CaseCategorisationDetails();
     private static final CcdPageConfiguration cicaCaseDetails = new EditCicaCaseDetailsPage();
     private static final CcdPageConfiguration dateOfInitialCicaDecision = new DateOfInitialCicaDecision();
@@ -142,7 +142,8 @@ public class CreateCase implements CCDConfig<CaseData, State, UserRole> {
             DocumentUtil.buildAndSaveNewDocumentEntity(
                 document.getValue().getDocumentLink(),
                 documentsRepository,
-                Long.parseLong(caseData.getCaseNumber())
+                Long.parseLong(caseData.getCaseNumber()),
+                false
             );
         }
 

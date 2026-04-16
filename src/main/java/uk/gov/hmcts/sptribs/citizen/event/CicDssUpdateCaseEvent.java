@@ -166,12 +166,13 @@ public class CicDssUpdateCaseEvent implements CCDConfig<CaseData, State, UserRol
                 : Stream.concat(
                     caseData.getCicCase().getApplicantDocumentsUploaded().stream(), documentListUpdated.stream()).toList();
         caseData.getCicCase().setApplicantDocumentsUploaded(applicantDocumentsUploaded);
-        
+
         for (ListValue<CaseworkerCICDocument> document : documentListUpdated) {
             DocumentUtil.buildAndSaveNewDocumentEntity(
                 document.getValue().getDocumentLink(),
                 documentsRepository,
-                Long.parseLong(caseData.getCaseNumber())
+                Long.parseLong(caseData.getCaseNumber()),
+                false
             );
         }
         dssCaseData.setOtherInfoDocuments(new ArrayList<>());
