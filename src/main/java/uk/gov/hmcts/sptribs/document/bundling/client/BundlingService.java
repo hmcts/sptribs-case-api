@@ -20,6 +20,7 @@ import uk.gov.hmcts.sptribs.document.bundling.model.BundleFolder;
 import uk.gov.hmcts.sptribs.document.bundling.model.BundlePaginationStyle;
 import uk.gov.hmcts.sptribs.document.bundling.model.Callback;
 import uk.gov.hmcts.sptribs.document.bundling.model.MultiBundleConfig;
+import uk.gov.hmcts.sptribs.document.model.DocumentType;
 import uk.gov.hmcts.sptribs.document.model.PageNumberFormat;
 
 import java.time.Clock;
@@ -226,6 +227,7 @@ public class BundlingService {
             .url(MapUtils.getString(stitchedDocMap, DOCUMENT_URL, ""))
             .binaryUrl(MapUtils.getString(stitchedDocMap, DOCUMENT_BINARY_URL, ""))
             .filename(MapUtils.getString(stitchedDocMap, DOCUMENT_FILENAME, ""))
+            .categoryId(DocumentType.BUNDLE.getCategory())
             .build();
 
         DocumentUtil.buildAndSaveNewDocumentEntity(
