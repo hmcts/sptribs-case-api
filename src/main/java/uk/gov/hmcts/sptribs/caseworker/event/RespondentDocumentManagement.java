@@ -119,7 +119,8 @@ public class RespondentDocumentManagement implements CCDConfig<CaseData, State, 
             DocumentUtil.buildAndSaveNewDocumentEntity(
                 document.getValue().getDocumentLink(),
                 documentsRepository,
-                Long.parseLong(caseData.getCaseNumber())
+                Long.parseLong(caseData.getCaseNumber()),
+                false
             );
         }
 

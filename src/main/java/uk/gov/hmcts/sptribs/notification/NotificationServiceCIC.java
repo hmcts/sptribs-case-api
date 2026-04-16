@@ -447,7 +447,7 @@ public class NotificationServiceCIC {
             uploadedPDF.setFilename(correspondenceDocumentFilename);
             uploadedPDF.setUrl(uploadResponse.getDocuments().getFirst().links.self.href);
 
-            DocumentUtil.buildAndSaveNewDocumentEntity(uploadedPDF, documentsRepository, longCaseRef);
+            DocumentUtil.buildAndSaveNewDocumentEntity(uploadedPDF, documentsRepository, longCaseRef, false);
 
             return uploadedPDF;
         } catch (RestClientException e) {

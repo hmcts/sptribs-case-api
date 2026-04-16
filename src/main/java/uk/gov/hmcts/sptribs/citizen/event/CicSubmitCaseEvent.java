@@ -308,7 +308,8 @@ public class CicSubmitCaseEvent implements CCDConfig<CaseData, State, UserRole> 
             DocumentUtil.buildAndSaveNewDocumentEntity(
                 document.getValue().getDocumentLink(),
                 documentsRepository,
-                Long.parseLong(caseData.getCaseNumber())
+                Long.parseLong(caseData.getCaseNumber()),
+                false
             );
         }
         dssCaseData.setTribunalFormDocuments(new ArrayList<>());

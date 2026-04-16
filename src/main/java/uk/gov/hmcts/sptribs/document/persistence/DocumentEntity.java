@@ -50,6 +50,9 @@ public class DocumentEntity {
     @Column(name = "category_id", nullable = false)
     private String categoryId;
 
+    @Column(name = "is_draft", nullable = false)
+    private boolean isDraft;
+
     @Override
     public final boolean equals(Object documentEntityObject) {
         if (this == documentEntityObject) {

@@ -201,7 +201,8 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
                 DocumentUtil.buildAndSaveNewDocumentEntity(
                     document.getValue().getDocumentLink(),
                     documentsRepository,
-                    caseNumber
+                    caseNumber,
+                    false
                 );
             }
         }
