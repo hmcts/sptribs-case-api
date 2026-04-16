@@ -57,7 +57,6 @@ import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SYSTEM_UPDATE;
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE;
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE_DELETE;
 
-@AllArgsConstructor
 @Slf4j
 @Component
 public class CicDssUpdateCaseEvent implements CCDConfig<CaseData, State, UserRole> {
@@ -76,7 +75,8 @@ public class CicDssUpdateCaseEvent implements CCDConfig<CaseData, State, UserRol
     @Autowired
     private Clock clock;
 
-    private final DocumentsRepository documentsRepository;
+    @Autowired
+    private DocumentsRepository documentsRepository;
 
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {

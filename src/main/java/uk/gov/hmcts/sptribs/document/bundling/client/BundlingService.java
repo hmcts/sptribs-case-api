@@ -53,7 +53,6 @@ import static uk.gov.hmcts.sptribs.document.bundling.BundlingConstants.TITLE;
 import static uk.gov.hmcts.sptribs.document.bundling.BundlingConstants.VALUE;
 
 @Service
-@AllArgsConstructor
 @Slf4j
 @SuppressWarnings("unchecked")
 public class BundlingService {
@@ -72,7 +71,8 @@ public class BundlingService {
     @Autowired
     private Clock clock;
 
-    private final DocumentsRepository documentsRepository;
+    @Autowired
+    private DocumentsRepository documentsRepository;
 
     public List<Bundle> createBundle(Callback callback, Long caseNumber) {
         BundleResponse response;
