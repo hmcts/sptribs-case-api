@@ -17,7 +17,6 @@ import java.time.Clock;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 import static java.util.Locale.ROOT;
 import static org.apache.commons.lang3.StringUtils.substringAfterLast;
@@ -207,7 +206,6 @@ public final class DocumentUtil {
     public static void buildAndSaveNewDocumentEntity(Document document, DocumentsRepository documentsRepository, Long caseReferenceNumber) {
         if (documentsRepository.findAllByDocumentBinaryUrl(document.getBinaryUrl()).isEmpty()) {
             documentsRepository.save(DocumentEntity.builder()
-                .id(UUID.randomUUID())
                 .caseReferenceNumber(caseReferenceNumber)
                 .documentUrl(document.getUrl())
                 .documentFilename(document.getFilename())
