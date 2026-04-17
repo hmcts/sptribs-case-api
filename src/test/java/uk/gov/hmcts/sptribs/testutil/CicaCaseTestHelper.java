@@ -11,6 +11,9 @@ public class CicaCaseTestHelper {
 
     private static final ObjectMapper objectMapper = new ObjectMapper();
 
+    private CicaCaseTestHelper() {
+    }
+
     public static CicaCaseEntity createCicaCaseEntity(String ccdReference) {
         JsonNode cicaNode = objectMapper.valueToTree("X1234");
         JsonNode fullNameNode = objectMapper.valueToTree("John Smith");

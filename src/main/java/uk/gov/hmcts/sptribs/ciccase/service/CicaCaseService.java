@@ -36,7 +36,8 @@ public class CicaCaseService {
             throw new CaseNotFoundException("No case found with CCD reference: " + ccdReference);
         }
 
-        return caseDataRepository.findCase(ccdReference, user.getUserDetails().getEmail()).orElseThrow(() -> new UnauthorisedCaseAccessException(
+        return caseDataRepository.findCase(ccdReference,
+            user.getUserDetails().getEmail()).orElseThrow(() -> new UnauthorisedCaseAccessException(
             "User is not authorised to access case: " + ccdReference));
     }
 }

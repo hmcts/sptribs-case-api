@@ -281,7 +281,8 @@ class CaseEventRepositoryImplTest {
                 ArgumentMatchers.<RowMapper<RemoveEventWithPrecedingData>>any()))
                 .thenThrow(new DataAccessResourceFailureException("DB error"));
 
-            assertThatThrownBy(() -> caseEventRepositoryImpl.getRemoveEventsWithPrecedingData(REFERENCE, CASE_EVENT_ID, START_DATE, END_DATE))
+            assertThatThrownBy(() ->
+                caseEventRepositoryImpl.getRemoveEventsWithPrecedingData(REFERENCE, CASE_EVENT_ID, START_DATE, END_DATE))
                 .isInstanceOf(CaseEventRepositoryException.class)
                 .hasMessageContaining("Failed to retrieve remove events for reference=")
                 .hasCauseInstanceOf(DataAccessResourceFailureException.class);
