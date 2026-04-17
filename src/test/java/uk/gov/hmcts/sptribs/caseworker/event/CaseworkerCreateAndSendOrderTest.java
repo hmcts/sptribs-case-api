@@ -31,6 +31,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.repositories.DocumentsRepository;
 import uk.gov.hmcts.sptribs.document.model.CICDocument;
+import uk.gov.hmcts.sptribs.document.persistence.DocumentsService;
 import uk.gov.hmcts.sptribs.notification.dispatcher.NewOrderIssuedNotification;
 import uk.gov.hmcts.sptribs.notification.exception.NotificationException;
 
@@ -46,6 +47,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -83,6 +85,9 @@ class CaseworkerCreateAndSendOrderTest {
 
     @Mock
     private DocumentsRepository documentsRepository;
+
+    @Mock
+    private DocumentsService documentsService;
 
     private DateModel dateModel = DateModel.builder()
         .dueDate(LocalDate.of(2026, 1, 2))
@@ -198,7 +203,13 @@ class CaseworkerCreateAndSendOrderTest {
         details.setData(caseData);
         final var response = caseworkerCreateAndSendOrder.aboutToSubmit(details, caseDetailsBefore());
 
-        verify(documentsRepository, times(1)).save(any());
+        verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
+            any(), eq(TEST_CASE_ID), eq(false)
+        );
+
+        verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
+            eq(document), eq(TEST_CASE_ID), eq(false)
+        );
 
         assertThat(response).isNotNull();
         assertThat(response.getData()).isNotNull();
@@ -249,7 +260,13 @@ class CaseworkerCreateAndSendOrderTest {
 
         final var response = caseworkerCreateAndSendOrder.aboutToSubmit(details, caseDetailsBefore());
 
-        verify(documentsRepository, times(1)).save(any());
+        verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
+            any(), eq(TEST_CASE_ID), eq(false)
+        );
+
+        verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
+            eq(document), eq(TEST_CASE_ID), eq(false)
+        );
 
         assertThat(response).isNotNull();
         assertThat(response.getData()).isNotNull();
@@ -300,7 +317,13 @@ class CaseworkerCreateAndSendOrderTest {
         details.setData(caseData);
         final var response = caseworkerCreateAndSendOrder.aboutToSubmit(details, caseDetailsBefore());
 
-        verify(documentsRepository, times(1)).save(any());
+        verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
+            any(), eq(TEST_CASE_ID), eq(false)
+        );
+
+        verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
+            eq(document), eq(TEST_CASE_ID), eq(false)
+        );
 
         assertThat(response).isNotNull();
         assertThat(response.getData()).isNotNull();
@@ -367,7 +390,13 @@ class CaseworkerCreateAndSendOrderTest {
         details.setData(caseData);
         final var response = caseworkerCreateAndSendOrder.aboutToSubmit(details, caseDetailsBefore());
 
-        verify(documentsRepository, times(1)).save(any());
+        verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
+            any(), eq(TEST_CASE_ID), eq(false)
+        );
+
+        verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
+            eq(document), eq(TEST_CASE_ID), eq(false)
+        );
 
         assertThat(response).isNotNull();
         assertThat(response.getData()).isNotNull();
@@ -450,7 +479,13 @@ class CaseworkerCreateAndSendOrderTest {
 
         final var response = caseworkerCreateAndSendOrder.aboutToSubmit(details, caseDetailsBefore());
 
-        verify(documentsRepository, times(1)).save(any());
+        verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
+            any(), eq(TEST_CASE_ID), eq(false)
+        );
+
+        verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
+            eq(document), eq(TEST_CASE_ID), eq(false)
+        );
 
         assertThat(response).isNotNull();
         assertThat(response.getData()).isNotNull();

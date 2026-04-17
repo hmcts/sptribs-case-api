@@ -23,6 +23,7 @@ import uk.gov.hmcts.sptribs.common.service.SubmissionService;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocumentUpload;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
+import uk.gov.hmcts.sptribs.document.persistence.DocumentsService;
 import uk.gov.hmcts.sptribs.notification.dispatcher.ApplicationReceivedNotification;
 import uk.gov.hmcts.sptribs.notification.exception.NotificationException;
 
@@ -33,7 +34,8 @@ import java.util.Set;
 
 import static java.util.Collections.emptySet;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -66,6 +68,9 @@ class CreateCaseTest {
     @Mock
     private DocumentsRepository documentsRepository;
 
+    @Mock
+    private DocumentsService documentsService;
+
     @InjectMocks
     private CreateCase createCase;
 
@@ -94,7 +99,7 @@ class CreateCaseTest {
         AboutToStartOrSubmitResponse<CaseData, State> result =
             createCase.aboutToSubmit(caseDetails, caseDetails);
 
-        verifyNoInteractions(documentsRepository);
+        verifyNoInteractions(documentsService);
 
         assertThat(result.getState()).isEqualTo(Submitted);
         assertThat(result.getData().getSecurityClass()).isEqualTo(PUBLIC);
@@ -166,7 +171,17 @@ class CreateCaseTest {
         AboutToStartOrSubmitResponse<CaseData, State> result =
             createCase.aboutToSubmit(caseDetails, caseDetails);
 
-        verify(documentsRepository, times(2)).save(any());
+        verify(documentsService, times(2)).buildAndSaveNewDocumentEntity(
+            any(), eq(TEST_CASE_ID), eq(false)
+        );
+
+        verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
+            eq(testDocument1), eq(TEST_CASE_ID), eq(false)
+        );
+
+        verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
+            eq(testDocument2), eq(TEST_CASE_ID), eq(false)
+        );
 
         assertThat(result.getData().getCicCase().getApplicantDocumentsUploaded()).hasSize(2);
         assertThat(result.getData().getCicCase().getApplicantDocumentsUploaded()).isEqualTo(expectedDocuments);

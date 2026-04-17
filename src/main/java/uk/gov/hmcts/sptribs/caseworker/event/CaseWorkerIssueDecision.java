@@ -26,11 +26,10 @@ import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
-import uk.gov.hmcts.sptribs.common.repositories.DocumentsRepository;
 import uk.gov.hmcts.sptribs.document.CaseDataDocumentService;
-import uk.gov.hmcts.sptribs.document.DocumentUtil;
 import uk.gov.hmcts.sptribs.document.content.DecisionTemplateContent;
 import uk.gov.hmcts.sptribs.document.model.CICDocument;
+import uk.gov.hmcts.sptribs.document.persistence.DocumentsService;
 import uk.gov.hmcts.sptribs.notification.dispatcher.DecisionIssuedNotification;
 
 import java.time.LocalDateTime;
@@ -77,7 +76,7 @@ public class CaseWorkerIssueDecision implements CCDConfig<CaseData, State, UserR
     private HttpServletRequest request;
 
     @Autowired
-    private DocumentsRepository documentsRepository;
+    private DocumentsService documentsService;
 
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
@@ -153,9 +152,8 @@ public class CaseWorkerIssueDecision implements CCDConfig<CaseData, State, UserR
 
         if (decisionDocument != null && decisionDocument.getDocumentLink() != null) {
             decisionDocument.getDocumentLink().setCategoryId("TD");
-            DocumentUtil.buildAndSaveNewDocumentEntity(
+            documentsService.buildAndSaveNewDocumentEntity(
                 decisionDocument.getDocumentLink(),
-                documentsRepository,
                 Long.parseLong(caseData.getCaseNumber()),
                 false
             );

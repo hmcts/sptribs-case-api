@@ -19,11 +19,10 @@ import uk.gov.hmcts.sptribs.ciccase.model.DssCaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.DssMessage;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
-import uk.gov.hmcts.sptribs.common.repositories.DocumentsRepository;
-import uk.gov.hmcts.sptribs.document.DocumentUtil;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.document.model.CitizenCICDocument;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
+import uk.gov.hmcts.sptribs.document.persistence.DocumentsService;
 import uk.gov.hmcts.sptribs.idam.IdamService;
 import uk.gov.hmcts.sptribs.notification.dispatcher.DssUpdateCaseSubmissionNotification;
 
@@ -75,7 +74,7 @@ public class CicDssUpdateCaseEvent implements CCDConfig<CaseData, State, UserRol
     private Clock clock;
 
     @Autowired
-    private DocumentsRepository documentsRepository;
+    private DocumentsService documentsService;
 
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
@@ -167,9 +166,8 @@ public class CicDssUpdateCaseEvent implements CCDConfig<CaseData, State, UserRol
         caseData.getCicCase().setApplicantDocumentsUploaded(applicantDocumentsUploaded);
 
         for (ListValue<CaseworkerCICDocument> document : documentListUpdated) {
-            DocumentUtil.buildAndSaveNewDocumentEntity(
+            documentsService.buildAndSaveNewDocumentEntity(
                 document.getValue().getDocumentLink(),
-                documentsRepository,
                 Long.parseLong(caseData.getCaseNumber()),
                 false
             );

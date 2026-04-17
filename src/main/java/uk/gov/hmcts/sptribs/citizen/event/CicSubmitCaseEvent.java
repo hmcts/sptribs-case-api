@@ -31,11 +31,10 @@ import uk.gov.hmcts.sptribs.ciccase.model.SubjectCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.CcdCaseType;
 import uk.gov.hmcts.sptribs.common.config.AppsConfig;
-import uk.gov.hmcts.sptribs.common.repositories.DocumentsRepository;
-import uk.gov.hmcts.sptribs.document.DocumentUtil;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.document.model.CitizenCICDocument;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
+import uk.gov.hmcts.sptribs.document.persistence.DocumentsService;
 import uk.gov.hmcts.sptribs.idam.IdamService;
 import uk.gov.hmcts.sptribs.util.AppsUtil;
 
@@ -75,17 +74,17 @@ public class CicSubmitCaseEvent implements CCDConfig<CaseData, State, UserRole> 
     private final IdamService idamService;
     private final AppsConfig appsConfig;
     private final DssApplicationReceivedNotification dssApplicationReceivedNotification;
-    private final DocumentsRepository documentsRepository;
+    private final DocumentsService documentsService;
 
     @Autowired
     public CicSubmitCaseEvent(HttpServletRequest request, IdamService idamService, AppsConfig appsConfig,
                               DssApplicationReceivedNotification dssApplicationReceivedNotification,
-                              DocumentsRepository documentsRepository) {
+                              DocumentsService documentsService) {
         this.request = request;
         this.idamService = idamService;
         this.appsConfig = appsConfig;
         this.dssApplicationReceivedNotification = dssApplicationReceivedNotification;
-        this.documentsRepository = documentsRepository;
+        this.documentsService = documentsService;
     }
 
     @Override
@@ -306,9 +305,8 @@ public class CicSubmitCaseEvent implements CCDConfig<CaseData, State, UserRole> 
 
         caseData.getCicCase().setApplicantDocumentsUploaded(applicantDocs);
         for (ListValue<CaseworkerCICDocument> document : applicantDocs) {
-            DocumentUtil.buildAndSaveNewDocumentEntity(
+            documentsService.buildAndSaveNewDocumentEntity(
                 document.getValue().getDocumentLink(),
-                documentsRepository,
                 Long.parseLong(caseData.getCaseNumber()),
                 false
             );

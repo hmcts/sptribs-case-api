@@ -21,6 +21,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.ciccase.model.access.Permissions;
 import uk.gov.hmcts.sptribs.common.repositories.DocumentsRepository;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
+import uk.gov.hmcts.sptribs.document.persistence.DocumentsService;
 import uk.gov.hmcts.sptribs.idam.IdamService;
 import uk.gov.hmcts.sptribs.notification.dispatcher.DssUpdateCaseSubmissionNotification;
 import uk.gov.hmcts.sptribs.notification.exception.NotificationException;
@@ -32,6 +33,7 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -60,6 +62,9 @@ class CicDssUpdateCaseEventTest {
 
     @Mock
     private DocumentsRepository documentsRepository;
+
+    @Mock
+    private DocumentsService documentsService;
 
     @InjectMocks
     private CicDssUpdateCaseEvent cicDssUpdateCaseEvent;
@@ -125,8 +130,6 @@ class CicDssUpdateCaseEventTest {
         AboutToStartOrSubmitResponse<CaseData, State> response =
             cicDssUpdateCaseEvent.aboutToSubmit(details, details);
 
-        verify(documentsRepository, times(2)).save(any());
-
         assertThat(response.getData().getCicCase().getApplicantDocumentsUploaded()).isNotEmpty();
         assertThat(response.getData().getCicCase().getApplicantDocumentsUploaded()).hasSize(3);
         assertThat(response.getData().getCicCase().getApplicantDocumentsUploaded().get(1).getValue().getDate())
@@ -137,6 +140,20 @@ class CicDssUpdateCaseEventTest {
         assertThat(response.getData().getMessages()).hasSize(2);
         assertThat(response.getData().getDssCaseData().getOtherInfoDocuments()).isEmpty();
         assertThat(response.getData().getDssCaseData().getAdditionalInformation()).isNull();
+
+        verify(documentsService, times(2)).buildAndSaveNewDocumentEntity(
+            any(), eq(TEST_CASE_ID), eq(false)
+        );
+        Document expectedDoc1 = getDssCaseData().getOtherInfoDocuments().getFirst().getValue().getDocumentLink();
+        expectedDoc1.setCategoryId("DSS");
+        Document expectedDoc2 = getDssCaseData().getOtherInfoDocuments().get(1).getValue().getDocumentLink();
+        expectedDoc2.setCategoryId("DSS");
+        verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
+            eq(expectedDoc1), eq(TEST_CASE_ID), eq(false)
+        );
+        verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
+            eq(expectedDoc2), eq(TEST_CASE_ID), eq(false)
+        );
     }
 
     @Test
@@ -172,8 +189,6 @@ class CicDssUpdateCaseEventTest {
         AboutToStartOrSubmitResponse<CaseData, State> response =
             cicDssUpdateCaseEvent.aboutToSubmit(details, details);
 
-        verify(documentsRepository, times(2)).save(any());
-
         assertThat(response.getData().getCicCase().getApplicantDocumentsUploaded()).isNotEmpty();
         assertThat(response.getData().getCicCase().getApplicantDocumentsUploaded()).hasSize(3);
         assertThat(response.getData().getCicCase().getApplicantDocumentsUploaded().get(1).getValue().getDate())
@@ -184,6 +199,20 @@ class CicDssUpdateCaseEventTest {
         assertThat(response.getData().getMessages()).hasSize(1);
         assertThat(response.getData().getDssCaseData().getOtherInfoDocuments()).isEmpty();
         assertThat(response.getData().getDssCaseData().getAdditionalInformation()).isNull();
+
+        verify(documentsService, times(2)).buildAndSaveNewDocumentEntity(
+            any(), eq(TEST_CASE_ID), eq(false)
+        );
+        Document expectedDoc1 = getDssCaseData().getOtherInfoDocuments().getFirst().getValue().getDocumentLink();
+        expectedDoc1.setCategoryId("DSS");
+        Document expectedDoc2 = getDssCaseData().getOtherInfoDocuments().get(1).getValue().getDocumentLink();
+        expectedDoc2.setCategoryId("DSS");
+        verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
+            eq(expectedDoc1), eq(TEST_CASE_ID), eq(false)
+        );
+        verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
+            eq(expectedDoc2), eq(TEST_CASE_ID), eq(false)
+        );
     }
 
     @Test
@@ -219,8 +248,6 @@ class CicDssUpdateCaseEventTest {
         AboutToStartOrSubmitResponse<CaseData, State> response =
             cicDssUpdateCaseEvent.aboutToSubmit(details, details);
 
-        verify(documentsRepository, times(2)).save(any());
-
         assertThat(response.getData().getCicCase().getApplicantDocumentsUploaded()).isNotEmpty();
         assertThat(response.getData().getCicCase().getApplicantDocumentsUploaded()).hasSize(3);
         assertThat(response.getData().getCicCase().getApplicantDocumentsUploaded().get(1).getValue().getDate())
@@ -231,6 +258,20 @@ class CicDssUpdateCaseEventTest {
         assertThat(response.getData().getMessages()).hasSize(1);
         assertThat(response.getData().getDssCaseData().getOtherInfoDocuments()).isEmpty();
         assertThat(response.getData().getDssCaseData().getAdditionalInformation()).isNull();
+
+        verify(documentsService, times(2)).buildAndSaveNewDocumentEntity(
+            any(), eq(TEST_CASE_ID), eq(false)
+        );
+        Document expectedDoc1 = getDssCaseData().getOtherInfoDocuments().getFirst().getValue().getDocumentLink();
+        expectedDoc1.setCategoryId("DSS");
+        Document expectedDoc2 = getDssCaseData().getOtherInfoDocuments().get(1).getValue().getDocumentLink();
+        expectedDoc2.setCategoryId("DSS");
+        verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
+            eq(expectedDoc1), eq(TEST_CASE_ID), eq(false)
+        );
+        verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
+            eq(expectedDoc2), eq(TEST_CASE_ID), eq(false)
+        );
     }
 
     @Test
@@ -255,7 +296,9 @@ class CicDssUpdateCaseEventTest {
         AboutToStartOrSubmitResponse<CaseData, State> response =
             cicDssUpdateCaseEvent.aboutToSubmit(details, details);
 
-        verify(documentsRepository, times(2)).save(any());
+        verify(documentsService, times(2)).buildAndSaveNewDocumentEntity(
+            any(), eq(TEST_CASE_ID), eq(false)
+        );
 
         assertThat(response.getData().getCicCase().getApplicantDocumentsUploaded()).isNotEmpty();
         assertThat(response.getData().getCicCase().getApplicantDocumentsUploaded()).hasSize(2);
@@ -267,6 +310,18 @@ class CicDssUpdateCaseEventTest {
         assertThat(response.getData().getMessages()).hasSize(1);
         assertThat(response.getData().getDssCaseData().getOtherInfoDocuments()).isEmpty();
         assertThat(response.getData().getDssCaseData().getAdditionalInformation()).isNull();
+
+
+        Document expectedDoc1 = getDssCaseData().getOtherInfoDocuments().getFirst().getValue().getDocumentLink();
+        expectedDoc1.setCategoryId("DSS");
+        Document expectedDoc2 = getDssCaseData().getOtherInfoDocuments().get(1).getValue().getDocumentLink();
+        expectedDoc2.setCategoryId("DSS");
+        verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
+            eq(expectedDoc1), eq(TEST_CASE_ID), eq(false)
+        );
+        verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
+            eq(expectedDoc2), eq(TEST_CASE_ID), eq(false)
+        );
     }
 
     @Test

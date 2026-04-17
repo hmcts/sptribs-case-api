@@ -23,6 +23,7 @@ import uk.gov.hmcts.sptribs.common.repositories.DocumentsRepository;
 import uk.gov.hmcts.sptribs.common.service.CcdSupplementaryDataService;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
+import uk.gov.hmcts.sptribs.document.persistence.DocumentsService;
 import uk.gov.hmcts.sptribs.services.cdam.CaseDocumentClientApi;
 
 import java.util.ArrayList;
@@ -69,6 +70,9 @@ public class CreateTestCaseTest {
 
     @Mock
     private DocumentsRepository documentsRepository;
+
+    @Mock
+    private DocumentsService documentsService;
 
     @Test
     void shouldAddConfigurationToConfigBuilder() {
@@ -130,7 +134,9 @@ public class CreateTestCaseTest {
 
         AboutToStartOrSubmitResponse<CaseData, State> response = createTestCase.aboutToSubmit(caseDetails, caseDetails);
 
-        verify(documentsRepository, times(1)).save(any());
+        verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
+            eq(expectedUploadDocument), eq(TEST_CASE_ID), eq(false)
+        );
 
         assertThat(response.getState()).isEqualTo(CaseManagement);
         assertThat(response.getData().getHyphenatedCaseRef()).isEqualTo(TEST_CASE_ID_HYPHENATED);
