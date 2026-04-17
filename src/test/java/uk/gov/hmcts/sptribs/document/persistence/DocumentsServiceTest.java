@@ -5,9 +5,14 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.dao.DataAccessException;
+import org.springframework.dao.DataAccessResourceFailureException;
+import org.springframework.dao.TransientDataAccessException;
 import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.sptribs.common.repositories.DocumentsRepository;
+import uk.gov.hmcts.sptribs.common.repositories.exception.CaseEventRepositoryException;
 
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -74,5 +79,16 @@ public class DocumentsServiceTest {
         verify(documentsRepository, times(1))
             .findAllByDocumentBinaryUrl(EXPECTED_TEST_DOCUMENT_ENTITY_NON_DRAFT.getDocumentBinaryUrl());
         verify(documentsRepository, times(0)).save(EXPECTED_TEST_DOCUMENT_ENTITY_NON_DRAFT);
+    }
+
+    @Test
+    public void shouldThrowRuntimeExceptionWhenDataAccessExceptionCaughtInBuildAndSaveNewDraftDocumentEntity() {
+        when(documentsRepository.findAllByDocumentBinaryUrl(TEST_DOCUMENT.getBinaryUrl()))
+            .thenThrow(new DataAccessResourceFailureException("DB error"));
+
+        assertThatThrownBy(() -> documentsService.buildAndSaveNewDocumentEntity(TEST_DOCUMENT, TEST_CASE_ID, false))
+            .isInstanceOf(RuntimeException.class)
+            .hasMessageContaining("Error saving document entity to database")
+            .hasCauseInstanceOf(DataAccessException.class);
     }
 }
