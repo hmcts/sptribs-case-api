@@ -113,7 +113,7 @@ public class CaseworkerCreateBundleFT extends FunctionalTestSuite {
             .isString()
             .isEqualTo("""
                 # Bundle creation failed\s
-                ## A notification could not be sent to: Representative\s
+                ## A notification could not be sent to: Respondent\s
                 ## Please resend the notification.""");
     }
 }

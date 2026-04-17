@@ -5,5 +5,8 @@
   "cicCaseFullName": "Test Tester",
   "cicCaseEmail": null,
   "cicCaseContactPreferenceType": "Email",
+  "cicCaseRespondentName": "Appeals team",
+  "cicCaseRespondentOrganisation": "CICA",
+  "cicCaseRespondentEmail": "appeals.team@cica",
   "hyphenatedCaseRef": "1234-5678-9012-3456"
 }

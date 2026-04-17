@@ -1,9 +1,6 @@
 {
   "subjectRepFullName": "Subject Name",
   "cicCaseSchemeCic": "Preference",
-  "cicCaseRespondentName": "Appeals team",
-  "cicCaseRespondentOrganisation": "CICA",
-  "cicCaseRespondentEmail": "appeals.team@cica",
   "cicCaseApplicantDocumentsUploaded": [
     {
       "id": "150dc5ce-cc10-4edf-9a0b-7dbc456f7ced",
