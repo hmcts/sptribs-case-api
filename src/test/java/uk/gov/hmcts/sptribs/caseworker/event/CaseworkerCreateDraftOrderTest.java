@@ -24,6 +24,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.ciccase.model.access.Permissions;
 import uk.gov.hmcts.sptribs.common.repositories.DocumentsRepository;
+import uk.gov.hmcts.sptribs.document.persistence.DocumentsService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,6 +32,7 @@ import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.DOUBLE_HYPHEN;
@@ -53,6 +55,9 @@ class CaseworkerCreateDraftOrderTest {
 
     @Mock
     private DocumentsRepository documentsRepository;
+
+    @Mock
+    private DocumentsService documentsService;
 
     @Test
     void shouldAddPublishToCamundaWhenWAIsEnabled() {
@@ -110,7 +115,13 @@ class CaseworkerCreateDraftOrderTest {
         SubmittedCallbackResponse draftCreatedResponse = caseworkerCreateDraftOrder.submitted(updatedCaseDetails, beforeDetails);
 
         //  Then
-        verify(documentsRepository, times(1)).save(any());
+        verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
+            any(), eq(TEST_CASE_ID), eq(true)
+        );
+
+        verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
+            eq(expectedDraftOrderCIC.getTemplateGeneratedDocument()), eq(TEST_CASE_ID), eq(true)
+        );
 
         assertThat(response).isNotNull();
         CaseData responseData = response.getData();
@@ -182,8 +193,15 @@ class CaseworkerCreateDraftOrderTest {
         caseData.setDraftOrderContentCIC(orderContentCIC);
         AboutToStartOrSubmitResponse<CaseData, State> response2 =
             caseworkerCreateDraftOrder.aboutToSubmit(updatedCaseDetails, beforeDetails);
+
         //  Then
-        verify(documentsRepository, times(2)).save(any());
+        verify(documentsService, times(2)).buildAndSaveNewDocumentEntity(
+            any(), eq(TEST_CASE_ID), eq(true)
+        );
+
+        verify(documentsService, times(2)).buildAndSaveNewDocumentEntity(
+            eq(Document.builder().filename("a--b--02-02-2002 11:11:11.pdf").build()), eq(TEST_CASE_ID), eq(true)
+        );
 
         assertThat(response2).isNotNull();
     }
@@ -225,7 +243,13 @@ class CaseworkerCreateDraftOrderTest {
         final AboutToStartOrSubmitResponse<CaseData, State> response =
                 caseworkerCreateDraftOrder.aboutToSubmit(updatedCaseDetails, beforeDetails);
 
-        verify(documentsRepository, times(1)).save(any());
+        verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
+            any(), eq(TEST_CASE_ID), eq(true)
+        );
+
+        verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
+            eq(Document.builder().filename("a--b--02-02-2002 11:11:11.pdf").build()), eq(TEST_CASE_ID), eq(true)
+        );
 
         assertThat(response).isNotNull();
         assertThat(response.getData()).isNotNull();

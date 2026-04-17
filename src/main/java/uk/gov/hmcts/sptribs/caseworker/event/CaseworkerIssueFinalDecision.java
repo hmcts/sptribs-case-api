@@ -26,11 +26,10 @@ import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
-import uk.gov.hmcts.sptribs.common.repositories.DocumentsRepository;
 import uk.gov.hmcts.sptribs.document.CaseDataDocumentService;
-import uk.gov.hmcts.sptribs.document.DocumentUtil;
 import uk.gov.hmcts.sptribs.document.content.FinalDecisionTemplateContent;
 import uk.gov.hmcts.sptribs.document.model.CICDocument;
+import uk.gov.hmcts.sptribs.document.persistence.DocumentsService;
 import uk.gov.hmcts.sptribs.notification.dispatcher.CaseFinalDecisionIssuedNotification;
 
 import java.time.LocalDateTime;
@@ -87,7 +86,7 @@ public class CaseworkerIssueFinalDecision implements CCDConfig<CaseData, State, 
     private CaseFinalDecisionIssuedNotification caseFinalDecisionIssuedNotification;
 
     @Autowired
-    private DocumentsRepository documentsRepository;
+    private DocumentsService documentsService;
 
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
@@ -207,9 +206,8 @@ public class CaseworkerIssueFinalDecision implements CCDConfig<CaseData, State, 
 
         if (finalDecisionDocument != null) {
             finalDecisionDocument.getDocumentLink().setCategoryId("TD");
-            DocumentUtil.buildAndSaveNewDocumentEntity(
+            documentsService.buildAndSaveNewDocumentEntity(
                 finalDecisionDocument.getDocumentLink(),
-                documentsRepository,
                 Long.parseLong(caseData.getCaseNumber()),
                 false
             );

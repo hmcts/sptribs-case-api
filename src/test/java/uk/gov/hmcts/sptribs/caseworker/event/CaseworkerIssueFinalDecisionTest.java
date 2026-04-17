@@ -31,12 +31,14 @@ import uk.gov.hmcts.sptribs.document.DocumentConstants;
 import uk.gov.hmcts.sptribs.document.content.DocmosisTemplateConstants;
 import uk.gov.hmcts.sptribs.document.content.FinalDecisionTemplateContent;
 import uk.gov.hmcts.sptribs.document.model.CICDocument;
+import uk.gov.hmcts.sptribs.document.persistence.DocumentsService;
 import uk.gov.hmcts.sptribs.notification.dispatcher.CaseFinalDecisionIssuedNotification;
 
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -65,6 +67,9 @@ class CaseworkerIssueFinalDecisionTest {
 
     @Mock
     private DocumentsRepository documentsRepository;
+
+    @Mock
+    private DocumentsService documentsService;
 
     @InjectMocks
     private IssueFinalDecisionSelectTemplate issueFinalDecisionSelectTemplate;
@@ -152,7 +157,12 @@ class CaseworkerIssueFinalDecisionTest {
         AboutToStartOrSubmitResponse<CaseData, State> response = issueFinalDecision.aboutToSubmit(details, beforeDetails);
 
         //Then
-        verify(documentsRepository, times(1)).save(any());
+        verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
+            any(), eq(TEST_CASE_ID), eq(false)
+        );
+        verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
+            eq(document.getDocumentLink()), eq(TEST_CASE_ID), eq(false)
+        );
 
         assertThat(response.getState())
             .isEqualTo(CaseClosed);
@@ -177,7 +187,7 @@ class CaseworkerIssueFinalDecisionTest {
         AboutToStartOrSubmitResponse<CaseData, State> response = issueFinalDecision.uploadDocumentMidEvent(caseDetails, caseDetails);
 
         //Then
-        verifyNoInteractions(documentsRepository);
+        verifyNoInteractions(documentsService);
 
         assertThat(response.getErrors()).contains(DocumentConstants.DOCUMENT_VALIDATION_MESSAGE);
     }

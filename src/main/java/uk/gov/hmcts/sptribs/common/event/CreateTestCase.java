@@ -30,11 +30,10 @@ import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.common.config.AppsConfig;
-import uk.gov.hmcts.sptribs.common.repositories.DocumentsRepository;
 import uk.gov.hmcts.sptribs.common.service.CcdSupplementaryDataService;
-import uk.gov.hmcts.sptribs.document.DocumentUtil;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
+import uk.gov.hmcts.sptribs.document.persistence.DocumentsService;
 import uk.gov.hmcts.sptribs.services.cdam.CaseDocumentClientApi;
 
 import java.io.IOException;
@@ -74,7 +73,7 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
     private final HttpServletRequest httpServletRequest;
     private final CaseDocumentClientApi caseDocumentClientApi;
 
-    private final DocumentsRepository documentsRepository;
+    private final DocumentsService documentsService;
 
     @Autowired
     public CreateTestCase(ObjectMapper objectMapper,
@@ -83,14 +82,14 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
                           AppsConfig appsConfig,
                           AuthTokenGenerator authTokenGenerator,
                           HttpServletRequest httpServletRequest,
-                          DocumentsRepository documentsRepository) {
+                          DocumentsService documentsService) {
         this.objectMapper = objectMapper;
         this.ccdSupplementaryDataService = ccdSupplementaryDataService;
         this.caseDocumentClientApi = caseDocumentClientApi;
         this.appsConfig = appsConfig;
         this.authTokenGenerator = authTokenGenerator;
         this.httpServletRequest = httpServletRequest;
-        this.documentsRepository = documentsRepository;
+        this.documentsService = documentsService;
     }
 
     @Override
@@ -198,9 +197,8 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
             caseData.getCicCase().setApplicantDocumentsUploaded(List.of(testDocumentListValue));
 
             for (ListValue<CaseworkerCICDocument> document : List.of(testDocumentListValue)) {
-                DocumentUtil.buildAndSaveNewDocumentEntity(
+                documentsService.buildAndSaveNewDocumentEntity(
                     document.getValue().getDocumentLink(),
-                    documentsRepository,
                     caseNumber,
                     false
                 );

@@ -11,8 +11,6 @@ import org.springframework.util.ObjectUtils;
 import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
-import uk.gov.hmcts.sptribs.common.repositories.DocumentsRepository;
-import uk.gov.hmcts.sptribs.document.DocumentUtil;
 import uk.gov.hmcts.sptribs.document.bundling.model.Bundle;
 import uk.gov.hmcts.sptribs.document.bundling.model.BundleDocument;
 import uk.gov.hmcts.sptribs.document.bundling.model.BundleFolder;
@@ -21,6 +19,7 @@ import uk.gov.hmcts.sptribs.document.bundling.model.Callback;
 import uk.gov.hmcts.sptribs.document.bundling.model.MultiBundleConfig;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
 import uk.gov.hmcts.sptribs.document.model.PageNumberFormat;
+import uk.gov.hmcts.sptribs.document.persistence.DocumentsService;
 
 import java.time.Clock;
 import java.time.LocalDateTime;
@@ -71,7 +70,7 @@ public class BundlingService {
     private Clock clock;
 
     @Autowired
-    private DocumentsRepository documentsRepository;
+    private DocumentsService documentsService;
 
     public List<Bundle> createBundle(Callback callback, Long caseNumber) {
         BundleResponse response;
@@ -229,9 +228,8 @@ public class BundlingService {
             .categoryId(DocumentType.BUNDLE.getCategory())
             .build();
 
-        DocumentUtil.buildAndSaveNewDocumentEntity(
+        documentsService.buildAndSaveNewDocumentEntity(
             stitchedDocument,
-            documentsRepository,
             caseNumber,
             false
         );

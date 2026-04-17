@@ -6,12 +6,10 @@ import org.apache.commons.lang3.ObjectUtils;
 import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
-import uk.gov.hmcts.sptribs.common.repositories.DocumentsRepository;
 import uk.gov.hmcts.sptribs.document.model.CICDocument;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocumentUpload;
 import uk.gov.hmcts.sptribs.document.model.DocumentInfo;
-import uk.gov.hmcts.sptribs.document.persistence.DocumentEntity;
 
 import java.time.Clock;
 import java.time.LocalDate;
@@ -201,21 +199,5 @@ public final class DocumentUtil {
     public static boolean isValidDocument(String fileName, String validExtensions) {
         String fileExtension = substringAfterLast(fileName, ".");
         return fileExtension != null && validExtensions.contains(fileExtension.toLowerCase(ROOT));
-    }
-
-    public static void buildAndSaveNewDocumentEntity(Document document,
-                                                     DocumentsRepository documentsRepository,
-                                                     Long caseReferenceNumber,
-                                                     boolean isDraft) {
-        if (documentsRepository.findAllByDocumentBinaryUrl(document.getBinaryUrl()).isEmpty()) {
-            documentsRepository.save(DocumentEntity.builder()
-                .caseReferenceNumber(caseReferenceNumber)
-                .documentUrl(document.getUrl())
-                .documentFilename(document.getFilename())
-                .documentBinaryUrl(document.getBinaryUrl())
-                .categoryId(document.getCategoryId())
-                .isDraft(isDraft)
-                .build());
-        }
     }
 }

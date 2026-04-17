@@ -23,6 +23,7 @@ import uk.gov.hmcts.sptribs.common.repositories.CorrespondenceRepository;
 import uk.gov.hmcts.sptribs.common.repositories.DocumentsRepository;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
+import uk.gov.hmcts.sptribs.document.persistence.DocumentsService;
 import uk.gov.hmcts.sptribs.idam.IdamService;
 import uk.gov.hmcts.sptribs.notification.exception.NotificationException;
 import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
@@ -88,6 +89,9 @@ public class NotificationServiceCICTest {
 
     @Mock
     private DocumentsRepository documentsRepository;
+
+    @Mock
+    private DocumentsService documentsService;
 
     @Mock
     private NotificationClient notificationClient;
@@ -169,7 +173,9 @@ public class NotificationServiceCICTest {
         verify(sendEmailResponse, times(3)).getNotificationId();
         verify(sendEmailResponse, times(2)).getReference();
         verify(correspondenceRepository, times(1)).save(any());
-        verify(documentsRepository, times(1)).save(any());
+        verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
+            any(), eq(TEST_CASE_ID), eq(false)
+        );
     }
 
     @Test
@@ -752,7 +758,9 @@ public class NotificationServiceCICTest {
         verify(sendEmailResponse, times(3)).getNotificationId();
         verify(sendEmailResponse, times(2)).getReference();
         verify(correspondenceRepository, times(1)).save(any());
-        verify(documentsRepository, times(1)).save(any());
+        verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
+            any(), eq(TEST_CASE_ID), eq(false)
+        );
     }
 
     @Test
@@ -829,7 +837,9 @@ public class NotificationServiceCICTest {
         verify(sendEmailResponse, times(3)).getNotificationId();
         verify(sendEmailResponse, times(2)).getReference();
         verify(correspondenceRepository, times(1)).save(any());
-        verify(documentsRepository, times(1)).save(any());
+        verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
+            any(), eq(TEST_CASE_ID), eq(false)
+        );
     }
 
     @Test
@@ -954,7 +964,9 @@ public class NotificationServiceCICTest {
         verify(sendEmailResponse, times(3)).getNotificationId();
         verify(sendEmailResponse, times(2)).getReference();
         verify(correspondenceRepository, times(1)).save(any());
-        verify(documentsRepository, times(1)).save(any());
+        verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
+            any(), eq(TEST_CASE_ID), eq(false)
+        );
     }
 
     @Test

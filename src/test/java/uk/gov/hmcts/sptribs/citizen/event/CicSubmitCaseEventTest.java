@@ -29,6 +29,7 @@ import uk.gov.hmcts.sptribs.common.repositories.DocumentsRepository;
 import uk.gov.hmcts.sptribs.constants.CommonConstants;
 import uk.gov.hmcts.sptribs.document.model.CitizenCICDocument;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
+import uk.gov.hmcts.sptribs.document.persistence.DocumentsService;
 import uk.gov.hmcts.sptribs.idam.IdamService;
 import uk.gov.hmcts.sptribs.notification.exception.NotificationException;
 import uk.gov.hmcts.sptribs.testutil.TestDataHelper;
@@ -41,6 +42,7 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -86,6 +88,9 @@ class CicSubmitCaseEventTest {
 
     @Mock
     private DocumentsRepository documentsRepository;
+
+    @Mock
+    private DocumentsService documentsService;
 
     @BeforeEach
     public void setUp() {
@@ -187,7 +192,9 @@ class CicSubmitCaseEventTest {
         final AboutToStartOrSubmitResponse<CaseData, State> response =
             cicSubmitCaseEvent.aboutToSubmit(updatedCaseDetails, beforeDetails);
 
-        verify(documentsRepository, times(4)).save(any());
+        verify(documentsService, times(4)).buildAndSaveNewDocumentEntity(
+            eq(genericTestDocument), eq(TEST_CASE_ID), eq(false)
+        );
 
         assertThat(response.getData().getCicCase().getApplicantDocumentsUploaded().getFirst().getValue().getDocumentEmailContent())
             .isEqualTo(genericTestDocumentRelevance1);
@@ -232,7 +239,9 @@ class CicSubmitCaseEventTest {
         final AboutToStartOrSubmitResponse<CaseData, State> response =
             cicSubmitCaseEvent.aboutToSubmit(updatedCaseDetails, beforeDetails);
 
-        verify(documentsRepository, times(3)).save(any());
+        verify(documentsService, times(3)).buildAndSaveNewDocumentEntity(
+            eq(dssDoc.getDocumentLink()), eq(TEST_CASE_ID), eq(false)
+        );
 
         assertThat(response).isNotNull();
         assertThat(response.getData().getDssCaseData().getOtherInfoDocuments()).isEmpty();
