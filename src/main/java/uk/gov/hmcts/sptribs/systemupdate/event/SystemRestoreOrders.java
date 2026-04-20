@@ -28,7 +28,7 @@ public class SystemRestoreOrders implements CCDConfig<CaseData, State, UserRole>
 
     private static final LocalDate END_TO_DATE = LocalDate.of(2026, 3, 6);
 
-    private final CaseDataRestoreService ordersListRestoreService;
+    private final CaseDataRestoreService caseDataRestoreService;
 
     @Override
     public void configure(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
@@ -46,7 +46,7 @@ public class SystemRestoreOrders implements CCDConfig<CaseData, State, UserRole>
         CaseData caseData = caseDetails.getData();
         Long reference = caseDetails.getId();
 
-        ordersListRestoreService.restoreOrdersList(reference, caseData, START_FROM_DATE, END_TO_DATE);
+        caseDataRestoreService.restoreOrdersList(reference, caseData, START_FROM_DATE, END_TO_DATE);
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
