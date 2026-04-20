@@ -1,6 +1,6 @@
 {
-  "cicCaseHearingNotificationParties": [
-    "Subject"
+  "cicCaseNotifyPartyRespondent": [
+    "RespondentCIC"
   ],
   "cicCaseNotifyPartySubject": ["SubjectCIC"],
   "cicCaseNotifyPartyMessage": "Party message",

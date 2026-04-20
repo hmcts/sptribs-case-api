@@ -1,120 +1,34 @@
 {
-  "caseData": {
-    "caseLinks": [],
-    "linkedCasesComponentLauncher": null,
-    "flagLauncher": null,
-    "caseNameHmctsInternal": "Subject kaikaqsrf",
-    "searchCriteria": {
-      "otherCaseReferences": [
-        {
-          "id": "0bd2b6e2-02bf-41b4-bd6a-a02293f69bf0",
-          "value": "CICATestReference"
-        }
-      ],
-      "parties": [
-        {
-          "id": "e0658072-9029-40dd-968d-f4199a66e7a6",
-          "value": {
-            "name": "Subject kaikaqsrf",
-            "emailAddress": "mhiuixlpc@sub.com",
-            "addressLine1": "1 Subject Rse Way",
-            "postcode": "SW11 1PD",
-            "dateOfBirth": "1990-01-01",
-            "dateOfDeath": null
-          }
-        },
-        {
-          "id": "cded995a-2c7e-495d-8b90-2e9fe4b125bb",
-          "value": {
-            "name": "Representative juiutsqbg",
-            "emailAddress": "laggbmcju@represent",
-            "addressLine1": null,
-            "postcode": null,
-            "dateOfBirth": null,
-            "dateOfDeath": null
-          }
-        },
-        {
-          "id": "fb82e0e3-992b-4a86-b3f9-c36c0195d502",
-          "value": {
-            "name": "Appeals team",
-            "emailAddress": "appeals.team@cica.gov.uk",
-            "addressLine1": null,
-            "postcode": null,
-            "dateOfBirth": null,
-            "dateOfDeath": null
-          }
-        }
-      ]
-    },
-    "caseManagementLocation": {
-      "baseLocation": 366559,
-      "region": 11
-    },
-    "caseManagementCategory": {
+  "cicCaseNotifyPartyRespondent": [
+    "RespondentCIC"
+  ],
+  "cicCaseNotifyPartySubject": ["SubjectCIC"],
+  "cicCaseNotifyPartyMessage": "Party message",
+  "cicCaseRespondentName": "Appeals team",
+  "cicCaseRespondentOrganisation": "CICA",
+  "cicCaseRespondentEmail": "appeals.team@",
+  "cicCaseFullName": "Test Tester",
+  "cicCaseEmail": "test@email.com",
+  "cicCaseContactPreferenceType": "Email",
+  "cicCaseApplicantDocumentsUploaded": [
+    {
+      "id": "150dc5ce-cc10-4edf-9a0b-7dbc456f7ced",
       "value": {
-        "code": "332a2553-e471-42f4-acfd-996bad115da1",
-        "label": "Criminal Injuries Compensation"
+        "documentCategory": "ApplicationForm",
+        "documentEmailContent": "Lorem ipsum",
+        "documentLink": {
+          "document_filename": "pdf.pdf"
+        }
       }
-    },
-    "securityClass": "PUBLIC",
-    "caseBundles": [
-      { "id": 10, "value": "Bundle" },
-      { "id": 9, "value": "Bundle" },
-      { "id": 8, "value": "Bundle" },
-      { "id": 7, "value": "Bundle" }
-    ],
-    "caseNumber": "1776327526891970",
-    "hyphenatedCaseRef": "1776-3275-2689-1970",
-    "cicCase": {
-      "caseCategory": "ASSESSMENT",
-      "caseSubcategory": "MEDICAL_REOPENING",
-      "caseReceivedDate": "2023-12-21",
-      "hearingList": {
-        "value": {
-          "code": "34064639-3e4d-4cea-9395-4dddddf75060",
-          "label": "1 - Case management - 21 Jan 2024 10:10"
-        }
-      },
-      "respondentName": "Appeals team",
-      "respondentOrganisation": "CICA",
-      "respondentEmail": "appeals.team@cica.gov.uk",
-      "fullName": "Subject kaikaqsrf",
-      "email": "mhiuixlpc@sub.com",
-      "dateOfBirth": "1990-01-01",
-      "representativeFullName": "Representative juiutsqbg",
-      "representativeEmailAddress": "laggbmcju@represent"
-    },
-    "listing": {
-      "hearingCreatedDate": "2024-02-05",
-      "hearingStatus": "Listed",
-      "hearingType": "INTERLOCUTORY",
-      "hearingFormat": "VIDEO",
-      "date": "2025-02-05",
-      "hearingTime": "10:10",
-      "session": "MORNING",
-      "hearingVenueNameAndAddress": "East London Tribunal Hearing Centre-2 Clove Crescent, East India Dock London"
-    },
-    "correspondence": [
+    }
+  ],
+  "hyphenatedCaseRef": "1234-5678-9012-3456",
+  "contactPartiesDocumentsDocumentList": {
+    "value": [],
+    "list_items": [
       {
-        "id": 1,
-        "value": {
-          "sentOn": "2026-04-20T09:42",
-          "from": "criminal.injuries.compensation.tribunal@notifications.service.gov.uk",
-          "to": "appeals.team@cica.gov.uk",
-          "document": "BUNDLE_CREATED_EMAIL.pdf",
-          "type": "Email"
-        }
-      },
-      {
-        "id": 2,
-        "value": {
-          "sentOn": "2026-04-17T14:11",
-          "from": "criminal.injuries.compensation.tribunal@notifications.service.gov.uk",
-          "to": "laggbmcju@representative.com",
-          "document": "BUNDLE_CREATED_EMAIL.pdf",
-          "type": "Email"
-        }
+        "code": "a17fa26b-6e91-48ba-841e-8ab75c772463",
+        "label": "[pdf.pdf A - Application Form](http://manage-case.demo.platform.hmcts.net/documents/null/binary)"
       }
     ]
   }
