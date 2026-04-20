@@ -139,6 +139,7 @@ public abstract class FunctionalTestSuite {
         CaseDetails createdCase = createCaseInCcd();
         CaseData formatter = CaseData.builder().build();
         caseData.put("hyphenatedCaseRef", formatter.formatCaseRef(createdCase.getId()));
+        caseData.putIfAbsent("caseNameHmctsInternal", "FT-" + createdCase.getId());
         return createdCase.getId();
     }
 
@@ -261,6 +262,16 @@ public abstract class FunctionalTestSuite {
     }
 
     protected Response triggerCallback(CallbackRequest request, String url) {
+        ensureCaseNameHmctsInternal(request.getCaseDetails());
+        ensureCaseNameHmctsInternal(request.getCaseDetailsBefore());
+
+        if (request.getCaseDetails() != null && request.getCaseDetails().getId() != null) {
+            seedCaseReferenceInApp(request.getCaseDetails().getId());
+        }
+        if (request.getCaseDetailsBefore() != null && request.getCaseDetailsBefore().getId() != null) {
+            seedCaseReferenceInApp(request.getCaseDetailsBefore().getId());
+        }
+
         return RestAssured
             .given()
             .relaxedHTTPSValidation()
@@ -271,6 +282,29 @@ public abstract class FunctionalTestSuite {
             .body(request)
             .when()
             .post(url);
+    }
+
+    private void seedCaseReferenceInApp(long caseReference) {
+        Response response = RestAssured
+            .given()
+            .relaxedHTTPSValidation()
+            .baseUri(testUrl)
+            .header(SERVICE_AUTHORIZATION, serviceAuthenticationGenerator.generateCcdDataToken())
+            .header(AUTHORIZATION, idamTokenGenerator.generateIdamTokenForSolicitor())
+            .when()
+            .post("/testing-support/seed-case-reference/{caseReference}", caseReference);
+
+        if (response.getStatusCode() >= 300) {
+            throw new IllegalStateException("Unable to seed case reference in app. Status: "
+                + response.getStatusCode() + ", body: " + response.asString());
+        }
+    }
+
+    private void ensureCaseNameHmctsInternal(CaseDetails caseDetails) {
+        if (caseDetails == null || caseDetails.getId() == null || caseDetails.getData() == null) {
+            return;
+        }
+        caseDetails.getData().putIfAbsent("caseNameHmctsInternal", "FT-" + caseDetails.getId());
     }
 
     protected Response triggerCallbackWithoutPersistedCase(Map<String, Object> caseData, String eventId, String url)

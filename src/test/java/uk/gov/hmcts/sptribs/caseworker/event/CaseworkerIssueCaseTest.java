@@ -32,6 +32,7 @@ import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
 import uk.gov.hmcts.sptribs.notification.dispatcher.CaseIssuedNotification;
 import uk.gov.hmcts.sptribs.notification.exception.NotificationException;
+import uk.gov.hmcts.sptribs.taskmanagement.TaskManagementService;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -51,6 +52,7 @@ import static uk.gov.hmcts.sptribs.ciccase.model.RepresentativeCIC.REPRESENTATIV
 import static uk.gov.hmcts.sptribs.ciccase.model.RespondentCIC.RESPONDENT;
 import static uk.gov.hmcts.sptribs.ciccase.model.SubjectCIC.SUBJECT;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_WA_CONFIG_USER;
+import static uk.gov.hmcts.sptribs.taskmanagement.model.TaskType.issueCaseToRespondent;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigBuilder;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.getEventsFrom;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.SOLICITOR_ADDRESS;
@@ -79,6 +81,9 @@ class CaseworkerIssueCaseTest {
     @Mock
     private CaseIssuedNotification caseIssuedNotification;
 
+    @Mock
+    private TaskManagementService taskManagementService;
+
     private final String bankHolidayUrl = "https://www.gov.uk/bank-holidays/scotland.json";
 
     private final String baseUrl = "http://localhost:4013/";
@@ -89,7 +94,8 @@ class CaseworkerIssueCaseTest {
 
     @BeforeEach
     void setUp() {
-        caseworkerIssueCase = new CaseworkerIssueCase(caseIssuedNotification, bankHolidayService, bankHolidayUrl, baseUrl);
+        caseworkerIssueCase =
+            new CaseworkerIssueCase(caseIssuedNotification, bankHolidayService, bankHolidayUrl, baseUrl, taskManagementService);
 
         Mockito.reset(bankHolidayService, caseIssuedNotification);
     }
@@ -103,10 +109,6 @@ class CaseworkerIssueCaseTest {
         assertThat(getEventsFrom(configBuilder).values())
             .extracting(Event::getId)
             .contains(CASEWORKER_ISSUE_CASE);
-
-        assertThat(getEventsFrom(configBuilder).values())
-            .extracting(Event::isPublishToCamunda)
-            .contains(true);
 
         assertThat(getEventsFrom(configBuilder).values())
             .extracting(Event::getGrants)
@@ -162,6 +164,8 @@ class CaseworkerIssueCaseTest {
         assertThat(submittedResponse).isNotNull();
         assertThat(submittedResponse.getConfirmationHeader())
             .contains("# Case issued \n##  This case has now been issued.");
+
+        verify(taskManagementService).enqueueCompletionTasks(List.of(issueCaseToRespondent), TEST_CASE_ID);
     }
 
     @Test
@@ -309,6 +313,7 @@ class CaseworkerIssueCaseTest {
                 .build();
         CaseDetails<CaseData, State> details = new CaseDetails<>();
         details.setData(caseData);
+        details.setId(TEST_CASE_ID);
 
         when(bankHolidayService.getScottishBankHolidays(anyString())).thenReturn(getBankHolidayResponse());
 

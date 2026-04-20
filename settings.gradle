@@ -20,4 +20,3 @@ rootProject.name = 'sptribs-case-api'
 if (file(configGenerator).exists()) {
   includeBuild configGenerator
 }*/
-

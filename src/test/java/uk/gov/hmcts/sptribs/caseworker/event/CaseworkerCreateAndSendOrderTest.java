@@ -8,6 +8,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.ccd.sdk.ConfigBuilderImpl;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.Event;
+import uk.gov.hmcts.ccd.sdk.taskmanagement.delay.DelayUntilRequest;
 import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.ccd.sdk.type.FlagDetail;
 import uk.gov.hmcts.ccd.sdk.type.Flags;
@@ -23,6 +24,7 @@ import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderContentCIC;
 import uk.gov.hmcts.sptribs.caseworker.model.Order;
 import uk.gov.hmcts.sptribs.caseworker.model.OrderIssuingType;
 import uk.gov.hmcts.sptribs.caseworker.util.CaseFlagsUtil;
+import uk.gov.hmcts.sptribs.ciccase.model.AdminAction;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.OrderTemplate;
@@ -32,6 +34,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.document.model.CICDocument;
 import uk.gov.hmcts.sptribs.notification.dispatcher.NewOrderIssuedNotification;
 import uk.gov.hmcts.sptribs.notification.exception.NotificationException;
+import uk.gov.hmcts.sptribs.taskmanagement.TaskManagementService;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -45,6 +48,8 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.argThat;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -57,6 +62,8 @@ import static uk.gov.hmcts.sptribs.ciccase.model.RepresentativeCIC.REPRESENTATIV
 import static uk.gov.hmcts.sptribs.ciccase.model.RespondentCIC.RESPONDENT;
 import static uk.gov.hmcts.sptribs.ciccase.model.SchemeCic.Year2012;
 import static uk.gov.hmcts.sptribs.ciccase.model.SubjectCIC.SUBJECT;
+import static uk.gov.hmcts.sptribs.taskmanagement.model.TaskType.followUpNoncomplianceOfDirections;
+import static uk.gov.hmcts.sptribs.taskmanagement.model.TaskType.reviewOrder;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigBuilder;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.getEventsFrom;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID;
@@ -79,6 +86,9 @@ class CaseworkerCreateAndSendOrderTest {
 
     @Mock
     private NewOrderIssuedNotification newOrderIssuedNotification;
+
+    @Mock
+    private TaskManagementService taskManagementService;
 
     private DateModel dateModel = DateModel.builder()
         .dueDate(LocalDate.of(2026, 1, 2))
@@ -191,6 +201,7 @@ class CaseworkerCreateAndSendOrderTest {
 
         final CaseDetails<CaseData, State> details = new CaseDetails<>();
         details.setData(caseData);
+        details.setId(TEST_CASE_ID);
         final var response = caseworkerCreateAndSendOrder.aboutToSubmit(details, caseDetailsBefore());
 
         assertThat(response).isNotNull();
@@ -238,6 +249,7 @@ class CaseworkerCreateAndSendOrderTest {
         caseData.setDraftOrderContentCIC(draftOrderContentCIC);
 
         details.setData(caseData);
+        details.setId(TEST_CASE_ID);
 
         final var response = caseworkerCreateAndSendOrder.aboutToSubmit(details, caseDetailsBefore());
 
@@ -287,6 +299,7 @@ class CaseworkerCreateAndSendOrderTest {
 
         final CaseDetails<CaseData, State> details = new CaseDetails<>();
         details.setData(caseData);
+        details.setId(TEST_CASE_ID);
         final var response = caseworkerCreateAndSendOrder.aboutToSubmit(details, caseDetailsBefore());
 
         assertThat(response).isNotNull();
@@ -351,6 +364,7 @@ class CaseworkerCreateAndSendOrderTest {
 
         final CaseDetails<CaseData, State> details = new CaseDetails<>();
         details.setData(caseData);
+        details.setId(TEST_CASE_ID);
         final var response = caseworkerCreateAndSendOrder.aboutToSubmit(details, caseDetailsBefore());
 
         assertThat(response).isNotNull();
@@ -430,6 +444,7 @@ class CaseworkerCreateAndSendOrderTest {
         caseData.setOrderDueDates(List.of(ListValue.<DateModel>builder().value(dateModel).build()));
 
         details.setData(caseData);
+        details.setId(TEST_CASE_ID);
 
         final var response = caseworkerCreateAndSendOrder.aboutToSubmit(details, caseDetailsBefore());
 
@@ -570,6 +585,47 @@ class CaseworkerCreateAndSendOrderTest {
         verify(newOrderIssuedNotification, times(1)).sendToRepresentative(any(CaseData.class), anyString());
         verify(newOrderIssuedNotification, times(1)).sendToRespondent(any(CaseData.class), anyString());
         verify(newOrderIssuedNotification, times(1)).sendToApplicant(any(CaseData.class), anyString());
+    }
+
+    @Test
+    void shouldEnqueueInitiationTasksForCaseManagementWhenDueDateAndAdminActionPresent() {
+        final CaseDetails<CaseData, State> details = new CaseDetails<>();
+        final CaseData caseData = CaseData.builder().build();
+        CicCase cicCase = getCicCase(CREATE_AND_SEND_NEW_ORDER, YesOrNo.NO, null,
+            Document.builder().filename("order.pdf").build());
+        cicCase.setAdminActionRequired(Set.of(AdminAction.ADMIN_ACTION_REQUIRED));
+        caseData.setCicCase(cicCase);
+        caseData.setOrderDueDates(List.of(ListValue.<DateModel>builder().value(dateModel).build()));
+        caseData.setDraftOrderContentCIC(DraftOrderContentCIC.builder().orderTemplate(OrderTemplate.CIC3_RULE_27).build());
+
+        details.setData(caseData);
+        details.setId(TEST_CASE_ID);
+        details.setState(State.CaseManagement);
+
+        caseworkerCreateAndSendOrder.aboutToSubmit(details, caseDetailsBefore());
+        
+        verify(taskManagementService).enqueueCompletionTasks(
+            argThat(taskTypes -> !taskTypes.isEmpty()),
+            eq(TEST_CASE_ID)
+        );
+        verify(taskManagementService).enqueueInitiationTasks(
+            eq(List.of(reviewOrder)),
+            eq(caseData),
+            eq(TEST_CASE_ID)
+        );
+        verify(taskManagementService).enqueueInitiationTasksWithDelay(
+            eq(List.of(followUpNoncomplianceOfDirections)),
+            eq(caseData),
+            eq(TEST_CASE_ID),
+            argThat((DelayUntilRequest request) ->
+                request.getDelayUntilOrigin().equals(caseData.getCicCase().getFirstOrderDueDate().toString())
+                    && request.getDelayUntilIntervalDays().equals(1)
+                    && request.getDelayUntilNonWorkingCalendar().equals(CaseworkerCreateAndSendOrder.CALENDAR_URLS)
+                    && request.getDelayUntilNonWorkingDaysOfWeek().equals(CaseworkerCreateAndSendOrder.NON_WORKING_DAYS_OF_WEEK)
+                    && request.getDelayUntilSkipNonWorkingDays().equals(Boolean.FALSE)
+                    && request.getDelayUntilMustBeWorkingDay().equals(CaseworkerCreateAndSendOrder.NEXT)
+            )
+        );
     }
 
     private CaseDetails<CaseData, State> caseDetailsBefore() {

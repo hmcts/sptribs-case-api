@@ -87,10 +87,6 @@ class CaseworkerEditRecordListingTest {
             .contains(CASEWORKER_EDIT_RECORD_LISTING);
 
         assertThat(getEventsFrom(configBuilder).values())
-                .extracting(Event::isPublishToCamunda)
-                .contains(true);
-
-        assertThat(getEventsFrom(configBuilder).values())
                 .extracting(Event::getGrants)
                 .extracting(map -> map.containsKey(ST_CIC_WA_CONFIG_USER))
                 .contains(true);

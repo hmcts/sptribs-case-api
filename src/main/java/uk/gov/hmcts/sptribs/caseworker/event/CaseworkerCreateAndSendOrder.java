@@ -9,6 +9,7 @@ import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.Event;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
+import uk.gov.hmcts.ccd.sdk.taskmanagement.delay.DelayUntilRequest;
 import uk.gov.hmcts.ccd.sdk.type.DynamicList;
 import uk.gov.hmcts.ccd.sdk.type.FlagDetail;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
@@ -40,6 +41,7 @@ import uk.gov.hmcts.sptribs.common.event.page.EditNewOrderContentPage;
 import uk.gov.hmcts.sptribs.common.event.page.PreviewDraftOrder;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
 import uk.gov.hmcts.sptribs.notification.dispatcher.NewOrderIssuedNotification;
+import uk.gov.hmcts.sptribs.taskmanagement.TaskManagementService;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -54,6 +56,7 @@ import static uk.gov.hmcts.sptribs.caseworker.model.OrderIssuingType.UPLOAD_A_NE
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_CREATE_AND_SEND_ORDER;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventUtil.getRecipients;
 import static uk.gov.hmcts.sptribs.caseworker.util.SendOrderUtil.updateCicCaseOrderList;
+import static uk.gov.hmcts.sptribs.ciccase.model.AdminAction.ADMIN_ACTION_REQUIRED;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseClosed;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
@@ -69,6 +72,9 @@ import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_WA_CONFIG_USER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE;
 import static uk.gov.hmcts.sptribs.document.DocumentUtil.updateCategoryToDocument;
+import static uk.gov.hmcts.sptribs.taskmanagement.TaskTypeCollections.REVIEW_TASKS_TO_COMPLETE;
+import static uk.gov.hmcts.sptribs.taskmanagement.model.TaskType.followUpNoncomplianceOfDirections;
+import static uk.gov.hmcts.sptribs.taskmanagement.model.TaskType.reviewOrder;
 
 @Slf4j
 @Component
@@ -82,10 +88,14 @@ public class CaseworkerCreateAndSendOrder implements CCDConfig<CaseData, State, 
     private static final CcdPageConfiguration previewOrder =
         new PreviewDraftOrder("previewCreateAndSendOrder", CASEWORKER_CREATE_AND_SEND_ORDER);
     private static final CcdPageConfiguration notifyParties = new SendOrderNotifyParties();
+    public static final String NON_WORKING_DAYS_OF_WEEK = "SATURDAY,SUNDAY";
+    public static final String NEXT = "Next";
+    public static final String CALENDAR_URLS = "https://www.gov.uk/bank-holidays/scotland.json, https://raw.githubusercontent.com/hmcts/sptribs-case-api/master/src/main/resources/dmn/privilege-calendar.json";
 
     private final ApplyAnonymity applyAnonymitySelect;
     private final DraftOrderFooter draftOrderFooter;
     private final NewOrderIssuedNotification newOrderIssuedNotification;
+    private final TaskManagementService taskManagementService;
     private final SendOrderOrderDueDates orderDueDates;
 
     @Override
@@ -102,8 +112,7 @@ public class CaseworkerCreateAndSendOrder implements CCDConfig<CaseData, State, 
                 .submittedCallback(this::submitted)
                 .grant(CREATE_READ_UPDATE, SUPER_USER,
                     ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER, ST_CIC_SENIOR_JUDGE, ST_CIC_JUDGE, ST_CIC_WA_CONFIG_USER)
-                .grantHistoryOnly(ST_CIC_HEARING_CENTRE_ADMIN, ST_CIC_HEARING_CENTRE_TEAM_LEADER)
-                .publishToCamunda();
+                .grantHistoryOnly(ST_CIC_HEARING_CENTRE_ADMIN, ST_CIC_HEARING_CENTRE_TEAM_LEADER);
 
         PageBuilder pageBuilder = new PageBuilder(eventBuilder);
         applyAnonymitySelect.addTo(pageBuilder);
@@ -187,10 +196,47 @@ public class CaseworkerCreateAndSendOrder implements CCDConfig<CaseData, State, 
         caseData.setOrderDueDates(new ArrayList<>());
         caseData.getCicCase().setFirstOrderDueDate(CicCaseFieldsUtil.calculateFirstDueDate(caseData.getCicCase().getOrderList()));
 
+        enqueueWorkAllocationTaskActions(details);
+
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
             .state(details.getState())
             .build();
+    }
+
+    private void enqueueWorkAllocationTaskActions(CaseDetails<CaseData, State> details) {
+        var caseData = details.getData();
+
+        taskManagementService.enqueueCompletionTasks(
+            REVIEW_TASKS_TO_COMPLETE,
+            details.getId()
+        );
+
+        if (caseData.getCicCase().getAdminActionRequired() != null
+            && caseData.getCicCase().getAdminActionRequired().contains(ADMIN_ACTION_REQUIRED)) {
+            taskManagementService.enqueueInitiationTasks(
+                List.of(reviewOrder),
+                caseData,
+                details.getId()
+            );
+        }
+
+        if (details.getState() == CaseManagement && caseData.getCicCase().getFirstOrderDueDate() != null) {
+            DelayUntilRequest delayUntilRequest = DelayUntilRequest.builder()
+                .delayUntilOrigin(caseData.getCicCase().getFirstOrderDueDate().toString())
+                .delayUntilIntervalDays(1)
+                .delayUntilNonWorkingCalendar(CALENDAR_URLS)
+                .delayUntilNonWorkingDaysOfWeek(NON_WORKING_DAYS_OF_WEEK)
+                .delayUntilSkipNonWorkingDays(false)
+                .delayUntilMustBeWorkingDay(NEXT)
+                .build();
+            taskManagementService.enqueueInitiationTasksWithDelay(
+                List.of(followUpNoncomplianceOfDirections),
+                caseData,
+                details.getId(),
+                delayUntilRequest
+            );
+        }
     }
 
     private static void updateAnonymityAlreadyApplied(CaseData caseData) {
@@ -254,4 +300,5 @@ public class CaseworkerCreateAndSendOrder implements CCDConfig<CaseData, State, 
 
         CaseFlagsUtil.addFlag(data, flagDetail);
     }
+
 }

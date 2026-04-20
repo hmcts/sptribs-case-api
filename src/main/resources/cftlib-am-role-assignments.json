@@ -67,6 +67,180 @@
           "jurisdiction": "ST_CIC"
         },
         "authorisations": []
+      },
+      {
+        "roleType": "ORGANISATION",
+        "roleName": "regional-centre-admin",
+        "grantType": "STANDARD",
+        "roleCategory": "ADMIN",
+        "classification": "PUBLIC",
+        "readOnly": false,
+        "attributes": {
+          "jurisdiction": "ST_CIC",
+          "caseType": "CriminalInjuriesCompensation",
+          "region": "11",
+          "baseLocation": "366559",
+          "substantive": "Y",
+          "bookable": true
+        },
+        "authorisations": []
+      },
+      {
+        "roleType": "ORGANISATION",
+        "roleName": "regional-centre-team-leader",
+        "grantType": "STANDARD",
+        "roleCategory": "ADMIN",
+        "classification": "PUBLIC",
+        "readOnly": false,
+        "attributes": {
+          "jurisdiction": "ST_CIC",
+          "caseType": "CriminalInjuriesCompensation",
+          "region": "11",
+          "baseLocation": "366559",
+          "substantive": "Y",
+          "bookable": true
+        },
+        "authorisations": []
+      },
+      {
+        "roleType": "ORGANISATION",
+        "roleName": "hearing-centre-admin",
+        "grantType": "STANDARD",
+        "roleCategory": "ADMIN",
+        "classification": "PUBLIC",
+        "readOnly": false,
+        "attributes": {
+          "jurisdiction": "ST_CIC",
+          "caseType": "CriminalInjuriesCompensation",
+          "region": "11",
+          "baseLocation": "366559",
+          "substantive": "Y",
+          "bookable": true
+        },
+        "authorisations": []
+      },
+      {
+        "roleType": "ORGANISATION",
+        "roleName": "hearing-centre-team-leader",
+        "grantType": "STANDARD",
+        "roleCategory": "ADMIN",
+        "classification": "PUBLIC",
+        "readOnly": false,
+        "attributes": {
+          "jurisdiction": "ST_CIC",
+          "caseType": "CriminalInjuriesCompensation",
+          "region": "11",
+          "baseLocation": "366559",
+          "substantive": "Y",
+          "bookable": true
+        },
+        "authorisations": []
+      },
+      {
+        "roleType": "ORGANISATION",
+        "roleName": "senior-tribunal-caseworker",
+        "grantType": "STANDARD",
+        "roleCategory": "LEGAL_OPERATIONS",
+        "classification": "PUBLIC",
+        "readOnly": false,
+        "attributes": {
+          "jurisdiction": "ST_CIC",
+          "caseType": "CriminalInjuriesCompensation",
+          "region": "11",
+          "baseLocation": "366559",
+          "substantive": "Y",
+          "bookable": true
+        },
+        "authorisations": []
+      },
+      {
+        "roleType": "ORGANISATION",
+        "roleName": "tribunal-caseworker",
+        "grantType": "STANDARD",
+        "roleCategory": "LEGAL_OPERATIONS",
+        "classification": "PUBLIC",
+        "readOnly": false,
+        "attributes": {
+          "jurisdiction": "ST_CIC",
+          "caseType": "CriminalInjuriesCompensation",
+          "region": "11",
+          "baseLocation": "366559",
+          "substantive": "Y",
+          "bookable": true
+        },
+        "authorisations": []
+      },
+      {
+        "roleType": "ORGANISATION",
+        "roleName": "senior-judge",
+        "grantType": "STANDARD",
+        "roleCategory": "JUDICIAL",
+        "classification": "PUBLIC",
+        "readOnly": false,
+        "attributes": {
+          "jurisdiction": "ST_CIC",
+          "caseType": "CriminalInjuriesCompensation",
+          "region": "11",
+          "baseLocation": "366559",
+          "substantive": "Y",
+          "bookable": true
+        },
+        "authorisations": [
+          "328"
+        ]
+      },
+      {
+        "roleType": "ORGANISATION",
+        "roleName": "judge",
+        "grantType": "STANDARD",
+        "roleCategory": "JUDICIAL",
+        "classification": "PUBLIC",
+        "readOnly": false,
+        "attributes": {
+          "jurisdiction": "ST_CIC",
+          "caseType": "CriminalInjuriesCompensation",
+          "region": "11",
+          "baseLocation": "366559",
+          "substantive": "Y",
+          "bookable": true
+        },
+        "authorisations": [
+          "328"
+        ]
+      },
+      {
+        "roleType": "ORGANISATION",
+        "roleName": "ctsc",
+        "grantType": "STANDARD",
+        "roleCategory": "CTSC",
+        "classification": "PUBLIC",
+        "readOnly": false,
+        "attributes": {
+          "jurisdiction": "ST_CIC",
+          "caseType": "CriminalInjuriesCompensation",
+          "region": "11",
+          "baseLocation": "366559",
+          "substantive": "Y",
+          "bookable": true
+        },
+        "authorisations": []
+      },
+      {
+        "roleType": "ORGANISATION",
+        "roleName": "ctsc-team-leader",
+        "grantType": "STANDARD",
+        "roleCategory": "CTSC",
+        "classification": "PUBLIC",
+        "readOnly": false,
+        "attributes": {
+          "jurisdiction": "ST_CIC",
+          "caseType": "CriminalInjuriesCompensation",
+          "region": "11",
+          "baseLocation": "366559",
+          "substantive": "Y",
+          "bookable": true
+        },
+        "authorisations": []
       }
     ],
     "overrideAll": true

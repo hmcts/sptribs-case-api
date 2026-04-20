@@ -21,6 +21,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.notification.dispatcher.CaseIssuedNotification;
+import uk.gov.hmcts.sptribs.taskmanagement.TaskManagementService;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
@@ -47,6 +48,7 @@ import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_JUDGE;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_WA_CONFIG_USER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE;
+import static uk.gov.hmcts.sptribs.taskmanagement.model.TaskType.issueCaseToRespondent;
 
 @Component
 @Slf4j
@@ -61,6 +63,8 @@ public class CaseworkerIssueCase implements CCDConfig<CaseData, State, UserRole>
     @Value("${bank-holidays.api.url}")
     private final String bankHolidayUrl;
 
+    private final TaskManagementService taskManagementService;
+
     @Value("${case-api.url}")
     private final String baseUrl;
 
@@ -71,12 +75,14 @@ public class CaseworkerIssueCase implements CCDConfig<CaseData, State, UserRole>
             CaseIssuedNotification caseIssuedNotification,
             BankHolidayService bankHolidayService,
             @Value("${bank-holidays.api.url}") String bankHolidayUrl,
-            @Value("${case-api.url}") String baseUrl
+            @Value("${case-api.url}") String baseUrl,
+            TaskManagementService taskManagementService
     ) {
         this.bankHolidayService = bankHolidayService;
         this.caseIssuedNotification = caseIssuedNotification;
         this.bankHolidayUrl = bankHolidayUrl;
         this.baseUrl = baseUrl;
+        this.taskManagementService = taskManagementService;
     }
 
     @Override
@@ -94,8 +100,7 @@ public class CaseworkerIssueCase implements CCDConfig<CaseData, State, UserRole>
                 .grant(CREATE_READ_UPDATE, SUPER_USER,
                     ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER, ST_CIC_HEARING_CENTRE_ADMIN,
                     ST_CIC_HEARING_CENTRE_TEAM_LEADER, ST_CIC_SENIOR_JUDGE, ST_CIC_WA_CONFIG_USER)
-                .grantHistoryOnly(ST_CIC_JUDGE)
-                .publishToCamunda();
+                .grantHistoryOnly(ST_CIC_JUDGE);
 
         PageBuilder pageBuilder = new PageBuilder(eventBuilder);
         issueCaseSelectDocument.addTo(pageBuilder);
@@ -113,8 +118,10 @@ public class CaseworkerIssueCase implements CCDConfig<CaseData, State, UserRole>
             .build();
     }
 
-    public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(final CaseDetails<CaseData, State> details,
-                                                                       final CaseDetails<CaseData, State> beforeDetails) {
+    public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(
+        final CaseDetails<CaseData, State> details,
+        final CaseDetails<CaseData, State> beforeDetails
+    ) {
         final CaseData caseData = details.getData();
         final CicCase cicCase = caseData.getCicCase();
 
@@ -124,6 +131,8 @@ public class CaseworkerIssueCase implements CCDConfig<CaseData, State, UserRole>
         LocalDate dueDate = LocalDate.now().plusDays(ALLOWED_RESPONSE_TIME_DAYS);
         LocalDate verifiedDueDate = isWorkingDay(dueDate, bankHolidays) ? dueDate : getNextWorkingDay(dueDate, bankHolidays);
         cicCase.setRespondentBundleDueDate(verifiedDueDate);
+
+        taskManagementService.enqueueCompletionTasks(List.of(issueCaseToRespondent), details.getId());
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)

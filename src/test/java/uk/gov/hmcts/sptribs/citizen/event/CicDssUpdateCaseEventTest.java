@@ -23,6 +23,7 @@ import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.idam.IdamService;
 import uk.gov.hmcts.sptribs.notification.dispatcher.DssUpdateCaseSubmissionNotification;
 import uk.gov.hmcts.sptribs.notification.exception.NotificationException;
+import uk.gov.hmcts.sptribs.taskmanagement.TaskManagementService;
 import uk.gov.hmcts.sptribs.testutil.TestDataHelper;
 
 import java.time.LocalDate;
@@ -37,6 +38,7 @@ import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CITIZEN_DSS_UPDATE_CASE_SUBMISSION;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_WA_CONFIG_USER;
 import static uk.gov.hmcts.sptribs.document.model.DocumentType.DSS_TRIBUNAL_FORM;
+import static uk.gov.hmcts.sptribs.taskmanagement.model.TaskType.processFurtherEvidence;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigBuilder;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.getEventsFrom;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_AUTHORIZATION_TOKEN;
@@ -55,6 +57,9 @@ class CicDssUpdateCaseEventTest {
     @Mock
     private IdamService idamService;
 
+    @Mock
+    private TaskManagementService taskManagementService;
+
     @InjectMocks
     private CicDssUpdateCaseEvent cicDssUpdateCaseEvent;
 
@@ -68,10 +73,6 @@ class CicDssUpdateCaseEventTest {
         assertThat(getEventsFrom(configBuilder).values())
             .extracting(Event::getId)
             .contains(CITIZEN_DSS_UPDATE_CASE_SUBMISSION);
-
-        assertThat(getEventsFrom(configBuilder).values())
-                .extracting(Event::isPublishToCamunda)
-                .contains(true);
 
         assertThat(getEventsFrom(configBuilder).values())
                 .extracting(Event::getGrants)
@@ -112,6 +113,7 @@ class CicDssUpdateCaseEventTest {
 
         final CaseDetails<CaseData, State> details = new CaseDetails<>();
         details.setData(caseData);
+        details.setId(TEST_CASE_ID);
 
         when(request.getHeader(AUTHORIZATION)).thenReturn(TEST_AUTHORIZATION_TOKEN);
         when(idamService.retrieveUser(TEST_AUTHORIZATION_TOKEN)).thenReturn(TestDataHelper.getUser());
@@ -128,6 +130,7 @@ class CicDssUpdateCaseEventTest {
         assertThat(response.getData().getMessages()).hasSize(2);
         assertThat(response.getData().getDssCaseData().getOtherInfoDocuments()).isEmpty();
         assertThat(response.getData().getDssCaseData().getAdditionalInformation()).isNull();
+        verify(taskManagementService).enqueueInitiationTasks(List.of(processFurtherEvidence), response.getData(), TEST_CASE_ID);
     }
 
     @Test
@@ -159,6 +162,7 @@ class CicDssUpdateCaseEventTest {
 
         final CaseDetails<CaseData, State> details = new CaseDetails<>();
         details.setData(caseData);
+        details.setId(TEST_CASE_ID);
         AboutToStartOrSubmitResponse<CaseData, State> response =
             cicDssUpdateCaseEvent.aboutToSubmit(details, details);
 
@@ -203,6 +207,7 @@ class CicDssUpdateCaseEventTest {
 
         final CaseDetails<CaseData, State> details = new CaseDetails<>();
         details.setData(caseData);
+        details.setId(TEST_CASE_ID);
         AboutToStartOrSubmitResponse<CaseData, State> response =
             cicDssUpdateCaseEvent.aboutToSubmit(details, details);
 
@@ -232,6 +237,7 @@ class CicDssUpdateCaseEventTest {
 
         final CaseDetails<CaseData, State> details = new CaseDetails<>();
         details.setData(caseData);
+        details.setId(TEST_CASE_ID);
 
         when(request.getHeader(AUTHORIZATION)).thenReturn(TEST_AUTHORIZATION_TOKEN);
         when(idamService.retrieveUser(TEST_AUTHORIZATION_TOKEN)).thenReturn(TestDataHelper.getUser());
