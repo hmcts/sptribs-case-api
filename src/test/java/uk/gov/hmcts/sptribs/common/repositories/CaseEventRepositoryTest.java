@@ -194,6 +194,53 @@ class CaseEventRepositoryTest {
             assertThat(results).hasSize(2);
         }
 
+        @Nested
+        class GetFirstEventDataForCase {
+
+            @Test
+            void shouldReturnCaseDataForFirstEvent() {
+                CaseData expectedCaseData = CaseData.builder().build();
+
+                when(namedParameterJdbcTemplate.query(
+                    anyString(),
+                    ArgumentMatchers.anyMap(),
+                    ArgumentMatchers.<RowMapper<CaseData>>any()))
+                        .thenReturn(List.of(expectedCaseData));
+
+                List<CaseData> results = caseEventRepository.getFirstEventDataForCase(REFERENCE, CASE_EVENT_ID);
+
+                assertThat(results).hasSize(1);
+                assertThat(results.getFirst()).isEqualTo(expectedCaseData);
+            }
+
+            @Test
+            void shouldReturnEmptyListWhenNoEventFound() {
+                when(namedParameterJdbcTemplate.query(
+                    anyString(),
+                    ArgumentMatchers.anyMap(),
+                    ArgumentMatchers.<RowMapper<CaseData>>any()))
+                        .thenReturn(List.of());
+
+                List<CaseData> results = caseEventRepository.getFirstEventDataForCase(REFERENCE, CASE_EVENT_ID);
+
+                assertThat(results).isEmpty();
+            }
+
+            @Test
+            void shouldThrowCaseEventRepositoryExceptionOnDataAccessException() {
+                when(namedParameterJdbcTemplate.query(
+                    anyString(),
+                    ArgumentMatchers.anyMap(),
+                    ArgumentMatchers.<RowMapper<CaseData>>any()))
+                        .thenThrow(new DataAccessResourceFailureException("DB error"));
+
+                assertThatThrownBy(() -> caseEventRepository.getFirstEventDataForCase(REFERENCE, CASE_EVENT_ID))
+                    .isInstanceOf(CaseEventRepositoryException.class)
+                    .hasMessageContaining("Failed to retrieve first event data for reference=")
+                    .hasCauseInstanceOf(DataAccessResourceFailureException.class);
+            }
+        }
+
         @Test
         void shouldReturnEmptyListAndLogWhenNoEventsFound() {
             when(namedParameterJdbcTemplate.query(
@@ -365,6 +412,71 @@ class CaseEventRepositoryTest {
 
             assertNotNull(result);
             assertThat(result.getPrecedingEventDate()).isNull();
+        }
+
+        @Test
+        void shouldMapResultSetToCaseDataViaParseEventData() throws Exception {
+            String validJson = "{\"cicCase\": {}}";
+            CaseData expectedCaseData = CaseData.builder().build();
+
+            when(objectMapper.readValue(validJson, CaseData.class)).thenReturn(expectedCaseData);
+            when(rs.getString("data")).thenReturn(validJson);
+
+            ArgumentCaptor<RowMapper<CaseData>> mapperCaptor = ArgumentCaptor.captor();
+
+            when(namedParameterJdbcTemplate.query(
+                anyString(),
+                ArgumentMatchers.anyMap(),
+                mapperCaptor.capture()))
+                    .thenReturn(List.of());
+
+            caseEventRepository.getFirstEventDataForCase(REFERENCE, CASE_EVENT_ID);
+
+            CaseData result = mapperCaptor.getValue().mapRow(rs, 0);
+
+            assertThat(result).isEqualTo(expectedCaseData);
+        }
+
+        @Test
+        void shouldReturnNullWhenJsonIsNull() throws Exception {
+            when(rs.getString("data")).thenReturn(null);
+
+            ArgumentCaptor<RowMapper<CaseData>> mapperCaptor = ArgumentCaptor.captor();
+
+            when(namedParameterJdbcTemplate.query(
+                anyString(),
+                ArgumentMatchers.anyMap(),
+                mapperCaptor.capture()))
+                    .thenReturn(List.of());
+
+            caseEventRepository.getFirstEventDataForCase(REFERENCE, CASE_EVENT_ID);
+
+            CaseData result = mapperCaptor.getValue().mapRow(rs, 0);
+
+            assertThat(result).isNull();
+        }
+
+        @Test
+        void shouldReturnNullWhenJsonParsingFails() throws Exception {
+            String invalidJson = "invalid-json";
+
+            when(rs.getString("data")).thenReturn(invalidJson);
+            when(objectMapper.readValue(invalidJson, CaseData.class))
+                    .thenThrow(new JsonProcessingException("parse error") {});
+
+            ArgumentCaptor<RowMapper<CaseData>> mapperCaptor = ArgumentCaptor.captor();
+
+            when(namedParameterJdbcTemplate.query(
+                anyString(),
+                ArgumentMatchers.anyMap(),
+                mapperCaptor.capture()))
+                    .thenReturn(List.of());
+
+            caseEventRepository.getFirstEventDataForCase(REFERENCE, CASE_EVENT_ID);
+
+            CaseData result = mapperCaptor.getValue().mapRow(rs, 0);
+
+            assertThat(result).isNull();
         }
     }
 
