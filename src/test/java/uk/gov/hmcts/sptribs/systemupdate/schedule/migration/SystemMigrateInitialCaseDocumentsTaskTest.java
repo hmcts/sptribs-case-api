@@ -17,6 +17,7 @@ import uk.gov.hmcts.sptribs.idam.IdamService;
 import uk.gov.hmcts.sptribs.systemupdate.service.CcdManagementException;
 import uk.gov.hmcts.sptribs.systemupdate.service.CcdUpdateService;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThatNoException;
@@ -88,7 +89,8 @@ class SystemMigrateInitialCaseDocumentsTaskTest {
 
         @Test
         void shouldDoNothingWhenNoCasesFound() {
-            when(caseEventRepository.getCasesWithEvent(RESPONDENT_DOCUMENT_MANAGEMENT))
+            when(caseEventRepository.getListOfCasesByEventIdDuringDateRange(
+                RESPONDENT_DOCUMENT_MANAGEMENT, LocalDate.of(2025, 10, 16), LocalDate.now()))
                 .thenReturn(List.of());
 
             systemMigrateInitialCaseDocumentsTask.run();
@@ -98,7 +100,8 @@ class SystemMigrateInitialCaseDocumentsTaskTest {
 
         @Test
         void shouldTriggerEventForEachCaseFound() {
-            when(caseEventRepository.getCasesWithEvent(RESPONDENT_DOCUMENT_MANAGEMENT))
+            when(caseEventRepository.getListOfCasesByEventIdDuringDateRange(
+                RESPONDENT_DOCUMENT_MANAGEMENT, LocalDate.of(2025, 10, 16), LocalDate.now()))
                 .thenReturn(List.of(111L, 222L, 333L));
 
             systemMigrateInitialCaseDocumentsTask.run();
@@ -120,7 +123,8 @@ class SystemMigrateInitialCaseDocumentsTaskTest {
 
         @Test
         void shouldContinueToNextCaseWhenCcdManagementExceptionThrown() {
-            when(caseEventRepository.getCasesWithEvent(RESPONDENT_DOCUMENT_MANAGEMENT))
+            when(caseEventRepository.getListOfCasesByEventIdDuringDateRange(
+                RESPONDENT_DOCUMENT_MANAGEMENT, LocalDate.of(2025, 10, 16), LocalDate.now()))
                 .thenReturn(List.of(111L, 222L, 333L));
 
             lenient().doThrow(new CcdManagementException("CCD error", new RuntimeException()))
@@ -135,7 +139,8 @@ class SystemMigrateInitialCaseDocumentsTaskTest {
 
         @Test
         void shouldContinueToNextCaseWhenIllegalArgumentExceptionThrown() {
-            when(caseEventRepository.getCasesWithEvent(RESPONDENT_DOCUMENT_MANAGEMENT))
+            when(caseEventRepository.getListOfCasesByEventIdDuringDateRange(
+                RESPONDENT_DOCUMENT_MANAGEMENT, LocalDate.of(2025, 10, 16), LocalDate.now()))
                 .thenReturn(List.of(111L, 222L));
 
             lenient().doThrow(new IllegalArgumentException("Deserialisation error"))
@@ -149,7 +154,8 @@ class SystemMigrateInitialCaseDocumentsTaskTest {
 
         @Test
         void shouldStopAndLogWhenRepositoryThrowsRuntimeException() {
-            when(caseEventRepository.getCasesWithEvent(RESPONDENT_DOCUMENT_MANAGEMENT))
+            when(caseEventRepository.getListOfCasesByEventIdDuringDateRange(
+                RESPONDENT_DOCUMENT_MANAGEMENT, LocalDate.of(2025, 10, 16), LocalDate.now()))
                 .thenThrow(new CaseEventRepositoryException("DB error", new RuntimeException()));
 
             assertThatNoException().isThrownBy(() -> systemMigrateInitialCaseDocumentsTask.run());

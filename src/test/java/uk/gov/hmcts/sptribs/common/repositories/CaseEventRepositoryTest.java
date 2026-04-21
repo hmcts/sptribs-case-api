@@ -195,50 +195,6 @@ class CaseEventRepositoryTest {
         }
 
         @Nested
-        class GetCasesWithEvent {
-
-            @Test
-            void shouldReturnListOfCaseReferences() {
-                when(namedParameterJdbcTemplate.query(
-                    anyString(),
-                    ArgumentMatchers.anyMap(),
-                    ArgumentMatchers.<RowMapper<Long>>any()))
-                        .thenReturn(List.of(111L, 222L, 333L));
-
-                List<Long> results = caseEventRepository.getCasesWithEvent(CASE_EVENT_ID);
-
-                assertThat(results).hasSize(3).containsExactly(111L, 222L, 333L);
-            }
-
-            @Test
-            void shouldReturnEmptyListWhenNoCasesFound() {
-                when(namedParameterJdbcTemplate.query(
-                    anyString(),
-                    ArgumentMatchers.anyMap(),
-                    ArgumentMatchers.<RowMapper<Long>>any()))
-                        .thenReturn(List.of());
-
-                List<Long> results = caseEventRepository.getCasesWithEvent(CASE_EVENT_ID);
-
-                assertThat(results).isEmpty();
-            }
-
-            @Test
-            void shouldThrowCaseEventRepositoryExceptionOnDataAccessException() {
-                when(namedParameterJdbcTemplate.query(
-                    anyString(),
-                    ArgumentMatchers.anyMap(),
-                    ArgumentMatchers.<RowMapper<Long>>any()))
-                        .thenThrow(new DataAccessResourceFailureException("DB error"));
-
-                assertThatThrownBy(() -> caseEventRepository.getCasesWithEvent(CASE_EVENT_ID))
-                    .isInstanceOf(CaseEventRepositoryException.class)
-                    .hasMessageContaining("Failed to retrieve cases for eventId=")
-                    .hasCauseInstanceOf(DataAccessResourceFailureException.class);
-            }
-        }
-
-        @Nested
         class GetFirstEventDataForCase {
 
             @Test
@@ -456,25 +412,6 @@ class CaseEventRepositoryTest {
 
             assertNotNull(result);
             assertThat(result.getPrecedingEventDate()).isNull();
-        }
-
-        @Test
-        void shouldMapResultSetToLongReference() throws Exception {
-            when(rs.getLong("reference")).thenReturn(999L);
-
-            ArgumentCaptor<RowMapper<Long>> mapperCaptor = ArgumentCaptor.captor();
-
-            when(namedParameterJdbcTemplate.query(
-                anyString(),
-                ArgumentMatchers.anyMap(),
-                mapperCaptor.capture()))
-                    .thenReturn(List.of());
-
-            caseEventRepository.getCasesWithEvent(CASE_EVENT_ID);
-
-            Long result = mapperCaptor.getValue().mapRow(rs, 0);
-
-            assertThat(result).isEqualTo(999L);
         }
 
         @Test

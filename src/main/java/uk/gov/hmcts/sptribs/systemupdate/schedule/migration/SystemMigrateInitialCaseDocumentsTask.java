@@ -11,6 +11,7 @@ import uk.gov.hmcts.sptribs.idam.IdamService;
 import uk.gov.hmcts.sptribs.systemupdate.service.CcdManagementException;
 import uk.gov.hmcts.sptribs.systemupdate.service.CcdUpdateService;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -47,7 +48,10 @@ public class SystemMigrateInitialCaseDocumentsTask implements Runnable {
                     Long caseIdToUpdate = Long.valueOf(migrateInitialDocsCaseRef);
                     caseIdsToUpdate.add(caseIdToUpdate);
                 } else {
-                    caseIdsToUpdate.addAll(caseEventRepository.getCasesWithEvent(RESPONDENT_DOCUMENT_MANAGEMENT));
+                    caseIdsToUpdate.addAll(caseEventRepository.getListOfCasesByEventIdDuringDateRange(
+                        RESPONDENT_DOCUMENT_MANAGEMENT,
+                        LocalDate.of(2025, 10, 16),
+                        LocalDate.now()));
                 }
             } catch (final RuntimeException e) {
                 log.error("System migrate initial case documents task stopped after search error", e);
