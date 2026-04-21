@@ -59,7 +59,7 @@ public final class DocumentListUtil {
 
     private static void prepareOtherCaseDocuments(CaseData data, List<CaseworkerCICDocument> docList) {
         docList.addAll(getOrderDocuments(data.getCicCase()));
-        docList.addAll(getCaseDocs(data.getCicCase()));
+        docList.addAll(getApplicantCaseDocs(data.getCicCase()));
         docList.addAll(getReinstateDocuments(data.getCicCase()));
         docList.addAll(getDecisionDocs(data));
         docList.addAll(getFinalDecisionDocs(data));
@@ -78,7 +78,7 @@ public final class DocumentListUtil {
     public static DynamicList prepareCICDocumentListWithAllDocuments(final CaseData data) {
         List<DynamicListElement> dynamicListElements = new ArrayList<>();
 
-        dynamicListElements.addAll(getDynamicListElements(getCaseDocs(data.getCicCase()), CASE_TYPE));
+        dynamicListElements.addAll(getDynamicListElements(getApplicantCaseDocs(data.getCicCase()), CASE_TYPE));
         dynamicListElements.addAll(getDynamicListElements(getReinstateDocuments(data.getCicCase()), REINSTATE_TYPE));
         dynamicListElements.addAll(getDynamicListElements(getDocumentManagementDocs(data), DOC_MGMT_TYPE));
         dynamicListElements.addAll(getDynamicListElements(getCloseCaseDocuments(data), CLOSE_CASE_TYPE));
@@ -88,6 +88,12 @@ public final class DocumentListUtil {
             .builder()
             .listItems(dynamicListElements)
             .build();
+    }
+
+    public static List<CaseworkerCICDocument> extractDocumentsFromListValues(List<ListValue<CaseworkerCICDocument>> listValues) {
+        return CollectionUtils.isEmpty(listValues)
+            ? new ArrayList<>()
+            : listValues.stream().map(ListValue::getValue).toList();
     }
 
     private static List<DynamicListElement> getDynamicListElements(List<CaseworkerCICDocument> docList, String fileType) {
@@ -161,6 +167,15 @@ public final class DocumentListUtil {
             .build();
     }
 
+    public static List<ListValue<CaseworkerCICDocument>> addToExistingDocumentList(
+            List<ListValue<CaseworkerCICDocument>> existing,
+            List<ListValue<CaseworkerCICDocument>> toAdd) {
+        if (CollectionUtils.isEmpty(existing)) {
+            return toAdd;
+        }
+        existing.addAll(toAdd);
+        return existing;
+    }
 
     private static void createDocumentList(String apiUrl, List<DynamicListElement> dynamicListElements, CaseworkerCICDocument doc) {
         String documentId = StringUtils.substringAfterLast(doc.getDocumentLink().getUrl(),
@@ -183,7 +198,7 @@ public final class DocumentListUtil {
         return reinstateDocList;
     }
 
-    private static List<CaseworkerCICDocument> getCaseDocs(CicCase cicCase) {
+    private static List<CaseworkerCICDocument> getApplicantCaseDocs(CicCase cicCase) {
         List<CaseworkerCICDocument> caseDocs = new ArrayList<>();
         if (!CollectionUtils.isEmpty(cicCase.getApplicantDocumentsUploaded())) {
             for (ListValue<CaseworkerCICDocument> document : cicCase.getApplicantDocumentsUploaded()) {
