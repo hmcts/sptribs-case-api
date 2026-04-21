@@ -270,6 +270,7 @@ public class CaseData {
         label = "Initial CICA Documents",
         typeOverride = Collection,
         typeParameterOverride = "CaseworkerCICDocument",
+        hint = "Initial case documents up to and including CICA initial submission",
         access = {CollectionCreateUpdateOnlyAccess.class}
     )
     private List<ListValue<CaseworkerCICDocument>> initialCicaDocuments;

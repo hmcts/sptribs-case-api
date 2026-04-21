@@ -460,6 +460,18 @@ public class TestDataHelper {
         return documentListValue;
     }
 
+    public static ListValue<CaseworkerCICDocument> getCaseworkerCICDocument(String fileName, DocumentType category, LocalDate date) {
+        final CaseworkerCICDocument caseworkerCICDocument = CaseworkerCICDocument.builder()
+            .documentLink(Document.builder().filename(fileName).build())
+            .documentCategory(category)
+            .documentEmailContent("some email content")
+            .date(date)
+            .build();
+        ListValue<CaseworkerCICDocument> caseworkerCICDocumentListValue = new ListValue<>();
+        caseworkerCICDocumentListValue.setValue(caseworkerCICDocument);
+        return caseworkerCICDocumentListValue;
+    }
+
     public static ListValue<CaseworkerCICDocumentUpload> getCaseworkerCICDocumentUpload(String fileName) {
         final CaseworkerCICDocumentUpload document = CaseworkerCICDocumentUpload.builder()
             .documentLink(Document.builder().filename(fileName).build())
@@ -517,6 +529,22 @@ public class TestDataHelper {
             .documentLink(Document.builder().filename(fileName).build())
             .documentCategory(category)
             .documentEmailContent("some email content")
+            .build();
+        List<ListValue<CaseworkerCICDocument>> documentList = new ArrayList<>();
+        ListValue<CaseworkerCICDocument> caseworkerCICDocumentListValue = new ListValue<>();
+        caseworkerCICDocumentListValue.setValue(caseworkerCICDocument);
+        documentList.add(caseworkerCICDocumentListValue);
+        return documentList;
+    }
+
+    public static List<ListValue<CaseworkerCICDocument>> getCaseworkerCICDocumentList(String fileName,
+                                                                                      DocumentType category,
+                                                                                      LocalDate date) {
+        final CaseworkerCICDocument caseworkerCICDocument = CaseworkerCICDocument.builder()
+            .documentLink(Document.builder().filename(fileName).build())
+            .documentCategory(category)
+            .documentEmailContent("some email content")
+            .date(date)
             .build();
         List<ListValue<CaseworkerCICDocument>> documentList = new ArrayList<>();
         ListValue<CaseworkerCICDocument> caseworkerCICDocumentListValue = new ListValue<>();
@@ -702,6 +730,4 @@ public class TestDataHelper {
         orderListValue.setValue(order);
         return orderListValue;
     }
-
-
 }

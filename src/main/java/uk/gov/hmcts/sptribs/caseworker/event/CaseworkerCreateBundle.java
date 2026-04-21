@@ -6,13 +6,13 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.Event;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
-import uk.gov.hmcts.sptribs.caseworker.util.DocumentListUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
@@ -38,7 +38,8 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import static java.util.Collections.emptyList;
-import static uk.gov.hmcts.sptribs.caseworker.util.DocumentListUtil.getAllCaseDocumentsExcludingInitialCicaUpload;
+import static uk.gov.hmcts.sptribs.caseworker.util.DocumentListUtil.extractDocumentsFromListValues;
+import static uk.gov.hmcts.sptribs.caseworker.util.DocumentListUtil.getAllCaseDocuments;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CREATE_BUNDLE;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseClosed;
@@ -92,13 +93,12 @@ public class CaseworkerCreateBundle implements CCDConfig<CaseData, State, UserRo
                                                                        CaseDetails<CaseData, State> beforeDetails) {
 
         final CaseData caseData = details.getData();
-        final List<ListValue<CaseworkerCICDocument>> documentListValues = DocumentListUtil.getAllCaseDocuments(caseData);
+        final List<CaseworkerCICDocument> allCaseDocuments = extractDocumentsFromListValues(getAllCaseDocuments(caseData));
 
         if (caseData.isBundleOrderEnabled()) {
-            caseData.setCaseDocuments(getInitialCicaUpload(caseData, details.getId()));
-            caseData.setFurtherCaseDocuments(getFurtherDocuments(caseData));
+            setCaseBundleRequestDocuments(caseData, allCaseDocuments);
         } else {
-            var cicDocumentList = convertToBundleDocumentType(documentListValues);
+            var cicDocumentList = convertToBundleDocumentType(allCaseDocuments);
             caseData.setCaseDocuments(cicDocumentList);
         }
 
@@ -124,43 +124,36 @@ public class CaseworkerCreateBundle implements CCDConfig<CaseData, State, UserRo
             .build();
     }
 
-    private List<AbstractCaseworkerCICDocument<CaseworkerCICDocument>> getInitialCicaUpload(CaseData caseData, long caseId) {
-        var initialDocs = Optional.ofNullable(caseData.getInitialCicaDocuments()).orElse(emptyList());
+    private void setCaseBundleRequestDocuments(CaseData caseData, List<CaseworkerCICDocument> allDocuments) {
+        List<CaseworkerCICDocument> initialDocuments = extractDocumentsFromListValues(caseData.getInitialCicaDocuments());
 
-        if (initialDocs.isEmpty()) {
-            log.warn("Initial Cica doc upload was empty for case {}", caseId);
-            return emptyList();
+        if (!CollectionUtils.isEmpty(initialDocuments)) {
+            caseData.setCaseDocuments(convertToBundleDocumentType(initialDocuments));
+            caseData.setFurtherCaseDocuments(convertToBundleDocumentType(getFurtherDocuments(allDocuments, initialDocuments)));
+        } else {
+            caseData.setCaseDocuments(convertToBundleDocumentType(allDocuments));
         }
-
-        return convertToBundleDocumentType(initialDocs);
     }
 
-    private List<AbstractCaseworkerCICDocument<CaseworkerCICDocument>> getFurtherDocuments(CaseData caseData) {
-        var docs = getAllCaseDocumentsExcludingInitialCicaUpload(caseData);
-
-        var bundleDocuments = convertToBundleDocumentType(docs);
-
-        bundleDocuments.sort(
-            Comparator.comparing(
-                doc -> doc.getValue().getDate(),
+    private static List<CaseworkerCICDocument> getFurtherDocuments(List<CaseworkerCICDocument> allDocuments,
+                                                                   List<CaseworkerCICDocument> initialDocuments) {
+        if (CollectionUtils.isEmpty(allDocuments)) {
+            return new ArrayList<>();
+        }
+        if (CollectionUtils.isEmpty(initialDocuments)) {
+            return new ArrayList<>(allDocuments);
+        }
+        return allDocuments.stream().filter(doc -> !initialDocuments.contains(doc))
+            .sorted(Comparator.comparing(
+                CaseworkerCICDocument::getDate,
                 Comparator.nullsLast(Comparator.naturalOrder())
-            )
-        );
-        return bundleDocuments;
+            ))
+            .collect(Collectors.toCollection(ArrayList::new));
     }
 
-    private List<AbstractCaseworkerCICDocument<CaseworkerCICDocument>> convertToBundleDocumentType(
-        List<ListValue<CaseworkerCICDocument>> docs) {
-        List<AbstractCaseworkerCICDocument<CaseworkerCICDocument>> abstractCaseworkerCICDocumentList = new ArrayList<>();
+    private List<AbstractCaseworkerCICDocument<CaseworkerCICDocument>> convertToBundleDocumentType(List<CaseworkerCICDocument> docs) {
 
-        for (ListValue<CaseworkerCICDocument> caseworkerCICDocumentListValue : docs) {
-            CaseworkerCICDocument document = caseworkerCICDocumentListValue.getValue();
-            if (document.isValidBundleDocument()) {
-                abstractCaseworkerCICDocumentList.add(new AbstractCaseworkerCICDocument<>(document));
-            }
-        }
-
-        return abstractCaseworkerCICDocumentList;
+        return docs.stream().filter(CaseworkerCICDocument::isValidBundleDocument).map(AbstractCaseworkerCICDocument::new).toList();
     }
 
     private List<ListValue<Bundle>> getExistingBundles(CaseDetails<CaseData, State> beforeDetails) {
