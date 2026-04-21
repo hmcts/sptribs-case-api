@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
@@ -13,6 +14,7 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import uk.gov.hmcts.ccd.data.casedetails.SecurityClassification;
 import uk.gov.hmcts.sptribs.common.repositories.CaseDataRepository;
+import uk.gov.hmcts.sptribs.testutil.IntegrationTestBase;
 
 import java.util.Map;
 
@@ -22,21 +24,21 @@ import static org.camunda.bpm.model.xml.test.assertions.ModelAssertions.assertTh
 @Transactional
 @Testcontainers
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-class CaseDataRepositoryImplIT {
+class CaseDataRepositoryImplIT extends IntegrationTestBase {
 
-    @Container
-    static PostgreSQLContainer<?> postgres =
-        new PostgreSQLContainer<>("postgres:15")
-            .withInitScript("sql/create_test_case_data_table.sql");
-
-    @DynamicPropertySource
-    static void props(DynamicPropertyRegistry registry) {
-        registry.add("spring.datasource.url", postgres::getJdbcUrl);
-        registry.add("spring.datasource.username", postgres::getUsername);
-        registry.add("spring.datasource.password", postgres::getPassword);
-        registry.add("spring.datasource.driver-class-name",
-            () -> "org.postgresql.Driver");
-    }
+//    @Container
+//    static PostgreSQLContainer<?> postgres =
+//        new PostgreSQLContainer<>("postgres:16")
+//            .withInitScript("sql/create_test_case_data_table.sql");
+//
+//    @DynamicPropertySource
+//    static void props(DynamicPropertyRegistry registry) {
+//        registry.add("spring.datasource.url", postgres::getJdbcUrl);
+//        registry.add("spring.datasource.username", postgres::getUsername);
+//        registry.add("spring.datasource.password", postgres::getPassword);
+//        registry.add("spring.datasource.driver-class-name",
+//            () -> "org.postgresql.Driver");
+//    }
 
     @Autowired
     private CaseDataRepository repository;
@@ -106,16 +108,18 @@ class CaseDataRepositoryImplIT {
     }
 
     private void insertCase(String state, String json) {
+        MapSqlParameterSource map = new MapSqlParameterSource()
+                .addValue("reference", Long.valueOf("123"))
+                .addValue("state", state)
+                .addValue("data", json)
+                .addValue("securityClassification", SecurityClassification.PUBLIC.name());
         jdbcTemplate.update("""
                 INSERT INTO ccd.case_data (id, reference, jurisdiction, case_type_id, state, data,
                                            security_classification, last_modified)
                 VALUES (1, :reference, 'ST_CIC', 'CriminalInjuriesCompensation', :state, :data::jsonb,
                         :securityClassification, now())
-            """, Map.of(
-            "reference", Long.valueOf("123"),
-            "state", state,
-            "data", json,
-            "securityClassification", SecurityClassification.PUBLIC.name()
-        ));
+            """,
+            map
+        );
     }
 }
