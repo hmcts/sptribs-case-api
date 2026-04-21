@@ -39,7 +39,7 @@ public class BundleCreatedNotification implements PartiesNotification {
         final NotificationResponse notificationResponse;
 
         notificationResponse = sendEmailNotification(templateVarsApplicant,
-        cicCase.getApplicantEmailAddress(), TemplateName.BUNDLE_CREATED_EMAIL, caseNumber);
+        cicCase.getApplicantEmailAddress(), caseNumber);
 
         cicCase.setAppNotificationResponse(notificationResponse);
     }
@@ -55,7 +55,7 @@ public class BundleCreatedNotification implements PartiesNotification {
         final NotificationResponse notificationResponse;
 
         notificationResponse = sendEmailNotification(templateVarsRepresentative,
-        cicCase.getRepresentativeEmailAddress(), TemplateName.BUNDLE_CREATED_EMAIL, caseNumber);
+        cicCase.getRepresentativeEmailAddress(), caseNumber);
 
         cicCase.setRepNotificationResponse(notificationResponse);
     }
@@ -71,17 +71,17 @@ public class BundleCreatedNotification implements PartiesNotification {
         final NotificationResponse notificationResponse;
 
         notificationResponse = sendEmailNotification(templateVarsRespondent,
-            cicCase.getRespondentEmail(), TemplateName.BUNDLE_CREATED_EMAIL, caseNumber);
+            cicCase.getRespondentEmail(), caseNumber);
 
         cicCase.setResNotificationResponse(notificationResponse);
     }
 
     private NotificationResponse sendEmailNotification(final Map<String, Object> templateVars, String toEmail,
-                                                       TemplateName emailTemplateName, String caseReferenceNumber) {
+                                                       String caseReferenceNumber) {
         return notificationService.sendEmail(
             notificationHelper.buildEmailNotificationRequest(toEmail,
                 templateVars,
-                emailTemplateName),
+                TemplateName.BUNDLE_CREATED_EMAIL),
             caseReferenceNumber);
     }
 }

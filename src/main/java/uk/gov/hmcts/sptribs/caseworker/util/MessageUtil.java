@@ -114,13 +114,13 @@ public final class MessageUtil {
         final StringBuilder message = new StringBuilder(100);
         message.append("A notification has been sent to: ");
 
-        if (!(cicCase.getRepNotificationResponse() == null)) {
+        if (cicCase.getRepNotificationResponse() != null) {
             message.append(REPRESENTATIVE + COMMA_SPACE);
         }
-        if (!(cicCase.getResNotificationResponse() == null)) {
+        if (cicCase.getResNotificationResponse() != null) {
             message.append(RESPONDENT + COMMA_SPACE);
         }
-        if (!(cicCase.getAppNotificationResponse() == null)) {
+        if (cicCase.getAppNotificationResponse() != null) {
             message.append(APPLICANT + COMMA_SPACE);
         }
         return message.substring(0, message.length() - 2);
