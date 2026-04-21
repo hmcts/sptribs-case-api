@@ -11,6 +11,7 @@ import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderCIC;
 import uk.gov.hmcts.sptribs.caseworker.model.Order;
+import uk.gov.hmcts.sptribs.caseworker.util.DocumentListUtil;
 import uk.gov.hmcts.sptribs.caseworker.util.DocumentRemoveListUtil;
 import uk.gov.hmcts.sptribs.caseworker.util.SendOrderUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
@@ -25,20 +26,23 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.RESPONDENT_DOCUMENT_MANAGEMENT;
 import static uk.gov.hmcts.sptribs.testutil.TestEventConstants.CASEWORKER_DOCUMENT_MANAGEMENT_REMOVE;
 
 @ExtendWith(MockitoExtension.class)
-class OrdersListRestoreServiceTest {
+class CaseDataRestoreServiceTest {
 
     private static final Long REFERENCE = 12345L;
     private static final LocalDate START_DATE = LocalDate.of(2026, 2, 24);
     private static final LocalDate END_DATE = LocalDate.of(2026, 3, 5);
 
     @InjectMocks
-    private OrdersListRestoreService ordersListRestoreService;
+    private CaseDataRestoreService caseDataRestoreService;
 
     @Mock
     private CaseEventRepository caseEventRepository;
@@ -57,7 +61,7 @@ class OrdersListRestoreServiceTest {
             try (MockedStatic<SendOrderUtil> sendOrderUtil = mockStatic(SendOrderUtil.class);
                  MockedStatic<DocumentRemoveListUtil> documentRemoveListUtil = mockStatic(DocumentRemoveListUtil.class)) {
 
-                ordersListRestoreService.restoreOrdersList(REFERENCE, currentData, START_DATE, END_DATE);
+                caseDataRestoreService.restoreOrdersList(REFERENCE, currentData, START_DATE, END_DATE);
 
                 sendOrderUtil.verifyNoInteractions();
                 documentRemoveListUtil.verifyNoInteractions();
@@ -94,7 +98,7 @@ class OrdersListRestoreServiceTest {
             try (MockedStatic<SendOrderUtil> sendOrderUtil = mockStatic(SendOrderUtil.class);
                  MockedStatic<DocumentRemoveListUtil> documentRemoveListUtil = mockStatic(DocumentRemoveListUtil.class)) {
 
-                ordersListRestoreService.restoreOrdersList(REFERENCE, currentData, START_DATE, END_DATE);
+                caseDataRestoreService.restoreOrdersList(REFERENCE, currentData, START_DATE, END_DATE);
 
                 sendOrderUtil.verify(() ->
                     SendOrderUtil.updateCicCaseOrderList(eq(currentData), eq(orderToRestore.getValue())));
@@ -127,7 +131,7 @@ class OrdersListRestoreServiceTest {
             try (MockedStatic<SendOrderUtil> sendOrderUtil = mockStatic(SendOrderUtil.class);
                  MockedStatic<DocumentRemoveListUtil> documentRemoveListUtil = mockStatic(DocumentRemoveListUtil.class)) {
 
-                ordersListRestoreService.restoreOrdersList(REFERENCE, currentData, START_DATE, END_DATE);
+                caseDataRestoreService.restoreOrdersList(REFERENCE, currentData, START_DATE, END_DATE);
 
                 sendOrderUtil.verifyNoInteractions();
             }
@@ -159,7 +163,7 @@ class OrdersListRestoreServiceTest {
             try (MockedStatic<SendOrderUtil> sendOrderUtil = mockStatic(SendOrderUtil.class);
                  MockedStatic<DocumentRemoveListUtil> documentRemoveListUtil = mockStatic(DocumentRemoveListUtil.class)) {
 
-                ordersListRestoreService.restoreOrdersList(REFERENCE, currentData, START_DATE, END_DATE);
+                caseDataRestoreService.restoreOrdersList(REFERENCE, currentData, START_DATE, END_DATE);
 
                 sendOrderUtil.verifyNoInteractions();
             }
@@ -189,7 +193,7 @@ class OrdersListRestoreServiceTest {
             try (MockedStatic<SendOrderUtil> sendOrderUtil = mockStatic(SendOrderUtil.class);
                  MockedStatic<DocumentRemoveListUtil> documentRemoveListUtil = mockStatic(DocumentRemoveListUtil.class)) {
 
-                ordersListRestoreService.restoreOrdersList(REFERENCE, currentData, START_DATE, END_DATE);
+                caseDataRestoreService.restoreOrdersList(REFERENCE, currentData, START_DATE, END_DATE);
 
                 sendOrderUtil.verifyNoInteractions();
             }
@@ -217,7 +221,7 @@ class OrdersListRestoreServiceTest {
             try (MockedStatic<SendOrderUtil> sendOrderUtil = mockStatic(SendOrderUtil.class);
                  MockedStatic<DocumentRemoveListUtil> documentRemoveListUtil = mockStatic(DocumentRemoveListUtil.class)) {
 
-                ordersListRestoreService.restoreOrdersList(REFERENCE, currentData, START_DATE, END_DATE);
+                caseDataRestoreService.restoreOrdersList(REFERENCE, currentData, START_DATE, END_DATE);
 
                 sendOrderUtil.verifyNoInteractions();
             }
@@ -260,7 +264,7 @@ class OrdersListRestoreServiceTest {
             try (MockedStatic<SendOrderUtil> sendOrderUtil = mockStatic(SendOrderUtil.class);
                  MockedStatic<DocumentRemoveListUtil> documentRemoveListUtil = mockStatic(DocumentRemoveListUtil.class)) {
 
-                ordersListRestoreService.restoreOrdersList(REFERENCE, currentData, START_DATE, END_DATE);
+                caseDataRestoreService.restoreOrdersList(REFERENCE, currentData, START_DATE, END_DATE);
 
                 // verify both orders restored
                 sendOrderUtil.verify(() ->
@@ -271,31 +275,142 @@ class OrdersListRestoreServiceTest {
         }
     }
 
+    @Nested
+    class WhenNoEventDataFound {
+
+        @Test
+        void shouldSkipUpdateWhenNoEventDataFound() {
+            when(caseEventRepository.getFirstEventDataForCase(REFERENCE, RESPONDENT_DOCUMENT_MANAGEMENT))
+                .thenReturn(List.of());
+
+            CaseData currentCaseData = CaseData.builder().build();
+
+            try (MockedStatic<DocumentListUtil> documentListUtil = mockStatic(DocumentListUtil.class)) {
+                caseDataRestoreService.updateInitialCaseDocuments(REFERENCE, currentCaseData);
+
+                documentListUtil.verifyNoInteractions();
+            }
+
+            assertThat(currentCaseData.getInitialCicaDocuments()).isNull();
+        }
+    }
+
+    @Nested
+    class WhenEventDataFound {
+
+        @Test
+        void shouldSetInitialCicaDocumentsFromEventData() {
+            ListValue<CaseworkerCICDocument> doc1 = ListValue.<CaseworkerCICDocument>builder()
+                .id("doc-1")
+                .value(CaseworkerCICDocument.builder()
+                    .documentLink(Document.builder().url("http://doc-1").build())
+                    .build())
+                .build();
+
+            ListValue<CaseworkerCICDocument> doc2 = ListValue.<CaseworkerCICDocument>builder()
+                .id("doc-2")
+                .value(CaseworkerCICDocument.builder()
+                    .documentLink(Document.builder().url("http://doc-2").build())
+                    .build())
+                .build();
+
+            List<ListValue<CaseworkerCICDocument>> allDocuments = List.of(doc1, doc2);
+
+            CaseData caseDataBefore = CaseData.builder().build();
+            CaseData currentCaseData = CaseData.builder().build();
+
+            when(caseEventRepository.getFirstEventDataForCase(REFERENCE, RESPONDENT_DOCUMENT_MANAGEMENT))
+                .thenReturn(List.of(caseDataBefore));
+
+            try (MockedStatic<DocumentListUtil> documentListUtil = mockStatic(DocumentListUtil.class)) {
+                documentListUtil.when(() -> DocumentListUtil.getAllCaseDocuments(caseDataBefore))
+                    .thenReturn(allDocuments);
+
+                caseDataRestoreService.updateInitialCaseDocuments(REFERENCE, currentCaseData);
+
+                assertThat(currentCaseData.getInitialCicaDocuments())
+                    .hasSize(2)
+                    .containsExactly(doc1, doc2);
+
+                documentListUtil.verify(() -> DocumentListUtil.getAllCaseDocuments(caseDataBefore));
+            }
+        }
+
+        @Test
+        void shouldSetEmptyListWhenNoDocumentsAtRespondentUpload() {
+            CaseData caseDataBefore = CaseData.builder().build();
+            CaseData currentCaseData = CaseData.builder().build();
+
+            when(caseEventRepository.getFirstEventDataForCase(REFERENCE, RESPONDENT_DOCUMENT_MANAGEMENT))
+                .thenReturn(List.of(caseDataBefore));
+
+            try (MockedStatic<DocumentListUtil> documentListUtil = mockStatic(DocumentListUtil.class)) {
+                documentListUtil.when(() -> DocumentListUtil.getAllCaseDocuments(caseDataBefore))
+                    .thenReturn(List.of());
+
+                caseDataRestoreService.updateInitialCaseDocuments(REFERENCE, currentCaseData);
+
+                assertThat(currentCaseData.getInitialCicaDocuments()).isEmpty();
+            }
+        }
+
+        @Test
+        void shouldUseFirstEventDataWhenMultipleResultsReturned() {
+            CaseData firstEventData = CaseData.builder().caseNumber("1").build();
+            CaseData secondEventData = CaseData.builder().caseNumber("2").build();
+
+            ListValue<CaseworkerCICDocument> doc = ListValue.<CaseworkerCICDocument>builder()
+                .id("doc-1")
+                .value(CaseworkerCICDocument.builder().build())
+                .build();
+
+            CaseData currentCaseData = CaseData.builder().build();
+
+            when(caseEventRepository.getFirstEventDataForCase(REFERENCE, RESPONDENT_DOCUMENT_MANAGEMENT))
+                    .thenReturn(List.of(firstEventData, secondEventData));
+
+            try (MockedStatic<DocumentListUtil> documentListUtil = mockStatic(DocumentListUtil.class)) {
+                documentListUtil.when(() -> DocumentListUtil.getAllCaseDocuments(firstEventData))
+                    .thenReturn(List.of(doc));
+                documentListUtil.when(() -> DocumentListUtil.getAllCaseDocuments(secondEventData))
+                    .thenReturn(List.of());
+
+                caseDataRestoreService.updateInitialCaseDocuments(REFERENCE, currentCaseData);
+
+                // verify only called with first event data, not second
+                documentListUtil.verify(() -> DocumentListUtil.getAllCaseDocuments(firstEventData));
+                documentListUtil.verify(() -> DocumentListUtil.getAllCaseDocuments(secondEventData), never());
+
+                assertThat(currentCaseData.getInitialCicaDocuments()).hasSize(1);
+            }
+        }
+    }
+
     private CaseData buildCaseDataWithOrders(List<ListValue<Order>> orders) {
         CicCase cicCase = CicCase.builder()
-                .orderList(new ArrayList<>(orders))
-                .build();
+            .orderList(new ArrayList<>(orders))
+            .build();
         return CaseData.builder()
-                .cicCase(cicCase)
-                .build();
+            .cicCase(cicCase)
+            .build();
     }
 
     private ListValue<Order> buildOrderWithUploadedFile(String id, String documentUrl) {
         CICDocument cicDocument = CICDocument.builder()
-                .documentLink(Document.builder().url(documentUrl).build())
-                .build();
+            .documentLink(Document.builder().url(documentUrl).build())
+            .build();
 
         Order order = Order.builder()
-                .uploadedFile(List.of(ListValue.<CICDocument>builder()
-                        .id(id)
-                        .value(cicDocument)
-                        .build()))
-                .build();
+            .uploadedFile(List.of(ListValue.<CICDocument>builder()
+                .id(id)
+                .value(cicDocument)
+                .build()))
+            .build();
 
         return ListValue.<Order>builder()
-                .id(id)
-                .value(order)
-                .build();
+            .id(id)
+            .value(order)
+            .build();
     }
 
     private ListValue<Order> buildOrderWithDraftOrderCIC(String id, String documentUrl) {
