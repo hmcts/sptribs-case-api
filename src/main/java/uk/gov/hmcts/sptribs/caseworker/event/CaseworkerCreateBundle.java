@@ -101,9 +101,9 @@ public class CaseworkerCreateBundle implements CCDConfig<CaseData, State, UserRo
                 .publishToCamunda();
 
         new PageBuilder(eventBuilder)
-            .page("createBundle")
-            .pageLabel("Create a bundle")
-            .done();
+                .page("createBundle")
+                .pageLabel("Create a bundle")
+                .done();
     }
 
     @SneakyThrows
