@@ -26,7 +26,7 @@ class CaseDataRepositoryImplIT {
 
     @Container
     static PostgreSQLContainer<?> postgres =
-        new PostgreSQLContainer<>("postgres:15")
+        new PostgreSQLContainer<>("postgres:16")
             .withInitScript("sql/create_test_case_data_table.sql");
 
     @DynamicPropertySource
