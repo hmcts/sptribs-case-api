@@ -12,6 +12,7 @@ import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import uk.gov.hmcts.ccd.data.casedetails.SecurityClassification;
+import uk.gov.hmcts.sptribs.IntegrationTestBase;
 import uk.gov.hmcts.sptribs.common.repositories.CaseDataRepository;
 
 import java.util.Map;
@@ -22,21 +23,21 @@ import static org.camunda.bpm.model.xml.test.assertions.ModelAssertions.assertTh
 @Transactional
 @Testcontainers
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-class CaseDataRepositoryImplIT {
+class CaseDataRepositoryImplIT extends IntegrationTestBase {
 
-    @Container
-    static PostgreSQLContainer<?> postgres =
-        new PostgreSQLContainer<>("postgres:16")
-            .withInitScript("sql/create_test_case_data_table.sql");
-
-    @DynamicPropertySource
-    static void props(DynamicPropertyRegistry registry) {
-        registry.add("spring.datasource.url", postgres::getJdbcUrl);
-        registry.add("spring.datasource.username", postgres::getUsername);
-        registry.add("spring.datasource.password", postgres::getPassword);
-        registry.add("spring.datasource.driver-class-name",
-            () -> "org.postgresql.Driver");
-    }
+//    @Container
+//    static PostgreSQLContainer<?> postgres =
+//        new PostgreSQLContainer<>("postgres:16")
+//            .withInitScript("sql/create_test_case_data_table.sql");
+//
+//    @DynamicPropertySource
+//    static void props(DynamicPropertyRegistry registry) {
+//        registry.add("spring.datasource.url", postgres::getJdbcUrl);
+//        registry.add("spring.datasource.username", postgres::getUsername);
+//        registry.add("spring.datasource.password", postgres::getPassword);
+//        registry.add("spring.datasource.driver-class-name",
+//            () -> "org.postgresql.Driver");
+//    }
 
     @Autowired
     private CaseDataRepository repository;
