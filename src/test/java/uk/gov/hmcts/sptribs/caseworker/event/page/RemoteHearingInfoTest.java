@@ -14,7 +14,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 
 @ExtendWith(MockitoExtension.class)
-public class RemoteHearingInfoTest {
+class RemoteHearingInfoTest {
 
     private static final String VIDEO_ERROR_MESSAGE = "Video call link must not contain '&'.";
     private static final String CONFERENCE_ERROR_MESSAGE = "Conference call number must not contain '&'.";
@@ -40,7 +40,7 @@ public class RemoteHearingInfoTest {
 
         //when
 
-        final AboutToStartOrSubmitResponse<CaseData, State> response = remoteHearingInfo.midEvent(caseDetails,caseDetails);
+        final AboutToStartOrSubmitResponse<CaseData, State> response = remoteHearingInfo.midEvent(caseDetails, caseDetails);
 
         //then
 
@@ -49,7 +49,7 @@ public class RemoteHearingInfoTest {
     }
 
     @Test
-    public void givenVideoLinkWithSpecialCharacter_whenMidEvent_thenShouldReturnError() {
+    void givenVideoLinkWithSpecialCharacter_whenMidEvent_thenShouldReturnError() {
 
         //given
         final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
@@ -66,7 +66,7 @@ public class RemoteHearingInfoTest {
 
         //when
 
-        final AboutToStartOrSubmitResponse<CaseData, State> response = remoteHearingInfo.midEvent(caseDetails,caseDetails);
+        final AboutToStartOrSubmitResponse<CaseData, State> response = remoteHearingInfo.midEvent(caseDetails, caseDetails);
 
         //then
 
@@ -75,7 +75,7 @@ public class RemoteHearingInfoTest {
     }
 
     @Test
-    public void givenConferenceCallNumberWithSpecialCharacter_whenMidEvent_thenShouldReturnError() {
+    void givenConferenceCallNumberWithSpecialCharacter_whenMidEvent_thenShouldReturnError() {
 
         //given
         final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
@@ -92,7 +92,7 @@ public class RemoteHearingInfoTest {
 
         //when
 
-        final AboutToStartOrSubmitResponse<CaseData, State> response = remoteHearingInfo.midEvent(caseDetails,caseDetails);
+        final AboutToStartOrSubmitResponse<CaseData, State> response = remoteHearingInfo.midEvent(caseDetails, caseDetails);
 
         //then
 

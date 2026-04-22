@@ -50,7 +50,7 @@ class HearingVenuesTest {
 
         //then
         assertThat(response.getErrors()).isEmpty();
-        assertThat(response.getData().getListing().getReadOnlyHearingVenueName() == null);
+        assertThat(response.getData().getListing().getReadOnlyHearingVenueName()).isNull();
 
     }
 
