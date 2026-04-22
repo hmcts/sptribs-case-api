@@ -284,7 +284,6 @@ public class NotificationServiceCIC {
 
             } else {
                 templateVars.put(docName + "Link", EMPTY_PLACEHOLDER);
-
                 addDocumentDetailsAndLink(templateVars, selectedDocuments, item, docName);
             }
         }
