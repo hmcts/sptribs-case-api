@@ -50,6 +50,7 @@ import java.util.UUID;
 import static java.util.Collections.singletonList;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.DOC_AVAILABLE;
+import static uk.gov.hmcts.sptribs.common.CommonConstants.EMPTY_PLACEHOLDER;
 
 @Service
 @RequiredArgsConstructor
@@ -280,16 +281,19 @@ public class NotificationServiceCIC {
 
             if (docName.contains(DOC_AVAILABLE)) {
                 templateVars.put(docName, item);
+
             } else {
-                addLinkOrDocumentDetails(templateVars, selectedDocuments, item, docName);
+                templateVars.put(docName + "Link", EMPTY_PLACEHOLDER);
+
+                addDocumentDetailsAndLink(templateVars, selectedDocuments, item, docName);
             }
         }
     }
 
-    private void addLinkOrDocumentDetails(Map<String, Object> templateVars,
-                                          List<CaseworkerCICDocument> selectedDocuments,
-                                          String item,
-                                          String docName) {
+    private void addDocumentDetailsAndLink(Map<String, Object> templateVars,
+                                           List<CaseworkerCICDocument> selectedDocuments,
+                                           String item,
+                                           String docName) {
         final User user = idamService.retrieveUser(request.getHeader(AUTHORIZATION));
         final String authorisation = user.getAuthToken();
         final String serviceAuthorization = authTokenGenerator.generate();
@@ -308,11 +312,11 @@ public class NotificationServiceCIC {
             if (uploadedDocument != null) {
                 log.debug("Document available for: {}", docName);
 
-                if (uploadedDocument.length <= TWO_MEGABYTES) {
-                    templateVars.put(docName, getJsonFileAttachment(uploadedDocument));
-                } else {
-                    addDocumentDetails(templateVars, selectedDocuments, item, docName);
-                }
+                boolean isFileLessThan2mb = uploadedDocument.length <= TWO_MEGABYTES;
+
+                addDocumentDetails(templateVars, selectedDocuments, item, docName,
+                    isFileLessThan2mb ? getJsonFileAttachment(uploadedDocument) : null);
+
             } else {
                 templateVars.put(docName, "");
             }
@@ -325,15 +329,25 @@ public class NotificationServiceCIC {
     private static void addDocumentDetails(Map<String, Object> templateVars,
                                            List<CaseworkerCICDocument> selectedDocuments,
                                            String item,
-                                           String docName) {
+                                           String docName,
+                                           JSONObject jsonFileAttachment) {
         CaseworkerCICDocument document = selectedDocuments.stream()
             .filter(doc -> doc.getDocumentLink().getBinaryUrl().contains(item))
             .findFirst()
             .orElseThrow(() -> new NotificationException(
                 new Exception(String.format("Unable to find document details for document id: %s", item))));
 
-        String documentNotification = String.format("%nFilename: %s%nDescription: %s%nUpload Date: %s",
-            document.getDocumentLink().getFilename(), document.getDocumentEmailContent(), document.getDate());
+        String documentNotification = String.format(
+            "%nFilename: %s%nDescription: %s%n",
+            document.getDocumentLink().getFilename(), document.getDocumentEmailContent());
+
+        if (jsonFileAttachment != null) {
+            documentNotification += "Download Link: ";
+            templateVars.replace(docName + "Link", jsonFileAttachment);
+        } else {
+            documentNotification += String.format("Upload Date: %s", document.getDate());
+        }
+
         templateVars.put(docName, documentNotification);
     }
 
