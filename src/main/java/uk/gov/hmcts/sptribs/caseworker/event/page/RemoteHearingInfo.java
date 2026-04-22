@@ -13,6 +13,9 @@ import java.util.List;
 
 public class RemoteHearingInfo implements CcdPageConfiguration {
 
+    private static final String VIDEO_CALL = "Video call link";
+    private static final String CONFERENCE_CALL = "Conference call number";
+
     @Override
     public void addTo(PageBuilder pageBuilder) {
         pageBuilder.page("remoteHearingInformation", this::midEvent)
@@ -29,10 +32,9 @@ public class RemoteHearingInfo implements CcdPageConfiguration {
         List<String> errors = new ArrayList<>();
         Listing listing = caseData.getListing();
 
-        if (listing != null) {
-            validateNoSpecialCharacter(listing.getVideoCallLink(), "Video call link", errors);
-            validateNoSpecialCharacter(listing.getConferenceCallNumber(), "Conference call number", errors);
-        }
+        validateNoSpecialCharacter(listing.getVideoCallLink(), VIDEO_CALL, errors);
+        validateNoSpecialCharacter(listing.getConferenceCallNumber(), CONFERENCE_CALL, errors);
+
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
