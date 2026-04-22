@@ -11,8 +11,8 @@ import org.springframework.test.util.ReflectionTestUtils;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.idam.client.models.User;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
+import uk.gov.hmcts.sptribs.common.repositories.CaseEventRepository;
 import uk.gov.hmcts.sptribs.common.repositories.exception.CaseEventRepositoryException;
-import uk.gov.hmcts.sptribs.common.repositories.impl.CaseEventRepositoryImpl;
 import uk.gov.hmcts.sptribs.idam.IdamService;
 import uk.gov.hmcts.sptribs.systemupdate.service.CcdManagementException;
 import uk.gov.hmcts.sptribs.systemupdate.service.CcdUpdateService;
@@ -44,7 +44,7 @@ class SystemRestoreOrdersTaskTest {
     private AuthTokenGenerator authTokenGenerator;
 
     @Mock
-    private CaseEventRepositoryImpl caseEventRepositoryImpl;
+    private CaseEventRepository caseEventRepository;
 
     @Mock
     private CcdUpdateService ccdUpdateService;
@@ -70,7 +70,7 @@ class SystemRestoreOrdersTaskTest {
 
             systemRestoreOrdersTask.run();
 
-            verifyNoInteractions(idamService, authTokenGenerator, caseEventRepositoryImpl, ccdUpdateService);
+            verifyNoInteractions(idamService, authTokenGenerator, caseEventRepository, ccdUpdateService);
         }
     }
 
@@ -90,7 +90,7 @@ class SystemRestoreOrdersTaskTest {
 
         @Test
         void shouldDoNothingWhenNoCasesFound() {
-            when(caseEventRepositoryImpl.getListOfCasesByEventIdDuringDateRange(
+            when(caseEventRepository.getListOfCasesByEventIdDuringDateRange(
                 CASEWORKER_DOCUMENT_MANAGEMENT_REMOVE, START_FROM_DATE, END_TO_DATE))
                 .thenReturn(List.of());
 
@@ -101,7 +101,7 @@ class SystemRestoreOrdersTaskTest {
 
         @Test
         void shouldTriggerEventForEachCaseFound() {
-            when(caseEventRepositoryImpl.getListOfCasesByEventIdDuringDateRange(
+            when(caseEventRepository.getListOfCasesByEventIdDuringDateRange(
                 CASEWORKER_DOCUMENT_MANAGEMENT_REMOVE, START_FROM_DATE, END_TO_DATE))
                 .thenReturn(List.of(111L, 222L, 333L));
 
@@ -119,12 +119,12 @@ class SystemRestoreOrdersTaskTest {
             systemRestoreOrdersTask.run();
 
             verify(ccdUpdateService).submitEvent(12345L, SYSTEM_RESTORE_ORDERS, user, SERVICE_AUTHORIZATION);
-            verifyNoInteractions(caseEventRepositoryImpl);
+            verifyNoInteractions(caseEventRepository);
         }
 
         @Test
         void shouldContinueToNextCaseWhenCcdManagementExceptionThrown() {
-            when(caseEventRepositoryImpl.getListOfCasesByEventIdDuringDateRange(
+            when(caseEventRepository.getListOfCasesByEventIdDuringDateRange(
                 CASEWORKER_DOCUMENT_MANAGEMENT_REMOVE, START_FROM_DATE, END_TO_DATE))
                 .thenReturn(List.of(111L, 222L, 333L));
 
@@ -148,7 +148,7 @@ class SystemRestoreOrdersTaskTest {
 
         @Test
         void shouldContinueToNextCaseWhenIllegalArgumentExceptionThrown() {
-            when(caseEventRepositoryImpl.getListOfCasesByEventIdDuringDateRange(
+            when(caseEventRepository.getListOfCasesByEventIdDuringDateRange(
                 CASEWORKER_DOCUMENT_MANAGEMENT_REMOVE, START_FROM_DATE, END_TO_DATE))
                 .thenReturn(List.of(111L, 222L));
 
@@ -163,7 +163,7 @@ class SystemRestoreOrdersTaskTest {
 
         @Test
         void shouldStopAndLogWhenRepositoryThrowsRuntimeException() {
-            when(caseEventRepositoryImpl.getListOfCasesByEventIdDuringDateRange(
+            when(caseEventRepository.getListOfCasesByEventIdDuringDateRange(
                 CASEWORKER_DOCUMENT_MANAGEMENT_REMOVE, START_FROM_DATE, END_TO_DATE))
                 .thenThrow(new CaseEventRepositoryException("DB error", new RuntimeException()));
 
