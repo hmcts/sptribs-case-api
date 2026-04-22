@@ -801,6 +801,9 @@ public class NotificationServiceCICTest {
 
         UploadResponse expectedResponse = uploadResponseWithSampleDocument();
 
+        String expectedDocumentDescription = String.format("%nFilename: %s%nDescription: %s%nDownload Link: ",
+            cicDocument.getDocumentLink().getFilename(), cicDocument.getDocumentEmailContent());
+
         when(caseDocumentClientAPI.uploadDocuments(any(), any(), any())).thenReturn(expectedResponse);
 
         //When
@@ -818,6 +821,10 @@ public class NotificationServiceCICTest {
             .containsEntry("DocumentAvailable1", "yes");
         assertThat(templateVarsArgCaptor.getValue())
             .extracting("CaseDocument1")
+            .isInstanceOf(String.class)
+            .isEqualTo(expectedDocumentDescription);
+        assertThat(templateVarsArgCaptor.getValue())
+            .extracting("CaseDocument1Link")
             .isInstanceOf(JSONObject.class);
 
         verify(sendEmailResponse, times(3)).getNotificationId();
