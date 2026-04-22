@@ -540,6 +540,8 @@ class CamundaTaskWaPermissionTest extends DmnDecisionTableBaseUnitTest {
     private static List<Map<String, Object>> defaultSpecificAccessRequestCtscPermissions() {
         return List.of(
             taskSupervisorPermissions(),
+            hearingCentreTeamLeaderSpecificAccessPermissions(),
+            regionalHearingCentreTeamLeaderSpecificAccessPermissions(),
             ctscTeamLeaderSpecificAccessPermissions()
         );
     }
