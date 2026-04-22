@@ -25,20 +25,6 @@ import static org.camunda.bpm.model.xml.test.assertions.ModelAssertions.assertTh
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 class CaseDataRepositoryImplIT extends IntegrationTestBase {
 
-//    @Container
-//    static PostgreSQLContainer<?> postgres =
-//        new PostgreSQLContainer<>("postgres:16")
-//            .withInitScript("sql/create_test_case_data_table.sql");
-//
-//    @DynamicPropertySource
-//    static void props(DynamicPropertyRegistry registry) {
-//        registry.add("spring.datasource.url", postgres::getJdbcUrl);
-//        registry.add("spring.datasource.username", postgres::getUsername);
-//        registry.add("spring.datasource.password", postgres::getPassword);
-//        registry.add("spring.datasource.driver-class-name",
-//            () -> "org.postgresql.Driver");
-//    }
-
     @Autowired
     private CaseDataRepository repository;
 
