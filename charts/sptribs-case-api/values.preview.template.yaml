@@ -181,7 +181,7 @@ ccd:
   ccd-admin-web:
     nodejs:
       disableKeyVaults: true
-      image: hmctspublic.azurecr.io/ccd/admin-web:latest
+      image: hmctsprod.azurecr.io/ccd/admin-web:latest
       ingressHost: admin-web-${SERVICE_FQDN}
       environment:
         USER_PROFILE_DB_HOST: '{{ tpl .Values.global.postgresHostname $}}'
@@ -231,13 +231,13 @@ ccd:
       className: traefik
 
   logstash:
-    image: "hmctspublic.azurecr.io/imported/logstash/logstash"
+    image: "hmctsprod.azurecr.io/imported/logstash/logstash"
     imageTag: "7.16.1"
     imagePullPolicy: "IfNotPresent"
     logstashJavaOpts: "-Xmx1g -Xms512M"
     extraInitContainers: |
       - name: download-postgres-jdbc
-        image: hmctspublic.azurecr.io/curl:7.70.0
+        image: hmctsprod.azurecr.io/curl:7.70.0
         command: ['curl', '-L', 'https://jdbc.postgresql.org/download/postgresql-42.2.18.jar', '-o', '/logstash-lib/postgresql.jar']
         volumeMounts:
         - name: logstash-lib
@@ -439,7 +439,7 @@ ccd-case-document-am-api:
   java:
     releaseNameOverride: ${SERVICE_NAME}-ccd-case-document-am-api
     imagePullPolicy: Always
-    image: hmctspublic.azurecr.io/ccd/case-document-am-api:latest
+    image: hmctsprod.azurecr.io/ccd/case-document-am-api:latest
     ingressHost: ccd-case-document-am-api-${SERVICE_FQDN}
     environment:
       CASE_DOCUMENT_S2S_AUTHORISED_SERVICES: ccd_case_document_am_api,ccd_gw,xui_webapp,ccd_data,bulk_scan_processor,em_npa_app,dg_docassembly_api,em_stitching_api,em_ccd_orchestrator,bulk_scan_orchestrator,sptribs_case_api,sptribs_frontend
@@ -453,7 +453,7 @@ xui-webapp:
   nodejs:
     imagePullPolicy: Always
     releaseNameOverride: ${SERVICE_NAME}-xui-webapp
-    image: hmctspublic.azurecr.io/xui/webapp:latest
+    image: hmctsprod.azurecr.io/xui/webapp:latest
     ingressHost: xui-${SERVICE_FQDN}
     devcpuRequests: 250m
     devmemoryRequests: 1024Mi
@@ -477,7 +477,7 @@ xui-mo-webapp:
   nodejs:
     imagePullPolicy: Always
     releaseNameOverride: ${SERVICE_NAME}-xui-mo-webapp
-    image: hmctspublic.azurecr.io/xui/mo-webapp:latest
+    image: hmctsprod.azurecr.io/xui/mo-webapp:latest
     ingressHost: xui-mo-${SERVICE_FQDN}
     environment:
       MANAGE_CASE_LINK: https://xui-${SERVICE_FQDN}/cases
@@ -495,7 +495,7 @@ sptribs-frontend:
       enabled: false
     imagePullPolicy: Always
     releaseNameOverride: ${SERVICE_NAME}-frontend
-    image: hmctspublic.azurecr.io/sptribs/frontend:latest #pr-xxxx
+    image: hmctsprod.azurecr.io/sptribs/frontend:latest #pr-xxxx
     ingressHost: frontend-${SERVICE_FQDN}
     environment:
       CCD_URL: http://{{ .Release.Name }}-ccd-data-store-api
@@ -507,7 +507,7 @@ aac-manage-case-assignment:
     disableKeyVaults: true
     imagePullPolicy: Always
     releaseNameOverride: ${SERVICE_NAME}-aac-manage-case-assignment
-    image: hmctspublic.azurecr.io/aac/manage-case-assignment:latest
+    image: hmctsprod.azurecr.io/aac/manage-case-assignment:latest
     ingressHost: aac-${SERVICE_FQDN}
     environment:
       MCA_DS_PROXY_URLS_ALLOWED_LIST: /searchCases.*,/internal/searchCases.*,/internal/cases.*
@@ -524,7 +524,7 @@ em-ccdorc:
   java:
     imagePullPolicy: Always
     releaseNameOverride: ${SERVICE_NAME}-em-ccdorc
-    image: hmctspublic.azurecr.io/em/ccdorc:latest
+    image: hmctsprod.azurecr.io/em/ccdorc:latest
     ingressHost: em-ccdorc-${SERVICE_FQDN}
     environment:
       EM_STITCHING_API_URL: https://em-stitching-${SERVICE_FQDN}
@@ -546,7 +546,7 @@ em-stitching:
   java:
     imagePullPolicy: Always
     releaseNameOverride: ${SERVICE_NAME}-em-stitching
-    image: hmctspublic.azurecr.io/em/stitching:latest
+    image: hmctsprod.azurecr.io/em/stitching:latest
     ingressHost: em-stitching-${SERVICE_FQDN}
     environment:
       CDAM_URL: http://${SERVICE_NAME}-ccd-case-document-am-api
