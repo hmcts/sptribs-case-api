@@ -9,6 +9,7 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.common.dto.RemoveEventWithPrecedingData;
+import uk.gov.hmcts.sptribs.common.repositories.CaseEventRepository;
 import uk.gov.hmcts.sptribs.common.repositories.exception.CaseEventRepositoryException;
 
 import java.time.LocalDate;
@@ -21,7 +22,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 @Repository
 @Slf4j
-public class CaseEventRepositoryImpl {
+public class CaseEventRepositoryImpl implements CaseEventRepository {
 
     public static final String CASE_EVENT_ID = "caseEventId";
     public static final String CREATED_DATE = "createdDate";
@@ -57,6 +58,7 @@ public class CaseEventRepositoryImpl {
             + "ORDER BY ce.created_date ASC "
             + "LIMIT 1";
 
+    @Override
     public List<CaseData> getFirstEventDataForCase(Long reference, String caseEventId) {
         try {
             return namedParameterJdbcTemplate.query(
@@ -71,6 +73,7 @@ public class CaseEventRepositoryImpl {
         }
     }
 
+    @Override
     public List<Long> getListOfCasesByEventTypeAndDate(String caseEventId, LocalDate createdDate) {
 
         List<Long> results;
@@ -101,6 +104,7 @@ public class CaseEventRepositoryImpl {
 
     }
 
+    @Override
     public List<Long> getListOfCasesByEventIdDuringDateRange(String caseEventId, LocalDate startDate, LocalDate endDate) {
 
         List<Long> results;
@@ -125,6 +129,7 @@ public class CaseEventRepositoryImpl {
         return results;
     }
 
+    @Override
     public List<RemoveEventWithPrecedingData> getRemoveEventsWithPrecedingData(
         Long reference, String caseEventId, LocalDate startDate, LocalDate endDate) {
 
