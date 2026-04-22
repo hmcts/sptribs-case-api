@@ -801,13 +801,15 @@ public class NotificationServiceCICTest {
 
         UploadResponse expectedResponse = uploadResponseWithSampleDocument();
 
-        String expectedDocumentDescription = String.format("%nFilename: %s%nDescription: %s%nDownload Link: ",
-            cicDocument.getDocumentLink().getFilename(), cicDocument.getDocumentEmailContent());
+
 
         when(caseDocumentClientAPI.uploadDocuments(any(), any(), any())).thenReturn(expectedResponse);
 
         //When
         notificationService.sendEmail(request, List.of(cicDocument), TEST_CASE_ID.toString());
+
+        String expectedDocumentDescription = String.format("%nFilename: %s%nDescription: %s%nDownload Link: ",
+            cicDocument.getDocumentLink().getFilename(), cicDocument.getDocumentEmailContent());
 
         //Then
         verify(notificationClient).sendEmail(
