@@ -64,21 +64,35 @@ public class HearingVenues implements CcdPageConfiguration {
         final List<String> errors = new ArrayList<>();
         final Listing listing = data.getListing();
 
-        if (!listing.getVenueNotListedOption().contains(VenueNotListed.VENUE_NOT_LISTED)) {
-            String selectedVenue = data.getListing().getSelectedVenue();
-            listing.setHearingVenueNameAndAddress(selectedVenue);
-        } else {
-            listing.setReadOnlyHearingVenueName(null);
+        if (listing != null) {
+
+            validateNoSpecialCharacter(listing.getHearingVenueNameAndAddress(), "Hearing venue", errors);
+            validateNoSpecialCharacter(listing.getAddlInstr(), "Additional instructions and directions", errors);
+
+            if (!listing.getVenueNotListedOption().contains(VenueNotListed.VENUE_NOT_LISTED)) {
+                String selectedVenue = data.getListing().getSelectedVenue();
+                listing.setHearingVenueNameAndAddress(selectedVenue);
+            } else {
+                listing.setReadOnlyHearingVenueName(null);
+            }
+            if (StringUtils.isBlank(listing.getHearingVenueNameAndAddress())
+                    && StringUtils.isBlank(listing.getReadOnlyHearingVenueName())) {
+                errors.add("Please enter valid Hearing venue");
+            }
+
+            data.setListing(listing);
         }
-        if (StringUtils.isBlank(listing.getHearingVenueNameAndAddress())
-            && StringUtils.isBlank(listing.getReadOnlyHearingVenueName())) {
-            errors.add("Please enter valid Hearing venue");
-        }
-        data.setListing(listing);
+
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
-            .data(data)
-            .errors(errors)
-            .build();
+                .data(data)
+                .errors(errors)
+                .build();
+    }
+
+    private void validateNoSpecialCharacter(String value, String fieldName, List<String> errors) {
+        if (value != null && value.contains("&")) {
+            errors.add(fieldName + " must not contain '&'.");
+        }
     }
 
 }

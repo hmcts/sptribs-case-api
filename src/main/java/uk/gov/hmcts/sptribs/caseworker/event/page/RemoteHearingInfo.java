@@ -15,32 +15,35 @@ public class RemoteHearingInfo implements CcdPageConfiguration {
 
     @Override
     public void addTo(PageBuilder pageBuilder) {
-            pageBuilder.page("remoteHearingInformation", this::midEvent)
-                .pageLabel("Remote hearing information")
-                .label("LabelRemoteHearingInfoObj", "")
-                .complex(CaseData::getListing)
-                .optionalWithLabel(Listing::getVideoCallLink, "Video link - please do not enter the & character.")
-                .optional(Listing::getConferenceCallNumber);
+        pageBuilder.page("remoteHearingInformation", this::midEvent)
+            .pageLabel("Remote hearing information")
+            .label("LabelRemoteHearingInfoObj", "")
+            .complex(CaseData::getListing)
+            .optionalWithLabel(Listing::getVideoCallLink, "Video call link - Please do not enter the '&' character.")
+            .optionalWithLabel(Listing::getConferenceCallNumber, "Conference call number - Please do not enter the '&' character.");
     }
 
     public AboutToStartOrSubmitResponse<CaseData, State> midEvent(CaseDetails<CaseData, State> details,
                                                                   CaseDetails<CaseData, State> detailsBefore) {
         CaseData caseData = details.getData();
-
         List<String> errors = new ArrayList<>();
+        Listing listing = caseData.getListing();
 
-        String videoLinkString = caseData.getListing() != null
-            ? caseData.getListing().getVideoCallLink()
-            : null;
-
-        if (videoLinkString != null && videoLinkString.contains("&")) {
-            errors.add("Video call link must not contain '&'.");
+        if (listing != null) {
+            validateNoSpecialCharacter(listing.getVideoCallLink(), "Video call link", errors);
+            validateNoSpecialCharacter(listing.getConferenceCallNumber(), "Conference call number", errors);
         }
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
             .errors(errors)
             .build();
+    }
+
+    private void validateNoSpecialCharacter(String value, String fieldName, List<String> errors) {
+        if (value != null && value.contains("&")) {
+            errors.add(fieldName + " must not contain '&'.");
+        }
     }
 
 
