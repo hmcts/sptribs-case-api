@@ -13,7 +13,7 @@ import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.Event;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
-import uk.gov.hmcts.sptribs.caseworker.util.DocumentListUtil;
+import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
@@ -27,7 +27,6 @@ import uk.gov.hmcts.sptribs.document.bundling.model.Callback;
 import uk.gov.hmcts.sptribs.document.model.AbstractCaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.notification.dispatcher.BundleCreatedNotification;
-import uk.gov.hmcts.sptribs.notification.dispatcher.CaseIssuedNotification;
 
 import java.time.Clock;
 import java.time.LocalDateTime;
@@ -43,10 +42,9 @@ import java.util.stream.Collectors;
 
 import static java.lang.String.format;
 import static java.util.Collections.emptyList;
+import static org.springframework.util.CollectionUtils.isEmpty;
 import static uk.gov.hmcts.sptribs.caseworker.util.DocumentListUtil.extractDocumentsFromListValues;
 import static uk.gov.hmcts.sptribs.caseworker.util.DocumentListUtil.getAllCaseDocuments;
-import static org.springframework.util.CollectionUtils.isEmpty;
-import static uk.gov.hmcts.sptribs.caseworker.util.DocumentListUtil.getAllCaseDocumentsExcludingInitialCicaUpload;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CREATE_BUNDLE;
 import static uk.gov.hmcts.sptribs.caseworker.util.MessageUtil.generateSimpleErrorMessage;
 import static uk.gov.hmcts.sptribs.caseworker.util.MessageUtil.generateSimpleMessageBundleCreation;
@@ -75,8 +73,6 @@ public class CaseworkerCreateBundle implements CCDConfig<CaseData, State, UserRo
 
     private final BundlingService bundlingService;
 
-    private final CaseIssuedNotification caseIssuedNotification;
-
     @Autowired
     private final Clock clock;
 
@@ -101,9 +97,9 @@ public class CaseworkerCreateBundle implements CCDConfig<CaseData, State, UserRo
                 .publishToCamunda();
 
         new PageBuilder(eventBuilder)
-                .page("createBundle")
-                .pageLabel("Create a bundle")
-                .done();
+            .page("createBundle")
+            .pageLabel("Create a bundle")
+            .done();
     }
 
     @SneakyThrows
@@ -136,7 +132,6 @@ public class CaseworkerCreateBundle implements CCDConfig<CaseData, State, UserRo
         caseData.setMultiBundleConfiguration(null);
         caseData.setCaseDocuments(null);
         caseData.setFurtherCaseDocuments(null);
-
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
@@ -189,8 +184,6 @@ public class CaseworkerCreateBundle implements CCDConfig<CaseData, State, UserRo
         }
     }
 
-    private List<AbstractCaseworkerCICDocument<CaseworkerCICDocument>> getInitialCicaUpload(CaseData caseData, long caseId) {
-        var initialDocs = Optional.ofNullable(caseData.getInitialCicaDocuments()).orElse(emptyList());
     private void setCaseBundleRequestDocuments(CaseData caseData, List<CaseworkerCICDocument> allDocuments) {
         List<CaseworkerCICDocument> initialDocuments = extractDocumentsFromListValues(caseData.getInitialCicaDocuments());
 
