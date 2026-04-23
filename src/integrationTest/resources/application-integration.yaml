@@ -1,6 +1,9 @@
 spring:
   flyway:
     enabled: false
+    locations:
+      - classpath:db/migration
+      - classpath:dataruntime-db/migration
   main:
     allow-bean-definition-overriding: true
   messages:
