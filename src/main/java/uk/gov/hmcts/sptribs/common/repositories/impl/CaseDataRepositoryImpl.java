@@ -98,7 +98,6 @@ public class CaseDataRepositoryImpl implements CaseDataRepository {
             (rs, rowNum) -> mapToCicaCaseEntity(rs)
         );
 
-        log.info("Email matched for CCD reference: {}", ccdReference);
         return results.stream().findFirst();
     }
 

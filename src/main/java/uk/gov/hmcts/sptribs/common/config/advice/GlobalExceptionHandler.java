@@ -77,6 +77,6 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(UnauthorisedCaseAccessException.class)
     public ResponseEntity<Object> handleUnauthorisedCaseAccessException(UnauthorisedCaseAccessException exception) {
         log.warn("User is not associated with this case: {}", exception.getMessage());
-        return status(HttpStatus.NOT_FOUND).build();
+        return status(HttpStatus.FORBIDDEN).build();
     }
 }
