@@ -124,21 +124,21 @@ public class NotificationServiceCICTest {
             .destinationAddress(EMAIL_ADDRESS)
             .template(TemplateName.APPLICATION_RECEIVED)
             .templateVars(templateVars)
-            .hasFileAttachments(false)
+            .hasFileAttachments(true)
             .uploadedDocuments(uploadedDocuments)
             .build();
 
         final User user = TestDataHelper.getUser();
 
-        //when(idamService.retrieveUser(any())).thenReturn(user);
+        when(idamService.retrieveUser(any())).thenReturn(user);
         when(sendEmailResponse.getReference()).thenReturn(Optional.of(randomUUID().toString()));
         when(sendEmailResponse.getNotificationId()).thenReturn(UUID.randomUUID());
         when(emailTemplatesConfig.getTemplatesCIC()).thenReturn(templateNameMap);
         when(httpServletRequest.getHeader(AUTHORIZATION)).thenReturn(TEST_AUTHORIZATION_TOKEN);
         when(authTokenGenerator.generate()).thenReturn(TEST_SERVICE_AUTH_TOKEN);
 
-        final byte[] sample = new byte[1];
-        // when(caseDocumentClientAPI.getDocumentBinary(anyString(), anyString(), any(UUID.class))).thenReturn(ResponseEntity.ok(sample));
+        final ResponseEntity<byte[]> sample = ResponseEntity.ok(new byte[1]);
+        when(caseDocumentClientAPI.getDocumentBinary(anyString(), anyString(), any(UUID.class))).thenReturn(sample);
 
         when(notificationClient.sendEmail(
             eq(templateId),
@@ -147,7 +147,7 @@ public class NotificationServiceCICTest {
             any()
         )).thenReturn(sendEmailResponse);
 
-        when(pdfServiceClient.generateFromHtml(any(), any())).thenReturn(sample);
+//        when(pdfServiceClient.generateFromHtml(any(), any())).thenReturn(sample);
 
         UploadResponse expectedResponse = uploadResponseWithSampleDocument();
         when(caseDocumentClientAPI.uploadDocuments(any(), any(), any())).thenReturn(expectedResponse);
@@ -800,8 +800,6 @@ public class NotificationServiceCICTest {
         when(caseDocumentClientAPI.getDocumentBinary(anyString(), anyString(), any(UUID.class))).thenReturn(sample);
 
         UploadResponse expectedResponse = uploadResponseWithSampleDocument();
-
-
 
         when(caseDocumentClientAPI.uploadDocuments(any(), any(), any())).thenReturn(expectedResponse);
 
