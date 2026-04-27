@@ -295,10 +295,18 @@ public final class DocumentListUtil {
     }
 
     public static void removeFurtherUploadedDocument(CaseData caseData, ListValue<CaseworkerCICDocument> cicDocumentListValue) {
+        removeDocumentFromList(caseData.getFurtherUploadedDocuments(), cicDocumentListValue);
+    }
 
-        if (caseData.getFurtherUploadedDocuments() != null) {
-            caseData.getFurtherUploadedDocuments().removeIf(listValue ->
-                cicDocumentListValue.getValue().getDocumentLink().equals(listValue.getValue().getDocumentLink())
+    public static void removeInitialCaseDocuments(CaseData caseData, ListValue<CaseworkerCICDocument> cicDocumentListValue) {
+        removeDocumentFromList(caseData.getInitialCicaDocuments(), cicDocumentListValue);
+    }
+
+    private static void removeDocumentFromList(List<ListValue<CaseworkerCICDocument>> documents,
+                                               ListValue<CaseworkerCICDocument> toRemove) {
+        if (documents != null) {
+            documents.removeIf(listValue ->
+                toRemove.getValue().getDocumentLink().equals(listValue.getValue().getDocumentLink())
             );
         }
     }
