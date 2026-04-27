@@ -5,6 +5,8 @@ import feign.FeignException;
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
 import org.elasticsearch.index.query.BoolQueryBuilder;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,6 +38,7 @@ import uk.gov.hmcts.sptribs.systemupdate.service.CcdSearchService;
 import uk.gov.hmcts.sptribs.util.AppsUtil;
 
 import java.io.IOException;
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -84,6 +87,9 @@ public abstract class FunctionalTestSuite {
 
     @Autowired
     protected AppsConfig appsConfig;
+
+    @Autowired
+    protected static FunctionalTestDataManager functionalTestDataManager;
 
     protected static final String EVENT_PARAM = "event";
     protected static final String UPDATE = "UPDATE";
@@ -139,6 +145,8 @@ public abstract class FunctionalTestSuite {
         CaseDetails createdCase = createCaseInCcd();
         CaseData formatter = CaseData.builder().build();
         caseData.put("hyphenatedCaseRef", formatter.formatCaseRef(createdCase.getId()));
+
+        functionalTestDataManager.addReference(createdCase.getId());
         return createdCase.getId();
     }
 
@@ -476,5 +484,20 @@ public abstract class FunctionalTestSuite {
             }
         }
         caseData.put("cicCaseDraftOrderCICList", draftOrderList);
+    }
+
+    @BeforeAll
+    static void setUpDataManager() throws SQLException {
+        functionalTestDataManager = FunctionalTestDataManager.fromEnvironment();
+    }
+
+
+    @AfterAll
+    static void tearDownDataManager() throws SQLException {
+
+        for (long reference : functionalTestDataManager.getTestReferences()) {
+            functionalTestDataManager.clearDown(reference);
+        }
+        functionalTestDataManager.closeAll();
     }
 }

@@ -1,10 +1,15 @@
 package uk.gov.hmcts.sptribs.caseworker;
 
 import io.restassured.response.Response;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import uk.gov.hmcts.sptribs.testutil.FunctionalTestDataManager;
 import uk.gov.hmcts.sptribs.testutil.FunctionalTestSuite;
 
+import java.sql.SQLException;
 import java.util.Map;
 
 import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
@@ -37,6 +42,9 @@ public class CaseworkerIssueCaseFT extends FunctionalTestSuite {
         "classpath:request/casedata/ccd-callback-casedata-caseworker-issue-case-submitted.json";
 
     private static final String CONFIRMATION_HEADER = "$.confirmation_header";
+
+    @Autowired
+    protected static FunctionalTestDataManager functionalTestDataManager;
 
     @Test
     public void shouldInitialiseDocumentListWhenAboutToStartCallbackIsInvoked() throws Exception {
@@ -92,4 +100,18 @@ public class CaseworkerIssueCaseFT extends FunctionalTestSuite {
                 ## A notification could not be sent to: Subject\s
                 ## Please resend the notification.""");
     }
+
+//    @BeforeAll
+//    static void setUpDataManager() throws SQLException {
+//        functionalTestDataManager = FunctionalTestDataManager.fromEnvironment();
+//    }
+
+//    @AfterAll
+//    static void tearDownDataManager() throws SQLException {
+//
+//        for (long reference : functionalTestDataManager.getTestReferences()) {
+//            functionalTestDataManager.clearDown(reference);
+//        }
+//        functionalTestDataManager.closeAll();
+//    }
 }
