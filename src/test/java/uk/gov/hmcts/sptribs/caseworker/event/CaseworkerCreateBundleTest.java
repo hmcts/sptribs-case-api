@@ -247,7 +247,7 @@ class CaseworkerCreateBundleTest {
         when(bundlingService.getMultiBundleConfig()).thenCallRealMethod();
         when(bundlingService.getMultiBundleConfigs()).thenCallRealMethod();
 
-        when(bundlingService.createBundle(any(BundleCallback.class))).thenAnswer(callback -> {
+        when(bundlingService.createBundle(any(BundleCallback.class), eq(TEST_CASE_ID))).thenAnswer(callback -> {
             final BundleCallback callbackAtMockTime = (BundleCallback) callback.getArguments()[0];
 
             final CaseData dataAtMockTime = callbackAtMockTime.getCaseDetails().getData();
