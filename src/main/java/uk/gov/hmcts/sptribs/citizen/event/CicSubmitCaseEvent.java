@@ -35,6 +35,7 @@ import uk.gov.hmcts.sptribs.common.config.AppsConfig;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.document.model.CitizenCICDocument;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
+import uk.gov.hmcts.sptribs.document.persistence.DocumentsService;
 import uk.gov.hmcts.sptribs.idam.IdamService;
 import uk.gov.hmcts.sptribs.util.AppsUtil;
 
@@ -70,18 +71,21 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 @Setter
 public class CicSubmitCaseEvent implements CCDConfig<CaseData, State, UserRole> {
 
-    private HttpServletRequest request;
-    private IdamService idamService;
-    private AppsConfig appsConfig;
-    private DssApplicationReceivedNotification dssApplicationReceivedNotification;
+    private final HttpServletRequest request;
+    private final IdamService idamService;
+    private final AppsConfig appsConfig;
+    private final DssApplicationReceivedNotification dssApplicationReceivedNotification;
+    private final DocumentsService documentsService;
 
     @Autowired
     public CicSubmitCaseEvent(HttpServletRequest request, IdamService idamService, AppsConfig appsConfig,
-                              DssApplicationReceivedNotification dssApplicationReceivedNotification) {
+                              DssApplicationReceivedNotification dssApplicationReceivedNotification,
+                              DocumentsService documentsService) {
         this.request = request;
         this.idamService = idamService;
         this.appsConfig = appsConfig;
         this.dssApplicationReceivedNotification = dssApplicationReceivedNotification;
+        this.documentsService = documentsService;
     }
 
     @Override
@@ -299,7 +303,16 @@ public class CicSubmitCaseEvent implements CCDConfig<CaseData, State, UserRole> 
             }
         }
 
-        caseData.getCicCase().setApplicantDocumentsUploaded(DocumentManagementUtil.buildListValues(docList));
+        List<ListValue<CaseworkerCICDocument>> applicantDocs = DocumentManagementUtil.buildListValues(docList);
+
+        caseData.getCicCase().setApplicantDocumentsUploaded(applicantDocs);
+        for (ListValue<CaseworkerCICDocument> document : applicantDocs) {
+            documentsService.buildAndSaveNewDocumentEntity(
+                document.getValue().getDocumentLink(),
+                Long.parseLong(caseData.getCaseNumber()),
+                false
+            );
+        }
         dssCaseData.setTribunalFormDocuments(new ArrayList<>());
         dssCaseData.setSupportingDocuments(new ArrayList<>());
         dssCaseData.setOtherInfoDocuments(new ArrayList<>());

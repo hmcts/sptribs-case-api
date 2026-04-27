@@ -12,7 +12,6 @@ import uk.gov.hmcts.ccd.sdk.ConfigBuilderImpl;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.Event;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
-import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.sptribs.cdam.model.Document;
 import uk.gov.hmcts.sptribs.cdam.model.UploadResponse;
@@ -20,9 +19,11 @@ import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.config.AppsConfig;
+import uk.gov.hmcts.sptribs.common.repositories.DocumentsRepository;
 import uk.gov.hmcts.sptribs.common.service.CcdSupplementaryDataService;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
+import uk.gov.hmcts.sptribs.document.persistence.DocumentsService;
 import uk.gov.hmcts.sptribs.services.cdam.CaseDocumentClientApi;
 
 import java.util.ArrayList;
@@ -32,6 +33,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
@@ -65,6 +67,12 @@ public class CreateTestCaseTest {
 
     @Mock
     private CcdSupplementaryDataService ccdSupplementaryDataService;
+
+    @Mock
+    private DocumentsRepository documentsRepository;
+
+    @Mock
+    private DocumentsService documentsService;
 
     @Test
     void shouldAddConfigurationToConfigBuilder() {
@@ -117,8 +125,6 @@ public class CreateTestCaseTest {
             .documentCategory(DocumentType.APPLICATION_FORM)
             .documentEmailContent("This is a test document uploaded during create case journey")
             .build();
-        final ListValue<CaseworkerCICDocument> expectedCICDocumentListValue =
-            ListValue.<CaseworkerCICDocument>builder().value(expectedCICDocument).build();
 
         UploadResponse expectedResponse = new UploadResponse();
         expectedResponse.setDocuments(expectedDocuments);
@@ -127,6 +133,10 @@ public class CreateTestCaseTest {
         when(caseDocumentClientApi.uploadDocuments(any(), any(), any())).thenReturn(expectedResponse);
 
         AboutToStartOrSubmitResponse<CaseData, State> response = createTestCase.aboutToSubmit(caseDetails, caseDetails);
+
+        verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
+            eq(expectedUploadDocument), eq(TEST_CASE_ID), eq(false)
+        );
 
         assertThat(response.getState()).isEqualTo(CaseManagement);
         assertThat(response.getData().getHyphenatedCaseRef()).isEqualTo(TEST_CASE_ID_HYPHENATED);

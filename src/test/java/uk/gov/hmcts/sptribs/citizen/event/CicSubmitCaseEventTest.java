@@ -3,13 +3,11 @@ package uk.gov.hmcts.sptribs.citizen.event;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import jakarta.servlet.http.HttpServletRequest;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.ccd.sdk.ConfigBuilderImpl;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
@@ -27,9 +25,11 @@ import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.ciccase.model.access.Permissions;
 import uk.gov.hmcts.sptribs.common.config.AppsConfig;
+import uk.gov.hmcts.sptribs.common.repositories.DocumentsRepository;
 import uk.gov.hmcts.sptribs.constants.CommonConstants;
 import uk.gov.hmcts.sptribs.document.model.CitizenCICDocument;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
+import uk.gov.hmcts.sptribs.document.persistence.DocumentsService;
 import uk.gov.hmcts.sptribs.idam.IdamService;
 import uk.gov.hmcts.sptribs.notification.exception.NotificationException;
 import uk.gov.hmcts.sptribs.testutil.TestDataHelper;
@@ -42,7 +42,9 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
@@ -84,12 +86,14 @@ class CicSubmitCaseEventTest {
     @Mock
     private IdamService idamService;
 
-    private AutoCloseable autoCloseableMocks;
+    @Mock
+    private DocumentsRepository documentsRepository;
+
+    @Mock
+    private DocumentsService documentsService;
 
     @BeforeEach
     public void setUp() {
-        autoCloseableMocks = MockitoAnnotations.openMocks(this);
-
         cicAppDetail = new AppsConfig.AppsDetails();
         cicAppDetail.setCaseType(CommonConstants.ST_CIC_CASE_TYPE);
         cicAppDetail.setJurisdiction(CommonConstants.ST_CIC_JURISDICTION);
@@ -98,11 +102,6 @@ class CicSubmitCaseEventTest {
         eventsConfig.setSubmitEvent(CITIZEN_CIC_SUBMIT_CASE);
 
         cicAppDetail.setEventIds(eventsConfig);
-    }
-
-    @AfterEach
-    public void tearDown() throws Exception {
-        autoCloseableMocks.close();
     }
 
     @Test
@@ -182,6 +181,7 @@ class CicSubmitCaseEventTest {
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
+        caseData.setCaseNumber(TEST_CASE_ID.toString());
         updatedCaseDetails.setData(caseData);
 
         when(request.getHeader(AUTHORIZATION)).thenReturn(TEST_AUTHORIZATION_TOKEN);
@@ -191,6 +191,10 @@ class CicSubmitCaseEventTest {
 
         final AboutToStartOrSubmitResponse<CaseData, State> response =
             cicSubmitCaseEvent.aboutToSubmit(updatedCaseDetails, beforeDetails);
+
+        verify(documentsService, times(4)).buildAndSaveNewDocumentEntity(
+            eq(genericTestDocument), eq(TEST_CASE_ID), eq(false)
+        );
 
         assertThat(response.getData().getCicCase().getApplicantDocumentsUploaded().getFirst().getValue().getDocumentEmailContent())
             .isEqualTo(genericTestDocumentRelevance1);
@@ -225,6 +229,7 @@ class CicSubmitCaseEventTest {
         final CaseData caseData = caseData();
         caseData.setCicCase(cicCase);
         caseData.setDssCaseData(dssCaseData);
+        caseData.setCaseNumber(TEST_CASE_ID.toString());
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
         final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
         updatedCaseDetails.setId(TEST_CASE_ID);
@@ -233,6 +238,10 @@ class CicSubmitCaseEventTest {
 
         final AboutToStartOrSubmitResponse<CaseData, State> response =
             cicSubmitCaseEvent.aboutToSubmit(updatedCaseDetails, beforeDetails);
+
+        verify(documentsService, times(3)).buildAndSaveNewDocumentEntity(
+            eq(dssDoc.getDocumentLink()), eq(TEST_CASE_ID), eq(false)
+        );
 
         assertThat(response).isNotNull();
         assertThat(response.getData().getDssCaseData().getOtherInfoDocuments()).isEmpty();

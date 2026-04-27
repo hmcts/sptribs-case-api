@@ -16,12 +16,16 @@ import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.ciccase.model.access.Permissions;
+import uk.gov.hmcts.sptribs.common.repositories.DocumentsRepository;
 import uk.gov.hmcts.sptribs.common.service.AuditEventService;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
+import uk.gov.hmcts.sptribs.document.persistence.DocumentsService;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.RESPONDENT_DOCUMENT_MANAGEMENT;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_WA_CONFIG_USER;
@@ -41,6 +45,12 @@ class RespondentDocumentManagementTest {
 
     @Mock
     private AuditEventService auditEventService;
+
+    @Mock
+    private DocumentsRepository documentsRepository;
+
+    @Mock
+    private DocumentsService documentsService;
 
     @Test
     void shouldAddPublishToCamundaWhenWAIsEnabled() {
@@ -78,6 +88,7 @@ class RespondentDocumentManagementTest {
             .build();
         caseData.setNewDocManagement(documentManagement);
 
+        caseData.setCaseNumber(TEST_CASE_ID.toString());
         beforeDetails.setData(caseData);
         updatedCaseDetails.setData(caseData);
         updatedCaseDetails.setState(State.CaseManagement);
@@ -86,6 +97,11 @@ class RespondentDocumentManagementTest {
 
         AboutToStartOrSubmitResponse<CaseData, State> response =
             respondentDocumentManagement.aboutToSubmit(updatedCaseDetails, beforeDetails);
+
+        verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
+            eq(response.getData().getAllDocManagement()
+                .getCaseworkerCICDocument().getFirst().getValue().getDocumentLink()), eq(TEST_CASE_ID), eq(false)
+        );
 
         assertThat(response.getData().getNewDocManagement().getCaseworkerCICDocument()).isEmpty();
         assertThat(response.getData().getNewDocManagement().getCaseworkerCICDocumentUpload()).isEmpty();
@@ -120,6 +136,7 @@ class RespondentDocumentManagementTest {
             .caseworkerCICDocumentUpload(getCaseworkerCICDocumentUploadList("file.pdf"))
             .build();
         caseData.setNewDocManagement(documentManagement);
+        caseData.setCaseNumber(TEST_CASE_ID.toString());
         beforeDetails.setData(caseData);
         updatedCaseDetails.setData(caseData);
         updatedCaseDetails.setState(State.CaseManagement);
@@ -130,6 +147,10 @@ class RespondentDocumentManagementTest {
 
         AboutToStartOrSubmitResponse<CaseData, State> response =
             respondentDocumentManagement.aboutToSubmit(updatedCaseDetails, beforeDetails);
+
+        verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
+            eq(response.getData().getInitialCicaDocuments().getFirst().getValue().getDocumentLink()), eq(TEST_CASE_ID), eq(false)
+        );
 
         assertThat(response.getData().getInitialCicaDocuments()).hasSize(1);
         assertThat(response.getData().getInitialCicaDocuments().getFirst().getValue().getDocumentLink().getFilename())
@@ -147,6 +168,7 @@ class RespondentDocumentManagementTest {
             .caseworkerCICDocumentUpload(getCaseworkerCICDocumentUploadList("file.pdf"))
             .build();
         caseData.setNewDocManagement(documentManagement);
+        caseData.setCaseNumber(TEST_CASE_ID.toString());
         beforeDetails.setData(caseData);
         updatedCaseDetails.setData(caseData);
         updatedCaseDetails.setState(State.CaseManagement);
@@ -157,6 +179,11 @@ class RespondentDocumentManagementTest {
 
         AboutToStartOrSubmitResponse<CaseData, State> response =
             respondentDocumentManagement.aboutToSubmit(updatedCaseDetails, beforeDetails);
+
+        verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
+            eq(response.getData().getFurtherUploadedDocuments()
+                .getFirst().getValue().getDocumentLink()), eq(TEST_CASE_ID), eq(false)
+        );
 
         assertThat(response.getData().getFurtherUploadedDocuments()).hasSize(1);
         assertThat(response.getData().getFurtherUploadedDocuments().getFirst().getValue().getDocumentLink().getFilename())
@@ -177,6 +204,7 @@ class RespondentDocumentManagementTest {
             .caseworkerCICDocumentUpload(getCaseworkerCICDocumentUploadList("new-file.pdf"))
             .build();
         caseData.setNewDocManagement(documentManagement);
+        caseData.setCaseNumber(TEST_CASE_ID.toString());
         beforeDetails.setData(caseData);
         updatedCaseDetails.setData(caseData);
         updatedCaseDetails.setState(State.CaseManagement);
@@ -187,6 +215,10 @@ class RespondentDocumentManagementTest {
 
         AboutToStartOrSubmitResponse<CaseData, State> response =
             respondentDocumentManagement.aboutToSubmit(updatedCaseDetails, beforeDetails);
+
+        verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
+            eq(response.getData().getFurtherUploadedDocuments().get(1).getValue().getDocumentLink()), eq(TEST_CASE_ID), eq(false)
+        );
 
         assertThat(response.getData().getFurtherUploadedDocuments()).hasSize(2);
         assertThat(response.getData().getFurtherUploadedDocuments().get(0).getValue().getDocumentLink().getFilename())
@@ -205,6 +237,7 @@ class RespondentDocumentManagementTest {
             .caseworkerCICDocumentUpload(getCaseworkerCICDocumentUploadList("file.pdf"))
             .build();
         caseData.setNewDocManagement(documentManagement);
+        caseData.setCaseNumber(TEST_CASE_ID.toString());
         beforeDetails.setData(caseData);
         updatedCaseDetails.setData(caseData);
         updatedCaseDetails.setState(State.CaseManagement);
@@ -213,6 +246,11 @@ class RespondentDocumentManagementTest {
 
         AboutToStartOrSubmitResponse<CaseData, State> response =
             respondentDocumentManagement.aboutToSubmit(updatedCaseDetails, beforeDetails);
+
+        verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
+            eq(response.getData().getAllDocManagement()
+                .getCaseworkerCICDocument().getFirst().getValue().getDocumentLink()), eq(TEST_CASE_ID), eq(false)
+        );
 
         assertThat(response.getData().getInitialCicaDocuments()).isNull();
         assertThat(response.getData().getFurtherUploadedDocuments()).isNull();

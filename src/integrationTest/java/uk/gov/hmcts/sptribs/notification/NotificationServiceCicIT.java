@@ -21,6 +21,7 @@ import uk.gov.hmcts.sptribs.cdam.model.UploadResponse;
 import uk.gov.hmcts.sptribs.ciccase.model.NotificationResponse;
 import uk.gov.hmcts.sptribs.common.config.EmailTemplatesConfigCIC;
 import uk.gov.hmcts.sptribs.common.repositories.CorrespondenceRepository;
+import uk.gov.hmcts.sptribs.common.repositories.DocumentsRepository;
 import uk.gov.hmcts.sptribs.document.CaseDataDocumentService;
 import uk.gov.hmcts.sptribs.document.DocAssemblyService;
 import uk.gov.hmcts.sptribs.document.DocumentClient;
@@ -83,6 +84,9 @@ public class NotificationServiceCicIT {
 
     @MockitoBean
     private CorrespondenceRepository correspondenceRepository;
+
+    @MockitoBean
+    private DocumentsRepository documentsRepository;
 
     @MockitoBean
     private DocAssemblyService docAssemblyService;

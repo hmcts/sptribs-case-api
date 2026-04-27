@@ -9,14 +9,18 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import uk.gov.hmcts.reform.idam.client.models.User;
 import uk.gov.hmcts.sptribs.ciccase.service.CicaCaseService;
 import uk.gov.hmcts.sptribs.controllers.model.CicaCaseResponse;
 import uk.gov.hmcts.sptribs.exception.CaseNotFoundException;
+import uk.gov.hmcts.sptribs.idam.IdamService;
+import uk.gov.hmcts.sptribs.testutil.TestDataHelper;
 
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -29,6 +33,9 @@ class CicaCaseControllerTest {
     @Mock
     private CicaCaseService cicaCaseService;
 
+    @Mock
+    private IdamService idamService;
+
     @InjectMocks
     private CicaCaseController cicaCaseController;
 
@@ -40,6 +47,8 @@ class CicaCaseControllerTest {
         String cicaReference = "X12345";
         CicaCaseResponse expectedResponse = createCicaCaseResponse(cicaReference);
         when(cicaCaseService.getCaseByCicaReference(cicaReference)).thenReturn(expectedResponse);
+        final User user = TestDataHelper.getUser();
+        when(idamService.retrieveUser(any())).thenReturn(user);
 
         // When
         ResponseEntity<CicaCaseResponse> response = cicaCaseController.getCaseByCicaReference(
@@ -62,6 +71,8 @@ class CicaCaseControllerTest {
         String cicaReference = "G98765";
         CicaCaseResponse expectedResponse = createCicaCaseResponse(cicaReference);
         when(cicaCaseService.getCaseByCicaReference(cicaReference)).thenReturn(expectedResponse);
+        final User user = TestDataHelper.getUser();
+        when(idamService.retrieveUser(any())).thenReturn(user);
 
         // When
         ResponseEntity<CicaCaseResponse> response = cicaCaseController.getCaseByCicaReference(
@@ -82,6 +93,8 @@ class CicaCaseControllerTest {
         String cicaReference = "X99999";
         when(cicaCaseService.getCaseByCicaReference(cicaReference))
             .thenThrow(new CaseNotFoundException("No case found with CICA reference: X99999"));
+        final User user = TestDataHelper.getUser();
+        when(idamService.retrieveUser(any())).thenReturn(user);
 
         // When / Then
         assertThatThrownBy(() -> cicaCaseController.getCaseByCicaReference(
@@ -99,6 +112,8 @@ class CicaCaseControllerTest {
         String cicaReference = "invalid";
         when(cicaCaseService.getCaseByCicaReference(cicaReference))
             .thenThrow(new IllegalArgumentException("Invalid CICA reference format"));
+        final User user = TestDataHelper.getUser();
+        when(idamService.retrieveUser(any())).thenReturn(user);
 
         // When / Then
         assertThatThrownBy(() -> cicaCaseController.getCaseByCicaReference(
@@ -116,6 +131,8 @@ class CicaCaseControllerTest {
         String cicaReference = "x12345";
         CicaCaseResponse expectedResponse = createCicaCaseResponse("X12345");
         when(cicaCaseService.getCaseByCicaReference(cicaReference)).thenReturn(expectedResponse);
+        final User user = TestDataHelper.getUser();
+        when(idamService.retrieveUser(any())).thenReturn(user);
 
         // When
         ResponseEntity<CicaCaseResponse> response = cicaCaseController.getCaseByCicaReference(

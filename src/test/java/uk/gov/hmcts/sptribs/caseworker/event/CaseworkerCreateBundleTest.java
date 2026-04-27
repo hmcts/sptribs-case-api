@@ -38,6 +38,7 @@ import java.util.UUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_WA_CONFIG_USER;
@@ -112,7 +113,7 @@ class CaseworkerCreateBundleTest {
         when(bundlingService.getMultiBundleConfig()).thenCallRealMethod();
         when(bundlingService.getMultiBundleConfigs()).thenCallRealMethod();
 
-        when(bundlingService.createBundle(any(BundleCallback.class))).thenAnswer(callback -> {
+        when(bundlingService.createBundle(any(BundleCallback.class), eq(TEST_CASE_ID))).thenAnswer(callback -> {
             final BundleCallback callbackAtMockTime = (BundleCallback) callback.getArguments()[0];
 
             //check case data at call time
@@ -171,7 +172,7 @@ class CaseworkerCreateBundleTest {
         when(bundlingService.getMultiBundleConfig()).thenCallRealMethod();
         when(bundlingService.getMultiBundleConfigs()).thenCallRealMethod();
 
-        when(bundlingService.createBundle(any(BundleCallback.class))).thenAnswer(callback -> {
+        when(bundlingService.createBundle(any(BundleCallback.class), eq(TEST_CASE_ID))).thenAnswer(callback -> {
             final BundleCallback callbackAtMockTime = (BundleCallback) callback.getArguments()[0];
 
             final CaseData dataAtMockTime = callbackAtMockTime.getCaseDetails().getData();
@@ -246,7 +247,7 @@ class CaseworkerCreateBundleTest {
         when(bundlingService.getMultiBundleConfig()).thenCallRealMethod();
         when(bundlingService.getMultiBundleConfigs()).thenCallRealMethod();
 
-        when(bundlingService.createBundle(any(BundleCallback.class))).thenAnswer(callback -> {
+        when(bundlingService.createBundle(any(BundleCallback.class), eq(TEST_CASE_ID))).thenAnswer(callback -> {
             final BundleCallback callbackAtMockTime = (BundleCallback) callback.getArguments()[0];
 
             final CaseData dataAtMockTime = callbackAtMockTime.getCaseDetails().getData();
@@ -309,7 +310,7 @@ class CaseworkerCreateBundleTest {
         when(bundlingService.getMultiBundleConfig()).thenCallRealMethod();
         when(bundlingService.getMultiBundleConfigs()).thenCallRealMethod();
 
-        when(bundlingService.createBundle(any(BundleCallback.class))).thenAnswer(callback -> {
+        when(bundlingService.createBundle(any(BundleCallback.class), eq(TEST_CASE_ID))).thenAnswer(callback -> {
             final BundleCallback callbackAtMockTime = (BundleCallback) callback.getArguments()[0];
 
             final CaseData dataAtMockTime = callbackAtMockTime.getCaseDetails().getData();
@@ -353,7 +354,7 @@ class CaseworkerCreateBundleTest {
 
         Bundle bundle = Bundle.builder().build();
 
-        when(bundlingService.createBundle(any(BundleCallback.class))).thenAnswer(callback -> {
+        when(bundlingService.createBundle(any(BundleCallback.class), eq(TEST_CASE_ID))).thenAnswer(callback -> {
             final BundleCallback callbackAtMockTime = (BundleCallback) callback.getArguments()[0];
 
             final CaseData dataAtMockTime = callbackAtMockTime.getCaseDetails().getData();
@@ -428,7 +429,7 @@ class CaseworkerCreateBundleTest {
         when(bundlingService.getMultiBundleConfig()).thenCallRealMethod();
         when(bundlingService.getMultiBundleConfigs()).thenCallRealMethod();
 
-        when(bundlingService.createBundle(any(BundleCallback.class))).thenAnswer(callback -> {
+        when(bundlingService.createBundle(any(BundleCallback.class), eq(TEST_CASE_ID))).thenAnswer(callback -> {
             final BundleCallback callbackAtMockTime = (BundleCallback) callback.getArguments()[0];
 
             //check case data at call time
@@ -581,7 +582,7 @@ class CaseworkerCreateBundleTest {
                 .build()
         );
 
-        when(bundlingService.createBundle(any(BundleCallback.class))).thenReturn(testBundles);
+        when(bundlingService.createBundle(any(BundleCallback.class), eq(TEST_CASE_ID))).thenReturn(testBundles);
         when(bundlingService.buildBundleListValues(anyList())).thenReturn(testListValueBundles);
 
         final List<ListValue<CaseworkerCICDocument>> documents = getCaseworkerCICDocumentList("test.mp3");
@@ -735,7 +736,7 @@ class CaseworkerCreateBundleTest {
                 .build()
         );
 
-        when(bundlingService.createBundle(any(BundleCallback.class))).thenReturn(testBundles);
+        when(bundlingService.createBundle(any(BundleCallback.class), eq(TEST_CASE_ID))).thenReturn(testBundles);
         when(bundlingService.buildBundleListValues(anyList())).thenReturn(testListValueBundles);
 
         final List<ListValue<CaseworkerCICDocument>> documents = getCaseworkerCICDocumentList("test.mp3");
@@ -832,7 +833,7 @@ class CaseworkerCreateBundleTest {
             .value(Bundle.builder().id(newBundleUUID).build())
             .build());
 
-        when(bundlingService.createBundle(any(BundleCallback.class))).thenReturn(List.of(oldBundle1, oldBundle2));
+        when(bundlingService.createBundle(any(BundleCallback.class), eq(TEST_CASE_ID))).thenReturn(List.of(oldBundle1, oldBundle2));
         when(bundlingService.buildBundleListValues(anyList())).thenReturn(apiReturnedBundles);
         when(bundlingService.getMultiBundleConfig()).thenCallRealMethod();
         when(bundlingService.getMultiBundleConfigs()).thenCallRealMethod();
@@ -890,7 +891,7 @@ class CaseworkerCreateBundleTest {
             .value(Bundle.builder().id(newBundleUUID).build())
             .build());
 
-        when(bundlingService.createBundle(any(BundleCallback.class))).thenReturn(List.of());
+        when(bundlingService.createBundle(any(BundleCallback.class), eq(TEST_CASE_ID))).thenReturn(List.of());
         when(bundlingService.buildBundleListValues(anyList())).thenReturn(apiReturnedBundles);
         when(bundlingService.getMultiBundleConfig()).thenCallRealMethod();
         when(bundlingService.getMultiBundleConfigs()).thenCallRealMethod();

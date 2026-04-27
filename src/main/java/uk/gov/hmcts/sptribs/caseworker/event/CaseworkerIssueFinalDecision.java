@@ -29,6 +29,7 @@ import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.document.CaseDataDocumentService;
 import uk.gov.hmcts.sptribs.document.content.FinalDecisionTemplateContent;
 import uk.gov.hmcts.sptribs.document.model.CICDocument;
+import uk.gov.hmcts.sptribs.document.persistence.DocumentsService;
 import uk.gov.hmcts.sptribs.notification.dispatcher.CaseFinalDecisionIssuedNotification;
 
 import java.time.LocalDateTime;
@@ -83,6 +84,9 @@ public class CaseworkerIssueFinalDecision implements CCDConfig<CaseData, State, 
 
     @Autowired
     private CaseFinalDecisionIssuedNotification caseFinalDecisionIssuedNotification;
+
+    @Autowired
+    private DocumentsService documentsService;
 
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
@@ -202,6 +206,11 @@ public class CaseworkerIssueFinalDecision implements CCDConfig<CaseData, State, 
 
         if (finalDecisionDocument != null) {
             finalDecisionDocument.getDocumentLink().setCategoryId("TD");
+            documentsService.buildAndSaveNewDocumentEntity(
+                finalDecisionDocument.getDocumentLink(),
+                Long.parseLong(caseData.getCaseNumber()),
+                false
+            );
         }
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
