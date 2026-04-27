@@ -17,6 +17,7 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.common.dto.RemoveEventWithPrecedingData;
 import uk.gov.hmcts.sptribs.common.repositories.exception.CaseEventRepositoryException;
+import uk.gov.hmcts.sptribs.common.repositories.impl.CaseEventRepositoryImpl;
 
 import java.sql.ResultSet;
 import java.sql.Timestamp;
@@ -42,7 +43,7 @@ class CaseEventRepositoryImplTest {
     private ObjectMapper objectMapper;
 
     @InjectMocks
-    private CaseEventRepository caseEventRepository;
+    private CaseEventRepositoryImpl caseEventRepository;
 
     private static final String CASE_EVENT_ID = "caseworker-remove-document";
     private static final LocalDate START_DATE = LocalDate.of(2026, 2, 24);
