@@ -79,6 +79,8 @@ public final class TestConstants {
 
     public static final String HEARING_VENUES_MID_EVENT_URL = "/callbacks/mid-event?page=listingDetails";
 
+    public static final String REMOTE_HEARING_INFO_MID_EVENT_URL = "/callbacks/mid-event?page=remoteHearingInformation";
+
     public static final String ORDER_DUE_DATES_MID_EVENT_URL = "/callbacks/mid-event?page=caseworkerSendOrderOrderDueDates";
 
     public static final String AMEND_ORDER_DUE_DATES_MID_EVENT_URL = "/callbacks/mid-event?page=caseworkerAmendDueDateEditDueDate";
