@@ -1,26 +1,33 @@
 package uk.gov.hmcts.sptribs.notification.dispatcher;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.sptribs.caseworker.model.ContactPartiesDocuments;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.ContactPreferenceType;
 import uk.gov.hmcts.sptribs.ciccase.model.NotificationResponse;
 import uk.gov.hmcts.sptribs.common.CommonConstants;
+import uk.gov.hmcts.sptribs.document.persistence.DocumentsService;
+import uk.gov.hmcts.sptribs.idam.IdamService;
 import uk.gov.hmcts.sptribs.notification.NotificationHelper;
 import uk.gov.hmcts.sptribs.notification.NotificationServiceCIC;
 import uk.gov.hmcts.sptribs.notification.PartiesNotification;
 import uk.gov.hmcts.sptribs.notification.TemplateName;
 import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
+import uk.gov.hmcts.sptribs.services.cdam.CaseDocumentClientApi;
 
 import java.util.Map;
+import java.util.UUID;
 
+import static uk.gov.hmcts.sptribs.common.CommonConstants.DOC_AVAILABLE;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.TRIBUNAL_EMAIL_VALUE;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.TRIBUNAL_NAME_VALUE;
-
 
 @Component
 @Slf4j
@@ -32,11 +39,32 @@ public class ContactPartiesNotification implements PartiesNotification {
     @Autowired
     private final NotificationHelper notificationHelper;
 
+    @Autowired
+    private final DocumentsService documentsService;
+
+    @Autowired
+    private final CaseDocumentClientApi caseDocumentClientApi;
+
+    @Autowired
+    private final IdamService idamService;
+
+    @Autowired
+    private final AuthTokenGenerator authTokenGenerator;
+
     private static final int DOC_ATTACH_LIMIT = 10;
 
-    public ContactPartiesNotification(NotificationServiceCIC notificationService, NotificationHelper notificationHelper) {
+    public ContactPartiesNotification(NotificationServiceCIC notificationService,
+                                      NotificationHelper notificationHelper,
+                                      DocumentsService documentsService,
+                                      CaseDocumentClientApi caseDocumentClientApi,
+                                      IdamService idamService,
+                                      AuthTokenGenerator authTokenGenerator) {
         this.notificationService = notificationService;
         this.notificationHelper = notificationHelper;
+        this.documentsService = documentsService;
+        this.caseDocumentClientApi = caseDocumentClientApi;
+        this.idamService = idamService;
+        this.authTokenGenerator = authTokenGenerator;
     }
 
     @Override
@@ -178,6 +206,22 @@ public class ContactPartiesNotification implements PartiesNotification {
             uploadedDocuments,
             templateVars,
             emailTemplateName);
+        for (Map.Entry<String, String> uploadedDocumentEntry : request.getUploadedDocuments().entrySet()) {
+            log.error("UUID: {}", uploadedDocumentEntry.getValue());
+            if (uploadedDocumentEntry.getKey().contains(DOC_AVAILABLE) || StringUtils.isEmpty(uploadedDocumentEntry.getValue())) {
+                continue;
+            }
+
+            ResponseEntity<uk.gov.hmcts.sptribs.cdam.model.Document> documentToAttach = caseDocumentClientApi.getDocument(
+                idamService.retrieveSystemUpdateUserDetails().getAuthToken(),
+                authTokenGenerator.generate(),
+                UUID.fromString(uploadedDocumentEntry.getValue())
+            );
+
+            if (documentToAttach.getBody() != null) {
+                documentsService.setSentToApplicantViaContactPartiesToTrue(documentToAttach.getBody().links.binary.href);
+            }
+        }
         return notificationService.sendEmail(request, caseReferenceNumber);
     }
 

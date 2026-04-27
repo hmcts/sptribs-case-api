@@ -28,8 +28,20 @@ public class DocumentsService {
                     .documentBinaryUrl(document.getBinaryUrl())
                     .categoryId(document.getCategoryId())
                     .isDraft(isDraft)
+                    .sentToApplicantViaContactParties(false)
                     .build());
             }
+        } catch (DataAccessException e) {
+            throw new RuntimeException("Error saving document entity to database", e);
+        }
+    }
+
+    @Transactional
+    public void setSentToApplicantViaContactPartiesToTrue(String documentBinaryUrl) {
+        try {
+            DocumentEntity documentEntity = documentsRepository.findAllByDocumentBinaryUrl(documentBinaryUrl).getFirst();
+            documentEntity.setSentToApplicantViaContactParties(true);
+            documentsRepository.save(documentEntity);
         } catch (DataAccessException e) {
             throw new RuntimeException("Error saving document entity to database", e);
         }

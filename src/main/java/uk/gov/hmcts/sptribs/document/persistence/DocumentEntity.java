@@ -53,6 +53,9 @@ public class DocumentEntity {
     @Column(name = "is_draft", nullable = false)
     private boolean isDraft;
 
+    @Column(name = "sent_to_applicant_via_contact_parties", nullable = false)
+    private boolean sentToApplicantViaContactParties;
+
     @Override
     public final boolean equals(Object documentEntityObject) {
         if (this == documentEntityObject) {
