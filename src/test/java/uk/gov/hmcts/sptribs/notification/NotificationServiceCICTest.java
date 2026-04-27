@@ -124,13 +124,13 @@ public class NotificationServiceCICTest {
             .destinationAddress(EMAIL_ADDRESS)
             .template(TemplateName.APPLICATION_RECEIVED)
             .templateVars(templateVars)
-            .hasFileAttachments(true)
+            .hasFileAttachments(false)
             .uploadedDocuments(uploadedDocuments)
             .build();
 
         final User user = TestDataHelper.getUser();
 
-        when(idamService.retrieveUser(any())).thenReturn(user);
+        //when(idamService.retrieveUser(any())).thenReturn(user);
         when(sendEmailResponse.getReference()).thenReturn(Optional.of(randomUUID().toString()));
         when(sendEmailResponse.getNotificationId()).thenReturn(UUID.randomUUID());
         when(emailTemplatesConfig.getTemplatesCIC()).thenReturn(templateNameMap);
@@ -138,7 +138,7 @@ public class NotificationServiceCICTest {
         when(authTokenGenerator.generate()).thenReturn(TEST_SERVICE_AUTH_TOKEN);
 
         final byte[] sample = new byte[1];
-        when(caseDocumentClientAPI.getDocumentBinary(anyString(), anyString(), any(UUID.class))).thenReturn(ResponseEntity.ok(sample));
+        // when(caseDocumentClientAPI.getDocumentBinary(anyString(), anyString(), any(UUID.class))).thenReturn(ResponseEntity.ok(sample));
 
         when(notificationClient.sendEmail(
             eq(templateId),
@@ -519,20 +519,20 @@ public class NotificationServiceCICTest {
             .destinationAddress(EMAIL_ADDRESS)
             .template(TemplateName.APPLICATION_RECEIVED)
             .templateVars(templateVars)
-            .hasFileAttachments(true)
+            .hasFileAttachments(false)
             .uploadedDocuments(uploadedDocuments)
             .build();
 
         final User user = TestDataHelper.getUser();
 
         //When&Then
-        when(idamService.retrieveUser(any())).thenReturn(user);
+        //when(idamService.retrieveUser(any())).thenReturn(user);
         when(emailTemplatesConfig.getTemplatesCIC()).thenReturn(templateNameMap);
         when(httpServletRequest.getHeader(AUTHORIZATION)).thenReturn(TEST_AUTHORIZATION_TOKEN);
         when(authTokenGenerator.generate()).thenReturn(TEST_SERVICE_AUTH_TOKEN);
 
         final byte[] sample = new byte[1];
-        when(caseDocumentClientAPI.getDocumentBinary(anyString(), anyString(), any(UUID.class))).thenReturn(ResponseEntity.ok(sample));
+        //when(caseDocumentClientAPI.getDocumentBinary(anyString(), anyString(), any(UUID.class))).thenReturn(ResponseEntity.ok(sample));
 
         when(notificationClient.sendEmail(
             eq(templateId),
@@ -801,10 +801,15 @@ public class NotificationServiceCICTest {
 
         UploadResponse expectedResponse = uploadResponseWithSampleDocument();
 
+
+
         when(caseDocumentClientAPI.uploadDocuments(any(), any(), any())).thenReturn(expectedResponse);
 
         //When
         notificationService.sendEmail(request, List.of(cicDocument), TEST_CASE_ID.toString());
+
+        String expectedDocumentDescription = String.format("%nFilename: %s%nDescription: %s%nDownload Link: ",
+            cicDocument.getDocumentLink().getFilename(), cicDocument.getDocumentEmailContent());
 
         //Then
         verify(notificationClient).sendEmail(
@@ -818,6 +823,10 @@ public class NotificationServiceCICTest {
             .containsEntry("DocumentAvailable1", "yes");
         assertThat(templateVarsArgCaptor.getValue())
             .extracting("CaseDocument1")
+            .isInstanceOf(String.class)
+            .isEqualTo(expectedDocumentDescription);
+        assertThat(templateVarsArgCaptor.getValue())
+            .extracting("CaseDocument1Link")
             .isInstanceOf(JSONObject.class);
 
         verify(sendEmailResponse, times(3)).getNotificationId();
