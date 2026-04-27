@@ -10,7 +10,6 @@ import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.ccd.sdk.type.DynamicList;
 import uk.gov.hmcts.ccd.sdk.type.DynamicListElement;
-import uk.gov.hmcts.ccd.sdk.type.Flags;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
@@ -199,41 +198,6 @@ public class CreateCase implements CCDConfig<CaseData, State, UserRole> {
                 .build()
         );
         data.setNewBundleOrderEnabled(YesNo.YES);
-    }
-
-    private void initialiseFlags(CaseData data) {
-        data.setCaseFlags(Flags.builder()
-            .details(new ArrayList<>())
-            .partyName(null)
-            .roleOnCase(null)
-            .build());
-
-        if (data.getCicCase().getFullName() != null) {
-            data.setSubjectFlags(Flags.builder()
-                .details(new ArrayList<>())
-                .partyName(data.getCicCase().getFullName())
-                .roleOnCase("subject")
-                .build()
-            );
-        }
-
-        if (data.getCicCase().getApplicantFullName() != null) {
-            data.setApplicantFlags(Flags.builder()
-                .details(new ArrayList<>())
-                .partyName(data.getCicCase().getApplicantFullName())
-                .roleOnCase("applicant")
-                .build()
-            );
-        }
-
-        if (data.getCicCase().getRepresentativeFullName() != null) {
-            data.setRepresentativeFlags(Flags.builder()
-                .details(new ArrayList<>())
-                .partyName(data.getCicCase().getRepresentativeFullName())
-                .roleOnCase("Representative")
-                .build()
-            );
-        }
     }
 
     private void setSupplementaryData(Long caseId) {
