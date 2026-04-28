@@ -31,19 +31,19 @@ public class FunctionalTestDataManager {
 
     private Connection connection;
 
-    @Value("${DB_HOST}")
+    @Value("${postgres.host}")
     private String host;
 
-    @Value("${DB_PORT}")
+    @Value("${postgres.port}")
     private String port;
 
-    @Value("${DB_USERNAME}")
+    @Value("${postgres.username}")
     private String username;
 
-    @Value("${DB_NAME}")
+    @Value("${postgres.name}")
     private String dbName;
 
-    @Value("${DB_PASSWORD:}")
+    @Value("${postgres.password}")
     private String password;
 
     public void connectToDB() {

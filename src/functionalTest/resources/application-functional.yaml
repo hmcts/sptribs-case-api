@@ -16,6 +16,12 @@ spring:
   jms:
     servicebus:
       enabled: false
+  postgres:
+    host: ${POSTGRES_HOST:localhost}
+    port: ${POSTGRES_PORT:6432}
+    username: ${POSTGRES_USERNAME:postgres}
+    password: ${POSTGRES_PASSWORD:}
+    name: ${POSTGRES_NAME:sptribs}
 
 s2s:
   name: sptribs_case_api
