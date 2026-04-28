@@ -122,6 +122,7 @@ public class CaseworkerDocumentManagementRemove implements CCDConfig<CaseData, S
             DecisionDocumentListUtil.removeFinalDecisionDraftAndCICDocument(data, v);
             DecisionDocumentListUtil.removeDecisionDraftAndCICDocument(data, v);
             DocumentListUtil.removeFurtherUploadedDocument(data, v);
+            DocumentListUtil.removeInitialCaseDocuments(data, v);
             OrderDocumentListUtil.removeNonDraftOrder(data,v);
         });
     }
