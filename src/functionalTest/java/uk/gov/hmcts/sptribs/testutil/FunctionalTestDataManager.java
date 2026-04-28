@@ -2,6 +2,8 @@ package uk.gov.hmcts.sptribs.testutil;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -11,7 +13,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 
 import static uk.gov.hmcts.sptribs.testutil.FunctionalTestConstants.KEY_CASE_CORRESPONDENCES_REFERENCE;
 import static uk.gov.hmcts.sptribs.testutil.FunctionalTestConstants.KEY_CASE_DATA_ID;
@@ -21,45 +22,39 @@ import static uk.gov.hmcts.sptribs.testutil.FunctionalTestConstants.TABLE_CASE_C
 import static uk.gov.hmcts.sptribs.testutil.FunctionalTestConstants.TABLE_CASE_DATA;
 import static uk.gov.hmcts.sptribs.testutil.FunctionalTestConstants.TABLE_CASE_EVENT;
 
+@Component
 public class FunctionalTestDataManager {
 
     private static final Logger log = LoggerFactory.getLogger(FunctionalTestDataManager.class);
 
     private static final List<Long> testReferences = Collections.synchronizedList(new ArrayList<>());
 
-    private final Connection connection;
+    private Connection connection;
 
-    private FunctionalTestDataManager(Connection connection) {
-        this.connection = connection;
-    }
+    @Value("${DB_HOST}")
+    private String host;
 
-    public static FunctionalTestDataManager connectToDB() {
+    @Value("${DB_PORT}")
+    private String port;
 
-        String host = required("DB_HOST");
-        String port = required("DB_PORT");
-        String username = required("DB_USERNAME");
-        String dbName = required("DB_NAME");
-        String password = "DB_PASSWORD";
+    @Value("${DB_USERNAME}")
+    private String username;
 
+    @Value("${DB_NAME}")
+    private String dbName;
+
+    @Value("${DB_PASSWORD:}")
+    private String password;
+
+    public void connectToDB() {
         String connectionString = String.format("jdbc:postgresql://%s:%s/%s", host, port, dbName);
 
         try {
-            Connection connection = DriverManager.getConnection(connectionString, username, password);
-
-            return new FunctionalTestDataManager(connection);
+            connection = DriverManager.getConnection(connectionString, username, password);
         } catch (SQLException e) {
             log.error("Failed to establish database connection to {}.", connectionString, e);
             throw new RuntimeException("Failed to establish database connection to: " + connectionString, e);
         }
-    }
-
-    private static String required(String name) {
-        String value = System.getenv(name);
-        if (value == null || value.isBlank()) {
-            throw new IllegalStateException(
-                "Required environment variable '" + name + "' is not set or is blank.");
-        }
-        return value;
     }
 
     public void clearDown(long reference) throws SQLException {

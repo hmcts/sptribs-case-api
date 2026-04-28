@@ -7,6 +7,7 @@ import io.restassured.response.Response;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.TestInstance;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,6 +54,7 @@ import static uk.gov.hmcts.sptribs.common.config.ControllerConstants.SERVICE_AUT
 import static uk.gov.hmcts.sptribs.controllers.model.DssCaseDataRequest.convertDssCaseDataToRequest;
 
 @ActiveProfiles("functional")
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public abstract class FunctionalTestSuite {
 
     private static final LocalDateTime LOCAL_DATE_TIME = LocalDateTime.of(2021, 4, 28, 1, 0);
@@ -89,7 +91,7 @@ public abstract class FunctionalTestSuite {
     protected AppsConfig appsConfig;
 
     @Autowired
-    protected static FunctionalTestDataManager functionalTestDataManager;
+    protected FunctionalTestDataManager functionalTestDataManager;
 
     protected static final String EVENT_PARAM = "event";
     protected static final String UPDATE = "UPDATE";
@@ -487,13 +489,13 @@ public abstract class FunctionalTestSuite {
     }
 
     @BeforeAll
-    static void setUpDataManager() {
-        functionalTestDataManager = FunctionalTestDataManager.connectToDB();
+    void setUpDataManager() {
+        functionalTestDataManager.connectToDB();
     }
 
 
     @AfterAll
-    static void tearDownDataManager() throws SQLException {
+    void tearDownDataManager() throws SQLException {
 
         for (long reference : functionalTestDataManager.getTestReferences()) {
             functionalTestDataManager.clearDown(reference);

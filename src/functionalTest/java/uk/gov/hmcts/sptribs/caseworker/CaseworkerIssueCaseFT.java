@@ -1,15 +1,12 @@
 package uk.gov.hmcts.sptribs.caseworker;
 
 import io.restassured.response.Response;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import uk.gov.hmcts.sptribs.testutil.FunctionalTestDataManager;
 import uk.gov.hmcts.sptribs.testutil.FunctionalTestSuite;
 
-import java.sql.SQLException;
 import java.util.Map;
 
 import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
