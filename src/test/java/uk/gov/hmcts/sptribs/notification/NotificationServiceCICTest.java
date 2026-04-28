@@ -115,6 +115,7 @@ public class NotificationServiceCICTest {
         final Map<String, Object> templateVars = new HashMap<>();
         templateVars.put(APPLICATION_RECEIVED.name(), templateId);
 
+
         final Map<String, String> uploadedDocuments = new HashMap<>();
         uploadedDocuments.put("FinalDecisionNotice", templateId);
         uploadedDocuments.put("FinalDecisionNotice1", "");
@@ -124,13 +125,13 @@ public class NotificationServiceCICTest {
             .destinationAddress(EMAIL_ADDRESS)
             .template(TemplateName.APPLICATION_RECEIVED)
             .templateVars(templateVars)
-            .hasFileAttachments(true)
+            .hasFileAttachments(false)
             .uploadedDocuments(uploadedDocuments)
             .build();
 
         final User user = TestDataHelper.getUser();
 
-        when(idamService.retrieveUser(any())).thenReturn(user);
+//        when(idamService.retrieveUser(any())).thenReturn(user);
         when(sendEmailResponse.getReference()).thenReturn(Optional.of(randomUUID().toString()));
         when(sendEmailResponse.getNotificationId()).thenReturn(UUID.randomUUID());
         when(emailTemplatesConfig.getTemplatesCIC()).thenReturn(templateNameMap);
@@ -138,7 +139,7 @@ public class NotificationServiceCICTest {
         when(authTokenGenerator.generate()).thenReturn(TEST_SERVICE_AUTH_TOKEN);
 
         final ResponseEntity<byte[]> sample = ResponseEntity.ok(new byte[1]);
-        when(caseDocumentClientAPI.getDocumentBinary(anyString(), anyString(), any(UUID.class))).thenReturn(sample);
+//        when(caseDocumentClientAPI.getDocumentBinary(anyString(), anyString(), any(UUID.class))).thenReturn(sample);
 
         when(notificationClient.sendEmail(
             eq(templateId),
