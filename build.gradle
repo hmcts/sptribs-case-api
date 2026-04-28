@@ -453,6 +453,37 @@ def loadEnvSecretsTask = tasks.register('loadEnvSecrets') {
   }
 }
 
+def loadLocalEnvSecretsTask = tasks.register('loadLocalEnvSecrets') {
+  doLast {
+    if (!System.getenv('ENVIRONMENT') && !project.file('./.local-env').exists()) {
+      new ByteArrayOutputStream().withStream { os ->
+        exec {
+          commandLine 'az', 'keyvault', 'secret', 'show', '--vault-name', 'sptribs-preview', '-o', 'tsv', '--query', 'value', '--name', 'sptribs-case-api-dot-env'
+          standardOutput = os
+        }
+        project.file('./.local-env').write(new String(os.toString().replace('\n', '').decodeBase64(), java.nio.charset.StandardCharsets.UTF_8))
+      }
+    }
+  }
+}
+
+def loadEnvFile = { task ->
+  def envFile = project.file('./.local-env').exists()
+    ? project.file('./.local-env')
+    : project.file('./.aat-env').exists()
+    ? project.file('./.aat-env')
+    : null
+
+  if (envFile) {
+    envFile.readLines().each() {
+      def index = it.indexOf("=")
+      def key = it.substring(0, index)
+      def value = it.substring(index + 1)
+      task.environment key, value
+    }
+  }
+}
+
 tasks.register('reloadEnvSecrets') {
   dependsOn loadEnvSecretsTask
   doFirst {
@@ -463,16 +494,9 @@ tasks.register('reloadEnvSecrets') {
 }
 
 bootRun {
-  doFirst() {
-    if (project.file('./.aat-env').exists()) {
-      project.file('./.aat-env').readLines().each() {
-        def index = it.indexOf("=")
-        def key = it.substring(0, index)
-        def value = it.substring(index + 1)
-        environment key, value
-      }
-    }
-  }
+  dependsOn loadLocalEnvSecretsTask
+  dependsOn loadEnvSecretsTask
+  doFirst() { loadEnvFile(it) }
 }
 
 bootJar {
@@ -486,16 +510,8 @@ bootJar {
 }
 
 functional {
-  doFirst() {
-    if (project.file('./.aat-env').exists()) {
-      project.file('./.aat-env').readLines().each() {
-        def index = it.indexOf("=")
-        def key = it.substring(0, index)
-        def value = it.substring(index + 1)
-        environment key, value
-      }
-    }
-  }
+  dependsOn loadLocalEnvSecretsTask
+  doFirst() { loadEnvFile(it) }
 }
 
 generateTypeScript {
@@ -540,15 +556,8 @@ bootWithCCD {
     environment 'SPRING_JMS_SERVICEBUS_ENABLED', 'false'
     group = 'ccd tasks'
     dependsOn loadEnvSecretsTask
-
-    doFirst() {
-        project.file('./.aat-env').readLines().each() {
-            def index = it.indexOf("=")
-            def key = it.substring(0, index)
-            def value = it.substring(index + 1)
-            environment key, value
-        }
-    }
+    dependsOn loadLocalEnvSecretsTask
+    doFirst() { loadEnvFile(it) }
 }
 
 assemble.dependsOn(dumpCCDDefinitions)
