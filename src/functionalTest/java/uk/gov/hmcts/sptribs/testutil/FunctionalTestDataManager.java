@@ -69,7 +69,7 @@ public class FunctionalTestDataManager {
         deleteCaseData(reference);
         deleteCaseCorrespondences(reference);
 
-        log.info("clearDown completed for reference: {}", reference);
+        log.info("Clear down completed for reference: {}", reference);
     }
 
     public void deleteCaseData(long reference) {
@@ -90,7 +90,6 @@ public class FunctionalTestDataManager {
 
     private void deleteFromTable(String table, String column, long reference) {
         String sql = "DELETE FROM " + table + " WHERE " + column + " = ?";
-        log.info("Executing: {} [reference={}]", sql, reference);
 
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setLong(1, reference);
@@ -125,7 +124,6 @@ public class FunctionalTestDataManager {
     }
 
     public void closeAll() {
-        log.info("Closing database connection.");
         if (connection != null) {
             try {
                 if (!connection.isClosed()) {

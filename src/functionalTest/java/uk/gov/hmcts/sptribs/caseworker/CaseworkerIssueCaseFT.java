@@ -100,18 +100,4 @@ public class CaseworkerIssueCaseFT extends FunctionalTestSuite {
                 ## A notification could not be sent to: Subject\s
                 ## Please resend the notification.""");
     }
-
-//    @BeforeAll
-//    static void setUpDataManager() throws SQLException {
-//        functionalTestDataManager = FunctionalTestDataManager.fromEnvironment();
-//    }
-
-//    @AfterAll
-//    static void tearDownDataManager() throws SQLException {
-//
-//        for (long reference : functionalTestDataManager.getTestReferences()) {
-//            functionalTestDataManager.clearDown(reference);
-//        }
-//        functionalTestDataManager.closeAll();
-//    }
 }
