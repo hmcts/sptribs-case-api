@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.authorisation.exceptions.InvalidTokenException;
 import uk.gov.hmcts.sptribs.common.config.interceptors.UnAuthorisedServiceException;
 import uk.gov.hmcts.sptribs.exception.CaseNotFoundException;
 import uk.gov.hmcts.sptribs.exception.DocumentDownloadException;
+import uk.gov.hmcts.sptribs.exception.UnauthorisedCaseAccessException;
 import uk.gov.hmcts.sptribs.notification.exception.NotificationException;
 import uk.gov.service.notify.NotificationClientException;
 
@@ -71,5 +72,11 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     public ResponseEntity<Object> handleIllegalArgumentException(IllegalArgumentException exception) {
         log.warn("Bad request: {}", exception.getMessage());
         return status(HttpStatus.BAD_REQUEST).body(exception.getMessage());
+    }
+
+    @ExceptionHandler(UnauthorisedCaseAccessException.class)
+    public ResponseEntity<Object> handleUnauthorisedCaseAccessException(UnauthorisedCaseAccessException exception) {
+        log.warn("User is not associated with this case: {}", exception.getMessage());
+        return status(HttpStatus.FORBIDDEN).build();
     }
 }
