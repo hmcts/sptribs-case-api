@@ -487,8 +487,8 @@ public abstract class FunctionalTestSuite {
     }
 
     @BeforeAll
-    static void setUpDataManager() throws SQLException {
-        functionalTestDataManager = FunctionalTestDataManager.fromEnvironment();
+    static void setUpDataManager() {
+        functionalTestDataManager = FunctionalTestDataManager.connectToDB();
     }
 
 
