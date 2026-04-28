@@ -129,7 +129,6 @@ public class CaseEventRepositoryImpl implements CaseEventRepository {
         return results;
     }
 
-    @Override
     public List<RemoveEventWithPrecedingData> getRemoveEventsWithPrecedingData(
         Long reference, String caseEventId, LocalDate startDate, LocalDate endDate) {
 
