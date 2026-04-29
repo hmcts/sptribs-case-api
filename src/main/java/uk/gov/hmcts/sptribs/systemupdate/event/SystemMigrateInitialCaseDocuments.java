@@ -6,6 +6,7 @@ import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
+import uk.gov.hmcts.sptribs.caseworker.model.YesNo;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
@@ -36,6 +37,8 @@ public class SystemMigrateInitialCaseDocuments implements CCDConfig<CaseData, St
                                                                        CaseDetails<CaseData, State> beforeDetails) {
         CaseData caseData = caseDetails.getData();
         Long reference = caseDetails.getId();
+
+        caseData.setNewBundleOrderEnabled(YesNo.YES);
 
         caseDataRestoreService.updateInitialCaseDocuments(reference, caseData);
 
