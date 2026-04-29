@@ -30,6 +30,7 @@ public class CaseTypeTabTest {
 
     @Test
     void shouldConfigureCaseTypeTab() {
+
         //Given
         final Tab.TabBuilder<CaseData, UserRole> summaryTabBuilder = Tab.TabBuilder.builder(CaseData.class, utils);
         final Tab.TabBuilder<CaseData, UserRole> stateTabBuilder = Tab.TabBuilder.builder(CaseData.class, utils);
