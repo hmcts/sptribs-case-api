@@ -27,6 +27,8 @@ import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CURRENT_EVENT;
 public class HearingVenues implements CcdPageConfiguration {
 
     private static final String ALWAYS_HIDE = "venueNotListedOption=\"ALWAYS_HIDE\"";
+    private static final String HEARING_VENUE = "Hearing venue";
+    private static final String ADDITIONAL_INFO = "Additional instructions and directions";
 
     @Override
     public void addTo(PageBuilder pageBuilder) {
@@ -54,15 +56,18 @@ public class HearingVenues implements CcdPageConfiguration {
             .mandatory(Listing::getNumberOfDays)
             .mandatory(Listing::getAdditionalHearingDate, "numberOfDays = \"Yes\"")
             .readonly(Listing::getHearingSummaryExists, ALWAYS_HIDE)
-            .readonly(Listing::getHearingStatus, ALWAYS_HIDE)
-            .done();
+            .readonly(Listing::getHearingStatus, ALWAYS_HIDE);
+
     }
 
-    private AboutToStartOrSubmitResponse<CaseData, State> midEvent(CaseDetails<CaseData, State> details,
+    public AboutToStartOrSubmitResponse<CaseData, State> midEvent(CaseDetails<CaseData, State> details,
                                                                    CaseDetails<CaseData, State> detailsBefore) {
         final CaseData data = details.getData();
         final List<String> errors = new ArrayList<>();
         final Listing listing = data.getListing();
+
+        validateNoSpecialCharacter(listing.getHearingVenueNameAndAddress(), HEARING_VENUE, errors);
+        validateNoSpecialCharacter(listing.getAddlInstr(), ADDITIONAL_INFO, errors);
 
         if (!listing.getVenueNotListedOption().contains(VenueNotListed.VENUE_NOT_LISTED)) {
             String selectedVenue = data.getListing().getSelectedVenue();
@@ -74,11 +79,19 @@ public class HearingVenues implements CcdPageConfiguration {
             && StringUtils.isBlank(listing.getReadOnlyHearingVenueName())) {
             errors.add("Please enter valid Hearing venue");
         }
+
         data.setListing(listing);
+
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(data)
             .errors(errors)
             .build();
+    }
+
+    private void validateNoSpecialCharacter(String value, String fieldName, List<String> errors) {
+        if (value != null && value.contains("&")) {
+            errors.add(fieldName + " must not contain '&'.");
+        }
     }
 
 }

@@ -14,6 +14,7 @@ import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.event.page.HearingTypeAndFormat;
 import uk.gov.hmcts.sptribs.caseworker.event.page.HearingVenues;
 import uk.gov.hmcts.sptribs.caseworker.event.page.RecordNotifyParties;
+import uk.gov.hmcts.sptribs.caseworker.event.page.RemoteHearingInfo;
 import uk.gov.hmcts.sptribs.caseworker.helper.RecordListHelper;
 import uk.gov.hmcts.sptribs.caseworker.model.HearingSummary;
 import uk.gov.hmcts.sptribs.caseworker.model.Listing;
@@ -59,6 +60,7 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
     private static final CcdPageConfiguration hearingTypeAndFormat = new HearingTypeAndFormat();
     private static final CcdPageConfiguration hearingVenues = new HearingVenues();
     private static final CcdPageConfiguration recordNotifyParties = new RecordNotifyParties();
+    private static final CcdPageConfiguration remoteHearingInfo = new RemoteHearingInfo();
 
     private final RecordListHelper recordListHelper;
 
@@ -97,7 +99,7 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
         hearingTypeAndFormat.addTo(pageBuilder);
         addRegionInfo(pageBuilder);
         hearingVenues.addTo(pageBuilder);
-        addRemoteHearingInfo(pageBuilder);
+        remoteHearingInfo.addTo(pageBuilder);
         addOtherInformation(pageBuilder);
         recordNotifyParties.addTo(pageBuilder);
     }
@@ -192,16 +194,6 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
             .complex(CaseData::getListing)
             .readonly(Listing::getRegionsMessage)
             .optional(Listing::getRegionList)
-            .done();
-    }
-
-    private void addRemoteHearingInfo(PageBuilder pageBuilder) {
-        pageBuilder.page("remoteHearingInformation")
-            .pageLabel("Remote hearing information")
-            .label("LabelRemoteHearingInfoObj", "")
-            .complex(CaseData::getListing)
-            .optional(Listing::getVideoCallLink)
-            .optional(Listing::getConferenceCallNumber)
             .done();
     }
 
