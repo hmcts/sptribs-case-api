@@ -513,7 +513,12 @@ bootJar {
 
 functional {
   dependsOn loadLocalEnvSecretsTask
-  doFirst() { loadEnvFile(it) }
+  doFirst() {
+    if (System.getenv('ENVIRONMENT') && project.file('./.aat-env').exists()) {
+      project.file('./.aat-env').delete()
+    }
+    loadEnvFile(it)
+  }
 }
 
 generateTypeScript {
