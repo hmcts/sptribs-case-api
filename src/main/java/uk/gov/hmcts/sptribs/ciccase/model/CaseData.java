@@ -21,26 +21,9 @@ import uk.gov.hmcts.ccd.sdk.type.Flags;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.ccd.sdk.type.SearchCriteria;
 import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
-import uk.gov.hmcts.sptribs.caseworker.model.CaseBuilt;
-import uk.gov.hmcts.sptribs.caseworker.model.CaseIssue;
-import uk.gov.hmcts.sptribs.caseworker.model.CaseIssueDecision;
-import uk.gov.hmcts.sptribs.caseworker.model.CaseIssueFinalDecision;
-import uk.gov.hmcts.sptribs.caseworker.model.CaseManagementLocation;
-import uk.gov.hmcts.sptribs.caseworker.model.CaseNote;
-import uk.gov.hmcts.sptribs.caseworker.model.CaseStay;
-import uk.gov.hmcts.sptribs.caseworker.model.CloseCase;
-import uk.gov.hmcts.sptribs.caseworker.model.ContactParties;
-import uk.gov.hmcts.sptribs.caseworker.model.ContactPartiesDocuments;
-import uk.gov.hmcts.sptribs.caseworker.model.DateModel;
-import uk.gov.hmcts.sptribs.caseworker.model.DocumentManagement;
-import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderContentCIC;
-import uk.gov.hmcts.sptribs.caseworker.model.EditCicaCaseDetails;
-import uk.gov.hmcts.sptribs.caseworker.model.Listing;
-import uk.gov.hmcts.sptribs.caseworker.model.ReferToJudge;
-import uk.gov.hmcts.sptribs.caseworker.model.ReferToLegalOfficer;
-import uk.gov.hmcts.sptribs.caseworker.model.RemoveCaseStay;
-import uk.gov.hmcts.sptribs.caseworker.model.SecurityClass;
-import uk.gov.hmcts.sptribs.caseworker.model.YesNo;
+import uk.gov.hmcts.sptribs.DAO.*;
+import uk.gov.hmcts.sptribs.DTO.*;
+import uk.gov.hmcts.sptribs.caseworker.model.*;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseFileViewAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseFlagsAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseLinksDefaultAccess;
@@ -61,6 +44,7 @@ import uk.gov.hmcts.sptribs.document.bundling.model.MultiBundleConfig;
 import uk.gov.hmcts.sptribs.document.model.AbstractCaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.notification.model.Correspondence;
+import uk.gov.hmcts.sptribs.notification.model.Statement;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -366,6 +350,15 @@ public class CaseData {
     private List<ListValue<Correspondence>> correspondence;
 
     @CCD(
+        label = "Hearing Statements",
+        typeOverride = Collection,
+        typeParameterOverride = "Statement",
+        access = {NonRespondentAccess.class}
+    )
+    @External
+    private List<ListValue<Statement>> statement;
+
+    @CCD(
         label = "Case number",
         access = {DefaultAccess.class, CaseworkerAccess.class}
     )
@@ -566,12 +559,20 @@ public class CaseData {
     @External
     private LocalDate reindexCasesModifiedSince;
 
+    @CCD(label = "Who is this statement from?")
+    private PartyType statementParty;
+
+    @CCD(label = "Statement document")
+    private CaseworkerCICDocument statementDocument;
     @CCD(
         label = "Matching cases count",
         access = {SuperUserOnlyAccess.class}
     )
     @External
     private Long reindexCasesMatchingCount;
+
+    @CCD(label = "Statement")
+    private StatementRecord statementRecord;
 
     public String getFirstHearingDate() {
 

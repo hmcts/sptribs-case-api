@@ -10,8 +10,7 @@ import uk.gov.hmcts.ccd.sdk.api.CCD;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CollectionDefaultAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.DefaultAccess;
-import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
-import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocumentUpload;
+import uk.gov.hmcts.sptribs.document.model.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,5 +41,12 @@ public class DocumentManagement {
     )
     @Builder.Default
     private List<ListValue<CaseworkerCICDocumentUpload>> caseworkerCICDocumentUpload = new ArrayList<>();
+
+    @CCD(
+        label = "Document",
+        access = {DefaultAccess.class}
+    )
+    @Builder.Default
+    private HearingStatementCICDocument HearingStatementCICDocument = new HearingStatementCICDocument();
 
 }

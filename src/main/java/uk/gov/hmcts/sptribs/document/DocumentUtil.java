@@ -6,10 +6,7 @@ import org.apache.commons.lang3.ObjectUtils;
 import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
-import uk.gov.hmcts.sptribs.document.model.CICDocument;
-import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
-import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocumentUpload;
-import uk.gov.hmcts.sptribs.document.model.DocumentInfo;
+import uk.gov.hmcts.sptribs.document.model.*;
 
 import java.time.Clock;
 import java.time.LocalDate;
@@ -130,6 +127,15 @@ public final class DocumentUtil {
             }
         }
 
+        return errors;
+    }
+
+    public static List<String> validateHearingStatementCICDocumentFormat(HearingStatementCICDocument document) {
+        final List<String> errors = new ArrayList<>();
+        if (document.isDocumentValid()) {
+            return errors;
+        }
+        errors.add(DOCUMENT_VALIDATION_MESSAGE);
         return errors;
     }
 

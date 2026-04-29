@@ -16,6 +16,7 @@ public final class CommonConstants {
     public static final String REGION = "region";
 
     public static final String PUBLIC_DATA_CLASSIFICATION = "PUBLIC";
+    public static final String CASEWORKER_UPLOAD_STATEMENT = "caseworker-upload-statement";
 
     private CommonConstants() {
     }
