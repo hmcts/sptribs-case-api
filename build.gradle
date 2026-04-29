@@ -455,6 +455,8 @@ def loadEnvSecretsTask = tasks.register('loadEnvSecrets') {
 
 def loadLocalEnvSecretsTask = tasks.register('loadLocalEnvSecrets') {
   doLast {
+    logger.lifecycle("ENVIRONMENT = {}", System.getenv('ENVIRONMENT'))
+    logger.lifecycle("ENVIRONMENT_NAME = {}", System.getenv('ENVIRONMENT_NAME'))
     if (!System.getenv('ENVIRONMENT') && !project.file('./.local-env').exists()) {
       new ByteArrayOutputStream().withStream { os ->
         exec {
