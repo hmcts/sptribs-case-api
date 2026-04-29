@@ -53,6 +53,7 @@ public class FunctionalTestDataManager {
 
         try {
             connection = DriverManager.getConnection(connectionString, username, password);
+            log.info("Successfully connected to database: {}", connectionString);
         } catch (SQLException e) {
             log.error("Failed to establish database connection to {}.", connectionString, e);
             throw new RuntimeException("Failed to establish database connection to: " + connectionString, e);
