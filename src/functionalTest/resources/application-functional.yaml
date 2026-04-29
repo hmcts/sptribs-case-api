@@ -1,5 +1,7 @@
 test-url: ${TEST_URL:http://localhost:4013}
 
+
+
 spring:
   flyway:
     enabled: false
@@ -22,7 +24,12 @@ s2s:
   ccd_data_name: ccd_data
   task_management_name: wa_task_management_api
   access_management_name: am_role_assignment_service
-
+postgres:
+  host: ${POSTGRES_HOST:localhost}
+  port: ${POSTGRES_PORT:6432}
+  username: ${SPTRIBS_POSTGRES_USERNAME_PREVIEW:${POSTGRES_USERNAME:postgres}}
+  password: ${SPTRIBS_POSTGRES_PASSWORD_PREVIEW:${POSTGRES_PASSWORD:}}
+  name: ${POSTGRES_NAME:sptribs}
 idam:
   api:
     url: ${IDAM_API_BASEURL:https://idam-api.aat.platform.hmcts.net}

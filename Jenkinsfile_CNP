@@ -233,6 +233,11 @@ withPipeline(type, product, component) {
     env.TASK_MONITOR_API_URL = "https://wa-task-monitor-sptribs-case-api-pr-${CHANGE_ID}.preview.platform.hmcts.net"
     env.TASK_MANAGEMENT_API_URL = "https://wa-task-management-api-sptribs-case-api-pr-${CHANGE_ID}.preview.platform.hmcts.net"
     env.ROLE_ASSIGNMENT_API_URL = "https://am-org-role-mapping-service-sptribs-case-api-pr-${CHANGE_ID}.preview.platform.hmcts.net"
+    env.POSTGRES_HOST = "sptribs-preview.postgres.database.azure.com"
+    env.POSTGRES_PORT = "5432"
+    env.POSTGRES_NAME = "pr-${CHANGE_ID}-sptribs-case-api"
+    echo "SPTRIBS_POSTGRES_USERNAME_PREVIEW = ${env.SPTRIBS_POSTGRES_USERNAME_PREVIEW}"
+    echo "SPTRIBS_POSTGRES_PASSWORD_PREVIEW = ${env.SPTRIBS_POSTGRES_PASSWORD_PREVIEW}"
 
     def waPRLabels = githubApi.getLabelsbyPattern(env.BRANCH_NAME, "pr-values:wa")
     if (waPRLabels.contains("pr-values:wa-ft-tests")) {
