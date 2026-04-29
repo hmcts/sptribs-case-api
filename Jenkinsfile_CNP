@@ -236,6 +236,8 @@ withPipeline(type, product, component) {
     env.POSTGRES_HOST = "sptribs-preview.postgres.database.azure.com"
     env.POSTGRES_PORT = "5432"
     env.POSTGRES_NAME = "pr-${CHANGE_ID}-sptribs-case-api"
+    echo "SPTRIBS_POSTGRES_USERNAME_PREVIEW = ${env.SPTRIBS_POSTGRES_USERNAME_PREVIEW}"
+    echo "SPTRIBS_POSTGRES_PASSWORD_PREVIEW = ${env.SPTRIBS_POSTGRES_PASSWORD_PREVIEW}"
 
     def waPRLabels = githubApi.getLabelsbyPattern(env.BRANCH_NAME, "pr-values:wa")
     if (waPRLabels.contains("pr-values:wa-ft-tests")) {
