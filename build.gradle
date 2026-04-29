@@ -468,6 +468,8 @@ def loadLocalEnvSecretsTask = tasks.register('loadLocalEnvSecrets') {
 }
 
 def loadEnvFile = { task ->
+  if (System.getenv('ENVIRONMENT')) return
+
   def envFile = project.file('./.local-env').exists()
     ? project.file('./.local-env')
     : project.file('./.aat-env').exists()
