@@ -411,6 +411,7 @@ dependencies {
   testAnnotationProcessor group: 'org.projectlombok', name: 'lombok', version: versions.lombok
   integrationTestImplementation sourceSets.main.runtimeClasspath
   integrationTestImplementation sourceSets.test.runtimeClasspath
+  integrationTestImplementation group: 'org.springframework.boot', name: 'spring-boot-testcontainers'
   integrationTestImplementation group: 'org.testcontainers', name: 'junit-jupiter', version: '1.21.4'
   integrationTestImplementation group: 'org.testcontainers', name: 'postgresql', version: '1.21.4'
 
@@ -534,6 +535,7 @@ tasks.withType(CftlibExec).configureEach {
 }
 
 bootWithCCD {
+    environment 'XUI_MO_PORT', '3003'
     environment 'XUI_JURISDICTIONS', 'ST_CIC'
     environment 'CASE_DOCUMENT_S2S_AUTHORISED_SERVICES', 'ccd_case_document_am_api,ccd_gw,xui_webapp,ccd_data,bulk_scan_processor,em_npa_app,dg_docassembly_api,em_stitching_api,em_ccd_orchestrator,bulk_scan_orchestrator,sptribs_case_api,sptribs_frontend'
     environment 'PDF_API_URL', 'http://rpe-pdf-service-aat.service.core-compute-aat.internal'

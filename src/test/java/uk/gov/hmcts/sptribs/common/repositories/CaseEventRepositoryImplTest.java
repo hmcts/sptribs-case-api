@@ -17,6 +17,7 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.common.dto.RemoveEventWithPrecedingData;
 import uk.gov.hmcts.sptribs.common.repositories.exception.CaseEventRepositoryException;
+import uk.gov.hmcts.sptribs.common.repositories.impl.CaseEventRepositoryImpl;
 
 import java.sql.ResultSet;
 import java.sql.Timestamp;
@@ -33,7 +34,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class CaseEventRepositoryTest {
+class CaseEventRepositoryImplTest {
 
     @Mock
     private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
@@ -42,7 +43,7 @@ class CaseEventRepositoryTest {
     private ObjectMapper objectMapper;
 
     @InjectMocks
-    private CaseEventRepository caseEventRepository;
+    private CaseEventRepositoryImpl caseEventRepository;
 
     private static final String CASE_EVENT_ID = "caseworker-remove-document";
     private static final LocalDate START_DATE = LocalDate.of(2026, 2, 24);
@@ -280,7 +281,8 @@ class CaseEventRepositoryTest {
                 ArgumentMatchers.<RowMapper<RemoveEventWithPrecedingData>>any()))
                 .thenThrow(new DataAccessResourceFailureException("DB error"));
 
-            assertThatThrownBy(() -> caseEventRepository.getRemoveEventsWithPrecedingData(REFERENCE, CASE_EVENT_ID, START_DATE, END_DATE))
+            assertThatThrownBy(() ->
+                caseEventRepository.getRemoveEventsWithPrecedingData(REFERENCE, CASE_EVENT_ID, START_DATE, END_DATE))
                 .isInstanceOf(CaseEventRepositoryException.class)
                 .hasMessageContaining("Failed to retrieve remove events for reference=")
                 .hasCauseInstanceOf(DataAccessResourceFailureException.class);
