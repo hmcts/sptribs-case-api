@@ -23,11 +23,11 @@ s2s:
   task_management_name: wa_task_management_api
   access_management_name: am_role_assignment_service
 postgres:
-  host: ${POSTGRES_HOST:localhost}
-  port: ${POSTGRES_PORT:6432}
+  host: ${FT_POSTGRES_HOST:localhost}
+  port: ${FT_POSTGRES_PORT:6432}
   username: ${SPTRIBS_POSTGRES_USERNAME_PREVIEW:${POSTGRES_USERNAME:postgres}}
   password: ${SPTRIBS_POSTGRES_PASSWORD_PREVIEW:${POSTGRES_PASSWORD:}}
-  name: ${POSTGRES_NAME:sptribs}
+  name: ${FT_POSTGRES_NAME:sptribs}
 idam:
   api:
     url: ${IDAM_API_BASEURL:https://idam-api.aat.platform.hmcts.net}
