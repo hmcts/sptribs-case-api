@@ -439,33 +439,37 @@ dependencies {
 
 mainClassName = 'uk.gov.hmcts.sptribs.CaseApiApplication'
 
-def loadEnvSecretsTask = tasks.register('loadEnvSecrets') {
-  doLast {
-    if (!project.file('./.aat-env').exists()) {
-      new ByteArrayOutputStream().withStream { os ->
-        exec {
-          commandLine 'az', 'keyvault', 'secret', 'show', '--vault-name', 'sptribs-aat', '-o', 'tsv', '--query', 'value', '--name', 'sptribs-case-api-dot-env'
-          standardOutput = os
-        }
-        project.file('./.aat-env').write(new String(os.toString().replace('\n', '').decodeBase64(), java.nio.charset.StandardCharsets.UTF_8))
-      }
-    }
-  }
-}
+//def loadEnvSecretsTask = tasks.register('loadEnvSecrets') {
+//  doLast {
+//    if (!project.file('./.aat-env').exists()) {
+//      new ByteArrayOutputStream().withStream { os ->
+//        exec {
+//          commandLine 'az', 'keyvault', 'secret', 'show', '--vault-name', 'sptribs-aat', '-o', 'tsv', '--query', 'value', '--name', 'sptribs-case-api-dot-env'
+//          standardOutput = os
+//        }
+//        project.file('./.aat-env').write(new String(os.toString().replace('\n', '').decodeBase64(), java.nio.charset.StandardCharsets.UTF_8))
+//      }
+//    }
+//  }
+//}
 
 def loadLocalEnvSecretsTask = tasks.register('loadLocalEnvSecrets') {
   doLast {
     if (!System.getenv('ENVIRONMENT') && !project.file('./.local-env').exists()) {
       new ByteArrayOutputStream().withStream { os ->
+        def azPath = ['which', 'az'].execute().text.trim()
         exec {
-          commandLine 'az', 'keyvault', 'secret', 'show', '--vault-name', 'sptribs-preview', '-o', 'tsv', '--query', 'value', '--name', 'sptribs-case-api-dot-env'
+          commandLine azPath, 'keyvault', 'secret', 'show', '--vault-name', 'sptribs-preview', '-o', 'tsv', '--query', 'value', '--name', 'sptribs-case-api-dot-env'
           standardOutput = os
+          environment 'PATH', System.getenv('PATH')
         }
         project.file('./.local-env').write(new String(os.toString().replace('\n', '').decodeBase64(), java.nio.charset.StandardCharsets.UTF_8))
       }
     }
   }
 }
+
+
 
 def loadEnvFile = { task ->
   if (System.getenv('ENVIRONMENT')) return
@@ -497,7 +501,7 @@ tasks.register('reloadEnvSecrets') {
 
 bootRun {
   dependsOn loadLocalEnvSecretsTask
-  dependsOn loadEnvSecretsTask
+//  dependsOn loadEnvSecretsTask
   doFirst() { loadEnvFile(it) }
 }
 
@@ -562,7 +566,7 @@ bootWithCCD {
     environment 'PDF_API_URL', 'http://rpe-pdf-service-aat.service.core-compute-aat.internal'
     environment 'SPRING_JMS_SERVICEBUS_ENABLED', 'false'
     group = 'ccd tasks'
-    dependsOn loadEnvSecretsTask
+//    dependsOn loadEnvSecretsTask
     dependsOn loadLocalEnvSecretsTask
     doFirst() { loadEnvFile(it) }
 }
