@@ -79,9 +79,9 @@ public class FunctionalTestDataManager {
     }
 
     public void deleteCaseEvent(long reference) throws SQLException {
+        long caseDataId = getCaseDataId(reference);
 
-        if (getCaseDataId(reference) != -1) {
-            long caseDataId = getCaseDataId(reference);
+        if (caseDataId != -1) {
             deleteFromTable(TABLE_CASE_EVENT, KEY_CASE_EVENT_REFERENCE, caseDataId);
         }
     }
