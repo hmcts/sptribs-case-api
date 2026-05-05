@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.sptribs.caseworker.model.Order;
+import uk.gov.hmcts.sptribs.caseworker.util.DocumentListUtil;
 import uk.gov.hmcts.sptribs.caseworker.util.DocumentRemoveListUtil;
 import uk.gov.hmcts.sptribs.caseworker.util.SendOrderUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
@@ -21,11 +22,12 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_DOCUMENT_MANAGEMENT_REMOVE;
+import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.RESPONDENT_DOCUMENT_MANAGEMENT;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class OrdersListRestoreService {
+public class CaseDataRestoreService {
 
     private final CaseEventRepository caseEventRepository;
 
@@ -61,6 +63,19 @@ public class OrdersListRestoreService {
             restoredOrdersList.size(), reference);
 
         restoredOrdersList.stream().map(ListValue::getValue).forEach(order -> SendOrderUtil.updateCicCaseOrderList(currentData, order));
+    }
+
+    public void updateInitialCaseDocuments(Long reference, CaseData currentCaseData) {
+        List<CaseData> caseDataFromEventList = caseEventRepository.getFirstEventDataForCase(reference, RESPONDENT_DOCUMENT_MANAGEMENT);
+        if (caseDataFromEventList.isEmpty()) {
+            log.warn("No event data found for reference={}, skipping", reference);
+            return;
+        }
+        CaseData caseDataBefore = caseDataFromEventList.getFirst();
+        var caseDocumentsAtRespondentUpload = DocumentListUtil.getAllCaseDocuments(caseDataBefore);
+        log.info("Updating initial case documents at respondent upload. Total number of case documents at respondent upload: {}",
+            caseDocumentsAtRespondentUpload.size());
+        currentCaseData.setInitialCicaDocuments(caseDocumentsAtRespondentUpload);
     }
 
     private List<ListValue<Order>> findRemovedEntries(RemoveEventWithPrecedingData event) {

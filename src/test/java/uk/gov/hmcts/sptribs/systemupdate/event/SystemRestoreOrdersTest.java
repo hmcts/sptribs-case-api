@@ -16,7 +16,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.repositories.exception.CaseEventRepositoryException;
-import uk.gov.hmcts.sptribs.common.service.OrdersListRestoreService;
+import uk.gov.hmcts.sptribs.common.service.CaseDataRestoreService;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -40,7 +40,7 @@ class SystemRestoreOrdersTest {
     private SystemRestoreOrders systemRestoreOrders;
 
     @Mock
-    private OrdersListRestoreService ordersListRestoreService;
+    private CaseDataRestoreService caseDataRestoreService;
 
     private static final LocalDate START_FROM_DATE = LocalDate.of(2026, 2, 24);
 
@@ -74,7 +74,7 @@ class SystemRestoreOrdersTest {
 
         systemRestoreOrders.aboutToSubmit(caseDetails, null);
 
-        verify(ordersListRestoreService).restoreOrdersList(
+        verify(caseDataRestoreService).restoreOrdersList(
             12345L,
             caseData,
             START_FROM_DATE,
@@ -104,7 +104,7 @@ class SystemRestoreOrdersTest {
             CaseData data = invocation.getArgument(1);
             data.getCicCase().setOrderList(List.of(restoredOrder));
             return null;
-        }).when(ordersListRestoreService).restoreOrdersList(any(), any(), any(), any());
+        }).when(caseDataRestoreService).restoreOrdersList(any(), any(), any(), any());
 
         AboutToStartOrSubmitResponse<CaseData, State> response =
             systemRestoreOrders.aboutToSubmit(caseDetails, null);
@@ -134,7 +134,7 @@ class SystemRestoreOrdersTest {
         caseDetails.setData(caseData);
 
         // service does nothing - no orders to restore
-        doNothing().when(ordersListRestoreService)
+        doNothing().when(caseDataRestoreService)
             .restoreOrdersList(any(), any(), any(), any());
 
         AboutToStartOrSubmitResponse<CaseData, State> response =
@@ -157,7 +157,7 @@ class SystemRestoreOrdersTest {
         caseDetails.setData(caseData);
 
         doThrow(new CaseEventRepositoryException("DB error", new RuntimeException()))
-            .when(ordersListRestoreService)
+            .when(caseDataRestoreService)
             .restoreOrdersList(any(), any(), any(), any());
 
         assertThatThrownBy(() -> systemRestoreOrders.aboutToSubmit(caseDetails, null))

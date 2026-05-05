@@ -1,7 +1,6 @@
 package uk.gov.hmcts.sptribs.systemupdate.event;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
@@ -12,31 +11,23 @@ import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.service.CaseDataRestoreService;
 
-import java.time.LocalDate;
-
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SYSTEM_UPDATE;
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE_DELETE;
 
 @RequiredArgsConstructor
 @Component
-@Slf4j
-public class SystemRestoreOrders implements CCDConfig<CaseData, State, UserRole> {
-
-    public static final String SYSTEM_RESTORE_ORDERS = "system-restore-orders";
-
-    private static final LocalDate START_FROM_DATE = LocalDate.of(2026, 2, 24);
-
-    private static final LocalDate END_TO_DATE = LocalDate.of(2026, 3, 6);
+public class SystemMigrateInitialCaseDocuments implements CCDConfig<CaseData, State, UserRole> {
+    public static final String SYSTEM_MIGRATE_INITIAL_CASE_DOCUMENTS = "migrate-initial-case-documents";
 
     private final CaseDataRestoreService caseDataRestoreService;
 
     @Override
     public void configure(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         configBuilder
-            .event(SYSTEM_RESTORE_ORDERS)
+            .event(SYSTEM_MIGRATE_INITIAL_CASE_DOCUMENTS)
             .forAllStates()
-            .name("Repopulate missing orders")
-            .description("Recover orders that are missing in cicCase")
+            .name("System: Migrate initial docs")
+            .description("Migrate ")
             .aboutToSubmitCallback(this::aboutToSubmit)
             .grant(CREATE_READ_UPDATE_DELETE, SYSTEM_UPDATE);
     }
@@ -46,10 +37,10 @@ public class SystemRestoreOrders implements CCDConfig<CaseData, State, UserRole>
         CaseData caseData = caseDetails.getData();
         Long reference = caseDetails.getId();
 
-        caseDataRestoreService.restoreOrdersList(reference, caseData, START_FROM_DATE, END_TO_DATE);
+        caseDataRestoreService.updateInitialCaseDocuments(reference, caseData);
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
-            .data(caseData)
-            .build();
+                .data(caseData)
+                .build();
     }
 }
