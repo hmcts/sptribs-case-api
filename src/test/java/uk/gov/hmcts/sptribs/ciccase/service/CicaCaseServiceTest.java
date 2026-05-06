@@ -1,160 +1,123 @@
 package uk.gov.hmcts.sptribs.ciccase.service;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import uk.gov.hmcts.sptribs.ciccase.repository.CicaCaseRepository;
-import uk.gov.hmcts.sptribs.controllers.model.CicaCaseResponse;
+import uk.gov.hmcts.reform.idam.client.models.User;
+import uk.gov.hmcts.reform.idam.client.models.UserDetails;
+import uk.gov.hmcts.sptribs.common.repositories.CaseDataRepository;
+import uk.gov.hmcts.sptribs.common.repositories.model.CicaCaseEntity;
 import uk.gov.hmcts.sptribs.exception.CaseNotFoundException;
+import uk.gov.hmcts.sptribs.exception.UnauthorisedCaseAccessException;
+import uk.gov.hmcts.sptribs.idam.IdamService;
 
-import java.util.Map;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.never;
+import static org.junit.Assert.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.sptribs.testutil.CicaCaseTestHelper.createCicaCaseEntity;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.SYSTEM_USER_USER_ID;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_SYSTEM_UPDATE_USER_EMAIL;
 
 @ExtendWith(MockitoExtension.class)
 class CicaCaseServiceTest {
 
+    private static final String TEST_AUTHORIZATION = "Bearer test-token";
+
     @Mock
-    private CicaCaseRepository cicaCaseRepository;
+    private CaseDataRepository caseDataRepository;
+
+    @Mock
+    private IdamService idamService;
+
+    @Mock
+    private User user;
 
     @InjectMocks
     private CicaCaseService cicaCaseService;
 
-    private final ObjectMapper objectMapper = new ObjectMapper();
-
     @Test
-    void shouldReturnCaseWhenFoundByCicaReference() {
+    void whenGetCaseByCCDReference_thenShouldReturnCaseSuccessfully() {
         // Given
-        String cicaReference = "X12345";
-        CicaCaseResponse expectedResponse = createCicaCaseResponse(cicaReference);
-        when(cicaCaseRepository.findByCicaReference(cicaReference)).thenReturn(Optional.of(expectedResponse));
+        String ccdReference = "1234567891234567";
+        CicaCaseEntity expectedEntity = createCicaCaseEntity(ccdReference);
+
+        when(user.getUserDetails()).thenReturn(userDetails());
+        when(idamService.retrieveUser(TEST_AUTHORIZATION)).thenReturn(user);
+        when(caseDataRepository.checkCaseExists(ccdReference)).thenReturn(true);
+        when(caseDataRepository.findCase(ccdReference, TEST_SYSTEM_UPDATE_USER_EMAIL))
+            .thenReturn(Optional.of(expectedEntity));
 
         // When
-        CicaCaseResponse actualResponse = cicaCaseService.getCaseByCicaReference(cicaReference);
+        CicaCaseEntity actualEntity = cicaCaseService.getCaseByCCDReference(ccdReference, TEST_AUTHORIZATION);
 
         // Then
-        assertThat(actualResponse).isEqualTo(expectedResponse);
-        verify(cicaCaseRepository).findByCicaReference(cicaReference);
+        assertThat(actualEntity).isEqualTo(expectedEntity);
+        verify(idamService).retrieveUser(TEST_AUTHORIZATION);
+        verify(caseDataRepository).checkCaseExists(ccdReference);
+        verify(caseDataRepository).findCase(ccdReference, TEST_SYSTEM_UPDATE_USER_EMAIL);
     }
 
     @Test
-    void shouldReturnCaseWhenFoundByLowercaseCicaReference() {
+    void whenGetCaseByCCDReference_thenThrowUnauthorisedCaseAccessExceptionAsEmailNotPresent() {
         // Given
-        String cicaReference = "x12345";
-        CicaCaseResponse expectedResponse = createCicaCaseResponse(cicaReference.toUpperCase());
-        when(cicaCaseRepository.findByCicaReference(cicaReference)).thenReturn(Optional.of(expectedResponse));
+        String ccdReference = "1234567891234567";
 
-        // When
-        CicaCaseResponse actualResponse = cicaCaseService.getCaseByCicaReference(cicaReference);
+        when(user.getUserDetails()).thenReturn(userDetails());
+        when(idamService.retrieveUser(TEST_AUTHORIZATION)).thenReturn(user);
+        when(caseDataRepository.checkCaseExists(ccdReference)).thenReturn(true);
+        when(caseDataRepository.findCase(ccdReference, TEST_SYSTEM_UPDATE_USER_EMAIL))
+            .thenReturn(Optional.empty());
+
+        // When & Then
+        UnauthorisedCaseAccessException exception = assertThrows(
+            UnauthorisedCaseAccessException.class,
+            () -> cicaCaseService.getCaseByCCDReference(ccdReference, TEST_AUTHORIZATION)
+        );
 
         // Then
-        assertThat(actualResponse).isEqualTo(expectedResponse);
-        verify(cicaCaseRepository).findByCicaReference(cicaReference);
+        assertEquals("User is not authorised to access case: " + ccdReference, exception.getMessage());
+
+        verify(caseDataRepository).findCase(ccdReference, TEST_SYSTEM_UPDATE_USER_EMAIL);
+        verify(idamService).retrieveUser(TEST_AUTHORIZATION);
+
     }
 
     @Test
-    void shouldReturnCaseWhenFoundByGPrefixCicaReference() {
+    void whenGetCaseByCCDReference_thenThrowCaseNotFoundException() {
         // Given
-        String cicaReference = "G98765";
-        CicaCaseResponse expectedResponse = createCicaCaseResponse(cicaReference);
-        when(cicaCaseRepository.findByCicaReference(cicaReference)).thenReturn(Optional.of(expectedResponse));
+        String ccdReference = "1234567891234567";
+        when(idamService.retrieveUser(TEST_AUTHORIZATION)).thenReturn(user);
+        when(caseDataRepository.checkCaseExists(ccdReference)).thenReturn(false);
 
-        // When
-        CicaCaseResponse actualResponse = cicaCaseService.getCaseByCicaReference(cicaReference);
+        // When & Then
+        CaseNotFoundException exception = assertThrows(
+            CaseNotFoundException.class,
+            () -> cicaCaseService.getCaseByCCDReference(ccdReference, TEST_AUTHORIZATION)
+        );
 
         // Then
-        assertThat(actualResponse).isEqualTo(expectedResponse);
-        verify(cicaCaseRepository).findByCicaReference(cicaReference);
+        assertEquals("No case found with CCD reference: " + ccdReference, exception.getMessage());
+
+        verify(caseDataRepository).checkCaseExists(ccdReference);
+        verify(idamService).retrieveUser(TEST_AUTHORIZATION);
+        verifyNoMoreInteractions(caseDataRepository);
     }
 
-    @Test
-    void shouldThrowCaseNotFoundExceptionWhenCaseNotFound() {
-        // Given
-        String cicaReference = "X99999";
-        when(cicaCaseRepository.findByCicaReference(cicaReference)).thenReturn(Optional.empty());
-
-        // When / Then
-        assertThatThrownBy(() -> cicaCaseService.getCaseByCicaReference(cicaReference))
-            .isExactlyInstanceOf(CaseNotFoundException.class)
-            .hasMessageContaining("No case found with CICA reference: X99999");
-    }
-
-    @Test
-    void shouldThrowIllegalArgumentExceptionWhenCicaReferenceIsNull() {
-        // When / Then
-        assertThatThrownBy(() -> cicaCaseService.getCaseByCicaReference(null))
-            .isExactlyInstanceOf(IllegalArgumentException.class)
-            .hasMessageContaining("CICA reference cannot be null or empty");
-
-        verify(cicaCaseRepository, never()).findByCicaReference(anyString());
-    }
-
-    @Test
-    void shouldThrowIllegalArgumentExceptionWhenCicaReferenceIsEmpty() {
-        // When / Then
-        assertThatThrownBy(() -> cicaCaseService.getCaseByCicaReference(""))
-            .isExactlyInstanceOf(IllegalArgumentException.class)
-            .hasMessageContaining("CICA reference cannot be null or empty");
-
-        verify(cicaCaseRepository, never()).findByCicaReference(anyString());
-    }
-
-    @Test
-    void shouldThrowIllegalArgumentExceptionWhenCicaReferenceIsBlank() {
-        // When / Then
-        assertThatThrownBy(() -> cicaCaseService.getCaseByCicaReference("   "))
-            .isExactlyInstanceOf(IllegalArgumentException.class)
-            .hasMessageContaining("CICA reference cannot be null or empty");
-
-        verify(cicaCaseRepository, never()).findByCicaReference(anyString());
-    }
-
-    @ParameterizedTest
-    @ValueSource(strings = {"12345", "A12345", "XYZ", "X", "G", "X1234A", "123X456"})
-    void shouldThrowIllegalArgumentExceptionWhenCicaReferenceHasInvalidFormat(String invalidReference) {
-        // When / Then
-        assertThatThrownBy(() -> cicaCaseService.getCaseByCicaReference(invalidReference))
-            .isExactlyInstanceOf(IllegalArgumentException.class)
-            .hasMessageContaining("Invalid CICA reference format");
-
-        verify(cicaCaseRepository, never()).findByCicaReference(anyString());
-    }
-
-    @ParameterizedTest
-    @ValueSource(strings = {"X1", "X12345", "X123456789", "G1", "G98765", "x12345", "g98765"})
-    void shouldAcceptValidCicaReferenceFormats(String validReference) {
-        // Given
-        CicaCaseResponse expectedResponse = createCicaCaseResponse(validReference.toUpperCase());
-        when(cicaCaseRepository.findByCicaReference(validReference)).thenReturn(Optional.of(expectedResponse));
-
-        // When
-        CicaCaseResponse actualResponse = cicaCaseService.getCaseByCicaReference(validReference);
-
-        // Then
-        assertThat(actualResponse).isNotNull();
-        verify(cicaCaseRepository).findByCicaReference(validReference);
-    }
-
-    private CicaCaseResponse createCicaCaseResponse(String cicaReference) {
-        JsonNode cicaRefNode = objectMapper.valueToTree(cicaReference);
-        return CicaCaseResponse.builder()
-            .id("1624351572550045")
-            .state("Submitted")
-            .data(Map.of("cicCaseCicaReferenceNumber", cicaRefNode))
+    private UserDetails userDetails() {
+        return UserDetails
+            .builder()
+            .id(SYSTEM_USER_USER_ID)
+            .email(TEST_SYSTEM_UPDATE_USER_EMAIL)
             .build();
     }
+
 }
 
 
