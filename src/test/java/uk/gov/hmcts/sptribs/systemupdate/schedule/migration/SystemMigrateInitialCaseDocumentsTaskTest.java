@@ -122,6 +122,17 @@ class SystemMigrateInitialCaseDocumentsTaskTest {
         }
 
         @Test
+        void shouldUseListOfReferencesWhenConfigured() {
+            ReflectionTestUtils.setField(systemMigrateInitialCaseDocumentsTask, "migrateInitialDocsCaseRef", "12345,54321");
+
+            systemMigrateInitialCaseDocumentsTask.run();
+
+            verify(ccdUpdateService).submitEvent(12345L, SYSTEM_MIGRATE_INITIAL_CASE_DOCUMENTS, user, SERVICE_AUTHORIZATION);
+            verify(ccdUpdateService).submitEvent(54321L, SYSTEM_MIGRATE_INITIAL_CASE_DOCUMENTS, user, SERVICE_AUTHORIZATION);
+            verifyNoInteractions(caseEventRepository);
+        }
+
+        @Test
         void shouldContinueToNextCaseWhenCcdManagementExceptionThrown() {
             when(caseEventRepository.getListOfCasesByEventIdDuringDateRange(
                 RESPONDENT_DOCUMENT_MANAGEMENT, LocalDate.of(2025, 10, 16), LocalDate.now()))
