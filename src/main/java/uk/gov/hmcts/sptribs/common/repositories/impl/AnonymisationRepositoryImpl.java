@@ -1,12 +1,13 @@
-package uk.gov.hmcts.sptribs.common.repositories;
+package uk.gov.hmcts.sptribs.common.repositories.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
+import uk.gov.hmcts.sptribs.common.repositories.AnonymisationRepository;
 
 @Repository
 @RequiredArgsConstructor
-public class AnonymisationRepositoryImpl implements  AnonymisationRepository {
+public class AnonymisationRepositoryImpl implements AnonymisationRepository {
 
     private static final String ANONYMISATION_GLOBAL_SEQ = "anonymisation_global_seq";
 
