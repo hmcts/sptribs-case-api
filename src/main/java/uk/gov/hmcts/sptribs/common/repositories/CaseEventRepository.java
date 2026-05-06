@@ -50,6 +50,27 @@ public class CaseEventRepository {
             + ")"
         + "SELECT * FROM events_with_context WHERE event_id = :caseEventId AND created_date >= :startDate AND created_date < :endDate";
 
+    private static final String SELECT_FIRST_EVENT_DATA_FOR_CASE =
+        "SELECT ce.data FROM ccd.case_event ce "
+            + "WHERE ce.case_data_id = (SELECT id FROM ccd.case_data WHERE reference = :reference)"
+            + "AND ce.event_id = :caseEventId "
+            + "ORDER BY ce.created_date ASC "
+            + "LIMIT 1";
+
+    public List<CaseData> getFirstEventDataForCase(Long reference, String caseEventId) {
+        try {
+            return namedParameterJdbcTemplate.query(
+                SELECT_FIRST_EVENT_DATA_FOR_CASE,
+                Map.of(REFERENCE, reference, CASE_EVENT_ID, caseEventId),
+                (rs, rowNum) -> parseEventData(rs.getString("data"), reference)
+            );
+        } catch (DataAccessException e) {
+            log.error("Failed to retrieve first event data for reference={}", reference, e);
+            throw new CaseEventRepositoryException(
+                "Failed to retrieve first event data for reference=" + reference, e);
+        }
+    }
+
     public List<Long> getListOfCasesByEventTypeAndDate(String caseEventId, LocalDate createdDate) {
 
         List<Long> results;

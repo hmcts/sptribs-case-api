@@ -142,7 +142,7 @@ public class Listing {
     private Set<VenueNotListed> venueNotListedOption;
 
     @CCD(
-        label = "Hearing Venue",
+        label = "Hearing Venue - Please do not enter the '&' character.",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private String hearingVenueNameAndAddress;
@@ -160,7 +160,7 @@ public class Listing {
     private String roomAtVenue;
 
     @CCD(
-        label = "Additional instructions and directions",
+        label = "Additional instructions and directions - Please do not enter the '&' character.",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private String addlInstr;
