@@ -104,7 +104,6 @@ public class ContactPartiesNotificationIT {
         when(authTokenGenerator.generate()).thenReturn(TEST_SERVICE_AUTH_TOKEN);
         when(idamService.retrieveSystemUpdateUserDetails()).thenReturn(user);
 
-        Document testDocument = new Document();
         Document.DocumentLink testDocumentBinaryUrl = new Document.DocumentLink();
         testDocumentBinaryUrl.href = "testDoc.pdf/binary";
         Document.DocumentLink testDocumentUrl = new Document.DocumentLink();
@@ -113,6 +112,8 @@ public class ContactPartiesNotificationIT {
 
         testDocumentLinks.binary = testDocumentBinaryUrl;
         testDocumentLinks.self = testDocumentUrl;
+
+        Document testDocument = new Document();
         testDocument.links = testDocumentLinks;
 
         when(caseDocumentClientApi.getDocument(any(), any(), any()))

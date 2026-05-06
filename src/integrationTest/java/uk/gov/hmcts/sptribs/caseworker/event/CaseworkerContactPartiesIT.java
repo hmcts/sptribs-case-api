@@ -61,11 +61,11 @@ import static uk.gov.hmcts.sptribs.testutil.IdamWireMock.stubForIdamDetails;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.ABOUT_TO_START_URL;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.AUTHORIZATION;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.CASEWORKER_USER_ID;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.SERVICE_AUTHORIZATION;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.SUBMITTED_URL;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_AUTHORIZATION_TOKEN;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID_HYPHENATED;
-import static uk.gov.hmcts.sptribs.testutil.TestConstants.SERVICE_AUTHORIZATION;
-import static uk.gov.hmcts.sptribs.testutil.TestConstants.SUBMITTED_URL;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_SERVICE_AUTH_TOKEN;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.callbackRequest;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.caseData;
@@ -110,7 +110,9 @@ public class CaseworkerContactPartiesIT {
     private static final String CONFIRMATION_HEADER = "$.confirmation_header";
 
     @BeforeAll
-    static void setUp() { IdamWireMock.start(); }
+    static void setUp() {
+        IdamWireMock.start();
+    }
 
     @AfterAll
     static void tearDown() {
@@ -130,7 +132,6 @@ public class CaseworkerContactPartiesIT {
         when(authTokenGenerator.generate()).thenReturn(TEST_SERVICE_AUTH_TOKEN);
         when(idamService.retrieveSystemUpdateUserDetails()).thenReturn(user);
 
-        Document testDocument = new Document();
         Document.DocumentLink testDocumentBinaryUrl = new Document.DocumentLink();
         testDocumentBinaryUrl.href = "testDoc.pdf/binary";
         Document.DocumentLink testDocumentUrl = new Document.DocumentLink();
@@ -139,6 +140,8 @@ public class CaseworkerContactPartiesIT {
 
         testDocumentLinks.binary = testDocumentBinaryUrl;
         testDocumentLinks.self = testDocumentUrl;
+
+        Document testDocument = new Document();
         testDocument.links = testDocumentLinks;
 
         when(caseDocumentClientApi.getDocument(any(), any(), any()))
