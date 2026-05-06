@@ -42,6 +42,26 @@ public class DocumentsServiceTest {
         .isDraft(true)
         .build();
 
+    private static final DocumentEntity EXPECTED_TEST_DOCUMENT_ENTITY_NON_DRAFT_NOT_SENT_VIA_CONTACT_PARTIES = DocumentEntity.builder()
+        .caseReferenceNumber(TEST_CASE_ID)
+        .documentUrl("example.com/test-document.pdf")
+        .documentFilename("test-document.pdf")
+        .documentBinaryUrl("example.com/test-document.pdf/binary")
+        .categoryId("testCategory")
+        .isDraft(false)
+        .sentToApplicantViaContactParties(false)
+        .build();
+
+    private static final DocumentEntity EXPECTED_TEST_DOCUMENT_ENTITY_NON_DRAFT_SENT_VIA_CONTACT_PARTIES = DocumentEntity.builder()
+        .caseReferenceNumber(TEST_CASE_ID)
+        .documentUrl("example.com/test-document.pdf")
+        .documentFilename("test-document.pdf")
+        .documentBinaryUrl("example.com/test-document.pdf/binary")
+        .categoryId("testCategory")
+        .isDraft(false)
+        .sentToApplicantViaContactParties(true)
+        .build();
+
     private static final Document TEST_DOCUMENT = Document.builder()
         .url("example.com/test-document.pdf")
         .filename("test-document.pdf")
@@ -85,6 +105,29 @@ public class DocumentsServiceTest {
             .thenThrow(new DataAccessResourceFailureException("DB error"));
 
         assertThatThrownBy(() -> documentsService.buildAndSaveNewDocumentEntity(TEST_DOCUMENT, TEST_CASE_ID, false))
+            .isInstanceOf(RuntimeException.class)
+            .hasMessageContaining("Error saving document entity to database")
+            .hasCauseInstanceOf(DataAccessException.class);
+    }
+
+    @Test
+    public void shouldSetSentToApplicantViaContactPartiesToTrue() {
+        when(documentsRepository.findAllByDocumentBinaryUrl(TEST_DOCUMENT.getBinaryUrl()))
+            .thenReturn(java.util.List.of(EXPECTED_TEST_DOCUMENT_ENTITY_NON_DRAFT_SENT_VIA_CONTACT_PARTIES));
+
+        documentsService.setSentToApplicantViaContactPartiesToTrue(TEST_DOCUMENT.getBinaryUrl());
+
+        verify(documentsRepository, times(1))
+            .findAllByDocumentBinaryUrl(TEST_DOCUMENT.getBinaryUrl());
+        verify(documentsRepository, times(1)).save(EXPECTED_TEST_DOCUMENT_ENTITY_NON_DRAFT_SENT_VIA_CONTACT_PARTIES);
+    }
+
+    @Test
+    public void shouldThrowRuntimeExceptionWhenDataAccessExceptionCaughtInSetSentToApplicantViaContactPartiesToTrue() {
+        when(documentsRepository.findAllByDocumentBinaryUrl(TEST_DOCUMENT.getBinaryUrl()))
+            .thenThrow(new DataAccessResourceFailureException("DB error"));
+
+        assertThatThrownBy(() -> documentsService.setSentToApplicantViaContactPartiesToTrue(TEST_DOCUMENT.getBinaryUrl()))
             .isInstanceOf(RuntimeException.class)
             .hasMessageContaining("Error saving document entity to database")
             .hasCauseInstanceOf(DataAccessException.class);
