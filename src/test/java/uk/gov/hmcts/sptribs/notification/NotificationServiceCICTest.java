@@ -129,17 +129,11 @@ public class NotificationServiceCICTest {
             .uploadedDocuments(uploadedDocuments)
             .build();
 
-        final User user = TestDataHelper.getUser();
-
-//        when(idamService.retrieveUser(any())).thenReturn(user);
         when(sendEmailResponse.getReference()).thenReturn(Optional.of(randomUUID().toString()));
         when(sendEmailResponse.getNotificationId()).thenReturn(UUID.randomUUID());
         when(emailTemplatesConfig.getTemplatesCIC()).thenReturn(templateNameMap);
         when(httpServletRequest.getHeader(AUTHORIZATION)).thenReturn(TEST_AUTHORIZATION_TOKEN);
         when(authTokenGenerator.generate()).thenReturn(TEST_SERVICE_AUTH_TOKEN);
-
-        final ResponseEntity<byte[]> sample = ResponseEntity.ok(new byte[1]);
-//        when(caseDocumentClientAPI.getDocumentBinary(anyString(), anyString(), any(UUID.class))).thenReturn(sample);
 
         when(notificationClient.sendEmail(
             eq(templateId),
@@ -524,16 +518,12 @@ public class NotificationServiceCICTest {
             .uploadedDocuments(uploadedDocuments)
             .build();
 
-        final User user = TestDataHelper.getUser();
-
         //When&Then
-        //when(idamService.retrieveUser(any())).thenReturn(user);
         when(emailTemplatesConfig.getTemplatesCIC()).thenReturn(templateNameMap);
         when(httpServletRequest.getHeader(AUTHORIZATION)).thenReturn(TEST_AUTHORIZATION_TOKEN);
         when(authTokenGenerator.generate()).thenReturn(TEST_SERVICE_AUTH_TOKEN);
 
         final byte[] sample = new byte[1];
-        //when(caseDocumentClientAPI.getDocumentBinary(anyString(), anyString(), any(UUID.class))).thenReturn(ResponseEntity.ok(sample));
 
         when(notificationClient.sendEmail(
             eq(templateId),
