@@ -142,8 +142,6 @@ public class NotificationServiceCICTest {
             any()
         )).thenReturn(sendEmailResponse);
 
-//        when(pdfServiceClient.generateFromHtml(any(), any())).thenReturn(sample);
-
         UploadResponse expectedResponse = uploadResponseWithSampleDocument();
         when(caseDocumentClientAPI.uploadDocuments(any(), any(), any())).thenReturn(expectedResponse);
 
