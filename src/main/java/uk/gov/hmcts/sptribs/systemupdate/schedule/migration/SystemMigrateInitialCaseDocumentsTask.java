@@ -13,6 +13,7 @@ import uk.gov.hmcts.sptribs.systemupdate.service.CcdUpdateService;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.RESPONDENT_DOCUMENT_MANAGEMENT;
@@ -45,8 +46,9 @@ public class SystemMigrateInitialCaseDocumentsTask implements Runnable {
             final List<Long> caseIdsToUpdate = new ArrayList<>();
             try {
                 if (migrateInitialDocsCaseRef != null && !migrateInitialDocsCaseRef.isEmpty()) {
-                    Long caseIdToUpdate = Long.valueOf(migrateInitialDocsCaseRef);
-                    caseIdsToUpdate.add(caseIdToUpdate);
+                    List<Long> casesToUpdate = Arrays.stream(
+                        migrateInitialDocsCaseRef.split(",")).map(s -> Long.parseLong(s.trim())).toList();
+                    caseIdsToUpdate.addAll(casesToUpdate);
                 } else {
                     caseIdsToUpdate.addAll(caseEventRepository.getListOfCasesByEventIdDuringDateRange(
                         RESPONDENT_DOCUMENT_MANAGEMENT,
