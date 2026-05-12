@@ -22,6 +22,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.document.model.CICDocument;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
+import uk.gov.hmcts.sptribs.testutil.TestDataHelper;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -725,5 +726,85 @@ public class DocumentListUtilTest {
 
         //then
         assertThat(caseData.getFurtherUploadedDocuments()).isNull();
+    }
+
+    @Test
+    void shouldRemoveInitialCaseDocuments_whenDocumentMatches() {
+        final CaseData caseData = CaseData.builder().build();
+
+        List<ListValue<CaseworkerCICDocument>> initialDocs = TestDataHelper.get2Document();
+        caseData.setInitialCicaDocuments(initialDocs);
+
+        CaseworkerCICDocument doc = CaseworkerCICDocument.builder()
+                .documentCategory(DocumentType.LINKED_DOCS)
+                .documentLink(Document.builder().url("url1").binaryUrl("url1").filename("name1").build())
+                .build();
+
+        ListValue<CaseworkerCICDocument> docToRemove =
+            ListValue.<CaseworkerCICDocument>builder().value(doc).build();
+
+        DocumentListUtil.removeInitialCaseDocuments(caseData, docToRemove);
+
+        assertThat(caseData.getInitialCicaDocuments()).hasSize(1);
+
+    }
+
+    @Test
+    void shouldNotRemoveInitialCaseDocuments_whenNoDocumentMatches() {
+        final CaseData caseData = CaseData.builder().build();
+
+        List<ListValue<CaseworkerCICDocument>> initialDocs = TestDataHelper.get2Document();
+        caseData.setInitialCicaDocuments(initialDocs);
+
+        CaseworkerCICDocument doc = CaseworkerCICDocument.builder()
+                .documentCategory(DocumentType.LINKED_DOCS)
+                .documentLink(Document.builder().url("url2").binaryUrl("url2").filename("name2").build())
+                .build();
+
+        ListValue<CaseworkerCICDocument> docToRemove =
+                ListValue.<CaseworkerCICDocument>builder().value(doc).build();
+
+        DocumentListUtil.removeInitialCaseDocuments(caseData, docToRemove);
+
+        assertThat(caseData.getInitialCicaDocuments()).hasSize(2);
+
+    }
+
+    @Test
+    void shouldNotRemoveInitialCaseDocuments_whenEmpty() {
+        final CaseData caseData = CaseData.builder().build();
+        caseData.setInitialCicaDocuments(new ArrayList<>());
+
+        CaseworkerCICDocument doc = CaseworkerCICDocument.builder()
+                .documentCategory(DocumentType.LINKED_DOCS)
+                .documentLink(Document.builder().url("url1").binaryUrl("url1").filename("name1").build())
+                .build();
+
+        ListValue<CaseworkerCICDocument> docToRemove =
+                ListValue.<CaseworkerCICDocument>builder().value(doc).build();
+
+        DocumentListUtil.removeInitialCaseDocuments(caseData, docToRemove);
+
+        assertThat(caseData.getInitialCicaDocuments()).isNotNull();
+        assertThat(caseData.getInitialCicaDocuments()).isEmpty();
+
+    }
+
+    @Test
+    void shouldNotRemoveInitialCaseDocuments_whenNull() {
+        final CaseData caseData = CaseData.builder().build();
+
+        CaseworkerCICDocument doc = CaseworkerCICDocument.builder()
+                .documentCategory(DocumentType.LINKED_DOCS)
+                .documentLink(Document.builder().url("url1").binaryUrl("url1").filename("name1").build())
+                .build();
+
+        ListValue<CaseworkerCICDocument> docToRemove =
+                ListValue.<CaseworkerCICDocument>builder().value(doc).build();
+
+        DocumentListUtil.removeInitialCaseDocuments(caseData, docToRemove);
+
+        assertThat(caseData.getInitialCicaDocuments()).isNull();
+
     }
 }

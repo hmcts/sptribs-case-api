@@ -235,6 +235,9 @@ feature:
   restore-orders-task:
     enabled: ${RESTORE_ORDERS_TASK_ENABLED:false}
     caseReference: ${RESTORE_ORDERS_TASK_TEST_CASE_REF:}
+  migrate-initial-case-documents-task:
+    enabled: ${INITIAL_DOCUMENTS_MIGRATION_ENABLED:false}
+    caseReference: ${INITIAL_DOCUMENTS_MIGRATION_TEST_CASE_REF:}
 
 caseinfo:
   apps:

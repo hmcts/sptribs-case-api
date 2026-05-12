@@ -95,16 +95,6 @@ public class RecordListHelper {
         return errors;
     }
 
-    public void addRemoteHearingInfo(PageBuilder pageBuilder) {
-        pageBuilder.page("remoteHearingInformation")
-            .pageLabel("Remote hearing information")
-            .label("LabelRemoteHearingInfo", "")
-            .complex(CaseData::getListing)
-            .optional(Listing::getVideoCallLink)
-            .optional(Listing::getConferenceCallNumber)
-            .done();
-    }
-
     public void addOtherInformation(PageBuilder pageBuilder) {
         pageBuilder.page("otherInformation")
             .pageLabel("Other information")
