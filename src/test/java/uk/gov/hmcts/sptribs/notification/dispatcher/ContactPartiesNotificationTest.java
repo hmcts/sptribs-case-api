@@ -33,6 +33,7 @@ import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.TRIBUNAL_EMAIL_VALUE;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.TRIBUNAL_NAME_VALUE;
@@ -351,7 +352,7 @@ class ContactPartiesNotificationTest {
                 CommonConstants.CONTACT_PARTY_INFO, data.getCicCase().getNotifyPartyMessage(),
                 CommonConstants.CIC_CASE_SUBJECT_NAME, data.getCicCase().getFullName()),
             TemplateName.CONTACT_PARTIES_EMAIL);
-        verify(documentsService).setSentToApplicantViaContactPartiesToTrue(testDocumentBinaryUrl.href);
+        verifyNoInteractions(documentsService);
     }
 
     @Test
@@ -418,7 +419,7 @@ class ContactPartiesNotificationTest {
                 CommonConstants.CIC_CASE_TRIBUNAL_NAME, TRIBUNAL_NAME_VALUE,
                 CommonConstants.CONTACT_PARTY_INFO, data.getCicCase().getNotifyPartyMessage()),
             TemplateName.CONTACT_PARTIES_EMAIL);
-        verify(documentsService).setSentToApplicantViaContactPartiesToTrue(testDocumentBinaryUrl.href);
+        verifyNoInteractions(documentsService);
     }
 
     private CaseData getMockCaseData() {
