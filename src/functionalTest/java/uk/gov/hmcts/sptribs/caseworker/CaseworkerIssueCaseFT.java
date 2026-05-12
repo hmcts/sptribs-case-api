@@ -41,7 +41,7 @@ public class CaseworkerIssueCaseFT extends FunctionalTestSuite {
     private static final String CONFIRMATION_HEADER = "$.confirmation_header";
 
     @Autowired
-    protected static FunctionalTestDataManager functionalTestDataManager;
+    protected FunctionalTestDataManager functionalTestDataManager;
 
     @Test
     public void shouldInitialiseDocumentListWhenAboutToStartCallbackIsInvoked() throws Exception {
@@ -79,7 +79,17 @@ public class CaseworkerIssueCaseFT extends FunctionalTestSuite {
         assertThatJson(response.asString())
             .inPath(CONFIRMATION_HEADER)
             .isString()
-            .contains("# Case issued \n##  This case has now been issued. \n## A notification has been sent to");
+            .contains("# Case issued \n##  This case has now been issued. \n## A notification has been sent to: Subject");
+
+        long testCaseRef = Long.parseLong(caseData.get("hyphenatedCaseRef").toString().replace("-", ""));
+
+        assertThat(functionalTestDataManager.getCorrespondenceEntities(testCaseRef)).hasSize(1);
+        assertThat(functionalTestDataManager.getCorrespondenceEntities(testCaseRef).getFirst().getCaseReferenceNumber())
+            .isEqualTo(Long.parseLong(caseData.get("hyphenatedCaseRef").toString().replace("-", "")));
+        assertThat(functionalTestDataManager.getCorrespondenceEntities(testCaseRef).getFirst().getCorrespondenceType())
+            .isEqualTo("Email");
+        assertThat(functionalTestDataManager.getCorrespondenceEntities(testCaseRef).getFirst().getEventType())
+            .isEqualTo("CASE_ISSUED_CITIZEN_EMAIL");
     }
 
     @Test

@@ -1,5 +1,4 @@
 {
-  "data": {
     "caseLinks": [],
     "caseNameHmctsInternal": "Testing subject",
     "caseFlags": {
@@ -75,6 +74,7 @@
     "cicCaseClaimLinkedToCic": "No",
     "cicCaseCompensationClaimLinkCIC": "No",
     "cicCaseIsRepresentativePresent": "Yes",
+    "cicCaseNotifyPartySubject": ["SubjectCIC"],
     "cicCaseApplicantDocumentsUploaded": [
       {
         "id": "bbf81d3c-969e-4a27-8745-e7b3c1a7eeba",
@@ -105,5 +105,4 @@
     },
     "firstHearingDate": "",
     "dataVersion": 0
-  }
 }

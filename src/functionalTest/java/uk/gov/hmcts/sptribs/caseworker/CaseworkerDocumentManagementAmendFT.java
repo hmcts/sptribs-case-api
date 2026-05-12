@@ -2,7 +2,9 @@ package uk.gov.hmcts.sptribs.caseworker;
 
 import io.restassured.response.Response;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import uk.gov.hmcts.sptribs.testutil.FunctionalTestDataManager;
 import uk.gov.hmcts.sptribs.testutil.FunctionalTestSuite;
 
 import java.util.Map;
@@ -33,6 +35,9 @@ public class CaseworkerDocumentManagementAmendFT extends FunctionalTestSuite {
         "classpath:responses/response-caseworker-document-management-amend-about-to-submit.json";
 
     private static final String CONFIRMATION_HEADER = "$.confirmation_header";
+
+    @Autowired
+    protected FunctionalTestDataManager functionalTestDataManager;
 
     @Test
     public void shouldInitialiseDocumentListWhenAboutToStartCallbackIsInvoked() throws Exception {
@@ -66,10 +71,21 @@ public class CaseworkerDocumentManagementAmendFT extends FunctionalTestSuite {
 
         final Response response = triggerCallback(caseData, CASEWORKER_DOCUMENT_MANAGEMENT_AMEND, SUBMITTED_URL);
 
+        long testCaseRef = Long.parseLong(caseData.get("hyphenatedCaseRef").toString().replace("-", ""));
+
+
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
         assertThatJson(response.asString())
             .inPath(CONFIRMATION_HEADER)
             .isString()
             .contains("# Document Updated");
+
+        assertThat(functionalTestDataManager.getCorrespondenceEntities(testCaseRef)).hasSize(1);
+        assertThat(functionalTestDataManager.getCorrespondenceEntities(testCaseRef).getFirst().getCaseReferenceNumber())
+            .isEqualTo(Long.parseLong(caseData.get("hyphenatedCaseRef").toString().replace("-", "")));
+        assertThat(functionalTestDataManager.getCorrespondenceEntities(testCaseRef).getFirst().getCorrespondenceType())
+            .isEqualTo("Email");
+        assertThat(functionalTestDataManager.getCorrespondenceEntities(testCaseRef).getFirst().getEventType())
+            .isEqualTo("CASE_ISSUED_CITIZEN_EMAIL");
     }
 }

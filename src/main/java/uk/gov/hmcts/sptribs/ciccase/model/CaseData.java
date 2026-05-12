@@ -362,7 +362,6 @@ public class CaseData {
         typeParameterOverride = "Correspondence",
         access = {NonRespondentAccess.class}
     )
-    @External
     private List<ListValue<Correspondence>> correspondence;
 
     @CCD(
