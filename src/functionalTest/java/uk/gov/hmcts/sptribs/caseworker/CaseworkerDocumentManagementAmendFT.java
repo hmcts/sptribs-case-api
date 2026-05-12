@@ -71,21 +71,10 @@ public class CaseworkerDocumentManagementAmendFT extends FunctionalTestSuite {
 
         final Response response = triggerCallback(caseData, CASEWORKER_DOCUMENT_MANAGEMENT_AMEND, SUBMITTED_URL);
 
-        long testCaseRef = Long.parseLong(caseData.get("hyphenatedCaseRef").toString().replace("-", ""));
-
-
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
         assertThatJson(response.asString())
             .inPath(CONFIRMATION_HEADER)
             .isString()
             .contains("# Document Updated");
-
-        assertThat(functionalTestDataManager.getCorrespondenceEntities(testCaseRef)).hasSize(1);
-        assertThat(functionalTestDataManager.getCorrespondenceEntities(testCaseRef).getFirst().getCaseReferenceNumber())
-            .isEqualTo(Long.parseLong(caseData.get("hyphenatedCaseRef").toString().replace("-", "")));
-        assertThat(functionalTestDataManager.getCorrespondenceEntities(testCaseRef).getFirst().getCorrespondenceType())
-            .isEqualTo("Email");
-        assertThat(functionalTestDataManager.getCorrespondenceEntities(testCaseRef).getFirst().getEventType())
-            .isEqualTo("CASE_ISSUED_CITIZEN_EMAIL");
     }
 }
