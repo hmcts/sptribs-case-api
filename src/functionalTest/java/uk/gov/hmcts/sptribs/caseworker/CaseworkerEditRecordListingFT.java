@@ -109,6 +109,30 @@ public class CaseworkerEditRecordListingFT extends FunctionalTestSuite {
                 ##  If any changes are made to this hearing,  \
                 remember to make those changes in this listing record.\s
                 ## A notification has been sent to: Subject""");
+
+        long testCaseRef = Long.parseLong(caseData.get("hyphenatedCaseRef").toString().replace("-", ""));
+
+        assertThat(functionalTestDataManager.getCorrespondenceEntities(testCaseRef)).hasSize(1);
+        assertThat(functionalTestDataManager.getCorrespondenceEntities(testCaseRef).getFirst().getId())
+            .isNotNull();
+        assertThat(functionalTestDataManager.getCorrespondenceEntities(testCaseRef).getFirst().getCaseReferenceNumber())
+            .isEqualTo(Long.parseLong(caseData.get("hyphenatedCaseRef").toString().replace("-", "")));
+        assertThat(functionalTestDataManager.getCorrespondenceEntities(testCaseRef).getFirst().getEventType())
+            .isEqualTo("HEARING_UPDATED_EMAIL");
+        assertThat(functionalTestDataManager.getCorrespondenceEntities(testCaseRef).getFirst().getSentOn())
+            .isNotNull();
+        assertThat(functionalTestDataManager.getCorrespondenceEntities(testCaseRef).getFirst().getSentFrom())
+            .isNotNull();
+        assertThat(functionalTestDataManager.getCorrespondenceEntities(testCaseRef).getFirst().getSentTo())
+            .isNotNull();
+        assertThat(functionalTestDataManager.getCorrespondenceEntities(testCaseRef).getFirst().getCorrespondenceType())
+            .isEqualTo("Email");
+        assertThat(functionalTestDataManager.getCorrespondenceEntities(testCaseRef).getFirst().getDocumentUrl())
+            .isNotNull();
+        assertThat(functionalTestDataManager.getCorrespondenceEntities(testCaseRef).getFirst().getDocumentFilename())
+            .isNotNull();
+        assertThat(functionalTestDataManager.getCorrespondenceEntities(testCaseRef).getFirst().getDocumentBinaryUrl())
+            .isNotNull();
     }
 
     @Test

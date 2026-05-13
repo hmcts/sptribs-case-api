@@ -13,20 +13,21 @@ import static org.springframework.http.HttpStatus.OK;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_LINK_CASE;
 import static uk.gov.hmcts.sptribs.testutil.CaseDataUtil.caseData;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.SUBMITTED_URL;
+import static uk.gov.hmcts.sptribs.testutil.TestEventConstants.CASEWORKER_RECORD_LISTING;
 
 @SpringBootTest
 public class CaseworkerLinkCaseFT extends FunctionalTestSuite {
 
-    private static final String REQUEST_ABOUT_TO_SUBMIT_HAPPY_PATH =
+    private static final String REQUEST_SUBMITTED_HAPPY_PATH =
         "classpath:request/casedata/ccd-callback-casedata-caseworker-link-case-submitted.json";
-    private static final String REQUEST_ABOUT_TO_SUBMIT_UNHAPPY_PATH =
+    private static final String REQUEST_SUBMITTED_UNHAPPY_PATH =
         "classpath:request/casedata/ccd-callback-casedata-caseworker-link-case-bad-submitted.json";
 
     private static final String CONFIRMATION_HEADER = "$.confirmation_header";
 
     @Test
-    public void shouldGiveInvalidResponseWhenBadAboutToSubmitCallbackIsInvoked() throws Exception {
-        final Map<String, Object> caseData = caseData(REQUEST_ABOUT_TO_SUBMIT_UNHAPPY_PATH);
+    public void shouldGiveInvalidResponseWhenBadSubmittedCallbackIsInvoked() throws Exception {
+        final Map<String, Object> caseData = caseData(REQUEST_SUBMITTED_UNHAPPY_PATH);
         final Response response = triggerCallback(caseData, CASEWORKER_LINK_CASE, SUBMITTED_URL);
 
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
@@ -37,8 +38,8 @@ public class CaseworkerLinkCaseFT extends FunctionalTestSuite {
     }
 
     @Test
-    public void shouldGiveValidResponseWhenAboutToSubmitCallbackIsInvoked() throws Exception {
-        final Map<String, Object> caseData = caseData(REQUEST_ABOUT_TO_SUBMIT_HAPPY_PATH);
+    public void shouldGiveValidResponseWhenSubmittedCallbackIsInvoked() throws Exception {
+        final Map<String, Object> caseData = caseData(REQUEST_SUBMITTED_HAPPY_PATH);
         final Response response = triggerCallback(caseData, CASEWORKER_LINK_CASE, SUBMITTED_URL);
 
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
@@ -46,5 +47,29 @@ public class CaseworkerLinkCaseFT extends FunctionalTestSuite {
             .inPath(CONFIRMATION_HEADER)
             .isString()
             .isEqualTo("# Case Link created \n");
+
+        long testCaseRef = Long.parseLong(caseData.get("hyphenatedCaseRef").toString().replace("-", ""));
+
+        assertThat(functionalTestDataManager.getCorrespondenceEntities(testCaseRef)).hasSize(1);
+        assertThat(functionalTestDataManager.getCorrespondenceEntities(testCaseRef).getFirst().getId())
+            .isNotNull();
+        assertThat(functionalTestDataManager.getCorrespondenceEntities(testCaseRef).getFirst().getCaseReferenceNumber())
+            .isEqualTo(Long.parseLong(caseData.get("hyphenatedCaseRef").toString().replace("-", "")));
+        assertThat(functionalTestDataManager.getCorrespondenceEntities(testCaseRef).getFirst().getEventType())
+            .isEqualTo("CASE_LINKED_EMAIL");
+        assertThat(functionalTestDataManager.getCorrespondenceEntities(testCaseRef).getFirst().getSentOn())
+            .isNotNull();
+        assertThat(functionalTestDataManager.getCorrespondenceEntities(testCaseRef).getFirst().getSentFrom())
+            .isNotNull();
+        assertThat(functionalTestDataManager.getCorrespondenceEntities(testCaseRef).getFirst().getSentTo())
+            .isNotNull();
+        assertThat(functionalTestDataManager.getCorrespondenceEntities(testCaseRef).getFirst().getCorrespondenceType())
+            .isEqualTo("Email");
+        assertThat(functionalTestDataManager.getCorrespondenceEntities(testCaseRef).getFirst().getDocumentUrl())
+            .isNotNull();
+        assertThat(functionalTestDataManager.getCorrespondenceEntities(testCaseRef).getFirst().getDocumentFilename())
+            .isNotNull();
+        assertThat(functionalTestDataManager.getCorrespondenceEntities(testCaseRef).getFirst().getDocumentBinaryUrl())
+            .isNotNull();
     }
 }

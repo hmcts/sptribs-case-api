@@ -128,6 +128,30 @@ public class CaseworkerCreateAndSendOrderFT extends FunctionalTestSuite {
             .inPath(CONFIRMATION_HEADER)
             .isString()
             .contains("# Order sent \n## A notification has been sent to: Representative");
+
+        long testCaseRef = Long.parseLong(caseData.get("hyphenatedCaseRef").toString().replace("-", ""));
+
+        assertThat(functionalTestDataManager.getCorrespondenceEntities(testCaseRef)).hasSize(1);
+        assertThat(functionalTestDataManager.getCorrespondenceEntities(testCaseRef).getFirst().getId())
+            .isNotNull();
+        assertThat(functionalTestDataManager.getCorrespondenceEntities(testCaseRef).getFirst().getCaseReferenceNumber())
+            .isEqualTo(Long.parseLong(caseData.get("hyphenatedCaseRef").toString().replace("-", "")));
+        assertThat(functionalTestDataManager.getCorrespondenceEntities(testCaseRef).getFirst().getEventType())
+            .isEqualTo("NEW_ORDER_ISSUED_POST");
+        assertThat(functionalTestDataManager.getCorrespondenceEntities(testCaseRef).getFirst().getSentOn())
+            .isNotNull();
+        assertThat(functionalTestDataManager.getCorrespondenceEntities(testCaseRef).getFirst().getSentFrom())
+            .isNotNull();
+        assertThat(functionalTestDataManager.getCorrespondenceEntities(testCaseRef).getFirst().getSentTo())
+            .isNotNull();
+        assertThat(functionalTestDataManager.getCorrespondenceEntities(testCaseRef).getFirst().getCorrespondenceType())
+            .isEqualTo("Letter");
+        assertThat(functionalTestDataManager.getCorrespondenceEntities(testCaseRef).getFirst().getDocumentUrl())
+            .isNotNull();
+        assertThat(functionalTestDataManager.getCorrespondenceEntities(testCaseRef).getFirst().getDocumentFilename())
+            .isNotNull();
+        assertThat(functionalTestDataManager.getCorrespondenceEntities(testCaseRef).getFirst().getDocumentBinaryUrl())
+            .isNotNull();
     }
 
     @Test

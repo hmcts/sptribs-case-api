@@ -91,6 +91,30 @@ public class CaseworkerStayTheCaseFT extends FunctionalTestSuite {
             .inPath(CONFIRMATION_HEADER)
             .isString()
             .contains("# Stay Added to Case \n## A notification has been sent to: Subject, Representative, Applicant");
+
+        long testCaseRef = Long.parseLong(caseData.get("hyphenatedCaseRef").toString().replace("-", ""));
+
+        assertThat(functionalTestDataManager.getCorrespondenceEntities(testCaseRef)).hasSize(3);
+        assertThat(functionalTestDataManager.getCorrespondenceEntities(testCaseRef).getFirst().getId())
+            .isNotNull();
+        assertThat(functionalTestDataManager.getCorrespondenceEntities(testCaseRef).getFirst().getCaseReferenceNumber())
+            .isEqualTo(Long.parseLong(caseData.get("hyphenatedCaseRef").toString().replace("-", "")));
+        assertThat(functionalTestDataManager.getCorrespondenceEntities(testCaseRef).getFirst().getEventType())
+            .isEqualTo("CASE_STAYED_EMAIL");
+        assertThat(functionalTestDataManager.getCorrespondenceEntities(testCaseRef).getFirst().getSentOn())
+            .isNotNull();
+        assertThat(functionalTestDataManager.getCorrespondenceEntities(testCaseRef).getFirst().getSentFrom())
+            .isNotNull();
+        assertThat(functionalTestDataManager.getCorrespondenceEntities(testCaseRef).getFirst().getSentTo())
+            .isNotNull();
+        assertThat(functionalTestDataManager.getCorrespondenceEntities(testCaseRef).getFirst().getCorrespondenceType())
+            .isEqualTo("Email");
+        assertThat(functionalTestDataManager.getCorrespondenceEntities(testCaseRef).getFirst().getDocumentUrl())
+            .isNotNull();
+        assertThat(functionalTestDataManager.getCorrespondenceEntities(testCaseRef).getFirst().getDocumentFilename())
+            .isNotNull();
+        assertThat(functionalTestDataManager.getCorrespondenceEntities(testCaseRef).getFirst().getDocumentBinaryUrl())
+            .isNotNull();
     }
 
     @Test

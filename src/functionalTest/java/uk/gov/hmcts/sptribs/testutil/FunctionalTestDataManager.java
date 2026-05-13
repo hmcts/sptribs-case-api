@@ -124,7 +124,7 @@ public class FunctionalTestDataManager {
             ResultSet rs = stmt.executeQuery();
 
             List<CorrespondenceEntity> correspondences = new ArrayList<>();
-            if (rs.next()) {
+            while (rs.next()) {
                 CorrespondenceEntity correspondenceEntity = CorrespondenceEntity.builder()
                     .caseReferenceNumber(rs.getLong(KEY_CASE_CORRESPONDENCES_REFERENCE))
                     .id(UUID.fromString(rs.getString("id")))

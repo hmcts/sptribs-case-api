@@ -80,6 +80,30 @@ public class CicDssUpdateCaseEventFT extends FunctionalTestSuite {
         assertThatJson(response.asString(),
             json -> json.inPath("confirmation_header").isEqualTo("# CIC Dss Update Case Event Email notifications sent")
         );
+
+        long testCaseRef = Long.parseLong(caseData.get("hyphenatedCaseRef").toString().replace("-", ""));
+
+        assertThat(functionalTestDataManager.getCorrespondenceEntities(testCaseRef)).hasSize(2);
+        assertThat(functionalTestDataManager.getCorrespondenceEntities(testCaseRef).getFirst().getId())
+            .isNotNull();
+        assertThat(functionalTestDataManager.getCorrespondenceEntities(testCaseRef).getFirst().getCaseReferenceNumber())
+            .isEqualTo(Long.parseLong(caseData.get("hyphenatedCaseRef").toString().replace("-", "")));
+        assertThat(functionalTestDataManager.getCorrespondenceEntities(testCaseRef).getFirst().getEventType())
+            .isEqualTo("UPDATE_RECEIVED");
+        assertThat(functionalTestDataManager.getCorrespondenceEntities(testCaseRef).getFirst().getSentOn())
+            .isNotNull();
+        assertThat(functionalTestDataManager.getCorrespondenceEntities(testCaseRef).getFirst().getSentFrom())
+            .isNotNull();
+        assertThat(functionalTestDataManager.getCorrespondenceEntities(testCaseRef).getFirst().getSentTo())
+            .isNotNull();
+        assertThat(functionalTestDataManager.getCorrespondenceEntities(testCaseRef).getFirst().getCorrespondenceType())
+            .isEqualTo("Email");
+        assertThat(functionalTestDataManager.getCorrespondenceEntities(testCaseRef).getFirst().getDocumentUrl())
+            .isNotNull();
+        assertThat(functionalTestDataManager.getCorrespondenceEntities(testCaseRef).getFirst().getDocumentFilename())
+            .isNotNull();
+        assertThat(functionalTestDataManager.getCorrespondenceEntities(testCaseRef).getFirst().getDocumentBinaryUrl())
+            .isNotNull();
     }
 
     @Test
