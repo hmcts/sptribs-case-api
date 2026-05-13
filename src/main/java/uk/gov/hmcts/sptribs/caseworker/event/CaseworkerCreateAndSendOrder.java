@@ -210,7 +210,7 @@ public class CaseworkerCreateAndSendOrder implements CCDConfig<CaseData, State, 
             sendOrderNotification(details.getData().getHyphenatedCaseRef(), details.getData());
         } catch (Exception notificationException) {
             return SubmittedCallbackResponse.builder()
-                .confirmationHeader(format("# Send order notification failed %n## Please resend the order: " + notificationException.getMessage()))
+                .confirmationHeader(format("# Send order notification failed %n## Please resend the order"))
                 .build();
         }
 

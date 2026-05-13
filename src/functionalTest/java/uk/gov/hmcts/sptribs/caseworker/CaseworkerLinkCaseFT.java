@@ -13,7 +13,6 @@ import static org.springframework.http.HttpStatus.OK;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_LINK_CASE;
 import static uk.gov.hmcts.sptribs.testutil.CaseDataUtil.caseData;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.SUBMITTED_URL;
-import static uk.gov.hmcts.sptribs.testutil.TestEventConstants.CASEWORKER_RECORD_LISTING;
 
 @SpringBootTest
 public class CaseworkerLinkCaseFT extends FunctionalTestSuite {
