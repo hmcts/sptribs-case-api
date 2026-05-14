@@ -444,8 +444,9 @@ def loadEnvSecretsTask = tasks.register('loadEnvSecrets') {
   doLast {
     if (!project.file('./.aat-env').exists()) {
       new ByteArrayOutputStream().withStream { os ->
+        def azPath = ['which', 'az'].execute().text.trim()
         exec {
-          commandLine 'az', 'keyvault', 'secret', 'show', '--vault-name', 'sptribs-aat', '-o', 'tsv', '--query', 'value', '--name', 'sptribs-case-api-dot-env'
+          commandLine azPath, 'keyvault', 'secret', 'show', '--vault-name', 'sptribs-aat', '-o', 'tsv', '--query', 'value', '--name', 'sptribs-case-api-dot-env'
           standardOutput = os
         }
         project.file('./.aat-env').write(new String(os.toString().replace('\n', '').decodeBase64(), java.nio.charset.StandardCharsets.UTF_8))
@@ -531,8 +532,9 @@ bootJar {
 }
 
 functional {
-  dependsOn loadEnvSecretsTask
-  loadEnvFile(it)
+  doFirst {
+    loadEnvFile(it)
+  }
 }
 
 generateTypeScript {
@@ -571,14 +573,14 @@ tasks.withType(CftlibExec).configureEach {
 }
 
 bootWithCCD {
-    environment 'XUI_MO_PORT', '3003'
-    environment 'XUI_JURISDICTIONS', 'ST_CIC'
-    environment 'CASE_DOCUMENT_S2S_AUTHORISED_SERVICES', 'ccd_case_document_am_api,ccd_gw,xui_webapp,ccd_data,bulk_scan_processor,em_npa_app,dg_docassembly_api,em_stitching_api,em_ccd_orchestrator,bulk_scan_orchestrator,sptribs_case_api,sptribs_frontend'
-    environment 'PDF_API_URL', 'http://rpe-pdf-service-aat.service.core-compute-aat.internal'
-    environment 'SPRING_JMS_SERVICEBUS_ENABLED', 'false'
-    group = 'ccd tasks'
-    dependsOn loadEnvSecretsTask
-    doFirst() { loadEnvFile(it) }
+  environment 'XUI_MO_PORT', '3003'
+  environment 'XUI_JURISDICTIONS', 'ST_CIC'
+  environment 'CASE_DOCUMENT_S2S_AUTHORISED_SERVICES', 'ccd_case_document_am_api,ccd_gw,xui_webapp,ccd_data,bulk_scan_processor,em_npa_app,dg_docassembly_api,em_stitching_api,em_ccd_orchestrator,bulk_scan_orchestrator,sptribs_case_api,sptribs_frontend'
+  environment 'PDF_API_URL', 'http://rpe-pdf-service-aat.service.core-compute-aat.internal'
+  environment 'SPRING_JMS_SERVICEBUS_ENABLED', 'false'
+  group = 'ccd tasks'
+  dependsOn loadEnvSecretsTask
+  doFirst() { loadEnvFile(it) }
 }
 
 assemble.dependsOn(dumpCCDDefinitions)
