@@ -9,7 +9,7 @@
       "list_items": [
         {
           "code": "${json-unit.any-string}",
-          "label": "[pdf.pdf A - Application Form](http://manage-case.demo.platform.hmcts.net/documents/f3335647-6277-40af-ba66-c09365c0776e/binary)"
+          "label": "${json-unit.any-string}"
         }
       ]
     }
