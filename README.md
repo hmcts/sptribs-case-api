@@ -37,6 +37,13 @@ To build the project, execute the following command:
 ### Running the application locally
 You will need access to the sptribs-aat vault, and an active VPN to run locally, as it depends on services running on AAT.
 
+For running functional tests locally, we need to make sure all the local database access is pointing to local instances.
+please run:
+
+        ./gradlew loadLocalEnvSecrets
+
+to generate the local env file over the aat one, then your bootwithCCD and functional tests will use this.
+
 This will require an Azure login, which can be done with the Azure CLI with:
 `az login` and following the steps to log into Azure
 `az acr login --name hmctsprod` to access the ACR namespace as part of `bootWithCCD` or `generateCCDConfig`/`buildCCDXlsx`
