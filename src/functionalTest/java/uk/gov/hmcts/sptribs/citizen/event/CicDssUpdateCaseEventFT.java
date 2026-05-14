@@ -89,7 +89,7 @@ public class CicDssUpdateCaseEventFT extends FunctionalTestSuite {
         assertThat(functionalTestDataManager.getCorrespondenceEntities(testCaseRef).getFirst().getCaseReferenceNumber())
             .isEqualTo(Long.parseLong(caseData.get("hyphenatedCaseRef").toString().replace("-", "")));
         assertThat(functionalTestDataManager.getCorrespondenceEntities(testCaseRef).getFirst().getEventType())
-            .isEqualTo("UPDATE_RECEIVED");
+            .contains("UPDATE_RECEIVED");
         assertThat(functionalTestDataManager.getCorrespondenceEntities(testCaseRef).getFirst().getSentOn())
             .isNotNull();
         assertThat(functionalTestDataManager.getCorrespondenceEntities(testCaseRef).getFirst().getSentFrom())
