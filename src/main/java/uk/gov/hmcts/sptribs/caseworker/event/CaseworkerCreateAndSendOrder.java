@@ -39,6 +39,7 @@ import uk.gov.hmcts.sptribs.common.event.page.CreateNewOrder;
 import uk.gov.hmcts.sptribs.common.event.page.EditNewOrderContentPage;
 import uk.gov.hmcts.sptribs.common.event.page.PreviewDraftOrder;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
+import uk.gov.hmcts.sptribs.document.persistence.DocumentsService;
 import uk.gov.hmcts.sptribs.notification.dispatcher.NewOrderIssuedNotification;
 
 import java.time.LocalDate;
@@ -87,6 +88,8 @@ public class CaseworkerCreateAndSendOrder implements CCDConfig<CaseData, State, 
     private final DraftOrderFooter draftOrderFooter;
     private final NewOrderIssuedNotification newOrderIssuedNotification;
     private final SendOrderOrderDueDates orderDueDates;
+    private final DocumentsService documentsService;
+
 
     @Override
     public void configure(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
@@ -156,6 +159,12 @@ public class CaseworkerCreateAndSendOrder implements CCDConfig<CaseData, State, 
 
             orderBuilder.draftOrder(draftOrderCIC);
 
+            documentsService.buildAndSaveNewDocumentEntity(
+                draftOrderCIC.getTemplateGeneratedDocument(),
+                Long.parseLong(caseData.getCaseNumber()),
+                false
+            );
+
             caseData.setDraftOrderContentCIC(new DraftOrderContentCIC());
             caseData.getCicCase().setOrderTemplateIssued(null);
         }
@@ -165,6 +174,12 @@ public class CaseworkerCreateAndSendOrder implements CCDConfig<CaseData, State, 
                 updateCategoryToDocument(caseData.getCicCase().getOrderFile(), DocumentType.TRIBUNAL_DIRECTION.getCategory());
             }
             orderBuilder.uploadedFile(caseData.getCicCase().getOrderFile());
+
+            documentsService.buildAndSaveNewDocumentEntity(
+                caseData.getCicCase().getOrderFile().getFirst().getValue().getDocumentLink(),
+                Long.parseLong(caseData.getCaseNumber()),
+                false
+            );
         }
 
         final Order order = orderBuilder

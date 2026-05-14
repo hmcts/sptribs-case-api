@@ -15,6 +15,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.hmcts.sptribs.caseworker.model.DocumentManagement;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.common.config.WebMvcConfig;
+import uk.gov.hmcts.sptribs.common.repositories.DocumentsRepository;
 import uk.gov.hmcts.sptribs.testutil.IdamWireMock;
 
 import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
@@ -29,6 +30,7 @@ import static uk.gov.hmcts.sptribs.testutil.TestConstants.AUTHORIZATION;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.SERVICE_AUTHORIZATION;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.SUBMITTED_URL;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_AUTHORIZATION_TOKEN;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.callbackRequest;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.caseData;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getCaseworkerCICDocumentUploadList;
@@ -48,6 +50,9 @@ public class RespondentDocumentManagementIT {
 
     @MockitoBean
     private WebMvcConfig webMvcConfig;
+
+    @MockitoBean
+    private DocumentsRepository documentsRepository;
 
     private static final String CASEWORKER_RESPONDENT_DOCUMENT_MANAGEMENT_ABOUT_TO_SUBMIT_RESPONSE =
         "classpath:responses/caseworker-respondent-document-management-about-to-submit-response.json";
@@ -71,6 +76,7 @@ public class RespondentDocumentManagementIT {
             .caseworkerCICDocumentUpload(getCaseworkerCICDocumentUploadList("file.pdf"))
             .build();
         caseData.setNewDocManagement(documentManagement);
+        caseData.setCaseNumber(TEST_CASE_ID.toString());
 
         String response = mockMvc.perform(post(ABOUT_TO_SUBMIT_URL)
             .contentType(APPLICATION_JSON)

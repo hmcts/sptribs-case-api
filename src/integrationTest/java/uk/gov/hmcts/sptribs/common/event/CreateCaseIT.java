@@ -15,6 +15,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.common.config.WebMvcConfig;
+import uk.gov.hmcts.sptribs.common.repositories.DocumentsRepository;
 import uk.gov.hmcts.sptribs.common.service.CcdSupplementaryDataService;
 import uk.gov.hmcts.sptribs.notification.NotificationHelper;
 import uk.gov.hmcts.sptribs.notification.NotificationServiceCIC;
@@ -82,6 +83,9 @@ public class CreateCaseIT {
     @MockitoBean
     private CcdSupplementaryDataService coreCaseApiService;
 
+    @MockitoBean
+    private DocumentsRepository documentsRepository;
+
     private static final String CONFIRMATION_HEADER = "$.confirmation_header";
 
     @BeforeAll
@@ -106,6 +110,7 @@ public class CreateCaseIT {
             .caseDocumentsUpload(getCaseworkerCICDocumentUploadList("file.pdf"))
             .build();
         caseData.setCicCase(cicCase);
+        caseData.setCaseNumber(TEST_CASE_ID.toString());
 
         String response = mockMvc.perform(post(ABOUT_TO_SUBMIT_URL)
             .contentType(APPLICATION_JSON)

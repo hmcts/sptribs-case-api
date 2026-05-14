@@ -18,6 +18,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocumentUpload;
+import uk.gov.hmcts.sptribs.document.persistence.DocumentsService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -52,6 +53,8 @@ import static uk.gov.hmcts.sptribs.document.DocumentUtil.uploadDocument;
 public class CaseworkerDocumentManagement implements CCDConfig<CaseData, State, UserRole> {
 
     private final UploadCaseDocuments uploadCaseDocuments = new UploadCaseDocuments();
+
+    private final DocumentsService documentsService;
 
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         Event.EventBuilder<CaseData, UserRole, State> eventBuilder =
@@ -99,6 +102,14 @@ public class CaseworkerDocumentManagement implements CCDConfig<CaseData, State, 
             } else {
                 caseData.getFurtherUploadedDocuments().addAll(documents);
             }
+        }
+
+        for (ListValue<CaseworkerCICDocument> document : documents) {
+            documentsService.buildAndSaveNewDocumentEntity(
+                document.getValue().getDocumentLink(),
+                details.getId(),
+                false
+            );
         }
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()

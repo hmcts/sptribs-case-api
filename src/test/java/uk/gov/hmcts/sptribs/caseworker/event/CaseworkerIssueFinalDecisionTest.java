@@ -25,20 +25,28 @@ import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.SubjectCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.ciccase.model.access.Permissions;
+import uk.gov.hmcts.sptribs.common.repositories.DocumentsRepository;
 import uk.gov.hmcts.sptribs.document.CaseDataDocumentService;
 import uk.gov.hmcts.sptribs.document.DocumentConstants;
 import uk.gov.hmcts.sptribs.document.content.DocmosisTemplateConstants;
 import uk.gov.hmcts.sptribs.document.content.FinalDecisionTemplateContent;
 import uk.gov.hmcts.sptribs.document.model.CICDocument;
+import uk.gov.hmcts.sptribs.document.persistence.DocumentsService;
 import uk.gov.hmcts.sptribs.notification.dispatcher.CaseFinalDecisionIssuedNotification;
 
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseClosed;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_WA_CONFIG_USER;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigBuilder;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.getEventsFrom;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.caseData;
 import static uk.gov.hmcts.sptribs.testutil.TestEventConstants.CASEWORKER_ISSUE_FINAL_DECISION;
 
@@ -56,6 +64,12 @@ class CaseworkerIssueFinalDecisionTest {
 
     @Mock
     private CaseFinalDecisionIssuedNotification caseFinalDecisionIssuedNotification;
+
+    @Mock
+    private DocumentsRepository documentsRepository;
+
+    @Mock
+    private DocumentsService documentsService;
 
     @InjectMocks
     private IssueFinalDecisionSelectTemplate issueFinalDecisionSelectTemplate;
@@ -136,12 +150,20 @@ class CaseworkerIssueFinalDecisionTest {
             .build();
         caseIssueFinalDecision.setDocument(document);
         caseData.setCaseIssueFinalDecision(caseIssueFinalDecision);
+        caseData.setCaseNumber(TEST_CASE_ID.toString());
         details.setData(caseData);
 
         //When
         AboutToStartOrSubmitResponse<CaseData, State> response = issueFinalDecision.aboutToSubmit(details, beforeDetails);
 
         //Then
+        verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
+            any(), eq(TEST_CASE_ID), eq(false)
+        );
+        verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
+            eq(document.getDocumentLink()), eq(TEST_CASE_ID), eq(false)
+        );
+
         assertThat(response.getState())
             .isEqualTo(CaseClosed);
     }
@@ -165,6 +187,8 @@ class CaseworkerIssueFinalDecisionTest {
         AboutToStartOrSubmitResponse<CaseData, State> response = issueFinalDecision.uploadDocumentMidEvent(caseDetails, caseDetails);
 
         //Then
+        verifyNoInteractions(documentsService);
+
         assertThat(response.getErrors()).contains(DocumentConstants.DOCUMENT_VALIDATION_MESSAGE);
     }
 

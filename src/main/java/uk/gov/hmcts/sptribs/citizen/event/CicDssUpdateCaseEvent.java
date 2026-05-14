@@ -22,6 +22,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.document.model.CitizenCICDocument;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
+import uk.gov.hmcts.sptribs.document.persistence.DocumentsService;
 import uk.gov.hmcts.sptribs.idam.IdamService;
 import uk.gov.hmcts.sptribs.notification.dispatcher.DssUpdateCaseSubmissionNotification;
 
@@ -71,6 +72,9 @@ public class CicDssUpdateCaseEvent implements CCDConfig<CaseData, State, UserRol
 
     @Autowired
     private Clock clock;
+
+    @Autowired
+    private DocumentsService documentsService;
 
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
@@ -161,6 +165,13 @@ public class CicDssUpdateCaseEvent implements CCDConfig<CaseData, State, UserRol
                     caseData.getCicCase().getApplicantDocumentsUploaded().stream(), documentListUpdated.stream()).toList();
         caseData.getCicCase().setApplicantDocumentsUploaded(applicantDocumentsUploaded);
 
+        for (ListValue<CaseworkerCICDocument> document : documentListUpdated) {
+            documentsService.buildAndSaveNewDocumentEntity(
+                document.getValue().getDocumentLink(),
+                Long.parseLong(caseData.getCaseNumber()),
+                false
+            );
+        }
         dssCaseData.setOtherInfoDocuments(new ArrayList<>());
         dssCaseData.setAdditionalInformation(null);
         caseData.setDssCaseData(dssCaseData);

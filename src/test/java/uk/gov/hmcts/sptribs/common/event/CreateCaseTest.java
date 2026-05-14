@@ -9,23 +9,35 @@ import uk.gov.hmcts.ccd.sdk.ConfigBuilderImpl;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.Event;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
+import uk.gov.hmcts.ccd.sdk.type.Document;
+import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.model.YesNo;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
+import uk.gov.hmcts.sptribs.common.repositories.DocumentsRepository;
 import uk.gov.hmcts.sptribs.common.service.CcdSupplementaryDataService;
 import uk.gov.hmcts.sptribs.common.service.SubmissionService;
+import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
+import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocumentUpload;
+import uk.gov.hmcts.sptribs.document.model.DocumentType;
+import uk.gov.hmcts.sptribs.document.persistence.DocumentsService;
 import uk.gov.hmcts.sptribs.notification.dispatcher.ApplicationReceivedNotification;
 import uk.gov.hmcts.sptribs.notification.exception.NotificationException;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 import static java.util.Collections.emptySet;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
@@ -52,6 +64,12 @@ class CreateCaseTest {
 
     @Mock
     private ApplicationReceivedNotification applicationReceivedNotification;
+
+    @Mock
+    private DocumentsRepository documentsRepository;
+
+    @Mock
+    private DocumentsService documentsService;
 
     @InjectMocks
     private CreateCase createCase;
@@ -81,6 +99,92 @@ class CreateCaseTest {
         AboutToStartOrSubmitResponse<CaseData, State> result =
             createCase.aboutToSubmit(caseDetails, caseDetails);
 
+        verifyNoInteractions(documentsService);
+
+        assertThat(result.getState()).isEqualTo(Submitted);
+        assertThat(result.getData().getSecurityClass()).isEqualTo(PUBLIC);
+        assertThat(result.getData().getCaseNameHmctsInternal()).isEqualTo("Test Full Name");
+        assertThat(result.getData().getNewBundleOrderEnabled())
+            .isEqualTo(YesNo.YES);
+    }
+
+    @Test
+    void shouldSuccessfullyUploadAndSaveApplicantDocumentsWhenAboutToSubmitEventTriggeredOnCreateCase() {
+        final CaseData caseData = caseData();
+        caseData.setCaseNumber(TEST_CASE_ID.toString());
+        caseData.getCicCase().setFullName("Test Full Name");
+
+        List<ListValue<CaseworkerCICDocumentUpload>> testDocumentList = new ArrayList<>();
+        Document testDocument1 = Document.builder()
+            .url("test.com/document1.pdf")
+            .filename("document1.pdf")
+            .build();
+        CaseworkerCICDocumentUpload testCaseworkerCICDocument1 = CaseworkerCICDocumentUpload.builder()
+            .documentLink(testDocument1)
+            .documentCategory(DocumentType.DSS_TRIBUNAL_FORM)
+            .build();
+        ListValue<CaseworkerCICDocumentUpload> testListValueCaseworkerCICDocument1 = new ListValue<>();
+        testListValueCaseworkerCICDocument1.setId("1");
+        testListValueCaseworkerCICDocument1.setValue(testCaseworkerCICDocument1);
+        testDocumentList.add(testListValueCaseworkerCICDocument1);
+
+        Document testDocument2 = Document.builder()
+            .url("test.com/document2.pdf")
+            .filename("document2.pdf")
+            .build();
+        CaseworkerCICDocumentUpload testCaseworkerCICDocument2 = CaseworkerCICDocumentUpload.builder()
+            .documentLink(testDocument2)
+            .documentCategory(DocumentType.DSS_SUPPORTING)
+            .build();
+        ListValue<CaseworkerCICDocumentUpload> testListValueCaseworkerCICDocument2 = new ListValue<>();
+        testListValueCaseworkerCICDocument2.setId("2");
+        testListValueCaseworkerCICDocument2.setValue(testCaseworkerCICDocument2);
+        testDocumentList.add(testListValueCaseworkerCICDocument2);
+
+        caseData.getCicCase().setCaseDocumentsUpload(testDocumentList);
+
+        List<ListValue<CaseworkerCICDocument>> expectedDocuments = new ArrayList<>();
+        CaseworkerCICDocument testExpectedCaseworkerCICDocument1 = CaseworkerCICDocument.builder()
+            .documentLink(testDocument1)
+            .documentCategory(DocumentType.DSS_TRIBUNAL_FORM)
+            .build();
+        ListValue<CaseworkerCICDocument> testExpectedListValueCaseworkerCICDocument1 = new ListValue<>();
+        testExpectedListValueCaseworkerCICDocument1.setId("1");
+        testExpectedListValueCaseworkerCICDocument1.setValue(testExpectedCaseworkerCICDocument1);
+        expectedDocuments.add(testExpectedListValueCaseworkerCICDocument1);
+
+        CaseworkerCICDocument testExpectedCaseworkerCICDocument2 = CaseworkerCICDocument.builder()
+            .documentLink(testDocument2)
+            .documentCategory(DocumentType.DSS_SUPPORTING)
+            .build();
+        ListValue<CaseworkerCICDocument> testExpectedListValueCaseworkerCICDocument2 = new ListValue<>();
+        testExpectedListValueCaseworkerCICDocument2.setId("2");
+        testExpectedListValueCaseworkerCICDocument2.setValue(testExpectedCaseworkerCICDocument2);
+        expectedDocuments.add(testExpectedListValueCaseworkerCICDocument2);
+
+        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+        caseDetails.setData(caseData);
+        caseDetails.setState(Submitted);
+
+        when(submissionService.submitApplication(caseDetails)).thenReturn(caseDetails);
+
+        AboutToStartOrSubmitResponse<CaseData, State> result =
+            createCase.aboutToSubmit(caseDetails, caseDetails);
+
+        verify(documentsService, times(2)).buildAndSaveNewDocumentEntity(
+            any(), eq(TEST_CASE_ID), eq(false)
+        );
+
+        verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
+            eq(testDocument1), eq(TEST_CASE_ID), eq(false)
+        );
+
+        verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
+            eq(testDocument2), eq(TEST_CASE_ID), eq(false)
+        );
+
+        assertThat(result.getData().getCicCase().getApplicantDocumentsUploaded()).hasSize(2);
+        assertThat(result.getData().getCicCase().getApplicantDocumentsUploaded()).isEqualTo(expectedDocuments);
         assertThat(result.getState()).isEqualTo(Submitted);
         assertThat(result.getData().getSecurityClass()).isEqualTo(PUBLIC);
         assertThat(result.getData().getCaseNameHmctsInternal()).isEqualTo("Test Full Name");

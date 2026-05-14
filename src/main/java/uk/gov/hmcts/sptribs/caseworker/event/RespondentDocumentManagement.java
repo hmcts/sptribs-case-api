@@ -18,6 +18,7 @@ import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.common.service.AuditEventService;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocumentUpload;
+import uk.gov.hmcts.sptribs.document.persistence.DocumentsService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -57,6 +58,7 @@ public class RespondentDocumentManagement implements CCDConfig<CaseData, State, 
     private static final boolean DATE_INCLUDED = true;
     private final UploadCaseDocuments uploadCaseDocuments = new UploadCaseDocuments();
     private final AuditEventService auditEventService;
+    private final DocumentsService documentsService;
 
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
@@ -110,6 +112,14 @@ public class RespondentDocumentManagement implements CCDConfig<CaseData, State, 
                 documents = getAllCaseDocuments(caseData);
                 caseData.setInitialCicaDocuments(addToExistingDocumentList(caseData.getInitialCicaDocuments(), documents));
             }
+        }
+
+        for (ListValue<CaseworkerCICDocument> document : documents) {
+            documentsService.buildAndSaveNewDocumentEntity(
+                document.getValue().getDocumentLink(),
+                Long.parseLong(caseData.getCaseNumber()),
+                false
+            );
         }
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()

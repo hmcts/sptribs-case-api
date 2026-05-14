@@ -17,7 +17,9 @@ import uk.gov.hmcts.sptribs.document.bundling.model.BundleFolder;
 import uk.gov.hmcts.sptribs.document.bundling.model.BundlePaginationStyle;
 import uk.gov.hmcts.sptribs.document.bundling.model.Callback;
 import uk.gov.hmcts.sptribs.document.bundling.model.MultiBundleConfig;
+import uk.gov.hmcts.sptribs.document.model.DocumentType;
 import uk.gov.hmcts.sptribs.document.model.PageNumberFormat;
+import uk.gov.hmcts.sptribs.document.persistence.DocumentsService;
 
 import java.time.Clock;
 import java.time.LocalDateTime;
@@ -67,7 +69,10 @@ public class BundlingService {
     @Autowired
     private Clock clock;
 
-    public List<Bundle> createBundle(Callback callback) {
+    @Autowired
+    private DocumentsService documentsService;
+
+    public List<Bundle> createBundle(Callback callback, Long caseNumber) {
         BundleResponse response;
         try {
             response = bundlingClient.createBundle(
@@ -75,7 +80,7 @@ public class BundlingService {
                 httpServletRequest.getHeader(AUTHORIZATION),
                 callback);
 
-            return getBundleFromResponse((List<LinkedHashMap<String, Object>>) response.getData().get(CASE_BUNDLES));
+            return getBundleFromResponse((List<LinkedHashMap<String, Object>>) response.getData().get(CASE_BUNDLES), caseNumber);
         } catch (FeignException exception) {
             log.error("Unable to create bundle {}",
                 exception.getMessage());
@@ -151,12 +156,12 @@ public class BundlingService {
         return newList;
     }
 
-    private List<Bundle> getBundleFromResponse(List<LinkedHashMap<String, Object>> response) {
+    private List<Bundle> getBundleFromResponse(List<LinkedHashMap<String, Object>> response, Long caseNumber) {
         List<Bundle> bundleList = new ArrayList<>();
         Optional.ofNullable(response).ifPresent(list ->
             list.forEach(res -> {
                 LinkedHashMap<String, Object> objectLinkedHashMap = (LinkedHashMap<String, Object>) res.get(VALUE);
-                Bundle bundle = buildBundle(objectLinkedHashMap);
+                Bundle bundle = buildBundle(objectLinkedHashMap, caseNumber);
 
                 bundle.setFolders(buildBundleFolderListValues(buildBundleFolders(objectLinkedHashMap)));
                 if (objectLinkedHashMap.get(DOCUMENTS) != null) {
@@ -192,14 +197,14 @@ public class BundlingService {
         return folders;
     }
 
-    private Bundle buildBundle(LinkedHashMap<String, Object> objectLinkedHashMap) {
+    private Bundle buildBundle(LinkedHashMap<String, Object> objectLinkedHashMap, Long caseNumber) {
         return Bundle.builder()
             .stitchStatus(NEW)
             .description(MapUtils.getString(objectLinkedHashMap, DESCRIPTION, ""))
             .id(MapUtils.getString(objectLinkedHashMap, ID, ""))
             .dateAndTime(LocalDateTime.now(clock))
             .title(MapUtils.getString(objectLinkedHashMap, TITLE, ""))
-            .stitchedDocument(getStitchedDocument(objectLinkedHashMap))
+            .stitchedDocument(getStitchedDocument(objectLinkedHashMap, caseNumber))
             .paginationStyle(BundlePaginationStyle.valueOf(
                 MapUtils.getObject(objectLinkedHashMap, PAGINATION_STYLE, BundlePaginationStyle.off).toString()))
             .pageNumberFormat(PageNumberFormat.valueOf(
@@ -209,18 +214,27 @@ public class BundlingService {
             .build();
     }
 
-    private Document getStitchedDocument(LinkedHashMap<String, Object> objectLinkedHashMap) {
+    private Document getStitchedDocument(LinkedHashMap<String, Object> objectLinkedHashMap, Long caseNumber) {
         if (ObjectUtils.isEmpty(objectLinkedHashMap.get(STITCHED_DOCUMENT))) {
             return null;
         }
 
         LinkedHashMap<String, Object> stitchedDocMap = (LinkedHashMap<String, Object>) objectLinkedHashMap.get(STITCHED_DOCUMENT);
 
-        return Document.builder()
+        Document stitchedDocument = Document.builder()
             .url(MapUtils.getString(stitchedDocMap, DOCUMENT_URL, ""))
             .binaryUrl(MapUtils.getString(stitchedDocMap, DOCUMENT_BINARY_URL, ""))
             .filename(MapUtils.getString(stitchedDocMap, DOCUMENT_FILENAME, ""))
+            .categoryId(DocumentType.BUNDLE.getCategory())
             .build();
+
+        documentsService.buildAndSaveNewDocumentEntity(
+            stitchedDocument,
+            caseNumber,
+            false
+        );
+
+        return stitchedDocument;
     }
 
     private List<BundleDocument> getDocuments(List<Map<String, Object>> documentsList) {

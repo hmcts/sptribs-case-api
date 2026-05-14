@@ -1,4 +1,5 @@
 {
+  "caseNumber": "1616591401473378",
   "dssCaseDataCaseTypeOfApplication": "CIC",
   "dssCaseDataSubjectFullName": "test_first_name",
   "dssCaseDataSubjectDateOfBirth": null,
@@ -19,9 +20,9 @@
       "id": null,
       "value": {
         "documentLink": {
-          "document_url": null,
-          "document_filename": null,
-          "document_binary_url": null,
+          "document_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/328c674f-59c3-418a-b76b-78f2cc52d21c",
+          "document_filename": "mockFileUpdatedTribunalFormDoc.pdf",
+          "document_binary_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/328c674f-59c3-418a-b76b-78f2cc52d21c/binary",
           "category_id": null
         }
       }
@@ -32,9 +33,9 @@
       "id": null,
       "value": {
         "documentLink": {
-          "document_url": null,
-          "document_filename": null,
-          "document_binary_url": null,
+          "document_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/328c674f-59c3-418a-b76b-78f2cc52d21b",
+          "document_filename": "mockFileUpdatedSupportingDoc.pdf",
+          "document_binary_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/328c674f-59c3-418a-b76b-78f2cc52d21b/binary",
           "category_id": null
         }
       }

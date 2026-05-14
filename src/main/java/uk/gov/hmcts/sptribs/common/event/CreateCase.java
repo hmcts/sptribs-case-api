@@ -39,6 +39,7 @@ import uk.gov.hmcts.sptribs.common.service.CcdSupplementaryDataService;
 import uk.gov.hmcts.sptribs.common.service.SubmissionService;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocumentUpload;
+import uk.gov.hmcts.sptribs.document.persistence.DocumentsService;
 import uk.gov.hmcts.sptribs.notification.dispatcher.ApplicationReceivedNotification;
 
 import java.util.ArrayList;
@@ -83,13 +84,17 @@ public class CreateCase implements CCDConfig<CaseData, State, UserRole> {
 
     private final ApplicationReceivedNotification applicationReceivedNotification;
 
+    private final DocumentsService documentsService;
+
     @Autowired
     public CreateCase(SubmissionService submissionService,
                       CcdSupplementaryDataService ccdSupplementaryDataService,
-                      ApplicationReceivedNotification applicationReceivedNotification) {
+                      ApplicationReceivedNotification applicationReceivedNotification,
+                      DocumentsService documentsService) {
         this.submissionService = submissionService;
         this.ccdSupplementaryDataService = ccdSupplementaryDataService;
         this.applicationReceivedNotification = applicationReceivedNotification;
+        this.documentsService = documentsService;
     }
 
     @Override
@@ -131,6 +136,14 @@ public class CreateCase implements CCDConfig<CaseData, State, UserRole> {
         caseData.getCicCase().setCaseDocumentsUpload(new ArrayList<>());
 
         caseData.getCicCase().setApplicantDocumentsUploaded(documents);
+        for (ListValue<CaseworkerCICDocument> document : documents) {
+            documentsService.buildAndSaveNewDocumentEntity(
+                document.getValue().getDocumentLink(),
+                Long.parseLong(caseData.getCaseNumber()),
+                false
+            );
+        }
+
         setIsRepresentativePresent(caseData);
         caseData.setSecurityClass(SecurityClass.PUBLIC);
         caseData.setCaseNameHmctsInternal(caseData.getCicCase().getFullName());

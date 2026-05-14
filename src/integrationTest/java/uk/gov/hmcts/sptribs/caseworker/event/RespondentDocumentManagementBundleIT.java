@@ -20,6 +20,7 @@ import uk.gov.hmcts.sptribs.caseworker.model.DocumentManagement;
 import uk.gov.hmcts.sptribs.caseworker.model.YesNo;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.common.config.WebMvcConfig;
+import uk.gov.hmcts.sptribs.common.repositories.DocumentsRepository;
 import uk.gov.hmcts.sptribs.common.service.AuditEventService;
 import uk.gov.hmcts.sptribs.document.bundling.client.BundleResponse;
 import uk.gov.hmcts.sptribs.document.bundling.client.BundlingClient;
@@ -73,6 +74,7 @@ import static uk.gov.hmcts.sptribs.testutil.TestConstants.ABOUT_TO_SUBMIT_URL;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.AUTHORIZATION;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.SERVICE_AUTHORIZATION;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_AUTHORIZATION_TOKEN;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.callbackRequest;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.caseData;
 
@@ -126,6 +128,9 @@ class RespondentDocumentManagementBundleIT {
     @MockitoBean
     private AuthTokenGenerator authTokenGenerator;
 
+    @MockitoBean
+    private DocumentsRepository documentsRepository;
+
     @BeforeAll
     static void setUp() {
         IdamWireMock.start();
@@ -142,6 +147,7 @@ class RespondentDocumentManagementBundleIT {
             .thenReturn(false, true);
 
         CaseData caseData = prepareInitialCaseData();
+        caseData.setCaseNumber(TEST_CASE_ID.toString());
 
         caseData.getNewDocManagement().setCaseworkerCICDocumentUpload(
             createUploads(

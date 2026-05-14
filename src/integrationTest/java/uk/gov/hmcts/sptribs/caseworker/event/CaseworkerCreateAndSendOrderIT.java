@@ -25,6 +25,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.OrderTemplate;
 import uk.gov.hmcts.sptribs.ciccase.model.PartiesCIC;
 import uk.gov.hmcts.sptribs.common.config.WebMvcConfig;
+import uk.gov.hmcts.sptribs.common.repositories.DocumentsRepository;
 import uk.gov.hmcts.sptribs.document.DocAssemblyService;
 import uk.gov.hmcts.sptribs.idam.IdamService;
 import uk.gov.hmcts.sptribs.notification.NotificationServiceCIC;
@@ -62,6 +63,7 @@ import static uk.gov.hmcts.sptribs.testutil.TestConstants.AUTHORIZATION;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.SERVICE_AUTHORIZATION;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.SUBMITTED_URL;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_AUTHORIZATION_TOKEN;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID_HYPHENATED;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.callbackRequest;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.caseData;
@@ -90,6 +92,9 @@ public class CaseworkerCreateAndSendOrderIT {
 
     @MockitoBean
     private NotificationServiceCIC notificationServiceCIC;
+
+    @MockitoBean
+    private DocumentsRepository documentsRepository;
 
     private static final String CASEWORKER_CREATE_AND_SEND_ORDER_ABOUT_TO_START_RESPONSE =
             "classpath:responses/caseworker-create-and-send-order-about-to-start-response.json";
@@ -168,6 +173,7 @@ public class CaseworkerCreateAndSendOrderIT {
             .build();
 
         final CaseData caseData = CaseData.builder()
+            .caseNumber(TEST_CASE_ID.toString())
             .draftOrderContentCIC(draftOrderContentCIC)
             .cicCase(CicCase.builder()
                 .orderIssuingType(CREATE_AND_SEND_NEW_ORDER)

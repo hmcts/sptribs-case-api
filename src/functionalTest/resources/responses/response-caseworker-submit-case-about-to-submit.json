@@ -1,5 +1,6 @@
 {
   "data": {
+    "caseNumber": "1616591401473378",
     "caseLinks": [],
     "allCaseworkerCICDocument": [],
     "newCaseworkerCICDocument": [],
@@ -45,7 +46,10 @@
         "value": {
           "documentCategory": "DSS Supporting uploaded documents",
           "documentLink": {
-            "category_id": "DSS"
+            "category_id": "DSS",
+            "document_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/328c674f-59c3-418a-b76b-78f2cc52d21b",
+            "document_filename": "mockFileUpdatedSupportingDoc.pdf",
+            "document_binary_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/328c674f-59c3-418a-b76b-78f2cc52d21b/binary"
           },
           "date": "${json-unit.any-string}"
         }
@@ -55,7 +59,10 @@
         "value": {
           "documentCategory": "DSS Tribunal form uploaded documents",
           "documentLink": {
-            "category_id": "DSS"
+            "category_id": "DSS",
+            "document_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/328c674f-59c3-418a-b76b-78f2cc52d21c",
+            "document_filename": "mockFileUpdatedTribunalFormDoc.pdf",
+            "document_binary_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/328c674f-59c3-418a-b76b-78f2cc52d21c/binary"
           },
           "date": "${json-unit.any-string}"
         }

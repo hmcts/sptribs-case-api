@@ -411,6 +411,7 @@ dependencies {
   testAnnotationProcessor group: 'org.projectlombok', name: 'lombok', version: versions.lombok
   integrationTestImplementation sourceSets.main.runtimeClasspath
   integrationTestImplementation sourceSets.test.runtimeClasspath
+  integrationTestImplementation group: 'org.springframework.boot', name: 'spring-boot-testcontainers'
   integrationTestImplementation group: 'org.testcontainers', name: 'junit-jupiter', version: '1.21.4'
   integrationTestImplementation group: 'org.testcontainers', name: 'postgresql', version: '1.21.4'
 
@@ -439,9 +440,24 @@ dependencies {
 
 mainClassName = 'uk.gov.hmcts.sptribs.CaseApiApplication'
 
+def loadEnvSecretsTask = tasks.register('loadEnvSecrets') {
+  doLast {
+    if (!project.file('./.aat-env').exists()) {
+      new ByteArrayOutputStream().withStream { os ->
+        exec {
+          commandLine 'az', 'keyvault', 'secret', 'show', '--vault-name', 'sptribs-aat', '-o', 'tsv', '--query', 'value', '--name', 'sptribs-case-api-dot-env'
+          standardOutput = os
+        }
+        project.file('./.aat-env').write(new String(os.toString().replace('\n', '').decodeBase64(), java.nio.charset.StandardCharsets.UTF_8))
+      }
+    }
+  }
+}
+
+
 def loadLocalEnvSecretsTask = tasks.register('loadLocalEnvSecrets') {
   doLast {
-    if (!System.getenv('ENVIRONMENT') && !project.file('./.local-env').exists()) {
+    if (!project.file('./.local-env').exists()) {
       new ByteArrayOutputStream().withStream { os ->
         def azPath = ['which', 'az'].execute().text.trim()
         exec {
@@ -456,9 +472,7 @@ def loadLocalEnvSecretsTask = tasks.register('loadLocalEnvSecrets') {
 }
 
 
-
 def loadEnvFile = { task ->
-  if (System.getenv('ENVIRONMENT')) return
 
   def envFile = project.file('./.local-env').exists()
     ? project.file('./.local-env')
@@ -466,13 +480,26 @@ def loadEnvFile = { task ->
     ? project.file('./.aat-env')
     : null
 
-  if (envFile) {
-    envFile.readLines().each() {
-      def index = it.indexOf("=")
-      def key = it.substring(0, index)
-      def value = it.substring(index + 1)
-      task.environment key, value
+  if (!envFile) {
+    println "No env file found"
+    return
+  }
+
+  println "Loading env from: ${envFile.name}"
+
+  envFile.readLines().each { line ->
+
+    line = line.trim()
+
+    if (!line || line.startsWith("#") || !line.contains("=")) {
+      return
     }
+
+    def index = line.indexOf("=")
+    def key = line.substring(0, index).trim()
+    def value = line.substring(index + 1).trim()
+
+    task.environment key, value
   }
 }
 
@@ -482,11 +509,14 @@ tasks.register('reloadEnvSecrets') {
     if (project.file('./.aat-env').exists()) {
       project.file('./.aat-env').delete()
     }
+    if (project.file('./.local-env').exists()) {
+      project.file('./.local-env').delete()
+    }
   }
 }
 
 bootRun {
-  dependsOn loadLocalEnvSecretsTask
+  dependsOn loadEnvSecretsTask
   doFirst() { loadEnvFile(it) }
 }
 
@@ -501,13 +531,8 @@ bootJar {
 }
 
 functional {
-  dependsOn loadLocalEnvSecretsTask
-  doFirst() {
-    if (System.getenv('ENVIRONMENT') && project.file('./.aat-env').exists()) {
-      project.file('./.aat-env').delete()
-    }
-    loadEnvFile(it)
-  }
+  dependsOn loadEnvSecretsTask
+  loadEnvFile(it)
 }
 
 generateTypeScript {
@@ -546,12 +571,13 @@ tasks.withType(CftlibExec).configureEach {
 }
 
 bootWithCCD {
+    environment 'XUI_MO_PORT', '3003'
     environment 'XUI_JURISDICTIONS', 'ST_CIC'
     environment 'CASE_DOCUMENT_S2S_AUTHORISED_SERVICES', 'ccd_case_document_am_api,ccd_gw,xui_webapp,ccd_data,bulk_scan_processor,em_npa_app,dg_docassembly_api,em_stitching_api,em_ccd_orchestrator,bulk_scan_orchestrator,sptribs_case_api,sptribs_frontend'
     environment 'PDF_API_URL', 'http://rpe-pdf-service-aat.service.core-compute-aat.internal'
     environment 'SPRING_JMS_SERVICEBUS_ENABLED', 'false'
     group = 'ccd tasks'
-    dependsOn loadLocalEnvSecretsTask
+    dependsOn loadEnvSecretsTask
     doFirst() { loadEnvFile(it) }
 }
 

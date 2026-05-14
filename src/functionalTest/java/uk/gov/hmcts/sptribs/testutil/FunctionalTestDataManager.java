@@ -22,9 +22,11 @@ import java.util.UUID;
 import static uk.gov.hmcts.sptribs.testutil.FunctionalTestConstants.KEY_CASE_CORRESPONDENCES_REFERENCE;
 import static uk.gov.hmcts.sptribs.testutil.FunctionalTestConstants.KEY_CASE_DATA_ID;
 import static uk.gov.hmcts.sptribs.testutil.FunctionalTestConstants.KEY_CASE_DATA_REFERENCE;
+import static uk.gov.hmcts.sptribs.testutil.FunctionalTestConstants.KEY_CASE_DOCUMENTS_REFERENCE;
 import static uk.gov.hmcts.sptribs.testutil.FunctionalTestConstants.KEY_CASE_EVENT_REFERENCE;
 import static uk.gov.hmcts.sptribs.testutil.FunctionalTestConstants.TABLE_CASE_CORRESPONDENCES;
 import static uk.gov.hmcts.sptribs.testutil.FunctionalTestConstants.TABLE_CASE_DATA;
+import static uk.gov.hmcts.sptribs.testutil.FunctionalTestConstants.TABLE_CASE_DOCUMENTS;
 import static uk.gov.hmcts.sptribs.testutil.FunctionalTestConstants.TABLE_CASE_EVENT;
 
 @Component
@@ -70,8 +72,19 @@ public class FunctionalTestDataManager {
         deleteCaseEvent(reference);
         deleteCaseData(reference);
         deleteCaseCorrespondences(reference);
+        deleteCaseDocuments(reference);
 
         log.info("Clear down completed for reference: {}", reference);
+    }
+
+    public void deleteCaseDocConstants(long[] references) {
+        for (long reference : references) {
+            deleteCaseDocuments(reference);
+        }
+    }
+
+    private void deleteCaseDocuments(long reference) {
+        deleteFromTable(TABLE_CASE_DOCUMENTS, KEY_CASE_DOCUMENTS_REFERENCE, reference);
     }
 
     public void deleteCaseData(long reference) {

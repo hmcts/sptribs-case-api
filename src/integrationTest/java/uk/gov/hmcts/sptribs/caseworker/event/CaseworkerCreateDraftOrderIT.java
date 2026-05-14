@@ -19,6 +19,7 @@ import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderContentCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.common.config.WebMvcConfig;
+import uk.gov.hmcts.sptribs.common.repositories.DocumentsRepository;
 import uk.gov.hmcts.sptribs.document.DocAssemblyService;
 import uk.gov.hmcts.sptribs.document.model.DocumentInfo;
 import uk.gov.hmcts.sptribs.idam.IdamService;
@@ -75,6 +76,9 @@ public class CaseworkerCreateDraftOrderIT {
 
     @MockitoBean
     private DocAssemblyService docAssemblyService;
+
+    @MockitoBean
+    private DocumentsRepository documentsRepository;
 
     private static final String CASEWORKER_CREATE_DRAFT_ORDER_MID_EVENT_RESPONSE =
         "classpath:responses/caseworker-create-draft-order-mid-event-response.json";
@@ -181,6 +185,7 @@ public class CaseworkerCreateDraftOrderIT {
                     .build())
                 .build()
             )
+            .caseNumber(TEST_CASE_ID.toString())
             .hearingList(getHearingList())
             .draftOrderContentCIC(DraftOrderContentCIC.builder()
                 .orderTemplate(CIC3_RULE_27)

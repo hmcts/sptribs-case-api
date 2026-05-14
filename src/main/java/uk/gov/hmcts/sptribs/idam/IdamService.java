@@ -37,6 +37,7 @@ public class IdamService {
 
     public User retrieveUser(String authorisation) {
         final String bearerToken = getBearerToken(authorisation);
+        //update this
         final UserDetails userDetails = idamClient.getUserDetails(bearerToken);
 
         return new User(bearerToken, userDetails);
