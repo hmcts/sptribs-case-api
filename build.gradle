@@ -532,8 +532,9 @@ bootJar {
 }
 
 functional {
-  dependsOn loadEnvSecretsTask
-  loadEnvFile(it)
+  doFirst {
+    loadEnvFile(it)
+  }
 }
 
 generateTypeScript {
