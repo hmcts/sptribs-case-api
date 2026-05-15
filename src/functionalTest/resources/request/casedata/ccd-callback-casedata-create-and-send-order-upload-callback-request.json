@@ -1,5 +1,4 @@
 {
-  "caseNumber": "1616591401473378",
   "allCaseworkerCICDocument": [
     {
       "id": "c340d45a-7909-466b-bee9-ec07742cc59c",
@@ -111,7 +110,6 @@
   "stayIsCaseStayed": "No",
   "hearingSummaryExists": "YES",
   "hearingList": [],
-  "hyphenatedCaseRef": "1699-9545-8542-9659",
   "cicCaseAnonymiseYesOrNo": "Yes",
   "cicCaseAnonymisedAppellantName": "AAC",
   "cicCaseOrderIssuingType": "UploadOrder",

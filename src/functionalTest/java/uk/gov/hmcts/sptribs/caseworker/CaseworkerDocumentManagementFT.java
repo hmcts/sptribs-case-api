@@ -67,6 +67,24 @@ public class CaseworkerDocumentManagementFT extends FunctionalTestSuite {
         assertThatJson(response.asString())
             .when(IGNORING_EXTRA_FIELDS)
             .isEqualTo(json(expectedResponse(ABOUT_TO_SUBMIT_RESPONSE)));
+
+        long testCaseRef = Long.parseLong(caseData.get("hyphenatedCaseRef").toString().replace("-", ""));
+
+        assertThat(functionalTestDataManager.getDocumentEntities(testCaseRef)).hasSize(1);
+        assertThat(functionalTestDataManager.getDocumentEntities(testCaseRef).getFirst().getId())
+            .isNotNull();
+        assertThat(functionalTestDataManager.getDocumentEntities(testCaseRef).getFirst().getCaseReferenceNumber())
+            .isEqualTo(Long.parseLong(caseData.get("hyphenatedCaseRef").toString().replace("-", "")));
+        assertThat(functionalTestDataManager.getDocumentEntities(testCaseRef).getFirst().getCategoryId()).isNotNull();
+        assertThat(functionalTestDataManager.getDocumentEntities(testCaseRef).getFirst().getSavedAt()).isNotNull();
+        assertThat(functionalTestDataManager.getDocumentEntities(testCaseRef).getFirst().isDraft()).isTrue();
+        assertThat(functionalTestDataManager.getDocumentEntities(testCaseRef).getFirst().isSentToApplicantViaContactParties()).isFalse();
+        assertThat(functionalTestDataManager.getDocumentEntities(testCaseRef).getFirst().getDocumentUrl())
+            .isNotNull();
+        assertThat(functionalTestDataManager.getDocumentEntities(testCaseRef).getFirst().getDocumentFilename())
+            .isNotNull();
+        assertThat(functionalTestDataManager.getDocumentEntities(testCaseRef).getFirst().getDocumentBinaryUrl())
+            .isNotNull();
     }
 
     @Test

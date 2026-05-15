@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.sptribs.document.persistence.DocumentEntity;
 import uk.gov.hmcts.sptribs.notification.persistence.CorrespondenceEntity;
 
 import java.sql.Connection;
@@ -155,6 +156,33 @@ public class FunctionalTestDataManager {
                 correspondences.add(correspondenceEntity);
             }
             return correspondences;
+        }
+    }
+
+    public List<DocumentEntity> getDocumentEntities(long reference) throws SQLException {
+        String sql = "SELECT * FROM " + TABLE_CASE_DOCUMENTS + " WHERE " + KEY_CASE_DOCUMENTS_REFERENCE + " = ?";
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setLong(1, reference);
+            ResultSet rs = stmt.executeQuery();
+
+            List<DocumentEntity> documents = new ArrayList<>();
+            while (rs.next()) {
+                DocumentEntity documentEntity = DocumentEntity.builder()
+                    .caseReferenceNumber(rs.getLong(KEY_CASE_CORRESPONDENCES_REFERENCE))
+                    .id(rs.getInt("id"))
+                    .savedAt(rs.getTimestamp("saved_at").toInstant()
+                        .atOffset(ZoneId.systemDefault().getRules().getOffset(LocalDateTime.now())))
+                    .documentUrl(rs.getString("document_url"))
+                    .documentBinaryUrl(rs.getString("document_binary_url"))
+                    .documentFilename(rs.getString("document_filename"))
+                    .categoryId(rs.getString("category_id"))
+                    .isDraft(rs.getBoolean("is_draft"))
+                    .sentToApplicantViaContactParties(rs.getBoolean("sent_to_applicant_via_contact_parties"))
+                    .build();
+
+                documents.add(documentEntity);
+            }
+            return documents;
         }
     }
 

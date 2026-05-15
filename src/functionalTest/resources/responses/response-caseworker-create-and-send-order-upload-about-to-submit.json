@@ -1,6 +1,5 @@
 {
   "data": {
-    "caseNumber": "1616591401473378",
     "allCaseworkerCICDocument": [
       {
         "id": "${json-unit.any-string}",
@@ -136,7 +135,6 @@
     "stayIsCaseStayed": "No",
     "hearingSummaryExists": "YES",
     "hearingList": [],
-    "hyphenatedCaseRef": "1699-9545-8542-9659",
     "closedDayCount": "",
     "firstHearingDate": "",
     "cicCaseAnonymiseYesOrNo": "Yes",
