@@ -40,6 +40,7 @@ import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_WA_CONFIG_USER;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigBuilder;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.getEventsFrom;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID_HYPHENATED;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.LOCAL_DATE_TIME;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.caseData;
 import static uk.gov.hmcts.sptribs.testutil.TestEventConstants.CASEWORKER_CREATE_DRAFT_ORDER;
@@ -96,7 +97,7 @@ class CaseworkerCreateDraftOrderTest {
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
         final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
 
-        caseData.setCaseNumber(TEST_CASE_ID.toString());
+        caseData.setHyphenatedCaseRef(TEST_CASE_ID_HYPHENATED);
         updatedCaseDetails.setData(caseData);
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
@@ -170,7 +171,7 @@ class CaseworkerCreateDraftOrderTest {
         final DraftOrderContentCIC orderContentCIC = DraftOrderContentCIC.builder()
             .orderTemplate(OrderTemplate.CIC7_ME_DMI_REPORTS).build();
         caseData.setDraftOrderContentCIC(orderContentCIC);
-        caseData.setCaseNumber(TEST_CASE_ID.toString());
+        caseData.setHyphenatedCaseRef(TEST_CASE_ID_HYPHENATED);
         updatedCaseDetails.setData(caseData);
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
@@ -217,7 +218,7 @@ class CaseworkerCreateDraftOrderTest {
         final DraftOrderContentCIC orderContentCIC = DraftOrderContentCIC.builder()
                 .orderTemplate(OrderTemplate.CIC7_ME_DMI_REPORTS).build();
         caseData.setDraftOrderContentCIC(orderContentCIC);
-        caseData.setCaseNumber(TEST_CASE_ID.toString());
+        caseData.setHyphenatedCaseRef(TEST_CASE_ID_HYPHENATED);
         updatedCaseDetails.setData(caseData);
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
