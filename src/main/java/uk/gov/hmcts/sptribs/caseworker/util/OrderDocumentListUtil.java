@@ -35,6 +35,7 @@ public final class OrderDocumentListUtil {
                     CaseworkerCICDocument doc = CaseworkerCICDocument.builder()
                         .documentLink(templateGeneratedDoc)
                         .documentCategory(DocumentType.TRIBUNAL_DIRECTION)
+                        .date(orderListValue.getValue().getOrderSentDate())
                         .build();
                     orderList.add(doc);
                 } else if (!CollectionUtils.isEmpty(orderListValue.getValue().getUploadedFile())) {
@@ -54,6 +55,7 @@ public final class OrderDocumentListUtil {
                     .documentLink(document.getValue().getDocumentLink())
                     .documentEmailContent(document.getValue().getDocumentEmailContent())
                     .documentCategory(DocumentType.TRIBUNAL_DIRECTION)
+                    .date(orderListValue.getValue().getOrderSentDate())
                     .build();
                 orderUploadList.add(doc);
             }

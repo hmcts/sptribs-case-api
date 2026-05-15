@@ -27,6 +27,7 @@ public  final class DecisionDocumentListUtil {
                     .documentEmailContent(caseData.getCaseIssueDecision().getDecisionDocument().getDocumentEmailContent())
                     .documentLink(caseData.getCaseIssueDecision().getDecisionDocument().getDocumentLink())
                     .documentCategory(DocumentType.TRIBUNAL_DIRECTION)
+                    .date(caseData.getCaseIssueDecision().getDecisionDate())
                     .build();
                 decisionDocs.add(doc);
             }
@@ -36,6 +37,7 @@ public  final class DecisionDocumentListUtil {
                 CaseworkerCICDocument doc = CaseworkerCICDocument.builder()
                     .documentLink(caseData.getCaseIssueDecision().getIssueDecisionDraft())
                     .documentCategory(DocumentType.TRIBUNAL_DIRECTION)
+                    .date(caseData.getCaseIssueDecision().getDecisionDate())
                     .build();
                 decisionDocs.add(doc);
             }
@@ -52,6 +54,7 @@ public  final class DecisionDocumentListUtil {
                     .documentEmailContent(caseData.getCaseIssueFinalDecision().getDocument().getDocumentEmailContent())
                     .documentLink(caseData.getCaseIssueFinalDecision().getDocument().getDocumentLink())
                     .documentCategory(DocumentType.TRIBUNAL_DIRECTION)
+                    .date(caseData.getCaseIssueFinalDecision().getFinalDecisionDate())
                     .build();
                 finalDecisionDocs.add(doc);
             }
@@ -61,6 +64,7 @@ public  final class DecisionDocumentListUtil {
                 CaseworkerCICDocument doc = CaseworkerCICDocument.builder()
                     .documentLink(caseData.getCaseIssueFinalDecision().getFinalDecisionDraft())
                     .documentCategory(DocumentType.TRIBUNAL_DIRECTION)
+                    .date(caseData.getCaseIssueFinalDecision().getFinalDecisionDate())
                     .build();
                 finalDecisionDocs.add(doc);
             }
