@@ -5,6 +5,9 @@ import feign.FeignException;
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
 import org.elasticsearch.index.query.BoolQueryBuilder;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.TestInstance;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,6 +39,7 @@ import uk.gov.hmcts.sptribs.systemupdate.service.CcdSearchService;
 import uk.gov.hmcts.sptribs.util.AppsUtil;
 
 import java.io.IOException;
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -50,6 +54,7 @@ import static uk.gov.hmcts.sptribs.common.config.ControllerConstants.SERVICE_AUT
 import static uk.gov.hmcts.sptribs.controllers.model.DssCaseDataRequest.convertDssCaseDataToRequest;
 
 @ActiveProfiles("functional")
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public abstract class FunctionalTestSuite {
 
     private static final LocalDateTime LOCAL_DATE_TIME = LocalDateTime.of(2021, 4, 28, 1, 0);
@@ -84,6 +89,9 @@ public abstract class FunctionalTestSuite {
 
     @Autowired
     protected AppsConfig appsConfig;
+
+    @Autowired
+    protected FunctionalTestDataManager functionalTestDataManager;
 
     protected static final String EVENT_PARAM = "event";
     protected static final String UPDATE = "UPDATE";
@@ -139,6 +147,8 @@ public abstract class FunctionalTestSuite {
         CaseDetails createdCase = createCaseInCcd();
         CaseData formatter = CaseData.builder().build();
         caseData.put("hyphenatedCaseRef", formatter.formatCaseRef(createdCase.getId()));
+
+        functionalTestDataManager.addReference(createdCase.getId());
         return createdCase.getId();
     }
 
@@ -476,5 +486,20 @@ public abstract class FunctionalTestSuite {
             }
         }
         caseData.put("cicCaseDraftOrderCICList", draftOrderList);
+    }
+
+    @BeforeAll
+    void setUpDataManager() {
+        functionalTestDataManager.connectToDB();
+    }
+
+
+    @AfterAll
+    void tearDownDataManager() throws SQLException {
+
+        for (long reference : functionalTestDataManager.getTestReferences()) {
+            functionalTestDataManager.clearDown(reference);
+        }
+        functionalTestDataManager.closeAll();
     }
 }
