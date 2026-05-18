@@ -146,22 +146,22 @@ public class CaseworkerCreateBundle implements CCDConfig<CaseData, State, UserRo
         final String caseNumber = data.getHyphenatedCaseRef();
         final List<String> errors = new ArrayList<>();
 
-        if (!CollectionUtils.isEmpty(cicCase.getNotifyPartyRespondent())) {
+        if (cicCase.getRespondentEmail() != null) {
             try {
                 bundleCreatedNotification.sendToRespondent(data, caseNumber);
             } catch (Exception notificationException) {
                 errors.add(RESPONDENT.getLabel());
             }
         }
-        if (!CollectionUtils.isEmpty(cicCase.getNotifyPartyRepresentative())) {
+        if (!CollectionUtils.isEmpty(cicCase.getRepresentativeCIC())) {
             try {
                 bundleCreatedNotification.sendToRepresentative(data, caseNumber);
             } catch (Exception notificationException) {
                 errors.add(REPRESENTATIVE.getLabel());
             }
         }
-        if (CollectionUtils.isEmpty(cicCase.getNotifyPartyRepresentative())
-            && !CollectionUtils.isEmpty(cicCase.getNotifyPartyApplicant())) {
+        if (CollectionUtils.isEmpty(cicCase.getRepresentativeCIC())
+            && !CollectionUtils.isEmpty(cicCase.getApplicantCIC())) {
             try {
                 bundleCreatedNotification.sendToApplicant(data, caseNumber);
             } catch (Exception notificationException) {
