@@ -16,7 +16,9 @@ import uk.gov.hmcts.sptribs.document.model.CICDocument;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -72,7 +74,9 @@ public class CaseDataRestoreService {
             return;
         }
         CaseData caseDataBefore = caseDataFromEventList.getFirst();
-        var caseDocumentsAtRespondentUpload = DocumentListUtil.getAllCaseDocuments(caseDataBefore);
+        List<ListValue<CaseworkerCICDocument>> caseDocumentsAtRespondentUpload = new ArrayList<>(DocumentListUtil.getAllCaseDocuments(caseDataBefore));
+        Set<ListValue<CaseworkerCICDocument>> currentCaseDocuments = new HashSet<>(DocumentListUtil.getAllCaseDocuments(currentCaseData));
+        caseDocumentsAtRespondentUpload.retainAll(currentCaseDocuments);
         log.info("Updating initial case documents at respondent upload. Total number of case documents at respondent upload: {}",
             caseDocumentsAtRespondentUpload.size());
         currentCaseData.setInitialCicaDocuments(caseDocumentsAtRespondentUpload);
