@@ -35,16 +35,6 @@ public class CaseworkerCreateBundleFT extends FunctionalTestSuite {
         "classpath:request/casedata/ccd-callback-casedata-caseworker-create-bundle-about-to-start-failure.json";
     private static final String CONFIRMATION_HEADER = "$.confirmation_header";
 
-//    @Test
-//    public void shouldCreateBundleInAboutToSubmitCallback() throws Exception {
-//        final Map<String, Object> caseData = caseData(REQUEST);
-//        final Response response = triggerCallback(caseData, CREATE_BUNDLE, ABOUT_TO_SUBMIT_URL);
-//
-//        assertThat(response.getStatusCode()).isEqualTo(OK.value());
-//        assertThatJson(response.asString())
-//            .when(IGNORING_EXTRA_FIELDS)
-//            .isEqualTo(json(expectedResponse(RESPONSE)));
-//    }
 
     @Test
     public void shouldNotSetTimestampForOldBundlesWithoutTimestampEntryWhenCreatingNewBundle() throws Exception {
