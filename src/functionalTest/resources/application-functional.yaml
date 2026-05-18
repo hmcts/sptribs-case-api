@@ -25,8 +25,8 @@ s2s:
 postgres:
   host: ${FT_POSTGRES_HOST:localhost}
   port: ${FT_POSTGRES_PORT:6432}
-  username: ${SPTRIBS_POSTGRES_USERNAME_PREVIEW:${POSTGRES_USERNAME:postgres}}
-  password: ${SPTRIBS_POSTGRES_PASSWORD_PREVIEW:${POSTGRES_PASSWORD:}}
+  username: ${SPTRIBS_POSTGRES_USERNAME_PREVIEW:postgres}}
+  password: ${SPTRIBS_POSTGRES_PASSWORD_PREVIEW:}}
   name: ${FT_POSTGRES_NAME:sptribs}
 idam:
   api:
