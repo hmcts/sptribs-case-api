@@ -128,7 +128,7 @@ public class CaseworkerIssueFinalDecision implements CCDConfig<CaseData, State, 
             finalDecisionDocument.getDocumentLink().setCategoryId("TD");
         }
 
-        caseData.getCaseIssueFinalDecision().setFinalDecisionDate(LocalDate.now());
+        caseData.getCaseIssueFinalDecision().setFinalDecisionDate(LocalDate.now(this.clock));
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
