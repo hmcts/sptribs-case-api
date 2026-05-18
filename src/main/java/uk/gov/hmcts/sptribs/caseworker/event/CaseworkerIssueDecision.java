@@ -105,7 +105,7 @@ public class CaseworkerIssueDecision implements CCDConfig<CaseData, State, UserR
             decisionDocument.getDocumentLink().setCategoryId("TD");
         }
 
-        caseData.getCaseIssueDecision().setDecisionDate(LocalDate.now());
+        caseData.getCaseIssueDecision().setDecisionDate(LocalDate.now(this.clock));
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
