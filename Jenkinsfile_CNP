@@ -24,6 +24,14 @@ static Map<String, Object> secret(String secretName, String envVariable) {
 
 def githubApi = new GithubAPI(this) as Object
 
+def postgresSecrets = env.ENVIRONMENT == 'preview' ? [
+  secret('sptribs-postgres-username-preview', 'POSTGRES_USERNAME'),
+  secret('sptribs-postgres-password-preview', 'POSTGRES_PASSWORD')
+] : [
+  secret('sptribs-POSTGRES-USER', 'POSTGRES_USERNAME'),
+  secret('sptribs-POSTGRES-PASS', 'POSTGRES_PASSWORD')
+]
+
 def secrets = [
         's2s-${env}'      : [
                 secret('microservicekey-ccd-data', 'DATA_STORE_S2S_KEY'),
@@ -58,8 +66,6 @@ def secrets = [
                 secret('wa-regionalHearingCentreTeamLead-uid', 'IDAM_WA_REGIONAL_HEARING_CENTRE_TEAM_LEAD_UID'),
                 secret('citizen-user', 'IDAM_CITIZEN_USERNAME'),
                 secret('citizen-password', 'IDAM_CITIZEN_PASSWORD'),
-                secret('sptribs-postgres-username-preview', 'SPTRIBS_POSTGRES_USERNAME_PREVIEW'),
-                secret('sptribs-postgres-password-preview', 'SPTRIBS_POSTGRES_PASSWORD_PREVIEW'),
                 secret('ccd-global-postgres-username-preview', 'CCD_GLOBAL_POSTGRES_USERNAME_PREVIEW'),
                 secret('ccd-global-postgres-password-preview', 'CCD_GLOBAL_POSTGRES_PASSWORD_PREVIEW'),
                 secret('ccd-data-store-db-username-preview', 'CCD_DATA_STORE_DB_USERNAME_PREVIEW'),
@@ -70,7 +76,8 @@ def secrets = [
                 secret('em-spring-datasource-password-preview', 'EM_SPRING_DATASOURCE_PASSWORD_PREVIEW'),
                 secret('s2s-case-api-secret', 'S2S_SECRET'),
                 secret('ccd-importer-username', 'DEFINITION_IMPORTER_USERNAME'),
-                secret('ccd-importer-password', 'DEFINITION_IMPORTER_PASSWORD')
+                secret('ccd-importer-password', 'DEFINITION_IMPORTER_PASSWORD'),
+                *postgresSecrets
         ],
         'sptribs-prod'    :[
           secret('s2s-case-api-secret', 'S2S_SECRET_PROD')
@@ -255,6 +262,8 @@ withPipeline(type, product, component) {
     env.SERVICE_AUTH_MICROSERVICE = "sptribs_case_api"
     env.SERVICE_AUTH_PROVIDER_URL = "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
     env.CAMUNDA_BASE_URL = "http://camunda-api-aat.service.core-compute-aat.internal"
+    env.FT_POSTGRES_HOST = "sptribs-aat-flexible-db-v15-aat.postgres.database.azure.com"
+    env.FT_POSTGRES_PORT = "5432"
     setCommonEnvVariables()
 
     enablePactAs([AppPipelineDsl.PactRoles.CONSUMER])
