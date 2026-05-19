@@ -3,7 +3,7 @@
     "cicCaseRespondentName": "Appeals team",
     "cicCaseRespondentOrganisation": "CICA",
     "cicCaseRespondentEmail": "appeals.team@cica.gov.uk",
-    "hyphenatedCaseRef": "1234-5678-9012-3456",
+    "hyphenatedCaseRef": "${json-unit.any-string}",
     "dssCaseDataCaseTypeOfApplication": "CIC",
     "dssCaseDataSubjectFullName": "test_full_name",
     "dssCaseDataSubjectDateOfBirth": "1990-01-01",

@@ -31,6 +31,7 @@ import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_WA_CONFIG_USER;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigBuilder;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.getEventsFrom;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID_HYPHENATED;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.LOCAL_DATE_TIME;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.caseData;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getCaseworkerCICDocumentList;
@@ -105,7 +106,7 @@ public class CaseworkerDocumentManagementTest {
             .caseworkerCICDocumentUpload(getCaseworkerCICDocumentUploadList("file.pdf"))
             .build();
         caseData.setNewDocManagement(documentManagement);
-        caseData.setCaseNumber(TEST_CASE_ID.toString());
+        caseData.setHyphenatedCaseRef(TEST_CASE_ID_HYPHENATED);
         beforeDetails.setData(caseData);
         updatedCaseDetails.setData(caseData);
         updatedCaseDetails.setState(State.CaseManagement);
@@ -157,7 +158,7 @@ public class CaseworkerDocumentManagementTest {
             .caseworkerCICDocumentUpload(getCaseworkerCICDocumentUploadList("file.pdf"))
             .build();
         caseData.setNewDocManagement(documentManagement);
-        caseData.setCaseNumber(TEST_CASE_ID.toString());
+        caseData.setHyphenatedCaseRef(TEST_CASE_ID_HYPHENATED);
         beforeDetails.setData(caseData);
         updatedCaseDetails.setData(caseData);
         updatedCaseDetails.setState(State.CaseManagement);
@@ -194,7 +195,7 @@ public class CaseworkerDocumentManagementTest {
             .caseworkerCICDocumentUpload(getCaseworkerCICDocumentUploadList("new-file.pdf"))
             .build();
         caseData.setNewDocManagement(documentManagement);
-        caseData.setCaseNumber(TEST_CASE_ID.toString());
+        caseData.setHyphenatedCaseRef(TEST_CASE_ID_HYPHENATED);
         beforeDetails.setData(caseData);
         updatedCaseDetails.setData(caseData);
         updatedCaseDetails.setState(State.CaseManagement);
@@ -230,7 +231,7 @@ public class CaseworkerDocumentManagementTest {
             .caseworkerCICDocumentUpload(getCaseworkerCICDocumentUploadList("file.pdf"))
             .build();
         caseData.setNewDocManagement(documentManagement);
-        caseData.setCaseNumber(TEST_CASE_ID.toString());
+        caseData.setHyphenatedCaseRef(TEST_CASE_ID_HYPHENATED);
         beforeDetails.setData(caseData);
         updatedCaseDetails.setData(caseData);
         updatedCaseDetails.setState(State.CaseManagement);

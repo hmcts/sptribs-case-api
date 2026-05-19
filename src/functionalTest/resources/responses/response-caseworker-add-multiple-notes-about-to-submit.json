@@ -27,6 +27,6 @@
       }
     ],
     "stayIsCaseStayed": "No",
-    "hyphenatedCaseRef": "1234-5678-9012-3456"
+    "hyphenatedCaseRef": "${json-unit.any-string}"
   }
 }

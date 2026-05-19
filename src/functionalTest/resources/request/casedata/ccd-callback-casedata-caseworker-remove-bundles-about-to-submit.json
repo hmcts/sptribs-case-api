@@ -1,5 +1,5 @@
 {
-  "hyphenatedCaseRef": "1714-0484-2347-8720",
+  "hyphenatedCaseRef": "${json-unit.any-string}",
   "caseBundleIdsAndTimestamps": [
     {
       "id": "1",

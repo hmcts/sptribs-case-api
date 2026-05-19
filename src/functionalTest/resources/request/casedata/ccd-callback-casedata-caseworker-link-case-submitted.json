@@ -22,7 +22,7 @@
   "cicCaseSubjectCIC": [
     "SubjectCIC"
   ],
-  "hyphenatedCaseRef": "1716-9095-2284-6778",
+  "hyphenatedCaseRef": "${json-unit.any-string}",
   "cicCaseDateOfBirth": "2000-01-01",
   "cicCaseCaseCategory": "Assessment",
   "caseNameHmctsInternal": "Testing subject",

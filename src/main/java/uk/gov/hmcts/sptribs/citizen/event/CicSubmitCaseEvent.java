@@ -309,7 +309,7 @@ public class CicSubmitCaseEvent implements CCDConfig<CaseData, State, UserRole> 
         for (ListValue<CaseworkerCICDocument> document : applicantDocs) {
             documentsService.buildAndSaveNewDocumentEntity(
                 document.getValue().getDocumentLink(),
-                Long.parseLong(caseData.getCaseNumber()),
+                Long.parseLong(caseData.getHyphenatedCaseRef().replace("-", "")),
                 false
             );
         }

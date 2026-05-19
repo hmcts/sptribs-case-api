@@ -81,7 +81,7 @@
   ],
   "stayIsCaseStayed": "No",
   "hearingList": [],
-  "hyphenatedCaseRef": "1715-6075-4062-2293",
+  "hyphenatedCaseRef": "${json-unit.any-string}",
   "closedDayCount": "",
   "issueCaseDocumentList": {
     "value": [],

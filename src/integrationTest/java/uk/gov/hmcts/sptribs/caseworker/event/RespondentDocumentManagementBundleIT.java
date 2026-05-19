@@ -70,11 +70,7 @@ import static uk.gov.hmcts.sptribs.document.bundling.BundlingConstants.SORT_INDE
 import static uk.gov.hmcts.sptribs.document.bundling.BundlingConstants.STITCHING_STATUS;
 import static uk.gov.hmcts.sptribs.document.bundling.BundlingConstants.TITLE;
 import static uk.gov.hmcts.sptribs.document.bundling.BundlingConstants.VALUE;
-import static uk.gov.hmcts.sptribs.testutil.TestConstants.ABOUT_TO_SUBMIT_URL;
-import static uk.gov.hmcts.sptribs.testutil.TestConstants.AUTHORIZATION;
-import static uk.gov.hmcts.sptribs.testutil.TestConstants.SERVICE_AUTHORIZATION;
-import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_AUTHORIZATION_TOKEN;
-import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.*;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.callbackRequest;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.caseData;
 
@@ -147,7 +143,7 @@ class RespondentDocumentManagementBundleIT {
             .thenReturn(false, true);
 
         CaseData caseData = prepareInitialCaseData();
-        caseData.setCaseNumber(TEST_CASE_ID.toString());
+        caseData.setHyphenatedCaseRef(TEST_CASE_ID_HYPHENATED);
 
         caseData.getNewDocManagement().setCaseworkerCICDocumentUpload(
             createUploads(

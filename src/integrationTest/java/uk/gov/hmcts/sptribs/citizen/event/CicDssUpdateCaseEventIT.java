@@ -97,7 +97,7 @@ public class CicDssUpdateCaseEventIT {
             .additionalInformation("Additional information added in DDS Update Case")
             .build();
         caseData.setDssCaseData(dssCaseData);
-        caseData.setCaseNumber(TEST_CASE_ID.toString());
+        caseData.setHyphenatedCaseRef(TEST_CASE_ID_HYPHENATED);
 
         final User user = new User(
             TEST_AUTHORIZATION_TOKEN,

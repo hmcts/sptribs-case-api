@@ -161,7 +161,7 @@ public class CaseworkerCreateAndSendOrder implements CCDConfig<CaseData, State, 
 
             documentsService.buildAndSaveNewDocumentEntity(
                 draftOrderCIC.getTemplateGeneratedDocument(),
-                Long.parseLong(caseData.getCaseNumber()),
+                Long.parseLong(caseData.getHyphenatedCaseRef().replace("-", "")),
                 false
             );
 

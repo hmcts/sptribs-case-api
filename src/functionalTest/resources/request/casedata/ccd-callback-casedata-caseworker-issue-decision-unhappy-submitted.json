@@ -233,7 +233,7 @@
     "SubjectCIC"
   ],
   "decisionSignature": "Lorem ipsum signature",
-  "hyphenatedCaseRef": "1716-9095-2284-6778",
+  "hyphenatedCaseRef": "${json-unit.any-string}",
   "cicCaseDateOfBirth": "2000-01-01",
   "cicCaseHearingList": {
     "value": {

@@ -44,8 +44,7 @@ import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_WA_CONFIG_USER;
 import static uk.gov.hmcts.sptribs.document.model.DocumentType.DSS_TRIBUNAL_FORM;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigBuilder;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.getEventsFrom;
-import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_AUTHORIZATION_TOKEN;
-import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.*;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getDssCaseData;
 
 @ExtendWith(MockitoExtension.class)
@@ -122,7 +121,7 @@ class CicDssUpdateCaseEventTest {
             .build();
 
         final CaseDetails<CaseData, State> details = new CaseDetails<>();
-        caseData.setCaseNumber(TEST_CASE_ID.toString());
+        caseData.setHyphenatedCaseRef(TEST_CASE_ID_HYPHENATED);
         details.setData(caseData);
 
         when(request.getHeader(AUTHORIZATION)).thenReturn(TEST_AUTHORIZATION_TOKEN);
@@ -184,7 +183,7 @@ class CicDssUpdateCaseEventTest {
         caseData.getDssCaseData().setAdditionalInformation("");
 
         final CaseDetails<CaseData, State> details = new CaseDetails<>();
-        caseData.setCaseNumber(TEST_CASE_ID.toString());
+        caseData.setHyphenatedCaseRef(TEST_CASE_ID_HYPHENATED);
         details.setData(caseData);
         AboutToStartOrSubmitResponse<CaseData, State> response =
             cicDssUpdateCaseEvent.aboutToSubmit(details, details);
@@ -243,7 +242,7 @@ class CicDssUpdateCaseEventTest {
         caseData.getDssCaseData().setAdditionalInformation(null);
 
         final CaseDetails<CaseData, State> details = new CaseDetails<>();
-        caseData.setCaseNumber(TEST_CASE_ID.toString());
+        caseData.setHyphenatedCaseRef(TEST_CASE_ID_HYPHENATED);
         details.setData(caseData);
         AboutToStartOrSubmitResponse<CaseData, State> response =
             cicDssUpdateCaseEvent.aboutToSubmit(details, details);
@@ -287,7 +286,7 @@ class CicDssUpdateCaseEventTest {
             .build();
 
         final CaseDetails<CaseData, State> details = new CaseDetails<>();
-        caseData.setCaseNumber(TEST_CASE_ID.toString());
+        caseData.setHyphenatedCaseRef(TEST_CASE_ID_HYPHENATED);
         details.setData(caseData);
 
         when(request.getHeader(AUTHORIZATION)).thenReturn(TEST_AUTHORIZATION_TOKEN);

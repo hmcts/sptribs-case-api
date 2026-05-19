@@ -215,7 +215,7 @@
     "SubjectCIC"
   ],
   "decisionSignature": "Lorem ipsum notice",
-  "hyphenatedCaseRef": "1716-9110-7606-6894",
+  "hyphenatedCaseRef": "${json-unit.any-string}",
   "cicCaseDateOfBirth": "2000-01-01",
   "cicCaseHearingList": {
     "value": {

@@ -83,5 +83,5 @@
   "cicCaseCompensationClaimLinkCIC": "Yes",
   "cicCaseIsRepresentativePresent": "Yes",
   "stayIsCaseStayed": "No",
-  "hyphenatedCaseRef": "1715-1652-3366-8065"
+  "hyphenatedCaseRef": "${json-unit.any-string}"
 }

@@ -109,7 +109,7 @@ public class CaseWorkerIssueDecisionIT {
     @Test
     void shouldClearDecisionSignatureInAboutToStart() throws Exception {
         final CaseData caseData = caseData();
-        caseData.setCaseNumber(TEST_CASE_ID.toString());
+        caseData.setHyphenatedCaseRef(TEST_CASE_ID_HYPHENATED);
 
         String response = mockMvc.perform(post(ABOUT_TO_START_URL)
                 .contentType(APPLICATION_JSON)
@@ -208,7 +208,7 @@ public class CaseWorkerIssueDecisionIT {
             .build();
 
         final CaseData caseData = CaseData.builder()
-            .caseNumber(TEST_CASE_ID.toString())
+            .hyphenatedCaseRef(TEST_CASE_ID_HYPHENATED)
             .caseIssueDecision(caseIssueDecision)
             .build();
 

@@ -173,7 +173,7 @@ public class CaseworkerCreateAndSendOrderIT {
             .build();
 
         final CaseData caseData = CaseData.builder()
-            .caseNumber(TEST_CASE_ID.toString())
+            .hyphenatedCaseRef(TEST_CASE_ID_HYPHENATED)
             .draftOrderContentCIC(draftOrderContentCIC)
             .cicCase(CicCase.builder()
                 .orderIssuingType(CREATE_AND_SEND_NEW_ORDER)

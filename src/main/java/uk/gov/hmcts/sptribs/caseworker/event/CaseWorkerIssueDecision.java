@@ -154,7 +154,7 @@ public class CaseWorkerIssueDecision implements CCDConfig<CaseData, State, UserR
             decisionDocument.getDocumentLink().setCategoryId("TD");
             documentsService.buildAndSaveNewDocumentEntity(
                 decisionDocument.getDocumentLink(),
-                Long.parseLong(caseData.getCaseNumber()),
+                Long.parseLong(caseData.getHyphenatedCaseRef().replace("-", "")),
                 false
             );
         }

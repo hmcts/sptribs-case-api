@@ -125,5 +125,5 @@
   "cicCaseIsRepresentativePresent": "Yes",
   "stayIsCaseStayed": "No",
   "hearingSummaryExists": "YES",
-  "hyphenatedCaseRef": "1699-9545-8542-9659"
+  "hyphenatedCaseRef": "${json-unit.any-string}"
 }

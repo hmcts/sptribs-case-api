@@ -200,7 +200,7 @@ class CaseworkerCreateAndSendOrderTest {
         caseData.setDraftOrderContentCIC(draftOrderContentCIC);
 
         final CaseDetails<CaseData, State> details = new CaseDetails<>();
-        caseData.setCaseNumber(TEST_CASE_ID.toString());
+        caseData.setHyphenatedCaseRef(TEST_CASE_ID_HYPHENATED);
         details.setData(caseData);
         final var response = caseworkerCreateAndSendOrder.aboutToSubmit(details, caseDetailsBefore());
 
@@ -256,7 +256,7 @@ class CaseworkerCreateAndSendOrderTest {
         caseData.setOrderDueDates(List.of(ListValue.<DateModel>builder().value(dateModel).build()));
         caseData.setDraftOrderContentCIC(draftOrderContentCIC);
 
-        caseData.setCaseNumber(TEST_CASE_ID.toString());
+        caseData.setHyphenatedCaseRef(TEST_CASE_ID_HYPHENATED);
         details.setData(caseData);
 
         final var response = caseworkerCreateAndSendOrder.aboutToSubmit(details, caseDetailsBefore());
@@ -314,7 +314,7 @@ class CaseworkerCreateAndSendOrderTest {
         caseData.setDraftOrderContentCIC(draftOrderContentCIC);
 
         final CaseDetails<CaseData, State> details = new CaseDetails<>();
-        caseData.setCaseNumber(TEST_CASE_ID.toString());
+        caseData.setHyphenatedCaseRef(TEST_CASE_ID_HYPHENATED);
         details.setData(caseData);
         final var response = caseworkerCreateAndSendOrder.aboutToSubmit(details, caseDetailsBefore());
 
@@ -387,7 +387,7 @@ class CaseworkerCreateAndSendOrderTest {
         caseData.setDraftOrderContentCIC(draftOrderContentCIC);
 
         final CaseDetails<CaseData, State> details = new CaseDetails<>();
-        caseData.setCaseNumber(TEST_CASE_ID.toString());
+        caseData.setHyphenatedCaseRef(TEST_CASE_ID_HYPHENATED);
         details.setData(caseData);
         final var response = caseworkerCreateAndSendOrder.aboutToSubmit(details, caseDetailsBefore());
 

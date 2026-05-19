@@ -242,7 +242,7 @@ public class CaseworkerIssueFinalDecisionIT {
 
         final CaseData caseData = CaseData.builder()
             .caseIssueFinalDecision(caseIssueFinalDecision)
-            .caseNumber(TEST_CASE_ID.toString())
+            .hyphenatedCaseRef(TEST_CASE_ID_HYPHENATED)
             .build();
 
         mockMvc.perform(MockMvcRequestBuilders.post(ABOUT_TO_SUBMIT_URL)

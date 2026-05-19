@@ -168,7 +168,7 @@ public class CicDssUpdateCaseEvent implements CCDConfig<CaseData, State, UserRol
         for (ListValue<CaseworkerCICDocument> document : documentListUpdated) {
             documentsService.buildAndSaveNewDocumentEntity(
                 document.getValue().getDocumentLink(),
-                Long.parseLong(caseData.getCaseNumber()),
+                Long.parseLong(caseData.getHyphenatedCaseRef().replace("-", "")),
                 false
             );
         }

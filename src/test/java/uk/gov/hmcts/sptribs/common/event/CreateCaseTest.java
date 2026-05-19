@@ -51,6 +51,7 @@ import static uk.gov.hmcts.sptribs.ciccase.model.SubjectCIC.SUBJECT;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigBuilder;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.getEventsFrom;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID_HYPHENATED;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.caseData;
 
 @ExtendWith(MockitoExtension.class)
@@ -111,7 +112,7 @@ class CreateCaseTest {
     @Test
     void shouldSuccessfullyUploadAndSaveApplicantDocumentsWhenAboutToSubmitEventTriggeredOnCreateCase() {
         final CaseData caseData = caseData();
-        caseData.setCaseNumber(TEST_CASE_ID.toString());
+        caseData.setHyphenatedCaseRef(TEST_CASE_ID_HYPHENATED);
         caseData.getCicCase().setFullName("Test Full Name");
 
         List<ListValue<CaseworkerCICDocumentUpload>> testDocumentList = new ArrayList<>();
