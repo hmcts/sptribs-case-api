@@ -44,7 +44,9 @@ import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_WA_CONFIG_USER;
 import static uk.gov.hmcts.sptribs.document.model.DocumentType.DSS_TRIBUNAL_FORM;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigBuilder;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.getEventsFrom;
-import static uk.gov.hmcts.sptribs.testutil.TestConstants.*;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_AUTHORIZATION_TOKEN;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID_HYPHENATED;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getDssCaseData;
 
 @ExtendWith(MockitoExtension.class)

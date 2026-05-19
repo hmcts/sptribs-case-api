@@ -57,7 +57,6 @@ import static uk.gov.hmcts.sptribs.testutil.TestConstants.ISSUE_DECISION_MID_EVE
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.SERVICE_AUTHORIZATION;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.SUBMITTED_URL;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_AUTHORIZATION_TOKEN;
-import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID_HYPHENATED;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.callbackRequest;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.caseData;
