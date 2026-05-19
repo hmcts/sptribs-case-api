@@ -238,8 +238,6 @@ withPipeline(type, product, component) {
     env.FT_POSTGRES_HOST = "sptribs-preview.postgres.database.azure.com"
     env.FT_POSTGRES_PORT = "5432"
     env.FT_POSTGRES_NAME = "pr-${CHANGE_ID}-sptribs-case-api"
-    env.FT_POSTGRES_USERNAME = 'SPTRIBS_POSTGRES_USERNAME_PREVIEW'
-    env.FT_POSTGRES_PASSWORD = 'SPTRIBS_POSTGRES_PASSWORD_PREVIEW'
 
     def waPRLabels = githubApi.getLabelsbyPattern(env.BRANCH_NAME, "pr-values:wa")
     if (waPRLabels.contains("pr-values:wa-ft-tests")) {
@@ -261,8 +259,6 @@ withPipeline(type, product, component) {
     env.CAMUNDA_BASE_URL = "http://camunda-api-aat.service.core-compute-aat.internal"
     env.FT_POSTGRES_HOST = "sptribs-aat-flexible-db-v15-aat.postgres.database.azure.com"
     env.FT_POSTGRES_PORT = "5432"
-    env.FT_POSTGRES_USERNAME = 'POSTGRES_USER'
-    env.FT_POSTGRES_PASSWORD = 'POSTGRES_PASSWORD'
     setCommonEnvVariables()
 
     enablePactAs([AppPipelineDsl.PactRoles.CONSUMER])
@@ -377,3 +373,24 @@ def setupRoleAssignments() {
     sh "./wa/setup-role-assignments.sh"
   }
 }
+
+before('functionalTest:aat') {
+  configureFtDatabase()
+}
+
+before('functionalTest:preview') {
+  configureFtDatabase()
+}
+
+def configureFtDatabase() {
+  if (env.ENVIRONMENT == 'preview') {
+    env.FT_POSTGRES_USERNAME = env.SPTRIBS_POSTGRES_USERNAME_PREVIEW
+    env.FT_POSTGRES_PASSWORD = env.SPTRIBS_POSTGRES_PASSWORD_PREVIEW
+  } else {
+    env.FT_POSTGRES_USERNAME = env.POSTGRES_USERNAME_AAT
+    env.FT_POSTGRES_PASSWORD = env.POSTGRES_PASSWORD_AAT
+  }
+
+  echo "Using FT DB user env for ${env.ENVIRONMENT}"
+}
+
