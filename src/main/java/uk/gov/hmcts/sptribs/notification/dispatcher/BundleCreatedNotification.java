@@ -7,6 +7,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.NotificationResponse;
 import uk.gov.hmcts.sptribs.common.CommonConstants;
+import uk.gov.hmcts.sptribs.notification.EmailBundleCreatedResponses;
 import uk.gov.hmcts.sptribs.notification.NotificationHelper;
 import uk.gov.hmcts.sptribs.notification.NotificationServiceCIC;
 import uk.gov.hmcts.sptribs.notification.PartiesNotification;
@@ -34,7 +35,8 @@ public class BundleCreatedNotification implements PartiesNotification {
         final Map<String, Object> templateVarsApplicant = notificationHelper.getApplicantCommonVars(caseNumber, caseData);
         templateVarsApplicant.put(CommonConstants.CIC_CASE_APPLICANT_NAME, cicCase.getApplicantFullName());
 
-        templateVarsApplicant.put(CommonConstants.DASHBOARD, CommonConstants.DASHBOARD_LINK);
+        templateVarsApplicant.put(CommonConstants.BUNDLE_CREATED_EMAIL_TEXT,
+            EmailBundleCreatedResponses.REPRESENTATIVE_APPLICANT_RESPONSE.getEmailResponse());
 
         final NotificationResponse notificationResponse;
 
@@ -50,7 +52,8 @@ public class BundleCreatedNotification implements PartiesNotification {
         final Map<String, Object> templateVarsRepresentative = notificationHelper.getRepresentativeCommonVars(caseNumber, caseData);
         templateVarsRepresentative.put(CommonConstants.CIC_CASE_REPRESENTATIVE_NAME, cicCase.getRepresentativeFullName());
 
-        templateVarsRepresentative.put(CommonConstants.DASHBOARD, CommonConstants.DASHBOARD_LINK);
+        templateVarsRepresentative.put(CommonConstants.BUNDLE_CREATED_EMAIL_TEXT,
+            EmailBundleCreatedResponses.REPRESENTATIVE_APPLICANT_RESPONSE.getEmailResponse());
 
         final NotificationResponse notificationResponse;
 
@@ -66,7 +69,8 @@ public class BundleCreatedNotification implements PartiesNotification {
         final Map<String, Object> templateVarsRespondent = notificationHelper.getRespondentCommonVars(caseNumber, caseData);
         templateVarsRespondent.put(CommonConstants.CIC_CASE_RESPONDENT_NAME, cicCase.getRespondentName());
 
-        templateVarsRespondent.put(CommonConstants.DASHBOARD, CommonConstants.DASHBOARD_LINK);
+        templateVarsRespondent.put(CommonConstants.BUNDLE_CREATED_EMAIL_TEXT,
+            EmailBundleCreatedResponses.RESPONDENT_RESPONSE.getEmailResponse());
 
         final NotificationResponse notificationResponse;
 

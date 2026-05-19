@@ -32,7 +32,7 @@ public final class CommonConstants {
     public static final String REINSTATE_REASON = "ReinstatementReason";
     public static final String TRIBUNAL_ORDER = "TribunalOrder";
     public static final String DECISION_NOTICE = "DecisionNotice";
-    public static final String DASHBOARD = "DashboardLink";
+    public static final String BUNDLE_CREATED_EMAIL_TEXT = "BundleCreatedText";
     public static final String FINAL_DECISION_NOTICE = "FinalDecisionNotice";
     public static final String FINAL_DECISION_GUIDANCE = "FinalDecisionGuidance";
     public static final String CASE_DOCUMENT = "CaseDocument";
