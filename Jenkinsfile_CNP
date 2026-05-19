@@ -240,7 +240,6 @@ withPipeline(type, product, component) {
     env.FT_POSTGRES_NAME = "pr-${CHANGE_ID}-sptribs-case-api"
     env.FT_POSTGRES_USERNAME = 'SPTRIBS_POSTGRES_USERNAME_PREVIEW'
     env.FT_POSTGRES_PASSWORD = 'SPTRIBS_POSTGRES_PASSWORD_PREVIEW'
-  }
 
     def waPRLabels = githubApi.getLabelsbyPattern(env.BRANCH_NAME, "pr-values:wa")
     if (waPRLabels.contains("pr-values:wa-ft-tests")) {
