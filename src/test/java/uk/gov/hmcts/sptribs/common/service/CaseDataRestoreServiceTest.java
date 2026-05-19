@@ -416,7 +416,8 @@ class CaseDataRestoreServiceTest {
                     .thenReturn(List.of(doc));
                 documentListUtil.when(() -> DocumentListUtil.getAllCaseDocuments(secondEventData))
                     .thenReturn(List.of());
-
+                documentListUtil.when(() -> DocumentListUtil.getAllCaseDocuments(currentCaseData))
+                    .thenReturn(List.of(doc));
                 caseDataRestoreService.updateInitialCaseDocuments(REFERENCE, currentCaseData);
 
                 // verify only called with first event data, not second
