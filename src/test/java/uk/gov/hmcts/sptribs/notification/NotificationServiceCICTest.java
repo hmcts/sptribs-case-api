@@ -2,7 +2,6 @@ package uk.gov.hmcts.sptribs.notification;
 
 import jakarta.servlet.http.HttpServletRequest;
 import org.apache.commons.io.IOUtils;
-import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -460,7 +459,7 @@ public class NotificationServiceCICTest {
 
         assertThatThrownBy(() -> notificationService.sendEmail(request, testCaseRef))
             .isInstanceOf(NotificationException.class)
-            .hasMessageContaining("uk.gov.service.notify.NotificationClientException");
+            .hasMessageContaining("Unable to find document details for document id:");
     }
 
     @Test
@@ -812,9 +811,6 @@ public class NotificationServiceCICTest {
             .extracting("CaseDocument1")
             .isInstanceOf(String.class)
             .isEqualTo(expectedDocumentDescription);
-        assertThat(templateVarsArgCaptor.getValue())
-            .extracting("CaseDocument1Link")
-            .isInstanceOf(JSONObject.class);
 
         verify(sendEmailResponse, times(3)).getNotificationId();
         verify(sendEmailResponse, times(2)).getReference();

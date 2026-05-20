@@ -52,7 +52,6 @@ import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.DASHBOARD;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.DASHBOARD_LINK;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.DOC_AVAILABLE;
-import static uk.gov.hmcts.sptribs.common.CommonConstants.EMPTY_PLACEHOLDER;
 
 @Service
 @RequiredArgsConstructor
@@ -285,7 +284,6 @@ public class NotificationServiceCIC {
                 templateVars.put(docName, item);
 
             } else {
-                templateVars.put(docName + "Link", EMPTY_PLACEHOLDER);
                 addDocumentDetails(templateVars, selectedDocuments, item, docName);
             }
         }
