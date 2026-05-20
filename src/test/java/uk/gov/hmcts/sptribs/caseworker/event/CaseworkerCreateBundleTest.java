@@ -226,6 +226,7 @@ class CaseworkerCreateBundleTest {
         final CicCase cicCase = CicCase.builder().build();
         cicCase.setApplicantDocumentsUploaded(cicDocuments);
         caseData.setCicCase(cicCase);
+        cicCase.setRepresentativeCIC(Set.of(RepresentativeCIC.REPRESENTATIVE));
 
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
         updatedCaseDetails.setData(caseData);
@@ -233,12 +234,13 @@ class CaseworkerCreateBundleTest {
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
 
         doThrow(new RuntimeException("Notification Failed")).when(bundleCreatedNotification).sendToRespondent(any(), any());
+        doThrow(new RuntimeException("Notification Failed")).when(bundleCreatedNotification).sendToRepresentative((CaseData) any(), any());
 
         SubmittedCallbackResponse createBundleSubmittedResponse =
             caseworkerCreateBundle.submitted(updatedCaseDetails, CaseDetails.<CaseData, State>builder().build());
 
         assertThat(createBundleSubmittedResponse.getConfirmationHeader())
-            .isEqualTo("# Bundle creation notification failed \n## A notification could not be sent to: Respondent \n"
+            .isEqualTo("# Bundle creation notification failed \n## A notification could not be sent to: Respondent, Representative \n"
                 + "## Please resend the notification.");
     }
 
