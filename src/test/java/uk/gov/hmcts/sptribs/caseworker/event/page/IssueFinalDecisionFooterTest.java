@@ -15,14 +15,10 @@ import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.document.CaseDataDocumentService;
 import uk.gov.hmcts.sptribs.document.content.FinalDecisionTemplateContent;
 
-import java.time.format.DateTimeFormatter;
-
 import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(MockitoExtension.class)
 class IssueFinalDecisionFooterTest {
-
-    private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     @InjectMocks
     private IssueFinalDecisionFooter issueFinalDecisionFooter;

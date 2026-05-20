@@ -43,8 +43,8 @@ public class OrderDocumentListUtilTest {
         List<CaseworkerCICDocument> result = OrderDocumentListUtil.getOrderDocuments(cicCase);
 
         //Then
-        assertThat(result).isNotNull();
-        assertThat(result).hasSize(1);
+        assertThat(result).isNotNull()
+            .hasSize(1);
 
         CaseworkerCICDocument orderDocument = result.getFirst();
         assertThat(orderDocument.getDocumentLink()).isEqualTo(document.getDocumentLink());
@@ -66,8 +66,8 @@ public class OrderDocumentListUtilTest {
         List<CaseworkerCICDocument> result = OrderDocumentListUtil.getOrderDocuments(cicCase);
 
         //Then
-        assertThat(result).isNotNull();
-        assertThat(result).hasSize(1);
+        assertThat(result).isNotNull()
+            .hasSize(1);
 
         CaseworkerCICDocument orderDocument = result.getFirst();
         assertThat(orderDocument.getDocumentLink()).isEqualTo(document);
