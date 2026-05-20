@@ -33,7 +33,7 @@ public class CaseworkerIssueDecisionFT extends FunctionalTestSuite {
     private static final String RESPONSE_MID_EVENT = "classpath:responses/response-caseworker-issue-decision-mid-event.json";
 
     private static final String DECISION_SIGNATURE = "$.data.decisionSignature";
-    private static final String DECISION_DATE = "$.data.caseIssueFinalDecisionFinalDecisionDate";
+    private static final String DECISION_DATE = "$.data.caseIssueDecisionDecisionDate";
     private static final String STATE = "$.state";
     private static final String CONFIRMATION_HEADER = "$.confirmation_header";
 
