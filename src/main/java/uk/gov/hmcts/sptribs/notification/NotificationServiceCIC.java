@@ -284,15 +284,15 @@ public class NotificationServiceCIC {
 
             } else {
                 templateVars.put(docName + "Link", EMPTY_PLACEHOLDER);
-                addDocumentDetailsAndLink(templateVars, selectedDocuments, item, docName);
+                addDocumentDetails(templateVars, selectedDocuments, item, docName);
             }
         }
     }
 
-    private void addDocumentDetailsAndLink(Map<String, Object> templateVars,
-                                           List<CaseworkerCICDocument> selectedDocuments,
-                                           String item,
-                                           String docName) {
+    private void addDocumentDetails(Map<String, Object> templateVars,
+                                   List<CaseworkerCICDocument> selectedDocuments,
+                                   String item,
+                                   String docName) {
         final User user = idamService.retrieveUser(request.getHeader(AUTHORIZATION));
         final String authorisation = user.getAuthToken();
         final String serviceAuthorization = authTokenGenerator.generate();
@@ -311,10 +311,7 @@ public class NotificationServiceCIC {
             if (uploadedDocument != null) {
                 log.debug("Document available for: {}", docName);
 
-                boolean isFileLessThan2mb = uploadedDocument.length <= TWO_MEGABYTES;
-
-                addDocumentDetails(templateVars, selectedDocuments, item, docName,
-                    isFileLessThan2mb ? getJsonFileAttachment(uploadedDocument) : null);
+                addDocumentDescription(templateVars, selectedDocuments, item, docName);
 
             } else {
                 templateVars.put(docName, "");
@@ -325,11 +322,10 @@ public class NotificationServiceCIC {
         }
     }
 
-    private static void addDocumentDetails(Map<String, Object> templateVars,
+    private static void addDocumentDescription(Map<String, Object> templateVars,
                                            List<CaseworkerCICDocument> selectedDocuments,
                                            String item,
-                                           String docName,
-                                           JSONObject jsonFileAttachment) {
+                                           String docName) {
         CaseworkerCICDocument document = selectedDocuments.stream()
             .filter(doc -> doc.getDocumentLink().getBinaryUrl().contains(item))
             .findFirst()
@@ -339,13 +335,6 @@ public class NotificationServiceCIC {
         String documentNotification = String.format(
             "%nFilename: %s%nDescription: %s%n",
             document.getDocumentLink().getFilename(), document.getDocumentEmailContent());
-
-        if (jsonFileAttachment != null) {
-            documentNotification += "Download Link: ";
-            templateVars.replace(docName + "Link", jsonFileAttachment);
-        } else {
-            documentNotification += String.format("Upload Date: %s", document.getDate());
-        }
 
         templateVars.put(docName, documentNotification);
     }
