@@ -40,7 +40,7 @@ public class CaseEventRepository {
     private static final String SELECT_LIST_OF_CASE_IDS_BY_EVENT_ID_DURING_DATE_RANGE =
         """
         SELECT DISTINCT REFERENCE FROM ccd.case_data cd
-        WHERE cd.id in 
+        WHERE cd.id in
             (SELECT DISTINCT case_data_id from ccd.case_event
             WHERE event_id = :caseEventId AND created_date >= :startDate AND created_date < :endDate)
         """;
@@ -112,7 +112,7 @@ public class CaseEventRepository {
     }
 
     public List<Long> getListOfCasesByEventIdDuringDateRange(String caseEventId, LocalDate startDate, LocalDate endDate) {
-       return getListOfCasesByEventIdDuringDateRange(caseEventId, startDate, endDate, null);
+        return getListOfCasesByEventIdDuringDateRange(caseEventId, startDate, endDate, null);
     }
 
     public List<Long> getListOfCasesByEventIdDuringDateRange(String caseEventId,
