@@ -34,6 +34,12 @@ public class SystemMigrateInitialCaseDocumentsTask implements Runnable {
     @Value("${feature.migrate-initial-case-documents-task.caseReference}")
     private String migrateInitialDocsCaseRef;
 
+    @Value("${feature.migrate-initial-case-documents-task.skipMigrated}")
+    private boolean skipMigrated;
+
+    @Value("${feature.migrate-initial-case-documents-task.batchSize}")
+    private int batchSize;
+
     @Override
     public void run() {
         if (migrateInitialDocsEnabled) {
@@ -49,6 +55,14 @@ public class SystemMigrateInitialCaseDocumentsTask implements Runnable {
                     List<Long> casesToUpdate = Arrays.stream(
                         migrateInitialDocsCaseRef.split(",")).map(s -> Long.parseLong(s.trim())).toList();
                     caseIdsToUpdate.addAll(casesToUpdate);
+                    log.info("Manual case list provided: {} cases", caseIdsToUpdate.size());
+                } else if (skipMigrated) {
+                    caseIdsToUpdate.addAll(caseEventRepository.getListOfCasesByEventIdDuringDateRange(
+                        RESPONDENT_DOCUMENT_MANAGEMENT,
+                        LocalDate.of(2025, 10, 16),
+                        LocalDate.now(),
+                        SYSTEM_MIGRATE_INITIAL_CASE_DOCUMENTS));
+                    log.info("Auto-discovery (skip migrated): {} cases", caseIdsToUpdate.size());
                 } else {
                     caseIdsToUpdate.addAll(caseEventRepository.getListOfCasesByEventIdDuringDateRange(
                         RESPONDENT_DOCUMENT_MANAGEMENT,
@@ -57,23 +71,19 @@ public class SystemMigrateInitialCaseDocumentsTask implements Runnable {
                 }
             } catch (final RuntimeException e) {
                 log.error("System migrate initial case documents task stopped after search error", e);
+                return;
             }
 
             if (caseIdsToUpdate.isEmpty()) {
                 log.info("No cases to update");
                 return;
             }
-            log.info("Cases:{}", caseIdsToUpdate.size());
-            for (final Long caseId : caseIdsToUpdate) {
-                triggerSystemRestoreOrdersEvent(user, serviceAuth, caseId);
-            }
 
-            log.info("System migrate initial case documents task complete.");
-
+            processBatches(caseIdsToUpdate, user, serviceAuth);
         }
     }
 
-    private void triggerSystemRestoreOrdersEvent(User user, String serviceAuth, Long caseId) {
+    private void triggerSystemMigrateInitialCaseDocuments(User user, String serviceAuth, Long caseId) {
         try {
             log.info("Running {} event for Case {}", SYSTEM_MIGRATE_INITIAL_CASE_DOCUMENTS, caseId);
 
@@ -84,5 +94,34 @@ public class SystemMigrateInitialCaseDocumentsTask implements Runnable {
         } catch (final IllegalArgumentException e) {
             log.error("Deserialization failed for case id: {}, continuing to next case", caseId);
         }
+    }
+
+    private void processBatches(List<Long> caseIds, User user, String serviceAuth) {
+        int total = caseIds.size();
+        int success = 0;
+        int failed = 0;
+        int batchCount = (total + batchSize - 1) / batchSize;
+
+        log.info("Processing {} cases in {} batches", total, batchCount);
+
+        for (int i = 0; i < total; i += batchSize) {
+            int batchNum = (i / batchSize) + 1;
+            int end = Math.min(i + batchSize, total);
+            List<Long> batch = caseIds.subList(i, end);
+
+            log.info("Batch {}/{} ({} cases)", batchNum, batchCount, batch.size());
+
+            for (final Long caseId : batch) {
+                try {
+                    triggerSystemMigrateInitialCaseDocuments(user, serviceAuth, caseId);
+                    success++;
+                } catch (final RuntimeException e) {
+                    failed++;
+                    log.error("Failed to migrate case {}", caseId, e);
+                }
+            }
+        }
+
+        log.info("Migration complete: {} succeeded, {} failed out of {} total", success, failed, total);
     }
 }

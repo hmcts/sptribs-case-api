@@ -12,6 +12,7 @@ import uk.gov.hmcts.sptribs.common.dto.RemoveEventWithPrecedingData;
 import uk.gov.hmcts.sptribs.common.repositories.exception.CaseEventRepositoryException;
 
 import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -37,9 +38,18 @@ public class CaseEventRepository {
         + "AND jsonb_array_length(cd.data -> 'furtherUploadedDocuments') > 0";
 
     private static final String SELECT_LIST_OF_CASE_IDS_BY_EVENT_ID_DURING_DATE_RANGE =
-        "SELECT DISTINCT REFERENCE FROM ccd.case_data cd where cd.id in "
-            + "(SELECT DISTINCT case_data_id from ccd.case_event "
-            + "WHERE event_id = :caseEventId AND created_date >= :startDate AND created_date < :endDate) ";
+        """
+        SELECT DISTINCT REFERENCE FROM ccd.case_data cd
+        WHERE cd.id in 
+            (SELECT DISTINCT case_data_id from ccd.case_event
+            WHERE event_id = :caseEventId AND created_date >= :startDate AND created_date < :endDate)
+        """;
+
+    private static final String SKIP_CASE_IF_EVENT_EXISTS =
+        """
+        AND cd.id NOT IN
+            (SELECT DISTINCT case_data_id FROM ccd.case_event WHERE event_id = :skipEventId)
+        """;
 
     private static final String SELECT_REMOVE_EVENTS_WITH_PRECEDING_DATA =
         "WITH events_with_context AS ( "
@@ -102,13 +112,27 @@ public class CaseEventRepository {
     }
 
     public List<Long> getListOfCasesByEventIdDuringDateRange(String caseEventId, LocalDate startDate, LocalDate endDate) {
+       return getListOfCasesByEventIdDuringDateRange(caseEventId, startDate, endDate, null);
+    }
+
+    public List<Long> getListOfCasesByEventIdDuringDateRange(String caseEventId,
+                                                             LocalDate startDate,
+                                                             LocalDate endDate,
+                                                             String skipEventId) {
+
+        String query = SELECT_LIST_OF_CASE_IDS_BY_EVENT_ID_DURING_DATE_RANGE;
 
         List<Long> results;
-        var params = Map.of(
+        var params = new HashMap<>(Map.of(
                 CASE_EVENT_ID, caseEventId,
                 START_DATE, startDate,
                 END_DATE, endDate.plusDays(1)
-        );
+        ));
+
+        if (skipEventId != null) {
+            query += SKIP_CASE_IF_EVENT_EXISTS;
+            params.put("skipEventId", skipEventId);
+        }
 
         try {
             results = namedParameterJdbcTemplate.query(SELECT_LIST_OF_CASE_IDS_BY_EVENT_ID_DURING_DATE_RANGE,
@@ -118,9 +142,9 @@ public class CaseEventRepository {
 
         } catch (DataAccessException dataAccessException) {
             log.error("Failed to retrieve list of affected cases for eventId = {} between {} and {}",
-                    caseEventId, startDate, endDate, dataAccessException);
+                caseEventId, startDate, endDate, dataAccessException);
             throw new CaseEventRepositoryException(
-                    "Failed to retrieve affected cases for eventID = " + caseEventId, dataAccessException);
+                "Failed to retrieve affected cases for eventID = " + caseEventId, dataAccessException);
         }
         return results;
     }

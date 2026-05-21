@@ -56,6 +56,8 @@ class SystemMigrateInitialCaseDocumentsTaskTest {
         void setUp() {
             ReflectionTestUtils.setField(systemMigrateInitialCaseDocumentsTask, "migrateInitialDocsEnabled", false);
             ReflectionTestUtils.setField(systemMigrateInitialCaseDocumentsTask, "migrateInitialDocsCaseRef", "");
+            ReflectionTestUtils.setField(systemMigrateInitialCaseDocumentsTask, "skipMigrated", false);
+            ReflectionTestUtils.setField(systemMigrateInitialCaseDocumentsTask, "batchSize", 10);
         }
 
         @Test
@@ -85,6 +87,8 @@ class SystemMigrateInitialCaseDocumentsTaskTest {
 
             ReflectionTestUtils.setField(systemMigrateInitialCaseDocumentsTask, "migrateInitialDocsEnabled", true);
             ReflectionTestUtils.setField(systemMigrateInitialCaseDocumentsTask, "migrateInitialDocsCaseRef", "");
+            ReflectionTestUtils.setField(systemMigrateInitialCaseDocumentsTask, "skipMigrated", false);
+            ReflectionTestUtils.setField(systemMigrateInitialCaseDocumentsTask, "batchSize", 10);
         }
 
         @Test
