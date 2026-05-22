@@ -10,9 +10,12 @@ import uk.gov.hmcts.ccd.sdk.ConfigBuilderImpl;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.Event;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
+import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.model.DocumentManagement;
+import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderCIC;
+import uk.gov.hmcts.sptribs.caseworker.model.Order;
 import uk.gov.hmcts.sptribs.caseworker.model.YesNo;
 import uk.gov.hmcts.sptribs.ciccase.model.ApplicantCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
@@ -329,6 +332,11 @@ class CaseworkerCreateBundleTest {
 
         cicCase.setApplicantDocumentsUploaded(allApplicantDocs);
 
+        Document document = Document.builder().url("testUrl").filename("test").build();
+        DraftOrderCIC draftOrderCIC = DraftOrderCIC.builder().templateGeneratedDocument(document).build();
+        Order order = Order.builder().draftOrder(draftOrderCIC).orderSentDate(LocalDate.of(2026, 5, 1)).build();
+        cicCase.setOrderList(List.of(ListValue.<Order>builder().value(order).build()));
+
         LocalDate caseworkerUploadDate = LocalDate.of(2026, 1, 20);
         final List<ListValue<CaseworkerCICDocument>> caseworkerDocs =
             getCaseworkerCICDocumentList("caseworkerDoc.docx", DocumentType.LINKED_DOCS, caseworkerUploadDate);
@@ -357,7 +365,7 @@ class CaseworkerCreateBundleTest {
             // Initial documents should be in caseDocuments
             assertThat(dataAtMockTime.getCaseDocuments()).hasSize(3);
             // furtherCaseDocuments should have the additional documents
-            assertThat(dataAtMockTime.getFurtherCaseDocuments()).hasSize(5);
+            assertThat(dataAtMockTime.getFurtherCaseDocuments()).hasSize(6);
             assertThat(dataAtMockTime.getBundleConfiguration()).isEqualTo(MULTI_BUNDLE_CONFIG);
             assertThat(dataAtMockTime.getMultiBundleConfiguration()).isEqualTo(List.of(MULTI_BUNDLE_CONFIG));
             return List.of(bundle);

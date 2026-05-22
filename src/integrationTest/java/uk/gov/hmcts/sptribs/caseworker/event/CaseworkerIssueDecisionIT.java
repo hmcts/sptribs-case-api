@@ -12,6 +12,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.reform.idam.client.models.User;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
@@ -43,7 +44,6 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.sptribs.ciccase.model.ApplicantCIC.APPLICANT_CIC;
 import static uk.gov.hmcts.sptribs.ciccase.model.ContactPreferenceType.EMAIL;
@@ -67,7 +67,7 @@ import static uk.gov.hmcts.sptribs.testutil.TestResourceUtil.expectedResponse;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
 @ContextConfiguration(initializers = {IdamWireMock.PropertiesInitializer.class})
-public class CaseWorkerIssueDecisionIT {
+public class CaseworkerIssueDecisionIT {
     private static final String CASEWORKER_ISSUE_DECISION_MID_EVENT_RESPONSE =
         "classpath:responses/caseworker-issue-decision-mid-event-response.json";
     private static final String CASEWORKER_ISSUE_DECISION_ABOUT_TO_SUBMIT_RESPONSE =
@@ -133,7 +133,7 @@ public class CaseWorkerIssueDecisionIT {
 
     @Test
     void shouldRenderDocumentInMidEvent() throws Exception {
-        final CaseIssueDecision caseIssueDecision = new CaseIssueDecision().builder()
+        final CaseIssueDecision caseIssueDecision = CaseIssueDecision.builder()
             .issueDecisionTemplate(DecisionTemplate.ELIGIBILITY)
             .build();
 
@@ -148,7 +148,7 @@ public class CaseWorkerIssueDecisionIT {
                 .build()
         );
 
-        Document document = new Document().builder()
+        Document document = Document.builder()
             .url("url")
             .binaryUrl("binary url")
             .filename("filename")
@@ -202,7 +202,7 @@ public class CaseWorkerIssueDecisionIT {
             .documentLink(Document.builder().url("url").binaryUrl("binary").filename("filename").build())
             .build();
 
-        final CaseIssueDecision caseIssueDecision = new CaseIssueDecision().builder()
+        final CaseIssueDecision caseIssueDecision = CaseIssueDecision.builder()
             .decisionDocument(document)
             .build();
 
@@ -211,7 +211,7 @@ public class CaseWorkerIssueDecisionIT {
             .caseIssueDecision(caseIssueDecision)
             .build();
 
-        mockMvc.perform(post(ABOUT_TO_SUBMIT_URL)
+        MvcResult result = mockMvc.perform(post(ABOUT_TO_SUBMIT_URL)
                 .contentType(APPLICATION_JSON)
                 .header(SERVICE_AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
                 .header(AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
@@ -222,9 +222,10 @@ public class CaseWorkerIssueDecisionIT {
                 .accept(APPLICATION_JSON))
             .andExpect(
                 status().isOk())
-            .andExpect(
-                content().json(expectedResponse(CASEWORKER_ISSUE_DECISION_ABOUT_TO_SUBMIT_RESPONSE))
-            );
+            .andReturn();
+
+        String actualResponse = result.getResponse().getContentAsString();
+        assertThatJson(actualResponse).isEqualTo(expectedResponse(CASEWORKER_ISSUE_DECISION_ABOUT_TO_SUBMIT_RESPONSE));
     }
 
     @Test

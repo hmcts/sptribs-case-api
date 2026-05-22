@@ -1,6 +1,8 @@
 package uk.gov.hmcts.sptribs.caseworker.event;
 
+import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -12,9 +14,10 @@ import uk.gov.hmcts.ccd.sdk.api.Event;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
+import uk.gov.hmcts.sptribs.caseworker.event.page.IssueFinalDecisionFooter;
 import uk.gov.hmcts.sptribs.caseworker.event.page.IssueFinalDecisionSelectTemplate;
+import uk.gov.hmcts.sptribs.caseworker.event.page.IssueFinalDecisionUpload;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseIssueFinalDecision;
-import uk.gov.hmcts.sptribs.caseworker.model.NoticeOption;
 import uk.gov.hmcts.sptribs.ciccase.model.ApplicantCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
@@ -34,6 +37,9 @@ import uk.gov.hmcts.sptribs.document.model.CICDocument;
 import uk.gov.hmcts.sptribs.document.service.DocumentsService;
 import uk.gov.hmcts.sptribs.notification.dispatcher.CaseFinalDecisionIssuedNotification;
 
+import java.time.Clock;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -60,20 +66,43 @@ class CaseworkerIssueFinalDecisionTest {
     @Mock
     private FinalDecisionTemplateContent finalDecisionTemplateContent;
 
-    @InjectMocks
-    private CaseworkerIssueFinalDecision issueFinalDecision;
-
     @Mock
     private CaseFinalDecisionIssuedNotification caseFinalDecisionIssuedNotification;
-
-    @Mock
-    private DocumentsRepository documentsRepository;
 
     @Mock
     private DocumentsService documentsService;
 
     @InjectMocks
     private IssueFinalDecisionSelectTemplate issueFinalDecisionSelectTemplate;
+
+    @Mock
+    private IssueFinalDecisionFooter issueFinalDecisionFooter;
+
+    @Mock
+    private IssueFinalDecisionUpload issueFinalDecisionUpload;
+
+    @Mock
+    private HttpServletRequest httpServletRequest;
+
+    private final Clock fixedClock = Clock.fixed(
+        LocalDate.of(2026, 5, 15)
+            .atStartOfDay(ZoneId.systemDefault())
+            .toInstant(),
+        ZoneId.systemDefault()
+    );
+
+    private CaseworkerIssueFinalDecision issueFinalDecision;
+
+    @BeforeEach
+    void setUp() {
+        issueFinalDecision = new CaseworkerIssueFinalDecision(
+            issueFinalDecisionFooter,
+            httpServletRequest,
+            caseDataDocumentService,
+            caseFinalDecisionIssuedNotification,
+            fixedClock
+        );
+    }
 
     @Test
     void shouldAddPublishToCamundaWhenWAIsEnabled() {
@@ -87,32 +116,18 @@ class CaseworkerIssueFinalDecisionTest {
             .contains(CASEWORKER_ISSUE_FINAL_DECISION);
 
         assertThat(getEventsFrom(configBuilder).values())
-                .extracting(Event::isPublishToCamunda)
-                .contains(true);
+            .extracting(Event::isPublishToCamunda)
+            .contains(true);
 
         assertThat(getEventsFrom(configBuilder).values())
-                .extracting(Event::getGrants)
-                .extracting(map -> map.containsKey(ST_CIC_WA_CONFIG_USER))
-                .contains(true);
+            .extracting(Event::getGrants)
+            .extracting(map -> map.containsKey(ST_CIC_WA_CONFIG_USER))
+            .contains(true);
 
         assertThat(getEventsFrom(configBuilder).values())
-                .extracting(Event::getGrants)
-                .extracting(map -> map.get(ST_CIC_WA_CONFIG_USER))
-                .contains(Permissions.CREATE_READ_UPDATE);
-    }
-
-    @Test
-    void shouldSuccessfullyIssueFinalDecision() {
-        //Given
-        final CaseData caseData = caseData();
-        final CaseIssueFinalDecision finalDecision = new CaseIssueFinalDecision();
-        finalDecision.setFinalDecisionNotice(NoticeOption.CREATE_FROM_TEMPLATE);
-        finalDecision.setDecisionTemplate(DecisionTemplate.QUANTUM);
-        caseData.setCaseIssueFinalDecision(finalDecision);
-
-        //Then
-        assertThat(caseData.getCaseIssueFinalDecision().getDecisionTemplate().getId()).isEqualTo("ST-CIC-DEC-ENG-CIC2_Quantum");
-        assertThat(caseData.getCaseIssueFinalDecision().getDecisionTemplate().getLabel()).contains("Quantum");
+            .extracting(Event::getGrants)
+            .extracting(map -> map.get(ST_CIC_WA_CONFIG_USER))
+            .contains(Permissions.CREATE_READ_UPDATE);
     }
 
     @Test
@@ -167,50 +182,8 @@ class CaseworkerIssueFinalDecisionTest {
 
         assertThat(response.getState())
             .isEqualTo(CaseClosed);
+        assertThat(response.getData().getCaseIssueFinalDecision().getFinalDecisionDate()).isEqualTo(LocalDate.of(2026, 5,15));
     }
-
-    @Test
-    void shouldReturnErrorsInvalidDocumentUploaded() {
-        //Given
-
-        final CICDocument document = CICDocument.builder()
-            .documentLink(Document.builder().binaryUrl("url").url("url").filename("file.sql").build())
-            .documentEmailContent("content")
-            .build();
-        final CaseIssueFinalDecision caseIssueFinalDecision = CaseIssueFinalDecision.builder().document(document).build();
-        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
-        final CaseData caseData = CaseData.builder()
-            .caseIssueFinalDecision(caseIssueFinalDecision)
-            .build();
-        caseDetails.setData(caseData);
-
-        //When
-        AboutToStartOrSubmitResponse<CaseData, State> response = issueFinalDecision.uploadDocumentMidEvent(caseDetails, caseDetails);
-
-        //Then
-        verifyNoInteractions(documentsService);
-
-        assertThat(response.getErrors()).contains(DocumentConstants.DOCUMENT_VALIDATION_MESSAGE);
-    }
-
-    @Test
-    void shouldReturnErrorsIfNoNotificationPartySelected() {
-        //Given
-        final CaseIssueFinalDecision caseIssueFinalDecision = new CaseIssueFinalDecision();
-        caseIssueFinalDecision.setDecisionTemplate(DecisionTemplate.ELIGIBILITY);
-        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
-        final CaseData caseData = CaseData.builder()
-            .caseIssueFinalDecision(caseIssueFinalDecision)
-            .build();
-        caseDetails.setData(caseData);
-
-        //When
-        AboutToStartOrSubmitResponse<CaseData, State> response = issueFinalDecision.midEvent(caseDetails, caseDetails);
-
-        //Then
-        assertThat(response.getErrors()).isNull();
-    }
-
 
     @Test
     void shouldReturnMainContentOnMidEvent() {
@@ -229,7 +202,6 @@ class CaseworkerIssueFinalDecisionTest {
         //Then
         Assertions.assertEquals(DocmosisTemplateConstants.ELIGIBILITY_MAIN_CONTENT, response.getData().getDecisionMainContent());
     }
-
 
     @Test
     void shouldRunAboutToStart() {
