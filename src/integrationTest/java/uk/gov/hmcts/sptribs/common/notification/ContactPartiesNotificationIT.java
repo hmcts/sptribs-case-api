@@ -21,7 +21,6 @@ import uk.gov.hmcts.sptribs.cdam.model.Document;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.common.repositories.DocumentsRepository;
-import uk.gov.hmcts.sptribs.document.persistence.DocumentEntity;
 import uk.gov.hmcts.sptribs.idam.IdamService;
 import uk.gov.hmcts.sptribs.notification.NotificationServiceCIC;
 import uk.gov.hmcts.sptribs.notification.dispatcher.ContactPartiesNotification;
@@ -29,7 +28,6 @@ import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
 import uk.gov.hmcts.sptribs.services.cdam.CaseDocumentClientApi;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -118,18 +116,6 @@ public class ContactPartiesNotificationIT {
 
         when(caseDocumentClientApi.getDocument(any(), any(), any()))
             .thenReturn(org.springframework.http.ResponseEntity.ok(testDocument));
-
-        when(documentsRepository.findAllByDocumentBinaryUrl(any()))
-            .thenReturn(Collections.singletonList(
-                DocumentEntity.builder()
-                    .caseReferenceNumber(TEST_CASE_ID)
-                    .documentUrl("example.com/test-document.pdf")
-                    .documentFilename("test-document.pdf")
-                    .documentBinaryUrl("example.com/test-document.pdf/binary")
-                    .categoryId("testCategory")
-                    .isDraft(false)
-                    .build()
-            ));
     }
 
     @Test

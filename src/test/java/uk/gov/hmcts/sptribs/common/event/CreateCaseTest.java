@@ -23,7 +23,7 @@ import uk.gov.hmcts.sptribs.common.service.SubmissionService;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocumentUpload;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
-import uk.gov.hmcts.sptribs.document.persistence.DocumentsService;
+import uk.gov.hmcts.sptribs.document.services.DocumentsService;
 import uk.gov.hmcts.sptribs.notification.dispatcher.ApplicationReceivedNotification;
 import uk.gov.hmcts.sptribs.notification.exception.NotificationException;
 

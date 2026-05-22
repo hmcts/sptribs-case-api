@@ -5,20 +5,15 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.sptribs.document.persistence.DocumentEntity;
-import uk.gov.hmcts.sptribs.notification.persistence.CorrespondenceEntity;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.UUID;
 
 import static uk.gov.hmcts.sptribs.testutil.FunctionalTestConstants.KEY_CASE_CORRESPONDENCES_REFERENCE;
 import static uk.gov.hmcts.sptribs.testutil.FunctionalTestConstants.KEY_CASE_DATA_ID;
@@ -38,7 +33,7 @@ public class FunctionalTestDataManager {
 
     private static final List<Long> testReferences = Collections.synchronizedList(new ArrayList<>());
 
-    private Connection connection;
+    protected static Connection connection;
 
     @Value("${postgres.host}")
     private String host;
@@ -55,7 +50,20 @@ public class FunctionalTestDataManager {
     @Value("${postgres.password}")
     private String password;
 
+
+
     public void connectToDB() {
+        if (connection != null) {
+            try {
+                if (!connection.isClosed()) {
+                    log.info("Database connection already exists, reusing it.");
+                    return;
+                }
+            } catch (SQLException e) {
+                log.warn("Error checking connection state", e);
+            }
+        }
+
         String connectionString = String.format("jdbc:postgresql://%s:%s/%s", host, port, dbName);
 
         try {
@@ -128,61 +136,6 @@ public class FunctionalTestDataManager {
                 return rs.getLong(KEY_CASE_DATA_ID);
             }
             return -1;
-        }
-    }
-
-    public List<CorrespondenceEntity> getCorrespondenceEntities(long reference) throws SQLException {
-        String sql = "SELECT * FROM " + TABLE_CASE_CORRESPONDENCES + " WHERE " + KEY_CASE_CORRESPONDENCES_REFERENCE + " = ?";
-        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
-            stmt.setLong(1, reference);
-            ResultSet rs = stmt.executeQuery();
-
-            List<CorrespondenceEntity> correspondences = new ArrayList<>();
-            while (rs.next()) {
-                CorrespondenceEntity correspondenceEntity = CorrespondenceEntity.builder()
-                    .caseReferenceNumber(rs.getLong(KEY_CASE_CORRESPONDENCES_REFERENCE))
-                    .id(UUID.fromString(rs.getString("id")))
-                    .eventType(rs.getString("event_type"))
-                    .sentOn(rs.getTimestamp("sent_on").toInstant()
-                        .atOffset(ZoneId.systemDefault().getRules().getOffset(LocalDateTime.now())))
-                    .sentFrom(rs.getString("sent_from"))
-                    .sentTo(rs.getString("sent_to"))
-                    .documentUrl(rs.getString("document_url"))
-                    .documentBinaryUrl(rs.getString("document_binary_url"))
-                    .documentFilename(rs.getString("document_filename"))
-                    .correspondenceType(rs.getString("correspondence_type"))
-                    .build();
-
-                correspondences.add(correspondenceEntity);
-            }
-            return correspondences;
-        }
-    }
-
-    public List<DocumentEntity> getDocumentEntities(long reference) throws SQLException {
-        String sql = "SELECT * FROM " + TABLE_CASE_DOCUMENTS + " WHERE " + KEY_CASE_DOCUMENTS_REFERENCE + " = ?";
-        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
-            stmt.setLong(1, reference);
-            ResultSet rs = stmt.executeQuery();
-
-            List<DocumentEntity> documents = new ArrayList<>();
-            while (rs.next()) {
-                DocumentEntity documentEntity = DocumentEntity.builder()
-                    .caseReferenceNumber(rs.getLong(KEY_CASE_CORRESPONDENCES_REFERENCE))
-                    .id(rs.getInt("id"))
-                    .savedAt(rs.getTimestamp("saved_at").toInstant()
-                        .atOffset(ZoneId.systemDefault().getRules().getOffset(LocalDateTime.now())))
-                    .documentUrl(rs.getString("document_url"))
-                    .documentBinaryUrl(rs.getString("document_binary_url"))
-                    .documentFilename(rs.getString("document_filename"))
-                    .categoryId(rs.getString("category_id"))
-                    .isDraft(rs.getBoolean("is_draft"))
-                    .sentToApplicantViaContactParties(rs.getBoolean("sent_to_applicant_via_contact_parties"))
-                    .build();
-
-                documents.add(documentEntity);
-            }
-            return documents;
         }
     }
 

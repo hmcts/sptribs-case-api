@@ -1,4 +1,4 @@
-package uk.gov.hmcts.sptribs.document.persistence;
+package uk.gov.hmcts.sptribs.document.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.sptribs.common.repositories.DocumentsRepository;
+import uk.gov.hmcts.sptribs.document.model.DocumentEntity;
 
 @Service
 public class DocumentsService {
@@ -17,20 +18,17 @@ public class DocumentsService {
         this.documentsRepository = documentsRepository;
     }
 
-    @Transactional
     public void buildAndSaveNewDocumentEntity(Document document, Long caseReferenceNumber, boolean isDraft) {
         try {
-            if (documentsRepository.findAllByDocumentBinaryUrl(document.getBinaryUrl()).isEmpty()) {
-                documentsRepository.save(DocumentEntity.builder()
-                    .caseReferenceNumber(caseReferenceNumber)
-                    .documentUrl(document.getUrl())
-                    .documentFilename(document.getFilename())
-                    .documentBinaryUrl(document.getBinaryUrl())
-                    .categoryId(document.getCategoryId())
-                    .isDraft(isDraft)
-                    .sentToApplicantViaContactParties(false)
-                    .build());
-            }
+            documentsRepository.save(DocumentEntity.builder()
+                .caseReferenceNumber(caseReferenceNumber)
+                .documentUrl(document.getUrl())
+                .documentFilename(document.getFilename())
+                .documentBinaryUrl(document.getBinaryUrl())
+                .categoryId(document.getCategoryId())
+                .isDraft(isDraft)
+                .sentToApplicantViaContactParties(false)
+                .build());
         } catch (DataAccessException e) {
             throw new RuntimeException("Error saving document entity to database", e);
         }
@@ -39,11 +37,9 @@ public class DocumentsService {
     @Transactional
     public void setSentToApplicantViaContactPartiesToTrue(String documentBinaryUrl) {
         try {
-            DocumentEntity documentEntity = documentsRepository.findAllByDocumentBinaryUrl(documentBinaryUrl).getFirst();
-            documentEntity.setSentToApplicantViaContactParties(true);
-            documentsRepository.save(documentEntity);
+            documentsRepository.setSentToApplicantViaContactPartiesToTrueByDocumentBinaryUrl(documentBinaryUrl);
         } catch (DataAccessException e) {
-            throw new RuntimeException("Error saving document entity to database", e);
+            throw new RuntimeException("Error updating sent_to_applicant_via_contact_parties to true", e);
         }
     }
 }

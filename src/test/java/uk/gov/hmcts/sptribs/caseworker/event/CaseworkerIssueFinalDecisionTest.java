@@ -31,7 +31,7 @@ import uk.gov.hmcts.sptribs.document.DocumentConstants;
 import uk.gov.hmcts.sptribs.document.content.DocmosisTemplateConstants;
 import uk.gov.hmcts.sptribs.document.content.FinalDecisionTemplateContent;
 import uk.gov.hmcts.sptribs.document.model.CICDocument;
-import uk.gov.hmcts.sptribs.document.persistence.DocumentsService;
+import uk.gov.hmcts.sptribs.document.services.DocumentsService;
 import uk.gov.hmcts.sptribs.notification.dispatcher.CaseFinalDecisionIssuedNotification;
 
 import java.util.Set;

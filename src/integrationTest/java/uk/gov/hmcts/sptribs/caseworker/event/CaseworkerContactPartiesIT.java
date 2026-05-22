@@ -25,14 +25,12 @@ import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.common.config.WebMvcConfig;
 import uk.gov.hmcts.sptribs.common.repositories.DocumentsRepository;
-import uk.gov.hmcts.sptribs.document.persistence.DocumentEntity;
 import uk.gov.hmcts.sptribs.idam.IdamService;
 import uk.gov.hmcts.sptribs.notification.NotificationServiceCIC;
 import uk.gov.hmcts.sptribs.services.cdam.CaseDocumentClientApi;
 import uk.gov.hmcts.sptribs.testutil.IdamWireMock;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -64,7 +62,6 @@ import static uk.gov.hmcts.sptribs.testutil.TestConstants.CASEWORKER_USER_ID;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.SERVICE_AUTHORIZATION;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.SUBMITTED_URL;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_AUTHORIZATION_TOKEN;
-import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID_HYPHENATED;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_SERVICE_AUTH_TOKEN;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.callbackRequest;
@@ -146,18 +143,6 @@ public class CaseworkerContactPartiesIT {
 
         when(caseDocumentClientApi.getDocument(any(), any(), any()))
             .thenReturn(org.springframework.http.ResponseEntity.ok(testDocument));
-
-        when(documentsRepository.findAllByDocumentBinaryUrl(any()))
-            .thenReturn(Collections.singletonList(
-                DocumentEntity.builder()
-                .caseReferenceNumber(TEST_CASE_ID)
-                .documentUrl("example.com/test-document.pdf")
-                .documentFilename("test-document.pdf")
-                .documentBinaryUrl("example.com/test-document.pdf/binary")
-                .categoryId("testCategory")
-                .isDraft(false)
-                .build()
-            ));
     }
 
     @Test
