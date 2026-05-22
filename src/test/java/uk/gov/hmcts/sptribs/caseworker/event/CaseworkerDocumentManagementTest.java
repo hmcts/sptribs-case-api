@@ -25,6 +25,7 @@ import uk.gov.hmcts.sptribs.document.services.DocumentsService;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_WA_CONFIG_USER;
@@ -250,6 +251,37 @@ public class CaseworkerDocumentManagementTest {
         expectedDoc.setCategoryId("L");
         verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
             eq(expectedDoc), eq(TEST_CASE_ID), eq(false)
+        );
+    }
+
+    @Test
+    void shouldStoreErrorsWhenBuildAndSaveNewDocumentEntityThrowsRuntimeException() {
+        final CaseData caseData = caseData();
+
+        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
+        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        DocumentManagement documentManagement = DocumentManagement.builder()
+            .caseworkerCICDocumentUpload(getCaseworkerCICDocumentUploadList("file.pdf"))
+            .build();
+        caseData.setNewDocManagement(documentManagement);
+        caseData.setHyphenatedCaseRef(TEST_CASE_ID_HYPHENATED);
+        beforeDetails.setData(caseData);
+        updatedCaseDetails.setData(caseData);
+        updatedCaseDetails.setState(State.CaseManagement);
+        updatedCaseDetails.setId(TEST_CASE_ID);
+        updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
+
+        doThrow(new RuntimeException("Error saving document entity to database"))
+            .when(documentsService).buildAndSaveNewDocumentEntity(any(), eq(TEST_CASE_ID), eq(false));
+
+        AboutToStartOrSubmitResponse<CaseData, State> response =
+            caseworkerDocumentManagement.aboutToSubmit(updatedCaseDetails, beforeDetails);
+
+        assertThat(response.getErrors()).hasSize(1);
+        assertThat(response.getErrors()).contains("Error saving document entity to database");
+
+        verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
+            any(), eq(TEST_CASE_ID), eq(false)
         );
     }
 }

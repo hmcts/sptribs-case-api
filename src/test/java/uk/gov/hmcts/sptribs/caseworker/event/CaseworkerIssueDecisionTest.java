@@ -39,8 +39,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_WA_CONFIG_USER;
@@ -216,5 +218,58 @@ class CaseworkerIssueDecisionTest {
         //Then
         assertThat(response).isNotNull();
         assertThat(response.getData().getDecisionSignature()).isEmpty();
+    }
+
+    @Test
+    void shouldStoreErrorsWhenBuildAndSaveNewDocumentEntityThrowsRuntimeException() {
+        final CaseDetails<CaseData, State> details = new CaseDetails<>();
+        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        final CaseData caseData = caseData();
+        final CaseIssueDecision decision = new CaseIssueDecision();
+        final CICDocument document = CICDocument.builder()
+            .documentLink(Document.builder().binaryUrl("url").url("url").filename("file.txt").build())
+            .documentEmailContent("content")
+            .build();
+        decision.setDecisionDocument(document);
+        caseData.setCaseIssueDecision(decision);
+        caseData.setHyphenatedCaseRef(TEST_CASE_ID_HYPHENATED);
+        details.setData(caseData);
+
+        doThrow(new RuntimeException("Error saving document entity to database"))
+            .when(documentsService).buildAndSaveNewDocumentEntity(any(), eq(TEST_CASE_ID), eq(false));
+
+        AboutToStartOrSubmitResponse<CaseData, State> response = issueDecision.aboutToSubmit(details, beforeDetails);
+
+        assertThat(response.getErrors()).hasSize(1);
+        assertThat(response.getErrors()).contains("Error saving document entity to database");
+
+        verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
+            any(), eq(TEST_CASE_ID), eq(false)
+        );
+    }
+
+    @Test
+    void shouldNotSaveDecisionDocumentToDBWhenDecisionDocumentIsNullAndWhenDocumentLinkIsNull() {
+        final CaseDetails<CaseData, State> details = new CaseDetails<>();
+        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        final CaseData caseData = caseData();
+        final CaseIssueDecision decision = new CaseIssueDecision();
+        caseData.setCaseIssueDecision(decision);
+        caseData.setHyphenatedCaseRef(TEST_CASE_ID_HYPHENATED);
+        details.setData(caseData);
+
+        issueDecision.aboutToSubmit(details, beforeDetails);
+
+        verifyNoInteractions(documentsService);
+
+        final CICDocument document = CICDocument.builder()
+            .documentLink(null)
+            .documentEmailContent("content")
+            .build();
+        decision.setDecisionDocument(document);
+
+        issueDecision.aboutToSubmit(details, beforeDetails);
+
+        verifyNoInteractions(documentsService);
     }
 }
