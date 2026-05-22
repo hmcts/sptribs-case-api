@@ -9,8 +9,11 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DataAccessResourceFailureException;
 import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.sptribs.common.repositories.DocumentsRepositoryJPA;
+import uk.gov.hmcts.sptribs.document.model.DocumentEntity;
+import uk.gov.hmcts.sptribs.document.services.DocumentsService;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -73,8 +76,6 @@ public class DocumentsServiceTest {
     public void shouldBuildAndSaveNewNonDraftDocumentEntity() {
         documentsService.buildAndSaveNewDocumentEntity(TEST_DOCUMENT, TEST_CASE_ID, false);
 
-        verify(documentsRepositoryJPA, times(1))
-            .findAllByDocumentBinaryUrl(EXPECTED_TEST_DOCUMENT_ENTITY_NON_DRAFT.getDocumentBinaryUrl());
         verify(documentsRepositoryJPA, times(1)).save(EXPECTED_TEST_DOCUMENT_ENTITY_NON_DRAFT);
     }
 
@@ -82,26 +83,12 @@ public class DocumentsServiceTest {
     public void shouldBuildAndSaveNewDraftDocumentEntity() {
         documentsService.buildAndSaveNewDocumentEntity(TEST_DOCUMENT, TEST_CASE_ID, true);
 
-        verify(documentsRepositoryJPA, times(1))
-            .findAllByDocumentBinaryUrl(EXPECTED_TEST_DOCUMENT_ENTITY_NON_DRAFT.getDocumentBinaryUrl());
         verify(documentsRepositoryJPA, times(1)).save(EXPECTED_TEST_DOCUMENT_ENTITY_DRAFT);
     }
 
     @Test
-    public void shouldNotBuildAndSaveDuplicateDocumentEntity() {
-        when(documentsRepositoryJPA.findAllByDocumentBinaryUrl(TEST_DOCUMENT.getBinaryUrl()))
-            .thenReturn(java.util.List.of(EXPECTED_TEST_DOCUMENT_ENTITY_NON_DRAFT));
-
-        documentsService.buildAndSaveNewDocumentEntity(TEST_DOCUMENT, TEST_CASE_ID, false);
-
-        verify(documentsRepositoryJPA, times(1))
-            .findAllByDocumentBinaryUrl(EXPECTED_TEST_DOCUMENT_ENTITY_NON_DRAFT.getDocumentBinaryUrl());
-        verify(documentsRepositoryJPA, times(0)).save(EXPECTED_TEST_DOCUMENT_ENTITY_NON_DRAFT);
-    }
-
-    @Test
     public void shouldThrowRuntimeExceptionWhenDataAccessExceptionCaughtInBuildAndSaveNewDraftDocumentEntity() {
-        when(documentsRepositoryJPA.findAllByDocumentBinaryUrl(TEST_DOCUMENT.getBinaryUrl()))
+        when(documentsRepositoryJPA.save(EXPECTED_TEST_DOCUMENT_ENTITY_DRAFT))
             .thenThrow(new DataAccessResourceFailureException("DB error"));
 
         assertThatThrownBy(() -> documentsService.buildAndSaveNewDocumentEntity(TEST_DOCUMENT, TEST_CASE_ID, false))
@@ -112,24 +99,22 @@ public class DocumentsServiceTest {
 
     @Test
     public void shouldSetSentToApplicantViaContactPartiesToTrue() {
-        when(documentsRepositoryJPA.findAllByDocumentBinaryUrl(TEST_DOCUMENT.getBinaryUrl()))
-            .thenReturn(java.util.List.of(EXPECTED_TEST_DOCUMENT_ENTITY_NON_DRAFT_SENT_VIA_CONTACT_PARTIES));
 
         documentsService.setSentToApplicantViaContactPartiesToTrue(TEST_DOCUMENT.getBinaryUrl());
 
-        verify(documentsRepositoryJPA, times(1))
-            .findAllByDocumentBinaryUrl(TEST_DOCUMENT.getBinaryUrl());
-        verify(documentsRepositoryJPA, times(1)).save(EXPECTED_TEST_DOCUMENT_ENTITY_NON_DRAFT_SENT_VIA_CONTACT_PARTIES);
+        verify(documentsRepositoryJPA, times(1)).setSentToApplicantViaContactPartiesToTrueByDocumentBinaryUrl(
+            EXPECTED_TEST_DOCUMENT_ENTITY_NON_DRAFT_SENT_VIA_CONTACT_PARTIES.getDocumentBinaryUrl()
+        );
     }
 
     @Test
     public void shouldThrowRuntimeExceptionWhenDataAccessExceptionCaughtInSetSentToApplicantViaContactPartiesToTrue() {
-        when(documentsRepositoryJPA.findAllByDocumentBinaryUrl(TEST_DOCUMENT.getBinaryUrl()))
-            .thenThrow(new DataAccessResourceFailureException("DB error"));
+        doThrow(new DataAccessResourceFailureException("DB error"))
+            .when(documentsRepositoryJPA).setSentToApplicantViaContactPartiesToTrueByDocumentBinaryUrl(TEST_DOCUMENT.getBinaryUrl());
 
         assertThatThrownBy(() -> documentsService.setSentToApplicantViaContactPartiesToTrue(TEST_DOCUMENT.getBinaryUrl()))
             .isInstanceOf(RuntimeException.class)
-            .hasMessageContaining("Error saving document entity to database")
+            .hasMessageContaining("Error updating sent_to_applicant_via_contact_parties to true")
             .hasCauseInstanceOf(DataAccessException.class);
     }
 }

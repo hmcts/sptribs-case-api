@@ -29,11 +29,12 @@ import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.document.CaseDataDocumentService;
 import uk.gov.hmcts.sptribs.document.content.FinalDecisionTemplateContent;
 import uk.gov.hmcts.sptribs.document.model.CICDocument;
-import uk.gov.hmcts.sptribs.document.persistence.DocumentsService;
+import uk.gov.hmcts.sptribs.document.services.DocumentsService;
 import uk.gov.hmcts.sptribs.notification.dispatcher.CaseFinalDecisionIssuedNotification;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -204,18 +205,25 @@ public class CaseworkerIssueFinalDecision implements CCDConfig<CaseData, State, 
         final CaseData caseData = details.getData();
         final CICDocument finalDecisionDocument = caseData.getCaseIssueFinalDecision().getDocument();
 
+        List<String> errors = new ArrayList<>();
+
         if (finalDecisionDocument != null) {
             finalDecisionDocument.getDocumentLink().setCategoryId("TD");
-            documentsService.buildAndSaveNewDocumentEntity(
-                finalDecisionDocument.getDocumentLink(),
-                Long.parseLong(caseData.getHyphenatedCaseRef().replace("-", "")),
-                false
-            );
+            try {
+                documentsService.buildAndSaveNewDocumentEntity(
+                    finalDecisionDocument.getDocumentLink(),
+                    Long.parseLong(caseData.getHyphenatedCaseRef().replace("-", "")),
+                    false
+                );
+            } catch (RuntimeException e) {
+                errors.add(e.getMessage());
+            }
         }
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
             .state(CaseClosed)
+            .errors(errors)
             .build();
     }
 

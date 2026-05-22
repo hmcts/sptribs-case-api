@@ -95,6 +95,12 @@ public abstract class FunctionalTestSuite {
     @Autowired
     protected FunctionalTestDataManager functionalTestDataManager;
 
+    @Autowired
+    protected CaseCorrespondencesFTDataManager caseCorrespondencesFTDataManager;
+
+    @Autowired
+    protected CaseDocumentsFTDataManager caseDocumentsFTDataManager;
+
     protected static final String EVENT_PARAM = "event";
     protected static final String UPDATE = "UPDATE";
     protected static final String UPDATE_CASE = "UPDATE_CASE";

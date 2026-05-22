@@ -18,7 +18,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocumentUpload;
-import uk.gov.hmcts.sptribs.document.persistence.DocumentsService;
+import uk.gov.hmcts.sptribs.document.services.DocumentsService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -104,16 +104,22 @@ public class CaseworkerDocumentManagement implements CCDConfig<CaseData, State, 
             }
         }
 
+        List<String> errors = new ArrayList<>();
         for (ListValue<CaseworkerCICDocument> document : documents) {
-            documentsService.buildAndSaveNewDocumentEntity(
-                document.getValue().getDocumentLink(),
-                details.getId(),
-                false
-            );
+            try {
+                documentsService.buildAndSaveNewDocumentEntity(
+                    document.getValue().getDocumentLink(),
+                    details.getId(),
+                    false
+                );
+            } catch (RuntimeException e) {
+                errors.add(e.getMessage());
+            }
         }
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
+            .errors(errors)
             .build();
 
     }

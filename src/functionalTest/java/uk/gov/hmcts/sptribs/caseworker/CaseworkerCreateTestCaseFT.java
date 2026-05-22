@@ -42,20 +42,20 @@ public class CaseworkerCreateTestCaseFT extends FunctionalTestSuite {
 
         long testCaseRef = Long.parseLong(caseData.get("hyphenatedCaseRef").toString().replace("-", ""));
 
-        assertThat(functionalTestDataManager.getDocumentEntities(testCaseRef)).hasSize(1);
-        assertThat(functionalTestDataManager.getDocumentEntities(testCaseRef).getFirst().getId())
+        assertThat(caseDocumentsFTDataManager.getDocumentEntities(testCaseRef)).hasSize(1);
+        assertThat(caseDocumentsFTDataManager.getDocumentEntities(testCaseRef).getFirst().getId())
             .isNotNull();
-        assertThat(functionalTestDataManager.getDocumentEntities(testCaseRef).getFirst().getCaseReferenceNumber())
+        assertThat(caseDocumentsFTDataManager.getDocumentEntities(testCaseRef).getFirst().getCaseReferenceNumber())
             .isEqualTo(Long.parseLong(caseData.get("hyphenatedCaseRef").toString().replace("-", "")));
-        assertThat(functionalTestDataManager.getDocumentEntities(testCaseRef).getFirst().getCategoryId()).isNotNull();
-        assertThat(functionalTestDataManager.getDocumentEntities(testCaseRef).getFirst().getSavedAt()).isNotNull();
-        assertThat(functionalTestDataManager.getDocumentEntities(testCaseRef).getFirst().isDraft()).isFalse();
-        assertThat(functionalTestDataManager.getDocumentEntities(testCaseRef).getFirst().isSentToApplicantViaContactParties()).isFalse();
-        assertThat(functionalTestDataManager.getDocumentEntities(testCaseRef).getFirst().getDocumentUrl())
+        assertThat(caseDocumentsFTDataManager.getDocumentEntities(testCaseRef).getFirst().getCategoryId()).isNotNull();
+        assertThat(caseDocumentsFTDataManager.getDocumentEntities(testCaseRef).getFirst().getSavedAt()).isNotNull();
+        assertThat(caseDocumentsFTDataManager.getDocumentEntities(testCaseRef).getFirst().isDraft()).isFalse();
+        assertThat(caseDocumentsFTDataManager.getDocumentEntities(testCaseRef).getFirst().isSentToApplicantViaContactParties()).isFalse();
+        assertThat(caseDocumentsFTDataManager.getDocumentEntities(testCaseRef).getFirst().getDocumentUrl())
             .isNotNull();
-        assertThat(functionalTestDataManager.getDocumentEntities(testCaseRef).getFirst().getDocumentFilename())
+        assertThat(caseDocumentsFTDataManager.getDocumentEntities(testCaseRef).getFirst().getDocumentFilename())
             .isNotNull();
-        assertThat(functionalTestDataManager.getDocumentEntities(testCaseRef).getFirst().getDocumentBinaryUrl())
+        assertThat(caseDocumentsFTDataManager.getDocumentEntities(testCaseRef).getFirst().getDocumentBinaryUrl())
             .isNotNull();
     }
 }

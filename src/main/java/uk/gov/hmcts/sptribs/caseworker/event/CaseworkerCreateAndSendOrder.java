@@ -39,7 +39,7 @@ import uk.gov.hmcts.sptribs.common.event.page.CreateNewOrder;
 import uk.gov.hmcts.sptribs.common.event.page.EditNewOrderContentPage;
 import uk.gov.hmcts.sptribs.common.event.page.PreviewDraftOrder;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
-import uk.gov.hmcts.sptribs.document.persistence.DocumentsService;
+import uk.gov.hmcts.sptribs.document.services.DocumentsService;
 import uk.gov.hmcts.sptribs.notification.dispatcher.NewOrderIssuedNotification;
 
 import java.time.LocalDate;
@@ -151,6 +151,9 @@ public class CaseworkerCreateAndSendOrder implements CCDConfig<CaseData, State, 
         final CaseData caseData = details.getData();
 
         Order.OrderBuilder orderBuilder = Order.builder();
+
+        List<String> errors = new ArrayList<>();
+
         if (caseData.getCicCase().getOrderIssuingType().equals(CREATE_AND_SEND_NEW_ORDER)) {
             DraftOrderCIC draftOrderCIC = DraftOrderCIC.builder()
                 .draftOrderContentCIC(caseData.getDraftOrderContentCIC())
@@ -159,11 +162,15 @@ public class CaseworkerCreateAndSendOrder implements CCDConfig<CaseData, State, 
 
             orderBuilder.draftOrder(draftOrderCIC);
 
-            documentsService.buildAndSaveNewDocumentEntity(
-                draftOrderCIC.getTemplateGeneratedDocument(),
-                Long.parseLong(caseData.getHyphenatedCaseRef().replace("-", "")),
-                false
-            );
+            try {
+                documentsService.buildAndSaveNewDocumentEntity(
+                    draftOrderCIC.getTemplateGeneratedDocument(),
+                    Long.parseLong(caseData.getHyphenatedCaseRef().replace("-", "")),
+                    false
+                );
+            } catch (RuntimeException e) {
+                errors.add(e.getMessage());
+            }
 
             caseData.setDraftOrderContentCIC(new DraftOrderContentCIC());
             caseData.getCicCase().setOrderTemplateIssued(null);
@@ -175,11 +182,15 @@ public class CaseworkerCreateAndSendOrder implements CCDConfig<CaseData, State, 
             }
             orderBuilder.uploadedFile(caseData.getCicCase().getOrderFile());
 
-            documentsService.buildAndSaveNewDocumentEntity(
-                caseData.getCicCase().getOrderFile().getFirst().getValue().getDocumentLink(),
-                Long.parseLong(caseData.getHyphenatedCaseRef().replace("-", "")),
-                false
-            );
+            try {
+                documentsService.buildAndSaveNewDocumentEntity(
+                    caseData.getCicCase().getOrderFile().getFirst().getValue().getDocumentLink(),
+                    Long.parseLong(caseData.getHyphenatedCaseRef().replace("-", "")),
+                    false
+                );
+            } catch (RuntimeException e) {
+                errors.add(e.getMessage());
+            }
         }
 
         final Order order = orderBuilder
@@ -205,6 +216,7 @@ public class CaseworkerCreateAndSendOrder implements CCDConfig<CaseData, State, 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
             .state(details.getState())
+            .errors(errors)
             .build();
     }
 

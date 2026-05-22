@@ -39,7 +39,7 @@ import uk.gov.hmcts.sptribs.common.service.CcdSupplementaryDataService;
 import uk.gov.hmcts.sptribs.common.service.SubmissionService;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocumentUpload;
-import uk.gov.hmcts.sptribs.document.persistence.DocumentsService;
+import uk.gov.hmcts.sptribs.document.services.DocumentsService;
 import uk.gov.hmcts.sptribs.notification.dispatcher.ApplicationReceivedNotification;
 
 import java.util.ArrayList;
@@ -136,12 +136,18 @@ public class CreateCase implements CCDConfig<CaseData, State, UserRole> {
         caseData.getCicCase().setCaseDocumentsUpload(new ArrayList<>());
 
         caseData.getCicCase().setApplicantDocumentsUploaded(documents);
+
+        List<String> errors = new ArrayList<>();
         for (ListValue<CaseworkerCICDocument> document : documents) {
-            documentsService.buildAndSaveNewDocumentEntity(
-                document.getValue().getDocumentLink(),
-                Long.parseLong(caseData.getHyphenatedCaseRef().replace("-", "")),
-                false
-            );
+            try {
+                documentsService.buildAndSaveNewDocumentEntity(
+                    document.getValue().getDocumentLink(),
+                    Long.parseLong(caseData.getHyphenatedCaseRef().replace("-", "")),
+                    false
+                );
+            } catch (RuntimeException e) {
+                errors.add(e.getMessage());
+            }
         }
 
         setIsRepresentativePresent(caseData);
@@ -155,6 +161,7 @@ public class CreateCase implements CCDConfig<CaseData, State, UserRole> {
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
             .state(submittedDetails.getState())
+            .errors(errors)
             .build();
     }
 

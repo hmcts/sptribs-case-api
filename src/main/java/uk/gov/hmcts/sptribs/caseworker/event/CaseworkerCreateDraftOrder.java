@@ -25,7 +25,7 @@ import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.common.event.page.CreateDraftOrder;
 import uk.gov.hmcts.sptribs.common.event.page.DraftOrderMainContentPage;
 import uk.gov.hmcts.sptribs.common.event.page.PreviewDraftOrder;
-import uk.gov.hmcts.sptribs.document.persistence.DocumentsService;
+import uk.gov.hmcts.sptribs.document.services.DocumentsService;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -115,11 +115,16 @@ public class CaseworkerCreateDraftOrder implements CCDConfig<CaseData, State, Us
             .templateGeneratedDocument(caseData.getCicCase().getOrderTemplateIssued())
             .build();
 
-        documentsService.buildAndSaveNewDocumentEntity(
-            draftOrderCIC.getTemplateGeneratedDocument(),
-            Long.parseLong(caseData.getHyphenatedCaseRef().replace("-", "")),
-            true
-        );
+        List<String> errors = new ArrayList<>();
+        try {
+            documentsService.buildAndSaveNewDocumentEntity(
+                draftOrderCIC.getTemplateGeneratedDocument(),
+                Long.parseLong(caseData.getHyphenatedCaseRef().replace("-", "")),
+                true
+            );
+        } catch (RuntimeException e) {
+            errors.add(e.getMessage());
+        }
 
         caseData.setDraftOrderContentCIC(new DraftOrderContentCIC());
 
@@ -154,6 +159,7 @@ public class CaseworkerCreateDraftOrder implements CCDConfig<CaseData, State, Us
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .state(details.getState())
             .data(caseData)
+            .errors(errors)
             .build();
     }
 
