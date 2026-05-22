@@ -1,6 +1,7 @@
 package uk.gov.hmcts.sptribs.caseworker.event;
 
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -12,13 +13,13 @@ import uk.gov.hmcts.ccd.sdk.api.Event;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
+import uk.gov.hmcts.sptribs.caseworker.event.page.IssueDecisionFooter;
 import uk.gov.hmcts.sptribs.caseworker.event.page.IssueDecisionSelectTemplate;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseIssueDecision;
 import uk.gov.hmcts.sptribs.ciccase.model.ApplicantCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.DecisionTemplate;
-import uk.gov.hmcts.sptribs.ciccase.model.LanguagePreference;
 import uk.gov.hmcts.sptribs.ciccase.model.RepresentativeCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.RespondentCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
@@ -31,13 +32,12 @@ import uk.gov.hmcts.sptribs.document.content.DocmosisTemplateConstants;
 import uk.gov.hmcts.sptribs.document.model.CICDocument;
 import uk.gov.hmcts.sptribs.notification.dispatcher.DecisionIssuedNotification;
 
+import java.time.Clock;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyMap;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_WA_CONFIG_USER;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigBuilder;
@@ -55,13 +55,31 @@ class CaseworkerIssueDecisionTest {
     private DecisionTemplateContent decisionTemplateContent;
 
     @InjectMocks
-    private CaseWorkerIssueDecision issueDecision;
-
-    @InjectMocks
     private IssueDecisionSelectTemplate issueDecisionSelectTemplate;
 
     @Mock
     private DecisionIssuedNotification decisionIssuedNotification;
+
+    @Mock
+    private IssueDecisionFooter issueDecisionFooter;
+
+    private final Clock fixedClock = Clock.fixed(
+        LocalDate.of(2026, 5, 15)
+            .atStartOfDay(ZoneId.systemDefault())
+            .toInstant(),
+        ZoneId.systemDefault()
+    );
+
+    private CaseworkerIssueDecision issueDecision;
+
+    @BeforeEach
+    void setUp() {
+        issueDecision = new CaseworkerIssueDecision(
+            issueDecisionFooter,
+            decisionIssuedNotification,
+            fixedClock
+        );
+    }
 
     @Test
     void shouldAddPublishToCamundaWhenWAIsEnabled() {
@@ -75,18 +93,18 @@ class CaseworkerIssueDecisionTest {
             .contains(CASEWORKER_ISSUE_DECISION);
 
         assertThat(getEventsFrom(configBuilder).values())
-                .extracting(Event::isPublishToCamunda)
-                .contains(true);
+            .extracting(Event::isPublishToCamunda)
+            .contains(true);
 
         assertThat(getEventsFrom(configBuilder).values())
-                .extracting(Event::getGrants)
-                .extracting(map -> map.containsKey(ST_CIC_WA_CONFIG_USER))
-                .contains(true);
+            .extracting(Event::getGrants)
+            .extracting(map -> map.containsKey(ST_CIC_WA_CONFIG_USER))
+            .contains(true);
 
         assertThat(getEventsFrom(configBuilder).values())
-                .extracting(Event::getGrants)
-                .extracting(map -> map.get(ST_CIC_WA_CONFIG_USER))
-                .contains(Permissions.CREATE_READ_UPDATE);
+            .extracting(Event::getGrants)
+            .extracting(map -> map.get(ST_CIC_WA_CONFIG_USER))
+            .contains(Permissions.CREATE_READ_UPDATE);
     }
 
     @Test
@@ -109,6 +127,7 @@ class CaseworkerIssueDecisionTest {
 
         //Then
         assertThat(response.getState()).isEqualTo(CaseManagement);
+        assertThat(response.getData().getCaseIssueDecision().getDecisionDate()).isEqualTo(LocalDate.of(2026, 5, 15));
     }
 
     @Test
@@ -134,32 +153,6 @@ class CaseworkerIssueDecisionTest {
 
         //Then
         assertThat(response.getConfirmationHeader()).contains("Decision notice issued");
-    }
-
-    @Test
-    void shouldRenderDocumentWithoutError() {
-        //Given
-        final CaseIssueDecision caseIssueDecision = new CaseIssueDecision();
-        caseIssueDecision.setIssueDecisionTemplate(DecisionTemplate.ELIGIBILITY);
-        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
-        final CaseData caseData = CaseData.builder()
-            .caseIssueDecision(caseIssueDecision)
-            .build();
-        caseDetails.setData(caseData);
-        Document document = new Document();
-        when(caseDataDocumentService.renderDocument(
-            anyMap(),
-            any(),
-            eq(DecisionTemplate.ELIGIBILITY.getId()),
-            eq(LanguagePreference.ENGLISH), any(), any()))
-            .thenReturn(document);
-
-        //When
-        AboutToStartOrSubmitResponse<CaseData, State> response = issueDecision.midEvent(caseDetails, caseDetails);
-
-        //Then
-        assertThat(response.getErrors()).isNull();
-        assertThat(caseIssueDecision.getIssueDecisionDraft()).isEqualTo(document);
     }
 
     @Test
