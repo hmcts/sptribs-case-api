@@ -45,16 +45,6 @@ public class DocumentsServiceTest {
         .isDraft(true)
         .build();
 
-    private static final DocumentEntity EXPECTED_TEST_DOCUMENT_ENTITY_NON_DRAFT_NOT_SENT_VIA_CONTACT_PARTIES = DocumentEntity.builder()
-        .caseReferenceNumber(TEST_CASE_ID)
-        .documentUrl("example.com/test-document.pdf")
-        .documentFilename("test-document.pdf")
-        .documentBinaryUrl("example.com/test-document.pdf/binary")
-        .categoryId("testCategory")
-        .isDraft(false)
-        .sentToApplicantViaContactParties(false)
-        .build();
-
     private static final DocumentEntity EXPECTED_TEST_DOCUMENT_ENTITY_NON_DRAFT_SENT_VIA_CONTACT_PARTIES = DocumentEntity.builder()
         .caseReferenceNumber(TEST_CASE_ID)
         .documentUrl("example.com/test-document.pdf")
