@@ -57,9 +57,9 @@ public class DocumentsService {
         //
         //
         //
-        //How to get lastest case bundles????
+        //How to get lastest case bundles???? when have 1 insert for the case bundle pdf so can get latest type bd
         //
-        // order and decisions????
+        // order and decisions???? type td
         //
     }
 }
