@@ -19,7 +19,6 @@ import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.config.AppsConfig;
-import uk.gov.hmcts.sptribs.common.repositories.DocumentsRepository;
 import uk.gov.hmcts.sptribs.common.service.CcdSupplementaryDataService;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
@@ -67,9 +66,6 @@ public class CreateTestCaseTest {
 
     @Mock
     private CcdSupplementaryDataService ccdSupplementaryDataService;
-
-    @Mock
-    private DocumentsRepository documentsRepository;
 
     @Mock
     private DocumentsService documentsService;

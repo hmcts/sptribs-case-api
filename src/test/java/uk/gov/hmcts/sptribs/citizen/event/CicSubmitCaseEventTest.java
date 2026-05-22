@@ -25,7 +25,6 @@ import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.ciccase.model.access.Permissions;
 import uk.gov.hmcts.sptribs.common.config.AppsConfig;
-import uk.gov.hmcts.sptribs.common.repositories.DocumentsRepository;
 import uk.gov.hmcts.sptribs.constants.CommonConstants;
 import uk.gov.hmcts.sptribs.document.model.CitizenCICDocument;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
@@ -86,9 +85,6 @@ class CicSubmitCaseEventTest {
 
     @Mock
     private IdamService idamService;
-
-    @Mock
-    private DocumentsRepository documentsRepository;
 
     @Mock
     private DocumentsService documentsService;

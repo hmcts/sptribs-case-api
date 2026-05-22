@@ -17,7 +17,6 @@ import uk.gov.hmcts.sptribs.caseworker.model.YesNo;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
-import uk.gov.hmcts.sptribs.common.repositories.DocumentsRepository;
 import uk.gov.hmcts.sptribs.common.service.CcdSupplementaryDataService;
 import uk.gov.hmcts.sptribs.common.service.SubmissionService;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
@@ -65,9 +64,6 @@ class CreateCaseTest {
 
     @Mock
     private ApplicationReceivedNotification applicationReceivedNotification;
-
-    @Mock
-    private DocumentsRepository documentsRepository;
 
     @Mock
     private DocumentsService documentsService;

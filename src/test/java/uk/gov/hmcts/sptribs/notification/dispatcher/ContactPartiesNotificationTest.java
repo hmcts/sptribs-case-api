@@ -15,7 +15,6 @@ import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.ContactPreferenceType;
 import uk.gov.hmcts.sptribs.common.CommonConstants;
-import uk.gov.hmcts.sptribs.common.repositories.DocumentsRepository;
 import uk.gov.hmcts.sptribs.document.services.DocumentsService;
 import uk.gov.hmcts.sptribs.idam.IdamService;
 import uk.gov.hmcts.sptribs.notification.NotificationHelper;
@@ -49,9 +48,6 @@ class ContactPartiesNotificationTest {
 
     @Mock
     private CaseDocumentClientApi caseDocumentClientApi;
-
-    @Mock
-    private DocumentsRepository documentsRepository;
 
     @Mock
     private DocumentsService documentsService;
