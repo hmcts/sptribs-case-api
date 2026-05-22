@@ -104,16 +104,22 @@ public class CaseworkerDocumentManagement implements CCDConfig<CaseData, State, 
             }
         }
 
+        List<String> errors = new ArrayList<>();
         for (ListValue<CaseworkerCICDocument> document : documents) {
-            documentsService.buildAndSaveNewDocumentEntity(
-                document.getValue().getDocumentLink(),
-                details.getId(),
-                false
-            );
+            try {
+                documentsService.buildAndSaveNewDocumentEntity(
+                    document.getValue().getDocumentLink(),
+                    details.getId(),
+                    false
+                );
+            } catch (RuntimeException e) {
+                errors.add(e.getMessage());
+            }
         }
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
+            .errors(errors)
             .build();
 
     }

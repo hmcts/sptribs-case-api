@@ -34,6 +34,7 @@ import uk.gov.hmcts.sptribs.notification.dispatcher.CaseFinalDecisionIssuedNotif
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -204,18 +205,25 @@ public class CaseworkerIssueFinalDecision implements CCDConfig<CaseData, State, 
         final CaseData caseData = details.getData();
         final CICDocument finalDecisionDocument = caseData.getCaseIssueFinalDecision().getDocument();
 
+        List<String> errors = new ArrayList<>();
+
         if (finalDecisionDocument != null) {
             finalDecisionDocument.getDocumentLink().setCategoryId("TD");
-            documentsService.buildAndSaveNewDocumentEntity(
-                finalDecisionDocument.getDocumentLink(),
-                Long.parseLong(caseData.getHyphenatedCaseRef().replace("-", "")),
-                false
-            );
+            try {
+                documentsService.buildAndSaveNewDocumentEntity(
+                    finalDecisionDocument.getDocumentLink(),
+                    Long.parseLong(caseData.getHyphenatedCaseRef().replace("-", "")),
+                    false
+                );
+            } catch (RuntimeException e) {
+                errors.add(e.getMessage());
+            }
         }
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
             .state(CaseClosed)
+            .errors(errors)
             .build();
     }
 

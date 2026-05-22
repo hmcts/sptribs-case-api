@@ -34,6 +34,8 @@ import uk.gov.hmcts.sptribs.notification.dispatcher.DecisionIssuedNotification;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 
 import static java.lang.String.format;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_ISSUE_DECISION;
@@ -150,18 +152,25 @@ public class CaseWorkerIssueDecision implements CCDConfig<CaseData, State, UserR
         final CaseData caseData = details.getData();
         final CICDocument decisionDocument = caseData.getCaseIssueDecision().getDecisionDocument();
 
+        List<String> errors = new ArrayList<>();
+
         if (decisionDocument != null && decisionDocument.getDocumentLink() != null) {
             decisionDocument.getDocumentLink().setCategoryId("TD");
-            documentsService.buildAndSaveNewDocumentEntity(
-                decisionDocument.getDocumentLink(),
-                Long.parseLong(caseData.getHyphenatedCaseRef().replace("-", "")),
-                false
-            );
+            try {
+                documentsService.buildAndSaveNewDocumentEntity(
+                    decisionDocument.getDocumentLink(),
+                    Long.parseLong(caseData.getHyphenatedCaseRef().replace("-", "")),
+                    false
+                );
+            } catch (RuntimeException e) {
+                errors.add(e.getMessage());
+            }
         }
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
-            .state(CaseManagement)//or AwaitingHearing
+            .state(CaseManagement)
+            .errors(errors)
             .build();
     }
 
