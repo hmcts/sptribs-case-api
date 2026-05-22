@@ -4,6 +4,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -20,7 +22,10 @@ import uk.gov.hmcts.sptribs.systemupdate.service.CcdUpdateService;
 import java.time.LocalDate;
 import java.util.List;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatNoException;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -33,6 +38,8 @@ import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_SYSTEM_UPDATE_USE
 
 @ExtendWith(MockitoExtension.class)
 class SystemMigrateInitialCaseDocumentsTaskTest {
+
+    public static final LocalDate AFFECTED_START_DATE = LocalDate.of(2025, 10, 16);
 
     @InjectMocks
     private SystemMigrateInitialCaseDocumentsTask systemMigrateInitialCaseDocumentsTask;
@@ -71,6 +78,18 @@ class SystemMigrateInitialCaseDocumentsTaskTest {
     @Nested
     class WhenTaskIsEnabled {
 
+        @Captor
+        private ArgumentCaptor<String> caseEventIdCaptor;
+
+        @Captor
+        private ArgumentCaptor<LocalDate> startDateCaptor;
+
+        @Captor
+        private ArgumentCaptor<LocalDate> endDateCaptor;
+
+        @Captor
+        private ArgumentCaptor<String> skipEventIdCaptor;
+
         private User user;
 
         @BeforeEach
@@ -94,7 +113,7 @@ class SystemMigrateInitialCaseDocumentsTaskTest {
         @Test
         void shouldDoNothingWhenNoCasesFound() {
             when(caseEventRepository.getListOfCasesByEventIdDuringDateRange(
-                RESPONDENT_DOCUMENT_MANAGEMENT, LocalDate.of(2025, 10, 16), LocalDate.now()))
+                RESPONDENT_DOCUMENT_MANAGEMENT, AFFECTED_START_DATE, LocalDate.now()))
                 .thenReturn(List.of());
 
             systemMigrateInitialCaseDocumentsTask.run();
@@ -105,7 +124,7 @@ class SystemMigrateInitialCaseDocumentsTaskTest {
         @Test
         void shouldTriggerEventForEachCaseFound() {
             when(caseEventRepository.getListOfCasesByEventIdDuringDateRange(
-                RESPONDENT_DOCUMENT_MANAGEMENT, LocalDate.of(2025, 10, 16), LocalDate.now()))
+                RESPONDENT_DOCUMENT_MANAGEMENT, AFFECTED_START_DATE, LocalDate.now()))
                 .thenReturn(List.of(111L, 222L, 333L));
 
             systemMigrateInitialCaseDocumentsTask.run();
@@ -139,7 +158,7 @@ class SystemMigrateInitialCaseDocumentsTaskTest {
         @Test
         void shouldContinueToNextCaseWhenCcdManagementExceptionThrown() {
             when(caseEventRepository.getListOfCasesByEventIdDuringDateRange(
-                RESPONDENT_DOCUMENT_MANAGEMENT, LocalDate.of(2025, 10, 16), LocalDate.now()))
+                RESPONDENT_DOCUMENT_MANAGEMENT, AFFECTED_START_DATE, LocalDate.now()))
                 .thenReturn(List.of(111L, 222L, 333L));
 
             lenient().doThrow(new CcdManagementException("CCD error", new RuntimeException()))
@@ -155,7 +174,7 @@ class SystemMigrateInitialCaseDocumentsTaskTest {
         @Test
         void shouldContinueToNextCaseWhenIllegalArgumentExceptionThrown() {
             when(caseEventRepository.getListOfCasesByEventIdDuringDateRange(
-                RESPONDENT_DOCUMENT_MANAGEMENT, LocalDate.of(2025, 10, 16), LocalDate.now()))
+                RESPONDENT_DOCUMENT_MANAGEMENT, AFFECTED_START_DATE, LocalDate.now()))
                 .thenReturn(List.of(111L, 222L));
 
             lenient().doThrow(new IllegalArgumentException("Deserialisation error"))
@@ -170,12 +189,37 @@ class SystemMigrateInitialCaseDocumentsTaskTest {
         @Test
         void shouldStopAndLogWhenRepositoryThrowsRuntimeException() {
             when(caseEventRepository.getListOfCasesByEventIdDuringDateRange(
-                RESPONDENT_DOCUMENT_MANAGEMENT, LocalDate.of(2025, 10, 16), LocalDate.now()))
+                RESPONDENT_DOCUMENT_MANAGEMENT, AFFECTED_START_DATE, LocalDate.now()))
                 .thenThrow(new CaseEventRepositoryException("DB error", new RuntimeException()));
 
             assertThatNoException().isThrownBy(() -> systemMigrateInitialCaseDocumentsTask.run());
 
             verifyNoInteractions(ccdUpdateService);
+        }
+
+        @Test
+        void shouldSkipAlreadyMigratedCases() {
+            ReflectionTestUtils.setField(systemMigrateInitialCaseDocumentsTask, "skipMigrated", true);
+
+            when(caseEventRepository.getListOfCasesByEventIdDuringDateRange(
+                anyString(), any(LocalDate.class), any(LocalDate.class), any()))
+                .thenReturn(List.of(111L, 222L, 333L));
+
+            systemMigrateInitialCaseDocumentsTask.run();
+
+            verify(caseEventRepository).getListOfCasesByEventIdDuringDateRange(
+                caseEventIdCaptor.capture(),
+                startDateCaptor.capture(),
+                endDateCaptor.capture(),
+                skipEventIdCaptor.capture());
+
+            assertThat(caseEventIdCaptor.getValue()).isEqualTo(RESPONDENT_DOCUMENT_MANAGEMENT);
+            assertThat(startDateCaptor.getValue()).isEqualTo(AFFECTED_START_DATE);
+            assertThat(skipEventIdCaptor.getValue()).isEqualTo(SYSTEM_MIGRATE_INITIAL_CASE_DOCUMENTS);
+
+            verify(ccdUpdateService).submitEvent(111L, SYSTEM_MIGRATE_INITIAL_CASE_DOCUMENTS, user, SERVICE_AUTHORIZATION);
+            verify(ccdUpdateService).submitEvent(222L, SYSTEM_MIGRATE_INITIAL_CASE_DOCUMENTS, user, SERVICE_AUTHORIZATION);
+            verify(ccdUpdateService).submitEvent(333L, SYSTEM_MIGRATE_INITIAL_CASE_DOCUMENTS, user, SERVICE_AUTHORIZATION);
         }
     }
 }

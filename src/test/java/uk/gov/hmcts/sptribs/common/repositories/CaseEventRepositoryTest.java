@@ -152,17 +152,14 @@ class CaseEventRepositoryTest {
 
         @Test
         void shouldUseQueryForSkippingEvents_noAdditionalClause() {
-            ArgumentCaptor<String> queryStringCaptor = ArgumentCaptor.captor();
-            ArgumentCaptor<Map<String, Object>> paramsCaptor = ArgumentCaptor.captor();
-
             when(namedParameterJdbcTemplate.query(
-                    queryStringCaptor.capture(), paramsCaptor.capture(), ArgumentMatchers.<RowMapper<Long>>any()))
-                    .thenReturn(List.of());
+                queryStringCaptor.capture(), paramsCaptor.capture(), ArgumentMatchers.<RowMapper<Long>>any()))
+                .thenReturn(List.of());
 
             caseEventRepository.getListOfCasesByEventIdDuringDateRange(CASE_EVENT_ID, START_DATE, END_DATE);
 
             assertThat(queryStringCaptor.getValue()).isNotNull()
-                    .doesNotContain(SKIP_CASE_IF_EVENT_EXISTS);
+                .doesNotContain(SKIP_CASE_IF_EVENT_EXISTS);
             assertThat(paramsCaptor.getValue()).doesNotContainKey("skipEventId");
         }
 
