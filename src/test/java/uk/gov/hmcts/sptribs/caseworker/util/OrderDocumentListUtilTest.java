@@ -12,6 +12,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.document.model.CICDocument;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,11 +30,11 @@ public class OrderDocumentListUtilTest {
     @Test
     void shouldGenerateOrderDocUpload() {
         //Given
-
         CICDocument document = CICDocument.builder().documentLink(Document.builder().filename("name").build()).build();
         ListValue<CICDocument> cicDocumentListValue = new ListValue<>();
         cicDocumentListValue.setValue(document);
-        Order order = Order.builder().uploadedFile(List.of(cicDocumentListValue)).build();
+        LocalDate orderSentDate = LocalDate.of(2026, 4, 20);
+        Order order = Order.builder().uploadedFile(List.of(cicDocumentListValue)).orderSentDate(orderSentDate).build();
         ListValue<Order> orderListValue = new ListValue<>();
         orderListValue.setValue(order);
         CicCase cicCase = CicCase.builder().orderList(List.of(orderListValue)).build();
@@ -42,15 +43,21 @@ public class OrderDocumentListUtilTest {
         List<CaseworkerCICDocument> result = OrderDocumentListUtil.getOrderDocuments(cicCase);
 
         //Then
-        assertThat(result).isNotNull();
+        assertThat(result).isNotNull()
+            .hasSize(1);
+
+        CaseworkerCICDocument orderDocument = result.getFirst();
+        assertThat(orderDocument.getDocumentLink()).isEqualTo(document.getDocumentLink());
+        assertThat(orderDocument.getDate()).isEqualTo(orderSentDate);
     }
 
     @Test
     void shouldGenerateOrderDocTemp() {
         //Given
-
-        Order order = Order.builder().draftOrder(DraftOrderCIC.builder()
-            .templateGeneratedDocument(Document.builder().filename("name").build()).build()).build();
+        Document document = Document.builder().filename("name").build();
+        DraftOrderCIC draftOrder = DraftOrderCIC.builder().templateGeneratedDocument(document).build();
+        LocalDate orderSentDate = LocalDate.of(2026, 4, 20);
+        Order order = Order.builder().draftOrder(draftOrder).orderSentDate(orderSentDate).build();
         ListValue<Order> orderListValue = new ListValue<>();
         orderListValue.setValue(order);
         CicCase cicCase = CicCase.builder().orderList(List.of(orderListValue)).build();
@@ -59,7 +66,12 @@ public class OrderDocumentListUtilTest {
         List<CaseworkerCICDocument> result = OrderDocumentListUtil.getOrderDocuments(cicCase);
 
         //Then
-        assertThat(result).isNotNull();
+        assertThat(result).isNotNull()
+            .hasSize(1);
+
+        CaseworkerCICDocument orderDocument = result.getFirst();
+        assertThat(orderDocument.getDocumentLink()).isEqualTo(document);
+        assertThat(orderDocument.getDate()).isEqualTo(orderSentDate);
     }
 
     @Test
