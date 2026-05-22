@@ -22,7 +22,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.DecisionTemplate;
 import uk.gov.hmcts.sptribs.ciccase.model.LanguagePreference;
 import uk.gov.hmcts.sptribs.common.config.WebMvcConfig;
-import uk.gov.hmcts.sptribs.common.repositories.DocumentsRepositoryJPA;
+import uk.gov.hmcts.sptribs.common.repositories.DocumentsRepository;
 import uk.gov.hmcts.sptribs.document.CaseDataDocumentService;
 import uk.gov.hmcts.sptribs.document.model.CICDocument;
 import uk.gov.hmcts.sptribs.idam.IdamService;
@@ -97,7 +97,7 @@ public class CaseworkerIssueFinalDecisionIT {
     private NotificationServiceCIC notificationServiceCIC;
 
     @MockitoBean
-    private DocumentsRepositoryJPA documentsRepositoryJPA;
+    private DocumentsRepository documentsRepository;
 
     @BeforeAll
     static void setUp() {

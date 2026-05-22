@@ -24,7 +24,7 @@ import uk.gov.hmcts.sptribs.cdam.model.Document;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.common.config.WebMvcConfig;
-import uk.gov.hmcts.sptribs.common.repositories.DocumentsRepositoryJPA;
+import uk.gov.hmcts.sptribs.common.repositories.DocumentsRepository;
 import uk.gov.hmcts.sptribs.idam.IdamService;
 import uk.gov.hmcts.sptribs.notification.NotificationServiceCIC;
 import uk.gov.hmcts.sptribs.services.cdam.CaseDocumentClientApi;
@@ -88,7 +88,7 @@ public class CaseworkerContactPartiesIT {
     private CaseDocumentClientApi caseDocumentClientApi;
 
     @MockitoBean
-    private DocumentsRepositoryJPA documentsRepositoryJPA;
+    private DocumentsRepository documentsRepository;
 
     @MockitoBean
     private IdamService idamService;

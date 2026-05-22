@@ -23,8 +23,8 @@ import uk.gov.hmcts.sptribs.ciccase.model.OrderTemplate;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.ciccase.model.access.Permissions;
-import uk.gov.hmcts.sptribs.common.repositories.DocumentsRepositoryJPA;
-import uk.gov.hmcts.sptribs.document.services.DocumentsService;
+import uk.gov.hmcts.sptribs.common.repositories.DocumentsRepository;
+import uk.gov.hmcts.sptribs.document.service.DocumentsService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -53,9 +53,6 @@ class CaseworkerCreateDraftOrderTest {
 
     @Mock
     private OrderService orderService;
-
-    @Mock
-    private DocumentsRepositoryJPA documentsRepositoryJPA;
 
     @Mock
     private DocumentsService documentsService;

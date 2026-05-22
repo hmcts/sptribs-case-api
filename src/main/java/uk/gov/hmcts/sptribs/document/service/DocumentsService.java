@@ -1,22 +1,21 @@
-package uk.gov.hmcts.sptribs.document.services;
+package uk.gov.hmcts.sptribs.document.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.ccd.sdk.type.Document;
-import uk.gov.hmcts.sptribs.common.repositories.DocumentsRepositoryJPA;
+import uk.gov.hmcts.sptribs.common.repositories.DocumentsRepository;
 import uk.gov.hmcts.sptribs.document.model.DocumentEntity;
 
 @Service
 public class DocumentsService {
 
-    private final DocumentsRepositoryJPA documentsRepositoryJPA;
+    private final DocumentsRepository documentsRepository;
 
     @Autowired
-    public DocumentsService(DocumentsRepositoryJPA documentsRepositoryJPA) {
-        this.documentsRepositoryJPA = documentsRepositoryJPA;
+    public DocumentsService(DocumentsRepository documentsRepository) {
+        this.documentsRepository = documentsRepository;
     }
 
     public void buildAndSaveNewDocumentEntity(Document document, Long caseReferenceNumber, boolean isDraft) {
@@ -45,6 +44,7 @@ public class DocumentsService {
     }
 
     public void getDocumentsOnCase(Long ccdReference) {
+        documentsRepository.findByCaseReferenceNumberOrderBySavedAtDesc(ccdReference);
         //get all docs from db,
         //sort into the 3 different sections
         //return serivce layer object that gets converetd to the documentresponse...

@@ -20,7 +20,7 @@ import uk.gov.hmcts.sptribs.caseworker.model.DocumentManagement;
 import uk.gov.hmcts.sptribs.caseworker.model.YesNo;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.common.config.WebMvcConfig;
-import uk.gov.hmcts.sptribs.common.repositories.DocumentsRepositoryJPA;
+import uk.gov.hmcts.sptribs.common.repositories.DocumentsRepository;
 import uk.gov.hmcts.sptribs.common.service.AuditEventService;
 import uk.gov.hmcts.sptribs.document.bundling.client.BundleResponse;
 import uk.gov.hmcts.sptribs.document.bundling.client.BundlingClient;
@@ -129,7 +129,7 @@ class RespondentDocumentManagementBundleIT {
     private AuthTokenGenerator authTokenGenerator;
 
     @MockitoBean
-    private DocumentsRepositoryJPA documentsRepositoryJPA;
+    private DocumentsRepository documentsRepository;
 
     @BeforeAll
     static void setUp() {

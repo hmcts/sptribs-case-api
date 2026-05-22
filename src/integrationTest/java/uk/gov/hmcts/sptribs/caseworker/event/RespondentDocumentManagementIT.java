@@ -15,7 +15,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.hmcts.sptribs.caseworker.model.DocumentManagement;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.common.config.WebMvcConfig;
-import uk.gov.hmcts.sptribs.common.repositories.DocumentsRepositoryJPA;
+import uk.gov.hmcts.sptribs.common.repositories.DocumentsRepository;
 import uk.gov.hmcts.sptribs.testutil.IdamWireMock;
 
 import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
@@ -52,7 +52,7 @@ public class RespondentDocumentManagementIT {
     private WebMvcConfig webMvcConfig;
 
     @MockitoBean
-    private DocumentsRepositoryJPA documentsRepositoryJPA;
+    private DocumentsRepository documentsRepository;
 
     private static final String CASEWORKER_RESPONDENT_DOCUMENT_MANAGEMENT_ABOUT_TO_SUBMIT_RESPONSE =
         "classpath:responses/caseworker-respondent-document-management-about-to-submit-response.json";

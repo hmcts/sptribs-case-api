@@ -8,9 +8,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DataAccessResourceFailureException;
 import uk.gov.hmcts.ccd.sdk.type.Document;
-import uk.gov.hmcts.sptribs.common.repositories.DocumentsRepositoryJPA;
+import uk.gov.hmcts.sptribs.common.repositories.DocumentsRepository;
 import uk.gov.hmcts.sptribs.document.model.DocumentEntity;
-import uk.gov.hmcts.sptribs.document.services.DocumentsService;
+import uk.gov.hmcts.sptribs.document.service.DocumentsService;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.doThrow;
@@ -25,7 +25,7 @@ public class DocumentsServiceTest {
     private DocumentsService documentsService;
 
     @Mock
-    private DocumentsRepositoryJPA documentsRepositoryJPA;
+    private DocumentsRepository documentsRepository;
 
     private static final DocumentEntity EXPECTED_TEST_DOCUMENT_ENTITY_NON_DRAFT = DocumentEntity.builder()
         .caseReferenceNumber(TEST_CASE_ID)
@@ -76,19 +76,19 @@ public class DocumentsServiceTest {
     public void shouldBuildAndSaveNewNonDraftDocumentEntity() {
         documentsService.buildAndSaveNewDocumentEntity(TEST_DOCUMENT, TEST_CASE_ID, false);
 
-        verify(documentsRepositoryJPA, times(1)).save(EXPECTED_TEST_DOCUMENT_ENTITY_NON_DRAFT);
+        verify(documentsRepository, times(1)).save(EXPECTED_TEST_DOCUMENT_ENTITY_NON_DRAFT);
     }
 
     @Test
     public void shouldBuildAndSaveNewDraftDocumentEntity() {
         documentsService.buildAndSaveNewDocumentEntity(TEST_DOCUMENT, TEST_CASE_ID, true);
 
-        verify(documentsRepositoryJPA, times(1)).save(EXPECTED_TEST_DOCUMENT_ENTITY_DRAFT);
+        verify(documentsRepository, times(1)).save(EXPECTED_TEST_DOCUMENT_ENTITY_DRAFT);
     }
 
     @Test
     public void shouldThrowRuntimeExceptionWhenDataAccessExceptionCaughtInBuildAndSaveNewDraftDocumentEntity() {
-        when(documentsRepositoryJPA.save(EXPECTED_TEST_DOCUMENT_ENTITY_DRAFT))
+        when(documentsRepository.save(EXPECTED_TEST_DOCUMENT_ENTITY_DRAFT))
             .thenThrow(new DataAccessResourceFailureException("DB error"));
 
         assertThatThrownBy(() -> documentsService.buildAndSaveNewDocumentEntity(TEST_DOCUMENT, TEST_CASE_ID, false))
@@ -102,7 +102,7 @@ public class DocumentsServiceTest {
 
         documentsService.setSentToApplicantViaContactPartiesToTrue(TEST_DOCUMENT.getBinaryUrl());
 
-        verify(documentsRepositoryJPA, times(1)).setSentToApplicantViaContactPartiesToTrueByDocumentBinaryUrl(
+        verify(documentsRepository, times(1)).setSentToApplicantViaContactPartiesToTrueByDocumentBinaryUrl(
             EXPECTED_TEST_DOCUMENT_ENTITY_NON_DRAFT_SENT_VIA_CONTACT_PARTIES.getDocumentBinaryUrl()
         );
     }
@@ -110,7 +110,7 @@ public class DocumentsServiceTest {
     @Test
     public void shouldThrowRuntimeExceptionWhenDataAccessExceptionCaughtInSetSentToApplicantViaContactPartiesToTrue() {
         doThrow(new DataAccessResourceFailureException("DB error"))
-            .when(documentsRepositoryJPA).setSentToApplicantViaContactPartiesToTrueByDocumentBinaryUrl(TEST_DOCUMENT.getBinaryUrl());
+            .when(documentsRepository).setSentToApplicantViaContactPartiesToTrueByDocumentBinaryUrl(TEST_DOCUMENT.getBinaryUrl());
 
         assertThatThrownBy(() -> documentsService.setSentToApplicantViaContactPartiesToTrue(TEST_DOCUMENT.getBinaryUrl()))
             .isInstanceOf(RuntimeException.class)
