@@ -241,8 +241,10 @@ class CaseworkerCreateBundleTest {
             caseworkerCreateBundle.submitted(updatedCaseDetails, CaseDetails.<CaseData, State>builder().build());
 
         assertThat(createBundleSubmittedResponse.getConfirmationHeader())
-            .isEqualTo("# Bundle creation notification failed \n## A notification could not be sent to: Respondent, Representative \n"
-                + "## Please resend the notification.");
+            .isEqualTo("""
+                # Bundle creation notification failed\s
+                ## A notification could not be sent to: Respondent, Representative\s
+                ## Please resend the notification.""");
     }
 
 
