@@ -12,6 +12,8 @@ import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.service.CaseDataRestoreService;
 
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_CASEWORKER;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SYSTEM_UPDATE;
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE_DELETE;
 
@@ -30,7 +32,7 @@ public class SystemMigrateInitialCaseDocuments implements CCDConfig<CaseData, St
             .name("System: Migrate initial docs")
             .description("Migrate ")
             .aboutToSubmitCallback(this::aboutToSubmit)
-            .grant(CREATE_READ_UPDATE_DELETE, SYSTEM_UPDATE);
+            .grant(CREATE_READ_UPDATE_DELETE, SYSTEM_UPDATE, ST_CIC_SENIOR_CASEWORKER, SUPER_USER);
     }
 
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(CaseDetails<CaseData, State> caseDetails,

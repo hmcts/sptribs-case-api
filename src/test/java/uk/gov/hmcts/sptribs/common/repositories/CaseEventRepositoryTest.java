@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.ArgumentMatchers;
+import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -91,12 +92,17 @@ class CaseEventRepositoryTest {
 
     @Nested
     class GetListOfCasesByEventIdDuringDateRange {
-
         private static final String SKIP_CASE_IF_EVENT_EXISTS =
             """
             AND cd.id NOT IN
                 (SELECT DISTINCT case_data_id FROM ccd.case_event WHERE event_id = :skipEventId)
             """;
+
+        @Captor
+        private ArgumentCaptor<Map<String, Object>> paramsCaptor;
+
+        @Captor
+        private ArgumentCaptor<String> queryStringCaptor;
 
         @Test
         void shouldReturnListOfCaseReferences() {
@@ -111,8 +117,6 @@ class CaseEventRepositoryTest {
 
         @Test
         void shouldPassEndDatePlusOneDayAsParameter() {
-            ArgumentCaptor<Map<String, Object>> paramsCaptor = ArgumentCaptor.captor();
-
             when(namedParameterJdbcTemplate.query(
                 anyString(), paramsCaptor.capture(), ArgumentMatchers.<RowMapper<Long>>any()))
                 .thenReturn(List.of());
@@ -135,9 +139,6 @@ class CaseEventRepositoryTest {
 
         @Test
         void shouldUseQueryForSkippingEvents_additionalClauseToSkipCases() {
-            ArgumentCaptor<String> queryStringCaptor = ArgumentCaptor.captor();
-            ArgumentCaptor<Map<String, Object>> paramsCaptor = ArgumentCaptor.captor();
-
             when(namedParameterJdbcTemplate.query(
                 queryStringCaptor.capture(), paramsCaptor.capture(), ArgumentMatchers.<RowMapper<Long>>any()))
                 .thenReturn(List.of());
