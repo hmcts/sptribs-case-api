@@ -135,7 +135,8 @@ public class CaseEventRepository {
         }
 
         try {
-            results = namedParameterJdbcTemplate.query(SELECT_LIST_OF_CASE_IDS_BY_EVENT_ID_DURING_DATE_RANGE,
+            results = namedParameterJdbcTemplate.query(
+                query,
                 params,
                 (rs, rowNum) -> rs.getLong(REFERENCE)
             );
