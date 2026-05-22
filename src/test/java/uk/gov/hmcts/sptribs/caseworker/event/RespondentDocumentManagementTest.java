@@ -16,7 +16,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.ciccase.model.access.Permissions;
-import uk.gov.hmcts.sptribs.common.repositories.DocumentsRepository;
+import uk.gov.hmcts.sptribs.common.repositories.DocumentsRepositoryJPA;
 import uk.gov.hmcts.sptribs.common.service.AuditEventService;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
 import uk.gov.hmcts.sptribs.document.persistence.DocumentsService;
@@ -48,7 +48,7 @@ class RespondentDocumentManagementTest {
     private AuditEventService auditEventService;
 
     @Mock
-    private DocumentsRepository documentsRepository;
+    private DocumentsRepositoryJPA documentsRepositoryJPA;
 
     @Mock
     private DocumentsService documentsService;

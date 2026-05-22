@@ -24,7 +24,7 @@ import uk.gov.hmcts.sptribs.cdam.model.Document;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.common.config.WebMvcConfig;
-import uk.gov.hmcts.sptribs.common.repositories.DocumentsRepository;
+import uk.gov.hmcts.sptribs.common.repositories.DocumentsRepositoryJPA;
 import uk.gov.hmcts.sptribs.document.persistence.DocumentEntity;
 import uk.gov.hmcts.sptribs.idam.IdamService;
 import uk.gov.hmcts.sptribs.notification.NotificationServiceCIC;
@@ -91,7 +91,7 @@ public class CaseworkerContactPartiesIT {
     private CaseDocumentClientApi caseDocumentClientApi;
 
     @MockitoBean
-    private DocumentsRepository documentsRepository;
+    private DocumentsRepositoryJPA documentsRepositoryJPA;
 
     @MockitoBean
     private IdamService idamService;
@@ -147,7 +147,7 @@ public class CaseworkerContactPartiesIT {
         when(caseDocumentClientApi.getDocument(any(), any(), any()))
             .thenReturn(org.springframework.http.ResponseEntity.ok(testDocument));
 
-        when(documentsRepository.findAllByDocumentBinaryUrl(any()))
+        when(documentsRepositoryJPA.findAllByDocumentBinaryUrl(any()))
             .thenReturn(Collections.singletonList(
                 DocumentEntity.builder()
                 .caseReferenceNumber(TEST_CASE_ID)

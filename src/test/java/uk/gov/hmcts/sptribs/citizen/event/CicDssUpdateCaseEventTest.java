@@ -19,7 +19,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.DssMessage;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.ciccase.model.access.Permissions;
-import uk.gov.hmcts.sptribs.common.repositories.DocumentsRepository;
+import uk.gov.hmcts.sptribs.common.repositories.DocumentsRepositoryJPA;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.document.persistence.DocumentsService;
 import uk.gov.hmcts.sptribs.idam.IdamService;
@@ -62,7 +62,7 @@ class CicDssUpdateCaseEventTest {
     private IdamService idamService;
 
     @Mock
-    private DocumentsRepository documentsRepository;
+    private DocumentsRepositoryJPA documentsRepositoryJPA;
 
     @Mock
     private DocumentsService documentsService;

@@ -5,7 +5,9 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.Resource;
@@ -17,6 +19,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import uk.gov.hmcts.sptribs.controllers.model.DocumentResponse;
 import uk.gov.hmcts.sptribs.document.DocumentDownloadService;
 import uk.gov.hmcts.sptribs.document.model.DownloadedDocumentResponse;
 
@@ -28,6 +31,33 @@ import uk.gov.hmcts.sptribs.document.model.DownloadedDocumentResponse;
 public class DocumentController {
 
     private final DocumentDownloadService documentDownloadService;
+
+    @GetMapping(value = "/getDocumnets/{ccdReference}")
+    @Operation(summary = "Get Documents for a CCD reference")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Documents retrieved successfully")
+//        @ApiResponse(responseCode = "400", description = "Invalid document ID"),
+//        @ApiResponse(responseCode = "404", description = "Document not found"),
+//        @ApiResponse(responseCode = "500", description = "Internal server error")
+    })
+    public ResponseEntity<DocumentResponse> getDocumentsByCCDReference(
+        @RequestHeader(HttpHeaders.AUTHORIZATION)
+        @Parameter(description = "Authorization token", required = true)
+        String authorisation,
+        @PathVariable
+        @NotBlank(message = "CCD reference cannot be blank")
+        @Pattern(regexp = "^\\d{16}$", message = "CCD reference must be 16 digits long")
+        @Parameter(
+            description = "The CCD reference number. ",
+            required = true,
+            example = "1740138704453399"
+        )
+        String ccdReference) {
+
+        //log.info("Received request to download document with id: {}", documentId);
+
+        return null;
+    }
 
     @GetMapping(value = "/downloadDocument/{documentId}")
     @Operation(summary = "Download a document by its ID")

@@ -8,7 +8,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DataAccessResourceFailureException;
 import uk.gov.hmcts.ccd.sdk.type.Document;
-import uk.gov.hmcts.sptribs.common.repositories.DocumentsRepository;
+import uk.gov.hmcts.sptribs.common.repositories.DocumentsRepositoryJPA;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.times;
@@ -22,7 +22,7 @@ public class DocumentsServiceTest {
     private DocumentsService documentsService;
 
     @Mock
-    private DocumentsRepository documentsRepository;
+    private DocumentsRepositoryJPA documentsRepositoryJPA;
 
     private static final DocumentEntity EXPECTED_TEST_DOCUMENT_ENTITY_NON_DRAFT = DocumentEntity.builder()
         .caseReferenceNumber(TEST_CASE_ID)
@@ -73,35 +73,35 @@ public class DocumentsServiceTest {
     public void shouldBuildAndSaveNewNonDraftDocumentEntity() {
         documentsService.buildAndSaveNewDocumentEntity(TEST_DOCUMENT, TEST_CASE_ID, false);
 
-        verify(documentsRepository, times(1))
+        verify(documentsRepositoryJPA, times(1))
             .findAllByDocumentBinaryUrl(EXPECTED_TEST_DOCUMENT_ENTITY_NON_DRAFT.getDocumentBinaryUrl());
-        verify(documentsRepository, times(1)).save(EXPECTED_TEST_DOCUMENT_ENTITY_NON_DRAFT);
+        verify(documentsRepositoryJPA, times(1)).save(EXPECTED_TEST_DOCUMENT_ENTITY_NON_DRAFT);
     }
 
     @Test
     public void shouldBuildAndSaveNewDraftDocumentEntity() {
         documentsService.buildAndSaveNewDocumentEntity(TEST_DOCUMENT, TEST_CASE_ID, true);
 
-        verify(documentsRepository, times(1))
+        verify(documentsRepositoryJPA, times(1))
             .findAllByDocumentBinaryUrl(EXPECTED_TEST_DOCUMENT_ENTITY_NON_DRAFT.getDocumentBinaryUrl());
-        verify(documentsRepository, times(1)).save(EXPECTED_TEST_DOCUMENT_ENTITY_DRAFT);
+        verify(documentsRepositoryJPA, times(1)).save(EXPECTED_TEST_DOCUMENT_ENTITY_DRAFT);
     }
 
     @Test
     public void shouldNotBuildAndSaveDuplicateDocumentEntity() {
-        when(documentsRepository.findAllByDocumentBinaryUrl(TEST_DOCUMENT.getBinaryUrl()))
+        when(documentsRepositoryJPA.findAllByDocumentBinaryUrl(TEST_DOCUMENT.getBinaryUrl()))
             .thenReturn(java.util.List.of(EXPECTED_TEST_DOCUMENT_ENTITY_NON_DRAFT));
 
         documentsService.buildAndSaveNewDocumentEntity(TEST_DOCUMENT, TEST_CASE_ID, false);
 
-        verify(documentsRepository, times(1))
+        verify(documentsRepositoryJPA, times(1))
             .findAllByDocumentBinaryUrl(EXPECTED_TEST_DOCUMENT_ENTITY_NON_DRAFT.getDocumentBinaryUrl());
-        verify(documentsRepository, times(0)).save(EXPECTED_TEST_DOCUMENT_ENTITY_NON_DRAFT);
+        verify(documentsRepositoryJPA, times(0)).save(EXPECTED_TEST_DOCUMENT_ENTITY_NON_DRAFT);
     }
 
     @Test
     public void shouldThrowRuntimeExceptionWhenDataAccessExceptionCaughtInBuildAndSaveNewDraftDocumentEntity() {
-        when(documentsRepository.findAllByDocumentBinaryUrl(TEST_DOCUMENT.getBinaryUrl()))
+        when(documentsRepositoryJPA.findAllByDocumentBinaryUrl(TEST_DOCUMENT.getBinaryUrl()))
             .thenThrow(new DataAccessResourceFailureException("DB error"));
 
         assertThatThrownBy(() -> documentsService.buildAndSaveNewDocumentEntity(TEST_DOCUMENT, TEST_CASE_ID, false))
@@ -112,19 +112,19 @@ public class DocumentsServiceTest {
 
     @Test
     public void shouldSetSentToApplicantViaContactPartiesToTrue() {
-        when(documentsRepository.findAllByDocumentBinaryUrl(TEST_DOCUMENT.getBinaryUrl()))
+        when(documentsRepositoryJPA.findAllByDocumentBinaryUrl(TEST_DOCUMENT.getBinaryUrl()))
             .thenReturn(java.util.List.of(EXPECTED_TEST_DOCUMENT_ENTITY_NON_DRAFT_SENT_VIA_CONTACT_PARTIES));
 
         documentsService.setSentToApplicantViaContactPartiesToTrue(TEST_DOCUMENT.getBinaryUrl());
 
-        verify(documentsRepository, times(1))
+        verify(documentsRepositoryJPA, times(1))
             .findAllByDocumentBinaryUrl(TEST_DOCUMENT.getBinaryUrl());
-        verify(documentsRepository, times(1)).save(EXPECTED_TEST_DOCUMENT_ENTITY_NON_DRAFT_SENT_VIA_CONTACT_PARTIES);
+        verify(documentsRepositoryJPA, times(1)).save(EXPECTED_TEST_DOCUMENT_ENTITY_NON_DRAFT_SENT_VIA_CONTACT_PARTIES);
     }
 
     @Test
     public void shouldThrowRuntimeExceptionWhenDataAccessExceptionCaughtInSetSentToApplicantViaContactPartiesToTrue() {
-        when(documentsRepository.findAllByDocumentBinaryUrl(TEST_DOCUMENT.getBinaryUrl()))
+        when(documentsRepositoryJPA.findAllByDocumentBinaryUrl(TEST_DOCUMENT.getBinaryUrl()))
             .thenThrow(new DataAccessResourceFailureException("DB error"));
 
         assertThatThrownBy(() -> documentsService.setSentToApplicantViaContactPartiesToTrue(TEST_DOCUMENT.getBinaryUrl()))

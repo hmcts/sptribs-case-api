@@ -2,26 +2,25 @@ package uk.gov.hmcts.sptribs.document.persistence;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.ccd.sdk.type.Document;
-import uk.gov.hmcts.sptribs.common.repositories.DocumentsRepository;
+import uk.gov.hmcts.sptribs.common.repositories.DocumentsRepositoryJPA;
 
 @Service
 public class DocumentsService {
 
-    private final DocumentsRepository documentsRepository;
+    private final DocumentsRepositoryJPA documentsRepositoryJPA;
 
     @Autowired
-    public DocumentsService(DocumentsRepository documentsRepository) {
-        this.documentsRepository = documentsRepository;
+    public DocumentsService(DocumentsRepositoryJPA documentsRepositoryJPA) {
+        this.documentsRepositoryJPA = documentsRepositoryJPA;
     }
 
-    @Transactional
     public void buildAndSaveNewDocumentEntity(Document document, Long caseReferenceNumber, boolean isDraft) {
         try {
-            if (documentsRepository.findAllByDocumentBinaryUrl(document.getBinaryUrl()).isEmpty()) {
-                documentsRepository.save(DocumentEntity.builder()
+                documentsRepositoryJPA.save(DocumentEntity.builder()
                     .caseReferenceNumber(caseReferenceNumber)
                     .documentUrl(document.getUrl())
                     .documentFilename(document.getFilename())
@@ -30,8 +29,7 @@ public class DocumentsService {
                     .isDraft(isDraft)
                     .sentToApplicantViaContactParties(false)
                     .build());
-            }
-        } catch (DataAccessException e) {
+        } catch (DataIntegrityViolationException e) {
             throw new RuntimeException("Error saving document entity to database", e);
         }
     }
@@ -39,11 +37,30 @@ public class DocumentsService {
     @Transactional
     public void setSentToApplicantViaContactPartiesToTrue(String documentBinaryUrl) {
         try {
-            DocumentEntity documentEntity = documentsRepository.findAllByDocumentBinaryUrl(documentBinaryUrl).getFirst();
+            DocumentEntity documentEntity = documentsRepositoryJPA.findAllByDocumentBinaryUrl(documentBinaryUrl).getFirst();
             documentEntity.setSentToApplicantViaContactParties(true);
-            documentsRepository.save(documentEntity);
+            documentsRepositoryJPA.save(documentEntity);
         } catch (DataAccessException e) {
             throw new RuntimeException("Error saving document entity to database", e);
         }
+    }
+
+    public void getDocumentsOnCase(Long ccdReference) {
+        //get all docs from db,
+        //sort into the 3 different sections
+        //return serivce layer object that gets converetd to the documentresponse...
+
+
+        //so we need three parts:
+        //
+        // docs sent to applicant via contact parties !!! use the db column
+        // we have draft column to exclude draft docs from some events
+        //
+        //
+        //
+        //How to get lastest case bundles????
+        //
+        // order and decisions????
+        //
     }
 }

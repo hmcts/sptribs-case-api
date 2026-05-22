@@ -25,7 +25,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.SubjectCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.ciccase.model.access.Permissions;
-import uk.gov.hmcts.sptribs.common.repositories.DocumentsRepository;
+import uk.gov.hmcts.sptribs.common.repositories.DocumentsRepositoryJPA;
 import uk.gov.hmcts.sptribs.document.CaseDataDocumentService;
 import uk.gov.hmcts.sptribs.document.DocumentConstants;
 import uk.gov.hmcts.sptribs.document.content.DocmosisTemplateConstants;
@@ -67,7 +67,7 @@ class CaseworkerIssueFinalDecisionTest {
     private CaseFinalDecisionIssuedNotification caseFinalDecisionIssuedNotification;
 
     @Mock
-    private DocumentsRepository documentsRepository;
+    private DocumentsRepositoryJPA documentsRepositoryJPA;
 
     @Mock
     private DocumentsService documentsService;
