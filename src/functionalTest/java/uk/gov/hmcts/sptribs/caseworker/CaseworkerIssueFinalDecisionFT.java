@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import uk.gov.hmcts.sptribs.testutil.FunctionalTestSuite;
 
+import java.time.LocalDate;
 import java.util.Map;
 
 import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
@@ -36,6 +37,7 @@ public class CaseworkerIssueFinalDecisionFT extends FunctionalTestSuite {
     private static final String RESPONSE_MID_EVENT = "classpath:responses/response-caseworker-issue-final-decision-mid-event.json";
 
     private static final String DECISION_SIGNATURE = "$.data.decisionSignature";
+    private static final String DECISION_DATE = "$.data.caseIssueFinalDecisionFinalDecisionDate";
     private static final String STATE = "$.state";
     private static final String CONFIRMATION_HEADER = "$.confirmation_header";
 
@@ -102,6 +104,18 @@ public class CaseworkerIssueFinalDecisionFT extends FunctionalTestSuite {
             .isNotNull();
         assertThat(caseDocumentsFTDataManager.getDocumentEntities(testCaseRef).getFirst().getDocumentBinaryUrl())
             .isNotNull();
+    }
+
+    @Test
+    public void shouldAddDateWhenAboutToSubmitEventCallbackIsInvoked() throws Exception {
+        final Map<String, Object> caseData = caseData(CALLBACK_REQUEST);
+        final Response response = triggerCallback(caseData, CASEWORKER_ISSUE_FINAL_DECISION, ABOUT_TO_SUBMIT_URL);
+
+        assertThat(response.getStatusCode()).isEqualTo(OK.value());
+        assertThatJson(response.asString())
+                .inPath(DECISION_DATE)
+                .isString()
+                .isEqualTo(LocalDate.now().toString());
     }
 
     @Test
