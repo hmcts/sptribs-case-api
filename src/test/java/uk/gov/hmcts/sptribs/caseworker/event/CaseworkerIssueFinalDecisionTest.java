@@ -99,7 +99,8 @@ class CaseworkerIssueFinalDecisionTest {
             httpServletRequest,
             caseDataDocumentService,
             caseFinalDecisionIssuedNotification,
-            fixedClock
+            fixedClock,
+            documentsService
         );
     }
 
