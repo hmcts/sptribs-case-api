@@ -359,4 +359,45 @@ class CicDssUpdateCaseEventTest {
         assertThat(response.getConfirmationHeader())
             .contains("# CIC Dss Update Case Event Email notification failed %n## Please resend the notification");
     }
+
+    @Test
+    void shouldStoreErrorsWhenBuildAndSaveNewDocumentEntityThrowsRuntimeException() {
+        final CaseworkerCICDocument caseworkerCICDocument =
+            CaseworkerCICDocument.builder()
+                .documentLink(Document.builder().build())
+                .documentCategory(DSS_TRIBUNAL_FORM)
+                .build();
+        final List<ListValue<CaseworkerCICDocument>> applicantDocumentsUploaded = new ArrayList<>();
+        applicantDocumentsUploaded.add(new ListValue<>("3", caseworkerCICDocument));
+
+        final CaseData caseData = CaseData.builder()
+            .cicCase(
+                CicCase.builder()
+                    .applicantDocumentsUploaded(applicantDocumentsUploaded)
+                    .build()
+            )
+            .dssCaseData(getDssCaseData())
+            .build();
+
+        final CaseDetails<CaseData, State> details = new CaseDetails<>();
+        caseData.setHyphenatedCaseRef(TEST_CASE_ID_HYPHENATED);
+        details.setData(caseData);
+
+        when(request.getHeader(AUTHORIZATION)).thenReturn(TEST_AUTHORIZATION_TOKEN);
+        when(idamService.retrieveUser(TEST_AUTHORIZATION_TOKEN)).thenReturn(TestDataHelper.getUser());
+
+        doThrow(new RuntimeException("Error saving document entity to database"))
+            .when(documentsService).buildAndSaveNewDocumentEntity(any(), eq(TEST_CASE_ID), eq(false));
+
+        AboutToStartOrSubmitResponse<CaseData, State> response =
+            cicDssUpdateCaseEvent.aboutToSubmit(details, details);
+
+        assertThat(response.getErrors()).hasSize(2);
+        assertThat(response.getErrors()).contains("Error saving document entity to database");
+
+        verify(documentsService, times(2)).buildAndSaveNewDocumentEntity(
+            any(), eq(TEST_CASE_ID), eq(false)
+        );
+    }
+
 }

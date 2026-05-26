@@ -126,13 +126,15 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
             Charset.defaultCharset()
         );
         final CaseData caseData = objectMapper.readValue(json, CaseData.class);
-        uploadTestDocumentAndUpdateCaseData(caseData, details.getId());
+        List<String> errors = new ArrayList<>();
+        uploadTestDocumentAndUpdateCaseData(caseData, details.getId(), errors);
         caseData.setHyphenatedCaseRef(caseData.formatCaseRef(details.getId()));
         setDefaultCaseDetails(caseData);
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
             .state(details.getData().getCaseStatus())
+            .errors(errors)
             .build();
     }
 
@@ -182,7 +184,7 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
         );
     }
 
-    private void uploadTestDocumentAndUpdateCaseData(CaseData caseData, Long caseNumber) {
+    private void uploadTestDocumentAndUpdateCaseData(CaseData caseData, Long caseNumber, List<String> errors) {
         final UploadResponse uploadResponse = uploadApplicantDocument();
 
         if (uploadResponse != null) {
@@ -197,11 +199,15 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
             caseData.getCicCase().setApplicantDocumentsUploaded(List.of(testDocumentListValue));
 
             for (ListValue<CaseworkerCICDocument> document : List.of(testDocumentListValue)) {
-                documentsService.buildAndSaveNewDocumentEntity(
-                    document.getValue().getDocumentLink(),
-                    caseNumber,
-                    false
-                );
+                try {
+                    documentsService.buildAndSaveNewDocumentEntity(
+                        document.getValue().getDocumentLink(),
+                        caseNumber,
+                        false
+                    );
+                } catch (RuntimeException e) {
+                    errors.add(e.getMessage());
+                }
             }
         }
 

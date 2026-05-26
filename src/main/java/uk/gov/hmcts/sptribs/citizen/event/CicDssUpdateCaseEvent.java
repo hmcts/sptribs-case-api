@@ -104,15 +104,18 @@ public class CicDssUpdateCaseEvent implements CCDConfig<CaseData, State, UserRol
 
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(CaseDetails<CaseData, State> details,
                                                                        CaseDetails<CaseData, State> beforeDetails) {
+        final List<String> errors = new ArrayList<>();
 
-        final CaseData caseData = addDocumentsToCaseData(details.getData(), details.getData().getDssCaseData());
+        final CaseData caseData = addDocumentsToCaseData(details.getData(), details.getData().getDssCaseData(), errors);
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
-            .data(caseData)
-            .build();
+                .data(caseData)
+                .errors(errors)
+                .build();
     }
 
-    private CaseData addDocumentsToCaseData(final CaseData caseData, final DssCaseData dssCaseData) {
+    private CaseData addDocumentsToCaseData(final CaseData caseData, final DssCaseData dssCaseData, List<String> errors)
+        throws RuntimeException {
         final List<CaseworkerCICDocument> documentList = new ArrayList<>();
         final List<ListValue<DssMessage>> messagesList = new ArrayList<>();
 
@@ -166,11 +169,15 @@ public class CicDssUpdateCaseEvent implements CCDConfig<CaseData, State, UserRol
         caseData.getCicCase().setApplicantDocumentsUploaded(applicantDocumentsUploaded);
 
         for (ListValue<CaseworkerCICDocument> document : documentListUpdated) {
-            documentsService.buildAndSaveNewDocumentEntity(
-                document.getValue().getDocumentLink(),
-                Long.parseLong(caseData.getHyphenatedCaseRef().replace("-", "")),
-                false
-            );
+            try {
+                documentsService.buildAndSaveNewDocumentEntity(
+                    document.getValue().getDocumentLink(),
+                    Long.parseLong(caseData.getHyphenatedCaseRef().replace("-", "")),
+                    false
+                );
+            } catch (RuntimeException e) {
+                errors.add(e.getMessage());
+            }
         }
         dssCaseData.setOtherInfoDocuments(new ArrayList<>());
         dssCaseData.setAdditionalInformation(null);
