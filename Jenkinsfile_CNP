@@ -60,6 +60,8 @@ def secrets = [
                 secret('citizen-password', 'IDAM_CITIZEN_PASSWORD'),
                 secret('sptribs-postgres-username-preview', 'SPTRIBS_POSTGRES_USERNAME_PREVIEW'),
                 secret('sptribs-postgres-password-preview', 'SPTRIBS_POSTGRES_PASSWORD_PREVIEW'),
+                secret('sptribs-POSTGRES-USER','POSTGRES_USERNAME_AAT'),
+                secret('sptribs-POSTGRES-PASS','POSTGRES_PASSWORD_AAT'),
                 secret('ccd-global-postgres-username-preview', 'CCD_GLOBAL_POSTGRES_USERNAME_PREVIEW'),
                 secret('ccd-global-postgres-password-preview', 'CCD_GLOBAL_POSTGRES_PASSWORD_PREVIEW'),
                 secret('ccd-data-store-db-username-preview', 'CCD_DATA_STORE_DB_USERNAME_PREVIEW'),
@@ -233,6 +235,9 @@ withPipeline(type, product, component) {
     env.TASK_MONITOR_API_URL = "https://wa-task-monitor-sptribs-case-api-pr-${CHANGE_ID}.preview.platform.hmcts.net"
     env.TASK_MANAGEMENT_API_URL = "https://wa-task-management-api-sptribs-case-api-pr-${CHANGE_ID}.preview.platform.hmcts.net"
     env.ROLE_ASSIGNMENT_API_URL = "https://am-org-role-mapping-service-sptribs-case-api-pr-${CHANGE_ID}.preview.platform.hmcts.net"
+    env.FT_POSTGRES_HOST = "sptribs-preview.postgres.database.azure.com"
+    env.FT_POSTGRES_PORT = "5432"
+    env.FT_POSTGRES_NAME = "pr-${CHANGE_ID}-sptribs-case-api"
 
     def waPRLabels = githubApi.getLabelsbyPattern(env.BRANCH_NAME, "pr-values:wa")
     if (waPRLabels.contains("pr-values:wa-ft-tests")) {
@@ -252,6 +257,8 @@ withPipeline(type, product, component) {
     env.SERVICE_AUTH_MICROSERVICE = "sptribs_case_api"
     env.SERVICE_AUTH_PROVIDER_URL = "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
     env.CAMUNDA_BASE_URL = "http://camunda-api-aat.service.core-compute-aat.internal"
+    env.FT_POSTGRES_HOST = "sptribs-aat-flexible-db-v15-aat.postgres.database.azure.com"
+    env.FT_POSTGRES_PORT = "5432"
     setCommonEnvVariables()
 
     enablePactAs([AppPipelineDsl.PactRoles.CONSUMER])
@@ -325,6 +332,14 @@ withPipeline(type, product, component) {
     uploadDmnDiagrams()
     uploadBpmnDiagram()
   }
+
+  before('functionalTest:aat') {
+    configureFtDatabase()
+  }
+
+  before('functionalTest:preview') {
+    configureFtDatabase()
+  }
 }
 
 def setCommonEnvVariables() {
@@ -332,6 +347,18 @@ def setCommonEnvVariables() {
     env.S2S_URL_BASE = "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
     env.FEE_API_URL = "http://fees-register-api-aat.service.core-compute-aat.internal"
     env.BEFTA_S2S_CLIENT_ID = "ccd_data"
+}
+
+def configureFtDatabase() {
+  if (env.ENVIRONMENT == 'preview') {
+    env.FT_POSTGRES_USERNAME = env.SPTRIBS_POSTGRES_USERNAME_PREVIEW
+    env.FT_POSTGRES_PASSWORD = env.SPTRIBS_POSTGRES_PASSWORD_PREVIEW
+  } else {
+    env.FT_POSTGRES_USERNAME = env.POSTGRES_USERNAME_AAT
+    env.FT_POSTGRES_PASSWORD = env.POSTGRES_PASSWORD_AAT
+  }
+
+  echo "Using FT DB user env for ${env.ENVIRONMENT}"
 }
 
 def generateDefinitions() {
