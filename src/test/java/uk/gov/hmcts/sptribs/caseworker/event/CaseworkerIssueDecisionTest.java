@@ -89,7 +89,8 @@ class CaseworkerIssueDecisionTest {
         issueDecision = new CaseworkerIssueDecision(
             issueDecisionFooter,
             decisionIssuedNotification,
-            fixedClock
+            fixedClock,
+            documentsService
         );
     }
 

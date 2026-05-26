@@ -2,7 +2,6 @@ package uk.gov.hmcts.sptribs.caseworker.event;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
@@ -61,9 +60,7 @@ public class CaseworkerIssueDecision implements CCDConfig<CaseData, State, UserR
     private final CcdPageConfiguration issueDecisionFooter;
     private final DecisionIssuedNotification decisionIssuedNotification;
     private final Clock clock;
-
-    @Autowired
-    private DocumentsService documentsService;
+    private final DocumentsService documentsService;
 
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
