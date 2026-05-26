@@ -28,6 +28,9 @@ import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.common.event.page.PartiesToContact;
 import uk.gov.hmcts.sptribs.notification.dispatcher.ContactPartiesNotification;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import static java.lang.String.format;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_CONTACT_PARTIES;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
@@ -124,16 +127,20 @@ public class CaseworkerContactParties implements CCDConfig<CaseData, State, User
 
         StringBuilder sentDocListBuilder = new StringBuilder();
 
-        caseData.getContactPartiesDocuments().getDocumentList().getListItems()
+        sentDocListBuilder.append("| ");
+
+        caseData.getContactPartiesDocuments().getDocumentList().getValue()
             .forEach(doc -> {
-                sentDocListBuilder.append(doc.getLabel()).append("\n");
+                sentDocListBuilder.append(extractDocNameAndCategory(doc.getLabel())).append(" | ");
             });
+
+        int numberOfSentDocs = caseData.getContactPartiesDocuments().getDocumentList().getValue().size();
 
         String sentDocList = sentDocListBuilder.toString();
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
-            .eventMetadata(EventMetadata.builder().summary("Selected documents added").description(sentDocList).build())
+            .eventMetadata(EventMetadata.builder().summary(numberOfSentDocs +  " Selected documents sent").description(sentDocList).build())
             .build();
     }
 
@@ -172,5 +179,16 @@ public class CaseworkerContactParties implements CCDConfig<CaseData, State, User
         if (!CollectionUtils.isEmpty(cicCase.getNotifyPartyRespondent())) {
             contactPartiesNotification.sendToRespondent(details.getData(), caseNumber);
         }
+    }
+
+    private String extractDocNameAndCategory(String label) {
+
+        Pattern pattern = Pattern.compile("\\[([^]]+)]");
+        Matcher matcher = pattern.matcher(label);
+
+        if (matcher.find()) {
+            return matcher.group(1).trim();
+        }
+        return label;
     }
 }
