@@ -77,7 +77,7 @@ public class CaseworkerCreateBundle implements CCDConfig<CaseData, State, UserRo
     private final Clock clock;
 
     @Autowired
-    private BundleCreatedNotification bundleCreatedNotification;
+    private final BundleCreatedNotification bundleCreatedNotification;
 
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
