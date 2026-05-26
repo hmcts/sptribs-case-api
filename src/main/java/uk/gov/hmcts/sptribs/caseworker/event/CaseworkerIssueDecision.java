@@ -61,9 +61,7 @@ public class CaseworkerIssueDecision implements CCDConfig<CaseData, State, UserR
     private final CcdPageConfiguration issueDecisionFooter;
     private final DecisionIssuedNotification decisionIssuedNotification;
     private final Clock clock;
-
-    @Autowired
-    private DocumentsService documentsService;
+    private final DocumentsService documentsService;
 
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {

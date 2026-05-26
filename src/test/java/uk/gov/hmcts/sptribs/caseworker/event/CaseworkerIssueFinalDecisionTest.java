@@ -28,7 +28,6 @@ import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.SubjectCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.ciccase.model.access.Permissions;
-import uk.gov.hmcts.sptribs.common.repositories.DocumentsRepository;
 import uk.gov.hmcts.sptribs.document.CaseDataDocumentService;
 import uk.gov.hmcts.sptribs.document.DocumentConstants;
 import uk.gov.hmcts.sptribs.document.content.DocmosisTemplateConstants;
@@ -45,6 +44,7 @@ import java.util.Set;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -100,7 +100,8 @@ class CaseworkerIssueFinalDecisionTest {
             httpServletRequest,
             caseDataDocumentService,
             caseFinalDecisionIssuedNotification,
-            fixedClock
+            fixedClock,
+            documentsService
         );
     }
 
@@ -219,5 +220,52 @@ class CaseworkerIssueFinalDecisionTest {
         //Then
         assertThat(response).isNotNull();
         assertThat(response.getData().getDecisionSignature()).isEmpty();
+    }
+
+    @Test
+    void shouldStoreErrorsWhenBuildAndSaveNewDocumentEntityThrowsRuntimeException() {
+        final CaseDetails<CaseData, State> details = new CaseDetails<>();
+        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        final CaseData caseData = caseData();
+        final CaseIssueFinalDecision caseIssueFinalDecision = new CaseIssueFinalDecision();
+        final CICDocument document = CICDocument.builder()
+            .documentLink(Document.builder().binaryUrl("url").url("url").filename("file.txt").build())
+            .documentEmailContent("content")
+            .build();
+        caseIssueFinalDecision.setDocument(document);
+        caseData.setCaseIssueFinalDecision(caseIssueFinalDecision);
+        caseData.setHyphenatedCaseRef(TEST_CASE_ID_HYPHENATED);
+        details.setData(caseData);
+
+        doThrow(new RuntimeException("Error saving document entity to database"))
+            .when(documentsService).buildAndSaveNewDocumentEntity(any(), eq(TEST_CASE_ID), eq(false));
+
+        AboutToStartOrSubmitResponse<CaseData, State> response = issueFinalDecision.aboutToSubmit(details, beforeDetails);
+
+        assertThat(response.getErrors()).hasSize(1);
+        assertThat(response.getErrors()).contains("Error saving document entity to database");
+
+        verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
+            any(), eq(TEST_CASE_ID), eq(false)
+        );
+    }
+
+    @Test
+    void shouldNotSaveDecisionDocumentToDBWhenFinalDecisionDocumentIsNull() {
+        final CaseDetails<CaseData, State> details = new CaseDetails<>();
+        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        final CaseData caseData = caseData();
+        final CaseIssueFinalDecision caseIssueFinalDecision = new CaseIssueFinalDecision();
+        caseData.setCaseIssueFinalDecision(caseIssueFinalDecision);
+        caseData.setHyphenatedCaseRef(TEST_CASE_ID_HYPHENATED);
+        details.setData(caseData);
+
+        issueFinalDecision.aboutToSubmit(details, beforeDetails);
+
+        verifyNoInteractions(documentsService);
+
+        issueFinalDecision.aboutToSubmit(details, beforeDetails);
+
+        verifyNoInteractions(documentsService);
     }
 }

@@ -29,7 +29,6 @@ import uk.gov.hmcts.sptribs.ciccase.model.OrderTemplate;
 import uk.gov.hmcts.sptribs.ciccase.model.PartiesCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
-import uk.gov.hmcts.sptribs.common.repositories.DocumentsRepository;
 import uk.gov.hmcts.sptribs.document.model.CICDocument;
 import uk.gov.hmcts.sptribs.document.service.DocumentsService;
 import uk.gov.hmcts.sptribs.notification.dispatcher.NewOrderIssuedNotification;
@@ -83,9 +82,6 @@ class CaseworkerCreateAndSendOrderTest {
 
     @Mock
     private NewOrderIssuedNotification newOrderIssuedNotification;
-
-    @Mock
-    private DocumentsRepository documentsRepository;
 
     @Mock
     private DocumentsService documentsService;
@@ -625,6 +621,85 @@ class CaseworkerCreateAndSendOrderTest {
         verify(newOrderIssuedNotification, times(1)).sendToRepresentative(any(CaseData.class), anyString());
         verify(newOrderIssuedNotification, times(1)).sendToRespondent(any(CaseData.class), anyString());
         verify(newOrderIssuedNotification, times(1)).sendToApplicant(any(CaseData.class), anyString());
+    }
+
+    @Test
+    void shouldStoreErrorsWhenBuildAndSaveNewDocumentEntityThrowsRuntimeExceptionForNewOrder() {
+        DraftOrderContentCIC draftOrderContentCIC = DraftOrderContentCIC.builder()
+            .orderTemplate(OrderTemplate.CIC3_RULE_27)
+            .mainContent("Main order content sample")
+            .orderSignature("Supreme Judge Fudge")
+            .build();
+
+        Document document = Document.builder()
+            .categoryId("TD")
+            .filename("Order--[AAC]--09-05-2024 09:04:04.pdf")
+            .binaryUrl("url/documents/uuid/binary")
+            .url("url/documents/uuid")
+            .build();
+
+        final CaseData caseData = CaseData.builder()
+            .draftOrderContentCIC(draftOrderContentCIC)
+            .orderDueDates(List.of(ListValue.<DateModel>builder().value(dateModel).build()))
+            .cicCase(getCicCase(CREATE_AND_SEND_NEW_ORDER, YesOrNo.YES, "AAC", document))
+            .build();
+
+        caseData.setDraftOrderContentCIC(draftOrderContentCIC);
+
+        final CaseDetails<CaseData, State> details = new CaseDetails<>();
+        caseData.setHyphenatedCaseRef(TEST_CASE_ID_HYPHENATED);
+        details.setData(caseData);
+
+        doThrow(new RuntimeException("Error saving document entity to database"))
+            .when(documentsService).buildAndSaveNewDocumentEntity(any(), eq(TEST_CASE_ID), eq(false));
+
+        final var newOrderResponse = caseworkerCreateAndSendOrder.aboutToSubmit(details, caseDetailsBefore());
+
+        assertThat(newOrderResponse.getErrors()).hasSize(1);
+        assertThat(newOrderResponse.getErrors()).contains("Error saving document entity to database");
+
+        verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
+            any(), eq(TEST_CASE_ID), eq(false)
+        );
+    }
+
+    @Test
+    void shouldStoreErrorsWhenBuildAndSaveNewDocumentEntityThrowsRuntimeExceptionForExistingOrder() {
+        final CaseDetails<CaseData, State> details = new CaseDetails<>();
+
+        Document document = Document.builder()
+            .filename("Order--[Test Name]--09-05-2024 09:04:04.pdf")
+            .binaryUrl("url/documents/uuid/binary")
+            .url("url/documents/uuid")
+            .build();
+
+        CICDocument cicDocument = CICDocument.builder()
+            .documentLink(document)
+            .documentEmailContent("Some test content")
+            .build();
+
+        final CaseData caseData = CaseData.builder().build();
+        CicCase cicCase1 = getCicCase(UPLOAD_A_NEW_ORDER_FROM_YOUR_COMPUTER, YesOrNo.NO, null, null);
+        List<ListValue<CICDocument>> orderFile = List.of(ListValue.<CICDocument>builder().value(cicDocument).build());
+        cicCase1.setOrderFile(orderFile);
+        caseData.setCicCase(cicCase1);
+        caseData.setOrderDueDates(List.of(ListValue.<DateModel>builder().value(dateModel).build()));
+
+        caseData.setHyphenatedCaseRef(TEST_CASE_ID_HYPHENATED);
+        details.setData(caseData);
+
+        doThrow(new RuntimeException("Error saving document entity to database"))
+            .when(documentsService).buildAndSaveNewDocumentEntity(any(), eq(TEST_CASE_ID), eq(false));
+
+        final var response = caseworkerCreateAndSendOrder.aboutToSubmit(details, caseDetailsBefore());
+
+        assertThat(response.getErrors()).hasSize(1);
+        assertThat(response.getErrors()).contains("Error saving document entity to database");
+
+        verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
+            any(), eq(TEST_CASE_ID), eq(false)
+        );
+
     }
 
     private CaseDetails<CaseData, State> caseDetailsBefore() {

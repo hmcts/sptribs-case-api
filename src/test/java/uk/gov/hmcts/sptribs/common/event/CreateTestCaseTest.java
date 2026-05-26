@@ -19,7 +19,6 @@ import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.config.AppsConfig;
-import uk.gov.hmcts.sptribs.common.repositories.DocumentsRepository;
 import uk.gov.hmcts.sptribs.common.service.CcdSupplementaryDataService;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
@@ -33,6 +32,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -67,9 +67,6 @@ public class CreateTestCaseTest {
 
     @Mock
     private CcdSupplementaryDataService ccdSupplementaryDataService;
-
-    @Mock
-    private DocumentsRepository documentsRepository;
 
     @Mock
     private DocumentsService documentsService;
@@ -156,5 +153,66 @@ public class CreateTestCaseTest {
         createTestCase.submitted(caseDetails, caseDetails);
 
         verify(ccdSupplementaryDataService).submitSupplementaryDataToCcd(TEST_CASE_ID.toString());
+    }
+
+    @Test
+    void shouldStoreErrorsWhenBuildAndSaveNewDocumentEntityThrowsRuntimeException() throws JsonProcessingException {
+        final CaseData caseData =
+            CaseData.builder()
+                .caseStatus(CaseManagement)
+                .build();
+        final AppsConfig.AppsDetails appsDetails = new AppsConfig.AppsDetails();
+        appsDetails.setCaseType("CriminalInjuriesCompensation");
+        appsDetails.setJurisdiction("ST_CIC");
+
+        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+        caseDetails.setId(TEST_CASE_ID);
+        caseDetails.setData(caseData);
+
+        final Document expectedCdamUploadedDocument = new Document();
+        final Document.DocumentLink documentLink = new Document.DocumentLink();
+        documentLink.href = "dmstore-url/doc-id";
+        final Document.DocumentLink binaryDocumentLink = new Document.DocumentLink();
+        binaryDocumentLink.href = "dmstore-url/doc-id/binary";
+        final Document.Links links = new Document.Links();
+        links.self = documentLink;
+        links.binary = binaryDocumentLink;
+        expectedCdamUploadedDocument.setLinks(links);
+        expectedCdamUploadedDocument.setOriginalDocumentName("sample_file.pdf");
+
+        final List<Document> expectedDocuments = new ArrayList<>();
+        expectedDocuments.add(expectedCdamUploadedDocument);
+
+        final uk.gov.hmcts.ccd.sdk.type.Document expectedUploadDocument = uk.gov.hmcts.ccd.sdk.type.Document.builder()
+            .url(expectedCdamUploadedDocument.links.self.href)
+            .filename(expectedCdamUploadedDocument.originalDocumentName)
+            .categoryId("A")
+            .binaryUrl(expectedCdamUploadedDocument.links.binary.href)
+            .build();
+
+        final CaseworkerCICDocument expectedCICDocument = CaseworkerCICDocument.builder()
+            .documentLink(expectedUploadDocument)
+            .documentCategory(DocumentType.APPLICATION_FORM)
+            .documentEmailContent("This is a test document uploaded during create case journey")
+            .build();
+
+        UploadResponse expectedResponse = new UploadResponse();
+        expectedResponse.setDocuments(expectedDocuments);
+
+        when(appsConfig.getApps()).thenReturn(List.of(appsDetails));
+        when(mapper.readValue(anyString(), eq(CaseData.class))).thenReturn(caseData());
+        when(caseDocumentClientApi.uploadDocuments(any(), any(), any())).thenReturn(expectedResponse);
+
+        doThrow(new RuntimeException("Error saving document entity to database"))
+            .when(documentsService).buildAndSaveNewDocumentEntity(any(), eq(TEST_CASE_ID), eq(false));
+
+        AboutToStartOrSubmitResponse<CaseData, State> response = createTestCase.aboutToSubmit(caseDetails, caseDetails);
+
+        assertThat(response.getErrors()).hasSize(1);
+        assertThat(response.getErrors()).contains("Error saving document entity to database");
+
+        verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
+            any(), eq(TEST_CASE_ID), eq(false)
+        );
     }
 }

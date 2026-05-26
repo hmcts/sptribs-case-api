@@ -23,7 +23,6 @@ import uk.gov.hmcts.sptribs.ciccase.model.OrderTemplate;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.ciccase.model.access.Permissions;
-import uk.gov.hmcts.sptribs.common.repositories.DocumentsRepository;
 import uk.gov.hmcts.sptribs.document.service.DocumentsService;
 
 import java.util.ArrayList;
@@ -33,6 +32,7 @@ import java.util.UUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.DOUBLE_HYPHEN;
@@ -257,6 +257,36 @@ class CaseworkerCreateDraftOrderTest {
                 .isEqualTo(orderContentCIC);
         assertThat(response.getData().getCicCase().getDraftOrderCICList().get(1).getValue().getDraftOrderContentCIC())
                 .isEqualTo(existingDraftOrderCIC.getDraftOrderContentCIC());
+    }
+
+    @Test
+    void shouldStoreErrorsWhenBuildAndSaveNewDocumentEntityThrowsRuntimeException() {
+        final CicCase cicCase = CicCase.builder()
+            .orderTemplateIssued(Document.builder().filename("a--b--02-02-2002 11:11:11.pdf").build()).build();
+        final CaseData caseData = caseData();
+        caseData.setCicCase(cicCase);
+        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
+        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+
+        caseData.setHyphenatedCaseRef(TEST_CASE_ID_HYPHENATED);
+        updatedCaseDetails.setData(caseData);
+        updatedCaseDetails.setId(TEST_CASE_ID);
+        updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
+        caseData.setDraftOrderContentCIC(DraftOrderContentCIC.builder()
+            .orderTemplate(OrderTemplate.CIC6_GENERAL_DIRECTIONS).build());
+
+        doThrow(new RuntimeException("Error saving document entity to database"))
+            .when(documentsService).buildAndSaveNewDocumentEntity(any(), eq(TEST_CASE_ID), eq(true));
+
+        AboutToStartOrSubmitResponse<CaseData, State> response =
+            caseworkerCreateDraftOrder.aboutToSubmit(updatedCaseDetails, beforeDetails);
+
+        assertThat(response.getErrors()).hasSize(1);
+        assertThat(response.getErrors()).contains("Error saving document entity to database");
+
+        verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
+            any(), eq(TEST_CASE_ID), eq(true)
+        );
     }
 }
 

@@ -379,4 +379,62 @@ class CicSubmitCaseEventTest {
             .contains("# Application Received notification failed %n## Please resend the notification");
     }
 
+    @Test
+    void shouldStoreErrorsWhenBuildAndSaveNewDocumentEntityThrowsRuntimeException() {
+        final Document genericTestDocument = Document.builder().build();
+
+        final CitizenCICDocument dssTribunalForm = new CitizenCICDocument();
+        dssTribunalForm.setDocumentLink(genericTestDocument);
+        final ListValue<CitizenCICDocument> tribunalFormDocListValue = new ListValue<>();
+        tribunalFormDocListValue.setValue(dssTribunalForm);
+
+        final CitizenCICDocument dssSupportingDoc = new CitizenCICDocument();
+        dssSupportingDoc.setDocumentLink(genericTestDocument);
+        final ListValue<CitizenCICDocument> supportingDocListValue = new ListValue<>();
+        supportingDocListValue.setValue(dssSupportingDoc);
+
+        final CitizenCICDocument dssOtherInfoDoc = new CitizenCICDocument();
+        dssOtherInfoDoc.setDocumentLink(genericTestDocument);
+        final ListValue<CitizenCICDocument> otherInfoDocListValue = new ListValue<>();
+        otherInfoDocListValue.setValue(dssOtherInfoDoc);
+
+        final DssCaseData dssCaseData = DssCaseData.builder()
+            .caseTypeOfApplication(CASE_DATA_CIC_ID)
+            .otherInfoDocuments(List.of(otherInfoDocListValue))
+            .supportingDocuments(List.of(supportingDocListValue))
+            .tribunalFormDocuments(List.of(tribunalFormDocListValue))
+            .subjectFullName(TEST_FIRST_NAME)
+            .representation(YesOrNo.YES)
+            .representationQualified(YesOrNo.YES)
+            .representativeEmailAddress(TEST_SOLICITOR_EMAIL)
+            .representativeFullName(TEST_SOLICITOR_NAME)
+            .build();
+
+        final CicCase cicCase = CicCase.builder().build();
+        final CaseData caseData = caseData();
+        caseData.setCicCase(cicCase);
+        caseData.setDssCaseData(dssCaseData);
+
+        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
+        updatedCaseDetails.setId(TEST_CASE_ID);
+        updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
+        caseData.setHyphenatedCaseRef(TEST_CASE_ID_HYPHENATED);
+        updatedCaseDetails.setData(caseData);
+
+        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+
+        doThrow(new RuntimeException("Error saving document entity to database"))
+            .when(documentsService).buildAndSaveNewDocumentEntity(any(), eq(TEST_CASE_ID), eq(false));
+
+        final AboutToStartOrSubmitResponse<CaseData, State> response =
+            cicSubmitCaseEvent.aboutToSubmit(updatedCaseDetails, beforeDetails);
+
+        assertThat(response.getErrors()).hasSize(3);
+        assertThat(response.getErrors()).contains("Error saving document entity to database");
+
+        verify(documentsService, times(3)).buildAndSaveNewDocumentEntity(
+            any(), eq(TEST_CASE_ID), eq(false)
+        );
+    }
+
 }

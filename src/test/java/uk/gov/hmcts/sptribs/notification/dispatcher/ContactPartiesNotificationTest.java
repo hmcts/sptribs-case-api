@@ -15,7 +15,6 @@ import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.ContactPreferenceType;
 import uk.gov.hmcts.sptribs.common.CommonConstants;
-import uk.gov.hmcts.sptribs.common.repositories.DocumentsRepository;
 import uk.gov.hmcts.sptribs.document.service.DocumentsService;
 import uk.gov.hmcts.sptribs.idam.IdamService;
 import uk.gov.hmcts.sptribs.notification.NotificationHelper;
@@ -49,9 +48,6 @@ class ContactPartiesNotificationTest {
 
     @Mock
     private CaseDocumentClientApi caseDocumentClientApi;
-
-    @Mock
-    private DocumentsRepository documentsRepository;
 
     @Mock
     private DocumentsService documentsService;
@@ -352,6 +348,31 @@ class ContactPartiesNotificationTest {
                 CommonConstants.CONTACT_PARTY_INFO, data.getCicCase().getNotifyPartyMessage(),
                 CommonConstants.CIC_CASE_SUBJECT_NAME, data.getCicCase().getFullName()),
             TemplateName.CONTACT_PARTIES_EMAIL);
+        verifyNoInteractions(documentsService);
+    }
+
+    @Test
+    void shouldNotSetSentToApplicantViaContactPartiesToTrueWhenNotifyingViaContactPartiesWithNullAttachments() {
+        //Given
+        final CaseData data = getMockCaseData();
+        ContactPartiesDocuments contactPartiesDocuments = ContactPartiesDocuments.builder()
+            .documentList(getDynamicMultiSelectDocumentList()).build();
+        data.setContactPartiesDocuments(contactPartiesDocuments);
+        data.getCicCase().setRepresentativeFullName("respFullName");
+        data.getCicCase().setNotifyPartyMessage("message");
+
+        //When
+        when(notificationHelper.buildEmailNotificationRequest(any(), anyBoolean(), anyMap(), anyMap(), any(TemplateName.class)))
+            .thenReturn(NotificationRequest.builder().uploadedDocuments(getDocumentUploadMap()).build());
+        when(idamService.retrieveSystemUpdateUserDetails()).thenReturn(TestDataHelper.getUser());
+        when(authTokenGenerator.generate()).thenReturn(TEST_SERVICE_AUTH_TOKEN);
+
+        when(caseDocumentClientApi.getDocument(TEST_AUTHORIZATION_TOKEN, TEST_SERVICE_AUTH_TOKEN, TEST_DOCUMENT_ID))
+            .thenReturn(ResponseEntity.noContent().build());
+
+        contactPartiesNotification.sendToRespondent(data, TEST_CASE_ID.toString());
+
+        //Then
         verifyNoInteractions(documentsService);
     }
 

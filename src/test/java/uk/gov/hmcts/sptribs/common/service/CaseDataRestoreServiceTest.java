@@ -337,6 +337,48 @@ class CaseDataRestoreServiceTest {
         }
 
         @Test
+        void shouldSetInitialCicaDocumentsFromEventData_OnlyCurrentCaseDocument() {
+            ListValue<CaseworkerCICDocument> doc1 = ListValue.<CaseworkerCICDocument>builder()
+                .id("doc-1")
+                .value(CaseworkerCICDocument.builder()
+                    .documentLink(Document.builder().url("http://doc-1").build())
+                    .build())
+                .build();
+
+            ListValue<CaseworkerCICDocument> doc2 = ListValue.<CaseworkerCICDocument>builder()
+                .id("doc-2")
+                .value(CaseworkerCICDocument.builder()
+                    .documentLink(Document.builder().url("http://doc-2").build())
+                    .build())
+                .build();
+
+            List<ListValue<CaseworkerCICDocument>> allDocuments = List.of(doc1, doc2);
+
+            List<ListValue<CaseworkerCICDocument>> currentAllDocuments = List.of(doc1);
+
+            CaseData caseDataBefore = CaseData.builder().build();
+            CaseData currentCaseData = CaseData.builder().build();
+
+            when(caseEventRepository.getFirstEventDataForCase(REFERENCE, RESPONDENT_DOCUMENT_MANAGEMENT))
+                    .thenReturn(List.of(caseDataBefore));
+
+            try (MockedStatic<DocumentListUtil> documentListUtil = mockStatic(DocumentListUtil.class)) {
+                documentListUtil.when(() -> DocumentListUtil.getAllCaseDocuments(caseDataBefore))
+                    .thenReturn(allDocuments);
+                documentListUtil.when(() -> DocumentListUtil.getAllCaseDocuments(currentCaseData))
+                    .thenReturn(currentAllDocuments);
+
+                caseDataRestoreService.updateInitialCaseDocuments(REFERENCE, currentCaseData);
+
+                assertThat(currentCaseData.getInitialCicaDocuments())
+                    .hasSize(1)
+                    .containsExactly(doc1);
+
+                documentListUtil.verify(() -> DocumentListUtil.getAllCaseDocuments(caseDataBefore));
+            }
+        }
+
+        @Test
         void shouldSetEmptyListWhenNoDocumentsAtRespondentUpload() {
             CaseData caseDataBefore = CaseData.builder().build();
             CaseData currentCaseData = CaseData.builder().build();
@@ -374,7 +416,8 @@ class CaseDataRestoreServiceTest {
                     .thenReturn(List.of(doc));
                 documentListUtil.when(() -> DocumentListUtil.getAllCaseDocuments(secondEventData))
                     .thenReturn(List.of());
-
+                documentListUtil.when(() -> DocumentListUtil.getAllCaseDocuments(currentCaseData))
+                    .thenReturn(List.of(doc));
                 caseDataRestoreService.updateInitialCaseDocuments(REFERENCE, currentCaseData);
 
                 // verify only called with first event data, not second

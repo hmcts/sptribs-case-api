@@ -117,12 +117,14 @@ public class CicSubmitCaseEvent implements CCDConfig<CaseData, State, UserRole> 
                                                                        CaseDetails<CaseData, State> beforeDetails) {
         final CaseData data = details.getData();
         final DssCaseData dssData = details.getData().getDssCaseData();
-        final CaseData caseData = getCaseData(data, dssData);
+        List<String> errors = new ArrayList<>();
+        final CaseData caseData = getCaseData(data, dssData, errors);
         setDssMetaData(data);
         data.setNewBundleOrderEnabled(YesNo.YES);
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
+            .errors(errors)
             .state(State.DSS_Submitted)
             .build();
     }
@@ -189,7 +191,7 @@ public class CicSubmitCaseEvent implements CCDConfig<CaseData, State, UserRole> 
         }
     }
 
-    private CaseData getCaseData(final CaseData caseData, final DssCaseData dssCaseData) {
+    private CaseData getCaseData(final CaseData caseData, final DssCaseData dssCaseData, List<String> errors) {
         caseData.getCicCase().setCaseReceivedDate(LocalDate.now());
         CicCaseFieldsUtil.calculateAndSetIsCaseInTime(caseData);
         caseData.getCicCase().setFullName(dssCaseData.getSubjectFullName());
@@ -307,11 +309,15 @@ public class CicSubmitCaseEvent implements CCDConfig<CaseData, State, UserRole> 
 
         caseData.getCicCase().setApplicantDocumentsUploaded(applicantDocs);
         for (ListValue<CaseworkerCICDocument> document : applicantDocs) {
-            documentsService.buildAndSaveNewDocumentEntity(
-                document.getValue().getDocumentLink(),
-                Long.parseLong(caseData.getHyphenatedCaseRef().replace("-", "")),
-                false
-            );
+            try {
+                documentsService.buildAndSaveNewDocumentEntity(
+                    document.getValue().getDocumentLink(),
+                    Long.parseLong(caseData.getHyphenatedCaseRef().replace("-", "")),
+                    false
+                );
+            } catch (RuntimeException e) {
+                errors.add(e.getMessage());
+            }
         }
         dssCaseData.setTribunalFormDocuments(new ArrayList<>());
         dssCaseData.setSupportingDocuments(new ArrayList<>());
