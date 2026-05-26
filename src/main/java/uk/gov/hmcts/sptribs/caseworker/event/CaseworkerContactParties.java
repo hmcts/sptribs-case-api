@@ -122,7 +122,14 @@ public class CaseworkerContactParties implements CCDConfig<CaseData, State, User
                                                                        CaseDetails<CaseData, State> beforeDetails) {
         final CaseData caseData = details.getData();
 
-        String sentDocList = caseData.getContactPartiesDocuments().getDocumentList().getListItems()..toString();
+        StringBuilder sentDocListBuilder = new StringBuilder();
+
+        caseData.getContactPartiesDocuments().getDocumentList().getListItems()
+            .forEach(doc -> {
+                sentDocListBuilder.append(doc.getLabel()).append("\n");
+            });
+
+        String sentDocList = sentDocListBuilder.toString();
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
