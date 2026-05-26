@@ -6,7 +6,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.sptribs.common.repositories.DocumentsRepository;
+import uk.gov.hmcts.sptribs.document.model.DocumentDashboardModel;
 import uk.gov.hmcts.sptribs.document.model.DocumentEntity;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class DocumentsService {
@@ -43,23 +47,26 @@ public class DocumentsService {
         }
     }
 
-    public void getDocumentsOnCase(Long ccdReference) {
-        documentsRepository.findByCaseReferenceNumberOrderBySavedAtDesc(ccdReference);
-        //get all docs from db,
-        //sort into the 3 different sections
-        //return serivce layer object that gets converetd to the documentresponse...
+    public DocumentDashboardModel getDocumentsOnCase(Long ccdReference) {
+        //probs exclude draft in query, could use query for more control also 
+        List<DocumentEntity> allDocumentsOnCase = documentsRepository.findByCaseReferenceNumberOrderBySavedAtDesc(ccdReference);
+
+        List<DocumentEntity> applicantDocuments = new ArrayList<>();
+        List<DocumentEntity> lastestCaseBundle = new ArrayList<>();
+        List<DocumentEntity> orderAndDecisionDocuments = new ArrayList<>();
 
 
-        //so we need three parts:
-        //
-        // docs sent to applicant via contact parties !!! use the db column
-        // we have draft column to exclude draft docs from some events
-        //
-        //
-        //
-        //How to get lastest case bundles???? when have 1 insert for the case bundle pdf so can get latest type bd
-        //
-        // order and decisions???? type td
-        //
+        for (DocumentEntity document : allDocumentsOnCase) {
+            //my logic
+            //check for
+            document.getCategoryId()
+        }
+
+        return DocumentDashboardModel.builder()
+            .contactPartiesDocuments(applicantDocuments)
+            .latestCaseBundleDocuments(lastestCaseBundle)
+            .orderAndDecisionDocuments(orderAndDecisionDocuments)
+            .build();
     }
+
 }
