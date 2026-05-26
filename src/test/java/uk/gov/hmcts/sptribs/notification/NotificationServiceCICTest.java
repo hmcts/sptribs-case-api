@@ -2,7 +2,6 @@ package uk.gov.hmcts.sptribs.notification;
 
 import jakarta.servlet.http.HttpServletRequest;
 import org.apache.commons.io.IOUtils;
-import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -119,6 +118,7 @@ public class NotificationServiceCICTest {
         final Map<String, Object> templateVars = new HashMap<>();
         templateVars.put(APPLICATION_RECEIVED.name(), templateId);
 
+
         final Map<String, String> uploadedDocuments = new HashMap<>();
         uploadedDocuments.put("FinalDecisionNotice", templateId);
         uploadedDocuments.put("FinalDecisionNotice1", "");
@@ -128,21 +128,15 @@ public class NotificationServiceCICTest {
             .destinationAddress(EMAIL_ADDRESS)
             .template(TemplateName.APPLICATION_RECEIVED)
             .templateVars(templateVars)
-            .hasFileAttachments(true)
+            .hasFileAttachments(false)
             .uploadedDocuments(uploadedDocuments)
             .build();
 
-        final User user = TestDataHelper.getUser();
-
-        when(idamService.retrieveUser(any())).thenReturn(user);
         when(sendEmailResponse.getReference()).thenReturn(Optional.of(randomUUID().toString()));
         when(sendEmailResponse.getNotificationId()).thenReturn(UUID.randomUUID());
         when(emailTemplatesConfig.getTemplatesCIC()).thenReturn(templateNameMap);
         when(httpServletRequest.getHeader(AUTHORIZATION)).thenReturn(TEST_AUTHORIZATION_TOKEN);
         when(authTokenGenerator.generate()).thenReturn(TEST_SERVICE_AUTH_TOKEN);
-
-        final byte[] sample = new byte[1];
-        when(caseDocumentClientAPI.getDocumentBinary(anyString(), anyString(), any(UUID.class))).thenReturn(ResponseEntity.ok(sample));
 
         when(notificationClient.sendEmail(
             eq(templateId),
@@ -150,8 +144,6 @@ public class NotificationServiceCICTest {
             any(),
             any()
         )).thenReturn(sendEmailResponse);
-
-        when(pdfServiceClient.generateFromHtml(any(), any())).thenReturn(sample);
 
         UploadResponse expectedResponse = uploadResponseWithSampleDocument();
         when(caseDocumentClientAPI.uploadDocuments(any(), any(), any())).thenReturn(expectedResponse);
@@ -474,7 +466,7 @@ public class NotificationServiceCICTest {
 
         assertThatThrownBy(() -> notificationService.sendEmail(request, testCaseRef))
             .isInstanceOf(NotificationException.class)
-            .hasMessageContaining("uk.gov.service.notify.NotificationClientException");
+            .hasMessageContaining("Unable to find document details for document id:");
     }
 
     @Test
@@ -526,20 +518,16 @@ public class NotificationServiceCICTest {
             .destinationAddress(EMAIL_ADDRESS)
             .template(TemplateName.APPLICATION_RECEIVED)
             .templateVars(templateVars)
-            .hasFileAttachments(true)
+            .hasFileAttachments(false)
             .uploadedDocuments(uploadedDocuments)
             .build();
 
-        final User user = TestDataHelper.getUser();
-
         //When&Then
-        when(idamService.retrieveUser(any())).thenReturn(user);
         when(emailTemplatesConfig.getTemplatesCIC()).thenReturn(templateNameMap);
         when(httpServletRequest.getHeader(AUTHORIZATION)).thenReturn(TEST_AUTHORIZATION_TOKEN);
         when(authTokenGenerator.generate()).thenReturn(TEST_SERVICE_AUTH_TOKEN);
 
         final byte[] sample = new byte[1];
-        when(caseDocumentClientAPI.getDocumentBinary(anyString(), anyString(), any(UUID.class))).thenReturn(ResponseEntity.ok(sample));
 
         when(notificationClient.sendEmail(
             eq(templateId),
@@ -816,6 +804,9 @@ public class NotificationServiceCICTest {
         //When
         notificationService.sendEmail(request, List.of(cicDocument), TEST_CASE_ID.toString());
 
+        String expectedDocumentDescription = String.format("%nFilename: %s%nDescription: %s%n",
+            cicDocument.getDocumentLink().getFilename(), cicDocument.getDocumentEmailContent());
+
         //Then
         verify(notificationClient).sendEmail(
             eq(templateId),
@@ -828,7 +819,8 @@ public class NotificationServiceCICTest {
             .containsEntry("DocumentAvailable1", "yes");
         assertThat(templateVarsArgCaptor.getValue())
             .extracting("CaseDocument1")
-            .isInstanceOf(JSONObject.class);
+            .isInstanceOf(String.class)
+            .isEqualTo(expectedDocumentDescription);
 
         verify(sendEmailResponse, times(3)).getNotificationId();
         verify(sendEmailResponse, times(2)).getReference();
@@ -949,8 +941,8 @@ public class NotificationServiceCICTest {
             .containsEntry(CASE_ISSUED_RESPONDENT_EMAIL.name(), templateId)
             .containsEntry("DocumentAvailable1", "yes");
 
-        String expectedDocumentDescription = String.format("%nFilename: %s%nDescription: %s%nUpload Date: %s",
-            cicDocument.getDocumentLink().getFilename(), cicDocument.getDocumentEmailContent(), cicDocument.getDate());
+        String expectedDocumentDescription = String.format("%nFilename: %s%nDescription: %s%n",
+            cicDocument.getDocumentLink().getFilename(), cicDocument.getDocumentEmailContent());
 
         assertThat(templateVarsArgCaptor.getValue())
             .extracting("CaseDocument1")
