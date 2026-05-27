@@ -105,36 +105,27 @@ public class SystemMigrateInitialCaseDocumentsTask implements Runnable {
         int failed = 0;
         int batchCount = (total + batchSize - 1) / batchSize;
 
-        log.info("Processing {} cases in {} batches", total, batchCount);
+        log.info("Processing {} cases in {} batches of {}", total, batchCount, batchSize);
 
-        for (int i = 0; i < total; i += batchSize) {
-            int batchNum = (i / batchSize) + 1;
-            int end = Math.min(i + batchSize, total);
-            List<Long> batch = caseIds.subList(i, end);
-
-            log.info("Batch {}/{} ({} cases)", batchNum, batchCount, batch.size());
-
-            for (final Long caseId : batch) {
+        for (int i = 0; i < total; i++) {
+            if (i > 0 && i % batchSize == 0) {
+                log.info("Batch {}/{} complete: {} succeeded, {} failed so far",
+                        i / batchSize, batchCount, success, failed);
                 try {
-                    triggerSystemMigrateInitialCaseDocuments(user, serviceAuth, caseId);
-                    success++;
-                } catch (final RuntimeException e) {
-                    failed++;
-                    log.error("Failed to migrate case {}", caseId, e);
-                }
-            }
-
-            log.info("Batch {}/{} complete: {} succeeded, {} failed so far", batchNum, batchCount, success, failed);
-
-            if (end < total) {
-                try {
-                    log.info("Pausing before next batch...");
                     Thread.sleep(batchPauseMs);
                 } catch (InterruptedException e) {
                     log.warn("Batch processing interrupted, stopping migration");
                     Thread.currentThread().interrupt();
                     break;
                 }
+            }
+
+            try {
+                triggerSystemMigrateInitialCaseDocuments(user, serviceAuth, caseIds.get(i));
+                success++;
+            } catch (final Exception e) {
+                failed++;
+                log.error("Failed to migrate case {}", caseIds.get(i), e);
             }
         }
 
