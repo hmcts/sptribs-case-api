@@ -40,6 +40,9 @@ public class SystemMigrateInitialCaseDocumentsTask implements Runnable {
     @Value("${feature.migrate-initial-case-documents-task.batchSize}")
     private int batchSize;
 
+    @Value("${migration.migrate-initial-case-documents-task.batchPauseMs:5000}")
+    private long batchPauseMs;
+
     @Override
     public void run() {
         if (migrateInitialDocsEnabled) {
@@ -118,6 +121,19 @@ public class SystemMigrateInitialCaseDocumentsTask implements Runnable {
                 } catch (final RuntimeException e) {
                     failed++;
                     log.error("Failed to migrate case {}", caseId, e);
+                }
+            }
+
+            log.info("Batch {}/{} complete: {} succeeded, {} failed so far", batchNum, batchCount, success, failed);
+
+            if (end < total) {
+                try {
+                    log.info("Pausing before next batch...");
+                    Thread.sleep(batchPauseMs);
+                } catch (InterruptedException e) {
+                    log.warn("Batch processing interrupted, stopping migration");
+                    Thread.currentThread().interrupt();
+                    break;
                 }
             }
         }
