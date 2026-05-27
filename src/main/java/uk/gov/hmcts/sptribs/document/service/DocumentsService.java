@@ -48,7 +48,7 @@ public class DocumentsService {
     }
 
     public DocumentDashboardModel getDocumentsOnCase(Long ccdReference) {
-        //probs exclude draft in query, could use query for more control also 
+        //probs exclude draft in query, could use query for more control also
         List<DocumentEntity> allDocumentsOnCase = documentsRepository.findByCaseReferenceNumberOrderBySavedAtDesc(ccdReference);
 
         List<DocumentEntity> applicantDocuments = new ArrayList<>();
@@ -59,7 +59,7 @@ public class DocumentsService {
         for (DocumentEntity document : allDocumentsOnCase) {
             //my logic
             //check for
-            document.getCategoryId()
+//            document.getCategoryId()
         }
 
         return DocumentDashboardModel.builder()

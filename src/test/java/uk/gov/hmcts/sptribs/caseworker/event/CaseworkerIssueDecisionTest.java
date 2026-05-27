@@ -75,9 +75,6 @@ class CaseworkerIssueDecisionTest {
     @Mock
     private IssueDecisionFooter issueDecisionFooter;
 
-    @Mock
-    private DocumentsService documentsService;
-
     private final Clock fixedClock = Clock.fixed(
         LocalDate.of(2026, 5, 15)
             .atStartOfDay(ZoneId.systemDefault())
