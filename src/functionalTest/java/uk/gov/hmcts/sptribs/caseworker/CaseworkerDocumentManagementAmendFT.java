@@ -36,9 +36,6 @@ public class CaseworkerDocumentManagementAmendFT extends FunctionalTestSuite {
 
     private static final String CONFIRMATION_HEADER = "$.confirmation_header";
 
-    @Autowired
-    protected FunctionalTestDataManager functionalTestDataManager;
-
     @Test
     public void shouldInitialiseDocumentListWhenAboutToStartCallbackIsInvoked() throws Exception {
         final Map<String, Object> caseData = caseData(REQUEST_ABOUT_TO_START);
