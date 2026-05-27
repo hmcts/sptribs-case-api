@@ -92,9 +92,6 @@ public class CaseworkerCreateAndSendOrderIT {
     @MockitoBean
     private NotificationServiceCIC notificationServiceCIC;
 
-    @MockitoBean
-    private DocumentsRepository documentsRepository;
-
     private static final String CASEWORKER_CREATE_AND_SEND_ORDER_ABOUT_TO_START_RESPONSE =
             "classpath:responses/caseworker-create-and-send-order-about-to-start-response.json";
 

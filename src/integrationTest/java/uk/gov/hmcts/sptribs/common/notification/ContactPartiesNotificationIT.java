@@ -73,9 +73,6 @@ public class ContactPartiesNotificationIT {
     private CaseDocumentClientApi caseDocumentClientApi;
 
     @MockitoBean
-    private DocumentsRepository documentsRepository;
-
-    @MockitoBean
     private IdamService idamService;
 
     @MockitoBean
