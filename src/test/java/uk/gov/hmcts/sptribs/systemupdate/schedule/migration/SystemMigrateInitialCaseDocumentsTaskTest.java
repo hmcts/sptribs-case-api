@@ -25,10 +25,17 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatNoException;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.lenient;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.RESPONDENT_DOCUMENT_MANAGEMENT;
 import static uk.gov.hmcts.sptribs.systemupdate.event.SystemMigrateInitialCaseDocuments.SYSTEM_MIGRATE_INITIAL_CASE_DOCUMENTS;
@@ -220,6 +227,91 @@ class SystemMigrateInitialCaseDocumentsTaskTest {
             verify(ccdUpdateService).submitEvent(111L, SYSTEM_MIGRATE_INITIAL_CASE_DOCUMENTS, user, SERVICE_AUTHORIZATION);
             verify(ccdUpdateService).submitEvent(222L, SYSTEM_MIGRATE_INITIAL_CASE_DOCUMENTS, user, SERVICE_AUTHORIZATION);
             verify(ccdUpdateService).submitEvent(333L, SYSTEM_MIGRATE_INITIAL_CASE_DOCUMENTS, user, SERVICE_AUTHORIZATION);
+        }
+
+        @Test
+        void shouldProcessAllCasesInBatches() {
+            ReflectionTestUtils.setField(systemMigrateInitialCaseDocumentsTask, "batchSize", 2);
+            ReflectionTestUtils.setField(systemMigrateInitialCaseDocumentsTask, "batchPauseMs", 100L);
+            ReflectionTestUtils.setField(systemMigrateInitialCaseDocumentsTask, "skipMigrated", true);
+
+            when(caseEventRepository.getListOfCasesByEventIdDuringDateRange(
+                anyString(), any(LocalDate.class), any(LocalDate.class), any()))
+                .thenReturn(List.of(111L, 222L, 333L, 444L, 555L));
+
+            systemMigrateInitialCaseDocumentsTask.run();
+
+            verify(ccdUpdateService).submitEvent(111L, SYSTEM_MIGRATE_INITIAL_CASE_DOCUMENTS, user, SERVICE_AUTHORIZATION);
+            verify(ccdUpdateService).submitEvent(222L, SYSTEM_MIGRATE_INITIAL_CASE_DOCUMENTS, user, SERVICE_AUTHORIZATION);
+            verify(ccdUpdateService).submitEvent(333L, SYSTEM_MIGRATE_INITIAL_CASE_DOCUMENTS, user, SERVICE_AUTHORIZATION);
+            verify(ccdUpdateService).submitEvent(444L, SYSTEM_MIGRATE_INITIAL_CASE_DOCUMENTS, user, SERVICE_AUTHORIZATION);
+            verify(ccdUpdateService).submitEvent(555L, SYSTEM_MIGRATE_INITIAL_CASE_DOCUMENTS, user, SERVICE_AUTHORIZATION);
+            verifyNoMoreInteractions(ccdUpdateService);
+        }
+
+        @Test
+        void shouldContinueProcessingWhenCaseFails() {
+            ReflectionTestUtils.setField(systemMigrateInitialCaseDocumentsTask, "batchSize", 2);
+            ReflectionTestUtils.setField(systemMigrateInitialCaseDocumentsTask, "batchPauseMs", 100L);
+            ReflectionTestUtils.setField(systemMigrateInitialCaseDocumentsTask, "skipMigrated", true);
+
+            when(caseEventRepository.getListOfCasesByEventIdDuringDateRange(
+                anyString(), any(LocalDate.class), any(LocalDate.class), any()))
+                .thenReturn(List.of(111L, 222L, 333L));
+
+            doThrow(new RuntimeException("service error"))
+                .when(ccdUpdateService).submitEvent(eq(222L), any(), any(), any());
+
+            systemMigrateInitialCaseDocumentsTask.run();
+
+            verify(ccdUpdateService).submitEvent(111L, SYSTEM_MIGRATE_INITIAL_CASE_DOCUMENTS, user, SERVICE_AUTHORIZATION);
+            verify(ccdUpdateService).submitEvent(222L, SYSTEM_MIGRATE_INITIAL_CASE_DOCUMENTS, user, SERVICE_AUTHORIZATION);
+            verify(ccdUpdateService).submitEvent(333L, SYSTEM_MIGRATE_INITIAL_CASE_DOCUMENTS, user, SERVICE_AUTHORIZATION);
+        }
+
+        @Test
+        void shouldNotPauseAfterFinalBatch() {
+            ReflectionTestUtils.setField(systemMigrateInitialCaseDocumentsTask, "batchSize", 3);
+            ReflectionTestUtils.setField(systemMigrateInitialCaseDocumentsTask, "batchPauseMs", 100L);
+            ReflectionTestUtils.setField(systemMigrateInitialCaseDocumentsTask, "skipMigrated", true);
+
+            when(caseEventRepository.getListOfCasesByEventIdDuringDateRange(
+                anyString(), any(LocalDate.class), any(LocalDate.class), any()))
+                .thenReturn(List.of(111L, 222L, 333L));
+
+            long start = System.currentTimeMillis();
+            systemMigrateInitialCaseDocumentsTask.run();
+            long elapsed = System.currentTimeMillis() - start;
+
+            assertThat(elapsed).isLessThan(100L);
+
+            verify(ccdUpdateService, times(3)).submitEvent(anyLong(), any(), any(), any());
+        }
+
+        @Test
+        void shouldStopProcessingWhenInterrupted() {
+            ReflectionTestUtils.setField(systemMigrateInitialCaseDocumentsTask, "batchSize", 2);
+            ReflectionTestUtils.setField(systemMigrateInitialCaseDocumentsTask, "batchPauseMs", 5000L);
+            ReflectionTestUtils.setField(systemMigrateInitialCaseDocumentsTask, "skipMigrated", true);
+
+            when(caseEventRepository.getListOfCasesByEventIdDuringDateRange(
+                anyString(), any(LocalDate.class), any(LocalDate.class), any()))
+                .thenReturn(List.of(111L, 222L, 333L, 444L));
+
+            doAnswer(invocation -> {
+                Thread.currentThread().interrupt();
+                return null;
+            }).when(ccdUpdateService).submitEvent(eq(222L), any(), any(), any());
+
+            systemMigrateInitialCaseDocumentsTask.run();
+
+            verify(ccdUpdateService).submitEvent(111L, SYSTEM_MIGRATE_INITIAL_CASE_DOCUMENTS, user, SERVICE_AUTHORIZATION);
+            verify(ccdUpdateService).submitEvent(222L, SYSTEM_MIGRATE_INITIAL_CASE_DOCUMENTS, user, SERVICE_AUTHORIZATION);
+
+            verify(ccdUpdateService, never()).submitEvent(eq(333L), any(), any(), any());
+            verify(ccdUpdateService, never()).submitEvent(eq(444L), any(), any(), any());
+
+            Thread.interrupted();
         }
     }
 }
