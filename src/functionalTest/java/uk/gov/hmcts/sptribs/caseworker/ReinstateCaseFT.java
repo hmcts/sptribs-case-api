@@ -3,8 +3,10 @@ package uk.gov.hmcts.sptribs.caseworker;
 import io.restassured.response.Response;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
+import uk.gov.hmcts.sptribs.notification.persistence.CorrespondenceEntity;
 import uk.gov.hmcts.sptribs.testutil.FunctionalTestSuite;
 
+import java.util.List;
 import java.util.Map;
 
 import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
@@ -121,27 +123,23 @@ public class ReinstateCaseFT extends FunctionalTestSuite {
 
         long testCaseRef = Long.parseLong(caseData.get("hyphenatedCaseRef").toString().replace("-", ""));
 
+        List<CorrespondenceEntity> correspondenceEntities = caseCorrespondencesFTDataManager.getCorrespondenceEntities(testCaseRef);
+        assertThat(correspondenceEntities).hasSize(1);
+
+        CorrespondenceEntity firstCorrespondenceEntity = correspondenceEntities.getFirst();
+
         assertThat(caseCorrespondencesFTDataManager.getCorrespondenceEntities(testCaseRef)).hasSize(1);
-        assertThat(caseCorrespondencesFTDataManager.getCorrespondenceEntities(testCaseRef).getFirst().getId())
-            .isNotNull();
-        assertThat(caseCorrespondencesFTDataManager.getCorrespondenceEntities(testCaseRef).getFirst().getCaseReferenceNumber())
-            .isEqualTo(Long.parseLong(caseData.get("hyphenatedCaseRef").toString().replace("-", "")));
-        assertThat(caseCorrespondencesFTDataManager.getCorrespondenceEntities(testCaseRef).getFirst().getEventType())
-            .isEqualTo("REINSTATED_EMAIL");
-        assertThat(caseCorrespondencesFTDataManager.getCorrespondenceEntities(testCaseRef).getFirst().getSentOn())
-            .isNotNull();
-        assertThat(caseCorrespondencesFTDataManager.getCorrespondenceEntities(testCaseRef).getFirst().getSentFrom())
-            .isNotNull();
-        assertThat(caseCorrespondencesFTDataManager.getCorrespondenceEntities(testCaseRef).getFirst().getSentTo())
-            .isNotNull();
-        assertThat(caseCorrespondencesFTDataManager.getCorrespondenceEntities(testCaseRef).getFirst().getCorrespondenceType())
-            .isEqualTo("Email");
-        assertThat(caseCorrespondencesFTDataManager.getCorrespondenceEntities(testCaseRef).getFirst().getDocumentUrl())
-            .isNotNull();
-        assertThat(caseCorrespondencesFTDataManager.getCorrespondenceEntities(testCaseRef).getFirst().getDocumentFilename())
-            .isNotNull();
-        assertThat(caseCorrespondencesFTDataManager.getCorrespondenceEntities(testCaseRef).getFirst().getDocumentBinaryUrl())
-            .isNotNull();
+        assertThat(firstCorrespondenceEntity.getId()).isNotNull();
+        assertThat(firstCorrespondenceEntity.getCaseReferenceNumber()).isEqualTo(Long.parseLong(caseData.get("hyphenatedCaseRef")
+            .toString().replace("-", "")));
+        assertThat(firstCorrespondenceEntity.getEventType()).isEqualTo("REINSTATED_EMAIL");
+        assertThat(firstCorrespondenceEntity.getSentOn()).isNotNull();
+        assertThat(firstCorrespondenceEntity.getSentFrom()).isNotNull();
+        assertThat(firstCorrespondenceEntity.getSentTo()).isNotNull();
+        assertThat(firstCorrespondenceEntity.getCorrespondenceType()).isEqualTo("Email");
+        assertThat(firstCorrespondenceEntity.getDocumentUrl()).isNotNull();
+        assertThat(firstCorrespondenceEntity.getDocumentFilename()).isNotNull();
+        assertThat(firstCorrespondenceEntity.getDocumentBinaryUrl()).isNotNull();
     }
 
     @Test

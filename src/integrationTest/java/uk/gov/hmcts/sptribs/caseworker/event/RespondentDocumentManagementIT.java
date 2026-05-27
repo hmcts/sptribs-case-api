@@ -51,9 +51,6 @@ public class RespondentDocumentManagementIT {
     @MockitoBean
     private WebMvcConfig webMvcConfig;
 
-    @MockitoBean
-    private DocumentsRepository documentsRepository;
-
     private static final String CASEWORKER_RESPONDENT_DOCUMENT_MANAGEMENT_ABOUT_TO_SUBMIT_RESPONSE =
         "classpath:responses/caseworker-respondent-document-management-about-to-submit-response.json";
 

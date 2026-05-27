@@ -34,7 +34,7 @@
         "documentEmailContent": "Lorem ipsum",
         "documentCategory": "ApplicationForm",
         "documentLink": {
-          "document_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/f3335647-6277-40af-ba66-c09365c0776e",
+          "document_url": "${json-unit.any-string}",
           "document_filename": "pdf.pdf",
           "document_binary_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/f3335647-6277-40af-ba66-c09365c0776e/binary",
           "category_id": "A"

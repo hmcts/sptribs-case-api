@@ -2,9 +2,7 @@ package uk.gov.hmcts.sptribs.caseworker;
 
 import io.restassured.response.Response;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import uk.gov.hmcts.sptribs.testutil.FunctionalTestDataManager;
 import uk.gov.hmcts.sptribs.testutil.FunctionalTestSuite;
 
 import java.util.Map;
@@ -35,9 +33,6 @@ public class CaseworkerDocumentManagementAmendFT extends FunctionalTestSuite {
         "classpath:responses/response-caseworker-document-management-amend-about-to-submit.json";
 
     private static final String CONFIRMATION_HEADER = "$.confirmation_header";
-
-    @Autowired
-    protected FunctionalTestDataManager functionalTestDataManager;
 
     @Test
     public void shouldInitialiseDocumentListWhenAboutToStartCallbackIsInvoked() throws Exception {

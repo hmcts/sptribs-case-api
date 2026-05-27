@@ -4,9 +4,11 @@ import io.restassured.response.Response;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
+import uk.gov.hmcts.sptribs.document.model.DocumentEntity;
 import uk.gov.hmcts.sptribs.testutil.FunctionalTestSuite;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
@@ -42,20 +44,20 @@ public class CaseworkerCreateTestCaseFT extends FunctionalTestSuite {
 
         long testCaseRef = Long.parseLong(caseData.get("hyphenatedCaseRef").toString().replace("-", ""));
 
-        assertThat(caseDocumentsFTDataManager.getDocumentEntities(testCaseRef)).hasSize(1);
-        assertThat(caseDocumentsFTDataManager.getDocumentEntities(testCaseRef).getFirst().getId())
-            .isNotNull();
-        assertThat(caseDocumentsFTDataManager.getDocumentEntities(testCaseRef).getFirst().getCaseReferenceNumber())
-            .isEqualTo(Long.parseLong(caseData.get("hyphenatedCaseRef").toString().replace("-", "")));
-        assertThat(caseDocumentsFTDataManager.getDocumentEntities(testCaseRef).getFirst().getCategoryId()).isNotNull();
-        assertThat(caseDocumentsFTDataManager.getDocumentEntities(testCaseRef).getFirst().getSavedAt()).isNotNull();
-        assertThat(caseDocumentsFTDataManager.getDocumentEntities(testCaseRef).getFirst().isDraft()).isFalse();
-        assertThat(caseDocumentsFTDataManager.getDocumentEntities(testCaseRef).getFirst().isSentToApplicantViaContactParties()).isFalse();
-        assertThat(caseDocumentsFTDataManager.getDocumentEntities(testCaseRef).getFirst().getDocumentUrl())
-            .isNotNull();
-        assertThat(caseDocumentsFTDataManager.getDocumentEntities(testCaseRef).getFirst().getDocumentFilename())
-            .isNotNull();
-        assertThat(caseDocumentsFTDataManager.getDocumentEntities(testCaseRef).getFirst().getDocumentBinaryUrl())
-            .isNotNull();
+        List<DocumentEntity> documentEntities = caseDocumentsFTDataManager.getDocumentEntities(testCaseRef);
+        assertThat(documentEntities).hasSize(1);
+
+        DocumentEntity firstDocumentEntity = documentEntities.getFirst();
+
+        assertThat(firstDocumentEntity.getId()).isNotNull();
+        assertThat(firstDocumentEntity.getCaseReferenceNumber()).isEqualTo(Long.parseLong(caseData.get("hyphenatedCaseRef")
+            .toString().replace("-", "")));
+        assertThat(firstDocumentEntity.getCategoryId()).isNotNull();
+        assertThat(firstDocumentEntity.getSavedAt()).isNotNull();
+        assertThat(firstDocumentEntity.isDraft()).isFalse();
+        assertThat(firstDocumentEntity.isSentToApplicantViaContactParties()).isFalse();
+        assertThat(firstDocumentEntity.getDocumentUrl()).isNotNull();
+        assertThat(firstDocumentEntity.getDocumentFilename()).isNotNull();
+        assertThat(firstDocumentEntity.getDocumentBinaryUrl()).isNotNull();
     }
 }

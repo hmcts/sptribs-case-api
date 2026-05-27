@@ -78,9 +78,6 @@ public class CaseworkerCreateDraftOrderIT {
     @MockitoBean
     private DocAssemblyService docAssemblyService;
 
-    @MockitoBean
-    private DocumentsRepository documentsRepository;
-
     private static final String CASEWORKER_CREATE_DRAFT_ORDER_MID_EVENT_RESPONSE =
         "classpath:responses/caseworker-create-draft-order-mid-event-response.json";
     private static final String CASEWORKER_CREATE_DRAFT_ORDER_ABOUT_TO_SUBMIT_RESPONSE =

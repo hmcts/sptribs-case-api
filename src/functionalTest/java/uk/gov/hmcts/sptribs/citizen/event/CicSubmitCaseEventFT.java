@@ -4,8 +4,11 @@ import io.restassured.response.Response;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
+import uk.gov.hmcts.sptribs.document.model.DocumentEntity;
+import uk.gov.hmcts.sptribs.notification.persistence.CorrespondenceEntity;
 import uk.gov.hmcts.sptribs.testutil.FunctionalTestSuite;
 
+import java.util.List;
 import java.util.Map;
 
 import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
@@ -48,21 +51,21 @@ public class CicSubmitCaseEventFT extends FunctionalTestSuite {
 
         long testCaseRef = Long.parseLong(caseData.get("hyphenatedCaseRef").toString().replace("-", ""));
 
-        assertThat(caseDocumentsFTDataManager.getDocumentEntities(testCaseRef)).hasSize(3);
-        assertThat(caseDocumentsFTDataManager.getDocumentEntities(testCaseRef).getFirst().getId())
-            .isNotNull();
-        assertThat(caseDocumentsFTDataManager.getDocumentEntities(testCaseRef).getFirst().getCaseReferenceNumber())
-            .isEqualTo(Long.parseLong(caseData.get("hyphenatedCaseRef").toString().replace("-", "")));
-        assertThat(caseDocumentsFTDataManager.getDocumentEntities(testCaseRef).getFirst().getCategoryId()).isNotNull();
-        assertThat(caseDocumentsFTDataManager.getDocumentEntities(testCaseRef).getFirst().getSavedAt()).isNotNull();
-        assertThat(caseDocumentsFTDataManager.getDocumentEntities(testCaseRef).getFirst().isDraft()).isFalse();
-        assertThat(caseDocumentsFTDataManager.getDocumentEntities(testCaseRef).getFirst().isSentToApplicantViaContactParties()).isFalse();
-        assertThat(caseDocumentsFTDataManager.getDocumentEntities(testCaseRef).getFirst().getDocumentUrl())
-            .isNotNull();
-        assertThat(caseDocumentsFTDataManager.getDocumentEntities(testCaseRef).getFirst().getDocumentFilename())
-            .isNotNull();
-        assertThat(caseDocumentsFTDataManager.getDocumentEntities(testCaseRef).getFirst().getDocumentBinaryUrl())
-            .isNotNull();
+        List<DocumentEntity> documentEntities = caseDocumentsFTDataManager.getDocumentEntities(testCaseRef);
+        assertThat(documentEntities).hasSize(3);
+
+        DocumentEntity firstDocumentEntity = documentEntities.getFirst();
+
+        assertThat(firstDocumentEntity.getId()).isNotNull();
+        assertThat(firstDocumentEntity.getCaseReferenceNumber()).isEqualTo(Long.parseLong(caseData.get("hyphenatedCaseRef")
+            .toString().replace("-", "")));
+        assertThat(firstDocumentEntity.getCategoryId()).isNotNull();
+        assertThat(firstDocumentEntity.getSavedAt()).isNotNull();
+        assertThat(firstDocumentEntity.isDraft()).isFalse();
+        assertThat(firstDocumentEntity.isSentToApplicantViaContactParties()).isFalse();
+        assertThat(firstDocumentEntity.getDocumentUrl()).isNotNull();
+        assertThat(firstDocumentEntity.getDocumentFilename()).isNotNull();
+        assertThat(firstDocumentEntity.getDocumentBinaryUrl()).isNotNull();
     }
 
     @Test
@@ -77,27 +80,22 @@ public class CicSubmitCaseEventFT extends FunctionalTestSuite {
 
         long testCaseRef = Long.parseLong(caseData.get("hyphenatedCaseRef").toString().replace("-", ""));
 
-        assertThat(caseCorrespondencesFTDataManager.getCorrespondenceEntities(testCaseRef)).hasSize(2);
-        assertThat(caseCorrespondencesFTDataManager.getCorrespondenceEntities(testCaseRef).getFirst().getId())
-            .isNotNull();
-        assertThat(caseCorrespondencesFTDataManager.getCorrespondenceEntities(testCaseRef).getFirst().getCaseReferenceNumber())
-            .isEqualTo(Long.parseLong(caseData.get("hyphenatedCaseRef").toString().replace("-", "")));
-        assertThat(caseCorrespondencesFTDataManager.getCorrespondenceEntities(testCaseRef).getFirst().getEventType())
-            .isEqualTo("APPLICATION_RECEIVED");
-        assertThat(caseCorrespondencesFTDataManager.getCorrespondenceEntities(testCaseRef).getFirst().getSentOn())
-            .isNotNull();
-        assertThat(caseCorrespondencesFTDataManager.getCorrespondenceEntities(testCaseRef).getFirst().getSentFrom())
-            .isNotNull();
-        assertThat(caseCorrespondencesFTDataManager.getCorrespondenceEntities(testCaseRef).getFirst().getSentTo())
-            .isNotNull();
-        assertThat(caseCorrespondencesFTDataManager.getCorrespondenceEntities(testCaseRef).getFirst().getCorrespondenceType())
-            .isEqualTo("Email");
-        assertThat(caseCorrespondencesFTDataManager.getCorrespondenceEntities(testCaseRef).getFirst().getDocumentUrl())
-            .isNotNull();
-        assertThat(caseCorrespondencesFTDataManager.getCorrespondenceEntities(testCaseRef).getFirst().getDocumentFilename())
-            .isNotNull();
-        assertThat(caseCorrespondencesFTDataManager.getCorrespondenceEntities(testCaseRef).getFirst().getDocumentBinaryUrl())
-            .isNotNull();
+        List<CorrespondenceEntity> correspondenceEntities = caseCorrespondencesFTDataManager.getCorrespondenceEntities(testCaseRef);
+        assertThat(correspondenceEntities).hasSize(2);
+
+        CorrespondenceEntity firstCorrespondenceEntity = correspondenceEntities.getFirst();
+
+        assertThat(firstCorrespondenceEntity.getId()).isNotNull();
+        assertThat(firstCorrespondenceEntity.getCaseReferenceNumber()).isEqualTo(Long.parseLong(caseData.get("hyphenatedCaseRef")
+            .toString().replace("-", "")));
+        assertThat(firstCorrespondenceEntity.getEventType()).isEqualTo("APPLICATION_RECEIVED");
+        assertThat(firstCorrespondenceEntity.getSentOn()).isNotNull();
+        assertThat(firstCorrespondenceEntity.getSentFrom()).isNotNull();
+        assertThat(firstCorrespondenceEntity.getSentTo()).isNotNull();
+        assertThat(firstCorrespondenceEntity.getCorrespondenceType()).isEqualTo("Email");
+        assertThat(firstCorrespondenceEntity.getDocumentUrl()).isNotNull();
+        assertThat(firstCorrespondenceEntity.getDocumentFilename()).isNotNull();
+        assertThat(firstCorrespondenceEntity.getDocumentBinaryUrl()).isNotNull();
     }
 
     @Test
@@ -113,27 +111,22 @@ public class CicSubmitCaseEventFT extends FunctionalTestSuite {
 
         long testCaseRef = Long.parseLong(caseData.get("hyphenatedCaseRef").toString().replace("-", ""));
 
-        assertThat(caseCorrespondencesFTDataManager.getCorrespondenceEntities(testCaseRef)).hasSize(2);
-        assertThat(caseCorrespondencesFTDataManager.getCorrespondenceEntities(testCaseRef).getFirst().getId())
-            .isNotNull();
-        assertThat(caseCorrespondencesFTDataManager.getCorrespondenceEntities(testCaseRef).getFirst().getCaseReferenceNumber())
-            .isEqualTo(Long.parseLong(caseData.get("hyphenatedCaseRef").toString().replace("-", "")));
-        assertThat(caseCorrespondencesFTDataManager.getCorrespondenceEntities(testCaseRef).getFirst().getEventType())
-            .isEqualTo("APPLICATION_RECEIVED_CY");
-        assertThat(caseCorrespondencesFTDataManager.getCorrespondenceEntities(testCaseRef).getFirst().getSentOn())
-            .isNotNull();
-        assertThat(caseCorrespondencesFTDataManager.getCorrespondenceEntities(testCaseRef).getFirst().getSentFrom())
-            .isNotNull();
-        assertThat(caseCorrespondencesFTDataManager.getCorrespondenceEntities(testCaseRef).getFirst().getSentTo())
-            .isNotNull();
-        assertThat(caseCorrespondencesFTDataManager.getCorrespondenceEntities(testCaseRef).getFirst().getCorrespondenceType())
-            .isEqualTo("Email");
-        assertThat(caseCorrespondencesFTDataManager.getCorrespondenceEntities(testCaseRef).getFirst().getDocumentUrl())
-            .isNotNull();
-        assertThat(caseCorrespondencesFTDataManager.getCorrespondenceEntities(testCaseRef).getFirst().getDocumentFilename())
-            .isNotNull();
-        assertThat(caseCorrespondencesFTDataManager.getCorrespondenceEntities(testCaseRef).getFirst().getDocumentBinaryUrl())
-            .isNotNull();
+        List<CorrespondenceEntity> correspondenceEntities = caseCorrespondencesFTDataManager.getCorrespondenceEntities(testCaseRef);
+        assertThat(correspondenceEntities).hasSize(2);
+
+        CorrespondenceEntity firstCorrespondenceEntity = correspondenceEntities.getFirst();
+
+        assertThat(firstCorrespondenceEntity.getId()).isNotNull();
+        assertThat(firstCorrespondenceEntity.getCaseReferenceNumber()).isEqualTo(Long.parseLong(caseData.get("hyphenatedCaseRef")
+            .toString().replace("-", "")));
+        assertThat(firstCorrespondenceEntity.getEventType()).isEqualTo("APPLICATION_RECEIVED_CY");
+        assertThat(firstCorrespondenceEntity.getSentOn()).isNotNull();
+        assertThat(firstCorrespondenceEntity.getSentFrom()).isNotNull();
+        assertThat(firstCorrespondenceEntity.getSentTo()).isNotNull();
+        assertThat(firstCorrespondenceEntity.getCorrespondenceType()).isEqualTo("Email");
+        assertThat(firstCorrespondenceEntity.getDocumentUrl()).isNotNull();
+        assertThat(firstCorrespondenceEntity.getDocumentFilename()).isNotNull();
+        assertThat(firstCorrespondenceEntity.getDocumentBinaryUrl()).isNotNull();
     }
 
     @Disabled("Skipped to unblock WA - New case needs to be created before updating supplementary data")

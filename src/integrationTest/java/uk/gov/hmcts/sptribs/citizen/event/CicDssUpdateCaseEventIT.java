@@ -74,9 +74,6 @@ public class CicDssUpdateCaseEventIT {
     @MockitoBean
     private NotificationServiceCIC notificationServiceCIC;
 
-    @MockitoBean
-    private DocumentsRepository documentsRepository;
-
     private static final String CONFIRMATION_HEADER = "$.confirmation_header";
 
     @BeforeAll

@@ -128,9 +128,6 @@ class RespondentDocumentManagementBundleIT {
     @MockitoBean
     private AuthTokenGenerator authTokenGenerator;
 
-    @MockitoBean
-    private DocumentsRepository documentsRepository;
-
     @BeforeAll
     static void setUp() {
         IdamWireMock.start();

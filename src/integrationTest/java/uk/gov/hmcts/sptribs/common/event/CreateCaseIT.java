@@ -83,9 +83,6 @@ public class CreateCaseIT {
     @MockitoBean
     private CcdSupplementaryDataService coreCaseApiService;
 
-    @MockitoBean
-    private DocumentsRepository documentsRepository;
-
     private static final String CONFIRMATION_HEADER = "$.confirmation_header";
 
     @BeforeAll
