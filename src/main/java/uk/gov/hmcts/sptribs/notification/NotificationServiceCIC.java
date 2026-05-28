@@ -447,9 +447,7 @@ public class NotificationServiceCIC {
             uploadedPDF.setFilename(correspondenceDocumentFilename);
             uploadedPDF.setUrl(uploadResponse.getDocuments().getFirst().links.self.href);
             uploadedPDF.setCategoryId(DocumentType.CORRESPONDENCE.getCategory());
-
-            documentsService.buildAndSaveNewDocumentEntity(uploadedPDF, longCaseRef, false);
-
+            
             return uploadedPDF;
         } catch (RestClientException e) {
             log.error("Failed to store correspondence document [" + correspondenceDocumentFilename + "]", e);

@@ -216,7 +216,6 @@ public class ContactPartiesNotification implements PartiesNotification {
             templateVars,
             emailTemplateName);
         for (Map.Entry<String, String> uploadedDocumentEntry : request.getUploadedDocuments().entrySet()) {
-            log.error("UUID: {}", uploadedDocumentEntry.getValue());
             if (uploadedDocumentEntry.getKey().contains(DOC_AVAILABLE) || StringUtils.isEmpty(uploadedDocumentEntry.getValue())) {
                 continue;
             }

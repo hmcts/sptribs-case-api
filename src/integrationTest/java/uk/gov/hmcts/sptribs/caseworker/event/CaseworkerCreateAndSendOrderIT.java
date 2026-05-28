@@ -25,7 +25,6 @@ import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.OrderTemplate;
 import uk.gov.hmcts.sptribs.ciccase.model.PartiesCIC;
 import uk.gov.hmcts.sptribs.common.config.WebMvcConfig;
-import uk.gov.hmcts.sptribs.common.repositories.DocumentsRepository;
 import uk.gov.hmcts.sptribs.document.DocAssemblyService;
 import uk.gov.hmcts.sptribs.idam.IdamService;
 import uk.gov.hmcts.sptribs.notification.NotificationServiceCIC;
@@ -164,8 +163,8 @@ public class CaseworkerCreateAndSendOrderIT {
         Document document = Document.builder()
             .categoryId("TD")
             .filename("Order--[AAC]--09-05-2024 09:04:04.pdf")
-            .binaryUrl("http://dm-store-aat.service.core-compute-aat.internal/documents/6bcdb209-ba65-4f31-a12a-5abbdf250fb6/binary")
-            .url("http://dm-store-aat.service.core-compute-aat.internal/documents/6bcdb209-ba65-4f31-a12a-5abbdf250fb6")
+            .binaryUrl("http://url/binary")
+            .url("http://url/")
             .build();
 
         final CaseData caseData = CaseData.builder()
