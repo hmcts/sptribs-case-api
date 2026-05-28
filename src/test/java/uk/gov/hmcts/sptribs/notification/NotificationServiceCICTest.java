@@ -936,8 +936,8 @@ public class NotificationServiceCICTest {
             .containsEntry(CASE_ISSUED_RESPONDENT_EMAIL.name(), templateId)
             .containsEntry("DocumentAvailable1", "yes");
 
-        String expectedDocumentDescription = String.format("%nFilename: %s%nDescription: %s%nUpload Date: %s",
-            cicDocument.getDocumentLink().getFilename(), cicDocument.getDocumentEmailContent(), cicDocument.getDate());
+        String expectedDocumentDescription = String.format("%nFilename: %s%nDescription: %s%n",
+            cicDocument.getDocumentLink().getFilename(), cicDocument.getDocumentEmailContent());
 
         assertThat(templateVarsArgCaptor.getValue())
             .extracting("CaseDocument1")
