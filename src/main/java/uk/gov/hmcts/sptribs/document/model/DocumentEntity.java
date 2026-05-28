@@ -56,7 +56,9 @@ public class DocumentEntity {
 
     @Override
     public boolean equals(Object documentEntityObject) {
-        if (documentEntityObject == null || getClass() != documentEntityObject.getClass()) return false;
+        if (documentEntityObject == null || getClass() != documentEntityObject.getClass()) {
+            return false;
+        }
 
         DocumentEntity that = (DocumentEntity) documentEntityObject;
         return getId() == that.getId()
