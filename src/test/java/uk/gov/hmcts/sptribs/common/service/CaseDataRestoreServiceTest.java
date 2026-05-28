@@ -17,7 +17,6 @@ import uk.gov.hmcts.sptribs.caseworker.util.SendOrderUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.common.dto.RemoveEventWithPrecedingData;
-import uk.gov.hmcts.sptribs.common.repositories.impl.CaseEventRepositoryImpl;
 import uk.gov.hmcts.sptribs.document.model.CICDocument;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 
