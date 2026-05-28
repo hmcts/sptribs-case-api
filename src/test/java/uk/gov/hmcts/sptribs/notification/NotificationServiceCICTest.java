@@ -805,6 +805,9 @@ public class NotificationServiceCICTest {
         //When
         notificationService.sendEmail(request, List.of(cicDocument), TEST_CASE_ID.toString());
 
+        String expectedDocumentDescription = String.format("%nFilename: %s%nDescription: %s%n",
+            cicDocument.getDocumentLink().getFilename(), cicDocument.getDocumentEmailContent());
+
         //Then
         verify(notificationClient).sendEmail(
             eq(templateId),
@@ -817,7 +820,8 @@ public class NotificationServiceCICTest {
             .containsEntry("DocumentAvailable1", "yes");
         assertThat(templateVarsArgCaptor.getValue())
             .extracting("CaseDocument1")
-            .isInstanceOf(java.lang.String.class);
+            .isInstanceOf(String.class)
+            .isEqualTo(expectedDocumentDescription);
 
         verify(sendEmailResponse, times(3)).getNotificationId();
         verify(sendEmailResponse, times(2)).getReference();
