@@ -30,7 +30,6 @@ import static uk.gov.hmcts.sptribs.common.CommonConstants.TRIBUNAL_EMAIL_VALUE;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.TRIBUNAL_NAME_VALUE;
 
 @Component
-@Slf4j
 public class ContactPartiesNotification implements PartiesNotification {
 
     @Autowired
@@ -216,7 +215,6 @@ public class ContactPartiesNotification implements PartiesNotification {
             templateVars,
             emailTemplateName);
         for (Map.Entry<String, String> uploadedDocumentEntry : request.getUploadedDocuments().entrySet()) {
-            log.error("UUID: {}", uploadedDocumentEntry.getValue());
             if (uploadedDocumentEntry.getKey().contains(DOC_AVAILABLE) || StringUtils.isEmpty(uploadedDocumentEntry.getValue())) {
                 continue;
             }
