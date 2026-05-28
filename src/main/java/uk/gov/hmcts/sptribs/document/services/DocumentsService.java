@@ -1,6 +1,6 @@
 package uk.gov.hmcts.sptribs.document.services;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -8,15 +8,11 @@ import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.sptribs.common.repositories.DocumentsRepository;
 import uk.gov.hmcts.sptribs.document.model.DocumentEntity;
 
+@RequiredArgsConstructor
 @Service
 public class DocumentsService {
 
     private final DocumentsRepository documentsRepository;
-
-    @Autowired
-    public DocumentsService(DocumentsRepository documentsRepository) {
-        this.documentsRepository = documentsRepository;
-    }
 
     public void buildAndSaveNewDocumentEntity(Document document, Long caseReferenceNumber, boolean isDraft) {
         try {
