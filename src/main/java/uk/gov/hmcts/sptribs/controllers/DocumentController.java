@@ -30,14 +30,14 @@ import uk.gov.hmcts.sptribs.document.service.DocumentsService;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@RequestMapping(path = "/case/document")
+@RequestMapping(path = "/cases")
 public class DocumentController {
 
     private final DocumentDownloadService documentDownloadService;
     private final DocumentsService documentsService;
     private final CaseworkerCICDocumentMapper caseworkerCICDocumentMapper;
 
-    @GetMapping(value = "/getDocumnets/{ccdReference}")
+    @GetMapping(value = "/{ccdReference}/documents")
     @Operation(summary = "Get Documents for a CCD reference")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Documents retrieved successfully"),

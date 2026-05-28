@@ -1,5 +1,6 @@
 package uk.gov.hmcts.sptribs.document.service;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
@@ -18,15 +19,11 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+@RequiredArgsConstructor
 @Service
 public class DocumentsService {
 
     private final DocumentsRepository documentsRepository;
-
-    @Autowired
-    public DocumentsService(DocumentsRepository documentsRepository) {
-        this.documentsRepository = documentsRepository;
-    }
 
     public void buildAndSaveNewDocumentEntity(Document document, Long caseReferenceNumber, boolean isDraft) {
         try {
