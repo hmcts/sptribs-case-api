@@ -12,10 +12,8 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
-import org.hibernate.proxy.HibernateProxy;
 
 import java.time.OffsetDateTime;
-import java.util.Objects;
 
 @Entity
 @Table(name = "case_documents")
@@ -57,28 +55,33 @@ public class DocumentEntity {
     private boolean sentToApplicantViaContactParties;
 
     @Override
-    public final boolean equals(Object documentEntityObject) {
-        if (this == documentEntityObject) {
-            return true;
-        }
-        if (documentEntityObject == null) {
-            return false;
-        }
-        Class<?> documentEntityObjectEffectiveClass = documentEntityObject instanceof HibernateProxy
-            ? ((HibernateProxy) documentEntityObject).getHibernateLazyInitializer().getPersistentClass() : documentEntityObject.getClass();
-        Class<?> thisEffectiveClass = this instanceof HibernateProxy
-            ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass() : this.getClass();
-        if (thisEffectiveClass != documentEntityObjectEffectiveClass) {
-            return false;
-        }
+    public boolean equals(Object documentEntityObject) {
+        if (documentEntityObject == null || getClass() != documentEntityObject.getClass()) return false;
+
         DocumentEntity that = (DocumentEntity) documentEntityObject;
-        return Objects.equals(getId(), that.getId());
+        return getId() == that.getId()
+            && isDraft() == that.isDraft()
+            && isSentToApplicantViaContactParties() == that.isSentToApplicantViaContactParties()
+            && getCaseReferenceNumber().equals(that.getCaseReferenceNumber())
+            && getSavedAt().equals(that.getSavedAt())
+            && getDocumentUrl().equals(that.getDocumentUrl())
+            && getDocumentFilename().equals(that.getDocumentFilename())
+            && getDocumentBinaryUrl().equals(that.getDocumentBinaryUrl())
+            && getCategoryId().equals(that.getCategoryId());
     }
 
     @Override
-    public final int hashCode() {
-        return this instanceof HibernateProxy
-            ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass().hashCode() : getClass().hashCode();
+    public int hashCode() {
+        int result = getId();
+        result = 31 * result + getCaseReferenceNumber().hashCode();
+        result = 31 * result + getSavedAt().hashCode();
+        result = 31 * result + getDocumentUrl().hashCode();
+        result = 31 * result + getDocumentFilename().hashCode();
+        result = 31 * result + getDocumentBinaryUrl().hashCode();
+        result = 31 * result + getCategoryId().hashCode();
+        result = 31 * result + Boolean.hashCode(isDraft());
+        result = 31 * result + Boolean.hashCode(isSentToApplicantViaContactParties());
+        return result;
     }
 }
 

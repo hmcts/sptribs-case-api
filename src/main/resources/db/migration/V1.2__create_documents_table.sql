@@ -1,6 +1,6 @@
 create table if not exists case_documents (
   id serial primary key,
-  case_reference_number bigint not null,
+  case_reference_number bigint not null references ccd.case_data(reference) on delete cascade,
   saved_at timestamp not null default current_timestamp,
   document_url varChar(200) not null,
   document_binary_url varChar(200) not null unique,
@@ -8,4 +8,4 @@ create table if not exists case_documents (
   category_id varChar(200) not null,
   is_draft boolean not null,
   sent_to_applicant_via_contact_parties boolean not null
-  );
+);
