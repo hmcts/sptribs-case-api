@@ -296,6 +296,31 @@ public abstract class FunctionalTestSuite {
         return triggerCallback(caseData, eventId, url, false);
     }
 
+    protected Response triggerCallbackForPersistedCaseAsSystemUser(Map<String, Object> caseData, String eventId, String url)
+        throws IOException {
+
+        final CaseDetails createdCase = createCaseInCcd();
+        CaseData formatter = CaseData.builder().build();
+        caseData.put("hyphenatedCaseRef", formatter.formatCaseRef(createdCase.getId()));
+        functionalTestDataManager.addReference(createdCase.getId());
+
+        CallbackRequest request = CallbackRequest
+            .builder()
+            .eventId(eventId)
+            .caseDetails(
+                CaseDetails
+                    .builder()
+                    .id(createdCase.getId())
+                    .data(caseData)
+                    .createdDate(LOCAL_DATE_TIME)
+                    .caseTypeId(CcdServiceCode.ST_CIC.getCaseType().getCaseTypeName())
+                    .build()
+            )
+            .build();
+
+        return triggerCallback(request, url);
+    }
+
     protected List<CaseDetails> searchForCasesWithQuery(BoolQueryBuilder query) {
         return searchService.searchForAllCasesWithQuery(
             query,

@@ -3,6 +3,7 @@ package uk.gov.hmcts.sptribs.document.services;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.sptribs.common.repositories.DocumentsRepository;
 import uk.gov.hmcts.sptribs.document.model.DocumentEntity;
@@ -29,6 +30,7 @@ public class DocumentsService {
         }
     }
 
+    @Transactional
     public void setSentToApplicantViaContactPartiesToTrue(String documentBinaryUrl) {
         try {
             documentsRepository.setSentToApplicantViaContactPartiesToTrueByDocumentBinaryUrl(documentBinaryUrl);

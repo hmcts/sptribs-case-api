@@ -12,7 +12,9 @@ import uk.gov.hmcts.ccd.sdk.ConfigBuilderImpl;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.Event;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
+import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
+import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.cdam.model.Document;
 import uk.gov.hmcts.sptribs.cdam.model.UploadResponse;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
@@ -28,6 +30,7 @@ import uk.gov.hmcts.sptribs.services.cdam.CaseDocumentClientApi;
 import java.util.ArrayList;
 import java.util.List;
 
+import static java.lang.String.format;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -131,10 +134,6 @@ public class CreateTestCaseTest {
 
         AboutToStartOrSubmitResponse<CaseData, State> response = createTestCase.aboutToSubmit(caseDetails, caseDetails);
 
-        verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
-            eq(expectedUploadDocument), eq(TEST_CASE_ID), eq(false)
-        );
-
         assertThat(response.getState()).isEqualTo(CaseManagement);
         assertThat(response.getData().getHyphenatedCaseRef()).isEqualTo(TEST_CASE_ID_HYPHENATED);
         assertThat(response.getData().getCicCase().getApplicantDocumentsUploaded()).hasSize(1);
@@ -156,60 +155,38 @@ public class CreateTestCaseTest {
     }
 
     @Test
-    void shouldStoreErrorsWhenBuildAndSaveNewDocumentEntityThrowsRuntimeException() throws JsonProcessingException {
-        final CaseData caseData =
-            CaseData.builder()
-                .caseStatus(CaseManagement)
-                .build();
-        final AppsConfig.AppsDetails appsDetails = new AppsConfig.AppsDetails();
-        appsDetails.setCaseType("CriminalInjuriesCompensation");
-        appsDetails.setJurisdiction("ST_CIC");
+    void shouldReturnFailureResponseHeaderWhenBuildAndSaveNewDocumentEntityThrowsRuntimeException() throws JsonProcessingException {
+        List<ListValue<CaseworkerCICDocument>> testDocumentList = new ArrayList<>();
+        uk.gov.hmcts.ccd.sdk.type.Document testDocument1 = uk.gov.hmcts.ccd.sdk.type.Document.builder()
+            .url("test.com/document1.pdf")
+            .filename("document1.pdf")
+            .build();
+        CaseworkerCICDocument testCaseworkerCICDocument1 = CaseworkerCICDocument.builder()
+            .documentLink(testDocument1)
+            .documentCategory(DocumentType.DSS_TRIBUNAL_FORM)
+            .build();
+        ListValue<CaseworkerCICDocument> testListValueCaseworkerCICDocument1 = new ListValue<>();
+        testListValueCaseworkerCICDocument1.setId("1");
+        testListValueCaseworkerCICDocument1.setValue(testCaseworkerCICDocument1);
+        testDocumentList.add(testListValueCaseworkerCICDocument1);
+
+        final CaseData caseData = caseData();
+        caseData.setHyphenatedCaseRef(caseData.formatCaseRef(TEST_CASE_ID));
+        caseData.getCicCase().setApplicantDocumentsUploaded(testDocumentList);
 
         final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
         caseDetails.setId(TEST_CASE_ID);
         caseDetails.setData(caseData);
-
-        final Document expectedCdamUploadedDocument = new Document();
-        final Document.DocumentLink documentLink = new Document.DocumentLink();
-        documentLink.href = "dmstore-url/doc-id";
-        final Document.DocumentLink binaryDocumentLink = new Document.DocumentLink();
-        binaryDocumentLink.href = "dmstore-url/doc-id/binary";
-        final Document.Links links = new Document.Links();
-        links.self = documentLink;
-        links.binary = binaryDocumentLink;
-        expectedCdamUploadedDocument.setLinks(links);
-        expectedCdamUploadedDocument.setOriginalDocumentName("sample_file.pdf");
-
-        final List<Document> expectedDocuments = new ArrayList<>();
-        expectedDocuments.add(expectedCdamUploadedDocument);
-
-        final uk.gov.hmcts.ccd.sdk.type.Document expectedUploadDocument = uk.gov.hmcts.ccd.sdk.type.Document.builder()
-            .url(expectedCdamUploadedDocument.links.self.href)
-            .filename(expectedCdamUploadedDocument.originalDocumentName)
-            .categoryId("A")
-            .binaryUrl(expectedCdamUploadedDocument.links.binary.href)
-            .build();
-
-        final CaseworkerCICDocument expectedCICDocument = CaseworkerCICDocument.builder()
-            .documentLink(expectedUploadDocument)
-            .documentCategory(DocumentType.APPLICATION_FORM)
-            .documentEmailContent("This is a test document uploaded during create case journey")
-            .build();
-
-        UploadResponse expectedResponse = new UploadResponse();
-        expectedResponse.setDocuments(expectedDocuments);
-
-        when(appsConfig.getApps()).thenReturn(List.of(appsDetails));
-        when(mapper.readValue(anyString(), eq(CaseData.class))).thenReturn(caseData());
-        when(caseDocumentClientApi.uploadDocuments(any(), any(), any())).thenReturn(expectedResponse);
+        caseDetails.setState(Submitted);
 
         doThrow(new RuntimeException("Error saving document entity to database"))
             .when(documentsService).buildAndSaveNewDocumentEntity(any(), eq(TEST_CASE_ID), eq(false));
 
-        AboutToStartOrSubmitResponse<CaseData, State> response = createTestCase.aboutToSubmit(caseDetails, caseDetails);
+        SubmittedCallbackResponse response =
+            createTestCase.submitted(caseDetails, caseDetails);
 
-        assertThat(response.getErrors()).hasSize(1);
-        assertThat(response.getErrors()).contains("Error saving document entity to database");
+        assertThat(response.getConfirmationHeader())
+            .contains(format("# Create case notification failed %n## Please resend the notification"));
 
         verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
             any(), eq(TEST_CASE_ID), eq(false)

@@ -24,8 +24,10 @@ import static uk.gov.hmcts.sptribs.testutil.TestResourceUtil.expectedResponse;
 @SpringBootTest
 public class CaseworkerCreateCaseFT extends FunctionalTestSuite {
 
-    private static final String REQUEST = "classpath:request/casedata/ccd-callback-casedata-caseworker-submit-case.json";
-    private static final String BAD_REQUEST = "classpath:request/casedata/ccd-callback-casedata-caseworker-submit-case-failure.json";
+    private static final String BAD_REQUEST = "classpath:request/casedata/ccd-callback-casedata-create-case-submitted-unhappy.json";
+    private static final String REQUEST = "classpath:request/casedata/ccd-callback-casedata-create-case-about-to-submit.json";
+    private static final String SUBMITTED_REQUEST = "classpath:request/casedata/ccd-callback-casedata-create-case-submitted.json";
+
     private static final String RESPONSE = "classpath:responses/response-caseworker-submit-case.json";
 
     private static final String CASEWORKER_CREATE_CASE_EVENT_ID = "caseworker-create-case";
@@ -41,6 +43,19 @@ public class CaseworkerCreateCaseFT extends FunctionalTestSuite {
             .when(IGNORING_EXTRA_FIELDS)
             .when(IGNORING_ARRAY_ORDER)
             .isEqualTo(json(expectedResponse(RESPONSE)));
+    }
+
+    @Test
+    public void shouldGetConfirmationWhenValidSubmittedCallbackIsInvoked() throws Exception {
+        final Map<String, Object> caseData = caseData(SUBMITTED_REQUEST);
+        final Response response = triggerCallback(caseData, CASEWORKER_CREATE_CASE_EVENT_ID, SUBMITTED_URL);
+
+        assertThat(response.getStatusCode()).isEqualTo(OK.value());
+        final String confirmationHeader = JsonPath.from(response.asString()).getString("confirmation_header");
+        assertThat(confirmationHeader)
+            .as("confirmation header should contain the generated case reference")
+            .contains("# Case Created", "## Case reference number:")
+            .matches("(?s).*##\\s*[0-9]{4}-[0-9]{4}-[0-9]{4}-[0-9]{4}.*");
 
         long testCaseRef = Long.parseLong(caseData.get("hyphenatedCaseRef").toString().replace("-", ""));
 
@@ -59,19 +74,6 @@ public class CaseworkerCreateCaseFT extends FunctionalTestSuite {
         assertThat(firstDocumentEntity.getDocumentUrl()).isNotNull();
         assertThat(firstDocumentEntity.getDocumentFilename()).isNotNull();
         assertThat(firstDocumentEntity.getDocumentBinaryUrl()).isNotNull();
-    }
-
-    @Test
-    public void shouldGetConfirmationWhenValidSubmittedCallbackIsInvoked() throws Exception {
-        final Map<String, Object> caseData = caseData(REQUEST);
-        final Response response = triggerCallback(caseData, CASEWORKER_CREATE_CASE_EVENT_ID, SUBMITTED_URL);
-
-        assertThat(response.getStatusCode()).isEqualTo(OK.value());
-        final String confirmationHeader = JsonPath.from(response.asString()).getString("confirmation_header");
-        assertThat(confirmationHeader)
-            .as("confirmation header should contain the generated case reference")
-            .contains("# Case Created", "## Case reference number:")
-            .matches("(?s).*##\\s*[0-9]{4}-[0-9]{4}-[0-9]{4}-[0-9]{4}.*");
     }
 
     @Test
