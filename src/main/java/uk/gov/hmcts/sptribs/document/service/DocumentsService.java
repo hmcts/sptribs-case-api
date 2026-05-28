@@ -8,9 +8,15 @@ import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.sptribs.common.repositories.DocumentsRepository;
 import uk.gov.hmcts.sptribs.document.model.DocumentDashboardModel;
 import uk.gov.hmcts.sptribs.document.model.DocumentEntity;
+import uk.gov.hmcts.sptribs.document.model.DocumentType;
 
+import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Service
 public class DocumentsService {
@@ -48,23 +54,44 @@ public class DocumentsService {
     }
 
     public DocumentDashboardModel getDocumentsOnCase(Long ccdReference) {
-        //probs exclude draft in query, could use query for more control also
-        List<DocumentEntity> allDocumentsOnCase = documentsRepository.findByCaseReferenceNumberOrderBySavedAtDesc(ccdReference);
 
-        List<DocumentEntity> applicantDocuments = new ArrayList<>();
-        List<DocumentEntity> lastestCaseBundle = new ArrayList<>();
+        List<DocumentEntity> allDocumentsOnCase =
+            documentsRepository.findAllNonDraftDocumentsByCaseReference(ccdReference);
+
+        List<DocumentEntity> contactPartiesDocuments = new ArrayList<>();
         List<DocumentEntity> orderAndDecisionDocuments = new ArrayList<>();
+        List<DocumentEntity> bundleDocuments = new ArrayList<>();
 
+        for (DocumentEntity doc : allDocumentsOnCase) {
 
-        for (DocumentEntity document : allDocumentsOnCase) {
-            //my logic
-            //check for
-//            document.getCategoryId()
+            if (doc.isSentToApplicantViaContactParties()) {
+                contactPartiesDocuments.add(doc);
+            }
+
+            if (DocumentType.TRIBUNAL_DIRECTION.getCategory().equals(doc.getCategoryId())) {
+                orderAndDecisionDocuments.add(doc);
+            }
+
+            if (DocumentType.BUNDLE.getCategory().equals(doc.getCategoryId())) {
+                bundleDocuments.add(doc);
+            }
         }
 
+        OffsetDateTime latestBundleDate = bundleDocuments.stream()
+            .map(DocumentEntity::getSavedAt)
+            .max(OffsetDateTime::compareTo)
+            .orElse(null);
+
+        List<DocumentEntity> latestCaseBundleDocuments =
+            latestBundleDate == null
+                ? List.of()
+                : bundleDocuments.stream()
+                .filter(doc -> latestBundleDate.equals(doc.getSavedAt()))
+                .toList();
+
         return DocumentDashboardModel.builder()
-            .contactPartiesDocuments(applicantDocuments)
-            .latestCaseBundleDocuments(lastestCaseBundle)
+            .contactPartiesDocuments(contactPartiesDocuments)
+            .latestCaseBundleDocuments(latestCaseBundleDocuments)
             .orderAndDecisionDocuments(orderAndDecisionDocuments)
             .build();
     }

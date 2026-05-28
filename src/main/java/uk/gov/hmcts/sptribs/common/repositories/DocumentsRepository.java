@@ -15,6 +15,13 @@ public interface DocumentsRepository extends JpaRepository<DocumentEntity, Integ
     @Query("update DocumentEntity d set d.sentToApplicantViaContactParties = true where d.documentBinaryUrl = :documentBinaryUrl")
     void setSentToApplicantViaContactPartiesToTrueByDocumentBinaryUrl(@Param("documentBinaryUrl") String documentBinaryUrl);
 
-    List<DocumentEntity> findByCaseReferenceNumberOrderBySavedAtDesc(
-        Long caseReferenceNumber);
+    @Query("""
+    SELECT d
+    FROM DocumentEntity d
+    WHERE d.caseReferenceNumber = :caseReferenceNumber
+      AND d.isDraft = false
+    ORDER BY d.savedAt DESC
+""")
+    List<DocumentEntity> findAllNonDraftDocumentsByCaseReference(
+        @Param("caseReferenceNumber") Long caseReferenceNumber);
 }

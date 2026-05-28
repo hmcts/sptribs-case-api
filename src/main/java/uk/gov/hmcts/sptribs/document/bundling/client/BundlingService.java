@@ -198,6 +198,7 @@ public class BundlingService {
     }
 
     private Bundle buildBundle(LinkedHashMap<String, Object> objectLinkedHashMap, Long caseNumber) {
+        //move sticthed do buiklder outsiode so we can insert to db cleanly
         return Bundle.builder()
             .stitchStatus(NEW)
             .description(MapUtils.getString(objectLinkedHashMap, DESCRIPTION, ""))
@@ -228,6 +229,7 @@ public class BundlingService {
             .categoryId(DocumentType.BUNDLE.getCategory())
             .build();
 
+        //is this correct place??
         documentsService.buildAndSaveNewDocumentEntity(
             stitchedDocument,
             caseNumber,
