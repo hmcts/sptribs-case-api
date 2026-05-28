@@ -19,9 +19,9 @@
       "id": null,
       "value": {
         "documentLink": {
-          "document_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/328c674f-59c3-418a-b76b-78f2cc52d21c",
+          "document_url": "http://dm-store.service.core-compute.internal/documents/328c674f-59c3-418a-b76b-78f2cc52d21c",
           "document_filename": "mockFileUpdatedTribunalFormDoc.pdf",
-          "document_binary_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/328c674f-59c3-418a-b76b-78f2cc52d21c/binary",
+          "document_binary_url": "http://dm-store.service.core-compute.internal/documents/328c674f-59c3-418a-b76b-78f2cc52d21c/binary",
           "category_id": null
         }
       }
@@ -32,9 +32,9 @@
       "id": null,
       "value": {
         "documentLink": {
-          "document_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/328c674f-59c3-418a-b76b-78f2cc52d21b",
+          "document_url": "http://dm-store.service.core-compute.internal/documents/328c674f-59c3-418a-b76b-78f2cc52d21b",
           "document_filename": "mockFileUpdatedSupportingDoc.pdf",
-          "document_binary_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/328c674f-59c3-418a-b76b-78f2cc52d21b/binary",
+          "document_binary_url": "http://dm-store.service.core-compute.internal/documents/328c674f-59c3-418a-b76b-78f2cc52d21b/binary",
           "category_id": null
         }
       }
@@ -46,9 +46,9 @@
       "value": {
         "documentLink": {
           "category_id": "DSS",
-          "document_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/328c674f-59c3-418a-b76b-78f2cc52d21a",
+          "document_url": "http://dm-store.service.core-compute.internal/documents/328c674f-59c3-418a-b76b-78f2cc52d21a",
           "document_filename": "mockFileUpdated.pdf",
-          "document_binary_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/328c674f-59c3-418a-b76b-78f2cc52d21a/binary"
+          "document_binary_url": "http://dm-store.service.core-compute.internal/documents/328c674f-59c3-418a-b76b-78f2cc52d21a/binary"
         },
         "comment": "a relevant doc"
       }

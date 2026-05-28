@@ -30,7 +30,6 @@ import static uk.gov.hmcts.sptribs.common.CommonConstants.TRIBUNAL_EMAIL_VALUE;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.TRIBUNAL_NAME_VALUE;
 
 @Component
-@Slf4j
 public class ContactPartiesNotification implements PartiesNotification {
 
     @Autowired

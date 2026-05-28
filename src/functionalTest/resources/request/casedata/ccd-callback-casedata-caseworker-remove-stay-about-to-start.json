@@ -50,9 +50,9 @@
         "value": {
           "documentLink": {
             "category_id": "A",
-            "document_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/149609f6-4e18-4eeb-958d-9750b2c7066d",
+            "document_url": "http://dm-store.service.core-compute.internal/documents/149609f6-4e18-4eeb-958d-9750b2c7066d",
             "document_filename": "pdf.pdf",
-            "document_binary_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/149609f6-4e18-4eeb-958d-9750b2c7066d/binary"
+            "document_binary_url": "http://dm-store.service.core-compute.internal/documents/149609f6-4e18-4eeb-958d-9750b2c7066d/binary"
           },
           "documentCategory": "ApplicationForm",
           "documentEmailContent": "Lorem ipsum description"

@@ -265,9 +265,9 @@
       "value": {
         "documentLink": {
           "category_id": "A",
-          "document_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/5f9c2b1a-1762-420a-9474-ad044188ba73",
+          "document_url": "http://dm-store.service.core-compute.internal/documents/5f9c2b1a-1762-420a-9474-ad044188ba73",
           "document_filename": "pdf.pdf",
-          "document_binary_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/5f9c2b1a-1762-420a-9474-ad044188ba73/binary"
+          "document_binary_url": "http://dm-store.service.core-compute.internal/documents/5f9c2b1a-1762-420a-9474-ad044188ba73/binary"
         },
         "documentCategory": "ApplicationForm",
         "documentEmailContent": "Lorem ipsum PDF"
@@ -280,9 +280,9 @@
   "caseIssueFinalDecisionDecisionTemplate": "CIC1 - Eligibility",
   "caseIssueFinalDecisionFinalDecisionDraft": {
     "category_id": "TD",
-    "document_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/31c74acb-4293-4147-a076-d2039c819f29",
+    "document_url": "http://dm-store.service.core-compute.internal/documents/31c74acb-4293-4147-a076-d2039c819f29",
     "document_filename": "Final-decision-notice2024-05-28 16:46:46.pdf",
-    "document_binary_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/31c74acb-4293-4147-a076-d2039c819f29/binary"
+    "document_binary_url": "http://dm-store.service.core-compute.internal/documents/31c74acb-4293-4147-a076-d2039c819f29/binary"
   },
   "caseIssueFinalDecisionFinalDecisionNotice": "Create from a template"
 }

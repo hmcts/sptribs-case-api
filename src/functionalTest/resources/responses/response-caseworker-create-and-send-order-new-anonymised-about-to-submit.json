@@ -8,9 +8,9 @@
           "documentCategory": "Mental Health records",
           "documentEmailContent": "A test doc",
           "documentLink": {
-            "document_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/5dabdd89-42e4-4294-8d67-a7aae560e6b6",
+            "document_url": "http://dm-store.service.core-compute.internal/documents/5dabdd89-42e4-4294-8d67-a7aae560e6b6",
             "document_filename": "Test-Letter-V2 3.pdf",
-            "document_binary_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/5dabdd89-42e4-4294-8d67-a7aae560e6b6/binary",
+            "document_binary_url": "http://dm-store.service.core-compute.internal/documents/5dabdd89-42e4-4294-8d67-a7aae560e6b6/binary",
             "category_id": "C"
           }
         }
@@ -21,9 +21,9 @@
           "documentCategory": "Application for review",
           "documentEmailContent": "test",
           "documentLink": {
-            "document_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/328c674f-59c3-418a-b76b-78f2cc52d21a",
+            "document_url": "http://dm-store.service.core-compute.internal/documents/328c674f-59c3-418a-b76b-78f2cc52d21a",
             "document_filename": "sample4.m4a",
-            "document_binary_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/328c674f-59c3-418a-b76b-78f2cc52d21a/binary",
+            "document_binary_url": "http://dm-store.service.core-compute.internal/documents/328c674f-59c3-418a-b76b-78f2cc52d21a/binary",
             "category_id": "A"
           }
         }
@@ -41,9 +41,9 @@
           "dueDateList": [],
           "draftOrder": {
             "templateGeneratedDocument": {
-              "document_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/6bcdb209-ba65-4f31-a12a-5abbdf250fb6",
+              "document_url": "http://dm-store.service.core-compute.internal/documents/6bcdb209-ba65-4f31-a12a-5abbdf250fb6",
               "document_filename": "Order--[AAC]--09-05-2024 09:04:04.pdf",
-              "document_binary_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/6bcdb209-ba65-4f31-a12a-5abbdf250fb6/binary",
+              "document_binary_url": "http://dm-store.service.core-compute.internal/documents/6bcdb209-ba65-4f31-a12a-5abbdf250fb6/binary",
               "category_id": "TD"
             },
             "orderContentOrderTemplate": "CIC3_Rule_27",
