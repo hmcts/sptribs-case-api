@@ -12,4 +12,5 @@ public class DocumentDashboardModel {
     List<DocumentEntity> latestCaseBundleDocuments;
     List<DocumentEntity> contactPartiesDocuments;
     List<DocumentEntity> orderAndDecisionDocuments;
+
 }

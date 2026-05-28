@@ -19,9 +19,12 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import uk.gov.hmcts.sptribs.controllers.mapper.CaseworkerCICDocumentMapper;
 import uk.gov.hmcts.sptribs.controllers.model.DocumentResponse;
 import uk.gov.hmcts.sptribs.document.DocumentDownloadService;
+import uk.gov.hmcts.sptribs.document.model.DocumentDashboardModel;
 import uk.gov.hmcts.sptribs.document.model.DownloadedDocumentResponse;
+import uk.gov.hmcts.sptribs.document.service.DocumentsService;
 
 @Tag(name = "Document Controller")
 @Slf4j
@@ -31,14 +34,16 @@ import uk.gov.hmcts.sptribs.document.model.DownloadedDocumentResponse;
 public class DocumentController {
 
     private final DocumentDownloadService documentDownloadService;
+    private final DocumentsService documentsService;
+    private final CaseworkerCICDocumentMapper caseworkerCICDocumentMapper;
 
     @GetMapping(value = "/getDocumnets/{ccdReference}")
     @Operation(summary = "Get Documents for a CCD reference")
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "Documents retrieved successfully")
-//        @ApiResponse(responseCode = "400", description = "Invalid document ID"),
-//        @ApiResponse(responseCode = "404", description = "Document not found"),
-//        @ApiResponse(responseCode = "500", description = "Internal server error")
+        @ApiResponse(responseCode = "200", description = "Documents retrieved successfully"),
+        @ApiResponse(responseCode = "400", description = "Invalid CCD reference"),
+        @ApiResponse(responseCode = "404", description = "Document not found"),
+        @ApiResponse(responseCode = "500", description = "Internal server error")
     })
     public ResponseEntity<DocumentResponse> getDocumentsByCCDReference(
         @RequestHeader(HttpHeaders.AUTHORIZATION)
@@ -54,9 +59,18 @@ public class DocumentController {
         )
         String ccdReference) {
 
-        //log.info("Received request to download document with id: {}", documentId);
+        log.info("Received request to get documents with CCD reference = {}", ccdReference);
 
-        return null;
+        DocumentDashboardModel documentDashboardModel = documentsService.getDocumentsOnCase(Long.valueOf(ccdReference));
+
+        DocumentResponse documentResponse = DocumentResponse.builder()
+            .contactPartiesDocuments(caseworkerCICDocumentMapper.map(documentDashboardModel.getContactPartiesDocuments()))
+            .orderAndDecisionDocuments(caseworkerCICDocumentMapper.map(documentDashboardModel.getOrderAndDecisionDocuments()))
+            .latestCaseBundleDocuments(caseworkerCICDocumentMapper.map(documentDashboardModel.getLatestCaseBundleDocuments()))
+            .build();
+
+        return ResponseEntity.ok()
+            .body(documentResponse);
     }
 
     @GetMapping(value = "/downloadDocument/{documentId}")

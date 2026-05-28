@@ -209,11 +209,14 @@ public class ContactPartiesNotification implements PartiesNotification {
         TemplateName emailTemplateName,
         String caseReferenceNumber,
         boolean sendingToRespondentOrTribunal) {
+
         final NotificationRequest request = notificationHelper.buildEmailNotificationRequest(toEmail,
             true,
             uploadedDocuments,
             templateVars,
             emailTemplateName);
+
+        //needs updating for error case and find a better way to remove api call for doc url
         for (Map.Entry<String, String> uploadedDocumentEntry : request.getUploadedDocuments().entrySet()) {
             if (uploadedDocumentEntry.getKey().contains(DOC_AVAILABLE) || StringUtils.isEmpty(uploadedDocumentEntry.getValue())) {
                 continue;
@@ -229,6 +232,7 @@ public class ContactPartiesNotification implements PartiesNotification {
                 documentsService.setSentToApplicantViaContactPartiesToTrue(documentToAttach.getBody().links.binary.href);
             }
         }
+
         return notificationService.sendEmail(request, caseReferenceNumber);
     }
 

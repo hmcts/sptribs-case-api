@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.sptribs.ciccase.service.CicaCaseService;
 import uk.gov.hmcts.sptribs.common.repositories.model.CicaCaseEntity;
 import uk.gov.hmcts.sptribs.controllers.model.CicaCaseResponse;
-import uk.gov.hmcts.sptribs.mapper.CicaCaseMapper;
+import uk.gov.hmcts.sptribs.controllers.mapper.CicaCaseMapper;
 
 import static uk.gov.hmcts.sptribs.common.config.ControllerConstants.AUTHORIZATION;
 import static uk.gov.hmcts.sptribs.common.config.ControllerConstants.SERVICE_AUTHORIZATION;

@@ -55,6 +55,7 @@ public class DocumentsService {
 
     public DocumentDashboardModel getDocumentsOnCase(Long ccdReference) {
 
+        //using 1 query then code rather than many queries
         List<DocumentEntity> allDocumentsOnCase =
             documentsRepository.findAllNonDraftDocumentsByCaseReference(ccdReference);
 

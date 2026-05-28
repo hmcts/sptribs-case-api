@@ -158,17 +158,21 @@ public class BundlingService {
 
     private List<Bundle> getBundleFromResponse(List<LinkedHashMap<String, Object>> response, Long caseNumber) {
         List<Bundle> bundleList = new ArrayList<>();
+
         Optional.ofNullable(response).ifPresent(list ->
             list.forEach(res -> {
                 LinkedHashMap<String, Object> objectLinkedHashMap = (LinkedHashMap<String, Object>) res.get(VALUE);
                 Bundle bundle = buildBundle(objectLinkedHashMap, caseNumber);
 
                 bundle.setFolders(buildBundleFolderListValues(buildBundleFolders(objectLinkedHashMap)));
+
                 if (objectLinkedHashMap.get(DOCUMENTS) != null) {
                     List<Map<String, Object>> documentsFromResponse = (List<Map<String, Object>>) objectLinkedHashMap.get(DOCUMENTS);
                     bundle.setDocuments(buildBundleDocumentListValues(getDocuments(documentsFromResponse)));
                 }
+
                 bundleList.add(bundle);
+
             }));
 
         return bundleList;

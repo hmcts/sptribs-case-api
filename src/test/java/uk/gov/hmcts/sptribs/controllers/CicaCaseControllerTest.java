@@ -12,7 +12,7 @@ import uk.gov.hmcts.sptribs.ciccase.service.CicaCaseService;
 import uk.gov.hmcts.sptribs.common.repositories.model.CicaCaseEntity;
 import uk.gov.hmcts.sptribs.controllers.model.CicaCaseResponse;
 import uk.gov.hmcts.sptribs.exception.CaseNotFoundException;
-import uk.gov.hmcts.sptribs.mapper.CicaCaseMapper;
+import uk.gov.hmcts.sptribs.controllers.mapper.CicaCaseMapper;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
