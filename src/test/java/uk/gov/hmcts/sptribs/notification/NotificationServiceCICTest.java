@@ -818,7 +818,7 @@ public class NotificationServiceCICTest {
             .containsEntry("DocumentAvailable1", "yes");
         assertThat(templateVarsArgCaptor.getValue())
             .extracting("CaseDocument1")
-            .isInstanceOf(JSONObject.class);
+            .isInstanceOf(java.lang.String.class);
 
         verify(sendEmailResponse, times(3)).getNotificationId();
         verify(sendEmailResponse, times(2)).getReference();
