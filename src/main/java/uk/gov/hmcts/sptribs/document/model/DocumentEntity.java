@@ -56,33 +56,19 @@ public class DocumentEntity {
 
     @Override
     public boolean equals(Object documentEntityObject) {
-        if (documentEntityObject == null || getClass() != documentEntityObject.getClass()) {
-            return false;
-        }
+        if (documentEntityObject == null || getClass() != documentEntityObject.getClass()) return false;
 
         DocumentEntity that = (DocumentEntity) documentEntityObject;
         return getId() == that.getId()
-            && isDraft() == that.isDraft()
-            && isSentToApplicantViaContactParties() == that.isSentToApplicantViaContactParties()
             && getCaseReferenceNumber().equals(that.getCaseReferenceNumber())
-            && getSavedAt().equals(that.getSavedAt())
-            && getDocumentUrl().equals(that.getDocumentUrl())
-            && getDocumentFilename().equals(that.getDocumentFilename())
-            && getDocumentBinaryUrl().equals(that.getDocumentBinaryUrl())
-            && getCategoryId().equals(that.getCategoryId());
+            && getDocumentBinaryUrl().equals(that.getDocumentBinaryUrl());
     }
 
     @Override
     public int hashCode() {
         int result = getId();
         result = 31 * result + getCaseReferenceNumber().hashCode();
-        result = 31 * result + getSavedAt().hashCode();
-        result = 31 * result + getDocumentUrl().hashCode();
-        result = 31 * result + getDocumentFilename().hashCode();
         result = 31 * result + getDocumentBinaryUrl().hashCode();
-        result = 31 * result + getCategoryId().hashCode();
-        result = 31 * result + Boolean.hashCode(isDraft());
-        result = 31 * result + Boolean.hashCode(isSentToApplicantViaContactParties());
         return result;
     }
 }
