@@ -30,7 +30,7 @@ import uk.gov.hmcts.sptribs.document.service.DocumentsService;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@RequestMapping(path = "/cases")
+@RequestMapping(path = "/cases/CIC")
 public class DocumentController {
 
     private final DocumentDownloadService documentDownloadService;
