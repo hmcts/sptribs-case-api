@@ -142,7 +142,7 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
         final CaseData caseData = details.getData();
         final String caseReference = caseData.getHyphenatedCaseRef();
 
-        ccdSupplementaryDataService.submitSupplementaryDataToCcd(details.getId().toString());
+        setSupplementaryData(details.getId());
 
         if (caseData.getCicCase().getApplicantDocumentsUploaded() != null) {
             for (ListValue<CaseworkerCICDocument> document : caseData.getCicCase().getApplicantDocumentsUploaded()) {
@@ -253,5 +253,14 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
             .documentCategory(DocumentType.APPLICATION_FORM)
             .documentEmailContent("This is a test document uploaded during create case journey")
             .build();
+    }
+
+
+    private void setSupplementaryData(Long caseId) {
+        try {
+            ccdSupplementaryDataService.submitSupplementaryDataToCcd(caseId.toString());
+        } catch (Exception exception) {
+            log.error("Unable to set Supplementary data with exception : {}", exception.getMessage());
+        }
     }
 }
