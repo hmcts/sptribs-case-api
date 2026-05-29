@@ -166,7 +166,7 @@ public abstract class FunctionalTestSuite {
 
     private Response triggerCallback(Map<String, Object> caseData, String eventId, String url, boolean createCase)
         throws IOException {
-        if (createCase && TestConstants.SUBMITTED_URL.equals(url)) {
+        if (createCase && (TestConstants.SUBMITTED_URL.equals(url) || TestConstants.ABOUT_TO_SUBMIT_URL.equals(url))) {
             return triggerCallback(caseData, eventId, url, createPersistedCaseReference(caseData));
         }
 
