@@ -561,6 +561,7 @@ em-stitching:
       CALLBACK_HTTP_SCHEME: http
       CALLBACK_HTTP_HOST_PORT: 80
       CALLBACK_DOMAINS: localhost,platform.hmcts.net
+      LOGGING_LEVEL_ROOT: DEBUG
     secrets:
       SPRING_DATASOURCE_PASSWORD:
         secretRef: postgres
