@@ -34,7 +34,6 @@ public class CaseworkerCreateTestCaseFT extends FunctionalTestSuite {
 
         final Response response = triggerCallback(caseData, CASEWORKER_CREATE_TEST_CASE_EVENT_ID, ABOUT_TO_SUBMIT_URL);
 
-        //test
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
         assertThatJson(response.asString())
             .when(IGNORING_EXTRA_FIELDS)
