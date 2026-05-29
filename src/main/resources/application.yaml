@@ -239,6 +239,9 @@ feature:
   migrate-initial-case-documents-task:
     enabled: ${INITIAL_DOCUMENTS_MIGRATION_ENABLED:false}
     caseReference: ${INITIAL_DOCUMENTS_MIGRATION_TEST_CASE_REF:}
+    skipMigrated: ${INITIAL_DOCUMENTS_MIGRATION_SKIP_MIGRATED:false}
+    batchSize: ${INITIAL_DOCUMENTS_MIGRATION_BATCH_SIZE:100}
+    batchPauseMs: ${INITIAL_DOCUMENTS_MIGRATION_BATCH_PAUSE:5000}
 
 caseinfo:
   apps:
