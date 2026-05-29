@@ -531,6 +531,7 @@ em-ccdorc:
       CCD_DATA_API_URL: https://ccd-data-store-api-${SERVICE_FQDN}
       CALLBACK_DOMAIN: em-ccdorc-${SERVICE_FQDN}
       CALLBACK_HTTP_SCHEME: https
+      LOGGING_LEVEL_ROOT: DEBUG
       APPLICATIONINSIGHTS_INSTRUMENTATION_LOGGING_LEVEL: WARN
     keyVaults:
       em-ccdorc:
