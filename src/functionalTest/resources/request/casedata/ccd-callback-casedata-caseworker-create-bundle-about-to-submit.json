@@ -1,6 +1,8 @@
 {
   "subjectRepFullName": "Subject Name",
   "cicCaseSchemeCic": "Preference",
+  "CicCaseSubjectFullName": "Test Name",
+  "ContactName": "Contact Test",
   "cicCaseApplicantDocumentsUploaded": [
     {
       "id": "150dc5ce-cc10-4edf-9a0b-7dbc456f7ced",
