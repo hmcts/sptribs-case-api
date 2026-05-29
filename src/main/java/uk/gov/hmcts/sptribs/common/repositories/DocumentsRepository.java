@@ -16,12 +16,12 @@ public interface DocumentsRepository extends JpaRepository<DocumentEntity, Integ
     void setSentToApplicantViaContactPartiesToTrueByDocumentBinaryUrl(@Param("documentBinaryUrl") String documentBinaryUrl);
 
     @Query("""
-    SELECT d
-    FROM DocumentEntity d
-    WHERE d.caseReferenceNumber = :caseReferenceNumber
-      AND d.isDraft = false
-    ORDER BY d.savedAt DESC
-""")
+            SELECT d
+            FROM DocumentEntity d
+            WHERE d.caseReferenceNumber = :caseReferenceNumber
+              AND d.isDraft = false
+            ORDER BY d.savedAt DESC
+        """)
     List<DocumentEntity> findAllNonDraftDocumentsByCaseReference(
         @Param("caseReferenceNumber") Long caseReferenceNumber);
 }

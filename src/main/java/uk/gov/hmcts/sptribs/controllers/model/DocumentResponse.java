@@ -17,9 +17,4 @@ public class DocumentResponse {
     List<CaseworkerCICDocument> latestCaseBundleDocuments;
     List<CaseworkerCICDocument> contactPartiesDocuments;
     List<CaseworkerCICDocument> orderAndDecisionDocuments;
-
- /*   the Latest case bundle
-    Documents that have already been sent to the applicant via 'Contact parties'
-    All orders and decisions
-*/
 }
