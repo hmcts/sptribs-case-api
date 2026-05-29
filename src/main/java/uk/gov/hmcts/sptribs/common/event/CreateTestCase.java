@@ -126,15 +126,13 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
             Charset.defaultCharset()
         );
         final CaseData caseData = objectMapper.readValue(json, CaseData.class);
-        List<String> errors = new ArrayList<>();
-        uploadTestDocumentAndUpdateCaseData(caseData, details.getId(), errors);
+        uploadTestDocumentAndUpdateCaseData(caseData);
         caseData.setHyphenatedCaseRef(caseData.formatCaseRef(details.getId()));
         setDefaultCaseDetails(caseData);
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
             .state(details.getData().getCaseStatus())
-            .errors(errors)
             .build();
     }
 
@@ -145,6 +143,23 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
         final String caseReference = caseData.getHyphenatedCaseRef();
 
         ccdSupplementaryDataService.submitSupplementaryDataToCcd(details.getId().toString());
+
+        if (caseData.getCicCase().getApplicantDocumentsUploaded() != null) {
+            for (ListValue<CaseworkerCICDocument> document : caseData.getCicCase().getApplicantDocumentsUploaded()) {
+                try {
+                    documentsService.buildAndSaveNewDocumentEntity(
+                        document.getValue().getDocumentLink(),
+                        details.getId(),
+                        false
+                    );
+                } catch (RuntimeException e) {
+                    log.error("Saving applicant documents failed with exception : {}", e.getMessage());
+                    return SubmittedCallbackResponse.builder()
+                        .confirmationHeader(format("# Create case notification failed %n## Please resend the notification"))
+                        .build();
+                }
+            }
+        }
 
         return SubmittedCallbackResponse.builder()
             .confirmationHeader(format("# Case Created %n## Case reference number: %n## %s", caseReference))
@@ -184,7 +199,7 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
         );
     }
 
-    private void uploadTestDocumentAndUpdateCaseData(CaseData caseData, Long caseNumber, List<String> errors) {
+    private void uploadTestDocumentAndUpdateCaseData(CaseData caseData) {
         final UploadResponse uploadResponse = uploadApplicantDocument();
 
         if (uploadResponse != null) {
@@ -197,20 +212,7 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
             testDocumentListValue.setValue(caseworkerCICDocument);
 
             caseData.getCicCase().setApplicantDocumentsUploaded(List.of(testDocumentListValue));
-
-            for (ListValue<CaseworkerCICDocument> document : List.of(testDocumentListValue)) {
-                try {
-                    documentsService.buildAndSaveNewDocumentEntity(
-                        document.getValue().getDocumentLink(),
-                        caseNumber,
-                        false
-                    );
-                } catch (RuntimeException e) {
-                    errors.add(e.getMessage());
-                }
-            }
         }
-
     }
 
     private UploadResponse uploadApplicantDocument() {

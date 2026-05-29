@@ -31,6 +31,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import static java.lang.String.format;
 import static java.util.Collections.emptySet;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.eq;
@@ -168,18 +169,6 @@ class CreateCaseTest {
         AboutToStartOrSubmitResponse<CaseData, State> result =
             createCase.aboutToSubmit(caseDetails, caseDetails);
 
-        verify(documentsService, times(2)).buildAndSaveNewDocumentEntity(
-            any(), eq(TEST_CASE_ID), eq(false)
-        );
-
-        verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
-            eq(testDocument1), eq(TEST_CASE_ID), eq(false)
-        );
-
-        verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
-            eq(testDocument2), eq(TEST_CASE_ID), eq(false)
-        );
-
         assertThat(result.getData().getCicCase().getApplicantDocumentsUploaded()).hasSize(2);
         assertThat(result.getData().getCicCase().getApplicantDocumentsUploaded()).isEqualTo(expectedDocuments);
         assertThat(result.getState()).isEqualTo(Submitted);
@@ -256,8 +245,40 @@ class CreateCaseTest {
 
     @Test
     void shouldSuccessfullyTriggerSubmittedEventOnCreateCase() {
+        List<ListValue<CaseworkerCICDocument>> testDocumentList = new ArrayList<>();
+        Document testDocument1 = Document.builder()
+            .url("test.com/document1.pdf")
+            .binaryUrl("test.com/document1.pdf/binary")
+            .categoryId("DSS")
+            .filename("document1.pdf")
+            .build();
+        CaseworkerCICDocument testCaseworkerCICDocument1 = CaseworkerCICDocument.builder()
+            .documentLink(testDocument1)
+            .documentCategory(DocumentType.DSS_TRIBUNAL_FORM)
+            .build();
+        ListValue<CaseworkerCICDocument> testListValueCaseworkerCICDocument1 = new ListValue<>();
+        testListValueCaseworkerCICDocument1.setId("1");
+        testListValueCaseworkerCICDocument1.setValue(testCaseworkerCICDocument1);
+        testDocumentList.add(testListValueCaseworkerCICDocument1);
+
+        Document testDocument2 = Document.builder()
+            .url("test.com/document2.pdf")
+            .binaryUrl("test.com/document2.pdf/binary")
+            .categoryId("DSS")
+            .filename("document2.pdf")
+            .build();
+        CaseworkerCICDocument testCaseworkerCICDocument2 = CaseworkerCICDocument.builder()
+            .documentLink(testDocument2)
+            .documentCategory(DocumentType.DSS_SUPPORTING)
+            .build();
+        ListValue<CaseworkerCICDocument> testListValueCaseworkerCICDocument2 = new ListValue<>();
+        testListValueCaseworkerCICDocument2.setId("2");
+        testListValueCaseworkerCICDocument2.setValue(testCaseworkerCICDocument2);
+        testDocumentList.add(testListValueCaseworkerCICDocument2);
+
         final CaseData caseData = caseData();
         caseData.setHyphenatedCaseRef(caseData.formatCaseRef(TEST_CASE_ID));
+        caseData.getCicCase().setApplicantDocumentsUploaded(testDocumentList);
 
         final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
         caseDetails.setData(caseData);
@@ -268,6 +289,10 @@ class CreateCaseTest {
 
         assertThat(result.getConfirmationHeader())
             .isEqualTo("# Case Created \n## Case reference number: \n## 1616-5914-0147-3378");
+
+        verify(documentsService, times(2)).buildAndSaveNewDocumentEntity(
+            any(), eq(TEST_CASE_ID), eq(false)
+        );
     }
 
     @Test
@@ -409,56 +434,41 @@ class CreateCaseTest {
     }
 
     @Test
-    void shouldStoreErrorsWhenBuildAndSaveNewDocumentEntityThrowsRuntimeException() {
-        final CaseData caseData = caseData();
-        caseData.setHyphenatedCaseRef(TEST_CASE_ID_HYPHENATED);
-        caseData.getCicCase().setFullName("Test Full Name");
+    void shouldReturnFailureResponseHeaderWhenBuildAndSaveNewDocumentEntityThrowsRuntimeException() {
 
-        List<ListValue<CaseworkerCICDocumentUpload>> testDocumentList = new ArrayList<>();
+        List<ListValue<CaseworkerCICDocument>> testDocumentList = new ArrayList<>();
         Document testDocument1 = Document.builder()
             .url("test.com/document1.pdf")
             .filename("document1.pdf")
             .build();
-        CaseworkerCICDocumentUpload testCaseworkerCICDocument1 = CaseworkerCICDocumentUpload.builder()
+        CaseworkerCICDocument testCaseworkerCICDocument1 = CaseworkerCICDocument.builder()
             .documentLink(testDocument1)
             .documentCategory(DocumentType.DSS_TRIBUNAL_FORM)
             .build();
-        ListValue<CaseworkerCICDocumentUpload> testListValueCaseworkerCICDocument1 = new ListValue<>();
+        ListValue<CaseworkerCICDocument> testListValueCaseworkerCICDocument1 = new ListValue<>();
         testListValueCaseworkerCICDocument1.setId("1");
         testListValueCaseworkerCICDocument1.setValue(testCaseworkerCICDocument1);
         testDocumentList.add(testListValueCaseworkerCICDocument1);
 
-        Document testDocument2 = Document.builder()
-            .url("test.com/document2.pdf")
-            .filename("document2.pdf")
-            .build();
-        CaseworkerCICDocumentUpload testCaseworkerCICDocument2 = CaseworkerCICDocumentUpload.builder()
-            .documentLink(testDocument2)
-            .documentCategory(DocumentType.DSS_SUPPORTING)
-            .build();
-        ListValue<CaseworkerCICDocumentUpload> testListValueCaseworkerCICDocument2 = new ListValue<>();
-        testListValueCaseworkerCICDocument2.setId("2");
-        testListValueCaseworkerCICDocument2.setValue(testCaseworkerCICDocument2);
-        testDocumentList.add(testListValueCaseworkerCICDocument2);
-
-        caseData.getCicCase().setCaseDocumentsUpload(testDocumentList);
+        final CaseData caseData = caseData();
+        caseData.setHyphenatedCaseRef(caseData.formatCaseRef(TEST_CASE_ID));
+        caseData.getCicCase().setApplicantDocumentsUploaded(testDocumentList);
 
         final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
         caseDetails.setData(caseData);
         caseDetails.setState(Submitted);
-
-        when(submissionService.submitApplication(caseDetails)).thenReturn(caseDetails);
+        caseDetails.setId(TEST_CASE_ID);
 
         doThrow(new RuntimeException("Error saving document entity to database"))
             .when(documentsService).buildAndSaveNewDocumentEntity(any(), eq(TEST_CASE_ID), eq(false));
 
-        AboutToStartOrSubmitResponse<CaseData, State> response =
-            createCase.aboutToSubmit(caseDetails, caseDetails);
+        SubmittedCallbackResponse response =
+            createCase.submitted(caseDetails, caseDetails);
 
-        assertThat(response.getErrors()).hasSize(2);
-        assertThat(response.getErrors()).contains("Error saving document entity to database");
+        assertThat(response.getConfirmationHeader())
+            .contains(format("# Create case notification failed %n## Please resend the notification"));
 
-        verify(documentsService, times(2)).buildAndSaveNewDocumentEntity(
+        verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
             any(), eq(TEST_CASE_ID), eq(false)
         );
     }

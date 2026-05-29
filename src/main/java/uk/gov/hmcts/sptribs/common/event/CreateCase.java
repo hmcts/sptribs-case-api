@@ -137,19 +137,6 @@ public class CreateCase implements CCDConfig<CaseData, State, UserRole> {
 
         caseData.getCicCase().setApplicantDocumentsUploaded(documents);
 
-        List<String> errors = new ArrayList<>();
-        for (ListValue<CaseworkerCICDocument> document : documents) {
-            try {
-                documentsService.buildAndSaveNewDocumentEntity(
-                    document.getValue().getDocumentLink(),
-                    Long.parseLong(caseData.getHyphenatedCaseRef().replace("-", "")),
-                    false
-                );
-            } catch (RuntimeException e) {
-                errors.add(e.getMessage());
-            }
-        }
-
         setIsRepresentativePresent(caseData);
         caseData.setSecurityClass(SecurityClass.PUBLIC);
         caseData.setCaseNameHmctsInternal(caseData.getCicCase().getFullName());
@@ -161,7 +148,6 @@ public class CreateCase implements CCDConfig<CaseData, State, UserRole> {
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
             .state(submittedDetails.getState())
-            .errors(errors)
             .build();
     }
 
@@ -171,6 +157,23 @@ public class CreateCase implements CCDConfig<CaseData, State, UserRole> {
         final CaseData caseData = details.getData();
         setSupplementaryData(details.getId());
         final String caseReference = caseData.getHyphenatedCaseRef();
+
+        if (caseData.getCicCase().getApplicantDocumentsUploaded() != null) {
+            for (ListValue<CaseworkerCICDocument> document : caseData.getCicCase().getApplicantDocumentsUploaded()) {
+                try {
+                    documentsService.buildAndSaveNewDocumentEntity(
+                        document.getValue().getDocumentLink(),
+                        Long.parseLong(caseData.getHyphenatedCaseRef().replace("-", "")),
+                        false
+                    );
+                } catch (RuntimeException e) {
+                    log.error("Saving applicant documents failed with exception: {}", e.getMessage());
+                    return SubmittedCallbackResponse.builder()
+                        .confirmationHeader(format("# Create case notification failed %n## Please resend the notification"))
+                        .build();
+                }
+            }
+        }
 
         try {
             sendApplicationReceivedNotification(caseReference, caseData);
