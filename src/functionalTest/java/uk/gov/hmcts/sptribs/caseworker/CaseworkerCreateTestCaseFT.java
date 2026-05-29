@@ -51,7 +51,7 @@ public class CaseworkerCreateTestCaseFT extends FunctionalTestSuite {
     public void shouldGetConfirmationWhenValidSubmittedCallbackIsInvoked() throws Exception {
         final Map<String, Object> caseData = caseData(SUBMITTED_REQUEST);
 
-        final Response response = triggerCallbackForPersistedCaseAsSystemUser(
+        final Response response = triggerCallback(
             caseData, CASEWORKER_CREATE_TEST_CASE_EVENT_ID, SUBMITTED_URL
         );
 
