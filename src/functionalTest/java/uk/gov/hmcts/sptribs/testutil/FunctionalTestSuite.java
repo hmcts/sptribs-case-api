@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import feign.FeignException;
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
-import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
