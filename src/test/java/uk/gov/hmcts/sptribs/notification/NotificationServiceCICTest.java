@@ -114,7 +114,6 @@ public class NotificationServiceCICTest {
         final Map<String, Object> templateVars = new HashMap<>();
         templateVars.put(APPLICATION_RECEIVED.name(), templateId);
 
-
         final Map<String, String> uploadedDocuments = new HashMap<>();
         uploadedDocuments.put("FinalDecisionNotice", templateId);
         uploadedDocuments.put("FinalDecisionNotice1", "");
@@ -124,15 +123,21 @@ public class NotificationServiceCICTest {
             .destinationAddress(EMAIL_ADDRESS)
             .template(TemplateName.APPLICATION_RECEIVED)
             .templateVars(templateVars)
-            .hasFileAttachments(false)
+            .hasFileAttachments(true)
             .uploadedDocuments(uploadedDocuments)
             .build();
 
+        final User user = TestDataHelper.getUser();
+
+        when(idamService.retrieveUser(any())).thenReturn(user);
         when(sendEmailResponse.getReference()).thenReturn(Optional.of(randomUUID().toString()));
         when(sendEmailResponse.getNotificationId()).thenReturn(UUID.randomUUID());
         when(emailTemplatesConfig.getTemplatesCIC()).thenReturn(templateNameMap);
         when(httpServletRequest.getHeader(AUTHORIZATION)).thenReturn(TEST_AUTHORIZATION_TOKEN);
         when(authTokenGenerator.generate()).thenReturn(TEST_SERVICE_AUTH_TOKEN);
+
+        final byte[] sample = new byte[1];
+        when(caseDocumentClientAPI.getDocumentBinary(anyString(), anyString(), any(UUID.class))).thenReturn(ResponseEntity.ok(sample));
 
         when(notificationClient.sendEmail(
             eq(templateId),
@@ -140,6 +145,8 @@ public class NotificationServiceCICTest {
             any(),
             any()
         )).thenReturn(sendEmailResponse);
+
+        when(pdfServiceClient.generateFromHtml(any(), any())).thenReturn(sample);
 
         UploadResponse expectedResponse = uploadResponseWithSampleDocument();
         when(caseDocumentClientAPI.uploadDocuments(any(), any(), any())).thenReturn(expectedResponse);
@@ -459,7 +466,7 @@ public class NotificationServiceCICTest {
 
         assertThatThrownBy(() -> notificationService.sendEmail(request, testCaseRef))
             .isInstanceOf(NotificationException.class)
-            .hasMessageContaining("Unable to find document details for document id:");
+            .hasMessageContaining("uk.gov.service.notify.NotificationClientException");
     }
 
     @Test
@@ -511,16 +518,20 @@ public class NotificationServiceCICTest {
             .destinationAddress(EMAIL_ADDRESS)
             .template(TemplateName.APPLICATION_RECEIVED)
             .templateVars(templateVars)
-            .hasFileAttachments(false)
+            .hasFileAttachments(true)
             .uploadedDocuments(uploadedDocuments)
             .build();
 
+        final User user = TestDataHelper.getUser();
+
         //When&Then
+        when(idamService.retrieveUser(any())).thenReturn(user);
         when(emailTemplatesConfig.getTemplatesCIC()).thenReturn(templateNameMap);
         when(httpServletRequest.getHeader(AUTHORIZATION)).thenReturn(TEST_AUTHORIZATION_TOKEN);
         when(authTokenGenerator.generate()).thenReturn(TEST_SERVICE_AUTH_TOKEN);
 
         final byte[] sample = new byte[1];
+        when(caseDocumentClientAPI.getDocumentBinary(anyString(), anyString(), any(UUID.class))).thenReturn(ResponseEntity.ok(sample));
 
         when(notificationClient.sendEmail(
             eq(templateId),
