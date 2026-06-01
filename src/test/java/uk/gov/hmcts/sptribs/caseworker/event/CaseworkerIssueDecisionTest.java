@@ -124,7 +124,9 @@ class CaseworkerIssueDecisionTest {
     void shouldSetState() {
         //Given
         final CaseDetails<CaseData, State> details = new CaseDetails<>();
+        details.setId(TEST_CASE_ID);
         final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        beforeDetails.setId(TEST_CASE_ID);
         final CaseData caseData = caseData();
         final CaseIssueDecision decision = new CaseIssueDecision();
         final CICDocument document = CICDocument.builder()
@@ -215,7 +217,9 @@ class CaseworkerIssueDecisionTest {
     @Test
     void shouldStoreErrorsWhenBuildAndSaveNewDocumentEntityThrowsRuntimeException() {
         final CaseDetails<CaseData, State> details = new CaseDetails<>();
+        details.setId(TEST_CASE_ID);
         final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        beforeDetails.setId(TEST_CASE_ID);
         final CaseData caseData = caseData();
         final CaseIssueDecision decision = new CaseIssueDecision();
         final CICDocument document = CICDocument.builder()

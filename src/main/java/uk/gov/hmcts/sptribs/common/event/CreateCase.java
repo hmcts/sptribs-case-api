@@ -163,7 +163,7 @@ public class CreateCase implements CCDConfig<CaseData, State, UserRole> {
                 try {
                     documentsService.buildAndSaveNewDocumentEntity(
                         document.getValue().getDocumentLink(),
-                        Long.parseLong(caseData.getHyphenatedCaseRef().replace("-", "")),
+                        details.getId(),
                         false
                     );
                 } catch (RuntimeException e) {

@@ -196,6 +196,7 @@ class CaseworkerCreateAndSendOrderTest {
         caseData.setDraftOrderContentCIC(draftOrderContentCIC);
 
         final CaseDetails<CaseData, State> details = new CaseDetails<>();
+        details.setId(TEST_CASE_ID);
         caseData.setHyphenatedCaseRef(TEST_CASE_ID_HYPHENATED);
         details.setData(caseData);
         final var response = caseworkerCreateAndSendOrder.aboutToSubmit(details, caseDetailsBefore());
@@ -233,6 +234,7 @@ class CaseworkerCreateAndSendOrderTest {
     @Test
     void shouldSuccessfullyCreateAndSendNewNonAnonymisedOrder() {
         final CaseDetails<CaseData, State> details = new CaseDetails<>();
+        details.setId(TEST_CASE_ID);
 
         Document document = Document.builder()
                 .categoryId("TD")
@@ -310,6 +312,7 @@ class CaseworkerCreateAndSendOrderTest {
         caseData.setDraftOrderContentCIC(draftOrderContentCIC);
 
         final CaseDetails<CaseData, State> details = new CaseDetails<>();
+        details.setId(TEST_CASE_ID);
         caseData.setHyphenatedCaseRef(TEST_CASE_ID_HYPHENATED);
         details.setData(caseData);
         final var response = caseworkerCreateAndSendOrder.aboutToSubmit(details, caseDetailsBefore());
@@ -383,6 +386,7 @@ class CaseworkerCreateAndSendOrderTest {
         caseData.setDraftOrderContentCIC(draftOrderContentCIC);
 
         final CaseDetails<CaseData, State> details = new CaseDetails<>();
+        details.setId(TEST_CASE_ID);
         caseData.setHyphenatedCaseRef(TEST_CASE_ID_HYPHENATED);
         details.setData(caseData);
         final var response = caseworkerCreateAndSendOrder.aboutToSubmit(details, caseDetailsBefore());
@@ -452,6 +456,7 @@ class CaseworkerCreateAndSendOrderTest {
     @Test
     void shouldSuccessfullySendUploadedOrder() {
         final CaseDetails<CaseData, State> details = new CaseDetails<>();
+        details.setId(TEST_CASE_ID);
 
         Document document = Document.builder()
             .filename("Order--[Test Name]--09-05-2024 09:04:04.pdf")
@@ -647,6 +652,7 @@ class CaseworkerCreateAndSendOrderTest {
         caseData.setDraftOrderContentCIC(draftOrderContentCIC);
 
         final CaseDetails<CaseData, State> details = new CaseDetails<>();
+        details.setId(TEST_CASE_ID);
         caseData.setHyphenatedCaseRef(TEST_CASE_ID_HYPHENATED);
         details.setData(caseData);
 
@@ -666,6 +672,7 @@ class CaseworkerCreateAndSendOrderTest {
     @Test
     void shouldStoreErrorsWhenBuildAndSaveNewDocumentEntityThrowsRuntimeExceptionForExistingOrder() {
         final CaseDetails<CaseData, State> details = new CaseDetails<>();
+        details.setId(TEST_CASE_ID);
 
         Document document = Document.builder()
             .filename("Order--[Test Name]--09-05-2024 09:04:04.pdf")

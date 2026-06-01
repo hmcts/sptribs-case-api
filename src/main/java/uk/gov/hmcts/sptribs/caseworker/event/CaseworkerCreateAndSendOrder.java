@@ -165,7 +165,7 @@ public class CaseworkerCreateAndSendOrder implements CCDConfig<CaseData, State, 
             try {
                 documentsService.buildAndSaveNewDocumentEntity(
                     draftOrderCIC.getTemplateGeneratedDocument(),
-                    Long.parseLong(caseData.getHyphenatedCaseRef().replace("-", "")),
+                    details.getId(),
                     false
                 );
             } catch (RuntimeException e) {
@@ -185,7 +185,7 @@ public class CaseworkerCreateAndSendOrder implements CCDConfig<CaseData, State, 
             try {
                 documentsService.buildAndSaveNewDocumentEntity(
                     caseData.getCicCase().getOrderFile().getFirst().getValue().getDocumentLink(),
-                    Long.parseLong(caseData.getHyphenatedCaseRef().replace("-", "")),
+                    details.getId(),
                     false
                 );
             } catch (RuntimeException e) {

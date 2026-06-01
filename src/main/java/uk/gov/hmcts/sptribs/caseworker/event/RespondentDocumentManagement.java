@@ -119,7 +119,7 @@ public class RespondentDocumentManagement implements CCDConfig<CaseData, State, 
             try {
                 documentsService.buildAndSaveNewDocumentEntity(
                     document.getValue().getDocumentLink(),
-                    Long.parseLong(caseData.getHyphenatedCaseRef().replace("-", "")),
+                    details.getId(),
                     false
                 );
             } catch (RuntimeException e) {
