@@ -2,10 +2,10 @@ package uk.gov.hmcts.sptribs.common.event;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.stereotype.Component;
@@ -59,6 +59,7 @@ import static uk.gov.hmcts.sptribs.constants.CommonConstants.ST_CIC_WA_CASE_REGI
 
 @Slf4j
 @Component
+@RequiredArgsConstructor
 public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
 
     private static final String ENVIRONMENT_AAT = "aat";
@@ -74,23 +75,6 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
     private final CaseDocumentClientApi caseDocumentClientApi;
 
     private final DocumentsService documentsService;
-
-    @Autowired
-    public CreateTestCase(ObjectMapper objectMapper,
-                          CcdSupplementaryDataService ccdSupplementaryDataService,
-                          CaseDocumentClientApi caseDocumentClientApi,
-                          AppsConfig appsConfig,
-                          AuthTokenGenerator authTokenGenerator,
-                          HttpServletRequest httpServletRequest,
-                          DocumentsService documentsService) {
-        this.objectMapper = objectMapper;
-        this.ccdSupplementaryDataService = ccdSupplementaryDataService;
-        this.caseDocumentClientApi = caseDocumentClientApi;
-        this.appsConfig = appsConfig;
-        this.authTokenGenerator = authTokenGenerator;
-        this.httpServletRequest = httpServletRequest;
-        this.documentsService = documentsService;
-    }
 
     @Override
     public void configure(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
