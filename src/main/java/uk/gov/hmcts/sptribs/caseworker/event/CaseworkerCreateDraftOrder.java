@@ -36,8 +36,6 @@ import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.springframework.util.CollectionUtils.isEmpty;
-import static uk.gov.hmcts.sptribs.caseworker.util.ErrorConstants.FAILED_SAVING_DOCUMENT_TO_DATABASE;
-import static uk.gov.hmcts.sptribs.caseworker.util.ErrorConstants.FAILED_SAVING_DOCUMENT_WITH_NO_FILENAME_TO_DATABASE;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_CREATE_DRAFT_ORDER;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.DOUBLE_HYPHEN;
 import static uk.gov.hmcts.sptribs.caseworker.util.MessageUtil.generateSimpleErrorMessageDocumentSave;

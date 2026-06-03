@@ -25,8 +25,6 @@ import java.util.List;
 
 import static uk.gov.hmcts.sptribs.caseworker.util.DocumentListUtil.addToExistingDocumentList;
 import static uk.gov.hmcts.sptribs.caseworker.util.DocumentListUtil.getAllCaseDocuments;
-import static uk.gov.hmcts.sptribs.caseworker.util.ErrorConstants.FAILED_SAVING_DOCUMENT_TO_DATABASE;
-import static uk.gov.hmcts.sptribs.caseworker.util.ErrorConstants.FAILED_SAVING_DOCUMENT_WITH_NO_FILENAME_TO_DATABASE;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.RESPONDENT_DOCUMENT_MANAGEMENT;
 import static uk.gov.hmcts.sptribs.caseworker.util.MessageUtil.generateSimpleErrorMessageDocumentSave;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;

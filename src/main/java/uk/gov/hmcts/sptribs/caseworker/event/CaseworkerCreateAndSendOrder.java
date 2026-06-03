@@ -52,8 +52,6 @@ import java.util.UUID;
 import static java.lang.String.format;
 import static uk.gov.hmcts.sptribs.caseworker.model.OrderIssuingType.CREATE_AND_SEND_NEW_ORDER;
 import static uk.gov.hmcts.sptribs.caseworker.model.OrderIssuingType.UPLOAD_A_NEW_ORDER_FROM_YOUR_COMPUTER;
-import static uk.gov.hmcts.sptribs.caseworker.util.ErrorConstants.FAILED_SAVING_DOCUMENT_TO_DATABASE;
-import static uk.gov.hmcts.sptribs.caseworker.util.ErrorConstants.FAILED_SAVING_DOCUMENT_WITH_NO_FILENAME_TO_DATABASE;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_CREATE_AND_SEND_ORDER;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventUtil.getRecipients;
 import static uk.gov.hmcts.sptribs.caseworker.util.MessageUtil.generateSimpleErrorMessageDocumentSave;
