@@ -4,7 +4,6 @@ import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.DssCaseData;
 
 import java.util.Map;
-import java.util.Optional;
 
 public interface PartiesNotification {
     default void sendToSubject(final CaseData caseData, final String caseNumber) {

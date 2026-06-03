@@ -14,10 +14,10 @@ public interface DocumentsRepository extends JpaRepository<DocumentEntity, Integ
 
     @Modifying
     @Query("""
-    update DocumentEntity d
-    set d.sentToApplicantViaContactParties = true
-    where d.documentBinaryUrl in :documentUrls
-    """)
+        update DocumentEntity d
+        set d.sentToApplicantViaContactParties = true
+        where d.documentBinaryUrl in :documentUrls
+        """)
     int setSentToApplicantViaContactPartiesToTrueByDocumentBinaryUrl(
         @Param("documentUrls") List<String> documentUrls
     );

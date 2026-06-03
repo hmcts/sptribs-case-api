@@ -333,11 +333,11 @@ class RespondentDocumentManagementTest {
             .when(documentsService).buildAndSaveNewDocumentEntity(
                 argThat(doc -> "unhappy_file.pdf".equals(doc.getFilename())
                     || "".equals(doc.getFilename())),
-                eq(TEST_CASE_ID), eq(false));
+                eq(TEST_CASE_ID), eq(false), eq(false));
 
         doNothing().when(documentsService).buildAndSaveNewDocumentEntity(
             argThat(doc -> "happy_file.pdf".equals(doc.getFilename())),
-            eq(TEST_CASE_ID), eq(false));
+            eq(TEST_CASE_ID), eq(false), eq(false));
 
         AboutToStartOrSubmitResponse<CaseData, State> response =
             respondentDocumentManagement.aboutToSubmit(updatedCaseDetails, beforeDetails);
@@ -345,13 +345,13 @@ class RespondentDocumentManagementTest {
         verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
             eq(Document.builder().filename("")
                 .categoryId("L").build()),
-            eq(TEST_CASE_ID), eq(false)
+            eq(TEST_CASE_ID), eq(false), eq(false)
         );
 
         verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
             eq(Document.builder().filename("unhappy_file.pdf")
                 .categoryId("L").build()),
-            eq(TEST_CASE_ID), eq(false)
+            eq(TEST_CASE_ID), eq(false), eq(false)
         );
 
         verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
@@ -359,7 +359,7 @@ class RespondentDocumentManagementTest {
                 .url("http://example.com/happy_file.pdf")
                 .binaryUrl("http://example.com/happy_file.pdf/binary")
                 .categoryId("L").build()),
-            eq(TEST_CASE_ID), eq(false)
+            eq(TEST_CASE_ID), eq(false), eq(false)
         );
 
         assertThat(response.getErrors()).hasSize(2);

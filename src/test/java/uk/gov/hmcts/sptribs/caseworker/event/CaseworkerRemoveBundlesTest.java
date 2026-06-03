@@ -20,7 +20,6 @@ import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.document.bundling.model.Bundle;
 import uk.gov.hmcts.sptribs.document.bundling.model.BundleIdAndTimestamp;
-import uk.gov.hmcts.sptribs.document.model.DocumentType;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;

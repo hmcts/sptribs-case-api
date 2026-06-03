@@ -24,7 +24,6 @@ import java.util.Map;
 import java.util.Set;
 
 import static uk.gov.hmcts.sptribs.caseworker.util.DocumentListUtil.getAllCaseDocuments;
-import static uk.gov.hmcts.sptribs.document.model.DocumentType.fromCategory;
 
 @RequiredArgsConstructor
 @Service

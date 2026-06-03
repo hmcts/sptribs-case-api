@@ -337,11 +337,11 @@ public class CaseworkerDocumentManagementTest {
             .when(documentsService).buildAndSaveNewDocumentEntity(
                 argThat(doc -> "unhappy_file.pdf".equals(doc.getFilename())
                     || "".equals(doc.getFilename())),
-                eq(TEST_CASE_ID), eq(false));
+                eq(TEST_CASE_ID), eq(false), eq(false));
 
         doNothing().when(documentsService).buildAndSaveNewDocumentEntity(
             argThat(doc -> "happy_file.pdf".equals(doc.getFilename())),
-            eq(TEST_CASE_ID), eq(false));
+            eq(TEST_CASE_ID), eq(false), eq(false));
 
         AboutToStartOrSubmitResponse<CaseData, State> response =
             caseworkerDocumentManagement.aboutToSubmit(updatedCaseDetails, beforeDetails);

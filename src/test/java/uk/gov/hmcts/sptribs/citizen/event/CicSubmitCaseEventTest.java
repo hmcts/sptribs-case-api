@@ -414,7 +414,7 @@ class CicSubmitCaseEventTest {
         final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
 
         doThrow(new RuntimeException("Error saving document entity to database"))
-            .when(documentsService).buildAndSaveNewDocumentEntity(any(), eq(TEST_CASE_ID), eq(false));
+            .when(documentsService).buildAndSaveNewDocumentEntity(any(), eq(TEST_CASE_ID), eq(false), eq(false));
 
         final AboutToStartOrSubmitResponse<CaseData, State> response =
             cicSubmitCaseEvent.aboutToSubmit(updatedCaseDetails, beforeDetails);
