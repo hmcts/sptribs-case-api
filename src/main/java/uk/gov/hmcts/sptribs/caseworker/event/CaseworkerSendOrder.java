@@ -43,7 +43,6 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static java.lang.String.format;
-import static uk.gov.hmcts.sptribs.caseworker.util.ErrorConstants.FAILED_SAVING_DOCUMENT_TO_DATABASE;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_SEND_ORDER;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.COLON;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.DOUBLE_HYPHEN;
