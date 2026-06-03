@@ -51,6 +51,7 @@ import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.DOUBLE_HYPHEN;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.DRAFT;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.SENT;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventUtil.getRecipients;
+import static uk.gov.hmcts.sptribs.caseworker.util.MessageUtil.generateSimpleErrorMessageDocumentSave;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseClosed;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
@@ -181,15 +182,7 @@ public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole>
                     false
                 );
             } catch (RuntimeException e) {
-                if (caseData.getCicCase().getOrderTemplateIssued().getFilename() != null
-                    && !caseData.getCicCase().getOrderTemplateIssued().getFilename().isEmpty()) {
-                    log.error("Document entity (from uploaded order) with filename {} could not be saved: {}",
-                        caseData.getCicCase().getOrderTemplateIssued().getFilename(), e.getMessage());
-                    errors.add(FAILED_SAVING_DOCUMENT_TO_DATABASE + caseData.getCicCase().getOrderTemplateIssued().getFilename());
-                } else {
-                    log.error("Document entity (from uploaded order) has no filename");
-                    errors.add(FAILED_SAVING_DOCUMENT_WITH_NO_FILENAME_TO_DATABASE);
-                }
+                errors.add(generateSimpleErrorMessageDocumentSave(caseData.getCicCase().getOrderTemplateIssued(), e.getMessage()));
             }
         }
 

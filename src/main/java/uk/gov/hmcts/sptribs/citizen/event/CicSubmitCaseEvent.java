@@ -52,6 +52,7 @@ import static org.apache.commons.lang.StringUtils.isNotBlank;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static uk.gov.hmcts.sptribs.caseworker.util.ErrorConstants.FAILED_SAVING_DOCUMENT_TO_DATABASE;
 import static uk.gov.hmcts.sptribs.caseworker.util.ErrorConstants.FAILED_SAVING_DOCUMENT_WITH_NO_FILENAME_TO_DATABASE;
+import static uk.gov.hmcts.sptribs.caseworker.util.MessageUtil.generateSimpleErrorMessageDocumentSave;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.DSS_Draft;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.DSS_Submitted;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.CITIZEN;
@@ -318,15 +319,7 @@ public class CicSubmitCaseEvent implements CCDConfig<CaseData, State, UserRole> 
                     false
                 );
             } catch (RuntimeException e) {
-                if (document.getValue().getDocumentLink().getFilename() != null
-                    && !document.getValue().getDocumentLink().getFilename().isEmpty()) {
-                    log.error("Document entity with filename {} could not be saved: {}",
-                        document.getValue().getDocumentLink().getFilename(), e.getMessage());
-                    errors.add(FAILED_SAVING_DOCUMENT_TO_DATABASE + document.getValue().getDocumentLink().getFilename());
-                } else {
-                    log.error("Document entity has no filename");
-                    errors.add(FAILED_SAVING_DOCUMENT_WITH_NO_FILENAME_TO_DATABASE);
-                }
+                errors.add(generateSimpleErrorMessageDocumentSave(document.getValue().getDocumentLink(), e.getMessage()));
             }
         }
         dssCaseData.setTribunalFormDocuments(new ArrayList<>());
