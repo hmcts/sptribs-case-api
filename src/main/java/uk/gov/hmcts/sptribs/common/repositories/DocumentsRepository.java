@@ -12,4 +12,8 @@ public interface DocumentsRepository extends JpaRepository<DocumentEntity, Integ
     @Modifying
     @Query("update DocumentEntity d set d.sentToApplicantViaContactParties = true where d.documentBinaryUrl = :documentBinaryUrl")
     void setSentToApplicantViaContactPartiesToTrueByDocumentBinaryUrl(@Param("documentBinaryUrl") String documentBinaryUrl);
+
+    @Modifying
+    @Query("update DocumentEntity d set d.isDraft = false where d.documentBinaryUrl = :documentBinaryUrl")
+    void setIsDraftToFalseByDocumentBinaryUrl(@Param("documentBinaryUrl") String documentBinaryUrl);
 }

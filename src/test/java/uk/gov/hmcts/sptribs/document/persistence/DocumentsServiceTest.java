@@ -107,4 +107,25 @@ public class DocumentsServiceTest {
             .hasMessageContaining("Error updating sent_to_applicant_via_contact_parties to true")
             .hasCauseInstanceOf(DataAccessException.class);
     }
+
+    @Test
+    public void shouldSetIsDraftToFalse() {
+
+        documentsService.setIsDraftToFalse(TEST_DOCUMENT.getBinaryUrl());
+
+        verify(documentsRepository, times(1)).setIsDraftToFalseByDocumentBinaryUrl(
+            EXPECTED_TEST_DOCUMENT_ENTITY_NON_DRAFT.getDocumentBinaryUrl()
+        );
+    }
+
+    @Test
+    public void shouldThrowRuntimeExceptionWhenDataAccessExceptionCaughtInSetIsDraftToFalse() {
+        doThrow(new DataAccessResourceFailureException("DB error"))
+            .when(documentsRepository).setIsDraftToFalseByDocumentBinaryUrl(TEST_DOCUMENT.getBinaryUrl());
+
+        assertThatThrownBy(() -> documentsService.setIsDraftToFalse(TEST_DOCUMENT.getBinaryUrl()))
+            .isInstanceOf(RuntimeException.class)
+            .hasMessageContaining("Error updating is_draft to false")
+            .hasCauseInstanceOf(DataAccessException.class);
+    }
 }

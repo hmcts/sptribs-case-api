@@ -38,4 +38,13 @@ public class DocumentsService {
             throw new RuntimeException("Error updating sent_to_applicant_via_contact_parties to true", e);
         }
     }
+
+    @Transactional
+    public void setIsDraftToFalse(String documentBinaryUrl) {
+        try {
+            documentsRepository.setIsDraftToFalseByDocumentBinaryUrl(documentBinaryUrl);
+        } catch (DataAccessException e) {
+            throw new RuntimeException("Error updating is_draft to false", e);
+        }
+    }
 }

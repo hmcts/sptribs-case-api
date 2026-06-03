@@ -50,6 +50,7 @@ import java.util.UUID;
 import static java.lang.String.format;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.times;
@@ -722,7 +723,7 @@ class CaseworkerSendOrderTest {
         caseDetails.setData(caseData);
 
         doThrow(new RuntimeException("Error saving document entity to database"))
-            .when(documentsService).buildAndSaveNewDocumentEntity(any(), eq(TEST_CASE_ID), eq(false));
+            .when(documentsService).setIsDraftToFalse(anyString());
 
         final AboutToStartOrSubmitResponse<CaseData, State> response = caseworkerSendOrder
             .aboutToSubmit(caseDetails, getApiCaseDetailsBefore());

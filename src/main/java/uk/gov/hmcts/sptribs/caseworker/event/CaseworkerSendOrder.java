@@ -163,11 +163,7 @@ public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole>
                     order.setDraftOrder(selectedDraftOrder);
 
                     try {
-                        documentsService.buildAndSaveNewDocumentEntity(
-                            order.getDraftOrder().getTemplateGeneratedDocument(),
-                            details.getId(),
-                            false
-                        );
+                        documentsService.setIsDraftToFalse(order.getDraftOrder().getTemplateGeneratedDocument().getBinaryUrl());
                     } catch (RuntimeException e) {
                         log.error("Document entity (from draft order) with filename {} could not be saved: {}",
                             order.getDraftOrder().getTemplateGeneratedDocument().getFilename(), e.getMessage());
