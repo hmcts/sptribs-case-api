@@ -1,6 +1,7 @@
 package uk.gov.hmcts.sptribs.document.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
@@ -27,6 +28,7 @@ import static uk.gov.hmcts.sptribs.document.model.DocumentType.fromCategory;
 
 @RequiredArgsConstructor
 @Service
+@Slf4j
 public class DocumentsService {
 
     private final DocumentsRepository documentsRepository;
@@ -63,6 +65,7 @@ public class DocumentsService {
 
     }
 
+    @Transactional
     public void updateDocumentsToSentViaContactParties(CaseData caseData, final Map<String, String> uploadedDocuments) {
 
         List<ListValue<CaseworkerCICDocument>> allCaseDocuments =  getAllCaseDocuments(caseData);
@@ -95,15 +98,19 @@ public class DocumentsService {
 
     public void setSentToApplicantViaContactPartiesToTrue(List<String> documentBinaryUrls) {
         try {
-            documentsRepository.setSentToApplicantViaContactPartiesToTrueByDocumentBinaryUrl(documentBinaryUrls);
+            int rowsUpdated =
+                documentsRepository.setSentToApplicantViaContactPartiesToTrueByDocumentBinaryUrl(documentBinaryUrls);
+            log.info("Document Repository updated {} documents to sent via contact parties.", rowsUpdated);
         } catch (DataAccessException e) {
             throw new RuntimeException("Error updating sent_to_applicant_via_contact_parties to true", e);
         }
     }
 
+    @Transactional
     public void setIsDraftToFalse(String documentBinaryUrl) {
         try {
             documentsRepository.setIsDraftToFalseByDocumentBinaryUrl(documentBinaryUrl);
+            log.info("Draft order updated to non draft successfully for url: {}", documentBinaryUrl);
         } catch (DataAccessException e) {
             throw new RuntimeException("Error updating is_draft to false", e);
         }

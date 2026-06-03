@@ -18,7 +18,7 @@ public interface DocumentsRepository extends JpaRepository<DocumentEntity, Integ
     set d.sentToApplicantViaContactParties = true
     where d.documentBinaryUrl in :documentUrls
     """)
-    void setSentToApplicantViaContactPartiesToTrueByDocumentBinaryUrl(
+    int setSentToApplicantViaContactPartiesToTrueByDocumentBinaryUrl(
         @Param("documentUrls") List<String> documentUrls
     );
 
