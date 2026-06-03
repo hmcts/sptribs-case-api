@@ -27,7 +27,7 @@ public class DocumentEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private long id;
 
     @Column(name = "case_reference_number", nullable = false)
     private Long caseReferenceNumber;
@@ -68,7 +68,7 @@ public class DocumentEntity {
 
     @Override
     public int hashCode() {
-        int result = getId();
+        int result = Long.hashCode(getId());
         result = 31 * result + getCaseReferenceNumber().hashCode();
         result = 31 * result + getDocumentBinaryUrl().hashCode();
         return result;
