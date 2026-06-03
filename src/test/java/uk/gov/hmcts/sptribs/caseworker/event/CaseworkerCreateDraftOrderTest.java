@@ -114,11 +114,11 @@ class CaseworkerCreateDraftOrderTest {
 
         //  Then
         verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
-            any(), eq(TEST_CASE_ID), eq(true)
+            any(), eq(TEST_CASE_ID), eq(true), eq(false)
         );
 
         verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
-            eq(expectedDraftOrderCIC.getTemplateGeneratedDocument()), eq(TEST_CASE_ID), eq(true)
+            eq(expectedDraftOrderCIC.getTemplateGeneratedDocument()), eq(TEST_CASE_ID), eq(true), eq(false)
         );
 
         assertThat(response).isNotNull();
@@ -194,11 +194,11 @@ class CaseworkerCreateDraftOrderTest {
 
         //  Then
         verify(documentsService, times(2)).buildAndSaveNewDocumentEntity(
-            any(), eq(TEST_CASE_ID), eq(true)
+            any(), eq(TEST_CASE_ID), eq(true), eq(false)
         );
 
         verify(documentsService, times(2)).buildAndSaveNewDocumentEntity(
-            eq(Document.builder().filename("a--b--02-02-2002 11:11:11.pdf").build()), eq(TEST_CASE_ID), eq(true)
+            eq(Document.builder().filename("a--b--02-02-2002 11:11:11.pdf").build()), eq(TEST_CASE_ID), eq(true), eq(false)
         );
 
         assertThat(response2).isNotNull();
@@ -242,11 +242,11 @@ class CaseworkerCreateDraftOrderTest {
                 caseworkerCreateDraftOrder.aboutToSubmit(updatedCaseDetails, beforeDetails);
 
         verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
-            any(), eq(TEST_CASE_ID), eq(true)
+            any(), eq(TEST_CASE_ID), eq(true), eq(false)
         );
 
         verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
-            eq(Document.builder().filename("a--b--02-02-2002 11:11:11.pdf").build()), eq(TEST_CASE_ID), eq(true)
+            eq(Document.builder().filename("a--b--02-02-2002 11:11:11.pdf").build()), eq(TEST_CASE_ID), eq(true), eq(false)
         );
 
         assertThat(response).isNotNull();
@@ -276,7 +276,7 @@ class CaseworkerCreateDraftOrderTest {
             .orderTemplate(OrderTemplate.CIC6_GENERAL_DIRECTIONS).build());
 
         doThrow(new RuntimeException("Error saving document entity to database"))
-            .when(documentsService).buildAndSaveNewDocumentEntity(any(), eq(TEST_CASE_ID), eq(true));
+            .when(documentsService).buildAndSaveNewDocumentEntity(any(), eq(TEST_CASE_ID), eq(true), eq(false));
 
         AboutToStartOrSubmitResponse<CaseData, State> response =
             caseworkerCreateDraftOrder.aboutToSubmit(updatedCaseDetails, beforeDetails);
@@ -285,7 +285,7 @@ class CaseworkerCreateDraftOrderTest {
         assertThat(response.getErrors()).contains("Error saving document entity to database");
 
         verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
-            any(), eq(TEST_CASE_ID), eq(true)
+            any(), eq(TEST_CASE_ID), eq(true), eq(false)
         );
     }
 }

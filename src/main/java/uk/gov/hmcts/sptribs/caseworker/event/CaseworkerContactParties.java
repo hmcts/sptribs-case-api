@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
@@ -12,6 +13,7 @@ import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.Event;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.ccd.sdk.type.DynamicMultiSelectList;
+import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.event.page.ContactPartiesSelectDocument;
 import uk.gov.hmcts.sptribs.caseworker.model.ContactParties;
@@ -24,9 +26,19 @@ import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.common.event.page.PartiesToContact;
+import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
+import uk.gov.hmcts.sptribs.document.service.DocumentsService;
+import uk.gov.hmcts.sptribs.notification.NotificationHelper;
 import uk.gov.hmcts.sptribs.notification.dispatcher.ContactPartiesNotification;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import static java.lang.String.format;
+import static uk.gov.hmcts.sptribs.caseworker.util.DocumentListUtil.getAllCaseDocuments;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_CONTACT_PARTIES;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingOutcome;
@@ -63,6 +75,9 @@ public class CaseworkerContactParties implements CCDConfig<CaseData, State, User
     private final ContactPartiesSelectDocument contactPartiesSelectDocument;
 
     private final ContactPartiesNotification contactPartiesNotification;
+    private final NotificationHelper notificationHelper;
+    private final DocumentsService documentsService;
+    private static final int DOC_ATTACH_LIMIT = 10;
 
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
@@ -137,17 +152,29 @@ public class CaseworkerContactParties implements CCDConfig<CaseData, State, User
     }
 
     private void sendContactPartiesNotification(CaseDetails<CaseData, State> details, CicCase cicCase, String caseNumber) {
+
+        final Map<String, String> uploadedDocuments = notificationHelper.
+            buildDocumentList(details.getData().getContactPartiesDocuments().getDocumentList(), DOC_ATTACH_LIMIT);
+        boolean sentToApplicantSide = false;
+
         if (!CollectionUtils.isEmpty(cicCase.getNotifyPartySubject())) {
-            contactPartiesNotification.sendToSubject(details.getData(), caseNumber);
+            contactPartiesNotification.sendToSubject(details.getData(), caseNumber, uploadedDocuments);
+            sentToApplicantSide = true;
         }
         if (!CollectionUtils.isEmpty(cicCase.getNotifyPartyRepresentative())) {
-            contactPartiesNotification.sendToRepresentative(details.getData(), caseNumber);
+            contactPartiesNotification.sendToRepresentative(details.getData(), caseNumber, uploadedDocuments);
+            sentToApplicantSide = true;
         }
         if (!CollectionUtils.isEmpty(cicCase.getNotifyPartyApplicant())) {
-            contactPartiesNotification.sendToApplicant(details.getData(), caseNumber);
+            contactPartiesNotification.sendToApplicant(details.getData(), caseNumber, uploadedDocuments);
+            sentToApplicantSide = true;
         }
         if (!CollectionUtils.isEmpty(cicCase.getNotifyPartyRespondent())) {
-            contactPartiesNotification.sendToRespondent(details.getData(), caseNumber);
+            contactPartiesNotification.sendToRespondent(details.getData(), caseNumber, uploadedDocuments);
+        }
+
+        if (sentToApplicantSide) {
+            documentsService.updateDocumentsToSentViaContactParties(details.getData(), uploadedDocuments);
         }
     }
 }

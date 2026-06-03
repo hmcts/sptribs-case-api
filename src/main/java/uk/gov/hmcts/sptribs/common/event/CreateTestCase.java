@@ -134,6 +134,7 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
                     documentsService.buildAndSaveNewDocumentEntity(
                         document.getValue().getDocumentLink(),
                         details.getId(),
+                        false,
                         false
                     );
                 } catch (RuntimeException e) {

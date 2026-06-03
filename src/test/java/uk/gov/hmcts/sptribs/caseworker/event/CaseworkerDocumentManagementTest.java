@@ -127,12 +127,12 @@ public class CaseworkerDocumentManagementTest {
         assertThat(response.getData().getAllDocManagement().getCaseworkerCICDocument().getFirst().getValue().getDate()).isNotNull();
 
         verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
-            any(), eq(TEST_CASE_ID), eq(false)
+            any(), eq(TEST_CASE_ID), eq(false), eq(false)
         );
         Document expectedDoc = getCaseworkerCICDocumentUploadList("file.pdf").getFirst().getValue().getDocumentLink();
         expectedDoc.setCategoryId("L");
         verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
-            eq(expectedDoc), eq(TEST_CASE_ID), eq(false)
+            eq(expectedDoc), eq(TEST_CASE_ID), eq(false), eq(false)
         );
     }
 
@@ -170,12 +170,12 @@ public class CaseworkerDocumentManagementTest {
             .isEqualTo("file.pdf");
 
         verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
-            any(), eq(TEST_CASE_ID), eq(false)
+            any(), eq(TEST_CASE_ID), eq(false), eq(false)
         );
         Document expectedDoc = getCaseworkerCICDocumentUploadList("file.pdf").getFirst().getValue().getDocumentLink();
         expectedDoc.setCategoryId("L");
         verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
-            eq(expectedDoc), eq(TEST_CASE_ID), eq(false)
+            eq(expectedDoc), eq(TEST_CASE_ID), eq(false), eq(false)
         );
     }
 
@@ -209,12 +209,12 @@ public class CaseworkerDocumentManagementTest {
             .isEqualTo("new-file.pdf");
 
         verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
-            any(), eq(TEST_CASE_ID), eq(false)
+            any(), eq(TEST_CASE_ID), eq(false), eq(false)
         );
         Document expectedDoc = getCaseworkerCICDocumentUploadList("new-file.pdf").getFirst().getValue().getDocumentLink();
         expectedDoc.setCategoryId("L");
         verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
-            eq(expectedDoc), eq(TEST_CASE_ID), eq(false)
+            eq(expectedDoc), eq(TEST_CASE_ID), eq(false), eq(false)
         );
     }
 
@@ -241,12 +241,12 @@ public class CaseworkerDocumentManagementTest {
         assertThat(response.getData().getFurtherUploadedDocuments()).isNull();
 
         verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
-            any(), eq(TEST_CASE_ID), eq(false)
+            any(), eq(TEST_CASE_ID), eq(false), eq(false)
         );
         Document expectedDoc = getCaseworkerCICDocumentUploadList("file.pdf").getFirst().getValue().getDocumentLink();
         expectedDoc.setCategoryId("L");
         verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
-            eq(expectedDoc), eq(TEST_CASE_ID), eq(false)
+            eq(expectedDoc), eq(TEST_CASE_ID), eq(false), eq(false)
         );
     }
 
@@ -268,7 +268,7 @@ public class CaseworkerDocumentManagementTest {
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
 
         doThrow(new RuntimeException("Error saving document entity to database"))
-            .when(documentsService).buildAndSaveNewDocumentEntity(any(), eq(TEST_CASE_ID), eq(false));
+            .when(documentsService).buildAndSaveNewDocumentEntity(any(), eq(TEST_CASE_ID), eq(false), eq(false));
 
         AboutToStartOrSubmitResponse<CaseData, State> response =
             caseworkerDocumentManagement.aboutToSubmit(updatedCaseDetails, beforeDetails);
@@ -277,7 +277,7 @@ public class CaseworkerDocumentManagementTest {
         assertThat(response.getErrors()).contains("Error saving document entity to database");
 
         verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
-            any(), eq(TEST_CASE_ID), eq(false)
+            any(), eq(TEST_CASE_ID), eq(false), eq(false)
         );
     }
 }

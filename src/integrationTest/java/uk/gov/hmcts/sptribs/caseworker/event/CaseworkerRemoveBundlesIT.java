@@ -96,15 +96,12 @@ public class CaseworkerRemoveBundlesIT {
 
         Document stitchedDocument1 = Document.builder()
             .filename("1-cicBundle.pdf")
-            .categoryId(DocumentType.BUNDLE.getCategory())
             .build();
         Document stitchedDocument2 = Document.builder()
             .filename("2-cicBundle.pdf")
-            .categoryId(DocumentType.BUNDLE.getCategory())
             .build();
         Document stitchedDocument3 = Document.builder()
             .filename("3-cicBundle.pdf")
-            .categoryId(DocumentType.BUNDLE.getCategory())
             .build();
 
         final CaseData caseData = caseData();
@@ -238,15 +235,12 @@ public class CaseworkerRemoveBundlesIT {
 
         Document stitchedDocument1 = Document.builder()
             .filename("1-cicBundle.pdf")
-            .categoryId(DocumentType.BUNDLE.getCategory())
             .build();
         Document stitchedDocument2 = Document.builder()
             .filename("2-cicBundle.pdf")
-            .categoryId(DocumentType.BUNDLE.getCategory())
             .build();
         Document stitchedDocument3 = Document.builder()
             .filename("3-cicBundle.pdf")
-            .categoryId(DocumentType.BUNDLE.getCategory())
             .build();
 
         final CaseData caseData = caseData();

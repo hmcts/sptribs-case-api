@@ -201,11 +201,11 @@ class CaseworkerCreateAndSendOrderTest {
         final var response = caseworkerCreateAndSendOrder.aboutToSubmit(details, caseDetailsBefore());
 
         verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
-            any(), eq(TEST_CASE_ID), eq(false)
+            any(), eq(TEST_CASE_ID), eq(false), eq(false)
         );
 
         verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
-            eq(document), eq(TEST_CASE_ID), eq(false)
+            eq(document), eq(TEST_CASE_ID), eq(false), eq(false)
         );
 
         assertThat(response).isNotNull();
@@ -258,11 +258,11 @@ class CaseworkerCreateAndSendOrderTest {
         final var response = caseworkerCreateAndSendOrder.aboutToSubmit(details, caseDetailsBefore());
 
         verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
-            any(), eq(TEST_CASE_ID), eq(false)
+            any(), eq(TEST_CASE_ID), eq(false), eq(false)
         );
 
         verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
-            eq(document), eq(TEST_CASE_ID), eq(false)
+            eq(document), eq(TEST_CASE_ID), eq(false), eq(false)
         );
 
         assertThat(response).isNotNull();
@@ -315,11 +315,11 @@ class CaseworkerCreateAndSendOrderTest {
         final var response = caseworkerCreateAndSendOrder.aboutToSubmit(details, caseDetailsBefore());
 
         verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
-            any(), eq(TEST_CASE_ID), eq(false)
+            any(), eq(TEST_CASE_ID), eq(false), eq(false)
         );
 
         verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
-            eq(document), eq(TEST_CASE_ID), eq(false)
+            eq(document), eq(TEST_CASE_ID), eq(false), eq(false)
         );
 
         assertThat(response).isNotNull();
@@ -388,11 +388,11 @@ class CaseworkerCreateAndSendOrderTest {
         final var response = caseworkerCreateAndSendOrder.aboutToSubmit(details, caseDetailsBefore());
 
         verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
-            any(), eq(TEST_CASE_ID), eq(false)
+            any(), eq(TEST_CASE_ID), eq(false), eq(false)
         );
 
         verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
-            eq(document), eq(TEST_CASE_ID), eq(false)
+            eq(document), eq(TEST_CASE_ID), eq(false), eq(false)
         );
 
         assertThat(response).isNotNull();
@@ -477,11 +477,11 @@ class CaseworkerCreateAndSendOrderTest {
         final var response = caseworkerCreateAndSendOrder.aboutToSubmit(details, caseDetailsBefore());
 
         verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
-            any(), eq(TEST_CASE_ID), eq(false)
+            any(), eq(TEST_CASE_ID), eq(false), eq(false)
         );
 
         verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
-            eq(document), eq(TEST_CASE_ID), eq(false)
+            eq(document), eq(TEST_CASE_ID), eq(false), eq(false)
         );
 
         assertThat(response).isNotNull();
@@ -651,7 +651,7 @@ class CaseworkerCreateAndSendOrderTest {
         details.setData(caseData);
 
         doThrow(new RuntimeException("Error saving document entity to database"))
-            .when(documentsService).buildAndSaveNewDocumentEntity(any(), eq(TEST_CASE_ID), eq(false));
+            .when(documentsService).buildAndSaveNewDocumentEntity(any(), eq(TEST_CASE_ID), eq(false), eq(false));
 
         final var newOrderResponse = caseworkerCreateAndSendOrder.aboutToSubmit(details, caseDetailsBefore());
 
@@ -659,7 +659,7 @@ class CaseworkerCreateAndSendOrderTest {
         assertThat(newOrderResponse.getErrors()).contains("Error saving document entity to database");
 
         verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
-            any(), eq(TEST_CASE_ID), eq(false)
+            any(), eq(TEST_CASE_ID), eq(false), eq(false)
         );
     }
 
@@ -689,7 +689,7 @@ class CaseworkerCreateAndSendOrderTest {
         details.setData(caseData);
 
         doThrow(new RuntimeException("Error saving document entity to database"))
-            .when(documentsService).buildAndSaveNewDocumentEntity(any(), eq(TEST_CASE_ID), eq(false));
+            .when(documentsService).buildAndSaveNewDocumentEntity(any(), eq(TEST_CASE_ID), eq(false), eq(false));
 
         final var response = caseworkerCreateAndSendOrder.aboutToSubmit(details, caseDetailsBefore());
 
@@ -697,7 +697,7 @@ class CaseworkerCreateAndSendOrderTest {
         assertThat(response.getErrors()).contains("Error saving document entity to database");
 
         verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
-            any(), eq(TEST_CASE_ID), eq(false)
+            any(), eq(TEST_CASE_ID), eq(false), eq(false)
         );
 
     }

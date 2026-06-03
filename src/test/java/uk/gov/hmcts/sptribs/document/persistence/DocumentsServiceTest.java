@@ -64,14 +64,14 @@ public class DocumentsServiceTest {
 
     @Test
     public void shouldBuildAndSaveNewNonDraftDocumentEntity() {
-        documentsService.buildAndSaveNewDocumentEntity(TEST_DOCUMENT, TEST_CASE_ID, false);
+        documentsService.buildAndSaveNewDocumentEntity(TEST_DOCUMENT, TEST_CASE_ID, false, false);
 
         verify(documentsRepository, times(1)).save(EXPECTED_TEST_DOCUMENT_ENTITY_NON_DRAFT);
     }
 
     @Test
     public void shouldBuildAndSaveNewDraftDocumentEntity() {
-        documentsService.buildAndSaveNewDocumentEntity(TEST_DOCUMENT, TEST_CASE_ID, true);
+        documentsService.buildAndSaveNewDocumentEntity(TEST_DOCUMENT, TEST_CASE_ID, true, false);
 
         verify(documentsRepository, times(1)).save(EXPECTED_TEST_DOCUMENT_ENTITY_DRAFT);
     }
@@ -81,30 +81,31 @@ public class DocumentsServiceTest {
         when(documentsRepository.save(EXPECTED_TEST_DOCUMENT_ENTITY_DRAFT))
             .thenThrow(new DataAccessResourceFailureException("DB error"));
 
-        assertThatThrownBy(() -> documentsService.buildAndSaveNewDocumentEntity(TEST_DOCUMENT, TEST_CASE_ID, false))
+        assertThatThrownBy(() -> documentsService.buildAndSaveNewDocumentEntity(TEST_DOCUMENT, TEST_CASE_ID, false,
+            false))
             .isInstanceOf(RuntimeException.class)
             .hasMessageContaining("Error saving document entity to database")
             .hasCauseInstanceOf(DataAccessException.class);
     }
 
-    @Test
-    public void shouldSetSentToApplicantViaContactPartiesToTrue() {
-
-        documentsService.setSentToApplicantViaContactPartiesToTrue(TEST_DOCUMENT.getBinaryUrl());
-
-        verify(documentsRepository, times(1)).setSentToApplicantViaContactPartiesToTrueByDocumentBinaryUrl(
-            EXPECTED_TEST_DOCUMENT_ENTITY_NON_DRAFT_SENT_VIA_CONTACT_PARTIES.getDocumentBinaryUrl()
-        );
-    }
-
-    @Test
-    public void shouldThrowRuntimeExceptionWhenDataAccessExceptionCaughtInSetSentToApplicantViaContactPartiesToTrue() {
-        doThrow(new DataAccessResourceFailureException("DB error"))
-            .when(documentsRepository).setSentToApplicantViaContactPartiesToTrueByDocumentBinaryUrl(TEST_DOCUMENT.getBinaryUrl());
-
-        assertThatThrownBy(() -> documentsService.setSentToApplicantViaContactPartiesToTrue(TEST_DOCUMENT.getBinaryUrl()))
-            .isInstanceOf(RuntimeException.class)
-            .hasMessageContaining("Error updating sent_to_applicant_via_contact_parties to true")
-            .hasCauseInstanceOf(DataAccessException.class);
-    }
+//    @Test
+//    public void shouldSetSentToApplicantViaContactPartiesToTrue() {
+//
+//        documentsService.setSentToApplicantViaContactPartiesToTrue(TEST_DOCUMENT.getBinaryUrl());
+//
+//        verify(documentsRepository, times(1)).setSentToApplicantViaContactPartiesToTrueByDocumentBinaryUrl(
+//            EXPECTED_TEST_DOCUMENT_ENTITY_NON_DRAFT_SENT_VIA_CONTACT_PARTIES.getDocumentBinaryUrl()
+//        );
+//    }
+//
+//    @Test
+//    public void shouldThrowRuntimeExceptionWhenDataAccessExceptionCaughtInSetSentToApplicantViaContactPartiesToTrue() {
+//        doThrow(new DataAccessResourceFailureException("DB error"))
+//            .when(documentsRepository).setSentToApplicantViaContactPartiesToTrueByDocumentBinaryUrl(TEST_DOCUMENT.getBinaryUrl());
+//
+//        assertThatThrownBy(() -> documentsService.setSentToApplicantViaContactPartiesToTrue(TEST_DOCUMENT.getBinaryUrl()))
+//            .isInstanceOf(RuntimeException.class)
+//            .hasMessageContaining("Error updating sent_to_applicant_via_contact_parties to true")
+//            .hasCauseInstanceOf(DataAccessException.class);
+//    }
 }

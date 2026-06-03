@@ -137,6 +137,7 @@ public class CaseworkerIssueFinalDecision implements CCDConfig<CaseData, State, 
                 documentsService.buildAndSaveNewDocumentEntity(
                     finalDecisionDocument.getDocumentLink(),
                     Long.parseLong(caseData.getHyphenatedCaseRef().replace("-", "")),
+                    false,
                     false
                 );
             } catch (RuntimeException e) {

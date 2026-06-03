@@ -45,8 +45,11 @@ public class DocumentEntity {
     @Column(name = "document_binary_url", nullable = false)
     private String documentBinaryUrl;
 
-    @Column(name = "category_id", nullable = false)
+    @Column(name = "category_id")
     private String categoryId;
+
+    @Column(name = "document_type_id", nullable = false)
+    private Long documentTypeId;
 
     @Column(name = "is_draft", nullable = false)
     private boolean isDraft;

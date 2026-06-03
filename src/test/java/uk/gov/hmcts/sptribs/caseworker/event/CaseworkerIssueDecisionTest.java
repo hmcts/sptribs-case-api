@@ -141,10 +141,10 @@ class CaseworkerIssueDecisionTest {
 
         //Then
         verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
-            any(), eq(TEST_CASE_ID), eq(false)
+            any(), eq(TEST_CASE_ID), eq(false), eq(false)
         );
         verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
-            eq(document.getDocumentLink()), eq(TEST_CASE_ID), eq(false)
+            eq(document.getDocumentLink()), eq(TEST_CASE_ID), eq(false), eq(false)
         );
 
         assertThat(response.getState()).isEqualTo(CaseManagement);
@@ -228,7 +228,7 @@ class CaseworkerIssueDecisionTest {
         details.setData(caseData);
 
         doThrow(new RuntimeException("Error saving document entity to database"))
-            .when(documentsService).buildAndSaveNewDocumentEntity(any(), eq(TEST_CASE_ID), eq(false));
+            .when(documentsService).buildAndSaveNewDocumentEntity(any(), eq(TEST_CASE_ID), eq(false), eq(false));
 
         AboutToStartOrSubmitResponse<CaseData, State> response = issueDecision.aboutToSubmit(details, beforeDetails);
 
@@ -236,7 +236,7 @@ class CaseworkerIssueDecisionTest {
         assertThat(response.getErrors()).contains("Error saving document entity to database");
 
         verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
-            any(), eq(TEST_CASE_ID), eq(false)
+            any(), eq(TEST_CASE_ID), eq(false), eq(false)
         );
     }
 

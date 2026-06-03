@@ -139,17 +139,17 @@ class CicDssUpdateCaseEventTest {
         assertThat(response.getData().getDssCaseData().getAdditionalInformation()).isNull();
 
         verify(documentsService, times(2)).buildAndSaveNewDocumentEntity(
-            any(), eq(TEST_CASE_ID), eq(false)
+            any(), eq(TEST_CASE_ID), eq(false), eq(false)
         );
         Document expectedDoc1 = getDssCaseData().getOtherInfoDocuments().getFirst().getValue().getDocumentLink();
         expectedDoc1.setCategoryId("DSS");
         Document expectedDoc2 = getDssCaseData().getOtherInfoDocuments().get(1).getValue().getDocumentLink();
         expectedDoc2.setCategoryId("DSS");
         verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
-            eq(expectedDoc1), eq(TEST_CASE_ID), eq(false)
+            eq(expectedDoc1), eq(TEST_CASE_ID), eq(false), eq(false)
         );
         verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
-            eq(expectedDoc2), eq(TEST_CASE_ID), eq(false)
+            eq(expectedDoc2), eq(TEST_CASE_ID), eq(false), eq(false)
         );
     }
 
@@ -198,17 +198,17 @@ class CicDssUpdateCaseEventTest {
         assertThat(response.getData().getDssCaseData().getAdditionalInformation()).isNull();
 
         verify(documentsService, times(2)).buildAndSaveNewDocumentEntity(
-            any(), eq(TEST_CASE_ID), eq(false)
+            any(), eq(TEST_CASE_ID), eq(false), eq(false)
         );
         Document expectedDoc1 = getDssCaseData().getOtherInfoDocuments().getFirst().getValue().getDocumentLink();
         expectedDoc1.setCategoryId("DSS");
         Document expectedDoc2 = getDssCaseData().getOtherInfoDocuments().get(1).getValue().getDocumentLink();
         expectedDoc2.setCategoryId("DSS");
         verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
-            eq(expectedDoc1), eq(TEST_CASE_ID), eq(false)
+            eq(expectedDoc1), eq(TEST_CASE_ID), eq(false), eq(false)
         );
         verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
-            eq(expectedDoc2), eq(TEST_CASE_ID), eq(false)
+            eq(expectedDoc2), eq(TEST_CASE_ID), eq(false), eq(false)
         );
     }
 
@@ -257,17 +257,17 @@ class CicDssUpdateCaseEventTest {
         assertThat(response.getData().getDssCaseData().getAdditionalInformation()).isNull();
 
         verify(documentsService, times(2)).buildAndSaveNewDocumentEntity(
-            any(), eq(TEST_CASE_ID), eq(false)
+            any(), eq(TEST_CASE_ID), eq(false), eq(false)
         );
         Document expectedDoc1 = getDssCaseData().getOtherInfoDocuments().getFirst().getValue().getDocumentLink();
         expectedDoc1.setCategoryId("DSS");
         Document expectedDoc2 = getDssCaseData().getOtherInfoDocuments().get(1).getValue().getDocumentLink();
         expectedDoc2.setCategoryId("DSS");
         verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
-            eq(expectedDoc1), eq(TEST_CASE_ID), eq(false)
+            eq(expectedDoc1), eq(TEST_CASE_ID), eq(false), eq(false)
         );
         verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
-            eq(expectedDoc2), eq(TEST_CASE_ID), eq(false)
+            eq(expectedDoc2), eq(TEST_CASE_ID), eq(false), eq(false)
         );
     }
 
@@ -294,7 +294,7 @@ class CicDssUpdateCaseEventTest {
             cicDssUpdateCaseEvent.aboutToSubmit(details, details);
 
         verify(documentsService, times(2)).buildAndSaveNewDocumentEntity(
-            any(), eq(TEST_CASE_ID), eq(false)
+            any(), eq(TEST_CASE_ID), eq(false), eq(false)
         );
 
         assertThat(response.getData().getCicCase().getApplicantDocumentsUploaded()).isNotEmpty();
@@ -314,10 +314,10 @@ class CicDssUpdateCaseEventTest {
         Document expectedDoc2 = getDssCaseData().getOtherInfoDocuments().get(1).getValue().getDocumentLink();
         expectedDoc2.setCategoryId("DSS");
         verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
-            eq(expectedDoc1), eq(TEST_CASE_ID), eq(false)
+            eq(expectedDoc1), eq(TEST_CASE_ID), eq(false), eq(false)
         );
         verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
-            eq(expectedDoc2), eq(TEST_CASE_ID), eq(false)
+            eq(expectedDoc2), eq(TEST_CASE_ID), eq(false), eq(false)
         );
     }
 
@@ -387,7 +387,7 @@ class CicDssUpdateCaseEventTest {
         when(idamService.retrieveUser(TEST_AUTHORIZATION_TOKEN)).thenReturn(TestDataHelper.getUser());
 
         doThrow(new RuntimeException("Error saving document entity to database"))
-            .when(documentsService).buildAndSaveNewDocumentEntity(any(), eq(TEST_CASE_ID), eq(false));
+            .when(documentsService).buildAndSaveNewDocumentEntity(any(), eq(TEST_CASE_ID), eq(false), eq(false));
 
         AboutToStartOrSubmitResponse<CaseData, State> response =
             cicDssUpdateCaseEvent.aboutToSubmit(details, details);
@@ -396,7 +396,7 @@ class CicDssUpdateCaseEventTest {
         assertThat(response.getErrors()).contains("Error saving document entity to database");
 
         verify(documentsService, times(2)).buildAndSaveNewDocumentEntity(
-            any(), eq(TEST_CASE_ID), eq(false)
+            any(), eq(TEST_CASE_ID), eq(false), eq(false)
         );
     }
 

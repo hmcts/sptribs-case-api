@@ -120,7 +120,7 @@ public class CaseworkerCreateDraftOrder implements CCDConfig<CaseData, State, Us
             documentsService.buildAndSaveNewDocumentEntity(
                 draftOrderCIC.getTemplateGeneratedDocument(),
                 Long.parseLong(caseData.getHyphenatedCaseRef().replace("-", "")),
-                true
+                true, false
             );
         } catch (RuntimeException e) {
             errors.add(e.getMessage());

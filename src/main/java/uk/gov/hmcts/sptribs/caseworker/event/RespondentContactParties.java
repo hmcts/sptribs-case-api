@@ -2,6 +2,7 @@ package uk.gov.hmcts.sptribs.caseworker.event;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
@@ -9,6 +10,7 @@ import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.ccd.sdk.type.DynamicMultiSelectList;
+import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.event.page.ContactPartiesSelectDocument;
 import uk.gov.hmcts.sptribs.caseworker.event.page.RespondentPartiesToContact;
@@ -20,10 +22,20 @@ import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
+import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
+import uk.gov.hmcts.sptribs.document.service.DocumentsService;
+import uk.gov.hmcts.sptribs.notification.NotificationHelper;
 import uk.gov.hmcts.sptribs.notification.dispatcher.ContactPartiesNotification;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import static java.lang.String.format;
 import static org.apache.commons.collections4.CollectionUtils.isEmpty;
+import static uk.gov.hmcts.sptribs.caseworker.util.DocumentListUtil.getAllCaseDocuments;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.RESPONDENT_CONTACT_PARTIES;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingOutcome;
@@ -58,6 +70,9 @@ public class RespondentContactParties implements CCDConfig<CaseData, State, User
     private String baseUrl;
     private final ContactPartiesNotification contactPartiesNotification;
     private final ContactPartiesSelectDocument contactPartiesSelectDocument;
+    private final NotificationHelper notificationHelper;
+    private final DocumentsService documentsService;
+    private static final int DOC_ATTACH_LIMIT = 10;
 
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
@@ -128,20 +143,30 @@ public class RespondentContactParties implements CCDConfig<CaseData, State, User
     private void sendContactPartiesNotification(CaseDetails<CaseData, State> details, CaseData data, String caseNumber) {
         final ContactParties contactParties = data.getContactParties();
         final CaseData caseData = details.getData();
+        final Map<String, String> uploadedDocuments = notificationHelper.
+            buildDocumentList(caseData.getContactPartiesDocuments().getDocumentList(), DOC_ATTACH_LIMIT);
+        boolean sentToApplicantSide = false;
 
         if (contactParties != null) {
             if (!isEmpty(contactParties.getSubjectContactParties())) {
-                contactPartiesNotification.sendToSubject(caseData, caseNumber);
+                contactPartiesNotification.sendToSubject(caseData, caseNumber, uploadedDocuments);
+                sentToApplicantSide = true;
             }
             if (!isEmpty(contactParties.getRepresentativeContactParties())) {
-                contactPartiesNotification.sendToRepresentative(caseData, caseNumber);
+                contactPartiesNotification.sendToRepresentative(caseData, caseNumber, uploadedDocuments);
+                sentToApplicantSide = true;
             }
             if (!isEmpty(contactParties.getApplicantContactParties())) {
-                contactPartiesNotification.sendToApplicant(caseData, caseNumber);
+                contactPartiesNotification.sendToApplicant(caseData, caseNumber, uploadedDocuments);
+                sentToApplicantSide = true;
             }
             if (!isEmpty(contactParties.getTribunal())) {
-                contactPartiesNotification.sendToTribunal(caseData, caseNumber);
+                contactPartiesNotification.sendToTribunal(caseData, caseNumber, uploadedDocuments);
             }
+        }
+
+        if (sentToApplicantSide) {
+            documentsService.updateDocumentsToSentViaContactParties(details.getData(), uploadedDocuments);
         }
     }
 }

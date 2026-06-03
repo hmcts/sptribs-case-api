@@ -13,6 +13,7 @@ import uk.gov.hmcts.ccd.sdk.type.DynamicList;
 import uk.gov.hmcts.ccd.sdk.type.FlagDetail;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
+import uk.gov.hmcts.reform.ccd.client.model.Document;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.event.page.ApplyAnonymity;
 import uk.gov.hmcts.sptribs.caseworker.event.page.DraftOrderFooter;
@@ -166,6 +167,7 @@ public class CaseworkerCreateAndSendOrder implements CCDConfig<CaseData, State, 
                 documentsService.buildAndSaveNewDocumentEntity(
                     draftOrderCIC.getTemplateGeneratedDocument(),
                     Long.parseLong(caseData.getHyphenatedCaseRef().replace("-", "")),
+                    false,
                     false
                 );
             } catch (RuntimeException e) {
@@ -186,7 +188,7 @@ public class CaseworkerCreateAndSendOrder implements CCDConfig<CaseData, State, 
                 documentsService.buildAndSaveNewDocumentEntity(
                     caseData.getCicCase().getOrderFile().getFirst().getValue().getDocumentLink(),
                     Long.parseLong(caseData.getHyphenatedCaseRef().replace("-", "")),
-                    false
+                    false, false
                 );
             } catch (RuntimeException e) {
                 errors.add(e.getMessage());

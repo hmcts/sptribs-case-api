@@ -113,6 +113,7 @@ public class CaseworkerIssueDecision implements CCDConfig<CaseData, State, UserR
                 documentsService.buildAndSaveNewDocumentEntity(
                     decisionDocument.getDocumentLink(),
                     Long.parseLong(caseData.getHyphenatedCaseRef().replace("-", "")),
+                    false,
                     false
                 );
             } catch (RuntimeException e) {

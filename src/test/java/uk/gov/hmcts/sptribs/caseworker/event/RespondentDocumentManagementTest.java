@@ -99,7 +99,7 @@ class RespondentDocumentManagementTest {
 
         verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
             eq(response.getData().getAllDocManagement()
-                .getCaseworkerCICDocument().getFirst().getValue().getDocumentLink()), eq(TEST_CASE_ID), eq(false)
+                .getCaseworkerCICDocument().getFirst().getValue().getDocumentLink()), eq(TEST_CASE_ID), eq(false), eq(false)
         );
 
         assertThat(response.getData().getNewDocManagement().getCaseworkerCICDocument()).isEmpty();
@@ -148,8 +148,8 @@ class RespondentDocumentManagementTest {
             respondentDocumentManagement.aboutToSubmit(updatedCaseDetails, beforeDetails);
 
         verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
-            eq(response.getData().getInitialCicaDocuments().getFirst().getValue().getDocumentLink()), eq(TEST_CASE_ID), eq(false)
-        );
+            eq(response.getData().getInitialCicaDocuments().getFirst().getValue().getDocumentLink()), eq(TEST_CASE_ID), eq(false),
+            eq(false));
 
         assertThat(response.getData().getInitialCicaDocuments()).hasSize(1);
         assertThat(response.getData().getInitialCicaDocuments().getFirst().getValue().getDocumentLink().getFilename())
@@ -181,7 +181,7 @@ class RespondentDocumentManagementTest {
 
         verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
             eq(response.getData().getFurtherUploadedDocuments()
-                .getFirst().getValue().getDocumentLink()), eq(TEST_CASE_ID), eq(false)
+                .getFirst().getValue().getDocumentLink()), eq(TEST_CASE_ID), eq(false), eq(false)
         );
 
         assertThat(response.getData().getFurtherUploadedDocuments()).hasSize(1);
@@ -216,7 +216,8 @@ class RespondentDocumentManagementTest {
             respondentDocumentManagement.aboutToSubmit(updatedCaseDetails, beforeDetails);
 
         verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
-            eq(response.getData().getFurtherUploadedDocuments().get(1).getValue().getDocumentLink()), eq(TEST_CASE_ID), eq(false)
+            eq(response.getData().getFurtherUploadedDocuments().get(1).getValue().getDocumentLink()), eq(TEST_CASE_ID), eq(false),
+            eq(false)
         );
 
         assertThat(response.getData().getFurtherUploadedDocuments()).hasSize(2);
@@ -248,7 +249,7 @@ class RespondentDocumentManagementTest {
 
         verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
             eq(response.getData().getAllDocManagement()
-                .getCaseworkerCICDocument().getFirst().getValue().getDocumentLink()), eq(TEST_CASE_ID), eq(false)
+                .getCaseworkerCICDocument().getFirst().getValue().getDocumentLink()), eq(TEST_CASE_ID), eq(false), eq(false)
         );
 
         assertThat(response.getData().getInitialCicaDocuments()).isNull();
@@ -273,7 +274,7 @@ class RespondentDocumentManagementTest {
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
 
         doThrow(new RuntimeException("Error saving document entity to database"))
-            .when(documentsService).buildAndSaveNewDocumentEntity(any(), eq(TEST_CASE_ID), eq(false));
+            .when(documentsService).buildAndSaveNewDocumentEntity(any(), eq(TEST_CASE_ID), eq(false), eq(false));
 
         AboutToStartOrSubmitResponse<CaseData, State> response =
             respondentDocumentManagement.aboutToSubmit(updatedCaseDetails, beforeDetails);
@@ -282,7 +283,7 @@ class RespondentDocumentManagementTest {
         assertThat(response.getErrors()).contains("Error saving document entity to database");
 
         verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
-            any(), eq(TEST_CASE_ID), eq(false)
+            any(), eq(TEST_CASE_ID), eq(false), eq(false)
         );
     }
 }

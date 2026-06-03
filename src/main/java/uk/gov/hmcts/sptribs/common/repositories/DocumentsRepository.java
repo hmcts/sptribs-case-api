@@ -11,9 +11,16 @@ import java.util.List;
 
 @Repository
 public interface DocumentsRepository extends JpaRepository<DocumentEntity, Integer> {
+
     @Modifying
-    @Query("update DocumentEntity d set d.sentToApplicantViaContactParties = true where d.documentBinaryUrl = :documentBinaryUrl")
-    void setSentToApplicantViaContactPartiesToTrueByDocumentBinaryUrl(@Param("documentBinaryUrl") String documentBinaryUrl);
+    @Query("""
+    update DocumentEntity d
+    set d.sentToApplicantViaContactParties = true
+    where d.documentBinaryUrl in :documentUrls
+    """)
+    void setSentToApplicantViaContactPartiesToTrueByDocumentBinaryUrl(
+        @Param("documentUrls") List<String> documentUrls
+    );
 
     @Query("""
             SELECT d

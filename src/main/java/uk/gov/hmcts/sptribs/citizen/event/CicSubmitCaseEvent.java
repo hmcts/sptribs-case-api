@@ -313,6 +313,7 @@ public class CicSubmitCaseEvent implements CCDConfig<CaseData, State, UserRole> 
                 documentsService.buildAndSaveNewDocumentEntity(
                     document.getValue().getDocumentLink(),
                     Long.parseLong(caseData.getHyphenatedCaseRef().replace("-", "")),
+                    false,
                     false
                 );
             } catch (RuntimeException e) {

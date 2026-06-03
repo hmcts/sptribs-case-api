@@ -174,10 +174,10 @@ class CaseworkerIssueFinalDecisionTest {
 
         //Then
         verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
-            any(), eq(TEST_CASE_ID), eq(false)
+            any(), eq(TEST_CASE_ID), eq(false), eq(false)
         );
         verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
-            eq(document.getDocumentLink()), eq(TEST_CASE_ID), eq(false)
+            eq(document.getDocumentLink()), eq(TEST_CASE_ID), eq(false), eq(false)
         );
 
         assertThat(response.getState())
@@ -237,7 +237,7 @@ class CaseworkerIssueFinalDecisionTest {
         details.setData(caseData);
 
         doThrow(new RuntimeException("Error saving document entity to database"))
-            .when(documentsService).buildAndSaveNewDocumentEntity(any(), eq(TEST_CASE_ID), eq(false));
+            .when(documentsService).buildAndSaveNewDocumentEntity(any(), eq(TEST_CASE_ID), eq(false), eq(false));
 
         AboutToStartOrSubmitResponse<CaseData, State> response = issueFinalDecision.aboutToSubmit(details, beforeDetails);
 
@@ -245,7 +245,7 @@ class CaseworkerIssueFinalDecisionTest {
         assertThat(response.getErrors()).contains("Error saving document entity to database");
 
         verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
-            any(), eq(TEST_CASE_ID), eq(false)
+            any(), eq(TEST_CASE_ID), eq(false), eq(false)
         );
     }
 

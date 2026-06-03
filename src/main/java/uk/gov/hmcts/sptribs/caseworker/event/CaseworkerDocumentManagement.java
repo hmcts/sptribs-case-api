@@ -110,6 +110,7 @@ public class CaseworkerDocumentManagement implements CCDConfig<CaseData, State, 
                 documentsService.buildAndSaveNewDocumentEntity(
                     document.getValue().getDocumentLink(),
                     details.getId(),
+                    false,
                     false
                 );
             } catch (RuntimeException e) {

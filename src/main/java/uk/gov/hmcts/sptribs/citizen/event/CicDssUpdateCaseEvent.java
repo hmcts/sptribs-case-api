@@ -173,6 +173,7 @@ public class CicDssUpdateCaseEvent implements CCDConfig<CaseData, State, UserRol
                 documentsService.buildAndSaveNewDocumentEntity(
                     document.getValue().getDocumentLink(),
                     Long.parseLong(caseData.getHyphenatedCaseRef().replace("-", "")),
+                    false,
                     false
                 );
             } catch (RuntimeException e) {

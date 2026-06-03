@@ -25,6 +25,7 @@ import uk.gov.hmcts.sptribs.services.cdam.CaseDocumentClientApi;
 import uk.gov.hmcts.sptribs.testutil.TestDataHelper;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -110,7 +111,7 @@ class ContactPartiesNotificationTest {
                 CommonConstants.CONTACT_PARTY_INFO, data.getCicCase().getNotifyPartyMessage(),
                 CommonConstants.CIC_CASE_SUBJECT_NAME, data.getCicCase().getFullName()),
             TemplateName.CONTACT_PARTIES_EMAIL);
-        verify(documentsService).setSentToApplicantViaContactPartiesToTrue(testDocumentBinaryUrl.href);
+        verify(documentsService).setSentToApplicantViaContactPartiesToTrue(List.of(testDocumentBinaryUrl.href));
     }
 
     @Test
@@ -182,7 +183,7 @@ class ContactPartiesNotificationTest {
                 CommonConstants.CONTACT_PARTY_INFO, data.getCicCase().getNotifyPartyMessage(),
                 CommonConstants.CIC_CASE_SUBJECT_NAME, data.getCicCase().getFullName()),
             TemplateName.CONTACT_PARTIES_EMAIL);
-        verify(documentsService).setSentToApplicantViaContactPartiesToTrue(testDocumentBinaryUrl.href);
+        verify(documentsService).setSentToApplicantViaContactPartiesToTrue(List.of(testDocumentBinaryUrl.href));
     }
 
     @Test
@@ -254,7 +255,7 @@ class ContactPartiesNotificationTest {
                 CommonConstants.CONTACT_PARTY_INFO, data.getCicCase().getNotifyPartyMessage(),
                 CommonConstants.CIC_CASE_SUBJECT_NAME, data.getCicCase().getFullName()),
             TemplateName.CONTACT_PARTIES_EMAIL);
-        verify(documentsService).setSentToApplicantViaContactPartiesToTrue(testDocumentBinaryUrl.href);
+        verify(documentsService).setSentToApplicantViaContactPartiesToTrue(List.of(testDocumentBinaryUrl.href));
     }
 
     @Test

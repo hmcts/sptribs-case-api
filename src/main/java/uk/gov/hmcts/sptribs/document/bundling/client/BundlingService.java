@@ -202,14 +202,25 @@ public class BundlingService {
     }
 
     private Bundle buildBundle(LinkedHashMap<String, Object> objectLinkedHashMap, Long caseNumber) {
-        //move sticthed do buiklder outsiode so we can insert to db cleanly
+
+        Document stitchedDocument = getStitchedDocument(objectLinkedHashMap, caseNumber);
+
+        if (stitchedDocument != null) {
+            documentsService.buildAndSaveNewDocumentEntity(
+                stitchedDocument,
+                caseNumber,
+                false,
+                true
+            );
+        }
+
         return Bundle.builder()
             .stitchStatus(NEW)
             .description(MapUtils.getString(objectLinkedHashMap, DESCRIPTION, ""))
             .id(MapUtils.getString(objectLinkedHashMap, ID, ""))
             .dateAndTime(LocalDateTime.now(clock))
             .title(MapUtils.getString(objectLinkedHashMap, TITLE, ""))
-            .stitchedDocument(getStitchedDocument(objectLinkedHashMap, caseNumber))
+            .stitchedDocument(stitchedDocument)
             .paginationStyle(BundlePaginationStyle.valueOf(
                 MapUtils.getObject(objectLinkedHashMap, PAGINATION_STYLE, BundlePaginationStyle.off).toString()))
             .pageNumberFormat(PageNumberFormat.valueOf(
@@ -226,21 +237,11 @@ public class BundlingService {
 
         LinkedHashMap<String, Object> stitchedDocMap = (LinkedHashMap<String, Object>) objectLinkedHashMap.get(STITCHED_DOCUMENT);
 
-        Document stitchedDocument = Document.builder()
+        return Document.builder()
             .url(MapUtils.getString(stitchedDocMap, DOCUMENT_URL, ""))
             .binaryUrl(MapUtils.getString(stitchedDocMap, DOCUMENT_BINARY_URL, ""))
             .filename(MapUtils.getString(stitchedDocMap, DOCUMENT_FILENAME, ""))
-            .categoryId(DocumentType.BUNDLE.getCategory())
             .build();
-
-        //is this correct place??
-        documentsService.buildAndSaveNewDocumentEntity(
-            stitchedDocument,
-            caseNumber,
-            false
-        );
-
-        return stitchedDocument;
     }
 
     private List<BundleDocument> getDocuments(List<Map<String, Object>> documentsList) {

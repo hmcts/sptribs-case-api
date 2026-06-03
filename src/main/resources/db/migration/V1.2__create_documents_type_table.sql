@@ -1,7 +1,7 @@
 CREATE TABLE IF NOT EXISTS case_document_types
 (
-  id           BIGSERIAL PRIMARY KEY,
-  code         VARCHAR(100) NOT NULL UNIQUE,
+  id   BIGINT PRIMARY KEY,
+  code VARCHAR(100) NOT NULL UNIQUE,
   name VARCHAR(200) NOT NULL
 );
 
