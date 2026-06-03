@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
@@ -97,6 +98,14 @@ public class DocumentsService {
             documentsRepository.setSentToApplicantViaContactPartiesToTrueByDocumentBinaryUrl(documentBinaryUrls);
         } catch (DataAccessException e) {
             throw new RuntimeException("Error updating sent_to_applicant_via_contact_parties to true", e);
+        }
+    }
+
+    public void setIsDraftToFalse(String documentBinaryUrl) {
+        try {
+            documentsRepository.setIsDraftToFalseByDocumentBinaryUrl(documentBinaryUrl);
+        } catch (DataAccessException e) {
+            throw new RuntimeException("Error updating is_draft to false", e);
         }
     }
 

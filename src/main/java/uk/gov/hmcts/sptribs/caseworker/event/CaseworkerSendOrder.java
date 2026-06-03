@@ -33,6 +33,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
+import uk.gov.hmcts.sptribs.document.service.DocumentsService;
 import uk.gov.hmcts.sptribs.notification.dispatcher.NewOrderIssuedNotification;
 
 import java.time.LocalDate;
@@ -42,6 +43,8 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static java.lang.String.format;
+import static uk.gov.hmcts.sptribs.caseworker.util.ErrorConstants.FAILED_SAVING_DOCUMENT_TO_DATABASE;
+import static uk.gov.hmcts.sptribs.caseworker.util.ErrorConstants.FAILED_SAVING_DOCUMENT_WITH_NO_FILENAME_TO_DATABASE;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_SEND_ORDER;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.COLON;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.DOUBLE_HYPHEN;
@@ -77,6 +80,7 @@ public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole>
 
     private final NewOrderIssuedNotification newOrderIssuedNotification;
     private final SendOrderOrderDueDates orderDueDates;
+    private final DocumentsService documentsService;
 
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
@@ -141,6 +145,8 @@ public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole>
             .orderSentDate(LocalDate.now())
             .reminderDay(caseData.getCicCase().getOrderReminderDays()).build();
 
+        List<String> errors = new ArrayList<>();
+
         if (caseData.getCicCase().getOrderIssuingType() != null && caseData.getCicCase().getDraftOrderDynamicList() != null
             && caseData.getCicCase().getOrderIssuingType().equals(OrderIssuingType.ISSUE_AND_SEND_AN_EXISTING_DRAFT)) {
 
@@ -154,6 +160,34 @@ public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole>
                     String fileName = selectedDraftOrder.getTemplateGeneratedDocument().getFilename().replace(DRAFT + COLON, "");
                     selectedDraftOrder.getTemplateGeneratedDocument().setFilename(SENT + COLON + fileName);
                     order.setDraftOrder(selectedDraftOrder);
+
+                    try {
+                        documentsService.setIsDraftToFalse(order.getDraftOrder().getTemplateGeneratedDocument().getBinaryUrl());
+                    } catch (RuntimeException e) {
+                        log.error("Document entity (from draft order) with filename {} could not be saved: {}",
+                            order.getDraftOrder().getTemplateGeneratedDocument().getFilename(), e.getMessage());
+                        errors.add(FAILED_SAVING_DOCUMENT_TO_DATABASE + order.getDraftOrder().getTemplateGeneratedDocument().getFilename());
+                    }
+                }
+            }
+        } else if (caseData.getCicCase().getOrderIssuingType() != null
+            && caseData.getCicCase().getOrderIssuingType().equals(OrderIssuingType.UPLOAD_A_NEW_ORDER_FROM_YOUR_COMPUTER)) {
+
+            try {
+                documentsService.buildAndSaveNewDocumentEntity(
+                    caseData.getCicCase().getOrderTemplateIssued(),
+                    details.getId(),
+                    false, false
+                );
+            } catch (RuntimeException e) {
+                if (caseData.getCicCase().getOrderTemplateIssued().getFilename() != null
+                    && !caseData.getCicCase().getOrderTemplateIssued().getFilename().isEmpty()) {
+                    log.error("Document entity (from uploaded order) with filename {} could not be saved: {}",
+                        caseData.getCicCase().getOrderTemplateIssued().getFilename(), e.getMessage());
+                    errors.add(FAILED_SAVING_DOCUMENT_TO_DATABASE + caseData.getCicCase().getOrderTemplateIssued().getFilename());
+                } else {
+                    log.error("Document entity (from uploaded order) has no filename");
+                    errors.add(FAILED_SAVING_DOCUMENT_WITH_NO_FILENAME_TO_DATABASE);
                 }
             }
         }
@@ -201,6 +235,7 @@ public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole>
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
             .state(details.getState())
+            .errors(errors)
             .build();
     }
 

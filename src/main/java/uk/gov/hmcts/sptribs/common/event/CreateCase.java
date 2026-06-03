@@ -163,9 +163,8 @@ public class CreateCase implements CCDConfig<CaseData, State, UserRole> {
                 try {
                     documentsService.buildAndSaveNewDocumentEntity(
                         document.getValue().getDocumentLink(),
-                        Long.parseLong(caseData.getHyphenatedCaseRef().replace("-", "")),
-                        false,
-                        false
+                        details.getId(),
+                        false, false
                     );
                 } catch (RuntimeException e) {
                     log.error("Saving applicant documents failed with exception: {}", e.getMessage());

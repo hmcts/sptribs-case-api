@@ -22,6 +22,10 @@ public interface DocumentsRepository extends JpaRepository<DocumentEntity, Integ
         @Param("documentUrls") List<String> documentUrls
     );
 
+    @Modifying
+    @Query("update DocumentEntity d set d.isDraft = false where d.documentBinaryUrl = :documentBinaryUrl")
+    void setIsDraftToFalseByDocumentBinaryUrl(@Param("documentBinaryUrl") String documentBinaryUrl);
+
     @Query("""
             SELECT d
             FROM DocumentEntity d

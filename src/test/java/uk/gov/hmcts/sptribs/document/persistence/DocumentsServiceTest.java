@@ -12,6 +12,8 @@ import uk.gov.hmcts.sptribs.common.repositories.DocumentsRepository;
 import uk.gov.hmcts.sptribs.document.model.DocumentEntity;
 import uk.gov.hmcts.sptribs.document.service.DocumentsService;
 
+import java.util.List;
+
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.times;
@@ -21,6 +23,7 @@ import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID;
 
 @ExtendWith(MockitoExtension.class)
 public class DocumentsServiceTest {
+
     @InjectMocks
     private DocumentsService documentsService;
 
@@ -88,24 +91,45 @@ public class DocumentsServiceTest {
             .hasCauseInstanceOf(DataAccessException.class);
     }
 
-//    @Test
-//    public void shouldSetSentToApplicantViaContactPartiesToTrue() {
-//
-//        documentsService.setSentToApplicantViaContactPartiesToTrue(TEST_DOCUMENT.getBinaryUrl());
-//
-//        verify(documentsRepository, times(1)).setSentToApplicantViaContactPartiesToTrueByDocumentBinaryUrl(
-//            EXPECTED_TEST_DOCUMENT_ENTITY_NON_DRAFT_SENT_VIA_CONTACT_PARTIES.getDocumentBinaryUrl()
-//        );
-//    }
-//
-//    @Test
-//    public void shouldThrowRuntimeExceptionWhenDataAccessExceptionCaughtInSetSentToApplicantViaContactPartiesToTrue() {
-//        doThrow(new DataAccessResourceFailureException("DB error"))
-//            .when(documentsRepository).setSentToApplicantViaContactPartiesToTrueByDocumentBinaryUrl(TEST_DOCUMENT.getBinaryUrl());
-//
-//        assertThatThrownBy(() -> documentsService.setSentToApplicantViaContactPartiesToTrue(TEST_DOCUMENT.getBinaryUrl()))
-//            .isInstanceOf(RuntimeException.class)
-//            .hasMessageContaining("Error updating sent_to_applicant_via_contact_parties to true")
-//            .hasCauseInstanceOf(DataAccessException.class);
-//    }
+    @Test
+    public void shouldSetSentToApplicantViaContactPartiesToTrue() {
+
+        documentsService.setSentToApplicantViaContactPartiesToTrue(List.of(TEST_DOCUMENT.getBinaryUrl()));
+
+        verify(documentsRepository, times(1)).setSentToApplicantViaContactPartiesToTrueByDocumentBinaryUrl(
+            List.of(EXPECTED_TEST_DOCUMENT_ENTITY_NON_DRAFT_SENT_VIA_CONTACT_PARTIES.getDocumentBinaryUrl())
+        );
+    }
+
+    @Test
+    public void shouldThrowRuntimeExceptionWhenDataAccessExceptionCaughtInSetSentToApplicantViaContactPartiesToTrue() {
+        doThrow(new DataAccessResourceFailureException("DB error"))
+            .when(documentsRepository).setSentToApplicantViaContactPartiesToTrueByDocumentBinaryUrl(List.of(TEST_DOCUMENT.getBinaryUrl()));
+
+        assertThatThrownBy(() -> documentsService.setSentToApplicantViaContactPartiesToTrue(List.of(TEST_DOCUMENT.getBinaryUrl())))
+            .isInstanceOf(RuntimeException.class)
+            .hasMessageContaining("Error updating sent_to_applicant_via_contact_parties to true")
+            .hasCauseInstanceOf(DataAccessException.class);
+    }
+
+    @Test
+    public void shouldSetIsDraftToFalse() {
+
+        documentsService.setIsDraftToFalse(TEST_DOCUMENT.getBinaryUrl());
+
+        verify(documentsRepository, times(1)).setIsDraftToFalseByDocumentBinaryUrl(
+            EXPECTED_TEST_DOCUMENT_ENTITY_NON_DRAFT.getDocumentBinaryUrl()
+        );
+    }
+
+    @Test
+    public void shouldThrowRuntimeExceptionWhenDataAccessExceptionCaughtInSetIsDraftToFalse() {
+        doThrow(new DataAccessResourceFailureException("DB error"))
+            .when(documentsRepository).setIsDraftToFalseByDocumentBinaryUrl(TEST_DOCUMENT.getBinaryUrl());
+
+        assertThatThrownBy(() -> documentsService.setIsDraftToFalse(TEST_DOCUMENT.getBinaryUrl()))
+            .isInstanceOf(RuntimeException.class)
+            .hasMessageContaining("Error updating is_draft to false")
+            .hasCauseInstanceOf(DataAccessException.class);
+    }
 }

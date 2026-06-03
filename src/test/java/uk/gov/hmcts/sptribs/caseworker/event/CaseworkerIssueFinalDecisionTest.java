@@ -157,7 +157,9 @@ class CaseworkerIssueFinalDecisionTest {
     void shouldIssueCaseFinalDecision() {
         //Given
         final CaseDetails<CaseData, State> details = new CaseDetails<>();
+        details.setId(TEST_CASE_ID);
         final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        beforeDetails.setId(TEST_CASE_ID);
         final CaseData caseData = caseData();
         final CaseIssueFinalDecision caseIssueFinalDecision = new CaseIssueFinalDecision();
         final CICDocument document = CICDocument.builder()
@@ -224,7 +226,9 @@ class CaseworkerIssueFinalDecisionTest {
     @Test
     void shouldStoreErrorsWhenBuildAndSaveNewDocumentEntityThrowsRuntimeException() {
         final CaseDetails<CaseData, State> details = new CaseDetails<>();
+        details.setId(TEST_CASE_ID);
         final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        beforeDetails.setId(TEST_CASE_ID);
         final CaseData caseData = caseData();
         final CaseIssueFinalDecision caseIssueFinalDecision = new CaseIssueFinalDecision();
         final CICDocument document = CICDocument.builder()
@@ -242,11 +246,31 @@ class CaseworkerIssueFinalDecisionTest {
         AboutToStartOrSubmitResponse<CaseData, State> response = issueFinalDecision.aboutToSubmit(details, beforeDetails);
 
         assertThat(response.getErrors()).hasSize(1);
-        assertThat(response.getErrors()).contains("Error saving document entity to database");
+        assertThat(response.getErrors()).contains("Error saving document with filename: " + document.getDocumentLink().getFilename());
 
         verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
             any(), eq(TEST_CASE_ID), eq(false), eq(false)
         );
+
+        document.getDocumentLink().setFilename(null);
+        caseIssueFinalDecision.setDocument(document);
+        caseData.setCaseIssueFinalDecision(caseIssueFinalDecision);
+        details.setData(caseData);
+
+        AboutToStartOrSubmitResponse<CaseData, State> nullFilenameResponse = issueFinalDecision.aboutToSubmit(details, beforeDetails);
+
+        assertThat(nullFilenameResponse.getErrors()).hasSize(1);
+        assertThat(nullFilenameResponse.getErrors()).contains("Error saving document with no filename");
+
+        document.getDocumentLink().setFilename("");
+        caseIssueFinalDecision.setDocument(document);
+        caseData.setCaseIssueFinalDecision(caseIssueFinalDecision);
+        details.setData(caseData);
+
+        AboutToStartOrSubmitResponse<CaseData, State> emptyFilenameResponse = issueFinalDecision.aboutToSubmit(details, beforeDetails);
+
+        assertThat(emptyFilenameResponse.getErrors()).hasSize(1);
+        assertThat(emptyFilenameResponse.getErrors()).contains("Error saving document with no filename");
     }
 
     @Test
