@@ -269,11 +269,12 @@ class CaseworkerCreateDraftOrderTest {
         final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
 
         caseData.setHyphenatedCaseRef(TEST_CASE_ID_HYPHENATED);
+        caseData.setDraftOrderContentCIC(DraftOrderContentCIC.builder()
+            .orderTemplate(OrderTemplate.CIC6_GENERAL_DIRECTIONS).build());
         updatedCaseDetails.setData(caseData);
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
-        caseData.setDraftOrderContentCIC(DraftOrderContentCIC.builder()
-            .orderTemplate(OrderTemplate.CIC6_GENERAL_DIRECTIONS).build());
+
 
         doThrow(new RuntimeException("Error saving document entity to database"))
             .when(documentsService).buildAndSaveNewDocumentEntity(any(), eq(TEST_CASE_ID), eq(true));
@@ -282,11 +283,36 @@ class CaseworkerCreateDraftOrderTest {
             caseworkerCreateDraftOrder.aboutToSubmit(updatedCaseDetails, beforeDetails);
 
         assertThat(response.getErrors()).hasSize(1);
-        assertThat(response.getErrors()).contains("Error saving document entity to database");
+        assertThat(response.getErrors()).contains("Error saving document with filename: " + cicCase.getDraftOrderCICList()
+            .getFirst().getValue().getTemplateGeneratedDocument().getFilename());
 
         verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
             any(), eq(TEST_CASE_ID), eq(true)
         );
+
+        cicCase.setOrderTemplateIssued(Document.builder().filename(null).build());
+        caseData.setCicCase(cicCase);
+        caseData.setDraftOrderContentCIC(DraftOrderContentCIC.builder()
+            .orderTemplate(OrderTemplate.CIC6_GENERAL_DIRECTIONS).build());
+        updatedCaseDetails.setData(caseData);
+
+        AboutToStartOrSubmitResponse<CaseData, State> nullFilenameResponse =
+            caseworkerCreateDraftOrder.aboutToSubmit(updatedCaseDetails, beforeDetails);
+
+        assertThat(nullFilenameResponse.getErrors()).hasSize(1);
+        assertThat(nullFilenameResponse.getErrors()).contains("Error saving document with no filename");
+
+        cicCase.setOrderTemplateIssued(Document.builder().filename("").build());
+        caseData.setCicCase(cicCase);
+        caseData.setDraftOrderContentCIC(DraftOrderContentCIC.builder()
+            .orderTemplate(OrderTemplate.CIC6_GENERAL_DIRECTIONS).build());
+        updatedCaseDetails.setData(caseData);
+
+        AboutToStartOrSubmitResponse<CaseData, State> emptyFilenameResponse =
+            caseworkerCreateDraftOrder.aboutToSubmit(updatedCaseDetails, beforeDetails);
+
+        assertThat(emptyFilenameResponse.getErrors()).hasSize(1);
+        assertThat(emptyFilenameResponse.getErrors()).contains("Error saving document with no filename");
     }
 }
 

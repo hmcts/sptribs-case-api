@@ -37,6 +37,8 @@ import java.util.stream.Stream;
 import static org.apache.commons.lang.StringUtils.isNotBlank;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.util.CollectionUtils.isEmpty;
+import static uk.gov.hmcts.sptribs.caseworker.util.ErrorConstants.FAILED_SAVING_DOCUMENT_TO_DATABASE;
+import static uk.gov.hmcts.sptribs.caseworker.util.ErrorConstants.FAILED_SAVING_DOCUMENT_WITH_NO_FILENAME_TO_DATABASE;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CITIZEN_DSS_UPDATE_CASE_SUBMISSION;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.DSS_Draft;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.DSS_Expired;
@@ -176,7 +178,15 @@ public class CicDssUpdateCaseEvent implements CCDConfig<CaseData, State, UserRol
                     false
                 );
             } catch (RuntimeException e) {
-                errors.add(e.getMessage());
+                if (document.getValue().getDocumentLink().getFilename() != null
+                    && !document.getValue().getDocumentLink().getFilename().isEmpty()) {
+                    log.error("Document entity with filename {} could not be saved: {}",
+                        document.getValue().getDocumentLink().getFilename(), e.getMessage());
+                    errors.add(FAILED_SAVING_DOCUMENT_TO_DATABASE + document.getValue().getDocumentLink().getFilename());
+                } else {
+                    log.error("Document entity has no filename");
+                    errors.add(FAILED_SAVING_DOCUMENT_WITH_NO_FILENAME_TO_DATABASE);
+                }
             }
         }
         dssCaseData.setOtherInfoDocuments(new ArrayList<>());

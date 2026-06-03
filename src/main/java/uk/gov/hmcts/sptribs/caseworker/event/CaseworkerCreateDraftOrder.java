@@ -36,6 +36,8 @@ import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.springframework.util.CollectionUtils.isEmpty;
+import static uk.gov.hmcts.sptribs.caseworker.util.ErrorConstants.FAILED_SAVING_DOCUMENT_TO_DATABASE;
+import static uk.gov.hmcts.sptribs.caseworker.util.ErrorConstants.FAILED_SAVING_DOCUMENT_WITH_NO_FILENAME_TO_DATABASE;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_CREATE_DRAFT_ORDER;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.DOUBLE_HYPHEN;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
@@ -107,8 +109,13 @@ public class CaseworkerCreateDraftOrder implements CCDConfig<CaseData, State, Us
         final CaseData caseData = details.getData();
         final OrderTemplate orderTemplate = caseData.getDraftOrderContentCIC().getOrderTemplate();
 
-        String[] fileName = caseData.getCicCase().getOrderTemplateIssued().getFilename().split(DOUBLE_HYPHEN);
-        addToDraftOrderTemplatesDynamicList(orderTemplate, caseData.getCicCase(), fileName[2]);
+        if (caseData.getCicCase().getOrderTemplateIssued().getFilename() != null
+            && caseData.getCicCase().getOrderTemplateIssued().getFilename().length() > 1) {
+            String[] fileName = caseData.getCicCase().getOrderTemplateIssued().getFilename().split(DOUBLE_HYPHEN);
+            addToDraftOrderTemplatesDynamicList(orderTemplate, caseData.getCicCase(), fileName[2]);
+        } else {
+            addToDraftOrderTemplatesDynamicList(orderTemplate, caseData.getCicCase(), null);
+        }
 
         DraftOrderCIC draftOrderCIC = DraftOrderCIC.builder()
             .draftOrderContentCIC(caseData.getDraftOrderContentCIC())
@@ -123,7 +130,15 @@ public class CaseworkerCreateDraftOrder implements CCDConfig<CaseData, State, Us
                 true
             );
         } catch (RuntimeException e) {
-            errors.add(e.getMessage());
+            if (draftOrderCIC.getTemplateGeneratedDocument().getFilename() != null
+                && !draftOrderCIC.getTemplateGeneratedDocument().getFilename().isEmpty()) {
+                log.error("Document entity with filename {} could not be saved: {}",
+                    draftOrderCIC.getTemplateGeneratedDocument().getFilename(), e.getMessage());
+                errors.add(FAILED_SAVING_DOCUMENT_TO_DATABASE + draftOrderCIC.getTemplateGeneratedDocument().getFilename());
+            } else {
+                log.error("Document entity has no filename");
+                errors.add(FAILED_SAVING_DOCUMENT_WITH_NO_FILENAME_TO_DATABASE);
+            }
         }
 
         caseData.setDraftOrderContentCIC(new DraftOrderContentCIC());
