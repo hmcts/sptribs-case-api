@@ -165,9 +165,10 @@ public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole>
                     try {
                         documentsService.setIsDraftToFalse(order.getDraftOrder().getTemplateGeneratedDocument().getBinaryUrl());
                     } catch (RuntimeException e) {
-                        log.error("Document entity (from draft order) with filename {} could not be saved: {}",
+                        log.error("Document entity (from draft order) with filename {} could not be updated: {}",
                             order.getDraftOrder().getTemplateGeneratedDocument().getFilename(), e.getMessage());
-                        errors.add(FAILED_SAVING_DOCUMENT_TO_DATABASE + order.getDraftOrder().getTemplateGeneratedDocument().getFilename());
+                        errors.add("Draft order with filename " + order.getDraftOrder().getTemplateGeneratedDocument().getFilename()
+                            + " could not be updated to non-draft");
                     }
                 }
             }
