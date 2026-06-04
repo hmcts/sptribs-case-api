@@ -43,7 +43,10 @@ public class LocationService {
     public DynamicList getHearingVenuesByRegion(String regionId) {
         final HearingVenue[] hearingVenues = getCourtVenues(regionId);
 
-        //update here ... if serivce code is present we shoudl alread be filtered!
+        // Location team is migrating from courtTypeId to serviceCode.
+        // When serviceCode is present, the Location service has already
+        // filtered the results, so no additional filtering is required.
+        // Retain the courtTypeId filter for backwards compatibility.
         boolean hasServiceCode = Arrays.stream(hearingVenues)
             .findFirst()
             .map(HearingVenue::getServiceCode)
