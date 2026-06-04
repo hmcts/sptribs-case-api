@@ -11,6 +11,8 @@ import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.Event;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.ccd.sdk.type.Document;
+import uk.gov.hmcts.ccd.sdk.type.DynamicListElement;
+import uk.gov.hmcts.ccd.sdk.type.DynamicMultiSelectList;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.event.page.ContactPartiesSelectDocument;
@@ -26,15 +28,19 @@ import uk.gov.hmcts.sptribs.ciccase.model.access.Permissions;
 import uk.gov.hmcts.sptribs.common.event.page.PartiesToContact;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
+import uk.gov.hmcts.sptribs.document.service.DocumentsService;
+import uk.gov.hmcts.sptribs.notification.NotificationHelper;
 import uk.gov.hmcts.sptribs.notification.dispatcher.ContactPartiesNotification;
 import uk.gov.hmcts.sptribs.notification.exception.NotificationException;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.sptribs.caseworker.util.ErrorConstants.SELECT_AT_LEAST_ONE_CONTACT_PARTY;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_WA_CONFIG_USER;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigBuilder;
@@ -62,6 +68,12 @@ class CaseworkerContactPartiesTest {
 
     @Mock
     private ContactPartiesSelectDocument contactPartiesSelectDocument;
+
+    @Mock
+    private DocumentsService documentsService;
+
+    @Mock
+    private NotificationHelper notificationHelper;
 
     @Test
     void shouldAddPublishToCamundaWhenWAIsEnabled() {
@@ -225,6 +237,25 @@ class CaseworkerContactPartiesTest {
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
 
+        //Given
+        final String documentLabel =
+            "[Document 1.pdf A - First decision](http://exui.net/documents/5e32a0d2-9b37-4548-b007-b9b2eb580d0a/binary)";
+        final DynamicListElement listItem = DynamicListElement
+            .builder()
+            .label(documentLabel)
+            .code(UUID.randomUUID())
+            .build();
+
+        final List<DynamicListElement> listItems = new ArrayList<>();
+        listItems.add(listItem);
+
+        final DynamicMultiSelectList documentList = new DynamicMultiSelectList();
+        documentList.setListItems(listItems);
+        documentList.setValue(listItems);
+
+        final int docAttachLimit = 2;
+
+        when(notificationHelper.buildDocumentList(documentList, docAttachLimit)).thenReturn(null);
         Mockito.doNothing().when(contactPartiesNotification).sendToApplicant(caseData, caseData.getHyphenatedCaseRef());
         Mockito.doNothing().when(contactPartiesNotification).sendToRepresentative(caseData, caseData.getHyphenatedCaseRef());
         Mockito.doNothing().when(contactPartiesNotification).sendToRespondent(caseData, caseData.getHyphenatedCaseRef());
