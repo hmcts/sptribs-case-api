@@ -101,7 +101,7 @@ public class ApplicationReceivedNotificationIT {
                 TRIBUNAL_NAME, CIC,
                 CIC_CASE_NUMBER, TEST_CASE_ID.toString(),
                 CIC_CASE_SUBJECT_NAME, "Test Name",
-                CONTACT_NAME, "Applicant Name".toString(),
+                CONTACT_NAME, "Applicant Name",
                 DASHBOARD, DASHBOARD_LINK
             ));
     }
