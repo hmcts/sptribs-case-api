@@ -38,7 +38,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import static org.springframework.util.CollectionUtils.isEmpty;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_CREATE_DRAFT_ORDER;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.DOUBLE_HYPHEN;
-import static uk.gov.hmcts.sptribs.caseworker.util.MessageUtil.generateSimpleErrorMessageDocumentSave;
+import static uk.gov.hmcts.sptribs.caseworker.util.MessageUtil.handleDocumentException;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseClosed;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
@@ -129,7 +129,7 @@ public class CaseworkerCreateDraftOrder implements CCDConfig<CaseData, State, Us
                 true
             );
         } catch (RuntimeException e) {
-            errors.add(generateSimpleErrorMessageDocumentSave(draftOrderCIC.getTemplateGeneratedDocument(), e.getMessage()));
+            errors.add(handleDocumentException(draftOrderCIC.getTemplateGeneratedDocument(), e.getMessage()));
         }
 
         caseData.setDraftOrderContentCIC(new DraftOrderContentCIC());

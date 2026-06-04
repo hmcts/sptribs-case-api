@@ -49,7 +49,7 @@ import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.DOUBLE_HYPHEN;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.DRAFT;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.SENT;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventUtil.getRecipients;
-import static uk.gov.hmcts.sptribs.caseworker.util.MessageUtil.generateSimpleErrorMessageDocumentSave;
+import static uk.gov.hmcts.sptribs.caseworker.util.MessageUtil.handleDocumentException;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseClosed;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
@@ -181,7 +181,7 @@ public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole>
                     false
                 );
             } catch (RuntimeException e) {
-                errors.add(generateSimpleErrorMessageDocumentSave(caseData.getCicCase().getOrderTemplateIssued(), e.getMessage()));
+                errors.add(handleDocumentException(caseData.getCicCase().getOrderTemplateIssued(), e.getMessage()));
             }
         }
 
