@@ -33,7 +33,7 @@ import java.util.List;
 
 import static java.lang.String.format;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_ISSUE_DECISION;
-import static uk.gov.hmcts.sptribs.caseworker.util.MessageUtil.generateSimpleErrorMessageDocumentSave;
+import static uk.gov.hmcts.sptribs.caseworker.util.MessageUtil.handleDocumentException;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingOutcome;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_CASEWORKER;
@@ -117,7 +117,7 @@ public class CaseworkerIssueDecision implements CCDConfig<CaseData, State, UserR
                     false, false
                 );
             } catch (RuntimeException e) {
-                errors.add(generateSimpleErrorMessageDocumentSave(decisionDocument.getDocumentLink(), e.getMessage()));
+                errors.add(handleDocumentException(decisionDocument.getDocumentLink(), e.getMessage()));
             }
         }
 

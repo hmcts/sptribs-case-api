@@ -115,7 +115,7 @@ public final class MessageUtil {
         return message.substring(0, message.length() - 2);
     }
 
-    public static String generateSimpleErrorMessageDocumentSave(final Document document, String errorMessage) {
+    public static String handleDocumentException(final Document document, String errorMessage) {
         if (document.getFilename() != null
             && !document.getFilename().isEmpty()) {
             log.error("Document entity with filename {} could not be saved: {}", document.getFilename(), errorMessage);

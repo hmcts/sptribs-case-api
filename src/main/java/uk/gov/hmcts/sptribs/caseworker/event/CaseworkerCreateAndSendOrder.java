@@ -54,7 +54,7 @@ import static uk.gov.hmcts.sptribs.caseworker.model.OrderIssuingType.CREATE_AND_
 import static uk.gov.hmcts.sptribs.caseworker.model.OrderIssuingType.UPLOAD_A_NEW_ORDER_FROM_YOUR_COMPUTER;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_CREATE_AND_SEND_ORDER;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventUtil.getRecipients;
-import static uk.gov.hmcts.sptribs.caseworker.util.MessageUtil.generateSimpleErrorMessageDocumentSave;
+import static uk.gov.hmcts.sptribs.caseworker.util.MessageUtil.handleDocumentException;
 import static uk.gov.hmcts.sptribs.caseworker.util.SendOrderUtil.updateCicCaseOrderList;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseClosed;
@@ -171,7 +171,7 @@ public class CaseworkerCreateAndSendOrder implements CCDConfig<CaseData, State, 
                     false
                 );
             } catch (RuntimeException e) {
-                errors.add(generateSimpleErrorMessageDocumentSave(draftOrderCIC.getTemplateGeneratedDocument(), e.getMessage()));
+                errors.add(handleDocumentException(draftOrderCIC.getTemplateGeneratedDocument(), e.getMessage()));
             }
 
             caseData.setDraftOrderContentCIC(new DraftOrderContentCIC());
@@ -192,7 +192,7 @@ public class CaseworkerCreateAndSendOrder implements CCDConfig<CaseData, State, 
                     false
                 );
             } catch (RuntimeException e) {
-                errors.add(generateSimpleErrorMessageDocumentSave(caseData.getCicCase()
+                errors.add(handleDocumentException(caseData.getCicCase()
                     .getOrderFile().getFirst().getValue().getDocumentLink(), e.getMessage()));
             }
         }

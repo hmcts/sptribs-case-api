@@ -50,7 +50,7 @@ import static java.lang.String.format;
 import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
 import static org.apache.commons.lang.StringUtils.isNotBlank;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
-import static uk.gov.hmcts.sptribs.caseworker.util.MessageUtil.generateSimpleErrorMessageDocumentSave;
+import static uk.gov.hmcts.sptribs.caseworker.util.MessageUtil.handleDocumentException;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.DSS_Draft;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.DSS_Submitted;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.CITIZEN;
@@ -318,7 +318,7 @@ public class CicSubmitCaseEvent implements CCDConfig<CaseData, State, UserRole> 
                     false
                 );
             } catch (RuntimeException e) {
-                errors.add(generateSimpleErrorMessageDocumentSave(document.getValue().getDocumentLink(), e.getMessage()));
+                errors.add(handleDocumentException(document.getValue().getDocumentLink(), e.getMessage()));
             }
         }
         dssCaseData.setTribunalFormDocuments(new ArrayList<>());

@@ -24,7 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_DOCUMENT_MANAGEMENT;
-import static uk.gov.hmcts.sptribs.caseworker.util.MessageUtil.generateSimpleErrorMessageDocumentSave;
+import static uk.gov.hmcts.sptribs.caseworker.util.MessageUtil.handleDocumentException;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingOutcome;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseClosed;
@@ -115,7 +115,7 @@ public class CaseworkerDocumentManagement implements CCDConfig<CaseData, State, 
                     false
                 );
             } catch (RuntimeException e) {
-                errors.add(generateSimpleErrorMessageDocumentSave(document.getValue().getDocumentLink(), e.getMessage()));
+                errors.add(handleDocumentException(document.getValue().getDocumentLink(), e.getMessage()));
             }
         }
 
