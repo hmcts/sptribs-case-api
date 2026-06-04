@@ -11,9 +11,12 @@ import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.Event;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.ccd.sdk.type.Document;
+import uk.gov.hmcts.ccd.sdk.type.DynamicListElement;
+import uk.gov.hmcts.ccd.sdk.type.DynamicMultiSelectList;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.event.page.ContactPartiesSelectDocument;
+import uk.gov.hmcts.sptribs.caseworker.model.ContactPartiesDocuments;
 import uk.gov.hmcts.sptribs.ciccase.model.ApplicantCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
@@ -32,6 +35,7 @@ import uk.gov.hmcts.sptribs.notification.exception.NotificationException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.doThrow;
@@ -323,6 +327,37 @@ class CaseworkerContactPartiesTest {
         assertThat(response).isNotNull();
         assertThat(response.getData().getContactPartiesDocuments().getDocumentList().getListItems()).hasSize(1);
         assertThat(response.getData().getCicCase().getNotifyPartyMessage()).isEqualTo("");
+    }
+
+    @Test
+    void shouldPopulateEventMetaDataForSummaryAndDescription() {
+        final CaseData caseData = caseData();
+        final CicCase cicCase = CicCase.builder()
+            .build();
+
+        caseData.setCicCase(cicCase);
+
+        ContactPartiesDocuments contactPartiesDocuments = new ContactPartiesDocuments();
+        List<DynamicListElement> selection = List.of(DynamicListElement.builder()
+                .code(UUID.randomUUID())
+                .label("[Document 1 - Test.pdf][https://manage-cases.hmcts.net/test123")
+                .build());
+        contactPartiesDocuments.setDocumentList(DynamicMultiSelectList.builder()
+            .value(selection)
+            .listItems(selection)
+            .build());
+
+        caseData.setContactPartiesDocuments(contactPartiesDocuments);
+
+        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
+        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        updatedCaseDetails.setData(caseData);
+        updatedCaseDetails.setId(TEST_CASE_ID);
+
+        AboutToStartOrSubmitResponse contactPartiesResponse = caseWorkerContactParties.aboutToSubmit(updatedCaseDetails, beforeDetails);
+
+        assertThat(contactPartiesResponse.getEventMetadata().getSummary()).isEqualTo("1 Selected documents sent");
+        assertThat(contactPartiesResponse.getEventMetadata().getDescription()).contains("Document 1 - Test.pdf");
     }
 }
 
