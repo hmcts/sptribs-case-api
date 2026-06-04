@@ -30,4 +30,8 @@ public class CaseworkerCICDocumentMapper {
             .map(this::map)
             .toList();
     }
+
+    public List<CaseworkerCICDocument> mapEntityToList(DocumentEntity entity) {
+        return List.of(map(entity));
+    }
 }

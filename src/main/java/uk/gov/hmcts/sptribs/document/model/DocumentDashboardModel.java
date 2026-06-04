@@ -9,7 +9,7 @@ import java.util.List;
 @Builder
 public class DocumentDashboardModel {
 
-    List<DocumentEntity> latestCaseBundleDocuments;
+    DocumentEntity latestCaseBundleDocument;
     List<DocumentEntity> contactPartiesDocuments;
     List<DocumentEntity> orderAndDecisionDocuments;
 

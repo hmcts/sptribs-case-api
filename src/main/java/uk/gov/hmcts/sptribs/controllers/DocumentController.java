@@ -53,7 +53,7 @@ public class DocumentController {
         @NotBlank(message = "CCD reference cannot be blank")
         @Pattern(regexp = "^\\d{16}$", message = "CCD reference must be 16 digits long")
         @Parameter(
-            description = "The CCD reference number. ",
+            description = "The CCD reference number.",
             required = true,
             example = "1740138704453399"
         )
@@ -66,7 +66,7 @@ public class DocumentController {
         DocumentResponse documentResponse = DocumentResponse.builder()
             .contactPartiesDocuments(caseworkerCICDocumentMapper.map(documentDashboardModel.getContactPartiesDocuments()))
             .orderAndDecisionDocuments(caseworkerCICDocumentMapper.map(documentDashboardModel.getOrderAndDecisionDocuments()))
-            .latestCaseBundleDocuments(caseworkerCICDocumentMapper.map(documentDashboardModel.getLatestCaseBundleDocuments()))
+            .latestCaseBundleDocuments(caseworkerCICDocumentMapper.mapEntityToList(documentDashboardModel.getLatestCaseBundleDocument()))
             .build();
 
         return ResponseEntity.ok()

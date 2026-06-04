@@ -84,8 +84,10 @@ public class DocumentsService {
     }
 
     private String getDocumentId(CaseworkerCICDocument document) {
+        String binaryUrl = document.getDocumentLink().getBinaryUrl();
+
         return StringUtils.substringAfterLast(
-            document.getDocumentLink().getUrl(),
+            binaryUrl.replaceFirst("/binary$", ""),
             "/"
         );
     }
@@ -132,35 +134,33 @@ public class DocumentsService {
             caseDocumentTypesCache.getId(CaseDocumentType.BUNDLE);
 
         for (DocumentEntity doc : allDocumentsOnCase) {
-
-            if (doc.isSentToApplicantViaContactParties()) {
-                contactPartiesDocuments.add(doc);
-            }
-
+            //if doc order and sent out via contact parties it will appear in orders .
             if (tribunalDocumentTypeId.equals(doc.getDocumentTypeId())) {
                 orderAndDecisionDocuments.add(doc);
             } else if (bundleDocumentTypeId.equals(doc.getDocumentTypeId())) {
                 bundleDocuments.add(doc);
+            } else if (doc.isSentToApplicantViaContactParties()) {
+                contactPartiesDocuments.add(doc);
             }
         }
 
+        return DocumentDashboardModel.builder()
+            .contactPartiesDocuments(contactPartiesDocuments)
+            .latestCaseBundleDocument(getLatestBundleDocument(bundleDocuments))
+            .orderAndDecisionDocuments(orderAndDecisionDocuments)
+            .build();
+    }
+
+    private DocumentEntity getLatestBundleDocument(List<DocumentEntity> bundleDocuments) {
         OffsetDateTime latestBundleDate = bundleDocuments.stream()
             .map(DocumentEntity::getSavedAt)
             .max(OffsetDateTime::compareTo)
             .orElse(null);
 
-        List<DocumentEntity> latestCaseBundleDocuments =
-            latestBundleDate == null
-                ? List.of()
-                : bundleDocuments.stream()
-                .filter(doc -> latestBundleDate.equals(doc.getSavedAt()))
-                .toList();
-
-        return DocumentDashboardModel.builder()
-            .contactPartiesDocuments(contactPartiesDocuments)
-            .latestCaseBundleDocuments(latestCaseBundleDocuments)
-            .orderAndDecisionDocuments(orderAndDecisionDocuments)
-            .build();
+        return bundleDocuments.stream()
+            .filter(doc -> latestBundleDate.equals(doc.getSavedAt()))
+            .findFirst()
+            .orElse(null);
     }
 
 }
