@@ -21,6 +21,7 @@ import java.util.UUID;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.COURT_TYPE_ID;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.HYPHEN;
+import static uk.gov.hmcts.sptribs.recordlisting.RecordListingConstants.CIC_SERVICE_CODE;
 import static uk.gov.hmcts.sptribs.recordlisting.RecordListingConstants.REGION_ALL;
 
 @Service
@@ -41,8 +42,19 @@ public class LocationService {
 
     public DynamicList getHearingVenuesByRegion(String regionId) {
         final HearingVenue[] hearingVenues = getCourtVenues(regionId);
-        HearingVenue[] filteredHearingVenues = Arrays.stream(hearingVenues)
-                    .filter(v -> COURT_TYPE_ID.equals(v.getCourtTypeId())).toArray(HearingVenue[]::new);
+
+        //update here ... if serivce code is present we shoudl alread be filtered!
+        boolean hasServiceCode = Arrays.stream(hearingVenues)
+            .findFirst()
+            .map(HearingVenue::getServiceCode)
+            .isPresent();
+
+        HearingVenue[] filteredHearingVenues = hasServiceCode
+            ? hearingVenues
+            : Arrays.stream(hearingVenues)
+            .filter(v -> COURT_TYPE_ID.equals(v.getCourtTypeId()))
+            .toArray(HearingVenue[]::new);
+
         return populateVenueDynamicList(filteredHearingVenues);
     }
 
@@ -84,7 +96,8 @@ public class LocationService {
                 authTokenGenerator.generate(),
                 httpServletRequest.getHeader(AUTHORIZATION),
                 regionId,
-                "Y");
+                "Y",
+                CIC_SERVICE_CODE);
             if (CollectionUtils.isEmpty(list)) {
                 return new HearingVenue[0];
             }
