@@ -25,9 +25,8 @@ import java.util.List;
 
 import static uk.gov.hmcts.sptribs.caseworker.util.DocumentListUtil.addToExistingDocumentList;
 import static uk.gov.hmcts.sptribs.caseworker.util.DocumentListUtil.getAllCaseDocuments;
-import static uk.gov.hmcts.sptribs.caseworker.util.ErrorConstants.FAILED_SAVING_DOCUMENT_TO_DATABASE;
-import static uk.gov.hmcts.sptribs.caseworker.util.ErrorConstants.FAILED_SAVING_DOCUMENT_WITH_NO_FILENAME_TO_DATABASE;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.RESPONDENT_DOCUMENT_MANAGEMENT;
+import static uk.gov.hmcts.sptribs.caseworker.util.MessageUtil.generateSimpleErrorMessageDocumentSave;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingOutcome;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseClosed;
@@ -125,15 +124,7 @@ public class RespondentDocumentManagement implements CCDConfig<CaseData, State, 
                     false, false
                 );
             } catch (RuntimeException e) {
-                if (document.getValue().getDocumentLink().getFilename() != null
-                    && !document.getValue().getDocumentLink().getFilename().isEmpty()) {
-                    log.error("Document entity with filename {} could not be saved: {}",
-                        document.getValue().getDocumentLink().getFilename(), e.getMessage());
-                    errors.add(FAILED_SAVING_DOCUMENT_TO_DATABASE + document.getValue().getDocumentLink().getFilename());
-                } else {
-                    log.error("Document entity has no filename");
-                    errors.add(FAILED_SAVING_DOCUMENT_WITH_NO_FILENAME_TO_DATABASE);
-                }
+                errors.add(generateSimpleErrorMessageDocumentSave(document.getValue().getDocumentLink(), e.getMessage()));
             }
         }
 

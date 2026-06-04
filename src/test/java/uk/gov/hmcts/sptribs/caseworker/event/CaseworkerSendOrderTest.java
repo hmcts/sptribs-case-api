@@ -729,8 +729,8 @@ class CaseworkerSendOrderTest {
             .aboutToSubmit(caseDetails, getApiCaseDetailsBefore());
 
         assertThat(response.getErrors()).hasSize(1);
-        assertThat(response.getErrors()).contains("Error saving document with filename: "
-            + documentList.getFirst().getValue().getDocumentLink().getFilename());
+        assertThat(response.getErrors()).contains("Draft order with filename "
+            + documentList.getFirst().getValue().getDocumentLink().getFilename() + " could not be updated to non-draft");
     }
 
     @Test

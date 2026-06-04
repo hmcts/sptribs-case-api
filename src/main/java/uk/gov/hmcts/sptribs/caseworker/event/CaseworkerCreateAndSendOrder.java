@@ -52,10 +52,9 @@ import java.util.UUID;
 import static java.lang.String.format;
 import static uk.gov.hmcts.sptribs.caseworker.model.OrderIssuingType.CREATE_AND_SEND_NEW_ORDER;
 import static uk.gov.hmcts.sptribs.caseworker.model.OrderIssuingType.UPLOAD_A_NEW_ORDER_FROM_YOUR_COMPUTER;
-import static uk.gov.hmcts.sptribs.caseworker.util.ErrorConstants.FAILED_SAVING_DOCUMENT_TO_DATABASE;
-import static uk.gov.hmcts.sptribs.caseworker.util.ErrorConstants.FAILED_SAVING_DOCUMENT_WITH_NO_FILENAME_TO_DATABASE;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_CREATE_AND_SEND_ORDER;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventUtil.getRecipients;
+import static uk.gov.hmcts.sptribs.caseworker.util.MessageUtil.generateSimpleErrorMessageDocumentSave;
 import static uk.gov.hmcts.sptribs.caseworker.util.SendOrderUtil.updateCicCaseOrderList;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseClosed;
@@ -172,15 +171,7 @@ public class CaseworkerCreateAndSendOrder implements CCDConfig<CaseData, State, 
                     false
                 );
             } catch (RuntimeException e) {
-                if (draftOrderCIC.getTemplateGeneratedDocument().getFilename() != null
-                    && !draftOrderCIC.getTemplateGeneratedDocument().getFilename().isEmpty()) {
-                    log.error("Document entity (from new order) with filename {} could not be saved: {}",
-                        draftOrderCIC.getTemplateGeneratedDocument().getFilename(), e.getMessage());
-                    errors.add(FAILED_SAVING_DOCUMENT_TO_DATABASE + draftOrderCIC.getTemplateGeneratedDocument().getFilename());
-                } else {
-                    log.error("Document entity (from new order) has no filename");
-                    errors.add(FAILED_SAVING_DOCUMENT_WITH_NO_FILENAME_TO_DATABASE);
-                }
+                errors.add(generateSimpleErrorMessageDocumentSave(draftOrderCIC.getTemplateGeneratedDocument(), e.getMessage()));
             }
 
             caseData.setDraftOrderContentCIC(new DraftOrderContentCIC());
@@ -201,16 +192,8 @@ public class CaseworkerCreateAndSendOrder implements CCDConfig<CaseData, State, 
                     false
                 );
             } catch (RuntimeException e) {
-                if (caseData.getCicCase().getOrderFile().getFirst().getValue().getDocumentLink().getFilename() != null
-                    && !caseData.getCicCase().getOrderFile().getFirst().getValue().getDocumentLink().getFilename().isEmpty()) {
-                    log.error("Document entity (from uploaded order) with filename {} could not be saved: {}",
-                        caseData.getCicCase().getOrderFile().getFirst().getValue().getDocumentLink().getFilename(), e.getMessage());
-                    errors.add("Error saving document with filename: "
-                        + caseData.getCicCase().getOrderFile().getFirst().getValue().getDocumentLink().getFilename());
-                } else {
-                    log.error("Document entity (from uploaded order) has no filename");
-                    errors.add("Error saving document with no filename");
-                }
+                errors.add(generateSimpleErrorMessageDocumentSave(caseData.getCicCase()
+                    .getOrderFile().getFirst().getValue().getDocumentLink(), e.getMessage()));
             }
         }
 

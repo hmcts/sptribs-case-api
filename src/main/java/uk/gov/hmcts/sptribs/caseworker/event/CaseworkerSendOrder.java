@@ -43,14 +43,13 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static java.lang.String.format;
-import static uk.gov.hmcts.sptribs.caseworker.util.ErrorConstants.FAILED_SAVING_DOCUMENT_TO_DATABASE;
-import static uk.gov.hmcts.sptribs.caseworker.util.ErrorConstants.FAILED_SAVING_DOCUMENT_WITH_NO_FILENAME_TO_DATABASE;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_SEND_ORDER;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.COLON;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.DOUBLE_HYPHEN;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.DRAFT;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.SENT;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventUtil.getRecipients;
+import static uk.gov.hmcts.sptribs.caseworker.util.MessageUtil.generateSimpleErrorMessageDocumentSave;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseClosed;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
@@ -164,9 +163,10 @@ public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole>
                     try {
                         documentsService.setIsDraftToFalse(order.getDraftOrder().getTemplateGeneratedDocument().getBinaryUrl());
                     } catch (RuntimeException e) {
-                        log.error("Document entity (from draft order) with filename {} could not be saved: {}",
+                        log.error("Document entity (from draft order) with filename {} could not be updated: {}",
                             order.getDraftOrder().getTemplateGeneratedDocument().getFilename(), e.getMessage());
-                        errors.add(FAILED_SAVING_DOCUMENT_TO_DATABASE + order.getDraftOrder().getTemplateGeneratedDocument().getFilename());
+                        errors.add("Draft order with filename " + order.getDraftOrder().getTemplateGeneratedDocument().getFilename()
+                            + " could not be updated to non-draft");
                     }
                 }
             }
@@ -180,15 +180,7 @@ public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole>
                     false, false
                 );
             } catch (RuntimeException e) {
-                if (caseData.getCicCase().getOrderTemplateIssued().getFilename() != null
-                    && !caseData.getCicCase().getOrderTemplateIssued().getFilename().isEmpty()) {
-                    log.error("Document entity (from uploaded order) with filename {} could not be saved: {}",
-                        caseData.getCicCase().getOrderTemplateIssued().getFilename(), e.getMessage());
-                    errors.add(FAILED_SAVING_DOCUMENT_TO_DATABASE + caseData.getCicCase().getOrderTemplateIssued().getFilename());
-                } else {
-                    log.error("Document entity (from uploaded order) has no filename");
-                    errors.add(FAILED_SAVING_DOCUMENT_WITH_NO_FILENAME_TO_DATABASE);
-                }
+                errors.add(generateSimpleErrorMessageDocumentSave(caseData.getCicCase().getOrderTemplateIssued(), e.getMessage()));
             }
         }
 
