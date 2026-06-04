@@ -10,6 +10,8 @@ import org.springframework.dao.DataAccessResourceFailureException;
 import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.sptribs.common.repositories.DocumentsRepository;
 import uk.gov.hmcts.sptribs.document.model.DocumentEntity;
+import uk.gov.hmcts.sptribs.document.model.DocumentType;
+import uk.gov.hmcts.sptribs.document.service.CaseDocumentTypesCache;
 import uk.gov.hmcts.sptribs.document.service.DocumentsService;
 
 import java.util.List;
@@ -30,12 +32,19 @@ public class DocumentsServiceTest {
     @Mock
     private DocumentsRepository documentsRepository;
 
+    @Mock
+    private CaseDocumentTypesCache caseDocumentTypesCache;
+
+    private static final DocumentType HOSPITAL_RECORDS = DocumentType.HOSPITAL_RECORDS;
+    private static final DocumentType DSS_SUPPORTING = DocumentType.DSS_SUPPORTING;
+
     private static final DocumentEntity EXPECTED_TEST_DOCUMENT_ENTITY_NON_DRAFT = DocumentEntity.builder()
         .caseReferenceNumber(TEST_CASE_ID)
             .documentUrl("example.com/test-document.pdf")
             .documentFilename("test-document.pdf")
             .documentBinaryUrl("example.com/test-document.pdf/binary")
-            .categoryId("testCategory")
+            .categoryId(HOSPITAL_RECORDS.getCategory())
+            .documentTypeId(2L)
             .isDraft(false)
             .build();
 
@@ -44,7 +53,8 @@ public class DocumentsServiceTest {
         .documentUrl("example.com/test-document.pdf")
         .documentFilename("test-document.pdf")
         .documentBinaryUrl("example.com/test-document.pdf/binary")
-        .categoryId("testCategory")
+        .categoryId(HOSPITAL_RECORDS.getCategory())
+        .documentTypeId(2L)
         .isDraft(true)
         .build();
 
@@ -53,28 +63,41 @@ public class DocumentsServiceTest {
         .documentUrl("example.com/test-document.pdf")
         .documentFilename("test-document.pdf")
         .documentBinaryUrl("example.com/test-document.pdf/binary")
-        .categoryId("testCategory")
+        .categoryId(DSS_SUPPORTING.getCategory())
+        .documentTypeId(1L)
         .isDraft(false)
         .sentToApplicantViaContactParties(true)
         .build();
 
-    private static final Document TEST_DOCUMENT = Document.builder()
+    private static final Document TEST_DOCUMENT_APPLICATION = Document.builder()
         .url("example.com/test-document.pdf")
         .filename("test-document.pdf")
         .binaryUrl("example.com/test-document.pdf/binary")
-        .categoryId("testCategory")
+        .categoryId(DSS_SUPPORTING.getCategory())
+        .build();
+
+    private static final Document TEST_DOCUMENT_EVIDENCE = Document.builder()
+        .url("example.com/test-document.pdf")
+        .filename("test-document.pdf")
+        .binaryUrl("example.com/test-document.pdf/binary")
+        .categoryId(HOSPITAL_RECORDS.getCategory())
         .build();
 
     @Test
     public void shouldBuildAndSaveNewNonDraftDocumentEntity() {
-        documentsService.buildAndSaveNewDocumentEntity(TEST_DOCUMENT, TEST_CASE_ID, false, false);
+        when(caseDocumentTypesCache.getId(HOSPITAL_RECORDS.getCaseDocumentType())).thenReturn(2L);
+
+        documentsService.buildAndSaveNewDocumentEntity(TEST_DOCUMENT_EVIDENCE, TEST_CASE_ID, false, false);
 
         verify(documentsRepository, times(1)).save(EXPECTED_TEST_DOCUMENT_ENTITY_NON_DRAFT);
     }
 
     @Test
     public void shouldBuildAndSaveNewDraftDocumentEntity() {
-        documentsService.buildAndSaveNewDocumentEntity(TEST_DOCUMENT, TEST_CASE_ID, true, false);
+
+        when(caseDocumentTypesCache.getId(HOSPITAL_RECORDS.getCaseDocumentType())).thenReturn(2L);
+
+        documentsService.buildAndSaveNewDocumentEntity(TEST_DOCUMENT_EVIDENCE, TEST_CASE_ID, true, false);
 
         verify(documentsRepository, times(1)).save(EXPECTED_TEST_DOCUMENT_ENTITY_DRAFT);
     }
@@ -83,8 +106,9 @@ public class DocumentsServiceTest {
     public void shouldThrowRuntimeExceptionWhenDataAccessExceptionCaughtInBuildAndSaveNewDraftDocumentEntity() {
         when(documentsRepository.save(EXPECTED_TEST_DOCUMENT_ENTITY_DRAFT))
             .thenThrow(new DataAccessResourceFailureException("DB error"));
+        when(caseDocumentTypesCache.getId(HOSPITAL_RECORDS.getCaseDocumentType())).thenReturn(2L);
 
-        assertThatThrownBy(() -> documentsService.buildAndSaveNewDocumentEntity(TEST_DOCUMENT, TEST_CASE_ID, false,
+        assertThatThrownBy(() -> documentsService.buildAndSaveNewDocumentEntity(TEST_DOCUMENT_EVIDENCE, TEST_CASE_ID, false,
             false))
             .isInstanceOf(RuntimeException.class)
             .hasMessageContaining("Error saving document entity to database")
@@ -94,7 +118,7 @@ public class DocumentsServiceTest {
     @Test
     public void shouldSetSentToApplicantViaContactPartiesToTrue() {
 
-        documentsService.setSentToApplicantViaContactPartiesToTrue(List.of(TEST_DOCUMENT.getBinaryUrl()));
+        documentsService.setSentToApplicantViaContactPartiesToTrue(List.of(TEST_DOCUMENT_APPLICATION.getBinaryUrl()));
 
         verify(documentsRepository, times(1)).setSentToApplicantViaContactPartiesToTrueByDocumentBinaryUrl(
             List.of(EXPECTED_TEST_DOCUMENT_ENTITY_NON_DRAFT_SENT_VIA_CONTACT_PARTIES.getDocumentBinaryUrl())
@@ -104,9 +128,11 @@ public class DocumentsServiceTest {
     @Test
     public void shouldThrowRuntimeExceptionWhenDataAccessExceptionCaughtInSetSentToApplicantViaContactPartiesToTrue() {
         doThrow(new DataAccessResourceFailureException("DB error"))
-            .when(documentsRepository).setSentToApplicantViaContactPartiesToTrueByDocumentBinaryUrl(List.of(TEST_DOCUMENT.getBinaryUrl()));
+            .when(documentsRepository).setSentToApplicantViaContactPartiesToTrueByDocumentBinaryUrl(
+                List.of(TEST_DOCUMENT_APPLICATION.getBinaryUrl()));
 
-        assertThatThrownBy(() -> documentsService.setSentToApplicantViaContactPartiesToTrue(List.of(TEST_DOCUMENT.getBinaryUrl())))
+        assertThatThrownBy(() -> documentsService.setSentToApplicantViaContactPartiesToTrue(
+            List.of(TEST_DOCUMENT_APPLICATION.getBinaryUrl())))
             .isInstanceOf(RuntimeException.class)
             .hasMessageContaining("Error updating sent_to_applicant_via_contact_parties to true")
             .hasCauseInstanceOf(DataAccessException.class);
@@ -115,7 +141,7 @@ public class DocumentsServiceTest {
     @Test
     public void shouldSetIsDraftToFalse() {
 
-        documentsService.setIsDraftToFalse(TEST_DOCUMENT.getBinaryUrl());
+        documentsService.setIsDraftToFalse(TEST_DOCUMENT_EVIDENCE.getBinaryUrl());
 
         verify(documentsRepository, times(1)).setIsDraftToFalseByDocumentBinaryUrl(
             EXPECTED_TEST_DOCUMENT_ENTITY_NON_DRAFT.getDocumentBinaryUrl()
@@ -125,9 +151,9 @@ public class DocumentsServiceTest {
     @Test
     public void shouldThrowRuntimeExceptionWhenDataAccessExceptionCaughtInSetIsDraftToFalse() {
         doThrow(new DataAccessResourceFailureException("DB error"))
-            .when(documentsRepository).setIsDraftToFalseByDocumentBinaryUrl(TEST_DOCUMENT.getBinaryUrl());
+            .when(documentsRepository).setIsDraftToFalseByDocumentBinaryUrl(TEST_DOCUMENT_APPLICATION.getBinaryUrl());
 
-        assertThatThrownBy(() -> documentsService.setIsDraftToFalse(TEST_DOCUMENT.getBinaryUrl()))
+        assertThatThrownBy(() -> documentsService.setIsDraftToFalse(TEST_DOCUMENT_APPLICATION.getBinaryUrl()))
             .isInstanceOf(RuntimeException.class)
             .hasMessageContaining("Error updating is_draft to false")
             .hasCauseInstanceOf(DataAccessException.class);
