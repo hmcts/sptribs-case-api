@@ -99,4 +99,26 @@ class CaseworkerCICDocumentMapperTest {
         assertThat(result.getFirst().getDocumentCategory())
             .isEqualTo(DocumentType.TRIBUNAL_DIRECTION);
     }
+
+    @Test
+    void shouldReturnEmptyWhenNoDocsInBundle() {
+
+        //when
+        List<CaseworkerCICDocument> result = mapper.mapEntityToList(null);
+
+        //then
+        assertThat(result).isEmpty();
+    }
+
+    @Test
+    void shouldReturnEmptyWhenNoDocsInModel() {
+
+        //when
+        List<CaseworkerCICDocument> result = mapper.map(List.of());
+
+        //then
+        assertThat(result).isEmpty();
+    }
 }
+
+

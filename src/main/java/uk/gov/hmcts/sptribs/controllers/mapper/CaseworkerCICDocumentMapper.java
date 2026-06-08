@@ -26,12 +26,22 @@ public class CaseworkerCICDocumentMapper {
     }
 
     public List<CaseworkerCICDocument> map(List<DocumentEntity> entities) {
+
+        if (entities == null) {
+            return List.of();
+        }
+
         return entities.stream()
             .map(this::map)
             .toList();
     }
 
     public List<CaseworkerCICDocument> mapEntityToList(DocumentEntity entity) {
+
+        if (entity == null) {
+            return List.of();
+        }
+
         return List.of(map(entity));
     }
 }
