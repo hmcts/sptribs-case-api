@@ -50,7 +50,7 @@ public class ApplicationReceivedNotificationTest {
 
         applicationReceivedNotification.sendToSubject(data, TEST_CASE_ID.toString());
 
-        HashMap<String, Object> templateVars = new HashMap<>(Map.of(CommonConstants.DASHBOARD, CommonConstants.DASHBOARD_LINK));
+        HashMap<String, Object> templateVars = new HashMap<>(Map.of(CommonConstants.DASHBOARD_KEY, CommonConstants.DASHBOARD_LINK));
 
         //Then
         verify(notificationService).sendEmail(any(NotificationRequest.class), eq(TEST_CASE_ID.toString()));
@@ -85,7 +85,7 @@ public class ApplicationReceivedNotificationTest {
         when(notificationHelper.getApplicantCommonVars(any(), any(CaseData.class))).thenReturn(new HashMap<>());
         applicationReceivedNotification.sendToApplicant(data, TEST_CASE_ID.toString());
 
-        HashMap<String, Object> templateVars = new HashMap<>(Map.of(CommonConstants.DASHBOARD, CommonConstants.DASHBOARD_LINK));
+        HashMap<String, Object> templateVars = new HashMap<>(Map.of(CommonConstants.DASHBOARD_KEY, CommonConstants.DASHBOARD_LINK));
 
         //Then
         verify(notificationService).sendEmail(any(NotificationRequest.class), eq(TEST_CASE_ID.toString()));
@@ -121,7 +121,7 @@ public class ApplicationReceivedNotificationTest {
         when(notificationHelper.getRepresentativeCommonVars(any(), any(CaseData.class))).thenReturn(new HashMap<>());
         applicationReceivedNotification.sendToRepresentative(data, TEST_CASE_ID.toString());
 
-        HashMap<String, Object> templateVars = new HashMap<>(Map.of(CommonConstants.DASHBOARD, CommonConstants.DASHBOARD_LINK));
+        HashMap<String, Object> templateVars = new HashMap<>(Map.of(CommonConstants.DASHBOARD_KEY, CommonConstants.DASHBOARD_LINK));
 
         //Then
         verify(notificationService).sendEmail(any(NotificationRequest.class), eq(TEST_CASE_ID.toString()));

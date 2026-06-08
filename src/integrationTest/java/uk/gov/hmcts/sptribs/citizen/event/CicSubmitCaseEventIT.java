@@ -42,7 +42,7 @@ import static uk.gov.hmcts.sptribs.common.CommonConstants.CIC_CASE_REPRESENTATIV
 import static uk.gov.hmcts.sptribs.common.CommonConstants.CIC_CASE_SUBJECT_NAME;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.CONTACT_NAME;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.CONTACT_PARTY_INFO;
-import static uk.gov.hmcts.sptribs.common.CommonConstants.DASHBOARD;
+import static uk.gov.hmcts.sptribs.common.CommonConstants.DASHBOARD_KEY;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.DASHBOARD_LINK;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.HAS_CICA_NUMBER;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.TRIBUNAL_NAME;
@@ -142,7 +142,7 @@ public class CicSubmitCaseEventIT {
                 CIC_CASE_NUMBER, TEST_CASE_ID_HYPHENATED,
                 HAS_CICA_NUMBER, true,
                 CICA_REF_NUMBER, TEST_CICA_REF_NUMBER,
-                DASHBOARD, DASHBOARD_LINK
+                DASHBOARD_KEY, DASHBOARD_LINK
             )),
             anyString()
         );
@@ -187,7 +187,7 @@ public class CicSubmitCaseEventIT {
                 CIC_CASE_NUMBER, TEST_CASE_ID_HYPHENATED,
                 HAS_CICA_NUMBER, true,
                 CICA_REF_NUMBER, TEST_CICA_REF_NUMBER,
-                DASHBOARD, DASHBOARD_LINK
+                DASHBOARD_KEY, DASHBOARD_LINK
             )),
             anyString()
         );
@@ -233,7 +233,7 @@ public class CicSubmitCaseEventIT {
                 CIC_CASE_NUMBER, TEST_CASE_ID_HYPHENATED,
                 HAS_CICA_NUMBER, true,
                 CICA_REF_NUMBER, TEST_CICA_REF_NUMBER,
-                DASHBOARD, DASHBOARD_LINK
+                DASHBOARD_KEY, DASHBOARD_LINK
             )),
             anyString()
         );

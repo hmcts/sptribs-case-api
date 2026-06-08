@@ -72,7 +72,7 @@ public final class CommonConstants {
     public static final String TRIBUNAL_EMAIL_VALUE = "CIC.enquiries@justice.gov.uk";
 
     public static final String DASHBOARD_LINK = "http://special-tribunals.service.gov.uk/cic-update";
-    public static final String DASHBOARD = "DashboardLink";
+    public static final String DASHBOARD_KEY = "DashboardLink";
 
 
     public static final String HAS_CICA_NUMBER = "hasCicaNumber";
