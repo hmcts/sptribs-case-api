@@ -14,7 +14,7 @@ import static net.javacrumbs.jsonunit.core.Option.IGNORING_ARRAY_ORDER;
 import static net.javacrumbs.jsonunit.core.Option.IGNORING_EXTRA_FIELDS;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.HttpStatus.OK;
-//import static uk.gov.hmcts.sptribs.ciccase.model.LanguagePreference.WELSH;
+import static uk.gov.hmcts.sptribs.ciccase.model.LanguagePreference.WELSH;
 import static uk.gov.hmcts.sptribs.testutil.CaseDataUtil.caseData;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.ABOUT_TO_SUBMIT_URL;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.SUBMITTED_URL;
@@ -24,7 +24,7 @@ import static uk.gov.hmcts.sptribs.testutil.TestResourceUtil.expectedResponse;
 public class CicSubmitCaseEventFT extends FunctionalTestSuite {
 
     private static final String REQUEST = "classpath:request/casedata/ccd-callback-casedata-submit-case-about-to-submit.json";
-    //    private static final String REQUEST_SUBMITTED = "classpath:request/casedata/ccd-callback-casedata-submit-case-submitted.json";
+        private static final String REQUEST_SUBMITTED = "classpath:request/casedata/ccd-callback-casedata-submit-case-submitted.json";
     private static final String REQUEST_MISSING_CASE_NUMBER =
         "classpath:request/casedata/ccd-callback-casedata-submit-case-missing-case-number.json";
     private static final String REQUEST_MISSING_PARTIES =
@@ -47,28 +47,28 @@ public class CicSubmitCaseEventFT extends FunctionalTestSuite {
             .isEqualTo(json(expectedResponse(RESPONSE)));
     }
 
-    //    @Test
-    //    public void shouldReceiveNotificationWhenSubmittedCallbackIsInvoked() throws Exception {
-    //        final Map<String, Object> caseData = caseData(REQUEST_SUBMITTED);
-    //        final Response response = triggerCallback(caseData, CITIZEN_SUBMIT_CASE_EVENT_ID, SUBMITTED_URL);
-    //
-    //        assertThat(response.getStatusCode()).isEqualTo(OK.value());
-    //        assertThatJson(response.asString())
-    //            .inPath(CONFIRMATION_HEADER)
-    //            .isEqualTo("# Application Received \\n## A notification has been sent to: Subject, Representative");
-    //    }
+        @Test
+        public void shouldReceiveNotificationWhenSubmittedCallbackIsInvoked() throws Exception {
+            final Map<String, Object> caseData = caseData(REQUEST_SUBMITTED);
+            final Response response = triggerCallback(caseData, CITIZEN_SUBMIT_CASE_EVENT_ID, SUBMITTED_URL);
 
-    //    @Test
-    //    public void shouldReceiveWelshNotificationWhenSubmittedCallbackIsInvoked() throws Exception {
-    //        final Map<String, Object> caseData = caseData(REQUEST_SUBMITTED);
-    //        caseData.put("dssCaseDataLanguagePreference", WELSH);
-    //        final Response response = triggerCallback(caseData, CITIZEN_SUBMIT_CASE_EVENT_ID, SUBMITTED_URL);
-    //
-    //        assertThat(response.getStatusCode()).isEqualTo(OK.value());
-    //        assertThatJson(response.asString())
-    //            .inPath(CONFIRMATION_HEADER)
-    //            .isEqualTo("# Application Received \\n## A notification has been sent to: Subject, Representative");
-    //    }
+            assertThat(response.getStatusCode()).isEqualTo(OK.value());
+            assertThatJson(response.asString())
+                .inPath(CONFIRMATION_HEADER)
+                .isEqualTo("# Application Received \\n## A notification has been sent to: Subject, Representative");
+        }
+
+        @Test
+        public void shouldReceiveWelshNotificationWhenSubmittedCallbackIsInvoked() throws Exception {
+            final Map<String, Object> caseData = caseData(REQUEST_SUBMITTED);
+            caseData.put("dssCaseDataLanguagePreference", WELSH);
+            final Response response = triggerCallback(caseData, CITIZEN_SUBMIT_CASE_EVENT_ID, SUBMITTED_URL);
+
+            assertThat(response.getStatusCode()).isEqualTo(OK.value());
+            assertThatJson(response.asString())
+                .inPath(CONFIRMATION_HEADER)
+                .isEqualTo("# Application Received \\n## A notification has been sent to: Subject, Representative");
+        }
 
     @Disabled("Skipped to unblock WA - New case needs to be created before updating supplementary data")
     @Test
