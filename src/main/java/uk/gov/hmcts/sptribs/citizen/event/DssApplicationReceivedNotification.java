@@ -43,6 +43,7 @@ public class DssApplicationReceivedNotification implements PartiesNotification {
         final Map<String, Object> templateVarsSubject = dssNotificationHelper.getSubjectCommonVars(caseNumber, caseData);
         templateVarsSubject.put(CIC_CASE_SUBJECT_NAME, dssCaseData.getSubjectFullName());
         templateVarsSubject.put(CONTACT_PARTY_INFO, dssCaseData.getNotifyPartyMessage());
+        templateVarsSubject.put(DASHBOARD, DASHBOARD_LINK);
         if (caseData.getEditCicaCaseDetails() != null && !StringUtils.isEmpty(caseData.getEditCicaCaseDetails().getCicaReferenceNumber())) {
             templateVarsSubject.put(HAS_CICA_NUMBER, true);
             templateVarsSubject.put(CICA_REF_NUMBER, caseData.getEditCicaCaseDetails().getCicaReferenceNumber());
@@ -65,6 +66,7 @@ public class DssApplicationReceivedNotification implements PartiesNotification {
         final Map<String, Object> templateVarsRep = dssNotificationHelper.getRepresentativeCommonVars(caseNumber, caseData);
         templateVarsRep.put(CIC_CASE_REPRESENTATIVE_NAME, dssCaseData.getRepresentativeFullName());
         templateVarsRep.put(CONTACT_PARTY_INFO, dssCaseData.getNotifyPartyMessage());
+        templateVarsRep.put(DASHBOARD, DASHBOARD_LINK);
         if (caseData.getEditCicaCaseDetails() != null && !StringUtils.isEmpty(caseData.getEditCicaCaseDetails().getCicaReferenceNumber())) {
             templateVarsRep.put(HAS_CICA_NUMBER, true);
             templateVarsRep.put(CICA_REF_NUMBER, caseData.getEditCicaCaseDetails().getCicaReferenceNumber());
@@ -85,7 +87,6 @@ public class DssApplicationReceivedNotification implements PartiesNotification {
                                                        String toEmail,
                                                        LanguagePreference languagePreference,
                                                        String caseReferenceNumber) {
-        templateVars.put(DASHBOARD, DASHBOARD_LINK);
 
         TemplateName templateName = ENGLISH.equals(languagePreference) ? APPLICATION_RECEIVED : APPLICATION_RECEIVED_CY;
         NotificationRequest request =
