@@ -4,6 +4,7 @@ build/
 *.class
 bin/main/application.yaml
 .env.test
+/test-results/
 
 ### STS ###
 .apt_generated
