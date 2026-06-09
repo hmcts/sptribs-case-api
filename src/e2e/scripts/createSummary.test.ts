@@ -10,7 +10,7 @@ import createSummary from "../journeys/CaseAPI/createSummary.ts";
 import task from "../journeys/CaseAPI/task.ts";
 
 test.describe("Create hearing summary tests", (): void => {
-  test.only("Create hearing summary - hearing outcome is allowed.", async ({
+  test("Create hearing summary - hearing outcome is allowed.", async ({
     page,
   }): Promise<void> => {
     const subjectName = `Subject AutoTesting${commonHelpers.randomLetters(5)}`;
