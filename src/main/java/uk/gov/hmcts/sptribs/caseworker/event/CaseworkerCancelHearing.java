@@ -103,6 +103,7 @@ public class CaseworkerCancelHearing implements CCDConfig<CaseData, State, UserR
 
         final CaseData caseData = details.getData();
         State state = details.getState();
+        //test
 
         DynamicListElement selectedHearing = caseData.getCicCase().getHearingList().getValue();
 
