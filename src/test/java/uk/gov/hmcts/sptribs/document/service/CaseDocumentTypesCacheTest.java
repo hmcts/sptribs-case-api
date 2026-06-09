@@ -16,6 +16,8 @@ import java.util.Map;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -68,13 +70,38 @@ class CaseDocumentTypesCacheTest {
 
     @Test
     void shouldThrowExceptionWhenDocumentTypeIsUnknown() {
-        ReflectionTestUtils.setField(caseDocumentTypesCache, "caseDocumentTypeIdMap", Map.of());
+        CaseDocumentType knownType = CaseDocumentType.values()[0];
+        CaseDocumentType unknownType = CaseDocumentType.values()[1];
 
-        CaseDocumentType type = CaseDocumentType.values()[0];
+        ReflectionTestUtils.setField(
+            caseDocumentTypesCache,
+            "caseDocumentTypeIdMap",
+            Map.of(knownType, 1L)
+        );
 
-        assertThatThrownBy(() -> caseDocumentTypesCache.getId(type))
+        assertThatThrownBy(() -> caseDocumentTypesCache.getId(unknownType))
             .isInstanceOf(IllegalArgumentException.class)
-            .hasMessage("Unknown document type code: " + type);
+            .hasMessage("Unknown document type code: " + unknownType);
+    }
+
+    @Test
+    void shouldLoadCacheOnlyOnFirstAccess() {
+        // given
+        List<CaseDocumentTypesEntity> entities = new ArrayList<>();
+
+        long id = 1L;
+        for (CaseDocumentType type : CaseDocumentType.values()) {
+            entities.add(buildDocumentTypeEntity(id++, type));
+        }
+
+        when(repository.findAll()).thenReturn(entities);
+
+        // when
+        caseDocumentTypesCache.getId(CaseDocumentType.values()[0]);
+        caseDocumentTypesCache.getId(CaseDocumentType.values()[1]);
+
+        // then
+        verify(repository, times(1)).findAll();
     }
 
     private CaseDocumentTypesEntity buildDocumentTypeEntity(long id, CaseDocumentType type) {

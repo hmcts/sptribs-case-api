@@ -1,6 +1,5 @@
 package uk.gov.hmcts.sptribs.document.service;
 
-import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -20,11 +19,6 @@ public class CaseDocumentTypesCache {
 
     private volatile Map<CaseDocumentType, Long> caseDocumentTypeIdMap = Map.of();
 
-    @PostConstruct
-    public void load() {
-        reload();
-    }
-
     public void reload() {
         Map<CaseDocumentType, Long> loadedTypes = caseDocumentTypesRepository.findAll()
             .stream()
@@ -41,6 +35,11 @@ public class CaseDocumentTypesCache {
     }
 
     public Long getId(CaseDocumentType code) {
+
+        if (caseDocumentTypeIdMap.isEmpty()) {
+            reload();
+        }
+
         Long id = caseDocumentTypeIdMap.get(code);
 
         if (id == null) {

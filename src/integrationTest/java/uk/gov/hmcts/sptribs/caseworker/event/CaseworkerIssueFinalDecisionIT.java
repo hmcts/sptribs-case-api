@@ -17,6 +17,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.reform.idam.client.models.User;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
+import uk.gov.hmcts.sptribs.IntegrationTestBase;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseIssueFinalDecision;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
@@ -70,7 +71,7 @@ import static uk.gov.hmcts.sptribs.testutil.TestResourceUtil.expectedResponse;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
 @ContextConfiguration(initializers = {IdamWireMock.PropertiesInitializer.class})
-public class CaseworkerIssueFinalDecisionIT {
+public class CaseworkerIssueFinalDecisionIT extends IntegrationTestBase {
     private static final String CASEWORKER_ISSUE_FINAL_DECISION_MID_EVENT_RESPONSE =
         "classpath:responses/caseworker-issue-final-decision-mid-event-response.json";
     private static final String CASEWORKER_ISSUE_FINAL_DECISION_UPLOAD_MID_EVENT_RESPONSE =

@@ -9,6 +9,6 @@ public abstract class IntegrationTestBase {
     @Container
     @ServiceConnection
     static PostgreSQLContainer<?> postgreSQLContainer = new PostgreSQLContainer<>("postgres:16")
-        .withInitScript("sql/create_test_case_data_table.sql");
+        .withInitScript("sql/create_test_case_data.sql");
 
 }
