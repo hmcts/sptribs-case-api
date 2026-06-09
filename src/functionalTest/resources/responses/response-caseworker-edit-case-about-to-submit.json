@@ -43,6 +43,6 @@
     "cicCaseCompensationClaimLinkCIC": "No",
     "stayIsCaseStayed": "No",
     "hearingList": [],
-    "hyphenatedCaseRef": "${json-unit.any-string}"
+    "hyphenatedCaseRef": "${json-unit.regex}^\\d{4}-\\d{4}-\\d{4}-\\d{4}"
   }
 }

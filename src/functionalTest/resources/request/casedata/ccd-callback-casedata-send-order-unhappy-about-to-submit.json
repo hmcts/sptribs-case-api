@@ -124,6 +124,5 @@
   "cicCaseCompensationClaimLinkCIC": "No",
   "cicCaseIsRepresentativePresent": "Yes",
   "stayIsCaseStayed": "No",
-  "hearingSummaryExists": "YES",
-  "hyphenatedCaseRef": "${json-unit.any-string}"
+  "hearingSummaryExists": "YES"
 }

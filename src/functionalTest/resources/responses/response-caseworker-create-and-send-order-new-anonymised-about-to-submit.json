@@ -133,7 +133,7 @@
     "stayIsCaseStayed": "No",
     "hearingSummaryExists": "YES",
     "hearingList": [],
-    "hyphenatedCaseRef": "${json-unit.any-string}",
+    "hyphenatedCaseRef": "${json-unit.regex}^\\d{4}-\\d{4}-\\d{4}-\\d{4}",
     "closedDayCount": "",
     "firstHearingDate": "",
     "cicCaseAnonymiseYesOrNo": "Yes",

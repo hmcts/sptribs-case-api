@@ -126,7 +126,6 @@
   "stayIsCaseStayed": "No",
   "hearingSummaryExists": "YES",
   "hearingList": [],
-  "hyphenatedCaseRef": "${json-unit.any-string}",
   "cicCaseAnonymiseYesOrNo": "Yes",
   "cicCaseAnonymisedAppellantName": "AAC",
   "cicCaseOrderIssuingType": "NewOrder",
