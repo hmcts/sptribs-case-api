@@ -1,0 +1,25 @@
+const createCaseLinkCreateCaseLink3_content = {
+  pageTitle: "Check your answers",
+  textOnPage1: "Bail",
+  textOnPage2: "Case consolidated",
+  textOnPage3: "Common circumstance",
+  textOnPage4: "Familial",
+  textOnPage5: "Findings of fact",
+  textOnPage6: "First Tier Agency (FTA) Request",
+  textOnPage7: "Guardian",
+  textOnPage8: "Linked for a hearing",
+  textOnPage9: "Point of law",
+  textOnPage10: "Progressed as part of this lead case",
+  textOnPage11: "Referred to the same judge",
+  textOnPage12: "Related appeal",
+  textOnPage13: "Related proceedings",
+  textOnPage14: "Same Party",
+  textOnPage15: "Same child/ren",
+  textOnPage16: "Shared evidence",
+  textOnPage17: "Other",
+  subTitle1: "Proposed case links",
+  tableTitle1: "Case name and number",
+  tableTitle2: "Reasons for case link",
+} as const;
+
+export default createCaseLinkCreateCaseLink3_content;
