@@ -1,9 +1,9 @@
 package uk.gov.hmcts.sptribs.citizen.event;
 
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ObjectUtils;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
@@ -70,6 +70,7 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 @Component
 @Slf4j
 @Setter
+@RequiredArgsConstructor
 public class CicSubmitCaseEvent implements CCDConfig<CaseData, State, UserRole> {
 
     private final HttpServletRequest request;
@@ -77,17 +78,6 @@ public class CicSubmitCaseEvent implements CCDConfig<CaseData, State, UserRole> 
     private final AppsConfig appsConfig;
     private final DssApplicationReceivedNotification dssApplicationReceivedNotification;
     private final DocumentsService documentsService;
-
-    @Autowired
-    public CicSubmitCaseEvent(HttpServletRequest request, IdamService idamService, AppsConfig appsConfig,
-                              DssApplicationReceivedNotification dssApplicationReceivedNotification,
-                              DocumentsService documentsService) {
-        this.request = request;
-        this.idamService = idamService;
-        this.appsConfig = appsConfig;
-        this.dssApplicationReceivedNotification = dssApplicationReceivedNotification;
-        this.documentsService = documentsService;
-    }
 
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
