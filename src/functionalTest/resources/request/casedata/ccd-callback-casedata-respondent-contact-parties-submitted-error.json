@@ -22,7 +22,6 @@
       }
     }
   ],
-  "hyphenatedCaseRef": "${json-unit.any-string}",
   "contactPartiesDocumentsDocumentList": {
     "value": [],
     "list_items": [

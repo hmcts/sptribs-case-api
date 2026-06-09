@@ -1,8 +1,8 @@
 package uk.gov.hmcts.sptribs.common.event;
 
+import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
@@ -64,6 +64,7 @@ import static uk.gov.hmcts.sptribs.document.DocumentUtil.updateUploadedDocumentC
 
 @Slf4j
 @Component
+@RequiredArgsConstructor
 public class CreateCase implements CCDConfig<CaseData, State, UserRole> {
 
     private static final CcdPageConfiguration categorisationDetails = new CaseCategorisationDetails();
@@ -85,17 +86,6 @@ public class CreateCase implements CCDConfig<CaseData, State, UserRole> {
     private final ApplicationReceivedNotification applicationReceivedNotification;
 
     private final DocumentsService documentsService;
-
-    @Autowired
-    public CreateCase(SubmissionService submissionService,
-                      CcdSupplementaryDataService ccdSupplementaryDataService,
-                      ApplicationReceivedNotification applicationReceivedNotification,
-                      DocumentsService documentsService) {
-        this.submissionService = submissionService;
-        this.ccdSupplementaryDataService = ccdSupplementaryDataService;
-        this.applicationReceivedNotification = applicationReceivedNotification;
-        this.documentsService = documentsService;
-    }
 
     @Override
     public void configure(ConfigBuilder<CaseData, State, UserRole> configBuilder) {

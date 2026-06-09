@@ -1,5 +1,4 @@
 {
-  "hyphenatedCaseRef": "${json-unit.any-string}",
   "cicCaseNotifyPartySubject": ["SubjectCIC"],
   "cicCaseContactPreferenceType": "Email",
   "cicCaseApplicantFullName": "Testing applicant",

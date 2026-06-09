@@ -24,7 +24,6 @@
   "cicCaseSubjectCIC": [
     "SubjectCIC"
   ],
-  "hyphenatedCaseRef": "${json-unit.any-string}",
   "cicCaseDateOfBirth": "2000-01-01",
   "stayExpirationDate": "2000-01-01",
   "cicCaseCaseCategory": "Assessment",
