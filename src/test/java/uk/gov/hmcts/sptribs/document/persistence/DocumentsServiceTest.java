@@ -128,6 +128,36 @@ public class DocumentsServiceTest {
     }
 
     @Test
+    public void shouldSetNewCategoryIdAndDocumentTypeId() {
+        Document applicationDocument = buildDocument(HOSPITAL_RECORDS.getCategory());
+        DocumentEntity applicationDocumentEntity = buildDocumentEntity(DSS_SUPPORTING.getCategory(), 1L, false, false,
+            OffsetDateTime.now());
+
+        documentsService.setNewCategoryIdAndDocumentTypeId(applicationDocument.getBinaryUrl(), DSS_SUPPORTING.getCategory());
+
+        verify(documentsRepository, times(1)).setCategoryIdAndDocumentTypeIdByDocumentBinaryUrl(
+            applicationDocumentEntity.getDocumentBinaryUrl(), DSS_SUPPORTING.getCategory(),
+            caseDocumentTypesCache.getId(DSS_SUPPORTING.getCaseDocumentType()));
+    }
+
+    @Test
+    public void shouldThrowRuntimeExceptionWhenDataAccessExceptionCaughtInSetNewCategoryIdAndDocumentTypeId() {
+        Document applicationDocument = buildDocument(DSS_SUPPORTING.getCategory());
+
+        doThrow(new DataAccessResourceFailureException("DB error")).when(
+            documentsRepository).setCategoryIdAndDocumentTypeIdByDocumentBinaryUrl(
+                applicationDocument.getBinaryUrl(),
+                DSS_SUPPORTING.getCategory(),
+                0L);
+
+        assertThatThrownBy(
+            () -> documentsService.setNewCategoryIdAndDocumentTypeId(applicationDocument.getBinaryUrl(), DSS_SUPPORTING.getCategory()))
+            .isInstanceOf(RuntimeException.class)
+            .hasMessageContaining("Error updating category ID or document type")
+            .hasCauseInstanceOf(DataAccessException.class);
+    }
+
+    @Test
     public void shouldSetIsDraftToFalse() {
         Document applicationDocument = buildDocument(HOSPITAL_RECORDS.getCategory());
         DocumentEntity draftEvidenceDocumentEntity = buildDocumentEntity(HOSPITAL_RECORDS.getCategory(), 2L, true, false,
@@ -172,7 +202,7 @@ public class DocumentsServiceTest {
     }
 
     @Test
-    void shouldUpdateDocumentsThatHaveBennSentInEmailToSentViaContactParties() {
+    void shouldUpdateDocumentsThatHaveBeenSentInEmailToSentViaContactParties() {
 
         //3 and 4 should not be included as map has reached limit for emails...
         ListValue<CaseworkerCICDocument> caseDocument1 = buildCaseworkerCicDocumentListValue("url-1", "my-env/binary-1/binary", "file-1");
