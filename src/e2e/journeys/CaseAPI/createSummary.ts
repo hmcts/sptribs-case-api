@@ -17,8 +17,6 @@ import createSummaryHearingOutcomePage from "../../pages/CaseAPI/createSummary/c
 import createSummaryHearingRecordingUploadPage from "../../pages/CaseAPI/createSummary/createSummaryHearingRecordingUploadPage.ts";
 import submitPage from "../../pages/CaseAPI/createSummary/submitPage.ts";
 import confirmPage from "../../pages/CaseAPI/createSummary/confirmPage.ts";
-import hearingsTabPage from "../../pages/CaseAPI/caseTabs/hearingsTabPage.ts";
-import hearingTabPage from "../../pages/CaseAPI/caseTabs/hearingsTabPage.ts";
 
 type CreateSummary = {
   createSummary(
