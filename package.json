@@ -17,7 +17,7 @@
     "genCommonEventNameConsts": "grep -rh \"public static final String\" ./src/main/java/uk/gov/hmcts/sptribs/common/event | sed \"s/    public static final String/export const/\" >> ./build/ts/index.ts",
     "genSystemEventNameConsts": "grep -rh \"public static final String\" ./src/main/java/uk/gov/hmcts/sptribs/systemupdate/event | sed \"s/    public static final String/export const/\" >> ./build/ts/index.ts",
     "genCourtLabelConsts": "grep -rh \\\"public static final String\\\" ./src/main/java/uk/gov/hmcts/sptribs/ciccase/constant | sed \\\"s/    public static final String/export const/\\\" >> ./build/ts/index.ts",
-    "test:ui": "npx playwright test --project chromium --headed"
+    "test:ui": "npx playwright test --project chromium"
   },
   "packageManager": "yarn@1.22.22+sha512.a6b2f7906b721bba3d67d4aff083df04dad64c399707841b7acf00f6b133b7ac24255f2652fa22ae3534329dc6180534e98d17432037ff6fd140556e2bb3137e",
   "devDependencies": {
