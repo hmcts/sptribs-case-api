@@ -4,7 +4,6 @@ import { randomBytes } from "crypto";
 import * as fs from "node:fs";
 import { UserRole } from "../config.ts";
 import authors_content from "../fixtures/content/authors_content.ts";
-import allTabTitles_content from "../fixtures/content/CaseAPI/caseTabs/allTabTitles_content.ts";
 import caseDocumentsUploadObject_content from "../fixtures/content/CaseAPI/createCase/caseDocumentsUploadObject_content.ts";
 import uploadCaseDocuments_content from "../fixtures/content/CaseAPI/documentManagementUpload/uploadCaseDocuments_content.ts";
 import CookiesContent from "../fixtures/content/cookies_content.ts";
@@ -39,17 +38,6 @@ interface CommonHelpers {
     service: string,
   ): Promise<void>;
   chooseEventFromDropdown(page: Page, chosenEvent: allEvents): Promise<any>;
-  checkNumberAndSubject(
-    page: Page,
-    caseNumber: string,
-    subjectName: string,
-  ): Promise<void>;
-  checkAllCaseTabs(
-    page: Page,
-    caseNumber: string,
-    respondent: boolean,
-    subjectName: string,
-  ): Promise<void>;
   generateUrl(baseURL: string, caseNumber: string): Promise<string>;
   feedbackBanner(page: Page, cy: boolean, landingPage: boolean): Promise<void>;
   signOutAndGoToCase(
@@ -334,63 +322,6 @@ const commonHelpers: CommonHelpers = {
       await page.getByRole("button", { name: "Go" }).click();
       await expect(page.locator("div.spinner-container")).toHaveCount(0);
       await page.waitForTimeout(5000);
-    }
-  },
-
-  async checkNumberAndSubject(
-    page: Page,
-    caseNumber: string,
-    subjectName: string,
-  ): Promise<void> {
-    await Promise.all([
-      expect(
-        page.locator(
-          "ccd-case-header > div > ccd-label-field > dl > dt > ccd-markdown > div > markdown > h3",
-        ),
-      ).toHaveText(subjectName),
-      expect(page.locator(".case-field").first()).toContainText(
-        allTabTitles_content.pageTitle + caseNumber,
-      ),
-    ]);
-  },
-
-  async checkAllCaseTabs(
-    page: Page,
-    caseNumber: string,
-    respondent: boolean,
-    subjectName: string,
-  ): Promise<void> {
-    await this.checkNumberAndSubject(page, caseNumber, subjectName);
-    if (respondent) {
-      await Promise.all([
-        Array.from({ length: 11 }, (_, index) => {
-          const textOnPage = (allTabTitles_content as any)[`tab${index + 1}`];
-          return commonHelpers.checkVisibleAndPresent(
-            page.locator(`.mat-tab-label-content:text-is("${textOnPage}")`),
-            1,
-          );
-        }).filter(Boolean),
-        Array.from({ length: 2 }, (_, index) => {
-          const textOnPage = (allTabTitles_content as any)[`tab${index + 14}`];
-          return commonHelpers.checkVisibleAndPresent(
-            page.locator(`.mat-tab-label-content:text-is("${textOnPage}")`),
-            1,
-          );
-        }).filter(Boolean),
-      ]);
-    } else {
-      await Promise.all([
-        Array.from({ length: 15 }, (_, index) => {
-          if (index !== 11) {
-            // Exclude tab 12 (index 11)
-            const textOnPage = (allTabTitles_content as any)[`tab${index + 1}`];
-            return commonHelpers.checkVisibleAndPresent(
-              page.locator(`.mat-tab-label-content:text-is("${textOnPage}")`),
-              1,
-            );
-          }
-        }).filter(Boolean),
-      ]);
     }
   },
 
