@@ -107,6 +107,20 @@ public class DocumentsService {
         }
     }
 
+    public void setNewCategoryIdAndDocumentTypeId(String documentBinaryUrl, String categoryId) {
+        try {
+            int rowsUpdated =
+                documentsRepository.setCategoryIdAndDocumentTypeIdByDocumentBinaryUrl(
+                    documentBinaryUrl,
+                    categoryId,
+                    caseDocumentTypesCache.getId(getCaseDocumentType(categoryId, false))
+                );
+            log.info("Document Repository updated {} category IDs.", rowsUpdated);
+        } catch (DataAccessException e) {
+            throw new RuntimeException("Error updating category ID or document type", e);
+        }
+    }
+
     @Transactional
     public void setIsDraftToFalse(String documentBinaryUrl) {
         try {
