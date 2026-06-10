@@ -1,28 +1,14 @@
 import { expect, Locator, Page } from "@playwright/test";
-import axios from "axios";
 import { randomBytes } from "crypto";
-import * as fs from "node:fs";
-import { UserRole } from "../config.ts";
 import authors_content from "../fixtures/content/authors_content.ts";
 import caseDocumentsUploadObject_content from "../fixtures/content/CaseAPI/createCase/caseDocumentsUploadObject_content.ts";
 import uploadCaseDocuments_content from "../fixtures/content/CaseAPI/documentManagementUpload/uploadCaseDocuments_content.ts";
-import CookiesContent from "../fixtures/content/cookies_content.ts";
-import subjectDetailsPage from "../fixtures/content/DSSCreateCase/SubjectDetails_content.ts";
-import CaseFinderContent from "../fixtures/content/DSSUpdateCase/CaseFinder_content.ts";
-import feedbackBanner_content from "../fixtures/content/DSSUpdateCase/feedbackBanner_content.ts";
-import idamLoginHelper from "./idamLoginHelper.ts";
 
 interface CommonHelpers {
   readonly months: string[];
   shortMonths(index: number): Promise<string>;
-  todayDate(): Promise<string>;
-  todayDateDoc(): Promise<string>;
-  futureDate(numberOfdays: number): Promise<string>;
-  todayDateFull(): Promise<string>;
   padZero(value: number): string;
   postcodeHandler(page: Page, party: string): Promise<void>;
-  convertDate(tab: boolean): Promise<string>;
-  getTimestamp(): Promise<string>;
   uploadFileController(
     page: Page,
     selector: string,
@@ -32,20 +18,7 @@ interface CommonHelpers {
     docManagementUpload: boolean,
   ): Promise<void>;
   checkVisibleAndPresent(locator: Locator, count: number): Promise<void>;
-  checkAndAcceptCookies(
-    page: Page,
-    cy: boolean,
-    service: string,
-  ): Promise<void>;
   chooseEventFromDropdown(page: Page, chosenEvent: allEvents): Promise<any>;
-  generateUrl(baseURL: string, caseNumber: string): Promise<string>;
-  feedbackBanner(page: Page, cy: boolean, landingPage: boolean): Promise<void>;
-  signOutAndGoToCase(
-    page: Page,
-    user: UserRole,
-    baseURL: string,
-    caseNumber: string,
-  ): Promise<void>;
   checkForButtons(
     page: Page,
     continueButton: string,
@@ -80,99 +53,6 @@ const commonHelpers: CommonHelpers = {
   async shortMonths(index: number): Promise<string> {
     const monthFullName = this.months[index - 1];
     return monthFullName.substring(0, 3);
-  },
-
-  async todayDate(): Promise<string> {
-    const now = new Date();
-    const dateString = now.toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "2-digit",
-      day: "numeric",
-    });
-    const [month, day, year] = dateString.split("/");
-
-    return `${day} ${await commonHelpers.shortMonths(parseInt(month))} ${year}`;
-  },
-
-  async todayDateDoc(): Promise<string> {
-    const now = new Date();
-    const dateString = now.toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "2-digit",
-      day: "2-digit",
-    });
-    const [month, day, year] = dateString
-      .split("/")
-      .map((part) => part.padStart(2, "0"));
-
-    return `${day} ${await commonHelpers.shortMonths(parseInt(month))} ${year}`;
-  },
-
-  async futureDate(numberOfDays: number): Promise<string> {
-    const privilegeDayPath = "src/tests/fixtures/privilegeDay.json";
-
-    const fetchBankHolidays = async () => {
-      try {
-        const response = await axios.get(
-          "https://www.gov.uk/bank-holidays/scotland.json",
-        );
-        return response.data;
-      } catch (error) {
-        console.error("Failed to fetch bank holidays:", error);
-        throw new Error("Could not fetch bank holidays");
-      }
-    };
-
-    const fetchPrivilegeDay = async () => {
-      const data = fs.readFileSync(privilegeDayPath, "utf-8");
-      const privilegeDayData = JSON.parse(data);
-      return privilegeDayData.events.map((event: any) => event.date);
-    };
-
-    const today = new Date();
-    let workingDaysCount = 0;
-
-    const holidaysData = await fetchBankHolidays();
-    const holidays: string[] = holidaysData.events
-      .filter((event: any) => {
-        const holidayDate = new Date(event.date);
-        const dayOfWeek = holidayDate.getDay();
-        return dayOfWeek !== 0 && dayOfWeek !== 6;
-      })
-      .map((event: any) => event.date);
-
-    const privilegeDay: string[] = await fetchPrivilegeDay();
-    const allHolidays = new Set([...holidays, ...privilegeDay]);
-
-    while (workingDaysCount < numberOfDays) {
-      today.setDate(today.getDate() + 1);
-
-      const dayOfWeek = today.getDay();
-      const formattedDate = today.toISOString().split("T")[0];
-
-      if (
-        dayOfWeek !== 0 &&
-        dayOfWeek !== 6 &&
-        !allHolidays.has(formattedDate)
-      ) {
-        workingDaysCount++;
-      }
-    }
-    const day = today.getDate();
-    const month = today.toLocaleString("en-US", { month: "long" });
-    const year = today.getFullYear();
-
-    return `${day} ${month} ${year}`;
-  },
-
-  async todayDateFull(): Promise<string> {
-    const now = new Date();
-
-    const day = now.getDate();
-    const month = now.toLocaleString("en-US", { month: "long" });
-    const year = now.getFullYear();
-
-    return `${day} ${month} ${year}`;
   },
 
   padZero(value: number): string {
@@ -234,28 +114,6 @@ const commonHelpers: CommonHelpers = {
     expect(await page.inputValue(postcodeZipcode)).toEqual(
       authors_content.postCode,
     );
-  },
-
-  async convertDate(tab: boolean): Promise<string> {
-    const dayOfBirth = subjectDetailsPage.dayOfBirth;
-    const monthOfBirth = subjectDetailsPage.monthOfBirth;
-    const yearOfBirth = subjectDetailsPage.yearOfBirth;
-    const monthName = this.months[Number(monthOfBirth) - 1];
-    if (tab) {
-      return `${dayOfBirth} ${monthName.slice(0, 3)} ${yearOfBirth}`;
-    } else {
-      return `${dayOfBirth} ${monthName} ${yearOfBirth}`;
-    }
-  },
-
-  async getTimestamp(): Promise<string> {
-    const currentDate = new Date();
-    let hours = currentDate.getHours();
-    hours = hours % 12;
-    hours = hours ? hours : 12;
-    return `${currentDate.getDate()} ${this.months[currentDate.getMonth()].slice(0, 3)} ${currentDate.getFullYear()}, ${hours}:${this.padZero(
-      currentDate.getMinutes(),
-    )}`;
   },
 
   async uploadFileController(
@@ -323,140 +181,6 @@ const commonHelpers: CommonHelpers = {
       await expect(page.locator("div.spinner-container")).toHaveCount(0);
       await page.waitForTimeout(5000);
     }
-  },
-
-  async generateUrl(baseURL: string, caseNumber: string): Promise<string> {
-    const caseNumberDigits = caseNumber.replace(/\D/g, "");
-    return `${baseURL}/case-details/${caseNumberDigits}#History`;
-  },
-
-  async checkAndAcceptCookies(
-    page: Page,
-    cy: boolean,
-    service: string,
-  ): Promise<void> {
-    switch (cy) {
-      case true:
-        if (service === "UC") {
-          await Promise.all([
-            expect(page.locator(".govuk-cookie-banner__heading")).toHaveText(
-              CookiesContent.titleCy + CaseFinderContent.headerCy,
-            ),
-            ...Array.from({ length: 2 }, (_, index) => {
-              const textOnPage = (CookiesContent as any)[
-                `textOnPageCy${index + 1}`
-              ];
-              return expect(
-                page.locator(".govuk-body").nth(index),
-              ).toContainText(textOnPage);
-            }),
-          ]);
-        }
-        await page.locator(".govuk-button").nth(0).click();
-        await page
-          .getByRole("button", { name: "Cuddio'r neges cwcihon" })
-          .click();
-        break;
-      default:
-        if (service === "UC") {
-          await Promise.all([
-            expect(page.locator(".govuk-cookie-banner__heading")).toHaveText(
-              CookiesContent.title + CaseFinderContent.header,
-            ),
-            ...Array.from({ length: 2 }, (_, index) => {
-              const textOnPage = (CookiesContent as any)[
-                `textOnPage${index + 1}`
-              ];
-              return expect(
-                page.locator(".govuk-body").nth(index),
-              ).toContainText(textOnPage);
-            }),
-          ]);
-        }
-        await page.locator(".govuk-button").nth(0).click();
-        await page.getByRole("button", { name: "Hide this message" }).click();
-        break;
-    }
-  },
-
-  async feedbackBanner(
-    page: Page,
-    cy: boolean,
-    landingPage: boolean,
-  ): Promise<void> {
-    switch (cy) {
-      case true:
-        if (landingPage) {
-          await Promise.all([
-            expect(page.locator(".govuk-phase-banner__text")).toContainText(
-              feedbackBanner_content.feedbackBannerCy,
-            ),
-            expect(page.locator("a.govuk-link").nth(0)).toHaveText(
-              feedbackBanner_content.feedbackLinkTextCy,
-            ),
-            expect(page.locator("a.govuk-link").nth(0)).toHaveAttribute(
-              "href",
-              feedbackBanner_content.feedbackLink + "?lang=cy",
-            ),
-          ]);
-        } else {
-          await Promise.all([
-            expect(page.locator(".govuk-phase-banner__text")).toContainText(
-              feedbackBanner_content.feedbackBannerCy,
-            ),
-            expect(page.locator("a.govuk-link").nth(3)).toHaveText(
-              feedbackBanner_content.feedbackLinkTextCy,
-            ),
-            expect(
-              await page.locator("a.govuk-link").nth(3).getAttribute("href"),
-            ).toContain(feedbackBanner_content.feedbackLink),
-          ]);
-        }
-        break;
-      default:
-        if (landingPage) {
-          await Promise.all([
-            expect(page.locator(".govuk-phase-banner__text")).toContainText(
-              feedbackBanner_content.feedbackBanner,
-            ),
-            expect(page.locator("a.govuk-link").nth(0)).toHaveText(
-              feedbackBanner_content.feedbackLinkText,
-            ),
-            expect(page.locator("a.govuk-link").nth(0)).toHaveAttribute(
-              "href",
-              feedbackBanner_content.feedbackLink,
-            ),
-          ]);
-        } else {
-          await Promise.all([
-            expect(page.locator(".govuk-phase-banner__text")).toContainText(
-              feedbackBanner_content.feedbackBanner,
-            ),
-            expect(page.locator("a.govuk-link").nth(3)).toHaveText(
-              feedbackBanner_content.feedbackLinkText,
-            ),
-            expect(
-              await page.locator("a.govuk-link").nth(3).getAttribute("href"),
-            ).toContain(feedbackBanner_content.feedbackLink),
-          ]);
-        }
-        break;
-    }
-  },
-
-  async signOutAndGoToCase(
-    page: Page,
-    user: UserRole,
-    baseURL: string,
-    caseNumber: string,
-  ): Promise<void> {
-    await page.locator(`a:text-is(" Sign out ")`).click();
-    await page.waitForTimeout(5000);
-    await page.waitForLoadState("domcontentloaded");
-    await idamLoginHelper.signInUser(page, user, baseURL);
-    await page.waitForTimeout(2000);
-    await page.goto(await this.generateUrl(baseURL, caseNumber));
-    await page.waitForLoadState("domcontentloaded");
   },
 
   async checkForButtons(
