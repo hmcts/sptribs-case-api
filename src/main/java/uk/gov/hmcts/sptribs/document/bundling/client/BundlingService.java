@@ -205,6 +205,8 @@ public class BundlingService {
         Document stitchedDocument = getStitchedDocument(objectLinkedHashMap, caseNumber);
 
         if (stitchedDocument != null) {
+            stitchedDocument.setCategoryId(MapUtils.getString(objectLinkedHashMap, ID, ""));
+
             documentsService.buildAndSaveNewDocumentEntity(
                 stitchedDocument,
                 caseNumber,

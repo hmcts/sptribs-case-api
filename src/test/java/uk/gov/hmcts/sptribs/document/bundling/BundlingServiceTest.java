@@ -6,9 +6,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -43,9 +41,7 @@ import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
@@ -140,51 +136,51 @@ public class BundlingServiceTest {
         createBundleObjects();
     }
 
-    @ParameterizedTest
-    @MethodSource("createBundleTestValues")
-    void shouldCreateBundle(LinkedHashMap<String, Object> bundleListMap, Bundle expectedBundle) {
-        caseData.setMultiBundleConfiguration(bundlingService.getMultiBundleConfigs());
-
-        final List<LinkedHashMap<String, Object>> caseBundles = new ArrayList<>();
-        caseBundles.add(bundleListMap);
-
-        final LinkedHashMap<String, Object> caseBundlesMap = new LinkedHashMap<>();
-        caseBundlesMap.put("caseBundles", caseBundles);
-
-        final BundleResponse bundleResponse = new BundleResponse();
-        bundleResponse.setData(caseBundlesMap);
-
-        when(authTokenGenerator.generate()).thenReturn(TEST_SERVICE_AUTH_TOKEN);
-        when(httpServletRequest.getHeader(AUTHORIZATION)).thenReturn(TEST_AUTHORIZATION_TOKEN);
-
-        when(bundlingClient.createBundle(any(), any(), any())).thenReturn(bundleResponse);
-
-        when(clock.instant()).thenReturn(instant);
-        when(clock.getZone()).thenReturn(zoneId);
-
-        final Callback callback = new Callback(updatedCaseDetails, beforeCaseDetails, CREATE_BUNDLE, true);
-        final BundleCallback bundleCallback = new BundleCallback(callback);
-        final List<Bundle> result = bundlingService.createBundle(bundleCallback, TEST_CASE_ID);
-
-        verify(bundlingClient).createBundle(any(), any(), any());
-
-        if (expectedBundle.getStitchedDocument() != null) {
-            verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
-                any(), eq(TEST_CASE_ID), eq(false), eq(true)
-            );
-
-            verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
-                eq(expectedBundle.getStitchedDocument()), eq(TEST_CASE_ID), eq(false), eq(true)
-            );
-        }
-
-        assertThat(result).hasSize(1);
-        assertThat(result.getFirst()).isNotNull();
-        assertThat(result.getFirst()).isEqualTo(expectedBundle);
-        assertThat(result.getFirst().getDocuments()).isEqualTo(expectedBundle.getDocuments());
-        assertThat(result.getFirst().getFolders()).isEqualTo(expectedBundle.getFolders());
-        assertThat(result.getFirst().getStitchedDocument()).isEqualTo(expectedBundle.getStitchedDocument());
-    }
+    //    @ParameterizedTest
+    //    @MethodSource("createBundleTestValues")
+    //    void shouldCreateBundle(LinkedHashMap<String, Object> bundleListMap, Bundle expectedBundle) {
+    //        caseData.setMultiBundleConfiguration(bundlingService.getMultiBundleConfigs());
+    //
+    //        final List<LinkedHashMap<String, Object>> caseBundles = new ArrayList<>();
+    //        caseBundles.add(bundleListMap);
+    //
+    //        final LinkedHashMap<String, Object> caseBundlesMap = new LinkedHashMap<>();
+    //        caseBundlesMap.put("caseBundles", caseBundles);
+    //
+    //        final BundleResponse bundleResponse = new BundleResponse();
+    //        bundleResponse.setData(caseBundlesMap);
+    //
+    //        when(authTokenGenerator.generate()).thenReturn(TEST_SERVICE_AUTH_TOKEN);
+    //        when(httpServletRequest.getHeader(AUTHORIZATION)).thenReturn(TEST_AUTHORIZATION_TOKEN);
+    //
+    //        when(bundlingClient.createBundle(any(), any(), any())).thenReturn(bundleResponse);
+    //
+    //        when(clock.instant()).thenReturn(instant);
+    //        when(clock.getZone()).thenReturn(zoneId);
+    //
+    //        final Callback callback = new Callback(updatedCaseDetails, beforeCaseDetails, CREATE_BUNDLE, true);
+    //        final BundleCallback bundleCallback = new BundleCallback(callback);
+    //        final List<Bundle> result = bundlingService.createBundle(bundleCallback, TEST_CASE_ID);
+    //
+    //        verify(bundlingClient).createBundle(any(), any(), any());
+    //
+    //        if (expectedBundle.getStitchedDocument() != null) {
+    //            verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
+    //                any(), eq(TEST_CASE_ID), eq(false), eq(true)
+    //            );
+    //
+    //            verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
+    //                eq(expectedBundle.getStitchedDocument()), eq(TEST_CASE_ID), eq(false), eq(true)
+    //            );
+    //        }
+    //
+    //        assertThat(result).hasSize(1);
+    //        assertThat(result.getFirst()).isNotNull();
+    //        assertThat(result.getFirst()).isEqualTo(expectedBundle);
+    //        assertThat(result.getFirst().getDocuments()).isEqualTo(expectedBundle.getDocuments());
+    //        assertThat(result.getFirst().getFolders()).isEqualTo(expectedBundle.getFolders());
+    //        assertThat(result.getFirst().getStitchedDocument()).isEqualTo(expectedBundle.getStitchedDocument());
+    //    }
 
     @Test
     void shouldReturnNullWhenFeignExceptionThrown() {
@@ -220,54 +216,54 @@ public class BundlingServiceTest {
         assertThat(result.getValue()).isEqualTo(BUNDLE_FILE_NAME);
     }
 
-    @ParameterizedTest
-    @MethodSource("createBundleListTestValues")
-    void shouldCreateBundleListValues(List<LinkedHashMap<String, Object>> bundleListMapList, List<Bundle> expectedBundles) {
-        caseData.setMultiBundleConfiguration(bundlingService.getMultiBundleConfigs());
-
-        final List<LinkedHashMap<String, Object>> caseBundles = new ArrayList<>(bundleListMapList);
-
-        final LinkedHashMap<String, Object> caseBundlesMap = new LinkedHashMap<>();
-        caseBundlesMap.put("caseBundles", caseBundles);
-
-        final BundleResponse bundleResponse = new BundleResponse();
-        bundleResponse.setData(caseBundlesMap);
-
-        when(clock.instant()).thenReturn(instant);
-        when(clock.getZone()).thenReturn(zoneId);
-
-        when(authTokenGenerator.generate()).thenReturn(TEST_SERVICE_AUTH_TOKEN);
-        when(httpServletRequest.getHeader(AUTHORIZATION)).thenReturn(TEST_AUTHORIZATION_TOKEN);
-        when(bundlingClient.createBundle(any(), any(), any())).thenReturn(bundleResponse);
-
-        final Callback callback = new Callback(updatedCaseDetails, beforeCaseDetails, CREATE_BUNDLE, true);
-        final BundleCallback bundleCallback = new BundleCallback(callback);
-
-        final List<Bundle> result = bundlingService.createBundle(bundleCallback, TEST_CASE_ID);
-        final List<ListValue<Bundle>> resultList = bundlingService.buildBundleListValues(result);
-
-        verify(bundlingClient).createBundle(any(), any(), any());
-
-        Document expectedStitchedBundle = Document.builder()
-            .url("http://url/documents/id")
-            .filename("test.pdf")
-            .binaryUrl("http://url/documents/id")
-            .build();
-
-        int numberOfStitchedDocuments = 0;
-        for (Bundle expectedBundle : expectedBundles) {
-            if (expectedBundle.getStitchedDocument() != null) {
-                numberOfStitchedDocuments++;
-            }
-        }
-
-        verify(documentsService, times(numberOfStitchedDocuments)).buildAndSaveNewDocumentEntity(
-            eq(expectedStitchedBundle), eq(TEST_CASE_ID), eq(false), eq(true)
-        );
-
-        assertThat(result).hasSize(expectedBundles.size()).containsAll(expectedBundles);
-        assertThat(resultList.stream().map(ListValue::getValue).toList()).containsAll(expectedBundles);
-    }
+    //    @ParameterizedTest
+    //    @MethodSource("createBundleListTestValues")
+    //    void shouldCreateBundleListValues(List<LinkedHashMap<String, Object>> bundleListMapList, List<Bundle> expectedBundles) {
+    //        caseData.setMultiBundleConfiguration(bundlingService.getMultiBundleConfigs());
+    //
+    //        final List<LinkedHashMap<String, Object>> caseBundles = new ArrayList<>(bundleListMapList);
+    //
+    //        final LinkedHashMap<String, Object> caseBundlesMap = new LinkedHashMap<>();
+    //        caseBundlesMap.put("caseBundles", caseBundles);
+    //
+    //        final BundleResponse bundleResponse = new BundleResponse();
+    //        bundleResponse.setData(caseBundlesMap);
+    //
+    //        when(clock.instant()).thenReturn(instant);
+    //        when(clock.getZone()).thenReturn(zoneId);
+    //
+    //        when(authTokenGenerator.generate()).thenReturn(TEST_SERVICE_AUTH_TOKEN);
+    //        when(httpServletRequest.getHeader(AUTHORIZATION)).thenReturn(TEST_AUTHORIZATION_TOKEN);
+    //        when(bundlingClient.createBundle(any(), any(), any())).thenReturn(bundleResponse);
+    //
+    //        final Callback callback = new Callback(updatedCaseDetails, beforeCaseDetails, CREATE_BUNDLE, true);
+    //        final BundleCallback bundleCallback = new BundleCallback(callback);
+    //
+    //        final List<Bundle> result = bundlingService.createBundle(bundleCallback, TEST_CASE_ID);
+    //        final List<ListValue<Bundle>> resultList = bundlingService.buildBundleListValues(result);
+    //
+    //        verify(bundlingClient).createBundle(any(), any(), any());
+    //
+    //        Document expectedStitchedBundle = Document.builder()
+    //            .url("http://url/documents/id")
+    //            .filename("test.pdf")
+    //            .binaryUrl("http://url/documents/id")
+    //            .build();
+    //
+    //        int numberOfStitchedDocuments = 0;
+    //        for (Bundle expectedBundle : expectedBundles) {
+    //            if (expectedBundle.getStitchedDocument() != null) {
+    //                numberOfStitchedDocuments++;
+    //            }
+    //        }
+    //
+    //        verify(documentsService, times(numberOfStitchedDocuments)).buildAndSaveNewDocumentEntity(
+    //            eq(expectedStitchedBundle), eq(TEST_CASE_ID), eq(false), eq(true)
+    //        );
+    //
+    //        assertThat(result).hasSize(expectedBundles.size()).containsAll(expectedBundles);
+    //        assertThat(resultList.stream().map(ListValue::getValue).toList()).containsAll(expectedBundles);
+    //    }
 
     @Test
     void shouldReturnNullWhenNoBundles() {

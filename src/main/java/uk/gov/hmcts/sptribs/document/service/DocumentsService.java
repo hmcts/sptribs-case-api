@@ -163,4 +163,10 @@ public class DocumentsService {
             .orElse(null);
     }
 
+    public void removeEntryFromDocumentTable(String caseID, String key) {
+
+
+
+        documentsRepository.deleteById(1);
+    }
 }
