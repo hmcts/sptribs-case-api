@@ -206,6 +206,7 @@ public class BundlingService {
 
         if (stitchedDocument != null) {
             stitchedDocument.setCategoryId(MapUtils.getString(objectLinkedHashMap, ID, ""));
+            stitchedDocument.setFilename(MapUtils.getString(objectLinkedHashMap, ID, ""));
 
             documentsService.buildAndSaveNewDocumentEntity(
                 stitchedDocument,
