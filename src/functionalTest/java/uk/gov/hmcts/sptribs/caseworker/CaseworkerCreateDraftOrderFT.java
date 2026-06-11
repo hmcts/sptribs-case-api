@@ -83,6 +83,7 @@ public class CaseworkerCreateDraftOrderFT extends FunctionalTestSuite {
             .toString().replace("-", "")));
         assertThat(firstDocumentEntity.getCategoryId()).isEqualTo("TD");
         assertThat(firstDocumentEntity.getSavedAt()).isNotNull();
+        assertThat(firstDocumentEntity.getUpdatedAt()).isNotNull();
         assertThat(firstDocumentEntity.isDraft()).isTrue();
         assertThat(firstDocumentEntity.isSentToApplicantViaContactParties()).isFalse();
         assertThat(firstDocumentEntity.getDocumentUrl()).isNotNull();
@@ -112,6 +113,7 @@ public class CaseworkerCreateDraftOrderFT extends FunctionalTestSuite {
             .toString().replace("-", "")));
         assertThat(firstDocumentEntity.getCategoryId()).isEqualTo("TD");
         assertThat(firstDocumentEntity.getSavedAt()).isNotNull();
+        assertThat(firstDocumentEntity.getUpdatedAt()).isNotNull();
         assertThat(firstDocumentEntity.isDraft()).isTrue();
         assertThat(firstDocumentEntity.isSentToApplicantViaContactParties()).isFalse();
         assertThat(firstDocumentEntity.getDocumentUrl()).isNotNull();

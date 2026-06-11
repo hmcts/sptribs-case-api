@@ -61,6 +61,7 @@ public class CicSubmitCaseEventFT extends FunctionalTestSuite {
             .toString().replace("-", "")));
         assertThat(firstDocumentEntity.getCategoryId()).isNotNull();
         assertThat(firstDocumentEntity.getSavedAt()).isNotNull();
+        assertThat(firstDocumentEntity.getUpdatedAt()).isNotNull();
         assertThat(firstDocumentEntity.isDraft()).isFalse();
         assertThat(firstDocumentEntity.isSentToApplicantViaContactParties()).isFalse();
         assertThat(firstDocumentEntity.getDocumentUrl()).isNotNull();
