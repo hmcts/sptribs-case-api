@@ -130,6 +130,8 @@ public class CaseworkerRemoveBundles implements CCDConfig<CaseData, State, UserR
 
     public SubmittedCallbackResponse submitted(CaseDetails<CaseData, State> details,
                                                CaseDetails<CaseData, State> beforeDetails) {
+
+        //REMOVE BUNDLE FROM DOC TABLE
         return SubmittedCallbackResponse.builder()
             .confirmationHeader("# Case Updated")
             .build();
