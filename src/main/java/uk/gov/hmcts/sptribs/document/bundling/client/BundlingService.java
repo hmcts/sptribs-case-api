@@ -242,7 +242,11 @@ public class BundlingService {
             return null;
         }
 
+        System.out.println("getstitcheddoc = :" + objectLinkedHashMap);
+
         LinkedHashMap<String, Object> stitchedDocMap = (LinkedHashMap<String, Object>) objectLinkedHashMap.get(STITCHED_DOCUMENT);
+
+        System.out.println("stitchedDocMap: " + stitchedDocMap);
 
         return Document.builder()
             .url(MapUtils.getString(stitchedDocMap, DOCUMENT_URL, ""))
