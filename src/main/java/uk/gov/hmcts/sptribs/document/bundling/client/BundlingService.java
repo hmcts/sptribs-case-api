@@ -202,7 +202,12 @@ public class BundlingService {
 
     private Bundle buildBundle(LinkedHashMap<String, Object> objectLinkedHashMap, Long caseNumber) {
 
+
+        System.out.println(objectLinkedHashMap);
+
         Document stitchedDocument = getStitchedDocument(objectLinkedHashMap, caseNumber);
+
+        System.out.println("BUILDING BUNDLE: " + stitchedDocument);
 
         if (stitchedDocument != null) {
             stitchedDocument.setCategoryId(MapUtils.getString(objectLinkedHashMap, ID, ""));
