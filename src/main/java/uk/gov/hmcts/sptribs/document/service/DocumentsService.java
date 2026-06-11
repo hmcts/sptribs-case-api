@@ -107,13 +107,15 @@ public class DocumentsService {
         }
     }
 
+    @Transactional
     public void setNewCategoryIdAndDocumentTypeId(String documentBinaryUrl, String categoryId) {
         try {
+            Long documentTypeId = caseDocumentTypesCache.getId(getCaseDocumentType(categoryId, false));
             int rowsUpdated =
                 documentsRepository.setCategoryIdAndDocumentTypeIdByDocumentBinaryUrl(
                     documentBinaryUrl,
                     categoryId,
-                    caseDocumentTypesCache.getId(getCaseDocumentType(categoryId, false))
+                    documentTypeId
                 );
             log.info("Document Repository updated {} category IDs.", rowsUpdated);
         } catch (DataAccessException e) {

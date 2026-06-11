@@ -195,6 +195,14 @@ public abstract class FunctionalTestSuite {
     }
 
     protected Response triggerCallback(Map<String, Object> caseData, String eventId, String url, Long caseId) throws IOException {
+        try {
+            if (eventId.equals("caseworker-amend-document")) {
+                caseDocumentsFTDataManager.saveTestDocumentEntity(caseId);
+            }
+        } catch (SQLException e) {
+            log.error("Exception occurred while saving test case document", e);
+        }
+
         CallbackRequest request = CallbackRequest
             .builder()
             .eventId(eventId)
