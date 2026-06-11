@@ -16,7 +16,7 @@ public interface DocumentsRepository extends JpaRepository<DocumentEntity, Integ
     @Query("""
         update DocumentEntity d
         set d.sentToApplicantViaContactParties = true,
-            d.updatedAt = current_timestamp
+            d.updatedAt = current_instant()
         where d.documentBinaryUrl in :documentUrls
         """)
     int setSentToApplicantViaContactPartiesToTrueByDocumentBinaryUrl(
@@ -28,7 +28,7 @@ public interface DocumentsRepository extends JpaRepository<DocumentEntity, Integ
         update DocumentEntity d
         set d.categoryId = :categoryId,
             d.documentTypeId = :documentTypeId,
-            d.updatedAt = current_timestamp
+            d.updatedAt = current_instant()
         where d.documentBinaryUrl = :documentBinaryUrl
         """)
     int setCategoryIdAndDocumentTypeIdByDocumentBinaryUrl(
@@ -38,7 +38,7 @@ public interface DocumentsRepository extends JpaRepository<DocumentEntity, Integ
     );
 
     @Modifying
-    @Query("update DocumentEntity d set d.isDraft = false, d.updatedAt = current_timestamp where d.documentBinaryUrl = :documentBinaryUrl")
+    @Query("update DocumentEntity d set d.isDraft = false, d.updatedAt = current_instant() where d.documentBinaryUrl = :documentBinaryUrl")
     void setIsDraftToFalseByDocumentBinaryUrl(@Param("documentBinaryUrl") String documentBinaryUrl);
 
     @Query("""
