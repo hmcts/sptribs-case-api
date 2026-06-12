@@ -6,7 +6,7 @@ create table if not exists case_documents (
   document_binary_url varChar(200) not null unique,
   document_filename varChar(200) not null,
   category_id varChar(200),
-  document_type_id BIGINT not null references case_document_types(id),
+  document_type_id bigint not null references case_document_types(id),
   is_draft boolean not null,
   sent_to_applicant_via_contact_parties boolean not null,
   updated_at timestamp not null default current_timestamp
