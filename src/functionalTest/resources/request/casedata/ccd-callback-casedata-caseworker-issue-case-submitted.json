@@ -71,9 +71,9 @@
         "documentCategory": "ApplicationForm",
         "documentEmailContent": "Application form",
         "documentLink": {
-          "document_url": "http://dm-store.service.core-compute.internal/documents/f3335647-6277-40af-ba66-c09365c0776e",
+          "document_url": "http://dm-store.service.core-compute.internal/documents/f3335642-6277-40af-ba66-c09365c0776e",
           "document_filename": "pdf.pdf",
-          "document_binary_url": "http://dm-store.service.core-compute.internal/documents/f3335647-6277-40af-ba66-c09365c0776e/binary",
+          "document_binary_url": "http://dm-store.service.core-compute.internal/documents/f3335642-6277-40af-ba66-c09365c0776e/binary",
           "category_id": "A"
         }
       }
@@ -87,7 +87,7 @@
     "list_items": [
       {
         "code": "334ff89d-33af-4442-b767-ada611ad0d15",
-        "label": "[pdf.pdf A - Application Form](http://manage-case.demo.platform.hmcts.net/documents/f3335647-6277-40af-ba66-c09365c0776e/binary)"
+        "label": "[pdf.pdf A - Application Form](http://manage-case.demo.platform.hmcts.net/documents/f3335642-6277-40af-ba66-c09365c0776e/binary)"
       }
     ]
   },
