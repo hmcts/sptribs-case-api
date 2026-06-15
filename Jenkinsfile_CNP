@@ -295,6 +295,14 @@ withPipeline(type, product, component) {
         uploadBpmnDiagram()
         setupRoleAssignments()
       }
+      stage('UI Tests') {
+          build job: 'HMCTS_j_to_z_Nightly/sptribs-e2etests/master',
+                parameters: [
+                    string(name: 'SPTRIBS_CASEAPI_URL', value: "https://xui-sptribs-case-api-pr-${CHANGE_ID}.preview.platform.hmcts.net")
+                ],
+                wait: true,
+                propagate: true
+      }
     }
   }
 
