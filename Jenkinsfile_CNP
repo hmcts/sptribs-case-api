@@ -52,6 +52,8 @@ def secrets = [
                 secret('idam-systemupdate-password', 'IDAM_SYSTEM_UPDATE_PASSWORD'),
                 secret('wa-seniorCaseworker-username', 'IDAM_WA_SENIOR_CASEWORKER_USERNAME'),
                 secret('wa-seniorCaseworker-password', 'IDAM_WA_SENIOR_CASEWORKER_PASSWORD'),
+                secret('wa-hearingCentreAdmin-username', 'WA_HEARING_CENTRE_ADMIN_USERNAME'),
+                secret('wa-hearingCentreAdmin-password', 'WA_HEARING_CENTRE_ADMIN_PASSWORD'),
                 secret('wa-seniorCaseworker-uid', 'WA_SENIOR_CASEWORKER_UID'),
                 secret('wa-regionalHearingCentreTeamLead-username', 'IDAM_WA_REGIONAL_HEARING_CENTRE_TEAM_LEAD_USERNAME'),
                 secret('wa-regionalHearingCentreTeamLead-password', 'IDAM_WA_REGIONAL_HEARING_CENTRE_TEAM_LEAD_PASSWORD'),
@@ -204,6 +206,30 @@ withPipeline(type, product, component) {
       reportFiles          : "index.html",
       reportName           : "Smoke Test Report"
     ]
+
+    onPR {
+      env.CASEAPI_BASE_URL = "https://xui-sptribs-case-api-pr-${CHANGE_ID}.preview.platform.hmcts.net"
+      stage('Install UI test dependencies') {
+          sh 'yarn install'
+          sh 'npx playwright install --with-deps'
+      }
+
+      stage('UI Tests') {
+          try {
+              sh 'yarn test:ui'
+          } finally {
+              publishHTML([
+                  allowMissing         : true,
+                  alwaysLinkToLastBuild: true,
+                  keepAll              : true,
+                  reportDir            : "playwright-report",
+                  reportFiles          : "index.html",
+                  reportName           : "UI Tests Report"
+              ])
+              steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'reports/tests-results/**/*'
+          }
+      }
+    }
   }
 
   afterAlways('smoketest:aat') {
