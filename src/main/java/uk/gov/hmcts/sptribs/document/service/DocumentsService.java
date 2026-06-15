@@ -36,8 +36,6 @@ public class DocumentsService {
     public void buildAndSaveNewDocumentEntity(Document document, Long caseReferenceNumber, boolean isDraft, boolean isStitchedDocument) {
         try {
 
-            log.info("Document name = {}, doc category = {}", document.getFilename(), document.getCategoryId());
-
             CaseDocumentType caseDocumentType = getCaseDocumentType(document.getCategoryId(), isStitchedDocument);
 
             documentsRepository.save(DocumentEntity.builder()

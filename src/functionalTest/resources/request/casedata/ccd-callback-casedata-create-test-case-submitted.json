@@ -37,7 +37,8 @@
           "document_url": "${json-unit.any-string}",
           "document_filename": "pdf.pdf",
           "document_binary_url": "http://dm-store.service.core-compute.internal/documents/f3335647-6277-40af-ba66-c09365c0776e/binary",
-          "category_id": "A"
+          "category_id": "A",
+          "upload_timestamp": ""
         }
       },
       "id": "1"
