@@ -56,8 +56,6 @@ public class DocumentsService {
 
     private CaseDocumentType getCaseDocumentType(String categoryId, boolean isStitchedDocument) {
 
-        log.info("cat id = {}", categoryId);
-
         if (isStitchedDocument) {
             return CaseDocumentType.BUNDLE;
         } else {
