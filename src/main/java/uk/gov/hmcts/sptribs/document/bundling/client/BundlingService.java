@@ -203,7 +203,7 @@ public class BundlingService {
     private Bundle buildBundle(LinkedHashMap<String, Object> objectLinkedHashMap, Long caseNumber) {
 
 
-        System.out.println(objectLinkedHashMap);
+        System.out.println("objectLinkedHashMap: " + objectLinkedHashMap);
 
         Document stitchedDocument = getStitchedDocument(objectLinkedHashMap, caseNumber);
 
@@ -242,11 +242,13 @@ public class BundlingService {
             return null;
         }
 
-        System.out.println("getstitcheddoc = :" + objectLinkedHashMap);
+        System.out.println("getstitcheddoc = :" + objectLinkedHashMap.get("id"));
+
+        System.out.println("STITCHEDDOC: " + objectLinkedHashMap.get(STITCHED_DOCUMENT));
 
         LinkedHashMap<String, Object> stitchedDocMap = (LinkedHashMap<String, Object>) objectLinkedHashMap.get(STITCHED_DOCUMENT);
 
-        System.out.println("stitchedDocMap: " + stitchedDocMap);
+        System.out.println("stitchedDocMap: " + stitchedDocMap.get("id"));
 
         return Document.builder()
             .url(MapUtils.getString(stitchedDocMap, DOCUMENT_URL, ""))
