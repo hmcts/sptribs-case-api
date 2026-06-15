@@ -6,33 +6,55 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.ResponseEntity;
 import uk.gov.hmcts.ccd.sdk.type.AddressGlobalUK;
+import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.sptribs.caseworker.model.ContactPartiesDocuments;
+import uk.gov.hmcts.sptribs.cdam.model.Document;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.ContactPreferenceType;
 import uk.gov.hmcts.sptribs.common.CommonConstants;
+import uk.gov.hmcts.sptribs.document.services.DocumentsService;
+import uk.gov.hmcts.sptribs.idam.IdamService;
 import uk.gov.hmcts.sptribs.notification.NotificationHelper;
 import uk.gov.hmcts.sptribs.notification.NotificationServiceCIC;
 import uk.gov.hmcts.sptribs.notification.TemplateName;
-import uk.gov.hmcts.sptribs.notification.dispatcher.ContactPartiesNotification;
 import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
+import uk.gov.hmcts.sptribs.services.cdam.CaseDocumentClientApi;
+import uk.gov.hmcts.sptribs.testutil.TestDataHelper;
 
 import java.util.HashMap;
+import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.TRIBUNAL_EMAIL_VALUE;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.TRIBUNAL_NAME_VALUE;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_AUTHORIZATION_TOKEN;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_SERVICE_AUTH_TOKEN;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getDynamicMultiSelectDocumentList;
 
 @ExtendWith(MockitoExtension.class)
 class ContactPartiesNotificationTest {
+    @Mock
+    private AuthTokenGenerator authTokenGenerator;
+
+    @Mock
+    private CaseDocumentClientApi caseDocumentClientApi;
+
+    @Mock
+    private DocumentsService documentsService;
+
+    @Mock
+    private IdamService idamService;
+
     @Mock
     private NotificationServiceCIC notificationService;
 
@@ -41,6 +63,8 @@ class ContactPartiesNotificationTest {
 
     @InjectMocks
     private ContactPartiesNotification contactPartiesNotification;
+
+    private static final UUID TEST_DOCUMENT_ID = UUID.randomUUID();
 
     @Test
     void shouldNotifySubjectOfContactPartiesWithEmailWithAttachments() {
@@ -55,7 +79,25 @@ class ContactPartiesNotificationTest {
 
         //When
         when(notificationHelper.buildEmailNotificationRequest(any(), anyBoolean(), anyMap(), anyMap(), any(TemplateName.class)))
-            .thenReturn(NotificationRequest.builder().build());
+            .thenReturn(NotificationRequest.builder().uploadedDocuments(getDocumentUploadMap()).build());
+        when(idamService.retrieveSystemUpdateUserDetails()).thenReturn(TestDataHelper.getUser());
+        when(authTokenGenerator.generate()).thenReturn(TEST_SERVICE_AUTH_TOKEN);
+
+        Document.DocumentLink testDocumentBinaryUrl = new Document.DocumentLink();
+        testDocumentBinaryUrl.href = "testDoc.pdf/binary";
+        Document.DocumentLink testDocumentUrl = new Document.DocumentLink();
+        testDocumentUrl.href = "testDoc.pdf";
+        Document.Links testDocumentLinks = new Document.Links();
+
+        testDocumentLinks.binary = testDocumentBinaryUrl;
+        testDocumentLinks.self = testDocumentUrl;
+
+        Document testDocument = new Document();
+        testDocument.links = testDocumentLinks;
+
+        when(caseDocumentClientApi.getDocument(TEST_AUTHORIZATION_TOKEN, TEST_SERVICE_AUTH_TOKEN, TEST_DOCUMENT_ID))
+            .thenReturn(ResponseEntity.ok(testDocument));
+
         contactPartiesNotification.sendToSubject(data, TEST_CASE_ID.toString());
 
         //Then
@@ -68,6 +110,7 @@ class ContactPartiesNotificationTest {
                 CommonConstants.CONTACT_PARTY_INFO, data.getCicCase().getNotifyPartyMessage(),
                 CommonConstants.CIC_CASE_SUBJECT_NAME, data.getCicCase().getFullName()),
             TemplateName.CONTACT_PARTIES_EMAIL);
+        verify(documentsService).setSentToApplicantViaContactPartiesToTrue(testDocumentBinaryUrl.href);
     }
 
     @Test
@@ -108,7 +151,25 @@ class ContactPartiesNotificationTest {
 
         //When
         when(notificationHelper.buildEmailNotificationRequest(any(), anyBoolean(), anyMap(), anyMap(), any(TemplateName.class)))
-            .thenReturn(NotificationRequest.builder().build());
+            .thenReturn(NotificationRequest.builder().uploadedDocuments(getDocumentUploadMap()).build());
+        when(idamService.retrieveSystemUpdateUserDetails()).thenReturn(TestDataHelper.getUser());
+        when(authTokenGenerator.generate()).thenReturn(TEST_SERVICE_AUTH_TOKEN);
+
+        Document.DocumentLink testDocumentBinaryUrl = new Document.DocumentLink();
+        testDocumentBinaryUrl.href = "testDoc.pdf/binary";
+        Document.DocumentLink testDocumentUrl = new Document.DocumentLink();
+        testDocumentUrl.href = "testDoc.pdf";
+        Document.Links testDocumentLinks = new Document.Links();
+
+        testDocumentLinks.binary = testDocumentBinaryUrl;
+        testDocumentLinks.self = testDocumentUrl;
+
+        Document testDocument = new Document();
+        testDocument.links = testDocumentLinks;
+
+        when(caseDocumentClientApi.getDocument(TEST_AUTHORIZATION_TOKEN, TEST_SERVICE_AUTH_TOKEN, TEST_DOCUMENT_ID))
+            .thenReturn(ResponseEntity.ok(testDocument));
+
         contactPartiesNotification.sendToApplicant(data, TEST_CASE_ID.toString());
 
         //Then
@@ -121,6 +182,7 @@ class ContactPartiesNotificationTest {
                 CommonConstants.CONTACT_PARTY_INFO, data.getCicCase().getNotifyPartyMessage(),
                 CommonConstants.CIC_CASE_SUBJECT_NAME, data.getCicCase().getFullName()),
             TemplateName.CONTACT_PARTIES_EMAIL);
+        verify(documentsService).setSentToApplicantViaContactPartiesToTrue(testDocumentBinaryUrl.href);
     }
 
     @Test
@@ -161,7 +223,25 @@ class ContactPartiesNotificationTest {
 
         //When
         when(notificationHelper.buildEmailNotificationRequest(any(), anyBoolean(), anyMap(), anyMap(), any(TemplateName.class)))
-            .thenReturn(NotificationRequest.builder().build());
+            .thenReturn(NotificationRequest.builder().uploadedDocuments(getDocumentUploadMap()).build());
+        when(idamService.retrieveSystemUpdateUserDetails()).thenReturn(TestDataHelper.getUser());
+        when(authTokenGenerator.generate()).thenReturn(TEST_SERVICE_AUTH_TOKEN);
+
+        Document.DocumentLink testDocumentBinaryUrl = new Document.DocumentLink();
+        testDocumentBinaryUrl.href = "testDoc.pdf/binary";
+        Document.DocumentLink testDocumentUrl = new Document.DocumentLink();
+        testDocumentUrl.href = "testDoc.pdf";
+        Document.Links testDocumentLinks = new Document.Links();
+
+        testDocumentLinks.binary = testDocumentBinaryUrl;
+        testDocumentLinks.self = testDocumentUrl;
+
+        Document testDocument = new Document();
+        testDocument.links = testDocumentLinks;
+
+        when(caseDocumentClientApi.getDocument(TEST_AUTHORIZATION_TOKEN, TEST_SERVICE_AUTH_TOKEN, TEST_DOCUMENT_ID))
+            .thenReturn(ResponseEntity.ok(testDocument));
+
         contactPartiesNotification.sendToRepresentative(data, TEST_CASE_ID.toString());
 
         //Then
@@ -174,6 +254,7 @@ class ContactPartiesNotificationTest {
                 CommonConstants.CONTACT_PARTY_INFO, data.getCicCase().getNotifyPartyMessage(),
                 CommonConstants.CIC_CASE_SUBJECT_NAME, data.getCicCase().getFullName()),
             TemplateName.CONTACT_PARTIES_EMAIL);
+        verify(documentsService).setSentToApplicantViaContactPartiesToTrue(testDocumentBinaryUrl.href);
     }
 
     @Test
@@ -236,7 +317,25 @@ class ContactPartiesNotificationTest {
 
         //When
         when(notificationHelper.buildEmailNotificationRequest(any(), anyBoolean(), anyMap(), anyMap(), any(TemplateName.class)))
-            .thenReturn(NotificationRequest.builder().build());
+            .thenReturn(NotificationRequest.builder().uploadedDocuments(getDocumentUploadMap()).build());
+        when(idamService.retrieveSystemUpdateUserDetails()).thenReturn(TestDataHelper.getUser());
+        when(authTokenGenerator.generate()).thenReturn(TEST_SERVICE_AUTH_TOKEN);
+
+        Document.DocumentLink testDocumentBinaryUrl = new Document.DocumentLink();
+        testDocumentBinaryUrl.href = "testDoc.pdf/binary";
+        Document.DocumentLink testDocumentUrl = new Document.DocumentLink();
+        testDocumentUrl.href = "testDoc.pdf";
+        Document.Links testDocumentLinks = new Document.Links();
+
+        testDocumentLinks.binary = testDocumentBinaryUrl;
+        testDocumentLinks.self = testDocumentUrl;
+
+        Document testDocument = new Document();
+        testDocument.links = testDocumentLinks;
+
+        when(caseDocumentClientApi.getDocument(TEST_AUTHORIZATION_TOKEN, TEST_SERVICE_AUTH_TOKEN, TEST_DOCUMENT_ID))
+            .thenReturn(ResponseEntity.ok(testDocument));
+
         contactPartiesNotification.sendToRespondent(data, TEST_CASE_ID.toString());
 
         //Then
@@ -249,6 +348,32 @@ class ContactPartiesNotificationTest {
                 CommonConstants.CONTACT_PARTY_INFO, data.getCicCase().getNotifyPartyMessage(),
                 CommonConstants.CIC_CASE_SUBJECT_NAME, data.getCicCase().getFullName()),
             TemplateName.CONTACT_PARTIES_EMAIL);
+        verifyNoInteractions(documentsService);
+    }
+
+    @Test
+    void shouldNotSetSentToApplicantViaContactPartiesToTrueWhenNotifyingViaContactPartiesWithNullAttachments() {
+        //Given
+        final CaseData data = getMockCaseData();
+        ContactPartiesDocuments contactPartiesDocuments = ContactPartiesDocuments.builder()
+            .documentList(getDynamicMultiSelectDocumentList()).build();
+        data.setContactPartiesDocuments(contactPartiesDocuments);
+        data.getCicCase().setRepresentativeFullName("respFullName");
+        data.getCicCase().setNotifyPartyMessage("message");
+
+        //When
+        when(notificationHelper.buildEmailNotificationRequest(any(), anyBoolean(), anyMap(), anyMap(), any(TemplateName.class)))
+            .thenReturn(NotificationRequest.builder().uploadedDocuments(getDocumentUploadMap()).build());
+        when(idamService.retrieveSystemUpdateUserDetails()).thenReturn(TestDataHelper.getUser());
+        when(authTokenGenerator.generate()).thenReturn(TEST_SERVICE_AUTH_TOKEN);
+
+        when(caseDocumentClientApi.getDocument(TEST_AUTHORIZATION_TOKEN, TEST_SERVICE_AUTH_TOKEN, TEST_DOCUMENT_ID))
+            .thenReturn(ResponseEntity.noContent().build());
+
+        contactPartiesNotification.sendToRespondent(data, TEST_CASE_ID.toString());
+
+        //Then
+        verifyNoInteractions(documentsService);
     }
 
     @Test
@@ -284,7 +409,25 @@ class ContactPartiesNotificationTest {
 
         //When
         when(notificationHelper.buildEmailNotificationRequest(any(), anyBoolean(), anyMap(), anyMap(), any(TemplateName.class)))
-            .thenReturn(NotificationRequest.builder().build());
+            .thenReturn(NotificationRequest.builder().uploadedDocuments(getDocumentUploadMap()).build());
+        when(idamService.retrieveSystemUpdateUserDetails()).thenReturn(TestDataHelper.getUser());
+        when(authTokenGenerator.generate()).thenReturn(TEST_SERVICE_AUTH_TOKEN);
+
+        Document.DocumentLink testDocumentBinaryUrl = new Document.DocumentLink();
+        testDocumentBinaryUrl.href = "testDoc.pdf/binary";
+        Document.DocumentLink testDocumentUrl = new Document.DocumentLink();
+        testDocumentUrl.href = "testDoc.pdf";
+        Document.Links testDocumentLinks = new Document.Links();
+
+        testDocumentLinks.binary = testDocumentBinaryUrl;
+        testDocumentLinks.self = testDocumentUrl;
+
+        Document testDocument = new Document();
+        testDocument.links = testDocumentLinks;
+
+        when(caseDocumentClientApi.getDocument(TEST_AUTHORIZATION_TOKEN, TEST_SERVICE_AUTH_TOKEN, TEST_DOCUMENT_ID))
+            .thenReturn(ResponseEntity.ok(testDocument));
+
         contactPartiesNotification.sendToTribunal(data, TEST_CASE_ID.toString());
 
         //Then
@@ -297,6 +440,7 @@ class ContactPartiesNotificationTest {
                 CommonConstants.CIC_CASE_TRIBUNAL_NAME, TRIBUNAL_NAME_VALUE,
                 CommonConstants.CONTACT_PARTY_INFO, data.getCicCase().getNotifyPartyMessage()),
             TemplateName.CONTACT_PARTIES_EMAIL);
+        verifyNoInteractions(documentsService);
     }
 
     private CaseData getMockCaseData() {
@@ -305,5 +449,19 @@ class ContactPartiesNotificationTest {
         return CaseData.builder()
             .cicCase(cicCase)
             .build();
+    }
+
+    private java.util.Map<String, String> getDocumentUploadMap() {
+        return java.util.Map.of(
+            "CaseDocument1", TEST_DOCUMENT_ID.toString(),
+            "CaseDocument2", "",
+            "CaseDocument3", "",
+            "CaseDocument4", "",
+            "CaseDocument5", "",
+            "DocumentAvailable1", "yes",
+            "DocumentAvailable2", "no",
+            "DocumentAvailable3", "no",
+            "DocumentAvailable4", "no",
+            "DocumentAvailable5", "no");
     }
 }

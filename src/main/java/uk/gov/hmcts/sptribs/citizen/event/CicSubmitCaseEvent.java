@@ -1,9 +1,9 @@
 package uk.gov.hmcts.sptribs.citizen.event;
 
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ObjectUtils;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
@@ -35,6 +35,7 @@ import uk.gov.hmcts.sptribs.common.config.AppsConfig;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.document.model.CitizenCICDocument;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
+import uk.gov.hmcts.sptribs.document.services.DocumentsService;
 import uk.gov.hmcts.sptribs.idam.IdamService;
 import uk.gov.hmcts.sptribs.util.AppsUtil;
 
@@ -49,6 +50,7 @@ import static java.lang.String.format;
 import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
 import static org.apache.commons.lang.StringUtils.isNotBlank;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
+import static uk.gov.hmcts.sptribs.caseworker.util.MessageUtil.handleDocumentException;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.DSS_Draft;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.DSS_Submitted;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.CITIZEN;
@@ -68,21 +70,14 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 @Component
 @Slf4j
 @Setter
+@RequiredArgsConstructor
 public class CicSubmitCaseEvent implements CCDConfig<CaseData, State, UserRole> {
 
-    private HttpServletRequest request;
-    private IdamService idamService;
-    private AppsConfig appsConfig;
-    private DssApplicationReceivedNotification dssApplicationReceivedNotification;
-
-    @Autowired
-    public CicSubmitCaseEvent(HttpServletRequest request, IdamService idamService, AppsConfig appsConfig,
-                              DssApplicationReceivedNotification dssApplicationReceivedNotification) {
-        this.request = request;
-        this.idamService = idamService;
-        this.appsConfig = appsConfig;
-        this.dssApplicationReceivedNotification = dssApplicationReceivedNotification;
-    }
+    private final HttpServletRequest request;
+    private final IdamService idamService;
+    private final AppsConfig appsConfig;
+    private final DssApplicationReceivedNotification dssApplicationReceivedNotification;
+    private final DocumentsService documentsService;
 
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
@@ -113,12 +108,14 @@ public class CicSubmitCaseEvent implements CCDConfig<CaseData, State, UserRole> 
                                                                        CaseDetails<CaseData, State> beforeDetails) {
         final CaseData data = details.getData();
         final DssCaseData dssData = details.getData().getDssCaseData();
-        final CaseData caseData = getCaseData(data, dssData);
+        List<String> errors = new ArrayList<>();
+        final CaseData caseData = getCaseData(data, dssData, errors);
         setDssMetaData(data);
         data.setNewBundleOrderEnabled(YesNo.YES);
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
+            .errors(errors)
             .state(State.DSS_Submitted)
             .build();
     }
@@ -185,7 +182,7 @@ public class CicSubmitCaseEvent implements CCDConfig<CaseData, State, UserRole> 
         }
     }
 
-    private CaseData getCaseData(final CaseData caseData, final DssCaseData dssCaseData) {
+    private CaseData getCaseData(final CaseData caseData, final DssCaseData dssCaseData, List<String> errors) {
         caseData.getCicCase().setCaseReceivedDate(LocalDate.now());
         CicCaseFieldsUtil.calculateAndSetIsCaseInTime(caseData);
         caseData.getCicCase().setFullName(dssCaseData.getSubjectFullName());
@@ -299,7 +296,20 @@ public class CicSubmitCaseEvent implements CCDConfig<CaseData, State, UserRole> 
             }
         }
 
-        caseData.getCicCase().setApplicantDocumentsUploaded(DocumentManagementUtil.buildListValues(docList));
+        List<ListValue<CaseworkerCICDocument>> applicantDocs = DocumentManagementUtil.buildListValues(docList);
+
+        caseData.getCicCase().setApplicantDocumentsUploaded(applicantDocs);
+        for (ListValue<CaseworkerCICDocument> document : applicantDocs) {
+            try {
+                documentsService.buildAndSaveNewDocumentEntity(
+                    document.getValue().getDocumentLink(),
+                    Long.parseLong(caseData.getHyphenatedCaseRef().replace("-", "")),
+                    false
+                );
+            } catch (RuntimeException e) {
+                errors.add(handleDocumentException(document.getValue().getDocumentLink(), e.getMessage()));
+            }
+        }
         dssCaseData.setTribunalFormDocuments(new ArrayList<>());
         dssCaseData.setSupportingDocuments(new ArrayList<>());
         dssCaseData.setOtherInfoDocuments(new ArrayList<>());

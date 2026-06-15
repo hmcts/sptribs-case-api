@@ -3,13 +3,11 @@ package uk.gov.hmcts.sptribs.citizen.event;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import jakarta.servlet.http.HttpServletRequest;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.ccd.sdk.ConfigBuilderImpl;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
@@ -30,6 +28,7 @@ import uk.gov.hmcts.sptribs.common.config.AppsConfig;
 import uk.gov.hmcts.sptribs.constants.CommonConstants;
 import uk.gov.hmcts.sptribs.document.model.CitizenCICDocument;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
+import uk.gov.hmcts.sptribs.document.services.DocumentsService;
 import uk.gov.hmcts.sptribs.idam.IdamService;
 import uk.gov.hmcts.sptribs.notification.exception.NotificationException;
 import uk.gov.hmcts.sptribs.testutil.TestDataHelper;
@@ -42,7 +41,11 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.argThat;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
@@ -53,6 +56,7 @@ import static uk.gov.hmcts.sptribs.testutil.TestConstants.CASE_DATA_CIC_ID;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.CASE_DATA_FILE_CIC;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_AUTHORIZATION_TOKEN;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID_HYPHENATED;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_FIRST_NAME;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_SOLICITOR_EMAIL;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_SOLICITOR_NAME;
@@ -84,12 +88,11 @@ class CicSubmitCaseEventTest {
     @Mock
     private IdamService idamService;
 
-    private AutoCloseable autoCloseableMocks;
+    @Mock
+    private DocumentsService documentsService;
 
     @BeforeEach
     public void setUp() {
-        autoCloseableMocks = MockitoAnnotations.openMocks(this);
-
         cicAppDetail = new AppsConfig.AppsDetails();
         cicAppDetail.setCaseType(CommonConstants.ST_CIC_CASE_TYPE);
         cicAppDetail.setJurisdiction(CommonConstants.ST_CIC_JURISDICTION);
@@ -98,11 +101,6 @@ class CicSubmitCaseEventTest {
         eventsConfig.setSubmitEvent(CITIZEN_CIC_SUBMIT_CASE);
 
         cicAppDetail.setEventIds(eventsConfig);
-    }
-
-    @AfterEach
-    public void tearDown() throws Exception {
-        autoCloseableMocks.close();
     }
 
     @Test
@@ -182,6 +180,7 @@ class CicSubmitCaseEventTest {
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
+        caseData.setHyphenatedCaseRef(TEST_CASE_ID_HYPHENATED);
         updatedCaseDetails.setData(caseData);
 
         when(request.getHeader(AUTHORIZATION)).thenReturn(TEST_AUTHORIZATION_TOKEN);
@@ -191,6 +190,10 @@ class CicSubmitCaseEventTest {
 
         final AboutToStartOrSubmitResponse<CaseData, State> response =
             cicSubmitCaseEvent.aboutToSubmit(updatedCaseDetails, beforeDetails);
+
+        verify(documentsService, times(4)).buildAndSaveNewDocumentEntity(
+            eq(genericTestDocument), eq(TEST_CASE_ID), eq(false)
+        );
 
         assertThat(response.getData().getCicCase().getApplicantDocumentsUploaded().getFirst().getValue().getDocumentEmailContent())
             .isEqualTo(genericTestDocumentRelevance1);
@@ -225,6 +228,7 @@ class CicSubmitCaseEventTest {
         final CaseData caseData = caseData();
         caseData.setCicCase(cicCase);
         caseData.setDssCaseData(dssCaseData);
+        caseData.setHyphenatedCaseRef(TEST_CASE_ID_HYPHENATED);
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
         final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
         updatedCaseDetails.setId(TEST_CASE_ID);
@@ -233,6 +237,10 @@ class CicSubmitCaseEventTest {
 
         final AboutToStartOrSubmitResponse<CaseData, State> response =
             cicSubmitCaseEvent.aboutToSubmit(updatedCaseDetails, beforeDetails);
+
+        verify(documentsService, times(3)).buildAndSaveNewDocumentEntity(
+            eq(dssDoc.getDocumentLink()), eq(TEST_CASE_ID), eq(false)
+        );
 
         assertThat(response).isNotNull();
         assertThat(response.getData().getDssCaseData().getOtherInfoDocuments()).isEmpty();
@@ -373,4 +381,136 @@ class CicSubmitCaseEventTest {
             .contains("# Application Received notification failed %n## Please resend the notification");
     }
 
+    @Test
+    void shouldStoreErrorsWhenBuildAndSaveNewDocumentEntityThrowsRuntimeException() {
+        final Document genericTestDocument = Document.builder().filename("test.pdf").build();
+
+        final CitizenCICDocument dssTribunalForm = new CitizenCICDocument();
+        dssTribunalForm.setDocumentLink(genericTestDocument);
+        final ListValue<CitizenCICDocument> tribunalFormDocListValue = new ListValue<>();
+        tribunalFormDocListValue.setValue(dssTribunalForm);
+
+        final DssCaseData dssCaseData = DssCaseData.builder()
+            .caseTypeOfApplication(CASE_DATA_CIC_ID)
+            .tribunalFormDocuments(List.of(tribunalFormDocListValue))
+            .subjectFullName(TEST_FIRST_NAME)
+            .representation(YesOrNo.YES)
+            .representationQualified(YesOrNo.YES)
+            .representativeEmailAddress(TEST_SOLICITOR_EMAIL)
+            .representativeFullName(TEST_SOLICITOR_NAME)
+            .build();
+
+        final CicCase cicCase = CicCase.builder().build();
+        final CaseData caseData = caseData();
+        caseData.setCicCase(cicCase);
+        caseData.setDssCaseData(dssCaseData);
+
+        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
+        updatedCaseDetails.setId(TEST_CASE_ID);
+        updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
+        caseData.setHyphenatedCaseRef(TEST_CASE_ID_HYPHENATED);
+        updatedCaseDetails.setData(caseData);
+
+        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+
+        doThrow(new RuntimeException("Error saving document entity to database"))
+            .when(documentsService).buildAndSaveNewDocumentEntity(any(), eq(TEST_CASE_ID), eq(false));
+
+        final AboutToStartOrSubmitResponse<CaseData, State> response =
+            cicSubmitCaseEvent.aboutToSubmit(updatedCaseDetails, beforeDetails);
+
+        assertThat(response.getErrors()).hasSize(1);
+        assertThat(response.getErrors()).contains("Error saving document with filename: " + genericTestDocument.getFilename());
+
+        verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
+            any(), eq(TEST_CASE_ID), eq(false)
+        );
+
+        genericTestDocument.setFilename(null);
+        dssTribunalForm.setDocumentLink(genericTestDocument);
+        tribunalFormDocListValue.setValue(dssTribunalForm);
+        dssCaseData.setTribunalFormDocuments(List.of(tribunalFormDocListValue));
+        updatedCaseDetails.setData(caseData);
+
+        final AboutToStartOrSubmitResponse<CaseData, State> nullFilenameResponse =
+            cicSubmitCaseEvent.aboutToSubmit(updatedCaseDetails, beforeDetails);
+
+        assertThat(nullFilenameResponse.getErrors()).hasSize(1);
+        assertThat(nullFilenameResponse.getErrors()).contains("Error saving document with no filename");
+
+        genericTestDocument.setFilename("");
+        dssTribunalForm.setDocumentLink(genericTestDocument);
+        tribunalFormDocListValue.setValue(dssTribunalForm);
+        dssCaseData.setTribunalFormDocuments(List.of(tribunalFormDocListValue));
+        updatedCaseDetails.setData(caseData);
+
+        final AboutToStartOrSubmitResponse<CaseData, State> emptyFilenameResponse =
+            cicSubmitCaseEvent.aboutToSubmit(updatedCaseDetails, beforeDetails);
+
+        assertThat(emptyFilenameResponse.getErrors()).hasSize(1);
+        assertThat(emptyFilenameResponse.getErrors()).contains("Error saving document with no filename");
+    }
+
+    @Test
+    void shouldStoreErrorsWhenBuildAndSaveNewDocumentEntityThrowsRuntimeExceptionForMultipleDocuments() {
+        final Document testHappyDocument = Document.builder().filename("happy_file.pdf").build();
+        final Document testUnhappyDocument = Document.builder().filename("unhappy_file.pdf").build();
+
+        final CitizenCICDocument dssTribunalForm = new CitizenCICDocument();
+        dssTribunalForm.setDocumentLink(testUnhappyDocument);
+        final ListValue<CitizenCICDocument> tribunalFormDocListValue = new ListValue<>();
+        tribunalFormDocListValue.setValue(dssTribunalForm);
+
+        final CitizenCICDocument dssSupportingDoc = new CitizenCICDocument();
+        dssSupportingDoc.setDocumentLink(testHappyDocument);
+        final ListValue<CitizenCICDocument> supportingDocListValue = new ListValue<>();
+        supportingDocListValue.setValue(dssSupportingDoc);
+
+        final CitizenCICDocument dssOtherInfoDoc = new CitizenCICDocument();
+        dssOtherInfoDoc.setDocumentLink(Document.builder().filename("").build());
+        final ListValue<CitizenCICDocument> otherInfoDocListValue = new ListValue<>();
+        otherInfoDocListValue.setValue(dssOtherInfoDoc);
+
+        final DssCaseData dssCaseData = DssCaseData.builder()
+            .caseTypeOfApplication(CASE_DATA_CIC_ID)
+            .tribunalFormDocuments(List.of(tribunalFormDocListValue))
+            .supportingDocuments(List.of(supportingDocListValue))
+            .otherInfoDocuments(List.of(otherInfoDocListValue))
+            .subjectFullName(TEST_FIRST_NAME)
+            .representation(YesOrNo.YES)
+            .representationQualified(YesOrNo.YES)
+            .representativeEmailAddress(TEST_SOLICITOR_EMAIL)
+            .representativeFullName(TEST_SOLICITOR_NAME)
+            .build();
+
+        final CicCase cicCase = CicCase.builder().build();
+        final CaseData caseData = caseData();
+        caseData.setCicCase(cicCase);
+        caseData.setDssCaseData(dssCaseData);
+
+        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
+        updatedCaseDetails.setId(TEST_CASE_ID);
+        updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
+        caseData.setHyphenatedCaseRef(TEST_CASE_ID_HYPHENATED);
+        updatedCaseDetails.setData(caseData);
+
+        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+
+        doThrow(new RuntimeException("Error saving document entity to database"))
+            .when(documentsService).buildAndSaveNewDocumentEntity(
+                argThat(doc -> "unhappy_file.pdf".equals(doc.getFilename())
+                    || "".equals(doc.getFilename())),
+                eq(TEST_CASE_ID), eq(false));
+
+        doNothing().when(documentsService).buildAndSaveNewDocumentEntity(
+            argThat(doc -> "happy_file.pdf".equals(doc.getFilename())),
+            eq(TEST_CASE_ID), eq(false));
+
+        final AboutToStartOrSubmitResponse<CaseData, State> response =
+            cicSubmitCaseEvent.aboutToSubmit(updatedCaseDetails, beforeDetails);
+
+        assertThat(response.getErrors()).hasSize(2);
+        assertThat(response.getErrors()).contains("Error saving document with filename: " + testUnhappyDocument.getFilename());
+        assertThat(response.getErrors()).contains("Error saving document with no filename");
+    }
 }

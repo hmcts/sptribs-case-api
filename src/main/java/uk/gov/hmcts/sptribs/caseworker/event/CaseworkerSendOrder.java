@@ -33,6 +33,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
+import uk.gov.hmcts.sptribs.document.services.DocumentsService;
 import uk.gov.hmcts.sptribs.notification.dispatcher.NewOrderIssuedNotification;
 
 import java.time.LocalDate;
@@ -48,6 +49,7 @@ import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.DOUBLE_HYPHEN;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.DRAFT;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.SENT;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventUtil.getRecipients;
+import static uk.gov.hmcts.sptribs.caseworker.util.MessageUtil.handleDocumentException;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseClosed;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
@@ -77,6 +79,8 @@ public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole>
 
     private final NewOrderIssuedNotification newOrderIssuedNotification;
     private final SendOrderOrderDueDates orderDueDates;
+    private final DocumentsService documentsService;
+
 
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
@@ -141,6 +145,8 @@ public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole>
             .orderSentDate(LocalDate.now())
             .reminderDay(caseData.getCicCase().getOrderReminderDays()).build();
 
+        List<String> errors = new ArrayList<>();
+
         if (caseData.getCicCase().getOrderIssuingType() != null && caseData.getCicCase().getDraftOrderDynamicList() != null
             && caseData.getCicCase().getOrderIssuingType().equals(OrderIssuingType.ISSUE_AND_SEND_AN_EXISTING_DRAFT)) {
 
@@ -154,7 +160,28 @@ public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole>
                     String fileName = selectedDraftOrder.getTemplateGeneratedDocument().getFilename().replace(DRAFT + COLON, "");
                     selectedDraftOrder.getTemplateGeneratedDocument().setFilename(SENT + COLON + fileName);
                     order.setDraftOrder(selectedDraftOrder);
+
+                    try {
+                        documentsService.setIsDraftToFalse(order.getDraftOrder().getTemplateGeneratedDocument().getBinaryUrl());
+                    } catch (RuntimeException e) {
+                        log.error("Document entity (from draft order) with filename {} could not be updated: {}",
+                            order.getDraftOrder().getTemplateGeneratedDocument().getFilename(), e.getMessage());
+                        errors.add("Draft order with filename " + order.getDraftOrder().getTemplateGeneratedDocument().getFilename()
+                            + " could not be updated to non-draft");
+                    }
                 }
+            }
+        } else if (caseData.getCicCase().getOrderIssuingType() != null
+            && caseData.getCicCase().getOrderIssuingType().equals(OrderIssuingType.UPLOAD_A_NEW_ORDER_FROM_YOUR_COMPUTER)) {
+
+            try {
+                documentsService.buildAndSaveNewDocumentEntity(
+                    caseData.getCicCase().getOrderTemplateIssued(),
+                    details.getId(),
+                    false
+                );
+            } catch (RuntimeException e) {
+                errors.add(handleDocumentException(caseData.getCicCase().getOrderTemplateIssued(), e.getMessage()));
             }
         }
 
@@ -201,6 +228,7 @@ public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole>
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
             .state(details.getState())
+            .errors(errors)
             .build();
     }
 

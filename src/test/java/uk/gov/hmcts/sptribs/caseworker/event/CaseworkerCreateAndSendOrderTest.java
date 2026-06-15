@@ -21,15 +21,14 @@ import uk.gov.hmcts.sptribs.caseworker.model.DateModel;
 import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderCIC;
 import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderContentCIC;
 import uk.gov.hmcts.sptribs.caseworker.model.Order;
-import uk.gov.hmcts.sptribs.caseworker.model.OrderIssuingType;
 import uk.gov.hmcts.sptribs.caseworker.util.CaseFlagsUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.OrderTemplate;
-import uk.gov.hmcts.sptribs.ciccase.model.PartiesCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.document.model.CICDocument;
+import uk.gov.hmcts.sptribs.document.services.DocumentsService;
 import uk.gov.hmcts.sptribs.notification.dispatcher.NewOrderIssuedNotification;
 import uk.gov.hmcts.sptribs.notification.exception.NotificationException;
 
@@ -45,6 +44,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -55,12 +55,16 @@ import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_CRE
 import static uk.gov.hmcts.sptribs.ciccase.model.ApplicantCIC.APPLICANT_CIC;
 import static uk.gov.hmcts.sptribs.ciccase.model.RepresentativeCIC.REPRESENTATIVE;
 import static uk.gov.hmcts.sptribs.ciccase.model.RespondentCIC.RESPONDENT;
-import static uk.gov.hmcts.sptribs.ciccase.model.SchemeCic.Year2012;
 import static uk.gov.hmcts.sptribs.ciccase.model.SubjectCIC.SUBJECT;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigBuilder;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.getEventsFrom;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.DATE_MODEL;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID_HYPHENATED;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.caseData;
+import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getApiCaseDetailsBefore;
+import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getCicCase;
+
 
 @ExtendWith(MockitoExtension.class)
 class CaseworkerCreateAndSendOrderTest {
@@ -80,9 +84,8 @@ class CaseworkerCreateAndSendOrderTest {
     @Mock
     private NewOrderIssuedNotification newOrderIssuedNotification;
 
-    private DateModel dateModel = DateModel.builder()
-        .dueDate(LocalDate.of(2026, 1, 2))
-        .build();
+    @Mock
+    private DocumentsService documentsService;
 
     @Test
     void shouldAddConfigurationToConfigBuilder() {
@@ -183,15 +186,25 @@ class CaseworkerCreateAndSendOrderTest {
 
         final CaseData caseData = CaseData.builder()
                 .draftOrderContentCIC(draftOrderContentCIC)
-                .orderDueDates(List.of(ListValue.<DateModel>builder().value(dateModel).build()))
+                .orderDueDates(List.of(ListValue.<DateModel>builder().value(DATE_MODEL).build()))
                 .cicCase(getCicCase(CREATE_AND_SEND_NEW_ORDER, YesOrNo.YES, "AAC", document))
                 .build();
 
         caseData.setDraftOrderContentCIC(draftOrderContentCIC);
 
         final CaseDetails<CaseData, State> details = new CaseDetails<>();
+        details.setId(TEST_CASE_ID);
+        caseData.setHyphenatedCaseRef(TEST_CASE_ID_HYPHENATED);
         details.setData(caseData);
-        final var response = caseworkerCreateAndSendOrder.aboutToSubmit(details, caseDetailsBefore());
+        final var response = caseworkerCreateAndSendOrder.aboutToSubmit(details, getApiCaseDetailsBefore());
+
+        verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
+            any(), eq(TEST_CASE_ID), eq(false)
+        );
+
+        verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
+            eq(document), eq(TEST_CASE_ID), eq(false)
+        );
 
         assertThat(response).isNotNull();
         assertThat(response.getData()).isNotNull();
@@ -211,13 +224,14 @@ class CaseworkerCreateAndSendOrderTest {
         Order order = orderList.getFirst().getValue();
         assertThat(order).isEqualTo(expectedOrder);
 
-        final var submittedResponse = caseworkerCreateAndSendOrder.submitted(details, caseDetailsBefore());
+        final var submittedResponse = caseworkerCreateAndSendOrder.submitted(details, getApiCaseDetailsBefore());
         assertThat(submittedResponse.getConfirmationHeader()).contains("# Order sent");
     }
 
     @Test
     void shouldSuccessfullyCreateAndSendNewNonAnonymisedOrder() {
         final CaseDetails<CaseData, State> details = new CaseDetails<>();
+        details.setId(TEST_CASE_ID);
 
         Document document = Document.builder()
                 .categoryId("TD")
@@ -234,12 +248,21 @@ class CaseworkerCreateAndSendOrderTest {
 
         final CaseData caseData = CaseData.builder().build();
         caseData.setCicCase(getCicCase(CREATE_AND_SEND_NEW_ORDER, YesOrNo.NO, null, document));
-        caseData.setOrderDueDates(List.of(ListValue.<DateModel>builder().value(dateModel).build()));
+        caseData.setOrderDueDates(List.of(ListValue.<DateModel>builder().value(DATE_MODEL).build()));
         caseData.setDraftOrderContentCIC(draftOrderContentCIC);
 
+        caseData.setHyphenatedCaseRef(TEST_CASE_ID_HYPHENATED);
         details.setData(caseData);
 
-        final var response = caseworkerCreateAndSendOrder.aboutToSubmit(details, caseDetailsBefore());
+        final var response = caseworkerCreateAndSendOrder.aboutToSubmit(details, getApiCaseDetailsBefore());
+
+        verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
+            any(), eq(TEST_CASE_ID), eq(false)
+        );
+
+        verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
+            eq(document), eq(TEST_CASE_ID), eq(false)
+        );
 
         assertThat(response).isNotNull();
         assertThat(response.getData()).isNotNull();
@@ -258,7 +281,7 @@ class CaseworkerCreateAndSendOrderTest {
         Order order = orderList.getFirst().getValue();
         assertThat(order).isEqualTo(expectedOrder);
 
-        final var submittedResponse = caseworkerCreateAndSendOrder.submitted(details, caseDetailsBefore());
+        final var submittedResponse = caseworkerCreateAndSendOrder.submitted(details, getApiCaseDetailsBefore());
         assertThat(submittedResponse.getConfirmationHeader()).contains("# Order sent");
     }
 
@@ -280,14 +303,24 @@ class CaseworkerCreateAndSendOrderTest {
         final CaseData caseData = CaseData.builder()
                 .draftOrderContentCIC(draftOrderContentCIC)
                 .cicCase(getCicCase(CREATE_AND_SEND_NEW_ORDER, YesOrNo.YES, "AAC", document))
-                .orderDueDates(List.of(ListValue.<DateModel>builder().value(dateModel).build()))
+                .orderDueDates(List.of(ListValue.<DateModel>builder().value(DATE_MODEL).build()))
                 .build();
 
         caseData.setDraftOrderContentCIC(draftOrderContentCIC);
 
         final CaseDetails<CaseData, State> details = new CaseDetails<>();
+        details.setId(TEST_CASE_ID);
+        caseData.setHyphenatedCaseRef(TEST_CASE_ID_HYPHENATED);
         details.setData(caseData);
-        final var response = caseworkerCreateAndSendOrder.aboutToSubmit(details, caseDetailsBefore());
+        final var response = caseworkerCreateAndSendOrder.aboutToSubmit(details, getApiCaseDetailsBefore());
+
+        verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
+            any(), eq(TEST_CASE_ID), eq(false)
+        );
+
+        verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
+            eq(document), eq(TEST_CASE_ID), eq(false)
+        );
 
         assertThat(response).isNotNull();
         assertThat(response.getData()).isNotNull();
@@ -314,7 +347,7 @@ class CaseworkerCreateAndSendOrderTest {
         Order order = orderList.getFirst().getValue();
         assertThat(order).isEqualTo(expectedOrder);
 
-        final var submittedResponse = caseworkerCreateAndSendOrder.submitted(details,caseDetailsBefore());
+        final var submittedResponse = caseworkerCreateAndSendOrder.submitted(details,getApiCaseDetailsBefore());
         assertThat(submittedResponse.getConfirmationHeader()).contains("# Order sent");
     }
 
@@ -344,14 +377,24 @@ class CaseworkerCreateAndSendOrderTest {
                 .caseFlags(flags)
                 .draftOrderContentCIC(draftOrderContentCIC)
                 .cicCase(getCicCase(CREATE_AND_SEND_NEW_ORDER, YesOrNo.YES, "AAC", document))
-                .orderDueDates(List.of(ListValue.<DateModel>builder().value(dateModel).build()))
+                .orderDueDates(List.of(ListValue.<DateModel>builder().value(DATE_MODEL).build()))
                 .build();
 
         caseData.setDraftOrderContentCIC(draftOrderContentCIC);
 
         final CaseDetails<CaseData, State> details = new CaseDetails<>();
+        details.setId(TEST_CASE_ID);
+        caseData.setHyphenatedCaseRef(TEST_CASE_ID_HYPHENATED);
         details.setData(caseData);
-        final var response = caseworkerCreateAndSendOrder.aboutToSubmit(details, caseDetailsBefore());
+        final var response = caseworkerCreateAndSendOrder.aboutToSubmit(details, getApiCaseDetailsBefore());
+
+        verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
+            any(), eq(TEST_CASE_ID), eq(false)
+        );
+
+        verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
+            eq(document), eq(TEST_CASE_ID), eq(false)
+        );
 
         assertThat(response).isNotNull();
         assertThat(response.getData()).isNotNull();
@@ -375,7 +418,7 @@ class CaseworkerCreateAndSendOrderTest {
         Order order = orderList.getFirst().getValue();
         assertThat(order).isEqualTo(expectedOrder);
 
-        final var submittedResponse = caseworkerCreateAndSendOrder.submitted(details,caseDetailsBefore());
+        final var submittedResponse = caseworkerCreateAndSendOrder.submitted(details,getApiCaseDetailsBefore());
         assertThat(submittedResponse.getConfirmationHeader()).contains("# Order sent");
     }
 
@@ -410,6 +453,7 @@ class CaseworkerCreateAndSendOrderTest {
     @Test
     void shouldSuccessfullySendUploadedOrder() {
         final CaseDetails<CaseData, State> details = new CaseDetails<>();
+        details.setId(TEST_CASE_ID);
 
         Document document = Document.builder()
             .filename("Order--[Test Name]--09-05-2024 09:04:04.pdf")
@@ -427,11 +471,20 @@ class CaseworkerCreateAndSendOrderTest {
         List<ListValue<CICDocument>> orderFile = List.of(ListValue.<CICDocument>builder().value(cicDocument).build());
         cicCase1.setOrderFile(orderFile);
         caseData.setCicCase(cicCase1);
-        caseData.setOrderDueDates(List.of(ListValue.<DateModel>builder().value(dateModel).build()));
+        caseData.setOrderDueDates(List.of(ListValue.<DateModel>builder().value(DATE_MODEL).build()));
 
+        caseData.setHyphenatedCaseRef(TEST_CASE_ID_HYPHENATED);
         details.setData(caseData);
 
-        final var response = caseworkerCreateAndSendOrder.aboutToSubmit(details, caseDetailsBefore());
+        final var response = caseworkerCreateAndSendOrder.aboutToSubmit(details, getApiCaseDetailsBefore());
+
+        verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
+            any(), eq(TEST_CASE_ID), eq(false)
+        );
+
+        verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
+            eq(document), eq(TEST_CASE_ID), eq(false)
+        );
 
         assertThat(response).isNotNull();
         assertThat(response.getData()).isNotNull();
@@ -448,7 +501,7 @@ class CaseworkerCreateAndSendOrderTest {
         assertThat(order).isEqualTo(expectedOrder);
         assertThat(order.getUploadedFile().getFirst().getValue().getDocumentLink().getCategoryId()).isEqualTo("TD");
 
-        final var submittedResponse = caseworkerCreateAndSendOrder.submitted(details, caseDetailsBefore());
+        final var submittedResponse = caseworkerCreateAndSendOrder.submitted(details, getApiCaseDetailsBefore());
         assertThat(submittedResponse.getConfirmationHeader()).contains("# Order sent");
     }
 
@@ -469,7 +522,7 @@ class CaseworkerCreateAndSendOrderTest {
                 .when(newOrderIssuedNotification)
                 .sendToSubject(caseData, hyphenatedCaseRef);
 
-        SubmittedCallbackResponse submittedResponse = caseworkerCreateAndSendOrder.submitted(caseDetails, caseDetailsBefore());
+        SubmittedCallbackResponse submittedResponse = caseworkerCreateAndSendOrder.submitted(caseDetails, getApiCaseDetailsBefore());
 
         assertThat(submittedResponse.getConfirmationHeader())
                 .isEqualTo("""
@@ -499,7 +552,7 @@ class CaseworkerCreateAndSendOrderTest {
                 .when(newOrderIssuedNotification)
                 .sendToRepresentative(caseData, hyphenatedCaseRef);
 
-        SubmittedCallbackResponse submittedResponse = caseworkerCreateAndSendOrder.submitted(caseDetails, caseDetailsBefore());
+        SubmittedCallbackResponse submittedResponse = caseworkerCreateAndSendOrder.submitted(caseDetails, getApiCaseDetailsBefore());
 
         assertThat(submittedResponse.getConfirmationHeader())
                 .isEqualTo("""
@@ -530,7 +583,7 @@ class CaseworkerCreateAndSendOrderTest {
                 .when(newOrderIssuedNotification)
                 .sendToRespondent(caseData, hyphenatedCaseRef);
 
-        SubmittedCallbackResponse submittedResponse = caseworkerCreateAndSendOrder.submitted(caseDetails, caseDetailsBefore());
+        SubmittedCallbackResponse submittedResponse = caseworkerCreateAndSendOrder.submitted(caseDetails, getApiCaseDetailsBefore());
 
         assertThat(submittedResponse.getConfirmationHeader())
                 .isEqualTo("""
@@ -560,7 +613,7 @@ class CaseworkerCreateAndSendOrderTest {
                 .when(newOrderIssuedNotification)
                 .sendToApplicant(caseData, hyphenatedCaseRef);
 
-        SubmittedCallbackResponse submittedResponse = caseworkerCreateAndSendOrder.submitted(caseDetails, caseDetailsBefore());
+        SubmittedCallbackResponse submittedResponse = caseworkerCreateAndSendOrder.submitted(caseDetails, getApiCaseDetailsBefore());
 
         assertThat(submittedResponse.getConfirmationHeader())
                 .isEqualTo("""
@@ -572,30 +625,106 @@ class CaseworkerCreateAndSendOrderTest {
         verify(newOrderIssuedNotification, times(1)).sendToApplicant(any(CaseData.class), anyString());
     }
 
-    private CaseDetails<CaseData, State> caseDetailsBefore() {
-        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
-        final CaseData caseData = CaseData.builder().build();
-        caseDetails.setData(caseData);
-        return caseDetails;
+    @Test
+    void shouldStoreErrorsWhenBuildAndSaveNewDocumentEntityThrowsRuntimeExceptionForNewOrder() {
+        DraftOrderContentCIC draftOrderContentCIC = DraftOrderContentCIC.builder()
+            .orderTemplate(OrderTemplate.CIC3_RULE_27)
+            .mainContent("Main order content sample")
+            .orderSignature("Supreme Judge Fudge")
+            .build();
+
+        Document document = Document.builder()
+            .categoryId("TD")
+            .filename("Order--[AAC]--09-05-2024 09:04:04.pdf")
+            .binaryUrl("url/documents/uuid/binary")
+            .url("url/documents/uuid")
+            .build();
+
+        final CaseData caseData = CaseData.builder()
+            .draftOrderContentCIC(draftOrderContentCIC)
+            .orderDueDates(List.of(ListValue.<DateModel>builder().value(DATE_MODEL).build()))
+            .cicCase(getCicCase(CREATE_AND_SEND_NEW_ORDER, YesOrNo.YES, "AAC", document))
+            .build();
+
+        caseData.setDraftOrderContentCIC(draftOrderContentCIC);
+
+        final CaseDetails<CaseData, State> details = new CaseDetails<>();
+        details.setId(TEST_CASE_ID);
+        caseData.setHyphenatedCaseRef(TEST_CASE_ID_HYPHENATED);
+        details.setData(caseData);
+
+        doThrow(new RuntimeException("Error saving document entity to database"))
+            .when(documentsService).buildAndSaveNewDocumentEntity(any(), eq(TEST_CASE_ID), eq(false));
+
+        final var newOrderResponse = caseworkerCreateAndSendOrder.aboutToSubmit(details, getApiCaseDetailsBefore());
+
+        assertThat(newOrderResponse.getErrors()).hasSize(1);
+        assertThat(newOrderResponse.getErrors()).contains("Error saving document with filename: " + document.getFilename());
+
+        verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
+            any(), eq(TEST_CASE_ID), eq(false)
+        );
     }
 
-    private static CicCase getCicCase(OrderIssuingType issueType,
-                                      YesOrNo isAnonymised,
-                                      String anonymisedName,
-                                      Document document) {
-        return CicCase.builder()
-            .orderIssuingType(issueType)
-            .anonymiseYesOrNo(isAnonymised)
-            .anonymisedAppellantName(anonymisedName)
-            .orderTemplateIssued(document)
-            .partiesCIC(Set.of(PartiesCIC.SUBJECT, PartiesCIC.REPRESENTATIVE))
-            .notifyPartySubject(Set.of(SUBJECT))
-            .notifyPartyRespondent(Set.of(RESPONDENT))
-            .notifyPartyRepresentative(Set.of(REPRESENTATIVE))
-            .notifyPartyApplicant(Set.of(APPLICANT_CIC))
-            .fullName("Test Name")
-            .schemeCic(Year2012)
+    @Test
+    void shouldStoreErrorsWhenBuildAndSaveNewDocumentEntityThrowsRuntimeExceptionForUploadedOrder() {
+        final CaseDetails<CaseData, State> details = new CaseDetails<>();
+        details.setId(TEST_CASE_ID);
+
+        Document document = Document.builder()
+            .filename("Order--[Test Name]--09-05-2024 09:04:04.pdf")
+            .binaryUrl("url/documents/uuid/binary")
+            .url("url/documents/uuid")
             .build();
+
+        CICDocument cicDocument = CICDocument.builder()
+            .documentLink(document)
+            .documentEmailContent("Some test content")
+            .build();
+
+        final CaseData caseData = CaseData.builder().build();
+        CicCase cicCase = getCicCase(UPLOAD_A_NEW_ORDER_FROM_YOUR_COMPUTER, YesOrNo.NO, null, null);
+        List<ListValue<CICDocument>> orderFile = List.of(ListValue.<CICDocument>builder().value(cicDocument).build());
+        cicCase.setOrderFile(orderFile);
+        caseData.setCicCase(cicCase);
+        caseData.setOrderDueDates(List.of(ListValue.<DateModel>builder().value(DATE_MODEL).build()));
+
+        caseData.setHyphenatedCaseRef(TEST_CASE_ID_HYPHENATED);
+        details.setData(caseData);
+
+        doThrow(new RuntimeException("Error saving document entity to database"))
+            .when(documentsService).buildAndSaveNewDocumentEntity(any(), eq(TEST_CASE_ID), eq(false));
+
+        final var response = caseworkerCreateAndSendOrder.aboutToSubmit(details, getApiCaseDetailsBefore());
+
+        assertThat(response.getErrors()).hasSize(1);
+        assertThat(response.getErrors()).contains("Error saving document with filename: " + document.getFilename());
+
+        verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
+            any(), eq(TEST_CASE_ID), eq(false)
+        );
+
+        cicDocument.getDocumentLink().setFilename(null);
+        cicCase = getCicCase(UPLOAD_A_NEW_ORDER_FROM_YOUR_COMPUTER, YesOrNo.NO, null, null);
+        cicCase.setOrderFile(List.of(ListValue.<CICDocument>builder().value(cicDocument).build()));
+        caseData.setCicCase(cicCase);
+        details.setData(caseData);
+
+        final var nullFilenameResponse = caseworkerCreateAndSendOrder.aboutToSubmit(details, getApiCaseDetailsBefore());
+
+        assertThat(nullFilenameResponse.getErrors()).hasSize(1);
+        assertThat(nullFilenameResponse.getErrors()).contains("Error saving document with no filename");
+
+        cicDocument.getDocumentLink().setFilename("");
+        cicCase = getCicCase(UPLOAD_A_NEW_ORDER_FROM_YOUR_COMPUTER, YesOrNo.NO, null, null);
+        cicCase.setOrderFile(List.of(ListValue.<CICDocument>builder().value(cicDocument).build()));
+        caseData.setCicCase(cicCase);
+        details.setData(caseData);
+
+        final var emptyFilenameResponse = caseworkerCreateAndSendOrder.aboutToSubmit(details, getApiCaseDetailsBefore());
+
+        assertThat(emptyFilenameResponse.getErrors()).hasSize(1);
+        assertThat(emptyFilenameResponse.getErrors()).contains("Error saving document with no filename");
     }
 
     private Order getExpectedOrder(DraftOrderCIC draftOrderCIC, List<ListValue<CICDocument>> uploadedFile) {

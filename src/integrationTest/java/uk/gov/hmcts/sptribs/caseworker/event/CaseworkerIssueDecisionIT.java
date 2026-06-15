@@ -22,6 +22,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.DecisionTemplate;
 import uk.gov.hmcts.sptribs.ciccase.model.LanguagePreference;
 import uk.gov.hmcts.sptribs.common.config.WebMvcConfig;
+import uk.gov.hmcts.sptribs.common.repositories.DocumentsRepository;
 import uk.gov.hmcts.sptribs.document.CaseDataDocumentService;
 import uk.gov.hmcts.sptribs.document.model.CICDocument;
 import uk.gov.hmcts.sptribs.idam.IdamService;
@@ -91,6 +92,9 @@ public class CaseworkerIssueDecisionIT {
     @MockitoBean
     private CaseDataDocumentService caseDataDocumentService;
 
+    @MockitoBean
+    private DocumentsRepository documentsRepository;
+
     @BeforeAll
     static void setUp() {
         IdamWireMock.start();
@@ -104,6 +108,7 @@ public class CaseworkerIssueDecisionIT {
     @Test
     void shouldClearDecisionSignatureInAboutToStart() throws Exception {
         final CaseData caseData = caseData();
+        caseData.setHyphenatedCaseRef(TEST_CASE_ID_HYPHENATED);
 
         String response = mockMvc.perform(post(ABOUT_TO_START_URL)
                 .contentType(APPLICATION_JSON)
@@ -202,6 +207,7 @@ public class CaseworkerIssueDecisionIT {
             .build();
 
         final CaseData caseData = CaseData.builder()
+            .hyphenatedCaseRef(TEST_CASE_ID_HYPHENATED)
             .caseIssueDecision(caseIssueDecision)
             .build();
 

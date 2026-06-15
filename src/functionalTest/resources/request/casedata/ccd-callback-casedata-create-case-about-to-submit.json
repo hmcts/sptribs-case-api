@@ -1,5 +1,4 @@
 {
-  "hyphenatedCaseRef": "1234-5678-9012-3456",
   "cicCaseCaseCategory": "Assessment",
   "cicCaseCaseSubcategory": "other",
   "cicCaseCaseReceivedDate": "2000-01-01",
@@ -29,18 +28,19 @@
   "cicCaseApplicantCIC": [
     "ApplicantCIC"
   ],
-  "cicCaseApplicantDocumentsUploaded": [
+  "cicCaseCaseDocumentsUpload": [
     {
       "value": {
-        "documentCategory": "ApplicationForm",
         "documentEmailContent": "Lorem ipsum",
+        "documentCategory": "ApplicationForm",
         "documentLink": {
-          "document_url": null,
-          "document_binary_url": null,
-          "document_filename": "pdf.pdf"
+          "document_url": "${json-unit.any-string}",
+          "document_filename": "pdf.pdf",
+          "document_binary_url": "http://dm-store.service.core-compute.internal/documents/f3335647-6277-40af-ba66-c09365c0776e/binary",
+          "category_id": "A"
         }
       },
-      "id": null
+      "id": "1"
     }
   ],
   "cicCaseSchemeCic": "Year2008",

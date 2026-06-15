@@ -23,6 +23,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.NotificationType;
 import uk.gov.hmcts.sptribs.common.config.EmailTemplatesConfigCIC;
 import uk.gov.hmcts.sptribs.common.repositories.CorrespondenceRepository;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
+import uk.gov.hmcts.sptribs.document.model.DocumentType;
 import uk.gov.hmcts.sptribs.idam.IdamService;
 import uk.gov.hmcts.sptribs.notification.exception.NotificationException;
 import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
@@ -466,6 +467,7 @@ public class NotificationServiceCIC {
             uploadedPDF.setBinaryUrl(uploadResponse.getDocuments().getFirst().links.binary.href);
             uploadedPDF.setFilename(correspondenceDocumentFilename);
             uploadedPDF.setUrl(uploadResponse.getDocuments().getFirst().links.self.href);
+            uploadedPDF.setCategoryId(DocumentType.CORRESPONDENCE.getCategory());
 
             return uploadedPDF;
         } catch (RestClientException e) {

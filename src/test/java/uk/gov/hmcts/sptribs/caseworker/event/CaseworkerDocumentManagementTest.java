@@ -3,11 +3,14 @@ package uk.gov.hmcts.sptribs.caseworker.event;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.ccd.sdk.ConfigBuilderImpl;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.Event;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
+import uk.gov.hmcts.ccd.sdk.type.Document;
+import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.event.page.UploadCaseDocuments;
 import uk.gov.hmcts.sptribs.caseworker.model.DocumentManagement;
@@ -16,13 +19,23 @@ import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.ciccase.model.access.Permissions;
+import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocumentUpload;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
+import uk.gov.hmcts.sptribs.document.services.DocumentsService;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.argThat;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_WA_CONFIG_USER;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigBuilder;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.getEventsFrom;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID_HYPHENATED;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.LOCAL_DATE_TIME;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.caseData;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getCaseworkerCICDocumentList;
@@ -37,6 +50,9 @@ public class CaseworkerDocumentManagementTest {
 
     @InjectMocks
     private UploadCaseDocuments uploadCaseDocuments;
+
+    @Mock
+    private DocumentsService documentsService;
 
     @Test
     void shouldAddPublishToCamundaWhenWAIsEnabled() {
@@ -91,6 +107,7 @@ public class CaseworkerDocumentManagementTest {
             .caseworkerCICDocumentUpload(getCaseworkerCICDocumentUploadList("file.pdf"))
             .build();
         caseData.setNewDocManagement(documentManagement);
+        caseData.setHyphenatedCaseRef(TEST_CASE_ID_HYPHENATED);
         beforeDetails.setData(caseData);
         updatedCaseDetails.setData(caseData);
         updatedCaseDetails.setState(State.CaseManagement);
@@ -112,6 +129,15 @@ public class CaseworkerDocumentManagementTest {
             .getCaseworkerCICDocument().getFirst().getValue().getDocumentLink().getFilename())
             .isEqualTo("file.pdf");
         assertThat(response.getData().getAllDocManagement().getCaseworkerCICDocument().getFirst().getValue().getDate()).isNotNull();
+
+        verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
+            any(), eq(TEST_CASE_ID), eq(false)
+        );
+        Document expectedDoc = getCaseworkerCICDocumentUploadList("file.pdf").getFirst().getValue().getDocumentLink();
+        expectedDoc.setCategoryId("L");
+        verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
+            eq(expectedDoc), eq(TEST_CASE_ID), eq(false)
+        );
     }
 
     @Test
@@ -133,6 +159,7 @@ public class CaseworkerDocumentManagementTest {
             .caseworkerCICDocumentUpload(getCaseworkerCICDocumentUploadList("file.pdf"))
             .build();
         caseData.setNewDocManagement(documentManagement);
+        caseData.setHyphenatedCaseRef(TEST_CASE_ID_HYPHENATED);
         beforeDetails.setData(caseData);
         updatedCaseDetails.setData(caseData);
         updatedCaseDetails.setState(State.CaseManagement);
@@ -145,6 +172,15 @@ public class CaseworkerDocumentManagementTest {
         assertThat(response.getData().getFurtherUploadedDocuments()).hasSize(1);
         assertThat(response.getData().getFurtherUploadedDocuments().getFirst().getValue().getDocumentLink().getFilename())
             .isEqualTo("file.pdf");
+
+        verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
+            any(), eq(TEST_CASE_ID), eq(false)
+        );
+        Document expectedDoc = getCaseworkerCICDocumentUploadList("file.pdf").getFirst().getValue().getDocumentLink();
+        expectedDoc.setCategoryId("L");
+        verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
+            eq(expectedDoc), eq(TEST_CASE_ID), eq(false)
+        );
     }
 
     @Test
@@ -160,6 +196,7 @@ public class CaseworkerDocumentManagementTest {
             .caseworkerCICDocumentUpload(getCaseworkerCICDocumentUploadList("new-file.pdf"))
             .build();
         caseData.setNewDocManagement(documentManagement);
+        caseData.setHyphenatedCaseRef(TEST_CASE_ID_HYPHENATED);
         beforeDetails.setData(caseData);
         updatedCaseDetails.setData(caseData);
         updatedCaseDetails.setState(State.CaseManagement);
@@ -174,6 +211,15 @@ public class CaseworkerDocumentManagementTest {
             .isEqualTo("existing.pdf");
         assertThat(response.getData().getFurtherUploadedDocuments().get(1).getValue().getDocumentLink().getFilename())
             .isEqualTo("new-file.pdf");
+
+        verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
+            any(), eq(TEST_CASE_ID), eq(false)
+        );
+        Document expectedDoc = getCaseworkerCICDocumentUploadList("new-file.pdf").getFirst().getValue().getDocumentLink();
+        expectedDoc.setCategoryId("L");
+        verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
+            eq(expectedDoc), eq(TEST_CASE_ID), eq(false)
+        );
     }
 
     @Test
@@ -186,6 +232,7 @@ public class CaseworkerDocumentManagementTest {
             .caseworkerCICDocumentUpload(getCaseworkerCICDocumentUploadList("file.pdf"))
             .build();
         caseData.setNewDocManagement(documentManagement);
+        caseData.setHyphenatedCaseRef(TEST_CASE_ID_HYPHENATED);
         beforeDetails.setData(caseData);
         updatedCaseDetails.setData(caseData);
         updatedCaseDetails.setState(State.CaseManagement);
@@ -196,5 +243,112 @@ public class CaseworkerDocumentManagementTest {
             caseworkerDocumentManagement.aboutToSubmit(updatedCaseDetails, beforeDetails);
 
         assertThat(response.getData().getFurtherUploadedDocuments()).isNull();
+
+        verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
+            any(), eq(TEST_CASE_ID), eq(false)
+        );
+        Document expectedDoc = getCaseworkerCICDocumentUploadList("file.pdf").getFirst().getValue().getDocumentLink();
+        expectedDoc.setCategoryId("L");
+        verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
+            eq(expectedDoc), eq(TEST_CASE_ID), eq(false)
+        );
+    }
+
+    @Test
+    void shouldStoreErrorsWhenBuildAndSaveNewDocumentEntityThrowsRuntimeException() {
+        final CaseData caseData = caseData();
+
+        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
+        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        DocumentManagement documentManagement = DocumentManagement.builder()
+            .caseworkerCICDocumentUpload(getCaseworkerCICDocumentUploadList("file.pdf"))
+            .build();
+        caseData.setNewDocManagement(documentManagement);
+        caseData.setHyphenatedCaseRef(TEST_CASE_ID_HYPHENATED);
+        beforeDetails.setData(caseData);
+        updatedCaseDetails.setData(caseData);
+        updatedCaseDetails.setState(State.CaseManagement);
+        updatedCaseDetails.setId(TEST_CASE_ID);
+        updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
+
+        doThrow(new RuntimeException("Error saving document entity to database"))
+            .when(documentsService).buildAndSaveNewDocumentEntity(any(), eq(TEST_CASE_ID), eq(false));
+
+        AboutToStartOrSubmitResponse<CaseData, State> response =
+            caseworkerDocumentManagement.aboutToSubmit(updatedCaseDetails, beforeDetails);
+
+        assertThat(response.getErrors()).hasSize(1);
+        assertThat(response.getErrors()).contains("Error saving document with filename: "
+            + caseData.getAllDocManagement().getCaseworkerCICDocument().getFirst().getValue().getDocumentLink().getFilename());
+
+        verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
+            any(), eq(TEST_CASE_ID), eq(false)
+        );
+
+        caseData.setNewDocManagement(DocumentManagement.builder()
+            .caseworkerCICDocumentUpload(getCaseworkerCICDocumentUploadList(""))
+            .build());
+        updatedCaseDetails.setData(caseData);
+
+        AboutToStartOrSubmitResponse<CaseData, State> emptyFilenameResponse =
+            caseworkerDocumentManagement.aboutToSubmit(updatedCaseDetails, beforeDetails);
+
+        assertThat(emptyFilenameResponse.getErrors()).hasSize(1);
+        assertThat(emptyFilenameResponse.getErrors()).contains("Error saving document with no filename");
+
+        caseData.setNewDocManagement(DocumentManagement.builder()
+            .caseworkerCICDocumentUpload(getCaseworkerCICDocumentUploadList(null))
+            .build());
+        updatedCaseDetails.setData(caseData);
+
+        AboutToStartOrSubmitResponse<CaseData, State> nullFilenameResponse =
+            caseworkerDocumentManagement.aboutToSubmit(updatedCaseDetails, beforeDetails);
+
+        assertThat(nullFilenameResponse.getErrors()).hasSize(1);
+        assertThat(nullFilenameResponse.getErrors()).contains("Error saving document with no filename");
+    }
+
+    @Test
+    void shouldStoreErrorsWhenBuildAndSaveNewDocumentEntityThrowsRuntimeExceptionForMultipleDocuments() {
+        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
+        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+
+        final CaseData caseData = caseData();
+        caseData.setHyphenatedCaseRef(TEST_CASE_ID_HYPHENATED);
+        updatedCaseDetails.setId(TEST_CASE_ID);
+
+        ListValue<CaseworkerCICDocumentUpload> testHappyDocument = getCaseworkerCICDocumentUploadList("happy_file.pdf").getFirst();
+        testHappyDocument.getValue().getDocumentLink().setUrl("http://example.com/happy_file.pdf");
+        testHappyDocument.getValue().getDocumentLink().setBinaryUrl("http://example.com/happy_file.pdf/binary");
+
+        ListValue<CaseworkerCICDocumentUpload> testUnhappyDocument =
+            getCaseworkerCICDocumentUploadList("unhappy_file.pdf").getFirst();
+
+        caseData.setNewDocManagement(DocumentManagement.builder()
+            .caseworkerCICDocumentUpload(getCaseworkerCICDocumentUploadList(""))
+            .build());
+        caseData.getNewDocManagement().getCaseworkerCICDocumentUpload()
+            .add(testHappyDocument);
+        caseData.getNewDocManagement().getCaseworkerCICDocumentUpload()
+            .add(testUnhappyDocument);
+        updatedCaseDetails.setData(caseData);
+
+        doThrow(new RuntimeException("Error saving document entity to database"))
+            .when(documentsService).buildAndSaveNewDocumentEntity(
+                argThat(doc -> "unhappy_file.pdf".equals(doc.getFilename())
+                    || "".equals(doc.getFilename())),
+                eq(TEST_CASE_ID), eq(false));
+
+        doNothing().when(documentsService).buildAndSaveNewDocumentEntity(
+            argThat(doc -> "happy_file.pdf".equals(doc.getFilename())),
+            eq(TEST_CASE_ID), eq(false));
+
+        AboutToStartOrSubmitResponse<CaseData, State> response =
+            caseworkerDocumentManagement.aboutToSubmit(updatedCaseDetails, beforeDetails);
+
+        assertThat(response.getErrors()).hasSize(2);
+        assertThat(response.getErrors()).contains("Error saving document with filename: "
+            + testUnhappyDocument.getValue().getDocumentLink().getFilename());
+        assertThat(response.getErrors()).contains("Error saving document with no filename");
     }
 }

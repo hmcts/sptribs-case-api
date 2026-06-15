@@ -23,13 +23,17 @@ import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.document.model.CICDocument;
+import uk.gov.hmcts.sptribs.document.services.DocumentsService;
 import uk.gov.hmcts.sptribs.notification.dispatcher.DecisionIssuedNotification;
 
 import java.time.Clock;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 import static java.lang.String.format;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_ISSUE_DECISION;
+import static uk.gov.hmcts.sptribs.caseworker.util.MessageUtil.handleDocumentException;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingOutcome;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_CASEWORKER;
@@ -57,6 +61,7 @@ public class CaseworkerIssueDecision implements CCDConfig<CaseData, State, UserR
     private final CcdPageConfiguration issueDecisionFooter;
     private final DecisionIssuedNotification decisionIssuedNotification;
     private final Clock clock;
+    private final DocumentsService documentsService;
 
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
@@ -101,15 +106,27 @@ public class CaseworkerIssueDecision implements CCDConfig<CaseData, State, UserR
         final CaseData caseData = details.getData();
         final CICDocument decisionDocument = caseData.getCaseIssueDecision().getDecisionDocument();
 
+        List<String> errors = new ArrayList<>();
+
         if (decisionDocument != null && decisionDocument.getDocumentLink() != null) {
             decisionDocument.getDocumentLink().setCategoryId("TD");
+            try {
+                documentsService.buildAndSaveNewDocumentEntity(
+                    decisionDocument.getDocumentLink(),
+                    details.getId(),
+                    false
+                );
+            } catch (RuntimeException e) {
+                errors.add(handleDocumentException(decisionDocument.getDocumentLink(), e.getMessage()));
+            }
         }
 
         caseData.getCaseIssueDecision().setDecisionDate(LocalDate.now(this.clock));
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
-            .state(CaseManagement)//or AwaitingHearing
+            .state(CaseManagement)
+            .errors(errors)
             .build();
     }
 

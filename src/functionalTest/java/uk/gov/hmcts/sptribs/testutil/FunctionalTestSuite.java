@@ -4,8 +4,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import feign.FeignException;
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
-import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.TestInstance;
 import org.slf4j.Logger;
@@ -52,6 +52,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_CREATE_CASE;
 import static uk.gov.hmcts.sptribs.common.config.ControllerConstants.SERVICE_AUTHORIZATION;
 import static uk.gov.hmcts.sptribs.controllers.model.DssCaseDataRequest.convertDssCaseDataToRequest;
+import static uk.gov.hmcts.sptribs.testutil.FunctionalTestConstants.DOC_TABLE_REFERENCE_ARRAY;
 
 @ActiveProfiles("functional")
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -92,6 +93,12 @@ public abstract class FunctionalTestSuite {
 
     @Autowired
     protected FunctionalTestDataManager functionalTestDataManager;
+
+    @Autowired
+    protected CaseCorrespondencesFTDataManager caseCorrespondencesFTDataManager;
+
+    @Autowired
+    protected CaseDocumentsFTDataManager caseDocumentsFTDataManager;
 
     protected static final String EVENT_PARAM = "event";
     protected static final String UPDATE = "UPDATE";
@@ -158,7 +165,7 @@ public abstract class FunctionalTestSuite {
 
     private Response triggerCallback(Map<String, Object> caseData, String eventId, String url, boolean createCase)
         throws IOException {
-        if (createCase && TestConstants.SUBMITTED_URL.equals(url)) {
+        if (createCase && (TestConstants.SUBMITTED_URL.equals(url) || TestConstants.ABOUT_TO_SUBMIT_URL.equals(url))) {
             return triggerCallback(caseData, eventId, url, createPersistedCaseReference(caseData));
         }
 
@@ -288,15 +295,6 @@ public abstract class FunctionalTestSuite {
         return triggerCallback(caseData, eventId, url, false);
     }
 
-    protected List<CaseDetails> searchForCasesWithQuery(BoolQueryBuilder query) {
-        return searchService.searchForAllCasesWithQuery(
-            query,
-            idamService.retrieveSystemUpdateUserDetails(),
-            serviceAuthenticationGenerator.generateCcdDataToken(),
-            State.Draft
-        );
-    }
-
     protected CaseData getCaseData(Map<String, Object> data) {
         return objectMapper.convertValue(data, CaseData.class);
     }
@@ -360,13 +358,6 @@ public abstract class FunctionalTestSuite {
             .subjectEmailAddress("test@email.com")
             .subjectContactNumber("07123412345")
             .caseTypeOfApplication("CIC")
-            .build();
-    }
-
-    protected DssCaseData getDssCaseDataUpdated() {
-        return DssCaseData.builder()
-            .caseTypeOfApplication("CIC")
-            .additionalInformation("some additional info")
             .build();
     }
 
@@ -494,12 +485,17 @@ public abstract class FunctionalTestSuite {
     }
 
 
-    @AfterAll
+    @AfterEach
     void tearDownDataManager() throws SQLException {
 
         for (long reference : functionalTestDataManager.getTestReferences()) {
             functionalTestDataManager.clearDown(reference);
         }
+        functionalTestDataManager.deleteCaseDocConstants(DOC_TABLE_REFERENCE_ARRAY);
+    }
+
+    @AfterAll
+    void closeDBConnection() {
         functionalTestDataManager.closeAll();
     }
 }

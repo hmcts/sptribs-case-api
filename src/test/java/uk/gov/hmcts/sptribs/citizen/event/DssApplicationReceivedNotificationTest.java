@@ -141,6 +141,7 @@ class DssApplicationReceivedNotificationTest {
         final DssCaseData dssCaseData = getMockDssCaseData();
         dssCaseData.setRepresentativeFullName("Rep Full Name");
         dssCaseData.setRepresentativeEmailAddress("rep@outlook.com");
+        dssCaseData.setLanguagePreference(ENGLISH);
         final CaseData caseData = CaseData.builder().dssCaseData(dssCaseData).editCicaCaseDetails(CICA_CASE_DETAILS).build();
         final NotificationResponse notificationResponse = getMockNotificationResponse();
 
@@ -170,6 +171,7 @@ class DssApplicationReceivedNotificationTest {
         final DssCaseData dssCaseData = getMockDssCaseData();
         dssCaseData.setRepresentativeFullName("Rep Full Name");
         dssCaseData.setRepresentativeEmailAddress("rep@outlook.com");
+        dssCaseData.setLanguagePreference(ENGLISH);
         final CaseData caseData = CaseData.builder().dssCaseData(dssCaseData).build();
         final NotificationResponse notificationResponse = getMockNotificationResponse();
 

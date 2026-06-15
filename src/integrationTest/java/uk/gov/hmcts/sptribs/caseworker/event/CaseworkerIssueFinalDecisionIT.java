@@ -23,6 +23,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.DecisionTemplate;
 import uk.gov.hmcts.sptribs.ciccase.model.LanguagePreference;
 import uk.gov.hmcts.sptribs.common.config.WebMvcConfig;
+import uk.gov.hmcts.sptribs.common.repositories.DocumentsRepository;
 import uk.gov.hmcts.sptribs.document.CaseDataDocumentService;
 import uk.gov.hmcts.sptribs.document.model.CICDocument;
 import uk.gov.hmcts.sptribs.idam.IdamService;
@@ -95,6 +96,9 @@ public class CaseworkerIssueFinalDecisionIT {
 
     @MockitoBean
     private NotificationServiceCIC notificationServiceCIC;
+
+    @MockitoBean
+    private DocumentsRepository documentsRepository;
 
     @BeforeAll
     static void setUp() {
@@ -238,6 +242,7 @@ public class CaseworkerIssueFinalDecisionIT {
 
         final CaseData caseData = CaseData.builder()
             .caseIssueFinalDecision(caseIssueFinalDecision)
+            .hyphenatedCaseRef(TEST_CASE_ID_HYPHENATED)
             .build();
 
         MvcResult result = mockMvc.perform(MockMvcRequestBuilders.post(ABOUT_TO_SUBMIT_URL)

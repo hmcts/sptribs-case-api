@@ -28,7 +28,9 @@ import uk.gov.hmcts.sptribs.document.bundling.model.BundleFolder;
 import uk.gov.hmcts.sptribs.document.bundling.model.BundlePaginationStyle;
 import uk.gov.hmcts.sptribs.document.bundling.model.Callback;
 import uk.gov.hmcts.sptribs.document.bundling.model.MultiBundleConfig;
+import uk.gov.hmcts.sptribs.document.model.DocumentType;
 import uk.gov.hmcts.sptribs.document.model.PageNumberFormat;
+import uk.gov.hmcts.sptribs.document.services.DocumentsService;
 
 import java.time.Clock;
 import java.time.Instant;
@@ -42,8 +44,11 @@ import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CREATE_BUNDLE;
@@ -107,6 +112,9 @@ public class BundlingServiceTest {
     @Mock
     private Clock clock;
 
+    @Mock
+    private DocumentsService documentsService;
+
     private CaseData caseData;
 
     private CaseDetails<CaseData, State> updatedCaseDetails;
@@ -157,15 +165,26 @@ public class BundlingServiceTest {
 
         final Callback callback = new Callback(updatedCaseDetails, beforeCaseDetails, CREATE_BUNDLE, true);
         final BundleCallback bundleCallback = new BundleCallback(callback);
-        final List<Bundle> result = bundlingService.createBundle(bundleCallback);
+        final List<Bundle> result = bundlingService.createBundle(bundleCallback, TEST_CASE_ID);
 
         verify(bundlingClient).createBundle(any(), any(), any());
+
+        if (expectedBundle.getStitchedDocument() != null) {
+            verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
+                any(), eq(TEST_CASE_ID), eq(false)
+            );
+
+            verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
+                eq(expectedBundle.getStitchedDocument()), eq(TEST_CASE_ID), eq(false)
+            );
+        }
+
         assertThat(result).hasSize(1);
-        assertThat(result.get(0)).isNotNull();
-        assertThat(result.get(0)).isEqualTo(expectedBundle);
-        assertThat(result.get(0).getDocuments()).isEqualTo(expectedBundle.getDocuments());
-        assertThat(result.get(0).getFolders()).isEqualTo(expectedBundle.getFolders());
-        assertThat(result.get(0).getStitchedDocument()).isEqualTo(expectedBundle.getStitchedDocument());
+        assertThat(result.getFirst()).isNotNull();
+        assertThat(result.getFirst()).isEqualTo(expectedBundle);
+        assertThat(result.getFirst().getDocuments()).isEqualTo(expectedBundle.getDocuments());
+        assertThat(result.getFirst().getFolders()).isEqualTo(expectedBundle.getFolders());
+        assertThat(result.getFirst().getStitchedDocument()).isEqualTo(expectedBundle.getStitchedDocument());
     }
 
     @Test
@@ -178,9 +197,10 @@ public class BundlingServiceTest {
         final Callback callback = new Callback(updatedCaseDetails, beforeCaseDetails, CREATE_BUNDLE, true);
         final BundleCallback bundleCallback = new BundleCallback(callback);
 
-        final List<Bundle> result = bundlingService.createBundle(bundleCallback);
+        final List<Bundle> result = bundlingService.createBundle(bundleCallback, TEST_CASE_ID);
 
         verify(bundlingClient).createBundle(any(), any(), any());
+        verifyNoInteractions(documentsService);
         assertThat(result).isNull();
     }
 
@@ -189,8 +209,8 @@ public class BundlingServiceTest {
         final List<MultiBundleConfig> result = bundlingService.getMultiBundleConfigs();
 
         assertThat(result).hasSize(1);
-        assertThat(result.get(0)).isNotNull();
-        assertThat(result.get(0).getValue()).isEqualTo(BUNDLE_FILE_NAME);
+        assertThat(result.getFirst()).isNotNull();
+        assertThat(result.getFirst().getValue()).isEqualTo(BUNDLE_FILE_NAME);
     }
 
     @Test
@@ -224,10 +244,29 @@ public class BundlingServiceTest {
         final Callback callback = new Callback(updatedCaseDetails, beforeCaseDetails, CREATE_BUNDLE, true);
         final BundleCallback bundleCallback = new BundleCallback(callback);
 
-        final List<Bundle> result = bundlingService.createBundle(bundleCallback);
+        final List<Bundle> result = bundlingService.createBundle(bundleCallback, TEST_CASE_ID);
         final List<ListValue<Bundle>> resultList = bundlingService.buildBundleListValues(result);
 
         verify(bundlingClient).createBundle(any(), any(), any());
+
+        Document expectedStitchedBundle = Document.builder()
+            .url("http://url/documents/id")
+            .filename("test.pdf")
+            .binaryUrl("http://url/documents/id")
+            .categoryId(DocumentType.BUNDLE.getCategory())
+            .build();
+
+        int numberOfStitchedDocuments = 0;
+        for (Bundle expectedBundle : expectedBundles) {
+            if (expectedBundle.getStitchedDocument() != null) {
+                numberOfStitchedDocuments++;
+            }
+        }
+
+        verify(documentsService, times(numberOfStitchedDocuments)).buildAndSaveNewDocumentEntity(
+            eq(expectedStitchedBundle), eq(TEST_CASE_ID), eq(false)
+        );
+
         assertThat(result).hasSize(expectedBundles.size()).containsAll(expectedBundles);
         assertThat(resultList.stream().map(ListValue::getValue).toList()).containsAll(expectedBundles);
     }
@@ -247,10 +286,11 @@ public class BundlingServiceTest {
         final Callback callback = new Callback(updatedCaseDetails, beforeCaseDetails, CREATE_BUNDLE, true);
         final BundleCallback bundleCallback = new BundleCallback(callback);
 
-        final List<Bundle> result = bundlingService.createBundle(bundleCallback);
+        final List<Bundle> result = bundlingService.createBundle(bundleCallback, TEST_CASE_ID);
         final List<ListValue<Bundle>> resultList = bundlingService.buildBundleListValues(result);
 
         verify(bundlingClient).createBundle(any(), any(), any());
+        verifyNoInteractions(documentsService);
         assertThat(result).isEmpty();
         assertThat(resultList).isNull();
     }
@@ -259,6 +299,7 @@ public class BundlingServiceTest {
     void shouldReturnNullWhenNoBundleFolders() {
         final List<BundleFolder> bundleFolderList = Collections.emptyList();
         final List<ListValue<BundleFolder>> resultList = bundlingService.buildBundleFolderListValues(bundleFolderList);
+        verifyNoInteractions(documentsService);
         assertThat(resultList).isNull();
     }
 
@@ -266,6 +307,7 @@ public class BundlingServiceTest {
     void shouldReturnNullWhenNoBundleDocuments() {
         final List<BundleDocument> bundleDocumentList = Collections.emptyList();
         final List<ListValue<BundleDocument>> resultList = bundlingService.buildBundleDocumentListValues(bundleDocumentList);
+        verifyNoInteractions(documentsService);
         assertThat(resultList).isNull();
     }
 
@@ -382,6 +424,7 @@ public class BundlingServiceTest {
             .url("http://url/documents/id")
             .filename("test.pdf")
             .binaryUrl("http://url/documents/id")
+            .categoryId(DocumentType.BUNDLE.getCategory())
             .build();
 
         BUNDLE_NULL_FOLDER_DOCUMENT_NULL_DOCUMENTS =

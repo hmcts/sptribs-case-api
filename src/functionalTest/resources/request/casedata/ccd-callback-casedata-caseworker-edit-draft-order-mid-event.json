@@ -1,8 +1,8 @@
 {
   "cicCaseOrderTemplateIssued": {
-    "document_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/ef6695ae-9358-41dd-bc0d-5176a34057c9",
+    "document_url": "http://dm-store.service.core-compute.internal/documents/ef6695ae-9358-41dd-bc0d-5176a34057c9",
     "document_filename": "DRAFT :Order--[Subject AutoTesting]--09-05-2024 09:51:56.pdf",
-    "document_binary_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/ef6695ae-9358-41dd-bc0d-5176a34057c9/binary",
+    "document_binary_url": "http://dm-store.service.core-compute.internal/documents/ef6695ae-9358-41dd-bc0d-5176a34057c9/binary",
     "category_id": "TD"
   },
   "cicCaseCompensationClaimLinkCIC": "Yes",
@@ -35,9 +35,9 @@
     {
       "value": {
         "templateGeneratedDocument": {
-          "document_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/6bcdb209-ba65-4f31-a12a-5abbdf250fb6",
+          "document_url": "http://dm-store.service.core-compute.internal/documents/6bcdb209-ba65-4f31-a12a-5abbdf250fb6",
           "document_filename": "DRAFT :Order--[Subject AutoTesting]--09-05-2024 09:04:04.pdf",
-          "document_binary_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/6bcdb209-ba65-4f31-a12a-5abbdf250fb6/binary",
+          "document_binary_url": "http://dm-store.service.core-compute.internal/documents/6bcdb209-ba65-4f31-a12a-5abbdf250fb6/binary",
           "category_id": "TD"
         },
         "orderContentOrderTemplate": "CIC3_Rule_27",

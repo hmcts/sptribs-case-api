@@ -39,6 +39,7 @@ import uk.gov.hmcts.sptribs.common.event.page.CreateNewOrder;
 import uk.gov.hmcts.sptribs.common.event.page.EditNewOrderContentPage;
 import uk.gov.hmcts.sptribs.common.event.page.PreviewDraftOrder;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
+import uk.gov.hmcts.sptribs.document.services.DocumentsService;
 import uk.gov.hmcts.sptribs.notification.dispatcher.NewOrderIssuedNotification;
 
 import java.time.LocalDate;
@@ -53,6 +54,7 @@ import static uk.gov.hmcts.sptribs.caseworker.model.OrderIssuingType.CREATE_AND_
 import static uk.gov.hmcts.sptribs.caseworker.model.OrderIssuingType.UPLOAD_A_NEW_ORDER_FROM_YOUR_COMPUTER;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_CREATE_AND_SEND_ORDER;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventUtil.getRecipients;
+import static uk.gov.hmcts.sptribs.caseworker.util.MessageUtil.handleDocumentException;
 import static uk.gov.hmcts.sptribs.caseworker.util.SendOrderUtil.updateCicCaseOrderList;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseClosed;
@@ -87,6 +89,8 @@ public class CaseworkerCreateAndSendOrder implements CCDConfig<CaseData, State, 
     private final DraftOrderFooter draftOrderFooter;
     private final NewOrderIssuedNotification newOrderIssuedNotification;
     private final SendOrderOrderDueDates orderDueDates;
+    private final DocumentsService documentsService;
+
 
     @Override
     public void configure(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
@@ -148,6 +152,9 @@ public class CaseworkerCreateAndSendOrder implements CCDConfig<CaseData, State, 
         final CaseData caseData = details.getData();
 
         Order.OrderBuilder orderBuilder = Order.builder();
+
+        List<String> errors = new ArrayList<>();
+
         if (caseData.getCicCase().getOrderIssuingType().equals(CREATE_AND_SEND_NEW_ORDER)) {
             DraftOrderCIC draftOrderCIC = DraftOrderCIC.builder()
                 .draftOrderContentCIC(caseData.getDraftOrderContentCIC())
@@ -155,6 +162,16 @@ public class CaseworkerCreateAndSendOrder implements CCDConfig<CaseData, State, 
                 .build();
 
             orderBuilder.draftOrder(draftOrderCIC);
+
+            try {
+                documentsService.buildAndSaveNewDocumentEntity(
+                    draftOrderCIC.getTemplateGeneratedDocument(),
+                    details.getId(),
+                    false
+                );
+            } catch (RuntimeException e) {
+                errors.add(handleDocumentException(draftOrderCIC.getTemplateGeneratedDocument(), e.getMessage()));
+            }
 
             caseData.setDraftOrderContentCIC(new DraftOrderContentCIC());
             caseData.getCicCase().setOrderTemplateIssued(null);
@@ -165,6 +182,17 @@ public class CaseworkerCreateAndSendOrder implements CCDConfig<CaseData, State, 
                 updateCategoryToDocument(caseData.getCicCase().getOrderFile(), DocumentType.TRIBUNAL_DIRECTION.getCategory());
             }
             orderBuilder.uploadedFile(caseData.getCicCase().getOrderFile());
+
+            try {
+                documentsService.buildAndSaveNewDocumentEntity(
+                    caseData.getCicCase().getOrderFile().getFirst().getValue().getDocumentLink(),
+                    details.getId(),
+                    false
+                );
+            } catch (RuntimeException e) {
+                errors.add(handleDocumentException(caseData.getCicCase()
+                    .getOrderFile().getFirst().getValue().getDocumentLink(), e.getMessage()));
+            }
         }
 
         final Order order = orderBuilder
@@ -190,6 +218,7 @@ public class CaseworkerCreateAndSendOrder implements CCDConfig<CaseData, State, 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
             .state(details.getState())
+            .errors(errors)
             .build();
     }
 
