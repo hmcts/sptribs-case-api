@@ -178,6 +178,7 @@ public class RespondentContactPartiesFT extends FunctionalTestSuite {
 
     @Test
     public void shouldSuccessfullySendEmailNotificationsInSubmittedEvent() throws Exception {
+        //Add a test here when a doc gets updated!
         final Map<String, Object> caseData = caseData(SUBMITTED_REQUEST);
 
         final Response response = triggerCallback(
