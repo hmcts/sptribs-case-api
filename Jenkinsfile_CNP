@@ -298,7 +298,8 @@ withPipeline(type, product, component) {
       stage('UI Tests') {
           build job: 'HMCTS_j_to_z_Nightly/sptribs-e2etests/master',
                 parameters: [
-                    string(name: 'SPTRIBS_CASEAPI_URL', value: "https://xui-sptribs-case-api-pr-${CHANGE_ID}.preview.platform.hmcts.net")
+                    string(name: 'SPTRIBS_CASEAPI_URL', value: "https://xui-sptribs-case-api-pr-${CHANGE_ID}.preview.platform.hmcts.net"),
+                    booleanParam(name: 'runContinuousIntegrationTests', value: true)
                 ],
                 wait: true,
                 propagate: true
