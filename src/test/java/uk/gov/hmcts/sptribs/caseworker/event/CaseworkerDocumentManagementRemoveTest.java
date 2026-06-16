@@ -3,6 +3,7 @@ package uk.gov.hmcts.sptribs.caseworker.event;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.ccd.sdk.ConfigBuilderImpl;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
@@ -24,6 +25,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.document.model.CICDocument;
+import uk.gov.hmcts.sptribs.document.service.DocumentsService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -47,6 +49,9 @@ public class CaseworkerDocumentManagementRemoveTest {
 
     @InjectMocks
     private ShowCaseDocuments showCaseDocuments;
+
+    @Mock
+    private DocumentsService documentsService;
 
     @Test
     void shouldAddConfigurationToConfigBuilder() {
@@ -96,6 +101,7 @@ public class CaseworkerDocumentManagementRemoveTest {
             .documentLink(Document.builder().url("url1").binaryUrl("url1").filename("name1").build()).build();
         caseData.setCaseIssueFinalDecision(CaseIssueFinalDecision.builder().document(doc).build());
         caseData.setCaseIssueDecision(CaseIssueDecision.builder().decisionDocument(doc).build());
+        caseData.setHyphenatedCaseRef("1111-2222-3333-4444");
 
         CICDocument document = CICDocument.builder()
             .documentLink(Document.builder().url("url1").binaryUrl("url1").filename("name1").build()).build();
@@ -176,6 +182,7 @@ public class CaseworkerDocumentManagementRemoveTest {
             .documentLink(Document.builder().url("url1").binaryUrl("url1").filename("name1").build()).build();
         caseData.setCaseIssueFinalDecision(CaseIssueFinalDecision.builder().document(doc).build());
         caseData.setCaseIssueDecision(CaseIssueDecision.builder().decisionDocument(doc).build());
+        caseData.setHyphenatedCaseRef("1111-2222-3333-4444");
 
         CICDocument document = CICDocument.builder()
             .documentLink(Document.builder().url("url1").binaryUrl("url1").filename("name1").build()).build();

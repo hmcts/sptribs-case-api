@@ -144,6 +144,7 @@ public class CaseworkerDocumentManagementRemoveIT {
                 .orderDocumentList(getCaseworkerCICDocumentList())
                 .build()
             )
+            .hyphenatedCaseRef("1111-2222-3333-4444")
             .build();
 
         String response = mockMvc.perform(post(ABOUT_TO_SUBMIT_URL)
@@ -187,6 +188,7 @@ public class CaseworkerDocumentManagementRemoveIT {
                 .build()
             )
             .furtherUploadedDocuments(getCaseworkerCICDocumentList())
+            .hyphenatedCaseRef("1111-2222-3333-4444")
             .build();
 
         String response = mockMvc.perform(post(ABOUT_TO_SUBMIT_URL)

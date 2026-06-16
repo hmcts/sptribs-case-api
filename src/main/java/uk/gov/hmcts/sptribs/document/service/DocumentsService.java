@@ -163,10 +163,11 @@ public class DocumentsService {
             .orElse(null);
     }
 
-    public void removeEntryFromDocumentTable(String caseID, String key) {
+    private DocumentEntity getDocumentEntityDocs(long caseRef, String value) {
+        return documentsRepository.findDocumentByCaseReferenceAndBinaryUrl(caseRef, value);
+    }
 
-
-
-        documentsRepository.deleteById(1);
+    public void removeEntryFromDocumentTable(long caseRef, String value) {
+        documentsRepository.delete(getDocumentEntityDocs(caseRef, value));
     }
 }

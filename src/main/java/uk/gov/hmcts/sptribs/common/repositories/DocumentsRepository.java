@@ -35,4 +35,14 @@ public interface DocumentsRepository extends JpaRepository<DocumentEntity, Integ
         """)
     List<DocumentEntity> findAllNonDraftDocumentsByCaseReference(
         @Param("caseReferenceNumber") Long caseReferenceNumber);
+
+    @Query("""
+    SELECT d
+    FROM DocumentEntity d
+    WHERE d.caseReferenceNumber = :caseReferenceNumber
+    AND d.documentBinaryUrl = :documentBinaryUrl
+        """)
+    DocumentEntity findDocumentByCaseReferenceAndBinaryUrl(
+        @Param("caseReferenceNumber") Long caseReferenceNumber,
+        @Param("documentBinaryUrl") String documentBinaryUrl);
 }
