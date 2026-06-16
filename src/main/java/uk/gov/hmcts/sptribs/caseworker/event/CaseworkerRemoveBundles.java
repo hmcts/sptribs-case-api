@@ -114,6 +114,10 @@ public class CaseworkerRemoveBundles implements CCDConfig<CaseData, State, UserR
         List<String> timestampsOfBundlesToDelete = collectTimestampsOfBundlesToDelete(selectedBundleLabels);
         List<ListValue<Bundle>> allBundles = caseData.getCaseBundles();
 
+        allBundles.forEach(bundleListValue -> {
+            System.out.println(bundleListValue.getValue().toString());
+        });
+
         allBundles.removeIf(bundleListValue ->
             timestampsOfBundlesToDelete.contains(bundleListValue.getValue().getDateAndTime().toString()));
 
