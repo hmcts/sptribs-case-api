@@ -115,7 +115,7 @@ public class CaseworkerRemoveBundles implements CCDConfig<CaseData, State, UserR
         List<ListValue<Bundle>> allBundles = caseData.getCaseBundles();
 
         allBundles.forEach(bundleListValue -> {
-            System.out.println(bundleListValue.getValue().toString());
+            System.out.println(bundleListValue.getValue().getStitchedDocument().getBinaryUrl().toString());
         });
 
         allBundles.removeIf(bundleListValue ->
