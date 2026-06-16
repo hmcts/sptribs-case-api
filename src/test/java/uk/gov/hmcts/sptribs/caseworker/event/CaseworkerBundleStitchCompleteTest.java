@@ -62,7 +62,6 @@ class CaseworkerBundleStitchCompleteTest {
     void shouldSuccessfullySaveBundleToDocumentService() throws Exception {
 
         //given
-        List<ListValue<Bundle>> bundles = new ArrayList<>();
         final CaseDetails<CaseData, State> details = new CaseDetails<>();
         details.setId(CASE_ID);
 
@@ -77,7 +76,7 @@ class CaseworkerBundleStitchCompleteTest {
         ListValue<Bundle> listValue = new ListValue<>();
         listValue.setId("1");
         listValue.setValue(bundle);
-
+        List<ListValue<Bundle>> bundles = new ArrayList<>();
         bundles.add(listValue);
 
         CaseData caseData = new CaseData();
@@ -98,7 +97,6 @@ class CaseworkerBundleStitchCompleteTest {
     void shouldSuccessfullySaveLatestBundleToDocumentService() throws Exception {
 
         //given
-        List<ListValue<Bundle>> bundles = new ArrayList<>();
         final CaseDetails<CaseData, State> details = new CaseDetails<>();
         details.setId(CASE_ID);
 
@@ -115,16 +113,16 @@ class CaseworkerBundleStitchCompleteTest {
             .build();
 
         Bundle bundle1 = createBundle(document1, 0L);
-        Bundle bundle2 = createBundle(document2, 1L);
-
         ListValue<Bundle> listValue1 = new ListValue<>();
         listValue1.setId("1");
         listValue1.setValue(bundle1);
 
+        Bundle bundle2 = createBundle(document2, 1L);
         ListValue<Bundle> listValue2 = new ListValue<>();
         listValue2.setId("2");
         listValue2.setValue(bundle2);
 
+        List<ListValue<Bundle>> bundles = new ArrayList<>();
         bundles.add(listValue1);
         bundles.add(listValue2);
 
@@ -148,7 +146,6 @@ class CaseworkerBundleStitchCompleteTest {
     void shouldReturnErrorResponseWhenDocumentServiceThrowsException() throws Exception {
 
         // given
-        List<ListValue<Bundle>> bundles = new ArrayList<>();
         final CaseDetails<CaseData, State> details = new CaseDetails<>();
         details.setId(CASE_ID);
 
@@ -163,7 +160,7 @@ class CaseworkerBundleStitchCompleteTest {
         ListValue<Bundle> listValue = new ListValue<>();
         listValue.setId("1");
         listValue.setValue(bundle);
-
+        List<ListValue<Bundle>> bundles = new ArrayList<>();
         bundles.add(listValue);
 
         CaseData caseData = new CaseData();
@@ -190,7 +187,6 @@ class CaseworkerBundleStitchCompleteTest {
     void shouldNotCallDocumentServiceWhenStitchedDocumentIsNull() {
 
         // given
-        List<ListValue<Bundle>> bundles = new ArrayList<>();
         final CaseDetails<CaseData, State> details = new CaseDetails<>();
         details.setId(CASE_ID);
 
@@ -199,7 +195,7 @@ class CaseworkerBundleStitchCompleteTest {
         ListValue<Bundle> listValue = new ListValue<>();
         listValue.setId("1");
         listValue.setValue(bundle);
-
+        List<ListValue<Bundle>> bundles = new ArrayList<>();
         bundles.add(listValue);
 
         CaseData caseData = new CaseData();
