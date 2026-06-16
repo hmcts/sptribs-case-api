@@ -7,6 +7,7 @@ public final class ControllerConstants {
     public static final String PAGE_SIZE = "page_size";
     public static final String ACCEPT = "accept";
     public static final String ACCEPT_VALUE = "application/vnd.jrd.api+json;Version=2.0";
+    public static final String SERVICE_CODE = "service_code";
 
     private ControllerConstants() {
     }
