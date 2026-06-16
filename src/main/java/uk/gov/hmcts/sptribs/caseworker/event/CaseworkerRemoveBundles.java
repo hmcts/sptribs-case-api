@@ -1,5 +1,6 @@
 package uk.gov.hmcts.sptribs.caseworker.event;
 
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -18,6 +19,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.document.bundling.model.Bundle;
 import uk.gov.hmcts.sptribs.document.bundling.model.BundleIdAndTimestamp;
+import uk.gov.hmcts.sptribs.document.service.DocumentsService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,12 +42,15 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 @Component
 @Slf4j
 @Setter
+@RequiredArgsConstructor
 public class CaseworkerRemoveBundles implements CCDConfig<CaseData, State, UserRole> {
 
 
     private static final SelectBundles selectBundles = new SelectBundles();
 
     private static final String PLACEHOLDER_STITCHED_DOCUMENT_FILENAME = "-cicBundle.pdf";
+
+    private final DocumentsService documentsService;
 
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
@@ -115,11 +120,15 @@ public class CaseworkerRemoveBundles implements CCDConfig<CaseData, State, UserR
         List<ListValue<Bundle>> allBundles = caseData.getCaseBundles();
 
         allBundles.forEach(bundleListValue -> {
-            System.out.println(bundleListValue.getValue().getStitchedDocument().getBinaryUrl().toString());
+            if (timestampsOfBundlesToDelete.contains(bundleListValue.getValue().getDateAndTime().toString())) {
+                allBundles.remove(bundleListValue);
+                try {
+                    removeBundleFromDocumentsTable(bundleListValue, caseData.getHyphenatedCaseRef());
+                } catch (Exception e) {
+                    log.error(e.getMessage());
+                }
+            }
         });
-
-        allBundles.removeIf(bundleListValue ->
-            timestampsOfBundlesToDelete.contains(bundleListValue.getValue().getDateAndTime().toString()));
 
         caseData.getCaseBundleIdsAndTimestamps().removeIf(bundleIdAndTimestampListValue ->
             timestampsOfBundlesToDelete.contains(bundleIdAndTimestampListValue.getValue().getDateAndTime().toString()));
@@ -156,5 +165,13 @@ public class CaseworkerRemoveBundles implements CCDConfig<CaseData, State, UserR
             bundleIdAndTimestamps.get(listValueIndex.get()).setId(String.valueOf(listValueIndex.incrementAndGet()));
             bundle.setId(String.valueOf(listValueIndex));
         }
+    }
+
+    private void removeBundleFromDocumentsTable(ListValue<Bundle> bundleListValue, String hyphenatedCaseRef) {
+
+        documentsService.removeEntryFromDocumentTable(
+            Long.parseLong(hyphenatedCaseRef.replace("-", "")),
+            bundleListValue.getValue().getStitchedDocument().getBinaryUrl());
+
     }
 }
