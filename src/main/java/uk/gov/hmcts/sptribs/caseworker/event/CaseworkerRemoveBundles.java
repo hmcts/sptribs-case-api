@@ -121,7 +121,6 @@ public class CaseworkerRemoveBundles implements CCDConfig<CaseData, State, UserR
 
         allBundles.forEach(bundleListValue -> {
             if (timestampsOfBundlesToDelete.contains(bundleListValue.getValue().getDateAndTime().toString())) {
-                allBundles.remove(bundleListValue);
                 try {
                     removeBundleFromDocumentsTable(bundleListValue, caseData.getHyphenatedCaseRef());
                 } catch (Exception e) {
@@ -129,6 +128,9 @@ public class CaseworkerRemoveBundles implements CCDConfig<CaseData, State, UserR
                 }
             }
         });
+
+        allBundles.removeIf(bundleListValue ->
+            timestampsOfBundlesToDelete.contains(bundleListValue.getValue().getDateAndTime().toString()));
 
         caseData.getCaseBundleIdsAndTimestamps().removeIf(bundleIdAndTimestampListValue ->
             timestampsOfBundlesToDelete.contains(bundleIdAndTimestampListValue.getValue().getDateAndTime().toString()));
@@ -143,8 +145,6 @@ public class CaseworkerRemoveBundles implements CCDConfig<CaseData, State, UserR
 
     public SubmittedCallbackResponse submitted(CaseDetails<CaseData, State> details,
                                                CaseDetails<CaseData, State> beforeDetails) {
-
-        //REMOVE BUNDLE FROM DOC TABLE
         return SubmittedCallbackResponse.builder()
             .confirmationHeader("# Case Updated")
             .build();
