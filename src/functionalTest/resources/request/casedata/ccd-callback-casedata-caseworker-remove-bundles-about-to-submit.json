@@ -31,8 +31,7 @@
         "title": "CIC Bundle",
         "description": "",
         "stitchedDocument": {
-          "document_filename": "1-cicBundle.pdf",
-          "category_id": "BD"
+          "document_filename": "1-cicBundle.pdf"
         },
         "folders": [
           {
@@ -123,8 +122,7 @@
         "title": "CIC Bundle",
         "description": "",
         "stitchedDocument": {
-          "document_filename": "2-cicBundle.pdf",
-          "category_id": "BD"
+          "document_filename": "2-cicBundle.pdf"
         },
         "folders": [
           {
@@ -215,8 +213,7 @@
         "title": "CIC Bundle",
         "description": "",
         "stitchedDocument": {
-          "document_filename": "3-cicBundle.pdf",
-          "category_id": "BD"
+          "document_filename": "3-cicBundle.pdf"
         },
         "folders": [
           {
