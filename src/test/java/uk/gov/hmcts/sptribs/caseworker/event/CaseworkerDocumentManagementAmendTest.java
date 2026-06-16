@@ -36,7 +36,9 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_DOCUMENT_MANAGEMENT_AMEND;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_WA_CONFIG_USER;
-import static uk.gov.hmcts.sptribs.document.model.DocumentType.*;
+import static uk.gov.hmcts.sptribs.document.model.DocumentType.APPLICATION_FORM;
+import static uk.gov.hmcts.sptribs.document.model.DocumentType.HOSPITAL_RECORDS;
+import static uk.gov.hmcts.sptribs.document.model.DocumentType.OTHER_GENERAL_EVIDENCE;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigBuilder;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.getEventsFrom;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID;
@@ -448,6 +450,7 @@ class CaseworkerDocumentManagementAmendTest {
         //When
         AboutToStartOrSubmitResponse<CaseData, State> aboutToStartResponse =
             caseworkerDocumentManagementAmend.aboutToStart(updatedCaseDetails);
+        assertThat(aboutToStartResponse.getData().getCicCase().getAmendDocumentList().getListItems()).isNotEmpty();
 
         cicCase.getAmendDocumentList().setValue(getDynamicListItems());
         cicCase.getApplicantDocumentsUploaded().getFirst().setValue(getCaseworkerCICDocument());
@@ -459,18 +462,17 @@ class CaseworkerDocumentManagementAmendTest {
         assertThat(midResponse.getData().getCicCase().getSelectedDocumentCategory()).isEqualTo(APPLICATION_FORM);
         assertThat(midResponse.getData().getCicCase().getSelectedDocumentEmailContent()).isEqualTo("updated email content");
 
+        assertThat(midResponse).isNotNull();
+        assertThat(midResponse.getData().getCicCase().getSelectedDocumentType()).isEqualTo(DocumentConstants.CASE_TYPE);
+
         updatedCaseDetails.getData().getCicCase().setSelectedDocumentEmailContent("new updated email content");
 
         AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmitResponse =
             caseworkerDocumentManagementAmend.aboutToSubmit(updatedCaseDetails, beforeDetails);
-        SubmittedCallbackResponse documentMgmtResponse = caseworkerDocumentManagementAmend.submitted(updatedCaseDetails, beforeDetails);
 
         //Then
         verifyNoInteractions(documentsService);
 
-        assertThat(aboutToStartResponse.getData().getCicCase().getAmendDocumentList().getListItems()).isNotEmpty();
-        assertThat(midResponse).isNotNull();
-        assertThat(midResponse.getData().getCicCase().getSelectedDocumentType()).isEqualTo(DocumentConstants.CASE_TYPE);
         assertThat(aboutToSubmitResponse.getData().getCicCase().getApplicantDocumentsUploaded().getFirst().getValue()).isNotNull();
         assertThat(aboutToSubmitResponse.getData().getCicCase()
             .getApplicantDocumentsUploaded().getFirst()
@@ -478,7 +480,6 @@ class CaseworkerDocumentManagementAmendTest {
         assertThat(aboutToSubmitResponse.getData().getCicCase()
             .getApplicantDocumentsUploaded().getFirst()
             .getValue().getDocumentEmailContent()).isEqualTo("new updated email content");
-        assertThat(documentMgmtResponse).isNotNull();
     }
 
     @Test
