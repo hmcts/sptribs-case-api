@@ -34,4 +34,7 @@ public class HearingVenue {
     @JsonProperty("court_type_id")
     private String courtTypeId;
 
+    @JsonProperty("service_code")
+    private String serviceCode;
+
 }
