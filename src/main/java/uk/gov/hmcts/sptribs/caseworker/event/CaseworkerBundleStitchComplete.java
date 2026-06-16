@@ -17,6 +17,10 @@ import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.document.bundling.model.Bundle;
 import uk.gov.hmcts.sptribs.document.service.DocumentsService;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import static java.lang.String.format;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.ASYNC_STITCH_COMPLETE;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseClosed;
@@ -66,28 +70,44 @@ public class CaseworkerBundleStitchComplete implements CCDConfig<CaseData, State
 
         log.info("Starting insert for latest case bundle for caseId = {}", caseId);
 
-        CaseData caseData = details.getData();
+        Document stitchedDocument = details.getData()
+            .getCaseBundles()
+            .getFirst()
+            .getValue()
+            .getStitchedDocument();
 
-        ListValue<Bundle> latestCaseBundle = caseData.getCaseBundles().getFirst();
-        Document stitchedDocument = latestCaseBundle.getValue().getStitchedDocument();
-
-        if (stitchedDocument != null) {
-            log.info("Inserting latest bundle document for caseId = {}", caseId);
-
-            documentsService.buildAndSaveNewDocumentEntity(
-                stitchedDocument,
-                caseId,
-                false,
-                true
-            );
-
-            log.info("Successfully inserted latest case bundle document for caseId = {}", caseId);
-        } else {
-            log.info("No stitched document found for caseId = {}, skipping insert", caseId);
+        if (stitchedDocument == null) {
+            log.info("No stitched document found for latest bundle, caseId = {}", caseId);
+            return buildResponse("# No stitched bundle document found");
         }
 
+        try {
+
+            saveLatestBundleDocument(stitchedDocument, caseId);
+
+            log.info("Successfully inserted latest case bundle document for caseId = {}", caseId);
+
+            return buildResponse("# documents added successfully");
+
+        } catch (RuntimeException exception) {
+            log.error("Error inserting latest case bundle document for caseId = {}", caseId, exception);
+
+            return buildResponse("# Error saving latest case bundle to document entity");
+        }
+    }
+
+    private SubmittedCallbackResponse buildResponse(String confirmationHeader) {
         return SubmittedCallbackResponse.builder()
-            .confirmationHeader("# documents added successfully")
+            .confirmationHeader(confirmationHeader)
             .build();
+    }
+
+    private void saveLatestBundleDocument(Document stitchedDocument, Long caseId) {
+        documentsService.buildAndSaveNewDocumentEntity(
+            stitchedDocument,
+            caseId,
+            false,
+            true
+        );
     }
 }
