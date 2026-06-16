@@ -98,7 +98,6 @@ public class CaseworkerDeleteDraftOrder implements CCDConfig<CaseData, State, Us
 
         removedDraftList.forEach(v -> {
             documentsService.removeEntryFromDocumentTable(
-                Long.parseLong(caseData.getHyphenatedCaseRef().replace("-", "")),
                 v.getValue().getTemplateGeneratedDocument().getBinaryUrl());
         });
 

@@ -39,10 +39,8 @@ public interface DocumentsRepository extends JpaRepository<DocumentEntity, Integ
     @Query("""
     SELECT d
     FROM DocumentEntity d
-    WHERE d.caseReferenceNumber = :caseReferenceNumber
-    AND d.documentBinaryUrl = :documentBinaryUrl
+    WHERE d.documentBinaryUrl = :documentBinaryUrl
         """)
-    DocumentEntity findDocumentByCaseReferenceAndBinaryUrl(
-        @Param("caseReferenceNumber") Long caseReferenceNumber,
+    DocumentEntity findDocumentByBinaryUrl(
         @Param("documentBinaryUrl") String documentBinaryUrl);
 }

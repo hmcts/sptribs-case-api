@@ -163,11 +163,11 @@ public class DocumentsService {
             .orElse(null);
     }
 
-    private DocumentEntity getDocumentEntityDocs(long caseRef, String value) {
-        return documentsRepository.findDocumentByCaseReferenceAndBinaryUrl(caseRef, value);
+    private DocumentEntity getDocumentEntityFromBinaryURL(String value) {
+        return documentsRepository.findDocumentByBinaryUrl(value);
     }
 
-    public void removeEntryFromDocumentTable(long caseRef, String value) {
-        documentsRepository.delete(getDocumentEntityDocs(caseRef, value));
+    public void removeEntryFromDocumentTable(String value) {
+        documentsRepository.delete(getDocumentEntityFromBinaryURL(value));
     }
 }

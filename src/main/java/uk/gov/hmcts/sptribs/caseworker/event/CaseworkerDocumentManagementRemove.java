@@ -124,7 +124,6 @@ public class CaseworkerDocumentManagementRemove implements CCDConfig<CaseData, S
 
         removedDocumentList.forEach(v -> {
             documentsService.removeEntryFromDocumentTable(
-                Long.parseLong(caseData.getHyphenatedCaseRef().replace("-", "")),
                  v.getValue().getDocumentLink().getBinaryUrl());
         });
 

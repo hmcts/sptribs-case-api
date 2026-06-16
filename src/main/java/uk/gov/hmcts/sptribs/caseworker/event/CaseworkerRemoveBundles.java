@@ -170,7 +170,6 @@ public class CaseworkerRemoveBundles implements CCDConfig<CaseData, State, UserR
     private void removeBundleFromDocumentsTable(ListValue<Bundle> bundleListValue, String hyphenatedCaseRef) {
 
         documentsService.removeEntryFromDocumentTable(
-            Long.parseLong(hyphenatedCaseRef.replace("-", "")),
             bundleListValue.getValue().getStitchedDocument().getBinaryUrl());
 
     }
