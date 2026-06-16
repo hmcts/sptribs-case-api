@@ -122,6 +122,21 @@ public class CaseworkerDocumentManagementAmend implements CCDConfig<CaseData, St
         final Document selectedDocumentLink = cicCase.getSelectedDocumentLink();
         final String selectedDocumentType = cicCase.getSelectedDocumentType();
 
+        List<String> errors = new ArrayList<>();
+        if (!selectedDocumentCategory.getCategory().equals(selectedDocumentLink.getCategoryId())) {
+            try {
+                documentsService.setNewCategoryIdAndDocumentTypeId(
+                    selectedDocumentLink.getBinaryUrl(),
+                    selectedDocumentCategory.getCategory()
+                );
+            } catch (RuntimeException e) {
+                log.error("Document entity with filename {} could not be assigned new category ID or document type ID: {}",
+                    selectedDocumentLink.getFilename(), e.getMessage());
+                errors.add("Document with filename " + selectedDocumentLink.getFilename()
+                    + " could not be assigned new category ID");
+            }
+        }
+
         switch (selectedDocumentType) {
             case CASE_TYPE:
                 updateCaseDocumentList(
@@ -179,20 +194,6 @@ public class CaseworkerDocumentManagementAmend implements CCDConfig<CaseData, St
                 break;
             default:
                 break;
-        }
-
-        List<String> errors = new ArrayList<>();
-
-        try {
-            documentsService.setNewCategoryIdAndDocumentTypeId(
-                selectedDocumentLink.getBinaryUrl(),
-                selectedDocumentCategory.getCategory()
-            );
-        } catch (RuntimeException e) {
-            log.error("Document entity with filename {} could not be assigned new category ID or document type ID: {}",
-                selectedDocumentLink.getFilename(), e.getMessage());
-            errors.add("Document with filename " + selectedDocumentLink.getFilename()
-                + " could not be assigned new category ID");
         }
 
         cicCase.setSelectedDocumentCategory(null);
