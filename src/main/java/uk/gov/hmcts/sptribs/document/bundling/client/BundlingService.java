@@ -18,7 +18,6 @@ import uk.gov.hmcts.sptribs.document.bundling.model.BundlePaginationStyle;
 import uk.gov.hmcts.sptribs.document.bundling.model.Callback;
 import uk.gov.hmcts.sptribs.document.bundling.model.MultiBundleConfig;
 import uk.gov.hmcts.sptribs.document.model.PageNumberFormat;
-import uk.gov.hmcts.sptribs.document.service.DocumentsService;
 
 import java.time.Clock;
 import java.time.LocalDateTime;
@@ -67,9 +66,6 @@ public class BundlingService {
 
     @Autowired
     private Clock clock;
-
-    @Autowired
-    private DocumentsService documentsService;
 
     public List<Bundle> createBundle(Callback callback, Long caseNumber) {
         BundleResponse response;
@@ -203,15 +199,6 @@ public class BundlingService {
     private Bundle buildBundle(LinkedHashMap<String, Object> objectLinkedHashMap, Long caseNumber) {
 
         Document stitchedDocument = getStitchedDocument(objectLinkedHashMap, caseNumber);
-
-        if (stitchedDocument != null) {
-            documentsService.buildAndSaveNewDocumentEntity(
-                stitchedDocument,
-                caseNumber,
-                false,
-                true
-            );
-        }
 
         return Bundle.builder()
             .stitchStatus(NEW)

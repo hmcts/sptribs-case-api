@@ -2,10 +2,12 @@ package uk.gov.hmcts.sptribs.caseworker.event;
 
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
+import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
@@ -13,8 +15,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.document.bundling.model.Bundle;
-
-import java.util.List;
+import uk.gov.hmcts.sptribs.document.service.DocumentsService;
 
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.ASYNC_STITCH_COMPLETE;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
@@ -37,6 +38,9 @@ public class CaseworkerBundleStitchComplete implements CCDConfig<CaseData, State
 
     private static final String ALWAYS_HIDE = "[STATE]=\"ALWAYS_HIDE\"";
 
+    @Autowired
+    private DocumentsService documentsService;
+
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         new PageBuilder(configBuilder
@@ -58,25 +62,32 @@ public class CaseworkerBundleStitchComplete implements CCDConfig<CaseData, State
     public SubmittedCallbackResponse submitted(CaseDetails<CaseData, State> details,
                                                CaseDetails<CaseData, State> beforeDetails) {
 
-        log.info("Submitting bundle stitch adding doc to db start");
+        Long caseId = details.getId();
+
+        log.info("Starting insert for latest case bundle for caseId = {}", caseId);
 
         CaseData caseData = details.getData();
 
-        List<ListValue<Bundle>> caseBundles = caseData.getCaseBundles();
+        ListValue<Bundle> latestCaseBundle = caseData.getCaseBundles().getFirst();
+        Document stitchedDocument = latestCaseBundle.getValue().getStitchedDocument();
 
-        for (ListValue<Bundle> caseBundle : caseBundles) {
+        if (stitchedDocument != null) {
+            log.info("Inserting latest bundle document for caseId = {}", caseId);
 
-            log.info("Bundle info name = {} with binary url {}",
-                caseBundle.getValue().getStitchedDocument().getFilename(), caseBundle.getValue().getStitchedDocument().getBinaryUrl());
+            documentsService.buildAndSaveNewDocumentEntity(
+                stitchedDocument,
+                caseId,
+                false,
+                true
+            );
 
-
+            log.info("Successfully inserted latest case bundle document for caseId = {}", caseId);
+        } else {
+            log.info("No stitched document found for caseId = {}, skipping insert", caseId);
         }
 
-        log.info("Submitting bundle stitch add doc to db complete");
-
         return SubmittedCallbackResponse.builder()
-            .confirmationHeader("# docs added successfully")
+            .confirmationHeader("# documents added successfully")
             .build();
-
     }
 }
