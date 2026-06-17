@@ -1,5 +1,6 @@
 package uk.gov.hmcts.sptribs.caseworker.event;
 
+import lombok.AllArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,11 +33,11 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 @Component
 @Slf4j
 @Setter
+@AllArgsConstructor
 public class CaseworkerBundleStitchComplete implements CCDConfig<CaseData, State, UserRole> {
 
     private static final String ALWAYS_HIDE = "[STATE]=\"ALWAYS_HIDE\"";
 
-    @Autowired
     private DocumentsService documentsService;
 
     @Override
@@ -81,7 +82,7 @@ public class CaseworkerBundleStitchComplete implements CCDConfig<CaseData, State
 
             log.info("Successfully inserted latest case bundle document for caseId = {}", caseId);
 
-            return buildResponse("# documents added successfully");
+            return buildResponse("# Documents added successfully");
 
         } catch (RuntimeException exception) {
             log.error("Error inserting latest case bundle document for caseId = {}", caseId, exception);
