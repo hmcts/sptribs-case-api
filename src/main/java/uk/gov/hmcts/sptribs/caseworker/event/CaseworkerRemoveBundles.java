@@ -121,11 +121,8 @@ public class CaseworkerRemoveBundles implements CCDConfig<CaseData, State, UserR
 
         allBundles.forEach(bundleListValue -> {
             if (timestampsOfBundlesToDelete.contains(bundleListValue.getValue().getDateAndTime().toString())) {
-                try {
-                    removeBundleFromDocumentsTable(bundleListValue, caseData.getHyphenatedCaseRef());
-                } catch (Exception e) {
-                    log.error(e.getMessage());
-                }
+
+                removeBundleFromDocumentsTable(bundleListValue);
             }
         });
 
@@ -167,9 +164,9 @@ public class CaseworkerRemoveBundles implements CCDConfig<CaseData, State, UserR
         }
     }
 
-    private void removeBundleFromDocumentsTable(ListValue<Bundle> bundleListValue, String hyphenatedCaseRef) {
+    private void removeBundleFromDocumentsTable(ListValue<Bundle> bundleListValue) {
 
-        documentsService.removeEntryFromDocumentTable(
+        documentsService.removeEntryFromDocumentTableByBinaryURL(
             bundleListValue.getValue().getStitchedDocument().getBinaryUrl());
 
     }

@@ -101,13 +101,11 @@ public class CaseworkerDocumentManagementRemove implements CCDConfig<CaseData, S
         final CaseDetails<CaseData, State> details,
         final CaseDetails<CaseData, State> beforeDetails) {
         var caseData = details.getData();
+
         if (!ObjectUtils.isEmpty(caseData.getCicCase().getRemovedDocumentList())) {
             removeCaseDocuments(caseData);
-            try {
-                removeDocumentsFromDocumentsTable(caseData);
-            } catch (Exception e) {
-                log.error(e.getMessage());
-            }
+
+            removeDocumentsFromDocumentsTable(caseData);
         }
 
         List<ListValue<CaseworkerCICDocument>> listValues = new ArrayList<>();
@@ -123,7 +121,7 @@ public class CaseworkerDocumentManagementRemove implements CCDConfig<CaseData, S
         List<ListValue<CaseworkerCICDocument>> removedDocumentList = caseData.getCicCase().getRemovedDocumentList();
 
         removedDocumentList.forEach(v -> {
-            documentsService.removeEntryFromDocumentTable(
+            documentsService.removeEntryFromDocumentTableByBinaryURL(
                  v.getValue().getDocumentLink().getBinaryUrl());
         });
 

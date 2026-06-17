@@ -163,11 +163,12 @@ public class DocumentsService {
             .orElse(null);
     }
 
-    private DocumentEntity getDocumentEntityFromBinaryURL(String value) {
-        return documentsRepository.findDocumentByBinaryUrl(value);
-    }
-
-    public void removeEntryFromDocumentTable(String value) {
-        documentsRepository.delete(getDocumentEntityFromBinaryURL(value));
+    @Transactional
+    public void removeEntryFromDocumentTableByBinaryURL(String value) {
+        try {
+            documentsRepository.deleteEntryByBinaryURL(value);
+        } catch (DataAccessException e) {
+            throw new RuntimeException("Error deleting entry from document table", e);
+        }
     }
 }

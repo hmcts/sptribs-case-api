@@ -75,11 +75,7 @@ public class CaseworkerDeleteDraftOrder implements CCDConfig<CaseData, State, Us
         CaseData caseData = details.getData();
         CicCase cicCase = repopulateDynamicDraftList(caseData.getCicCase());
 
-        try {
-            removeDraftsFromDocumentTable(caseData);
-        } catch (Exception e) {
-            log.error(e.getMessage());
-        }
+        removeDraftsFromDocumentTable(caseData);
 
         caseData.setCicCase(cicCase);
 
@@ -97,7 +93,7 @@ public class CaseworkerDeleteDraftOrder implements CCDConfig<CaseData, State, Us
         List<ListValue<DraftOrderCIC>> removedDraftList = caseData.getCicCase().getRemovedDraftList();
 
         removedDraftList.forEach(v -> {
-            documentsService.removeEntryFromDocumentTable(
+            documentsService.removeEntryFromDocumentTableByBinaryURL(
                 v.getValue().getTemplateGeneratedDocument().getBinaryUrl());
         });
 
