@@ -1,7 +1,9 @@
 package uk.gov.hmcts.sptribs.caseworker.util;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
+import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.sptribs.caseworker.model.ContactParties;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.NotificationParties;
@@ -10,7 +12,10 @@ import java.util.List;
 import java.util.Set;
 
 import static java.lang.String.format;
+import static uk.gov.hmcts.sptribs.caseworker.util.ErrorConstants.FAILED_SAVING_DOCUMENT_TO_DATABASE;
+import static uk.gov.hmcts.sptribs.caseworker.util.ErrorConstants.FAILED_SAVING_DOCUMENT_WITH_NO_FILENAME_TO_DATABASE;
 
+@Slf4j
 public final class MessageUtil {
 
     private static final String REPRESENTATIVE = "Representative";
@@ -108,6 +113,17 @@ public final class MessageUtil {
         errors.forEach(e -> message.append(e).append(COMMA_SPACE));
 
         return message.substring(0, message.length() - 2);
+    }
+
+    public static String handleDocumentException(final Document document, String errorMessage) {
+        if (document.getFilename() != null
+            && !document.getFilename().isEmpty()) {
+            log.error("Document entity with filename {} could not be saved: {}", document.getFilename(), errorMessage);
+            return FAILED_SAVING_DOCUMENT_TO_DATABASE + document.getFilename();
+        } else {
+            log.error("Document entity has no filename {}", errorMessage);
+            return FAILED_SAVING_DOCUMENT_WITH_NO_FILENAME_TO_DATABASE;
+        }
     }
 
     public static String generateSimpleMessageBundleCreation(final CicCase cicCase) {

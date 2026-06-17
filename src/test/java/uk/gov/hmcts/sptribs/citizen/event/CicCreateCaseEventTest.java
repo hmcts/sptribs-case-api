@@ -17,7 +17,7 @@ import static uk.gov.hmcts.sptribs.ciccase.model.State.DSS_Draft;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.caseData;
 
-@ExtendWith({MockitoExtension.class})
+@ExtendWith(MockitoExtension.class)
 class CicCreateCaseEventTest {
 
     @Mock

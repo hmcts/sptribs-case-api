@@ -23,17 +23,24 @@ import uk.gov.hmcts.sptribs.ciccase.model.OrderTemplate;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.ciccase.model.access.Permissions;
+import uk.gov.hmcts.sptribs.document.services.DocumentsService;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.DOUBLE_HYPHEN;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_WA_CONFIG_USER;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigBuilder;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.getEventsFrom;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID_HYPHENATED;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.LOCAL_DATE_TIME;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.caseData;
 import static uk.gov.hmcts.sptribs.testutil.TestEventConstants.CASEWORKER_CREATE_DRAFT_ORDER;
@@ -46,6 +53,9 @@ class CaseworkerCreateDraftOrderTest {
 
     @Mock
     private OrderService orderService;
+
+    @Mock
+    private DocumentsService documentsService;
 
     @Test
     void shouldAddPublishToCamundaWhenWAIsEnabled() {
@@ -84,6 +94,7 @@ class CaseworkerCreateDraftOrderTest {
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
         final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
 
+        caseData.setHyphenatedCaseRef(TEST_CASE_ID_HYPHENATED);
         updatedCaseDetails.setData(caseData);
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
@@ -102,6 +113,14 @@ class CaseworkerCreateDraftOrderTest {
         SubmittedCallbackResponse draftCreatedResponse = caseworkerCreateDraftOrder.submitted(updatedCaseDetails, beforeDetails);
 
         //  Then
+        verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
+            any(), eq(TEST_CASE_ID), eq(true)
+        );
+
+        verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
+            eq(expectedDraftOrderCIC.getTemplateGeneratedDocument()), eq(TEST_CASE_ID), eq(true)
+        );
+
         assertThat(response).isNotNull();
         CaseData responseData = response.getData();
         assertThat(responseData.getCicCase().getDraftOrderCICList()).hasSize(1);
@@ -149,6 +168,7 @@ class CaseworkerCreateDraftOrderTest {
         final DraftOrderContentCIC orderContentCIC = DraftOrderContentCIC.builder()
             .orderTemplate(OrderTemplate.CIC7_ME_DMI_REPORTS).build();
         caseData.setDraftOrderContentCIC(orderContentCIC);
+        caseData.setHyphenatedCaseRef(TEST_CASE_ID_HYPHENATED);
         updatedCaseDetails.setData(caseData);
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
@@ -171,7 +191,16 @@ class CaseworkerCreateDraftOrderTest {
         caseData.setDraftOrderContentCIC(orderContentCIC);
         AboutToStartOrSubmitResponse<CaseData, State> response2 =
             caseworkerCreateDraftOrder.aboutToSubmit(updatedCaseDetails, beforeDetails);
+
         //  Then
+        verify(documentsService, times(2)).buildAndSaveNewDocumentEntity(
+            any(), eq(TEST_CASE_ID), eq(true)
+        );
+
+        verify(documentsService, times(2)).buildAndSaveNewDocumentEntity(
+            eq(Document.builder().filename("a--b--02-02-2002 11:11:11.pdf").build()), eq(TEST_CASE_ID), eq(true)
+        );
+
         assertThat(response2).isNotNull();
     }
 
@@ -186,6 +215,7 @@ class CaseworkerCreateDraftOrderTest {
         final DraftOrderContentCIC orderContentCIC = DraftOrderContentCIC.builder()
                 .orderTemplate(OrderTemplate.CIC7_ME_DMI_REPORTS).build();
         caseData.setDraftOrderContentCIC(orderContentCIC);
+        caseData.setHyphenatedCaseRef(TEST_CASE_ID_HYPHENATED);
         updatedCaseDetails.setData(caseData);
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
@@ -211,6 +241,14 @@ class CaseworkerCreateDraftOrderTest {
         final AboutToStartOrSubmitResponse<CaseData, State> response =
                 caseworkerCreateDraftOrder.aboutToSubmit(updatedCaseDetails, beforeDetails);
 
+        verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
+            any(), eq(TEST_CASE_ID), eq(true)
+        );
+
+        verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
+            eq(Document.builder().filename("a--b--02-02-2002 11:11:11.pdf").build()), eq(TEST_CASE_ID), eq(true)
+        );
+
         assertThat(response).isNotNull();
         assertThat(response.getData()).isNotNull();
         assertThat(response.getData().getCicCase().getDraftOrderCICList()).hasSize(2);
@@ -219,6 +257,62 @@ class CaseworkerCreateDraftOrderTest {
                 .isEqualTo(orderContentCIC);
         assertThat(response.getData().getCicCase().getDraftOrderCICList().get(1).getValue().getDraftOrderContentCIC())
                 .isEqualTo(existingDraftOrderCIC.getDraftOrderContentCIC());
+    }
+
+    @Test
+    void shouldStoreErrorsWhenBuildAndSaveNewDocumentEntityThrowsRuntimeException() {
+        final CicCase cicCase = CicCase.builder()
+            .orderTemplateIssued(Document.builder().filename("a--b--02-02-2002 11:11:11.pdf").build()).build();
+        final CaseData caseData = caseData();
+        caseData.setCicCase(cicCase);
+        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
+        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+
+        caseData.setHyphenatedCaseRef(TEST_CASE_ID_HYPHENATED);
+        caseData.setDraftOrderContentCIC(DraftOrderContentCIC.builder()
+            .orderTemplate(OrderTemplate.CIC6_GENERAL_DIRECTIONS).build());
+        updatedCaseDetails.setData(caseData);
+        updatedCaseDetails.setId(TEST_CASE_ID);
+        updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
+
+
+        doThrow(new RuntimeException("Error saving document entity to database"))
+            .when(documentsService).buildAndSaveNewDocumentEntity(any(), eq(TEST_CASE_ID), eq(true));
+
+        AboutToStartOrSubmitResponse<CaseData, State> response =
+            caseworkerCreateDraftOrder.aboutToSubmit(updatedCaseDetails, beforeDetails);
+
+        assertThat(response.getErrors()).hasSize(1);
+        assertThat(response.getErrors()).contains("Error saving document with filename: " + cicCase.getDraftOrderCICList()
+            .getFirst().getValue().getTemplateGeneratedDocument().getFilename());
+
+        verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
+            any(), eq(TEST_CASE_ID), eq(true)
+        );
+
+        cicCase.setOrderTemplateIssued(Document.builder().filename(null).build());
+        caseData.setCicCase(cicCase);
+        caseData.setDraftOrderContentCIC(DraftOrderContentCIC.builder()
+            .orderTemplate(OrderTemplate.CIC6_GENERAL_DIRECTIONS).build());
+        updatedCaseDetails.setData(caseData);
+
+        AboutToStartOrSubmitResponse<CaseData, State> nullFilenameResponse =
+            caseworkerCreateDraftOrder.aboutToSubmit(updatedCaseDetails, beforeDetails);
+
+        assertThat(nullFilenameResponse.getErrors()).hasSize(1);
+        assertThat(nullFilenameResponse.getErrors()).contains("Error saving document with no filename");
+
+        cicCase.setOrderTemplateIssued(Document.builder().filename("").build());
+        caseData.setCicCase(cicCase);
+        caseData.setDraftOrderContentCIC(DraftOrderContentCIC.builder()
+            .orderTemplate(OrderTemplate.CIC6_GENERAL_DIRECTIONS).build());
+        updatedCaseDetails.setData(caseData);
+
+        AboutToStartOrSubmitResponse<CaseData, State> emptyFilenameResponse =
+            caseworkerCreateDraftOrder.aboutToSubmit(updatedCaseDetails, beforeDetails);
+
+        assertThat(emptyFilenameResponse.getErrors()).hasSize(1);
+        assertThat(emptyFilenameResponse.getErrors()).contains("Error saving document with no filename");
     }
 }
 

@@ -1,5 +1,4 @@
 {
-  "hyphenatedCaseRef": "1714-0484-2347-8720",
   "caseBundleIdsAndTimestamps": [
     {
       "id": "1",
@@ -32,7 +31,8 @@
         "title": "CIC Bundle",
         "description": "",
         "stitchedDocument": {
-          "document_filename": "1-cicBundle.pdf"
+          "document_filename": "1-cicBundle.pdf",
+          "category_id": "BD"
         },
         "folders": [
           {
@@ -123,7 +123,8 @@
         "title": "CIC Bundle",
         "description": "",
         "stitchedDocument": {
-          "document_filename": "2-cicBundle.pdf"
+          "document_filename": "2-cicBundle.pdf",
+          "category_id": "BD"
         },
         "folders": [
           {
@@ -214,7 +215,8 @@
         "title": "CIC Bundle",
         "description": "",
         "stitchedDocument": {
-          "document_filename": "3-cicBundle.pdf"
+          "document_filename": "3-cicBundle.pdf",
+          "category_id": "BD"
         },
         "folders": [
           {

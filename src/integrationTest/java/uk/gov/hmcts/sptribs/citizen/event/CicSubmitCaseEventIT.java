@@ -222,7 +222,7 @@ public class CicSubmitCaseEventIT {
                 status().isOk());
 
         verify(notificationClient).sendEmail(
-            eq("48ccf890-0550-48ca-8c52-fa68cec09947"),
+            eq("86e6988c-dfc8-43de-8890-e38269ee40d1"),
             eq("test@representative.com"),
             eq(Map.of(
                 TRIBUNAL_NAME, CIC,

@@ -8,6 +8,14 @@
   "cicCaseFormReceivedInTime": "Yes",
   "cicCaseDateOfBirth": "2000-01-01",
   "caseIssueDecisionIssueDecisionTemplate": "CIC1 - Eligibility",
+  "caseIssueDecisionDecisionDocument": {
+    "documentEmailContent": "Lorem ipsum case issue decision",
+    "documentLink": {
+      "document_url": "http://dm-store.service.core-compute.internal/documents/d06c860a-030a-4d23-933b-0d16042e6c45",
+      "document_filename": "pdf.pdf",
+      "document_binary_url": "http://dm-store.service.core-compute.internal/documents/d06c860a-030a-4d23-933b-0d16042e6c45/binary"
+      }
+  },
   "hearingStatus": "Complete",
   "firstHearingDate": "",
   "cicCaseSchemeCic": "Year2012",
@@ -29,7 +37,6 @@
     "valueCode": "7b98eb0a-c29e-44fe-82a9-d721c2352b9b",
     "valueLabel": "East London Tribunal Hearing Centre-2 Clove Crescent, East India Dock London"
   },
-  "hyphenatedCaseRef": "1716-8905-3287-8722",
   "subjectFlags": {
     "partyName": "Testing subject",
     "roleOnCase": "subject",
@@ -53,9 +60,9 @@
         "documentCategory": "ApplicationForm",
         "documentEmailContent": "Lorem ipsum application form",
         "documentLink": {
-          "document_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/d06c860a-030a-4d23-933b-0d16042e6c45",
+          "document_url": "http://dm-store.service.core-compute.internal/documents/d06c860a-030a-4d23-933b-0d16042e6c45",
           "document_filename": "pdf.pdf",
-          "document_binary_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/d06c860a-030a-4d23-933b-0d16042e6c45/binary",
+          "document_binary_url": "http://dm-store.service.core-compute.internal/documents/d06c860a-030a-4d23-933b-0d16042e6c45/binary",
           "category_id": "A"
         }
       },
@@ -72,6 +79,8 @@
   ],
   "numberOfDays": "No",
   "cicCaseIsRepresentativePresent": "No",
+  "cicCaseNotifyPartySubject": ["SubjectCIC"],
+  "cicCaseFullName": "Testing subject",
   "hearingCreatedDate": "2024-05-28",
   "outcome": "Allowed",
   "cicCaseClaimLinkedToCic": "No",

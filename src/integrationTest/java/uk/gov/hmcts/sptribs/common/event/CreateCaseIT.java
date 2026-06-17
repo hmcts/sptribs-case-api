@@ -106,6 +106,7 @@ public class CreateCaseIT {
             .caseDocumentsUpload(getCaseworkerCICDocumentUploadList("file.pdf"))
             .build();
         caseData.setCicCase(cicCase);
+        caseData.setHyphenatedCaseRef(TEST_CASE_ID_HYPHENATED);
 
         String response = mockMvc.perform(post(ABOUT_TO_SUBMIT_URL)
             .contentType(APPLICATION_JSON)

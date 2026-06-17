@@ -13,6 +13,9 @@ spring:
     username: test
     password: test
     driver-class-name: org.testcontainers.jdbc.ContainerDatabaseDriver
+    hikari:
+      maximum-pool-size: 1
+      minimum-idle: 0
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
   jms:

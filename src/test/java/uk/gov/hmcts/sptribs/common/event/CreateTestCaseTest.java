@@ -14,6 +14,7 @@ import uk.gov.hmcts.ccd.sdk.api.Event;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
+import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.cdam.model.Document;
 import uk.gov.hmcts.sptribs.cdam.model.UploadResponse;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
@@ -23,15 +24,19 @@ import uk.gov.hmcts.sptribs.common.config.AppsConfig;
 import uk.gov.hmcts.sptribs.common.service.CcdSupplementaryDataService;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
+import uk.gov.hmcts.sptribs.document.services.DocumentsService;
 import uk.gov.hmcts.sptribs.services.cdam.CaseDocumentClientApi;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import static java.lang.String.format;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
@@ -65,6 +70,9 @@ public class CreateTestCaseTest {
 
     @Mock
     private CcdSupplementaryDataService ccdSupplementaryDataService;
+
+    @Mock
+    private DocumentsService documentsService;
 
     @Test
     void shouldAddConfigurationToConfigBuilder() {
@@ -117,8 +125,6 @@ public class CreateTestCaseTest {
             .documentCategory(DocumentType.APPLICATION_FORM)
             .documentEmailContent("This is a test document uploaded during create case journey")
             .build();
-        final ListValue<CaseworkerCICDocument> expectedCICDocumentListValue =
-            ListValue.<CaseworkerCICDocument>builder().value(expectedCICDocument).build();
 
         UploadResponse expectedResponse = new UploadResponse();
         expectedResponse.setDocuments(expectedDocuments);
@@ -146,5 +152,44 @@ public class CreateTestCaseTest {
         createTestCase.submitted(caseDetails, caseDetails);
 
         verify(ccdSupplementaryDataService).submitSupplementaryDataToCcd(TEST_CASE_ID.toString());
+    }
+
+    @Test
+    void shouldReturnFailureResponseHeaderWhenBuildAndSaveNewDocumentEntityThrowsRuntimeException() throws JsonProcessingException {
+        List<ListValue<CaseworkerCICDocument>> testDocumentList = new ArrayList<>();
+        uk.gov.hmcts.ccd.sdk.type.Document testDocument1 = uk.gov.hmcts.ccd.sdk.type.Document.builder()
+            .url("test.com/document1.pdf")
+            .filename("document1.pdf")
+            .build();
+        CaseworkerCICDocument testCaseworkerCICDocument1 = CaseworkerCICDocument.builder()
+            .documentLink(testDocument1)
+            .documentCategory(DocumentType.DSS_TRIBUNAL_FORM)
+            .build();
+        ListValue<CaseworkerCICDocument> testListValueCaseworkerCICDocument1 = new ListValue<>();
+        testListValueCaseworkerCICDocument1.setId("1");
+        testListValueCaseworkerCICDocument1.setValue(testCaseworkerCICDocument1);
+        testDocumentList.add(testListValueCaseworkerCICDocument1);
+
+        final CaseData caseData = caseData();
+        caseData.setHyphenatedCaseRef(caseData.formatCaseRef(TEST_CASE_ID));
+        caseData.getCicCase().setApplicantDocumentsUploaded(testDocumentList);
+
+        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+        caseDetails.setId(TEST_CASE_ID);
+        caseDetails.setData(caseData);
+        caseDetails.setState(Submitted);
+
+        doThrow(new RuntimeException("Error saving document entity to database"))
+            .when(documentsService).buildAndSaveNewDocumentEntity(any(), eq(TEST_CASE_ID), eq(false));
+
+        SubmittedCallbackResponse response =
+            createTestCase.submitted(caseDetails, caseDetails);
+
+        assertThat(response.getConfirmationHeader())
+            .contains(format("# Create case notification failed %n## Please resend the notification"));
+
+        verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
+            any(), eq(TEST_CASE_ID), eq(false)
+        );
     }
 }

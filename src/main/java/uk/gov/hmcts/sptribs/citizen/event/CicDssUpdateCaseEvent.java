@@ -22,6 +22,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.document.model.CitizenCICDocument;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
+import uk.gov.hmcts.sptribs.document.services.DocumentsService;
 import uk.gov.hmcts.sptribs.idam.IdamService;
 import uk.gov.hmcts.sptribs.notification.dispatcher.DssUpdateCaseSubmissionNotification;
 
@@ -37,6 +38,7 @@ import static org.apache.commons.lang.StringUtils.isNotBlank;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.util.CollectionUtils.isEmpty;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CITIZEN_DSS_UPDATE_CASE_SUBMISSION;
+import static uk.gov.hmcts.sptribs.caseworker.util.MessageUtil.handleDocumentException;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.DSS_Draft;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.DSS_Expired;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.Draft;
@@ -72,6 +74,9 @@ public class CicDssUpdateCaseEvent implements CCDConfig<CaseData, State, UserRol
     @Autowired
     private Clock clock;
 
+    @Autowired
+    private DocumentsService documentsService;
+
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         Event.EventBuilder<CaseData, UserRole, State> eventBuilder =
@@ -100,15 +105,18 @@ public class CicDssUpdateCaseEvent implements CCDConfig<CaseData, State, UserRol
 
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(CaseDetails<CaseData, State> details,
                                                                        CaseDetails<CaseData, State> beforeDetails) {
+        final List<String> errors = new ArrayList<>();
 
-        final CaseData caseData = addDocumentsToCaseData(details.getData(), details.getData().getDssCaseData());
+        final CaseData caseData = addDocumentsToCaseData(details.getData(), details.getData().getDssCaseData(), errors);
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
-            .data(caseData)
-            .build();
+                .data(caseData)
+                .errors(errors)
+                .build();
     }
 
-    private CaseData addDocumentsToCaseData(final CaseData caseData, final DssCaseData dssCaseData) {
+    private CaseData addDocumentsToCaseData(final CaseData caseData, final DssCaseData dssCaseData, List<String> errors)
+        throws RuntimeException {
         final List<CaseworkerCICDocument> documentList = new ArrayList<>();
         final List<ListValue<DssMessage>> messagesList = new ArrayList<>();
 
@@ -161,6 +169,17 @@ public class CicDssUpdateCaseEvent implements CCDConfig<CaseData, State, UserRol
                     caseData.getCicCase().getApplicantDocumentsUploaded().stream(), documentListUpdated.stream()).toList();
         caseData.getCicCase().setApplicantDocumentsUploaded(applicantDocumentsUploaded);
 
+        for (ListValue<CaseworkerCICDocument> document : documentListUpdated) {
+            try {
+                documentsService.buildAndSaveNewDocumentEntity(
+                    document.getValue().getDocumentLink(),
+                    Long.parseLong(caseData.getHyphenatedCaseRef().replace("-", "")),
+                    false
+                );
+            } catch (RuntimeException e) {
+                errors.add(handleDocumentException(document.getValue().getDocumentLink(), e.getMessage()));
+            }
+        }
         dssCaseData.setOtherInfoDocuments(new ArrayList<>());
         dssCaseData.setAdditionalInformation(null);
         caseData.setDssCaseData(dssCaseData);
