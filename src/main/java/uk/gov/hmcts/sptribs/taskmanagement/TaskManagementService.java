@@ -140,7 +140,9 @@ public class TaskManagementService {
     }
 
     private List<TaskPermission> getTaskPermissions(TaskType taskType) {
-        return getTaskAccess(taskType).stream().map(TaskAccess::toTaskPermission).toList();
+        return getTaskAccess(taskType).stream()
+            .map(taskAccess -> taskAccess.toTaskPermission(taskType.getRoleCategory()))
+            .toList();
     }
 
     private List<TaskAccess> getTaskAccess(TaskType taskType) {

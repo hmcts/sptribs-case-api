@@ -536,6 +536,9 @@ em-ccdorc:
       CALLBACK_DOMAIN: em-ccdorc-${SERVICE_FQDN}
       CALLBACK_HTTP_SCHEME: https
       APPLICATIONINSIGHTS_INSTRUMENTATION_LOGGING_LEVEL: WARN
+      IDAM_SECURITY_ALLOWED_ISSUERS_0: https://idam-web-public.aat.platform.hmcts.net/o
+      IDAM_SECURITY_ALLOWED_ISSUERS_1: https://hmcts-access.aat.platform.hmcts.net/o
+      IDAM_SECURITY_ALLOWED_ISSUERS_2: https://forgerock-am.service.core-compute-idam-aat2.internal:8443/openam/oauth2/realms/root/realms/hmcts
     keyVaults:
       em-ccdorc:
         resourceGroup: em-ccdorc
@@ -562,6 +565,12 @@ em-stitching:
       RUN_DB_MIGRATION_ON_STARTUP: true
       FLYWAY_POSTGRESQL_TRANSACTIONAL_LOCK: false
       APPLICATIONINSIGHTS_INSTRUMENTATION_LOGGING_LEVEL: WARN
+      CALLBACK_HTTP_SCHEME: http
+      CALLBACK_HTTP_HOST_PORT: 80
+      CALLBACK_DOMAINS: localhost,platform.hmcts.net
+      IDAM_SECURITY_ALLOWED_ISSUERS_0: https://idam-web-public.aat.platform.hmcts.net/o
+      IDAM_SECURITY_ALLOWED_ISSUERS_1: https://hmcts-access.aat.platform.hmcts.net/o
+      IDAM_SECURITY_ALLOWED_ISSUERS_2: https://forgerock-am.service.core-compute-idam-aat2.internal:8443/openam/oauth2/realms/root/realms/hmcts
     secrets:
       SPRING_DATASOURCE_PASSWORD:
         secretRef: postgres

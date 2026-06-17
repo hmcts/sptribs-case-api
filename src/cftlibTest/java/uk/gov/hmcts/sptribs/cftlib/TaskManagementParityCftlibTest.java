@@ -2,11 +2,14 @@ package uk.gov.hmcts.sptribs.cftlib;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.http.NameValuePair;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.entity.ContentType;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -20,7 +23,6 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.test.context.TestPropertySource;
 import uk.gov.hmcts.reform.ccd.client.CoreCaseDataApi;
 import uk.gov.hmcts.reform.ccd.client.model.StartEventResponse;
-import uk.gov.hmcts.reform.idam.client.IdamClient;
 import uk.gov.hmcts.rse.ccd.lib.test.CftlibTest;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
@@ -29,6 +31,7 @@ import uk.gov.hmcts.sptribs.taskmanagement.model.ProcessCategoryIdentifiers;
 import uk.gov.hmcts.sptribs.taskmanagement.model.TaskType;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Duration;
@@ -38,6 +41,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -163,9 +167,6 @@ class TaskManagementParityCftlibTest extends CftlibTest {
     private NamedParameterJdbcTemplate db;
 
     @Autowired
-    private IdamClient idam;
-
-    @Autowired
     private CoreCaseDataApi ccdApi;
 
     @Autowired
@@ -175,6 +176,7 @@ class TaskManagementParityCftlibTest extends CftlibTest {
     private TaskManagementService taskManagementService;
 
     private final Map<String, Map<String, Object>> fixtureCache = new HashMap<>();
+    private final Map<String, String> authorisationCache = new HashMap<>();
     private Map<String, Object> createCaseSeedData;
 
     @BeforeAll
@@ -819,7 +821,16 @@ class TaskManagementParityCftlibTest extends CftlibTest {
     }
 
     private void clearTaskOutbox(long caseId) {
-        db.update("DELETE FROM ccd.task_outbox WHERE case_id = :caseId", Map.of("caseId", String.valueOf(caseId)));
+        db.update(
+            """
+                DELETE FROM ccd.task_outbox_history
+                WHERE task_outbox_id IN (
+                    SELECT id FROM ccd.task_outbox WHERE case_id = :caseId
+                )
+                """,
+            Map.of("caseId", caseId)
+        );
+        db.update("DELETE FROM ccd.task_outbox WHERE case_id = :caseId", Map.of("caseId", caseId));
     }
 
     private void seedTasksForTermination(long caseId, List<TaskType> taskTypes) {
@@ -833,9 +844,19 @@ class TaskManagementParityCftlibTest extends CftlibTest {
 
         await().atMost(Duration.ofSeconds(45)).untilAsserted(() -> {
             List<Map<String, Object>> rows = db.queryForList(
-                "SELECT status, last_response_code FROM ccd.task_outbox "
-                    + "WHERE case_id = :caseId AND action = :action::ccd.task_action",
-                Map.of("caseId", String.valueOf(caseId), "action", "initiate")
+                """
+                    SELECT o.status, h.response_code AS last_response_code
+                    FROM ccd.task_outbox o
+                    LEFT JOIN LATERAL (
+                        SELECT response_code
+                        FROM ccd.task_outbox_history h
+                        WHERE h.task_outbox_id = o.id
+                        ORDER BY h.id DESC
+                        LIMIT 1
+                    ) h ON TRUE
+                    WHERE o.case_id = :caseId AND o.requested_action = :action::ccd.task_action
+                    """,
+                Map.of("caseId", caseId, "action", "initiate")
             );
             assertThat(rows).hasSize(distinctTaskTypes.size());
             rows.forEach(this::assertProcessedRow);
@@ -853,9 +874,21 @@ class TaskManagementParityCftlibTest extends CftlibTest {
 
         await().atMost(Duration.ofSeconds(45)).untilAsserted(() -> {
             List<Map<String, Object>> rows = db.queryForList(
-                "SELECT status, last_response_code, payload->'task'->>'type' AS task_type "
-                    + "FROM ccd.task_outbox WHERE case_id = :caseId AND action = :action::ccd.task_action",
-                Map.of("caseId", String.valueOf(caseId), "action", "initiate")
+                """
+                    SELECT o.status,
+                           h.response_code AS last_response_code,
+                           o.payload->'task'->>'type' AS task_type
+                    FROM ccd.task_outbox o
+                    LEFT JOIN LATERAL (
+                        SELECT response_code
+                        FROM ccd.task_outbox_history h
+                        WHERE h.task_outbox_id = o.id
+                        ORDER BY h.id DESC
+                        LIMIT 1
+                    ) h ON TRUE
+                    WHERE o.case_id = :caseId AND o.requested_action = :action::ccd.task_action
+                    """,
+                Map.of("caseId", caseId, "action", "initiate")
             );
             assertThat(rows).hasSize(expectedTypes.size());
             assertThat(rows.stream().map(row -> String.valueOf(row.get("task_type"))).toList())
@@ -874,11 +907,24 @@ class TaskManagementParityCftlibTest extends CftlibTest {
 
         await().atMost(Duration.ofSeconds(45)).untilAsserted(() -> {
             Map<String, Object> row = db.queryForMap(
-                "SELECT status, last_response_code, "
-                    + "COALESCE(payload->'task_types', payload->'task_type', payload->'taskType')::text AS task_types "
-                    + "FROM ccd.task_outbox WHERE case_id = :caseId AND action = :action::ccd.task_action "
-                    + "ORDER BY id DESC LIMIT 1",
-                Map.of("caseId", String.valueOf(caseId), "action", action.toLowerCase(Locale.ROOT))
+                """
+                    SELECT o.status,
+                           h.response_code AS last_response_code,
+                           COALESCE(o.payload->'task_types', o.payload->'task_type', o.payload->'taskType')::text
+                               AS task_types
+                    FROM ccd.task_outbox o
+                    LEFT JOIN LATERAL (
+                        SELECT response_code
+                        FROM ccd.task_outbox_history h
+                        WHERE h.task_outbox_id = o.id
+                        ORDER BY h.id DESC
+                        LIMIT 1
+                    ) h ON TRUE
+                    WHERE o.case_id = :caseId AND o.requested_action = :action::ccd.task_action
+                    ORDER BY o.id DESC
+                    LIMIT 1
+                    """,
+                Map.of("caseId", caseId, "action", action.toLowerCase(Locale.ROOT))
             );
             assertProcessedRow(row);
             List<String> actualTypes = parseJsonArray(row.get("task_types"));
@@ -891,8 +937,8 @@ class TaskManagementParityCftlibTest extends CftlibTest {
     private void assertNoTaskOutboxAction(long caseId, String action) {
         await().atMost(Duration.ofSeconds(20)).untilAsserted(() -> {
             Integer count = db.queryForObject(
-                "SELECT count(*) FROM ccd.task_outbox WHERE case_id = :caseId AND action = :action::ccd.task_action",
-                Map.of("caseId", String.valueOf(caseId), "action", action.toLowerCase(Locale.ROOT)),
+                "SELECT count(*) FROM ccd.task_outbox WHERE case_id = :caseId AND requested_action = :action::ccd.task_action",
+                Map.of("caseId", caseId, "action", action.toLowerCase(Locale.ROOT)),
                 Integer.class
             );
             assertThat(count).isEqualTo(0);
@@ -933,11 +979,11 @@ class TaskManagementParityCftlibTest extends CftlibTest {
             overlay.putIfAbsent("cicCaseOrderIssuingType", "UploadOrder");
             overlay.putIfAbsent("cicCaseAdminActionRequired", null);
             overlay.putIfAbsent("cicCaseFirstOrderDueDate", null);
-            overlay.putIfAbsent("cicCaseOrderDueDates", List.of());
+            overlay.putIfAbsent("orderDueDates", List.of());
             Object firstDueDate = overlay.get("cicCaseFirstOrderDueDate");
             if (firstDueDate instanceof String dueDate && !dueDate.isBlank()) {
                 overlay.put(
-                    "cicCaseOrderDueDates",
+                    "orderDueDates",
                     List.of(Map.of("id", "1", "value", Map.of("dueDate", dueDate)))
                 );
             }
@@ -1014,7 +1060,51 @@ class TaskManagementParityCftlibTest extends CftlibTest {
     }
 
     private String getAuthorisation(String user) {
-        return idam.getAccessToken(user, "");
+        return authorisationCache.computeIfAbsent(user, this::requestAuthorisationFromLocalIdam);
+    }
+
+    private String requestAuthorisationFromLocalIdam(String user) {
+        String baseUrl = Optional.ofNullable(System.getenv("IDAM_API_BASEURL")).orElse("http://localhost:5062");
+        String clientId = Optional.ofNullable(System.getenv("IDAM_CLIENT_ID")).orElse("sptribs-case-api");
+        String clientSecret = Optional.ofNullable(System.getenv("IDAM_CLIENT_SECRET"))
+            .orElse("thUphEveC2Ekuqedaneh4jEcRuba4t2t");
+        String redirectUri = Optional.ofNullable(System.getenv("IDAM_CLIENT_REDIRECT_URI"))
+            .orElse("http://localhost:3001/receiver");
+        String password = Optional.ofNullable(System.getenv("IDAM_CASEWORKER_PASSWORD")).orElse("password");
+
+        List<NameValuePair> params = List.of(
+            new BasicNameValuePair("grant_type", "password"),
+            new BasicNameValuePair("client_id", clientId),
+            new BasicNameValuePair("client_secret", clientSecret),
+            new BasicNameValuePair("redirect_uri", redirectUri),
+            new BasicNameValuePair("username", user),
+            new BasicNameValuePair("password", password),
+            new BasicNameValuePair("scope", "openid profile roles")
+        );
+
+        HttpPost request = new HttpPost(baseUrl + "/o/token");
+        request.setHeader("Content-Type", "application/x-www-form-urlencoded");
+
+        try {
+            request.setEntity(new UrlEncodedFormEntity(params, StandardCharsets.UTF_8));
+            var response = HttpClientBuilder.create().build().execute(request);
+            try {
+                int status = response.getStatusLine().getStatusCode();
+                String responseBody = EntityUtils.toString(response.getEntity());
+                assertThat(status)
+                    .as("IDAM token request must return 200 for %s. body=%s", user, responseBody)
+                    .isEqualTo(200);
+                String accessToken = mapper.readTree(responseBody).path("access_token").asText("");
+                assertThat(accessToken)
+                    .as("IDAM token response must contain access_token for %s. body=%s", user, responseBody)
+                    .isNotBlank();
+                return "Bearer " + accessToken;
+            } finally {
+                response.close();
+            }
+        } catch (IOException ex) {
+            throw new IllegalStateException("Unable to request IDAM token for " + user, ex);
+        }
     }
 
     private String getServiceAuth() {

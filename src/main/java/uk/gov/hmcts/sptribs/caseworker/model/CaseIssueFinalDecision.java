@@ -1,5 +1,6 @@
 package uk.gov.hmcts.sptribs.caseworker.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.AllArgsConstructor;
@@ -12,6 +13,8 @@ import uk.gov.hmcts.sptribs.ciccase.model.DecisionTemplate;
 import uk.gov.hmcts.sptribs.ciccase.model.access.CaseworkerWithCAAAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.DefaultAccess;
 import uk.gov.hmcts.sptribs.document.model.CICDocument;
+
+import java.time.LocalDate;
 
 import static uk.gov.hmcts.ccd.sdk.type.FieldType.FixedList;
 
@@ -54,4 +57,11 @@ public class CaseIssueFinalDecision {
         access = {DefaultAccess.class}
     )
     private CICDocument document;
+
+    @CCD(
+        label = "Final Decision Date",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private LocalDate finalDecisionDate;
 }

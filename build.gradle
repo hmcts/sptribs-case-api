@@ -429,6 +429,7 @@ dependencies {
   testAnnotationProcessor group: 'org.projectlombok', name: 'lombok', version: versions.lombok
   integrationTestImplementation sourceSets.main.runtimeClasspath
   integrationTestImplementation sourceSets.test.runtimeClasspath
+  integrationTestImplementation group: 'org.springframework.boot', name: 'spring-boot-testcontainers'
   integrationTestImplementation group: 'org.testcontainers', name: 'junit-jupiter', version: '1.21.4'
   integrationTestImplementation group: 'org.testcontainers', name: 'postgresql', version: '1.21.4'
 
@@ -465,13 +466,63 @@ def loadEnvSecretsTask = tasks.register('loadEnvSecrets') {
   doLast {
     if (!project.file('./.aat-env').exists()) {
       new ByteArrayOutputStream().withStream { os ->
+        def azPath = ['which', 'az'].execute().text.trim()
         exec {
-          commandLine 'az', 'keyvault', 'secret', 'show', '--vault-name', 'sptribs-aat', '-o', 'tsv', '--query', 'value', '--name', 'sptribs-case-api-dot-env'
+          commandLine azPath, 'keyvault', 'secret', 'show', '--vault-name', 'sptribs-aat', '-o', 'tsv', '--query', 'value', '--name', 'sptribs-case-api-dot-env'
           standardOutput = os
         }
         project.file('./.aat-env').write(new String(os.toString().replace('\n', '').decodeBase64(), java.nio.charset.StandardCharsets.UTF_8))
       }
     }
+  }
+}
+
+
+def loadLocalEnvSecretsTask = tasks.register('loadLocalEnvSecrets') {
+  doLast {
+    if (!project.file('./.local-env').exists()) {
+      new ByteArrayOutputStream().withStream { os ->
+        def azPath = ['which', 'az'].execute().text.trim()
+        exec {
+          commandLine azPath, 'keyvault', 'secret', 'show', '--vault-name', 'sptribs-preview', '-o', 'tsv', '--query', 'value', '--name', 'sptribs-case-api-dot-env'
+          standardOutput = os
+          environment 'PATH', System.getenv('PATH')
+        }
+        project.file('./.local-env').write(new String(os.toString().replace('\n', '').decodeBase64(), java.nio.charset.StandardCharsets.UTF_8))
+      }
+    }
+  }
+}
+
+
+def loadEnvFile = { task ->
+
+  def envFile = project.file('./.local-env').exists()
+    ? project.file('./.local-env')
+    : project.file('./.aat-env').exists()
+    ? project.file('./.aat-env')
+    : null
+
+  if (!envFile) {
+    println "No env file found"
+    return
+  }
+
+  println "Loading env from: ${envFile.name}"
+
+  envFile.readLines().each { line ->
+
+    line = line.trim()
+
+    if (!line || line.startsWith("#") || !line.contains("=")) {
+      return
+    }
+
+    def index = line.indexOf("=")
+    def key = line.substring(0, index).trim()
+    def value = line.substring(index + 1).trim()
+
+    task.environment key, value
   }
 }
 
@@ -481,20 +532,15 @@ tasks.register('reloadEnvSecrets') {
     if (project.file('./.aat-env').exists()) {
       project.file('./.aat-env').delete()
     }
+    if (project.file('./.local-env').exists()) {
+      project.file('./.local-env').delete()
+    }
   }
 }
 
 bootRun {
-  doFirst() {
-    if (project.file('./.aat-env').exists()) {
-      project.file('./.aat-env').readLines().each() {
-        def index = it.indexOf("=")
-        def key = it.substring(0, index)
-        def value = it.substring(index + 1)
-        environment key, value
-      }
-    }
-  }
+  dependsOn loadEnvSecretsTask
+  doFirst() { loadEnvFile(it) }
 }
 
 bootJar {
@@ -508,15 +554,8 @@ bootJar {
 }
 
 functional {
-  doFirst() {
-    if (project.file('./.aat-env').exists()) {
-      project.file('./.aat-env').readLines().each() {
-        def index = it.indexOf("=")
-        def key = it.substring(0, index)
-        def value = it.substring(index + 1)
-        environment key, value
-      }
-    }
+  doFirst {
+    loadEnvFile(it)
   }
 }
 
@@ -550,11 +589,30 @@ ccd {
 }
 
 def localRseCftLibDir = file('../rse-cft-lib')
-def localWaTaskManagementApiDir = file("${localRseCftLibDir}/projects/wa-task-management-api")
+def localDtsseCcdConfigGeneratorDir = file('../dtsse-ccd-config-generator')
+def localDtsseWaTaskManagementApiDir = file("${localDtsseCcdConfigGeneratorDir}/wa-task-management-api")
+def localRseWaTaskManagementApiDir = file("${localRseCftLibDir}/projects/wa-task-management-api")
+// Prefer the newer local WA API source when present so cftlib parity tests match the current /tasks response contract.
+def localWaTaskManagementApiDir = localDtsseWaTaskManagementApiDir.exists()
+    ? localDtsseWaTaskManagementApiDir
+    : localRseWaTaskManagementApiDir
 def localCftLibPublishingInit = file("${localRseCftLibDir}/cftlib/buildSrc/configurePublishing.gradle")
 def localWaPublishingFixInit = file("$rootDir/gradle/wa-publish-fix.init.gradle")
 def localWaM2Jar = file("${System.properties['user.home']}/.m2/repository/com/github/hmcts/rse-cft-lib/wa-task-management-api/0.19.2017/wa-task-management-api-0.19.2017.jar")
-def useLocalWaTaskManagementApi = (project.findProperty('useLocalWaTaskManagementApi') ?: 'false').toString().toBoolean()
+def resolveLocalDtsseWaPlainJar = {
+  def jars = fileTree(dir: "${localDtsseWaTaskManagementApiDir}/build/libs", include: 'wa-task-management-api*-plain.jar')
+      .files
+      .toList()
+      .sort { it.name }
+  jars ? jars.last() : file("${localDtsseWaTaskManagementApiDir}/build/libs/wa-task-management-api-plain.jar")
+}
+def resolveLocalWaOverrideJar = {
+  localDtsseWaTaskManagementApiDir.exists() ? resolveLocalDtsseWaPlainJar() : localWaM2Jar
+}
+def useLocalWaTaskManagementApi = (
+    project.findProperty('useLocalWaTaskManagementApi')
+        ?: (localDtsseWaTaskManagementApiDir.exists() ? 'true' : 'false')
+).toString().toBoolean()
 
 tasks.register('publishLocalWaTaskManagementApiToMavenLocal', Exec) {
   group = 'ccd tasks'
@@ -562,20 +620,28 @@ tasks.register('publishLocalWaTaskManagementApiToMavenLocal', Exec) {
   onlyIf {
     useLocalWaTaskManagementApi
         && localWaTaskManagementApiDir.exists()
-        && localCftLibPublishingInit.exists()
-        && localWaPublishingFixInit.exists()
+        && (
+            (localDtsseWaTaskManagementApiDir.exists() && localDtsseCcdConfigGeneratorDir.exists())
+                || (localCftLibPublishingInit.exists() && localWaPublishingFixInit.exists())
+        )
   }
-  workingDir localWaTaskManagementApiDir
-  commandLine './gradlew', '--no-daemon',
-      '-I', localCftLibPublishingInit.absolutePath,
-      '-I', localWaPublishingFixInit.absolutePath,
-      'publishToMavenLocal'
-  environment 'RELEASE_VERSION', '0.19.2017'
+  if (localDtsseWaTaskManagementApiDir.exists()) {
+    workingDir localDtsseCcdConfigGeneratorDir
+    commandLine './gradlew', '--no-daemon', ':wa-task-management-api:jar'
+  } else {
+    workingDir localWaTaskManagementApiDir
+    commandLine './gradlew', '--no-daemon',
+        '-I', localCftLibPublishingInit.absolutePath,
+        '-I', localWaPublishingFixInit.absolutePath,
+        'publishToMavenLocal'
+    environment 'RELEASE_VERSION', '0.19.2017'
+  }
 }
 
 tasks.withType(CftlibExec).configureEach {
   dependsOn tasks.named('publishLocalWaTaskManagementApiToMavenLocal')
   environment 'RSE_LIB_ADDITIONAL_DATABASES', 'sptribs'
+  environment 'RSE_LIB_STUB_AUTH_OUTBOUND', 'false'
   environment 'CCD_DECENTRALISED_CASE-TYPE-SERVICE-URLS_CriminalInjuriesCompensation', 'http://localhost:4013'
   environment 'SPRING_JMS_SERVICEBUS_ENABLED', 'false'
   // The IDAM simulator authorizes /api/v1/users requests only when the token subject exists in simulator memory.
@@ -583,16 +649,29 @@ tasks.withType(CftlibExec).configureEach {
   // Keep explicit env override support for local/custom setups.
   environment 'IDAM_DATA_STORE_SYSTEM_USER_USERNAME',
       System.getenv('IDAM_DATA_STORE_SYSTEM_USER_USERNAME') ?: 'TEST_CASE_WORKER_USER@mailinator.com'
+  environment 'IDAM_SYSTEM_UPDATE_USERNAME',
+      System.getenv('IDAM_SYSTEM_UPDATE_USERNAME') ?: 'TEST_CASE_WORKER_USER@mailinator.com'
+  environment 'IDAM_SYSTEM_UPDATE_PASSWORD', System.getenv('IDAM_SYSTEM_UPDATE_PASSWORD') ?: 'password'
+  environment 'IDAM_API_BASEURL', 'http://localhost:5062'
+  environment 'IDAM_URL', 'http://localhost:5062'
+  environment 'OPEN_ID_IDAM_URL', 'http://localhost:5062'
+  environment 'WA_SYSTEM_USERNAME', System.getenv('WA_SYSTEM_USERNAME') ?: 'TEST_CASE_WORKER_USER@mailinator.com'
+  environment 'WA_SYSTEM_PASSWORD', System.getenv('WA_SYSTEM_PASSWORD') ?: 'password'
+  environment 'WA_IDAM_CLIENT_ID', System.getenv('WA_IDAM_CLIENT_ID') ?: 'sptribs-case-api'
+  environment 'WA_IDAM_CLIENT_SECRET',
+      System.getenv('WA_IDAM_CLIENT_SECRET') ?: 'thUphEveC2Ekuqedaneh4jEcRuba4t2t'
+  environment 'IA_IDAM_REDIRECT_URI', System.getenv('IA_IDAM_REDIRECT_URI') ?: 'http://localhost:3001/receiver'
   environment 'TASK_MANAGEMENT_EXCLUSIVE_CLIENTS',
       'wa_task_management_api,wa_task_monitor,wa_case_event_handler,wa_workflow_api,nfdiv_case_api,sptribs_case_api'
   environment 'TASK_MANAGEMENT_PRIVILEGED_CLIENTS',
       'wa_task_management_api,xui_webapp,ccd_case_disposer,sptribs_case_api'
   doFirst {
     def waManifest = file("$buildDir/cftlib/wa-task-management-api")
-    if (useLocalWaTaskManagementApi && waManifest.exists() && localWaM2Jar.exists()) {
+    def waOverrideJar = resolveLocalWaOverrideJar()
+    if (useLocalWaTaskManagementApi && waManifest.exists() && waOverrideJar.exists()) {
       def lines = waManifest.readLines()
       if (lines.size() > 1) {
-        lines[1] = localWaM2Jar.absolutePath
+        lines[1] = waOverrideJar.absolutePath
         waManifest.text = lines.join(System.lineSeparator()) + System.lineSeparator()
       }
     }
@@ -612,22 +691,16 @@ tasks.withType(CftlibExec).configureEach {
 }
 
 bootWithCCD {
-    environment 'XUI_JURISDICTIONS', 'ST_CIC'
-    environment 'CASE_DOCUMENT_S2S_AUTHORISED_SERVICES', 'ccd_case_document_am_api,ccd_gw,xui_webapp,ccd_data,bulk_scan_processor,em_npa_app,dg_docassembly_api,em_stitching_api,em_ccd_orchestrator,bulk_scan_orchestrator,sptribs_case_api,sptribs_frontend'
-    environment 'PDF_API_URL', 'http://rpe-pdf-service-aat.service.core-compute-aat.internal'
-    environment 'SPRING_JMS_SERVICEBUS_ENABLED', 'false'
-    environment 'TEST_SUPPORT_ENABLED', 'true'
-    group = 'ccd tasks'
-    dependsOn loadEnvSecretsTask
+  environment 'XUI_MO_PORT', '3003'
+  environment 'XUI_JURISDICTIONS', 'ST_CIC'
+  environment 'CASE_DOCUMENT_S2S_AUTHORISED_SERVICES', 'ccd_case_document_am_api,ccd_gw,xui_webapp,ccd_data,bulk_scan_processor,em_npa_app,dg_docassembly_api,em_stitching_api,em_ccd_orchestrator,bulk_scan_orchestrator,sptribs_case_api,sptribs_frontend'
+  environment 'PDF_API_URL', 'http://rpe-pdf-service-aat.service.core-compute-aat.internal'
+  environment 'SPRING_JMS_SERVICEBUS_ENABLED', 'false'
+  environment 'TEST_SUPPORT_ENABLED', 'true'
+  group = 'ccd tasks'
+  dependsOn loadEnvSecretsTask
 
-    doFirst() {
-        project.file('./.aat-env').readLines().each() {
-            def index = it.indexOf("=")
-            def key = it.substring(0, index)
-            def value = it.substring(index + 1)
-            environment key, value
-        }
-    }
+  doFirst() { loadEnvFile(it) }
 }
 
 assemble.dependsOn(dumpCCDDefinitions)

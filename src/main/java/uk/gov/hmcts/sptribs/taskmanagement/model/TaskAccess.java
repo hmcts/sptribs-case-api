@@ -108,7 +108,7 @@ public enum TaskAccess {
         this.authorisations = authorisations;
     }
 
-    public TaskPermission toTaskPermission() {
+    public TaskPermission toTaskPermission(String defaultRoleCategory) {
         String roleName = name()
             .toLowerCase()
             .replace("_specific_access", "")
@@ -116,10 +116,11 @@ public enum TaskAccess {
         List<String> authorisationsList = authorisations == Authorisations.NONE
             ? Collections.emptyList()
             : List.of(authorisations.getAuthorisation());
+        String resolvedRoleCategory = roleCategory == NONE ? defaultRoleCategory : roleCategory.getName();
 
         return TaskPermission.builder()
             .roleName(roleName)
-            .roleCategory(roleCategory.getName())
+            .roleCategory(resolvedRoleCategory)
             .permissions(permissions.stream()
                 .sorted(Comparator.comparingInt(Enum::ordinal))
                 .map(TaskOperation::name)
@@ -130,5 +131,4 @@ public enum TaskAccess {
             .build();
     }
 }
-
 

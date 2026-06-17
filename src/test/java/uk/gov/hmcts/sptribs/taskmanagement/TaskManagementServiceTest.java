@@ -190,6 +190,8 @@ class TaskManagementServiceTest {
         assertThat(payload.getPriorityDate()).isEqualTo(dueDate.atStartOfDay().atOffset(ZoneOffset.UTC));
         assertThat(payload.getPermissions()).extracting(TaskPermission::getRoleName)
             .containsExactly("senior-tribunal-caseworker", "tribunal-caseworker", "task-supervisor");
+        assertThat(payload.getPermissions()).extracting(TaskPermission::getRoleCategory)
+            .containsExactly("LEGAL_OPERATIONS", "LEGAL_OPERATIONS", "LEGAL_OPERATIONS");
     }
 
     @Test
@@ -206,6 +208,8 @@ class TaskManagementServiceTest {
 
         assertThat(payload.getPermissions()).extracting(TaskPermission::getRoleName)
             .containsExactly("senior-judge", "judge", "task-supervisor");
+        assertThat(payload.getPermissions()).extracting(TaskPermission::getRoleCategory)
+            .containsExactly("JUDICIAL", "JUDICIAL", "JUDICIAL");
     }
 
     @Test

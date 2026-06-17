@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.ArgumentMatchers;
+import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -45,6 +46,7 @@ class CaseEventRepositoryTest {
     private CaseEventRepository caseEventRepository;
 
     private static final String CASE_EVENT_ID = "caseworker-remove-document";
+    private static final String TEST_EVENT_ID = "test-event-id";
     private static final LocalDate START_DATE = LocalDate.of(2026, 2, 24);
     private static final LocalDate END_DATE = LocalDate.of(2026, 3, 6);
     private static final Long REFERENCE = 12345L;
@@ -90,6 +92,17 @@ class CaseEventRepositoryTest {
 
     @Nested
     class GetListOfCasesByEventIdDuringDateRange {
+        private static final String SKIP_CASE_IF_EVENT_EXISTS =
+            """
+            AND cd.id NOT IN
+                (SELECT DISTINCT case_data_id FROM ccd.case_event WHERE event_id = :skipEventId)
+            """;
+
+        @Captor
+        private ArgumentCaptor<Map<String, Object>> paramsCaptor;
+
+        @Captor
+        private ArgumentCaptor<String> queryStringCaptor;
 
         @Test
         void shouldReturnListOfCaseReferences() {
@@ -104,8 +117,6 @@ class CaseEventRepositoryTest {
 
         @Test
         void shouldPassEndDatePlusOneDayAsParameter() {
-            ArgumentCaptor<Map<String, Object>> paramsCaptor = ArgumentCaptor.captor();
-
             when(namedParameterJdbcTemplate.query(
                 anyString(), paramsCaptor.capture(), ArgumentMatchers.<RowMapper<Long>>any()))
                 .thenReturn(List.of());
@@ -124,6 +135,32 @@ class CaseEventRepositoryTest {
             List<Long> results = caseEventRepository.getListOfCasesByEventIdDuringDateRange(CASE_EVENT_ID, START_DATE, END_DATE);
 
             assertThat(results).isEmpty();
+        }
+
+        @Test
+        void shouldUseQueryForSkippingEvents_additionalClauseToSkipCases() {
+            when(namedParameterJdbcTemplate.query(
+                queryStringCaptor.capture(), paramsCaptor.capture(), ArgumentMatchers.<RowMapper<Long>>any()))
+                .thenReturn(List.of());
+
+            caseEventRepository.getListOfCasesByEventIdDuringDateRange(CASE_EVENT_ID, START_DATE, END_DATE, TEST_EVENT_ID);
+
+            assertThat(queryStringCaptor.getValue()).isNotNull()
+                .contains(SKIP_CASE_IF_EVENT_EXISTS);
+            assertThat(paramsCaptor.getValue()).containsEntry("skipEventId", TEST_EVENT_ID);
+        }
+
+        @Test
+        void shouldUseQueryForSkippingEvents_noAdditionalClause() {
+            when(namedParameterJdbcTemplate.query(
+                queryStringCaptor.capture(), paramsCaptor.capture(), ArgumentMatchers.<RowMapper<Long>>any()))
+                .thenReturn(List.of());
+
+            caseEventRepository.getListOfCasesByEventIdDuringDateRange(CASE_EVENT_ID, START_DATE, END_DATE);
+
+            assertThat(queryStringCaptor.getValue()).isNotNull()
+                .doesNotContain(SKIP_CASE_IF_EVENT_EXISTS);
+            assertThat(paramsCaptor.getValue()).doesNotContainKey("skipEventId");
         }
 
         @Test
