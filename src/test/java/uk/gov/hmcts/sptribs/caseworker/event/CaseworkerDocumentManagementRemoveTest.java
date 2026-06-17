@@ -31,6 +31,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigBuilder;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.getEventsFrom;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID;
@@ -101,7 +104,6 @@ public class CaseworkerDocumentManagementRemoveTest {
             .documentLink(Document.builder().url("url1").binaryUrl("url1").filename("name1").build()).build();
         caseData.setCaseIssueFinalDecision(CaseIssueFinalDecision.builder().document(doc).build());
         caseData.setCaseIssueDecision(CaseIssueDecision.builder().decisionDocument(doc).build());
-        caseData.setHyphenatedCaseRef("1111-2222-3333-4444");
 
         CICDocument document = CICDocument.builder()
             .documentLink(Document.builder().url("url1").binaryUrl("url1").filename("name1").build()).build();
@@ -167,6 +169,7 @@ public class CaseworkerDocumentManagementRemoveTest {
         SubmittedCallbackResponse documentMgmtResponse = caseworkerDocumentManagementRemove.submitted(updatedCaseDetails, beforeDetails);
 
         //Then
+        verify(documentsService, times(12)).removeEntryFromDocumentTableByBinaryURL(anyString());
         assertThat(midResponse).isNotNull();
         assertThat(response).isNotNull();
         assertThat(documentMgmtResponse).isNotNull();
@@ -182,7 +185,6 @@ public class CaseworkerDocumentManagementRemoveTest {
             .documentLink(Document.builder().url("url1").binaryUrl("url1").filename("name1").build()).build();
         caseData.setCaseIssueFinalDecision(CaseIssueFinalDecision.builder().document(doc).build());
         caseData.setCaseIssueDecision(CaseIssueDecision.builder().decisionDocument(doc).build());
-        caseData.setHyphenatedCaseRef("1111-2222-3333-4444");
 
         CICDocument document = CICDocument.builder()
             .documentLink(Document.builder().url("url1").binaryUrl("url1").filename("name1").build()).build();
@@ -241,6 +243,7 @@ public class CaseworkerDocumentManagementRemoveTest {
         SubmittedCallbackResponse documentMgmtResponse = caseworkerDocumentManagementRemove.submitted(updatedCaseDetails, beforeDetails);
 
         //Then
+        verify(documentsService, times(7)).removeEntryFromDocumentTableByBinaryURL(anyString());
         assertThat(start).isNotNull();
         assertThat(midResponse).isNotNull();
         assertThat(response).isNotNull();

@@ -15,6 +15,7 @@ import static org.springframework.http.HttpStatus.OK;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.REMOVE_BUNDLES;
 import static uk.gov.hmcts.sptribs.testutil.CaseDataUtil.caseData;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.ABOUT_TO_START_URL;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.ABOUT_TO_SUBMIT_URL;
 import static uk.gov.hmcts.sptribs.testutil.TestResourceUtil.expectedResponse;
 
 @SpringBootTest
@@ -43,15 +44,15 @@ public class CaseworkerRemoveBundlesFT extends FunctionalTestSuite {
             .isEqualTo(json(expectedResponse(RESPONSE_ABOUT_TO_START)));
     }
 
-    //    @Test
-    //    public void shouldReturnCorrectBundleWhenAboutToSubmitCallbackIsInvoked() throws Exception {
-    //        final Map<String, Object> caseData = caseData(REQUEST_ABOUT_TO_SUBMIT);
-    //
-    //        final Response response = triggerCallback(caseData, REMOVE_BUNDLES, ABOUT_TO_SUBMIT_URL);
-    //
-    //        assertThat(response.getStatusCode()).isEqualTo(OK.value());
-    //        assertThatJson(response.asString())
-    //            .when(IGNORING_EXTRA_FIELDS)
-    //            .isEqualTo(json(expectedResponse(RESPONSE_ABOUT_TO_SUBMIT)));
-    //    }
+    @Test
+    public void shouldReturnCorrectBundleWhenAboutToSubmitCallbackIsInvoked() throws Exception {
+        final Map<String, Object> caseData = caseData(REQUEST_ABOUT_TO_SUBMIT);
+
+        final Response response = triggerCallback(caseData, REMOVE_BUNDLES, ABOUT_TO_SUBMIT_URL);
+
+        assertThat(response.getStatusCode()).isEqualTo(OK.value());
+        assertThatJson(response.asString())
+            .when(IGNORING_EXTRA_FIELDS)
+            .isEqualTo(json(expectedResponse(RESPONSE_ABOUT_TO_SUBMIT)));
+    }
 }

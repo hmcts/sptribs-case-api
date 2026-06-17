@@ -3,7 +3,6 @@ package uk.gov.hmcts.sptribs.caseworker.event;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Answers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -22,6 +21,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.document.bundling.model.Bundle;
 import uk.gov.hmcts.sptribs.document.bundling.model.BundleIdAndTimestamp;
+import uk.gov.hmcts.sptribs.document.service.DocumentsService;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -29,6 +29,8 @@ import java.util.List;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigBuilder;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.getEventsFrom;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID;
@@ -45,8 +47,8 @@ class CaseworkerRemoveBundlesTest {
     @InjectMocks
     private SelectBundles selectBundles;
 
-    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
-    private ListValue<Bundle> bundleListValue;
+    @Mock
+    private DocumentsService documentsService;
 
     private CaseData caseData;
 
@@ -180,62 +182,60 @@ class CaseworkerRemoveBundlesTest {
         assertThat(response.getData().getCicCase().getRemoveBundlesList().getValue()).isNull();
     }
 
-    //    @Test
-    //    void shouldSuccessfullyDeleteBundlesOnAboutToSubmit() {
-    //        UUID dynamicListElementCode1 = UUID.randomUUID();
-    //        UUID dynamicListElementCode2 = UUID.randomUUID();
-    //
-    //        List<DynamicListElement> removeBundleLabels = List.of(
-    //            DynamicListElement.builder()
-    //                .code(dynamicListElementCode1)
-    //                .label(caseData.getCaseBundles().getFirst().getValue().getDateAndTime() + " -- 1-cicBundle.pdf")
-    //                .build(),
-    //            DynamicListElement.builder()
-    //                .code(dynamicListElementCode2)
-    //                .label(caseData.getCaseBundles().get(1).getValue().getDateAndTime() + " -- 2-cicBundle.pdf")
-    //                .build(),
-    //            DynamicListElement.builder()
-    //                .code(UUID.randomUUID())
-    //                .label(caseData.getCaseBundles().get(2).getValue().getDateAndTime() + " -- 3-cicBundle.pdf")
-    //                .build()
-    //        );
-    //
-    //        List<DynamicListElement> selectedRemoveBundleLabels = List.of(
-    //            DynamicListElement.builder()
-    //                .code(dynamicListElementCode1)
-    //                .label(caseData.getCaseBundles().getFirst().getValue().getDateAndTime() + " -- 1-cicBundle.pdf")
-    //                .build(),
-    //            DynamicListElement.builder()
-    //                .code(dynamicListElementCode2)
-    //                .label(caseData.getCaseBundles().get(1).getValue().getDateAndTime() + " -- 2-cicBundle.pdf")
-    //                .build()
-    //        );
-    //
-    //        caseData.getCicCase().setRemoveBundlesList(DynamicMultiSelectList.builder()
-    //            .listItems(removeBundleLabels)
-    //            .value(selectedRemoveBundleLabels)
-    //            .build());
-    //
-    //        updatedCaseDetails.setData(caseData);
-    //
-    //        Bundle bundle = mock(Bundle.class);
-    //        Document stitchedDocument = mock(Document.class);
-    //        when(bundle.getStitchedDocument()).thenReturn(stitchedDocument);
-    //
-    //        String bundleUUID3 = caseData.getCaseBundles().get(2).getValue().getId();
-    //
-    //        AboutToStartOrSubmitResponse<CaseData, State> response =
-    //            caseworkerRemoveBundles.aboutToSubmit(updatedCaseDetails, CaseDetails.<CaseData, State>builder().build());
-    //
-    //        assertThat(response.getData().getCaseBundles()).hasSize(1);
-    //        assertThat(response.getData().getCaseBundles().getFirst().getId()).isEqualTo("1");
-    //        assertThat(response.getData().getCaseBundles().getFirst().getValue().getId()).isEqualTo(bundleUUID3);
-    //        assertThat(response.getData().getCaseBundleIdsAndTimestamps()).hasSize(1);
-    //        assertThat(response.getData().getCaseBundleIdsAndTimestamps().getFirst().getId()).isEqualTo("1");
-    //        assertThat(response.getData().getCaseBundleIdsAndTimestamps().getFirst().getValue().getBundleId()).isEqualTo(bundleUUID3);
-    //        assertThat(response.getData().getCicCase().getRemoveBundlesList().getListItems()).isNull();
-    //        assertThat(response.getData().getCicCase().getRemoveBundlesList().getValue()).isNull();
-    //    }
+    @Test
+    void shouldSuccessfullyDeleteBundlesOnAboutToSubmit() {
+        UUID dynamicListElementCode1 = UUID.randomUUID();
+        UUID dynamicListElementCode2 = UUID.randomUUID();
+
+        List<DynamicListElement> removeBundleLabels = List.of(
+            DynamicListElement.builder()
+                .code(dynamicListElementCode1)
+                .label(caseData.getCaseBundles().getFirst().getValue().getDateAndTime() + " -- 1-cicBundle.pdf")
+                .build(),
+            DynamicListElement.builder()
+                .code(dynamicListElementCode2)
+                .label(caseData.getCaseBundles().get(1).getValue().getDateAndTime() + " -- 2-cicBundle.pdf")
+                .build(),
+            DynamicListElement.builder()
+                .code(UUID.randomUUID())
+                .label(caseData.getCaseBundles().get(2).getValue().getDateAndTime() + " -- 3-cicBundle.pdf")
+                .build()
+        );
+
+        List<DynamicListElement> selectedRemoveBundleLabels = List.of(
+            DynamicListElement.builder()
+                .code(dynamicListElementCode1)
+                .label(caseData.getCaseBundles().getFirst().getValue().getDateAndTime() + " -- 1-cicBundle.pdf")
+                .build(),
+            DynamicListElement.builder()
+                .code(dynamicListElementCode2)
+                .label(caseData.getCaseBundles().get(1).getValue().getDateAndTime() + " -- 2-cicBundle.pdf")
+                .build()
+        );
+
+        caseData.getCicCase().setRemoveBundlesList(DynamicMultiSelectList.builder()
+            .listItems(removeBundleLabels)
+            .value(selectedRemoveBundleLabels)
+            .build());
+
+        updatedCaseDetails.setData(caseData);
+
+        String bundleUUID3 = caseData.getCaseBundles().get(2).getValue().getId();
+
+        AboutToStartOrSubmitResponse<CaseData, State> response =
+            caseworkerRemoveBundles.aboutToSubmit(updatedCaseDetails, CaseDetails.<CaseData, State>builder().build());
+
+        //Stitched Document isn't generated yet so binary will always be null
+        verify(documentsService, times(2)).removeEntryFromDocumentTableByBinaryURL(null);
+        assertThat(response.getData().getCaseBundles()).hasSize(1);
+        assertThat(response.getData().getCaseBundles().getFirst().getId()).isEqualTo("1");
+        assertThat(response.getData().getCaseBundles().getFirst().getValue().getId()).isEqualTo(bundleUUID3);
+        assertThat(response.getData().getCaseBundleIdsAndTimestamps()).hasSize(1);
+        assertThat(response.getData().getCaseBundleIdsAndTimestamps().getFirst().getId()).isEqualTo("1");
+        assertThat(response.getData().getCaseBundleIdsAndTimestamps().getFirst().getValue().getBundleId()).isEqualTo(bundleUUID3);
+        assertThat(response.getData().getCicCase().getRemoveBundlesList().getListItems()).isNull();
+        assertThat(response.getData().getCicCase().getRemoveBundlesList().getValue()).isNull();
+    }
 
     @Test
     void shouldSuccessfullySubmit() {

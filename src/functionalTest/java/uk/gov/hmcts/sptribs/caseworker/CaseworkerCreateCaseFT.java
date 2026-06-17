@@ -1,10 +1,13 @@
 package uk.gov.hmcts.sptribs.caseworker;
 
+import io.restassured.path.json.JsonPath;
 import io.restassured.response.Response;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
+import uk.gov.hmcts.sptribs.document.model.DocumentEntity;
 import uk.gov.hmcts.sptribs.testutil.FunctionalTestSuite;
 
+import java.util.List;
 import java.util.Map;
 
 import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
@@ -42,36 +45,36 @@ public class CaseworkerCreateCaseFT extends FunctionalTestSuite {
             .isEqualTo(json(expectedResponse(RESPONSE)));
     }
 
-    //    @Test
-    //    public void shouldGetConfirmationWhenValidSubmittedCallbackIsInvoked() throws Exception {
-    //        final Map<String, Object> caseData = caseData(SUBMITTED_REQUEST);
-    //        final Response response = triggerCallback(caseData, CASEWORKER_CREATE_CASE_EVENT_ID, SUBMITTED_URL);
-    //
-    //        assertThat(response.getStatusCode()).isEqualTo(OK.value());
-    //        final String confirmationHeader = JsonPath.from(response.asString()).getString("confirmation_header");
-    //        assertThat(confirmationHeader)
-    //            .as("confirmation header should contain the generated case reference")
-    //            .contains("# Case Created", "## Case reference number:")
-    //            .matches("(?s).*##\\s*[0-9]{4}-[0-9]{4}-[0-9]{4}-[0-9]{4}.*");
-    //
-    //        long testCaseRef = Long.parseLong(caseData.get("hyphenatedCaseRef").toString().replace("-", ""));
-    //
-    //        List<DocumentEntity> documentEntities = caseDocumentsFTDataManager.getDocumentEntities(testCaseRef);
-    //        assertThat(documentEntities).hasSize(1);
-    //
-    //        DocumentEntity firstDocumentEntity = documentEntities.getFirst();
-    //
-    //        assertThat(firstDocumentEntity.getId()).isNotNull();
-    //        assertThat(firstDocumentEntity.getCaseReferenceNumber()).isEqualTo(Long.parseLong(caseData.get("hyphenatedCaseRef")
-    //            .toString().replace("-", "")));
-    //        assertThat(firstDocumentEntity.getCategoryId()).isNotNull();
-    //        assertThat(firstDocumentEntity.getSavedAt()).isNotNull();
-    //        assertThat(firstDocumentEntity.isDraft()).isFalse();
-    //        assertThat(firstDocumentEntity.isSentToApplicantViaContactParties()).isFalse();
-    //        assertThat(firstDocumentEntity.getDocumentUrl()).isNotNull();
-    //        assertThat(firstDocumentEntity.getDocumentFilename()).isNotNull();
-    //        assertThat(firstDocumentEntity.getDocumentBinaryUrl()).isNotNull();
-    //    }
+    @Test
+    public void shouldGetConfirmationWhenValidSubmittedCallbackIsInvoked() throws Exception {
+        final Map<String, Object> caseData = caseData(SUBMITTED_REQUEST);
+        final Response response = triggerCallback(caseData, CASEWORKER_CREATE_CASE_EVENT_ID, SUBMITTED_URL);
+
+        assertThat(response.getStatusCode()).isEqualTo(OK.value());
+        final String confirmationHeader = JsonPath.from(response.asString()).getString("confirmation_header");
+        assertThat(confirmationHeader)
+            .as("confirmation header should contain the generated case reference")
+            .contains("# Case Created", "## Case reference number:")
+            .matches("(?s).*##\\s*[0-9]{4}-[0-9]{4}-[0-9]{4}-[0-9]{4}.*");
+
+        long testCaseRef = Long.parseLong(caseData.get("hyphenatedCaseRef").toString().replace("-", ""));
+
+        List<DocumentEntity> documentEntities = caseDocumentsFTDataManager.getDocumentEntities(testCaseRef);
+        assertThat(documentEntities).hasSize(1);
+
+        DocumentEntity firstDocumentEntity = documentEntities.getFirst();
+
+        assertThat(firstDocumentEntity.getId()).isNotNull();
+        assertThat(firstDocumentEntity.getCaseReferenceNumber()).isEqualTo(Long.parseLong(caseData.get("hyphenatedCaseRef")
+            .toString().replace("-", "")));
+        assertThat(firstDocumentEntity.getCategoryId()).isNotNull();
+        assertThat(firstDocumentEntity.getSavedAt()).isNotNull();
+        assertThat(firstDocumentEntity.isDraft()).isFalse();
+        assertThat(firstDocumentEntity.isSentToApplicantViaContactParties()).isFalse();
+        assertThat(firstDocumentEntity.getDocumentUrl()).isNotNull();
+        assertThat(firstDocumentEntity.getDocumentFilename()).isNotNull();
+        assertThat(firstDocumentEntity.getDocumentBinaryUrl()).isNotNull();
+    }
 
     @Test
     public void shouldGetFailureWhenInvalidSubmittedCallbackIsInvoked() throws Exception {
