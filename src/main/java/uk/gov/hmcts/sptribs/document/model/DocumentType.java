@@ -6,8 +6,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import uk.gov.hmcts.ccd.sdk.api.HasLabel;
 
-import java.util.Arrays;
-
 @Getter
 @AllArgsConstructor
 public enum DocumentType implements HasLabel {
@@ -165,14 +163,4 @@ public enum DocumentType implements HasLabel {
     private final String type;
     private final String category;
     private final CaseDocumentType caseDocumentType;
-
-    public static DocumentType fromCategory(String category) {
-        return Arrays.stream(values())
-            .filter(value -> value.category.equals(category))
-            .findFirst()
-            .orElseThrow(() ->
-                new IllegalArgumentException("Unknown category: " + category)
-            );
-    }
-
 }

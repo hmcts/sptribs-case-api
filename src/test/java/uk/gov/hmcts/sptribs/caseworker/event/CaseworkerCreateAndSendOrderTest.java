@@ -28,6 +28,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.OrderTemplate;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.document.model.CICDocument;
+import uk.gov.hmcts.sptribs.document.model.DocumentType;
 import uk.gov.hmcts.sptribs.document.service.DocumentsService;
 import uk.gov.hmcts.sptribs.notification.dispatcher.NewOrderIssuedNotification;
 import uk.gov.hmcts.sptribs.notification.exception.NotificationException;
@@ -199,11 +200,11 @@ class CaseworkerCreateAndSendOrderTest {
         final var response = caseworkerCreateAndSendOrder.aboutToSubmit(details, getApiCaseDetailsBefore());
 
         verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
-            any(), eq(TEST_CASE_ID), eq(false), eq(false)
+            any(), eq(TEST_CASE_ID), eq(false), eq(DocumentType.TRIBUNAL_DIRECTION), eq(false)
         );
 
         verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
-            eq(document), eq(TEST_CASE_ID), eq(false), eq(false)
+            eq(document), eq(TEST_CASE_ID), eq(false), eq(DocumentType.TRIBUNAL_DIRECTION), eq(false)
         );
 
         assertThat(response).isNotNull();
@@ -257,11 +258,11 @@ class CaseworkerCreateAndSendOrderTest {
         final var response = caseworkerCreateAndSendOrder.aboutToSubmit(details, getApiCaseDetailsBefore());
 
         verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
-            any(), eq(TEST_CASE_ID), eq(false), eq(false)
+            any(), eq(TEST_CASE_ID), eq(false), eq(DocumentType.TRIBUNAL_DIRECTION), eq(false)
         );
 
         verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
-            eq(document), eq(TEST_CASE_ID), eq(false), eq(false)
+            eq(document), eq(TEST_CASE_ID), eq(false), eq(DocumentType.TRIBUNAL_DIRECTION), eq(false)
         );
 
         assertThat(response).isNotNull();
@@ -315,11 +316,11 @@ class CaseworkerCreateAndSendOrderTest {
         final var response = caseworkerCreateAndSendOrder.aboutToSubmit(details, getApiCaseDetailsBefore());
 
         verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
-            any(), eq(TEST_CASE_ID), eq(false), eq(false)
+            any(), eq(TEST_CASE_ID), eq(false), eq(DocumentType.TRIBUNAL_DIRECTION), eq(false)
         );
 
         verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
-            eq(document), eq(TEST_CASE_ID), eq(false), eq(false)
+            eq(document), eq(TEST_CASE_ID), eq(false), eq(DocumentType.TRIBUNAL_DIRECTION), eq(false)
         );
 
         assertThat(response).isNotNull();
@@ -389,11 +390,11 @@ class CaseworkerCreateAndSendOrderTest {
         final var response = caseworkerCreateAndSendOrder.aboutToSubmit(details, getApiCaseDetailsBefore());
 
         verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
-            any(), eq(TEST_CASE_ID), eq(false), eq(false)
+            any(), eq(TEST_CASE_ID), eq(false), eq(DocumentType.TRIBUNAL_DIRECTION), eq(false)
         );
 
         verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
-            eq(document), eq(TEST_CASE_ID), eq(false), eq(false)
+            eq(document), eq(TEST_CASE_ID), eq(false), eq(DocumentType.TRIBUNAL_DIRECTION), eq(false)
         );
 
         assertThat(response).isNotNull();
@@ -479,11 +480,11 @@ class CaseworkerCreateAndSendOrderTest {
         final var response = caseworkerCreateAndSendOrder.aboutToSubmit(details, getApiCaseDetailsBefore());
 
         verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
-            any(), eq(TEST_CASE_ID), eq(false), eq(false)
+            any(), eq(TEST_CASE_ID), eq(false), eq(DocumentType.TRIBUNAL_DIRECTION), eq(false)
         );
 
         verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
-            eq(document), eq(TEST_CASE_ID), eq(false), eq(false)
+            eq(document), eq(TEST_CASE_ID), eq(false), eq(DocumentType.TRIBUNAL_DIRECTION), eq(false)
         );
 
         assertThat(response).isNotNull();
@@ -654,7 +655,8 @@ class CaseworkerCreateAndSendOrderTest {
         details.setData(caseData);
 
         doThrow(new RuntimeException("Error saving document entity to database"))
-            .when(documentsService).buildAndSaveNewDocumentEntity(any(), eq(TEST_CASE_ID), eq(false), eq(false));
+            .when(documentsService).buildAndSaveNewDocumentEntity(any(), eq(TEST_CASE_ID), eq(false),
+                eq(DocumentType.TRIBUNAL_DIRECTION), eq(false));
 
         final var newOrderResponse = caseworkerCreateAndSendOrder.aboutToSubmit(details, getApiCaseDetailsBefore());
 
@@ -662,7 +664,7 @@ class CaseworkerCreateAndSendOrderTest {
         assertThat(newOrderResponse.getErrors()).contains("Error saving document with filename: " + document.getFilename());
 
         verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
-            any(), eq(TEST_CASE_ID), eq(false), eq(false)
+            any(), eq(TEST_CASE_ID), eq(false), eq(DocumentType.TRIBUNAL_DIRECTION), eq(false)
         );
     }
 
@@ -693,7 +695,8 @@ class CaseworkerCreateAndSendOrderTest {
         details.setData(caseData);
 
         doThrow(new RuntimeException("Error saving document entity to database"))
-            .when(documentsService).buildAndSaveNewDocumentEntity(any(), eq(TEST_CASE_ID), eq(false), eq(false));
+            .when(documentsService).buildAndSaveNewDocumentEntity(any(), eq(TEST_CASE_ID), eq(false),
+                eq(DocumentType.TRIBUNAL_DIRECTION), eq(false));
 
         final var response = caseworkerCreateAndSendOrder.aboutToSubmit(details, getApiCaseDetailsBefore());
 
@@ -701,7 +704,7 @@ class CaseworkerCreateAndSendOrderTest {
         assertThat(response.getErrors()).contains("Error saving document with filename: " + document.getFilename());
 
         verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
-            any(), eq(TEST_CASE_ID), eq(false), eq(false)
+            any(), eq(TEST_CASE_ID), eq(false), eq(DocumentType.TRIBUNAL_DIRECTION), eq(false)
         );
 
         cicDocument.getDocumentLink().setFilename(null);

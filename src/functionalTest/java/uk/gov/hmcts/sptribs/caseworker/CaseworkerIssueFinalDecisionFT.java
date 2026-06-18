@@ -4,6 +4,7 @@ import io.restassured.response.Response;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import uk.gov.hmcts.sptribs.document.model.DocumentEntity;
+import uk.gov.hmcts.sptribs.document.model.DocumentType;
 import uk.gov.hmcts.sptribs.notification.persistence.CorrespondenceEntity;
 import uk.gov.hmcts.sptribs.testutil.FunctionalTestSuite;
 
@@ -100,7 +101,8 @@ public class CaseworkerIssueFinalDecisionFT extends FunctionalTestSuite {
         assertThat(firstDocumentEntity.getId()).isNotNull();
         assertThat(firstDocumentEntity.getCaseReferenceNumber()).isEqualTo(Long.parseLong(caseData.get("hyphenatedCaseRef")
             .toString().replace("-", "")));
-        assertThat(firstDocumentEntity.getCategoryId()).isEqualTo("TD");
+        assertThat(firstDocumentEntity.getDocumentTypeName()).isEqualTo(DocumentType.TRIBUNAL_DIRECTION.name());
+        assertThat(firstDocumentEntity.getCaseDocumentTypeId()).isEqualTo(4L);
         assertThat(firstDocumentEntity.getSavedAt()).isNotNull();
         assertThat(firstDocumentEntity.isDraft()).isFalse();
         assertThat(firstDocumentEntity.isSentToApplicantViaContactParties()).isFalse();

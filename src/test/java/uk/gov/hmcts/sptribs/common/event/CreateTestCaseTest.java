@@ -180,7 +180,8 @@ public class CreateTestCaseTest {
         caseDetails.setState(Submitted);
 
         doThrow(new RuntimeException("Error saving document entity to database"))
-            .when(documentsService).buildAndSaveNewDocumentEntity(any(), eq(TEST_CASE_ID), eq(false), eq(false));
+            .when(documentsService).buildAndSaveNewDocumentEntity(any(), eq(TEST_CASE_ID), eq(false),
+                eq(DocumentType.DSS_TRIBUNAL_FORM), eq(false));
 
         SubmittedCallbackResponse response =
             createTestCase.submitted(caseDetails, caseDetails);
@@ -189,7 +190,7 @@ public class CreateTestCaseTest {
             .contains(format("# Create case notification failed %n## Please resend the notification"));
 
         verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
-            any(), eq(TEST_CASE_ID), eq(false), eq(false)
+            any(), eq(TEST_CASE_ID), eq(false), eq(DocumentType.DSS_TRIBUNAL_FORM), eq(false)
         );
     }
 }

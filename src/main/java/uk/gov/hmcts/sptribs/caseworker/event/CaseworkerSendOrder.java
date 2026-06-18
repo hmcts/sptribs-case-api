@@ -177,7 +177,9 @@ public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole>
                 documentsService.buildAndSaveNewDocumentEntity(
                     caseData.getCicCase().getOrderTemplateIssued(),
                     details.getId(),
-                    false, false
+                    false,
+                    DocumentType.TRIBUNAL_DIRECTION,
+                    false
                 );
             } catch (RuntimeException e) {
                 errors.add(handleDocumentException(caseData.getCicCase().getOrderTemplateIssued(), e.getMessage()));
