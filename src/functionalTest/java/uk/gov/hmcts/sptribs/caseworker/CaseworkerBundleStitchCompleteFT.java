@@ -40,7 +40,7 @@ public class CaseworkerBundleStitchCompleteFT extends FunctionalTestSuite {
 
         assertThatJson(response.asString())
             .inPath(CONFIRMATION_HEADER)
-            .isEqualTo("# documents added successfully");
+            .isEqualTo("# Documents added successfully");
 
         long testCaseRef = Long.parseLong(
             caseData.get("hyphenatedCaseRef").toString().replace("-", "")
