@@ -170,11 +170,11 @@ public class BundlingServiceTest {
 
         if (expectedBundle.getStitchedDocument() != null) {
             verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
-                any(), eq(TEST_CASE_ID), eq(false), eq(true)
+                any(), eq(TEST_CASE_ID), eq(false), eq(null), eq(true)
             );
 
             verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
-                eq(expectedBundle.getStitchedDocument()), eq(TEST_CASE_ID), eq(false), eq(true)
+                eq(expectedBundle.getStitchedDocument()), eq(TEST_CASE_ID), eq(false), eq(null), eq(true)
             );
         }
 
@@ -262,7 +262,7 @@ public class BundlingServiceTest {
         }
 
         verify(documentsService, times(numberOfStitchedDocuments)).buildAndSaveNewDocumentEntity(
-            eq(expectedStitchedBundle), eq(TEST_CASE_ID), eq(false), eq(true)
+            eq(expectedStitchedBundle), eq(TEST_CASE_ID), eq(false), eq(null), eq(true)
         );
 
         assertThat(result).hasSize(expectedBundles.size()).containsAll(expectedBundles);

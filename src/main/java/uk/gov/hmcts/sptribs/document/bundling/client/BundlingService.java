@@ -209,6 +209,7 @@ public class BundlingService {
                 stitchedDocument,
                 caseNumber,
                 false,
+                null,
                 true
             );
         }

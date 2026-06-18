@@ -305,6 +305,7 @@ public class CicSubmitCaseEvent implements CCDConfig<CaseData, State, UserRole> 
                     document.getValue().getDocumentLink(),
                     Long.parseLong(caseData.getHyphenatedCaseRef().replace("-", "")),
                     false,
+                    document.getValue().getDocumentCategory(),
                     false
                 );
             } catch (RuntimeException e) {
