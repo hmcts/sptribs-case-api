@@ -112,6 +112,7 @@ public class CaseworkerDocumentManagement implements CCDConfig<CaseData, State, 
                     document.getValue().getDocumentLink(),
                     details.getId(),
                     false,
+                    document.getValue().getDocumentCategory(),
                     false
                 );
             } catch (RuntimeException e) {

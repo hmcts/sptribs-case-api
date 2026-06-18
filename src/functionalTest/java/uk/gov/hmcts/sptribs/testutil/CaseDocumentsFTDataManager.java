@@ -39,8 +39,8 @@ public class CaseDocumentsFTDataManager extends FunctionalTestDataManager {
                     .documentUrl(rs.getString("document_url"))
                     .documentBinaryUrl(rs.getString("document_binary_url"))
                     .documentFilename(rs.getString("document_filename"))
-                    .categoryId(rs.getString("category_id"))
-                    .documentTypeId(rs.getLong("document_type_id"))
+                    .documentTypeName(rs.getString("document_type_name"))
+                    .caseDocumentTypeId(rs.getLong("case_document_type_id"))
                     .isDraft(rs.getBoolean("is_draft"))
                     .sentToApplicantViaContactParties(rs.getBoolean("sent_to_applicant_via_contact_parties"))
                     .build();

@@ -102,6 +102,7 @@ public class CaseworkerBundleStitchComplete implements CCDConfig<CaseData, State
             stitchedDocument,
             caseId,
             false,
+            null,
             true
         );
     }

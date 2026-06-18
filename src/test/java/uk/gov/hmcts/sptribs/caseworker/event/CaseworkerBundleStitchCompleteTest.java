@@ -89,7 +89,7 @@ class CaseworkerBundleStitchCompleteTest {
         //then
         assertThat(stayedResponse.getConfirmationHeader()).contains("# documents added successfully");
 
-        verify(documentsService).buildAndSaveNewDocumentEntity(document, CASE_ID, false, true);
+        verify(documentsService).buildAndSaveNewDocumentEntity(document, CASE_ID, false, null, true);
 
     }
 
@@ -138,7 +138,8 @@ class CaseworkerBundleStitchCompleteTest {
         //then
         assertThat(stayedResponse.getConfirmationHeader()).contains("# documents added successfully");
 
-        verify(documentsService).buildAndSaveNewDocumentEntity(document2, CASE_ID, false, true);
+        verify(documentsService).buildAndSaveNewDocumentEntity(document2, CASE_ID, false, null,
+            true);
 
     }
 
@@ -169,7 +170,8 @@ class CaseworkerBundleStitchCompleteTest {
 
         doThrow(new RuntimeException("DB failure"))
             .when(documentsService)
-            .buildAndSaveNewDocumentEntity(document, CASE_ID, false, true);
+            .buildAndSaveNewDocumentEntity(document, CASE_ID, false, null,
+                true);
 
         // when
         SubmittedCallbackResponse response =
@@ -180,7 +182,8 @@ class CaseworkerBundleStitchCompleteTest {
             .contains("# Error saving latest case bundle to document entity");
 
         verify(documentsService)
-            .buildAndSaveNewDocumentEntity(document, CASE_ID, false, true);
+            .buildAndSaveNewDocumentEntity(document, CASE_ID, false, null,
+                true);
     }
 
     @Test

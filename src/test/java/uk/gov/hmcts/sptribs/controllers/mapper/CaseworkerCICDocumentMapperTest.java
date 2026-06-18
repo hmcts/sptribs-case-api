@@ -23,7 +23,7 @@ class CaseworkerCICDocumentMapperTest {
         DocumentEntity entity = DocumentEntity.builder()
             .documentFilename("test-document.pdf")
             .documentUrl("http://test-url")
-            .categoryId(DocumentType.TRIBUNAL_DIRECTION.getCategory())
+            .documentTypeName(DocumentType.TRIBUNAL_DIRECTION.name())
             .savedAt(savedAt)
             .build();
 
@@ -51,7 +51,7 @@ class CaseworkerCICDocumentMapperTest {
             .documentFilename("document-1.pdf")
             .documentUrl("url-1")
             .documentBinaryUrl("test-url/binary")
-            .categoryId(DocumentType.TRIBUNAL_DIRECTION.getCategory())
+            .documentTypeName(DocumentType.TRIBUNAL_DIRECTION.name())
             .savedAt(OffsetDateTime.now())
             .build();
 
@@ -59,7 +59,7 @@ class CaseworkerCICDocumentMapperTest {
             .documentFilename("document-2.pdf")
             .documentUrl("url-2")
             .documentBinaryUrl("test-url-2/binary")
-            .categoryId(DocumentType.APPLICATION_FORM.getCategory())
+            .documentTypeName(DocumentType.APPLICATION_FORM.name())
             .savedAt(OffsetDateTime.now())
             .build();
 
@@ -83,7 +83,7 @@ class CaseworkerCICDocumentMapperTest {
             .documentFilename("test-document.pdf")
             .documentUrl("test-url")
             .documentBinaryUrl("test-url/binary")
-            .categoryId(DocumentType.TRIBUNAL_DIRECTION.getCategory())
+            .documentTypeName(DocumentType.TRIBUNAL_DIRECTION.name())
             .savedAt(OffsetDateTime.now())
             .build();
 
@@ -115,6 +115,16 @@ class CaseworkerCICDocumentMapperTest {
 
         //when
         List<CaseworkerCICDocument> result = mapper.map(List.of());
+
+        //then
+        assertThat(result).isEmpty();
+    }
+
+    @Test
+    void shouldReturnEmptyWhenNullDocsInModel() {
+
+        //when
+        List<CaseworkerCICDocument> result = mapper.map((List<DocumentEntity>) null);
 
         //then
         assertThat(result).isEmpty();

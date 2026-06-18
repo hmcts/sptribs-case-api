@@ -60,8 +60,8 @@ public class CaseworkerBundleStitchCompleteFT extends FunctionalTestSuite {
         assertThat(documentEntity.getDocumentUrl()).isNotNull();
         assertThat(documentEntity.getDocumentFilename()).isNotNull();
         assertThat(documentEntity.getDocumentBinaryUrl()).isNotNull();
-        assertThat(documentEntity.getCategoryId()).isNull();
-        assertThat(documentEntity.getDocumentTypeId()).isEqualTo(BUNDLE_CASE_DOCUMENT_TYPE);
+        assertThat(documentEntity.getDocumentTypeName()).isNull();
+        assertThat(documentEntity.getCaseDocumentTypeId()).isEqualTo(BUNDLE_CASE_DOCUMENT_TYPE);
     }
 
 
