@@ -87,7 +87,7 @@ class CaseworkerBundleStitchCompleteTest {
         final SubmittedCallbackResponse stayedResponse = caseworkerBundleStitchComplete.submitted(details, details);
 
         //then
-        assertThat(stayedResponse.getConfirmationHeader()).contains("# documents added successfully");
+        assertThat(stayedResponse.getConfirmationHeader()).contains("# Documents added successfully");
 
         verify(documentsService).buildAndSaveNewDocumentEntity(document, CASE_ID, false, null, true);
 
@@ -136,7 +136,7 @@ class CaseworkerBundleStitchCompleteTest {
         final SubmittedCallbackResponse stayedResponse = caseworkerBundleStitchComplete.submitted(details, details);
 
         //then
-        assertThat(stayedResponse.getConfirmationHeader()).contains("# documents added successfully");
+        assertThat(stayedResponse.getConfirmationHeader()).contains("# Documents added successfully");
 
         verify(documentsService).buildAndSaveNewDocumentEntity(document2, CASE_ID, false, null,
             true);
