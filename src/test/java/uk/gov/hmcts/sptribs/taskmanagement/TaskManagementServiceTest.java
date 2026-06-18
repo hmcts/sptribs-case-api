@@ -11,6 +11,7 @@ import uk.gov.hmcts.ccd.sdk.taskmanagement.delay.DelayUntilRequest;
 import uk.gov.hmcts.ccd.sdk.taskmanagement.delay.DelayUntilResolver;
 import uk.gov.hmcts.ccd.sdk.taskmanagement.model.TaskPayload;
 import uk.gov.hmcts.ccd.sdk.taskmanagement.model.TaskPermission;
+import uk.gov.hmcts.ccd.sdk.taskmanagement.model.outbox.TaskOutboxTrigger;
 import uk.gov.hmcts.ccd.sdk.taskmanagement.model.outbox.TerminateTaskOutboxPayload;
 import uk.gov.hmcts.ccd.sdk.taskmanagement.model.request.TaskCreateRequest;
 import uk.gov.hmcts.ccd.sdk.type.DynamicList;
@@ -30,7 +31,6 @@ import java.util.UUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
@@ -83,12 +83,15 @@ class TaskManagementServiceTest {
             CASE_ID
         );
 
+        ArgumentCaptor<TaskOutboxTrigger> triggerCaptor = ArgumentCaptor.forClass(TaskOutboxTrigger.class);
         ArgumentCaptor<TaskCreateRequest> captor = ArgumentCaptor.forClass(TaskCreateRequest.class);
-        verify(taskOutboxService, times(2)).enqueueTaskCreateRequest(captor.capture());
+        verify(taskOutboxService).enqueueTaskCreateRequest(triggerCaptor.capture(), captor.capture());
 
-        List<TaskCreateRequest> requests = captor.getAllValues();
-        assertThat(requests).extracting(request -> request.task().getType())
+        assertThat(captor.getValue().tasks()).extracting(TaskPayload::getType)
             .containsExactly("registerNewCase", "reviewSetAsideRequest");
+        assertThat(triggerCaptor.getValue().caseId()).isEqualTo(String.valueOf(CASE_ID));
+        assertThat(triggerCaptor.getValue().caseType()).isEqualTo("CriminalInjuriesCompensation");
+        assertThat(triggerCaptor.getValue().eventId()).isEqualTo("sptribs-wa-init");
     }
 
     @Test
@@ -110,13 +113,19 @@ class TaskManagementServiceTest {
             delayUntilRequest
         );
 
+        ArgumentCaptor<TaskOutboxTrigger> triggerCaptor = ArgumentCaptor.forClass(TaskOutboxTrigger.class);
         ArgumentCaptor<TaskCreateRequest> requestCaptor = ArgumentCaptor.forClass(TaskCreateRequest.class);
         ArgumentCaptor<LocalDateTime> delayCaptor = ArgumentCaptor.forClass(LocalDateTime.class);
-        verify(taskOutboxService, times(2)).enqueueTaskCreateRequest(requestCaptor.capture(), delayCaptor.capture());
+        verify(taskOutboxService).enqueueTaskCreateRequest(
+            triggerCaptor.capture(),
+            requestCaptor.capture(),
+            delayCaptor.capture()
+        );
 
-        assertThat(requestCaptor.getAllValues()).extracting(request -> request.task().getType())
+        assertThat(requestCaptor.getValue().tasks()).extracting(TaskPayload::getType)
             .containsExactly("registerNewCase", "reviewSetAsideRequest");
-        assertThat(delayCaptor.getAllValues()).containsOnly(delayUntilDateTime);
+        assertThat(triggerCaptor.getValue().eventId()).isEqualTo("sptribs-wa-init");
+        assertThat(delayCaptor.getValue()).isEqualTo(delayUntilDateTime);
     }
 
     @Test
@@ -127,10 +136,15 @@ class TaskManagementServiceTest {
 
         taskManagementService.enqueueInitiationTasks(List.of(TaskType.registerNewCase), caseData, CASE_ID);
 
+        ArgumentCaptor<TaskOutboxTrigger> triggerCaptor = ArgumentCaptor.forClass(TaskOutboxTrigger.class);
         ArgumentCaptor<TaskCreateRequest> captor = ArgumentCaptor.forClass(TaskCreateRequest.class);
-        verify(taskOutboxService).enqueueTaskCreateRequest(captor.capture());
-        TaskPayload payload = captor.getValue().task();
+        verify(taskOutboxService).enqueueTaskCreateRequest(triggerCaptor.capture(), captor.capture());
 
+        assertThat(triggerCaptor.getValue().caseId()).isEqualTo(String.valueOf(CASE_ID));
+        assertThat(triggerCaptor.getValue().caseType()).isEqualTo("CriminalInjuriesCompensation");
+        assertThat(triggerCaptor.getValue().eventId()).isEqualTo("sptribs-wa-init");
+        assertThat(captor.getValue().tasks()).hasSize(1);
+        TaskPayload payload = captor.getValue().tasks().getFirst();
         assertThat(payload.getCaseId()).isEqualTo(String.valueOf(CASE_ID));
         assertThat(payload.getCaseTypeId()).isEqualTo("CriminalInjuriesCompensation");
         assertThat(payload.getCaseName()).isEqualTo("Case name");
@@ -180,8 +194,8 @@ class TaskManagementServiceTest {
         );
 
         ArgumentCaptor<TaskCreateRequest> captor = ArgumentCaptor.forClass(TaskCreateRequest.class);
-        verify(taskOutboxService).enqueueTaskCreateRequest(captor.capture());
-        TaskPayload payload = captor.getValue().task();
+        verify(taskOutboxService).enqueueTaskCreateRequest(any(TaskOutboxTrigger.class), captor.capture());
+        TaskPayload payload = captor.getValue().tasks().getFirst();
 
         assertThat(payload.getSecurityClassification()).isEqualTo("PRIVATE");
         assertThat(payload.getCaseCategory()).isEqualTo("Custom Category");
@@ -203,8 +217,8 @@ class TaskManagementServiceTest {
         );
 
         ArgumentCaptor<TaskCreateRequest> captor = ArgumentCaptor.forClass(TaskCreateRequest.class);
-        verify(taskOutboxService).enqueueTaskCreateRequest(captor.capture());
-        TaskPayload payload = captor.getValue().task();
+        verify(taskOutboxService).enqueueTaskCreateRequest(any(TaskOutboxTrigger.class), captor.capture());
+        TaskPayload payload = captor.getValue().tasks().getFirst();
 
         assertThat(payload.getPermissions()).extracting(TaskPermission::getRoleName)
             .containsExactly("senior-judge", "judge", "task-supervisor");
@@ -219,8 +233,12 @@ class TaskManagementServiceTest {
         taskManagementService.enqueueCompletionTasks(taskTypes, CASE_ID);
         taskManagementService.enqueueCancellationTasks(taskTypes, CASE_ID);
 
+        ArgumentCaptor<TaskOutboxTrigger> completeTriggerCaptor = ArgumentCaptor.forClass(TaskOutboxTrigger.class);
         ArgumentCaptor<TerminateTaskOutboxPayload> completeCaptor = ArgumentCaptor.forClass(TerminateTaskOutboxPayload.class);
-        verify(taskOutboxService).enqueueTaskCompleteRequest(completeCaptor.capture());
+        verify(taskOutboxService).enqueueTaskCompleteRequest(completeTriggerCaptor.capture(), completeCaptor.capture());
+        assertThat(completeTriggerCaptor.getValue().eventId()).isEqualTo("sptribs-wa-complete");
+        assertThat(completeTriggerCaptor.getValue().caseId()).isEqualTo(String.valueOf(CASE_ID));
+        assertThat(completeTriggerCaptor.getValue().caseType()).isEqualTo("CriminalInjuriesCompensation");
         assertThat(completeCaptor.getValue())
             .isEqualTo(new TerminateTaskOutboxPayload(
                 String.valueOf(CASE_ID),
@@ -228,8 +246,12 @@ class TaskManagementServiceTest {
                 List.of("reviewOrder", "processFurtherEvidence")
             ));
 
+        ArgumentCaptor<TaskOutboxTrigger> cancelTriggerCaptor = ArgumentCaptor.forClass(TaskOutboxTrigger.class);
         ArgumentCaptor<TerminateTaskOutboxPayload> cancelCaptor = ArgumentCaptor.forClass(TerminateTaskOutboxPayload.class);
-        verify(taskOutboxService).enqueueTaskCancelRequest(cancelCaptor.capture());
+        verify(taskOutboxService).enqueueTaskCancelRequest(cancelTriggerCaptor.capture(), cancelCaptor.capture());
+        assertThat(cancelTriggerCaptor.getValue().eventId()).isEqualTo("sptribs-wa-cancel");
+        assertThat(cancelTriggerCaptor.getValue().caseId()).isEqualTo(String.valueOf(CASE_ID));
+        assertThat(cancelTriggerCaptor.getValue().caseType()).isEqualTo("CriminalInjuriesCompensation");
         assertThat(cancelCaptor.getValue())
             .isEqualTo(new TerminateTaskOutboxPayload(
                 String.valueOf(CASE_ID),
@@ -245,8 +267,8 @@ class TaskManagementServiceTest {
         taskManagementService.enqueueCancellationTasks(null, CASE_ID);
         taskManagementService.enqueueCancellationTasks(List.of(), CASE_ID);
 
-        verify(taskOutboxService, never()).enqueueTaskCompleteRequest(any());
-        verify(taskOutboxService, never()).enqueueTaskCancelRequest(any());
-        verify(taskOutboxService, never()).enqueueTaskCreateRequest(any());
+        verify(taskOutboxService, never()).enqueueTaskCompleteRequest(any(), any());
+        verify(taskOutboxService, never()).enqueueTaskCancelRequest(any(), any());
+        verify(taskOutboxService, never()).enqueueTaskCreateRequest(any(), any());
     }
 }

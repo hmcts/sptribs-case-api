@@ -30,7 +30,7 @@ plugins {
   id 'io.spring.dependency-management' version '1.1.7'
   id 'org.springframework.boot' version '3.5.10'
   id 'com.github.ben-manes.versions' version '0.50.0'
-  id 'hmcts.ccd.sdk' version 'task-management-root-cause-fix-20260408-0956'
+  id 'hmcts.ccd.sdk' version 'task-mgmt-multi-create-20260617'
   id "au.com.dius.pact" version "4.3.10"
   id 'com.github.hmcts.rse-cft-lib' version '0.19.2017'
 }
@@ -346,7 +346,7 @@ dependencies {
 // uncomment for local version
 // implementation group: 'com.github.hmcts', name: 'ccd-config-generator', version: 'DEV-SNAPSHOT'
 //  implementation 'com.github.hmcts:task-management:DEV-SNAPSHOT'
-  implementation 'com.github.hmcts:task-management:task-management-root-cause-fix-20260408-0956'
+  implementation 'com.github.hmcts:task-management:task-mgmt-multi-create-20260617'
   //  implementation 'com.github.hmcts:decentralised-runtime:task-mgmt-40.1-46b69557'
 //  implementation 'com.github.hmcts:ccd-config-generator:task-mgmt-40.1-46b69557'
 
@@ -452,7 +452,7 @@ dependencies {
   // Provides fast-reload of just the sptribs service.
   cftlibImplementation 'org.springframework.boot:spring-boot-devtools'
   cftlibTestImplementation sourceSets.test.runtimeClasspath
-  cftlibTestImplementation 'com.github.hmcts:task-management:task-management-root-cause-fix-20260408-0956'
+  cftlibTestImplementation 'com.github.hmcts:task-management:task-mgmt-multi-create-20260617'
 //  cftlibTestImplementation 'com.github.hmcts:decentralised-runtime:task-mgmt-40.1-46b69557'
 //  cftlibTestImplementation 'com.github.hmcts:ccd-config-generator:task-mgmt-40.1-46b69557'
   cftlibTestImplementation 'com.microsoft.playwright:playwright:1.58.0'
@@ -640,6 +640,8 @@ tasks.register('publishLocalWaTaskManagementApiToMavenLocal', Exec) {
 
 tasks.withType(CftlibExec).configureEach {
   dependsOn tasks.named('publishLocalWaTaskManagementApiToMavenLocal')
+  environment.remove('SERVER_PORT')
+  environment.remove('PORT')
   environment 'RSE_LIB_ADDITIONAL_DATABASES', 'sptribs'
   environment 'RSE_LIB_STUB_AUTH_OUTBOUND', 'false'
   environment 'CCD_DECENTRALISED_CASE-TYPE-SERVICE-URLS_CriminalInjuriesCompensation', 'http://localhost:4013'
@@ -673,6 +675,26 @@ tasks.withType(CftlibExec).configureEach {
       if (lines.size() > 1) {
         lines[1] = waOverrideJar.absolutePath
         waManifest.text = lines.join(System.lineSeparator()) + System.lineSeparator()
+      }
+    }
+
+    [
+        'ccd-definition-store-api'    : '4451',
+        'ccd-data-store-api'          : '4452',
+        'ccd-user-profile-api'        : '4453',
+        'aac-manage-case-assignment'  : '4454',
+        'ccd-case-document-am-api'    : '4455',
+        'am-role-assignment-service'  : '4096',
+        'dg-docassembly-api'          : '8080',
+        'wa-task-management-api'      : '8087'
+    ].each { manifestName, port ->
+      def serviceManifest = file("$buildDir/cftlib/${manifestName}")
+      if (serviceManifest.exists()) {
+        def lines = serviceManifest.readLines()
+        if (!lines.isEmpty() && !lines[0].contains('--server.port=')) {
+          lines[0] = "${lines[0]} --server.port=${port}"
+          serviceManifest.text = lines.join(System.lineSeparator()) + System.lineSeparator()
+        }
       }
     }
 

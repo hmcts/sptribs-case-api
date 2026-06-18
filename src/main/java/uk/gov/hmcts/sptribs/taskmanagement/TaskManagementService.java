@@ -7,6 +7,7 @@ import uk.gov.hmcts.ccd.sdk.taskmanagement.delay.DelayUntilRequest;
 import uk.gov.hmcts.ccd.sdk.taskmanagement.delay.DelayUntilResolver;
 import uk.gov.hmcts.ccd.sdk.taskmanagement.model.TaskPayload;
 import uk.gov.hmcts.ccd.sdk.taskmanagement.model.TaskPermission;
+import uk.gov.hmcts.ccd.sdk.taskmanagement.model.outbox.TaskOutboxTrigger;
 import uk.gov.hmcts.ccd.sdk.taskmanagement.model.outbox.TerminateTaskOutboxPayload;
 import uk.gov.hmcts.ccd.sdk.taskmanagement.model.request.TaskCreateRequest;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
@@ -48,6 +49,10 @@ import static uk.gov.hmcts.sptribs.taskmanagement.model.TaskAccess.TRIBUNAL_CASE
 @RequiredArgsConstructor
 public class TaskManagementService {
 
+    private static final String INITIATE_TASK_EVENT_ID = "sptribs-wa-init";
+    private static final String COMPLETE_TASK_EVENT_ID = "sptribs-wa-complete";
+    private static final String CANCEL_TASK_EVENT_ID = "sptribs-wa-cancel";
+
     private final TaskOutboxService taskOutboxService;
     private final DelayUntilResolver delayUntilResolver;
 
@@ -56,10 +61,15 @@ public class TaskManagementService {
             return;
         }
 
-        taskTypes.stream()
+        List<TaskPayload> taskPayloads = taskTypes.stream()
             .distinct()
-            .map(taskType -> new TaskCreateRequest(getTaskPayload(taskType, caseData, caseId)))
-            .forEach(taskOutboxService::enqueueTaskCreateRequest);
+            .map(taskType -> getTaskPayload(taskType, caseData, caseId))
+            .toList();
+
+        taskOutboxService.enqueueTaskCreateRequest(
+            createTrigger(caseId, INITIATE_TASK_EVENT_ID),
+            new TaskCreateRequest(taskPayloads)
+        );
     }
 
     public void enqueueInitiationTasksWithDelay(List<TaskType> taskTypes,
@@ -71,10 +81,16 @@ public class TaskManagementService {
         }
         LocalDateTime delayUntilDate = delayUntilResolver.resolve(delayUntilRequest);
 
-        taskTypes.stream()
+        List<TaskPayload> taskPayloads = taskTypes.stream()
             .distinct()
-            .map(taskType -> new TaskCreateRequest(getTaskPayload(taskType, caseData, caseId)))
-            .forEach(taskCreateRequest -> taskOutboxService.enqueueTaskCreateRequest(taskCreateRequest, delayUntilDate));
+            .map(taskType -> getTaskPayload(taskType, caseData, caseId))
+            .toList();
+
+        taskOutboxService.enqueueTaskCreateRequest(
+            createTrigger(caseId, INITIATE_TASK_EVENT_ID),
+            new TaskCreateRequest(taskPayloads),
+            delayUntilDate
+        );
     }
 
     public void enqueueCompletionTasks(List<TaskType> taskTypes, long caseId) {
@@ -97,10 +113,14 @@ public class TaskManagementService {
         );
 
         if (completion) {
-            taskOutboxService.enqueueTaskCompleteRequest(taskOutboxPayload);
+            taskOutboxService.enqueueTaskCompleteRequest(createTrigger(caseId, COMPLETE_TASK_EVENT_ID), taskOutboxPayload);
         } else {
-            taskOutboxService.enqueueTaskCancelRequest(taskOutboxPayload);
+            taskOutboxService.enqueueTaskCancelRequest(createTrigger(caseId, CANCEL_TASK_EVENT_ID), taskOutboxPayload);
         }
+    }
+
+    private TaskOutboxTrigger createTrigger(long caseId, String eventId) {
+        return TaskOutboxTrigger.create(String.valueOf(caseId), CIC_CASE_TYPE, eventId);
     }
 
     private TaskPayload getTaskPayload(TaskType taskType, CaseData caseData, long caseId) {

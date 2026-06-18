@@ -858,7 +858,7 @@ class TaskManagementParityCftlibTest extends CftlibTest {
                     """,
                 Map.of("caseId", caseId, "action", "initiate")
             );
-            assertThat(rows).hasSize(distinctTaskTypes.size());
+            assertThat(rows).hasSize(1);
             rows.forEach(this::assertProcessedRow);
         });
 
@@ -877,8 +877,11 @@ class TaskManagementParityCftlibTest extends CftlibTest {
                 """
                     SELECT o.status,
                            h.response_code AS last_response_code,
-                           o.payload->'task'->>'type' AS task_type
+                           task_payload->>'type' AS task_type
                     FROM ccd.task_outbox o
+                    CROSS JOIN LATERAL jsonb_array_elements(
+                        COALESCE(o.payload->'tasks', jsonb_build_array(o.payload->'task'))
+                    ) task_payload
                     LEFT JOIN LATERAL (
                         SELECT response_code
                         FROM ccd.task_outbox_history h
