@@ -49,6 +49,8 @@ public class ContactPartiesNotification implements PartiesNotification {
             notificationResponse = sendLetterNotification(templateVarsSubject, TemplateName.CONTACT_PARTIES_POST, caseNumber);
         }
         cicCase.setSubjectLetterNotifyList(notificationResponse);
+
+        //we have the id in the notification response ......
     }
 
     @Override
