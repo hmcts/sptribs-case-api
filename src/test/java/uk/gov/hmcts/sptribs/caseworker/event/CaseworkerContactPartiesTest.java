@@ -327,8 +327,11 @@ class CaseworkerContactPartiesTest {
         when(notificationHelper.buildDocumentList(documentList, docAttachLimit)).thenReturn(emailDocs);
         Mockito.doNothing().when(contactPartiesNotification).sendToRespondent(caseData, caseData.getHyphenatedCaseRef(), emailDocs);
 
+        //when
         SubmittedCallbackResponse contactPartiesResponse = caseWorkerContactParties.submitted(updatedCaseDetails, beforeDetails);
 
+
+        //then
         assertThat(contactPartiesResponse).isNotNull();
         assertThat(contactPartiesResponse.getConfirmationHeader()).doesNotContain("Subject");
         assertThat(contactPartiesResponse.getConfirmationHeader()).doesNotContain("Applicant");

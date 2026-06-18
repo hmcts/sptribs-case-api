@@ -6,6 +6,7 @@ import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import uk.gov.hmcts.sptribs.document.model.DocumentEntity;
+import uk.gov.hmcts.sptribs.document.model.DocumentType;
 import uk.gov.hmcts.sptribs.testutil.FunctionalTestSuite;
 
 import java.util.HashMap;
@@ -72,7 +73,8 @@ public class CaseworkerCreateTestCaseFT extends FunctionalTestSuite {
         assertThat(firstDocumentEntity.getId()).isNotNull();
         assertThat(firstDocumentEntity.getCaseReferenceNumber()).isEqualTo(Long.parseLong(caseData.get("hyphenatedCaseRef")
             .toString().replace("-", "")));
-        assertThat(firstDocumentEntity.getCategoryId()).isNotNull();
+        assertThat(firstDocumentEntity.getDocumentTypeName()).isEqualTo(DocumentType.APPLICATION_FORM.name());
+        assertThat(firstDocumentEntity.getCaseDocumentTypeId()).isEqualTo(1L);
         assertThat(firstDocumentEntity.getSavedAt()).isNotNull();
         assertThat(firstDocumentEntity.getUpdatedAt()).isNotNull();
         assertThat(firstDocumentEntity.isDraft()).isFalse();

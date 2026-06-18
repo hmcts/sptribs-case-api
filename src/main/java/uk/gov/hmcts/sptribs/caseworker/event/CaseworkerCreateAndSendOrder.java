@@ -168,6 +168,7 @@ public class CaseworkerCreateAndSendOrder implements CCDConfig<CaseData, State, 
                     draftOrderCIC.getTemplateGeneratedDocument(),
                     details.getId(),
                     false,
+                    DocumentType.TRIBUNAL_DIRECTION,
                     false
                 );
             } catch (RuntimeException e) {
@@ -189,6 +190,7 @@ public class CaseworkerCreateAndSendOrder implements CCDConfig<CaseData, State, 
                     caseData.getCicCase().getOrderFile().getFirst().getValue().getDocumentLink(),
                     details.getId(),
                     false,
+                    DocumentType.TRIBUNAL_DIRECTION,
                     false
                 );
             } catch (RuntimeException e) {

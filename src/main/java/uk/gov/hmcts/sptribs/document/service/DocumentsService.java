@@ -33,18 +33,28 @@ public class DocumentsService {
     private final DocumentsRepository documentsRepository;
     private final CaseDocumentTypesCache caseDocumentTypesCache;
 
-    public void buildAndSaveNewDocumentEntity(Document document, Long caseReferenceNumber, boolean isDraft, boolean isStitchedDocument) {
+    public void buildAndSaveNewDocumentEntity(Document document, Long caseReferenceNumber, boolean isDraft,
+                                              DocumentType documentType, boolean isStitchedDocument) {
         try {
 
-            CaseDocumentType caseDocumentType = getCaseDocumentType(document.getCategoryId(), isStitchedDocument);
+            final String documentTypeName;
+            final CaseDocumentType caseDocumentType;
+
+            if (isStitchedDocument) {
+                documentTypeName = null;
+                caseDocumentType = CaseDocumentType.BUNDLE;
+            } else {
+                documentTypeName = documentType.name();
+                caseDocumentType = documentType.getCaseDocumentType();
+            }
 
             documentsRepository.save(DocumentEntity.builder()
                 .caseReferenceNumber(caseReferenceNumber)
                 .documentUrl(document.getUrl())
                 .documentFilename(document.getFilename())
                 .documentBinaryUrl(document.getBinaryUrl())
-                .categoryId(document.getCategoryId())
-                .documentTypeId(caseDocumentTypesCache.getId(caseDocumentType))
+                .documentTypeName(documentTypeName)
+                .caseDocumentTypeId(caseDocumentTypesCache.getId(caseDocumentType))
                 .isDraft(isDraft)
                 .sentToApplicantViaContactParties(false)
                 .build());
@@ -52,16 +62,6 @@ public class DocumentsService {
         } catch (DataAccessException e) {
             throw new RuntimeException("Error saving document entity to database", e);
         }
-    }
-
-    private CaseDocumentType getCaseDocumentType(String categoryId, boolean isStitchedDocument) {
-
-        if (isStitchedDocument) {
-            return CaseDocumentType.BUNDLE;
-        } else {
-            return DocumentType.fromCategory(categoryId).getCaseDocumentType();
-        }
-
     }
 
     @Transactional
@@ -151,11 +151,12 @@ public class DocumentsService {
 
         for (DocumentEntity doc : allDocumentsOnCase) {
             //if doc order and sent out via contact parties it will appear in orders .
-            if (tribunalDocumentTypeId.equals(doc.getDocumentTypeId())) {
+            if (tribunalDocumentTypeId.equals(doc.getCaseDocumentTypeId())) {
                 orderAndDecisionDocuments.add(doc);
-            } else if (bundleDocumentTypeId.equals(doc.getDocumentTypeId())) {
+            } else if (bundleDocumentTypeId.equals(doc.getCaseDocumentTypeId())) {
                 bundleDocuments.add(doc);
             } else if (doc.isSentToApplicantViaContactParties()) {
+                //this will change with new work mapping correspondence to docs
                 contactPartiesDocuments.add(doc);
             }
         }
