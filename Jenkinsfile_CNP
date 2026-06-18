@@ -245,9 +245,9 @@ withPipeline(type, product, component) {
     }
 
     def e2eLabels = githubApi.getLabelsbyPattern(env.BRANCH_NAME, "enable-e2e-tests")
-    if (e2eLabels.contains("enable-e2e-tests")) {
-      env.E2E_TESTS_ENABLED = true
-    }
+      if (e2eLabels.contains("enable-e2e-tests")) {
+        env.E2E_TESTS_ENABLED = true
+      }
 
     setCommonEnvVariables()
 
