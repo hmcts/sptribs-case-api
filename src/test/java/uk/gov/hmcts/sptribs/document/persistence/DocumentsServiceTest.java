@@ -134,10 +134,10 @@ public class DocumentsServiceTest {
         DocumentEntity applicationDocumentEntity = buildDocumentEntity(DSS_SUPPORTING.getCategory(), 1L, false, false,
             OffsetDateTime.now());
 
-        documentsService.setNewCategoryIdAndDocumentTypeId(applicationDocument.getBinaryUrl(), DSS_SUPPORTING.getCategory());
+        documentsService.setNewCategoryIdAndDocumentTypeId(applicationDocument.getBinaryUrl(), DSS_SUPPORTING);
 
         verify(documentsRepository, times(1)).setCategoryIdAndDocumentTypeIdByDocumentBinaryUrl(
-            applicationDocumentEntity.getDocumentBinaryUrl(), DSS_SUPPORTING.getCategory(),
+            applicationDocumentEntity.getDocumentBinaryUrl(), DSS_SUPPORTING.name(),
             caseDocumentTypesCache.getId(DSS_SUPPORTING.getCaseDocumentType()));
     }
 
@@ -148,11 +148,11 @@ public class DocumentsServiceTest {
         doThrow(new DataAccessResourceFailureException("DB error")).when(
             documentsRepository).setCategoryIdAndDocumentTypeIdByDocumentBinaryUrl(
                 applicationDocument.getBinaryUrl(),
-                DSS_SUPPORTING.getCategory(),
+                DSS_SUPPORTING.name(),
                 0L);
 
         assertThatThrownBy(
-            () -> documentsService.setNewCategoryIdAndDocumentTypeId(applicationDocument.getBinaryUrl(), DSS_SUPPORTING.getCategory()))
+            () -> documentsService.setNewCategoryIdAndDocumentTypeId(applicationDocument.getBinaryUrl(), DSS_SUPPORTING))
             .isInstanceOf(RuntimeException.class)
             .hasMessageContaining("Error updating category ID or document type")
             .hasCauseInstanceOf(DataAccessException.class);

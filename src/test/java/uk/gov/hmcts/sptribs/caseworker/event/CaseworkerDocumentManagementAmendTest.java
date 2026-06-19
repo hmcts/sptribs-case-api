@@ -126,7 +126,7 @@ class CaseworkerDocumentManagementAmendTest {
 
         //Then
         verify(documentsService).setNewCategoryIdAndDocumentTypeId(
-            "http://url/binary", "C"
+            "http://url/binary", HOSPITAL_RECORDS
         );
 
         assertThat(aboutToStartResponse.getData().getCicCase().getAmendDocumentList().getListItems()).isNotEmpty();
@@ -170,7 +170,7 @@ class CaseworkerDocumentManagementAmendTest {
 
         //Then
         verify(documentsService).setNewCategoryIdAndDocumentTypeId(
-            "http://url/binary", "A"
+            "http://url/binary", APPLICATION_FORM
         );
 
         assertThat(aboutToSubmitResponse.getData().getCicCase().getReinstateDocuments().getFirst().getValue()).isNotNull();
@@ -210,7 +210,7 @@ class CaseworkerDocumentManagementAmendTest {
 
         //Then
         verify(documentsService).setNewCategoryIdAndDocumentTypeId(
-            "http://url/binary", "A"
+            "http://url/binary", APPLICATION_FORM
         );
 
         assertThat(aboutToSubmitResponse.getData().getAllDocManagement().getCaseworkerCICDocument().getFirst().getValue()).isNotNull();
@@ -250,7 +250,7 @@ class CaseworkerDocumentManagementAmendTest {
 
         //Then
         verify(documentsService).setNewCategoryIdAndDocumentTypeId(
-            "http://url/binary", "A"
+            "http://url/binary", APPLICATION_FORM
         );
 
         assertThat(aboutToSubmitResponse.getData().getCloseCase().getDocuments().getFirst().getValue()).isNotNull();
@@ -290,7 +290,7 @@ class CaseworkerDocumentManagementAmendTest {
 
         //Then
         verify(documentsService).setNewCategoryIdAndDocumentTypeId(
-            "http://url/binary", "A"
+            "http://url/binary", APPLICATION_FORM
         );
 
         assertThat(aboutToSubmitResponse.getData().getListing().getSummary().getRecFile().getFirst().getValue()).isNotNull();
@@ -343,7 +343,7 @@ class CaseworkerDocumentManagementAmendTest {
 
         //Then
         verify(documentsService).setNewCategoryIdAndDocumentTypeId(
-            "http://url/binary", "A"
+            "http://url/binary", APPLICATION_FORM
         );
 
         // Should update the main document management list
@@ -411,7 +411,7 @@ class CaseworkerDocumentManagementAmendTest {
 
         //Then
         verify(documentsService).setNewCategoryIdAndDocumentTypeId(
-            "http://url/binary", "A"
+            "http://url/binary", APPLICATION_FORM
         );
 
         // Should update the main document management list
@@ -508,7 +508,7 @@ class CaseworkerDocumentManagementAmendTest {
         updatedCaseDetails.getData().getCicCase().setSelectedDocumentCategory(HOSPITAL_RECORDS);
 
         doThrow(new RuntimeException("Error updating category ID or document type"))
-            .when(documentsService).setNewCategoryIdAndDocumentTypeId("http://url/","C");
+            .when(documentsService).setNewCategoryIdAndDocumentTypeId("http://url/",HOSPITAL_RECORDS);
 
         AboutToStartOrSubmitResponse<CaseData, State> response =
             caseworkerDocumentManagementAmend.aboutToSubmit(updatedCaseDetails, beforeDetails);
@@ -519,7 +519,7 @@ class CaseworkerDocumentManagementAmendTest {
             + " could not be assigned new category ID");
 
         verify(documentsService).setNewCategoryIdAndDocumentTypeId(
-            "http://url/binary", "C"
+            "http://url/binary", HOSPITAL_RECORDS
         );
     }
 

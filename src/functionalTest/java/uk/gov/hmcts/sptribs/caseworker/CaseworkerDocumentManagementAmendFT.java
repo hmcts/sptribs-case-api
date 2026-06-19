@@ -71,8 +71,8 @@ public class CaseworkerDocumentManagementAmendFT extends FunctionalTestSuite {
         assertThat(firstDocumentEntity.getId()).isNotNull();
         assertThat(firstDocumentEntity.getCaseReferenceNumber()).isEqualTo(Long.parseLong(caseData.get("hyphenatedCaseRef")
             .toString().replace("-", "")));
-        assertThat(firstDocumentEntity.getCategoryId()).isEqualTo("A");
-        assertThat(firstDocumentEntity.getDocumentTypeId()).isEqualTo(1);
+        assertThat(firstDocumentEntity.getDocumentTypeName()).isEqualTo("APPLICATION_FORM");
+        assertThat(firstDocumentEntity.getCaseDocumentTypeId()).isEqualTo(1);
         assertThat(firstDocumentEntity.getSavedAt()).isNotNull();
         assertThat(firstDocumentEntity.getUpdatedAt()).isNotNull();
         assertThat(firstDocumentEntity.isDraft()).isFalse();

@@ -108,13 +108,13 @@ public class DocumentsService {
     }
 
     @Transactional
-    public void setNewCategoryIdAndDocumentTypeId(String documentBinaryUrl, String categoryId) {
+    public void setNewCategoryIdAndDocumentTypeId(String documentBinaryUrl, DocumentType documentTypeName) {
         try {
-            Long documentTypeId = caseDocumentTypesCache.getId(getCaseDocumentType(categoryId, false));
+            Long documentTypeId = caseDocumentTypesCache.getId(documentTypeName.getCaseDocumentType());
             int rowsUpdated =
                 documentsRepository.setCategoryIdAndDocumentTypeIdByDocumentBinaryUrl(
                     documentBinaryUrl,
-                    categoryId,
+                    documentTypeName.name(),
                     documentTypeId
                 );
             log.info("Document Repository updated {} category IDs.", rowsUpdated);

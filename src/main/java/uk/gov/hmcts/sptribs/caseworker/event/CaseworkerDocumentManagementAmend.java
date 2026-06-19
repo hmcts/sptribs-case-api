@@ -127,7 +127,7 @@ public class CaseworkerDocumentManagementAmend implements CCDConfig<CaseData, St
             try {
                 documentsService.setNewCategoryIdAndDocumentTypeId(
                     selectedDocumentLink.getBinaryUrl(),
-                    selectedDocumentCategory.getCategory()
+                    selectedDocumentCategory
                 );
             } catch (RuntimeException e) {
                 log.error("Document entity with filename {} could not be assigned new category ID or document type ID: {}",
