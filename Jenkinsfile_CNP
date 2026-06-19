@@ -346,10 +346,9 @@ withPipeline(type, product, component) {
     configureFtDatabase()
     if (env.E2E_TESTS_ENABLED == 'true') {
       stage('UI Tests') {
-      build job: 'HMCTS_j_to_z_Nightly/sptribs-e2etests/master',
+      build job: 'HMCTS_j_to_z/sptribs-e2etests/master',
             parameters: [
                 string(name: 'SPTRIBS_CASEAPI_URL', value: env.TEST_E2E_URL),
-                booleanParam(name: 'runContinuousIntegrationTests', value: true)
             ],
             wait: true,
             propagate: true
