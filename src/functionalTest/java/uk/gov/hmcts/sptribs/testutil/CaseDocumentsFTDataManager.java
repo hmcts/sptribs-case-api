@@ -54,7 +54,7 @@ public class CaseDocumentsFTDataManager extends FunctionalTestDataManager {
         }
     }
 
-    public void saveTestDocumentEntity(long reference) throws SQLException {
+    public void saveTestDocumentEntity(long reference, String docUrlUuid) throws SQLException {
         String sql = "INSERT INTO " + TABLE_CASE_DOCUMENTS + " ("
             + KEY_CASE_DOCUMENTS_REFERENCE
             + ", saved_at"
@@ -71,9 +71,9 @@ public class CaseDocumentsFTDataManager extends FunctionalTestDataManager {
             stmt.setLong(1, reference);
             stmt.setTimestamp(2, Timestamp.valueOf(LocalDateTime.now()));
             stmt.setString(3,
-                "http://dm-store.service.core-compute.internal/documents/467d1fd1-75bd-4760-b993-51be259daebf");
+                "http://dm-store.service.core-compute.internal/documents/" + docUrlUuid);
             stmt.setString(4,
-                "http://dm-store.service.core-compute.internal/documents/467d1fd1-75bd-4760-b993-51be259daebf/binary");
+                "http://dm-store.service.core-compute.internal/documents/" + docUrlUuid + "/binary");
             stmt.setString(5, "mockFile.pdf");
             stmt.setString(6, "HOSPITAL_RECORDS");
             stmt.setBoolean(7, false);

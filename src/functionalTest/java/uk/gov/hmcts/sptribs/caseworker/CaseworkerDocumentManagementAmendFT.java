@@ -4,10 +4,12 @@ import io.restassured.response.Response;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import uk.gov.hmcts.sptribs.document.model.DocumentEntity;
+import uk.gov.hmcts.sptribs.testutil.CaseDataUtil;
 import uk.gov.hmcts.sptribs.testutil.FunctionalTestSuite;
 
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
 import static net.javacrumbs.jsonunit.assertj.JsonAssertions.json;
@@ -21,6 +23,7 @@ import static uk.gov.hmcts.sptribs.testutil.TestConstants.ABOUT_TO_START_URL;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.ABOUT_TO_SUBMIT_URL;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.SUBMITTED_URL;
 import static uk.gov.hmcts.sptribs.testutil.TestResourceUtil.expectedResponse;
+import static uk.gov.hmcts.sptribs.testutil.TestResourceUtil.resourceAsString;
 
 @SpringBootTest
 public class CaseworkerDocumentManagementAmendFT extends FunctionalTestSuite {
@@ -51,19 +54,21 @@ public class CaseworkerDocumentManagementAmendFT extends FunctionalTestSuite {
 
     @Test
     public void shouldReturnCorrectDocumentInformationWhenAboutToSubmitCallbackIsInvoked() throws Exception {
-        final Map<String, Object> caseData = caseData(CALLBACK_REQUEST);
+        String testDocUUID = UUID.randomUUID().toString();
 
-        Long caseId = createPersistedCaseReference(caseData);
-        caseDocumentsFTDataManager.saveTestDocumentEntity(caseId);
-        final Response response = triggerCallback(caseData, CASEWORKER_DOCUMENT_MANAGEMENT_AMEND, ABOUT_TO_SUBMIT_URL, caseId);
+        String caseDataWithDocUrls = resourceAsString(CALLBACK_REQUEST).replace("${UUID}", testDocUUID);
+
+        final Map<String, Object> caseData = CaseDataUtil.caseDataFromString(caseDataWithDocUrls);
+
+        Long testCaseRef = createPersistedCaseReference(caseData);
+        caseDocumentsFTDataManager.saveTestDocumentEntity(testCaseRef, testDocUUID);
+        final Response response = triggerCallback(caseData, CASEWORKER_DOCUMENT_MANAGEMENT_AMEND, ABOUT_TO_SUBMIT_URL, testCaseRef);
 
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
         assertThatJson(response.asString())
             .when(IGNORING_EXTRA_FIELDS)
             .when(IGNORING_ARRAY_ORDER)
             .isEqualTo(json(expectedResponse(RESPONSE_ABOUT_TO_SUBMIT)));
-
-        long testCaseRef = Long.parseLong(caseData.get("hyphenatedCaseRef").toString().replace("-", ""));
 
         List<DocumentEntity> documentEntities = caseDocumentsFTDataManager.getDocumentEntities(testCaseRef);
         assertThat(documentEntities).hasSize(1);
