@@ -53,7 +53,9 @@ public class CaseworkerDocumentManagementAmendFT extends FunctionalTestSuite {
     public void shouldReturnCorrectDocumentInformationWhenAboutToSubmitCallbackIsInvoked() throws Exception {
         final Map<String, Object> caseData = caseData(CALLBACK_REQUEST);
 
-        final Response response = triggerCallback(caseData, CASEWORKER_DOCUMENT_MANAGEMENT_AMEND, ABOUT_TO_SUBMIT_URL);
+        Long caseId = createPersistedCaseReference(caseData);
+        caseDocumentsFTDataManager.saveTestDocumentEntity(caseId);
+        final Response response = triggerCallback(caseData, CASEWORKER_DOCUMENT_MANAGEMENT_AMEND, ABOUT_TO_SUBMIT_URL, caseId);
 
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
         assertThatJson(response.asString())

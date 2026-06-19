@@ -71,9 +71,9 @@ public class CaseDocumentsFTDataManager extends FunctionalTestDataManager {
             stmt.setLong(1, reference);
             stmt.setTimestamp(2, Timestamp.valueOf(LocalDateTime.now()));
             stmt.setString(3,
-                "http://dm-store.service.core-compute.internal/documents/467d1fd1-75bd-4760-b993-51be259daebe");
+                "http://dm-store.service.core-compute.internal/documents/467d1fd1-75bd-4760-b993-51be259daebf");
             stmt.setString(4,
-                "http://dm-store.service.core-compute.internal/documents/467d1fd1-75bd-4760-b993-51be259daebe/binary");
+                "http://dm-store.service.core-compute.internal/documents/467d1fd1-75bd-4760-b993-51be259daebf/binary");
             stmt.setString(5, "mockFile.pdf");
             stmt.setString(6, "HOSPITAL_RECORDS");
             stmt.setBoolean(7, false);
