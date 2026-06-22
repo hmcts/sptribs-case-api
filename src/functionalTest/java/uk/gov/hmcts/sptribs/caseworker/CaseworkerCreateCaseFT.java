@@ -37,7 +37,7 @@ public class CaseworkerCreateCaseFT extends FunctionalTestSuite {
     @Test
     public void shouldSuccessfullySubmitCaseWhenAboutToSubmitCallbackIsTriggered() throws Exception {
         final Map<String, Object> caseData = caseData(REQUEST);
-        final Response response = triggerCallback(caseData, CASEWORKER_CREATE_CASE_EVENT_ID, ABOUT_TO_SUBMIT_URL);
+        final Response response = triggerCallback(caseData, CASEWORKER_CREATE_CASE_EVENT_ID, ABOUT_TO_SUBMIT_URL, false);
 
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
         assertThatJson(response.asString())
@@ -49,7 +49,7 @@ public class CaseworkerCreateCaseFT extends FunctionalTestSuite {
     @Test
     public void shouldGetConfirmationWhenValidSubmittedCallbackIsInvoked() throws Exception {
         final Map<String, Object> caseData = caseData(SUBMITTED_REQUEST);
-        final Response response = triggerCallback(caseData, CASEWORKER_CREATE_CASE_EVENT_ID, SUBMITTED_URL);
+        final Response response = triggerCallback(caseData, CASEWORKER_CREATE_CASE_EVENT_ID, SUBMITTED_URL, false);
 
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
         final String confirmationHeader = JsonPath.from(response.asString()).getString("confirmation_header");
@@ -82,7 +82,7 @@ public class CaseworkerCreateCaseFT extends FunctionalTestSuite {
     @Test
     public void shouldGetFailureWhenInvalidSubmittedCallbackIsInvoked() throws Exception {
         final Map<String, Object> caseData = caseData(BAD_REQUEST);
-        final Response response = triggerCallback(caseData, CASEWORKER_CREATE_CASE_EVENT_ID, SUBMITTED_URL);
+        final Response response = triggerCallback(caseData, CASEWORKER_CREATE_CASE_EVENT_ID, SUBMITTED_URL, false);
 
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
         assertThatJson(response.asString())

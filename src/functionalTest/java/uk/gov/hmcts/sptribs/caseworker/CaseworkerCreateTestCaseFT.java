@@ -39,7 +39,7 @@ public class CaseworkerCreateTestCaseFT extends FunctionalTestSuite {
         caseData.put("emptyString", "");
         caseData.put("emptyJsonObject", emptyJsonObject);
 
-        final Response response = triggerCallback(caseData, CASEWORKER_CREATE_TEST_CASE_EVENT_ID, ABOUT_TO_SUBMIT_URL);
+        final Response response = triggerCallback(caseData, CASEWORKER_CREATE_TEST_CASE_EVENT_ID, ABOUT_TO_SUBMIT_URL, false);
 
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
         assertThatJson(response.asString())
@@ -53,7 +53,7 @@ public class CaseworkerCreateTestCaseFT extends FunctionalTestSuite {
         final Map<String, Object> caseData = caseData(SUBMITTED_REQUEST);
 
         final Response response = triggerCallback(
-            caseData, CASEWORKER_CREATE_TEST_CASE_EVENT_ID, SUBMITTED_URL
+            caseData, CASEWORKER_CREATE_TEST_CASE_EVENT_ID, SUBMITTED_URL, false
         );
 
         assertThat(response.getStatusCode()).isEqualTo(OK.value());

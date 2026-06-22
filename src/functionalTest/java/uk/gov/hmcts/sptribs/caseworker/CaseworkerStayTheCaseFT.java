@@ -71,7 +71,7 @@ public class CaseworkerStayTheCaseFT extends FunctionalTestSuite {
     public void shouldSetIsCaseStayedAndSetCaseStayedStateInAboutToSubmit() throws Exception {
         final Map<String, Object> caseData = caseData(CALLBACK_CASE_DATA);
 
-        final Response response = triggerCallback(caseData, CASEWORKER_STAY_THE_CASE, ABOUT_TO_SUBMIT_URL);
+        final Response response = triggerCallback(caseData, CASEWORKER_STAY_THE_CASE, ABOUT_TO_SUBMIT_URL, false);
 
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
         assertThatJson(response.asString())
@@ -86,7 +86,7 @@ public class CaseworkerStayTheCaseFT extends FunctionalTestSuite {
     public void submittedSuccess() throws Exception {
         final Map<String, Object> caseData = caseData(SUBMITTED_REQUEST);
 
-        final Response response = triggerCallback(caseData, CASEWORKER_STAY_THE_CASE, SUBMITTED_URL);
+        final Response response = triggerCallback(caseData, CASEWORKER_STAY_THE_CASE, SUBMITTED_URL, false);
 
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
         assertThatJson(response.asString())
@@ -118,7 +118,7 @@ public class CaseworkerStayTheCaseFT extends FunctionalTestSuite {
     public void submittedFailed() throws Exception {
         final Map<String, Object> caseData = caseData(SUBMITTED_INCOMPLETE_REQUEST);
 
-        final Response response = triggerCallback(caseData, CASEWORKER_STAY_THE_CASE, SUBMITTED_URL);
+        final Response response = triggerCallback(caseData, CASEWORKER_STAY_THE_CASE, SUBMITTED_URL, false);
 
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
         System.out.println(response.asString());

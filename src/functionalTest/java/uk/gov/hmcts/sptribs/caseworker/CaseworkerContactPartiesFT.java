@@ -38,7 +38,7 @@ public class CaseworkerContactPartiesFT extends FunctionalTestSuite {
 
         final Map<String, Object> caseData = caseData(ABOUT_TO_START_REQUEST);
 
-        final Response response = triggerCallback(caseData, CASEWORKER_CONTACT_PARTIES, ABOUT_TO_START_URL);
+        final Response response = triggerCallback(caseData, CASEWORKER_CONTACT_PARTIES, ABOUT_TO_START_URL, false);
 
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
         assertThatJson(response.asString())
@@ -52,7 +52,7 @@ public class CaseworkerContactPartiesFT extends FunctionalTestSuite {
         //add a test here when our document gets updated!
         final Map<String, Object> caseData = caseData(SUBMITTED_REQUEST);
 
-        final Response response = triggerCallback(caseData, CASEWORKER_CONTACT_PARTIES, SUBMITTED_URL);
+        final Response response = triggerCallback(caseData, CASEWORKER_CONTACT_PARTIES, SUBMITTED_URL, false);
 
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
         assertThatJson(response.asString())

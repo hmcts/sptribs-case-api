@@ -48,7 +48,7 @@ public class CaseworkerIssueFinalDecisionFT extends FunctionalTestSuite {
     @Test
     public void shouldAddDecisionSignatureFieldWhenAboutToStartCallbackIsInvoked() throws Exception {
         final Map<String, Object> caseData = caseData(REQUEST_ABOUT_TO_START);
-        final Response response = triggerCallback(caseData, CASEWORKER_ISSUE_FINAL_DECISION, ABOUT_TO_START_URL);
+        final Response response = triggerCallback(caseData, CASEWORKER_ISSUE_FINAL_DECISION, ABOUT_TO_START_URL, false);
 
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
         assertThatJson(response.asString())
@@ -60,7 +60,7 @@ public class CaseworkerIssueFinalDecisionFT extends FunctionalTestSuite {
     @Test
     public void shouldAddValidDecisionSignatureAndCreateDraftDocumentWhenMidEventCallbackIsInvoked() throws Exception {
         final Map<String, Object> caseData = caseData(CALLBACK_REQUEST);
-        final Response response = triggerCallback(caseData, CASEWORKER_ISSUE_FINAL_DECISION, ISSUE_FINAL_DECISION_MID_EVENT_URL);
+        final Response response = triggerCallback(caseData, CASEWORKER_ISSUE_FINAL_DECISION, ISSUE_FINAL_DECISION_MID_EVENT_URL, false);
 
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
         assertThatJson(response.asString())
@@ -71,7 +71,8 @@ public class CaseworkerIssueFinalDecisionFT extends FunctionalTestSuite {
     @Test
     public void shouldGiveNoErrorsWithValidDocumentWhenUploadDocumentMidEventCallbackIsInvoked() throws Exception {
         final Map<String, Object> caseData = caseData(REQUEST_UPLOAD_DOCUMENT_MID_EVENT);
-        final Response response = triggerCallback(caseData, CASEWORKER_ISSUE_FINAL_DECISION, ISSUE_FINAL_DECISION_UPLOAD_MID_EVENT_URL);
+        final Response response =
+            triggerCallback(caseData, CASEWORKER_ISSUE_FINAL_DECISION, ISSUE_FINAL_DECISION_UPLOAD_MID_EVENT_URL, false);
 
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
         assertThatJson(response.asString())
@@ -83,7 +84,7 @@ public class CaseworkerIssueFinalDecisionFT extends FunctionalTestSuite {
     @Test
     public void shouldChangeStateWhenAboutToSubmitEventCallbackIsInvoked() throws Exception {
         final Map<String, Object> caseData = caseData(CALLBACK_REQUEST);
-        final Response response = triggerCallback(caseData, CASEWORKER_ISSUE_FINAL_DECISION, ABOUT_TO_SUBMIT_URL);
+        final Response response = triggerCallback(caseData, CASEWORKER_ISSUE_FINAL_DECISION, ABOUT_TO_SUBMIT_URL, false);
 
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
         assertThatJson(response.asString())
@@ -115,7 +116,7 @@ public class CaseworkerIssueFinalDecisionFT extends FunctionalTestSuite {
     @Test
     public void shouldAddDateWhenAboutToSubmitEventCallbackIsInvoked() throws Exception {
         final Map<String, Object> caseData = caseData(CALLBACK_REQUEST);
-        final Response response = triggerCallback(caseData, CASEWORKER_ISSUE_FINAL_DECISION, ABOUT_TO_SUBMIT_URL);
+        final Response response = triggerCallback(caseData, CASEWORKER_ISSUE_FINAL_DECISION, ABOUT_TO_SUBMIT_URL, false);
 
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
         assertThatJson(response.asString())
@@ -127,7 +128,7 @@ public class CaseworkerIssueFinalDecisionFT extends FunctionalTestSuite {
     @Test
     public void shouldSuccessfullySendNotificationWhenSubmittedEventCallbackIsInvoked() throws Exception {
         final Map<String, Object> caseData = caseData(CALLBACK_REQUEST);
-        final Response response = triggerCallback(caseData, CASEWORKER_ISSUE_FINAL_DECISION, SUBMITTED_URL);
+        final Response response = triggerCallback(caseData, CASEWORKER_ISSUE_FINAL_DECISION, SUBMITTED_URL, false);
 
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
         assertThatJson(response.asString())
@@ -158,7 +159,7 @@ public class CaseworkerIssueFinalDecisionFT extends FunctionalTestSuite {
     @Test
     public void shouldUnsuccessfullySendNotificationWhenBadSubmittedEventCallbackIsInvoked() throws Exception {
         final Map<String, Object> caseData = caseData(REQUEST_SUBMITTED_UNHAPPY_PATH);
-        final Response response = triggerCallback(caseData, CASEWORKER_ISSUE_FINAL_DECISION, SUBMITTED_URL);
+        final Response response = triggerCallback(caseData, CASEWORKER_ISSUE_FINAL_DECISION, SUBMITTED_URL, false);
 
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
         assertThatJson(response.asString())

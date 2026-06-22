@@ -53,7 +53,8 @@ public class CaseworkerCreateDraftOrderFT extends FunctionalTestSuite {
         final Response response = triggerCallback(
             caseData,
             CASEWORKER_CREATE_DRAFT_ORDER,
-            CREATE_DRAFT_ORDER_ADD_FOOTER_MID_EVENT_URL
+            CREATE_DRAFT_ORDER_ADD_FOOTER_MID_EVENT_URL,
+            false
         );
 
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
@@ -65,7 +66,7 @@ public class CaseworkerCreateDraftOrderFT extends FunctionalTestSuite {
     @Test
     public void shouldCreateDraftOrderCICListIfEmptyInAboutToSubmitCallback() throws Exception {
         final Map<String, Object> caseData = caseData(EMPTY_DRAFT_ORDER_CIC_LIST_ABOUT_TO_SUBMIT_REQUEST);
-        final Response response = triggerCallback(caseData, CASEWORKER_CREATE_DRAFT_ORDER, ABOUT_TO_SUBMIT_URL);
+        final Response response = triggerCallback(caseData, CASEWORKER_CREATE_DRAFT_ORDER, ABOUT_TO_SUBMIT_URL, false);
 
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
         assertThatJson(response.asString())
@@ -96,7 +97,7 @@ public class CaseworkerCreateDraftOrderFT extends FunctionalTestSuite {
     @Test
     public void shouldAddToDraftOrderCICListIfNotEmptyInAboutToSubmitCallback() throws Exception {
         final Map<String, Object> caseData = caseData(EXISTING_DRAFT_ORDER_CIC_LIST_ABOUT_TO_SUBMIT_REQUEST);
-        final Response response = triggerCallback(caseData, CASEWORKER_CREATE_DRAFT_ORDER, ABOUT_TO_SUBMIT_URL);
+        final Response response = triggerCallback(caseData, CASEWORKER_CREATE_DRAFT_ORDER, ABOUT_TO_SUBMIT_URL, false);
 
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
         assertThatJson(response.asString())
@@ -127,7 +128,7 @@ public class CaseworkerCreateDraftOrderFT extends FunctionalTestSuite {
     @Test
     public void shouldReturnDraftOrderCreatedConfirmationInSubmittedCallback() throws Exception {
         final Map<String, Object> caseData = caseData(SUBMITTED_REQUEST);
-        final Response response = triggerCallback(caseData, CASEWORKER_CREATE_DRAFT_ORDER, SUBMITTED_URL);
+        final Response response = triggerCallback(caseData, CASEWORKER_CREATE_DRAFT_ORDER, SUBMITTED_URL, false);
 
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
         assertThatJson(response.asString())

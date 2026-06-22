@@ -41,7 +41,7 @@ public class CicSubmitCaseEventFT extends FunctionalTestSuite {
     @Test
     public void shouldSuccessfullySubmitCaseWhenAboutToSubmitCallbackIsTriggered() throws Exception {
         final Map<String, Object> caseData = caseData(REQUEST);
-        final Response response = triggerCallback(caseData, CITIZEN_SUBMIT_CASE_EVENT_ID, ABOUT_TO_SUBMIT_URL);
+        final Response response = triggerCallback(caseData, CITIZEN_SUBMIT_CASE_EVENT_ID, ABOUT_TO_SUBMIT_URL, false);
 
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
         assertThatJson(response.asString())
@@ -73,7 +73,7 @@ public class CicSubmitCaseEventFT extends FunctionalTestSuite {
     @Test
     public void shouldReceiveNotificationWhenSubmittedCallbackIsInvoked() throws Exception {
         final Map<String, Object> caseData = caseData(REQUEST_SUBMITTED);
-        final Response response = triggerCallback(caseData, CITIZEN_SUBMIT_CASE_EVENT_ID, SUBMITTED_URL);
+        final Response response = triggerCallback(caseData, CITIZEN_SUBMIT_CASE_EVENT_ID, SUBMITTED_URL, false);
 
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
         assertThatJson(response.asString())
@@ -104,7 +104,7 @@ public class CicSubmitCaseEventFT extends FunctionalTestSuite {
     public void shouldReceiveWelshNotificationWhenSubmittedCallbackIsInvoked() throws Exception {
         final Map<String, Object> caseData = caseData(REQUEST_SUBMITTED);
         caseData.put("dssCaseDataLanguagePreference", WELSH);
-        final Response response = triggerCallback(caseData, CITIZEN_SUBMIT_CASE_EVENT_ID, SUBMITTED_URL);
+        final Response response = triggerCallback(caseData, CITIZEN_SUBMIT_CASE_EVENT_ID, SUBMITTED_URL, false);
 
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
         assertThatJson(response.asString())
@@ -135,7 +135,7 @@ public class CicSubmitCaseEventFT extends FunctionalTestSuite {
     @Test
     public void shouldNotSendApplicationReceivedNotificationWhenNotifyPartiesNotFound() throws Exception {
         final Map<String, Object> caseData = caseData(REQUEST_MISSING_PARTIES);
-        final Response response = triggerCallback(caseData, CITIZEN_SUBMIT_CASE_EVENT_ID, SUBMITTED_URL);
+        final Response response = triggerCallback(caseData, CITIZEN_SUBMIT_CASE_EVENT_ID, SUBMITTED_URL, false);
 
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
         assertThatJson(response.asString())
