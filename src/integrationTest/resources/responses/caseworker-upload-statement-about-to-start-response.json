@@ -1,0 +1,18 @@
+{
+  "data": {
+    "statementUploadStatementDocument": null,
+    "statementUploadStatementParty": {
+      "list_items": [
+        {
+          "label": "Applicant"
+        },
+        {
+          "label": "Respondent"
+        },
+        {
+          "label": "Representative"
+        }
+      ]
+    }
+  }
+}

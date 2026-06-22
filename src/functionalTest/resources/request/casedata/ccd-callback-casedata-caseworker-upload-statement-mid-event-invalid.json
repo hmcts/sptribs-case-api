@@ -1,0 +1,7 @@
+{
+  "statementUploadStatementDocument": {
+    "document_url": "http://dm/documents/abc",
+    "document_filename": "statement.exe",
+    "document_binary_url": "http://dm/documents/abc/binary"
+  }
+}

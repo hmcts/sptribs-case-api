@@ -83,6 +83,7 @@ public class CaseTypeTab implements CCDConfig<CaseData, State, UserRole> {
         buildCorrespondenceTab(configBuilder);
         buildOrderTab(configBuilder);
         buildCaseDocumentTab(configBuilder);
+        buildCaseStatementsTab(configBuilder);
         buildBundlesTab(configBuilder);
         buildHearing(configBuilder);
         buildCicaDetails(configBuilder);
@@ -269,6 +270,13 @@ public class CaseTypeTab implements CCDConfig<CaseData, State, UserRole> {
             .label("Case Documents", null, "#### Case Documents")
             .field("cicCaseApplicantDocumentsUploaded")
             .field("allCaseworkerCICDocument");
+    }
+
+    private void buildCaseStatementsTab(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
+        configBuilder.tab("caseStatements", "Case Statements")
+            .forRoles(CASEWORKER)
+            .label("Case Statements", null, "#### Case Statements")
+            .field("statements");
     }
 
     private void buildCorrespondenceTab(ConfigBuilder<CaseData, State, UserRole> configBuilder) {

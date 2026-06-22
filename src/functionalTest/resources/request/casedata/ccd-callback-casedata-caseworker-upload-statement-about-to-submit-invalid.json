@@ -1,0 +1,22 @@
+{
+  "cicCaseApplicantFullName": "Applicant Person",
+  "cicCaseRespondentName": "Appeals Team",
+  "cicCaseRepresentativeFullName": "Representative Person",
+  "statementUploadStatementParty": {
+    "value": {
+      "label": "Applicant",
+      "code": "f70ce2d1-6677-4fd8-9f11-d012f4de6639"
+    },
+    "list_items": [
+      {
+        "label": "Applicant",
+        "code": "f70ce2d1-6677-4fd8-9f11-d012f4de6639"
+      }
+    ]
+  },
+  "statementUploadStatementDocument": {
+    "document_url": "http://dm/documents/abc",
+    "document_filename": "statement.exe",
+    "document_binary_url": "http://dm/documents/abc/binary"
+  }
+}

@@ -61,6 +61,8 @@ import uk.gov.hmcts.sptribs.document.bundling.model.MultiBundleConfig;
 import uk.gov.hmcts.sptribs.document.model.AbstractCaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.notification.model.Correspondence;
+import uk.gov.hmcts.sptribs.statement.model.Statement;
+import uk.gov.hmcts.sptribs.statement.model.StatementUpload;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -364,6 +366,20 @@ public class CaseData {
     )
     @External
     private List<ListValue<Correspondence>> correspondence;
+
+    @JsonUnwrapped(prefix = "statementUpload")
+    @Builder.Default
+    @CCD(access = {DefaultAccess.class})
+    private StatementUpload statementUpload = new StatementUpload();
+
+    @CCD(
+        label = "Statements",
+        typeOverride = Collection,
+        typeParameterOverride = "Statement",
+        access = {DefaultAccess.class}
+    )
+    @External
+    private List<ListValue<Statement>> statements;
 
     @CCD(
         label = "Case number",

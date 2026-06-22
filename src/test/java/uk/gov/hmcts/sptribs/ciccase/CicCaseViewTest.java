@@ -9,13 +9,19 @@ import uk.gov.hmcts.sptribs.ciccase.model.casetype.CriminalInjuriesCompensationD
 import uk.gov.hmcts.sptribs.common.repositories.CorrespondenceRepository;
 import uk.gov.hmcts.sptribs.notification.model.Correspondence;
 import uk.gov.hmcts.sptribs.notification.persistence.CorrespondenceEntity;
+import uk.gov.hmcts.sptribs.statement.model.Statement;
+import uk.gov.hmcts.sptribs.statement.service.StatementPersistenceException;
+import uk.gov.hmcts.sptribs.statement.service.StatementService;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 import java.util.UUID;
 
 import static java.util.Collections.singletonList;
+import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -23,13 +29,17 @@ import static org.mockito.Mockito.when;
 class CicCaseViewTest {
 
     private final CorrespondenceRepository correspondenceRepository = mock(CorrespondenceRepository.class);
-    private final CicCaseView cicCaseView = new CicCaseView(correspondenceRepository);
+    private final StatementService statementService = mock(StatementService.class);
+    private final CicCaseView cicCaseView = new CicCaseView(correspondenceRepository, statementService);
 
     @Test
     void shouldReturnProvidedCaseDataUnchanged() {
         CriminalInjuriesCompensationData caseData = new CriminalInjuriesCompensationData();
         caseData.setCaseNameHmctsInternal("Sample case");
         CaseViewRequest<State> request = new CaseViewRequest<>(1234567890123456L, State.CaseManagement);
+
+        when(statementService.getStatementsForCase(request.caseRef()))
+            .thenReturn(emptyList());
 
         var returnedCaseData = cicCaseView.getCase(request, caseData);
 
@@ -77,9 +87,64 @@ class CicCaseViewTest {
 
         when(correspondenceRepository.findAllByCaseReferenceNumberOrderBySentOnDesc(request.caseRef()))
             .thenReturn(singletonList(testCorrespondenceEntity));
+        when(statementService.getStatementsForCase(request.caseRef()))
+            .thenReturn(emptyList());
 
         CriminalInjuriesCompensationData returnedCaseData = cicCaseView.getCase(request, caseData);
 
         assertThat(returnedCaseData).isSameAs(caseData);
+    }
+
+    @Test
+    void shouldReturnProvidedCaseDataWithStatements() {
+        CriminalInjuriesCompensationData caseData = new CriminalInjuriesCompensationData();
+        caseData.setCaseNameHmctsInternal("Sample case");
+
+        CaseViewRequest<State> request = new CaseViewRequest<>(1234567890123456L, State.CaseManagement);
+
+        Statement testStatement = Statement.builder()
+            .party("Applicant")
+            .uploadedOn(OffsetDateTime.now().format(DateTimeFormatter.ofPattern("d MMM yyyy HH:mm")))
+            .document(Document.builder()
+                .url("http://test-url.com/statement.pdf")
+                .filename("statement.pdf")
+                .binaryUrl("http://test-url.com/statement.pdf/binary")
+                .build())
+            .build();
+
+        ListValue<Statement> statementListValue = new ListValue<>();
+        statementListValue.setId("1");
+        statementListValue.setValue(testStatement);
+
+        when(correspondenceRepository.findAllByCaseReferenceNumberOrderBySentOnDesc(request.caseRef()))
+            .thenReturn(emptyList());
+        when(statementService.getStatementsForCase(request.caseRef()))
+            .thenReturn(List.of(statementListValue));
+
+        CriminalInjuriesCompensationData returnedCaseData = cicCaseView.getCase(request, caseData);
+
+        assertThat(returnedCaseData).isSameAs(caseData);
+        assertThat(returnedCaseData.getStatements()).hasSize(1);
+        assertThat(returnedCaseData.getStatements().getFirst().getValue().getParty()).isEqualTo("Applicant");
+        assertThat(returnedCaseData.getStatements().getFirst().getValue().getDocument().getFilename())
+            .isEqualTo("statement.pdf");
+    }
+
+    @Test
+    void shouldReturnCaseDataWhenStatementServiceFails() {
+        CriminalInjuriesCompensationData caseData = new CriminalInjuriesCompensationData();
+        caseData.setCaseNameHmctsInternal("Sample case");
+
+        CaseViewRequest<State> request = new CaseViewRequest<>(1234567890123456L, State.CaseManagement);
+
+        when(correspondenceRepository.findAllByCaseReferenceNumberOrderBySentOnDesc(request.caseRef()))
+            .thenReturn(emptyList());
+        when(statementService.getStatementsForCase(request.caseRef()))
+            .thenThrow(new StatementPersistenceException("Failed to fetch statements", new RuntimeException("db")));
+
+        CriminalInjuriesCompensationData returnedCaseData = cicCaseView.getCase(request, caseData);
+
+        assertThat(returnedCaseData).isSameAs(caseData);
+        assertThat(returnedCaseData.getStatements()).isEmpty();
     }
 }
