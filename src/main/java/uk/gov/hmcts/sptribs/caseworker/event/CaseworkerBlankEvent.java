@@ -27,6 +27,8 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 @Setter
 public class CaseworkerBlankEvent implements CCDConfig<CaseData, State, UserRole> {
 
+    private static final String ALWAYS_HIDE = "[STATE]=\"ALWAYS_HIDE\"";
+
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         new PageBuilder(configBuilder
@@ -34,11 +36,9 @@ public class CaseworkerBlankEvent implements CCDConfig<CaseData, State, UserRole
             .forStates(CaseManagement)
             .name("Blank event: blank event")
             .description("Blank event: blank event")
-            .showSummary()
+            .showCondition(ALWAYS_HIDE)
             .submittedCallback(this::submitted)
-            .grant(CREATE_READ_UPDATE, SUPER_USER, ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER,
-                ST_CIC_HEARING_CENTRE_ADMIN, ST_CIC_HEARING_CENTRE_TEAM_LEADER)
-            .grantHistoryOnly(ST_CIC_SENIOR_JUDGE, ST_CIC_JUDGE))
+            .grant(CREATE_READ_UPDATE, SUPER_USER))
             .page("blankEventPage")
             .pageLabel("A blank event page")
             .done();
