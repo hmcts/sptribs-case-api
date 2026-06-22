@@ -90,11 +90,12 @@ class CaseDataRepositoryImplIT extends IntegrationTestBase {
 
     private void insertCase(String state, String json) {
         jdbcTemplate.update("""
-                INSERT INTO ccd.case_data (id, reference, jurisdiction, case_type_id, state, data,
-                                           security_classification, last_modified)
-                VALUES (1, :reference, 'ST_CIC', 'CriminalInjuriesCompensation', :state, :data::jsonb,
-                        :securityClassification, now())
-            """, Map.of(
+             INSERT INTO ccd.case_data (id, reference, jurisdiction, case_type_id, state, data,
+             security_classification, last_modified)
+             VALUES (1, :reference, 'ST_CIC', 'CriminalInjuriesCompensation', :state, CAST(:data AS jsonb),
+             CAST(:securityClassification AS ccd.securityclassification), now())
+             """,
+            Map.of(
             "reference", Long.valueOf("123"),
             "state", state,
             "data", json,

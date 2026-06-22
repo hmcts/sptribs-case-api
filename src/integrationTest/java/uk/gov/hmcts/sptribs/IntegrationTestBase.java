@@ -1,14 +1,20 @@
 package uk.gov.hmcts.sptribs;
 
+import org.junit.jupiter.api.MethodOrderer;
+import org.junit.jupiter.api.TestMethodOrder;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
+@SpringBootTest
+@Testcontainers
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public abstract class IntegrationTestBase {
 
     @Container
     @ServiceConnection
-    static PostgreSQLContainer<?> postgreSQLContainer = new PostgreSQLContainer<>("postgres:16")
-        .withInitScripts("sql/create_test_case_data.sql", "sql/create_test_case_document_types.sql", "sql/create_test_case_documents.sql");
-
+    static PostgreSQLContainer<?> postgreSQLContainer =
+        new PostgreSQLContainer<>("postgres:16");
 }
