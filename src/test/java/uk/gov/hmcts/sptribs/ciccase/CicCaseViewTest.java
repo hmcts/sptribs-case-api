@@ -14,14 +14,14 @@ import uk.gov.hmcts.sptribs.statement.service.StatementPersistenceException;
 import uk.gov.hmcts.sptribs.statement.service.StatementService;
 
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.time.OffsetDateTime;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.UUID;
 
-import static java.util.Collections.singletonList;
 import static java.util.Collections.emptyList;
+import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
