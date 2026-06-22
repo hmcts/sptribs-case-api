@@ -22,12 +22,11 @@ import uk.gov.hmcts.sptribs.statement.service.StatementPersistenceException;
 import uk.gov.hmcts.sptribs.statement.service.StatementService;
 import uk.gov.hmcts.sptribs.statement.service.StatementValidationException;
 
-
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigBuilder;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.getEventsFrom;
 import static uk.gov.hmcts.sptribs.testutil.TestEventConstants.CASEWORKER_UPLOAD_STATEMENT;
