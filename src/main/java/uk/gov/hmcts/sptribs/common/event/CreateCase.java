@@ -154,7 +154,9 @@ public class CreateCase implements CCDConfig<CaseData, State, UserRole> {
                     documentsService.buildAndSaveNewDocumentEntity(
                         document.getValue().getDocumentLink(),
                         details.getId(),
-                        false, false
+                        false,
+                        document.getValue().getDocumentCategory(),
+                        false
                     );
                 } catch (RuntimeException e) {
                     log.error("Saving applicant documents failed with exception: {}", e.getMessage());

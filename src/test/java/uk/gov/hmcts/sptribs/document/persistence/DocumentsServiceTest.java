@@ -53,11 +53,11 @@ public class DocumentsServiceTest {
     @Test
     public void shouldBuildAndSaveNewNonDraftDocumentEntity() {
         Document evidenceDocument = buildDocument(HOSPITAL_RECORDS.getCategory());
-        DocumentEntity evidenceDocumentEntity = buildDocumentEntity(HOSPITAL_RECORDS.getCategory(), 2L, false, false, OffsetDateTime.now());
+        DocumentEntity evidenceDocumentEntity = buildDocumentEntity(HOSPITAL_RECORDS.name(), 2L, false, false, OffsetDateTime.now());
 
         when(caseDocumentTypesCache.getId(HOSPITAL_RECORDS.getCaseDocumentType())).thenReturn(2L);
 
-        documentsService.buildAndSaveNewDocumentEntity(evidenceDocument, TEST_CASE_ID, false, false);
+        documentsService.buildAndSaveNewDocumentEntity(evidenceDocument, TEST_CASE_ID, false, HOSPITAL_RECORDS,false);
 
         verify(documentsRepository, times(1)).save(evidenceDocumentEntity);
     }
@@ -69,7 +69,7 @@ public class DocumentsServiceTest {
 
         when(caseDocumentTypesCache.getId(CaseDocumentType.BUNDLE)).thenReturn(6L);
 
-        documentsService.buildAndSaveNewDocumentEntity(bundleDocument, TEST_CASE_ID, false, true);
+        documentsService.buildAndSaveNewDocumentEntity(bundleDocument, TEST_CASE_ID, false, null,true);
 
         verify(documentsRepository, times(1)).save(bundleDocumentEntity);
     }
@@ -77,12 +77,12 @@ public class DocumentsServiceTest {
     @Test
     public void shouldBuildAndSaveNewDraftDocumentEntity() {
         Document draftEvidenceDocument = buildDocument(HOSPITAL_RECORDS.getCategory());
-        DocumentEntity draftEvidenceDocumentEntity = buildDocumentEntity(HOSPITAL_RECORDS.getCategory(), 2L, true, false,
+        DocumentEntity draftEvidenceDocumentEntity = buildDocumentEntity(HOSPITAL_RECORDS.name(), 2L, true, false,
             OffsetDateTime.now());
 
         when(caseDocumentTypesCache.getId(HOSPITAL_RECORDS.getCaseDocumentType())).thenReturn(2L);
 
-        documentsService.buildAndSaveNewDocumentEntity(draftEvidenceDocument, TEST_CASE_ID, true, false);
+        documentsService.buildAndSaveNewDocumentEntity(draftEvidenceDocument, TEST_CASE_ID, true, HOSPITAL_RECORDS, false);
 
         verify(documentsRepository, times(1)).save(draftEvidenceDocumentEntity);
     }
@@ -90,14 +90,15 @@ public class DocumentsServiceTest {
     @Test
     public void shouldThrowRuntimeExceptionWhenDataAccessExceptionCaughtInBuildAndSaveNewDraftDocumentEntity() {
         Document draftEvidenceDocument = buildDocument(HOSPITAL_RECORDS.getCategory());
-        DocumentEntity draftEvidenceDocumentEntity = buildDocumentEntity(HOSPITAL_RECORDS.getCategory(), 2L, true, false,
+        DocumentEntity draftEvidenceDocumentEntity = buildDocumentEntity(HOSPITAL_RECORDS.name(), 2L, true, false,
             OffsetDateTime.now());
 
         when(documentsRepository.save(draftEvidenceDocumentEntity)).thenThrow(new DataAccessResourceFailureException("DB error"));
         when(caseDocumentTypesCache.getId(HOSPITAL_RECORDS.getCaseDocumentType())).thenReturn(2L);
 
         assertThatThrownBy(
-            () -> documentsService.buildAndSaveNewDocumentEntity(draftEvidenceDocument, TEST_CASE_ID, true, false)).isInstanceOf(
+            () -> documentsService.buildAndSaveNewDocumentEntity(draftEvidenceDocument, TEST_CASE_ID, true,
+                HOSPITAL_RECORDS, false)).isInstanceOf(
             RuntimeException.class).hasMessageContaining("Error saving document entity to database").hasCauseInstanceOf(
             DataAccessException.class);
     }
@@ -105,7 +106,7 @@ public class DocumentsServiceTest {
     @Test
     public void shouldSetSentToApplicantViaContactPartiesToTrue() {
         Document applicationDocument = buildDocument(DSS_SUPPORTING.getCategory());
-        DocumentEntity applicationDocumentEntity = buildDocumentEntity(DSS_SUPPORTING.getCategory(), 1L, false, false,
+        DocumentEntity applicationDocumentEntity = buildDocumentEntity(DSS_SUPPORTING.name(), 1L, false, false,
             OffsetDateTime.now());
 
         documentsService.setSentToApplicantViaContactPartiesToTrue(List.of(applicationDocument.getBinaryUrl()));
@@ -130,7 +131,7 @@ public class DocumentsServiceTest {
     @Test
     public void shouldSetIsDraftToFalse() {
         Document applicationDocument = buildDocument(HOSPITAL_RECORDS.getCategory());
-        DocumentEntity draftEvidenceDocumentEntity = buildDocumentEntity(HOSPITAL_RECORDS.getCategory(), 2L, true, false,
+        DocumentEntity draftEvidenceDocumentEntity = buildDocumentEntity(HOSPITAL_RECORDS.name(), 2L, true, false,
             OffsetDateTime.now());
 
 
@@ -201,14 +202,14 @@ public class DocumentsServiceTest {
 
         //given
         List<DocumentEntity> documentEntities = new ArrayList<>();
-        DocumentEntity orderDocument = buildDocumentEntity(ORDER_AND_DECISION_DOCUMENT.getCategory(), 4L, false, false,
+        DocumentEntity orderDocument = buildDocumentEntity(ORDER_AND_DECISION_DOCUMENT.name(), 4L, false, false,
             OffsetDateTime.now());
         DocumentEntity bundleDocument = buildDocumentEntity(null, 6L, false, false, OffsetDateTime.now());
-        DocumentEntity documentSentOutViaContactParties1 = buildDocumentEntity(HOSPITAL_RECORDS.getCategory(), 2L, false, true,
+        DocumentEntity documentSentOutViaContactParties1 = buildDocumentEntity(HOSPITAL_RECORDS.name(), 2L, false, true,
             OffsetDateTime.now());
-        DocumentEntity documentSentOutViaContactParties2 = buildDocumentEntity(DSS_SUPPORTING.getCategory(), 1L, false, true,
+        DocumentEntity documentSentOutViaContactParties2 = buildDocumentEntity(DSS_SUPPORTING.name(), 1L, false, true,
             OffsetDateTime.now());
-        DocumentEntity orderDocumentSentViaContactParties = buildDocumentEntity(ORDER_AND_DECISION_DOCUMENT.getCategory(), 4L, false, true,
+        DocumentEntity orderDocumentSentViaContactParties = buildDocumentEntity(ORDER_AND_DECISION_DOCUMENT.name(), 4L, false, true,
             OffsetDateTime.now());
         documentEntities.add(orderDocument);
         documentEntities.add(bundleDocument);
@@ -265,22 +266,55 @@ public class DocumentsServiceTest {
 
     }
 
+    @Test
+    void shouldReturnEmptyModelWhenNoConditionsMet() {
+        //given
+        List<DocumentEntity> documentEntities = new ArrayList<>();
+
+        DocumentEntity applicantDoc = buildDocumentEntity(DSS_SUPPORTING.name(), 1L, false, false,
+            OffsetDateTime.now());
+
+        documentEntities.add(applicantDoc);
+
+        when(documentsRepository.findAllNonDraftDocumentsByCaseReference(TEST_CASE_ID)).thenReturn(documentEntities);
+        when(caseDocumentTypesCache.getId(ORDER_AND_DECISION_DOCUMENT.getCaseDocumentType())).thenReturn(4L);
+        when(caseDocumentTypesCache.getId(CaseDocumentType.BUNDLE)).thenReturn(6L);
+
+        //when
+        DocumentDashboardModel actualResult = documentsService.getDocumentsOnCase(TEST_CASE_ID);
+
+        //then
+        assertThat(actualResult).isNotNull();
+
+    }
+
     private Map<String, String> buildUploadedDocuments() {
 
         return Map.of("CaseDocument1", "binary-1", "CaseDocument2", "binary-2", "DocumentAvailable1", "yes", "DocumentAvailable2", "yes");
     }
 
-    private DocumentEntity buildDocumentEntity(String categoryId, Long documentTypeId, boolean isDraft,
+    private DocumentEntity buildDocumentEntity(String docTypeName, Long caseDocumentTypeId, boolean isDraft,
                                                boolean sentToApplicantViaContactParties, OffsetDateTime offsetDateTime) {
-        return DocumentEntity.builder().caseReferenceNumber(TEST_CASE_ID).documentUrl("example.com/test-document.pdf").documentFilename(
-            "test-document.pdf").documentBinaryUrl("example.com/test-document.pdf/binary").categoryId(categoryId).documentTypeId(
-            documentTypeId).isDraft(isDraft).sentToApplicantViaContactParties(sentToApplicantViaContactParties).savedAt(
-            offsetDateTime).build();
+        return DocumentEntity.builder()
+            .caseReferenceNumber(TEST_CASE_ID)
+            .documentUrl("example.com/test-document.pdf")
+            .documentFilename("test-document.pdf")
+            .documentBinaryUrl("example.com/test-document.pdf/binary")
+            .documentTypeName(docTypeName)
+            .caseDocumentTypeId(caseDocumentTypeId)
+            .isDraft(isDraft)
+            .sentToApplicantViaContactParties(sentToApplicantViaContactParties)
+            .savedAt(offsetDateTime)
+            .build();
     }
 
     private Document buildDocument(String categoryId) {
-        return Document.builder().url("example.com/test-document.pdf").filename("test-document.pdf").binaryUrl(
-            "example.com/test-document.pdf/binary").categoryId(categoryId).build();
+        return Document.builder()
+            .url("example.com/test-document.pdf")
+            .filename("test-document.pdf")
+            .binaryUrl("example.com/test-document.pdf/binary")
+            .categoryId(categoryId)
+            .build();
     }
 
 }

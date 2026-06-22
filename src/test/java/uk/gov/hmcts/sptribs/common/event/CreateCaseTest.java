@@ -290,8 +290,12 @@ class CreateCaseTest {
         assertThat(result.getConfirmationHeader())
             .isEqualTo("# Case Created \n## Case reference number: \n## 1616-5914-0147-3378");
 
-        verify(documentsService, times(2)).buildAndSaveNewDocumentEntity(
-            any(), eq(TEST_CASE_ID), eq(false), eq(false)
+        verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
+            any(), eq(TEST_CASE_ID), eq(false), eq(DocumentType.DSS_TRIBUNAL_FORM), eq(false)
+        );
+
+        verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
+            any(), eq(TEST_CASE_ID), eq(false), eq(DocumentType.DSS_SUPPORTING), eq(false)
         );
     }
 
@@ -460,7 +464,8 @@ class CreateCaseTest {
         caseDetails.setId(TEST_CASE_ID);
 
         doThrow(new RuntimeException("Error saving document entity to database"))
-            .when(documentsService).buildAndSaveNewDocumentEntity(any(), eq(TEST_CASE_ID), eq(false), eq(false));
+            .when(documentsService).buildAndSaveNewDocumentEntity(any(), eq(TEST_CASE_ID), eq(false),
+                eq(DocumentType.DSS_TRIBUNAL_FORM), eq(false));
 
         SubmittedCallbackResponse response =
             createCase.submitted(caseDetails, caseDetails);
@@ -469,7 +474,7 @@ class CreateCaseTest {
             .contains(format("# Create case notification failed %n## Please resend the notification"));
 
         verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
-            any(), eq(TEST_CASE_ID), eq(false), eq(false)
+            any(), eq(TEST_CASE_ID), eq(false), eq(DocumentType.DSS_TRIBUNAL_FORM), eq(false)
         );
     }
 }

@@ -116,12 +116,15 @@ public class RespondentDocumentManagement implements CCDConfig<CaseData, State, 
         }
 
         List<String> errors = new ArrayList<>();
+
         for (ListValue<CaseworkerCICDocument> document : documents) {
             try {
                 documentsService.buildAndSaveNewDocumentEntity(
                     document.getValue().getDocumentLink(),
                     details.getId(),
-                    false, false
+                    false,
+                    document.getValue().getDocumentCategory(),
+                    false
                 );
             } catch (RuntimeException e) {
                 errors.add(handleDocumentException(document.getValue().getDocumentLink(), e.getMessage()));
