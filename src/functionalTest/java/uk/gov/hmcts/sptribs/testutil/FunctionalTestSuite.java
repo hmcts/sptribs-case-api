@@ -181,11 +181,7 @@ public abstract class FunctionalTestSuite {
         }
 
         if (createTestDocument) {
-            String testDocUUID = UUID.randomUUID().toString();
-            String caseDataWithDocUrls = JSON.getDefault().toJSON(caseData).replace("${UUID}", testDocUUID);
-            caseData = CaseDataUtil.caseDataFromString(caseDataWithDocUrls);
-
-            caseDocumentsFTDataManager.saveTestDocumentEntity(testCaseRef, testDocUUID);
+            generateAndSetUuidInCaseDataAndDB(caseData, testCaseRef);
         }
 
         if (createCaseForSubmittedOrAboutToSubmitEvent) {
@@ -500,6 +496,24 @@ public abstract class FunctionalTestSuite {
             }
         }
         caseData.put("cicCaseDraftOrderCICList", draftOrderList);
+    }
+
+    private void generateAndSetUuidInCaseDataAndDB(Map<String, Object> caseData, Long testCaseRef) throws SQLException, IOException {
+        String caseDataJsonString = JSON.getDefault().toJSON(caseData);
+
+        while (caseDataJsonString.contains("${UUID}")) {
+            String documentUrlUuid = UUID.randomUUID().toString();
+            caseDataJsonString = caseDataJsonString.replaceFirst(
+                    "http://dm-store.service.core-compute.internal/documents/\\$\\{UUID}",
+                    "http://dm-store.service.core-compute.internal/documents/" +  documentUrlUuid)
+                .replaceFirst("http://dm-store.service.core-compute.internal/documents/\\$\\{UUID}",
+                    "http://dm-store.service.core-compute.internal/documents/" + documentUrlUuid);
+
+            caseDocumentsFTDataManager.saveTestDocumentEntity(testCaseRef, documentUrlUuid);
+        }
+
+        caseData.clear();
+        caseData.putAll(CaseDataUtil.caseDataFromString(caseDataJsonString));
     }
 
     @BeforeAll
