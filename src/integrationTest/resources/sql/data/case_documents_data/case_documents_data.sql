@@ -1,16 +1,5 @@
 CREATE SCHEMA IF NOT EXISTS ccd;
 
-CREATE TABLE IF NOT EXISTS ccd.case_data (
-                                           id BIGINT NOT NULL,
-                                           reference BIGINT,
-                                           jurisdiction TEXT,
-                                           case_type_id TEXT,
-                                           state TEXT,
-                                           data JSONB,
-                                           security_classification TEXT NOT NULL,
-                                           last_modified TIMESTAMP
-);
-
 INSERT INTO ccd.case_data (id, reference, jurisdiction, case_type_id, state, data, security_classification)
 VALUES (1, 1234567890, 'SPTRIBS', 'CriminalInjuriesCompensation', 'Open', '{}'::jsonb, 'PUBLIC');
 
