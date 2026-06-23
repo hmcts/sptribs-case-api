@@ -2,34 +2,29 @@ package uk.gov.hmcts.sptribs.common.repositories.impl;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.transaction.annotation.Transactional;
-import org.testcontainers.junit.jupiter.Testcontainers;
-import uk.gov.hmcts.ccd.data.casedetails.SecurityClassification;
+import uk.gov.hmcts.sptribs.CaseDataManager;
 import uk.gov.hmcts.sptribs.IntegrationTestBase;
 import uk.gov.hmcts.sptribs.common.repositories.CaseDataRepository;
 
-import java.util.Map;
-
 import static org.camunda.bpm.model.xml.test.assertions.ModelAssertions.assertThat;
 
-@SpringBootTest
 @Transactional
-@Testcontainers
-@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 class CaseDataRepositoryImplIT extends IntegrationTestBase {
 
     @Autowired
     private CaseDataRepository repository;
 
     @Autowired
+    private CaseDataManager caseDataManager;
+
+    @Autowired
     private NamedParameterJdbcTemplate jdbcTemplate;
 
     @Test
     void givenCCDReference_thenShouldReturnTrueWhenCaseExistsAndValidState() {
-        insertCase("Submitted", "{}");
+        caseDataManager.addCaseData(123L, "Submitted", "{}");
 
         boolean result = repository.checkCaseExists("123");
 
@@ -38,7 +33,7 @@ class CaseDataRepositoryImplIT extends IntegrationTestBase {
 
     @Test
     void givenCCDReference_thenShouldReturnFalseWhenStateIsInvalid() {
-        insertCase("Draft", "{}");
+        caseDataManager.addCaseData(123L,"Draft", "{}");
 
         boolean result = repository.checkCaseExists("123");
 
@@ -47,7 +42,7 @@ class CaseDataRepositoryImplIT extends IntegrationTestBase {
 
     @Test
     void givenCCDReference_thenShouldFindCaseByEmail() {
-        insertCase("Submitted", """
+        caseDataManager.addCaseData(123L,"Submitted", """
                 {
                   "cicCaseEmail": "test@example.com"
                 }
@@ -60,7 +55,7 @@ class CaseDataRepositoryImplIT extends IntegrationTestBase {
 
     @Test
     void givenCCDReference_thenShouldFindCaseBySearchPartiesEmail() {
-        insertCase("Submitted", """
+        caseDataManager.addCaseData(123L,"Submitted", """
                 {
                   "SearchCriteria": {
                     "SearchParties": [
@@ -81,25 +76,10 @@ class CaseDataRepositoryImplIT extends IntegrationTestBase {
 
     @Test
     void givenCCDReference_thenShouldReturnEmptyWhenEmailDoesNotMatch() {
-        insertCase("Submitted", "{}");
+        caseDataManager.addCaseData(123L,"Submitted", "{}");
 
         var result = repository.findCase("123", "wrong@example.com");
 
         assertThat(result).isEmpty();
-    }
-
-    private void insertCase(String state, String json) {
-        jdbcTemplate.update("""
-             INSERT INTO ccd.case_data (id, reference, jurisdiction, case_type_id, state, data,
-             security_classification, last_modified)
-             VALUES (1, :reference, 'ST_CIC', 'CriminalInjuriesCompensation', :state, CAST(:data AS jsonb),
-             CAST(:securityClassification AS ccd.securityclassification), now())
-             """,
-            Map.of(
-            "reference", Long.valueOf("123"),
-            "state", state,
-            "data", json,
-            "securityClassification", SecurityClassification.PUBLIC.name()
-        ));
     }
 }

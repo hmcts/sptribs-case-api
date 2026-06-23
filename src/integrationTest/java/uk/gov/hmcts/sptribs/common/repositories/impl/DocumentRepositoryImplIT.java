@@ -15,6 +15,7 @@ import java.util.Map;
 
 import static org.camunda.bpm.model.xml.test.assertions.ModelAssertions.assertThat;
 
+@Transactional
 class DocumentRepositoryImplIT extends IntegrationTestBase {
 
     @Autowired
@@ -33,11 +34,10 @@ class DocumentRepositoryImplIT extends IntegrationTestBase {
 
     @BeforeEach
     void setUp() {
-        caseDataManager.addCaseData(1111222233334444L, "{}");
-        caseDocumentManager.addCaseDocument(1111222233334444L, binaryUrl);
+        caseDataManager.addCaseData(123L, "test", "{}");
+        caseDocumentManager.addCaseDocument(123L, binaryUrl);
     }
 
-    @Transactional
     @Test
     void givenBinaryURL_thenShouldDeleteEntryFromTable() {
 
