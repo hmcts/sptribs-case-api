@@ -13,7 +13,6 @@ import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static uk.gov.hmcts.sptribs.common.config.ControllerConstants.SERVICE_AUTHORIZATION;
-import static uk.gov.hmcts.sptribs.common.config.ControllerConstants.SERVICE_CODE;
 import static uk.gov.hmcts.sptribs.recordlisting.RecordListingConstants.IS_HEARING_LOCATION;
 import static uk.gov.hmcts.sptribs.recordlisting.RecordListingConstants.REGION_ID;
 import static uk.gov.hmcts.sptribs.recordlisting.RecordListingConstants.REGION_ID_1;
