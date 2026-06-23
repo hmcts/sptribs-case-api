@@ -10,7 +10,7 @@ spring:
       - com.azure.spring.cloud.autoconfigure.implementation.context.AzureTokenCredentialAutoConfiguration
   datasource:
     hikari:
-      maximum-pool-size: 10
+      maximum-pool-size: 2
       minimum-idle: 0
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
