@@ -6,6 +6,7 @@ public final class RecordListingConstants {
     public static final String REGION_ID_1 = "regionId";
     public static final String IS_HEARING_LOCATION = "is_hearing_location";
     public static final String REGION_ALL = "ALL";
+    public static final String CIC_SERVICE_CODE = "BBA2";
 
     private RecordListingConstants() {
     }
