@@ -87,7 +87,7 @@ class LocationServiceTest {
         //When
         when(authTokenGenerator.generate()).thenReturn(TEST_SERVICE_AUTH_TOKEN);
         when(httpServletRequest.getHeader(AUTHORIZATION)).thenReturn(TEST_AUTHORIZATION_TOKEN);
-        when(locationClient.getHearingVenues(TEST_SERVICE_AUTH_TOKEN, TEST_AUTHORIZATION_TOKEN, "1", "Y", "BBA2"))
+        when(locationClient.getHearingVenues(TEST_SERVICE_AUTH_TOKEN, TEST_AUTHORIZATION_TOKEN, "1", "Y"))
             .thenReturn(List.of(hearingVenue, hearingVenue2));
         DynamicList hearingVenueList = locationService.getHearingVenuesByRegion("1");
 
@@ -104,21 +104,32 @@ class LocationServiceTest {
         final HearingVenue hearingVenue = HearingVenue
             .builder()
             .regionId("1")
+            .courtName("courtName1234")
+            .courtAddress("courtAddress1234")
+            .courtTypeId("13")
+            .serviceCode("BBA2")
+            .build();
+
+        final HearingVenue hearingVenue2 = HearingVenue
+            .builder()
+            .regionId("1")
             .courtName("courtName")
             .courtAddress("courtAddress")
-            .serviceCode("BBA2")
+            .courtTypeId("13")
+            .serviceCode("BBA3")
             .build();
 
         //When
         when(authTokenGenerator.generate()).thenReturn(TEST_SERVICE_AUTH_TOKEN);
         when(httpServletRequest.getHeader(AUTHORIZATION)).thenReturn(TEST_AUTHORIZATION_TOKEN);
-        when(locationClient.getHearingVenues(TEST_SERVICE_AUTH_TOKEN, TEST_AUTHORIZATION_TOKEN, "1", "Y", "BBA2"))
-            .thenReturn(List.of(hearingVenue));
+        when(locationClient.getHearingVenues(TEST_SERVICE_AUTH_TOKEN, TEST_AUTHORIZATION_TOKEN, "1", "Y"))
+            .thenReturn(List.of(hearingVenue, hearingVenue2));
         DynamicList hearingVenueList = locationService.getHearingVenuesByRegion("1");
 
         //Then
         assertThat(hearingVenueList).isNotNull();
-        assertThat(hearingVenueList.getListItems()).extracting("label").containsExactlyInAnyOrder("courtName-courtAddress");
+        assertThat(hearingVenueList.getListItems()).extracting("label")
+            .containsExactlyInAnyOrder("courtName1234-courtAddress1234");
 
     }
 
@@ -135,7 +146,7 @@ class LocationServiceTest {
         //When
         when(authTokenGenerator.generate()).thenReturn(TEST_SERVICE_AUTH_TOKEN);
         when(httpServletRequest.getHeader(AUTHORIZATION)).thenReturn(TEST_AUTHORIZATION_TOKEN);
-        when(locationClient.getHearingVenues(TEST_SERVICE_AUTH_TOKEN, TEST_AUTHORIZATION_TOKEN, "1", "Y", "BBA2"))
+        when(locationClient.getHearingVenues(TEST_SERVICE_AUTH_TOKEN, TEST_AUTHORIZATION_TOKEN, "1", "Y"))
             .thenReturn(List.of(hearingVenueResponse));
 
         DynamicList hearingVenueList = locationService.getHearingVenuesByRegion("1");
@@ -151,7 +162,7 @@ class LocationServiceTest {
         //When
         when(authTokenGenerator.generate()).thenReturn(TEST_SERVICE_AUTH_TOKEN);
         when(httpServletRequest.getHeader(AUTHORIZATION)).thenReturn(TEST_AUTHORIZATION_TOKEN);
-        when(locationClient.getHearingVenues(TEST_SERVICE_AUTH_TOKEN, TEST_AUTHORIZATION_TOKEN, "1", "Y", "BBA2"))
+        when(locationClient.getHearingVenues(TEST_SERVICE_AUTH_TOKEN, TEST_AUTHORIZATION_TOKEN, "1", "Y"))
             .thenReturn(null);
         DynamicList regionList = locationService.getHearingVenuesByRegion("1");
 
