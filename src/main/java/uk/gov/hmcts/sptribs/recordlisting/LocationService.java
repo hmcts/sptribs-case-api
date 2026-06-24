@@ -17,6 +17,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
+import java.util.function.Predicate;
 
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.COURT_TYPE_ID;
@@ -44,21 +45,23 @@ public class LocationService {
         final HearingVenue[] hearingVenues = getCourtVenues(regionId);
 
         // Location team is migrating from courtTypeId to serviceCode.
-        // When serviceCode is present, the Location service has already
-        // filtered the results, so no additional filtering is required.
+        // When serviceCode is present, we filter by that.
         // Retain the courtTypeId filter for backwards compatibility.
         boolean hasServiceCode = Arrays.stream(hearingVenues)
             .findFirst()
             .map(HearingVenue::getServiceCode)
             .isPresent();
 
-        HearingVenue[] filteredHearingVenues = hasServiceCode
-            ? hearingVenues
-            : Arrays.stream(hearingVenues)
-            .filter(v -> COURT_TYPE_ID.equals(v.getCourtTypeId()))
-            .toArray(HearingVenue[]::new);
+        Predicate<HearingVenue> filter = hasServiceCode
+            ? venue -> CIC_SERVICE_CODE.equals(venue.getServiceCode())
+            : venue -> COURT_TYPE_ID.equals(venue.getCourtTypeId());
 
-        return populateVenueDynamicList(filteredHearingVenues);
+        return populateVenueDynamicList(
+            Arrays.stream(hearingVenues)
+                .filter(filter)
+                .toArray(HearingVenue[]::new)
+        );
+
     }
 
     public DynamicList getAllRegions() {
@@ -99,8 +102,7 @@ public class LocationService {
                 authTokenGenerator.generate(),
                 httpServletRequest.getHeader(AUTHORIZATION),
                 regionId,
-                "Y",
-                CIC_SERVICE_CODE);
+                "Y");
             if (CollectionUtils.isEmpty(list)) {
                 return new HearingVenue[0];
             }
