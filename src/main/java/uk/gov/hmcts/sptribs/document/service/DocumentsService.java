@@ -10,6 +10,7 @@ import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.common.repositories.DocumentsRepository;
+import uk.gov.hmcts.sptribs.common.repositories.exception.DocumentDeleteException;
 import uk.gov.hmcts.sptribs.document.model.CaseDocumentType;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.document.model.DocumentDashboardModel;
@@ -169,7 +170,8 @@ public class DocumentsService {
         try {
             documentsRepository.deleteEntryByBinaryURL(value);
         } catch (DataAccessException e) {
-            throw new RuntimeException("Error deleting entry from document table", e);
+            throw new DocumentDeleteException("Error deleting entry from document table. "
+                + "BinaryUrl: " + value, e);
         }
     }
 }

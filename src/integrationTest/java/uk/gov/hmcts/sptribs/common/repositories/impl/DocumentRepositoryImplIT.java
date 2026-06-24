@@ -1,6 +1,5 @@
 package uk.gov.hmcts.sptribs.common.repositories.impl;
 
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,7 +10,6 @@ import uk.gov.hmcts.sptribs.CaseDocumentManager;
 import uk.gov.hmcts.sptribs.IntegrationTestBase;
 import uk.gov.hmcts.sptribs.common.repositories.DocumentsRepository;
 
-import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -20,14 +18,15 @@ import static org.camunda.bpm.model.xml.test.assertions.ModelAssertions.assertTh
 @Transactional
 class DocumentRepositoryImplIT extends IntegrationTestBase {
 
+
+    @Autowired
+    private DocumentsRepository repository;
+
     @Autowired
     private CaseDataManager caseDataManager;
 
     @Autowired
     private CaseDocumentManager caseDocumentManager;
-
-    @Autowired
-    private DocumentsRepository repository;
 
     @Autowired
     private NamedParameterJdbcTemplate jdbcTemplate;
@@ -52,11 +51,6 @@ class DocumentRepositoryImplIT extends IntegrationTestBase {
         assertThat(getCount(binaryUrl)).isZero();
     }
 
-    @AfterEach
-    void cleardown() {
-        caseDataManager.cleanup();
-        caseDocumentManager.cleanup();
-    }
 
     private int getCount(String binaryUrl) {
         return jdbcTemplate.queryForObject(

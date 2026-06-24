@@ -2,7 +2,6 @@ package uk.gov.hmcts.sptribs.common.repositories.impl;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.sptribs.CaseDataManager;
 import uk.gov.hmcts.sptribs.IntegrationTestBase;
@@ -18,9 +17,6 @@ class CaseDataRepositoryImplIT extends IntegrationTestBase {
 
     @Autowired
     private CaseDataManager caseDataManager;
-
-    @Autowired
-    private NamedParameterJdbcTemplate jdbcTemplate;
 
     @Test
     void givenCCDReference_thenShouldReturnTrueWhenCaseExistsAndValidState() {
