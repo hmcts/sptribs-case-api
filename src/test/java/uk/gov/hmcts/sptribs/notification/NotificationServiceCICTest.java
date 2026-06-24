@@ -22,7 +22,7 @@ import uk.gov.hmcts.sptribs.common.config.EmailTemplatesConfigCIC;
 import uk.gov.hmcts.sptribs.common.repositories.CorrespondenceRepository;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
-import uk.gov.hmcts.sptribs.idam.IdamService;
+import uk.gov.hmcts.sptribs.idam.*;
 import uk.gov.hmcts.sptribs.notification.exception.NotificationException;
 import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
 import uk.gov.hmcts.sptribs.services.cdam.CaseDocumentClientApi;
@@ -128,7 +128,7 @@ public class NotificationServiceCICTest {
             .uploadedDocuments(uploadedDocuments)
             .build();
 
-        final User user = TestDataHelper.getUser();
+        final CICUser user = TestDataHelper.getUser();
 
         when(idamService.retrieveUser(any())).thenReturn(user);
         when(sendEmailResponse.getReference()).thenReturn(Optional.of(randomUUID().toString()));
@@ -185,7 +185,7 @@ public class NotificationServiceCICTest {
             .uploadedDocuments(uploadedDocuments)
             .build();
 
-        final User user = TestDataHelper.getUser();
+        final CICUser user = TestDataHelper.getUser();
 
         when(idamService.retrieveUser(any())).thenReturn(user);
         when(sendEmailResponse.getReference()).thenReturn(Optional.of(randomUUID().toString()));
@@ -242,7 +242,7 @@ public class NotificationServiceCICTest {
             .uploadedDocuments(uploadedDocuments)
             .build();
 
-        final User user = TestDataHelper.getUser();
+        final CICUser user = TestDataHelper.getUser();
 
         when(idamService.retrieveUser(any())).thenReturn(user);
         when(sendEmailResponse.getReference()).thenReturn(Optional.of(randomUUID().toString()));
@@ -451,7 +451,7 @@ public class NotificationServiceCICTest {
             .build();
 
         final byte[] sample = new byte[1];
-        final User user = TestDataHelper.getUser();
+        final CICUser user = TestDataHelper.getUser();
 
         when(idamService.retrieveUser(any())).thenReturn(user);
         when(httpServletRequest.getHeader(AUTHORIZATION)).thenReturn(TEST_AUTHORIZATION_TOKEN);
@@ -523,7 +523,7 @@ public class NotificationServiceCICTest {
             .uploadedDocuments(uploadedDocuments)
             .build();
 
-        final User user = TestDataHelper.getUser();
+        final CICUser user = TestDataHelper.getUser();
 
         //When&Then
         when(idamService.retrieveUser(any())).thenReturn(user);
@@ -716,7 +716,7 @@ public class NotificationServiceCICTest {
             .uploadedDocuments(uploadedDocuments)
             .build();
 
-        final User user = TestDataHelper.getUser();
+        final CICUser user = TestDataHelper.getUser();
         when(idamService.retrieveUser(any())).thenReturn(user);
         when(emailTemplatesConfig.getTemplatesCIC()).thenReturn(templateNameMap);
         when(httpServletRequest.getHeader(AUTHORIZATION)).thenReturn(TEST_AUTHORIZATION_TOKEN);
@@ -781,7 +781,7 @@ public class NotificationServiceCICTest {
             .uploadedDocuments(uploadedDocuments)
             .build();
 
-        final User user = TestDataHelper.getUser();
+        final CICUser user = TestDataHelper.getUser();
         when(idamService.retrieveUser(any())).thenReturn(user);
         when(emailTemplatesConfig.getTemplatesCIC()).thenReturn(templateNameMap);
         when(httpServletRequest.getHeader(AUTHORIZATION)).thenReturn(TEST_AUTHORIZATION_TOKEN);
@@ -856,7 +856,7 @@ public class NotificationServiceCICTest {
             .uploadedDocuments(uploadedDocuments)
             .build();
 
-        final User user = TestDataHelper.getUser();
+        final CICUser user = TestDataHelper.getUser();
         when(idamService.retrieveUser(any())).thenReturn(user);
         when(httpServletRequest.getHeader(AUTHORIZATION)).thenReturn(TEST_AUTHORIZATION_TOKEN);
         when(authTokenGenerator.generate()).thenReturn(TEST_SERVICE_AUTH_TOKEN);
@@ -901,7 +901,7 @@ public class NotificationServiceCICTest {
             .uploadedDocuments(uploadedDocuments)
             .build();
 
-        final User user = TestDataHelper.getUser();
+        final CICUser user = TestDataHelper.getUser();
         when(idamService.retrieveUser(any())).thenReturn(user);
         when(emailTemplatesConfig.getTemplatesCIC()).thenReturn(templateNameMap);
         when(httpServletRequest.getHeader(AUTHORIZATION)).thenReturn(TEST_AUTHORIZATION_TOKEN);
@@ -968,7 +968,7 @@ public class NotificationServiceCICTest {
             .uploadedDocuments(uploadedDocuments)
             .build();
 
-        final User user = TestDataHelper.getUser();
+        final CICUser user = TestDataHelper.getUser();
         when(idamService.retrieveUser(any())).thenReturn(user);
         when(httpServletRequest.getHeader(AUTHORIZATION)).thenReturn(TEST_AUTHORIZATION_TOKEN);
         when(authTokenGenerator.generate()).thenReturn(TEST_SERVICE_AUTH_TOKEN);

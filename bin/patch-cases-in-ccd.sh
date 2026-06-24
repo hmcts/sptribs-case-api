@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-IDAM_API_BASE_URL=https://idam-api.aat.platform.hmcts.net
+IDAM_API_BASE_URL=https://idam-web-public.aat.platform.hmcts.net
 SERVICE_AUTH_PROVIDER_API_BASE_URL=http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
 CCD_BASE_URL=http://ccd-data-store-api-aat.service.core-compute-aat.internal
 OAUTH2_CLIENT_SECRET=$(az keyvault secret show --vault-name sptribs-aat -o tsv --query value --name idam-secret)
@@ -35,10 +35,10 @@ for user in $users; do
   password=$(echo $user | cut -f2 -d'|')
 
 
-  echo "Retrieving user details for user $email"
-  userDetails=$(curl --insecure --fail --show-error --silent -X GET -H "Authorization: Bearer $idamToken" "${IDAM_API_BASE_URL}/details")
-  firstName=$(echo "$userDetails" | docker run --rm --interactive ghcr.io/jqlang/jq -r .forename)
-  lastName=$(echo "$userDetails" | docker run --rm --interactive ghcr.io/jqlang/jq -r .surname)
-  userId=$(echo "$userDetails" | docker run --rm --interactive ghcr.io/jqlang/jq -r .id)
+  echo "Retrieving user info for user $email"
+  userInfo=$(curl --insecure --fail --show-error --silent -X GET -H "Authorization: Bearer $idamToken" "${IDAM_API_BASE_URL}/o/userinfo")
+  givenName=$(echo "$userInfo" | docker run --rm --interactive ghcr.io/jqlang/jq -r .given_name)
+  familyName=$(echo "$userInfo" | docker run --rm --interactive ghcr.io/jqlang/jq -r .family_name)
+  userId=$(echo "$userInfo" | docker run --rm --interactive ghcr.io/jqlang/jq -r .uid)
 
 done

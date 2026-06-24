@@ -23,7 +23,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.NotificationType;
 import uk.gov.hmcts.sptribs.common.config.EmailTemplatesConfigCIC;
 import uk.gov.hmcts.sptribs.common.repositories.CorrespondenceRepository;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
-import uk.gov.hmcts.sptribs.idam.IdamService;
+import uk.gov.hmcts.sptribs.idam.*;
 import uk.gov.hmcts.sptribs.notification.exception.NotificationException;
 import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
 import uk.gov.hmcts.sptribs.notification.persistence.CorrespondenceEntity;
@@ -290,7 +290,7 @@ public class NotificationServiceCIC {
                                           List<CaseworkerCICDocument> selectedDocuments,
                                           String item,
                                           String docName) {
-        final User user = idamService.retrieveUser(request.getHeader(AUTHORIZATION));
+        final CICUser user = idamService.retrieveUser(request.getHeader(AUTHORIZATION));
         final String authorisation = user.getAuthToken();
         final String serviceAuthorization = authTokenGenerator.generate();
 

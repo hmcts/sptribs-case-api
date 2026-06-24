@@ -35,7 +35,7 @@ import uk.gov.hmcts.sptribs.common.config.AppsConfig;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.document.model.CitizenCICDocument;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
-import uk.gov.hmcts.sptribs.idam.IdamService;
+import uk.gov.hmcts.sptribs.idam.*;
 import uk.gov.hmcts.sptribs.util.AppsUtil;
 
 import java.time.LocalDate;
@@ -252,11 +252,11 @@ public class CicSubmitCaseEvent implements CCDConfig<CaseData, State, UserRole> 
         }
 
         if (isNotBlank(dssCaseData.getAdditionalInformation())) {
-            final User caseworkerUser = idamService.retrieveUser(request.getHeader(AUTHORIZATION));
+            final CICUser caseworkerUser = idamService.retrieveUser(request.getHeader(AUTHORIZATION));
             final DssMessage message = DssMessage.builder()
                 .message(dssCaseData.getAdditionalInformation())
                 .dateReceived(LocalDate.now())
-                .receivedFrom(caseworkerUser.getUserDetails().getFullName())
+                .receivedFrom(caseworkerUser.getUserInfo().getName())
                 .build();
 
             final ListValue<DssMessage> listValue = ListValue

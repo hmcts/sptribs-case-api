@@ -20,7 +20,7 @@ import uk.gov.hmcts.sptribs.caseworker.model.ContactPartiesDocuments;
 import uk.gov.hmcts.sptribs.cdam.model.Document;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
-import uk.gov.hmcts.sptribs.idam.IdamService;
+import uk.gov.hmcts.sptribs.idam.*;
 import uk.gov.hmcts.sptribs.services.cdam.CaseDocumentClientApi;
 
 import java.util.List;
@@ -53,13 +53,13 @@ class ContactPartiesSelectDocumentTest {
     @Mock
     private AuthTokenGenerator authTokenGenerator;
 
-    private User systemUser;
+    private CICUser systemUser;
 
     @Nested
     class RequireStubbing {
         @BeforeEach
         void setUp() {
-            systemUser = mock(User.class);
+            systemUser = mock(CICUser.class);
             when(idamService.retrieveSystemUpdateUserDetails()).thenReturn(systemUser);
             when(systemUser.getAuthToken()).thenReturn(SYSTEM_AUTH);
             when(authTokenGenerator.generate()).thenReturn(SERVICE_AUTH);

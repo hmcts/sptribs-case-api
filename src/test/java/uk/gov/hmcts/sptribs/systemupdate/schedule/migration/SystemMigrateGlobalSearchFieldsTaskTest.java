@@ -11,9 +11,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.idam.client.models.User;
-import uk.gov.hmcts.reform.idam.client.models.UserDetails;
-import uk.gov.hmcts.sptribs.idam.IdamService;
+import uk.gov.hmcts.reform.idam.client.models.*;
+import uk.gov.hmcts.sptribs.idam.*;
 import uk.gov.hmcts.sptribs.systemupdate.service.CcdConflictException;
 import uk.gov.hmcts.sptribs.systemupdate.service.CcdManagementException;
 import uk.gov.hmcts.sptribs.systemupdate.service.CcdSearchCaseException;
@@ -55,7 +54,7 @@ public class SystemMigrateGlobalSearchFieldsTaskTest {
     @InjectMocks
     private SystemMigrateGlobalSearchTask task;
 
-    private User user;
+    private CICUser user;
 
     private static final BoolQueryBuilder query = boolQuery()
         .must(boolQuery()
@@ -65,8 +64,8 @@ public class SystemMigrateGlobalSearchFieldsTaskTest {
 
     @BeforeEach
     void setUp() {
-        user = new User(SYSTEM_UPDATE_AUTH_TOKEN,
-            UserDetails.builder().email(TEST_SYSTEM_UPDATE_USER_EMAIL).roles(List.of("caseworker")).build());
+        user = new CICUser(SYSTEM_UPDATE_AUTH_TOKEN,
+            UserInfo.builder().sub(TEST_SYSTEM_UPDATE_USER_EMAIL).roles(List.of("caseworker")).build());
         when(idamService.retrieveSystemUpdateUserDetails()).thenReturn(user);
         when(authTokenGenerator.generate()).thenReturn(SERVICE_AUTHORIZATION);
         ReflectionTestUtils.setField(task, "globalSearchMigrationEnabled", true);

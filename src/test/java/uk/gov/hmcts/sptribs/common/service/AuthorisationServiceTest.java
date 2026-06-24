@@ -8,7 +8,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.idam.client.models.User;
-import uk.gov.hmcts.sptribs.idam.IdamService;
+import uk.gov.hmcts.sptribs.idam.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -31,7 +31,7 @@ class AuthorisationServiceTest {
     private IdamService idamService;
 
     @Mock
-    private User user;
+    private CICUser user;
 
     private static final String TEST_TOKEN = "token";
     private static final String TEST_BEARER_TOKEN = BEARER + TEST_TOKEN;

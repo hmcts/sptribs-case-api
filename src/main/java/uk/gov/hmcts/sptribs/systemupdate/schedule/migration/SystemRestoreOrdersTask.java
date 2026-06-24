@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.idam.client.models.User;
 import uk.gov.hmcts.sptribs.common.repositories.CaseEventRepository;
-import uk.gov.hmcts.sptribs.idam.IdamService;
+import uk.gov.hmcts.sptribs.idam.*;
 import uk.gov.hmcts.sptribs.systemupdate.service.CcdManagementException;
 import uk.gov.hmcts.sptribs.systemupdate.service.CcdUpdateService;
 
@@ -44,11 +44,11 @@ public class SystemRestoreOrdersTask implements Runnable {
     @Override
     public void run() {
         if (restoreOrdersTaskEnabled) {
-            final User user = idamService.retrieveSystemUpdateUserDetails();
+            final CICUser user = idamService.retrieveSystemUpdateUserDetails();
             final String serviceAuth = authTokenGenerator.generate();
 
-            log.info("User name: {}", user.getUserDetails().getEmail());
-            log.info("User roles: {}", String.join(",", user.getUserDetails().getRoles()));
+            log.info("User name: {}", user.getUserInfo().getSub());
+            log.info("User roles: {}", String.join(",", user.getUserInfo().getRoles()));
 
             final List<Long> caseIdsToUpdate = new ArrayList<>();
             try {
@@ -77,7 +77,7 @@ public class SystemRestoreOrdersTask implements Runnable {
         }
     }
 
-    private void triggerSystemRestoreOrdersEvent(User user, String serviceAuth, Long caseId) {
+    private void triggerSystemRestoreOrdersEvent(CICUser user, String serviceAuth, Long caseId) {
         try {
             log.info("Running {} event for Case {}", SYSTEM_RESTORE_ORDERS, caseId);
 

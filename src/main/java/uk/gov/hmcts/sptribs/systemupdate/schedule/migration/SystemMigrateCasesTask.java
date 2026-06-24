@@ -5,7 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.idam.client.models.User;
-import uk.gov.hmcts.sptribs.idam.IdamService;
+import uk.gov.hmcts.sptribs.idam.*;
 
 import java.util.List;
 
@@ -33,7 +33,7 @@ public class SystemMigrateCasesTask implements Runnable {
     public void run() {
         log.info("Migrate cases scheduled task started");
 
-        final User user = idamService.retrieveSystemUpdateUserDetails();
+        final CICUser user = idamService.retrieveSystemUpdateUserDetails();
         final String serviceAuthorization = authTokenGenerator.generate();
 
         migrations.stream()

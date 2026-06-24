@@ -13,13 +13,12 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
-import uk.gov.hmcts.reform.idam.client.models.User;
-import uk.gov.hmcts.reform.idam.client.models.UserDetails;
+import uk.gov.hmcts.reform.idam.client.models.*;
 import uk.gov.hmcts.sptribs.caseworker.service.ExtendedCaseDataApi;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.ExtendedCaseDetails;
 import uk.gov.hmcts.sptribs.common.config.WebMvcConfig;
-import uk.gov.hmcts.sptribs.idam.IdamService;
+import uk.gov.hmcts.sptribs.idam.*;
 import uk.gov.hmcts.sptribs.testutil.IdamWireMock;
 
 import java.util.List;
@@ -94,9 +93,9 @@ public class CaseworkerChangeSecurityClassificationIT {
     void shouldNotReturnErrorsInMidEventIfUserHasPermittedRoles() throws Exception {
         final CaseData caseData = caseData();
         caseData.setSecurityClass(PRIVATE);
-        final User user = new User(
+        final CICUser user = new CICUser(
             TEST_AUTHORIZATION_TOKEN,
-            UserDetails.builder()
+            UserInfo.builder()
                 .roles(List.of("caseworker-st_cic", "caseworker-st_cic-senior-judge"))
                 .build()
         );
@@ -128,9 +127,9 @@ public class CaseworkerChangeSecurityClassificationIT {
     void shouldReturnErrorsInMidEventIfUserDoesNotHavePermittedRoles() throws Exception {
         final CaseData caseData = caseData();
         caseData.setSecurityClass(PRIVATE);
-        final User user = new User(
+        final CICUser user = new CICUser(
             TEST_AUTHORIZATION_TOKEN,
-            UserDetails.builder()
+            UserInfo.builder()
                 .roles(List.of("caseworker-st_cic"))
                 .build()
         );
@@ -155,9 +154,9 @@ public class CaseworkerChangeSecurityClassificationIT {
     void shouldSetDataAndSecurityClassificationsOnAboutToSubmit() throws Exception {
         final CaseData caseData = caseData();
         caseData.setSecurityClass(PUBLIC);
-        final User user = new User(
+        final CICUser user = new CICUser(
             TEST_AUTHORIZATION_TOKEN,
-            UserDetails.builder()
+            UserInfo.builder()
                 .roles(List.of("caseworker-st_cic"))
                 .build()
         );

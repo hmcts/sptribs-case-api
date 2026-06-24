@@ -16,7 +16,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
-import uk.gov.hmcts.sptribs.idam.IdamService;
+import uk.gov.hmcts.sptribs.idam.*;
 
 import java.time.Clock;
 import java.time.LocalDate;
@@ -73,7 +73,7 @@ public class CaseworkerAddNote implements CCDConfig<CaseData, State, UserRole> {
         final CaseDetails<CaseData, State> beforeDetails
     ) {
 
-        final User caseworkerUser = idamService.retrieveUser(request.getHeader(AUTHORIZATION));
+        final CICUser caseworkerUser = idamService.retrieveUser(request.getHeader(AUTHORIZATION));
 
         final CaseData caseData = details.getData();
 
@@ -82,7 +82,7 @@ public class CaseworkerAddNote implements CCDConfig<CaseData, State, UserRole> {
         final CaseNote caseNote = new CaseNote();
         caseNote.setNote(note);
         caseNote.setDate(LocalDate.now(clock));
-        caseNote.setAuthor(caseworkerUser.getUserDetails().getFullName());
+        caseNote.setAuthor(caseworkerUser.getUserInfo().getName());
 
         if (isEmpty(caseData.getNotes())) {
             List<ListValue<CaseNote>> listValues = new ArrayList<>();

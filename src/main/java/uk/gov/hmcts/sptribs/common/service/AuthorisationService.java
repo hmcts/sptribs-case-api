@@ -5,7 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.idam.client.models.User;
-import uk.gov.hmcts.sptribs.idam.IdamService;
+import uk.gov.hmcts.sptribs.idam.*;
 
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static uk.gov.hmcts.sptribs.common.config.ControllerConstants.BEARER_PREFIX;
@@ -26,7 +26,7 @@ public class AuthorisationService {
     }
 
     public String getAuthorisation() {
-        final User user = idamService.retrieveUser(httpServletRequest.getHeader(AUTHORIZATION));
+        final CICUser user = idamService.retrieveUser(httpServletRequest.getHeader(AUTHORIZATION));
         return user.getAuthToken().startsWith(BEARER_PREFIX)
             ? user.getAuthToken() : BEARER_PREFIX + user.getAuthToken();
     }

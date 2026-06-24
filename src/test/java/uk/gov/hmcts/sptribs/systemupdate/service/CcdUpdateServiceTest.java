@@ -9,11 +9,11 @@ import uk.gov.hmcts.reform.ccd.client.CoreCaseDataApi;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDataContent;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.client.model.StartEventResponse;
-import uk.gov.hmcts.reform.idam.client.models.User;
-import uk.gov.hmcts.reform.idam.client.models.UserDetails;
+import uk.gov.hmcts.reform.idam.client.models.*;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.task.CaseTask;
+import uk.gov.hmcts.sptribs.idam.*;
 import uk.gov.hmcts.sptribs.systemupdate.schedule.migration.task.MigrateRetiredFields;
 
 import java.util.HashMap;
@@ -59,7 +59,7 @@ class CcdUpdateServiceTest {
     @Test
     void shouldSubmitActionEvent() {
 
-        final User user = systemUpdateUser();
+        final CICUser user = systemUpdateUser();
         final Map<String, Object> caseData = new HashMap<>();
         final uk.gov.hmcts.ccd.sdk.api.CaseDetails<CaseData, State> caseDetails =
                 new uk.gov.hmcts.ccd.sdk.api.CaseDetails<>();
@@ -103,7 +103,7 @@ class CcdUpdateServiceTest {
     @Test
     void shouldThrowCcdManagementExceptionWhenSubmitEvent() {
         final String message = "Submit Event Failed";
-        final User user = systemUpdateUser();
+        final CICUser user = systemUpdateUser();
 
         when(coreCaseDataApi.startEventForCaseWorker(any(), any(), any(),  anyString(),
             anyString(), any(), any())).thenThrow(
@@ -120,7 +120,7 @@ class CcdUpdateServiceTest {
     @Test
     void shouldThrowCcdConflictExceptionWhenSubmitEvent() {
         final String message = "Submit Event Failed With a Conflict";
-        final User user = systemUpdateUser();
+        final CICUser user = systemUpdateUser();
 
         when(coreCaseDataApi.startEventForCaseWorker(any(), any(), any(),  anyString(),
             anyString(), any(), any())).thenThrow(
@@ -137,7 +137,7 @@ class CcdUpdateServiceTest {
     @Test
     void shouldSubmitEventWithRetry() {
 
-        final User user = systemUpdateUser();
+        final CICUser user = systemUpdateUser();
         final uk.gov.hmcts.ccd.sdk.api.CaseDetails<CaseData, State> caseDetails =
             new uk.gov.hmcts.ccd.sdk.api.CaseDetails<>();
         caseDetails.setId(TEST_CASE_ID);
@@ -199,11 +199,11 @@ class CcdUpdateServiceTest {
                 .build();
     }
 
-    private User systemUpdateUser() {
-        return new User(
+    private CICUser systemUpdateUser() {
+        return new CICUser(
                 SYSTEM_UPDATE_AUTH_TOKEN,
-                UserDetails.builder()
-                        .id(SYSTEM_USER_USER_ID)
+                UserInfo.builder()
+                        .uid(SYSTEM_USER_USER_ID)
                         .build());
     }
 }
