@@ -11,7 +11,9 @@ import uk.gov.hmcts.sptribs.CaseDocumentManager;
 import uk.gov.hmcts.sptribs.IntegrationTestBase;
 import uk.gov.hmcts.sptribs.common.repositories.DocumentsRepository;
 
+import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import static org.camunda.bpm.model.xml.test.assertions.ModelAssertions.assertThat;
 
@@ -30,16 +32,18 @@ class DocumentRepositoryImplIT extends IntegrationTestBase {
     @Autowired
     private NamedParameterJdbcTemplate jdbcTemplate;
 
-    String binaryUrl = "test/binary/123";
 
     @BeforeEach
     void setUp() {
         caseDataManager.addCaseData(123L, "test", "{}");
-        caseDocumentManager.addCaseDocument(123L, binaryUrl);
     }
 
     @Test
     void givenBinaryURL_thenShouldDeleteEntryFromTable() {
+
+        String binaryUrl = UUID.randomUUID().toString();
+
+        caseDocumentManager.addCaseDocument(123L, binaryUrl);
 
         assertThat(getCount(binaryUrl)).isEqualTo(1);
 
