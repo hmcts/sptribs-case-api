@@ -17,6 +17,7 @@ import uk.gov.hmcts.sptribs.document.bundling.model.BundleFolder;
 import uk.gov.hmcts.sptribs.document.bundling.model.BundlePaginationStyle;
 import uk.gov.hmcts.sptribs.document.bundling.model.Callback;
 import uk.gov.hmcts.sptribs.document.bundling.model.MultiBundleConfig;
+import uk.gov.hmcts.sptribs.document.model.CaseDocumentType;
 import uk.gov.hmcts.sptribs.document.model.PageNumberFormat;
 import uk.gov.hmcts.sptribs.document.service.DocumentsService;
 
@@ -208,9 +209,8 @@ public class BundlingService {
             documentsService.buildAndSaveNewDocumentEntity(
                 stitchedDocument,
                 caseNumber,
-                false,
                 null,
-                true
+                CaseDocumentType.BUNDLE
             );
         }
 
