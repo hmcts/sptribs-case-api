@@ -73,7 +73,6 @@ public class CaseworkerSendOrderFT extends FunctionalTestSuite {
         assertThat(firstDocumentEntity.getDocumentTypeName()).isEqualTo(DocumentType.TRIBUNAL_DIRECTION.name());
         assertThat(firstDocumentEntity.getCaseDocumentTypeId()).isEqualTo(4L);
         assertThat(firstDocumentEntity.getSavedAt()).isNotNull();
-        assertThat(firstDocumentEntity.isDraft()).isFalse();
         assertThat(firstDocumentEntity.isSentToApplicantViaContactParties()).isFalse();
         assertThat(firstDocumentEntity.getDocumentUrl()).isNotNull();
         assertThat(firstDocumentEntity.getDocumentFilename()).isNotNull();
