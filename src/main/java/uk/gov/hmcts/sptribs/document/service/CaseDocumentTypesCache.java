@@ -2,6 +2,7 @@ package uk.gov.hmcts.sptribs.document.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.sptribs.common.repositories.CaseDocumentTypesRepository;
 import uk.gov.hmcts.sptribs.document.model.CaseDocumentType;
@@ -10,7 +11,7 @@ import uk.gov.hmcts.sptribs.document.model.CaseDocumentTypesEntity;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-@Service
+@Component
 @RequiredArgsConstructor
 @Slf4j
 public class CaseDocumentTypesCache {

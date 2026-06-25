@@ -10,6 +10,8 @@ import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.common.repositories.DocumentsRepository;
+import uk.gov.hmcts.sptribs.common.repositories.exception.document.DocumentSaveException;
+import uk.gov.hmcts.sptribs.common.repositories.exception.document.DocumentUpdateException;
 import uk.gov.hmcts.sptribs.document.model.CaseDocumentType;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.document.model.DocumentDashboardModel;
@@ -48,7 +50,7 @@ public class DocumentsService {
                 .build());
 
         } catch (DataAccessException e) {
-            throw new RuntimeException("Error saving document entity to database", e);
+            throw new DocumentSaveException("Error saving document entity to database", e);
         }
     }
 
@@ -91,7 +93,7 @@ public class DocumentsService {
                 documentsRepository.setSentToApplicantViaContactPartiesToTrueByDocumentBinaryUrl(documentBinaryUrls);
             log.info("Document Repository updated {} documents to sent via contact parties.", rowsUpdated);
         } catch (DataAccessException e) {
-            throw new RuntimeException("Error updating sent_to_applicant_via_contact_parties to true", e);
+            throw new DocumentUpdateException("Error updating sent_to_applicant_via_contact_parties to true", e);
         }
     }
 
@@ -104,7 +106,7 @@ public class DocumentsService {
             log.info("Draft order updated to non draft case document type successfully for url: {}", documentBinaryUrl);
 
         } catch (DataAccessException e) {
-            throw new RuntimeException("Error updating case document type from draft order to order", e);
+            throw new DocumentUpdateException("Error updating case document type from draft order to order", e);
         }
     }
 
