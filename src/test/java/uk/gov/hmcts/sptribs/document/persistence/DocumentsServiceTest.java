@@ -152,7 +152,8 @@ public class DocumentsServiceTest {
             applicationDocument.getBinaryUrl(), 4L);
 
         assertThatThrownBy(() -> documentsService.updateDocumentToNonDraft(applicationDocument.getBinaryUrl())).isInstanceOf(
-            RuntimeException.class).hasMessageContaining("Error updating case document type from draft order to order").hasCauseInstanceOf(DataAccessException.class);
+                RuntimeException.class).hasMessageContaining("Error updating case document type from draft order to order")
+            .hasCauseInstanceOf(DataAccessException.class);
     }
 
     @Test
