@@ -87,6 +87,7 @@ uk:
           tribunalOrganisation: 'CICA'
           tribunalEmail: CIC.enquiries@justice.gov.uk
         templatesCIC:
+          ANONYMITY_APPLIED_EMAIL: 'c1f6dda2-fdfe-4a42-9174-a53857d56823'
           APPLICATION_RECEIVED: '48ccf890-0550-48ca-8c52-fa68cec09947'
           APPLICATION_RECEIVED_CY: '86e6988c-dfc8-43de-8890-e38269ee40d1'
           CASE_ISSUED_CITIZEN_EMAIL: '03a0bbaa-10ee-4304-a1b1-6fdf76a2fd69'
@@ -127,6 +128,11 @@ uk:
         templates:
           english:
             SAVE_SIGN_OUT: '3aff9dc0-0188-42f6-a0be-fc5daa404d9a'
+
+sptribs:
+  notifications:
+    anonymity:
+      recipient_email: ${ANONYMITY_NOTIFICATION_RECIPIENT:mihai.tranca@justice.gov.uk}
 
 s2s-authorised:
   services: ${S2S_AUTHORISED_SERVICES:ccd_data,sptribs_frontend,sptribs_dss_update_case_web}

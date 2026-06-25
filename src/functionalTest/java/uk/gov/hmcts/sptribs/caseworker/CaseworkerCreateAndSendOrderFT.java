@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import uk.gov.hmcts.sptribs.testutil.FunctionalTestSuite;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
@@ -141,5 +142,39 @@ public class CaseworkerCreateAndSendOrderFT extends FunctionalTestSuite {
             .inPath(CONFIRMATION_HEADER)
             .isString()
             .contains("# Send order notification failed \n## Please resend the order");
+    }
+
+    @Test
+    public void shouldReturnHappyResponseWhenAnonymityIsNewlyAppliedInSubmittedCallback() throws Exception {
+        final Map<String, Object> caseDataAfter = caseData(CALLBACK_REQUEST);
+        final Map<String, Object> caseDataBefore = new HashMap<>(caseDataAfter);
+        caseDataBefore.put("cicCaseAnonymiseYesOrNo", "No");
+        caseDataBefore.remove("cicCaseAnonymisedAppellantName");
+        caseDataBefore.put("cicCaseAnonymityAlreadyApplied", "No");
+
+        final Response response = triggerCallback(caseDataAfter, caseDataBefore, CASEWORKER_CREATE_AND_SEND_ORDER, SUBMITTED_URL);
+
+        assertThat(response.getStatusCode()).isEqualTo(OK.value());
+        assertThatJson(response.asString())
+            .inPath(CONFIRMATION_HEADER)
+            .isString()
+            .contains("# Order sent \n## A notification has been sent to: Representative");
+    }
+
+    @Test
+    public void shouldReturnHappyResponseWhenAnonymityAlreadyAppliedInSubmittedCallback() throws Exception {
+        final Map<String, Object> caseDataAfter = caseData(CALLBACK_REQUEST);
+        final Map<String, Object> caseDataBefore = new HashMap<>(caseDataAfter);
+        caseDataBefore.put("cicCaseAnonymiseYesOrNo", "Yes");
+        caseDataBefore.put("cicCaseAnonymisedAppellantName", "AAC");
+        caseDataBefore.put("cicCaseAnonymityAlreadyApplied", "Yes");
+
+        final Response response = triggerCallback(caseDataAfter, caseDataBefore, CASEWORKER_CREATE_AND_SEND_ORDER, SUBMITTED_URL);
+
+        assertThat(response.getStatusCode()).isEqualTo(OK.value());
+        assertThatJson(response.asString())
+            .inPath(CONFIRMATION_HEADER)
+            .isString()
+            .contains("# Order sent \n## A notification has been sent to: Representative");
     }
 }

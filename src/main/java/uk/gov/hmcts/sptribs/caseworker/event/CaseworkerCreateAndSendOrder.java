@@ -39,6 +39,7 @@ import uk.gov.hmcts.sptribs.common.event.page.CreateNewOrder;
 import uk.gov.hmcts.sptribs.common.event.page.EditNewOrderContentPage;
 import uk.gov.hmcts.sptribs.common.event.page.PreviewDraftOrder;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
+import uk.gov.hmcts.sptribs.notification.dispatcher.AnonymityAppliedNotification;
 import uk.gov.hmcts.sptribs.notification.dispatcher.NewOrderIssuedNotification;
 
 import java.time.LocalDate;
@@ -86,6 +87,7 @@ public class CaseworkerCreateAndSendOrder implements CCDConfig<CaseData, State, 
     private final ApplyAnonymity applyAnonymitySelect;
     private final DraftOrderFooter draftOrderFooter;
     private final NewOrderIssuedNotification newOrderIssuedNotification;
+    private final AnonymityAppliedNotification anonymityAppliedNotification;
     private final SendOrderOrderDueDates orderDueDates;
 
     @Override
@@ -205,9 +207,10 @@ public class CaseworkerCreateAndSendOrder implements CCDConfig<CaseData, State, 
     }
 
     public SubmittedCallbackResponse submitted(CaseDetails<CaseData, State> details,
-                                                      CaseDetails<CaseData, State> beforeDetails) {
+                                                       CaseDetails<CaseData, State> beforeDetails) {
         try {
             sendOrderNotification(details.getData().getHyphenatedCaseRef(), details.getData());
+            sendAnonymityNotification(details, beforeDetails);
         } catch (Exception notificationException) {
             return SubmittedCallbackResponse.builder()
                 .confirmationHeader(format("# Send order notification failed %n## Please resend the order"))
@@ -218,6 +221,27 @@ public class CaseworkerCreateAndSendOrder implements CCDConfig<CaseData, State, 
             .confirmationHeader(format("# Order sent %n## %s",
                 MessageUtil.generateSimpleMessage(details.getData().getCicCase())))
             .build();
+    }
+
+    private void sendAnonymityNotification(CaseDetails<CaseData, State> details,
+                                           CaseDetails<CaseData, State> beforeDetails) {
+        if (isAnonymityNewlyApplied(details, beforeDetails)) {
+            anonymityAppliedNotification.sendToTribunal(details.getData(), details.getData().getHyphenatedCaseRef());
+        }
+    }
+
+    private boolean isAnonymityNewlyApplied(CaseDetails<CaseData, State> details,
+                                            CaseDetails<CaseData, State> beforeDetails) {
+        CicCase cicCaseAfter = details.getData().getCicCase();
+        CicCase cicCaseBefore = beforeDetails != null && beforeDetails.getData() != null ? beforeDetails.getData().getCicCase() : null;
+
+        boolean anonymityAppliedAfter = YesOrNo.YES.equals(cicCaseAfter.getAnonymiseYesOrNo())
+            && cicCaseAfter.getAnonymisedAppellantName() != null;
+
+        boolean anonymityAppliedBefore = cicCaseBefore != null && (YesOrNo.YES.equals(cicCaseBefore.getAnonymityAlreadyApplied())
+            || (YesOrNo.YES.equals(cicCaseBefore.getAnonymiseYesOrNo()) && cicCaseBefore.getAnonymisedAppellantName() != null));
+
+        return anonymityAppliedAfter && !anonymityAppliedBefore;
     }
 
     private void sendOrderNotification(String caseNumber, CaseData caseData) {

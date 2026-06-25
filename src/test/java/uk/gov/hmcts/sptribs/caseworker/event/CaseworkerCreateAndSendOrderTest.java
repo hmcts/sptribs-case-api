@@ -31,6 +31,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.document.model.CICDocument;
 import uk.gov.hmcts.sptribs.notification.dispatcher.NewOrderIssuedNotification;
+import uk.gov.hmcts.sptribs.notification.dispatcher.AnonymityAppliedNotification;
 import uk.gov.hmcts.sptribs.notification.exception.NotificationException;
 
 import java.time.LocalDate;
@@ -79,6 +80,9 @@ class CaseworkerCreateAndSendOrderTest {
 
     @Mock
     private NewOrderIssuedNotification newOrderIssuedNotification;
+
+    @Mock
+    private AnonymityAppliedNotification anonymityAppliedNotification;
 
     private DateModel dateModel = DateModel.builder()
         .dueDate(LocalDate.of(2026, 1, 2))
@@ -570,6 +574,52 @@ class CaseworkerCreateAndSendOrderTest {
         verify(newOrderIssuedNotification, times(1)).sendToRepresentative(any(CaseData.class), anyString());
         verify(newOrderIssuedNotification, times(1)).sendToRespondent(any(CaseData.class), anyString());
         verify(newOrderIssuedNotification, times(1)).sendToApplicant(any(CaseData.class), anyString());
+    }
+
+    @Test
+    void shouldSendAnonymityNotificationWhenAnonymityIsNewlyApplied() {
+        final CaseData caseData = caseData();
+        caseData.setHyphenatedCaseRef("1234-5678-9012-3456");
+        caseData.getCicCase().setAnonymiseYesOrNo(YesOrNo.YES);
+        caseData.getCicCase().setAnonymisedAppellantName("AAC");
+
+        final CaseData beforeCaseData = caseData();
+        beforeCaseData.getCicCase().setAnonymiseYesOrNo(YesOrNo.NO);
+        beforeCaseData.getCicCase().setAnonymityAlreadyApplied(YesOrNo.NO);
+        beforeCaseData.getCicCase().setAnonymisedAppellantName(null);
+
+        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+        caseDetails.setData(caseData);
+        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        beforeDetails.setData(beforeCaseData);
+
+        SubmittedCallbackResponse submittedResponse = caseworkerCreateAndSendOrder.submitted(caseDetails, beforeDetails);
+
+        assertThat(submittedResponse.getConfirmationHeader()).contains("# Order sent");
+        verify(anonymityAppliedNotification, times(1)).sendToTribunal(caseData, "1234-5678-9012-3456");
+    }
+
+    @Test
+    void shouldNotSendAnonymityNotificationWhenAnonymityAlreadyAppliedBefore() {
+        final CaseData caseData = caseData();
+        caseData.setHyphenatedCaseRef("1234-5678-9012-3456");
+        caseData.getCicCase().setAnonymiseYesOrNo(YesOrNo.YES);
+        caseData.getCicCase().setAnonymisedAppellantName("AAC");
+
+        final CaseData beforeCaseData = caseData();
+        beforeCaseData.getCicCase().setAnonymiseYesOrNo(YesOrNo.YES);
+        beforeCaseData.getCicCase().setAnonymityAlreadyApplied(YesOrNo.YES);
+        beforeCaseData.getCicCase().setAnonymisedAppellantName("AAC");
+
+        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+        caseDetails.setData(caseData);
+        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        beforeDetails.setData(beforeCaseData);
+
+        SubmittedCallbackResponse submittedResponse = caseworkerCreateAndSendOrder.submitted(caseDetails, beforeDetails);
+
+        assertThat(submittedResponse.getConfirmationHeader()).contains("# Order sent");
+        verify(anonymityAppliedNotification, never()).sendToTribunal(any(CaseData.class), anyString());
     }
 
     private CaseDetails<CaseData, State> caseDetailsBefore() {
