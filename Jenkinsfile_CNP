@@ -244,6 +244,11 @@ withPipeline(type, product, component) {
       env.WA_FUNCTIONAL_TESTS_ENABLED = true
     }
 
+    def e2eLabels = githubApi.getLabelsbyPattern(env.BRANCH_NAME, "enable-e2e-tests")
+      if (e2eLabels.contains("enable-e2e-tests")) {
+        env.E2E_TESTS_ENABLED = true
+      }
+
     setCommonEnvVariables()
 
     enablePactAs([AppPipelineDsl.PactRoles.CONSUMER])
@@ -339,6 +344,16 @@ withPipeline(type, product, component) {
 
   before('functionalTest:preview') {
     configureFtDatabase()
+    if (env.E2E_TESTS_ENABLED == 'true') {
+      stage('UI Tests') {
+      build job: 'HMCTS_j_to_z/sptribs-e2etests/master',
+            parameters: [
+                string(name: 'SPTRIBS_CASEAPI_URL', value: env.TEST_E2E_URL),
+            ],
+            wait: true,
+            propagate: true
+        }
+    }
   }
 }
 
