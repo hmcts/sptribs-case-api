@@ -13,6 +13,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
+import uk.gov.hmcts.sptribs.document.model.CaseDocumentType;
 import uk.gov.hmcts.sptribs.document.service.DocumentsService;
 
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.ASYNC_STITCH_COMPLETE;
@@ -100,9 +101,8 @@ public class CaseworkerBundleStitchComplete implements CCDConfig<CaseData, State
         documentsService.buildAndSaveNewDocumentEntity(
             stitchedDocument,
             caseId,
-            false,
             null,
-            true
+            CaseDocumentType.BUNDLE
         );
     }
 }

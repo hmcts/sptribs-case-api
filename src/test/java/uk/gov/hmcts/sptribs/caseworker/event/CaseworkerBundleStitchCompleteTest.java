@@ -15,6 +15,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.document.bundling.model.Bundle;
+import uk.gov.hmcts.sptribs.document.model.CaseDocumentType;
 import uk.gov.hmcts.sptribs.document.service.DocumentsService;
 
 import java.time.Clock;
@@ -89,7 +90,7 @@ class CaseworkerBundleStitchCompleteTest {
         //then
         assertThat(stayedResponse.getConfirmationHeader()).contains("# Documents added successfully");
 
-        verify(documentsService).buildAndSaveNewDocumentEntity(document, CASE_ID, false, null, true);
+        verify(documentsService).buildAndSaveNewDocumentEntity(document, CASE_ID,null, CaseDocumentType.BUNDLE);
 
     }
 
@@ -138,8 +139,8 @@ class CaseworkerBundleStitchCompleteTest {
         //then
         assertThat(stayedResponse.getConfirmationHeader()).contains("# Documents added successfully");
 
-        verify(documentsService).buildAndSaveNewDocumentEntity(document2, CASE_ID, false, null,
-            true);
+        verify(documentsService).buildAndSaveNewDocumentEntity(document2, CASE_ID, null,
+            CaseDocumentType.BUNDLE);
 
     }
 
@@ -170,8 +171,8 @@ class CaseworkerBundleStitchCompleteTest {
 
         doThrow(new RuntimeException("DB failure"))
             .when(documentsService)
-            .buildAndSaveNewDocumentEntity(document, CASE_ID, false, null,
-                true);
+            .buildAndSaveNewDocumentEntity(document, CASE_ID, null,
+                CaseDocumentType.BUNDLE);
 
         // when
         SubmittedCallbackResponse response =
@@ -182,8 +183,8 @@ class CaseworkerBundleStitchCompleteTest {
             .contains("# Error saving latest case bundle to document entity");
 
         verify(documentsService)
-            .buildAndSaveNewDocumentEntity(document, CASE_ID, false, null,
-                true);
+            .buildAndSaveNewDocumentEntity(document, CASE_ID, null,
+                CaseDocumentType.BUNDLE);
     }
 
     @Test
