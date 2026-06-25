@@ -11,9 +11,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.ccd.client.CoreCaseDataApi;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.client.model.SearchResult;
-import uk.gov.hmcts.reform.idam.client.models.User;
-import uk.gov.hmcts.reform.idam.client.models.UserDetails;
+import uk.gov.hmcts.reform.idam.client.models.*;
 import uk.gov.hmcts.sptribs.common.ccd.CcdCaseType;
+import uk.gov.hmcts.sptribs.idam.*;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -61,7 +61,7 @@ class CcdSearchServiceTest {
         final BoolQueryBuilder query = boolQuery()
             .must(matchQuery(STATE, Submitted))
             .filter(rangeQuery(DUE_DATE).lte(LocalDate.now()));
-        final User user = new User(SYSTEM_UPDATE_AUTH_TOKEN, UserDetails.builder().build());
+        final CICUser user = new CICUser(SYSTEM_UPDATE_AUTH_TOKEN, UserInfo.builder().build());
         final SearchResult expected1 = SearchResult.builder().total(PAGE_SIZE).cases(createCaseDetailsList(PAGE_SIZE)).build();
         final SearchResult expected2 = SearchResult.builder().total(1).cases(createCaseDetailsList(1)).build();
 
@@ -89,7 +89,7 @@ class CcdSearchServiceTest {
     @Test
     void shouldReturnCasesWithVersionOlderThan() {
         //Given
-        final User user = new User(SYSTEM_UPDATE_AUTH_TOKEN, UserDetails.builder().build());
+        final CICUser user = new CICUser(SYSTEM_UPDATE_AUTH_TOKEN, UserInfo.builder().build());
         final SearchResult expected1 = SearchResult.builder().total(PAGE_SIZE).cases(createCaseDetailsList(PAGE_SIZE)).build();
         final int latestVersion = 1;
 
@@ -125,7 +125,7 @@ class CcdSearchServiceTest {
         final BoolQueryBuilder query = boolQuery()
             .must(matchQuery("state", Submitted))
             .filter(rangeQuery(DUE_DATE).lte(LocalDate.now()));
-        final User user = new User(SYSTEM_UPDATE_AUTH_TOKEN, UserDetails.builder().build());
+        final CICUser user = new CICUser(SYSTEM_UPDATE_AUTH_TOKEN, UserInfo.builder().build());
 
         doThrow(feignException(422, "A reason")).when(coreCaseDataApi)
             .searchCases(
@@ -152,7 +152,7 @@ class CcdSearchServiceTest {
             "1627504115236368",
             "1627568021302127"
         );
-        final User user = new User(SYSTEM_UPDATE_AUTH_TOKEN, UserDetails.builder().build());
+        final CICUser user = new CICUser(SYSTEM_UPDATE_AUTH_TOKEN, UserInfo.builder().build());
         final SearchResult expected = SearchResult.builder()
             .total(caseReferences.size())
             .cases(createCaseDetailsList(caseReferences.size()))

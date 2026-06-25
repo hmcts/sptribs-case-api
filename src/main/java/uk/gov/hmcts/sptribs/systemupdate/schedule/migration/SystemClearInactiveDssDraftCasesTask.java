@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.idam.client.models.User;
-import uk.gov.hmcts.sptribs.idam.IdamService;
+import uk.gov.hmcts.sptribs.idam.*;
 import uk.gov.hmcts.sptribs.systemupdate.service.CcdConflictException;
 import uk.gov.hmcts.sptribs.systemupdate.service.CcdManagementException;
 import uk.gov.hmcts.sptribs.systemupdate.service.CcdSearchCaseException;
@@ -47,7 +47,7 @@ public class SystemClearInactiveDssDraftCasesTask implements Runnable {
 
     @Override
     public void run() {
-        final User user = idamService.retrieveSystemUpdateUserDetails();
+        final CICUser user = idamService.retrieveSystemUpdateUserDetails();
         final String serviceAuth = authTokenGenerator.generate();
 
         try {
@@ -72,7 +72,7 @@ public class SystemClearInactiveDssDraftCasesTask implements Runnable {
         }
     }
 
-    private void triggerSystemClearInactiveDssDraftCase(User user, String serviceAuth, CaseDetails caseDetails) {
+    private void triggerSystemClearInactiveDssDraftCase(CICUser user, String serviceAuth, CaseDetails caseDetails) {
         try {
             log.info("System Clear Inactive Dss Draft Cases Event for Case {}", caseDetails.getId());
             ccdUpdateService.submitEvent(caseDetails.getId(), SYSTEM_CLEAR_INACTIVE_DSS_DRAFT_CASE, user, serviceAuth);

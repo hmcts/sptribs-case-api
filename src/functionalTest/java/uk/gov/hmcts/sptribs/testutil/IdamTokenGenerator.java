@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.idam.client.IdamClient;
-import uk.gov.hmcts.reform.idam.client.models.UserDetails;
+import uk.gov.hmcts.reform.idam.client.models.*;
 
 import java.util.concurrent.TimeUnit;
 
@@ -119,7 +119,7 @@ public class IdamTokenGenerator {
         return userToken;
     }
 
-    public UserDetails getUserDetailsFor(final String token) {
-        return idamClient.getUserDetails(token);
+    public UserInfo getUserDetailsFor(final String token) {
+        return idamClient.getUserInfo(token);
     }
 }

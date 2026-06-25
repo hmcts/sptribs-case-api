@@ -8,8 +8,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.idam.client.models.User;
-import uk.gov.hmcts.reform.idam.client.models.UserDetails;
+import uk.gov.hmcts.reform.idam.client.models.*;
+import uk.gov.hmcts.sptribs.idam.*;
 import uk.gov.hmcts.sptribs.systemupdate.schedule.migration.task.MigrateRetiredFields;
 import uk.gov.hmcts.sptribs.systemupdate.schedule.migration.task.SetFailedMigrationVersionToZero;
 import uk.gov.hmcts.sptribs.systemupdate.service.CcdConflictException;
@@ -56,11 +56,11 @@ class BaseMigrationTest {
     @InjectMocks
     private BaseMigration baseMigration;
 
-    private User user;
+    private CICUser user;
 
     @BeforeEach
     void setUp() {
-        user = new User(SYSTEM_UPDATE_AUTH_TOKEN, UserDetails.builder().build());
+        user = new CICUser(SYSTEM_UPDATE_AUTH_TOKEN, UserInfo.builder().build());
     }
 
     @Test

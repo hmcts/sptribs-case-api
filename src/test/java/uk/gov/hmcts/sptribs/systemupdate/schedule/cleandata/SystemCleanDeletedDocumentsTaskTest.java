@@ -7,10 +7,9 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
-import uk.gov.hmcts.reform.idam.client.models.User;
-import uk.gov.hmcts.reform.idam.client.models.UserDetails;
+import uk.gov.hmcts.reform.idam.client.models.*;
 import uk.gov.hmcts.sptribs.common.repositories.CaseEventRepository;
-import uk.gov.hmcts.sptribs.idam.IdamService;
+import uk.gov.hmcts.sptribs.idam.*;
 import uk.gov.hmcts.sptribs.systemupdate.service.CcdManagementException;
 import uk.gov.hmcts.sptribs.systemupdate.service.CcdUpdateService;
 
@@ -40,7 +39,7 @@ class SystemCleanDeletedDocumentsTaskTest {
     @InjectMocks
     private SystemCleanDeletedDocumentsTask systemCleanDeletedDocumentsTask;
 
-    private User user;
+    private CICUser user;
     private final Long caseId1 = 101L;
     private final Long caseId2 = 202L;
 
@@ -155,7 +154,7 @@ class SystemCleanDeletedDocumentsTaskTest {
     }
 
     private void initMocks() {
-        user = new User(SYSTEM_UPDATE_AUTH_TOKEN, UserDetails.builder().build());
+        user = new CICUser(SYSTEM_UPDATE_AUTH_TOKEN, UserInfo.builder().build());
         when(idamService.retrieveSystemUpdateUserDetails()).thenReturn(user);
         when(authTokenGenerator.generate()).thenReturn(SERVICE_AUTHORIZATION);
         ReflectionTestUtils.setField(systemCleanDeletedDocumentsTask, "cleanDeletedDocumentsTestCaseReference", "");

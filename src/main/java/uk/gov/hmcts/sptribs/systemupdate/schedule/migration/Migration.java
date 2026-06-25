@@ -1,6 +1,7 @@
 package uk.gov.hmcts.sptribs.systemupdate.schedule.migration;
 
 import uk.gov.hmcts.reform.idam.client.models.User;
+import uk.gov.hmcts.sptribs.idam.*;
 
 public interface Migration {
 
@@ -10,7 +11,7 @@ public interface Migration {
      * @param user                 - for authentication with CCD API
      * @param serviceAuthorization - for authorization with CCD API
      */
-    void apply(final User user, final String serviceAuthorization);
+    void apply(final CICUser user, final String serviceAuthorization);
 
     /**
      * Returns the priority of the migration task.

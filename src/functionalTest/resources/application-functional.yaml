@@ -30,7 +30,7 @@ postgres:
   name: ${FT_POSTGRES_NAME:sptribs}
 idam:
   api:
-    url: ${IDAM_API_BASEURL:https://idam-api.aat.platform.hmcts.net}
+    url: ${IDAM_API_BASEURL:https://idam-web-public.aat.platform.hmcts.net}
   s2s-auth:
     url: ${TEST_S2S_URL:http://rpe-service-auth-provider-aat.service.core-compute-aat.internal}
     secret: ${S2S_SECRET:dummy}

@@ -16,7 +16,7 @@ import uk.gov.hmcts.sptribs.caseworker.model.HearingSummary;
 import uk.gov.hmcts.sptribs.caseworker.model.Judge;
 import uk.gov.hmcts.sptribs.caseworker.model.Listing;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
-import uk.gov.hmcts.sptribs.idam.IdamService;
+import uk.gov.hmcts.sptribs.idam.*;
 import uk.gov.hmcts.sptribs.judicialrefdata.model.UserProfileRefreshResponse;
 import uk.gov.hmcts.sptribs.testutil.TestDataHelper;
 
@@ -93,7 +93,7 @@ class JudicialServiceTest {
         final CaseData caseData = CaseData.builder().build();
 
         //When
-        final User user = TestDataHelper.getUser();
+        final CICUser user = TestDataHelper.getUser();
         when(idamService.retrieveSystemUpdateUserDetails()).thenReturn(user);
         when(authTokenGenerator.generate()).thenReturn(TEST_SERVICE_AUTH_TOKEN);
         when(judicialClient.getUserProfiles(
@@ -126,7 +126,7 @@ class JudicialServiceTest {
     @Test
     void shouldReturnEmptyDynamicListWhenListFromJudicialRefDataCallIsNull() {
         //When
-        final User user = TestDataHelper.getUser();
+        final CICUser user = TestDataHelper.getUser();
         when(idamService.retrieveSystemUpdateUserDetails()).thenReturn(user);
         when(authTokenGenerator.generate()).thenReturn(TEST_SERVICE_AUTH_TOKEN);
         when(judicialClient.getUserProfiles(
@@ -144,7 +144,7 @@ class JudicialServiceTest {
     @Test
     void shouldReturnEmptyDynamicListWhenExceptionFromJudicialRefDataCall() {
         //When
-        final User user = TestDataHelper.getUser();
+        final CICUser user = TestDataHelper.getUser();
         when(idamService.retrieveSystemUpdateUserDetails()).thenReturn(user);
         when(authTokenGenerator.generate()).thenReturn(TEST_SERVICE_AUTH_TOKEN);
 

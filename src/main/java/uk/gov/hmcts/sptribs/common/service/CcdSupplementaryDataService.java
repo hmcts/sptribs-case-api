@@ -6,7 +6,7 @@ import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.ccd.client.CoreCaseDataApi;
 import uk.gov.hmcts.reform.idam.client.models.User;
 import uk.gov.hmcts.sptribs.config.CaseFlagsConfiguration;
-import uk.gov.hmcts.sptribs.idam.IdamService;
+import uk.gov.hmcts.sptribs.idam.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -59,7 +59,7 @@ public class CcdSupplementaryDataService {
             singletonMap(SET_OPERATION, singletonMap(SERVICE_ID_FIELD,
                 caseFlagsConfiguration.getHmctsId())));
 
-        final User caseworkerUser = idamService.retrieveSystemUpdateUserDetails();
+        final CICUser caseworkerUser = idamService.retrieveSystemUpdateUserDetails();
 
         coreCaseDataApi.submitSupplementaryData(caseworkerUser.getAuthToken(),
             authTokenGenerator.generate(),

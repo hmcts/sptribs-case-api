@@ -22,7 +22,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.document.model.CitizenCICDocument;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
-import uk.gov.hmcts.sptribs.idam.IdamService;
+import uk.gov.hmcts.sptribs.idam.*;
 import uk.gov.hmcts.sptribs.notification.dispatcher.DssUpdateCaseSubmissionNotification;
 
 import java.time.Clock;
@@ -130,12 +130,12 @@ public class CicDssUpdateCaseEvent implements CCDConfig<CaseData, State, UserRol
         }
 
         if (isNotBlank(dssCaseData.getAdditionalInformation())) {
-            final User user = idamService.retrieveUser(request.getHeader(AUTHORIZATION));
+            final CICUser user = idamService.retrieveUser(request.getHeader(AUTHORIZATION));
 
             final DssMessage message = DssMessage.builder()
                 .message(dssCaseData.getAdditionalInformation())
                 .dateReceived(LocalDate.now())
-                .receivedFrom(user.getUserDetails().getFullName())
+                .receivedFrom(user.getUserInfo().getName())
                 .build();
 
             final ListValue<DssMessage> listValue = ListValue

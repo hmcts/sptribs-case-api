@@ -9,8 +9,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 import uk.gov.hmcts.reform.idam.client.IdamClient;
-import uk.gov.hmcts.reform.idam.client.models.User;
-import uk.gov.hmcts.reform.idam.client.models.UserDetails;
+import uk.gov.hmcts.reform.idam.client.models.*;
 
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -45,32 +44,32 @@ public class IdamServiceTest {
     @Test
     void shouldRetrieveUserDetails() {
         final String bearerToken = TEST_SERVICE_AUTH_TOKEN;
-        final UserDetails userDetails = userDetails();
+        final UserInfo userInfo = userInfo();
 
-        when(idamClient.getUserDetails(bearerToken)).thenReturn(userDetails());
+        when(idamClient.getUserInfo(bearerToken)).thenReturn(userInfo());
 
-        final User result = idamService.retrieveUser(bearerToken);
+        final CICUser result = idamService.retrieveUser(bearerToken);
 
-        assertEquals(userDetails, result.getUserDetails());
+        assertEquals(userInfo, result.getUserInfo());
         assertEquals(bearerToken, result.getAuthToken());
     }
 
     @Test
     public void shouldRetrieveUserWhenValidAuthorizationTokenIsPassed() {
-        when(idamClient.getUserDetails(SYSTEM_UPDATE_AUTH_TOKEN))
-            .thenReturn(userDetails());
+        when(idamClient.getUserInfo(SYSTEM_UPDATE_AUTH_TOKEN))
+            .thenReturn(userInfo());
 
         assertThatCode(() -> idamService.retrieveUser(SYSTEM_UPDATE_AUTH_TOKEN))
             .doesNotThrowAnyException();
 
-        verify(idamClient).getUserDetails(SYSTEM_UPDATE_AUTH_TOKEN);
+        verify(idamClient).getUserInfo(SYSTEM_UPDATE_AUTH_TOKEN);
         verifyNoMoreInteractions(idamClient);
     }
 
     @Test
     public void shouldThrowFeignUnauthorizedExceptionWhenInValidAuthorizationTokenIsPassed() {
         doThrow(feignException(401, "Failed to retrieve Idam user"))
-            .when(idamClient).getUserDetails("Bearer invalid_token");
+            .when(idamClient).getUserInfo("Bearer invalid_token");
 
         assertThatThrownBy(() -> idamService.retrieveUser(INVALID_AUTH_TOKEN))
             .isExactlyInstanceOf(FeignException.Unauthorized.class)
@@ -82,14 +81,14 @@ public class IdamServiceTest {
         when(idamClient.getAccessToken(TEST_SYSTEM_UPDATE_USER_EMAIL, TEST_SYSTEM_USER_PASSWORD))
             .thenReturn(SYSTEM_UPDATE_AUTH_TOKEN);
 
-        when(idamClient.getUserDetails(SYSTEM_UPDATE_AUTH_TOKEN))
-            .thenReturn(userDetails());
+        when(idamClient.getUserInfo(SYSTEM_UPDATE_AUTH_TOKEN))
+            .thenReturn(userInfo());
 
         assertThatCode(() -> idamService.retrieveSystemUpdateUserDetails())
             .doesNotThrowAnyException();
 
         verify(idamClient).getAccessToken(TEST_SYSTEM_UPDATE_USER_EMAIL, TEST_SYSTEM_USER_PASSWORD);
-        verify(idamClient).getUserDetails(SYSTEM_UPDATE_AUTH_TOKEN);
+        verify(idamClient).getUserInfo(SYSTEM_UPDATE_AUTH_TOKEN);
         verifyNoMoreInteractions(idamClient);
     }
 
@@ -103,11 +102,11 @@ public class IdamServiceTest {
             .hasMessageContaining("Failed to retrieve Idam user");
     }
 
-    private UserDetails userDetails() {
-        return UserDetails
+    private UserInfo userInfo() {
+        return UserInfo
             .builder()
-            .id(SYSTEM_USER_USER_ID)
-            .email(TEST_SYSTEM_UPDATE_USER_EMAIL)
+            .uid(SYSTEM_USER_USER_ID)
+            .sub(TEST_SYSTEM_UPDATE_USER_EMAIL)
             .build();
     }
 }

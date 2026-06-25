@@ -8,7 +8,7 @@ import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.reform.idam.client.models.User;
 import uk.gov.hmcts.sptribs.ciccase.model.LanguagePreference;
 import uk.gov.hmcts.sptribs.document.model.DocumentInfo;
-import uk.gov.hmcts.sptribs.idam.IdamService;
+import uk.gov.hmcts.sptribs.idam.*;
 
 import java.util.Map;
 
@@ -32,7 +32,7 @@ public class CaseDataDocumentService {
                                    final String filename,
                                    final HttpServletRequest request) {
 
-        final User caseworkerUser = idamService.retrieveUser(request.getHeader(AUTHORIZATION));
+        final CICUser caseworkerUser = idamService.retrieveUser(request.getHeader(AUTHORIZATION));
         final String authorisation = caseworkerUser.getAuthToken();
 
         final DocumentInfo documentInfo = docAssemblyService.renderDocument(

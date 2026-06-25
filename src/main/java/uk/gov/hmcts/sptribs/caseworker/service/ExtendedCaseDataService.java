@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.idam.client.models.User;
 import uk.gov.hmcts.sptribs.ciccase.model.ExtendedCaseDetails;
-import uk.gov.hmcts.sptribs.idam.IdamService;
+import uk.gov.hmcts.sptribs.idam.*;
 
 import java.util.Map;
 
@@ -28,7 +28,7 @@ public class ExtendedCaseDataService {
     private ExtendedCaseDataApi caseDataApi;
 
     public Map<String, Object> getDataClassification(String caseId) {
-        final User caseworkerUser = idamService.retrieveUser(request.getHeader(AUTHORIZATION));
+        final CICUser caseworkerUser = idamService.retrieveUser(request.getHeader(AUTHORIZATION));
         ExtendedCaseDetails caseDetails = caseDataApi.getExtendedCaseDetails(caseworkerUser.getAuthToken(),
             authTokenGenerator.generate(), caseId);
         return caseDetails.getDataClassification();

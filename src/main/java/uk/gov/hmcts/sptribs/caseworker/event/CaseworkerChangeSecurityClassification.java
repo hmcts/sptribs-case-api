@@ -11,14 +11,13 @@ import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
-import uk.gov.hmcts.reform.idam.client.models.User;
 import uk.gov.hmcts.sptribs.caseworker.model.SecurityClass;
 import uk.gov.hmcts.sptribs.caseworker.service.ExtendedCaseDataService;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
-import uk.gov.hmcts.sptribs.idam.IdamService;
+import uk.gov.hmcts.sptribs.idam.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -114,7 +113,7 @@ public class CaseworkerChangeSecurityClassification implements CCDConfig<CaseDat
         final List<String> errors = new ArrayList<>();
         final CaseData caseData = details.getData();
 
-        final User user = idamService.retrieveUser(request.getHeader(AUTHORIZATION));
+        final CICUser user = idamService.retrieveUser(request.getHeader(AUTHORIZATION));
         if (!checkAvailableForNewClass(user, caseData.getSecurityClass())) {
             errors.add("You do not have permission to change the case to the selected Security Classification");
         }
@@ -125,8 +124,8 @@ public class CaseworkerChangeSecurityClassification implements CCDConfig<CaseDat
             .build();
     }
 
-    private boolean checkAvailableForNewClass(User user, SecurityClass newClass) {
-        List<String> roles = user.getUserDetails().getRoles();
+    private boolean checkAvailableForNewClass(CICUser user, SecurityClass newClass) {
+        List<String> roles = user.getUserInfo().getRoles();
         return Arrays.stream(newClass.getPermittedRoles()).anyMatch(roles::contains);
     }
 }
