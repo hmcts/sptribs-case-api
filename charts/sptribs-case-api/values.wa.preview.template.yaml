@@ -56,7 +56,7 @@ wa:
 
   camunda-bpm:
     java:
-      image: hmctsprivate.azurecr.io/camunda/bpm:latest
+      image: hmctsprod.azurecr.io/camunda/bpm:latest
 
   wa-case-event-handler:
     java:
@@ -109,7 +109,7 @@ wa:
 am-org-role-mapping-service:
   enabled: true
   java:
-    image: 'hmctspublic.azurecr.io/am/org-role-mapping-service:latest'
+    image: 'hmctsprod.azurecr.io/am/org-role-mapping-service:latest'
     ingressHost: am-org-role-mapping-service-${SERVICE_FQDN}
     releaseNameOverride: ${SERVICE_NAME}-am-org-role-mapping-service
     secrets:

@@ -54,18 +54,18 @@ class RespondentDocumentManagementTest {
             .contains(RESPONDENT_DOCUMENT_MANAGEMENT);
 
         assertThat(getEventsFrom(configBuilder).values())
-                .extracting(Event::isPublishToCamunda)
-                .contains(true);
+            .extracting(Event::isPublishToCamunda)
+            .contains(true);
 
         assertThat(getEventsFrom(configBuilder).values())
                 .extracting(Event::getGrants)
-                .extracting(map -> map.containsKey(ST_CIC_WA_CONFIG_USER))
-                .contains(true);
+            .extracting(map -> map.containsKey(ST_CIC_WA_CONFIG_USER))
+            .contains(true);
 
         assertThat(getEventsFrom(configBuilder).values())
-                .extracting(Event::getGrants)
-                .extracting(map -> map.get(ST_CIC_WA_CONFIG_USER))
-                .contains(Permissions.CREATE_READ_UPDATE);
+            .extracting(Event::getGrants)
+            .extracting(map -> map.get(ST_CIC_WA_CONFIG_USER))
+            .contains(Permissions.CREATE_READ_UPDATE);
     }
 
     @Test

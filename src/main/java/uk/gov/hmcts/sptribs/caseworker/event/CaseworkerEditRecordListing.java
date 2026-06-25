@@ -17,6 +17,7 @@ import uk.gov.hmcts.sptribs.caseworker.event.page.HearingTypeAndFormat;
 import uk.gov.hmcts.sptribs.caseworker.event.page.HearingVenues;
 import uk.gov.hmcts.sptribs.caseworker.event.page.ListingChangeReason;
 import uk.gov.hmcts.sptribs.caseworker.event.page.RecordNotifyParties;
+import uk.gov.hmcts.sptribs.caseworker.event.page.RemoteHearingInfo;
 import uk.gov.hmcts.sptribs.caseworker.event.page.SelectHearing;
 import uk.gov.hmcts.sptribs.caseworker.helper.RecordListHelper;
 import uk.gov.hmcts.sptribs.caseworker.model.Listing;
@@ -63,6 +64,8 @@ public class CaseworkerEditRecordListing implements CCDConfig<CaseData, State, U
 
     private static final CcdPageConfiguration listingChangeReason = new ListingChangeReason();
 
+    private static final CcdPageConfiguration remoteHearingInfo = new RemoteHearingInfo();
+
     @Autowired
     private RecordListHelper recordListHelper;
 
@@ -95,7 +98,7 @@ public class CaseworkerEditRecordListing implements CCDConfig<CaseData, State, U
         hearingTypeAndFormat.addTo(pageBuilder);
         addRegionInfo(pageBuilder);
         hearingVenues.addTo(pageBuilder);
-        recordListHelper.addRemoteHearingInfo(pageBuilder);
+        remoteHearingInfo.addTo(pageBuilder);
         recordListHelper.addOtherInformation(pageBuilder);
         listingChangeReason.addTo(pageBuilder);
         recordNotifyParties.addTo(pageBuilder);

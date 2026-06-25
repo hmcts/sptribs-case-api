@@ -12,15 +12,21 @@ import uk.gov.hmcts.sptribs.ciccase.model.ContactPreferenceType;
 import uk.gov.hmcts.sptribs.ciccase.model.NotificationResponse;
 import uk.gov.hmcts.sptribs.common.CommonConstants;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
+import uk.gov.hmcts.sptribs.notification.EmailRespondentResponses;
 import uk.gov.hmcts.sptribs.notification.NotificationHelper;
 import uk.gov.hmcts.sptribs.notification.NotificationServiceCIC;
 import uk.gov.hmcts.sptribs.notification.PartiesNotification;
 import uk.gov.hmcts.sptribs.notification.TemplateName;
 import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+
+import static uk.gov.hmcts.sptribs.notification.EmailRespondentResponses.IN_TIME_RESPONSE;
+import static uk.gov.hmcts.sptribs.notification.EmailRespondentResponses.OUT_OF_TIME_RESPONSE;
 
 @RequiredArgsConstructor
 @Component
@@ -98,6 +104,10 @@ public class CaseIssuedNotification implements PartiesNotification {
         final Map<String, Object> templateVarsRespondent = notificationHelper.getRespondentCommonVars(caseNumber, caseData);
         templateVarsRespondent.put(CommonConstants.CIC_CASE_RESPONDENT_NAME, caseData.getCicCase().getRespondentName());
 
+        LocalDate dueDate = cicCase.getRespondentBundleDueDate();
+        templateVarsRespondent.put(CommonConstants.CIC_BUNDLE_DUE_DATE_TEXT,
+            cicCase.getIsCaseInTime().toBoolean() ? buildTimeString(true, dueDate) : buildTimeString(false, dueDate));
+
         final NotificationResponse notificationResponse;
         if (ObjectUtils.isNotEmpty(caseData.getCaseIssue().getDocumentList())) {
             final Map<String, String> uploadedDocuments = getUploadedDocuments(caseData);
@@ -114,6 +124,17 @@ public class CaseIssuedNotification implements PartiesNotification {
                 cicCase.getAlternativeRespondentEmail(), TemplateName.CASE_ISSUED_RESPONDENT_EMAIL, caseNumber);
             cicCase.setResNotificationResponse(notificationResponse);
         }
+    }
+
+    private String buildTimeString(boolean isInTime, LocalDate dueDate) {
+        EmailRespondentResponses response = isInTime
+            ? IN_TIME_RESPONSE
+            : OUT_OF_TIME_RESPONSE;
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        String formattedDate = dueDate.format(formatter);
+
+        return response.format(formattedDate);
     }
 
     private NotificationResponse sendEmailNotification(final Map<String, Object> templateVars, String toEmail,

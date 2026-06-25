@@ -26,13 +26,11 @@ import static org.junit.jupiter.api.Assertions.fail;
 import static uk.gov.hmcts.sptribs.DmnDecisionTable.WA_TASK_INITIATION_ST_CIC_CRIMINALINJURIESCOMPENSATION;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.APPLICATION_WORK_TYPE;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.COMPLETE_HEARING_OUTCOME_TASK;
-import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.CREATE_DUE_DATE;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.DECISION_WORK_TYPE;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.FOLLOW_UP_NONCOMPLIANCE_OF_DIR_TASK;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.HEARING_WORK_TYPE;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.ISSUE_CASE_TO_RESPONDENT_TASK;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.ISSUE_DECISION_NOTICE_TASK;
-import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.ISSUE_DUE_DATE;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.PRIORITY_WORK_TYPE;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.PROCESS_CASE_WITHDRAWAL_DIR_LISTED_TASK;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.PROCESS_CASE_WITHDRAWAL_DIR_TASK;
@@ -480,21 +478,6 @@ class CamundaTaskWaInitiationTest extends DmnDecisionTableBaseUnitTest {
                         "name", "Process stay directions",
                         "workingDaysAllowed", 7,
                         "processCategories", PROCESS_CATEGORY_PROCESSING,
-                        "workType", ROUTINE_WORK_TYPE,
-                        "roleCategory", ROLE_CATEGORY_ADMIN
-                    )
-                )
-            ),
-            Arguments.of(
-                "create-draft-order",
-                "CaseManagement",
-                Map.of("Data", Map.of("cicCaseReferralTypeForWA", "")),
-                List.of(
-                    Map.of(
-                        "taskId", ISSUE_DUE_DATE,
-                        "name", "Issue due date",
-                        "workingDaysAllowed", 2,
-                        "processCategories", PROCESS_CATEGORY_ISSUE_CASE,
                         "workType", ROUTINE_WORK_TYPE,
                         "roleCategory", ROLE_CATEGORY_ADMIN
                     )
@@ -1368,21 +1351,6 @@ class CamundaTaskWaInitiationTest extends DmnDecisionTableBaseUnitTest {
                     )
                 )
             ),
-            Arguments.of(
-                "caseworker-issue-case",
-                "CaseManagement",
-                null,
-                List.of(
-                    Map.of(
-                        "taskId", CREATE_DUE_DATE,
-                        "name", "Create due date",
-                        "workingDaysAllowed", 2,
-                        "processCategories", PROCESS_CATEGORY_ISSUE_CASE,
-                        "workType", ROUTINE_WORK_TYPE,
-                        "roleCategory", ROLE_CATEGORY_ADMIN
-                    )
-                )
-            ),
             //test due date of create and send order
             Arguments.of(
                 "create-and-send-order",
@@ -1451,7 +1419,7 @@ class CamundaTaskWaInitiationTest extends DmnDecisionTableBaseUnitTest {
         DmnDecisionTableImpl logic = (DmnDecisionTableImpl) decision.getDecisionLogic();
         assertThat(logic.getInputs().size(), is(5));
         assertThat(logic.getOutputs().size(), is(7));
-        assertThat(logic.getRules().size(), is(65));
+        assertThat(logic.getRules().size(), is(63));
     }
 
     @ParameterizedTest(name = "event id: {0} post event state: {1} additional data: {2}")

@@ -13,6 +13,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseIssue;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
@@ -20,6 +21,7 @@ import uk.gov.hmcts.sptribs.common.config.WebMvcConfig;
 import uk.gov.hmcts.sptribs.notification.NotificationServiceCIC;
 import uk.gov.hmcts.sptribs.testutil.IdamWireMock;
 
+import java.time.LocalDate;
 import java.util.Set;
 
 import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
@@ -160,6 +162,8 @@ class CaseworkerIssueCaseIT {
                 .respondentEmail("respondent@test.com")
                 .applicantFullName("Applicant Name")
                 .applicantEmailAddress("applicant@test.com")
+                .respondentBundleDueDate(LocalDate.now())
+                .isCaseInTime(YesOrNo.YES)
                 .build()
         );
 

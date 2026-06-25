@@ -37,9 +37,16 @@ To build the project, execute the following command:
 ### Running the application locally
 You will need access to the sptribs-aat vault, and an active VPN to run locally, as it depends on services running on AAT.
 
+For running functional tests locally, we need to make sure all the local database access is pointing to local instances.
+please run:
+
+        ./gradlew loadLocalEnvSecrets
+
+to generate the local env file over the aat one, then your bootwithCCD and functional tests will use this.
+
 This will require an Azure login, which can be done with the Azure CLI with:
 `az login` and following the steps to log into Azure
-`az acr login --name hmctspublic && az acr login --name hmctsprivate` to access the `hmctspublic` and `hmctsprivate` namespaces
+`az acr login --name hmctsprod` to access the ACR namespace as part of `bootWithCCD` or `generateCCDConfig`/`buildCCDXlsx`
 
 Run the application by executing the following command:
 
@@ -82,6 +89,13 @@ Then uncomment the dependency in `build.gradle` like so:
 ```groovy
   implementation group: 'com.github.hmcts', name: 'ccd-config-generator', version: 'DEV-SNAPSHOT'
 ```
+
+### GitHub Labels
+On a pull request you can add the following labels:
+- `enable_keep_helm` - to keep the deployment in the preview environment for testing after the pipeline has finished
+- `pr-values:wa` - use the `values.wa.preview.template.yaml` to deploy with Work Allocation pods
+- `pr-values:wa-ft-tests` - run the Work Allocation Functional tests (requires the above)
+- `enable_ccd_diff` - runs the `ccd-diff` workflow to show changes to the CCD definition
 
 ### Crons
 

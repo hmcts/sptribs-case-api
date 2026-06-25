@@ -25,8 +25,10 @@ import static java.util.Collections.emptySet;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.AUTHORIZATION;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.ERRORS;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.HEARING_VENUES_MID_EVENT_URL;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.SERVICE_AUTHORIZATION;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_AUTHORIZATION_TOKEN;
@@ -95,5 +97,81 @@ public class HearingVenuesIT {
             .andExpect(
                 content().json(expectedResponse(HEARING_VENUES_RESPONSE))
             );
+    }
+
+    @Test
+    void shouldValidateSpecialCharacterInMidEvent() throws Exception {
+        Listing listing = Listing.builder()
+            .hearingVenueNameAndAddress("London Centre - London")
+            .readOnlyHearingVenueName("London Centre - London")
+            .addlInstr("&&&")
+            .venueNotListedOption(emptySet())
+            .build();
+
+        ListValue<Listing> listingListValue = new ListValue<>();
+        listingListValue.setValue(listing);
+
+        List<ListValue<Listing>> list = new ArrayList<>();
+        list.add(listingListValue);
+
+        CaseData caseData = CaseData.builder()
+            .listing(listing)
+            .hearingList(list)
+            .build();
+
+        mockMvc.perform(post(HEARING_VENUES_MID_EVENT_URL)
+                .contentType(APPLICATION_JSON)
+                .header(SERVICE_AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
+                .header(AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
+                .content(objectMapper.writeValueAsString(
+                    callbackRequest(
+                        caseData,
+                        CASEWORKER_CREATE_HEARING_SUMMARY)))
+                .accept(APPLICATION_JSON))
+            .andExpect(
+                status().isOk())
+            .andExpect(
+                jsonPath(ERRORS)
+                    .value("Additional instructions and directions must not contain '&'.")
+            );
+
+    }
+
+    @Test
+    void shouldValidateSpecialCharacterInAddressFieldInMidEvent() throws Exception {
+        Listing listing = Listing.builder()
+            .hearingVenueNameAndAddress("London Centre&&& - London")
+            .readOnlyHearingVenueName("London Centre - London")
+            .addlInstr("test")
+            .venueNotListedOption(emptySet())
+            .build();
+
+        ListValue<Listing> listingListValue = new ListValue<>();
+        listingListValue.setValue(listing);
+
+        List<ListValue<Listing>> list = new ArrayList<>();
+        list.add(listingListValue);
+
+        CaseData caseData = CaseData.builder()
+            .listing(listing)
+            .hearingList(list)
+            .build();
+
+        mockMvc.perform(post(HEARING_VENUES_MID_EVENT_URL)
+                .contentType(APPLICATION_JSON)
+                .header(SERVICE_AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
+                .header(AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
+                .content(objectMapper.writeValueAsString(
+                    callbackRequest(
+                        caseData,
+                        CASEWORKER_CREATE_HEARING_SUMMARY)))
+                .accept(APPLICATION_JSON))
+            .andExpect(
+                status().isOk())
+            .andExpect(
+                jsonPath(ERRORS)
+                    .value("Hearing venue must not contain '&'.")
+            );
+
     }
 }

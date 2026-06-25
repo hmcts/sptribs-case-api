@@ -76,16 +76,60 @@ class LocationServiceTest {
             .courtTypeId(COURT_TYPE_ID)
             .build();
 
+        final HearingVenue hearingVenue2 = HearingVenue
+            .builder()
+            .regionId("1")
+            .courtName("courtName")
+            .courtAddress("courtAddress")
+            .courtTypeId("13")
+            .build();
+
         //When
         when(authTokenGenerator.generate()).thenReturn(TEST_SERVICE_AUTH_TOKEN);
         when(httpServletRequest.getHeader(AUTHORIZATION)).thenReturn(TEST_AUTHORIZATION_TOKEN);
         when(locationClient.getHearingVenues(TEST_SERVICE_AUTH_TOKEN, TEST_AUTHORIZATION_TOKEN, "1", "Y"))
-            .thenReturn(List.of(hearingVenue));
+            .thenReturn(List.of(hearingVenue, hearingVenue2));
         DynamicList hearingVenueList = locationService.getHearingVenuesByRegion("1");
 
         //Then
         assertThat(hearingVenueList).isNotNull();
+        assertThat(hearingVenueList.getListItems().size()).isEqualTo(1);
         assertThat(hearingVenueList.getListItems()).extracting("label").containsExactlyInAnyOrder("courtName-courtAddress");
+
+    }
+
+    @Test
+    void shouldPopulateHearingVenueDynamicListAndFilterByServiceCode() {
+        //Given
+        final HearingVenue hearingVenue = HearingVenue
+            .builder()
+            .regionId("1")
+            .courtName("courtName1234")
+            .courtAddress("courtAddress1234")
+            .courtTypeId("13")
+            .serviceCode("BBA2")
+            .build();
+
+        final HearingVenue hearingVenue2 = HearingVenue
+            .builder()
+            .regionId("1")
+            .courtName("courtName")
+            .courtAddress("courtAddress")
+            .courtTypeId("13")
+            .serviceCode("BBA3")
+            .build();
+
+        //When
+        when(authTokenGenerator.generate()).thenReturn(TEST_SERVICE_AUTH_TOKEN);
+        when(httpServletRequest.getHeader(AUTHORIZATION)).thenReturn(TEST_AUTHORIZATION_TOKEN);
+        when(locationClient.getHearingVenues(TEST_SERVICE_AUTH_TOKEN, TEST_AUTHORIZATION_TOKEN, "1", "Y"))
+            .thenReturn(List.of(hearingVenue, hearingVenue2));
+        DynamicList hearingVenueList = locationService.getHearingVenuesByRegion("1");
+
+        //Then
+        assertThat(hearingVenueList).isNotNull();
+        assertThat(hearingVenueList.getListItems()).extracting("label")
+            .containsExactlyInAnyOrder("courtName1234-courtAddress1234");
 
     }
 

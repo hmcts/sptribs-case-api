@@ -1,5 +1,6 @@
 package uk.gov.hmcts.sptribs.caseworker.event;
 
+import org.jspecify.annotations.NonNull;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -9,7 +10,11 @@ import uk.gov.hmcts.ccd.sdk.ConfigBuilderImpl;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.Event;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
+import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
+import uk.gov.hmcts.sptribs.caseworker.model.DocumentManagement;
+import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderCIC;
+import uk.gov.hmcts.sptribs.caseworker.model.Order;
 import uk.gov.hmcts.sptribs.caseworker.model.YesNo;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
@@ -22,12 +27,13 @@ import uk.gov.hmcts.sptribs.document.bundling.model.BundleCallback;
 import uk.gov.hmcts.sptribs.document.bundling.model.BundleIdAndTimestamp;
 import uk.gov.hmcts.sptribs.document.bundling.model.MultiBundleConfig;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
+import uk.gov.hmcts.sptribs.document.model.DocumentType;
 
 import java.time.Clock;
 import java.time.Instant;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -43,6 +49,7 @@ import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.getEventsFrom;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.LOCAL_DATE_TIME;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.caseData;
+import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getCaseworkerCICDocument;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getCaseworkerCICDocumentList;
 import static uk.gov.hmcts.sptribs.testutil.TestEventConstants.CREATE_BUNDLE;
 
@@ -76,18 +83,18 @@ class CaseworkerCreateBundleTest {
             .contains(CREATE_BUNDLE);
 
         assertThat(getEventsFrom(configBuilder).values())
-                .extracting(Event::isPublishToCamunda)
-                .contains(true);
+            .extracting(Event::isPublishToCamunda)
+            .contains(true);
 
         assertThat(getEventsFrom(configBuilder).values())
-                .extracting(Event::getGrants)
-                .extracting(map -> map.containsKey(ST_CIC_WA_CONFIG_USER))
-                .contains(true);
+            .extracting(Event::getGrants)
+            .extracting(map -> map.containsKey(ST_CIC_WA_CONFIG_USER))
+            .contains(true);
 
         assertThat(getEventsFrom(configBuilder).values())
-                .extracting(Event::getGrants)
-                .extracting(map -> map.get(ST_CIC_WA_CONFIG_USER))
-                .contains(Permissions.CREATE_READ_UPDATE);
+            .extracting(Event::getGrants)
+            .extracting(map -> map.get(ST_CIC_WA_CONFIG_USER))
+            .contains(Permissions.CREATE_READ_UPDATE);
     }
 
     @Test
@@ -139,46 +146,49 @@ class CaseworkerCreateBundleTest {
     }
 
     @Test
-    void shouldSuccessfullyCreateBundleWithNewOrderEnabled() {
+    void shouldSuccessfullyCreateBundleWithNewOrderEnabled_noInitialDocuments_null() {
         final CaseData caseData = caseData();
         caseData.setNewBundleOrderEnabled(YesNo.YES);
+        caseData.setInitialCicaDocuments(null);
 
-        // Set up initial CICA documents
-        final List<ListValue<CaseworkerCICDocument>> initialDocuments = getCaseworkerCICDocumentList("initial.pdf");
-        caseData.setInitialCicaDocuments(initialDocuments);
+        final CicCase cicCase = CicCase.builder()
+            .build();
 
-        // Set up further uploaded documents
-        final List<ListValue<CaseworkerCICDocument>> furtherDocuments = getCaseworkerCICDocumentList("further.pdf");
-        caseData.setFurtherUploadedDocuments(furtherDocuments);
+        LocalDate applicantDocsDate = LocalDate.of(2026, 1, 10);
+        List<ListValue<CaseworkerCICDocument>> allApplicantDocs = setApplicantDocsForDate(applicantDocsDate);
+        cicCase.setApplicantDocumentsUploaded(allApplicantDocs);
 
-        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
-        updatedCaseDetails.setData(caseData);
-        updatedCaseDetails.setId(TEST_CASE_ID);
-        updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
+        final List<ListValue<CaseworkerCICDocument>> caseworkerDocs =
+            getCaseworkerCICDocumentList("caseworkerDoc.docx");
+        DocumentManagement documentManagement = DocumentManagement.builder().caseworkerCICDocument(caseworkerDocs).build();
+
+        caseData.setAllDocManagement(documentManagement);
+        caseData.setCicCase(cicCase);
+
+        CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+        caseDetails.setId(TEST_CASE_ID);
+        caseDetails.setCreatedDate(LOCAL_DATE_TIME);
+        caseDetails.setData(caseData);
 
         final Bundle bundle = Bundle.builder().build();
-
         when(bundlingService.getMultiBundleConfig()).thenCallRealMethod();
         when(bundlingService.getMultiBundleConfigs()).thenCallRealMethod();
 
         when(bundlingService.createBundle(any(BundleCallback.class))).thenAnswer(callback -> {
             final BundleCallback callbackAtMockTime = (BundleCallback) callback.getArguments()[0];
 
-            //check case data at call time
             final CaseData dataAtMockTime = callbackAtMockTime.getCaseDetails().getData();
-            // Should have initial documents in caseDocuments
-            assertThat(dataAtMockTime.getCaseDocuments()).hasSize(1);
-            assertThat(dataAtMockTime.getCaseDocuments().getFirst().getValue()).isEqualTo(initialDocuments.getFirst().getValue());
-            // Should have further documents in furtherCaseDocuments
-            assertThat(dataAtMockTime.getFurtherCaseDocuments()).hasSize(1);
-            assertThat(dataAtMockTime.getFurtherCaseDocuments().getFirst().getValue()).isEqualTo(furtherDocuments.getFirst().getValue());
+            // All documents should be in caseDocuments
+            assertThat(dataAtMockTime.getCaseDocuments()).hasSize(4);
+            // furtherCaseDocuments should be null as no initial doc set
+            assertThat(dataAtMockTime.getFurtherCaseDocuments()).isNull();
             assertThat(dataAtMockTime.getBundleConfiguration()).isEqualTo(MULTI_BUNDLE_CONFIG);
             assertThat(dataAtMockTime.getMultiBundleConfiguration()).isEqualTo(List.of(MULTI_BUNDLE_CONFIG));
             return List.of(bundle);
         });
 
-        final AboutToStartOrSubmitResponse<CaseData, State> response =
-            caseworkerCreateBundle.aboutToSubmit(updatedCaseDetails, CaseDetails.<CaseData, State>builder().build());
+        AboutToStartOrSubmitResponse<CaseData, State> response =
+            caseworkerCreateBundle.aboutToSubmit(caseDetails, CaseDetails.<CaseData, State>builder().build());
 
         verify(bundlingService).getMultiBundleConfig();
         verify(bundlingService).getMultiBundleConfigs();
@@ -187,13 +197,104 @@ class CaseworkerCreateBundleTest {
         final CaseData responseData = response.getData();
         assertThat(responseData)
             .isNotNull()
-            .isEqualTo(updatedCaseDetails.getData());
+            .isEqualTo(caseDetails.getData());
         assertThat(responseData.getCaseBundles()).isNotNull();
-
-        //case documents should remain null so that they are not duplicated
-        //i.e. not in their respective child objects as well (CicCase.applicantDocumentsUploaded)
         assertThat(responseData.getCaseDocuments()).isNull();
         assertThat(responseData.getMultiBundleConfiguration()).isNull();
+    }
+
+    @Test
+    void shouldSuccessfullyCreateBundleWithNewOrderEnabled_FurtherUploadsAfterCicaUpload() {
+        final CaseData caseData = caseData();
+        caseData.setNewBundleOrderEnabled(YesNo.YES);
+
+        final CicCase cicCase = CicCase.builder().build();
+
+        LocalDate applicantDocsDate = LocalDate.of(2026, 1, 10);
+        List<ListValue<CaseworkerCICDocument>> allApplicantDocs = setApplicantDocsForDate(applicantDocsDate);
+        List<ListValue<CaseworkerCICDocument>> initialDocuments = new ArrayList<>(allApplicantDocs);
+        caseData.setInitialCicaDocuments(initialDocuments);
+
+        LocalDate additionalApplicantDocsDate = LocalDate.of(2026, 2, 12);
+        final ListValue<CaseworkerCICDocument> tribunalForm2 =
+            getCaseworkerCICDocument("tribunalForm2.pdf", DocumentType.DSS_TRIBUNAL_FORM, additionalApplicantDocsDate);
+        final ListValue<CaseworkerCICDocument> supportingDocs2 =
+            getCaseworkerCICDocument("supportingDoc2.docx", DocumentType.DSS_SUPPORTING, additionalApplicantDocsDate);
+        final ListValue<CaseworkerCICDocument> otherDocs2 =
+            getCaseworkerCICDocument("otherDoc2.txt", DocumentType.DSS_OTHER, additionalApplicantDocsDate);
+        allApplicantDocs.add(tribunalForm2);
+        allApplicantDocs.add(supportingDocs2);
+        allApplicantDocs.add(otherDocs2);
+
+        cicCase.setApplicantDocumentsUploaded(allApplicantDocs);
+
+        Document document = Document.builder().url("testUrl").filename("test").build();
+        DraftOrderCIC draftOrderCIC = DraftOrderCIC.builder().templateGeneratedDocument(document).build();
+        Order order = Order.builder().draftOrder(draftOrderCIC).orderSentDate(LocalDate.of(2026, 5, 1)).build();
+        cicCase.setOrderList(List.of(ListValue.<Order>builder().value(order).build()));
+
+        LocalDate caseworkerUploadDate = LocalDate.of(2026, 1, 20);
+        final List<ListValue<CaseworkerCICDocument>> caseworkerDocs =
+            getCaseworkerCICDocumentList("caseworkerDoc.docx", DocumentType.LINKED_DOCS, caseworkerUploadDate);
+        DocumentManagement documentManagement = DocumentManagement.builder().caseworkerCICDocument(caseworkerDocs).build();
+
+        LocalDate additionalCaseworkerUploadDate = LocalDate.of(2026, 2, 14);
+        final ListValue<CaseworkerCICDocument> extraCaseworkerDoc =
+            getCaseworkerCICDocument("caseworkerDoc2.docx", DocumentType.LINKED_DOCS, additionalCaseworkerUploadDate);
+        caseworkerDocs.add(extraCaseworkerDoc);
+        caseData.setAllDocManagement(documentManagement);
+        caseData.setCicCase(cicCase);
+
+        CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+        caseDetails.setId(TEST_CASE_ID);
+        caseDetails.setCreatedDate(LOCAL_DATE_TIME);
+        caseDetails.setData(caseData);
+
+        final Bundle bundle = Bundle.builder().build();
+        when(bundlingService.getMultiBundleConfig()).thenCallRealMethod();
+        when(bundlingService.getMultiBundleConfigs()).thenCallRealMethod();
+
+        when(bundlingService.createBundle(any(BundleCallback.class))).thenAnswer(callback -> {
+            final BundleCallback callbackAtMockTime = (BundleCallback) callback.getArguments()[0];
+
+            final CaseData dataAtMockTime = callbackAtMockTime.getCaseDetails().getData();
+            // Initial documents should be in caseDocuments
+            assertThat(dataAtMockTime.getCaseDocuments()).hasSize(3);
+            // furtherCaseDocuments should have the additional documents
+            assertThat(dataAtMockTime.getFurtherCaseDocuments()).hasSize(6);
+            assertThat(dataAtMockTime.getBundleConfiguration()).isEqualTo(MULTI_BUNDLE_CONFIG);
+            assertThat(dataAtMockTime.getMultiBundleConfiguration()).isEqualTo(List.of(MULTI_BUNDLE_CONFIG));
+            return List.of(bundle);
+        });
+
+        AboutToStartOrSubmitResponse<CaseData, State> response =
+            caseworkerCreateBundle.aboutToSubmit(caseDetails, CaseDetails.<CaseData, State>builder().build());
+
+        verify(bundlingService).getMultiBundleConfig();
+        verify(bundlingService).getMultiBundleConfigs();
+        verify(bundlingService).buildBundleListValues(anyList());
+
+        final CaseData responseData = response.getData();
+        assertThat(responseData)
+            .isNotNull()
+            .isEqualTo(caseDetails.getData());
+        assertThat(responseData.getCaseBundles()).isNotNull();
+        assertThat(responseData.getCaseDocuments()).isNull();
+        assertThat(responseData.getMultiBundleConfiguration()).isNull();
+    }
+
+    private static @NonNull List<ListValue<CaseworkerCICDocument>> setApplicantDocsForDate(LocalDate date) {
+        final ListValue<CaseworkerCICDocument> tribunalForm =
+            getCaseworkerCICDocument("tribunalForm.pdf", DocumentType.DSS_TRIBUNAL_FORM, date);
+        final ListValue<CaseworkerCICDocument> supportingDocs =
+            getCaseworkerCICDocument("supportingDoc.docx", DocumentType.DSS_SUPPORTING, date);
+        final ListValue<CaseworkerCICDocument> otherDocs =
+            getCaseworkerCICDocument("otherDoc.txt", DocumentType.DSS_OTHER, date);
+        List<ListValue<CaseworkerCICDocument>> allApplicantDocs = new ArrayList<>();
+        allApplicantDocs.add(tribunalForm);
+        allApplicantDocs.add(supportingDocs);
+        allApplicantDocs.add(otherDocs);
+        return allApplicantDocs;
     }
 
     @Test
@@ -379,7 +480,7 @@ class CaseworkerCreateBundleTest {
         assertThat(responseData.getCaseBundles()).hasSize((1));
 
         assertThat(responseData.getCaseBundles().getFirst().getValue().getDateAndTime())
-            .isEqualTo(LocalDateTime.ofInstant(instant, ZoneOffset.UTC));
+            .isEqualTo(LocalDateTime.ofInstant(instant, zoneId));
     }
 
     @Test
@@ -394,25 +495,25 @@ class CaseworkerCreateBundleTest {
         final Bundle bundle1 = Bundle.builder()
             .dateAndTime(LocalDateTime.now(Clock.fixed(
                 instant,
-                ZoneOffset.UTC)).minusYears(3))
+                zoneId)).minusYears(3))
             .id(testBundleUUID1)
             .build();
         final Bundle bundle2 = Bundle.builder()
             .dateAndTime(LocalDateTime.now(Clock.fixed(
                 instant,
-                ZoneOffset.UTC)).minusMonths(3))
+                zoneId)).minusMonths(3))
             .id(testBundleUUID2)
             .build();
         final Bundle bundle3 = Bundle.builder()
             .dateAndTime(LocalDateTime.now(Clock.fixed(
                 instant,
-                ZoneOffset.UTC)).minusDays(3))
+                zoneId)).minusDays(3))
             .id(testBundleUUID3)
             .build();
         final Bundle bundle4 = Bundle.builder()
             .dateAndTime(LocalDateTime.now(Clock.fixed(
                 instant,
-                ZoneOffset.UTC)).minusHours(3))
+                zoneId)).minusHours(3))
             .id(testBundleUUID4)
             .build();
 
@@ -513,7 +614,7 @@ class CaseworkerCreateBundleTest {
                 .id("5")
                 .value(BundleIdAndTimestamp.builder()
                     .bundleId(testListValueBundles.getLast().getValue().getId())
-                    .dateAndTime(LocalDateTime.ofInstant(instant, ZoneOffset.UTC))
+                    .dateAndTime(LocalDateTime.ofInstant(instant, zoneId))
                     .build())
                 .build()
         );
@@ -529,15 +630,15 @@ class CaseworkerCreateBundleTest {
             .hasSize(updatedCaseDetails.getData().getCaseBundleIdsAndTimestamps().size());
 
         assertThat(responseData.getCaseBundles().getFirst().getValue().getDateAndTime())
-            .isEqualTo(LocalDateTime.ofInstant(instant, ZoneOffset.UTC));
+            .isEqualTo(LocalDateTime.ofInstant(instant, zoneId));
         assertThat(responseData.getCaseBundles().get(1).getValue().getDateAndTime())
-            .isEqualTo(LocalDateTime.now(Clock.fixed(instant, ZoneOffset.UTC)).minusHours(3));
+            .isEqualTo(LocalDateTime.now(Clock.fixed(instant, zoneId)).minusHours(3));
         assertThat(responseData.getCaseBundles().get(2).getValue().getDateAndTime())
-            .isEqualTo(LocalDateTime.now(Clock.fixed(instant, ZoneOffset.UTC)).minusDays(3));
+            .isEqualTo(LocalDateTime.now(Clock.fixed(instant, zoneId)).minusDays(3));
         assertThat(responseData.getCaseBundles().get(3).getValue().getDateAndTime())
-            .isEqualTo(LocalDateTime.now(Clock.fixed(instant, ZoneOffset.UTC)).minusMonths(3));
+            .isEqualTo(LocalDateTime.now(Clock.fixed(instant, zoneId)).minusMonths(3));
         assertThat(responseData.getCaseBundles().getLast().getValue().getDateAndTime())
-            .isEqualTo(LocalDateTime.now(Clock.fixed(instant,ZoneOffset.UTC)).minusYears(3));
+            .isEqualTo(LocalDateTime.now(Clock.fixed(instant,zoneId)).minusYears(3));
     }
 
     @Test
@@ -552,13 +653,13 @@ class CaseworkerCreateBundleTest {
         final Bundle bundle1 = Bundle.builder()
             .dateAndTime(LocalDateTime.now(Clock.fixed(
                 instant,
-                ZoneOffset.UTC)).minusYears(3))
+                zoneId)).minusYears(3))
             .id(testBundleUUID1)
             .build();
         final Bundle bundle2 = Bundle.builder()
             .dateAndTime(LocalDateTime.now(Clock.fixed(
                 instant,
-                ZoneOffset.UTC)).minusMonths(3))
+                zoneId)).minusMonths(3))
             .id(testBundleUUID2)
             .build();
         final Bundle bundle3 = Bundle.builder()
@@ -667,7 +768,7 @@ class CaseworkerCreateBundleTest {
                 .id("5")
                 .value(BundleIdAndTimestamp.builder()
                     .bundleId(testListValueBundles.getLast().getValue().getId())
-                    .dateAndTime(LocalDateTime.ofInstant(instant, ZoneOffset.UTC))
+                    .dateAndTime(LocalDateTime.ofInstant(instant, zoneId))
                     .build())
                 .build()
         );
@@ -683,11 +784,11 @@ class CaseworkerCreateBundleTest {
             .hasSize(updatedCaseDetails.getData().getCaseBundleIdsAndTimestamps().size());
 
         assertThat(responseData.getCaseBundles().getFirst().getValue().getDateAndTime())
-            .isEqualTo(LocalDateTime.ofInstant(instant, ZoneOffset.UTC));
+            .isEqualTo(LocalDateTime.ofInstant(instant, zoneId));
         assertThat(responseData.getCaseBundles().get(1).getValue().getDateAndTime())
-            .isEqualTo(LocalDateTime.now(Clock.fixed(instant,ZoneOffset.UTC)).minusMonths(3));
+            .isEqualTo(LocalDateTime.now(Clock.fixed(instant,zoneId)).minusMonths(3));
         assertThat(responseData.getCaseBundles().get(2).getValue().getDateAndTime())
-            .isEqualTo(LocalDateTime.now(Clock.fixed(instant,ZoneOffset.UTC)).minusYears(3));
+            .isEqualTo(LocalDateTime.now(Clock.fixed(instant,zoneId)).minusYears(3));
         assertThat(responseData.getCaseBundles().get(3).getValue().getDateAndTime())
             .isNull();
         assertThat(responseData.getCaseBundles().getLast().getValue().getDateAndTime())
@@ -768,7 +869,7 @@ class CaseworkerCreateBundleTest {
         // New bundle should be first (sorted by timestamp descending, nulls last)
         assertThat(responseData.getCaseBundles().getFirst().getValue().getId()).isEqualTo(newBundleUUID);
         assertThat(responseData.getCaseBundles().getFirst().getValue().getDateAndTime())
-            .isEqualTo(LocalDateTime.ofInstant(instant, ZoneOffset.UTC));
+            .isEqualTo(LocalDateTime.ofInstant(instant, zoneId));
 
         // Old bundles should have null timestamps (backwards compatibility - not incorrectly set to new bundle's time)
         assertThat(responseData.getCaseBundles().get(1).getValue().getId()).isEqualTo(existingOldBundleUUID1);
@@ -822,7 +923,7 @@ class CaseworkerCreateBundleTest {
 
         assertThat(responseData.getCaseBundles()).hasSize(1);
         assertThat(responseData.getCaseBundles().getFirst().getValue().getDateAndTime())
-            .isEqualTo(LocalDateTime.ofInstant(instant, ZoneOffset.UTC));
+            .isEqualTo(LocalDateTime.ofInstant(instant, zoneId));
         assertThat(responseData.getCaseBundleIdsAndTimestamps()).hasSize(1);
     }
 }

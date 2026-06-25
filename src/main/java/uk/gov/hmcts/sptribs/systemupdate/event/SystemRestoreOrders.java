@@ -10,7 +10,7 @@ import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
-import uk.gov.hmcts.sptribs.common.service.OrdersListRestoreService;
+import uk.gov.hmcts.sptribs.common.service.CaseDataRestoreService;
 
 import java.time.LocalDate;
 
@@ -28,7 +28,7 @@ public class SystemRestoreOrders implements CCDConfig<CaseData, State, UserRole>
 
     private static final LocalDate END_TO_DATE = LocalDate.of(2026, 3, 6);
 
-    private final OrdersListRestoreService ordersListRestoreService;
+    private final CaseDataRestoreService caseDataRestoreService;
 
     @Override
     public void configure(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
@@ -46,7 +46,7 @@ public class SystemRestoreOrders implements CCDConfig<CaseData, State, UserRole>
         CaseData caseData = caseDetails.getData();
         Long reference = caseDetails.getId();
 
-        ordersListRestoreService.restoreOrdersList(reference, caseData, START_FROM_DATE, END_TO_DATE);
+        caseDataRestoreService.restoreOrdersList(reference, caseData, START_FROM_DATE, END_TO_DATE);
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)

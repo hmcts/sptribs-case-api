@@ -91,7 +91,7 @@ uk:
           APPLICATION_RECEIVED_CY: '86e6988c-dfc8-43de-8890-e38269ee40d1'
           CASE_ISSUED_CITIZEN_EMAIL: '03a0bbaa-10ee-4304-a1b1-6fdf76a2fd69'
           CASE_ISSUED_CITIZEN_POST: 'eedc916f-088f-4653-99ed-b954e1dbd58d'
-          CASE_ISSUED_RESPONDENT_EMAIL: 'd90a4a2d-1406-48d3-a319-924cc8f67d5e'
+          CASE_ISSUED_RESPONDENT_EMAIL: 'a8f94ce2-e220-4879-83cf-486bec2c188f'
           CASE_LINKED_EMAIL: '14633cea-db23-4a44-a477-3f3b37202b72'
           CASE_LINKED_POST: 'd69207af-ed64-4a60-b0a3-224d429d8b17'
           CASE_STAYED_EMAIL: '474266c4-f583-43b6-b464-3faad6567037'#
@@ -235,6 +235,12 @@ feature:
   restore-orders-task:
     enabled: ${RESTORE_ORDERS_TASK_ENABLED:false}
     caseReference: ${RESTORE_ORDERS_TASK_TEST_CASE_REF:}
+  migrate-initial-case-documents-task:
+    enabled: ${INITIAL_DOCUMENTS_MIGRATION_ENABLED:false}
+    caseReference: ${INITIAL_DOCUMENTS_MIGRATION_TEST_CASE_REF:}
+    skipMigrated: ${INITIAL_DOCUMENTS_MIGRATION_SKIP_MIGRATED:false}
+    batchSize: ${INITIAL_DOCUMENTS_MIGRATION_BATCH_SIZE:100}
+    batchPauseMs: ${INITIAL_DOCUMENTS_MIGRATION_BATCH_PAUSE:5000}
 
 caseinfo:
   apps:

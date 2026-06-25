@@ -17,10 +17,12 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
+import java.util.function.Predicate;
 
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.COURT_TYPE_ID;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.HYPHEN;
+import static uk.gov.hmcts.sptribs.recordlisting.RecordListingConstants.CIC_SERVICE_CODE;
 import static uk.gov.hmcts.sptribs.recordlisting.RecordListingConstants.REGION_ALL;
 
 @Service
@@ -41,9 +43,25 @@ public class LocationService {
 
     public DynamicList getHearingVenuesByRegion(String regionId) {
         final HearingVenue[] hearingVenues = getCourtVenues(regionId);
-        HearingVenue[] filteredHearingVenues = Arrays.stream(hearingVenues)
-                    .filter(v -> COURT_TYPE_ID.equals(v.getCourtTypeId())).toArray(HearingVenue[]::new);
-        return populateVenueDynamicList(filteredHearingVenues);
+
+        // Location team is migrating from courtTypeId to serviceCode.
+        // When serviceCode is present, we filter by that.
+        // Retain the courtTypeId filter for backwards compatibility.
+        boolean hasServiceCode = Arrays.stream(hearingVenues)
+            .findFirst()
+            .map(HearingVenue::getServiceCode)
+            .isPresent();
+
+        Predicate<HearingVenue> filter = hasServiceCode
+            ? venue -> CIC_SERVICE_CODE.equals(venue.getServiceCode())
+            : venue -> COURT_TYPE_ID.equals(venue.getCourtTypeId());
+
+        return populateVenueDynamicList(
+            Arrays.stream(hearingVenues)
+                .filter(filter)
+                .toArray(HearingVenue[]::new)
+        );
+
     }
 
     public DynamicList getAllRegions() {
