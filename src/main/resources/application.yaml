@@ -129,11 +129,6 @@ uk:
           english:
             SAVE_SIGN_OUT: '3aff9dc0-0188-42f6-a0be-fc5daa404d9a'
 
-sptribs:
-  notifications:
-    anonymity:
-      recipient_email: ${ANONYMITY_NOTIFICATION_RECIPIENT:mihai.tranca@justice.gov.uk}
-
 s2s-authorised:
   services: ${S2S_AUTHORISED_SERVICES:ccd_data,sptribs_frontend,sptribs_dss_update_case_web}
 
