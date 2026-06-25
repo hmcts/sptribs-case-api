@@ -1,6 +1,7 @@
 package uk.gov.hmcts.sptribs.caseworker.event;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
@@ -15,6 +16,8 @@ import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
+import uk.gov.hmcts.sptribs.taskmanagement.TaskInitiationResolver;
+import uk.gov.hmcts.sptribs.taskmanagement.TaskManagementService;
 
 import java.time.LocalDate;
 
@@ -34,13 +37,17 @@ import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_JUDGE;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_WA_CONFIG_USER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE;
+import static uk.gov.hmcts.sptribs.taskmanagement.TaskTypeCollections.ISSUE_CASE_CANCELLABLE_TASKS;
+import static uk.gov.hmcts.sptribs.taskmanagement.TaskTypeCollections.REFERRAL_COMPLETABLE_TASKS;
 
 @Component
 @Slf4j
 public class CaseWorkerReferToJudge implements CCDConfig<CaseData, State, UserRole> {
-
     private final ReferToJudgeReason referToJudgeReason = new ReferToJudgeReason();
     private final ReferToJudgeAdditionalInfo referToJudgeAdditionalInfo = new ReferToJudgeAdditionalInfo();
+
+    @Autowired
+    private TaskManagementService taskManagementService;
 
     @Override
     public void configure(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
@@ -65,8 +72,7 @@ public class CaseWorkerReferToJudge implements CCDConfig<CaseData, State, UserRo
                     ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER, ST_CIC_WA_CONFIG_USER)
                 .grantHistoryOnly(
                     ST_CIC_SENIOR_JUDGE,
-                    ST_CIC_JUDGE)
-                .publishToCamunda();
+                    ST_CIC_JUDGE);
 
         PageBuilder pageBuilder = new PageBuilder(eventBuilder);
         referToJudgeReason.addTo(pageBuilder);
@@ -91,6 +97,17 @@ public class CaseWorkerReferToJudge implements CCDConfig<CaseData, State, UserRo
                 && caseData.getReferToJudge().getReferralReason() != null) {
             caseData.getCicCase().setReferralTypeForWA(caseData.getReferToJudge().getReferralReason().getLabel());
         }
+
+        taskManagementService.enqueueCancellationTasks(ISSUE_CASE_CANCELLABLE_TASKS, details.getId());
+        taskManagementService.enqueueCompletionTasks(REFERRAL_COMPLETABLE_TASKS, details.getId());
+        taskManagementService.enqueueInitiationTasks(
+            TaskInitiationResolver.referToJudgeInitiationTasks(
+                details.getState(),
+                caseData.getCicCase().getReferralTypeForWA()
+            ),
+            caseData,
+            details.getId()
+        );
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)

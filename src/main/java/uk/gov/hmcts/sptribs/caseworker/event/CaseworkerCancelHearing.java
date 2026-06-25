@@ -25,8 +25,10 @@ import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.notification.dispatcher.CancelHearingNotification;
+import uk.gov.hmcts.sptribs.taskmanagement.TaskManagementService;
 
 import java.time.LocalDate;
+import java.util.List;
 
 import static java.lang.String.format;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_CANCEL_HEARING;
@@ -42,6 +44,8 @@ import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_JUDGE;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_WA_CONFIG_USER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE;
+import static uk.gov.hmcts.sptribs.taskmanagement.model.TaskType.completeHearingOutcome;
+import static uk.gov.hmcts.sptribs.taskmanagement.model.TaskType.stitchCollateHearingBundle;
 
 @Component
 @Slf4j
@@ -55,12 +59,15 @@ public class CaseworkerCancelHearing implements CCDConfig<CaseData, State, UserR
     private final HearingService hearingService;
 
     private final CancelHearingNotification cancelHearingNotification;
+    private final TaskManagementService taskManagementService;
 
     @Autowired
     public CaseworkerCancelHearing(HearingService hearingService,
-                                   CancelHearingNotification cancelHearingNotification) {
+                                   CancelHearingNotification cancelHearingNotification,
+                                   TaskManagementService taskManagementService) {
         this.hearingService = hearingService;
         this.cancelHearingNotification = cancelHearingNotification;
+        this.taskManagementService = taskManagementService;
     }
 
     @Override
@@ -78,8 +85,7 @@ public class CaseworkerCancelHearing implements CCDConfig<CaseData, State, UserR
                 .grant(CREATE_READ_UPDATE, SUPER_USER,
                     ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER, ST_CIC_HEARING_CENTRE_ADMIN,
                     ST_CIC_HEARING_CENTRE_TEAM_LEADER, ST_CIC_SENIOR_JUDGE, ST_CIC_WA_CONFIG_USER)
-                .grantHistoryOnly(ST_CIC_JUDGE)
-                .publishToCamunda();
+                .grantHistoryOnly(ST_CIC_JUDGE);
 
         final PageBuilder pageBuilder = new PageBuilder(eventBuilder);
         hearingDateSelect.addTo(pageBuilder);
@@ -115,6 +121,10 @@ public class CaseworkerCancelHearing implements CCDConfig<CaseData, State, UserR
         final String hearingName = caseData.getCicCase().getHearingList().getValue().getLabel();
 
         hearingService.updateHearingList(caseData, hearingName);
+        taskManagementService.enqueueCancellationTasks(
+            List.of(completeHearingOutcome, stitchCollateHearingBundle),
+            details.getId()
+        );
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)

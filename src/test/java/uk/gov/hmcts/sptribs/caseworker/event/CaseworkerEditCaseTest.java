@@ -23,14 +23,20 @@ import uk.gov.hmcts.sptribs.ciccase.model.SubjectCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.ciccase.model.access.Permissions;
 import uk.gov.hmcts.sptribs.common.service.SubmissionService;
+import uk.gov.hmcts.sptribs.taskmanagement.TaskManagementService;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_WA_CONFIG_USER;
+import static uk.gov.hmcts.sptribs.taskmanagement.model.TaskType.processFurtherEvidence;
+import static uk.gov.hmcts.sptribs.taskmanagement.model.TaskType.registerNewCase;
+import static uk.gov.hmcts.sptribs.taskmanagement.model.TaskType.vetNewCaseDocuments;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigBuilder;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.getEventsFrom;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.APPLICANT_FIRST_NAME;
@@ -49,9 +55,12 @@ class CaseworkerEditCaseTest {
     @Mock
     private SubmissionService submissionService;
 
+    @Mock
+    private TaskManagementService taskManagementService;
+
     @BeforeEach
     public void setUp() {
-        caseworkerEditCase = new CaseworkerEditCase(submissionService);
+        caseworkerEditCase = new CaseworkerEditCase(submissionService, taskManagementService);
     }
 
     @Test
@@ -64,10 +73,6 @@ class CaseworkerEditCaseTest {
         assertThat(getEventsFrom(configBuilder).values())
             .extracting(Event::getId)
             .contains(CASEWORKER_EDIT_CASE);
-
-        assertThat(getEventsFrom(configBuilder).values())
-            .extracting(Event::isPublishToCamunda)
-            .contains(true);
 
         assertThat(getEventsFrom(configBuilder).values())
                 .extracting(Event::getGrants)
@@ -105,6 +110,8 @@ class CaseworkerEditCaseTest {
         //Then
         assertThat(response.getData()).isNotNull();
         assertThat(response.getState()).isEqualTo(State.Submitted);
+        verify(taskManagementService).enqueueCompletionTasks(List.of(registerNewCase, processFurtherEvidence), TEST_CASE_ID);
+        verify(taskManagementService).enqueueInitiationTasks(List.of(vetNewCaseDocuments), response.getData(), TEST_CASE_ID);
     }
 
     @Test
@@ -133,6 +140,8 @@ class CaseworkerEditCaseTest {
         //Then
         assertThat(response.getData()).isNotNull();
         assertThat(stayedResponse).isNotNull();
+        verify(taskManagementService).enqueueCompletionTasks(List.of(registerNewCase, processFurtherEvidence), TEST_CASE_ID);
+        verify(taskManagementService).enqueueInitiationTasks(List.of(), response.getData(), TEST_CASE_ID);
     }
 
 
