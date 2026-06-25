@@ -3,7 +3,6 @@ package uk.gov.hmcts.sptribs.document.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
 import uk.gov.hmcts.sptribs.common.repositories.CaseDocumentTypesRepository;
 import uk.gov.hmcts.sptribs.document.model.CaseDocumentType;
 import uk.gov.hmcts.sptribs.document.model.CaseDocumentTypesEntity;
