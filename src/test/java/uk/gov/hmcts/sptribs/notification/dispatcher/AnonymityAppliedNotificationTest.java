@@ -7,16 +7,17 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
+import uk.gov.hmcts.sptribs.ciccase.model.ContactPreferenceType;
 import uk.gov.hmcts.sptribs.ciccase.model.NotificationResponse;
 import uk.gov.hmcts.sptribs.notification.NotificationHelper;
 import uk.gov.hmcts.sptribs.notification.NotificationServiceCIC;
 import uk.gov.hmcts.sptribs.notification.TemplateName;
 import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
 
-import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.eq;
@@ -39,45 +40,81 @@ class AnonymityAppliedNotificationTest {
     void setUp() {
         anonymityAppliedNotification = new AnonymityAppliedNotification(
             notificationServiceCIC,
-            notificationHelper,
-            "anonymity@test.com"
+            notificationHelper
         );
     }
 
     @Test
-    void shouldSendAnonymityAppliedEmail() {
+    void shouldSendAnonymityAppliedEmailToSubject() {
         CaseData caseData = CaseData.builder()
             .cicCase(CicCase.builder()
                 .fullName("Test Subject")
-                .anonymisationDate(LocalDate.of(2026, 6, 24))
+                .email("subject@test.com")
+                .contactPreferenceType(ContactPreferenceType.EMAIL)
                 .build())
             .build();
 
         Map<String, Object> templateVars = new HashMap<>();
-        when(notificationHelper.getTribunalCommonVars(eq("1234-5678-9012-3456"), eq(caseData))).thenReturn(templateVars);
-        when(notificationHelper.buildEmailNotificationRequest(eq("anonymity@test.com"), anyMap(),
+        NotificationResponse response = NotificationResponse.builder().id("1").build();
+
+        when(notificationHelper.getSubjectCommonVars(eq("1234-5678-9012-3456"), eq(caseData))).thenReturn(templateVars);
+        when(notificationHelper.buildEmailNotificationRequest(eq("subject@test.com"), anyMap(),
             eq(TemplateName.ANONYMITY_APPLIED_EMAIL))).thenReturn(NotificationRequest.builder().build());
         when(notificationServiceCIC.sendEmail(any(NotificationRequest.class), eq("1234-5678-9012-3456")))
-            .thenReturn(NotificationResponse.builder().id("1").build());
+            .thenReturn(response);
 
-        anonymityAppliedNotification.sendToTribunal(caseData, "1234-5678-9012-3456");
+        anonymityAppliedNotification.sendToSubject(caseData, "1234-5678-9012-3456");
 
         verify(notificationServiceCIC).sendEmail(any(NotificationRequest.class), eq("1234-5678-9012-3456"));
+        assertThat(caseData.getCicCase().getSubjectNotifyList()).isEqualTo(response);
     }
 
     @Test
-    void shouldNotSendEmailWhenRecipientNotConfigured() {
-        anonymityAppliedNotification = new AnonymityAppliedNotification(
-            notificationServiceCIC,
-            notificationHelper,
-            " "
-        );
+    void shouldSendAnonymityAppliedEmailToRepresentative() {
+        CaseData caseData = CaseData.builder()
+            .cicCase(CicCase.builder()
+                .representativeFullName("Rep Name")
+                .representativeEmailAddress("rep@test.com")
+                .representativeContactDetailsPreference(ContactPreferenceType.EMAIL)
+                .build())
+            .build();
 
-        CaseData caseData = CaseData.builder().cicCase(CicCase.builder().build()).build();
+        Map<String, Object> templateVars = new HashMap<>();
+        NotificationResponse response = NotificationResponse.builder().id("2").build();
 
-        anonymityAppliedNotification.sendToTribunal(caseData, "1234-5678-9012-3456");
+        when(notificationHelper.getRepresentativeCommonVars(eq("1234-5678-9012-3456"), eq(caseData))).thenReturn(templateVars);
+        when(notificationHelper.buildEmailNotificationRequest(eq("rep@test.com"), anyMap(),
+            eq(TemplateName.ANONYMITY_APPLIED_EMAIL))).thenReturn(NotificationRequest.builder().build());
+        when(notificationServiceCIC.sendEmail(any(NotificationRequest.class), eq("1234-5678-9012-3456")))
+            .thenReturn(response);
 
-        verify(notificationHelper, never()).getTribunalCommonVars(any(), any());
+        anonymityAppliedNotification.sendToRepresentative(caseData, "1234-5678-9012-3456");
+
+        verify(notificationServiceCIC).sendEmail(any(NotificationRequest.class), eq("1234-5678-9012-3456"));
+        assertThat(caseData.getCicCase().getRepNotificationResponse()).isEqualTo(response);
+    }
+
+    @Test
+    void shouldNotSendSubjectEmailWhenPreferenceIsPost() {
+        CaseData caseData = CaseData.builder()
+            .cicCase(CicCase.builder().contactPreferenceType(ContactPreferenceType.POST).build())
+            .build();
+
+        anonymityAppliedNotification.sendToSubject(caseData, "1234-5678-9012-3456");
+
+        verify(notificationHelper, never()).getSubjectCommonVars(any(), any());
+        verify(notificationServiceCIC, never()).sendEmail(any(), any());
+    }
+
+    @Test
+    void shouldNotSendRepresentativeEmailWhenPreferenceIsPost() {
+        CaseData caseData = CaseData.builder()
+            .cicCase(CicCase.builder().representativeContactDetailsPreference(ContactPreferenceType.POST).build())
+            .build();
+
+        anonymityAppliedNotification.sendToRepresentative(caseData, "1234-5678-9012-3456");
+
+        verify(notificationHelper, never()).getRepresentativeCommonVars(any(), any());
         verify(notificationServiceCIC, never()).sendEmail(any(), any());
     }
 }

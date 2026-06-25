@@ -226,7 +226,16 @@ public class CaseworkerCreateAndSendOrder implements CCDConfig<CaseData, State, 
     private void sendAnonymityNotification(CaseDetails<CaseData, State> details,
                                            CaseDetails<CaseData, State> beforeDetails) {
         if (isAnonymityNewlyApplied(details, beforeDetails)) {
-            anonymityAppliedNotification.sendToTribunal(details.getData(), details.getData().getHyphenatedCaseRef());
+            CaseData caseData = details.getData();
+            String caseNumber = caseData.getHyphenatedCaseRef();
+
+            if (!CollectionUtils.isEmpty(caseData.getCicCase().getNotifyPartySubject())) {
+                anonymityAppliedNotification.sendToSubject(caseData, caseNumber);
+            }
+
+            if (!CollectionUtils.isEmpty(caseData.getCicCase().getNotifyPartyRepresentative())) {
+                anonymityAppliedNotification.sendToRepresentative(caseData, caseNumber);
+            }
         }
     }
 
