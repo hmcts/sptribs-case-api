@@ -13,7 +13,6 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 import java.util.List;
 
 @SpringBootTest
-@Testcontainers
 @Import({CaseDataManager.class, CaseDocumentManager.class})
 public abstract class IntegrationTestBase {
 
@@ -24,11 +23,6 @@ public abstract class IntegrationTestBase {
     private CaseDocumentManager caseDocumentManager;
 
     private List<IntegrationTestDataManager> dataManagerList;
-
-//    @Container
-//    @ServiceConnection
-//    static PostgreSQLContainer<?> postgreSQLContainer =
-//        new PostgreSQLContainer<>("postgres:16").withReuse(true);
 
     @ServiceConnection
     static final PostgreSQLContainer<?> postgreSQLContainer;
