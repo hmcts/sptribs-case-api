@@ -1,6 +1,6 @@
 spring:
   flyway:
-    enabled: true
+    enabled: false
   main:
     allow-bean-definition-overriding: true
   messages:
