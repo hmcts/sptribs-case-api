@@ -35,7 +35,6 @@ import uk.gov.hmcts.sptribs.judicialrefdata.JudicialService;
 import uk.gov.hmcts.sptribs.notification.dispatcher.CaseWithdrawnNotification;
 
 import java.util.List;
-import java.util.regex.Matcher;
 
 import static java.lang.String.format;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_CLOSE_THE_CASE;
@@ -68,7 +67,7 @@ public class CaseworkerCloseTheCase implements CCDConfig<CaseData, State, UserRo
     private static final CcdPageConfiguration closeCaseConsentOrder = new CloseCaseConsentOrder();
     private static final CcdPageConfiguration closeCaseRule27 = new CloseCaseRule27();
     private static final CcdPageConfiguration closeCaseSelectRecipients = new CloseCaseSelectRecipients();
-    
+
     @Autowired
     private JudicialService judicialService;
 
