@@ -38,7 +38,7 @@ public class CaseworkerBundleStitchComplete implements CCDConfig<CaseData, State
 
     private static final String ALWAYS_HIDE = "[STATE]=\"ALWAYS_HIDE\"";
 
-    private DocumentsService documentsService;
+    private final DocumentsService documentsService;
 
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
