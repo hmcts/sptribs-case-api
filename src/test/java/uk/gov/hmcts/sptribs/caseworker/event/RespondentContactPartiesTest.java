@@ -9,10 +9,12 @@ import uk.gov.hmcts.ccd.sdk.ConfigBuilderImpl;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.Event;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
+import uk.gov.hmcts.ccd.sdk.type.DynamicMultiSelectList;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.event.page.ContactPartiesSelectDocument;
 import uk.gov.hmcts.sptribs.caseworker.event.page.RespondentPartiesToContact;
 import uk.gov.hmcts.sptribs.caseworker.model.ContactParties;
+import uk.gov.hmcts.sptribs.caseworker.model.ContactPartiesDocuments;
 import uk.gov.hmcts.sptribs.ciccase.model.ApplicantCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
@@ -22,19 +24,28 @@ import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.SubjectCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.TribunalCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
+import uk.gov.hmcts.sptribs.document.service.DocumentsService;
+import uk.gov.hmcts.sptribs.notification.NotificationHelper;
 import uk.gov.hmcts.sptribs.notification.dispatcher.ContactPartiesNotification;
 
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.sptribs.caseworker.util.ErrorConstants.SELECT_AT_LEAST_ONE_CONTACT_PARTY;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.RESPONDENT_CONTACT_PARTIES;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigBuilder;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.getEventsFrom;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.LOCAL_DATE_TIME;
+import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.buildDynamicMultiSelectDocumentList;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.caseData;
+import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getDocumentUploadMap;
 
 @ExtendWith(MockitoExtension.class)
 class RespondentContactPartiesTest {
@@ -50,6 +61,12 @@ class RespondentContactPartiesTest {
 
     @Mock
     private ContactPartiesSelectDocument contactPartiesSelectDocument;
+
+    @Mock
+    private DocumentsService documentsService;
+
+    @Mock
+    private NotificationHelper notificationHelper;
 
     @Test
     void shouldAddConfigurationToConfigBuilder() {
@@ -165,6 +182,10 @@ class RespondentContactPartiesTest {
     @Test
     void shouldDisplayTheCorrectMessageWithCommaSeparation() {
         //Given
+        DynamicMultiSelectList documentList = buildDynamicMultiSelectDocumentList();
+        final ContactPartiesDocuments contactPartiesDocuments = ContactPartiesDocuments.builder()
+            .documentList(documentList)
+            .build();
         Set<SubjectCIC> sub = new HashSet<>();
         sub.add(SubjectCIC.SUBJECT);
         Set<ApplicantCIC> app = new HashSet<>();
@@ -181,12 +202,17 @@ class RespondentContactPartiesTest {
             .tribunal(tri).build();
         final CaseData caseData = caseData();
         caseData.setContactParties(contactParties);
+        caseData.setContactPartiesDocuments(contactPartiesDocuments);
 
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
         final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
         updatedCaseDetails.setData(caseData);
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
+        final int docAttachLimit = 10;
+        Map<String, String> emailDocs = getDocumentUploadMap();
+
+        when(notificationHelper.buildDocumentList(documentList, docAttachLimit)).thenReturn(emailDocs);
 
         //When
         SubmittedCallbackResponse response =
@@ -209,6 +235,54 @@ class RespondentContactPartiesTest {
         assertThat(resContactPartiesResponse.getConfirmationHeader()).contains("Representative");
         assertThat(resContactPartiesResponse.getConfirmationHeader()).contains("Tribunal");
         assertThat(resContactPartiesResponse.getConfirmationHeader()).contains(",");
+
+        verify(documentsService, times(2)).updateDocumentsToSentViaContactParties(caseData, emailDocs);
+    }
+
+    @Test
+    void shouldNotUpdateDocumentToSentViaContactPartiesWithTribunalOnly() {
+        //Given
+        DynamicMultiSelectList documentList = buildDynamicMultiSelectDocumentList();
+        ContactPartiesDocuments contactPartiesDocuments = ContactPartiesDocuments.builder()
+            .documentList(documentList)
+            .build();
+
+        Set<TribunalCIC> tri = new HashSet<>();
+        tri.add(TribunalCIC.TRIBUNAL);
+
+        ContactParties contactParties = ContactParties.builder()
+            .tribunal(tri)
+            .build();
+        final CaseData caseData = caseData();
+        caseData.setContactParties(contactParties);
+        caseData.setContactPartiesDocuments(contactPartiesDocuments);
+
+        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
+        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        updatedCaseDetails.setData(caseData);
+        updatedCaseDetails.setId(TEST_CASE_ID);
+        updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
+        final int docAttachLimit = 10;
+        Map<String, String> emailDocs = getDocumentUploadMap();
+
+        when(notificationHelper.buildDocumentList(documentList, docAttachLimit)).thenReturn(emailDocs);
+
+        //When
+        SubmittedCallbackResponse response =
+            respondentContactParties.submitted(updatedCaseDetails, beforeDetails);
+
+        //Then
+        assertThat(caseData.getContactParties().getTribunal()).hasSize(1);
+        assertThat(response).isNotNull();
+
+        //When
+        SubmittedCallbackResponse resContactPartiesResponse = respondentContactParties.submitted(updatedCaseDetails, beforeDetails);
+
+        //Then
+        assertThat(resContactPartiesResponse).isNotNull();
+        assertThat(resContactPartiesResponse.getConfirmationHeader()).contains("Tribunal");
+
+        verifyNoInteractions(documentsService);
     }
 
     @Test

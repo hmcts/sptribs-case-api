@@ -2,6 +2,7 @@ package uk.gov.hmcts.sptribs.mapper;
 
 import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.sptribs.common.repositories.model.CicaCaseEntity;
+import uk.gov.hmcts.sptribs.controllers.mapper.CicaCaseMapper;
 import uk.gov.hmcts.sptribs.controllers.model.CicaCaseResponse;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;

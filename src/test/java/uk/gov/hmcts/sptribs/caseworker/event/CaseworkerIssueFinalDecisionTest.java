@@ -32,7 +32,9 @@ import uk.gov.hmcts.sptribs.document.CaseDataDocumentService;
 import uk.gov.hmcts.sptribs.document.content.DocmosisTemplateConstants;
 import uk.gov.hmcts.sptribs.document.content.FinalDecisionTemplateContent;
 import uk.gov.hmcts.sptribs.document.model.CICDocument;
-import uk.gov.hmcts.sptribs.document.services.DocumentsService;
+import uk.gov.hmcts.sptribs.document.model.CaseDocumentType;
+import uk.gov.hmcts.sptribs.document.model.DocumentType;
+import uk.gov.hmcts.sptribs.document.service.DocumentsService;
 import uk.gov.hmcts.sptribs.notification.dispatcher.CaseFinalDecisionIssuedNotification;
 
 import java.time.Clock;
@@ -176,10 +178,10 @@ class CaseworkerIssueFinalDecisionTest {
 
         //Then
         verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
-            any(), eq(TEST_CASE_ID), eq(false)
+            any(), eq(TEST_CASE_ID), eq(DocumentType.TRIBUNAL_DIRECTION), eq(CaseDocumentType.FINAL_DECISION)
         );
         verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
-            eq(document.getDocumentLink()), eq(TEST_CASE_ID), eq(false)
+            eq(document.getDocumentLink()), eq(TEST_CASE_ID), eq(DocumentType.TRIBUNAL_DIRECTION), eq(CaseDocumentType.FINAL_DECISION)
         );
 
         assertThat(response.getState())
@@ -241,7 +243,8 @@ class CaseworkerIssueFinalDecisionTest {
         details.setData(caseData);
 
         doThrow(new RuntimeException("Error saving document entity to database"))
-            .when(documentsService).buildAndSaveNewDocumentEntity(any(), eq(TEST_CASE_ID), eq(false));
+            .when(documentsService).buildAndSaveNewDocumentEntity(any(), eq(TEST_CASE_ID),
+                eq(DocumentType.TRIBUNAL_DIRECTION), eq(CaseDocumentType.FINAL_DECISION));
 
         AboutToStartOrSubmitResponse<CaseData, State> response = issueFinalDecision.aboutToSubmit(details, beforeDetails);
 
@@ -249,7 +252,7 @@ class CaseworkerIssueFinalDecisionTest {
         assertThat(response.getErrors()).contains("Error saving document with filename: " + document.getDocumentLink().getFilename());
 
         verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
-            any(), eq(TEST_CASE_ID), eq(false)
+            any(), eq(TEST_CASE_ID), eq(DocumentType.TRIBUNAL_DIRECTION), eq(CaseDocumentType.FINAL_DECISION)
         );
 
         document.getDocumentLink().setFilename(null);

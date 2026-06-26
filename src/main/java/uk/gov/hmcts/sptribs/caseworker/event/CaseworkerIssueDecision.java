@@ -23,7 +23,9 @@ import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.document.model.CICDocument;
-import uk.gov.hmcts.sptribs.document.services.DocumentsService;
+import uk.gov.hmcts.sptribs.document.model.CaseDocumentType;
+import uk.gov.hmcts.sptribs.document.model.DocumentType;
+import uk.gov.hmcts.sptribs.document.service.DocumentsService;
 import uk.gov.hmcts.sptribs.notification.dispatcher.DecisionIssuedNotification;
 
 import java.time.Clock;
@@ -109,12 +111,13 @@ public class CaseworkerIssueDecision implements CCDConfig<CaseData, State, UserR
         List<String> errors = new ArrayList<>();
 
         if (decisionDocument != null && decisionDocument.getDocumentLink() != null) {
-            decisionDocument.getDocumentLink().setCategoryId("TD");
+            decisionDocument.getDocumentLink().setCategoryId(DocumentType.TRIBUNAL_DIRECTION.getCategory());
             try {
                 documentsService.buildAndSaveNewDocumentEntity(
                     decisionDocument.getDocumentLink(),
                     details.getId(),
-                    false
+                    DocumentType.TRIBUNAL_DIRECTION,
+                    CaseDocumentType.DECISION
                 );
             } catch (RuntimeException e) {
                 errors.add(handleDocumentException(decisionDocument.getDocumentLink(), e.getMessage()));

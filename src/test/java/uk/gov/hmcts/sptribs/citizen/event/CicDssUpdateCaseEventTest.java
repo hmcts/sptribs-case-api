@@ -20,9 +20,11 @@ import uk.gov.hmcts.sptribs.ciccase.model.DssMessage;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.ciccase.model.access.Permissions;
+import uk.gov.hmcts.sptribs.document.model.CaseDocumentType;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.document.model.CitizenCICDocument;
-import uk.gov.hmcts.sptribs.document.services.DocumentsService;
+import uk.gov.hmcts.sptribs.document.model.DocumentType;
+import uk.gov.hmcts.sptribs.document.service.DocumentsService;
 import uk.gov.hmcts.sptribs.idam.IdamService;
 import uk.gov.hmcts.sptribs.notification.dispatcher.DssUpdateCaseSubmissionNotification;
 import uk.gov.hmcts.sptribs.notification.exception.NotificationException;
@@ -144,17 +146,17 @@ class CicDssUpdateCaseEventTest {
         assertThat(response.getData().getDssCaseData().getAdditionalInformation()).isNull();
 
         verify(documentsService, times(2)).buildAndSaveNewDocumentEntity(
-            any(), eq(TEST_CASE_ID), eq(false)
+            any(), eq(TEST_CASE_ID), eq(DocumentType.DSS_OTHER), eq(CaseDocumentType.APPLICANT)
         );
         Document expectedDoc1 = getDssCaseData().getOtherInfoDocuments().getFirst().getValue().getDocumentLink();
         expectedDoc1.setCategoryId("DSS");
         Document expectedDoc2 = getDssCaseData().getOtherInfoDocuments().get(1).getValue().getDocumentLink();
         expectedDoc2.setCategoryId("DSS");
         verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
-            eq(expectedDoc1), eq(TEST_CASE_ID), eq(false)
+            eq(expectedDoc1), eq(TEST_CASE_ID), eq(DocumentType.DSS_OTHER),  eq(CaseDocumentType.APPLICANT)
         );
         verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
-            eq(expectedDoc2), eq(TEST_CASE_ID), eq(false)
+            eq(expectedDoc2), eq(TEST_CASE_ID), eq(DocumentType.DSS_OTHER),  eq(CaseDocumentType.APPLICANT)
         );
     }
 
@@ -203,17 +205,17 @@ class CicDssUpdateCaseEventTest {
         assertThat(response.getData().getDssCaseData().getAdditionalInformation()).isNull();
 
         verify(documentsService, times(2)).buildAndSaveNewDocumentEntity(
-            any(), eq(TEST_CASE_ID), eq(false)
+            any(), eq(TEST_CASE_ID), eq(DocumentType.DSS_OTHER), eq(CaseDocumentType.APPLICANT)
         );
         Document expectedDoc1 = getDssCaseData().getOtherInfoDocuments().getFirst().getValue().getDocumentLink();
         expectedDoc1.setCategoryId("DSS");
         Document expectedDoc2 = getDssCaseData().getOtherInfoDocuments().get(1).getValue().getDocumentLink();
         expectedDoc2.setCategoryId("DSS");
         verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
-            eq(expectedDoc1), eq(TEST_CASE_ID), eq(false)
+            eq(expectedDoc1), eq(TEST_CASE_ID), eq(DocumentType.DSS_OTHER), eq(CaseDocumentType.APPLICANT)
         );
         verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
-            eq(expectedDoc2), eq(TEST_CASE_ID), eq(false)
+            eq(expectedDoc2), eq(TEST_CASE_ID), eq(DocumentType.DSS_OTHER), eq(CaseDocumentType.APPLICANT)
         );
     }
 
@@ -262,17 +264,17 @@ class CicDssUpdateCaseEventTest {
         assertThat(response.getData().getDssCaseData().getAdditionalInformation()).isNull();
 
         verify(documentsService, times(2)).buildAndSaveNewDocumentEntity(
-            any(), eq(TEST_CASE_ID), eq(false)
+            any(), eq(TEST_CASE_ID), eq(DocumentType.DSS_OTHER),  eq(CaseDocumentType.APPLICANT)
         );
         Document expectedDoc1 = getDssCaseData().getOtherInfoDocuments().getFirst().getValue().getDocumentLink();
         expectedDoc1.setCategoryId("DSS");
         Document expectedDoc2 = getDssCaseData().getOtherInfoDocuments().get(1).getValue().getDocumentLink();
         expectedDoc2.setCategoryId("DSS");
         verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
-            eq(expectedDoc1), eq(TEST_CASE_ID), eq(false)
+            eq(expectedDoc1), eq(TEST_CASE_ID), eq(DocumentType.DSS_OTHER), eq(CaseDocumentType.APPLICANT)
         );
         verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
-            eq(expectedDoc2), eq(TEST_CASE_ID), eq(false)
+            eq(expectedDoc2), eq(TEST_CASE_ID), eq(DocumentType.DSS_OTHER), eq(CaseDocumentType.APPLICANT)
         );
     }
 
@@ -299,7 +301,7 @@ class CicDssUpdateCaseEventTest {
             cicDssUpdateCaseEvent.aboutToSubmit(details, details);
 
         verify(documentsService, times(2)).buildAndSaveNewDocumentEntity(
-            any(), eq(TEST_CASE_ID), eq(false)
+            any(), eq(TEST_CASE_ID), eq(DocumentType.DSS_OTHER), eq(CaseDocumentType.APPLICANT)
         );
 
         assertThat(response.getData().getCicCase().getApplicantDocumentsUploaded()).isNotEmpty();
@@ -319,10 +321,10 @@ class CicDssUpdateCaseEventTest {
         Document expectedDoc2 = getDssCaseData().getOtherInfoDocuments().get(1).getValue().getDocumentLink();
         expectedDoc2.setCategoryId("DSS");
         verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
-            eq(expectedDoc1), eq(TEST_CASE_ID), eq(false)
+            eq(expectedDoc1), eq(TEST_CASE_ID), eq(DocumentType.DSS_OTHER), eq(CaseDocumentType.APPLICANT)
         );
         verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
-            eq(expectedDoc2), eq(TEST_CASE_ID), eq(false)
+            eq(expectedDoc2), eq(TEST_CASE_ID), eq(DocumentType.DSS_OTHER), eq(CaseDocumentType.APPLICANT)
         );
     }
 
@@ -399,7 +401,8 @@ class CicDssUpdateCaseEventTest {
         details.setData(caseData);
 
         doThrow(new RuntimeException("Error saving document entity to database"))
-            .when(documentsService).buildAndSaveNewDocumentEntity(any(), eq(TEST_CASE_ID), eq(false));
+            .when(documentsService).buildAndSaveNewDocumentEntity(any(), eq(TEST_CASE_ID),
+                eq(DocumentType.DSS_OTHER),  eq(CaseDocumentType.APPLICANT));
 
         AboutToStartOrSubmitResponse<CaseData, State> response =
             cicDssUpdateCaseEvent.aboutToSubmit(details, details);
@@ -409,7 +412,7 @@ class CicDssUpdateCaseEventTest {
             + getDssCaseData().getOtherInfoDocuments().getFirst().getValue().getDocumentLink().getFilename());
 
         verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
-            any(), eq(TEST_CASE_ID), eq(false)
+            any(), eq(TEST_CASE_ID), eq(DocumentType.DSS_OTHER),  eq(CaseDocumentType.APPLICANT)
         );
 
         genericTestDocument.setFilename(null);
@@ -497,11 +500,11 @@ class CicDssUpdateCaseEventTest {
             .when(documentsService).buildAndSaveNewDocumentEntity(
                 argThat(doc -> "unhappy_file.pdf".equals(doc.getFilename())
                     || "".equals(doc.getFilename())),
-                eq(TEST_CASE_ID), eq(false));
+                eq(TEST_CASE_ID), eq(DocumentType.DSS_OTHER), eq(CaseDocumentType.APPLICANT));
 
         doNothing().when(documentsService).buildAndSaveNewDocumentEntity(
             argThat(doc -> "happy_file.pdf".equals(doc.getFilename())),
-            eq(TEST_CASE_ID), eq(false));
+            eq(TEST_CASE_ID), eq(DocumentType.DSS_OTHER), eq(CaseDocumentType.APPLICANT));
 
         final AboutToStartOrSubmitResponse<CaseData, State> response =
             cicDssUpdateCaseEvent.aboutToSubmit(updatedCaseDetails, beforeDetails);

@@ -115,7 +115,8 @@ public enum DocumentType implements HasLabel {
 
     @JsonProperty("Application for an extension of time")
     @JsonAlias({"TG Docs"})
-    APPLICATION_FOR_AN_EXTENSION_OF_TIME("TG - Application for an extension of time", "Application for an extension of time", "TG"),
+    APPLICATION_FOR_AN_EXTENSION_OF_TIME("TG - Application for an extension of time", "Application for an extension of time",
+        "TG"),
 
     @JsonProperty("Application for a postponement")
     @JsonAlias({"TG Docs"})
@@ -133,10 +134,6 @@ public enum DocumentType implements HasLabel {
     @JsonAlias({"Correspondence Docs"})
     CORRESPONDENCE("Correspondence documents", "Correspondence documents", "CD"),
 
-    @JsonProperty("Stitched bundle documents")
-    @JsonAlias({"Bundle Docs"})
-    BUNDLE("Stitched bundle documents", "Stitched bundle documents", "BD"),
-
     @JsonProperty("Other-TG")
     @JsonAlias({"TG Docs"})
     OTHER_GENERAL_EVIDENCE("TG - Other", "Other-TG", "TG"),
@@ -153,9 +150,7 @@ public enum DocumentType implements HasLabel {
     @JsonAlias({"DSS Docs"})
     DSS_OTHER("DSS Other information documents", "DSS Other information documents", "DSS");
 
-
     private final String label;
     private final String type;
     private final String category;
-
 }

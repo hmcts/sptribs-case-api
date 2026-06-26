@@ -38,8 +38,9 @@ import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.common.event.page.CreateNewOrder;
 import uk.gov.hmcts.sptribs.common.event.page.EditNewOrderContentPage;
 import uk.gov.hmcts.sptribs.common.event.page.PreviewDraftOrder;
+import uk.gov.hmcts.sptribs.document.model.CaseDocumentType;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
-import uk.gov.hmcts.sptribs.document.services.DocumentsService;
+import uk.gov.hmcts.sptribs.document.service.DocumentsService;
 import uk.gov.hmcts.sptribs.notification.dispatcher.NewOrderIssuedNotification;
 
 import java.time.LocalDate;
@@ -167,7 +168,8 @@ public class CaseworkerCreateAndSendOrder implements CCDConfig<CaseData, State, 
                 documentsService.buildAndSaveNewDocumentEntity(
                     draftOrderCIC.getTemplateGeneratedDocument(),
                     details.getId(),
-                    false
+                    DocumentType.TRIBUNAL_DIRECTION,
+                    CaseDocumentType.ORDER
                 );
             } catch (RuntimeException e) {
                 errors.add(handleDocumentException(draftOrderCIC.getTemplateGeneratedDocument(), e.getMessage()));
@@ -187,7 +189,8 @@ public class CaseworkerCreateAndSendOrder implements CCDConfig<CaseData, State, 
                 documentsService.buildAndSaveNewDocumentEntity(
                     caseData.getCicCase().getOrderFile().getFirst().getValue().getDocumentLink(),
                     details.getId(),
-                    false
+                    DocumentType.TRIBUNAL_DIRECTION,
+                    CaseDocumentType.ORDER
                 );
             } catch (RuntimeException e) {
                 errors.add(handleDocumentException(caseData.getCicCase()

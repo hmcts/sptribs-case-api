@@ -38,7 +38,9 @@ import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_SERVICE_AUTH_TOKE
 @ContextConfiguration(initializers = {IdamWireMock.PropertiesInitializer.class})
 class DocumentControllerIT {
 
-    private static final String DOWNLOAD_DOCUMENT_URL = "/case/document/downloadDocument/";
+    private static final String DOWNLOAD_DOCUMENT_URL = "/cases/CIC/downloadDocument/";
+
+    //add tests for other endpoint to get docs!!!
 
     @Autowired
     private MockMvc mockMvc;

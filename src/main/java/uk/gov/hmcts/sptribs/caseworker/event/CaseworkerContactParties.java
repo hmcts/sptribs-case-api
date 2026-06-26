@@ -26,8 +26,11 @@ import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.common.event.page.PartiesToContact;
+import uk.gov.hmcts.sptribs.document.service.DocumentsService;
+import uk.gov.hmcts.sptribs.notification.NotificationHelper;
 import uk.gov.hmcts.sptribs.notification.dispatcher.ContactPartiesNotification;
 
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -68,6 +71,9 @@ public class CaseworkerContactParties implements CCDConfig<CaseData, State, User
     private final ContactPartiesSelectDocument contactPartiesSelectDocument;
 
     private final ContactPartiesNotification contactPartiesNotification;
+    private final NotificationHelper notificationHelper;
+    private final DocumentsService documentsService;
+    private static final int DOC_ATTACH_LIMIT = 10;
 
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
@@ -167,17 +173,29 @@ public class CaseworkerContactParties implements CCDConfig<CaseData, State, User
     }
 
     private void sendContactPartiesNotification(CaseDetails<CaseData, State> details, CicCase cicCase, String caseNumber) {
+
+        final Map<String, String> uploadedDocuments = notificationHelper
+            .buildDocumentList(details.getData().getContactPartiesDocuments().getDocumentList(), DOC_ATTACH_LIMIT);
+        boolean sentToApplicantSide = false;
+
         if (!CollectionUtils.isEmpty(cicCase.getNotifyPartySubject())) {
-            contactPartiesNotification.sendToSubject(details.getData(), caseNumber);
+            contactPartiesNotification.sendToSubject(details.getData(), caseNumber, uploadedDocuments);
+            sentToApplicantSide = true;
         }
         if (!CollectionUtils.isEmpty(cicCase.getNotifyPartyRepresentative())) {
-            contactPartiesNotification.sendToRepresentative(details.getData(), caseNumber);
+            contactPartiesNotification.sendToRepresentative(details.getData(), caseNumber, uploadedDocuments);
+            sentToApplicantSide = true;
         }
         if (!CollectionUtils.isEmpty(cicCase.getNotifyPartyApplicant())) {
-            contactPartiesNotification.sendToApplicant(details.getData(), caseNumber);
+            contactPartiesNotification.sendToApplicant(details.getData(), caseNumber, uploadedDocuments);
+            sentToApplicantSide = true;
         }
         if (!CollectionUtils.isEmpty(cicCase.getNotifyPartyRespondent())) {
-            contactPartiesNotification.sendToRespondent(details.getData(), caseNumber);
+            contactPartiesNotification.sendToRespondent(details.getData(), caseNumber, uploadedDocuments);
+        }
+
+        if (sentToApplicantSide) {
+            documentsService.updateDocumentsToSentViaContactParties(details.getData(), uploadedDocuments);
         }
     }
 

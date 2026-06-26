@@ -25,7 +25,9 @@ import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.common.event.page.CreateDraftOrder;
 import uk.gov.hmcts.sptribs.common.event.page.DraftOrderMainContentPage;
 import uk.gov.hmcts.sptribs.common.event.page.PreviewDraftOrder;
-import uk.gov.hmcts.sptribs.document.services.DocumentsService;
+import uk.gov.hmcts.sptribs.document.model.CaseDocumentType;
+import uk.gov.hmcts.sptribs.document.model.DocumentType;
+import uk.gov.hmcts.sptribs.document.service.DocumentsService;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -126,7 +128,8 @@ public class CaseworkerCreateDraftOrder implements CCDConfig<CaseData, State, Us
             documentsService.buildAndSaveNewDocumentEntity(
                 draftOrderCIC.getTemplateGeneratedDocument(),
                 details.getId(),
-                true
+                DocumentType.TRIBUNAL_DIRECTION,
+                CaseDocumentType.DRAFT_ORDER
             );
         } catch (RuntimeException e) {
             errors.add(handleDocumentException(draftOrderCIC.getTemplateGeneratedDocument(), e.getMessage()));

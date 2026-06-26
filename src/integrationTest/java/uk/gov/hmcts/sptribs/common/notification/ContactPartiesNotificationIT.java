@@ -120,6 +120,14 @@ public class ContactPartiesNotificationIT {
 
     @Test
     void shouldSendEmailToSubject() {
+
+        final Map<String, String> uploadedDocuments = Map.of(
+            DOC_AVAILABLE + 1, "yes",
+            CASE_DOCUMENT + 1, "0777a9cf-4be8-4664-baa2-9eb5563abaec",
+            DOC_AVAILABLE + 2, "no",
+            CASE_DOCUMENT + 2, EMPTY_PLACEHOLDER
+        );
+
         final CaseData data = CaseData.builder()
             .cicCase(CicCase.builder()
                 .contactPreferenceType(EMAIL)
@@ -130,7 +138,7 @@ public class ContactPartiesNotificationIT {
             .contactPartiesDocuments(getContactPartiesDocuments())
             .build();
 
-        contactPartiesNotification.sendToSubject(data, TEST_CASE_ID.toString());
+        contactPartiesNotification.sendToSubject(data, TEST_CASE_ID.toString(), uploadedDocuments);
 
         verify(notificationServiceCIC).sendEmail(notificationRequestCaptor.capture(), eq(TEST_CASE_ID.toString()));
 
@@ -149,16 +157,16 @@ public class ContactPartiesNotificationIT {
                 CONTACT_PARTY_INFO, "a message"
             ));
         assertThat(notificationRequest.getUploadedDocuments())
-            .containsAllEntriesOf(Map.of(
-                DOC_AVAILABLE + 1, "yes",
-                CASE_DOCUMENT + 1, "0777a9cf-4be8-4664-baa2-9eb5563abaec",
-                DOC_AVAILABLE + 2, "no",
-                CASE_DOCUMENT + 2, EMPTY_PLACEHOLDER
-            ));
+            .containsAllEntriesOf(uploadedDocuments);
     }
 
     @Test
     void shouldSendLetterToSubject() {
+
+        final Map<String, String> uploadedDocuments = Map.of(
+            "DOC", "Test-Doc"
+        );
+
         final CaseData data = CaseData.builder()
             .cicCase(CicCase.builder()
                 .contactPreferenceType(POST)
@@ -172,7 +180,7 @@ public class ContactPartiesNotificationIT {
                 .build())
             .build();
 
-        contactPartiesNotification.sendToSubject(data, TEST_CASE_ID.toString());
+        contactPartiesNotification.sendToSubject(data, TEST_CASE_ID.toString(), uploadedDocuments);
 
         verify(notificationServiceCIC).sendLetter(notificationRequestCaptor.capture(), eq(TEST_CASE_ID.toString()));
 
@@ -194,6 +202,15 @@ public class ContactPartiesNotificationIT {
 
     @Test
     void shouldSendEmailToApplicant() {
+
+        final Map<String, String> uploadedDocuments = Map.of(
+            DOC_AVAILABLE + 1, "yes",
+            CASE_DOCUMENT + 1, "0777a9cf-4be8-4664-baa2-9eb5563abaec",
+            DOC_AVAILABLE + 2, "no",
+            CASE_DOCUMENT + 2, EMPTY_PLACEHOLDER
+        );
+
+
         final CaseData data = CaseData.builder()
             .cicCase(CicCase.builder()
                 .applicantContactDetailsPreference(EMAIL)
@@ -205,7 +222,7 @@ public class ContactPartiesNotificationIT {
             .contactPartiesDocuments(getContactPartiesDocuments())
             .build();
 
-        contactPartiesNotification.sendToApplicant(data, TEST_CASE_ID.toString());
+        contactPartiesNotification.sendToApplicant(data, TEST_CASE_ID.toString(), uploadedDocuments);
 
         verify(notificationServiceCIC).sendEmail(notificationRequestCaptor.capture(), eq(TEST_CASE_ID.toString()));
 
@@ -224,16 +241,15 @@ public class ContactPartiesNotificationIT {
                 CONTACT_PARTY_INFO, "a message"
             ));
         assertThat(notificationRequest.getUploadedDocuments())
-            .containsAllEntriesOf(Map.of(
-                DOC_AVAILABLE + 1, "yes",
-                CASE_DOCUMENT + 1, "0777a9cf-4be8-4664-baa2-9eb5563abaec",
-                DOC_AVAILABLE + 2, "no",
-                CASE_DOCUMENT + 2, EMPTY_PLACEHOLDER
-            ));
+            .containsAllEntriesOf(uploadedDocuments);
     }
 
     @Test
     void shouldSendLetterToApplicant() {
+        final Map<String, String> uploadedDocuments = Map.of(
+            "DOC", "Test-Doc"
+        );
+
         final CaseData data = CaseData.builder()
             .cicCase(CicCase.builder()
                 .applicantContactDetailsPreference(POST)
@@ -250,7 +266,7 @@ public class ContactPartiesNotificationIT {
             .contactPartiesDocuments(getContactPartiesDocuments())
             .build();
 
-        contactPartiesNotification.sendToApplicant(data, TEST_CASE_ID.toString());
+        contactPartiesNotification.sendToApplicant(data, TEST_CASE_ID.toString(), uploadedDocuments);
 
         verify(notificationServiceCIC).sendLetter(notificationRequestCaptor.capture(), eq(TEST_CASE_ID.toString()));
 
@@ -272,6 +288,14 @@ public class ContactPartiesNotificationIT {
 
     @Test
     void shouldSendEmailToRepresentative() {
+
+        Map<String, String> uploadedDocuments = Map.of(
+            DOC_AVAILABLE + 1, "yes",
+            CASE_DOCUMENT + 1, "0777a9cf-4be8-4664-baa2-9eb5563abaec",
+            DOC_AVAILABLE + 2, "no",
+            CASE_DOCUMENT + 2, EMPTY_PLACEHOLDER
+        );
+
         final CaseData data = CaseData.builder()
             .cicCase(CicCase.builder()
                 .fullName("Subject Name")
@@ -283,7 +307,7 @@ public class ContactPartiesNotificationIT {
             .contactPartiesDocuments(getContactPartiesDocuments())
             .build();
 
-        contactPartiesNotification.sendToRepresentative(data, TEST_CASE_ID.toString());
+        contactPartiesNotification.sendToRepresentative(data, TEST_CASE_ID.toString(), uploadedDocuments);
 
         verify(notificationServiceCIC).sendEmail(notificationRequestCaptor.capture(), eq(TEST_CASE_ID.toString()));
 
@@ -302,16 +326,16 @@ public class ContactPartiesNotificationIT {
                 CONTACT_PARTY_INFO, "a message"
             ));
         assertThat(notificationRequest.getUploadedDocuments())
-            .containsAllEntriesOf(Map.of(
-                DOC_AVAILABLE + 1, "yes",
-                CASE_DOCUMENT + 1, "0777a9cf-4be8-4664-baa2-9eb5563abaec",
-                DOC_AVAILABLE + 2, "no",
-                CASE_DOCUMENT + 2, EMPTY_PLACEHOLDER
-            ));
+            .containsAllEntriesOf(uploadedDocuments);
     }
 
     @Test
     void shouldSendLetterToRepresentative() {
+
+        final Map<String, String> uploadedDocuments = Map.of(
+            "DOC", "Test-Doc"
+        );
+
         final CaseData data = CaseData.builder()
             .cicCase(CicCase.builder()
                 .fullName("Subject Name")
@@ -327,7 +351,7 @@ public class ContactPartiesNotificationIT {
                 .build())
             .build();
 
-        contactPartiesNotification.sendToRepresentative(data, TEST_CASE_ID.toString());
+        contactPartiesNotification.sendToRepresentative(data, TEST_CASE_ID.toString(), uploadedDocuments);
 
         verify(notificationServiceCIC).sendLetter(notificationRequestCaptor.capture(), eq(TEST_CASE_ID.toString()));
 
@@ -358,7 +382,7 @@ public class ContactPartiesNotificationIT {
                 .build())
             .build();
 
-        contactPartiesNotification.sendToRespondent(data, TEST_CASE_ID.toString());
+        contactPartiesNotification.sendToRespondent(data, TEST_CASE_ID.toString(), Map.of());
 
         verify(notificationServiceCIC).sendEmail(notificationRequestCaptor.capture(), eq(TEST_CASE_ID.toString()));
 
@@ -380,6 +404,14 @@ public class ContactPartiesNotificationIT {
 
     @Test
     void shouldSendEmailToRespondentWithDocumentsAttached() {
+
+        Map<String, String> uploadedDocuments = Map.of(
+            DOC_AVAILABLE + 1, "yes",
+            CASE_DOCUMENT + 1, "0777a9cf-4be8-4664-baa2-9eb5563abaec",
+            DOC_AVAILABLE + 2, "no",
+            CASE_DOCUMENT + 2, EMPTY_PLACEHOLDER
+        );
+
         final CaseData data = CaseData.builder()
             .cicCase(CicCase.builder()
                 .fullName("Subject Name")
@@ -390,7 +422,7 @@ public class ContactPartiesNotificationIT {
             .contactPartiesDocuments(getContactPartiesDocuments())
             .build();
 
-        contactPartiesNotification.sendToRespondent(data, TEST_CASE_ID.toString());
+        contactPartiesNotification.sendToRespondent(data, TEST_CASE_ID.toString(), uploadedDocuments);
 
         verify(notificationServiceCIC).sendEmail(notificationRequestCaptor.capture(), eq(TEST_CASE_ID.toString()));
 
@@ -409,12 +441,7 @@ public class ContactPartiesNotificationIT {
                 CONTACT_PARTY_INFO, "a message"
             ));
         assertThat(notificationRequest.getUploadedDocuments())
-            .containsAllEntriesOf(Map.of(
-                DOC_AVAILABLE + 1, "yes",
-                CASE_DOCUMENT + 1, "0777a9cf-4be8-4664-baa2-9eb5563abaec",
-                DOC_AVAILABLE + 2, "no",
-                CASE_DOCUMENT + 2, EMPTY_PLACEHOLDER
-            ));
+            .containsAllEntriesOf(uploadedDocuments);
     }
 
     @Test
@@ -428,7 +455,7 @@ public class ContactPartiesNotificationIT {
                 .build())
             .build();
 
-        contactPartiesNotification.sendToTribunal(data, TEST_CASE_ID.toString());
+        contactPartiesNotification.sendToTribunal(data, TEST_CASE_ID.toString(), Map.of());
 
         verify(notificationServiceCIC).sendEmail(notificationRequestCaptor.capture(), eq(TEST_CASE_ID.toString()));
 
@@ -450,6 +477,14 @@ public class ContactPartiesNotificationIT {
 
     @Test
     void shouldSendEmailToTribunalWithDocumentsAttached() {
+
+        Map<String, String> uploadedDocuments = Map.of(
+            DOC_AVAILABLE + 1, "yes",
+            CASE_DOCUMENT + 1, "0777a9cf-4be8-4664-baa2-9eb5563abaec",
+            DOC_AVAILABLE + 2, "no",
+            CASE_DOCUMENT + 2, EMPTY_PLACEHOLDER
+        );
+
         final CaseData data = CaseData.builder()
             .cicCase(CicCase.builder()
                 .fullName("Subject Name")
@@ -460,7 +495,7 @@ public class ContactPartiesNotificationIT {
             .contactPartiesDocuments(getContactPartiesDocuments())
             .build();
 
-        contactPartiesNotification.sendToTribunal(data, TEST_CASE_ID.toString());
+        contactPartiesNotification.sendToTribunal(data, TEST_CASE_ID.toString(), uploadedDocuments);
 
         verify(notificationServiceCIC).sendEmail(notificationRequestCaptor.capture(), eq(TEST_CASE_ID.toString()));
 
@@ -479,12 +514,7 @@ public class ContactPartiesNotificationIT {
                 CONTACT_PARTY_INFO, "a message"
             ));
         assertThat(notificationRequest.getUploadedDocuments())
-            .containsAllEntriesOf(Map.of(
-                DOC_AVAILABLE + 1, "yes",
-                CASE_DOCUMENT + 1, "0777a9cf-4be8-4664-baa2-9eb5563abaec",
-                DOC_AVAILABLE + 2, "no",
-                CASE_DOCUMENT + 2, EMPTY_PLACEHOLDER
-            ));
+            .containsAllEntriesOf(uploadedDocuments);
     }
 
     private ContactPartiesDocuments getContactPartiesDocuments() {

@@ -20,7 +20,6 @@ import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.common.config.WebMvcConfig;
 import uk.gov.hmcts.sptribs.document.bundling.model.Bundle;
 import uk.gov.hmcts.sptribs.document.bundling.model.BundleIdAndTimestamp;
-import uk.gov.hmcts.sptribs.document.model.DocumentType;
 import uk.gov.hmcts.sptribs.testutil.IdamWireMock;
 
 import java.time.LocalDateTime;
@@ -96,15 +95,12 @@ public class CaseworkerRemoveBundlesIT {
 
         Document stitchedDocument1 = Document.builder()
             .filename("1-cicBundle.pdf")
-            .categoryId(DocumentType.BUNDLE.getCategory())
             .build();
         Document stitchedDocument2 = Document.builder()
             .filename("2-cicBundle.pdf")
-            .categoryId(DocumentType.BUNDLE.getCategory())
             .build();
         Document stitchedDocument3 = Document.builder()
             .filename("3-cicBundle.pdf")
-            .categoryId(DocumentType.BUNDLE.getCategory())
             .build();
 
         final CaseData caseData = caseData();
@@ -238,15 +234,12 @@ public class CaseworkerRemoveBundlesIT {
 
         Document stitchedDocument1 = Document.builder()
             .filename("1-cicBundle.pdf")
-            .categoryId(DocumentType.BUNDLE.getCategory())
             .build();
         Document stitchedDocument2 = Document.builder()
             .filename("2-cicBundle.pdf")
-            .categoryId(DocumentType.BUNDLE.getCategory())
             .build();
         Document stitchedDocument3 = Document.builder()
             .filename("3-cicBundle.pdf")
-            .categoryId(DocumentType.BUNDLE.getCategory())
             .build();
 
         final CaseData caseData = caseData();

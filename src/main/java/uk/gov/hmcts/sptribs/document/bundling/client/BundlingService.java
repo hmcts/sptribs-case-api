@@ -17,9 +17,9 @@ import uk.gov.hmcts.sptribs.document.bundling.model.BundleFolder;
 import uk.gov.hmcts.sptribs.document.bundling.model.BundlePaginationStyle;
 import uk.gov.hmcts.sptribs.document.bundling.model.Callback;
 import uk.gov.hmcts.sptribs.document.bundling.model.MultiBundleConfig;
-import uk.gov.hmcts.sptribs.document.model.DocumentType;
+import uk.gov.hmcts.sptribs.document.model.CaseDocumentType;
 import uk.gov.hmcts.sptribs.document.model.PageNumberFormat;
-import uk.gov.hmcts.sptribs.document.services.DocumentsService;
+import uk.gov.hmcts.sptribs.document.service.DocumentsService;
 
 import java.time.Clock;
 import java.time.LocalDateTime;
@@ -158,17 +158,21 @@ public class BundlingService {
 
     private List<Bundle> getBundleFromResponse(List<LinkedHashMap<String, Object>> response, Long caseNumber) {
         List<Bundle> bundleList = new ArrayList<>();
+
         Optional.ofNullable(response).ifPresent(list ->
             list.forEach(res -> {
                 LinkedHashMap<String, Object> objectLinkedHashMap = (LinkedHashMap<String, Object>) res.get(VALUE);
                 Bundle bundle = buildBundle(objectLinkedHashMap, caseNumber);
 
                 bundle.setFolders(buildBundleFolderListValues(buildBundleFolders(objectLinkedHashMap)));
+
                 if (objectLinkedHashMap.get(DOCUMENTS) != null) {
                     List<Map<String, Object>> documentsFromResponse = (List<Map<String, Object>>) objectLinkedHashMap.get(DOCUMENTS);
                     bundle.setDocuments(buildBundleDocumentListValues(getDocuments(documentsFromResponse)));
                 }
+
                 bundleList.add(bundle);
+
             }));
 
         return bundleList;
@@ -198,13 +202,25 @@ public class BundlingService {
     }
 
     private Bundle buildBundle(LinkedHashMap<String, Object> objectLinkedHashMap, Long caseNumber) {
+
+        Document stitchedDocument = getStitchedDocument(objectLinkedHashMap, caseNumber);
+
+        if (stitchedDocument != null) {
+            documentsService.buildAndSaveNewDocumentEntity(
+                stitchedDocument,
+                caseNumber,
+                null,
+                CaseDocumentType.BUNDLE
+            );
+        }
+
         return Bundle.builder()
             .stitchStatus(NEW)
             .description(MapUtils.getString(objectLinkedHashMap, DESCRIPTION, ""))
             .id(MapUtils.getString(objectLinkedHashMap, ID, ""))
             .dateAndTime(LocalDateTime.now(clock))
             .title(MapUtils.getString(objectLinkedHashMap, TITLE, ""))
-            .stitchedDocument(getStitchedDocument(objectLinkedHashMap, caseNumber))
+            .stitchedDocument(stitchedDocument)
             .paginationStyle(BundlePaginationStyle.valueOf(
                 MapUtils.getObject(objectLinkedHashMap, PAGINATION_STYLE, BundlePaginationStyle.off).toString()))
             .pageNumberFormat(PageNumberFormat.valueOf(
@@ -221,20 +237,11 @@ public class BundlingService {
 
         LinkedHashMap<String, Object> stitchedDocMap = (LinkedHashMap<String, Object>) objectLinkedHashMap.get(STITCHED_DOCUMENT);
 
-        Document stitchedDocument = Document.builder()
+        return Document.builder()
             .url(MapUtils.getString(stitchedDocMap, DOCUMENT_URL, ""))
             .binaryUrl(MapUtils.getString(stitchedDocMap, DOCUMENT_BINARY_URL, ""))
             .filename(MapUtils.getString(stitchedDocMap, DOCUMENT_FILENAME, ""))
-            .categoryId(DocumentType.BUNDLE.getCategory())
             .build();
-
-        documentsService.buildAndSaveNewDocumentEntity(
-            stitchedDocument,
-            caseNumber,
-            false
-        );
-
-        return stitchedDocument;
     }
 
     private List<BundleDocument> getDocuments(List<Map<String, Object>> documentsList) {

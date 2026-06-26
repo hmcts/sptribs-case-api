@@ -1,4 +1,4 @@
-package uk.gov.hmcts.sptribs.mapper;
+package uk.gov.hmcts.sptribs.controllers.mapper;
 
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.sptribs.common.repositories.model.CicaCaseEntity;

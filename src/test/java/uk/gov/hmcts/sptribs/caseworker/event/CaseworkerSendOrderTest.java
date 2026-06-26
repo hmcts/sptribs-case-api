@@ -37,7 +37,9 @@ import uk.gov.hmcts.sptribs.ciccase.model.SubjectCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.ciccase.model.access.Permissions;
 import uk.gov.hmcts.sptribs.document.model.CICDocument;
-import uk.gov.hmcts.sptribs.document.services.DocumentsService;
+import uk.gov.hmcts.sptribs.document.model.CaseDocumentType;
+import uk.gov.hmcts.sptribs.document.model.DocumentType;
+import uk.gov.hmcts.sptribs.document.service.DocumentsService;
 import uk.gov.hmcts.sptribs.notification.dispatcher.NewOrderIssuedNotification;
 
 import java.time.LocalDate;
@@ -723,7 +725,7 @@ class CaseworkerSendOrderTest {
         caseDetails.setData(caseData);
 
         doThrow(new RuntimeException("Error saving document entity to database"))
-            .when(documentsService).setIsDraftToFalse(anyString());
+            .when(documentsService).updateDocumentToNonDraft(anyString());
 
         final AboutToStartOrSubmitResponse<CaseData, State> response = caseworkerSendOrder
             .aboutToSubmit(caseDetails, getApiCaseDetailsBefore());
@@ -754,7 +756,8 @@ class CaseworkerSendOrderTest {
         details.setData(caseData);
 
         doThrow(new RuntimeException("Error saving document entity to database"))
-            .when(documentsService).buildAndSaveNewDocumentEntity(any(), eq(TEST_CASE_ID), eq(false));
+            .when(documentsService).buildAndSaveNewDocumentEntity(any(), eq(TEST_CASE_ID),
+                eq(DocumentType.TRIBUNAL_DIRECTION), eq(CaseDocumentType.ORDER));
 
         final var response = caseworkerSendOrder.aboutToSubmit(details, getApiCaseDetailsBefore());
 
@@ -762,7 +765,7 @@ class CaseworkerSendOrderTest {
         assertThat(response.getErrors()).contains("Error saving document with filename: " + document.getFilename());
 
         verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
-            any(), eq(TEST_CASE_ID), eq(false)
+            any(), eq(TEST_CASE_ID), eq(DocumentType.TRIBUNAL_DIRECTION), eq(CaseDocumentType.ORDER)
         );
 
         document.setFilename(null);

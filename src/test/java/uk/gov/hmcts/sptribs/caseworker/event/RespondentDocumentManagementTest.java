@@ -19,9 +19,10 @@ import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.ciccase.model.access.Permissions;
 import uk.gov.hmcts.sptribs.common.service.AuditEventService;
+import uk.gov.hmcts.sptribs.document.model.CaseDocumentType;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocumentUpload;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
-import uk.gov.hmcts.sptribs.document.services.DocumentsService;
+import uk.gov.hmcts.sptribs.document.service.DocumentsService;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -104,7 +105,8 @@ class RespondentDocumentManagementTest {
 
         verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
             eq(response.getData().getAllDocManagement()
-                .getCaseworkerCICDocument().getFirst().getValue().getDocumentLink()), eq(TEST_CASE_ID), eq(false)
+                .getCaseworkerCICDocument().getFirst().getValue().getDocumentLink()), eq(TEST_CASE_ID),
+            eq(DocumentType.LINKED_DOCS), eq(CaseDocumentType.RESPONDENT)
         );
 
         assertThat(response.getData().getNewDocManagement().getCaseworkerCICDocument()).isEmpty();
@@ -153,8 +155,8 @@ class RespondentDocumentManagementTest {
             respondentDocumentManagement.aboutToSubmit(updatedCaseDetails, beforeDetails);
 
         verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
-            eq(response.getData().getInitialCicaDocuments().getFirst().getValue().getDocumentLink()), eq(TEST_CASE_ID), eq(false)
-        );
+            eq(response.getData().getInitialCicaDocuments().getFirst().getValue().getDocumentLink()), eq(TEST_CASE_ID),
+            eq(DocumentType.LINKED_DOCS), eq(CaseDocumentType.RESPONDENT));
 
         assertThat(response.getData().getInitialCicaDocuments()).hasSize(1);
         assertThat(response.getData().getInitialCicaDocuments().getFirst().getValue().getDocumentLink().getFilename())
@@ -186,7 +188,8 @@ class RespondentDocumentManagementTest {
 
         verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
             eq(response.getData().getFurtherUploadedDocuments()
-                .getFirst().getValue().getDocumentLink()), eq(TEST_CASE_ID), eq(false)
+                .getFirst().getValue().getDocumentLink()), eq(TEST_CASE_ID),
+            eq(DocumentType.LINKED_DOCS), eq(CaseDocumentType.RESPONDENT)
         );
 
         assertThat(response.getData().getFurtherUploadedDocuments()).hasSize(1);
@@ -221,7 +224,8 @@ class RespondentDocumentManagementTest {
             respondentDocumentManagement.aboutToSubmit(updatedCaseDetails, beforeDetails);
 
         verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
-            eq(response.getData().getFurtherUploadedDocuments().get(1).getValue().getDocumentLink()), eq(TEST_CASE_ID), eq(false)
+            eq(response.getData().getFurtherUploadedDocuments().get(1).getValue().getDocumentLink()), eq(TEST_CASE_ID),
+            eq(DocumentType.LINKED_DOCS), eq(CaseDocumentType.RESPONDENT)
         );
 
         assertThat(response.getData().getFurtherUploadedDocuments()).hasSize(2);
@@ -253,7 +257,8 @@ class RespondentDocumentManagementTest {
 
         verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
             eq(response.getData().getAllDocManagement()
-                .getCaseworkerCICDocument().getFirst().getValue().getDocumentLink()), eq(TEST_CASE_ID), eq(false)
+                .getCaseworkerCICDocument().getFirst().getValue().getDocumentLink()), eq(TEST_CASE_ID),
+            eq(DocumentType.LINKED_DOCS), eq(CaseDocumentType.RESPONDENT)
         );
 
         assertThat(response.getData().getInitialCicaDocuments()).isNull();
@@ -278,7 +283,8 @@ class RespondentDocumentManagementTest {
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
 
         doThrow(new RuntimeException("Error saving document entity to database"))
-            .when(documentsService).buildAndSaveNewDocumentEntity(any(), eq(TEST_CASE_ID), eq(false));
+            .when(documentsService).buildAndSaveNewDocumentEntity(any(), eq(TEST_CASE_ID),
+                eq(DocumentType.LINKED_DOCS), eq(CaseDocumentType.RESPONDENT));
 
         AboutToStartOrSubmitResponse<CaseData, State> response =
             respondentDocumentManagement.aboutToSubmit(updatedCaseDetails, beforeDetails);
@@ -288,7 +294,7 @@ class RespondentDocumentManagementTest {
             + caseData.getAllDocManagement().getCaseworkerCICDocument().getFirst().getValue().getDocumentLink().getFilename());
 
         verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
-            any(), eq(TEST_CASE_ID), eq(false)
+            any(), eq(TEST_CASE_ID), eq(DocumentType.LINKED_DOCS), eq(CaseDocumentType.RESPONDENT)
         );
 
         caseData.setNewDocManagement(DocumentManagement.builder()
@@ -332,11 +338,11 @@ class RespondentDocumentManagementTest {
             .when(documentsService).buildAndSaveNewDocumentEntity(
                 argThat(doc -> "unhappy_file.pdf".equals(doc.getFilename())
                     || "".equals(doc.getFilename())),
-                eq(TEST_CASE_ID), eq(false));
+                eq(TEST_CASE_ID), eq(DocumentType.LINKED_DOCS), eq(CaseDocumentType.RESPONDENT));
 
         doNothing().when(documentsService).buildAndSaveNewDocumentEntity(
             argThat(doc -> "happy_file.pdf".equals(doc.getFilename())),
-            eq(TEST_CASE_ID), eq(false));
+            eq(TEST_CASE_ID), eq(DocumentType.LINKED_DOCS), eq(CaseDocumentType.RESPONDENT));
 
         AboutToStartOrSubmitResponse<CaseData, State> response =
             respondentDocumentManagement.aboutToSubmit(updatedCaseDetails, beforeDetails);
@@ -344,13 +350,13 @@ class RespondentDocumentManagementTest {
         verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
             eq(Document.builder().filename("")
                 .categoryId("L").build()),
-            eq(TEST_CASE_ID), eq(false)
+            eq(TEST_CASE_ID), eq(DocumentType.LINKED_DOCS), eq(CaseDocumentType.RESPONDENT)
         );
 
         verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
             eq(Document.builder().filename("unhappy_file.pdf")
                 .categoryId("L").build()),
-            eq(TEST_CASE_ID), eq(false)
+            eq(TEST_CASE_ID), eq(DocumentType.LINKED_DOCS), eq(CaseDocumentType.RESPONDENT)
         );
 
         verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
@@ -358,7 +364,7 @@ class RespondentDocumentManagementTest {
                 .url("http://example.com/happy_file.pdf")
                 .binaryUrl("http://example.com/happy_file.pdf/binary")
                 .categoryId("L").build()),
-            eq(TEST_CASE_ID), eq(false)
+            eq(TEST_CASE_ID), eq(DocumentType.LINKED_DOCS), eq(CaseDocumentType.RESPONDENT)
         );
 
         assertThat(response.getErrors()).hasSize(2);

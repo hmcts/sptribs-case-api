@@ -49,6 +49,7 @@ public class CaseworkerContactPartiesFT extends FunctionalTestSuite {
     @Test
     public void shouldSendNotificationsInSubmittedCallback() throws Exception {
 
+        //add a test here when our document gets updated!
         final Map<String, Object> caseData = caseData(SUBMITTED_REQUEST);
 
         final Response response = triggerCallback(caseData, CASEWORKER_CONTACT_PARTIES, SUBMITTED_URL);

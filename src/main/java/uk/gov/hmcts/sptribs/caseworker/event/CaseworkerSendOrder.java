@@ -32,8 +32,9 @@ import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
+import uk.gov.hmcts.sptribs.document.model.CaseDocumentType;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
-import uk.gov.hmcts.sptribs.document.services.DocumentsService;
+import uk.gov.hmcts.sptribs.document.service.DocumentsService;
 import uk.gov.hmcts.sptribs.notification.dispatcher.NewOrderIssuedNotification;
 
 import java.time.LocalDate;
@@ -80,7 +81,6 @@ public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole>
     private final NewOrderIssuedNotification newOrderIssuedNotification;
     private final SendOrderOrderDueDates orderDueDates;
     private final DocumentsService documentsService;
-
 
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
@@ -162,7 +162,7 @@ public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole>
                     order.setDraftOrder(selectedDraftOrder);
 
                     try {
-                        documentsService.setIsDraftToFalse(order.getDraftOrder().getTemplateGeneratedDocument().getBinaryUrl());
+                        documentsService.updateDocumentToNonDraft(order.getDraftOrder().getTemplateGeneratedDocument().getBinaryUrl());
                     } catch (RuntimeException e) {
                         log.error("Document entity (from draft order) with filename {} could not be updated: {}",
                             order.getDraftOrder().getTemplateGeneratedDocument().getFilename(), e.getMessage());
@@ -178,7 +178,8 @@ public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole>
                 documentsService.buildAndSaveNewDocumentEntity(
                     caseData.getCicCase().getOrderTemplateIssued(),
                     details.getId(),
-                    false
+                    DocumentType.TRIBUNAL_DIRECTION,
+                    CaseDocumentType.ORDER
                 );
             } catch (RuntimeException e) {
                 errors.add(handleDocumentException(caseData.getCicCase().getOrderTemplateIssued(), e.getMessage()));
