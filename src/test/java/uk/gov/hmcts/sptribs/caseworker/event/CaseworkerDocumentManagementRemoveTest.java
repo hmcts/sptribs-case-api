@@ -3,6 +3,7 @@ package uk.gov.hmcts.sptribs.caseworker.event;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.ccd.sdk.ConfigBuilderImpl;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
@@ -24,11 +25,15 @@ import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.document.model.CICDocument;
+import uk.gov.hmcts.sptribs.document.service.DocumentsService;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigBuilder;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.getEventsFrom;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID;
@@ -47,6 +52,9 @@ public class CaseworkerDocumentManagementRemoveTest {
 
     @InjectMocks
     private ShowCaseDocuments showCaseDocuments;
+
+    @Mock
+    private DocumentsService documentsService;
 
     @Test
     void shouldAddConfigurationToConfigBuilder() {
@@ -161,6 +169,7 @@ public class CaseworkerDocumentManagementRemoveTest {
         SubmittedCallbackResponse documentMgmtResponse = caseworkerDocumentManagementRemove.submitted(updatedCaseDetails, beforeDetails);
 
         //Then
+        verify(documentsService, times(12)).removeEntryFromDocumentTableByBinaryURL(anyString());
         assertThat(midResponse).isNotNull();
         assertThat(response).isNotNull();
         assertThat(documentMgmtResponse).isNotNull();
@@ -234,6 +243,7 @@ public class CaseworkerDocumentManagementRemoveTest {
         SubmittedCallbackResponse documentMgmtResponse = caseworkerDocumentManagementRemove.submitted(updatedCaseDetails, beforeDetails);
 
         //Then
+        verify(documentsService, times(7)).removeEntryFromDocumentTableByBinaryURL(anyString());
         assertThat(start).isNotNull();
         assertThat(midResponse).isNotNull();
         assertThat(response).isNotNull();
