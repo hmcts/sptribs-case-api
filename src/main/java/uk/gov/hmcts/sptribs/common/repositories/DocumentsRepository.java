@@ -26,27 +26,30 @@ public interface DocumentsRepository extends JpaRepository<DocumentEntity, Integ
     @Query("""
         update DocumentEntity d
         set d.documentTypeName = :documentTypeName,
-            d.caseDocumentTypeId = :caseDocumentTypeId,
             d.updatedAt = current_instant()
         where d.documentBinaryUrl = :documentBinaryUrl
         """)
-    int setCategoryIdAndDocumentTypeIdByDocumentBinaryUrl(
+    int setDocumentTypeNameByDocumentBinaryUrl(
         @Param("documentBinaryUrl") String documentBinaryUrl,
-        @Param("documentTypeName") String documentTypeName,
-        @Param("caseDocumentTypeId") Long caseDocumentTypeId
+        @Param("documentTypeName") String documentTypeName
     );
 
-    @Modifying
-    @Query("update DocumentEntity d set d.isDraft = false, d.updatedAt = current_instant() where d.documentBinaryUrl = :documentBinaryUrl")
-    void setIsDraftToFalseByDocumentBinaryUrl(@Param("documentBinaryUrl") String documentBinaryUrl);
+    @Query("""
+        update DocumentEntity d
+        set d.caseDocumentTypeId = :caseDocumentTypeId
+        where d.documentBinaryUrl = :documentBinaryUrl
+        """)
+    void updateCaseDocumentTypeIdByDocumentBinaryUrl(
+        @Param("documentBinaryUrl") String documentBinaryUrl,
+        @Param("caseDocumentTypeId") Long caseDocumentTypeId
+    );
 
     @Query("""
             SELECT d
             FROM DocumentEntity d
             WHERE d.caseReferenceNumber = :caseReferenceNumber
-              AND d.isDraft = false
             ORDER BY d.savedAt DESC
         """)
-    List<DocumentEntity> findAllNonDraftDocumentsByCaseReference(
+    List<DocumentEntity> findAllDocumentsByCaseReference(
         @Param("caseReferenceNumber") Long caseReferenceNumber);
 }

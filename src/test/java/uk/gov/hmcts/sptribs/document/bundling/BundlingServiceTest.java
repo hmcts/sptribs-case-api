@@ -28,6 +28,7 @@ import uk.gov.hmcts.sptribs.document.bundling.model.BundleFolder;
 import uk.gov.hmcts.sptribs.document.bundling.model.BundlePaginationStyle;
 import uk.gov.hmcts.sptribs.document.bundling.model.Callback;
 import uk.gov.hmcts.sptribs.document.bundling.model.MultiBundleConfig;
+import uk.gov.hmcts.sptribs.document.model.CaseDocumentType;
 import uk.gov.hmcts.sptribs.document.model.PageNumberFormat;
 import uk.gov.hmcts.sptribs.document.service.DocumentsService;
 
@@ -170,11 +171,11 @@ public class BundlingServiceTest {
 
         if (expectedBundle.getStitchedDocument() != null) {
             verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
-                any(), eq(TEST_CASE_ID), eq(false), eq(null), eq(true)
+                any(), eq(TEST_CASE_ID), eq(null), eq(CaseDocumentType.BUNDLE)
             );
 
             verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
-                eq(expectedBundle.getStitchedDocument()), eq(TEST_CASE_ID), eq(false), eq(null), eq(true)
+                eq(expectedBundle.getStitchedDocument()), eq(TEST_CASE_ID), eq(null), eq(CaseDocumentType.BUNDLE)
             );
         }
 
@@ -262,7 +263,7 @@ public class BundlingServiceTest {
         }
 
         verify(documentsService, times(numberOfStitchedDocuments)).buildAndSaveNewDocumentEntity(
-            eq(expectedStitchedBundle), eq(TEST_CASE_ID), eq(false), eq(null), eq(true)
+            eq(expectedStitchedBundle), eq(TEST_CASE_ID), eq(null), eq(CaseDocumentType.BUNDLE)
         );
 
         assertThat(result).hasSize(expectedBundles.size()).containsAll(expectedBundles);

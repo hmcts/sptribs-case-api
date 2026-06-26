@@ -42,7 +42,6 @@ public class CaseDocumentsFTDataManager extends FunctionalTestDataManager {
                     .documentFilename(rs.getString("document_filename"))
                     .documentTypeName(rs.getString("document_type_name"))
                     .caseDocumentTypeId(rs.getLong("case_document_type_id"))
-                    .isDraft(rs.getBoolean("is_draft"))
                     .sentToApplicantViaContactParties(rs.getBoolean("sent_to_applicant_via_contact_parties"))
                     .updatedAt(rs.getTimestamp("updated_at").toInstant()
                         .atOffset(ZoneId.systemDefault().getRules().getOffset(LocalDateTime.now())))
@@ -63,10 +62,9 @@ public class CaseDocumentsFTDataManager extends FunctionalTestDataManager {
             + ", document_filename"
             + ", document_type_name"
             + ", case_document_type_id"
-            + ", is_draft"
             + ", sent_to_applicant_via_contact_parties"
             + ", updated_at"
-            + ") VALUES (?, ?, ?, ?, ?, ?, CAST(2 AS bigint), ?, ?, ?)";
+            + ") VALUES (?, ?, ?, ?, ?, ?, CAST(3 AS bigint), ?, ?)";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setLong(1, reference);
             stmt.setTimestamp(2, Timestamp.valueOf(LocalDateTime.now()));
@@ -77,8 +75,7 @@ public class CaseDocumentsFTDataManager extends FunctionalTestDataManager {
             stmt.setString(5, "mockFile.pdf");
             stmt.setString(6, "HOSPITAL_RECORDS");
             stmt.setBoolean(7, false);
-            stmt.setBoolean(8, false);
-            stmt.setTimestamp(9, Timestamp.valueOf(LocalDateTime.now()));
+            stmt.setTimestamp(8, Timestamp.valueOf(LocalDateTime.now()));
             stmt.executeUpdate();
         }
     }

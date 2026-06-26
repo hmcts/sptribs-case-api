@@ -19,6 +19,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.service.CcdSupplementaryDataService;
 import uk.gov.hmcts.sptribs.common.service.SubmissionService;
+import uk.gov.hmcts.sptribs.document.model.CaseDocumentType;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocumentUpload;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
@@ -291,11 +292,11 @@ class CreateCaseTest {
             .isEqualTo("# Case Created \n## Case reference number: \n## 1616-5914-0147-3378");
 
         verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
-            any(), eq(TEST_CASE_ID), eq(false), eq(DocumentType.DSS_TRIBUNAL_FORM), eq(false)
+            any(), eq(TEST_CASE_ID), eq(DocumentType.DSS_TRIBUNAL_FORM), eq(CaseDocumentType.CASEWORKER)
         );
 
         verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
-            any(), eq(TEST_CASE_ID), eq(false), eq(DocumentType.DSS_SUPPORTING), eq(false)
+            any(), eq(TEST_CASE_ID), eq(DocumentType.DSS_SUPPORTING), eq(CaseDocumentType.CASEWORKER)
         );
     }
 
@@ -464,8 +465,8 @@ class CreateCaseTest {
         caseDetails.setId(TEST_CASE_ID);
 
         doThrow(new RuntimeException("Error saving document entity to database"))
-            .when(documentsService).buildAndSaveNewDocumentEntity(any(), eq(TEST_CASE_ID), eq(false),
-                eq(DocumentType.DSS_TRIBUNAL_FORM), eq(false));
+            .when(documentsService).buildAndSaveNewDocumentEntity(any(), eq(TEST_CASE_ID),
+                eq(DocumentType.DSS_TRIBUNAL_FORM), eq(CaseDocumentType.CASEWORKER));
 
         SubmittedCallbackResponse response =
             createCase.submitted(caseDetails, caseDetails);
@@ -474,7 +475,7 @@ class CreateCaseTest {
             .contains(format("# Create case notification failed %n## Please resend the notification"));
 
         verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
-            any(), eq(TEST_CASE_ID), eq(false), eq(DocumentType.DSS_TRIBUNAL_FORM), eq(false)
+            any(), eq(TEST_CASE_ID), eq(DocumentType.DSS_TRIBUNAL_FORM), eq(CaseDocumentType.CASEWORKER)
         );
     }
 }
