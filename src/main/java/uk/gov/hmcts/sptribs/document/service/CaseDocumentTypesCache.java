@@ -17,7 +17,7 @@ public class CaseDocumentTypesCache {
 
     private final CaseDocumentTypesRepository caseDocumentTypesRepository;
 
-    private volatile Map<CaseDocumentType, Long> caseDocumentTypeIdMap = Map.of();
+    private Map<CaseDocumentType, Long> caseDocumentTypeIdMap = Map.of();
 
     public void reload() {
         Map<CaseDocumentType, Long> loadedTypes = caseDocumentTypesRepository.findAll()
