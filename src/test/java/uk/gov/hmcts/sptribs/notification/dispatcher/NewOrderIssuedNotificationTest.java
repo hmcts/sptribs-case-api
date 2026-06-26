@@ -309,7 +309,8 @@ public class NewOrderIssuedNotificationTest {
 
     private CaseData getMockCaseData() {
         CicCase cicCase = CicCase.builder()
-            .fullName("fullName").caseNumber(TEST_CASE_ID.toString())
+            .fullName("fullName")
+            .caseNumber(TEST_CASE_ID.toString())
             .build();
 
         return CaseData.builder()

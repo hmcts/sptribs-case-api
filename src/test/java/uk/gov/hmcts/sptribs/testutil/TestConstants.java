@@ -1,6 +1,7 @@
 package uk.gov.hmcts.sptribs.testutil;
 
 import uk.gov.hmcts.ccd.sdk.type.AddressGlobalUK;
+import uk.gov.hmcts.sptribs.caseworker.model.DateModel;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -172,6 +173,10 @@ public final class TestConstants {
 
     public static final String ST_CIC_JURISDICTION = "ST_CIC";
     public static final String ST_CIC_CASE_TYPE = "CriminalInjuriesCompensation";
+
+    public static final DateModel DATE_MODEL = DateModel.builder()
+        .dueDate(LocalDate.of(2026, 1, 2))
+        .build();
 
     private TestConstants() {
     }

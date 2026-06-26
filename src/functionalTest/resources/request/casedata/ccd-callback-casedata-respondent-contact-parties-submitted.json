@@ -18,12 +18,12 @@
         "documentCategory": "ApplicationForm",
         "documentEmailContent": "Lorem ipsum",
         "documentLink": {
-          "document_filename": "pdf.pdf"
+          "document_filename": "pdf.pdf",
+          "document_binary_url": "http://test-doc/documents/null/binary"
         }
       }
     }
   ],
-  "hyphenatedCaseRef": "1234-5678-9012-3456",
   "contactPartiesDocumentsDocumentList": {
     "value": [],
     "list_items": [

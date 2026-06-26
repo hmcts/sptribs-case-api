@@ -1,0 +1,51 @@
+{
+  "cicCaseCaseCategory": "Assessment",
+  "cicCaseCaseSubcategory": "other",
+  "cicCaseCaseReceivedDate": "2000-01-01",
+  "cicCasePartiesCIC": [
+    "ApplicantCIC",
+    "SubjectCIC"
+  ],
+  "cicCaseFullName": "Testing subject",
+  "cicCasePhoneNumber": "01234567891",
+  "cicCaseDateOfBirth": "2000-01-01",
+  "cicCaseAddress": {
+    "AddressLine1": "Buckingham Palace",
+    "PostTown": "London",
+    "Country": "United Kingdom",
+    "PostCode": "SW1A 1AA"
+  },
+  "cicCaseContactPreferenceType": "Email",
+  "cicCaseEmail": "subject@hmcts.net",
+  "cicCaseApplicantFullName": "Testing applicant",
+  "cicCaseApplicantPhoneNumber": "01234567892",
+  "cicCaseApplicantDateOfBirth": null,
+  "cicCaseApplicantContactDetailsPreference": "Email",
+  "cicCaseApplicantEmailAddress": "applicant@hmcts.net",
+  "cicCaseSubjectCIC": [
+    "SubjectCIC"
+  ],
+  "cicCaseApplicantCIC": [
+    "ApplicantCIC"
+  ],
+  "cicCaseApplicantDocumentsUploaded": [
+    {
+      "value": {
+        "documentEmailContent": "Lorem ipsum",
+        "documentCategory": "ApplicationForm",
+        "documentLink": {
+          "document_url": "${json-unit.any-string}",
+          "document_filename": "pdf.pdf",
+          "document_binary_url": "http://dm-store.service.core-compute.internal/documents/f3335646-6277-40af-ba66-c09365c0776e/binary",
+          "category_id": "A"
+        }
+      },
+      "id": "1"
+    }
+  ],
+  "cicCaseSchemeCic": "Year2008",
+  "cicCaseRegionCIC": "London",
+  "cicCaseClaimLinkedToCic": "No",
+  "cicCaseCompensationClaimLinkCIC": "No",
+  "cicCaseFormReceivedInTime": "Yes"
+}

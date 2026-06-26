@@ -3,8 +3,12 @@ package uk.gov.hmcts.sptribs.caseworker;
 import io.restassured.response.Response;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
+import uk.gov.hmcts.sptribs.document.model.DocumentEntity;
+import uk.gov.hmcts.sptribs.document.model.DocumentType;
+import uk.gov.hmcts.sptribs.notification.persistence.CorrespondenceEntity;
 import uk.gov.hmcts.sptribs.testutil.FunctionalTestSuite;
 
+import java.util.List;
 import java.util.Map;
 
 import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
@@ -55,6 +59,24 @@ public class CaseworkerSendOrderFT extends FunctionalTestSuite {
             .when(IGNORING_EXTRA_FIELDS)
             .when(IGNORING_ARRAY_ORDER)
             .isEqualTo(json(expectedResponse(RESPONSE)));
+
+        long testCaseRef = Long.parseLong(caseData.get("hyphenatedCaseRef").toString().replace("-", ""));
+
+        List<DocumentEntity> documentEntities = caseDocumentsFTDataManager.getDocumentEntities(testCaseRef);
+        assertThat(documentEntities).hasSize(1);
+
+        DocumentEntity firstDocumentEntity = documentEntities.getFirst();
+
+        assertThat(firstDocumentEntity.getId()).isNotNull();
+        assertThat(firstDocumentEntity.getCaseReferenceNumber()).isEqualTo(Long.parseLong(caseData.get("hyphenatedCaseRef")
+            .toString().replace("-", "")));
+        assertThat(firstDocumentEntity.getDocumentTypeName()).isEqualTo(DocumentType.TRIBUNAL_DIRECTION.name());
+        assertThat(firstDocumentEntity.getCaseDocumentTypeId()).isEqualTo(4L);
+        assertThat(firstDocumentEntity.getSavedAt()).isNotNull();
+        assertThat(firstDocumentEntity.isSentToApplicantViaContactParties()).isFalse();
+        assertThat(firstDocumentEntity.getDocumentUrl()).isNotNull();
+        assertThat(firstDocumentEntity.getDocumentFilename()).isNotNull();
+        assertThat(firstDocumentEntity.getDocumentBinaryUrl()).isNotNull();
     }
 
     @Test
@@ -68,6 +90,26 @@ public class CaseworkerSendOrderFT extends FunctionalTestSuite {
             .inPath(CONFIRMATION_HEADER)
             .isString()
             .contains("# Order sent \n## A notification has been sent to: Representative");
+
+        long testCaseRef = Long.parseLong(caseData.get("hyphenatedCaseRef").toString().replace("-", ""));
+
+        List<CorrespondenceEntity> correspondenceEntities = caseCorrespondencesFTDataManager.getCorrespondenceEntities(testCaseRef);
+        assertThat(correspondenceEntities).hasSize(1);
+
+        CorrespondenceEntity firstCorrespondenceEntity = correspondenceEntities.getFirst();
+
+        assertThat(caseCorrespondencesFTDataManager.getCorrespondenceEntities(testCaseRef)).hasSize(1);
+        assertThat(firstCorrespondenceEntity.getId()).isNotNull();
+        assertThat(firstCorrespondenceEntity.getCaseReferenceNumber()).isEqualTo(Long.parseLong(caseData.get("hyphenatedCaseRef")
+            .toString().replace("-", "")));
+        assertThat(firstCorrespondenceEntity.getEventType()).isEqualTo("NEW_ORDER_ISSUED_POST");
+        assertThat(firstCorrespondenceEntity.getSentOn()).isNotNull();
+        assertThat(firstCorrespondenceEntity.getSentFrom()).isNotNull();
+        assertThat(firstCorrespondenceEntity.getSentTo()).isNotNull();
+        assertThat(firstCorrespondenceEntity.getCorrespondenceType()).isEqualTo("Letter");
+        assertThat(firstCorrespondenceEntity.getDocumentUrl()).isNotNull();
+        assertThat(firstCorrespondenceEntity.getDocumentFilename()).isNotNull();
+        assertThat(firstCorrespondenceEntity.getDocumentBinaryUrl()).isNotNull();
     }
 
     @Test

@@ -2,7 +2,6 @@ package uk.gov.hmcts.sptribs.notification;
 
 import jakarta.servlet.http.HttpServletRequest;
 import org.apache.commons.io.IOUtils;
-import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -806,6 +805,9 @@ public class NotificationServiceCICTest {
         //When
         notificationService.sendEmail(request, List.of(cicDocument), TEST_CASE_ID.toString());
 
+        String expectedDocumentDescription = String.format("%nFilename: %s%nDescription: %s%n",
+            cicDocument.getDocumentLink().getFilename(), cicDocument.getDocumentEmailContent());
+
         //Then
         verify(notificationClient).sendEmail(
             eq(templateId),
@@ -818,7 +820,8 @@ public class NotificationServiceCICTest {
             .containsEntry("DocumentAvailable1", "yes");
         assertThat(templateVarsArgCaptor.getValue())
             .extracting("CaseDocument1")
-            .isInstanceOf(JSONObject.class);
+            .isInstanceOf(String.class)
+            .isEqualTo(expectedDocumentDescription);
 
         verify(sendEmailResponse, times(3)).getNotificationId();
         verify(sendEmailResponse, times(2)).getReference();
@@ -936,8 +939,8 @@ public class NotificationServiceCICTest {
             .containsEntry(CASE_ISSUED_RESPONDENT_EMAIL.name(), templateId)
             .containsEntry("DocumentAvailable1", "yes");
 
-        String expectedDocumentDescription = String.format("%nFilename: %s%nDescription: %s%nUpload Date: %s",
-            cicDocument.getDocumentLink().getFilename(), cicDocument.getDocumentEmailContent(), cicDocument.getDate());
+        String expectedDocumentDescription = String.format("%nFilename: %s%nDescription: %s%n",
+            cicDocument.getDocumentLink().getFilename(), cicDocument.getDocumentEmailContent());
 
         assertThat(templateVarsArgCaptor.getValue())
             .extracting("CaseDocument1")

@@ -3,9 +3,13 @@ package uk.gov.hmcts.sptribs.caseworker;
 import io.restassured.response.Response;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
+import uk.gov.hmcts.sptribs.document.model.DocumentEntity;
+import uk.gov.hmcts.sptribs.document.model.DocumentType;
+import uk.gov.hmcts.sptribs.notification.persistence.CorrespondenceEntity;
 import uk.gov.hmcts.sptribs.testutil.FunctionalTestSuite;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Map;
 
 import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
@@ -70,6 +74,24 @@ public class CaseworkerIssueDecisionFT extends FunctionalTestSuite {
             .inPath(STATE)
             .isString()
             .isEqualTo("CaseManagement");
+
+        long testCaseRef = Long.parseLong(caseData.get("hyphenatedCaseRef").toString().replace("-", ""));
+
+        List<DocumentEntity> documentEntities = caseDocumentsFTDataManager.getDocumentEntities(testCaseRef);
+        assertThat(documentEntities).hasSize(1);
+
+        DocumentEntity firstDocumentEntity = documentEntities.getFirst();
+
+        assertThat(firstDocumentEntity.getId()).isNotNull();
+        assertThat(firstDocumentEntity.getCaseReferenceNumber()).isEqualTo(Long.parseLong(caseData.get("hyphenatedCaseRef")
+            .toString().replace("-", "")));
+        assertThat(firstDocumentEntity.getDocumentTypeName()).isEqualTo(DocumentType.TRIBUNAL_DIRECTION.name());
+        assertThat(firstDocumentEntity.getCaseDocumentTypeId()).isEqualTo(6L);
+        assertThat(firstDocumentEntity.getSavedAt()).isNotNull();
+        assertThat(firstDocumentEntity.isSentToApplicantViaContactParties()).isFalse();
+        assertThat(firstDocumentEntity.getDocumentUrl()).isNotNull();
+        assertThat(firstDocumentEntity.getDocumentFilename()).isNotNull();
+        assertThat(firstDocumentEntity.getDocumentBinaryUrl()).isNotNull();
     }
 
     @Test
@@ -94,7 +116,26 @@ public class CaseworkerIssueDecisionFT extends FunctionalTestSuite {
         assertThatJson(response.asString())
             .inPath(CONFIRMATION_HEADER)
             .isString()
-            .isEqualTo("# Decision notice issued \n## A notification has been sent to");
+            .isEqualTo("# Decision notice issued \n## A notification has been sent to: Subject");
+
+        long testCaseRef = Long.parseLong(caseData.get("hyphenatedCaseRef").toString().replace("-", ""));
+
+        List<CorrespondenceEntity> correspondenceEntities = caseCorrespondencesFTDataManager.getCorrespondenceEntities(testCaseRef);
+        assertThat(correspondenceEntities).hasSize(1);
+
+        CorrespondenceEntity firstCorrespondenceEntity = correspondenceEntities.getFirst();
+
+        assertThat(firstCorrespondenceEntity.getId()).isNotNull();
+        assertThat(firstCorrespondenceEntity.getCaseReferenceNumber()).isEqualTo(Long.parseLong(caseData.get("hyphenatedCaseRef")
+            .toString().replace("-", "")));
+        assertThat(firstCorrespondenceEntity.getEventType()).isEqualTo("DECISION_ISSUED_EMAIL");
+        assertThat(firstCorrespondenceEntity.getSentOn()).isNotNull();
+        assertThat(firstCorrespondenceEntity.getSentFrom()).isNotNull();
+        assertThat(firstCorrespondenceEntity.getSentTo()).isNotNull();
+        assertThat(firstCorrespondenceEntity.getCorrespondenceType()).isEqualTo("Email");
+        assertThat(firstCorrespondenceEntity.getDocumentUrl()).isNotNull();
+        assertThat(firstCorrespondenceEntity.getDocumentFilename()).isNotNull();
+        assertThat(firstCorrespondenceEntity.getDocumentBinaryUrl()).isNotNull();
     }
 
     @Test

@@ -19,6 +19,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
+import uk.gov.hmcts.sptribs.document.service.DocumentsService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -46,6 +47,7 @@ public class CaseworkerDeleteDraftOrder implements CCDConfig<CaseData, State, Us
 
     private static final CcdPageConfiguration showDraftOrders = new ShowDraftOrders();
     private static final ShowRemovedDraftOrders showRemovedDraftOrders = new ShowRemovedDraftOrders();
+    private final DocumentsService documentsService;
 
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
@@ -73,6 +75,8 @@ public class CaseworkerDeleteDraftOrder implements CCDConfig<CaseData, State, Us
         CaseData caseData = details.getData();
         CicCase cicCase = repopulateDynamicDraftList(caseData.getCicCase());
 
+        removeDraftsFromDocumentTable(caseData);
+
         caseData.setCicCase(cicCase);
 
         List<ListValue<DraftOrderCIC>> listValues = new ArrayList<>();
@@ -83,6 +87,16 @@ public class CaseworkerDeleteDraftOrder implements CCDConfig<CaseData, State, Us
             .data(caseData)
             .state(details.getState())
             .build();
+    }
+
+    private void removeDraftsFromDocumentTable(CaseData caseData) {
+        List<ListValue<DraftOrderCIC>> removedDraftList = caseData.getCicCase().getRemovedDraftList();
+
+        removedDraftList.forEach(v -> {
+            documentsService.removeEntryFromDocumentTableByBinaryURL(
+                v.getValue().getTemplateGeneratedDocument().getBinaryUrl());
+        });
+
     }
 
     public SubmittedCallbackResponse submitted(CaseDetails<CaseData, State> details,

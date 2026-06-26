@@ -136,13 +136,13 @@ public class NewOrderIssuedNotification implements PartiesNotification {
 
     private Document getLastSelectedOrder(CicCase cicCase) {
         if (CollectionUtils.isNotEmpty(cicCase.getOrderList())) {
-            final Order order = cicCase.getOrderList().get(0).getValue();
+            final Order order = cicCase.getOrderList().getFirst().getValue();
 
             if (order.getDraftOrder() != null) {
                 return order.getDraftOrder().getTemplateGeneratedDocument();
             } else if (order.getUploadedFile() != null
                 && CollectionUtils.isNotEmpty(order.getUploadedFile())) {
-                return order.getUploadedFile().get(0).getValue().getDocumentLink();
+                return order.getUploadedFile().getFirst().getValue().getDocumentLink();
             }
         }
 

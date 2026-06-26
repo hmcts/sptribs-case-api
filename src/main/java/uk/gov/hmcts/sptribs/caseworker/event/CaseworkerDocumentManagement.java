@@ -16,13 +16,16 @@ import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
+import uk.gov.hmcts.sptribs.document.model.CaseDocumentType;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocumentUpload;
+import uk.gov.hmcts.sptribs.document.service.DocumentsService;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_DOCUMENT_MANAGEMENT;
+import static uk.gov.hmcts.sptribs.caseworker.util.MessageUtil.handleDocumentException;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingOutcome;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseClosed;
@@ -52,6 +55,8 @@ import static uk.gov.hmcts.sptribs.document.DocumentUtil.uploadDocument;
 public class CaseworkerDocumentManagement implements CCDConfig<CaseData, State, UserRole> {
 
     private final UploadCaseDocuments uploadCaseDocuments = new UploadCaseDocuments();
+
+    private final DocumentsService documentsService;
 
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         Event.EventBuilder<CaseData, UserRole, State> eventBuilder =
@@ -101,8 +106,23 @@ public class CaseworkerDocumentManagement implements CCDConfig<CaseData, State, 
             }
         }
 
+        List<String> errors = new ArrayList<>();
+        for (ListValue<CaseworkerCICDocument> document : documents) {
+            try {
+                documentsService.buildAndSaveNewDocumentEntity(
+                    document.getValue().getDocumentLink(),
+                    details.getId(),
+                    document.getValue().getDocumentCategory(),
+                    CaseDocumentType.CASEWORKER
+                );
+            } catch (RuntimeException e) {
+                errors.add(handleDocumentException(document.getValue().getDocumentLink(), e.getMessage()));
+            }
+        }
+
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
+            .errors(errors)
             .build();
 
     }

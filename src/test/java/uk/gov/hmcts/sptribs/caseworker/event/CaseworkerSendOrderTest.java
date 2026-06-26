@@ -13,6 +13,7 @@ import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.ccd.sdk.type.DynamicList;
 import uk.gov.hmcts.ccd.sdk.type.DynamicListElement;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
+import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.event.page.SendOrderOrderDueDates;
 import uk.gov.hmcts.sptribs.caseworker.model.DateModel;
@@ -36,6 +37,9 @@ import uk.gov.hmcts.sptribs.ciccase.model.SubjectCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.ciccase.model.access.Permissions;
 import uk.gov.hmcts.sptribs.document.model.CICDocument;
+import uk.gov.hmcts.sptribs.document.model.CaseDocumentType;
+import uk.gov.hmcts.sptribs.document.model.DocumentType;
+import uk.gov.hmcts.sptribs.document.service.DocumentsService;
 import uk.gov.hmcts.sptribs.notification.dispatcher.NewOrderIssuedNotification;
 
 import java.time.LocalDate;
@@ -47,6 +51,14 @@ import java.util.UUID;
 
 import static java.lang.String.format;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static uk.gov.hmcts.sptribs.caseworker.model.OrderIssuingType.ISSUE_AND_SEND_AN_EXISTING_DRAFT;
+import static uk.gov.hmcts.sptribs.caseworker.model.OrderIssuingType.UPLOAD_A_NEW_ORDER_FROM_YOUR_COMPUTER;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.COLON;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.DOUBLE_HYPHEN;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.DRAFT;
@@ -54,17 +66,21 @@ import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.SENT;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_WA_CONFIG_USER;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigBuilder;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.getEventsFrom;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.DATE_MODEL;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.SOLICITOR_ADDRESS;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.SUBJECT_ADDRESS;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASEWORKER_USER_EMAIL;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID_HYPHENATED;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_FIRST_NAME;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_SOLICITOR_EMAIL;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_SOLICITOR_NAME;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_SUBJECT_EMAIL;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.LOCAL_DATE_TIME;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.caseData;
+import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getApiCaseDetailsBefore;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getCICDocumentList;
+import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getCicCase;
 import static uk.gov.hmcts.sptribs.testutil.TestEventConstants.CASEWORKER_SEND_ORDER;
 
 
@@ -79,6 +95,9 @@ class CaseworkerSendOrderTest {
 
     @Mock
     private SendOrderOrderDueDates orderDueDates;
+
+    @Mock
+    private DocumentsService documentsService;
 
     @Test
     void shouldAddPublishToCamundaWhenWAIsEnabled() {
@@ -146,7 +165,7 @@ class CaseworkerSendOrderTest {
             .orderFile(List.of(documentListValue))
             .orderReminderYesOrNo(YesNo.YES)
             .orderReminderDays(ReminderDays.DAY_COUNT_1)
-            .orderIssuingType(OrderIssuingType.ISSUE_AND_SEND_AN_EXISTING_DRAFT)
+            .orderIssuingType(ISSUE_AND_SEND_AN_EXISTING_DRAFT)
             .build();
         final CaseData caseData = caseData();
         caseData.setOrderDueDates(List.of(dates));
@@ -210,7 +229,7 @@ class CaseworkerSendOrderTest {
             .orderFile(List.of(documentListValue))
             .orderReminderYesOrNo(YesNo.YES)
             .orderReminderDays(ReminderDays.DAY_COUNT_1)
-            .orderIssuingType(OrderIssuingType.ISSUE_AND_SEND_AN_EXISTING_DRAFT)
+            .orderIssuingType(ISSUE_AND_SEND_AN_EXISTING_DRAFT)
             .build();
         final CaseData caseData = caseData();
         caseData.setOrderDueDates(List.of(dates));
@@ -275,7 +294,7 @@ class CaseworkerSendOrderTest {
             .orderFile(List.of(documentListValue))
             .orderReminderYesOrNo(YesNo.YES)
             .orderReminderDays(ReminderDays.DAY_COUNT_1)
-            .orderIssuingType(OrderIssuingType.ISSUE_AND_SEND_AN_EXISTING_DRAFT)
+            .orderIssuingType(ISSUE_AND_SEND_AN_EXISTING_DRAFT)
             .build();
         final CaseData caseData = caseData();
         caseData.setOrderDueDates(List.of(dates));
@@ -328,7 +347,7 @@ class CaseworkerSendOrderTest {
             .notifyPartyRepresentative(Set.of(RepresentativeCIC.REPRESENTATIVE))
             .notifyPartyRespondent(Set.of(RespondentCIC.RESPONDENT))
             .notifyPartySubject(Set.of(SubjectCIC.SUBJECT))
-            .orderIssuingType(OrderIssuingType.ISSUE_AND_SEND_AN_EXISTING_DRAFT)
+            .orderIssuingType(ISSUE_AND_SEND_AN_EXISTING_DRAFT)
             .orderReminderYesOrNo(YesNo.YES)
             .orderReminderDays(ReminderDays.DAY_COUNT_1)
             .draftOrderDynamicList(getDraftOrderList())
@@ -384,7 +403,7 @@ class CaseworkerSendOrderTest {
             .representativeContactDetailsPreference(ContactPreferenceType.POST)
             .notifyPartyRepresentative(Set.of(RepresentativeCIC.REPRESENTATIVE))
             .notifyPartySubject(Set.of(SubjectCIC.SUBJECT))
-            .orderIssuingType(OrderIssuingType.ISSUE_AND_SEND_AN_EXISTING_DRAFT)
+            .orderIssuingType(ISSUE_AND_SEND_AN_EXISTING_DRAFT)
             .orderReminderYesOrNo(YesNo.YES)
             .orderReminderDays(ReminderDays.DAY_COUNT_1)
             .orderFile(documentList)
@@ -450,7 +469,7 @@ class CaseworkerSendOrderTest {
             .representativeContactDetailsPreference(ContactPreferenceType.POST)
             .notifyPartyRepresentative(Set.of(RepresentativeCIC.REPRESENTATIVE))
             .notifyPartySubject(Set.of(SubjectCIC.SUBJECT))
-            .orderIssuingType(OrderIssuingType.ISSUE_AND_SEND_AN_EXISTING_DRAFT)
+            .orderIssuingType(ISSUE_AND_SEND_AN_EXISTING_DRAFT)
             .orderReminderYesOrNo(YesNo.YES)
             .orderReminderDays(ReminderDays.DAY_COUNT_1)
             .orderFile(documentList)
@@ -487,7 +506,7 @@ class CaseworkerSendOrderTest {
 
         EnumSet<OrderIssuingType> expectedOrderIssuingTypes = EnumSet.of(
                 OrderIssuingType.UPLOAD_A_NEW_ORDER_FROM_YOUR_COMPUTER,
-                OrderIssuingType.ISSUE_AND_SEND_AN_EXISTING_DRAFT
+                ISSUE_AND_SEND_AN_EXISTING_DRAFT
         );
 
         DynamicList expectedDynamicList = DynamicListUtil.createDynamicListFromEnumSet(expectedOrderIssuingTypes,
@@ -564,7 +583,7 @@ class CaseworkerSendOrderTest {
                 .orderFile(List.of(documentListValue))
                 .orderReminderYesOrNo(YesNo.YES)
                 .orderReminderDays(ReminderDays.DAY_COUNT_1)
-                .orderIssuingType(OrderIssuingType.ISSUE_AND_SEND_AN_EXISTING_DRAFT)
+                .orderIssuingType(ISSUE_AND_SEND_AN_EXISTING_DRAFT)
                 .build();
         final CaseData caseData = caseData();
         caseData.setOrderDueDates(List.of(dates));
@@ -661,6 +680,115 @@ class CaseworkerSendOrderTest {
 
         // Then
         assertThat(s.getConfirmationHeader()).contains("# Order sent");
+    }
+
+    @Test
+    void shouldStoreErrorsWhenBuildAndSaveNewDocumentEntityThrowsRuntimeExceptionForDraftOrder() {
+        // Given
+        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+        final DynamicListElement element = DynamicListElement.builder()
+            .code(UUID.randomUUID())
+            .label(OrderTemplate.CIC6_GENERAL_DIRECTIONS.getLabel() + "--[Test Name]--09-05-2024 09:04:04.pdf")
+            .build();
+        final List<DynamicListElement> elements = new ArrayList<>();
+        elements.add(element);
+        final DynamicList dynamicList = DynamicList.builder()
+            .listItems(elements)
+            .value(element)
+            .build();
+        final List<ListValue<DraftOrderCIC>> draftOrderCICList = new ArrayList<>();
+        final DraftOrderContentCIC contentCIC = DraftOrderContentCIC.builder()
+            .mainContent("content")
+            .orderSignature("signature")
+            .orderTemplate(OrderTemplate.CIC6_GENERAL_DIRECTIONS)
+            .build();
+        final List<ListValue<CICDocument>> documentList = getCICDocumentList(
+            OrderTemplate.CIC6_GENERAL_DIRECTIONS.getLabel() + "--[Test Name]--09-05-2024 09:04:04.pdf");
+        final DraftOrderCIC orderCIC = DraftOrderCIC.builder()
+            .draftOrderContentCIC(contentCIC)
+            .templateGeneratedDocument(documentList.getFirst().getValue().getDocumentLink())
+            .build();
+        final ListValue<DraftOrderCIC> listValue = ListValue.<DraftOrderCIC>builder()
+            .value(orderCIC)
+            .build();
+        draftOrderCICList.add(listValue);
+
+        CicCase cicCase = CicCase.builder()
+            .draftOrderDynamicList(dynamicList)
+            .draftOrderCICList(draftOrderCICList)
+            .orderFile(documentList)
+            .orderIssuingType(OrderIssuingType.ISSUE_AND_SEND_AN_EXISTING_DRAFT)
+            .build();
+        final CaseData caseData = CaseData.builder()
+            .cicCase(cicCase)
+            .build();
+        caseDetails.setData(caseData);
+
+        doThrow(new RuntimeException("Error saving document entity to database"))
+            .when(documentsService).updateDocumentToNonDraft(anyString());
+
+        final AboutToStartOrSubmitResponse<CaseData, State> response = caseworkerSendOrder
+            .aboutToSubmit(caseDetails, getApiCaseDetailsBefore());
+
+        assertThat(response.getErrors()).hasSize(1);
+        assertThat(response.getErrors()).contains("Draft order with filename "
+            + documentList.getFirst().getValue().getDocumentLink().getFilename() + " could not be updated to non-draft");
+    }
+
+    @Test
+    void shouldStoreErrorsWhenBuildAndSaveNewDocumentEntityThrowsRuntimeExceptionForUploadedOrder() {
+        final CaseDetails<CaseData, State> details = new CaseDetails<>();
+        details.setId(TEST_CASE_ID);
+
+        Document document = Document.builder()
+            .filename("Order--[Test Name]--09-05-2024 09:04:04.pdf")
+            .binaryUrl("url/documents/uuid/binary")
+            .url("url/documents/uuid")
+            .build();
+
+        final CaseData caseData = CaseData.builder().build();
+        CicCase cicCase = getCicCase(UPLOAD_A_NEW_ORDER_FROM_YOUR_COMPUTER, YesOrNo.NO, null, document);
+        cicCase.setOrderTemplateIssued(document);
+        caseData.setCicCase(cicCase);
+        caseData.setOrderDueDates(List.of(ListValue.<DateModel>builder().value(DATE_MODEL).build()));
+
+        caseData.setHyphenatedCaseRef(TEST_CASE_ID_HYPHENATED);
+        details.setData(caseData);
+
+        doThrow(new RuntimeException("Error saving document entity to database"))
+            .when(documentsService).buildAndSaveNewDocumentEntity(any(), eq(TEST_CASE_ID),
+                eq(DocumentType.TRIBUNAL_DIRECTION), eq(CaseDocumentType.ORDER));
+
+        final var response = caseworkerSendOrder.aboutToSubmit(details, getApiCaseDetailsBefore());
+
+        assertThat(response.getErrors()).hasSize(1);
+        assertThat(response.getErrors()).contains("Error saving document with filename: " + document.getFilename());
+
+        verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
+            any(), eq(TEST_CASE_ID), eq(DocumentType.TRIBUNAL_DIRECTION), eq(CaseDocumentType.ORDER)
+        );
+
+        document.setFilename(null);
+        cicCase = getCicCase(UPLOAD_A_NEW_ORDER_FROM_YOUR_COMPUTER, YesOrNo.NO, null, null);
+        cicCase.setOrderTemplateIssued(document);
+        caseData.setCicCase(cicCase);
+        details.setData(caseData);
+
+        final var nullFilenameResponse = caseworkerSendOrder.aboutToSubmit(details, getApiCaseDetailsBefore());
+
+        assertThat(nullFilenameResponse.getErrors()).hasSize(1);
+        assertThat(nullFilenameResponse.getErrors()).contains("Error saving document with no filename");
+
+        document.setFilename("");
+        cicCase = getCicCase(UPLOAD_A_NEW_ORDER_FROM_YOUR_COMPUTER, YesOrNo.NO, null, null);
+        cicCase.setOrderTemplateIssued(document);
+        caseData.setCicCase(cicCase);
+        details.setData(caseData);
+
+        final var emptyFilenameResponse = caseworkerSendOrder.aboutToSubmit(details, getApiCaseDetailsBefore());
+
+        assertThat(emptyFilenameResponse.getErrors()).hasSize(1);
+        assertThat(emptyFilenameResponse.getErrors()).contains("Error saving document with no filename");
     }
 
     private DynamicList getDraftOrderList() {

@@ -3,8 +3,10 @@ package uk.gov.hmcts.sptribs.caseworker;
 import io.restassured.response.Response;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
+import uk.gov.hmcts.sptribs.document.model.DocumentEntity;
 import uk.gov.hmcts.sptribs.testutil.FunctionalTestSuite;
 
+import java.util.List;
 import java.util.Map;
 
 import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
@@ -67,6 +69,24 @@ public class RespondentDocumentManagementFT extends FunctionalTestSuite {
         assertThatJson(response.asString())
             .when(IGNORING_EXTRA_FIELDS)
             .isEqualTo(json(expectedResponse(ABOUT_TO_SUBMIT_RESPONSE)));
+
+        long testCaseRef = Long.parseLong(caseData.get("hyphenatedCaseRef").toString().replace("-", ""));
+
+        List<DocumentEntity> documentEntities = caseDocumentsFTDataManager.getDocumentEntities(testCaseRef);
+        assertThat(documentEntities).hasSize(3);
+
+        DocumentEntity firstDocumentEntity = documentEntities.getFirst();
+
+        assertThat(firstDocumentEntity.getId()).isNotNull();
+        assertThat(firstDocumentEntity.getCaseReferenceNumber()).isEqualTo(Long.parseLong(caseData.get("hyphenatedCaseRef")
+            .toString().replace("-", "")));
+        assertThat(firstDocumentEntity.getDocumentTypeName()).isNotNull();
+        assertThat(firstDocumentEntity.getCaseDocumentTypeId()).isEqualTo(2L);
+        assertThat(firstDocumentEntity.getSavedAt()).isNotNull();
+        assertThat(firstDocumentEntity.isSentToApplicantViaContactParties()).isFalse();
+        assertThat(firstDocumentEntity.getDocumentUrl()).isNotNull();
+        assertThat(firstDocumentEntity.getDocumentFilename()).isNotNull();
+        assertThat(firstDocumentEntity.getDocumentBinaryUrl()).isNotNull();
     }
 
     @Test
