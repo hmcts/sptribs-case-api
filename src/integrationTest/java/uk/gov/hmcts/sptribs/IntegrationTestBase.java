@@ -7,13 +7,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.context.annotation.Import;
 import org.testcontainers.containers.PostgreSQLContainer;
-import org.testcontainers.junit.jupiter.Container;
-import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.util.List;
 
-@SpringBootTest
-@Testcontainers
+@SpringBootTest(properties = "spring.flyway.enabled = true")
 @Import({CaseDataManager.class, CaseDocumentManager.class})
 public abstract class IntegrationTestBase {
 
@@ -25,10 +22,13 @@ public abstract class IntegrationTestBase {
 
     private List<IntegrationTestDataManager> dataManagerList;
 
-    @Container
     @ServiceConnection
-    static PostgreSQLContainer<?> postgreSQLContainer =
-        new PostgreSQLContainer<>("postgres:16");
+    static final PostgreSQLContainer<?> postgreSQLContainer;
+
+    static {
+        postgreSQLContainer = new PostgreSQLContainer<>("postgres:16");
+        postgreSQLContainer.start();
+    }
 
     @PostConstruct
     void setup() {
