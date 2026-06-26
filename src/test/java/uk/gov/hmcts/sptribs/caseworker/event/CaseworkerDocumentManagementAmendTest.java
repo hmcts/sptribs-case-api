@@ -507,7 +507,7 @@ class CaseworkerDocumentManagementAmendTest {
 
         updatedCaseDetails.getData().getCicCase().setSelectedDocumentCategory(HOSPITAL_RECORDS);
 
-        doThrow(new RuntimeException("Error updating category ID or document type"))
+        doThrow(new RuntimeException("Error updating document type name"))
             .when(documentsService).setNewDocumentTypeName("http://url/",HOSPITAL_RECORDS.name());
 
         AboutToStartOrSubmitResponse<CaseData, State> response =

@@ -105,9 +105,9 @@ public class DocumentsService {
                     documentBinaryUrl,
                     documentTypeName
                 );
-            log.info("Document Repository updated {} category IDs.", rowsUpdated);
+            log.info("Document Repository updated {} document type names.", rowsUpdated);
         } catch (DataAccessException e) {
-            throw new RuntimeException("Error updating category ID or document type", e);
+            throw new RuntimeException("Error updating document type name", e);
         }
     }
 

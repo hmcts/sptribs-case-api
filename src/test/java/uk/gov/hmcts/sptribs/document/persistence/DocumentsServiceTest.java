@@ -152,7 +152,7 @@ public class DocumentsServiceTest {
         assertThatThrownBy(
             () -> documentsService.setNewDocumentTypeName(applicationDocument.getBinaryUrl(), DSS_SUPPORTING.name()))
             .isInstanceOf(RuntimeException.class)
-            .hasMessageContaining("Error updating category ID or document type")
+            .hasMessageContaining("Error updating document type name")
             .hasCauseInstanceOf(DataAccessException.class);
     }
 
