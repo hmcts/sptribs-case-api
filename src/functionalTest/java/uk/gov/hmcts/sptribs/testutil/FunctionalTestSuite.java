@@ -43,6 +43,7 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -503,13 +504,23 @@ public abstract class FunctionalTestSuite {
     private void generateAndSetUuidInCaseDataAndDB(Map<String, Object> caseData, Long testCaseRef) throws SQLException, IOException {
         String caseDataJsonString = JSON.getDefault().toJSON(caseData);
 
-        Pattern pattern = Pattern.compile("\\$\\{UUID(\\d+)}");
-        Matcher matcher = pattern.matcher(caseDataJsonString);
+        Pattern placeholderPattern = Pattern.compile("\\$\\{UUID(\\d+)}");
+        Matcher matcher = placeholderPattern.matcher(caseDataJsonString);
+        Map<String, String> placeholdersAndUuids = new HashMap<>();
 
         while (matcher.find()) {
-            String uuid = UUID.randomUUID().toString();
-            caseDataJsonString = caseDataJsonString.replace(matcher.group(), uuid);
-            caseDocumentsFTDataManager.saveTestDocumentEntity(testCaseRef, uuid);
+            String placeholder = matcher.group();
+            String uuid = placeholdersAndUuids.get(placeholder);
+
+            if (uuid == null) {
+                uuid = UUID.randomUUID().toString();
+                placeholdersAndUuids.put(placeholder, uuid);
+                caseDocumentsFTDataManager.saveTestDocumentEntity(testCaseRef, uuid);
+            }
+        }
+
+        for (Map.Entry<String, String> placeholderAndUuid : placeholdersAndUuids.entrySet()) {
+            caseDataJsonString = caseDataJsonString.replace(placeholderAndUuid.getKey(), placeholderAndUuid.getValue());
         }
 
         caseData.clear();
