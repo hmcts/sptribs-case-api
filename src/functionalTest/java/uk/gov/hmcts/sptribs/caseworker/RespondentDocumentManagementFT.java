@@ -81,9 +81,8 @@ public class RespondentDocumentManagementFT extends FunctionalTestSuite {
         assertThat(firstDocumentEntity.getCaseReferenceNumber()).isEqualTo(Long.parseLong(caseData.get("hyphenatedCaseRef")
             .toString().replace("-", "")));
         assertThat(firstDocumentEntity.getDocumentTypeName()).isNotNull();
-        assertThat(firstDocumentEntity.getCaseDocumentTypeId()).isEqualTo(1L);
+        assertThat(firstDocumentEntity.getCaseDocumentTypeId()).isEqualTo(2L);
         assertThat(firstDocumentEntity.getSavedAt()).isNotNull();
-        assertThat(firstDocumentEntity.isDraft()).isFalse();
         assertThat(firstDocumentEntity.isSentToApplicantViaContactParties()).isFalse();
         assertThat(firstDocumentEntity.getDocumentUrl()).isNotNull();
         assertThat(firstDocumentEntity.getDocumentFilename()).isNotNull();

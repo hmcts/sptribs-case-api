@@ -1,14 +1,42 @@
 package uk.gov.hmcts.sptribs;
 
+import jakarta.annotation.PostConstruct;
+import org.junit.jupiter.api.AfterEach;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
+import org.springframework.context.annotation.Import;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
+import java.util.List;
+
+@SpringBootTest
+@Testcontainers
+@Import({CaseDataManager.class, CaseDocumentManager.class})
 public abstract class IntegrationTestBase {
+
+    @Autowired
+    private CaseDataManager caseDataManager;
+
+    @Autowired
+    private CaseDocumentManager caseDocumentManager;
+
+    private List<IntegrationTestDataManager> dataManagerList;
 
     @Container
     @ServiceConnection
-    static PostgreSQLContainer<?> postgreSQLContainer = new PostgreSQLContainer<>("postgres:16")
-        .withInitScripts("sql/create_test_case_data.sql", "sql/create_test_case_document_types.sql");
+    static PostgreSQLContainer<?> postgreSQLContainer =
+        new PostgreSQLContainer<>("postgres:16");
 
+    @PostConstruct
+    void setup() {
+        dataManagerList = List.of(caseDataManager, caseDocumentManager);
+    }
+
+    @AfterEach
+    void cleardown() {
+        dataManagerList.forEach(IntegrationTestDataManager::cleanup);
+    }
 }

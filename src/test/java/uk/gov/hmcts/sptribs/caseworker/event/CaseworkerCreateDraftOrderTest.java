@@ -23,6 +23,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.OrderTemplate;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.ciccase.model.access.Permissions;
+import uk.gov.hmcts.sptribs.document.model.CaseDocumentType;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
 import uk.gov.hmcts.sptribs.document.service.DocumentsService;
 
@@ -115,13 +116,12 @@ class CaseworkerCreateDraftOrderTest {
 
         //  Then
         verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
-            any(), eq(TEST_CASE_ID), eq(true), eq(DocumentType.TRIBUNAL_DIRECTION), eq(false)
+            any(), eq(TEST_CASE_ID), eq(DocumentType.TRIBUNAL_DIRECTION), eq(CaseDocumentType.DRAFT_ORDER)
         );
 
         verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
-            eq(expectedDraftOrderCIC.getTemplateGeneratedDocument()), eq(TEST_CASE_ID), eq(true),
-            eq(DocumentType.TRIBUNAL_DIRECTION), eq(false)
-        );
+            eq(expectedDraftOrderCIC.getTemplateGeneratedDocument()), eq(TEST_CASE_ID),
+            eq(DocumentType.TRIBUNAL_DIRECTION), eq(CaseDocumentType.DRAFT_ORDER));
 
         assertThat(response).isNotNull();
         CaseData responseData = response.getData();
@@ -196,12 +196,12 @@ class CaseworkerCreateDraftOrderTest {
 
         //  Then
         verify(documentsService, times(2)).buildAndSaveNewDocumentEntity(
-            any(), eq(TEST_CASE_ID), eq(true), eq(DocumentType.TRIBUNAL_DIRECTION), eq(false)
+            any(), eq(TEST_CASE_ID), eq(DocumentType.TRIBUNAL_DIRECTION), eq(CaseDocumentType.DRAFT_ORDER)
         );
 
         verify(documentsService, times(2)).buildAndSaveNewDocumentEntity(
-            eq(Document.builder().filename("a--b--02-02-2002 11:11:11.pdf").build()), eq(TEST_CASE_ID), eq(true),
-            eq(DocumentType.TRIBUNAL_DIRECTION), eq(false)
+            eq(Document.builder().filename("a--b--02-02-2002 11:11:11.pdf").build()),
+            eq(TEST_CASE_ID), eq(DocumentType.TRIBUNAL_DIRECTION), eq(CaseDocumentType.DRAFT_ORDER)
         );
 
         assertThat(response2).isNotNull();
@@ -245,12 +245,12 @@ class CaseworkerCreateDraftOrderTest {
                 caseworkerCreateDraftOrder.aboutToSubmit(updatedCaseDetails, beforeDetails);
 
         verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
-            any(), eq(TEST_CASE_ID), eq(true), eq(DocumentType.TRIBUNAL_DIRECTION), eq(false)
+            any(), eq(TEST_CASE_ID), eq(DocumentType.TRIBUNAL_DIRECTION), eq(CaseDocumentType.DRAFT_ORDER)
         );
 
         verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
-            eq(Document.builder().filename("a--b--02-02-2002 11:11:11.pdf").build()), eq(TEST_CASE_ID), eq(true),
-            eq(DocumentType.TRIBUNAL_DIRECTION), eq(false)
+            eq(Document.builder().filename("a--b--02-02-2002 11:11:11.pdf").build()), eq(TEST_CASE_ID),
+            eq(DocumentType.TRIBUNAL_DIRECTION), eq(CaseDocumentType.DRAFT_ORDER)
         );
 
         assertThat(response).isNotNull();
@@ -281,8 +281,8 @@ class CaseworkerCreateDraftOrderTest {
 
 
         doThrow(new RuntimeException("Error saving document entity to database"))
-            .when(documentsService).buildAndSaveNewDocumentEntity(any(), eq(TEST_CASE_ID), eq(true),
-                eq(DocumentType.TRIBUNAL_DIRECTION), eq(false));
+            .when(documentsService).buildAndSaveNewDocumentEntity(any(), eq(TEST_CASE_ID),
+                eq(DocumentType.TRIBUNAL_DIRECTION), eq(CaseDocumentType.DRAFT_ORDER));
 
         AboutToStartOrSubmitResponse<CaseData, State> response =
             caseworkerCreateDraftOrder.aboutToSubmit(updatedCaseDetails, beforeDetails);
@@ -292,7 +292,7 @@ class CaseworkerCreateDraftOrderTest {
             .getFirst().getValue().getTemplateGeneratedDocument().getFilename());
 
         verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
-            any(), eq(TEST_CASE_ID), eq(true), eq(DocumentType.TRIBUNAL_DIRECTION), eq(false)
+            any(), eq(TEST_CASE_ID), eq(DocumentType.TRIBUNAL_DIRECTION), eq(CaseDocumentType.DRAFT_ORDER)
         );
 
         cicCase.setOrderTemplateIssued(Document.builder().filename(null).build());

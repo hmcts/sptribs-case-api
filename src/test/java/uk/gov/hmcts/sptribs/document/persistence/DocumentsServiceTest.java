@@ -51,13 +51,13 @@ public class DocumentsServiceTest {
     private static final DocumentType ORDER_AND_DECISION_DOCUMENT = DocumentType.TRIBUNAL_DIRECTION;
 
     @Test
-    public void shouldBuildAndSaveNewNonDraftDocumentEntity() {
+    public void shouldBuildAndSaveNewCaseworkerDocumentEntity() {
         Document evidenceDocument = buildDocument(HOSPITAL_RECORDS.getCategory());
-        DocumentEntity evidenceDocumentEntity = buildDocumentEntity(HOSPITAL_RECORDS.name(), 2L, false, false, OffsetDateTime.now());
+        DocumentEntity evidenceDocumentEntity = buildDocumentEntity(HOSPITAL_RECORDS.name(), 3L, false, OffsetDateTime.now());
 
-        when(caseDocumentTypesCache.getId(HOSPITAL_RECORDS.getCaseDocumentType())).thenReturn(2L);
+        when(caseDocumentTypesCache.getId(CaseDocumentType.CASEWORKER)).thenReturn(3L);
 
-        documentsService.buildAndSaveNewDocumentEntity(evidenceDocument, TEST_CASE_ID, false, HOSPITAL_RECORDS,false);
+        documentsService.buildAndSaveNewDocumentEntity(evidenceDocument, TEST_CASE_ID, HOSPITAL_RECORDS, CaseDocumentType.CASEWORKER);
 
         verify(documentsRepository, times(1)).save(evidenceDocumentEntity);
     }
@@ -65,24 +65,25 @@ public class DocumentsServiceTest {
     @Test
     public void shouldBuildAndSaveNewBundleDocument() {
         Document bundleDocument = buildDocument(null);
-        DocumentEntity bundleDocumentEntity = buildDocumentEntity(null, 6L, false, false, OffsetDateTime.now());
+        DocumentEntity bundleDocumentEntity = buildDocumentEntity(null, 10L, false, OffsetDateTime.now());
 
-        when(caseDocumentTypesCache.getId(CaseDocumentType.BUNDLE)).thenReturn(6L);
+        when(caseDocumentTypesCache.getId(CaseDocumentType.BUNDLE)).thenReturn(10L);
 
-        documentsService.buildAndSaveNewDocumentEntity(bundleDocument, TEST_CASE_ID, false, null,true);
+        documentsService.buildAndSaveNewDocumentEntity(bundleDocument, TEST_CASE_ID, null,CaseDocumentType.BUNDLE);
 
         verify(documentsRepository, times(1)).save(bundleDocumentEntity);
     }
 
     @Test
-    public void shouldBuildAndSaveNewDraftDocumentEntity() {
+    public void shouldBuildAndSaveNewDraftOrderDocumentEntity() {
         Document draftEvidenceDocument = buildDocument(HOSPITAL_RECORDS.getCategory());
-        DocumentEntity draftEvidenceDocumentEntity = buildDocumentEntity(HOSPITAL_RECORDS.name(), 2L, true, false,
-            OffsetDateTime.now());
+        DocumentEntity draftEvidenceDocumentEntity = buildDocumentEntity(HOSPITAL_RECORDS.name(), 5L,
+            true, OffsetDateTime.now());
 
-        when(caseDocumentTypesCache.getId(HOSPITAL_RECORDS.getCaseDocumentType())).thenReturn(2L);
+        when(caseDocumentTypesCache.getId(CaseDocumentType.DRAFT_ORDER)).thenReturn(5L);
 
-        documentsService.buildAndSaveNewDocumentEntity(draftEvidenceDocument, TEST_CASE_ID, true, HOSPITAL_RECORDS, false);
+        documentsService.buildAndSaveNewDocumentEntity(draftEvidenceDocument, TEST_CASE_ID, HOSPITAL_RECORDS,
+            CaseDocumentType.DRAFT_ORDER);
 
         verify(documentsRepository, times(1)).save(draftEvidenceDocumentEntity);
     }
@@ -90,15 +91,15 @@ public class DocumentsServiceTest {
     @Test
     public void shouldThrowRuntimeExceptionWhenDataAccessExceptionCaughtInBuildAndSaveNewDraftDocumentEntity() {
         Document draftEvidenceDocument = buildDocument(HOSPITAL_RECORDS.getCategory());
-        DocumentEntity draftEvidenceDocumentEntity = buildDocumentEntity(HOSPITAL_RECORDS.name(), 2L, true, false,
+        DocumentEntity draftEvidenceDocumentEntity = buildDocumentEntity(HOSPITAL_RECORDS.name(), 5L, true,
             OffsetDateTime.now());
 
         when(documentsRepository.save(draftEvidenceDocumentEntity)).thenThrow(new DataAccessResourceFailureException("DB error"));
-        when(caseDocumentTypesCache.getId(HOSPITAL_RECORDS.getCaseDocumentType())).thenReturn(2L);
+        when(caseDocumentTypesCache.getId(CaseDocumentType.DRAFT_ORDER)).thenReturn(5L);
 
         assertThatThrownBy(
-            () -> documentsService.buildAndSaveNewDocumentEntity(draftEvidenceDocument, TEST_CASE_ID, true,
-                HOSPITAL_RECORDS, false)).isInstanceOf(
+            () -> documentsService.buildAndSaveNewDocumentEntity(draftEvidenceDocument, TEST_CASE_ID, HOSPITAL_RECORDS,
+                CaseDocumentType.DRAFT_ORDER)).isInstanceOf(
             RuntimeException.class).hasMessageContaining("Error saving document entity to database").hasCauseInstanceOf(
             DataAccessException.class);
     }
@@ -106,7 +107,7 @@ public class DocumentsServiceTest {
     @Test
     public void shouldSetSentToApplicantViaContactPartiesToTrue() {
         Document applicationDocument = buildDocument(DSS_SUPPORTING.getCategory());
-        DocumentEntity applicationDocumentEntity = buildDocumentEntity(DSS_SUPPORTING.name(), 1L, false, false,
+        DocumentEntity applicationDocumentEntity = buildDocumentEntity(DSS_SUPPORTING.name(), 1L, false,
             OffsetDateTime.now());
 
         documentsService.setSentToApplicantViaContactPartiesToTrue(List.of(applicationDocument.getBinaryUrl()));
@@ -129,25 +130,30 @@ public class DocumentsServiceTest {
     }
 
     @Test
-    public void shouldSetIsDraftToFalse() {
+    public void shouldUpdateDocumentToNonDraftOrder() {
         Document applicationDocument = buildDocument(HOSPITAL_RECORDS.getCategory());
-        DocumentEntity draftEvidenceDocumentEntity = buildDocumentEntity(HOSPITAL_RECORDS.name(), 2L, true, false,
+        DocumentEntity draftEvidenceDocumentEntity = buildDocumentEntity(HOSPITAL_RECORDS.name(), 5L, true,
             OffsetDateTime.now());
 
+        when(caseDocumentTypesCache.getId(CaseDocumentType.ORDER)).thenReturn(4L);
 
-        documentsService.setIsDraftToFalse(applicationDocument.getBinaryUrl());
+        documentsService.updateDocumentToNonDraft(applicationDocument.getBinaryUrl());
 
-        verify(documentsRepository, times(1)).setIsDraftToFalseByDocumentBinaryUrl(draftEvidenceDocumentEntity.getDocumentBinaryUrl());
+        verify(documentsRepository, times(1)).updateDocumentTypeByDocumentBinaryUrl(
+            draftEvidenceDocumentEntity.getDocumentBinaryUrl(), 4L);
     }
 
     @Test
-    public void shouldThrowRuntimeExceptionWhenDataAccessExceptionCaughtInSetIsDraftToFalse() {
+    public void shouldThrowRuntimeExceptionWhenDataAccessExceptionCaughtInUpdateDocumentToNonDraft() {
         Document applicationDocument = buildDocument(DSS_SUPPORTING.getCategory());
-        doThrow(new DataAccessResourceFailureException("DB error")).when(documentsRepository).setIsDraftToFalseByDocumentBinaryUrl(
-            applicationDocument.getBinaryUrl());
+        when(caseDocumentTypesCache.getId(CaseDocumentType.ORDER)).thenReturn(4L);
 
-        assertThatThrownBy(() -> documentsService.setIsDraftToFalse(applicationDocument.getBinaryUrl())).isInstanceOf(
-            RuntimeException.class).hasMessageContaining("Error updating is_draft to false").hasCauseInstanceOf(DataAccessException.class);
+        doThrow(new DataAccessResourceFailureException("DB error")).when(documentsRepository).updateDocumentTypeByDocumentBinaryUrl(
+            applicationDocument.getBinaryUrl(), 4L);
+
+        assertThatThrownBy(() -> documentsService.updateDocumentToNonDraft(applicationDocument.getBinaryUrl())).isInstanceOf(
+                RuntimeException.class).hasMessageContaining("Error updating case document type from draft order to order")
+            .hasCauseInstanceOf(DataAccessException.class);
     }
 
     @Test
@@ -202,14 +208,14 @@ public class DocumentsServiceTest {
 
         //given
         List<DocumentEntity> documentEntities = new ArrayList<>();
-        DocumentEntity orderDocument = buildDocumentEntity(ORDER_AND_DECISION_DOCUMENT.name(), 4L, false, false,
+        DocumentEntity orderDocument = buildDocumentEntity(ORDER_AND_DECISION_DOCUMENT.name(), 4L, false,
             OffsetDateTime.now());
-        DocumentEntity bundleDocument = buildDocumentEntity(null, 6L, false, false, OffsetDateTime.now());
-        DocumentEntity documentSentOutViaContactParties1 = buildDocumentEntity(HOSPITAL_RECORDS.name(), 2L, false, true,
+        DocumentEntity bundleDocument = buildDocumentEntity(null, 10L, false, OffsetDateTime.now());
+        DocumentEntity documentSentOutViaContactParties1 = buildDocumentEntity(HOSPITAL_RECORDS.name(), 2L, true,
             OffsetDateTime.now());
-        DocumentEntity documentSentOutViaContactParties2 = buildDocumentEntity(DSS_SUPPORTING.name(), 1L, false, true,
+        DocumentEntity documentSentOutViaContactParties2 = buildDocumentEntity(DSS_SUPPORTING.name(), 1L, true,
             OffsetDateTime.now());
-        DocumentEntity orderDocumentSentViaContactParties = buildDocumentEntity(ORDER_AND_DECISION_DOCUMENT.name(), 4L, false, true,
+        DocumentEntity orderDocumentSentViaContactParties = buildDocumentEntity(ORDER_AND_DECISION_DOCUMENT.name(), 4L, true,
             OffsetDateTime.now());
         documentEntities.add(orderDocument);
         documentEntities.add(bundleDocument);
@@ -217,9 +223,9 @@ public class DocumentsServiceTest {
         documentEntities.add(documentSentOutViaContactParties2);
         documentEntities.add(orderDocumentSentViaContactParties);
 
-        when(documentsRepository.findAllNonDraftDocumentsByCaseReference(TEST_CASE_ID)).thenReturn(documentEntities);
-        when(caseDocumentTypesCache.getId(ORDER_AND_DECISION_DOCUMENT.getCaseDocumentType())).thenReturn(4L);
-        when(caseDocumentTypesCache.getId(CaseDocumentType.BUNDLE)).thenReturn(6L);
+        when(documentsRepository.findAllDocumentsByCaseReference(TEST_CASE_ID)).thenReturn(documentEntities);
+        when(caseDocumentTypesCache.getId(CaseDocumentType.ORDER)).thenReturn(4L);
+        when(caseDocumentTypesCache.getId(CaseDocumentType.BUNDLE)).thenReturn(10L);
 
         //when
         DocumentDashboardModel actualResult = documentsService.getDocumentsOnCase(TEST_CASE_ID);
@@ -241,19 +247,19 @@ public class DocumentsServiceTest {
     void shouldReturnDocumentDashboardModelAndFilterLatestBundleForCCDRef() {
         //given
         List<DocumentEntity> documentEntities = new ArrayList<>();
-        DocumentEntity bundleDocument1 = buildDocumentEntity(null, 6L, false, false, OffsetDateTime.now().minusHours(4L));
-        DocumentEntity bundleDocument2 = buildDocumentEntity(null, 6L, false, false, OffsetDateTime.now().minusHours(3L));
-        DocumentEntity bundleDocument3 = buildDocumentEntity(null, 6L, false, false, OffsetDateTime.now().minusHours(2L));
-        DocumentEntity bundleDocument4 = buildDocumentEntity(null, 6L, false, false, OffsetDateTime.now().minusHours(1L));
+        DocumentEntity bundleDocument1 = buildDocumentEntity(null, 10L, false, OffsetDateTime.now().minusHours(4L));
+        DocumentEntity bundleDocument2 = buildDocumentEntity(null, 10L, false, OffsetDateTime.now().minusHours(3L));
+        DocumentEntity bundleDocument3 = buildDocumentEntity(null, 10L, false, OffsetDateTime.now().minusHours(2L));
+        DocumentEntity bundleDocument4 = buildDocumentEntity(null, 10L, false, OffsetDateTime.now().minusHours(1L));
 
         documentEntities.add(bundleDocument1);
         documentEntities.add(bundleDocument2);
         documentEntities.add(bundleDocument3);
         documentEntities.add(bundleDocument4);
 
-        when(documentsRepository.findAllNonDraftDocumentsByCaseReference(TEST_CASE_ID)).thenReturn(documentEntities);
-        when(caseDocumentTypesCache.getId(ORDER_AND_DECISION_DOCUMENT.getCaseDocumentType())).thenReturn(4L);
-        when(caseDocumentTypesCache.getId(CaseDocumentType.BUNDLE)).thenReturn(6L);
+        when(documentsRepository.findAllDocumentsByCaseReference(TEST_CASE_ID)).thenReturn(documentEntities);
+        when(caseDocumentTypesCache.getId(CaseDocumentType.ORDER)).thenReturn(4L);
+        when(caseDocumentTypesCache.getId(CaseDocumentType.BUNDLE)).thenReturn(10L);
 
         //when
         DocumentDashboardModel actualResult = documentsService.getDocumentsOnCase(TEST_CASE_ID);
@@ -271,14 +277,14 @@ public class DocumentsServiceTest {
         //given
         List<DocumentEntity> documentEntities = new ArrayList<>();
 
-        DocumentEntity applicantDoc = buildDocumentEntity(DSS_SUPPORTING.name(), 1L, false, false,
+        DocumentEntity applicantDoc = buildDocumentEntity(DSS_SUPPORTING.name(), 1L, false,
             OffsetDateTime.now());
 
         documentEntities.add(applicantDoc);
 
-        when(documentsRepository.findAllNonDraftDocumentsByCaseReference(TEST_CASE_ID)).thenReturn(documentEntities);
-        when(caseDocumentTypesCache.getId(ORDER_AND_DECISION_DOCUMENT.getCaseDocumentType())).thenReturn(4L);
-        when(caseDocumentTypesCache.getId(CaseDocumentType.BUNDLE)).thenReturn(6L);
+        when(documentsRepository.findAllDocumentsByCaseReference(TEST_CASE_ID)).thenReturn(documentEntities);
+        when(caseDocumentTypesCache.getId(CaseDocumentType.ORDER)).thenReturn(4L);
+        when(caseDocumentTypesCache.getId(CaseDocumentType.BUNDLE)).thenReturn(10L);
 
         //when
         DocumentDashboardModel actualResult = documentsService.getDocumentsOnCase(TEST_CASE_ID);
@@ -293,7 +299,7 @@ public class DocumentsServiceTest {
         return Map.of("CaseDocument1", "binary-1", "CaseDocument2", "binary-2", "DocumentAvailable1", "yes", "DocumentAvailable2", "yes");
     }
 
-    private DocumentEntity buildDocumentEntity(String docTypeName, Long caseDocumentTypeId, boolean isDraft,
+    private DocumentEntity buildDocumentEntity(String docTypeName, Long caseDocumentTypeId,
                                                boolean sentToApplicantViaContactParties, OffsetDateTime offsetDateTime) {
         return DocumentEntity.builder()
             .caseReferenceNumber(TEST_CASE_ID)
@@ -302,7 +308,6 @@ public class DocumentsServiceTest {
             .documentBinaryUrl("example.com/test-document.pdf/binary")
             .documentTypeName(docTypeName)
             .caseDocumentTypeId(caseDocumentTypeId)
-            .isDraft(isDraft)
             .sentToApplicantViaContactParties(sentToApplicantViaContactParties)
             .savedAt(offsetDateTime)
             .build();

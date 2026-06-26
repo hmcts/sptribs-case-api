@@ -32,9 +32,9 @@
         "documentCategory": "DSS Other information documents",
         "documentEmailContent": "a relevant doc",
         "documentLink": {
-          "document_url": "http://dm-store.service.core-compute.internal/documents/328c674f-59c3-418a-b76b-78f2cc52d21a",
+          "document_url": "http://dm-store.service.core-compute.internal/documents/608c674f-59c3-418a-b76b-78f2cc52d21a",
           "document_filename": "mockFileUpdated.mp3",
-          "document_binary_url": "http://dm-store.service.core-compute.internal/documents/328c674f-59c3-418a-b76b-78f2cc52d21a/binary",
+          "document_binary_url": "http://dm-store.service.core-compute.internal/documents/608c674f-59c3-418a-b76b-78f2cc52d21a/binary",
           "category_id": "DSS"
         }
       }
