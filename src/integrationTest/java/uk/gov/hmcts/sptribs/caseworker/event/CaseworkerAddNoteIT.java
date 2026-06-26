@@ -2,21 +2,14 @@ package uk.gov.hmcts.sptribs.caseworker.event;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import feign.FeignException;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.common.config.WebMvcConfig;
-import uk.gov.hmcts.sptribs.testutil.IdamWireMock;
+import uk.gov.hmcts.sptribs.testutil.IntegrationTestBaseWireMock;
 
 import java.time.Clock;
 import java.time.Instant;
@@ -42,11 +35,7 @@ import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.callbackRequest;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.caseData;
 import static uk.gov.hmcts.sptribs.testutil.TestResourceUtil.expectedResponse;
 
-@ExtendWith(SpringExtension.class)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@AutoConfigureMockMvc
-@ContextConfiguration(initializers = {IdamWireMock.PropertiesInitializer.class})
-class CaseworkerAddNoteIT {
+class CaseworkerAddNoteIT extends IntegrationTestBaseWireMock {
 
     private static final String CASEWORKER_ADD_NOTE_RESPONSE =
         "classpath:responses/caseworker-add-note-response.json";
@@ -62,16 +51,6 @@ class CaseworkerAddNoteIT {
 
     @MockitoBean
     private Clock clock;
-
-    @BeforeAll
-    static void setUp() {
-        IdamWireMock.start();
-    }
-
-    @AfterAll
-    static void tearDown() {
-        IdamWireMock.stopAndReset();
-    }
 
     @BeforeEach
     void setClock() {
