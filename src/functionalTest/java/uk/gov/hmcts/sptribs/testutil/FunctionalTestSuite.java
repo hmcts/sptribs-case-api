@@ -46,6 +46,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
@@ -501,15 +503,13 @@ public abstract class FunctionalTestSuite {
     private void generateAndSetUuidInCaseDataAndDB(Map<String, Object> caseData, Long testCaseRef) throws SQLException, IOException {
         String caseDataJsonString = JSON.getDefault().toJSON(caseData);
 
-        while (caseDataJsonString.contains("${UUID}")) {
-            String documentUrlUuid = UUID.randomUUID().toString();
-            caseDataJsonString = caseDataJsonString.replaceFirst(
-                    "http://dm-store.service.core-compute.internal/documents/\\$\\{UUID}",
-                    "http://dm-store.service.core-compute.internal/documents/" +  documentUrlUuid)
-                .replaceFirst("http://dm-store.service.core-compute.internal/documents/\\$\\{UUID}",
-                    "http://dm-store.service.core-compute.internal/documents/" + documentUrlUuid);
+        Pattern pattern = Pattern.compile("\\$\\{UUID(\\d+)}");
+        Matcher matcher = pattern.matcher(caseDataJsonString);
 
-            caseDocumentsFTDataManager.saveTestDocumentEntity(testCaseRef, documentUrlUuid);
+        while (matcher.find()) {
+            String uuid = UUID.randomUUID().toString();
+            caseDataJsonString = caseDataJsonString.replace(matcher.group(), uuid);
+            caseDocumentsFTDataManager.saveTestDocumentEntity(testCaseRef, uuid);
         }
 
         caseData.clear();

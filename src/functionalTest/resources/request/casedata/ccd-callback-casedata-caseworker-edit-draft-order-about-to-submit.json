@@ -4,9 +4,9 @@
   "orderContentMainContent": "Lorem ipsum main content",
   "orderContentOrderSignature": "Lorem ipsum signature",
   "cicCaseOrderTemplateIssued": {
-    "document_url": "http://dm-store.service.core-compute.internal/documents/0ebad3a7-223e-4185-b8ce-ccb50a87e982",
+    "document_url": "http://dm-store.service.core-compute.internal/documents/${UUID1}",
     "document_filename": "DRAFT :Order--[null]--09-05-2024 15:11:08.pdf",
-    "document_binary_url": "http://dm-store.service.core-compute.internal/documents/0ebad3a7-223e-4185-b8ce-ccb50a87e982/binary",
+    "document_binary_url": "http://dm-store.service.core-compute.internal/documents/${UUID1}/binary",
     "category_id": "TD"
   },
   "cicCaseDraftOrderDynamicList": {
@@ -28,9 +28,9 @@
       "id": "1",
       "value": {
         "templateGeneratedDocument": {
-          "document_url": "http://dm-store.service.core-compute.internal/documents/6bcdb209-ba65-4f31-a12a-5abbdf250fb6",
+          "document_url": "http://dm-store.service.core-compute.internal/documents/${UUID2}",
           "document_filename": "DRAFT :Order--[Subject AutoTesting]--09-05-2024 09:04:04.pdf",
-          "document_binary_url": "http://dm-store.service.core-compute.internal/documents/6bcdb209-ba65-4f31-a12a-5abbdf250fb6/binary",
+          "document_binary_url": "http://dm-store.service.core-compute.internal/documents/${UUID2}/binary",
           "category_id": "TD"
         },
         "orderContentOrderTemplate": "CIC3_Rule_27",
