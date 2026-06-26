@@ -41,4 +41,13 @@ public interface DocumentsRepository extends JpaRepository<DocumentEntity, Integ
         """)
     List<DocumentEntity> findAllDocumentsByCaseReference(
         @Param("caseReferenceNumber") Long caseReferenceNumber);
+
+    @Modifying
+    @Query("""
+            DELETE
+            FROM DocumentEntity d
+            WHERE d.documentBinaryUrl = :documentBinaryUrl
+        """)
+    void deleteEntryByBinaryURL(
+        @Param("documentBinaryUrl") String documentBinaryUrl);
 }
