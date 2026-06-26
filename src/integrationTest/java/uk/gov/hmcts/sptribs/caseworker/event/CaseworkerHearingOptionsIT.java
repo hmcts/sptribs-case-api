@@ -17,6 +17,7 @@ import uk.gov.hmcts.ccd.sdk.type.DynamicList;
 import uk.gov.hmcts.ccd.sdk.type.DynamicListElement;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
+import uk.gov.hmcts.sptribs.IntegrationTestBase;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.common.config.WebMvcConfig;
 import uk.gov.hmcts.sptribs.recordlisting.model.HearingVenue;
@@ -62,7 +63,7 @@ import static uk.gov.hmcts.sptribs.testutil.TestResourceUtil.expectedResponse;
     IdamWireMock.PropertiesInitializer.class,
     RefDataLocationWireMock.PropertiesInitializer.class
 })
-public class CaseworkerHearingOptionsIT {
+public class CaseworkerHearingOptionsIT extends IntegrationTestBase {
 
     private static final String CASEWORKER_HEARING_OPTIONS_ABOUT_TO_START_RESPONSE =
         "classpath:responses/caseworker-hearing-options-about-to-start-response.json";

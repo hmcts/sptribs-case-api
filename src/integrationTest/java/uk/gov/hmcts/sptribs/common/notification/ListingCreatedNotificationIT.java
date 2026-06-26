@@ -10,6 +10,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.ccd.sdk.type.AddressGlobalUK;
+import uk.gov.hmcts.sptribs.IntegrationTestBase;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.notification.NotificationServiceCIC;
@@ -43,7 +44,7 @@ import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getRecordListing;
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
-public class ListingCreatedNotificationIT {
+public class ListingCreatedNotificationIT extends IntegrationTestBase {
 
     @MockitoBean
     private NotificationServiceCIC notificationServiceCIC;

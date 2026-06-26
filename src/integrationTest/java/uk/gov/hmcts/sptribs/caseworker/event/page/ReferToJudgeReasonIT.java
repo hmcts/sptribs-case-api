@@ -12,6 +12,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
+import uk.gov.hmcts.sptribs.IntegrationTestBase;
 import uk.gov.hmcts.sptribs.caseworker.model.ReferToJudge;
 import uk.gov.hmcts.sptribs.caseworker.model.ReferralReason;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
@@ -35,8 +36,7 @@ import static uk.gov.hmcts.sptribs.testutil.TestResourceUtil.expectedResponse;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
 @ContextConfiguration(initializers = {IdamWireMock.PropertiesInitializer.class})
-public class ReferToJudgeReasonIT {
-
+public class ReferToJudgeReasonIT extends IntegrationTestBase {
     private static final String REFER_TO_JUDGE_REASON_RESPONSE =
         "classpath:responses/refer-to-judge-reason-mid-event-response.json";
 

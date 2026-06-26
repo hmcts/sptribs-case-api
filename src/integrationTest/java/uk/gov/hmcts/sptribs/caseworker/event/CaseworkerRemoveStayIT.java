@@ -13,6 +13,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
+import uk.gov.hmcts.sptribs.IntegrationTestBase;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseStay;
 import uk.gov.hmcts.sptribs.caseworker.model.RemoveCaseStay;
 import uk.gov.hmcts.sptribs.caseworker.model.StayReason;
@@ -65,7 +66,7 @@ import static uk.gov.hmcts.sptribs.testutil.TestResourceUtil.expectedResponse;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
 @ContextConfiguration(initializers = {IdamWireMock.PropertiesInitializer.class})
-public class CaseworkerRemoveStayIT {
+public class CaseworkerRemoveStayIT extends IntegrationTestBase {
     private static final String CASEWORKER_REMOVE_STAY_ABOUT_TO_START_RESPONSE =
         "classpath:responses/caseworker-remove-stay-about-to-start-response.json";
     private static final String CASEWORKER_REMOVE_STAY_ABOUT_TO_SUBMIT_RESPONSE =

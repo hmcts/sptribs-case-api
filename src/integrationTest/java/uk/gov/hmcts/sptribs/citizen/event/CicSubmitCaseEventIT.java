@@ -14,6 +14,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
+import uk.gov.hmcts.sptribs.IntegrationTestBase;
 import uk.gov.hmcts.sptribs.caseworker.model.EditCicaCaseDetails;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.DssCaseData;
@@ -64,7 +65,7 @@ import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.caseData;
 @AutoConfigureMockMvc
 @ContextConfiguration(initializers = {IdamWireMock.PropertiesInitializer.class})
 @ActiveProfiles("integration")
-public class CicSubmitCaseEventIT {
+public class CicSubmitCaseEventIT extends IntegrationTestBase {
 
     @Autowired
     private MockMvc mockMvc;

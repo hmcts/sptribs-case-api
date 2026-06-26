@@ -11,6 +11,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.hmcts.reform.authorisation.exceptions.InvalidTokenException;
 import uk.gov.hmcts.reform.authorisation.validators.AuthTokenValidator;
+import uk.gov.hmcts.sptribs.IntegrationTestBase;
 
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -32,7 +33,7 @@ import static uk.gov.hmcts.sptribs.testutil.TestConstants.SUBMITTED_URL;
         "s2s.stub=false"
     }
 )
-public class RequestInterceptorIT {
+public class RequestInterceptorIT extends IntegrationTestBase {
 
     private static final String INVALID_AUTH_WITH_BEARER = "Bearer " + INVALID_AUTH_TOKEN;
     private static final String AUTH_HEADER_WITH_BEARER = "Bearer " + AUTH_HEADER_VALUE;
