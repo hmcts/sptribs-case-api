@@ -25,10 +25,18 @@ public abstract class IntegrationTestBase {
 
     private List<IntegrationTestDataManager> dataManagerList;
 
-    @Container
+//    @Container
+//    @ServiceConnection
+//    static PostgreSQLContainer<?> postgreSQLContainer =
+//        new PostgreSQLContainer<>("postgres:16").withReuse(true);
+
     @ServiceConnection
-    static PostgreSQLContainer<?> postgreSQLContainer =
-        new PostgreSQLContainer<>("postgres:16");
+    static final PostgreSQLContainer<?> postgreSQLContainer;
+
+    static {
+        postgreSQLContainer = new PostgreSQLContainer<>("postgres:16");
+        postgreSQLContainer.start();
+    }
 
     @PostConstruct
     void setup() {
