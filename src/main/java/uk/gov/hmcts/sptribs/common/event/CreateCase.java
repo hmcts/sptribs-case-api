@@ -37,6 +37,7 @@ import uk.gov.hmcts.sptribs.common.event.page.SelectParties;
 import uk.gov.hmcts.sptribs.common.event.page.SubjectDetails;
 import uk.gov.hmcts.sptribs.common.service.CcdSupplementaryDataService;
 import uk.gov.hmcts.sptribs.common.service.SubmissionService;
+import uk.gov.hmcts.sptribs.document.model.CaseDocumentType;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocumentUpload;
 import uk.gov.hmcts.sptribs.document.service.DocumentsService;
@@ -154,9 +155,8 @@ public class CreateCase implements CCDConfig<CaseData, State, UserRole> {
                     documentsService.buildAndSaveNewDocumentEntity(
                         document.getValue().getDocumentLink(),
                         details.getId(),
-                        false,
                         document.getValue().getDocumentCategory(),
-                        false
+                        CaseDocumentType.CASEWORKER
                     );
                 } catch (RuntimeException e) {
                     log.error("Saving applicant documents failed with exception: {}", e.getMessage());
