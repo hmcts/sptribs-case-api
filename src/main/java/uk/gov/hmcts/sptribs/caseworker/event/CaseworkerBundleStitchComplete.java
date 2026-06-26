@@ -1,6 +1,6 @@
 package uk.gov.hmcts.sptribs.caseworker.event;
 
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -33,7 +33,7 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 @Component
 @Slf4j
 @Setter
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class CaseworkerBundleStitchComplete implements CCDConfig<CaseData, State, UserRole> {
 
     private static final String ALWAYS_HIDE = "[STATE]=\"ALWAYS_HIDE\"";
