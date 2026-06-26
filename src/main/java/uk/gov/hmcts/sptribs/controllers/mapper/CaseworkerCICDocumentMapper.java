@@ -20,7 +20,8 @@ public class CaseworkerCICDocumentMapper {
 
         return CaseworkerCICDocument.builder()
             .documentLink(document)
-            .documentCategory(DocumentType.valueOf(entity.getDocumentTypeName()))
+            .documentCategory(entity.getDocumentTypeName() != null ? DocumentType.valueOf(entity.getDocumentTypeName())
+                : null)
             .date(entity.getSavedAt().toLocalDate())
             .build();
     }

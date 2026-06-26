@@ -45,6 +45,34 @@ class CaseworkerCICDocumentMapperTest {
     }
 
     @Test
+    void shouldMapDocumentEntityToCaseworkerCicDocumentWithNullDocTypeName() {
+        // Given
+        OffsetDateTime savedAt = OffsetDateTime.parse("2026-06-05T10:15:30Z");
+
+        DocumentEntity entity = DocumentEntity.builder()
+            .documentFilename("test-document.pdf")
+            .documentUrl("http://test-url")
+            .savedAt(savedAt)
+            .build();
+
+        // When
+        CaseworkerCICDocument result = mapper.map(entity);
+
+        // Then
+        assertThat(result).isNotNull();
+
+        Document document = result.getDocumentLink();
+        assertThat(document.getUrl()).isEqualTo("http://test-url");
+        assertThat(document.getFilename()).isEqualTo("test-document.pdf");
+
+        assertThat(result.getDocumentCategory())
+            .isEqualTo(null);
+
+        assertThat(result.getDate())
+            .isEqualTo(savedAt.toLocalDate());
+    }
+
+    @Test
     void shouldMapListOfDocumentEntities() {
         // Given
         DocumentEntity entity1 = DocumentEntity.builder()
