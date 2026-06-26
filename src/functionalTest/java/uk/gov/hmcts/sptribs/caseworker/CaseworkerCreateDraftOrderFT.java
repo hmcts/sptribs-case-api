@@ -4,6 +4,7 @@ import io.restassured.response.Response;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import uk.gov.hmcts.sptribs.document.model.DocumentEntity;
+import uk.gov.hmcts.sptribs.document.model.DocumentType;
 import uk.gov.hmcts.sptribs.testutil.FunctionalTestSuite;
 
 import java.util.List;
@@ -81,9 +82,9 @@ public class CaseworkerCreateDraftOrderFT extends FunctionalTestSuite {
         assertThat(firstDocumentEntity.getId()).isNotNull();
         assertThat(firstDocumentEntity.getCaseReferenceNumber()).isEqualTo(Long.parseLong(caseData.get("hyphenatedCaseRef")
             .toString().replace("-", "")));
-        assertThat(firstDocumentEntity.getCategoryId()).isEqualTo("TD");
+        assertThat(firstDocumentEntity.getDocumentTypeName()).isEqualTo(DocumentType.TRIBUNAL_DIRECTION.name());
+        assertThat(firstDocumentEntity.getCaseDocumentTypeId()).isEqualTo(5L);
         assertThat(firstDocumentEntity.getSavedAt()).isNotNull();
-        assertThat(firstDocumentEntity.isDraft()).isTrue();
         assertThat(firstDocumentEntity.isSentToApplicantViaContactParties()).isFalse();
         assertThat(firstDocumentEntity.getDocumentUrl()).isNotNull();
         assertThat(firstDocumentEntity.getDocumentFilename()).isNotNull();
@@ -110,9 +111,9 @@ public class CaseworkerCreateDraftOrderFT extends FunctionalTestSuite {
         assertThat(firstDocumentEntity.getId()).isNotNull();
         assertThat(firstDocumentEntity.getCaseReferenceNumber()).isEqualTo(Long.parseLong(caseData.get("hyphenatedCaseRef")
             .toString().replace("-", "")));
-        assertThat(firstDocumentEntity.getCategoryId()).isEqualTo("TD");
+        assertThat(firstDocumentEntity.getDocumentTypeName()).isEqualTo(DocumentType.TRIBUNAL_DIRECTION.name());
+        assertThat(firstDocumentEntity.getCaseDocumentTypeId()).isEqualTo(5L);
         assertThat(firstDocumentEntity.getSavedAt()).isNotNull();
-        assertThat(firstDocumentEntity.isDraft()).isTrue();
         assertThat(firstDocumentEntity.isSentToApplicantViaContactParties()).isFalse();
         assertThat(firstDocumentEntity.getDocumentUrl()).isNotNull();
         assertThat(firstDocumentEntity.getDocumentFilename()).isNotNull();

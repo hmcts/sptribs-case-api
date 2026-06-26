@@ -16,6 +16,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.common.service.AuditEventService;
+import uk.gov.hmcts.sptribs.document.model.CaseDocumentType;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocumentUpload;
 import uk.gov.hmcts.sptribs.document.service.DocumentsService;
@@ -116,12 +117,14 @@ public class RespondentDocumentManagement implements CCDConfig<CaseData, State, 
         }
 
         List<String> errors = new ArrayList<>();
+
         for (ListValue<CaseworkerCICDocument> document : documents) {
             try {
                 documentsService.buildAndSaveNewDocumentEntity(
                     document.getValue().getDocumentLink(),
                     details.getId(),
-                    false, false
+                    document.getValue().getDocumentCategory(),
+                    CaseDocumentType.RESPONDENT
                 );
             } catch (RuntimeException e) {
                 errors.add(handleDocumentException(document.getValue().getDocumentLink(), e.getMessage()));

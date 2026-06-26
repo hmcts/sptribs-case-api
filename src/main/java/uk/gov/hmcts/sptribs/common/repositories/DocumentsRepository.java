@@ -23,16 +23,22 @@ public interface DocumentsRepository extends JpaRepository<DocumentEntity, Integ
     );
 
     @Modifying
-    @Query("update DocumentEntity d set d.isDraft = false where d.documentBinaryUrl = :documentBinaryUrl")
-    void setIsDraftToFalseByDocumentBinaryUrl(@Param("documentBinaryUrl") String documentBinaryUrl);
+    @Query("""
+        update DocumentEntity d
+        set d.caseDocumentTypeId = :documentTypeId
+        where d.documentBinaryUrl = :documentBinaryUrl
+        """)
+    void updateDocumentTypeByDocumentBinaryUrl(
+        @Param("documentBinaryUrl") String documentBinaryUrl,
+        @Param("documentTypeId") Long documentTypeId
+    );
 
     @Query("""
             SELECT d
             FROM DocumentEntity d
             WHERE d.caseReferenceNumber = :caseReferenceNumber
-              AND d.isDraft = false
             ORDER BY d.savedAt DESC
         """)
-    List<DocumentEntity> findAllNonDraftDocumentsByCaseReference(
+    List<DocumentEntity> findAllDocumentsByCaseReference(
         @Param("caseReferenceNumber") Long caseReferenceNumber);
 }

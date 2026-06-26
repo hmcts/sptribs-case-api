@@ -4,21 +4,11 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.Data;
 
 @Entity
 @Table(name = "case_document_types")
-@Getter
-@Setter
-@ToString
-@RequiredArgsConstructor
-@AllArgsConstructor
-@Builder
+@Data
 public class CaseDocumentTypesEntity {
 
     @Id
@@ -29,5 +19,8 @@ public class CaseDocumentTypesEntity {
 
     @Column(name = "name", nullable = false)
     private String name;
+
+    @Column(name = "description")
+    private String description;
 
 }

@@ -32,6 +32,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.SubjectCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.CcdCaseType;
 import uk.gov.hmcts.sptribs.common.config.AppsConfig;
+import uk.gov.hmcts.sptribs.document.model.CaseDocumentType;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.document.model.CitizenCICDocument;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
@@ -304,8 +305,8 @@ public class CicSubmitCaseEvent implements CCDConfig<CaseData, State, UserRole> 
                 documentsService.buildAndSaveNewDocumentEntity(
                     document.getValue().getDocumentLink(),
                     Long.parseLong(caseData.getHyphenatedCaseRef().replace("-", "")),
-                    false,
-                    false
+                    document.getValue().getDocumentCategory(),
+                    CaseDocumentType.APPLICANT
                 );
             } catch (RuntimeException e) {
                 errors.add(handleDocumentException(document.getValue().getDocumentLink(), e.getMessage()));

@@ -28,6 +28,8 @@ import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.document.CaseDataDocumentService;
 import uk.gov.hmcts.sptribs.document.model.CICDocument;
+import uk.gov.hmcts.sptribs.document.model.CaseDocumentType;
+import uk.gov.hmcts.sptribs.document.model.DocumentType;
 import uk.gov.hmcts.sptribs.document.service.DocumentsService;
 import uk.gov.hmcts.sptribs.notification.dispatcher.CaseFinalDecisionIssuedNotification;
 
@@ -133,12 +135,13 @@ public class CaseworkerIssueFinalDecision implements CCDConfig<CaseData, State, 
         List<String> errors = new ArrayList<>();
 
         if (finalDecisionDocument != null) {
-            finalDecisionDocument.getDocumentLink().setCategoryId("TD");
+            finalDecisionDocument.getDocumentLink().setCategoryId(DocumentType.TRIBUNAL_DIRECTION.getCategory());
             try {
                 documentsService.buildAndSaveNewDocumentEntity(
                     finalDecisionDocument.getDocumentLink(),
                     details.getId(),
-                    false, false
+                    DocumentType.TRIBUNAL_DIRECTION,
+                    CaseDocumentType.FINAL_DECISION
                 );
             } catch (RuntimeException e) {
                 errors.add(handleDocumentException(finalDecisionDocument.getDocumentLink(), e.getMessage()));

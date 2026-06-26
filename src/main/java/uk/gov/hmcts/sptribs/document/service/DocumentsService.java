@@ -10,6 +10,8 @@ import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.common.repositories.DocumentsRepository;
+import uk.gov.hmcts.sptribs.common.repositories.exception.document.DocumentSaveException;
+import uk.gov.hmcts.sptribs.common.repositories.exception.document.DocumentUpdateException;
 import uk.gov.hmcts.sptribs.document.model.CaseDocumentType;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.document.model.DocumentDashboardModel;
@@ -33,35 +35,23 @@ public class DocumentsService {
     private final DocumentsRepository documentsRepository;
     private final CaseDocumentTypesCache caseDocumentTypesCache;
 
-    public void buildAndSaveNewDocumentEntity(Document document, Long caseReferenceNumber, boolean isDraft, boolean isStitchedDocument) {
+    public void buildAndSaveNewDocumentEntity(Document document, Long caseReferenceNumber,
+                                              DocumentType documentType, CaseDocumentType caseDocumentType) {
         try {
-
-            CaseDocumentType caseDocumentType = getCaseDocumentType(document.getCategoryId(), isStitchedDocument);
 
             documentsRepository.save(DocumentEntity.builder()
                 .caseReferenceNumber(caseReferenceNumber)
                 .documentUrl(document.getUrl())
                 .documentFilename(document.getFilename())
                 .documentBinaryUrl(document.getBinaryUrl())
-                .categoryId(document.getCategoryId())
-                .documentTypeId(caseDocumentTypesCache.getId(caseDocumentType))
-                .isDraft(isDraft)
+                .documentTypeName(documentType != null ? documentType.name() : null)
+                .caseDocumentTypeId(caseDocumentTypesCache.getId(caseDocumentType))
                 .sentToApplicantViaContactParties(false)
                 .build());
 
         } catch (DataAccessException e) {
-            throw new RuntimeException("Error saving document entity to database", e);
+            throw new DocumentSaveException("Error saving document entity to database", e);
         }
-    }
-
-    private CaseDocumentType getCaseDocumentType(String categoryId, boolean isStitchedDocument) {
-
-        if (isStitchedDocument) {
-            return CaseDocumentType.BUNDLE;
-        } else {
-            return DocumentType.fromCategory(categoryId).getCaseDocumentType();
-        }
-
     }
 
     @Transactional
@@ -103,17 +93,20 @@ public class DocumentsService {
                 documentsRepository.setSentToApplicantViaContactPartiesToTrueByDocumentBinaryUrl(documentBinaryUrls);
             log.info("Document Repository updated {} documents to sent via contact parties.", rowsUpdated);
         } catch (DataAccessException e) {
-            throw new RuntimeException("Error updating sent_to_applicant_via_contact_parties to true", e);
+            throw new DocumentUpdateException("Error updating sent_to_applicant_via_contact_parties to true", e);
         }
     }
 
     @Transactional
-    public void setIsDraftToFalse(String documentBinaryUrl) {
+    public void updateDocumentToNonDraft(String documentBinaryUrl) {
+
         try {
-            documentsRepository.setIsDraftToFalseByDocumentBinaryUrl(documentBinaryUrl);
-            log.info("Draft order updated to non draft successfully for url: {}", documentBinaryUrl);
+            Long orderDocumentTypeId = caseDocumentTypesCache.getId(CaseDocumentType.ORDER);
+            documentsRepository.updateDocumentTypeByDocumentBinaryUrl(documentBinaryUrl, orderDocumentTypeId);
+            log.info("Draft order updated to non draft case document type successfully for url: {}", documentBinaryUrl);
+
         } catch (DataAccessException e) {
-            throw new RuntimeException("Error updating is_draft to false", e);
+            throw new DocumentUpdateException("Error updating case document type from draft order to order", e);
         }
     }
 
@@ -121,25 +114,29 @@ public class DocumentsService {
 
         //using 1 query then code rather than many queries
         List<DocumentEntity> allDocumentsOnCase =
-            documentsRepository.findAllNonDraftDocumentsByCaseReference(ccdReference);
+            documentsRepository.findAllDocumentsByCaseReference(ccdReference);
 
         List<DocumentEntity> contactPartiesDocuments = new ArrayList<>();
         List<DocumentEntity> orderAndDecisionDocuments = new ArrayList<>();
         List<DocumentEntity> bundleDocuments = new ArrayList<>();
 
+
+        //need to double check and maybe update the filters here
+        // to reflect new case doc types, will do this later
         Long tribunalDocumentTypeId =
-            caseDocumentTypesCache.getId(CaseDocumentType.TRIBUNAL_DOCUMENT);
+            caseDocumentTypesCache.getId(CaseDocumentType.ORDER);
 
         Long bundleDocumentTypeId =
             caseDocumentTypesCache.getId(CaseDocumentType.BUNDLE);
 
         for (DocumentEntity doc : allDocumentsOnCase) {
             //if doc order and sent out via contact parties it will appear in orders .
-            if (tribunalDocumentTypeId.equals(doc.getDocumentTypeId())) {
+            if (tribunalDocumentTypeId.equals(doc.getCaseDocumentTypeId())) {
                 orderAndDecisionDocuments.add(doc);
-            } else if (bundleDocumentTypeId.equals(doc.getDocumentTypeId())) {
+            } else if (bundleDocumentTypeId.equals(doc.getCaseDocumentTypeId())) {
                 bundleDocuments.add(doc);
             } else if (doc.isSentToApplicantViaContactParties()) {
+                //this will change with new work mapping correspondence to docs
                 contactPartiesDocuments.add(doc);
             }
         }

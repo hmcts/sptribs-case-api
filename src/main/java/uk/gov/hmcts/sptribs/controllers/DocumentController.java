@@ -38,7 +38,7 @@ public class DocumentController {
     private final CaseworkerCICDocumentMapper caseworkerCICDocumentMapper;
 
     @GetMapping(value = "/{ccdReference}/documents")
-    @Operation(summary = "Get Documents for a CCD reference")
+    @Operation(summary = "Get Documents for CIC case from a CCD reference number")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Documents retrieved successfully"),
         @ApiResponse(responseCode = "400", description = "Invalid CCD reference"),
