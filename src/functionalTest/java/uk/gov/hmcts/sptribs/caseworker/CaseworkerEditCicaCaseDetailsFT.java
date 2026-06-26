@@ -26,7 +26,7 @@ public class CaseworkerEditCicaCaseDetailsFT extends FunctionalTestSuite {
     public void shouldReceiveValidResponseWhenSubmittedCallbackIsInvoked() throws Exception {
         final Map<String, Object> caseData = caseData(CALLBACK_REQUEST);
 
-        final Response response = triggerCallback(caseData, CASEWORKER_EDIT_CICA_CASE_DETAILS, SUBMITTED_URL);
+        final Response response = triggerCallback(caseData, CASEWORKER_EDIT_CICA_CASE_DETAILS, SUBMITTED_URL, false);
 
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
         assertThatJson(response.asString())

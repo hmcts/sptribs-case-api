@@ -38,7 +38,7 @@ public class CaseworkerManageOrderDueDataFT extends FunctionalTestSuite {
     @Test
     public void shouldSuccessfullyInitialiseDynamicListWhenAboutToStartCallbackIsInvoked() throws Exception {
         final Map<String, Object> caseData = caseData(REQUEST_ABOUT_TO_START);
-        final Response response = triggerCallback(caseData, CASEWORKER_AMEND_DUE_DATE, ABOUT_TO_START_URL);
+        final Response response = triggerCallback(caseData, CASEWORKER_AMEND_DUE_DATE, ABOUT_TO_START_URL, false);
 
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
         assertThatJson(response.asString())
@@ -50,7 +50,7 @@ public class CaseworkerManageOrderDueDataFT extends FunctionalTestSuite {
     @Test
     public void shouldSuccessfullyReturnOrderListsWhenAboutToSubmitCallbackIsInvoked() throws Exception {
         final Map<String, Object> caseData = caseData(CALLBACK_REQUEST);
-        final Response response = triggerCallback(caseData, CASEWORKER_AMEND_DUE_DATE, ABOUT_TO_SUBMIT_URL);
+        final Response response = triggerCallback(caseData, CASEWORKER_AMEND_DUE_DATE, ABOUT_TO_SUBMIT_URL, false);
 
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
         assertThatJson(response.asString())
@@ -62,7 +62,7 @@ public class CaseworkerManageOrderDueDataFT extends FunctionalTestSuite {
     @Test
     public void shouldTriggerSuccessfulResponseIfSubmittedCallbackIsInvoked() throws Exception {
         final Map<String, Object> caseData = caseData(CALLBACK_REQUEST);
-        final Response response = triggerCallback(caseData, CASEWORKER_AMEND_DUE_DATE, SUBMITTED_URL);
+        final Response response = triggerCallback(caseData, CASEWORKER_AMEND_DUE_DATE, SUBMITTED_URL, false);
 
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
         assertThatJson(response.asString())

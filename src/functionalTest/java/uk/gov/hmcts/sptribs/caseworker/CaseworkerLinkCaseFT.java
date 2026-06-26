@@ -29,7 +29,7 @@ public class CaseworkerLinkCaseFT extends FunctionalTestSuite {
     @Test
     public void shouldGiveInvalidResponseWhenBadSubmittedCallbackIsInvoked() throws Exception {
         final Map<String, Object> caseData = caseData(REQUEST_SUBMITTED_UNHAPPY_PATH);
-        final Response response = triggerCallback(caseData, CASEWORKER_LINK_CASE, SUBMITTED_URL);
+        final Response response = triggerCallback(caseData, CASEWORKER_LINK_CASE, SUBMITTED_URL, false);
 
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
         assertThatJson(response.asString())
@@ -41,7 +41,7 @@ public class CaseworkerLinkCaseFT extends FunctionalTestSuite {
     @Test
     public void shouldGiveValidResponseWhenSubmittedCallbackIsInvoked() throws Exception {
         final Map<String, Object> caseData = caseData(REQUEST_SUBMITTED_HAPPY_PATH);
-        final Response response = triggerCallback(caseData, CASEWORKER_LINK_CASE, SUBMITTED_URL);
+        final Response response = triggerCallback(caseData, CASEWORKER_LINK_CASE, SUBMITTED_URL, false);
 
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
         assertThatJson(response.asString())

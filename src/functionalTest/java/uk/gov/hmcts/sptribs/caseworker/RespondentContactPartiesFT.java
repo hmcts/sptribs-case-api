@@ -70,7 +70,8 @@ public class RespondentContactPartiesFT extends FunctionalTestSuite {
         final Response response = triggerCallback(
             caseData,
             RESPONDENT_CONTACT_PARTIES,
-            PARTIES_TO_CONTACT_MID_EVENT_URL
+            PARTIES_TO_CONTACT_MID_EVENT_URL,
+            false
         );
 
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
@@ -87,7 +88,8 @@ public class RespondentContactPartiesFT extends FunctionalTestSuite {
         final Response response = triggerCallback(
             caseData,
             RESPONDENT_CONTACT_PARTIES,
-            PARTIES_TO_CONTACT_MID_EVENT_URL
+            PARTIES_TO_CONTACT_MID_EVENT_URL,
+            false
         );
 
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
@@ -104,7 +106,8 @@ public class RespondentContactPartiesFT extends FunctionalTestSuite {
         final Response response = triggerCallback(
             caseData,
             RESPONDENT_CONTACT_PARTIES,
-            PARTIES_TO_CONTACT_MID_EVENT_URL
+            PARTIES_TO_CONTACT_MID_EVENT_URL,
+            false
         );
 
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
@@ -127,7 +130,8 @@ public class RespondentContactPartiesFT extends FunctionalTestSuite {
         final Response response = triggerCallback(
             caseData,
             RESPONDENT_CONTACT_PARTIES,
-            CONTACT_PARTIES_SELECT_DOCUMENT_MID_EVENT_URL
+            CONTACT_PARTIES_SELECT_DOCUMENT_MID_EVENT_URL,
+            false
         );
 
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
@@ -150,7 +154,8 @@ public class RespondentContactPartiesFT extends FunctionalTestSuite {
         final Response response = triggerCallback(
             caseData,
             RESPONDENT_CONTACT_PARTIES,
-            CONTACT_PARTIES_SELECT_DOCUMENT_MID_EVENT_URL
+            CONTACT_PARTIES_SELECT_DOCUMENT_MID_EVENT_URL,
+            false
         );
 
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
@@ -167,7 +172,8 @@ public class RespondentContactPartiesFT extends FunctionalTestSuite {
         final Response response = triggerCallback(
             caseData,
             RESPONDENT_CONTACT_PARTIES,
-            ABOUT_TO_START_URL
+            ABOUT_TO_START_URL,
+            false
         );
 
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
@@ -184,7 +190,8 @@ public class RespondentContactPartiesFT extends FunctionalTestSuite {
         final Response response = triggerCallback(
             caseData,
             RESPONDENT_CONTACT_PARTIES,
-            SUBMITTED_URL
+            SUBMITTED_URL,
+            false
         );
 
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
@@ -219,7 +226,8 @@ public class RespondentContactPartiesFT extends FunctionalTestSuite {
         final Response response = triggerCallback(
             caseData,
             RESPONDENT_CONTACT_PARTIES,
-            SUBMITTED_URL
+            SUBMITTED_URL,
+            false
         );
 
         assertThat(response.getStatusCode()).isEqualTo(OK.value());

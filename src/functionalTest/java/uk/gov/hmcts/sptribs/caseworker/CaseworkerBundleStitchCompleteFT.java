@@ -33,7 +33,8 @@ public class CaseworkerBundleStitchCompleteFT extends FunctionalTestSuite {
         final Response response = triggerCallback(
             caseData,
             CASEWORKER_BUNDLE_STITCH_COMPLETE,
-            SUBMITTED_URL
+            SUBMITTED_URL,
+            false
         );
 
         assertThat(response.getStatusCode()).isEqualTo(OK.value());

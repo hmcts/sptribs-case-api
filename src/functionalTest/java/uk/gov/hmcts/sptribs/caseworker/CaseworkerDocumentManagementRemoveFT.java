@@ -38,7 +38,7 @@ public class CaseworkerDocumentManagementRemoveFT extends FunctionalTestSuite {
     public void shouldInitialiseAllDocumentListsWhenAboutToStartCallbackIsInvoked() throws Exception {
         final Map<String, Object> caseData = caseData(REQUEST_ABOUT_TO_START);
 
-        final Response response = triggerCallback(caseData, CASEWORKER_DOCUMENT_MANAGEMENT_REMOVE, ABOUT_TO_START_URL);
+        final Response response = triggerCallback(caseData, CASEWORKER_DOCUMENT_MANAGEMENT_REMOVE, ABOUT_TO_START_URL, false);
 
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
         assertThatJson(response.asString())
@@ -51,7 +51,7 @@ public class CaseworkerDocumentManagementRemoveFT extends FunctionalTestSuite {
     public void shouldReturnEmptyDocumentListsWhenAboutToSubmitCallbackIsInvoked() throws Exception {
         final Map<String, Object> caseData = caseData(CALLBACK_REQUEST);
 
-        final Response response = triggerCallback(caseData, CASEWORKER_DOCUMENT_MANAGEMENT_REMOVE, ABOUT_TO_SUBMIT_URL);
+        final Response response = triggerCallback(caseData, CASEWORKER_DOCUMENT_MANAGEMENT_REMOVE, ABOUT_TO_SUBMIT_URL, false);
 
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
         assertThatJson(response.asString())
@@ -64,7 +64,7 @@ public class CaseworkerDocumentManagementRemoveFT extends FunctionalTestSuite {
     public void shouldReceiveValidResponseWhenSubmittedCallbackIsInvoked() throws Exception {
         final Map<String, Object> caseData = caseData(CALLBACK_REQUEST);
 
-        final Response response = triggerCallback(caseData, CASEWORKER_DOCUMENT_MANAGEMENT_REMOVE, SUBMITTED_URL);
+        final Response response = triggerCallback(caseData, CASEWORKER_DOCUMENT_MANAGEMENT_REMOVE, SUBMITTED_URL, false);
 
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
         assertThatJson(response.asString())

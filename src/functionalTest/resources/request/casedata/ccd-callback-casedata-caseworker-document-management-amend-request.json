@@ -18,8 +18,8 @@
   "cicCaseSelectedDocumentCategory": "ApplicationForm",
   "cicCaseSelectedDocumentEmailContent": "Lorem ipsum text A - Application Form",
   "cicCaseSelectedDocumentLink": {
-    "document_url": "http://dm-store.service.core-compute.internal/documents/467d1fd1-75bd-4760-b993-51be259daebe",
-    "document_binary_url": "http://dm-store.service.core-compute.internal/documents/467d1fd1-75bd-4760-b993-51be259daebe/binary",
+    "document_url": "http://dm-store.service.core-compute.internal/documents/${UUID1}",
+    "document_binary_url": "http://dm-store.service.core-compute.internal/documents/${UUID1}/binary",
     "document_filename": "mockFile.pdf"
   }
 }

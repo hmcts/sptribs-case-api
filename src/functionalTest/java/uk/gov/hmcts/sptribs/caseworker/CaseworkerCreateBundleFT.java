@@ -38,7 +38,7 @@ public class CaseworkerCreateBundleFT extends FunctionalTestSuite {
     @Test
     public void shouldCreateBundleInAboutToSubmitCallback() throws Exception {
         final Map<String, Object> caseData = caseData(REQUEST);
-        final Response response = triggerCallback(caseData, CREATE_BUNDLE, ABOUT_TO_SUBMIT_URL);
+        final Response response = triggerCallback(caseData, CREATE_BUNDLE, ABOUT_TO_SUBMIT_URL, false);
 
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
         assertThatJson(response.asString())
@@ -79,7 +79,7 @@ public class CaseworkerCreateBundleFT extends FunctionalTestSuite {
         final Map<String, Object> caseData = caseData(REQUEST);
         caseData.remove("caseBundleIdsAndTimestamps");
 
-        final Response response = triggerCallback(caseData, CREATE_BUNDLE, ABOUT_TO_SUBMIT_URL);
+        final Response response = triggerCallback(caseData, CREATE_BUNDLE, ABOUT_TO_SUBMIT_URL, false);
 
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
         assertThatJson(response.asString())
@@ -92,7 +92,7 @@ public class CaseworkerCreateBundleFT extends FunctionalTestSuite {
     public void shouldBeSuccessfulWhenSubmittedCallbackIsInvoked() throws Exception {
         final Map<String, Object> caseData = caseData(CALLBACK_REQUEST);
 
-        final Response response = triggerCallback(caseData, CREATE_BUNDLE, SUBMITTED_URL);
+        final Response response = triggerCallback(caseData, CREATE_BUNDLE, SUBMITTED_URL, false);
 
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
         assertThatJson(response.asString())
@@ -105,7 +105,7 @@ public class CaseworkerCreateBundleFT extends FunctionalTestSuite {
     public void shouldReturnFailureMessageWhenEmailCouldNotSendWhenSubmittedCallbackIsInvoked() throws Exception {
         final Map<String, Object> caseData = caseData(SUBMITTED_FAILURE_REQUEST);
 
-        final Response response = triggerCallback(caseData, CREATE_BUNDLE, SUBMITTED_URL);
+        final Response response = triggerCallback(caseData, CREATE_BUNDLE, SUBMITTED_URL, false);
 
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
         assertThatJson(response.asString())
