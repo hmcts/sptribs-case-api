@@ -34,9 +34,11 @@ public interface DocumentsRepository extends JpaRepository<DocumentEntity, Integ
         @Param("documentTypeName") String documentTypeName
     );
 
+    @Modifying
     @Query("""
         update DocumentEntity d
-        set d.caseDocumentTypeId = :caseDocumentTypeId
+        set d.caseDocumentTypeId = :caseDocumentTypeId,
+            d.updatedAt = current_instant()
         where d.documentBinaryUrl = :documentBinaryUrl
         """)
     void updateCaseDocumentTypeIdByDocumentBinaryUrl(
