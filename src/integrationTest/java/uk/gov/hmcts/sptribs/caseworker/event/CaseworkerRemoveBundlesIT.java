@@ -318,7 +318,7 @@ public class CaseworkerRemoveBundlesIT extends IntegrationTestBase {
 
         assertThat(removeBundlesLabels).hasSize(3);
 
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS");
 
         assertThat(removeBundlesLabels.getFirst().getLabel())
             .isEqualTo(bundleTimestamp1.format(formatter) + " -- " + "1-cicBundle.pdf");
