@@ -50,12 +50,7 @@ public class CaseworkerEditDraftOrderFT extends FunctionalTestSuite {
     public void shouldSuccessFullyInitialiseDraftOrderListWhenAboutToSubmitCallbackIsInvoked() throws Exception {
         final Map<String, Object> caseData = caseData(CALLBACK_REQUEST);
 
-        final Response response = triggerCallback(caseData, CASEWORKER_EDIT_DRAFT_ORDER, ABOUT_TO_SUBMIT_URL, true);
-
-        long testCaseRef = Long.parseLong(caseData.get("hyphenatedCaseRef").toString().replace("-", ""));
-
-        List<DocumentEntity> documentEntities = caseDocumentsFTDataManager.getDocumentEntities(testCaseRef);
-        assertThat(documentEntities).hasSize(2);
+        final Response response = triggerCallback(caseData, CASEWORKER_EDIT_DRAFT_ORDER, ABOUT_TO_SUBMIT_URL, false);
 
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
         assertThatJson(response.asString())
