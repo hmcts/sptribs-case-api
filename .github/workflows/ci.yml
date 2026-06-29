@@ -24,3 +24,6 @@ jobs:
           cache: 'gradle'
       - name: Run task
         run: ./gradlew ${{ matrix.task }}
+      - name: Run task management parity CFT lib test
+        if: matrix.task == 'check'
+        run: ./gradlew cftlibTest -PcftlibSelectClass=uk.gov.hmcts.sptribs.cftlib.TaskManagementParityCftlibTest
