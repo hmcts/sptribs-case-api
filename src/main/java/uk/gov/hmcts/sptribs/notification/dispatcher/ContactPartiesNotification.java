@@ -28,7 +28,7 @@ public class ContactPartiesNotification implements PartiesNotification {
     private final NotificationHelper notificationHelper;
 
     @Override
-    public void sendToSubject(final CaseData caseData, final String caseNumber, final Map<String, String> uploadedDocuments) {
+    public String sendToSubject(final CaseData caseData, final String caseNumber, final Map<String, String> uploadedDocuments) {
         final CicCase cicCase = caseData.getCicCase();
         final Map<String, Object> templateVarsSubject = notificationHelper.getSubjectCommonVars(caseNumber, caseData);
         templateVarsSubject.put(CommonConstants.CIC_CASE_SUBJECT_NAME, cicCase.getFullName());
@@ -49,12 +49,12 @@ public class ContactPartiesNotification implements PartiesNotification {
             notificationResponse = sendLetterNotification(templateVarsSubject, TemplateName.CONTACT_PARTIES_POST, caseNumber);
         }
         cicCase.setSubjectLetterNotifyList(notificationResponse);
-
         //we have the id in the notification response ......
+        return notificationResponse.getId();
     }
 
     @Override
-    public void sendToApplicant(final CaseData caseData, final String caseNumber, final Map<String, String> uploadedDocuments) {
+    public String sendToApplicant(final CaseData caseData, final String caseNumber, final Map<String, String> uploadedDocuments) {
         final CicCase cicCase = caseData.getCicCase();
         final Map<String, Object> templateVarsApplicant = notificationHelper.getApplicantCommonVars(caseNumber, caseData);
         templateVarsApplicant.put(CommonConstants.CIC_CASE_SUBJECT_NAME, cicCase.getFullName());
@@ -76,10 +76,11 @@ public class ContactPartiesNotification implements PartiesNotification {
         }
 
         cicCase.setAppNotificationResponse(notificationResponse);
+        return notificationResponse.getId();
     }
 
     @Override
-    public void sendToRepresentative(final CaseData caseData, final String caseNumber, final Map<String, String> uploadedDocuments) {
+    public String sendToRepresentative(final CaseData caseData, final String caseNumber, final Map<String, String> uploadedDocuments) {
         final CicCase cicCase = caseData.getCicCase();
         final Map<String, Object> templateVarsRepresentative = notificationHelper.getRepresentativeCommonVars(caseNumber, caseData);
         templateVarsRepresentative.put(CommonConstants.CIC_CASE_SUBJECT_NAME, cicCase.getFullName());
@@ -102,10 +103,11 @@ public class ContactPartiesNotification implements PartiesNotification {
         }
 
         cicCase.setRepNotificationResponse(notificationResponse);
+        return notificationResponse.getId();
     }
 
     @Override
-    public void sendToRespondent(final CaseData caseData, final String caseNumber, final Map<String, String> uploadedDocuments) {
+    public String sendToRespondent(final CaseData caseData, final String caseNumber, final Map<String, String> uploadedDocuments) {
         final CicCase cicCase = caseData.getCicCase();
         final Map<String, Object> templateVarsRespondent = notificationHelper.getRespondentCommonVars(caseNumber, caseData);
         templateVarsRespondent.put(CommonConstants.CIC_CASE_SUBJECT_NAME, cicCase.getFullName());
@@ -126,10 +128,11 @@ public class ContactPartiesNotification implements PartiesNotification {
         }
 
         cicCase.setResNotificationResponse(notificationResponse);
+        return notificationResponse.getId();
     }
 
     @Override
-    public void sendToTribunal(final CaseData caseData, final String caseNumber, final Map<String, String> uploadedDocuments) {
+    public String sendToTribunal(final CaseData caseData, final String caseNumber, final Map<String, String> uploadedDocuments) {
         final CicCase cicCase = caseData.getCicCase();
         final Map<String, Object> templateVarsTribunal = notificationHelper.getTribunalCommonVars(caseNumber, caseData);
         templateVarsTribunal.put(CommonConstants.CIC_CASE_TRIBUNAL_NAME, TRIBUNAL_NAME_VALUE);
@@ -149,6 +152,7 @@ public class ContactPartiesNotification implements PartiesNotification {
         }
 
         cicCase.setTribunalNotificationResponse(notificationResponse);
+        return notificationResponse.getId();
     }
 
     private NotificationResponse sendEmailNotification(final Map<String, Object> templateVars,

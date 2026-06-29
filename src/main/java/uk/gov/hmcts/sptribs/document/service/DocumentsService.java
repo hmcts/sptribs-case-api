@@ -56,7 +56,7 @@ public class DocumentsService {
     }
 
     @Transactional
-    public void updateDocumentsToSentViaContactParties(CaseData caseData, final Map<String, String> uploadedDocuments) {
+    public List<Long> updateDocumentsToSentViaContactParties(CaseData caseData, final Map<String, String> uploadedDocuments) {
 
         List<ListValue<CaseworkerCICDocument>> allCaseDocuments =  getAllCaseDocuments(caseData);
         Set<String> uploadedDocumentIds = new HashSet<>(uploadedDocuments.values());
@@ -71,7 +71,7 @@ public class DocumentsService {
             }
         }
 
-        setSentToApplicantViaContactPartiesToTrue(binaryUrls);
+        return setSentToApplicantViaContactPartiesToTrue(binaryUrls);
     }
 
     private String getDocumentId(CaseworkerCICDocument document) {
@@ -88,11 +88,13 @@ public class DocumentsService {
             .getBinaryUrl();
     }
 
-    public void setSentToApplicantViaContactPartiesToTrue(List<String> documentBinaryUrls) {
+    public List<Long> setSentToApplicantViaContactPartiesToTrue(List<String> documentBinaryUrls) {
         try {
+            List<Long> documentIds = documentsRepository.findIdsByDocumentBinaryUrls(documentBinaryUrls);
             int rowsUpdated =
                 documentsRepository.setSentToApplicantViaContactPartiesToTrueByDocumentBinaryUrl(documentBinaryUrls);
             log.info("Document Repository updated {} documents to sent via contact parties.", rowsUpdated);
+            return documentIds;
         } catch (DataAccessException e) {
             throw new DocumentUpdateException("Error updating sent_to_applicant_via_contact_parties to true", e);
         }

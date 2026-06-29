@@ -12,6 +12,15 @@ import java.util.List;
 @Repository
 public interface DocumentsRepository extends JpaRepository<DocumentEntity, Integer> {
 
+    @Query("""
+        select d.id
+        from DocumentEntity d
+        where d.documentBinaryUrl in :documentUrls
+        """)
+    List<Long> findIdsByDocumentBinaryUrls(
+        @Param("documentUrls") List<String> documentUrls
+    );
+
     @Modifying
     @Query("""
         update DocumentEntity d
