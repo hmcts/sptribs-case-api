@@ -101,7 +101,7 @@ public abstract class FunctionalTestSuite {
     protected CaseDetails createCaseInCcd() {
         String caseworkerToken = idamTokenGenerator.generateIdamTokenForCaseworker();
         String s2sTokenForCaseApi = serviceAuthenticationGenerator.generate();
-        String caseworkerUserId = idamTokenGenerator.getUserDetailsFor(caseworkerToken).getUid();
+        String caseworkerUserId = idamTokenGenerator.getUserInfoFor(caseworkerToken).getUid();
         StartEventResponse startEventResponse = startEventForCreateCase(caseworkerToken, s2sTokenForCaseApi, caseworkerUserId);
 
         CaseDataContent caseDataContent = CaseDataContent.builder()

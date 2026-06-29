@@ -119,7 +119,7 @@ public class IdamTokenGenerator {
         return userToken;
     }
 
-    public UserInfo getUserDetailsFor(final String token) {
+    public UserInfo getUserInfoFor(final String token) {
         return idamClient.getUserInfo(token);
     }
 }
