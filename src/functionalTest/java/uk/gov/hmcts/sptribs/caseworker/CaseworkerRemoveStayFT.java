@@ -35,7 +35,7 @@ public class CaseworkerRemoveStayFT extends FunctionalTestSuite {
     public void shouldReturnPositiveResponseWhenAboutToStartCallbackIsInvoked() throws Exception {
         final Map<String, Object> caseData = caseData(CALLBACK_ABOUT_TO_START);
 
-        final Response response = triggerCallback(caseData, CASEWORKER_REMOVE_STAY, ABOUT_TO_START_URL);
+        final Response response = triggerCallback(caseData, CASEWORKER_REMOVE_STAY, ABOUT_TO_START_URL, false);
 
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
     }
@@ -44,7 +44,7 @@ public class CaseworkerRemoveStayFT extends FunctionalTestSuite {
     public void shouldChangeStateWhenAboutToSubmitCallbackIsInvoked() throws Exception {
         final Map<String, Object> caseData = caseData(CALLBACK_REQUEST);
 
-        final Response response = triggerCallback(caseData, CASEWORKER_REMOVE_STAY, ABOUT_TO_SUBMIT_URL);
+        final Response response = triggerCallback(caseData, CASEWORKER_REMOVE_STAY, ABOUT_TO_SUBMIT_URL, false);
 
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
         assertThatJson(response.asString())
@@ -57,7 +57,7 @@ public class CaseworkerRemoveStayFT extends FunctionalTestSuite {
     public void shouldReturnHappyResponseWhenValidSubmittedCallbackIsInvoked() throws Exception {
         final Map<String, Object> caseData = caseData(CALLBACK_REQUEST);
 
-        final Response response = triggerCallback(caseData, CASEWORKER_REMOVE_STAY, SUBMITTED_URL);
+        final Response response = triggerCallback(caseData, CASEWORKER_REMOVE_STAY, SUBMITTED_URL, false);
 
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
         assertThatJson(response.asString())
@@ -89,7 +89,7 @@ public class CaseworkerRemoveStayFT extends FunctionalTestSuite {
     public void shouldReturnUnhappyResponseWhenInvalidSubmittedCallbackIsInvoked() throws Exception {
         final Map<String, Object> caseData = caseData(CALLBACK_SUBMITTED_UNHAPPY);
 
-        final Response response = triggerCallback(caseData, CASEWORKER_REMOVE_STAY, SUBMITTED_URL);
+        final Response response = triggerCallback(caseData, CASEWORKER_REMOVE_STAY, SUBMITTED_URL, false);
 
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
         assertThatJson(response.asString())

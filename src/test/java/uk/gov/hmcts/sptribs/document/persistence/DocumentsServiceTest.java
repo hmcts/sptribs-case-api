@@ -130,6 +130,33 @@ public class DocumentsServiceTest {
     }
 
     @Test
+    public void shouldSetNewDocumentTypeName() {
+        Document applicationDocument = buildDocument(HOSPITAL_RECORDS.getCategory());
+        DocumentEntity applicationDocumentEntity = buildDocumentEntity(DSS_SUPPORTING.name(), 1L, false, OffsetDateTime.now());
+
+        documentsService.setNewDocumentTypeName(applicationDocument.getBinaryUrl(), DSS_SUPPORTING.name());
+
+        verify(documentsRepository, times(1)).setDocumentTypeNameByDocumentBinaryUrl(
+            applicationDocumentEntity.getDocumentBinaryUrl(), DSS_SUPPORTING.name());
+    }
+
+    @Test
+    public void shouldThrowRuntimeExceptionWhenDataAccessExceptionCaughtInSetNewDocumentTypeName() {
+        Document applicationDocument = buildDocument(DSS_SUPPORTING.getCategory());
+
+        doThrow(new DataAccessResourceFailureException("DB error")).when(
+            documentsRepository).setDocumentTypeNameByDocumentBinaryUrl(
+                applicationDocument.getBinaryUrl(),
+                DSS_SUPPORTING.name());
+
+        assertThatThrownBy(
+            () -> documentsService.setNewDocumentTypeName(applicationDocument.getBinaryUrl(), DSS_SUPPORTING.name()))
+            .isInstanceOf(RuntimeException.class)
+            .hasMessageContaining("Error updating document type name")
+            .hasCauseInstanceOf(DataAccessException.class);
+    }
+
+    @Test
     public void shouldUpdateDocumentToNonDraftOrder() {
         Document applicationDocument = buildDocument(HOSPITAL_RECORDS.getCategory());
         DocumentEntity draftEvidenceDocumentEntity = buildDocumentEntity(HOSPITAL_RECORDS.name(), 5L, true,
@@ -139,7 +166,7 @@ public class DocumentsServiceTest {
 
         documentsService.updateDocumentToNonDraft(applicationDocument.getBinaryUrl());
 
-        verify(documentsRepository, times(1)).updateDocumentTypeByDocumentBinaryUrl(
+        verify(documentsRepository, times(1)).updateCaseDocumentTypeIdByDocumentBinaryUrl(
             draftEvidenceDocumentEntity.getDocumentBinaryUrl(), 4L);
     }
 
@@ -148,7 +175,7 @@ public class DocumentsServiceTest {
         Document applicationDocument = buildDocument(DSS_SUPPORTING.getCategory());
         when(caseDocumentTypesCache.getId(CaseDocumentType.ORDER)).thenReturn(4L);
 
-        doThrow(new DataAccessResourceFailureException("DB error")).when(documentsRepository).updateDocumentTypeByDocumentBinaryUrl(
+        doThrow(new DataAccessResourceFailureException("DB error")).when(documentsRepository).updateCaseDocumentTypeIdByDocumentBinaryUrl(
             applicationDocument.getBinaryUrl(), 4L);
 
         assertThatThrownBy(() -> documentsService.updateDocumentToNonDraft(applicationDocument.getBinaryUrl())).isInstanceOf(
@@ -179,7 +206,7 @@ public class DocumentsServiceTest {
     }
 
     @Test
-    void shouldUpdateDocumentsThatHaveBennSentInEmailToSentViaContactParties() {
+    void shouldUpdateDocumentsThatHaveBeenSentInEmailToSentViaContactParties() {
 
         //3 and 4 should not be included as map has reached limit for emails...
         ListValue<CaseworkerCICDocument> caseDocument1 = buildCaseworkerCicDocumentListValue("url-1", "my-env/binary-1/binary", "file-1");

@@ -48,7 +48,7 @@ public class CaseworkerEditRecordListingFT extends FunctionalTestSuite {
     public void shouldSetHearingAndRegionFieldsWhenAboutToStartCallBackIsInvoked() throws Exception {
         final Map<String, Object> caseData = caseData(REQUEST_ABOUT_TO_START);
 
-        final Response response = triggerCallback(caseData, CASEWORKER_EDIT_RECORD_LISTING, ABOUT_TO_START_URL);
+        final Response response = triggerCallback(caseData, CASEWORKER_EDIT_RECORD_LISTING, ABOUT_TO_START_URL, false);
 
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
         assertThatJson(response.asString())
@@ -61,7 +61,7 @@ public class CaseworkerEditRecordListingFT extends FunctionalTestSuite {
     public void shouldSetHearingVenueFieldsWhenMidEventCallBackIsInvoked() throws Exception {
         final Map<String, Object> caseData = caseData(REQUEST_MID_EVENT);
 
-        final Response response = triggerCallback(caseData, CASEWORKER_EDIT_RECORD_LISTING, EDIT_RECORD_LISTING_MID_EVENT_URL);
+        final Response response = triggerCallback(caseData, CASEWORKER_EDIT_RECORD_LISTING, EDIT_RECORD_LISTING_MID_EVENT_URL, false);
 
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
         assertThatJson(response.asString())
@@ -74,7 +74,7 @@ public class CaseworkerEditRecordListingFT extends FunctionalTestSuite {
     public void shouldSetAdditionalHearingDateAndStateWhenAboutToSubmitCallBackIsInvoked() throws Exception {
         final Map<String, Object> caseData = caseData(CALLBACK_REQUEST_HAPPY);
 
-        final Response response = triggerCallback(caseData, CASEWORKER_EDIT_RECORD_LISTING, ABOUT_TO_SUBMIT_URL);
+        final Response response = triggerCallback(caseData, CASEWORKER_EDIT_RECORD_LISTING, ABOUT_TO_SUBMIT_URL, false);
 
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
         assertThatJson(response.asString())
@@ -87,7 +87,7 @@ public class CaseworkerEditRecordListingFT extends FunctionalTestSuite {
     public void shouldContainErrorWhenNoPartiesEnteredWhenAboutToSubmitCallBackIsInvoked() throws Exception {
         final Map<String, Object> caseData = caseData(CALLBACK_REQUEST_UNHAPPY);
 
-        final Response response = triggerCallback(caseData, CASEWORKER_EDIT_RECORD_LISTING, ABOUT_TO_SUBMIT_URL);
+        final Response response = triggerCallback(caseData, CASEWORKER_EDIT_RECORD_LISTING, ABOUT_TO_SUBMIT_URL, false);
 
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
         assertThatJson(response.asString())
@@ -100,7 +100,7 @@ public class CaseworkerEditRecordListingFT extends FunctionalTestSuite {
     public void shouldTriggerSuccessfulResponseIfSubmittedCallbackIsInvoked() throws Exception {
         final Map<String, Object> caseData = caseData(CALLBACK_REQUEST_HAPPY);
 
-        final Response response = triggerCallback(caseData, CASEWORKER_EDIT_RECORD_LISTING, SUBMITTED_URL);
+        final Response response = triggerCallback(caseData, CASEWORKER_EDIT_RECORD_LISTING, SUBMITTED_URL, false);
 
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
         assertThatJson(response.asString())
@@ -136,7 +136,7 @@ public class CaseworkerEditRecordListingFT extends FunctionalTestSuite {
     public void shouldTriggerUnsuccessfulResponseIfBadSubmittedCallbackIsInvoked() throws Exception {
         final Map<String, Object> caseData = caseData(CALLBACK_REQUEST_UNHAPPY);
 
-        final Response response = triggerCallback(caseData, CASEWORKER_EDIT_RECORD_LISTING, SUBMITTED_URL);
+        final Response response = triggerCallback(caseData, CASEWORKER_EDIT_RECORD_LISTING, SUBMITTED_URL, false);
 
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
         assertThatJson(response.asString())

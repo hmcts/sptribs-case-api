@@ -36,7 +36,7 @@ public class CaseworkerRemoveBundlesFT extends FunctionalTestSuite {
     public void shouldInitialiseRemoveBundlesListWhenAboutToStartCallbackIsInvoked() throws Exception {
         final Map<String, Object> caseData = caseData(REQUEST_ABOUT_TO_START);
 
-        final Response response = triggerCallback(caseData, REMOVE_BUNDLES, ABOUT_TO_START_URL);
+        final Response response = triggerCallback(caseData, REMOVE_BUNDLES, ABOUT_TO_START_URL, false);
 
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
         assertThatJson(response.asString())
@@ -48,7 +48,7 @@ public class CaseworkerRemoveBundlesFT extends FunctionalTestSuite {
     public void shouldReturnCorrectBundleWhenAboutToSubmitCallbackIsInvoked() throws Exception {
         final Map<String, Object> caseData = caseData(REQUEST_ABOUT_TO_SUBMIT);
 
-        final Response response = triggerCallback(caseData, REMOVE_BUNDLES, ABOUT_TO_SUBMIT_URL);
+        final Response response = triggerCallback(caseData, REMOVE_BUNDLES, ABOUT_TO_SUBMIT_URL, false);
 
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
         assertThatJson(response.asString())

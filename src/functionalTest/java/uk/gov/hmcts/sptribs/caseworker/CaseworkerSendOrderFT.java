@@ -40,7 +40,7 @@ public class CaseworkerSendOrderFT extends FunctionalTestSuite {
     @Test
     public void shouldSetOrderIssueTypesAndTemplatesInAboutToStartCallback() throws Exception {
         final Map<String, Object> caseData = caseData(GENERAL_REQUEST);
-        final Response response = triggerCallback(caseData, CASEWORKER_SEND_ORDER, ABOUT_TO_START_URL);
+        final Response response = triggerCallback(caseData, CASEWORKER_SEND_ORDER, ABOUT_TO_START_URL, false);
 
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
         assertThatJson(response.asString())
@@ -52,7 +52,7 @@ public class CaseworkerSendOrderFT extends FunctionalTestSuite {
     public void shouldRetainSelectedOrderDataWhenAboutToSubmitCallbackIsTriggered() throws Exception {
         final Map<String, Object> caseData = caseData(CALLBACK_REQUEST);
 
-        final Response response = triggerCallback(caseData, CASEWORKER_SEND_ORDER, ABOUT_TO_SUBMIT_URL);
+        final Response response = triggerCallback(caseData, CASEWORKER_SEND_ORDER, ABOUT_TO_SUBMIT_URL, false);
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
 
         assertThatJson(response.asString())
@@ -73,6 +73,7 @@ public class CaseworkerSendOrderFT extends FunctionalTestSuite {
         assertThat(firstDocumentEntity.getDocumentTypeName()).isEqualTo(DocumentType.TRIBUNAL_DIRECTION.name());
         assertThat(firstDocumentEntity.getCaseDocumentTypeId()).isEqualTo(4L);
         assertThat(firstDocumentEntity.getSavedAt()).isNotNull();
+        assertThat(firstDocumentEntity.getUpdatedAt()).isNotNull();
         assertThat(firstDocumentEntity.isSentToApplicantViaContactParties()).isFalse();
         assertThat(firstDocumentEntity.getDocumentUrl()).isNotNull();
         assertThat(firstDocumentEntity.getDocumentFilename()).isNotNull();
@@ -83,7 +84,7 @@ public class CaseworkerSendOrderFT extends FunctionalTestSuite {
     public void shouldReturnHappyResponseWhenValidSubmittedCallbackIsInvoked() throws Exception {
         final Map<String, Object> caseData = caseData(CALLBACK_REQUEST);
 
-        final Response response = triggerCallback(caseData, CASEWORKER_SEND_ORDER, SUBMITTED_URL);
+        final Response response = triggerCallback(caseData, CASEWORKER_SEND_ORDER, SUBMITTED_URL, false);
 
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
         assertThatJson(response.asString())
@@ -116,7 +117,7 @@ public class CaseworkerSendOrderFT extends FunctionalTestSuite {
     public void shouldReturnUnhappyResponseWhenInvalidSubmittedCallbackIsInvoked() throws Exception {
         final Map<String, Object> caseData = caseData(REQUEST_UNHAPPY_ABOUT_TO_SUBMIT);
 
-        final Response response = triggerCallback(caseData, CASEWORKER_SEND_ORDER, SUBMITTED_URL);
+        final Response response = triggerCallback(caseData, CASEWORKER_SEND_ORDER, SUBMITTED_URL, false);
 
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
         assertThatJson(response.asString())
