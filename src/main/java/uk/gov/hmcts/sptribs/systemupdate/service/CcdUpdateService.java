@@ -8,9 +8,8 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.ccd.client.CoreCaseDataApi;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDataContent;
 import uk.gov.hmcts.reform.ccd.client.model.StartEventResponse;
-import uk.gov.hmcts.reform.idam.client.models.User;
 import uk.gov.hmcts.sptribs.ciccase.task.CaseTask;
-import uk.gov.hmcts.sptribs.idam.*;
+import uk.gov.hmcts.sptribs.idam.CICUser;
 
 import static java.lang.String.format;
 import static org.springframework.http.HttpStatus.CONFLICT;

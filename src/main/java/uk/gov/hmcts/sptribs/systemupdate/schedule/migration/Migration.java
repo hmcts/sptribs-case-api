@@ -1,7 +1,6 @@
 package uk.gov.hmcts.sptribs.systemupdate.schedule.migration;
 
-import uk.gov.hmcts.reform.idam.client.models.User;
-import uk.gov.hmcts.sptribs.idam.*;
+import uk.gov.hmcts.sptribs.idam.CICUser;
 
 public interface Migration {
 
