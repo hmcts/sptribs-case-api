@@ -53,7 +53,8 @@ public class CaseworkerCloseTheCaseFT extends FunctionalTestSuite {
         final Response response = triggerCallback(
             caseData,
             CASEWORKER_CLOSE_THE_CASE,
-            CLOSE_CASE_UPLOAD_DOCUMENTS_MID_EVENT_URL
+            CLOSE_CASE_UPLOAD_DOCUMENTS_MID_EVENT_URL,
+            false
         );
 
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
@@ -69,7 +70,8 @@ public class CaseworkerCloseTheCaseFT extends FunctionalTestSuite {
         final Response response = triggerCallback(
             caseData,
             CASEWORKER_CLOSE_THE_CASE,
-            CLOSE_CASE_UPLOAD_DOCUMENTS_MID_EVENT_URL
+            CLOSE_CASE_UPLOAD_DOCUMENTS_MID_EVENT_URL,
+            false
         );
 
         assertThatJson(response.asString())
@@ -82,7 +84,7 @@ public class CaseworkerCloseTheCaseFT extends FunctionalTestSuite {
     public void shouldPopulateJudgesListInAboutToStartCallback() throws Exception {
         final Map<String, Object> caseData = caseData(CALLBACK_CASE_DATA);
 
-        final Response response = triggerCallback(caseData, CASEWORKER_CLOSE_THE_CASE, ABOUT_TO_START_URL);
+        final Response response = triggerCallback(caseData, CASEWORKER_CLOSE_THE_CASE, ABOUT_TO_START_URL, false);
         final String responseAsString = response.asString();
 
         assertThatJson(responseAsString)
@@ -105,7 +107,7 @@ public class CaseworkerCloseTheCaseFT extends FunctionalTestSuite {
     public void shouldUpdateCategoryToCaseworkerDocumentInAboutToSubmitCallback() throws Exception {
         final Map<String, Object> caseData = caseData(ABOUT_TO_SUBMIT_REQUEST);
 
-        final Response response = triggerCallback(caseData, CASEWORKER_CLOSE_THE_CASE, ABOUT_TO_SUBMIT_URL);
+        final Response response = triggerCallback(caseData, CASEWORKER_CLOSE_THE_CASE, ABOUT_TO_SUBMIT_URL, false);
 
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
         assertThatJson(response.asString())
@@ -117,7 +119,7 @@ public class CaseworkerCloseTheCaseFT extends FunctionalTestSuite {
     public void shouldSendEmailSuccessfullyInSubmittedCallback() throws Exception {
         final Map<String, Object> caseData = caseData(SUBMITTED_REQUEST);
 
-        final Response response = triggerCallback(caseData, CASEWORKER_CLOSE_THE_CASE, SUBMITTED_URL);
+        final Response response = triggerCallback(caseData, CASEWORKER_CLOSE_THE_CASE, SUBMITTED_URL, false);
 
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
         assertThatJson(response.asString())
@@ -152,7 +154,7 @@ public class CaseworkerCloseTheCaseFT extends FunctionalTestSuite {
     public void shouldErrorSubmittedCallback() throws Exception {
         final Map<String, Object> caseData = caseData(SUBMITTED_REQUEST_WITHOUT_EMAIL);
 
-        final Response response = triggerCallback(caseData, CASEWORKER_CLOSE_THE_CASE, SUBMITTED_URL);
+        final Response response = triggerCallback(caseData, CASEWORKER_CLOSE_THE_CASE, SUBMITTED_URL, false);
 
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
         assertThatJson(response.asString())

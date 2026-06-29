@@ -37,14 +37,18 @@ import uk.gov.hmcts.sptribs.idam.IdamService;
 import uk.gov.hmcts.sptribs.services.cdam.CaseDocumentClientApi;
 import uk.gov.hmcts.sptribs.systemupdate.service.CcdSearchService;
 import uk.gov.hmcts.sptribs.util.AppsUtil;
+import wiremock.org.eclipse.jetty.util.ajax.JSON;
 
 import java.io.IOException;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
@@ -150,7 +154,7 @@ public abstract class FunctionalTestSuite {
         );
     }
 
-    private Long createPersistedCaseReference(Map<String, Object> caseData) {
+    protected Long createPersistedCaseReference(Map<String, Object> caseData) {
         CaseDetails createdCase = createCaseInCcd();
         CaseData formatter = CaseData.builder().build();
         caseData.put("hyphenatedCaseRef", formatter.formatCaseRef(createdCase.getId()));
@@ -159,14 +163,32 @@ public abstract class FunctionalTestSuite {
         return createdCase.getId();
     }
 
-    protected Response triggerCallback(Map<String, Object> caseData, String eventId, String url) throws IOException {
-        return triggerCallback(caseData, eventId, url, true);
+    protected Response triggerCallback(Map<String, Object> caseData, String eventId, String url, boolean createTestDocument)
+        throws IOException, SQLException {
+
+        return triggerCallback(caseData, eventId, url, true, createTestDocument);
     }
 
-    private Response triggerCallback(Map<String, Object> caseData, String eventId, String url, boolean createCase)
-        throws IOException {
-        if (createCase && (TestConstants.SUBMITTED_URL.equals(url) || TestConstants.ABOUT_TO_SUBMIT_URL.equals(url))) {
-            return triggerCallback(caseData, eventId, url, createPersistedCaseReference(caseData));
+    private Response triggerCallback(Map<String, Object> caseData,
+                                     String eventId,
+                                     String url,
+                                     boolean createCase,
+                                     boolean createTestDocument) throws IOException, SQLException {
+
+        Long testCaseRef = 1234567890123456L;
+        boolean createCaseForSubmittedOrAboutToSubmitEvent =
+            createCase && (TestConstants.SUBMITTED_URL.equals(url) || TestConstants.ABOUT_TO_SUBMIT_URL.equals(url));
+
+        if (createTestDocument || createCaseForSubmittedOrAboutToSubmitEvent) {
+            testCaseRef = createPersistedCaseReference(caseData);
+        }
+
+        if (createTestDocument) {
+            generateAndSetUuidInCaseDataAndDB(caseData, testCaseRef);
+        }
+
+        if (createCaseForSubmittedOrAboutToSubmitEvent) {
+            return triggerCallback(caseData, eventId, url, testCaseRef);
         }
 
         CallbackRequest request = CallbackRequest
@@ -175,7 +197,7 @@ public abstract class FunctionalTestSuite {
             .caseDetailsBefore(
                 CaseDetails
                     .builder()
-                    .id(1234567890123456L)
+                    .id(testCaseRef)
                     .data(caseData)
                     .createdDate(LOCAL_DATE_TIME)
                     .caseTypeId(CcdServiceCode.ST_CIC.getCaseType().getCaseTypeName())
@@ -183,7 +205,7 @@ public abstract class FunctionalTestSuite {
             .caseDetails(
                 CaseDetails
                     .builder()
-                    .id(1234567890123456L)
+                    .id(testCaseRef)
                     .data(caseData)
                     .createdDate(LOCAL_DATE_TIME)
                     .caseTypeId(CcdServiceCode.ST_CIC.getCaseType().getCaseTypeName())
@@ -291,8 +313,8 @@ public abstract class FunctionalTestSuite {
     }
 
     protected Response triggerCallbackWithoutPersistedCase(Map<String, Object> caseData, String eventId, String url)
-        throws IOException {
-        return triggerCallback(caseData, eventId, url, false);
+        throws IOException, SQLException {
+        return triggerCallback(caseData, eventId, url, false, false);
     }
 
     protected CaseData getCaseData(Map<String, Object> data) {
@@ -477,6 +499,32 @@ public abstract class FunctionalTestSuite {
             }
         }
         caseData.put("cicCaseDraftOrderCICList", draftOrderList);
+    }
+
+    private void generateAndSetUuidInCaseDataAndDB(Map<String, Object> caseData, Long testCaseRef) throws SQLException, IOException {
+        String caseDataJsonString = JSON.getDefault().toJSON(caseData);
+
+        Pattern placeholderPattern = Pattern.compile("\\$\\{UUID(\\d+)}");
+        Matcher matcher = placeholderPattern.matcher(caseDataJsonString);
+        Map<String, String> placeholdersAndUuids = new HashMap<>();
+
+        while (matcher.find()) {
+            String placeholder = matcher.group();
+            String uuid = placeholdersAndUuids.get(placeholder);
+
+            if (uuid == null) {
+                uuid = UUID.randomUUID().toString();
+                placeholdersAndUuids.put(placeholder, uuid);
+                caseDocumentsFTDataManager.saveTestDocumentEntity(testCaseRef, uuid);
+            }
+        }
+
+        for (Map.Entry<String, String> placeholderAndUuid : placeholdersAndUuids.entrySet()) {
+            caseDataJsonString = caseDataJsonString.replace(placeholderAndUuid.getKey(), placeholderAndUuid.getValue());
+        }
+
+        caseData.clear();
+        caseData.putAll(CaseDataUtil.caseDataFromString(caseDataJsonString));
     }
 
     @BeforeAll

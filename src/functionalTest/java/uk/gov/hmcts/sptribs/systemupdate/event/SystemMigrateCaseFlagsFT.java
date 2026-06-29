@@ -28,7 +28,7 @@ public class SystemMigrateCaseFlagsFT extends FunctionalTestSuite {
     @Test
     public void shouldMigrateCaseFlagsOnAboutToSubmit() throws Exception {
         final Map<String, Object> caseData = caseData(REQUEST);
-        final Response response = triggerCallback(caseData, SYSTEM_MIGRATE_CASE_FLAGS, ABOUT_TO_SUBMIT_URL);
+        final Response response = triggerCallback(caseData, SYSTEM_MIGRATE_CASE_FLAGS, ABOUT_TO_SUBMIT_URL, false);
 
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
         assertThatJson(response.asString())

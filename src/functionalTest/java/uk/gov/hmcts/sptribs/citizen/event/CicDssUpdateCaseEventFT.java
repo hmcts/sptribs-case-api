@@ -46,7 +46,7 @@ public class CicDssUpdateCaseEventFT extends FunctionalTestSuite {
 
         final Map<String, Object> caseData = caseData(REQUEST);
 
-        final Response response = triggerCallback(caseData, CITIZEN_DSS_UPDATE_CASE_SUBMISSION, ABOUT_TO_SUBMIT_URL);
+        final Response response = triggerCallback(caseData, CITIZEN_DSS_UPDATE_CASE_SUBMISSION, ABOUT_TO_SUBMIT_URL, false);
 
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
         assertThatJson(response.asString())
@@ -61,7 +61,7 @@ public class CicDssUpdateCaseEventFT extends FunctionalTestSuite {
 
         final Map<String, Object> caseData = caseData(REQUEST_EMPTY_APPLICANT_DOCUMENTS_UPLOADED);
 
-        final Response response = triggerCallback(caseData, CITIZEN_DSS_UPDATE_CASE_SUBMISSION, ABOUT_TO_SUBMIT_URL);
+        final Response response = triggerCallback(caseData, CITIZEN_DSS_UPDATE_CASE_SUBMISSION, ABOUT_TO_SUBMIT_URL,false);
 
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
         assertThatJson(response.asString())
@@ -76,7 +76,7 @@ public class CicDssUpdateCaseEventFT extends FunctionalTestSuite {
 
         final Map<String, Object> caseData = caseData(REQUEST_SUBMITTED_CALLBACK);
 
-        final Response response = triggerCallback(caseData, CITIZEN_DSS_UPDATE_CASE_SUBMISSION, SUBMITTED_URL);
+        final Response response = triggerCallback(caseData, CITIZEN_DSS_UPDATE_CASE_SUBMISSION, SUBMITTED_URL, false);
 
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
         assertThatJson(response.asString(),
@@ -109,7 +109,7 @@ public class CicDssUpdateCaseEventFT extends FunctionalTestSuite {
 
         final Map<String, Object> caseData = caseData(INVALID_REQUEST_SUBMITTED_CALLBACK);
 
-        final Response response = triggerCallback(caseData, CITIZEN_DSS_UPDATE_CASE_SUBMISSION, SUBMITTED_URL);
+        final Response response = triggerCallback(caseData, CITIZEN_DSS_UPDATE_CASE_SUBMISSION, SUBMITTED_URL, false);
 
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
         assertThatJson(response.asString(),

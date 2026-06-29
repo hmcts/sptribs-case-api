@@ -101,11 +101,25 @@ public class DocumentsService {
     }
 
     @Transactional
+    public void setNewDocumentTypeName(String documentBinaryUrl, String documentTypeName) {
+        try {
+            int rowsUpdated =
+                documentsRepository.setDocumentTypeNameByDocumentBinaryUrl(
+                    documentBinaryUrl,
+                    documentTypeName
+                );
+            log.info("Document Repository updated {} document type names.", rowsUpdated);
+        } catch (DataAccessException e) {
+            throw new RuntimeException("Error updating document type name", e);
+        }
+    }
+
+    @Transactional
     public void updateDocumentToNonDraft(String documentBinaryUrl) {
 
         try {
             Long orderDocumentTypeId = caseDocumentTypesCache.getId(CaseDocumentType.ORDER);
-            documentsRepository.updateDocumentTypeByDocumentBinaryUrl(documentBinaryUrl, orderDocumentTypeId);
+            documentsRepository.updateCaseDocumentTypeIdByDocumentBinaryUrl(documentBinaryUrl, orderDocumentTypeId);
             log.info("Draft order updated to non draft case document type successfully for url: {}", documentBinaryUrl);
 
         } catch (DataAccessException e) {

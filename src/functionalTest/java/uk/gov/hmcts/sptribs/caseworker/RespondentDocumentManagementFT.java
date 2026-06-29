@@ -46,7 +46,8 @@ public class RespondentDocumentManagementFT extends FunctionalTestSuite {
         final Response response = triggerCallback(
             caseData,
             RESPONDENT_DOCUMENT_MANAGEMENT,
-            CASE_DOCUMENT_MANAGEMENT_UPLOAD_DOCUMENTS_MID_EVENT_URL
+            CASE_DOCUMENT_MANAGEMENT_UPLOAD_DOCUMENTS_MID_EVENT_URL,
+            false
         );
 
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
@@ -62,7 +63,8 @@ public class RespondentDocumentManagementFT extends FunctionalTestSuite {
         final Response response = triggerCallback(
             caseData,
             RESPONDENT_DOCUMENT_MANAGEMENT,
-            ABOUT_TO_SUBMIT_URL
+            ABOUT_TO_SUBMIT_URL,
+            false
         );
 
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
@@ -83,6 +85,7 @@ public class RespondentDocumentManagementFT extends FunctionalTestSuite {
         assertThat(firstDocumentEntity.getDocumentTypeName()).isNotNull();
         assertThat(firstDocumentEntity.getCaseDocumentTypeId()).isEqualTo(2L);
         assertThat(firstDocumentEntity.getSavedAt()).isNotNull();
+        assertThat(firstDocumentEntity.getUpdatedAt()).isNotNull();
         assertThat(firstDocumentEntity.isSentToApplicantViaContactParties()).isFalse();
         assertThat(firstDocumentEntity.getDocumentUrl()).isNotNull();
         assertThat(firstDocumentEntity.getDocumentFilename()).isNotNull();
@@ -96,7 +99,8 @@ public class RespondentDocumentManagementFT extends FunctionalTestSuite {
         final Response response = triggerCallback(
             caseData,
             RESPONDENT_DOCUMENT_MANAGEMENT,
-            SUBMITTED_URL
+            SUBMITTED_URL,
+            false
         );
 
         assertThat(response.getStatusCode()).isEqualTo(OK.value());

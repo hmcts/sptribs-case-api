@@ -45,7 +45,7 @@ public class CaseworkerEditCaseFT extends FunctionalTestSuite {
     public void shouldSuccessfullyInitialiseFieldsWhenAboutToSubmitCallbackIsInvoked() throws Exception {
         final Map<String, Object> caseData = caseData(CALLBACK_REQUEST);
 
-        final Response response = triggerCallback(caseData, CASEWORKER_EDIT_CASE, ABOUT_TO_SUBMIT_URL);
+        final Response response = triggerCallback(caseData, CASEWORKER_EDIT_CASE, ABOUT_TO_SUBMIT_URL, false);
 
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
         assertThatJson(response.asString())
@@ -58,7 +58,7 @@ public class CaseworkerEditCaseFT extends FunctionalTestSuite {
     public void shouldReceiveValidResponseWhenSubmittedCallbackIsInvoked() throws Exception {
         final Map<String, Object> caseData = caseData(CALLBACK_REQUEST);
 
-        final Response response = triggerCallback(caseData, CASEWORKER_EDIT_CASE, SUBMITTED_URL);
+        final Response response = triggerCallback(caseData, CASEWORKER_EDIT_CASE, SUBMITTED_URL, false);
 
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
         assertThatJson(response.asString())
@@ -71,7 +71,7 @@ public class CaseworkerEditCaseFT extends FunctionalTestSuite {
     public void shouldSuccessfullyInitialiseFlagsWhenAboutToSubmitCallbackIsInvoked() throws Exception {
         final Map<String, Object> caseData = caseData(INITIALISE_FLAGS_CALLBACK_REQUEST);
 
-        final Response response = triggerCallback(caseData, CASEWORKER_EDIT_CASE, ABOUT_TO_SUBMIT_URL);
+        final Response response = triggerCallback(caseData, CASEWORKER_EDIT_CASE, ABOUT_TO_SUBMIT_URL, false);
 
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
         assertThatJson(response.asString())
@@ -84,7 +84,7 @@ public class CaseworkerEditCaseFT extends FunctionalTestSuite {
     public void shouldSuccessfullyUpdateFlagPartyNamesWhenAboutToSubmitCallbackIsInvoked() throws Exception {
         final Map<String, Object> caseData = caseData(UPDATE_FLAGS_CALLBACK_REQUEST);
 
-        final Response response = triggerCallback(caseData, CASEWORKER_EDIT_CASE, ABOUT_TO_SUBMIT_URL);
+        final Response response = triggerCallback(caseData, CASEWORKER_EDIT_CASE, ABOUT_TO_SUBMIT_URL, false);
 
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
         assertThatJson(response.asString())
