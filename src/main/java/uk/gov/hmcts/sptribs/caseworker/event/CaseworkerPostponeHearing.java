@@ -24,8 +24,11 @@ import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.notification.dispatcher.HearingPostponedNotification;
+import uk.gov.hmcts.sptribs.taskmanagement.TaskManagementService;
+import uk.gov.hmcts.sptribs.taskmanagement.model.TaskType;
 
 import java.time.LocalDate;
+import java.util.List;
 
 import static java.lang.String.format;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_POSTPONE_HEARING;
@@ -41,6 +44,8 @@ import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_JUDGE;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_WA_CONFIG_USER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE;
+import static uk.gov.hmcts.sptribs.taskmanagement.model.ProcessCategoryIdentifiers.HearingBundle;
+import static uk.gov.hmcts.sptribs.taskmanagement.model.ProcessCategoryIdentifiers.HearingCompletion;
 
 @Component
 @Slf4j
@@ -49,20 +54,25 @@ public class CaseworkerPostponeHearing implements CCDConfig<CaseData, State, Use
     private static final CcdPageConfiguration selectHearing = new SelectHearing();
     private static final CcdPageConfiguration selectReason = new PostponeHearingSelectReason();
     private static final CcdPageConfiguration notifyParties = new PostponeHearingNotifyParties();
+    private static final List<TaskType> CANCELLABLE_TASK_TYPES =
+        TaskType.getTaskTypesFromProcessCategoryIdentifiers(List.of(HearingCompletion, HearingBundle));
 
     private final HearingService hearingService;
 
     private final RecordListHelper recordListHelper;
 
     private final HearingPostponedNotification hearingPostponedNotification;
+    private final TaskManagementService taskManagementService;
 
     @Autowired
     public CaseworkerPostponeHearing(HearingService hearingService,
                                      RecordListHelper recordListHelper,
-                                     HearingPostponedNotification hearingPostponedNotification) {
+                                     HearingPostponedNotification hearingPostponedNotification,
+                                     TaskManagementService taskManagementService) {
         this.hearingService = hearingService;
         this.recordListHelper = recordListHelper;
         this.hearingPostponedNotification = hearingPostponedNotification;
+        this.taskManagementService = taskManagementService;
     }
 
     @Override
@@ -79,8 +89,7 @@ public class CaseworkerPostponeHearing implements CCDConfig<CaseData, State, Use
                 .grant(CREATE_READ_UPDATE, SUPER_USER,
                     ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER, ST_CIC_HEARING_CENTRE_ADMIN,
                     ST_CIC_HEARING_CENTRE_TEAM_LEADER, ST_CIC_SENIOR_JUDGE, ST_CIC_WA_CONFIG_USER)
-                .grantHistoryOnly(ST_CIC_JUDGE)
-                .publishToCamunda();
+                .grantHistoryOnly(ST_CIC_JUDGE);
 
         PageBuilder pageBuilder = new PageBuilder(eventBuilder);
         selectHearing.addTo(pageBuilder);
@@ -112,6 +121,8 @@ public class CaseworkerPostponeHearing implements CCDConfig<CaseData, State, Use
         final String hearingName = caseData.getCicCase().getHearingList().getValue().getLabel();
 
         hearingService.updateHearingList(caseData, hearingName);
+
+        taskManagementService.enqueueCancellationTasks(CANCELLABLE_TASK_TYPES, details.getId());
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)

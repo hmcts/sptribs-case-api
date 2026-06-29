@@ -29,12 +29,15 @@ import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.document.CaseDataDocumentService;
 import uk.gov.hmcts.sptribs.document.model.CICDocument;
 import uk.gov.hmcts.sptribs.notification.dispatcher.CaseFinalDecisionIssuedNotification;
+import uk.gov.hmcts.sptribs.taskmanagement.TaskManagementService;
+import uk.gov.hmcts.sptribs.taskmanagement.model.TaskType;
 
 import java.time.Clock;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static java.lang.String.format;
@@ -79,6 +82,8 @@ public class CaseworkerIssueFinalDecision implements CCDConfig<CaseData, State, 
     private final CaseDataDocumentService caseDataDocumentService;
 
     private final CaseFinalDecisionIssuedNotification caseFinalDecisionIssuedNotification;
+
+    private final TaskManagementService taskManagementService;
 
     private final Clock clock;
 
@@ -129,6 +134,7 @@ public class CaseworkerIssueFinalDecision implements CCDConfig<CaseData, State, 
         }
 
         caseData.getCaseIssueFinalDecision().setFinalDecisionDate(LocalDate.now(this.clock));
+        taskManagementService.enqueueCompletionTasks(List.of(TaskType.issueDecisionNotice), details.getId());
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)

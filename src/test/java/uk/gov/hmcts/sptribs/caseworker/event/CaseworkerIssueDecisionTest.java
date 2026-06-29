@@ -31,17 +31,22 @@ import uk.gov.hmcts.sptribs.document.content.DecisionTemplateContent;
 import uk.gov.hmcts.sptribs.document.content.DocmosisTemplateConstants;
 import uk.gov.hmcts.sptribs.document.model.CICDocument;
 import uk.gov.hmcts.sptribs.notification.dispatcher.DecisionIssuedNotification;
+import uk.gov.hmcts.sptribs.taskmanagement.TaskManagementService;
 
 import java.time.Clock;
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.util.List;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_WA_CONFIG_USER;
+import static uk.gov.hmcts.sptribs.taskmanagement.model.TaskType.issueDecisionNotice;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigBuilder;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.getEventsFrom;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.caseData;
 import static uk.gov.hmcts.sptribs.testutil.TestEventConstants.CASEWORKER_ISSUE_DECISION;
 
@@ -63,6 +68,9 @@ class CaseworkerIssueDecisionTest {
     @Mock
     private IssueDecisionFooter issueDecisionFooter;
 
+    @Mock
+    private TaskManagementService taskManagementService;
+
     private final Clock fixedClock = Clock.fixed(
         LocalDate.of(2026, 5, 15)
             .atStartOfDay(ZoneId.systemDefault())
@@ -77,7 +85,8 @@ class CaseworkerIssueDecisionTest {
         issueDecision = new CaseworkerIssueDecision(
             issueDecisionFooter,
             decisionIssuedNotification,
-            fixedClock
+            fixedClock,
+            taskManagementService
         );
     }
 
@@ -121,6 +130,7 @@ class CaseworkerIssueDecisionTest {
         decision.setDecisionDocument(document);
         caseData.setCaseIssueDecision(decision);
         details.setData(caseData);
+        details.setId(TEST_CASE_ID);
 
         //When
         AboutToStartOrSubmitResponse<CaseData, State> response = issueDecision.aboutToSubmit(details, beforeDetails);
@@ -128,6 +138,7 @@ class CaseworkerIssueDecisionTest {
         //Then
         assertThat(response.getState()).isEqualTo(CaseManagement);
         assertThat(response.getData().getCaseIssueDecision().getDecisionDate()).isEqualTo(LocalDate.of(2026, 5, 15));
+        verify(taskManagementService).enqueueCompletionTasks(List.of(issueDecisionNotice), TEST_CASE_ID);
     }
 
     @Test

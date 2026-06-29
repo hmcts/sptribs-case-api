@@ -36,6 +36,7 @@ import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.document.model.CitizenCICDocument;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
 import uk.gov.hmcts.sptribs.idam.IdamService;
+import uk.gov.hmcts.sptribs.taskmanagement.TaskManagementService;
 import uk.gov.hmcts.sptribs.util.AppsUtil;
 
 import java.time.LocalDate;
@@ -64,6 +65,7 @@ import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SYSTEM_UPDATE;
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE;
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE_DELETE;
+import static uk.gov.hmcts.sptribs.taskmanagement.model.TaskType.registerNewCase;
 
 @Component
 @Slf4j
@@ -74,14 +76,17 @@ public class CicSubmitCaseEvent implements CCDConfig<CaseData, State, UserRole> 
     private IdamService idamService;
     private AppsConfig appsConfig;
     private DssApplicationReceivedNotification dssApplicationReceivedNotification;
+    private TaskManagementService taskManagementService;
 
     @Autowired
     public CicSubmitCaseEvent(HttpServletRequest request, IdamService idamService, AppsConfig appsConfig,
-                              DssApplicationReceivedNotification dssApplicationReceivedNotification) {
+                              DssApplicationReceivedNotification dssApplicationReceivedNotification,
+                              TaskManagementService taskManagementService) {
         this.request = request;
         this.idamService = idamService;
         this.appsConfig = appsConfig;
         this.dssApplicationReceivedNotification = dssApplicationReceivedNotification;
+        this.taskManagementService = taskManagementService;
     }
 
     @Override
@@ -105,8 +110,7 @@ public class CicSubmitCaseEvent implements CCDConfig<CaseData, State, UserRole> 
                     SUPER_USER,
                     ST_CIC_JUDGE)
                 .aboutToSubmitCallback(this::aboutToSubmit)
-                .submittedCallback(this::submitted)
-                .publishToCamunda();
+                .submittedCallback(this::submitted);
     }
 
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(CaseDetails<CaseData, State> details,
@@ -116,6 +120,7 @@ public class CicSubmitCaseEvent implements CCDConfig<CaseData, State, UserRole> 
         final CaseData caseData = getCaseData(data, dssData);
         setDssMetaData(data);
         data.setNewBundleOrderEnabled(YesNo.YES);
+        taskManagementService.enqueueInitiationTasks(List.of(registerNewCase), caseData, details.getId());
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)

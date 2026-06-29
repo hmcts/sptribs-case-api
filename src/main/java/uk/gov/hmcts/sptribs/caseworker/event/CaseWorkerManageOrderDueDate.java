@@ -23,6 +23,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
+import uk.gov.hmcts.sptribs.taskmanagement.TaskManagementService;
 
 import java.time.Clock;
 import java.time.LocalDate;
@@ -45,6 +46,7 @@ import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_JUDGE;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_WA_CONFIG_USER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE;
+import static uk.gov.hmcts.sptribs.taskmanagement.model.TaskType.followUpNoncomplianceOfDirections;
 
 
 @Component
@@ -57,6 +59,8 @@ public class CaseWorkerManageOrderDueDate implements CCDConfig<CaseData, State, 
 
     private final OrderService orderService;
     private final Clock clock;
+
+    private final TaskManagementService taskManagementService;
 
     @Override
     public void configure(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
@@ -73,8 +77,7 @@ public class CaseWorkerManageOrderDueDate implements CCDConfig<CaseData, State, 
                 .grant(CREATE_READ_UPDATE, SUPER_USER,
                     ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER, ST_CIC_HEARING_CENTRE_ADMIN,
                     ST_CIC_HEARING_CENTRE_TEAM_LEADER, ST_CIC_SENIOR_JUDGE, ST_CIC_WA_CONFIG_USER)
-                .grantHistoryOnly(ST_CIC_JUDGE)
-                .publishToCamunda();
+                .grantHistoryOnly(ST_CIC_JUDGE);
 
         PageBuilder pageBuilder = new PageBuilder(eventBuilder);
         manageSelectOrderTemplates.addTo(pageBuilder);
@@ -111,6 +114,7 @@ public class CaseWorkerManageOrderDueDate implements CCDConfig<CaseData, State, 
         caseData.getCicCase().setOrderList(orderList);
         caseData.setOrderDueDates(new ArrayList<>());
         cicCase.setFirstOrderDueDate(CicCaseFieldsUtil.calculateFirstDueDate(caseData.getCicCase().getOrderList()));
+        taskManagementService.enqueueCompletionTasks(List.of(followUpNoncomplianceOfDirections), details.getId());
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .state(details.getState())
             .data(caseData)

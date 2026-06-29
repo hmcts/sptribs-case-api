@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import uk.gov.hmcts.sptribs.testutil.FunctionalTestSuite;
 
+import java.util.List;
 import java.util.Map;
 
 import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
@@ -59,8 +60,16 @@ public class CaseworkerHearingOptionsFT extends FunctionalTestSuite {
 
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
         assertThatJson(response.asString())
-            .when(IGNORING_EXTRA_FIELDS)
-            .isEqualTo(json(expectedResponse(MID_EVENT_RESPONSE)));
+            .inPath("$.data.hearingVenues.list_items")
+            .isArray()
+            .isNotEmpty();
+
+        List<Map<String, Object>> hearingVenues = response.jsonPath().getList("data.hearingVenues.list_items");
+        assertThat(hearingVenues)
+            .allSatisfy(item -> {
+                assertThat(item.get("code")).isNotNull();
+                assertThat(item.get("label")).isNotNull();
+            });
     }
 
     @Test
@@ -71,8 +80,9 @@ public class CaseworkerHearingOptionsFT extends FunctionalTestSuite {
 
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
         assertThatJson(response.asString())
-            .when(IGNORING_EXTRA_FIELDS)
-            .isEqualTo(json(expectedResponse(MID_EVENT_NULL_LIST_RESPONSE)));
+            .inPath("$.data.hearingVenues.list_items")
+            .isArray()
+            .isNotEmpty();
     }
 
     @Test

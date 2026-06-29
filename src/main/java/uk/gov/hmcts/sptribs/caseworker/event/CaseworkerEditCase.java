@@ -27,6 +27,10 @@ import uk.gov.hmcts.sptribs.common.event.page.RepresentativeDetails;
 import uk.gov.hmcts.sptribs.common.event.page.SelectParties;
 import uk.gov.hmcts.sptribs.common.event.page.SubjectDetails;
 import uk.gov.hmcts.sptribs.common.service.SubmissionService;
+import uk.gov.hmcts.sptribs.taskmanagement.TaskManagementService;
+import uk.gov.hmcts.sptribs.taskmanagement.model.TaskType;
+
+import java.util.List;
 
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_EDIT_CASE;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
@@ -45,6 +49,9 @@ import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_SENIOR_JUDGE;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_WA_CONFIG_USER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE;
+import static uk.gov.hmcts.sptribs.taskmanagement.model.TaskType.processFurtherEvidence;
+import static uk.gov.hmcts.sptribs.taskmanagement.model.TaskType.registerNewCase;
+import static uk.gov.hmcts.sptribs.taskmanagement.model.TaskType.vetNewCaseDocuments;
 
 @Component
 public class CaseworkerEditCase implements CCDConfig<CaseData, State, UserRole> {
@@ -61,10 +68,12 @@ public class CaseworkerEditCase implements CCDConfig<CaseData, State, UserRole> 
     private static final CcdPageConfiguration editContactPreferenceDetails = new ContactPreferenceDetails();
 
     private final SubmissionService submissionService;
+    private final TaskManagementService taskManagementService;
 
     @Autowired
-    public CaseworkerEditCase(SubmissionService submissionService) {
+    public CaseworkerEditCase(SubmissionService submissionService, TaskManagementService taskManagementService) {
         this.submissionService = submissionService;
+        this.taskManagementService = taskManagementService;
     }
 
     @Override
@@ -106,6 +115,11 @@ public class CaseworkerEditCase implements CCDConfig<CaseData, State, UserRole> 
 
         CaseFlagsUtil.updateOrInitialiseFlags(data);
         CicCaseFieldsUtil.calculateAndSetIsCaseInTime(data);
+        taskManagementService.enqueueCompletionTasks(
+            List.of(registerNewCase, processFurtherEvidence),
+            details.getId()
+        );
+        taskManagementService.enqueueInitiationTasks(getInitiationTaskTypes(state), data, details.getId());
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(data)
@@ -132,14 +146,20 @@ public class CaseworkerEditCase implements CCDConfig<CaseData, State, UserRole> 
                 ST_CIC_HEARING_CENTRE_TEAM_LEADER, ST_CIC_SENIOR_JUDGE, ST_CIC_RESPONDENT, ST_CIC_WA_CONFIG_USER)
             .grantHistoryOnly(ST_CIC_JUDGE)
             .aboutToSubmitCallback(this::aboutToSubmit)
-            .submittedCallback(this::submitted)
-            .publishToCamunda();
+            .submittedCallback(this::submitted);
 
         return new PageBuilder(eventBuilder);
     }
 
     private boolean checkNull(CaseData data) {
         return null != data.getCicCase() && null != data.getCicCase().getPartiesCIC();
+    }
+
+    private List<TaskType> getInitiationTaskTypes(State state) {
+        if (state == Submitted) {
+            return List.of(vetNewCaseDocuments);
+        }
+        return List.of();
     }
 
 }

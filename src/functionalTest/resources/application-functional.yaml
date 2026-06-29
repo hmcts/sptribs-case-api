@@ -17,6 +17,11 @@ spring:
     servicebus:
       enabled: false
 
+task-management:
+  outbox:
+    poller:
+      enabled: false
+
 s2s:
   name: sptribs_case_api
   ccd_data_name: ccd_data

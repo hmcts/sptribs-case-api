@@ -1,0 +1,9 @@
+allprojects {
+  afterEvaluate { p ->
+    if (p.tasks.findByName('sourcesJar') && p.tasks.findByName('openApiGenerate')) {
+      p.tasks.named('sourcesJar') {
+        dependsOn p.tasks.named('openApiGenerate')
+      }
+    }
+  }
+}
