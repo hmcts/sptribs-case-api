@@ -165,7 +165,7 @@ public class CaseworkerCreateBundle implements CCDConfig<CaseData, State, UserRo
             .map(doc -> {
                 String filename = doc.getDocumentLink().getFilename();
                 String category = doc.getDocumentCategory() != null ? doc.getDocumentCategory().getType() : null;
-                String updatedFilename = (filename != null && category != null) ? filename + " - " + category : filename;
+                String updatedFilename = (filename != null && category != null) ? category + " - " + filename : filename;
 
                 CaseworkerCICDocument docWithFilename = CaseworkerCICDocument.builder()
                     .documentCategory(doc.getDocumentCategory())
@@ -173,6 +173,7 @@ public class CaseworkerCreateBundle implements CCDConfig<CaseData, State, UserRo
                     .documentLink(Document.builder()
                         .url(doc.getDocumentLink().getUrl())
                         .binaryUrl(doc.getDocumentLink().getBinaryUrl())
+                        .categoryId(doc.getDocumentCategory().getCategory())
                         .filename(updatedFilename)
                         .build())
                     .date(doc.getDate())
