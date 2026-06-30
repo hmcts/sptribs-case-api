@@ -15,6 +15,8 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.hmcts.ccd.sdk.type.Document;
+import uk.gov.hmcts.ccd.sdk.type.FlagDetail;
+import uk.gov.hmcts.ccd.sdk.type.Flags;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 import uk.gov.hmcts.sptribs.caseworker.model.DateModel;
@@ -49,6 +51,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.sptribs.caseworker.model.OrderIssuingType.CREATE_AND_SEND_NEW_ORDER;
+import static uk.gov.hmcts.sptribs.caseworker.util.CaseFlagsUtil.ANONYMITY_FLAG_CODE;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_CREATE_AND_SEND_ORDER;
 import static uk.gov.hmcts.sptribs.ciccase.model.ApplicantCIC.APPLICANT_CIC;
 import static uk.gov.hmcts.sptribs.ciccase.model.ContactPreferenceType.EMAIL;
@@ -204,6 +207,68 @@ public class CaseworkerCreateAndSendOrderIT {
         assertThatJson(response)
                 .when(IGNORING_EXTRA_FIELDS)
                 .isEqualTo(json(expectedResponse(CASEWORKER_CREATE_AND_SEND_ORDER_ABOUT_TO_SUBMIT_RESPONSE)));
+    }
+
+    @Test
+    void shouldNotCreateOrReactivateAnonymityFlagWhenAnonymiseNoOnAboutToSubmit() throws Exception {
+        DateModel dateModel = DateModel.builder()
+            .dueDate(LocalDate.of(2026, 11, 12))
+            .dueDateOptions(DueDateOptions.DAY_COUNT_120)
+            .information("due date for test")
+            .build();
+
+        DraftOrderContentCIC draftOrderContentCIC = DraftOrderContentCIC.builder()
+            .orderTemplate(OrderTemplate.CIC3_RULE_27)
+            .mainContent("Main order content sample")
+            .orderSignature("Supreme Judge Fudge")
+            .build();
+
+        Document document = Document.builder()
+            .categoryId("TD")
+            .filename("Order--[Subject Name]--09-05-2024 09:04:04.pdf")
+            .binaryUrl("http://dm-store-aat.service.core-compute-aat.internal/documents/6bcdb209-ba65-4f31-a12a-5abbdf250fb6/binary")
+            .url("http://dm-store-aat.service.core-compute-aat.internal/documents/6bcdb209-ba65-4f31-a12a-5abbdf250fb6")
+            .build();
+
+        ListValue<FlagDetail> inactiveAnonymityFlag = ListValue.<FlagDetail>builder()
+            .id("existing-anon-id")
+            .value(FlagDetail.builder().flagCode(ANONYMITY_FLAG_CODE).status("Inactive").build())
+            .build();
+
+        final CaseData caseData = CaseData.builder()
+            .draftOrderContentCIC(draftOrderContentCIC)
+            .caseFlags(Flags.builder().details(List.of(inactiveAnonymityFlag)).build())
+            .cicCase(CicCase.builder()
+                .orderIssuingType(CREATE_AND_SEND_NEW_ORDER)
+                .anonymiseYesOrNo(YesOrNo.NO)
+                .anonymisedAppellantName("AAC")
+                .orderTemplateIssued(document)
+                .partiesCIC(Set.of(PartiesCIC.SUBJECT, PartiesCIC.REPRESENTATIVE, PartiesCIC.APPLICANT))
+                .notifyPartySubject(Set.of(SUBJECT))
+                .notifyPartyRespondent(Set.of(RESPONDENT))
+                .notifyPartyRepresentative(Set.of(REPRESENTATIVE))
+                .notifyPartyApplicant(Set.of(APPLICANT_CIC))
+                .fullName("Test Name")
+                .schemeCic(Year2012)
+                .build())
+            .orderDueDates(List.of(ListValue.<DateModel>builder().value(dateModel).build()))
+            .build();
+
+        String response = mockMvc.perform(post(ABOUT_TO_SUBMIT_URL)
+                .contentType(APPLICATION_JSON)
+                .header(SERVICE_AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
+                .header(AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
+                .content(objectMapper.writeValueAsString(
+                    callbackRequest(caseData, CASEWORKER_CREATE_AND_SEND_ORDER)))
+                .accept(APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andReturn()
+            .getResponse()
+            .getContentAsString();
+
+        assertThatJson(response).inPath("$.data.caseFlags.details").isArray().hasSize(1);
+        assertThatJson(response).inPath("$.data.caseFlags.details[0].id").isEqualTo("existing-anon-id");
+        assertThatJson(response).inPath("$.data.caseFlags.details[0].value.status").isEqualTo("Inactive");
     }
 
     @Test

@@ -1,0 +1,20 @@
+{
+  "data": {
+    "caseFlags": {
+      "details": [
+        {
+          "id": "original-anon-id",
+          "value": {
+            "flagCode": "CF0012",
+            "status": "Inactive",
+            "dateTimeCreated": "2024-01-01T10:00:00",
+            "dateTimeModified": "${json-unit.any-string}"
+          }
+        }
+      ]
+    },
+    "cicCaseAnonymiseYesOrNo": "No",
+    "cicCaseAnonymityAlreadyApplied": "No",
+    "cicCaseAnonymisedAppellantName": "AA"
+  }
+}
