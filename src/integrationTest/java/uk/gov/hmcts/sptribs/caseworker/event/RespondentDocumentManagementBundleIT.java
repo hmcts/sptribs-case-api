@@ -195,7 +195,9 @@ class RespondentDocumentManagementBundleIT {
             .containsExactlyInAnyOrder("initial-application.pdf", "initial-linked.pdf");
 
         assertThat(furtherDocumentNames.get())
-            .containsExactlyInAnyOrder("second-application.pdf", "second-linked.pdf", "caseworker-direction.pdf");
+            .containsExactlyInAnyOrder("second-application.pdf - Application Form",
+                "second-linked.pdf - Linked docs",
+                "caseworker-direction.pdf - Direction / decision notices");
 
         verify(bundlingClient).createBundle(
             eq(SERVICE_AUTHORIZATION),
@@ -213,7 +215,9 @@ class RespondentDocumentManagementBundleIT {
         assertThat(folderDocumentNames.get("Linked documents"))
             .containsExactly("initial-linked.pdf");
         assertThat(folderDocumentNames.get("Further Documents"))
-            .containsExactlyInAnyOrder("second-application.pdf", "second-linked.pdf", "caseworker-direction.pdf")
+            .containsExactlyInAnyOrder("second-application.pdf - Application Form",
+            "second-linked.pdf - Linked docs",
+            "caseworker-direction.pdf - Direction / decision notices")
             .doesNotContain("initial-application.pdf", "initial-linked.pdf");
     }
 
