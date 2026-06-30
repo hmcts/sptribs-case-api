@@ -739,6 +739,7 @@ class CaseworkerSendOrderTest {
     void shouldStoreErrorsWhenBuildAndSaveNewDocumentEntityThrowsRuntimeExceptionForUploadedOrder() {
         final CaseDetails<CaseData, State> details = new CaseDetails<>();
         details.setId(TEST_CASE_ID);
+        List<ListValue<CICDocument>> uploadedOrderDocuments = new ArrayList<>();
 
         Document document = Document.builder()
             .filename("Order--[Test Name]--09-05-2024 09:04:04.pdf")
@@ -746,9 +747,19 @@ class CaseworkerSendOrderTest {
             .url("url/documents/uuid")
             .build();
 
+        CICDocument cicDocument = CICDocument.builder()
+            .documentLink(document)
+            .build();
+
+        ListValue<CICDocument> cicDocumentListValue = new ListValue<>();
+        cicDocumentListValue.setId("123");
+        cicDocumentListValue.setValue(cicDocument);
+
+        uploadedOrderDocuments.add(cicDocumentListValue);
+
         final CaseData caseData = CaseData.builder().build();
-        CicCase cicCase = getCicCase(UPLOAD_A_NEW_ORDER_FROM_YOUR_COMPUTER, YesOrNo.NO, null, document);
-        cicCase.setOrderTemplateIssued(document);
+        CicCase cicCase = getCicCase(UPLOAD_A_NEW_ORDER_FROM_YOUR_COMPUTER, YesOrNo.NO, null, null);
+        cicCase.setOrderFile(uploadedOrderDocuments);
         caseData.setCicCase(cicCase);
         caseData.setOrderDueDates(List.of(ListValue.<DateModel>builder().value(DATE_MODEL).build()));
 
@@ -770,7 +781,7 @@ class CaseworkerSendOrderTest {
 
         document.setFilename(null);
         cicCase = getCicCase(UPLOAD_A_NEW_ORDER_FROM_YOUR_COMPUTER, YesOrNo.NO, null, null);
-        cicCase.setOrderTemplateIssued(document);
+        cicCase.setOrderFile(uploadedOrderDocuments);
         caseData.setCicCase(cicCase);
         details.setData(caseData);
 
@@ -781,7 +792,7 @@ class CaseworkerSendOrderTest {
 
         document.setFilename("");
         cicCase = getCicCase(UPLOAD_A_NEW_ORDER_FROM_YOUR_COMPUTER, YesOrNo.NO, null, null);
-        cicCase.setOrderTemplateIssued(document);
+        cicCase.setOrderFile(uploadedOrderDocuments);
         caseData.setCicCase(cicCase);
         details.setData(caseData);
 
@@ -789,6 +800,68 @@ class CaseworkerSendOrderTest {
 
         assertThat(emptyFilenameResponse.getErrors()).hasSize(1);
         assertThat(emptyFilenameResponse.getErrors()).contains("Error saving document with no filename");
+    }
+
+    @Test
+    void shouldSuccessfullySaveNewDocumentEntityForSendUploadedOrders() {
+
+        //given
+        final CaseDetails<CaseData, State> details = new CaseDetails<>();
+        details.setId(TEST_CASE_ID);
+
+        Document document = Document.builder()
+            .filename("Order--[Test Name]--09-05-2024 09:04:04.pdf")
+            .binaryUrl("url/documents/uuid/binary")
+            .url("url/documents/uuid")
+            .build();
+
+        Document document2 = Document.builder()
+            .filename("Order--[Test Name]--09-05-2024 09:04:04.pdf")
+            .binaryUrl("url/documents/uuid2/binary")
+            .url("url/documents/uuid2")
+            .build();
+
+        CICDocument cicDocument = CICDocument.builder()
+            .documentLink(document)
+            .build();
+
+        ListValue<CICDocument> cicDocumentListValue = new ListValue<>();
+        cicDocumentListValue.setId("123");
+        cicDocumentListValue.setValue(cicDocument);
+
+        CICDocument cicDocument2 = CICDocument.builder()
+            .documentLink(document2)
+            .build();
+
+        ListValue<CICDocument> cicDocumentListValue2 = new ListValue<>();
+        cicDocumentListValue2.setId("1234");
+        cicDocumentListValue2.setValue(cicDocument2);
+
+        List<ListValue<CICDocument>> uploadedOrderDocuments = new ArrayList<>();
+        uploadedOrderDocuments.add(cicDocumentListValue);
+        uploadedOrderDocuments.add(cicDocumentListValue2);
+
+        final CaseData caseData = CaseData.builder().build();
+        CicCase cicCase = getCicCase(UPLOAD_A_NEW_ORDER_FROM_YOUR_COMPUTER, YesOrNo.NO, null, null);
+        cicCase.setOrderFile(uploadedOrderDocuments);
+        caseData.setCicCase(cicCase);
+        caseData.setOrderDueDates(List.of(ListValue.<DateModel>builder().value(DATE_MODEL).build()));
+
+        caseData.setHyphenatedCaseRef(TEST_CASE_ID_HYPHENATED);
+        details.setData(caseData);
+
+        // When
+        final AboutToStartOrSubmitResponse<CaseData, State> response = caseworkerSendOrder.aboutToSubmit(details, details);
+
+        // Then
+        assertThat(response.getData().getCicCase().getOrderList().getFirst().getValue().getUploadedFile())
+            .isEqualTo(uploadedOrderDocuments);
+
+        verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(document, TEST_CASE_ID,
+            DocumentType.TRIBUNAL_DIRECTION, CaseDocumentType.ORDER);
+        verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(document2, TEST_CASE_ID,
+            DocumentType.TRIBUNAL_DIRECTION, CaseDocumentType.ORDER);
+
     }
 
     private DynamicList getDraftOrderList() {
