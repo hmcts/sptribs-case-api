@@ -3,8 +3,11 @@ package uk.gov.hmcts.sptribs.caseworker;
 import io.restassured.response.Response;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
+import uk.gov.hmcts.sptribs.document.model.DocumentEntity;
+import uk.gov.hmcts.sptribs.document.model.DocumentType;
 import uk.gov.hmcts.sptribs.testutil.FunctionalTestSuite;
 
+import java.util.List;
 import java.util.Map;
 
 import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
@@ -50,7 +53,8 @@ public class CaseworkerCreateDraftOrderFT extends FunctionalTestSuite {
         final Response response = triggerCallback(
             caseData,
             CASEWORKER_CREATE_DRAFT_ORDER,
-            CREATE_DRAFT_ORDER_ADD_FOOTER_MID_EVENT_URL
+            CREATE_DRAFT_ORDER_ADD_FOOTER_MID_EVENT_URL,
+            false
         );
 
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
@@ -62,29 +66,67 @@ public class CaseworkerCreateDraftOrderFT extends FunctionalTestSuite {
     @Test
     public void shouldCreateDraftOrderCICListIfEmptyInAboutToSubmitCallback() throws Exception {
         final Map<String, Object> caseData = caseData(EMPTY_DRAFT_ORDER_CIC_LIST_ABOUT_TO_SUBMIT_REQUEST);
-        final Response response = triggerCallback(caseData, CASEWORKER_CREATE_DRAFT_ORDER, ABOUT_TO_SUBMIT_URL);
+        final Response response = triggerCallback(caseData, CASEWORKER_CREATE_DRAFT_ORDER, ABOUT_TO_SUBMIT_URL, false);
 
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
         assertThatJson(response.asString())
             .when(IGNORING_EXTRA_FIELDS)
             .isEqualTo(json(expectedResponse(EMPTY_DRAFT_ORDER_CIC_LIST_ABOUT_TO_SUBMIT_RESPONSE)));
+
+        long testCaseRef = Long.parseLong(caseData.get("hyphenatedCaseRef").toString().replace("-", ""));
+
+        List<DocumentEntity> documentEntities = caseDocumentsFTDataManager.getDocumentEntities(testCaseRef);
+        assertThat(documentEntities).hasSize(1);
+
+        DocumentEntity firstDocumentEntity = documentEntities.getFirst();
+
+        assertThat(firstDocumentEntity.getId()).isNotNull();
+        assertThat(firstDocumentEntity.getCaseReferenceNumber()).isEqualTo(Long.parseLong(caseData.get("hyphenatedCaseRef")
+            .toString().replace("-", "")));
+        assertThat(firstDocumentEntity.getDocumentTypeName()).isEqualTo(DocumentType.TRIBUNAL_DIRECTION.name());
+        assertThat(firstDocumentEntity.getCaseDocumentTypeId()).isEqualTo(5L);
+        assertThat(firstDocumentEntity.getSavedAt()).isNotNull();
+        assertThat(firstDocumentEntity.getUpdatedAt()).isNotNull();
+        assertThat(firstDocumentEntity.isSentToApplicantViaContactParties()).isFalse();
+        assertThat(firstDocumentEntity.getDocumentUrl()).isNotNull();
+        assertThat(firstDocumentEntity.getDocumentFilename()).isNotNull();
+        assertThat(firstDocumentEntity.getDocumentBinaryUrl()).isNotNull();
     }
 
     @Test
     public void shouldAddToDraftOrderCICListIfNotEmptyInAboutToSubmitCallback() throws Exception {
         final Map<String, Object> caseData = caseData(EXISTING_DRAFT_ORDER_CIC_LIST_ABOUT_TO_SUBMIT_REQUEST);
-        final Response response = triggerCallback(caseData, CASEWORKER_CREATE_DRAFT_ORDER, ABOUT_TO_SUBMIT_URL);
+        final Response response = triggerCallback(caseData, CASEWORKER_CREATE_DRAFT_ORDER, ABOUT_TO_SUBMIT_URL, false);
 
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
         assertThatJson(response.asString())
             .when(IGNORING_EXTRA_FIELDS)
             .isEqualTo(json(expectedResponse(EXISTING_DRAFT_ORDER_CIC_LIST_ABOUT_TO_SUBMIT_RESPONSE)));
+
+        long testCaseRef = Long.parseLong(caseData.get("hyphenatedCaseRef").toString().replace("-", ""));
+
+        List<DocumentEntity> documentEntities = caseDocumentsFTDataManager.getDocumentEntities(testCaseRef);
+        assertThat(documentEntities).hasSize(1);
+
+        DocumentEntity firstDocumentEntity = documentEntities.getFirst();
+
+        assertThat(firstDocumentEntity.getId()).isNotNull();
+        assertThat(firstDocumentEntity.getCaseReferenceNumber()).isEqualTo(Long.parseLong(caseData.get("hyphenatedCaseRef")
+            .toString().replace("-", "")));
+        assertThat(firstDocumentEntity.getDocumentTypeName()).isEqualTo(DocumentType.TRIBUNAL_DIRECTION.name());
+        assertThat(firstDocumentEntity.getCaseDocumentTypeId()).isEqualTo(5L);
+        assertThat(firstDocumentEntity.getSavedAt()).isNotNull();
+        assertThat(firstDocumentEntity.getUpdatedAt()).isNotNull();
+        assertThat(firstDocumentEntity.isSentToApplicantViaContactParties()).isFalse();
+        assertThat(firstDocumentEntity.getDocumentUrl()).isNotNull();
+        assertThat(firstDocumentEntity.getDocumentFilename()).isNotNull();
+        assertThat(firstDocumentEntity.getDocumentBinaryUrl()).isNotNull();
     }
 
     @Test
     public void shouldReturnDraftOrderCreatedConfirmationInSubmittedCallback() throws Exception {
         final Map<String, Object> caseData = caseData(SUBMITTED_REQUEST);
-        final Response response = triggerCallback(caseData, CASEWORKER_CREATE_DRAFT_ORDER, SUBMITTED_URL);
+        final Response response = triggerCallback(caseData, CASEWORKER_CREATE_DRAFT_ORDER, SUBMITTED_URL, false);
 
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
         assertThatJson(response.asString())

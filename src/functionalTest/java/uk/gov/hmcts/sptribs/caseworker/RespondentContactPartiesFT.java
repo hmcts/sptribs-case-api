@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import uk.gov.hmcts.sptribs.cdam.model.Document;
 import uk.gov.hmcts.sptribs.cdam.model.UploadResponse;
+import uk.gov.hmcts.sptribs.notification.persistence.CorrespondenceEntity;
 import uk.gov.hmcts.sptribs.testutil.FunctionalTestSuite;
 
 import java.util.List;
@@ -69,7 +70,8 @@ public class RespondentContactPartiesFT extends FunctionalTestSuite {
         final Response response = triggerCallback(
             caseData,
             RESPONDENT_CONTACT_PARTIES,
-            PARTIES_TO_CONTACT_MID_EVENT_URL
+            PARTIES_TO_CONTACT_MID_EVENT_URL,
+            false
         );
 
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
@@ -86,7 +88,8 @@ public class RespondentContactPartiesFT extends FunctionalTestSuite {
         final Response response = triggerCallback(
             caseData,
             RESPONDENT_CONTACT_PARTIES,
-            PARTIES_TO_CONTACT_MID_EVENT_URL
+            PARTIES_TO_CONTACT_MID_EVENT_URL,
+            false
         );
 
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
@@ -103,7 +106,8 @@ public class RespondentContactPartiesFT extends FunctionalTestSuite {
         final Response response = triggerCallback(
             caseData,
             RESPONDENT_CONTACT_PARTIES,
-            PARTIES_TO_CONTACT_MID_EVENT_URL
+            PARTIES_TO_CONTACT_MID_EVENT_URL,
+            false
         );
 
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
@@ -126,7 +130,8 @@ public class RespondentContactPartiesFT extends FunctionalTestSuite {
         final Response response = triggerCallback(
             caseData,
             RESPONDENT_CONTACT_PARTIES,
-            CONTACT_PARTIES_SELECT_DOCUMENT_MID_EVENT_URL
+            CONTACT_PARTIES_SELECT_DOCUMENT_MID_EVENT_URL,
+            false
         );
 
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
@@ -149,7 +154,8 @@ public class RespondentContactPartiesFT extends FunctionalTestSuite {
         final Response response = triggerCallback(
             caseData,
             RESPONDENT_CONTACT_PARTIES,
-            CONTACT_PARTIES_SELECT_DOCUMENT_MID_EVENT_URL
+            CONTACT_PARTIES_SELECT_DOCUMENT_MID_EVENT_URL,
+            false
         );
 
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
@@ -166,7 +172,8 @@ public class RespondentContactPartiesFT extends FunctionalTestSuite {
         final Response response = triggerCallback(
             caseData,
             RESPONDENT_CONTACT_PARTIES,
-            ABOUT_TO_START_URL
+            ABOUT_TO_START_URL,
+            false
         );
 
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
@@ -177,18 +184,39 @@ public class RespondentContactPartiesFT extends FunctionalTestSuite {
 
     @Test
     public void shouldSuccessfullySendEmailNotificationsInSubmittedEvent() throws Exception {
+        //Add a test here when a doc gets updated!
         final Map<String, Object> caseData = caseData(SUBMITTED_REQUEST);
 
         final Response response = triggerCallback(
             caseData,
             RESPONDENT_CONTACT_PARTIES,
-            SUBMITTED_URL
+            SUBMITTED_URL,
+            false
         );
 
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
         assertThatJson(response.asString())
             .inPath(CONFIRMATION_HEADER)
             .isEqualTo("# Message sent \\n## A notification has been sent to: Subject");
+
+        long testCaseRef = Long.parseLong(caseData.get("hyphenatedCaseRef").toString().replace("-", ""));
+
+        List<CorrespondenceEntity> correspondenceEntities = caseCorrespondencesFTDataManager.getCorrespondenceEntities(testCaseRef);
+        assertThat(correspondenceEntities).hasSize(1);
+
+        CorrespondenceEntity firstCorrespondenceEntity = correspondenceEntities.getFirst();
+
+        assertThat(firstCorrespondenceEntity.getId()).isNotNull();
+        assertThat(firstCorrespondenceEntity.getCaseReferenceNumber()).isEqualTo(Long.parseLong(caseData.get("hyphenatedCaseRef")
+            .toString().replace("-", "")));
+        assertThat(firstCorrespondenceEntity.getEventType()).isEqualTo("CONTACT_PARTIES_EMAIL");
+        assertThat(firstCorrespondenceEntity.getSentOn()).isNotNull();
+        assertThat(firstCorrespondenceEntity.getSentFrom()).isNotNull();
+        assertThat(firstCorrespondenceEntity.getSentTo()).isNotNull();
+        assertThat(firstCorrespondenceEntity.getCorrespondenceType()).isEqualTo("Email");
+        assertThat(firstCorrespondenceEntity.getDocumentUrl()).isNotNull();
+        assertThat(firstCorrespondenceEntity.getDocumentFilename()).isNotNull();
+        assertThat(firstCorrespondenceEntity.getDocumentBinaryUrl()).isNotNull();
     }
 
     @Test
@@ -198,7 +226,8 @@ public class RespondentContactPartiesFT extends FunctionalTestSuite {
         final Response response = triggerCallback(
             caseData,
             RESPONDENT_CONTACT_PARTIES,
-            SUBMITTED_URL
+            SUBMITTED_URL,
+            false
         );
 
         assertThat(response.getStatusCode()).isEqualTo(OK.value());

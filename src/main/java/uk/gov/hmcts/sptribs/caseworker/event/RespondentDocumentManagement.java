@@ -16,8 +16,10 @@ import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.common.service.AuditEventService;
+import uk.gov.hmcts.sptribs.document.model.CaseDocumentType;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocumentUpload;
+import uk.gov.hmcts.sptribs.document.service.DocumentsService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,6 +27,7 @@ import java.util.List;
 import static uk.gov.hmcts.sptribs.caseworker.util.DocumentListUtil.addToExistingDocumentList;
 import static uk.gov.hmcts.sptribs.caseworker.util.DocumentListUtil.getAllCaseDocuments;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.RESPONDENT_DOCUMENT_MANAGEMENT;
+import static uk.gov.hmcts.sptribs.caseworker.util.MessageUtil.handleDocumentException;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingOutcome;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseClosed;
@@ -57,6 +60,7 @@ public class RespondentDocumentManagement implements CCDConfig<CaseData, State, 
     private static final boolean DATE_INCLUDED = true;
     private final UploadCaseDocuments uploadCaseDocuments = new UploadCaseDocuments();
     private final AuditEventService auditEventService;
+    private final DocumentsService documentsService;
 
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
@@ -97,6 +101,7 @@ public class RespondentDocumentManagement implements CCDConfig<CaseData, State, 
                                                                        final CaseDetails<CaseData, State> beforeDetails) {
 
         final CaseData caseData = details.getData();
+        List<ListValue<CaseworkerCICDocument>> allDocuments;
         List<ListValue<CaseworkerCICDocumentUpload>> uploadedDocuments = caseData.getNewDocManagement().getCaseworkerCICDocumentUpload();
         List<ListValue<CaseworkerCICDocument>> documents = convertToCaseworkerCICDocumentUpload(uploadedDocuments, DATE_INCLUDED);
         caseData.getNewDocManagement().setCaseworkerCICDocumentUpload(new ArrayList<>());
@@ -107,13 +112,29 @@ public class RespondentDocumentManagement implements CCDConfig<CaseData, State, 
             if (auditEventService.hasCaseEvent(String.valueOf(details.getId()), RESPONDENT_DOCUMENT_MANAGEMENT)) {
                 caseData.setFurtherUploadedDocuments(addToExistingDocumentList(caseData.getFurtherUploadedDocuments(), documents));
             } else {
-                documents = getAllCaseDocuments(caseData);
-                caseData.setInitialCicaDocuments(addToExistingDocumentList(caseData.getInitialCicaDocuments(), documents));
+                allDocuments = getAllCaseDocuments(caseData);
+                caseData.setInitialCicaDocuments(addToExistingDocumentList(caseData.getInitialCicaDocuments(), allDocuments));
+            }
+        }
+
+        List<String> errors = new ArrayList<>();
+
+        for (ListValue<CaseworkerCICDocument> document : documents) {
+            try {
+                documentsService.buildAndSaveNewDocumentEntity(
+                    document.getValue().getDocumentLink(),
+                    details.getId(),
+                    document.getValue().getDocumentCategory(),
+                    CaseDocumentType.RESPONDENT
+                );
+            } catch (RuntimeException e) {
+                errors.add(handleDocumentException(document.getValue().getDocumentLink(), e.getMessage()));
             }
         }
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
+            .errors(errors)
             .build();
 
     }

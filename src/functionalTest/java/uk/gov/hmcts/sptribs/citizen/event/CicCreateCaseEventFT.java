@@ -32,7 +32,7 @@ public class CicCreateCaseEventFT extends FunctionalTestSuite {
     public void shouldCreateCaseSuccessfullyInAboutToSubmitCallback() throws Exception {
         final Map<String, Object> caseData = caseData(REQUEST);
 
-        final Response response = triggerCallback(caseData, CITIZEN_CIC_CREATE_CASE, ABOUT_TO_SUBMIT_URL);
+        final Response response = triggerCallback(caseData, CITIZEN_CIC_CREATE_CASE, ABOUT_TO_SUBMIT_URL, false);
 
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
         assertThatJson(response.asString())
@@ -44,7 +44,7 @@ public class CicCreateCaseEventFT extends FunctionalTestSuite {
     @Test
     public void shouldReceiveNotificationWhenSubmittedCallbackIsInvoked() throws Exception {
         final Map<String, Object> caseData = caseData(REQUEST);
-        final Response response = triggerCallback(caseData, CITIZEN_CIC_CREATE_CASE, SUBMITTED_URL);
+        final Response response = triggerCallback(caseData, CITIZEN_CIC_CREATE_CASE, SUBMITTED_URL, false);
 
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
         assertThatJson(response.asString())

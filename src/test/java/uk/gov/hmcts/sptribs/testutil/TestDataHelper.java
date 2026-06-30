@@ -25,6 +25,7 @@ import uk.gov.hmcts.sptribs.caseworker.model.DueDateOptions;
 import uk.gov.hmcts.sptribs.caseworker.model.HearingSummary;
 import uk.gov.hmcts.sptribs.caseworker.model.Listing;
 import uk.gov.hmcts.sptribs.caseworker.model.Order;
+import uk.gov.hmcts.sptribs.caseworker.model.OrderIssuingType;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.DssCaseData;
@@ -33,6 +34,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.HearingFormat;
 import uk.gov.hmcts.sptribs.ciccase.model.HearingState;
 import uk.gov.hmcts.sptribs.ciccase.model.HearingType;
 import uk.gov.hmcts.sptribs.ciccase.model.PanelMember;
+import uk.gov.hmcts.sptribs.ciccase.model.PartiesCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.common.ccd.CcdCaseType;
 import uk.gov.hmcts.sptribs.document.model.CICDocument;
@@ -56,11 +58,16 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Collections.emptySet;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static uk.gov.hmcts.ccd.sdk.type.YesOrNo.YES;
+import static uk.gov.hmcts.sptribs.ciccase.model.ApplicantCIC.APPLICANT_CIC;
 import static uk.gov.hmcts.sptribs.ciccase.model.GetAmendDateAsCompleted.MARKASCOMPLETED;
 import static uk.gov.hmcts.sptribs.ciccase.model.HearingFormat.FACE_TO_FACE;
 import static uk.gov.hmcts.sptribs.ciccase.model.HearingState.Listed;
 import static uk.gov.hmcts.sptribs.ciccase.model.HearingType.FINAL;
 import static uk.gov.hmcts.sptribs.ciccase.model.HearingType.INTERLOCUTORY;
+import static uk.gov.hmcts.sptribs.ciccase.model.RepresentativeCIC.REPRESENTATIVE;
+import static uk.gov.hmcts.sptribs.ciccase.model.RespondentCIC.RESPONDENT;
+import static uk.gov.hmcts.sptribs.ciccase.model.SchemeCic.Year2012;
+import static uk.gov.hmcts.sptribs.ciccase.model.SubjectCIC.SUBJECT;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.HEARING_DATE_1;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.HEARING_DATE_2;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.HEARING_TIME;
@@ -191,6 +198,32 @@ public class TestDataHelper {
                 .reason(reason)
                 .build()
         );
+    }
+
+    public static uk.gov.hmcts.ccd.sdk.api.CaseDetails<CaseData, State> getApiCaseDetailsBefore() {
+        final uk.gov.hmcts.ccd.sdk.api.CaseDetails<CaseData, State> caseDetails = new uk.gov.hmcts.ccd.sdk.api.CaseDetails<>();
+        final CaseData caseData = CaseData.builder().build();
+        caseDetails.setData(caseData);
+        return caseDetails;
+    }
+
+    public static CicCase getCicCase(OrderIssuingType issueType,
+                                      YesOrNo isAnonymised,
+                                      String anonymisedName,
+                                      Document document) {
+        return CicCase.builder()
+            .orderIssuingType(issueType)
+            .anonymiseYesOrNo(isAnonymised)
+            .anonymisedAppellantName(anonymisedName)
+            .orderTemplateIssued(document)
+            .partiesCIC(Set.of(PartiesCIC.SUBJECT, PartiesCIC.REPRESENTATIVE))
+            .notifyPartySubject(Set.of(SUBJECT))
+            .notifyPartyRespondent(Set.of(RESPONDENT))
+            .notifyPartyRepresentative(Set.of(REPRESENTATIVE))
+            .notifyPartyApplicant(Set.of(APPLICANT_CIC))
+            .fullName("Test Name")
+            .schemeCic(Year2012)
+            .build();
     }
 
     private static CaseDetails caseDetailsBefore(CaseData caseData) {
@@ -729,5 +762,32 @@ public class TestDataHelper {
         ListValue<Order> orderListValue = new ListValue<>();
         orderListValue.setValue(order);
         return orderListValue;
+    }
+
+    public static DynamicMultiSelectList buildDynamicMultiSelectDocumentList() {
+        final String documentLabel =
+            "[Document 1.pdf A - First decision](http://exui.net/documents/5e32a0d2-9b37-4548-b007-b9b2eb580d0a/binary)";
+        final DynamicListElement listItem = DynamicListElement
+            .builder()
+            .label(documentLabel)
+            .code(UUID.randomUUID())
+            .build();
+
+        final List<DynamicListElement> listItems = new ArrayList<>();
+        listItems.add(listItem);
+
+        final DynamicMultiSelectList documentList = new DynamicMultiSelectList();
+        documentList.setListItems(listItems);
+        documentList.setValue(listItems);
+
+        return documentList;
+    }
+
+    public static Map<String, String> getDocumentUploadMap() {
+        return Map.of(
+            "CaseDocument1", "5e32a0d2-9b37-4548-b007-b9b2eb580d0a",
+            "CaseDocument2", "",
+            "DocumentAvailable1", "yes",
+            "DocumentAvailable2", "no");
     }
 }

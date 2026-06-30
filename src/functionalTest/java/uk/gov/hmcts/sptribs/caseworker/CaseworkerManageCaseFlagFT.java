@@ -26,7 +26,7 @@ public class CaseworkerManageCaseFlagFT extends FunctionalTestSuite {
     public void shouldTriggerSuccessfulResponseIfSubmittedCallbackIsInvoked() throws Exception {
         final Map<String, Object> caseData = caseData(CALLBACK_REQUEST);
 
-        final Response response = triggerCallback(caseData, CASEWORKER_MANAGE_CASE_FLAG, SUBMITTED_URL);
+        final Response response = triggerCallback(caseData, CASEWORKER_MANAGE_CASE_FLAG, SUBMITTED_URL, false);
 
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
         assertThatJson(response.asString())

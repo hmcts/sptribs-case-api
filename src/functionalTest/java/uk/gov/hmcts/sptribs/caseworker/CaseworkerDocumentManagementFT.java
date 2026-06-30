@@ -3,8 +3,10 @@ package uk.gov.hmcts.sptribs.caseworker;
 import io.restassured.response.Response;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
+import uk.gov.hmcts.sptribs.document.model.DocumentEntity;
 import uk.gov.hmcts.sptribs.testutil.FunctionalTestSuite;
 
+import java.util.List;
 import java.util.Map;
 
 import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
@@ -44,7 +46,8 @@ public class CaseworkerDocumentManagementFT extends FunctionalTestSuite {
         final Response response = triggerCallback(
             caseData,
             CASEWORKER_DOCUMENT_MANAGEMENT,
-            CASE_DOCUMENT_MANAGEMENT_UPLOAD_DOCUMENTS_MID_EVENT_URL
+            CASE_DOCUMENT_MANAGEMENT_UPLOAD_DOCUMENTS_MID_EVENT_URL,
+            false
         );
 
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
@@ -60,13 +63,33 @@ public class CaseworkerDocumentManagementFT extends FunctionalTestSuite {
         final Response response = triggerCallback(
             caseData,
             CASEWORKER_DOCUMENT_MANAGEMENT,
-            ABOUT_TO_SUBMIT_URL
+            ABOUT_TO_SUBMIT_URL,
+            false
         );
 
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
         assertThatJson(response.asString())
             .when(IGNORING_EXTRA_FIELDS)
             .isEqualTo(json(expectedResponse(ABOUT_TO_SUBMIT_RESPONSE)));
+
+        long testCaseRef = Long.parseLong(caseData.get("hyphenatedCaseRef").toString().replace("-", ""));
+
+        List<DocumentEntity> documentEntities = caseDocumentsFTDataManager.getDocumentEntities(testCaseRef);
+        assertThat(documentEntities).hasSize(3);
+
+        DocumentEntity firstDocumentEntity = documentEntities.getFirst();
+
+        assertThat(firstDocumentEntity.getId()).isNotNull();
+        assertThat(firstDocumentEntity.getCaseReferenceNumber()).isEqualTo(Long.parseLong(caseData.get("hyphenatedCaseRef")
+            .toString().replace("-", "")));
+        assertThat(firstDocumentEntity.getDocumentTypeName()).isNotNull();
+        assertThat(firstDocumentEntity.getCaseDocumentTypeId()).isEqualTo(3L);
+        assertThat(firstDocumentEntity.getSavedAt()).isNotNull();
+        assertThat(firstDocumentEntity.getUpdatedAt()).isNotNull();
+        assertThat(firstDocumentEntity.isSentToApplicantViaContactParties()).isFalse();
+        assertThat(firstDocumentEntity.getDocumentUrl()).isNotNull();
+        assertThat(firstDocumentEntity.getDocumentFilename()).isNotNull();
+        assertThat(firstDocumentEntity.getDocumentBinaryUrl()).isNotNull();
     }
 
     @Test
@@ -76,7 +99,8 @@ public class CaseworkerDocumentManagementFT extends FunctionalTestSuite {
         final Response response = triggerCallback(
             caseData,
             CASEWORKER_DOCUMENT_MANAGEMENT,
-            SUBMITTED_URL
+            SUBMITTED_URL,
+            false
         );
 
         assertThat(response.getStatusCode()).isEqualTo(OK.value());

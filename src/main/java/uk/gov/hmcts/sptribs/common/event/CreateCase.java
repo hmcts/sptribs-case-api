@@ -1,8 +1,8 @@
 package uk.gov.hmcts.sptribs.common.event;
 
+import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
@@ -37,8 +37,10 @@ import uk.gov.hmcts.sptribs.common.event.page.SelectParties;
 import uk.gov.hmcts.sptribs.common.event.page.SubjectDetails;
 import uk.gov.hmcts.sptribs.common.service.CcdSupplementaryDataService;
 import uk.gov.hmcts.sptribs.common.service.SubmissionService;
+import uk.gov.hmcts.sptribs.document.model.CaseDocumentType;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocumentUpload;
+import uk.gov.hmcts.sptribs.document.service.DocumentsService;
 import uk.gov.hmcts.sptribs.notification.dispatcher.ApplicationReceivedNotification;
 
 import java.util.ArrayList;
@@ -63,6 +65,7 @@ import static uk.gov.hmcts.sptribs.document.DocumentUtil.updateUploadedDocumentC
 
 @Slf4j
 @Component
+@RequiredArgsConstructor
 public class CreateCase implements CCDConfig<CaseData, State, UserRole> {
 
     private static final CcdPageConfiguration categorisationDetails = new CaseCategorisationDetails();
@@ -83,14 +86,7 @@ public class CreateCase implements CCDConfig<CaseData, State, UserRole> {
 
     private final ApplicationReceivedNotification applicationReceivedNotification;
 
-    @Autowired
-    public CreateCase(SubmissionService submissionService,
-                      CcdSupplementaryDataService ccdSupplementaryDataService,
-                      ApplicationReceivedNotification applicationReceivedNotification) {
-        this.submissionService = submissionService;
-        this.ccdSupplementaryDataService = ccdSupplementaryDataService;
-        this.applicationReceivedNotification = applicationReceivedNotification;
-    }
+    private final DocumentsService documentsService;
 
     @Override
     public void configure(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
@@ -131,6 +127,7 @@ public class CreateCase implements CCDConfig<CaseData, State, UserRole> {
         caseData.getCicCase().setCaseDocumentsUpload(new ArrayList<>());
 
         caseData.getCicCase().setApplicantDocumentsUploaded(documents);
+
         setIsRepresentativePresent(caseData);
         caseData.setSecurityClass(SecurityClass.PUBLIC);
         caseData.setCaseNameHmctsInternal(caseData.getCicCase().getFullName());
@@ -151,6 +148,24 @@ public class CreateCase implements CCDConfig<CaseData, State, UserRole> {
         final CaseData caseData = details.getData();
         setSupplementaryData(details.getId());
         final String caseReference = caseData.getHyphenatedCaseRef();
+
+        if (caseData.getCicCase().getApplicantDocumentsUploaded() != null) {
+            for (ListValue<CaseworkerCICDocument> document : caseData.getCicCase().getApplicantDocumentsUploaded()) {
+                try {
+                    documentsService.buildAndSaveNewDocumentEntity(
+                        document.getValue().getDocumentLink(),
+                        details.getId(),
+                        document.getValue().getDocumentCategory(),
+                        CaseDocumentType.CASEWORKER
+                    );
+                } catch (RuntimeException e) {
+                    log.error("Saving applicant documents failed with exception: {}", e.getMessage());
+                    return SubmittedCallbackResponse.builder()
+                        .confirmationHeader(format("# Create case notification failed %n## Please resend the notification"))
+                        .build();
+                }
+            }
+        }
 
         try {
             sendApplicationReceivedNotification(caseReference, caseData);

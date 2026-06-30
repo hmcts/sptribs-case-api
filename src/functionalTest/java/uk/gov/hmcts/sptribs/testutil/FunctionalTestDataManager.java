@@ -18,9 +18,11 @@ import java.util.List;
 import static uk.gov.hmcts.sptribs.testutil.FunctionalTestConstants.KEY_CASE_CORRESPONDENCES_REFERENCE;
 import static uk.gov.hmcts.sptribs.testutil.FunctionalTestConstants.KEY_CASE_DATA_ID;
 import static uk.gov.hmcts.sptribs.testutil.FunctionalTestConstants.KEY_CASE_DATA_REFERENCE;
+import static uk.gov.hmcts.sptribs.testutil.FunctionalTestConstants.KEY_CASE_DOCUMENTS_REFERENCE;
 import static uk.gov.hmcts.sptribs.testutil.FunctionalTestConstants.KEY_CASE_EVENT_REFERENCE;
 import static uk.gov.hmcts.sptribs.testutil.FunctionalTestConstants.TABLE_CASE_CORRESPONDENCES;
 import static uk.gov.hmcts.sptribs.testutil.FunctionalTestConstants.TABLE_CASE_DATA;
+import static uk.gov.hmcts.sptribs.testutil.FunctionalTestConstants.TABLE_CASE_DOCUMENTS;
 import static uk.gov.hmcts.sptribs.testutil.FunctionalTestConstants.TABLE_CASE_EVENT;
 
 @Component
@@ -31,7 +33,7 @@ public class FunctionalTestDataManager {
 
     private static final List<Long> testReferences = Collections.synchronizedList(new ArrayList<>());
 
-    private Connection connection;
+    protected static Connection connection;
 
     @Value("${postgres.host}")
     private String host;
@@ -48,7 +50,20 @@ public class FunctionalTestDataManager {
     @Value("${postgres.password}")
     private String password;
 
+
+
     public void connectToDB() {
+        if (connection != null) {
+            try {
+                if (!connection.isClosed()) {
+                    log.info("Database connection already exists, reusing it.");
+                    return;
+                }
+            } catch (SQLException e) {
+                log.warn("Error checking connection state", e);
+            }
+        }
+
         String connectionString = String.format("jdbc:postgresql://%s:%s/%s", host, port, dbName);
 
         try {
@@ -66,8 +81,19 @@ public class FunctionalTestDataManager {
         deleteCaseEvent(reference);
         deleteCaseData(reference);
         deleteCaseCorrespondences(reference);
+        deleteCaseDocuments(reference);
 
         log.info("Clear down completed for reference: {}", reference);
+    }
+
+    public void deleteCaseDocConstants(long[] references) {
+        for (long reference : references) {
+            deleteCaseDocuments(reference);
+        }
+    }
+
+    private void deleteCaseDocuments(long reference) {
+        deleteFromTable(TABLE_CASE_DOCUMENTS, KEY_CASE_DOCUMENTS_REFERENCE, reference);
     }
 
     public void deleteCaseData(long reference) {

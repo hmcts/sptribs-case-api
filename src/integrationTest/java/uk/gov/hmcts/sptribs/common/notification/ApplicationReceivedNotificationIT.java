@@ -24,6 +24,8 @@ import static uk.gov.hmcts.sptribs.ciccase.model.ContactPreferenceType.EMAIL;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.CIC_CASE_NUMBER;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.CIC_CASE_SUBJECT_NAME;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.CONTACT_NAME;
+import static uk.gov.hmcts.sptribs.common.CommonConstants.DASHBOARD_KEY;
+import static uk.gov.hmcts.sptribs.common.CommonConstants.DASHBOARD_LINK;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.TRIBUNAL_NAME;
 import static uk.gov.hmcts.sptribs.common.ccd.CcdCaseType.CIC;
 import static uk.gov.hmcts.sptribs.notification.TemplateName.APPLICATION_RECEIVED;
@@ -68,7 +70,8 @@ public class ApplicationReceivedNotificationIT {
                 TRIBUNAL_NAME, CIC,
                 CIC_CASE_NUMBER, TEST_CASE_ID.toString(),
                 CIC_CASE_SUBJECT_NAME, "Test Name",
-                CONTACT_NAME, "Test Name"
+                CONTACT_NAME, "Test Name",
+                DASHBOARD_KEY, DASHBOARD_LINK
             ));
     }
 
@@ -98,7 +101,8 @@ public class ApplicationReceivedNotificationIT {
                 TRIBUNAL_NAME, CIC,
                 CIC_CASE_NUMBER, TEST_CASE_ID.toString(),
                 CIC_CASE_SUBJECT_NAME, "Test Name",
-                CONTACT_NAME, "Applicant Name"
+                CONTACT_NAME, "Applicant Name",
+                DASHBOARD_KEY, DASHBOARD_LINK
             ));
     }
 
@@ -128,7 +132,8 @@ public class ApplicationReceivedNotificationIT {
                 TRIBUNAL_NAME, CIC,
                 CIC_CASE_NUMBER, TEST_CASE_ID.toString(),
                 CIC_CASE_SUBJECT_NAME, "Test Name",
-                CONTACT_NAME, "Representative Name"
+                CONTACT_NAME, "Representative Name",
+                DASHBOARD_KEY, DASHBOARD_LINK
             ));
     }
 }

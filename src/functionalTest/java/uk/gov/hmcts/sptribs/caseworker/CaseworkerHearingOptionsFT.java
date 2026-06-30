@@ -43,7 +43,7 @@ public class CaseworkerHearingOptionsFT extends FunctionalTestSuite {
     @Test
     public void shouldPopulateRegionDataWhenAboutToStartCallbackIsInvoked() throws Exception {
         final Map<String, Object> caseData = caseData(ABOUT_TO_START_REQUEST);
-        final Response response = triggerCallback(caseData, CASEWORKER_HEARING_OPTIONS, ABOUT_TO_START_URL);
+        final Response response = triggerCallback(caseData, CASEWORKER_HEARING_OPTIONS, ABOUT_TO_START_URL, false);
 
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
         assertThatJson(response.asString())
@@ -55,7 +55,7 @@ public class CaseworkerHearingOptionsFT extends FunctionalTestSuite {
     public void shouldPopulateVenueDataWhenMidEventCallbackIsInvoked() throws Exception {
         final Map<String, Object> caseData = caseData(MID_EVENT_REQUEST);
         final Response response =
-            triggerCallback(caseData, CASEWORKER_HEARING_OPTIONS, HEARING_OPTIONS_REGION_DATA_MID_EVENT_URL);
+            triggerCallback(caseData, CASEWORKER_HEARING_OPTIONS, HEARING_OPTIONS_REGION_DATA_MID_EVENT_URL, false);
 
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
         assertThatJson(response.asString())
@@ -67,7 +67,7 @@ public class CaseworkerHearingOptionsFT extends FunctionalTestSuite {
     public void shouldPopulateVenueDataWithNullRegionListWhenMidEventCallbackIsInvoked() throws Exception {
         final Map<String, Object> caseData = caseData(MID_EVENT_NULL_LIST_REQUEST);
         final Response response =
-            triggerCallback(caseData, CASEWORKER_HEARING_OPTIONS, HEARING_OPTIONS_REGION_DATA_MID_EVENT_URL);
+            triggerCallback(caseData, CASEWORKER_HEARING_OPTIONS, HEARING_OPTIONS_REGION_DATA_MID_EVENT_URL, false);
 
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
         assertThatJson(response.asString())

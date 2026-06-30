@@ -2,10 +2,10 @@ package uk.gov.hmcts.sptribs.common.event;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.stereotype.Component;
@@ -31,8 +31,10 @@ import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.common.config.AppsConfig;
 import uk.gov.hmcts.sptribs.common.service.CcdSupplementaryDataService;
+import uk.gov.hmcts.sptribs.document.model.CaseDocumentType;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
+import uk.gov.hmcts.sptribs.document.service.DocumentsService;
 import uk.gov.hmcts.sptribs.services.cdam.CaseDocumentClientApi;
 
 import java.io.IOException;
@@ -58,6 +60,7 @@ import static uk.gov.hmcts.sptribs.constants.CommonConstants.ST_CIC_WA_CASE_REGI
 
 @Slf4j
 @Component
+@RequiredArgsConstructor
 public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
 
     private static final String ENVIRONMENT_AAT = "aat";
@@ -72,20 +75,7 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
     private final HttpServletRequest httpServletRequest;
     private final CaseDocumentClientApi caseDocumentClientApi;
 
-    @Autowired
-    public CreateTestCase(ObjectMapper objectMapper,
-                          CcdSupplementaryDataService ccdSupplementaryDataService,
-                          CaseDocumentClientApi caseDocumentClientApi,
-                          AppsConfig appsConfig,
-                          AuthTokenGenerator authTokenGenerator,
-                          HttpServletRequest httpServletRequest) {
-        this.objectMapper = objectMapper;
-        this.ccdSupplementaryDataService = ccdSupplementaryDataService;
-        this.caseDocumentClientApi = caseDocumentClientApi;
-        this.appsConfig = appsConfig;
-        this.authTokenGenerator = authTokenGenerator;
-        this.httpServletRequest = httpServletRequest;
-    }
+    private final DocumentsService documentsService;
 
     @Override
     public void configure(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
@@ -137,7 +127,25 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
         final CaseData caseData = details.getData();
         final String caseReference = caseData.getHyphenatedCaseRef();
 
-        ccdSupplementaryDataService.submitSupplementaryDataToCcd(details.getId().toString());
+        setSupplementaryData(details.getId());
+
+        if (caseData.getCicCase().getApplicantDocumentsUploaded() != null) {
+            for (ListValue<CaseworkerCICDocument> document : caseData.getCicCase().getApplicantDocumentsUploaded()) {
+                try {
+                    documentsService.buildAndSaveNewDocumentEntity(
+                        document.getValue().getDocumentLink(),
+                        details.getId(),
+                        document.getValue().getDocumentCategory(),
+                        CaseDocumentType.CASEWORKER
+                    );
+                } catch (RuntimeException e) {
+                    log.error("Saving applicant documents failed with exception : {}", e.getMessage());
+                    return SubmittedCallbackResponse.builder()
+                        .confirmationHeader(format("# Create case notification failed %n## Please resend the notification"))
+                        .build();
+                }
+            }
+        }
 
         return SubmittedCallbackResponse.builder()
             .confirmationHeader(format("# Case Created %n## Case reference number: %n## %s", caseReference))
@@ -191,7 +199,6 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
 
             caseData.getCicCase().setApplicantDocumentsUploaded(List.of(testDocumentListValue));
         }
-
     }
 
     private UploadResponse uploadApplicantDocument() {
@@ -232,5 +239,14 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
             .documentCategory(DocumentType.APPLICATION_FORM)
             .documentEmailContent("This is a test document uploaded during create case journey")
             .build();
+    }
+
+
+    private void setSupplementaryData(Long caseId) {
+        try {
+            ccdSupplementaryDataService.submitSupplementaryDataToCcd(caseId.toString());
+        } catch (Exception exception) {
+            log.error("Unable to set Supplementary data with exception : {}", exception.getMessage());
+        }
     }
 }

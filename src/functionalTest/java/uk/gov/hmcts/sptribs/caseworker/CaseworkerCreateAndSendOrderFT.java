@@ -3,8 +3,12 @@ package uk.gov.hmcts.sptribs.caseworker;
 import io.restassured.response.Response;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
+import uk.gov.hmcts.sptribs.document.model.DocumentEntity;
+import uk.gov.hmcts.sptribs.document.model.DocumentType;
+import uk.gov.hmcts.sptribs.notification.persistence.CorrespondenceEntity;
 import uk.gov.hmcts.sptribs.testutil.FunctionalTestSuite;
 
+import java.util.List;
 import java.util.Map;
 
 import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
@@ -56,7 +60,7 @@ public class CaseworkerCreateAndSendOrderFT extends FunctionalTestSuite {
     public void shouldSetOrderIssueTypesAndTemplatesInAboutToStartCallback() throws Exception {
         final Map<String, Object> caseData = caseData(ABOUT_TO_START_REQUEST);
 
-        final Response response = triggerCallback(caseData, CASEWORKER_CREATE_AND_SEND_ORDER, ABOUT_TO_START_URL);
+        final Response response = triggerCallback(caseData, CASEWORKER_CREATE_AND_SEND_ORDER, ABOUT_TO_START_URL, false);
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
 
         assertThatJson(response.asString())
@@ -69,7 +73,7 @@ public class CaseworkerCreateAndSendOrderFT extends FunctionalTestSuite {
     public void shouldRetainSelectedOrderDataWhenAboutToSubmitCallbackIsTriggered() throws Exception {
         final Map<String, Object> caseData = caseData(CALLBACK_REQUEST);
 
-        final Response response = triggerCallback(caseData, CASEWORKER_CREATE_AND_SEND_ORDER, ABOUT_TO_SUBMIT_URL);
+        final Response response = triggerCallback(caseData, CASEWORKER_CREATE_AND_SEND_ORDER, ABOUT_TO_SUBMIT_URL, false);
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
 
         assertThatJson(response.asString())
@@ -82,7 +86,7 @@ public class CaseworkerCreateAndSendOrderFT extends FunctionalTestSuite {
     public void shouldAddNewAnonymisedOrderFromTemplateWhenAboutToSubmitCallbackIsTriggered() throws Exception {
         final Map<String, Object> caseData = caseData(NEW_ORDER_TEMPLATE_REQUEST);
 
-        final Response response = triggerCallback(caseData, CASEWORKER_CREATE_AND_SEND_ORDER, ABOUT_TO_SUBMIT_URL);
+        final Response response = triggerCallback(caseData, CASEWORKER_CREATE_AND_SEND_ORDER, ABOUT_TO_SUBMIT_URL, false);
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
 
         assertThatJson(response.asString())
@@ -95,7 +99,7 @@ public class CaseworkerCreateAndSendOrderFT extends FunctionalTestSuite {
     public void shouldAddNonAnonymisedOrderFromTemplateWhenAboutToSubmitCallbackIsTriggered() throws Exception {
         final Map<String, Object> caseData = caseData(NEW_ORDER_TEMPLATE_NON_ANONYMISED_REQUEST);
 
-        final Response response = triggerCallback(caseData, CASEWORKER_CREATE_AND_SEND_ORDER, ABOUT_TO_SUBMIT_URL);
+        final Response response = triggerCallback(caseData, CASEWORKER_CREATE_AND_SEND_ORDER, ABOUT_TO_SUBMIT_URL, false);
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
 
         assertThatJson(response.asString())
@@ -108,33 +112,71 @@ public class CaseworkerCreateAndSendOrderFT extends FunctionalTestSuite {
     public void shouldAddNewOrderFromUploadWhenAboutToSubmitCallbackIsTriggered() throws Exception {
         final Map<String, Object> caseData = caseData(UPLOADED_ORDER_REQUEST);
 
-        final Response response = triggerCallback(caseData, CASEWORKER_CREATE_AND_SEND_ORDER, ABOUT_TO_SUBMIT_URL);
+        final Response response = triggerCallback(caseData, CASEWORKER_CREATE_AND_SEND_ORDER, ABOUT_TO_SUBMIT_URL, false);
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
 
         assertThatJson(response.asString())
             .when(IGNORING_EXTRA_FIELDS)
             .when(IGNORING_ARRAY_ORDER)
             .isEqualTo(json(expectedResponse(UPLOADED_ORDER_RESPONSE)));
+
+        long testCaseRef = Long.parseLong(caseData.get("hyphenatedCaseRef").toString().replace("-", ""));
+
+        List<DocumentEntity> documentEntities = caseDocumentsFTDataManager.getDocumentEntities(testCaseRef);
+        assertThat(documentEntities).hasSize(1);
+
+        DocumentEntity firstDocumentEntity = documentEntities.getFirst();
+
+        assertThat(firstDocumentEntity.getId()).isNotNull();
+        assertThat(firstDocumentEntity.getCaseReferenceNumber()).isEqualTo(Long.parseLong(caseData.get("hyphenatedCaseRef")
+            .toString().replace("-", "")));
+        assertThat(firstDocumentEntity.getDocumentTypeName()).isEqualTo(DocumentType.TRIBUNAL_DIRECTION.name());
+        assertThat(firstDocumentEntity.getCaseDocumentTypeId()).isEqualTo(4L);
+        assertThat(firstDocumentEntity.getSavedAt()).isNotNull();
+        assertThat(firstDocumentEntity.getUpdatedAt()).isNotNull();
+        assertThat(firstDocumentEntity.isSentToApplicantViaContactParties()).isFalse();
+        assertThat(firstDocumentEntity.getDocumentUrl()).isNotNull();
+        assertThat(firstDocumentEntity.getDocumentFilename()).isNotNull();
+        assertThat(firstDocumentEntity.getDocumentBinaryUrl()).isNotNull();
     }
 
     @Test
     public void shouldReturnHappyResponseWhenValidSubmittedCallbackIsInvoked() throws Exception {
         final Map<String, Object> caseData = caseData(CALLBACK_REQUEST);
 
-        final Response response = triggerCallback(caseData, CASEWORKER_CREATE_AND_SEND_ORDER, SUBMITTED_URL);
+        final Response response = triggerCallback(caseData, CASEWORKER_CREATE_AND_SEND_ORDER, SUBMITTED_URL, false);
 
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
         assertThatJson(response.asString())
             .inPath(CONFIRMATION_HEADER)
             .isString()
             .contains("# Order sent \n## A notification has been sent to: Representative");
+
+        long testCaseRef = Long.parseLong(caseData.get("hyphenatedCaseRef").toString().replace("-", ""));
+
+        List<CorrespondenceEntity> correspondenceEntities = caseCorrespondencesFTDataManager.getCorrespondenceEntities(testCaseRef);
+        assertThat(correspondenceEntities).hasSize(1);
+
+        CorrespondenceEntity firstCorrespondenceEntity = correspondenceEntities.getFirst();
+
+        assertThat(firstCorrespondenceEntity.getId()).isNotNull();
+        assertThat(firstCorrespondenceEntity.getCaseReferenceNumber()).isEqualTo(Long.parseLong(caseData.get("hyphenatedCaseRef")
+            .toString().replace("-", "")));
+        assertThat(firstCorrespondenceEntity.getEventType()).isEqualTo("NEW_ORDER_ISSUED_POST");
+        assertThat(firstCorrespondenceEntity.getSentOn()).isNotNull();
+        assertThat(firstCorrespondenceEntity.getSentFrom()).isNotNull();
+        assertThat(firstCorrespondenceEntity.getSentTo()).isNotNull();
+        assertThat(firstCorrespondenceEntity.getCorrespondenceType()).isEqualTo("Letter");
+        assertThat(firstCorrespondenceEntity.getDocumentUrl()).isNotNull();
+        assertThat(firstCorrespondenceEntity.getDocumentFilename()).isNotNull();
+        assertThat(firstCorrespondenceEntity.getDocumentBinaryUrl()).isNotNull();
     }
 
     @Test
     public void shouldReturnUnhappyResponseWhenInvalidSubmittedCallbackIsInvoked() throws Exception {
         final Map<String, Object> caseData = caseData(REQUEST_UNHAPPY_ABOUT_TO_SUBMIT);
 
-        final Response response = triggerCallback(caseData, CASEWORKER_CREATE_AND_SEND_ORDER, SUBMITTED_URL);
+        final Response response = triggerCallback(caseData, CASEWORKER_CREATE_AND_SEND_ORDER, SUBMITTED_URL, false);
 
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
         assertThatJson(response.asString())
