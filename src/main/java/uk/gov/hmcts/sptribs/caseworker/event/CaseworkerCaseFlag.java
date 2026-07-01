@@ -7,13 +7,21 @@ import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
+import uk.gov.hmcts.ccd.sdk.type.FlagDetail;
+import uk.gov.hmcts.ccd.sdk.type.ListValue;
+import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
+import uk.gov.hmcts.sptribs.caseworker.event.page.ApplyAnonymity;
 import uk.gov.hmcts.sptribs.caseworker.util.CaseFlagsUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.common.service.CcdSupplementaryDataService;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static java.lang.String.format;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_CASE_FLAG;
@@ -40,6 +48,7 @@ public class CaseworkerCaseFlag implements CCDConfig<CaseData, State, UserRole> 
     private static final String ALWAYS_HIDE = "flagLauncher = \"ALWAYS_HIDE\"";
 
     private final CcdSupplementaryDataService coreCaseApiService;
+    private final ApplyAnonymity applyAnonymity;
 
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
@@ -67,13 +76,24 @@ public class CaseworkerCaseFlag implements CCDConfig<CaseData, State, UserRole> 
     }
 
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(CaseDetails<CaseData, State> details,
-                                                                       CaseDetails<CaseData, State> beforeDetails) {
-        CaseData caseData = details.getData();
+                                                                        CaseDetails<CaseData, State> beforeDetails) {
+        CaseData caseData = details.getData() == null ? CaseData.builder().build() : details.getData();
         CaseData beforeData = beforeDetails == null ? null : beforeDetails.getData();
-        CaseFlagsUtil.mergeAnonymityFlagsPreserveOriginalId(caseData, beforeData);
+        CicCase cicCase = caseData.getCicCase();
+        if (cicCase == null) {
+            cicCase = new CicCase();
+            caseData.setCicCase(cicCase);
+        }
+
+        List<String> errors = new ArrayList<>();
+        ListValue<FlagDetail> effectiveAnonymityFlag = CaseFlagsUtil.mergeAnonymityFlagsPreserveOriginalId(caseData, beforeData);
+        boolean hasActiveAnonymityFlag = CaseFlagsUtil.isActiveFlag(effectiveAnonymityFlag);
+        cicCase.setAnonymiseYesOrNo(hasActiveAnonymityFlag ? YesOrNo.YES : YesOrNo.NO);
+        applyAnonymity.applyAnonymitySelection(cicCase, errors);
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
+            .errors(errors)
             .build();
     }
 

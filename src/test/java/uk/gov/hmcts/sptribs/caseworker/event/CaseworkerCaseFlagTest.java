@@ -12,8 +12,10 @@ import uk.gov.hmcts.ccd.sdk.type.FlagDetail;
 import uk.gov.hmcts.ccd.sdk.type.Flags;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
+import uk.gov.hmcts.sptribs.caseworker.event.page.ApplyAnonymity;
 import uk.gov.hmcts.sptribs.caseworker.util.CaseFlagsUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.service.CcdSupplementaryDataService;
@@ -23,6 +25,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigBuilder;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.getEventsFrom;
@@ -34,6 +38,9 @@ class CaseworkerCaseFlagTest {
 
     @Mock
     private CcdSupplementaryDataService coreCaseApiService;
+
+    @Mock
+    private ApplyAnonymity applyAnonymity;
 
     @InjectMocks
     private CaseworkerCaseFlag caseworkerCaseFlag;
@@ -62,7 +69,7 @@ class CaseworkerCaseFlagTest {
 
     @Test
     void shouldKeepOriginalListItemIdAndCopyLatestAnonymityFlagDetailsOnCreate() {
-        CaseData caseData = CaseData.builder().build();
+        CaseData caseData = CaseData.builder().cicCase(new CicCase()).build();
         ArrayList<ListValue<FlagDetail>> flags = new ArrayList<>();
         flags.add(buildAnonymityFlag("2", "Active", "Latest comment"));
         flags.add(buildAnonymityFlag("1", "Inactive", "Old comment"));
@@ -87,6 +94,7 @@ class CaseworkerCaseFlagTest {
             .isEqualTo(LocalDateTime.of(2024, 1, 1, 10, 0));
         assertThat(response.getData().getCaseFlags().getDetails().getFirst().getValue().getDateTimeModified())
             .isNotNull();
+        verify(applyAnonymity).applyAnonymitySelection(eq(response.getData().getCicCase()), anyList());
     }
 
     private ListValue<FlagDetail> buildAnonymityFlag(String id, String status, String flagComment) {

@@ -147,13 +147,16 @@ public class CaseworkerCreateAndSendOrder implements CCDConfig<CaseData, State, 
                                                                         CaseDetails<CaseData, State> beforeDetails) {
         final CaseData caseData = details.getData();
         final CicCase cicCase = caseData.getCicCase();
+        final CaseData beforeData = beforeDetails == null ? null : beforeDetails.getData();
+        final ListValue<FlagDetail> mergedAnonymityFlag =
+            CaseFlagsUtil.mergeAnonymityFlagsPreserveOriginalId(caseData, beforeData);
 
         final Order order = buildOrder(caseData, cicCase);
 
         updateCicCaseOrderList(caseData, order);
 
         if (shouldApplyAnonymityFlag(cicCase)) {
-            applyAnonymityCaseFlag(caseData);
+            applyAnonymityCaseFlag(caseData, mergedAnonymityFlag);
         }
 
         resetOrderJourneyFields(caseData, cicCase);
@@ -266,10 +269,11 @@ public class CaseworkerCreateAndSendOrder implements CCDConfig<CaseData, State, 
 
     }
 
-    private void applyAnonymityCaseFlag(CaseData data) {
-        ListValue<FlagDetail> existingAnonymityFlag = CaseFlagsUtil.mergeAnonymityFlagsPreserveOriginalId(data);
-        if (existingAnonymityFlag != null) {
+    private void applyAnonymityCaseFlag(CaseData data, ListValue<FlagDetail> existingAnonymityFlag) {
+        if (existingAnonymityFlag != null && existingAnonymityFlag.getValue() != null) {
             existingAnonymityFlag.getValue().setStatus(CaseFlagsUtil.ACTIVE_STATUS);
+            existingAnonymityFlag.getValue().setFlagComment("Applied anonymity");
+            existingAnonymityFlag.getValue().setDateTimeModified(LocalDateTime.now());
             return;
         }
 

@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -72,11 +73,18 @@ public final class CaseFlagsUtil {
     }
 
     public static ListValue<FlagDetail> mergeAnonymityFlagsPreserveOriginalId(CaseData data, CaseData beforeData) {
-        if (data.getCaseFlags() == null || data.getCaseFlags().getDetails() == null) {
+        if (data == null || data.getCaseFlags() == null || data.getCaseFlags().getDetails() == null) {
             return null;
         }
 
-        List<ListValue<FlagDetail>> flagDetails = data.getCaseFlags().getDetails();
+        List<ListValue<FlagDetail>> flagDetails = data.getCaseFlags().getDetails().stream()
+            .filter(Objects::nonNull)
+            .toList();
+
+        if (flagDetails.isEmpty()) {
+            return null;
+        }
+
         List<ListValue<FlagDetail>> anonymityFlags = flagDetails.stream().filter(CaseFlagsUtil::isAnonymityFlag).toList();
 
         if (anonymityFlags.isEmpty()) {
@@ -86,6 +94,10 @@ public final class CaseFlagsUtil {
         Set<String> beforeAnonymityFlagIds = getAnonymityFlagIds(beforeData);
         ListValue<FlagDetail> originalFlag = selectTargetFlagToKeep(anonymityFlags, beforeAnonymityFlagIds);
         ListValue<FlagDetail> latestFlag = selectSourceFlag(anonymityFlags, beforeAnonymityFlagIds);
+
+        if (originalFlag == null || latestFlag == null) {
+            return null;
+        }
 
         if (!originalFlag.equals(latestFlag)) {
             LocalDateTime originalCreatedAt = originalFlag.getValue() == null ? null : originalFlag.getValue().getDateTimeCreated();
@@ -109,12 +121,18 @@ public final class CaseFlagsUtil {
         }
 
         return data.getCaseFlags().getDetails().stream()
-            .filter(CaseFlagsUtil::isAnonymityFlag).map(ListValue::getId)
+            .filter(Objects::nonNull)
+            .filter(CaseFlagsUtil::isAnonymityFlag)
+            .map(ListValue::getId)
             .filter(id -> id != null && !id.isBlank()).collect(Collectors.toSet());
     }
 
     private static ListValue<FlagDetail> selectTargetFlagToKeep(List<ListValue<FlagDetail>> anonymityFlags,
-                                                                Set<String> beforeAnonymityFlagIds) {
+                                                                 Set<String> beforeAnonymityFlagIds) {
+        if (anonymityFlags.isEmpty()) {
+            return null;
+        }
+
         return anonymityFlags.stream()
             .filter(flag -> flag.getId() != null
                 && beforeAnonymityFlagIds.contains(flag.getId())).findFirst().orElse(anonymityFlags.getFirst());
@@ -122,6 +140,10 @@ public final class CaseFlagsUtil {
 
     private static ListValue<FlagDetail> selectSourceFlag(List<ListValue<FlagDetail>> anonymityFlags,
                                                           Set<String> beforeAnonymityFlagIds) {
+        if (anonymityFlags.isEmpty()) {
+            return null;
+        }
+
         List<ListValue<FlagDetail>> newAnonymityFlags = anonymityFlags.stream()
             .filter(flag -> flag.getId() == null || !beforeAnonymityFlagIds.contains(flag.getId())).toList();
 
@@ -133,6 +155,10 @@ public final class CaseFlagsUtil {
     }
 
     private static ListValue<FlagDetail> latestByCreatedDateOrLast(List<ListValue<FlagDetail>> flags) {
+        if (flags.isEmpty()) {
+            return null;
+        }
+
         return flags.stream()
             .filter(flag -> flag.getValue() != null && flag.getValue().getDateTimeCreated() != null)
             .max(Comparator.comparing(flag -> flag.getValue().getDateTimeCreated())).orElse(flags.getLast());

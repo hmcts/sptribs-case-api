@@ -13,6 +13,7 @@ import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.event.page.ApplyAnonymity;
 import uk.gov.hmcts.sptribs.caseworker.util.CaseFlagsUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
@@ -70,8 +71,13 @@ public class CaseworkerManageCaseFlag implements CCDConfig<CaseData, State, User
 
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(CaseDetails<CaseData, State> details,
                                                                         CaseDetails<CaseData, State> beforeDetails) {
-        CaseData caseData = details.getData();
+        CaseData caseData = details.getData() == null ? CaseData.builder().build() : details.getData();
         CaseData beforeData = beforeDetails == null ? null : beforeDetails.getData();
+        CicCase cicCase = caseData.getCicCase();
+        if (cicCase == null) {
+            cicCase = new CicCase();
+            caseData.setCicCase(cicCase);
+        }
         List<String> errors = new ArrayList<>();
 
         ListValue<FlagDetail> effectiveAnonymityFlag = CaseFlagsUtil.mergeAnonymityFlagsPreserveOriginalId(
@@ -79,8 +85,8 @@ public class CaseworkerManageCaseFlag implements CCDConfig<CaseData, State, User
             beforeData
         );
         boolean hasActiveAnonymityFlag = CaseFlagsUtil.isActiveFlag(effectiveAnonymityFlag);
-        caseData.getCicCase().setAnonymiseYesOrNo(hasActiveAnonymityFlag ? YesOrNo.YES : YesOrNo.NO);
-        applyAnonymity.applyAnonymitySelection(caseData.getCicCase(), errors);
+        cicCase.setAnonymiseYesOrNo(hasActiveAnonymityFlag ? YesOrNo.YES : YesOrNo.NO);
+        applyAnonymity.applyAnonymitySelection(cicCase, errors);
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
