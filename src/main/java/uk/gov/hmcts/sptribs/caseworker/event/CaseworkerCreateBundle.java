@@ -12,6 +12,7 @@ import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.Event;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
+import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
@@ -129,7 +130,8 @@ public class CaseworkerCreateBundle implements CCDConfig<CaseData, State, UserRo
 
         if (!CollectionUtils.isEmpty(initialDocuments)) {
             caseData.setCaseDocuments(convertToBundleDocumentType(initialDocuments));
-            caseData.setFurtherCaseDocuments(convertToBundleDocumentType(getFurtherDocuments(allDocuments, initialDocuments)));
+            caseData.setFurtherCaseDocuments(
+                convertToBundleDocumentTypeWithDescriptionInName(getFurtherDocuments(allDocuments, initialDocuments)));
         } else {
             caseData.setCaseDocuments(convertToBundleDocumentType(allDocuments));
         }
@@ -154,6 +156,31 @@ public class CaseworkerCreateBundle implements CCDConfig<CaseData, State, UserRo
     private List<AbstractCaseworkerCICDocument<CaseworkerCICDocument>> convertToBundleDocumentType(List<CaseworkerCICDocument> docs) {
 
         return docs.stream().filter(CaseworkerCICDocument::isValidBundleDocument).map(AbstractCaseworkerCICDocument::new).toList();
+    }
+
+    private List<AbstractCaseworkerCICDocument<CaseworkerCICDocument>> convertToBundleDocumentTypeWithDescriptionInName(
+        List<CaseworkerCICDocument> docs) {
+        return docs.stream()
+            .filter(CaseworkerCICDocument::isValidBundleDocument)
+            .map(doc -> {
+                String filename = doc.getDocumentLink().getFilename();
+                String category = doc.getDocumentCategory() != null ? doc.getDocumentCategory().getType() : null;
+                String updatedFilename = (filename != null && category != null) ? category + " - " + filename : filename;
+
+                CaseworkerCICDocument docWithFilename = CaseworkerCICDocument.builder()
+                    .documentCategory(doc.getDocumentCategory())
+                    .documentEmailContent(doc.getDocumentEmailContent())
+                    .documentLink(Document.builder()
+                        .url(doc.getDocumentLink().getUrl())
+                        .binaryUrl(doc.getDocumentLink().getBinaryUrl())
+                        .categoryId(doc.getDocumentCategory().getCategory())
+                        .filename(updatedFilename)
+                        .build())
+                    .date(doc.getDate())
+                    .build();
+                return new AbstractCaseworkerCICDocument<>(docWithFilename);
+            })
+            .toList();
     }
 
     private List<ListValue<Bundle>> getExistingBundles(CaseDetails<CaseData, State> beforeDetails) {
