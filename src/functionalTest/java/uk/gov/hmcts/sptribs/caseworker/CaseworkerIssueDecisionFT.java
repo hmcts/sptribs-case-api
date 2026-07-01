@@ -31,6 +31,8 @@ public class CaseworkerIssueDecisionFT extends FunctionalTestSuite {
     private static final String REQUEST_ABOUT_TO_START = "classpath:request/casedata/ccd-callback-casedata-general.json";
     private static final String CALLBACK_REQUEST =
         "classpath:request/casedata/ccd-callback-casedata-caseworker-issue-decision-callback-request.json";
+    private static final String REQUEST_SUBMITTED_PATH =
+        "classpath:request/casedata/ccd-callback-casedata-caseworker-issue-decision-submitted.json";
     private static final String REQUEST_SUBMITTED_UNHAPPY_PATH =
         "classpath:request/casedata/ccd-callback-casedata-caseworker-issue-decision-unhappy-submitted.json";
 
@@ -65,7 +67,8 @@ public class CaseworkerIssueDecisionFT extends FunctionalTestSuite {
     }
 
     @Test
-    public void shouldChangeStateWhenAboutToSubmitEventCallbackIsInvoked() throws Exception {
+    public void shouldChangeStateAndAddDateWhenAboutToSubmitEventCallbackIsInvokedForDecisionDocumentCreatedFromTemplate()
+        throws Exception {
         final Map<String, Object> caseData = caseData(CALLBACK_REQUEST);
         final Response response = triggerCallback(caseData, CASEWORKER_ISSUE_DECISION, ABOUT_TO_SUBMIT_URL, false);
 
@@ -74,6 +77,11 @@ public class CaseworkerIssueDecisionFT extends FunctionalTestSuite {
             .inPath(STATE)
             .isString()
             .isEqualTo("CaseManagement");
+
+        assertThatJson(response.asString())
+            .inPath(DECISION_DATE)
+            .isString()
+            .isEqualTo(LocalDate.now().toString());
 
         long testCaseRef = Long.parseLong(caseData.get("hyphenatedCaseRef").toString().replace("-", ""));
 
@@ -96,21 +104,44 @@ public class CaseworkerIssueDecisionFT extends FunctionalTestSuite {
     }
 
     @Test
-    public void shouldAddDateWhenAboutToSubmitEventCallbackIsInvoked() throws Exception {
+    public void shouldChangeStateAndAddDateWhenAboutToSubmitEventCallbackIsInvokedForUploadedDecisionDocument() throws Exception {
         final Map<String, Object> caseData = caseData(CALLBACK_REQUEST);
         final Response response = triggerCallback(caseData, CASEWORKER_ISSUE_DECISION, ABOUT_TO_SUBMIT_URL, false);
 
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
         assertThatJson(response.asString())
-                .inPath(DECISION_DATE)
-                .isString()
-                .isEqualTo(LocalDate.now().toString());
+            .inPath(STATE)
+            .isString()
+            .isEqualTo("CaseManagement");
 
+        assertThatJson(response.asString())
+            .inPath(DECISION_DATE)
+            .isString()
+            .isEqualTo(LocalDate.now().toString());
+
+        long testCaseRef = Long.parseLong(caseData.get("hyphenatedCaseRef").toString().replace("-", ""));
+
+        List<DocumentEntity> documentEntities = caseDocumentsFTDataManager.getDocumentEntities(testCaseRef);
+        assertThat(documentEntities).hasSize(1);
+
+        DocumentEntity firstDocumentEntity = documentEntities.getFirst();
+
+        assertThat(firstDocumentEntity.getId()).isNotNull();
+        assertThat(firstDocumentEntity.getCaseReferenceNumber()).isEqualTo(Long.parseLong(caseData.get("hyphenatedCaseRef")
+            .toString().replace("-", "")));
+        assertThat(firstDocumentEntity.getDocumentTypeName()).isEqualTo(DocumentType.TRIBUNAL_DIRECTION.name());
+        assertThat(firstDocumentEntity.getCaseDocumentTypeId()).isEqualTo(6L);
+        assertThat(firstDocumentEntity.getSavedAt()).isNotNull();
+        assertThat(firstDocumentEntity.getUpdatedAt()).isNotNull();
+        assertThat(firstDocumentEntity.isSentToApplicantViaContactParties()).isFalse();
+        assertThat(firstDocumentEntity.getDocumentUrl()).isNotNull();
+        assertThat(firstDocumentEntity.getDocumentFilename()).isNotNull();
+        assertThat(firstDocumentEntity.getDocumentBinaryUrl()).isNotNull();
     }
 
     @Test
     public void shouldSuccessfullySendNotificationWhenSubmittedEventCallbackIsInvoked() throws Exception {
-        final Map<String, Object> caseData = caseData(CALLBACK_REQUEST);
+        final Map<String, Object> caseData = caseData(REQUEST_SUBMITTED_PATH);
         final Response response = triggerCallback(caseData, CASEWORKER_ISSUE_DECISION, SUBMITTED_URL, false);
 
         assertThat(response.getStatusCode()).isEqualTo(OK.value());

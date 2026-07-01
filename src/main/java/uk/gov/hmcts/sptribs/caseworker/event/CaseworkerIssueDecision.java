@@ -9,6 +9,7 @@ import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.Event;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
+import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.event.page.IssueDecisionMainContent;
 import uk.gov.hmcts.sptribs.caseworker.event.page.IssueDecisionNotice;
@@ -107,21 +108,15 @@ public class CaseworkerIssueDecision implements CCDConfig<CaseData, State, UserR
                                                                        CaseDetails<CaseData, State> beforeDetails) {
         final CaseData caseData = details.getData();
         final CICDocument decisionDocument = caseData.getCaseIssueDecision().getDecisionDocument();
+        final Document decisionDocumentCreatedFromTemplate = caseData.getCaseIssueDecision().getIssueDecisionDraft();
 
-        List<String> errors = new ArrayList<>();
+        final List<String> errors = new ArrayList<>();
 
         if (decisionDocument != null && decisionDocument.getDocumentLink() != null) {
             decisionDocument.getDocumentLink().setCategoryId(DocumentType.TRIBUNAL_DIRECTION.getCategory());
-            try {
-                documentsService.buildAndSaveNewDocumentEntity(
-                    decisionDocument.getDocumentLink(),
-                    details.getId(),
-                    DocumentType.TRIBUNAL_DIRECTION,
-                    CaseDocumentType.DECISION
-                );
-            } catch (RuntimeException e) {
-                errors.add(handleDocumentException(decisionDocument.getDocumentLink(), e.getMessage()));
-            }
+            saveDecisionDocumentToDB(decisionDocument.getDocumentLink(), details.getId(), errors);
+        } else if (decisionDocumentCreatedFromTemplate != null) {
+            saveDecisionDocumentToDB(decisionDocumentCreatedFromTemplate, details.getId(), errors);
         }
 
         caseData.getCaseIssueDecision().setDecisionDate(LocalDate.now(this.clock));
@@ -163,6 +158,19 @@ public class CaseworkerIssueDecision implements CCDConfig<CaseData, State, UserR
         }
         if (!CollectionUtils.isEmpty(data.getCicCase().getNotifyPartyApplicant())) {
             decisionIssuedNotification.sendToApplicant(data, caseNumber);
+        }
+    }
+
+    private void saveDecisionDocumentToDB(Document decisionDocument, Long caseId, List<String> errors) {
+        try {
+            documentsService.buildAndSaveNewDocumentEntity(
+                decisionDocument,
+                caseId,
+                DocumentType.TRIBUNAL_DIRECTION,
+                CaseDocumentType.DECISION
+            );
+        } catch (RuntimeException e) {
+            errors.add(handleDocumentException(decisionDocument, e.getMessage()));
         }
     }
 }

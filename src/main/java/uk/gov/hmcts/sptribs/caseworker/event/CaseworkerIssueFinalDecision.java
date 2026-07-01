@@ -131,21 +131,15 @@ public class CaseworkerIssueFinalDecision implements CCDConfig<CaseData, State, 
                                                                        CaseDetails<CaseData, State> beforeDetails) {
         final CaseData caseData = details.getData();
         final CICDocument finalDecisionDocument = caseData.getCaseIssueFinalDecision().getDocument();
+        final Document finalDecisionDocumentCreatedFromTemplate = caseData.getCaseIssueFinalDecision().getFinalDecisionDraft();
 
-        List<String> errors = new ArrayList<>();
+        final List<String> errors = new ArrayList<>();
 
         if (finalDecisionDocument != null) {
             finalDecisionDocument.getDocumentLink().setCategoryId(DocumentType.TRIBUNAL_DIRECTION.getCategory());
-            try {
-                documentsService.buildAndSaveNewDocumentEntity(
-                    finalDecisionDocument.getDocumentLink(),
-                    details.getId(),
-                    DocumentType.TRIBUNAL_DIRECTION,
-                    CaseDocumentType.FINAL_DECISION
-                );
-            } catch (RuntimeException e) {
-                errors.add(handleDocumentException(finalDecisionDocument.getDocumentLink(), e.getMessage()));
-            }
+            saveFinalDecisionDocumentToDB(finalDecisionDocument.getDocumentLink(), details.getId(), errors);
+        } else if (finalDecisionDocumentCreatedFromTemplate != null) {
+            saveFinalDecisionDocumentToDB(finalDecisionDocumentCreatedFromTemplate, details.getId(), errors);
         }
 
         caseData.getCaseIssueFinalDecision().setFinalDecisionDate(LocalDate.now(this.clock));
@@ -209,6 +203,18 @@ public class CaseworkerIssueFinalDecision implements CCDConfig<CaseData, State, 
             filename,
             request
         );
+    }
 
+    private void saveFinalDecisionDocumentToDB(Document finalDecisionDocument, Long caseId, List<String> errors) {
+        try {
+            documentsService.buildAndSaveNewDocumentEntity(
+                finalDecisionDocument,
+                caseId,
+                DocumentType.TRIBUNAL_DIRECTION,
+                CaseDocumentType.FINAL_DECISION
+            );
+        } catch (RuntimeException e) {
+            errors.add(handleDocumentException(finalDecisionDocument, e.getMessage()));
+        }
     }
 }

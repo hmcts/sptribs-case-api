@@ -156,7 +156,7 @@ class CaseworkerIssueFinalDecisionTest {
     }
 
     @Test
-    void shouldIssueCaseFinalDecision() {
+    void shouldIssueCaseFinalDecisionWhenUploadedFromComputer() {
         //Given
         final CaseDetails<CaseData, State> details = new CaseDetails<>();
         details.setId(TEST_CASE_ID);
@@ -182,6 +182,34 @@ class CaseworkerIssueFinalDecisionTest {
         );
         verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
             eq(document.getDocumentLink()), eq(TEST_CASE_ID), eq(DocumentType.TRIBUNAL_DIRECTION), eq(CaseDocumentType.FINAL_DECISION)
+        );
+
+        assertThat(response.getState())
+            .isEqualTo(CaseClosed);
+        assertThat(response.getData().getCaseIssueFinalDecision().getFinalDecisionDate()).isEqualTo(LocalDate.of(2026, 5,15));
+    }
+
+    @Test
+    void shouldIssueCaseFinalDecisionWhenCreatedFromTemplate() {
+        //Given
+        final CaseDetails<CaseData, State> details = new CaseDetails<>();
+        details.setId(TEST_CASE_ID);
+        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        beforeDetails.setId(TEST_CASE_ID);
+        final CaseData caseData = caseData();
+        final CaseIssueFinalDecision caseIssueFinalDecision = new CaseIssueFinalDecision();
+        final Document document = Document.builder().binaryUrl("url").url("url").filename("file.txt").categoryId("TD").build();
+        caseIssueFinalDecision.setFinalDecisionDraft(document);
+        caseData.setCaseIssueFinalDecision(caseIssueFinalDecision);
+        caseData.setHyphenatedCaseRef(TEST_CASE_ID_HYPHENATED);
+        details.setData(caseData);
+
+        //When
+        AboutToStartOrSubmitResponse<CaseData, State> response = issueFinalDecision.aboutToSubmit(details, beforeDetails);
+
+        //Then
+        verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
+            eq(document), eq(TEST_CASE_ID), eq(DocumentType.TRIBUNAL_DIRECTION), eq(CaseDocumentType.FINAL_DECISION)
         );
 
         assertThat(response.getState())

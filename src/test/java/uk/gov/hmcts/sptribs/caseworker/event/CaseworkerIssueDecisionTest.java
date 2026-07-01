@@ -123,7 +123,7 @@ class CaseworkerIssueDecisionTest {
     }
 
     @Test
-    void shouldSetState() {
+    void shouldSetStateOnAboutToSubmitWhenUploadedFromComputer() {
         //Given
         final CaseDetails<CaseData, State> details = new CaseDetails<>();
         details.setId(TEST_CASE_ID);
@@ -149,6 +149,33 @@ class CaseworkerIssueDecisionTest {
         );
         verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
             eq(document.getDocumentLink()), eq(TEST_CASE_ID), eq(DocumentType.TRIBUNAL_DIRECTION), eq(CaseDocumentType.DECISION)
+        );
+
+        assertThat(response.getState()).isEqualTo(CaseManagement);
+        assertThat(response.getData().getCaseIssueDecision().getDecisionDate()).isEqualTo(LocalDate.of(2026, 5, 15));
+    }
+
+    @Test
+    void shouldSetStateOnAboutToSubmitWhenCreatedFromTemplate() {
+        //Given
+        final CaseDetails<CaseData, State> details = new CaseDetails<>();
+        details.setId(TEST_CASE_ID);
+        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        beforeDetails.setId(TEST_CASE_ID);
+        final CaseData caseData = caseData();
+        final CaseIssueDecision decision = new CaseIssueDecision();
+        final Document document = Document.builder().binaryUrl("url").url("url").filename("file.txt").build();
+        decision.setIssueDecisionDraft(document);
+        caseData.setCaseIssueDecision(decision);
+        caseData.setHyphenatedCaseRef(TEST_CASE_ID_HYPHENATED);
+        details.setData(caseData);
+
+        //When
+        AboutToStartOrSubmitResponse<CaseData, State> response = issueDecision.aboutToSubmit(details, beforeDetails);
+
+        //Then
+        verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
+            eq(document), eq(TEST_CASE_ID), eq(DocumentType.TRIBUNAL_DIRECTION), eq(CaseDocumentType.DECISION)
         );
 
         assertThat(response.getState()).isEqualTo(CaseManagement);
