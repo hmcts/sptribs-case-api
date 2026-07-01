@@ -32,6 +32,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
+import uk.gov.hmcts.sptribs.document.model.CICDocument;
 import uk.gov.hmcts.sptribs.document.model.CaseDocumentType;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
 import uk.gov.hmcts.sptribs.document.service.DocumentsService;
@@ -174,15 +175,22 @@ public class CaseworkerSendOrder implements CCDConfig<CaseData, State, UserRole>
         } else if (caseData.getCicCase().getOrderIssuingType() != null
             && caseData.getCicCase().getOrderIssuingType().equals(OrderIssuingType.UPLOAD_A_NEW_ORDER_FROM_YOUR_COMPUTER)) {
 
-            try {
-                documentsService.buildAndSaveNewDocumentEntity(
-                    caseData.getCicCase().getOrderTemplateIssued(),
-                    details.getId(),
-                    DocumentType.TRIBUNAL_DIRECTION,
-                    CaseDocumentType.ORDER
-                );
-            } catch (RuntimeException e) {
-                errors.add(handleDocumentException(caseData.getCicCase().getOrderTemplateIssued(), e.getMessage()));
+            List<ListValue<CICDocument>> uploadedOrderDocuments = caseData.getCicCase().getOrderFile();
+
+            for (ListValue<CICDocument> uploadedOrderDocument : uploadedOrderDocuments) {
+
+                try {
+
+                    documentsService.buildAndSaveNewDocumentEntity(
+                        uploadedOrderDocument.getValue().getDocumentLink(),
+                        details.getId(),
+                        DocumentType.TRIBUNAL_DIRECTION,
+                        CaseDocumentType.ORDER
+                    );
+
+                } catch (RuntimeException e) {
+                    errors.add(handleDocumentException(uploadedOrderDocument.getValue().getDocumentLink(), e.getMessage()));
+                }
             }
         }
 

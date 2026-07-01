@@ -30,10 +30,13 @@ public class CaseworkerSendOrderFT extends FunctionalTestSuite {
     private static final String GENERAL_REQUEST =
         "classpath:request/casedata/ccd-callback-casedata-general.json";
     private static final String CALLBACK_REQUEST = "classpath:request/casedata/ccd-callback-casedata-send-order-callback-request.json";
+    private static final String SEND_DRAFT_CALLBACK_REQUEST =
+        "classpath:request/casedata/ccd-callback-casedata-send-draft-order-callback-request.json";
     private static final String REQUEST_UNHAPPY_ABOUT_TO_SUBMIT =
         "classpath:request/casedata/ccd-callback-casedata-send-order-unhappy-about-to-submit.json";
 
     private static final String RESPONSE = "classpath:responses/response-caseworker-send-order-about-to-submit.json";
+    private static final String DRAFT_RESPONSE = "classpath:responses/response-caseworker-send-draft-order-about-to-submit.json";
     private static final String ABOUT_TO_START_RESPONSE = "classpath:responses/response-caseworker-send-order-about-to-start.json";
     private static final String CONFIRMATION_HEADER = "$.confirmation_header";
 
@@ -49,7 +52,7 @@ public class CaseworkerSendOrderFT extends FunctionalTestSuite {
     }
 
     @Test
-    public void shouldRetainSelectedOrderDataWhenAboutToSubmitCallbackIsTriggered() throws Exception {
+    public void shouldCreateAndSendUploadedOrderDocumentWhenAboutToSubmitCallbackIsTriggered() throws Exception {
         final Map<String, Object> caseData = caseData(CALLBACK_REQUEST);
 
         final Response response = triggerCallback(caseData, CASEWORKER_SEND_ORDER, ABOUT_TO_SUBMIT_URL, false);
@@ -78,6 +81,38 @@ public class CaseworkerSendOrderFT extends FunctionalTestSuite {
         assertThat(firstDocumentEntity.getDocumentUrl()).isNotNull();
         assertThat(firstDocumentEntity.getDocumentFilename()).isNotNull();
         assertThat(firstDocumentEntity.getDocumentBinaryUrl()).isNotNull();
+    }
+
+    @Test
+    public void shouldSendAndUpdateDraftOrderDocumentWhenAboutToSubmitCallbackIsTriggered() throws Exception {
+        final Map<String, Object> caseData = caseData(SEND_DRAFT_CALLBACK_REQUEST);
+
+        //we should replace the boolean here with an object to create the test document!!
+        final Response response = triggerCallback(caseData, CASEWORKER_SEND_ORDER, ABOUT_TO_SUBMIT_URL, true);
+        assertThat(response.getStatusCode()).isEqualTo(OK.value());
+
+        System.out.println(response.asString());
+
+        assertThatJson(response.asString())
+            .when(IGNORING_EXTRA_FIELDS)
+            .when(IGNORING_ARRAY_ORDER)
+            .isEqualTo(json(expectedResponse(DRAFT_RESPONSE)));
+
+        long testCaseRef = Long.parseLong(caseData.get("hyphenatedCaseRef").toString().replace("-", ""));
+
+        List<DocumentEntity> documentEntities = caseDocumentsFTDataManager.getDocumentEntities(testCaseRef);
+        assertThat(documentEntities).hasSize(1);
+
+        DocumentEntity firstDocumentEntity = documentEntities.getFirst();
+
+        assertThat(firstDocumentEntity.getId()).isNotNull();
+        assertThat(firstDocumentEntity.getCaseReferenceNumber()).isEqualTo(Long.parseLong(caseData.get("hyphenatedCaseRef")
+            .toString().replace("-", "")));
+        assertThat(firstDocumentEntity.getDocumentTypeName()).isEqualTo(DocumentType.HOSPITAL_RECORDS.name());
+        //should be 4 to represent order.
+        assertThat(firstDocumentEntity.getCaseDocumentTypeId()).isEqualTo(4L);
+        assertThat(firstDocumentEntity.getUpdatedAt()).isNotNull();
+
     }
 
     @Test

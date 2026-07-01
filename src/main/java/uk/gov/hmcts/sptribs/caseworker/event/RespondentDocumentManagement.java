@@ -101,6 +101,7 @@ public class RespondentDocumentManagement implements CCDConfig<CaseData, State, 
                                                                        final CaseDetails<CaseData, State> beforeDetails) {
 
         final CaseData caseData = details.getData();
+        List<ListValue<CaseworkerCICDocument>> allDocuments;
         List<ListValue<CaseworkerCICDocumentUpload>> uploadedDocuments = caseData.getNewDocManagement().getCaseworkerCICDocumentUpload();
         List<ListValue<CaseworkerCICDocument>> documents = convertToCaseworkerCICDocumentUpload(uploadedDocuments, DATE_INCLUDED);
         caseData.getNewDocManagement().setCaseworkerCICDocumentUpload(new ArrayList<>());
@@ -111,8 +112,8 @@ public class RespondentDocumentManagement implements CCDConfig<CaseData, State, 
             if (auditEventService.hasCaseEvent(String.valueOf(details.getId()), RESPONDENT_DOCUMENT_MANAGEMENT)) {
                 caseData.setFurtherUploadedDocuments(addToExistingDocumentList(caseData.getFurtherUploadedDocuments(), documents));
             } else {
-                documents = getAllCaseDocuments(caseData);
-                caseData.setInitialCicaDocuments(addToExistingDocumentList(caseData.getInitialCicaDocuments(), documents));
+                allDocuments = getAllCaseDocuments(caseData);
+                caseData.setInitialCicaDocuments(addToExistingDocumentList(caseData.getInitialCicaDocuments(), allDocuments));
             }
         }
 
