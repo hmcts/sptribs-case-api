@@ -48,56 +48,84 @@ public class ApplyAnonymity implements CcdPageConfiguration {
     }
 
     public AboutToStartOrSubmitResponse<CaseData, State> midEvent(CaseDetails<CaseData, State> caseDetails,
-                                                                  CaseDetails<CaseData, State> caseDetailsBefore) {
+                                                                   CaseDetails<CaseData, State> caseDetailsBefore) {
         final CaseData caseData = caseDetails.getData();
         final CicCase cicCase = caseData.getCicCase();
         final List<String> errors = new ArrayList<>();
-
-        if (YesOrNo.YES.equals(cicCase.getAnonymiseYesOrNo()) && cicCase.getAnonymisedAppellantName() == null) {
-            String anonymisedName = anonymisationService.getOrCreateAnonymisation();
-            if (anonymisedName == null) {
-                errors.add(FAILED_TO_ANONYMISE_CASE);
-            }
-            cicCase.setAnonymisedAppellantName(anonymisedName);
-            cicCase.setAnonymisationDate(LocalDate.now());
-        }
-
-        if (YesOrNo.NO.equals(cicCase.getAnonymityAlreadyApplied()) && YesOrNo.YES.equals(cicCase.getAnonymiseYesOrNo())) {
-            //If this is the first anonymisation journey the user should only be able to create and send a new order
-            //with only general directions template
-            DynamicList updatedOptions = DynamicListUtil.createDynamicListFromEnumSet(
-                EnumSet.of(OrderIssuingType.CREATE_AND_SEND_NEW_ORDER),
-                OrderIssuingType::getLabel,
-                OrderIssuingType.CREATE_AND_SEND_NEW_ORDER);
-            cicCase.setOrderIssuingDynamicRadioList(updatedOptions);
-
-            DynamicList updatedTemplateOptions = DynamicListUtil.createDynamicListFromEnumSet(
-                EnumSet.of(OrderTemplate.CIC6_GENERAL_DIRECTIONS),
-                OrderTemplate::getLabel,
-                OrderTemplate.CIC6_GENERAL_DIRECTIONS);
-            cicCase.setTemplateDynamicList(updatedTemplateOptions);
-        } else {
-            //Reset the list if they go back and change their mind about anonymisation
-            DynamicList orderIssueTypeOptions = DynamicListUtil.createDynamicListFromEnumSet(
-                EnumSet.of(
-                    CREATE_AND_SEND_NEW_ORDER,
-                    UPLOAD_A_NEW_ORDER_FROM_YOUR_COMPUTER),
-                OrderIssuingType::getLabel,
-                cicCase.getOrderIssuingType());
-            cicCase.setOrderIssuingDynamicRadioList(orderIssueTypeOptions);
-
-            DynamicList orderTemplateOptions = DynamicListUtil.createDynamicListFromEnumSet(
-                EnumSet.allOf(OrderTemplate.class),
-                OrderTemplate::getLabel,
-                caseData.getDraftOrderContentCIC().getOrderTemplate());
-            cicCase.setTemplateDynamicList(orderTemplateOptions);
-        }
+        boolean firstTimeAnonymisationJourney = isFirstTimeAnonymisationJourney(cicCase);
+        applyAnonymitySelection(cicCase, errors, !firstTimeAnonymisationJourney);
+        updateIssuingAndTemplateOptions(caseData, firstTimeAnonymisationJourney);
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
             .errors(errors)
             .build();
     }
+
+    private static boolean isFirstTimeAnonymisationJourney(CicCase cicCase) {
+        return !YesOrNo.YES.equals(cicCase.getAnonymityAlreadyApplied())
+            && YesOrNo.YES.equals(cicCase.getAnonymiseYesOrNo());
+    }
+
+    private static void updateIssuingAndTemplateOptions(CaseData caseData, boolean firstTimeAnonymisationJourney) {
+        CicCase cicCase = caseData.getCicCase();
+        if (firstTimeAnonymisationJourney) {
+            DynamicList restrictedIssueOptions = DynamicListUtil.createDynamicListFromEnumSet(
+                EnumSet.of(CREATE_AND_SEND_NEW_ORDER),
+                OrderIssuingType::getLabel,
+                CREATE_AND_SEND_NEW_ORDER);
+            cicCase.setOrderIssuingDynamicRadioList(restrictedIssueOptions);
+
+            DynamicList restrictedTemplateOptions = DynamicListUtil.createDynamicListFromEnumSet(
+                EnumSet.of(OrderTemplate.CIC6_GENERAL_DIRECTIONS),
+                OrderTemplate::getLabel,
+                OrderTemplate.CIC6_GENERAL_DIRECTIONS);
+            cicCase.setTemplateDynamicList(restrictedTemplateOptions);
+            return;
+        }
+
+        DynamicList allIssueOptions = DynamicListUtil.createDynamicListFromEnumSet(
+            EnumSet.of(CREATE_AND_SEND_NEW_ORDER, UPLOAD_A_NEW_ORDER_FROM_YOUR_COMPUTER),
+            OrderIssuingType::getLabel,
+            cicCase.getOrderIssuingType());
+        cicCase.setOrderIssuingDynamicRadioList(allIssueOptions);
+
+        DynamicList allTemplateOptions = DynamicListUtil.createDynamicListFromEnumSet(
+            EnumSet.allOf(OrderTemplate.class),
+            OrderTemplate::getLabel,
+            caseData.getDraftOrderContentCIC().getOrderTemplate());
+        cicCase.setTemplateDynamicList(allTemplateOptions);
+    }
+
+    public void applyAnonymitySelection(CicCase cicCase, List<String> errors) {
+        applyAnonymitySelection(cicCase, errors, true);
+    }
+
+    public void applyAnonymitySelection(CicCase cicCase, List<String> errors, boolean updateAnonymityAlreadyApplied) {
+        if (YesOrNo.YES.equals(cicCase.getAnonymiseYesOrNo())) {
+            if (cicCase.getAnonymisedAppellantName() == null) {
+                String anonymisedName = anonymisationService.getOrCreateAnonymisation();
+
+                if (anonymisedName == null) {
+                    errors.add(FAILED_TO_ANONYMISE_CASE);
+                    return;
+                }
+                cicCase.setAnonymisedAppellantName(anonymisedName);
+            }
+            if (cicCase.getAnonymisationDate() == null) {
+                cicCase.setAnonymisationDate(LocalDate.now());
+            }
+            if (updateAnonymityAlreadyApplied) {
+                cicCase.setAnonymityAlreadyApplied(YesOrNo.YES);
+            }
+            return;
+        }
+
+        if (YesOrNo.NO.equals(cicCase.getAnonymiseYesOrNo())) {
+            cicCase.setAnonymisationDate(null);
+            if (updateAnonymityAlreadyApplied) {
+                cicCase.setAnonymityAlreadyApplied(YesOrNo.NO);
+            }
+        }
+    }
 }
-
-
