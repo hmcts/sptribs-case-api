@@ -54,7 +54,6 @@ public class DocumentEntity {
 
     @Column(name = "case_document_type_id", nullable = false)
     private Long caseDocumentTypeId;
-
     //this is going to be removed
     @Column(name = "sent_to_applicant_via_contact_parties", nullable = false)
     private boolean sentToApplicantViaContactParties;

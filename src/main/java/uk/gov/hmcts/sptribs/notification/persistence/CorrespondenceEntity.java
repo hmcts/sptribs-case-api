@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import org.hibernate.proxy.HibernateProxy;
+import uk.gov.hmcts.sptribs.notification.model.Party;
 
 import java.time.OffsetDateTime;
 import java.util.Objects;
@@ -57,6 +58,9 @@ public class CorrespondenceEntity {
 
     @Column(name = "document_binary_url", nullable = false)
     private String documentBinaryUrl;
+
+    @Column(name = "receiving_party")
+    private Party receivingParty;
 
     @Override
     public final boolean equals(Object correspondenceEntityObject) {
