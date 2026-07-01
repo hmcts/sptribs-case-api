@@ -32,19 +32,42 @@
   "securityClass": "PUBLIC",
   "caseBundles": [],
   "orderDueDates": [],
-  "cicCaseOrderFile": [
+
+  "cicCaseOrderTemplateIssued": {
+    "document_url": "http://dm-store.service.core-compute.internal/documents/${UUID1}",
+    "document_filename": "test.pdf",
+    "document_binary_url": "http://dm-store.service.core-compute.internal/documents/${UUID1}/binary",
+    "category_id": "TD"
+  },
+
+  "cicCaseDraftOrderDynamicList": {
+    "value": {
+      "code": "cb58659c-e90e-41c9-ab49-f3e3bd7523c0",
+      "label": "CIC3 - Rule 27--26-04-2024 10:09:12"
+    },
+    "list_items": [
+      {
+        "code": "cb58659c-e90e-41c9-ab49-f3e3bd7523c0",
+        "label": "CIC3 - Rule 27--26-04-2024 10:09:12"
+      }
+    ]
+  },
+
+  "cicCaseDraftOrderCICList": [
     {
-      "id": "1",
+      "id": "cb58659c-e90e-41c9-ab49-f3e3bd7523c0",
       "value": {
-        "documentLink": {
-          "document_url": "http://dm-store.service.core-compute.internal/documents/c42d2333-b4c6-4065-a528-3cff9a0cd932",
-          "document_filename": "test.pdf",
-          "document_binary_url": "http://dm-store.service.core-compute.internal/documents/c42d2333-b4c6-4065-a528-3cff9a0cd932/binary",
+        "templateGeneratedDocument": {
+          "document_url": "http://dm-store.service.core-compute.internal/documents/${UUID1}",
+          "document_filename": "Draft: test.pdf--CIC3 - Rule 27--26-04-2024 10:09:12.pdf",
+          "document_binary_url": "http://dm-store.service.core-compute.internal/documents/${UUID1}/binary",
           "category_id": "TD"
-        }
+        },
+        "orderContentOrderTemplate": "CIC3_Rule_27"
       }
     }
   ],
+
   "cicCaseOrderList": [
     {
       "id": "1",
@@ -56,9 +79,9 @@
             "value": {
               "documentEmailContent": "Test",
               "documentLink": {
-                "document_url": "http://dm-store.service.core-compute.internal/documents/c42d2333-b4c6-4065-a528-3cff9a0cd932",
+                "document_url": "http://dm-store.service.core-compute.internal/documents/${UUID1}",
                 "document_filename": "test.pdf",
-                "document_binary_url": "http://dm-store.service.core-compute.internal/documents/c42d2333-b4c6-4065-a528-3cff9a0cd932/binary",
+                "document_binary_url": "http://dm-store.service.core-compute.internal/documents/${UUID1}/binary",
                 "category_id": "TD"
               }
             }
@@ -69,11 +92,13 @@
       }
     }
   ],
+
   "cicCaseOrderDocumentList": [],
-  "cicCaseOrderIssuingType": "UploadOrder",
+  "cicCaseOrderIssuingType": "DraftOrder",
   "cicCaseCaseCategory": "Assessment",
   "cicCaseCaseSubcategory": "Fatal",
   "cicCaseCaseReceivedDate": "2023-01-01",
+
   "cicCasePartiesCIC": [
     "SubjectCIC",
     "RepresentativeCIC",
@@ -86,15 +111,18 @@
   "cicCaseRepresentativeCIC": [
     "RepresentativeCIC"
   ],
+
   "cicCaseNotifyPartyApplicant": [],
   "cicCaseNotifyPartySubject": [],
   "cicCaseNotifyPartyRepresentative": [
     "RepresentativeCIC"
   ],
   "cicCaseNotifyPartyRespondent": [],
+
   "cicCaseRespondentName": "Appeals team",
   "cicCaseRespondentOrganisation": "CICA",
   "cicCaseRespondentEmail": "appeals.team@cica.gov.uk",
+
   "cicCaseFullName": "Test Tester",
   "cicCaseAddress": {
     "AddressLine1": "1 Rse Way",
@@ -105,11 +133,13 @@
     "PostCode": "SW11 1PD",
     "Country": "United Kingdom"
   },
+
   "cicCaseEmail": "st-test1@mailinator.com",
   "cicCaseDateOfBirth": "1990-01-01",
   "cicCaseContactPreferenceType": "Email",
   "cicCaseSchemeCic": "Preference",
   "cicCaseRegionCIC": "Midlands",
+
   "cicCaseApplicantFullName": "Test Test",
   "cicCaseApplicantAddress": {
     "AddressLine1": "1 Rse Way",
@@ -123,6 +153,7 @@
   "cicCaseApplicantPhoneNumber": "0764646346356",
   "cicCaseApplicantDateOfBirth": "1980-01-01",
   "cicCaseApplicantContactDetailsPreference": "Post",
+
   "cicCaseRepresentativeFullName": "Resp Respondent",
   "cicCaseRepresentativeAddress": {
     "AddressLine1": "1 Rse Way",
@@ -135,16 +166,19 @@
   },
   "cicCaseRepresentativePhoneNumber": "0745435345356",
   "cicCaseRepresentativeContactDetailsPreference": "Post",
+
   "cicCaseIsRepresentativeQualified": "No",
   "cicCaseFormReceivedInTime": "Yes",
   "cicCaseClaimLinkedToCic": "No",
   "cicCaseCompensationClaimLinkCIC": "No",
   "cicCaseIsRepresentativePresent": "Yes",
+
   "cicCaseApplicantDocumentsUploaded": [],
   "cicCaseReinstateDocuments": [],
   "cicCaseDecisionDocumentList": [],
   "cicCaseRemovedDocumentList": [],
   "cicCaseFinalDecisionDocumentList": [],
+
   "stayIsCaseStayed": "No",
   "hearingSummaryExists": "YES",
   "hearingList": []
