@@ -17,10 +17,12 @@ import uk.gov.hmcts.ccd.sdk.type.Flags;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.common.config.WebMvcConfig;
 import uk.gov.hmcts.sptribs.common.service.CcdSupplementaryDataService;
 import uk.gov.hmcts.sptribs.testutil.IdamWireMock;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.util.List;
@@ -100,6 +102,11 @@ public class CaseworkerCaseFlagIT {
     @Test
     void shouldMergeAnonymityFlagsPreservingOriginalIdOnAboutToSubmit() throws Exception {
         CaseData caseData = CaseData.builder()
+            .cicCase(CicCase.builder()
+                .anonymiseYesOrNo(YesOrNo.YES)
+                .anonymisedAppellantName("AC")
+                .anonymisationDate(LocalDate.of(2024, 1, 1))
+                .build())
             .caseFlags(Flags.builder().details(List.of(
                 buildAnonymityFlag("new-flag-id", "Active", "Latest comment", LocalDateTime.of(2025, 1, 1, 10, 0)),
                 buildAnonymityFlag("original-flag-id", "Inactive", "Original comment", LocalDateTime.of(2024, 1, 1, 10, 0))
@@ -107,6 +114,11 @@ public class CaseworkerCaseFlagIT {
             .build();
 
         CaseData beforeData = CaseData.builder()
+            .cicCase(CicCase.builder()
+                .anonymiseYesOrNo(YesOrNo.YES)
+                .anonymisedAppellantName("AC")
+                .anonymisationDate(LocalDate.of(2024, 1, 1))
+                .build())
             .caseFlags(Flags.builder().details(List.of(
                 buildAnonymityFlag("original-flag-id", "Inactive", "Original comment", LocalDateTime.of(2024, 1, 1, 10, 0))
             )).build())
