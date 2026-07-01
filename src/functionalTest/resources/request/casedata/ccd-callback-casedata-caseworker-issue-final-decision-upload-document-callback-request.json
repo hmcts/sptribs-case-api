@@ -30,7 +30,7 @@
     "roleOnCase": "subject",
     "details": []
   },
-  "caseIssueFinalDecisionFinalDecisionNotice": "Create from a template",
+  "caseIssueFinalDecisionFinalDecisionNotice": "Upload from your computer",
   "hearingVenueNameAndAddress": "East London Tribunal Hearing Centre",
   "cicCaseRespondentName": "Appeals team",
   "decisionSignature": "Lorem ipsum signature",
@@ -60,11 +60,15 @@
   "cicCaseCaseSubcategory": "other",
   "cicCasePhoneNumber": "",
   "caseIssueFinalDecisionDecisionTemplate": "CIC1 - Eligibility",
-  "caseIssueFinalDecisionFinalDecisionDraft": {
-    "document_url": "http://dm-store.service.core-compute.internal/documents/d06c860a-030a-4d23-933b-0d16042e6c45",
-    "document_filename": "pdf.pdf",
-    "document_binary_url": "http://dm-store.service.core-compute.internal/documents/d06c860a-030a-4d23-933b-0d16042e6c45/binary",
-    "category_id": "TD"
+  "caseIssueFinalDecisionDocument": {
+    "documentEmailContent": "Lorem ipsum case issue decision",
+    "documentCategory": "TD",
+    "documentLink": {
+      "document_url": "http://dm-store.service.core-compute.internal/documents/d06c860a-030a-4d23-933b-0d16042e6c45",
+      "document_filename": "pdf.pdf",
+      "document_binary_url": "http://dm-store.service.core-compute.internal/documents/d06c860a-030a-4d23-933b-0d16042e6c45/binary",
+      "category_id": "TD"
+    }
   },
   "cicCaseRegionCIC": "London",
   "session": "morning",

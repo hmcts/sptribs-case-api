@@ -1,11 +1,23 @@
 {
+  "hearingType": "CaseManagement",
   "cicCasePartiesCIC": [
     "SubjectCIC"
   ],
+  "caseIssueDecisionDecisionNotice": "Upload from your computer",
   "cicCaseCompensationClaimLinkCIC": "No",
   "cicCaseFormReceivedInTime": "Yes",
   "cicCaseDateOfBirth": "2000-01-01",
+  "caseIssueDecisionIssueDecisionTemplate": "CIC1 - Eligibility",
+  "caseIssueDecisionDecisionDocument": {
+    "documentEmailContent": "Lorem ipsum case issue decision",
+    "documentLink": {
+      "document_url": "http://dm-store.service.core-compute.internal/documents/d06c860a-030a-4d23-933b-0d16042e6c45",
+      "document_filename": "pdf.pdf",
+      "document_binary_url": "http://dm-store.service.core-compute.internal/documents/d06c860b-030a-4d23-933b-0d16042e6c45/binary"
+      }
+  },
   "hearingStatus": "Complete",
+  "firstHearingDate": "",
   "cicCaseSchemeCic": "Year2012",
   "hearingVenues": {
     "value": {
@@ -30,7 +42,6 @@
     "roleOnCase": "subject",
     "details": []
   },
-  "caseIssueFinalDecisionFinalDecisionNotice": "Create from a template",
   "hearingVenueNameAndAddress": "East London Tribunal Hearing Centre",
   "cicCaseRespondentName": "Appeals team",
   "decisionSignature": "Lorem ipsum signature",
@@ -42,6 +53,7 @@
   "hearingFormat": "Face to Face",
   "hearingTime": "09:00",
   "cicCaseContactPreferenceType": "Email",
+  "closedDayCount": "",
   "cicCaseApplicantDocumentsUploaded": [
     {
       "value": {
@@ -50,7 +62,7 @@
         "documentLink": {
           "document_url": "http://dm-store.service.core-compute.internal/documents/d06c860a-030a-4d23-933b-0d16042e6c45",
           "document_filename": "pdf.pdf",
-          "document_binary_url": "http://dm-store.service.core-compute.internal/documents/d06c860a-030a-4d23-933b-0d16042e6c45/binary",
+          "document_binary_url": "http://dm-store.service.core-compute.internal/documents/d06c860b-030a-4d23-933b-0d16042e6c45/binary",
           "category_id": "A"
         }
       },
@@ -59,13 +71,6 @@
   ],
   "cicCaseCaseSubcategory": "other",
   "cicCasePhoneNumber": "",
-  "caseIssueFinalDecisionDecisionTemplate": "CIC1 - Eligibility",
-  "caseIssueFinalDecisionFinalDecisionDraft": {
-    "document_url": "http://dm-store.service.core-compute.internal/documents/d06c860a-030a-4d23-933b-0d16042e6c45",
-    "document_filename": "pdf.pdf",
-    "document_binary_url": "http://dm-store.service.core-compute.internal/documents/d06c860a-030a-4d23-933b-0d16042e6c45/binary",
-    "category_id": "TD"
-  },
   "cicCaseRegionCIC": "London",
   "session": "morning",
   "isFullPanel": "No. It was a 'sit alone' hearing",
@@ -81,6 +86,7 @@
   "cicCaseClaimLinkedToCic": "No",
   "subjectName": "Testing subject",
   "securityClass": "PUBLIC",
+  "caseIssueDecisionIssueDecisionDraft": {},
   "regionList": {
     "value": {
       "code": "bfc93094-d20c-432a-9908-29d032425f4d",
@@ -131,6 +137,7 @@
     "valueCode": "bfc93094-d20c-432a-9908-29d032425f4d",
     "valueLabel": "1-London"
   },
+  "dataVersion": 0,
   "cicCaseSubjectCIC": [
     "SubjectCIC"
   ],
@@ -225,6 +232,7 @@
           "valueCode": "bfc93094-d20c-432a-9908-29d032425f4d",
           "valueLabel": "1-London"
         },
+        "venueNotListedOption": [],
         "hearingVenueNameAndAddress": "East London Tribunal Hearing Centre",
         "readOnlyHearingVenueName": "East London Tribunal Hearing Centre",
         "date": "2026-01-01",
