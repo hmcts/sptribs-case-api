@@ -5,10 +5,13 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.ContactPreferenceType;
 import uk.gov.hmcts.sptribs.ciccase.model.NotificationResponse;
+import uk.gov.hmcts.sptribs.ciccase.model.State;
+import uk.gov.hmcts.sptribs.notification.NotificationConstants;
 import uk.gov.hmcts.sptribs.notification.NotificationHelper;
 import uk.gov.hmcts.sptribs.notification.NotificationServiceCIC;
 import uk.gov.hmcts.sptribs.notification.TemplateName;
@@ -116,5 +119,56 @@ class AnonymityAppliedNotificationTest {
 
         verify(notificationHelper, never()).getRepresentativeCommonVars(any(), any());
         verify(notificationServiceCIC, never()).sendEmail(any(), any());
+    }
+
+    @Test
+    void shouldSendNotificationIfNewlyAppliedAndNoBeforeDetails() {
+        CaseData caseData = CaseData.builder()
+            .caseStatus(State.AwaitingHearing)
+            .hyphenatedCaseRef("1234-5678-9012-3456")
+            .cicCase(CicCase.builder()
+                .anonymiseYesOrNo(YesOrNo.YES)
+                .anonymisedAppellantName("AAC")
+                .fullName("Test Subject")
+                .build())
+            .build();
+
+        Map<String, Object> templateVars = new HashMap<>();
+        when(notificationHelper.getTribunalCommonVars(eq("1234-5678-9012-3456"), eq(caseData))).thenReturn(templateVars);
+        when(notificationHelper.buildEmailNotificationRequest(eq(NotificationConstants.ANONYMITY_RECIPIENT_EMAIL), any(),
+            eq(TemplateName.ANONYMITY_APPLIED_EMAIL))).thenAnswer(invocation -> NotificationRequest.builder()
+            .destinationAddress(invocation.getArgument(0))
+            .templateVars(invocation.getArgument(1))
+            .template(invocation.getArgument(2))
+            .build());
+        when(notificationServiceCIC.sendEmail(any(NotificationRequest.class), eq("1234-5678-9012-3456")))
+            .thenReturn(NotificationResponse.builder().id("1").build());
+
+        anonymityAppliedNotification.sendAnonymityNotificationIfNewlyApplied(caseData, null, "1234567890");
+
+        verify(notificationServiceCIC).sendEmail(any(NotificationRequest.class), eq("1234-5678-9012-3456"));
+    }
+
+    @Test
+    void shouldNotSendNotificationIfNotNewlyApplied() {
+        CaseData caseData = CaseData.builder()
+            .caseStatus(State.AwaitingHearing)
+            .cicCase(CicCase.builder()
+                .anonymiseYesOrNo(YesOrNo.YES)
+                .anonymityAlreadyApplied(YesOrNo.YES)
+                .anonymisedAppellantName("AAC")
+                .fullName("Test Subject")
+                .build())
+            .build();
+
+        CaseData beforeCaseData = CaseData.builder()
+            .cicCase(CicCase.builder()
+                .anonymiseYesOrNo(YesOrNo.YES)
+                .anonymityAlreadyApplied(YesOrNo.YES)
+                .anonymisedAppellantName("AAC")
+                .build())
+            .build();
+
+        anonymityAppliedNotification.sendAnonymityNotificationIfNewlyApplied(caseData, beforeCaseData, "1234567890");
     }
 }

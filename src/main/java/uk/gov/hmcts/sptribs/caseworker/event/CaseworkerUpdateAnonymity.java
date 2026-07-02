@@ -8,11 +8,13 @@ import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.Event;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
+import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.event.page.ApplyAnonymity;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
+import uk.gov.hmcts.sptribs.notification.dispatcher.AnonymityAppliedNotification;
 
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_UPDATE_ANONYMITY;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_CASEWORKER;
@@ -30,6 +32,7 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 public class CaseworkerUpdateAnonymity implements CCDConfig<CaseData, State, UserRole> {
 
     private final ApplyAnonymity applyAnonymity;
+    private final AnonymityAppliedNotification anonymityAppliedNotification;
 
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
@@ -41,6 +44,7 @@ public class CaseworkerUpdateAnonymity implements CCDConfig<CaseData, State, Use
                 .description("Update Anonymity")
                 .showSummary()
                 .aboutToSubmitCallback(this::aboutToSubmit)
+                .submittedCallback(this::submitted)
                 .grant(CREATE_READ_UPDATE,
                     ST_CIC_HEARING_CENTRE_ADMIN, ST_CIC_HEARING_CENTRE_TEAM_LEADER, ST_CIC_WA_CONFIG_USER)
                 .grantHistoryOnly(ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER, ST_CIC_JUDGE, ST_CIC_SENIOR_JUDGE)
@@ -58,5 +62,16 @@ public class CaseworkerUpdateAnonymity implements CCDConfig<CaseData, State, Use
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(data)
             .build();
+    }
+
+    public SubmittedCallbackResponse submitted(final CaseDetails<CaseData, State> details,
+                                               final CaseDetails<CaseData, State> beforeDetails) {
+        anonymityAppliedNotification.sendAnonymityNotificationIfNewlyApplied(
+            details.getData(),
+            beforeDetails == null ? null : beforeDetails.getData(),
+            details.getId() != null ? details.getId().toString() : null
+        );
+
+        return SubmittedCallbackResponse.builder().build();
     }
 }

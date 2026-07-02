@@ -19,6 +19,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.common.service.CcdSupplementaryDataService;
+import uk.gov.hmcts.sptribs.notification.dispatcher.AnonymityAppliedNotification;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -49,6 +50,7 @@ public class CaseworkerCaseFlag implements CCDConfig<CaseData, State, UserRole> 
 
     private final CcdSupplementaryDataService coreCaseApiService;
     private final ApplyAnonymity applyAnonymity;
+    private final AnonymityAppliedNotification anonymityAppliedNotification;
 
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
@@ -100,7 +102,13 @@ public class CaseworkerCaseFlag implements CCDConfig<CaseData, State, UserRole> 
     public SubmittedCallbackResponse submitted(CaseDetails<CaseData, State> details,
                                                CaseDetails<CaseData, State> beforeDetails) {
 
-        coreCaseApiService.submitSupplementaryDataToCcd(details.getId().toString());
+        coreCaseApiService.submitSupplementaryDataToCcd(details.getId() != null ? details.getId().toString() : null);
+
+        anonymityAppliedNotification.sendAnonymityNotificationIfNewlyApplied(
+            details.getData(),
+            beforeDetails == null ? null : beforeDetails.getData(),
+            details.getId() != null ? details.getId().toString() : null
+        );
 
         return SubmittedCallbackResponse.builder()
             .confirmationHeader(format("# Flag created %n## This Flag has been added to case"))

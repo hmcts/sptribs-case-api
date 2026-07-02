@@ -582,8 +582,6 @@ class CaseworkerCreateAndSendOrderTest {
         caseData.setHyphenatedCaseRef("1234-5678-9012-3456");
         caseData.getCicCase().setAnonymiseYesOrNo(YesOrNo.YES);
         caseData.getCicCase().setAnonymisedAppellantName("AAC");
-        caseData.getCicCase().setNotifyPartySubject(Set.of(SUBJECT));
-        caseData.getCicCase().setNotifyPartyRepresentative(Set.of(REPRESENTATIVE));
 
         final CaseData beforeCaseData = caseData();
         beforeCaseData.getCicCase().setAnonymiseYesOrNo(YesOrNo.NO);
@@ -598,8 +596,8 @@ class CaseworkerCreateAndSendOrderTest {
         SubmittedCallbackResponse submittedResponse = caseworkerCreateAndSendOrder.submitted(caseDetails, beforeDetails);
 
         assertThat(submittedResponse.getConfirmationHeader()).contains("# Order sent");
-        verify(anonymityAppliedNotification, times(1)).sendToSubject(caseData, "1234-5678-9012-3456");
-        verify(anonymityAppliedNotification, times(1)).sendToRepresentative(caseData, "1234-5678-9012-3456");
+        verify(anonymityAppliedNotification, times(1))
+            .sendAnonymityNotificationIfNewlyApplied(caseData, beforeCaseData, null);
     }
 
     @Test
@@ -622,8 +620,8 @@ class CaseworkerCreateAndSendOrderTest {
         SubmittedCallbackResponse submittedResponse = caseworkerCreateAndSendOrder.submitted(caseDetails, beforeDetails);
 
         assertThat(submittedResponse.getConfirmationHeader()).contains("# Order sent");
-        verify(anonymityAppliedNotification, never()).sendToSubject(any(CaseData.class), anyString());
-        verify(anonymityAppliedNotification, never()).sendToRepresentative(any(CaseData.class), anyString());
+        verify(anonymityAppliedNotification, times(1))
+            .sendAnonymityNotificationIfNewlyApplied(caseData, beforeCaseData, null);
     }
 
     private CaseDetails<CaseData, State> caseDetailsBefore() {
