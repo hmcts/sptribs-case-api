@@ -66,6 +66,10 @@ public class CaseworkerUpdateAnonymity implements CCDConfig<CaseData, State, Use
 
     public SubmittedCallbackResponse submitted(final CaseDetails<CaseData, State> details,
                                                final CaseDetails<CaseData, State> beforeDetails) {
+        if (details.getState() != null) {
+            details.getData().setCaseStatus(details.getState());
+        }
+
         anonymityAppliedNotification.sendAnonymityNotificationIfNewlyApplied(
             details.getData(),
             beforeDetails == null ? null : beforeDetails.getData(),

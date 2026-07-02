@@ -238,6 +238,9 @@ public class CaseworkerCreateAndSendOrder implements CCDConfig<CaseData, State, 
     public SubmittedCallbackResponse submitted(CaseDetails<CaseData, State> details,
                                                        CaseDetails<CaseData, State> beforeDetails) {
         try {
+            if (details.getState() != null) {
+                details.getData().setCaseStatus(details.getState());
+            }
             sendOrderNotification(details.getData().getHyphenatedCaseRef(), details.getData());
             anonymityAppliedNotification.sendAnonymityNotificationIfNewlyApplied(
                 details.getData(),

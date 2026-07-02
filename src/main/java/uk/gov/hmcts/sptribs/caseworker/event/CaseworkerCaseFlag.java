@@ -104,6 +104,10 @@ public class CaseworkerCaseFlag implements CCDConfig<CaseData, State, UserRole> 
 
         coreCaseApiService.submitSupplementaryDataToCcd(details.getId() != null ? details.getId().toString() : null);
 
+        if (details.getState() != null) {
+            details.getData().setCaseStatus(details.getState());
+        }
+
         anonymityAppliedNotification.sendAnonymityNotificationIfNewlyApplied(
             details.getData(),
             beforeDetails == null ? null : beforeDetails.getData(),
