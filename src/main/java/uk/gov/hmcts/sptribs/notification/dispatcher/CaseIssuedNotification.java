@@ -18,6 +18,7 @@ import uk.gov.hmcts.sptribs.notification.NotificationServiceCIC;
 import uk.gov.hmcts.sptribs.notification.PartiesNotification;
 import uk.gov.hmcts.sptribs.notification.TemplateName;
 import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
+import uk.gov.hmcts.sptribs.notification.model.Party;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -143,7 +144,7 @@ public class CaseIssuedNotification implements PartiesNotification {
             notificationHelper.buildEmailNotificationRequest(toEmail,
                 templateVars,
                 emailTemplateName),
-            caseReferenceNumber);
+            caseReferenceNumber, null);
     }
 
     private NotificationResponse sendEmailNotificationWithAttachment(String toEmail,
@@ -158,7 +159,7 @@ public class CaseIssuedNotification implements PartiesNotification {
                 templateVars,
                 TemplateName.CASE_ISSUED_RESPONDENT_EMAIL),
             selectedDocuments,
-            caseReferenceNumber);
+            caseReferenceNumber, null);
     }
 
     private NotificationResponse sendLetterNotification(Map<String, Object> templateVarsLetter, String caseReferenceNumber) {

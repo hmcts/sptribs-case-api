@@ -2,6 +2,8 @@ package uk.gov.hmcts.sptribs.notification.persistence;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
 import jakarta.persistence.IdClass;
 import jakarta.persistence.Table;
@@ -11,7 +13,9 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.proxy.HibernateProxy;
+import org.hibernate.type.SqlTypes;
 import uk.gov.hmcts.sptribs.notification.model.Party;
 
 import java.time.OffsetDateTime;
@@ -59,6 +63,8 @@ public class CorrespondenceEntity {
     @Column(name = "document_binary_url", nullable = false)
     private String documentBinaryUrl;
 
+    @Enumerated(EnumType.STRING)
+    @JdbcTypeCode(SqlTypes.NAMED_ENUM)
     @Column(name = "receiving_party")
     private Party receivingParty;
 

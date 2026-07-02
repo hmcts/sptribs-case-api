@@ -14,13 +14,4 @@ import java.util.UUID;
 @Repository
 public interface CorrespondenceDocumentRepository extends JpaRepository<CorrespondenceDocumentEntity, Integer> {
 
-    @Modifying
-    @Transactional
-    @Query(value = """
-        INSERT INTO correspondence_document (document_id, correspondence_id)
-        VALUES (:documentId, :correspondenceId)
-        """, nativeQuery = true)
-    void insert(@Param("documentId") Long documentId,
-                @Param("correspondenceId") UUID correspondenceId);
-
 }

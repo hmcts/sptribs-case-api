@@ -93,7 +93,7 @@ public class ListingUpdatedNotification implements PartiesNotification {
             toEmail,
             templateVars,
             TemplateName.HEARING_UPDATED_EMAIL);
-        return notificationService.sendEmail(request, caseReferenceNumber);
+        return notificationService.sendEmail(request, caseReferenceNumber, null);
     }
 
     private NotificationResponse sendLetterNotification(Map<String, Object> templateVarsLetter, String caseReferenceNumber) {

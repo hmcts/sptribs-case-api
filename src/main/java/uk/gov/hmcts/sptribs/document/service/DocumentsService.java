@@ -11,6 +11,7 @@ import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.common.repositories.DocumentsRepository;
 import uk.gov.hmcts.sptribs.common.repositories.exception.document.DocumentDeleteException;
+import uk.gov.hmcts.sptribs.common.repositories.exception.document.DocumentLookupException;
 import uk.gov.hmcts.sptribs.common.repositories.exception.document.DocumentSaveException;
 import uk.gov.hmcts.sptribs.common.repositories.exception.document.DocumentUpdateException;
 import uk.gov.hmcts.sptribs.document.model.CaseDocumentType;
@@ -47,7 +48,6 @@ public class DocumentsService {
                 .documentBinaryUrl(document.getBinaryUrl())
                 .documentTypeName(documentType != null ? documentType.name() : null)
                 .caseDocumentTypeId(caseDocumentTypesCache.getId(caseDocumentType))
-                .sentToApplicantViaContactParties(false)
                 .build());
 
         } catch (DataAccessException e) {
@@ -55,8 +55,7 @@ public class DocumentsService {
         }
     }
 
-    @Transactional
-    public List<Long> updateDocumentsToSentViaContactParties(CaseData caseData, final Map<String, String> uploadedDocuments) {
+    public List<Long> getDocumentsViaSentByContactParties(CaseData caseData, final Map<String, String> uploadedDocuments) {
 
         List<ListValue<CaseworkerCICDocument>> allCaseDocuments =  getAllCaseDocuments(caseData);
         Set<String> uploadedDocumentIds = new HashSet<>(uploadedDocuments.values());
@@ -71,7 +70,7 @@ public class DocumentsService {
             }
         }
 
-        return setSentToApplicantViaContactPartiesToTrue(binaryUrls);
+        return getDocumentIdsByDocumentBinaryUrls(binaryUrls);
     }
 
     private String getDocumentId(CaseworkerCICDocument document) {
@@ -88,15 +87,13 @@ public class DocumentsService {
             .getBinaryUrl();
     }
 
-    public List<Long> setSentToApplicantViaContactPartiesToTrue(List<String> documentBinaryUrls) {
+    private List<Long> getDocumentIdsByDocumentBinaryUrls(List<String> documentBinaryUrls) {
         try {
             List<Long> documentIds = documentsRepository.findIdsByDocumentBinaryUrls(documentBinaryUrls);
-            int rowsUpdated =
-                documentsRepository.setSentToApplicantViaContactPartiesToTrueByDocumentBinaryUrl(documentBinaryUrls);
-            log.info("Document Repository updated {} documents to sent via contact parties.", rowsUpdated);
+            log.info("Document Repository found the following documentIds {}.", documentIds);
             return documentIds;
         } catch (DataAccessException e) {
-            throw new DocumentUpdateException("Error updating sent_to_applicant_via_contact_parties to true", e);
+            throw new DocumentLookupException("Error getting document id's by documentBinaryUrls", e);
         }
     }
 
@@ -152,10 +149,10 @@ public class DocumentsService {
                 orderAndDecisionDocuments.add(doc);
             } else if (bundleDocumentTypeId.equals(doc.getCaseDocumentTypeId())) {
                 bundleDocuments.add(doc);
-            } else if (doc.isSentToApplicantViaContactParties()) {
-                //this will change with new work mapping correspondence to docs
-                contactPartiesDocuments.add(doc);
-            }
+//            } else if (doc.isSentToApplicantViaContactParties()) {
+//                //this will change with new work mapping correspondence to docs
+//                contactPartiesDocuments.add(doc);
+          }
         }
 
         return DocumentDashboardModel.builder()

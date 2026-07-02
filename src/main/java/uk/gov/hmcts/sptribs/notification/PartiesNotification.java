@@ -16,6 +16,7 @@ public interface PartiesNotification {
         final Map<String, String> uploadedDocuments
     ) {
         sendToSubject(caseData, caseNumber);
+        return null;
     }
 
     default void sendToSubject(final DssCaseData dssCaseData, final String caseNumber) {
@@ -32,6 +33,7 @@ public interface PartiesNotification {
         final Map<String, String> uploadedDocuments
     ) {
         sendToApplicant(caseData, caseNumber);
+        return null;
     }
 
 
@@ -45,6 +47,7 @@ public interface PartiesNotification {
         final Map<String, String> uploadedDocuments
     ) {
         sendToRepresentative(caseData, caseNumber);
+        return null;
     }
 
     default void sendToRepresentative(final DssCaseData dssCaseData, final String caseNumber) {
@@ -61,6 +64,7 @@ public interface PartiesNotification {
         final Map<String, String> uploadedDocuments
     ) {
         sendToRespondent(caseData, caseNumber);
+        return null;
     }
 
     default void sendToTribunal(final CaseData caseData, final String caseNumber) {
@@ -73,6 +77,7 @@ public interface PartiesNotification {
         final Map<String, String> uploadedDocuments
     ) {
         sendToTribunal(caseData, caseNumber);
+        return null;
     }
 
 }
