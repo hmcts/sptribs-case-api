@@ -8,13 +8,10 @@
   "cicCaseFormReceivedInTime": "Yes",
   "cicCaseDateOfBirth": "2000-01-01",
   "caseIssueDecisionIssueDecisionTemplate": "CIC1 - Eligibility",
-  "caseIssueDecisionDecisionDocument": {
-    "documentEmailContent": "Lorem ipsum case issue decision",
-    "documentLink": {
-      "document_url": "http://dm-store.service.core-compute.internal/documents/d06c860a-030a-4d23-933b-0d16042e6c45",
-      "document_filename": "pdf.pdf",
-      "document_binary_url": "http://dm-store.service.core-compute.internal/documents/d06c860b-030a-4d23-933b-0d16042e6c45/binary"
-    }
+  "caseIssueDecisionIssueDecisionDraft": {
+    "document_url": "",
+    "document_filename": "pdf.pdf",
+    "document_binary_url": "http://dm-store.service.core-compute.internal/documents/d06c860b-030a-4d23-933b-0d16042e6c45/binary"
   },
   "hearingStatus": "Complete",
   "firstHearingDate": "",
@@ -86,7 +83,6 @@
   "cicCaseClaimLinkedToCic": "No",
   "subjectName": "Testing subject",
   "securityClass": "PUBLIC",
-  "caseIssueDecisionIssueDecisionDraft": {},
   "regionList": {
     "value": {
       "code": "bfc93094-d20c-432a-9908-29d032425f4d",
