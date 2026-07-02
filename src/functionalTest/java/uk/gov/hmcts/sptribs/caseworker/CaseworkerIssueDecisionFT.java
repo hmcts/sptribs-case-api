@@ -31,6 +31,8 @@ public class CaseworkerIssueDecisionFT extends FunctionalTestSuite {
     private static final String REQUEST_ABOUT_TO_START = "classpath:request/casedata/ccd-callback-casedata-general.json";
     private static final String CALLBACK_REQUEST =
         "classpath:request/casedata/ccd-callback-casedata-caseworker-issue-decision-callback-request.json";
+    private static final String UPLOAD_DOCUMENT_CALLBACK_REQUEST =
+        "classpath:request/casedata/ccd-callback-casedata-caseworker-issue-decision-upload-document-callback-request.json";
     private static final String REQUEST_SUBMITTED_PATH =
         "classpath:request/casedata/ccd-callback-casedata-caseworker-issue-decision-submitted.json";
     private static final String REQUEST_SUBMITTED_UNHAPPY_PATH =
@@ -105,7 +107,7 @@ public class CaseworkerIssueDecisionFT extends FunctionalTestSuite {
 
     @Test
     public void shouldChangeStateAndAddDateWhenAboutToSubmitEventCallbackIsInvokedForUploadedDecisionDocument() throws Exception {
-        final Map<String, Object> caseData = caseData(CALLBACK_REQUEST);
+        final Map<String, Object> caseData = caseData(UPLOAD_DOCUMENT_CALLBACK_REQUEST);
         final Response response = triggerCallback(caseData, CASEWORKER_ISSUE_DECISION, ABOUT_TO_SUBMIT_URL, false);
 
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
