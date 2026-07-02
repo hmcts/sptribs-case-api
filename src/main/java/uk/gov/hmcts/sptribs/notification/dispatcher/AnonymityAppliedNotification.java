@@ -69,7 +69,6 @@ public class AnonymityAppliedNotification implements PartiesNotification {
     }
 
     private String formatCaseStatus(State caseStatus) {
-        log.warn("case state: {}", caseStatus);
         if (caseStatus == null) {
             return CommonConstants.NONE_PROVIDED;
         }
