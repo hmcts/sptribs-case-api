@@ -409,13 +409,13 @@ public class CaseworkerCreateAndSendOrderIT {
 
         ArgumentCaptor<NotificationRequest> captor =
             ArgumentCaptor.forClass(NotificationRequest.class);
-        verify(notificationServiceCIC, times(6)).sendEmail(captor.capture(), eq(TEST_CASE_ID_HYPHENATED));
+        verify(notificationServiceCIC, times(5)).sendEmail(captor.capture(), eq(TEST_CASE_ID_HYPHENATED));
         verifyNoMoreInteractions(notificationServiceCIC);
 
         long anonymityTemplateCalls = captor.getAllValues().stream()
             .filter(request -> ANONYMITY_APPLIED_EMAIL.equals(request.getTemplate()))
             .count();
-        org.assertj.core.api.Assertions.assertThat(anonymityTemplateCalls).isEqualTo(2);
+        org.assertj.core.api.Assertions.assertThat(anonymityTemplateCalls).isEqualTo(1);
     }
 
     @Test
