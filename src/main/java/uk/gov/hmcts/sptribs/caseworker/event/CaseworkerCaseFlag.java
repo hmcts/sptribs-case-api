@@ -1,18 +1,27 @@
 package uk.gov.hmcts.sptribs.caseworker.event;
 
-import lombok.Setter;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
+import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
+import uk.gov.hmcts.ccd.sdk.type.FlagDetail;
+import uk.gov.hmcts.ccd.sdk.type.ListValue;
+import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
+import uk.gov.hmcts.sptribs.caseworker.event.page.ApplyAnonymity;
+import uk.gov.hmcts.sptribs.caseworker.util.CaseFlagsUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.common.service.CcdSupplementaryDataService;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static java.lang.String.format;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_CASE_FLAG;
@@ -33,13 +42,13 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 
 @Component
 @Slf4j
-@Setter
+@RequiredArgsConstructor
 public class CaseworkerCaseFlag implements CCDConfig<CaseData, State, UserRole> {
 
     private static final String ALWAYS_HIDE = "flagLauncher = \"ALWAYS_HIDE\"";
 
-    @Autowired
-    private CcdSupplementaryDataService coreCaseApiService;
+    private final CcdSupplementaryDataService coreCaseApiService;
+    private final ApplyAnonymity applyAnonymity;
 
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
@@ -49,6 +58,7 @@ public class CaseworkerCaseFlag implements CCDConfig<CaseData, State, UserRole> 
             .name("Create Flag")
             .description("Create Flag")
             .showSummary()
+            .aboutToSubmitCallback(this::aboutToSubmit)
             .submittedCallback(this::submitted)
             .grant(CREATE_READ_UPDATE, AC_CASE_FLAGS_ADMIN, SUPER_USER,
                 ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER, ST_CIC_HEARING_CENTRE_ADMIN,
@@ -65,13 +75,35 @@ public class CaseworkerCaseFlag implements CCDConfig<CaseData, State, UserRole> 
                 null, null, null, null, "#ARGUMENT(CREATE)");
     }
 
+    public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(CaseDetails<CaseData, State> details,
+                                                                        CaseDetails<CaseData, State> beforeDetails) {
+        CaseData caseData = details.getData() == null ? CaseData.builder().build() : details.getData();
+        CaseData beforeData = beforeDetails == null ? null : beforeDetails.getData();
+        CicCase cicCase = caseData.getCicCase();
+        if (cicCase == null) {
+            cicCase = new CicCase();
+            caseData.setCicCase(cicCase);
+        }
+
+        List<String> errors = new ArrayList<>();
+        ListValue<FlagDetail> effectiveAnonymityFlag = CaseFlagsUtil.mergeAnonymityFlagsPreserveOriginalId(caseData, beforeData);
+        boolean hasActiveAnonymityFlag = CaseFlagsUtil.isActiveFlag(effectiveAnonymityFlag);
+        cicCase.setAnonymiseYesOrNo(hasActiveAnonymityFlag ? YesOrNo.YES : YesOrNo.NO);
+        applyAnonymity.applyAnonymitySelection(cicCase, errors);
+
+        return AboutToStartOrSubmitResponse.<CaseData, State>builder()
+            .data(caseData)
+            .errors(errors)
+            .build();
+    }
+
     public SubmittedCallbackResponse submitted(CaseDetails<CaseData, State> details,
                                                CaseDetails<CaseData, State> beforeDetails) {
 
         coreCaseApiService.submitSupplementaryDataToCcd(details.getId().toString());
 
         return SubmittedCallbackResponse.builder()
-                .confirmationHeader(format("# Flag created %n## This Flag has been added to case"))
-                .build();
+            .confirmationHeader(format("# Flag created %n## This Flag has been added to case"))
+            .build();
     }
 }

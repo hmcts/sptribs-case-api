@@ -46,6 +46,12 @@ public class CaseworkerCreateAndSendOrderFT extends FunctionalTestSuite {
         "classpath:request/casedata/ccd-callback-casedata-create-and-send-order-new-callback-request.json";
     private static final String NEW_ORDER_TEMPLATE_NON_ANONYMISED_RESPONSE =
         "classpath:responses/response-caseworker-create-and-send-order-new-about-to-submit.json";
+    private static final String TOGGLED_OFF_REQUEST =
+        "classpath:request/casedata/ccd-callback-casedata-create-and-send-order-anonymity-toggled-off-callback-request.json";
+    private static final String TOGGLED_OFF_BEFORE_REQUEST =
+        "classpath:request/casedata/ccd-callback-casedata-create-and-send-order-anonymity-toggled-off-before-callback-request.json";
+    private static final String TOGGLED_OFF_RESPONSE =
+        "classpath:responses/response-caseworker-create-and-send-order-anonymity-toggled-off-about-to-submit.json";
 
     private static final String UPLOADED_ORDER_REQUEST =
         "classpath:request/casedata/ccd-callback-casedata-create-and-send-order-upload-callback-request.json";
@@ -107,6 +113,25 @@ public class CaseworkerCreateAndSendOrderFT extends FunctionalTestSuite {
             .when(IGNORING_EXTRA_FIELDS)
             .when(IGNORING_ARRAY_ORDER)
             .isEqualTo(json(expectedResponse(NEW_ORDER_TEMPLATE_NON_ANONYMISED_RESPONSE)));
+    }
+
+    @Test
+    public void shouldNotReactivateAnonymityFlagWhenAnonymityHasBeenToggledOff() throws Exception {
+        final Map<String, Object> caseData = caseData(TOGGLED_OFF_REQUEST);
+        final Map<String, Object> caseDataBefore = caseData(TOGGLED_OFF_BEFORE_REQUEST);
+
+        final Response response = triggerCallback(
+            caseData,
+            caseDataBefore,
+            CASEWORKER_CREATE_AND_SEND_ORDER,
+            ABOUT_TO_SUBMIT_URL
+        );
+
+        assertThat(response.getStatusCode()).isEqualTo(OK.value());
+        assertThatJson(response.asString())
+            .when(IGNORING_EXTRA_FIELDS)
+            .when(IGNORING_ARRAY_ORDER)
+            .isEqualTo(json(expectedResponse(TOGGLED_OFF_RESPONSE)));
     }
 
     @Test
