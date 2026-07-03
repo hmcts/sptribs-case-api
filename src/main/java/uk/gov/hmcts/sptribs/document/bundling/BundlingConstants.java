@@ -20,7 +20,7 @@ public final class BundlingConstants {
     public static final String DOCUMENT_URL = "document_url";
     public static final String DOCUMENT_FILENAME = "document_filename";
     public static final String DOCUMENT_BINARY_URL = "document_binary_url";
-    public static final String FURTHER_DOCUMENTS = "Further documents";
+    public static final String FURTHER_DOCUMENTS = "Further Documents";
 
     private BundlingConstants() {
 
