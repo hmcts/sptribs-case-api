@@ -19,6 +19,7 @@ import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.document.model.DocumentDashboardModel;
 import uk.gov.hmcts.sptribs.document.model.DocumentEntity;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
+import uk.gov.hmcts.sptribs.notification.model.Party;
 
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
@@ -26,6 +27,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Stream;
 
 import static uk.gov.hmcts.sptribs.caseworker.util.DocumentListUtil.getAllCaseDocuments;
 
@@ -126,52 +128,43 @@ public class DocumentsService {
 
     public DocumentDashboardModel getDocumentsOnCase(Long ccdReference) {
 
-        //using 1 query then code rather than many queries
-        List<DocumentEntity> allDocumentsOnCase =
-            documentsRepository.findAllDocumentsByCaseReference(ccdReference);
+        List<Long> orderAndDecisionTypeIds = Stream.of(
+                CaseDocumentType.ORDER,
+                CaseDocumentType.DECISION,
+                CaseDocumentType.FINAL_DECISION
+            )
+            .map(caseDocumentTypesCache::getId)
+            .toList();
 
-        List<DocumentEntity> contactPartiesDocuments = new ArrayList<>();
-        List<DocumentEntity> orderAndDecisionDocuments = new ArrayList<>();
-        List<DocumentEntity> bundleDocuments = new ArrayList<>();
+        // get documents sent out via contact parties events for specified parties.
+        //need to get the time stamp from the correspondence to show on dashboard!
+        List<DocumentEntity> contactPartyDocuments =
+            documentsRepository.findContactPartyDocuments(
+                ccdReference,
+                List.of(Party.APPLICANT, Party.REPRESENTATIVE, Party.SUBJECT)
+            );
 
+        //order and decision documents
+        //use updated at if present
+        List<DocumentEntity> orderDecisionDocuments =
+            documentsRepository.findOrderAndDecisionDocuments(
+                ccdReference,
+                orderAndDecisionTypeIds
+            );
 
-        //need to double check and maybe update the filters here
-        // to reflect new case doc types, will do this later
-        Long tribunalDocumentTypeId =
-            caseDocumentTypesCache.getId(CaseDocumentType.ORDER);
-
-        Long bundleDocumentTypeId =
-            caseDocumentTypesCache.getId(CaseDocumentType.BUNDLE);
-
-        for (DocumentEntity doc : allDocumentsOnCase) {
-            //if doc order and sent out via contact parties it will appear in orders .
-            if (tribunalDocumentTypeId.equals(doc.getCaseDocumentTypeId())) {
-                orderAndDecisionDocuments.add(doc);
-            } else if (bundleDocumentTypeId.equals(doc.getCaseDocumentTypeId())) {
-                bundleDocuments.add(doc);
-//            } else if (doc.isSentToApplicantViaContactParties()) {
-//                //this will change with new work mapping correspondence to docs
-//                contactPartiesDocuments.add(doc);
-          }
-        }
+        //get latest bundle
+        //use created on date
+        DocumentEntity latestBundle =
+            documentsRepository.findLatestBundleDocument(
+                ccdReference,
+                    caseDocumentTypesCache.getId(CaseDocumentType.BUNDLE)
+            );
 
         return DocumentDashboardModel.builder()
-            .contactPartiesDocuments(contactPartiesDocuments)
-            .latestCaseBundleDocument(getLatestBundleDocument(bundleDocuments))
-            .orderAndDecisionDocuments(orderAndDecisionDocuments)
+            .contactPartiesDocuments(contactPartyDocuments)
+            .latestCaseBundleDocument(latestBundle)
+            .orderAndDecisionDocuments(orderDecisionDocuments)
             .build();
-    }
-
-    private DocumentEntity getLatestBundleDocument(List<DocumentEntity> bundleDocuments) {
-        OffsetDateTime latestBundleDate = bundleDocuments.stream()
-            .map(DocumentEntity::getSavedAt)
-            .max(OffsetDateTime::compareTo)
-            .orElse(null);
-
-        return bundleDocuments.stream()
-            .filter(doc -> latestBundleDate.equals(doc.getSavedAt()))
-            .findFirst()
-            .orElse(null);
     }
 
     @Transactional

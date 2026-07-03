@@ -6,7 +6,9 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import uk.gov.hmcts.sptribs.document.model.DocumentEntity;
+import uk.gov.hmcts.sptribs.notification.model.Party;
 
+import java.util.Collection;
 import java.util.List;
 
 @Repository
@@ -45,15 +47,6 @@ public interface DocumentsRepository extends JpaRepository<DocumentEntity, Integ
         @Param("caseDocumentTypeId") Long caseDocumentTypeId
     );
 
-    @Query("""
-            SELECT d
-            FROM DocumentEntity d
-            WHERE d.caseReferenceNumber = :caseReferenceNumber
-            ORDER BY d.savedAt DESC
-        """)
-    List<DocumentEntity> findAllDocumentsByCaseReference(
-        @Param("caseReferenceNumber") Long caseReferenceNumber);
-
     @Modifying
     @Query("""
             DELETE
@@ -62,4 +55,44 @@ public interface DocumentsRepository extends JpaRepository<DocumentEntity, Integ
         """)
     void deleteEntryByBinaryURL(
         @Param("documentBinaryUrl") String documentBinaryUrl);
+
+    @Query("""
+    select distinct d
+    from DocumentEntity d
+        join CorrespondenceDocumentEntity cd
+            on cd.id.documentId = d.id
+        join CorrespondenceEntity c
+            on c.id = cd.id.correspondenceId
+    where d.caseReferenceNumber = :caseReference
+        and c.receivingParty in :parties
+    order by d.savedAt desc
+    """)
+    List<DocumentEntity> findContactPartyDocuments(
+        @Param("caseReference") Long caseReference,
+        @Param("parties") Collection<Party> parties
+    );
+
+    @Query("""
+    select d
+    from DocumentEntity d
+    where d.caseReferenceNumber = :caseReference
+        and d.caseDocumentTypeId in :caseDocumentIds
+    order by d.savedAt desc
+    """)
+    List<DocumentEntity> findOrderAndDecisionDocuments(
+        Long caseReference,
+        Collection<Long> caseDocumentIds
+    );
+
+    @Query("""
+    select d
+    from DocumentEntity d
+    where d.caseReferenceNumber = :caseReference
+        and d.caseDocumentTypeId = :bundleCategoryId
+    order by d.savedAt desc
+    """)
+    DocumentEntity findLatestBundleDocument(
+        Long caseReference,
+        Long bundleCategoryId
+    );
 }

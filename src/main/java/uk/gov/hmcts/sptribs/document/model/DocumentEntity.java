@@ -36,9 +36,8 @@ public class DocumentEntity {
     @Column(name = "saved_at", nullable = false)
     private OffsetDateTime savedAt =  OffsetDateTime.now();
 
-    @Builder.Default
     @Column(name = "updated_at")
-    private OffsetDateTime updatedAt =  OffsetDateTime.now();
+    private OffsetDateTime updatedAt;
 
     @Column(name = "document_url", nullable = false)
     private String documentUrl;
