@@ -48,6 +48,12 @@ public class FunctionalTestDataManager {
     @Value("${postgres.password}")
     private String password;
 
+    @Value("${core_case_data.api.url}")
+    private String ccdDataStoreUrl;
+
+    @org.springframework.beans.factory.annotation.Autowired
+    private ServiceAuthenticationGenerator serviceAuthenticationGenerator;
+
     public void connectToDB() {
         String connectionString = String.format("jdbc:postgresql://%s:%s/%s", host, port, dbName);
 
@@ -63,11 +69,37 @@ public class FunctionalTestDataManager {
     public void clearDown(long reference) throws SQLException {
         log.info("Starting clearDown for reference: {}", reference);
 
+        cleanDatabaseViaCcdEndpoint();
         deleteCaseEvent(reference);
         deleteCaseData(reference);
         deleteCaseCorrespondences(reference);
+        deleteCaseFromElasticsearch(reference);
 
         log.info("Clear down completed for reference: {}", reference);
+    }
+
+    public void cleanDatabaseViaCcdEndpoint() {
+        String changeId = System.getenv("CHANGE_ID");
+        if (changeId == null || changeId.isBlank()) {
+            changeId = "0";
+        }
+
+        String cleanUrl = ccdDataStoreUrl + "/testing-support/cleanup-case-type/" + changeId;
+        String caseTypeIds = "CriminalInjuriesCompensation";
+
+        log.info("Sending DELETE request to CCD Data Store cleanup endpoint: {}?caseTypeIds={}", cleanUrl, caseTypeIds);
+        try {
+            io.restassured.response.Response response = io.restassured.RestAssured.given()
+                .relaxedHTTPSValidation()
+                .header("ServiceAuthorization", serviceAuthenticationGenerator.generateCcdDataToken())
+                .queryParam("caseTypeIds", caseTypeIds)
+                .when()
+                .delete(cleanUrl);
+
+            log.info("CCD Data Store cleanup response status code: {}", response.getStatusCode());
+        } catch (Exception e) {
+            log.error("Error occurred while calling CCD Data Store cleanup endpoint", e);
+        }
     }
 
     public void deleteCaseData(long reference) {
@@ -110,6 +142,53 @@ public class FunctionalTestDataManager {
                 return rs.getLong(KEY_CASE_DATA_ID);
             }
             return -1;
+        }
+    }
+
+    private String getElasticsearchBaseUrl() {
+        String hosts = System.getenv("ELASTIC_SEARCH_HOSTS");
+        if (hosts == null || hosts.isBlank()) {
+            hosts = System.getenv("ELASTIC_SEARCH_DATA_NODES_HOSTS");
+        }
+        if (hosts == null || hosts.isBlank()) {
+            hosts = "http://localhost:9200";
+        }
+        if (!hosts.startsWith("http://") && !hosts.startsWith("https://")) {
+            hosts = "http://" + hosts;
+        }
+        return hosts;
+    }
+
+    public void deleteCaseFromElasticsearch(long reference) {
+        String elasticsearchBaseUrl = getElasticsearchBaseUrl();
+        String caseIdStr = String.valueOf(reference);
+        String deleteUrl = elasticsearchBaseUrl + "/*_cases/_delete_by_query?ignore_unavailable=true&refresh=true";
+
+        String jsonPayload = "{\n"
+            + "  \"query\": {\n"
+            + "    \"bool\": {\n"
+            + "      \"should\": [\n"
+            + "        { \"term\": { \"reference\": " + reference + " } },\n"
+            + "        { \"term\": { \"reference\": \"" + reference + "\" } },\n"
+            + "        { \"term\": { \"id\": " + reference + " } }\n"
+            + "      ]\n"
+            + "    }\n"
+            + "  }\n"
+            + "}";
+
+        log.info("Sending POST request to Elasticsearch: {}", deleteUrl);
+        try {
+            io.restassured.response.Response response = io.restassured.RestAssured.given()
+                .relaxedHTTPSValidation()
+                .header("Content-Type", "application/json")
+                .body(jsonPayload)
+                .when()
+                .post(deleteUrl);
+
+            int statusCode = response.getStatusCode();
+            log.info("Elasticsearch response status code: {}, body: {}", statusCode, response.getBody().asString());
+        } catch (Exception e) {
+            log.error("Error occurred while deleting case {} from Elasticsearch", caseIdStr, e);
         }
     }
 
