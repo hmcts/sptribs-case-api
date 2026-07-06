@@ -2,6 +2,7 @@ package uk.gov.hmcts.sptribs.idam;
 
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -14,6 +15,7 @@ import java.util.concurrent.TimeUnit;
 import static uk.gov.hmcts.sptribs.common.config.ControllerConstants.BEARER_PREFIX;
 
 @Service
+@Slf4j
 public class IdamService {
 
     private final String systemUpdateUserName;
@@ -37,6 +39,8 @@ public class IdamService {
     public CICUser retrieveUser(String authorisation) {
         final String bearerToken = getBearerToken(authorisation);
         final UserInfo userInfo = idamClient.getUserInfo(bearerToken);
+        log.info("Retrieved IDAM user info: uid={}, rolesCount={}", userInfo.getUid(),
+            userInfo.getRoles() == null ? 0 : userInfo.getRoles().size());
 
         return new CICUser(bearerToken, userInfo);
     }
