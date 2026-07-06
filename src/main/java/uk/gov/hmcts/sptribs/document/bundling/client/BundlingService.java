@@ -79,11 +79,9 @@ public class BundlingService {
 
             return getBundleFromResponse((List<LinkedHashMap<String, Object>>) response.getData().get(CASE_BUNDLES));
         } catch (FeignException exception) {
-            log.error("Unable to create bundle {}",
-                exception.getMessage(),
+            log.error("Unable to create bundle - status: {}, body: {}",
                 exception.status(),
                 exception.contentUTF8());
-
             return null;
         }
     }
