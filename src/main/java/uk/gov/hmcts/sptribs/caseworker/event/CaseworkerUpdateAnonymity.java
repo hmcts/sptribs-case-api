@@ -73,7 +73,7 @@ public class CaseworkerUpdateAnonymity implements CCDConfig<CaseData, State, Use
         anonymityAppliedNotification.sendAnonymityNotificationIfNewlyApplied(
             details.getData(),
             beforeDetails == null ? null : beforeDetails.getData(),
-            details.getId() != null ? details.getId().toString() : null
+            details.getId() == null ? null : details.getId().toString()
         );
 
         return SubmittedCallbackResponse.builder().build();

@@ -102,7 +102,7 @@ public class CaseworkerCaseFlag implements CCDConfig<CaseData, State, UserRole> 
     public SubmittedCallbackResponse submitted(CaseDetails<CaseData, State> details,
                                                CaseDetails<CaseData, State> beforeDetails) {
 
-        coreCaseApiService.submitSupplementaryDataToCcd(details.getId() != null ? details.getId().toString() : null);
+        coreCaseApiService.submitSupplementaryDataToCcd(details.getId() == null ? null : details.getId().toString());
 
         if (details.getState() != null) {
             details.getData().setCaseStatus(details.getState());
@@ -111,7 +111,7 @@ public class CaseworkerCaseFlag implements CCDConfig<CaseData, State, UserRole> 
         anonymityAppliedNotification.sendAnonymityNotificationIfNewlyApplied(
             details.getData(),
             beforeDetails == null ? null : beforeDetails.getData(),
-            details.getId() != null ? details.getId().toString() : null
+            details.getId() == null ? null : details.getId().toString()
         );
 
         return SubmittedCallbackResponse.builder()
