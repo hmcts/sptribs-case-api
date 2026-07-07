@@ -1,5 +1,7 @@
 package uk.gov.hmcts.sptribs.testutil;
 
+import io.restassured.RestAssured;
+import io.restassured.response.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -90,7 +92,7 @@ public class FunctionalTestDataManager {
 
         log.info("Sending DELETE request to CCD Data Store cleanup endpoint: {}?caseTypeIds={}", cleanUrl, caseTypeIds);
         try {
-            io.restassured.response.Response response = io.restassured.RestAssured.given()
+            Response response = RestAssured.given()
                 .relaxedHTTPSValidation()
                 .header("ServiceAuthorization", serviceAuthenticationGenerator.generateCcdDataToken())
                 .queryParam("caseTypeIds", caseTypeIds)
@@ -179,7 +181,7 @@ public class FunctionalTestDataManager {
 
         log.info("Sending POST request to Elasticsearch: {}", deleteUrl);
         try {
-            io.restassured.response.Response response = io.restassured.RestAssured.given()
+            Response response = RestAssured.given()
                 .relaxedHTTPSValidation()
                 .header("Content-Type", "application/json")
                 .body(jsonPayload)
@@ -211,7 +213,7 @@ public class FunctionalTestDataManager {
 
         log.info("Sending POST request to Elasticsearch search endpoint: {}", searchUrl);
         try {
-            io.restassured.response.Response response = io.restassured.RestAssured.given()
+            Response response = RestAssured.given()
                 .relaxedHTTPSValidation()
                 .header("Content-Type", "application/json")
                 .body(jsonPayload)

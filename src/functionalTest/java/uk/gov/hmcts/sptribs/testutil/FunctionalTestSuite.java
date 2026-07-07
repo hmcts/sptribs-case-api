@@ -389,7 +389,7 @@ public abstract class FunctionalTestSuite {
 
         final CaseDataContent caseDataContent = CaseDataContent.builder()
             .data(convertDssCaseDataToRequest(getDssCaseData()))
-            .event(uk.gov.hmcts.reform.ccd.client.model.Event.builder().id(appsDetails.getEventIds().getCreateEvent()).build())
+            .event(Event.builder().id(appsDetails.getEventIds().getCreateEvent()).build())
             .eventToken(createEventResponseToken)
             .build();
         return coreCaseDataApi.submitForCitizen(
