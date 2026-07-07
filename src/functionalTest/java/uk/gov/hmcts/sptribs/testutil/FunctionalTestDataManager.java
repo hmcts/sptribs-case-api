@@ -195,45 +195,6 @@ public class FunctionalTestDataManager {
         }
     }
 
-    public boolean isCaseInElasticsearch(long reference) {
-        String elasticsearchBaseUrl = getElasticsearchBaseUrl();
-        String searchUrl = elasticsearchBaseUrl + "/*_cases/_search?ignore_unavailable=true";
-
-        String jsonPayload = "{\n"
-            + "  \"query\": {\n"
-            + "    \"bool\": {\n"
-            + "      \"should\": [\n"
-            + "        { \"term\": { \"reference\": " + reference + " } },\n"
-            + "        { \"term\": { \"reference\": \"" + reference + "\" } },\n"
-            + "        { \"term\": { \"id\": " + reference + " } }\n"
-            + "      ]\n"
-            + "    }\n"
-            + "  }\n"
-            + "}";
-
-        log.info("Sending POST request to Elasticsearch search endpoint: {}", searchUrl);
-        try {
-            Response response = RestAssured.given()
-                .relaxedHTTPSValidation()
-                .header("Content-Type", "application/json")
-                .body(jsonPayload)
-                .when()
-                .post(searchUrl);
-
-            int statusCode = response.getStatusCode();
-            if (statusCode == 200) {
-                long totalHits = response.jsonPath().getLong("hits.total.value");
-                log.info("Elasticsearch search response hits: {}", totalHits);
-                return totalHits > 0;
-            } else {
-                log.warn("Elasticsearch search response status: {}, body: {}", statusCode, response.getBody().asString());
-            }
-        } catch (Exception e) {
-            log.error("Error occurred while searching case {} in Elasticsearch", reference, e);
-        }
-        return false;
-    }
-
     public void addReference(Long id) {
         testReferences.add(id);
     }
