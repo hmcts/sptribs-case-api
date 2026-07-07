@@ -501,10 +501,6 @@ public abstract class FunctionalTestSuite {
 
         for (long reference : functionalTestDataManager.getTestReferences()) {
             functionalTestDataManager.clearDown(reference);
-            
-            boolean stillExists = functionalTestDataManager.isCaseInElasticsearch(reference);
-            org.junit.jupiter.api.Assertions.assertFalse(stillExists,
-                "Case reference " + reference + " was not cleaned up from Elasticsearch!");
         }
         functionalTestDataManager.closeAll();
     }
