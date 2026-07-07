@@ -318,6 +318,12 @@ class CaseworkerIssueFinalDecisionTest {
 
         verifyNoInteractions(documentsService);
 
+        caseIssueFinalDecision.setDocument(CICDocument.builder()
+            .documentLink(null)
+            .documentEmailContent("final decision document test")
+            .build()
+        );
+
         issueFinalDecision.aboutToSubmit(details, beforeDetails);
 
         verifyNoInteractions(documentsService);

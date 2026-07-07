@@ -135,7 +135,7 @@ public class CaseworkerIssueFinalDecision implements CCDConfig<CaseData, State, 
 
         final List<String> errors = new ArrayList<>();
 
-        if (finalDecisionDocument != null) {
+        if (finalDecisionDocument != null && finalDecisionDocument.getDocumentLink() != null) {
             finalDecisionDocument.getDocumentLink().setCategoryId(DocumentType.TRIBUNAL_DIRECTION.getCategory());
             saveFinalDecisionDocumentToDB(finalDecisionDocument.getDocumentLink(), details.getId(), errors);
         } else if (finalDecisionDocumentCreatedFromTemplate != null) {
