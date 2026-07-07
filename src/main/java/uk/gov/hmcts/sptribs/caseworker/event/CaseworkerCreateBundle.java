@@ -131,7 +131,8 @@ public class CaseworkerCreateBundle implements CCDConfig<CaseData, State, UserRo
         if (!CollectionUtils.isEmpty(initialDocuments)) {
             caseData.setCaseDocuments(convertToBundleDocumentType(initialDocuments));
             caseData.setFurtherCaseDocuments(
-                convertToBundleDocumentTypeWithDescriptionInName(getFurtherDocuments(allDocuments, initialDocuments)));
+                convertToBundleDocumentType(getFurtherDocuments(allDocuments, initialDocuments)));
+            //convertToBundleDocumentTypeWithDescriptionInName(getFurtherDocuments(allDocuments, initialDocuments)));
         } else {
             caseData.setCaseDocuments(convertToBundleDocumentType(allDocuments));
         }
