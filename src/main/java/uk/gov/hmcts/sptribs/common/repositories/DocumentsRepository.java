@@ -57,7 +57,7 @@ public interface DocumentsRepository extends JpaRepository<DocumentEntity, Integ
         @Param("documentBinaryUrl") String documentBinaryUrl);
 
     @Query("""
-    select distinct d
+    select distinct d, CorrespondenceEntity.sentOn
     from DocumentEntity d
         join CorrespondenceDocumentEntity cd
             on cd.id.documentId = d.id
