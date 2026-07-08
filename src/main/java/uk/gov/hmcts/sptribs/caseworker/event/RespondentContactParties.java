@@ -102,7 +102,6 @@ public class RespondentContactParties implements CCDConfig<CaseData, State, User
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
             .build();
-
     }
 
     public SubmittedCallbackResponse submitted(CaseDetails<CaseData, State> details,
