@@ -1,7 +1,6 @@
 package uk.gov.hmcts.sptribs.caseworker;
 
 import io.restassured.response.Response;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import uk.gov.hmcts.sptribs.testutil.FunctionalTestSuite;
@@ -30,7 +29,6 @@ public class CaseworkerCreateBundleFT extends FunctionalTestSuite {
     private static final String RESPONSE =
         "classpath:responses/response-caseworker-create-bundle-about-to-submit.json";
 
-    @Disabled("Skipped to unblock WA - Structure seems outdated") //TODO remove this flag before merge.
     @Test
     public void shouldCreateBundleInAboutToSubmitCallback() throws Exception {
         final Map<String, Object> caseData = caseData(REQUEST);
