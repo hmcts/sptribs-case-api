@@ -16,14 +16,12 @@ import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.common.service.AnonymisationService;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
 
 import static uk.gov.hmcts.sptribs.caseworker.model.OrderIssuingType.CREATE_AND_SEND_NEW_ORDER;
 import static uk.gov.hmcts.sptribs.caseworker.model.OrderIssuingType.UPLOAD_A_NEW_ORDER_FROM_YOUR_COMPUTER;
-import static uk.gov.hmcts.sptribs.caseworker.util.ErrorConstants.FAILED_TO_ANONYMISE_CASE;
 
 @RequiredArgsConstructor
 @Component
@@ -53,7 +51,7 @@ public class ApplyAnonymity implements CcdPageConfiguration {
         final CicCase cicCase = caseData.getCicCase();
         final List<String> errors = new ArrayList<>();
         boolean firstTimeAnonymisationJourney = isFirstTimeAnonymisationJourney(cicCase);
-        applyAnonymitySelection(cicCase, errors, !firstTimeAnonymisationJourney);
+        anonymisationService.applyAnonymitySelection(cicCase, errors, !firstTimeAnonymisationJourney);
         updateIssuingAndTemplateOptions(caseData, firstTimeAnonymisationJourney);
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
@@ -95,37 +93,5 @@ public class ApplyAnonymity implements CcdPageConfiguration {
             OrderTemplate::getLabel,
             caseData.getDraftOrderContentCIC().getOrderTemplate());
         cicCase.setTemplateDynamicList(allTemplateOptions);
-    }
-
-    public void applyAnonymitySelection(CicCase cicCase, List<String> errors) {
-        applyAnonymitySelection(cicCase, errors, true);
-    }
-
-    public void applyAnonymitySelection(CicCase cicCase, List<String> errors, boolean updateAnonymityAlreadyApplied) {
-        if (YesOrNo.YES.equals(cicCase.getAnonymiseYesOrNo())) {
-            if (cicCase.getAnonymisedAppellantName() == null) {
-                String anonymisedName = anonymisationService.getOrCreateAnonymisation();
-
-                if (anonymisedName == null) {
-                    errors.add(FAILED_TO_ANONYMISE_CASE);
-                    return;
-                }
-                cicCase.setAnonymisedAppellantName(anonymisedName);
-            }
-            if (cicCase.getAnonymisationDate() == null) {
-                cicCase.setAnonymisationDate(LocalDate.now());
-            }
-            if (updateAnonymityAlreadyApplied) {
-                cicCase.setAnonymityAlreadyApplied(YesOrNo.YES);
-            }
-            return;
-        }
-
-        if (YesOrNo.NO.equals(cicCase.getAnonymiseYesOrNo())) {
-            cicCase.setAnonymisationDate(null);
-            if (updateAnonymityAlreadyApplied) {
-                cicCase.setAnonymityAlreadyApplied(YesOrNo.NO);
-            }
-        }
     }
 }

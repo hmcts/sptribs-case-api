@@ -68,10 +68,6 @@ public final class CaseFlagsUtil {
         }
     }
 
-    public static ListValue<FlagDetail> mergeAnonymityFlagsPreserveOriginalId(CaseData data) {
-        return mergeAnonymityFlagsPreserveOriginalId(data, null);
-    }
-
     public static ListValue<FlagDetail> mergeAnonymityFlagsPreserveOriginalId(CaseData data, CaseData beforeData) {
         if (data == null || data.getCaseFlags() == null || data.getCaseFlags().getDetails() == null) {
             return null;

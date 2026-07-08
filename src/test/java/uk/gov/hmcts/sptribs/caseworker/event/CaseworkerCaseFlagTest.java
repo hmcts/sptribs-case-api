@@ -1,8 +1,8 @@
 package uk.gov.hmcts.sptribs.caseworker.event;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.ccd.sdk.ConfigBuilderImpl;
@@ -12,12 +12,13 @@ import uk.gov.hmcts.ccd.sdk.type.FlagDetail;
 import uk.gov.hmcts.ccd.sdk.type.Flags;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
-import uk.gov.hmcts.sptribs.caseworker.event.page.ApplyAnonymity;
 import uk.gov.hmcts.sptribs.caseworker.util.CaseFlagsUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
+import uk.gov.hmcts.sptribs.common.repositories.AnonymisationRepository;
+import uk.gov.hmcts.sptribs.common.service.AnonymisationService;
 import uk.gov.hmcts.sptribs.common.service.CcdSupplementaryDataService;
 
 import java.time.LocalDateTime;
@@ -27,6 +28,8 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigBuilder;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.getEventsFrom;
@@ -40,10 +43,17 @@ class CaseworkerCaseFlagTest {
     private CcdSupplementaryDataService coreCaseApiService;
 
     @Mock
-    private ApplyAnonymity applyAnonymity;
+    private AnonymisationRepository anonymisationRepository;
 
-    @InjectMocks
+    private AnonymisationService anonymisationService;
+
     private CaseworkerCaseFlag caseworkerCaseFlag;
+
+    @BeforeEach
+    void setUp() {
+        anonymisationService = spy(new AnonymisationService(anonymisationRepository));
+        caseworkerCaseFlag = new CaseworkerCaseFlag(coreCaseApiService, anonymisationService);
+    }
 
     @Test
     void shouldAddConfigurationToConfigBuilder() {
@@ -83,6 +93,9 @@ class CaseworkerCaseFlagTest {
 
         CaseDetails<CaseData, State> details = CaseDetails.<CaseData, State>builder().data(caseData).build();
         CaseDetails<CaseData, State> beforeDetails = CaseDetails.<CaseData, State>builder().data(beforeData).build();
+
+        doReturn("AC").when(anonymisationService).getOrCreateAnonymisation();
+
         var response = caseworkerCaseFlag.aboutToSubmit(details, beforeDetails);
 
         assertThat(response.getData().getCaseFlags().getDetails()).hasSize(1);
@@ -94,7 +107,7 @@ class CaseworkerCaseFlagTest {
             .isEqualTo(LocalDateTime.of(2024, 1, 1, 10, 0));
         assertThat(response.getData().getCaseFlags().getDetails().getFirst().getValue().getDateTimeModified())
             .isNotNull();
-        verify(applyAnonymity).applyAnonymitySelection(eq(response.getData().getCicCase()), anyList());
+        verify(anonymisationService).processAnonymityFlag(eq(caseData), eq(beforeData), anyList());
     }
 
     private ListValue<FlagDetail> buildAnonymityFlag(String id, String status, String flagComment) {
