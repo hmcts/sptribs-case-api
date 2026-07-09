@@ -19,6 +19,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import uk.gov.hmcts.sptribs.ciccase.service.CicaCaseService;
+import uk.gov.hmcts.sptribs.common.repositories.model.CicaCaseEntity;
 import uk.gov.hmcts.sptribs.controllers.mapper.CaseworkerCICDocumentMapper;
 import uk.gov.hmcts.sptribs.controllers.model.DocumentResponse;
 import uk.gov.hmcts.sptribs.document.DocumentDownloadService;
@@ -36,12 +38,14 @@ public class DocumentController {
     private final DocumentDownloadService documentDownloadService;
     private final DocumentsService documentsService;
     private final CaseworkerCICDocumentMapper caseworkerCICDocumentMapper;
+    private final CicaCaseService cicaCaseService;
 
     @GetMapping(value = "/{ccdReference}/documents")
     @Operation(summary = "Get Documents for CIC case from a CCD reference number")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Documents retrieved successfully"),
         @ApiResponse(responseCode = "400", description = "Invalid CCD reference"),
+        @ApiResponse(responseCode = "401", description = "Unauthorized - Postcode or email mismatch"),
         @ApiResponse(responseCode = "404", description = "Document not found"),
         @ApiResponse(responseCode = "500", description = "Internal server error")
     })
@@ -49,6 +53,9 @@ public class DocumentController {
         @RequestHeader(HttpHeaders.AUTHORIZATION)
         @Parameter(description = "Authorization token", required = true)
         String authorisation,
+        @RequestHeader(value = "X-Postcode")
+        @Parameter(description = "Postcode for verification", required = true)
+        String postcode,
         @PathVariable
         @NotBlank(message = "CCD reference cannot be blank")
         @Pattern(regexp = "^\\d{16}$", message = "CCD reference must be 16 digits long")
@@ -60,6 +67,9 @@ public class DocumentController {
         String ccdReference) {
 
         log.info("Received request to get documents with CCD reference = {}", ccdReference);
+
+        CicaCaseEntity cicaCaseEntity = cicaCaseService.getCaseByCCDReference(ccdReference, authorisation);
+        cicaCaseService.validatePostcode(cicaCaseEntity, postcode, authorisation);
 
         DocumentDashboardModel documentDashboardModel = documentsService.getDocumentsOnCase(Long.valueOf(ccdReference));
 
