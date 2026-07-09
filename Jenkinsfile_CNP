@@ -238,8 +238,8 @@ withPipeline(type, product, component) {
     env.FT_POSTGRES_HOST = "sptribs-preview.postgres.database.azure.com"
     env.FT_POSTGRES_PORT = "5432"
     env.FT_POSTGRES_NAME = "pr-${CHANGE_ID}-sptribs-case-api"
-    env.ELASTIC_SEARCH_HOSTS = "sptribs-case-api-pr-${CHANGE_ID}-es-master-0:9200"
-    env.ELASTIC_SEARCH_DATA_NODES_HOSTS = "http://sptribs-case-api-pr-${CHANGE_ID}-es-master-0:9200"
+    env.ELASTIC_SEARCH_HOSTS = "sptribs-case-api-pr-${CHANGE_ID}-es-master:9200"
+    env.ELASTIC_SEARCH_DATA_NODES_HOSTS = "http://sptribs-case-api-pr-${CHANGE_ID}-es-master:9200"
 
     def waPRLabels = githubApi.getLabelsbyPattern(env.BRANCH_NAME, "pr-values:wa")
     if (waPRLabels.contains("pr-values:wa-ft-tests")) {
