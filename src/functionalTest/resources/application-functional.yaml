@@ -77,3 +77,7 @@ caseinfo:
         submitEvent: citizen-cic-submit-dss-application
       caseTypeOfApplication:
         - CIC
+
+elasticsearch:
+  hosts: ${ELASTIC_SEARCH_HOSTS:localhost:9200}
+  data-nodes-hosts: ${ELASTIC_SEARCH_DATA_NODES_HOSTS:http://localhost:9200}
