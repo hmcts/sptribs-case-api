@@ -154,7 +154,7 @@ public class DocumentsService {
 
         //get latest bundle
         //use created on date
-        //use an optional here ...
+        //use an optional here? ...
         DocumentEntity latestBundle =
             documentsRepository.findLatestBundleDocument(
                 ccdReference,
