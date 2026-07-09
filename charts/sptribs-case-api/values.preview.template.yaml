@@ -21,8 +21,6 @@ java:
     POSTGRES_NAME: "{{ .Values.global.databaseNamePrefix }}sptribs-case-api"
     POSTGRES_USERNAME: ${SPTRIBS_POSTGRES_USERNAME_PREVIEW}
     POSTGRES_CONNECTION_OPTIONS: ""
-    ELASTIC_SEARCH_HOSTS: ${SERVICE_NAME}-es-master:9200
-    ELASTIC_SEARCH_DATA_NODES_HOSTS: http://${SERVICE_NAME}-es-master:9200
   keyVaults:
     sptribs:
       secrets:
