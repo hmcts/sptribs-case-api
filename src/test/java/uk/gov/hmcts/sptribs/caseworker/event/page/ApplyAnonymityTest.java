@@ -1,9 +1,9 @@
 package uk.gov.hmcts.sptribs.caseworker.event.page;
 
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
@@ -14,23 +14,31 @@ import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.OrderTemplate;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
+import uk.gov.hmcts.sptribs.common.repositories.AnonymisationRepository;
 import uk.gov.hmcts.sptribs.common.service.AnonymisationService;
 
 import java.time.LocalDate;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
-import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class ApplyAnonymityTest {
 
-    @InjectMocks
     private ApplyAnonymity applyAnonymity;
+    private AnonymisationService anonymisationService;
 
     @Mock
-    private AnonymisationService anonymisationService;
+    private AnonymisationRepository anonymisationRepository;
+
+    @BeforeEach
+    void setUp() {
+        anonymisationService = spy(new AnonymisationService(anonymisationRepository));
+        applyAnonymity = new ApplyAnonymity(anonymisationService);
+    }
 
     @Test
     void shouldSuccessfullyApplyAnonymity() {
@@ -45,7 +53,7 @@ class ApplyAnonymityTest {
             .build();
         caseDetails.setData(caseData);
 
-        when(anonymisationService.getOrCreateAnonymisation()).thenReturn("AC");
+        doReturn("AC").when(anonymisationService).getOrCreateAnonymisation();
 
         var response = applyAnonymity.midEvent(caseDetails, caseDetails);
 
@@ -69,7 +77,7 @@ class ApplyAnonymityTest {
         caseDetails.setData(caseData);
 
         var response = applyAnonymity.midEvent(caseDetails, caseDetails);
-        verifyNoInteractions(anonymisationService);
+        verify(anonymisationService, never()).getOrCreateAnonymisation();
 
         assertThat(response).isNotNull();
         assertThat(response.getData().getCicCase().getAnonymisedAppellantName()).isEqualTo("AC");
@@ -87,7 +95,7 @@ class ApplyAnonymityTest {
         caseDetails.setData(caseData);
 
         var response = applyAnonymity.midEvent(caseDetails, caseDetails);
-        verifyNoInteractions(anonymisationService);
+        verify(anonymisationService, never()).getOrCreateAnonymisation();
 
         assertThat(response).isNotNull();
         assertThat(response.getData().getCicCase().getAnonymisedAppellantName()).isNull();
@@ -109,7 +117,7 @@ class ApplyAnonymityTest {
 
         var response = applyAnonymity.midEvent(caseDetails, caseDetails);
 
-        verifyNoInteractions(anonymisationService);
+        verify(anonymisationService, never()).getOrCreateAnonymisation();
         assertThat(response).isNotNull();
         assertThat(response.getData().getCicCase().getAnonymisedAppellantName()).isEqualTo("AC");
         assertThat(response.getData().getCicCase().getAnonymisationDate()).isNull();
@@ -129,7 +137,7 @@ class ApplyAnonymityTest {
             .build();
         caseDetails.setData(caseData);
 
-        when(anonymisationService.getOrCreateAnonymisation()).thenReturn("AC");
+        doReturn("AC").when(anonymisationService).getOrCreateAnonymisation();
 
         var response = applyAnonymity.midEvent(caseDetails, caseDetails);
 
