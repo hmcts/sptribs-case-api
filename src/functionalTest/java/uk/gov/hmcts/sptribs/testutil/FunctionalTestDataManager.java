@@ -150,6 +150,8 @@ public class FunctionalTestDataManager {
 
     private String getElasticsearchBaseUrl() {
         String hosts = System.getenv("ELASTIC_SEARCH_HOSTS");
+        log.warn("elastic search host found in ELASTIC_SEARCH_HOSTS : {}", hosts);
+        log.warn("elastic search found in ELASTIC_SEARCH_DATA_NODES_HOSTS: {}", System.getenv("ELASTIC_SEARCH_DATA_NODES_HOSTS"));
         if (hosts == null || hosts.isBlank()) {
             hosts = System.getenv("ELASTIC_SEARCH_DATA_NODES_HOSTS");
         }
@@ -159,6 +161,7 @@ public class FunctionalTestDataManager {
         if (!hosts.startsWith("http://") && !hosts.startsWith("https://")) {
             hosts = "http://" + hosts;
         }
+        log.warn("Using Elasticsearch hosts: {}", hosts);
         return hosts;
     }
 
