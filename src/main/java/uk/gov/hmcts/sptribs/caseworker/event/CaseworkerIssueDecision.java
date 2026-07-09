@@ -23,6 +23,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
+import uk.gov.hmcts.sptribs.common.repositories.exception.document.DocumentSaveException;
 import uk.gov.hmcts.sptribs.document.model.CICDocument;
 import uk.gov.hmcts.sptribs.document.model.CaseDocumentType;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
@@ -169,7 +170,7 @@ public class CaseworkerIssueDecision implements CCDConfig<CaseData, State, UserR
                 DocumentType.TRIBUNAL_DIRECTION,
                 CaseDocumentType.DECISION
             );
-        } catch (RuntimeException e) {
+        } catch (DocumentSaveException e) {
             errors.add(handleDocumentException(decisionDocument, e.getMessage()));
         }
     }
