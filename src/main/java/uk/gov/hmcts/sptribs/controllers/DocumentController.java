@@ -69,7 +69,7 @@ public class DocumentController {
         log.info("Received request to get documents with CCD reference = {}", ccdReference);
 
         CicaCaseEntity cicaCaseEntity = cicaCaseService.getCaseByCCDReference(ccdReference, authorisation);
-        cicaCaseService.validatePostcode(cicaCaseEntity, postcode, authorisation);
+        cicaCaseService.validatePostcode(cicaCaseEntity, postcode);
 
         DocumentDashboardModel documentDashboardModel = documentsService.getDocumentsOnCase(Long.valueOf(ccdReference));
 

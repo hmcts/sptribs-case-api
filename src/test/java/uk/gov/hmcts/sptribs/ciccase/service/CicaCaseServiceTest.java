@@ -128,11 +128,8 @@ class CicaCaseServiceTest {
         String postcode = "SW11 1PD";
         CicaCaseEntity entity = createCicaCaseEntityWithPostcode(ccdReference, postcode);
 
-        when(user.getUserDetails()).thenReturn(userDetails());
-        when(idamService.retrieveUser(TEST_AUTHORIZATION)).thenReturn(user);
-
         // When & Then - should not throw any exception
-        cicaCaseService.validatePostcode(entity, postcode, TEST_AUTHORIZATION);
+        cicaCaseService.validatePostcode(entity, postcode);
     }
 
     @Test
@@ -141,11 +138,8 @@ class CicaCaseServiceTest {
         String ccdReference = "1234567891234567";
         CicaCaseEntity entity = createCicaCaseEntityWithPostcode(ccdReference, "sw11 1pd");
 
-        when(user.getUserDetails()).thenReturn(userDetails());
-        when(idamService.retrieveUser(TEST_AUTHORIZATION)).thenReturn(user);
-
         // When & Then - should ignore case and spaces
-        cicaCaseService.validatePostcode(entity, "SW111PD  ", TEST_AUTHORIZATION);
+        cicaCaseService.validatePostcode(entity, "SW111PD  ");
     }
 
     @Test
@@ -155,11 +149,8 @@ class CicaCaseServiceTest {
         String postcode = "SW11 1PD";
         CicaCaseEntity entity = createCicaCaseEntityWithRepresentativePostcode(ccdReference, postcode);
 
-        when(user.getUserDetails()).thenReturn(userDetails());
-        when(idamService.retrieveUser(TEST_AUTHORIZATION)).thenReturn(user);
-
         // When & Then - should not throw any exception
-        cicaCaseService.validatePostcode(entity, postcode, TEST_AUTHORIZATION);
+        cicaCaseService.validatePostcode(entity, postcode);
     }
 
     @Test
@@ -169,29 +160,8 @@ class CicaCaseServiceTest {
         String postcode = "SW11 1PD";
         CicaCaseEntity entity = createCicaCaseEntityWithAppellantPostcode(ccdReference, postcode);
 
-        when(user.getUserDetails()).thenReturn(userDetails());
-        when(idamService.retrieveUser(TEST_AUTHORIZATION)).thenReturn(user);
-
         // When & Then - should not throw any exception
-        cicaCaseService.validatePostcode(entity, postcode, TEST_AUTHORIZATION);
-    }
-
-    @Test
-    void whenUserEmailDoesNotMatchAnyRole_thenShouldThrowUnauthorisedPostcodeException() {
-        // Given
-        String ccdReference = "1234567891234567";
-        String postcode = "SW11 1PD";
-        CicaCaseEntity entity = createCicaCaseEntityWithEmailAndPostcode(ccdReference, postcode, "different.email@hmcts.net");
-
-        when(user.getUserDetails()).thenReturn(userDetails());
-        when(idamService.retrieveUser(TEST_AUTHORIZATION)).thenReturn(user);
-
-        // When & Then
-        UnauthorisedCaseAccessException exception = assertThrows(
-            UnauthorisedCaseAccessException.class,
-            () -> cicaCaseService.validatePostcode(entity, postcode, TEST_AUTHORIZATION)
-        );
-        assertEquals("User is not authorised to access case: 1234567891234567", exception.getMessage());
+        cicaCaseService.validatePostcode(entity, postcode);
     }
 
     @Test
@@ -200,13 +170,10 @@ class CicaCaseServiceTest {
         String ccdReference = "1234567891234567";
         CicaCaseEntity entity = createCicaCaseEntityWithPostcode(ccdReference, "SW11 1PD");
 
-        when(user.getUserDetails()).thenReturn(userDetails());
-        when(idamService.retrieveUser(TEST_AUTHORIZATION)).thenReturn(user);
-
         // When & Then
         UnauthorisedCaseAccessException exception = assertThrows(
             UnauthorisedCaseAccessException.class,
-            () -> cicaCaseService.validatePostcode(entity, "EH12 3AB", TEST_AUTHORIZATION)
+            () -> cicaCaseService.validatePostcode(entity, "EH12 3AB")
         );
         assertEquals("Submitted postcode does not match the postcode held in case data", exception.getMessage());
     }
@@ -220,7 +187,7 @@ class CicaCaseServiceTest {
         // When & Then
         UnauthorisedCaseAccessException exception = assertThrows(
             UnauthorisedCaseAccessException.class,
-            () -> cicaCaseService.validatePostcode(entity, null, TEST_AUTHORIZATION)
+            () -> cicaCaseService.validatePostcode(entity, null)
         );
         assertEquals("Submitted postcode cannot be null", exception.getMessage());
     }
@@ -231,13 +198,10 @@ class CicaCaseServiceTest {
         String ccdReference = "1234567891234567";
         CicaCaseEntity entity = createCicaCaseEntityWithPostcode(ccdReference, null);
 
-        when(user.getUserDetails()).thenReturn(userDetails());
-        when(idamService.retrieveUser(TEST_AUTHORIZATION)).thenReturn(user);
-
         // When & Then
         UnauthorisedCaseAccessException exception = assertThrows(
             UnauthorisedCaseAccessException.class,
-            () -> cicaCaseService.validatePostcode(entity, "SW11 1PD", TEST_AUTHORIZATION)
+            () -> cicaCaseService.validatePostcode(entity, "SW11 1PD")
         );
         assertEquals("Postcode not found in case data", exception.getMessage());
     }
@@ -260,7 +224,7 @@ class CicaCaseServiceTest {
 
         // Then
         assertThat(result).isEqualTo(entity);
-        verify(idamService, org.mockito.Mockito.times(2)).retrieveUser(TEST_AUTHORIZATION);
+        verify(idamService).retrieveUser(TEST_AUTHORIZATION);
         verify(caseDataRepository).checkCaseExists(ccdReference);
         verify(caseDataRepository).findCase(ccdReference, TEST_SYSTEM_UPDATE_USER_EMAIL);
     }
@@ -284,7 +248,7 @@ class CicaCaseServiceTest {
         CaseData caseData = new CaseData();
         CicCase cicCase = new CicCase();
         AddressGlobalUK address = AddressGlobalUK.builder().postCode(postcode).build();
-        cicCase.setRepresentativeAddress(address);
+        cicCase.setAddress(address);
         cicCase.setRepresentativeEmailAddress(TEST_SYSTEM_UPDATE_USER_EMAIL);
         caseData.setCicCase(cicCase);
 
@@ -299,7 +263,7 @@ class CicaCaseServiceTest {
         CaseData caseData = new CaseData();
         CicCase cicCase = new CicCase();
         AddressGlobalUK address = AddressGlobalUK.builder().postCode(postcode).build();
-        cicCase.setApplicantAddress(address);
+        cicCase.setAddress(address);
         cicCase.setApplicantEmailAddress(TEST_SYSTEM_UPDATE_USER_EMAIL);
         caseData.setCicCase(cicCase);
 

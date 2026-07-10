@@ -54,10 +54,9 @@ public class CicaCaseService {
      *
      * @param cicaCaseEntity     the case entity.
      * @param submittedPostcode  the postcode submitted by the user.
-     * @param authorisation      user authorization token.
      * @throws UnauthorisedCaseAccessException if the postcodes do not match or cannot be found.
      */
-    public void validatePostcode(CicaCaseEntity cicaCaseEntity, String submittedPostcode, String authorisation) {
+    public void validatePostcode(CicaCaseEntity cicaCaseEntity, String submittedPostcode) {
         log.info("Validating submitted postcode against case data");
 
         if (submittedPostcode == null) {
@@ -69,27 +68,7 @@ public class CicaCaseService {
             .map(CaseData::getCicCase)
             .orElseThrow(() -> new UnauthorisedCaseAccessException("CicCase data not found in case data"));
 
-        User user = idamService.retrieveUser(authorisation);
-        String userEmail = Optional.ofNullable(user)
-            .map(User::getUserDetails)
-            .map(ud -> ud.getEmail())
-            .orElseThrow(() -> new UnauthorisedCaseAccessException("User email not found"));
-
-        AddressGlobalUK targetAddress = null;
-        String roleName = null;
-
-        if (userEmail.equalsIgnoreCase(cicCase.getRepresentativeEmailAddress())) {
-            targetAddress = cicCase.getRepresentativeAddress();
-            roleName = "representative";
-        } else if (userEmail.equalsIgnoreCase(cicCase.getEmail())) {
-            targetAddress = cicCase.getAddress();
-            roleName = "subject";
-        } else if (userEmail.equalsIgnoreCase(cicCase.getApplicantEmailAddress())) {
-            targetAddress = cicCase.getApplicantAddress();
-            roleName = "appellant";
-        } else {
-            throw new UnauthorisedCaseAccessException("User is not authorised to access case: " + cicaCaseEntity.getId());
-        }
+        AddressGlobalUK targetAddress = cicCase.getAddress();
 
         if (targetAddress == null || targetAddress.getPostCode() == null) {
             throw new UnauthorisedCaseAccessException("Postcode not found in case data");
@@ -114,11 +93,7 @@ public class CicaCaseService {
      */
     public CicaCaseEntity getCaseWithVerifiedPostcode(String ccdReference, String authorisation, String submittedPostcode) {
         CicaCaseEntity cicaCaseEntity = getCaseByCCDReference(ccdReference, authorisation);
-        validatePostcode(cicaCaseEntity, submittedPostcode, authorisation);
+        validatePostcode(cicaCaseEntity, submittedPostcode);
         return cicaCaseEntity;
     }
 }
-
-
-
-
