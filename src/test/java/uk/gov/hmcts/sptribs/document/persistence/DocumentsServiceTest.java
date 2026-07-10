@@ -53,11 +53,11 @@ public class DocumentsServiceTest {
     @Test
     public void shouldBuildAndSaveNewCaseworkerDocumentEntity() {
         Document evidenceDocument = buildDocument(HOSPITAL_RECORDS.getCategory());
-        DocumentEntity evidenceDocumentEntity = buildDocumentEntity(HOSPITAL_RECORDS.name(), 3L, false, OffsetDateTime.now());
+        DocumentEntity evidenceDocumentEntity = buildDocumentEntity(HOSPITAL_RECORDS.name(), 2L, false, OffsetDateTime.now());
 
-        when(caseDocumentTypesCache.getId(CaseDocumentType.CASEWORKER)).thenReturn(3L);
+        when(caseDocumentTypesCache.getId(CaseDocumentType.DOCUMENT_MANAGEMENT)).thenReturn(2L);
 
-        documentsService.buildAndSaveNewDocumentEntity(evidenceDocument, TEST_CASE_ID, HOSPITAL_RECORDS, CaseDocumentType.CASEWORKER);
+        documentsService.buildAndSaveNewDocumentEntity(evidenceDocument, TEST_CASE_ID, HOSPITAL_RECORDS, CaseDocumentType.DOCUMENT_MANAGEMENT);
 
         verify(documentsRepository, times(1)).save(evidenceDocumentEntity);
     }
@@ -65,9 +65,9 @@ public class DocumentsServiceTest {
     @Test
     public void shouldBuildAndSaveNewBundleDocument() {
         Document bundleDocument = buildDocument(null);
-        DocumentEntity bundleDocumentEntity = buildDocumentEntity(null, 10L, false, OffsetDateTime.now());
+        DocumentEntity bundleDocumentEntity = buildDocumentEntity(null, 9L, false, OffsetDateTime.now());
 
-        when(caseDocumentTypesCache.getId(CaseDocumentType.BUNDLE)).thenReturn(10L);
+        when(caseDocumentTypesCache.getId(CaseDocumentType.BUNDLE)).thenReturn(9L);
 
         documentsService.buildAndSaveNewDocumentEntity(bundleDocument, TEST_CASE_ID, null,CaseDocumentType.BUNDLE);
 
@@ -77,10 +77,10 @@ public class DocumentsServiceTest {
     @Test
     public void shouldBuildAndSaveNewDraftOrderDocumentEntity() {
         Document draftEvidenceDocument = buildDocument(HOSPITAL_RECORDS.getCategory());
-        DocumentEntity draftEvidenceDocumentEntity = buildDocumentEntity(HOSPITAL_RECORDS.name(), 5L,
+        DocumentEntity draftEvidenceDocumentEntity = buildDocumentEntity(HOSPITAL_RECORDS.name(), 4L,
             true, OffsetDateTime.now());
 
-        when(caseDocumentTypesCache.getId(CaseDocumentType.DRAFT_ORDER)).thenReturn(5L);
+        when(caseDocumentTypesCache.getId(CaseDocumentType.DRAFT_ORDER)).thenReturn(4L);
 
         documentsService.buildAndSaveNewDocumentEntity(draftEvidenceDocument, TEST_CASE_ID, HOSPITAL_RECORDS,
             CaseDocumentType.DRAFT_ORDER);
@@ -91,11 +91,11 @@ public class DocumentsServiceTest {
     @Test
     public void shouldThrowRuntimeExceptionWhenDataAccessExceptionCaughtInBuildAndSaveNewDraftDocumentEntity() {
         Document draftEvidenceDocument = buildDocument(HOSPITAL_RECORDS.getCategory());
-        DocumentEntity draftEvidenceDocumentEntity = buildDocumentEntity(HOSPITAL_RECORDS.name(), 5L, true,
+        DocumentEntity draftEvidenceDocumentEntity = buildDocumentEntity(HOSPITAL_RECORDS.name(), 4L, true,
             OffsetDateTime.now());
 
         when(documentsRepository.save(draftEvidenceDocumentEntity)).thenThrow(new DataAccessResourceFailureException("DB error"));
-        when(caseDocumentTypesCache.getId(CaseDocumentType.DRAFT_ORDER)).thenReturn(5L);
+        when(caseDocumentTypesCache.getId(CaseDocumentType.DRAFT_ORDER)).thenReturn(4L);
 
         assertThatThrownBy(
             () -> documentsService.buildAndSaveNewDocumentEntity(draftEvidenceDocument, TEST_CASE_ID, HOSPITAL_RECORDS,
@@ -105,14 +105,14 @@ public class DocumentsServiceTest {
     }
 
     @Test
-    public void shouldSetSentToApplicantViaContactPartiesToTrue() {
+    public void shouldGetDocumentsSentToApplicantViaContactParties() {
         Document applicationDocument = buildDocument(DSS_SUPPORTING.getCategory());
         DocumentEntity applicationDocumentEntity = buildDocumentEntity(DSS_SUPPORTING.name(), 1L, false,
             OffsetDateTime.now());
 
-        documentsService.setSentToApplicantViaContactPartiesToTrue(List.of(applicationDocument.getBinaryUrl()));
+        documentsService.getDocumentsViaSentByContactParties(List.of(applicationDocument.getBinaryUrl()));
 
-        verify(documentsRepository, times(1)).setSentToApplicantViaContactPartiesToTrueByDocumentBinaryUrl(
+        verify(documentsRepository, times(1)).findIdsByDocumentBinaryUrls(
             List.of(applicationDocumentEntity.getDocumentBinaryUrl()));
     }
 

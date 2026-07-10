@@ -5,11 +5,13 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import uk.gov.hmcts.sptribs.document.model.ContactPartyDocumentDetails;
 import uk.gov.hmcts.sptribs.document.model.DocumentEntity;
 import uk.gov.hmcts.sptribs.notification.model.Party;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface DocumentsRepository extends JpaRepository<DocumentEntity, Integer> {
@@ -57,7 +59,10 @@ public interface DocumentsRepository extends JpaRepository<DocumentEntity, Integ
         @Param("documentBinaryUrl") String documentBinaryUrl);
 
     @Query("""
-    select distinct d, CorrespondenceEntity.sentOn
+    select new uk.gov.hmcts.sptribs.document.model.ContactPartyDocumentDetails(
+        d,
+        max(c.sentOn)
+    )
     from DocumentEntity d
         join CorrespondenceDocumentEntity cd
             on cd.id.documentId = d.id
@@ -65,9 +70,10 @@ public interface DocumentsRepository extends JpaRepository<DocumentEntity, Integ
             on c.id = cd.id.correspondenceId
     where d.caseReferenceNumber = :caseReference
         and c.receivingParty in :parties
+    group by d
     order by d.savedAt desc
     """)
-    List<DocumentEntity> findContactPartyDocuments(
+    List<ContactPartyDocumentDetails> findContactPartyDocuments(
         @Param("caseReference") Long caseReference,
         @Param("parties") Collection<Party> parties
     );
@@ -91,7 +97,7 @@ public interface DocumentsRepository extends JpaRepository<DocumentEntity, Integ
         and d.caseDocumentTypeId = :bundleCategoryId
     order by d.savedAt desc
     """)
-    DocumentEntity findLatestBundleDocument(
+    Optional<DocumentEntity> findLatestBundleDocument(
         Long caseReference,
         Long bundleCategoryId
     );

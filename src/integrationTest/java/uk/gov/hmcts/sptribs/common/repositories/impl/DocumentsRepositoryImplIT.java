@@ -16,7 +16,7 @@ import java.util.UUID;
 import static org.camunda.bpm.model.xml.test.assertions.ModelAssertions.assertThat;
 
 @Transactional
-class DocumentRepositoryImplIT extends IntegrationTestBase {
+class DocumentsRepositoryImplIT extends IntegrationTestBase {
 
 
     @Autowired

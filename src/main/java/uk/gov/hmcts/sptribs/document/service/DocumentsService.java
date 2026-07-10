@@ -16,6 +16,7 @@ import uk.gov.hmcts.sptribs.common.repositories.exception.document.DocumentSaveE
 import uk.gov.hmcts.sptribs.common.repositories.exception.document.DocumentUpdateException;
 import uk.gov.hmcts.sptribs.document.model.CaseDocumentType;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
+import uk.gov.hmcts.sptribs.document.model.ContactPartyDocumentDetails;
 import uk.gov.hmcts.sptribs.document.model.DocumentDashboardModel;
 import uk.gov.hmcts.sptribs.document.model.DocumentEntity;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
@@ -26,6 +27,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Stream;
 
@@ -128,7 +130,7 @@ public class DocumentsService {
 
     public DocumentDashboardModel getDocumentsOnCase(Long ccdReference) {
 
-        List<Long> orderAndDecisionTypeIds = Stream.of(
+        final List<Long> orderAndDecisionTypeIds = Stream.of(
                 CaseDocumentType.ORDER,
                 CaseDocumentType.DECISION,
                 CaseDocumentType.FINAL_DECISION
@@ -136,34 +138,36 @@ public class DocumentsService {
             .map(caseDocumentTypesCache::getId)
             .toList();
 
-        // get documents sent out via contact parties events for specified parties.
-        //need to get the time stamp from the correspondence to show on dashboard!
-        List<DocumentEntity> contactPartyDocuments =
+        final List<Party> contactParties = List.of(
+            Party.APPLICANT,
+            Party.REPRESENTATIVE,
+            Party.SUBJECT
+        );
+
+        // Documents that have been sent to contact parties, with date from when email sent.
+        List<ContactPartyDocumentDetails> contactPartyDocuments =
             documentsRepository.findContactPartyDocuments(
                 ccdReference,
-                List.of(Party.APPLICANT, Party.REPRESENTATIVE, Party.SUBJECT)
+                contactParties
             );
 
-        //order and decision documents
-        //use updated at if present
+        // Latest generated case bundle, if one exists.
+        Optional<DocumentEntity> latestBundle =
+            documentsRepository.findLatestBundleDocument(
+                ccdReference,
+                caseDocumentTypesCache.getId(CaseDocumentType.BUNDLE)
+            );
+
+        // Order and decision documents displayed on the dashboard.
         List<DocumentEntity> orderDecisionDocuments =
             documentsRepository.findOrderAndDecisionDocuments(
                 ccdReference,
                 orderAndDecisionTypeIds
             );
 
-        //get latest bundle
-        //use created on date
-        //use an optional here? ...
-        DocumentEntity latestBundle =
-            documentsRepository.findLatestBundleDocument(
-                ccdReference,
-                    caseDocumentTypesCache.getId(CaseDocumentType.BUNDLE)
-            );
-
         return DocumentDashboardModel.builder()
             .contactPartiesDocuments(contactPartyDocuments)
-            .latestCaseBundleDocument(latestBundle)
+            .latestCaseBundleDocument(latestBundle.orElse(null))
             .orderAndDecisionDocuments(orderDecisionDocuments)
             .build();
     }
