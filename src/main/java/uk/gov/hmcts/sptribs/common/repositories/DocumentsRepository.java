@@ -75,7 +75,7 @@ public interface DocumentsRepository extends JpaRepository<DocumentEntity, Integ
     """)
     List<ContactPartyDocumentDetails> findContactPartyDocuments(
         @Param("caseReference") Long caseReference,
-        @Param("parties") Collection<Party> parties
+        @Param("parties") List<Party> parties
     );
 
     @Query("""
@@ -87,7 +87,7 @@ public interface DocumentsRepository extends JpaRepository<DocumentEntity, Integ
     """)
     List<DocumentEntity> findOrderAndDecisionDocuments(
         Long caseReference,
-        Collection<Long> caseDocumentIds
+        List<Long> caseDocumentIds
     );
 
     @Query("""
