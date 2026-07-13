@@ -64,7 +64,7 @@ public class DocumentsServiceTest {
     );
 
     @Test
-    public void shouldBuildAndSaveNewCaseworkerDocumentEntity() {
+     void shouldBuildAndSaveNewCaseworkerDocumentEntity() {
         Document evidenceDocument = buildDocument(HOSPITAL_RECORDS.getCategory());
         DocumentEntity evidenceDocumentEntity = buildDocumentEntity(HOSPITAL_RECORDS.name(), 2L, OffsetDateTime.now());
 
@@ -77,7 +77,7 @@ public class DocumentsServiceTest {
     }
 
     @Test
-    public void shouldBuildAndSaveNewBundleDocument() {
+     void shouldBuildAndSaveNewBundleDocument() {
         Document bundleDocument = buildDocument(null);
         DocumentEntity bundleDocumentEntity = buildDocumentEntity(null, 9L, OffsetDateTime.now());
 
@@ -89,7 +89,7 @@ public class DocumentsServiceTest {
     }
 
     @Test
-    public void shouldBuildAndSaveNewDraftOrderDocumentEntity() {
+     void shouldBuildAndSaveNewDraftOrderDocumentEntity() {
         Document draftEvidenceDocument = buildDocument(HOSPITAL_RECORDS.getCategory());
         DocumentEntity draftEvidenceDocumentEntity = buildDocumentEntity(HOSPITAL_RECORDS.name(), 4L, OffsetDateTime.now());
 
@@ -102,7 +102,7 @@ public class DocumentsServiceTest {
     }
 
     @Test
-    public void shouldThrowRuntimeExceptionWhenDataAccessExceptionCaughtInBuildAndSaveNewDraftDocumentEntity() {
+     void shouldThrowRuntimeExceptionWhenDataAccessExceptionCaughtInBuildAndSaveNewDraftDocumentEntity() {
         Document draftEvidenceDocument = buildDocument(HOSPITAL_RECORDS.getCategory());
         DocumentEntity draftEvidenceDocumentEntity = buildDocumentEntity(HOSPITAL_RECORDS.name(), 4L,
             OffsetDateTime.now());
@@ -118,7 +118,7 @@ public class DocumentsServiceTest {
     }
 
     @Test
-    public void shouldSetNewDocumentTypeName() {
+     void shouldSetNewDocumentTypeName() {
         Document applicationDocument = buildDocument(HOSPITAL_RECORDS.getCategory());
         DocumentEntity applicationDocumentEntity = buildDocumentEntity(DSS_SUPPORTING.name(), 1L, OffsetDateTime.now());
 
@@ -129,7 +129,7 @@ public class DocumentsServiceTest {
     }
 
     @Test
-    public void shouldThrowRuntimeExceptionWhenDataAccessExceptionCaughtInSetNewDocumentTypeName() {
+     void shouldThrowRuntimeExceptionWhenDataAccessExceptionCaughtInSetNewDocumentTypeName() {
         Document applicationDocument = buildDocument(DSS_SUPPORTING.getCategory());
 
         doThrow(new DataAccessResourceFailureException("DB error")).when(
@@ -145,7 +145,7 @@ public class DocumentsServiceTest {
     }
 
     @Test
-    public void shouldUpdateDocumentToNonDraftOrder() {
+     void shouldUpdateDocumentToNonDraftOrder() {
         Document applicationDocument = buildDocument(HOSPITAL_RECORDS.getCategory());
         DocumentEntity draftEvidenceDocumentEntity = buildDocumentEntity(HOSPITAL_RECORDS.name(), 3L,
             OffsetDateTime.now());
@@ -159,7 +159,7 @@ public class DocumentsServiceTest {
     }
 
     @Test
-    public void shouldThrowRuntimeExceptionWhenDataAccessExceptionCaughtInUpdateDocumentToNonDraft() {
+     void shouldThrowRuntimeExceptionWhenDataAccessExceptionCaughtInUpdateDocumentToNonDraft() {
         Document applicationDocument = buildDocument(DSS_SUPPORTING.getCategory());
         when(caseDocumentTypesCache.getId(CaseDocumentType.ORDER)).thenReturn(3L);
 
@@ -219,7 +219,7 @@ public class DocumentsServiceTest {
     }
 
     @Test
-    public void shouldThrowDocumentLookupExceptionWhenDataAccessExceptionGettingDocuments() {
+     void shouldThrowDocumentLookupExceptionWhenDataAccessExceptionGettingDocuments() {
         ListValue<CaseworkerCICDocument> caseDocument1 = buildCaseworkerCicDocumentListValue("url-1", "my-env/binary-1/binary", "file-1");
 
         DocumentManagement documentManagement = DocumentManagement.builder().caseworkerCICDocument(
