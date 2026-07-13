@@ -2,6 +2,7 @@ package uk.gov.hmcts.sptribs.controllers;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,12 +16,15 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.sptribs.cdam.model.Document;
+import uk.gov.hmcts.sptribs.ciccase.service.CicaCaseService;
 import uk.gov.hmcts.sptribs.common.config.WebMvcConfig;
+import uk.gov.hmcts.sptribs.common.repositories.model.CicaCaseEntity;
 import uk.gov.hmcts.sptribs.services.cdam.CaseDocumentClientApi;
 import uk.gov.hmcts.sptribs.testutil.IdamWireMock;
 
 import java.util.UUID;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -38,7 +42,9 @@ import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_SERVICE_AUTH_TOKE
 @ContextConfiguration(initializers = {IdamWireMock.PropertiesInitializer.class})
 class DocumentControllerIT {
 
-    private static final String DOWNLOAD_DOCUMENT_URL = "/cases/CIC/downloadDocument/";
+    private static final String CCD_REFERENCE = "1234567891234567";
+    private static final String POSTCODE = "SW11 1PD";
+    private static final String DOWNLOAD_DOCUMENT_URL = "/cases/CIC/" + CCD_REFERENCE + "/documents/%s/download";
 
     //add tests for other endpoint to get docs!!!
 
@@ -54,6 +60,9 @@ class DocumentControllerIT {
     @MockitoBean
     private CaseDocumentClientApi caseDocumentClientApi;
 
+    @MockitoBean
+    private CicaCaseService cicaCaseService;
+
     @BeforeAll
     static void setUp() {
         IdamWireMock.start();
@@ -62,6 +71,12 @@ class DocumentControllerIT {
     @AfterAll
     static void tearDown() {
         IdamWireMock.stopAndReset();
+    }
+
+    @BeforeEach
+    void setUpMocks() {
+        CicaCaseEntity cicaCaseEntity = CicaCaseEntity.builder().id(CCD_REFERENCE).build();
+        when(cicaCaseService.getCaseByCCDReference(eq(CCD_REFERENCE), any())).thenReturn(cicaCaseEntity);
     }
 
     @Test
@@ -90,9 +105,10 @@ class DocumentControllerIT {
         )).thenReturn(ResponseEntity.ok(documentContent));
 
         // When & Then
-        mockMvc.perform(get(DOWNLOAD_DOCUMENT_URL + documentId)
+        mockMvc.perform(get(String.format(DOWNLOAD_DOCUMENT_URL, documentId))
                 .header(AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
-                .header(SERVICE_AUTHORIZATION, TEST_SERVICE_AUTH_TOKEN))
+                .header(SERVICE_AUTHORIZATION, TEST_SERVICE_AUTH_TOKEN)
+                .header("X-Postcode", POSTCODE))
             .andExpect(status().isOk())
             .andExpect(header().string(HttpHeaders.CONTENT_TYPE, mimeType))
             .andExpect(header().string("original-file-name", fileName))
@@ -112,9 +128,10 @@ class DocumentControllerIT {
         )).thenReturn(ResponseEntity.ok(null));
 
         // When & Then
-        mockMvc.perform(get(DOWNLOAD_DOCUMENT_URL + documentId)
+        mockMvc.perform(get(String.format(DOWNLOAD_DOCUMENT_URL, documentId))
                 .header(AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
-                .header(SERVICE_AUTHORIZATION, TEST_SERVICE_AUTH_TOKEN))
+                .header(SERVICE_AUTHORIZATION, TEST_SERVICE_AUTH_TOKEN)
+                .header("X-Postcode", POSTCODE))
             .andExpect(status().isInternalServerError());
     }
 
@@ -142,9 +159,10 @@ class DocumentControllerIT {
         )).thenReturn(ResponseEntity.ok(null));
 
         // When & Then
-        mockMvc.perform(get(DOWNLOAD_DOCUMENT_URL + documentId)
+        mockMvc.perform(get(String.format(DOWNLOAD_DOCUMENT_URL, documentId))
                 .header(AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
-                .header(SERVICE_AUTHORIZATION, TEST_SERVICE_AUTH_TOKEN))
+                .header(SERVICE_AUTHORIZATION, TEST_SERVICE_AUTH_TOKEN)
+                .header("X-Postcode", POSTCODE))
             .andExpect(status().isInternalServerError());
     }
 
@@ -161,9 +179,10 @@ class DocumentControllerIT {
         )).thenThrow(new RuntimeException("API error"));
 
         // When & Then
-        mockMvc.perform(get(DOWNLOAD_DOCUMENT_URL + documentId)
+        mockMvc.perform(get(String.format(DOWNLOAD_DOCUMENT_URL, documentId))
                 .header(AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
-                .header(SERVICE_AUTHORIZATION, TEST_SERVICE_AUTH_TOKEN))
+                .header(SERVICE_AUTHORIZATION, TEST_SERVICE_AUTH_TOKEN)
+                .header("X-Postcode", POSTCODE))
             .andExpect(status().isInternalServerError());
     }
 
@@ -173,9 +192,10 @@ class DocumentControllerIT {
         String invalidDocumentId = "invalid-uuid-format";
 
         // When & Then
-        mockMvc.perform(get(DOWNLOAD_DOCUMENT_URL + invalidDocumentId)
+        mockMvc.perform(get(String.format(DOWNLOAD_DOCUMENT_URL, invalidDocumentId))
                 .header(AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
-                .header(SERVICE_AUTHORIZATION, TEST_SERVICE_AUTH_TOKEN))
+                .header(SERVICE_AUTHORIZATION, TEST_SERVICE_AUTH_TOKEN)
+                .header("X-Postcode", POSTCODE))
             .andExpect(status().isInternalServerError());
     }
 
@@ -206,9 +226,10 @@ class DocumentControllerIT {
         )).thenReturn(ResponseEntity.ok(documentContent));
 
         // When & Then
-        mockMvc.perform(get(DOWNLOAD_DOCUMENT_URL + documentId)
+        mockMvc.perform(get(String.format(DOWNLOAD_DOCUMENT_URL, documentId))
                 .header(AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
-                .header(SERVICE_AUTHORIZATION, TEST_SERVICE_AUTH_TOKEN))
+                .header(SERVICE_AUTHORIZATION, TEST_SERVICE_AUTH_TOKEN)
+                .header("X-Postcode", POSTCODE))
             .andExpect(status().isOk())
             .andExpect(header().string(HttpHeaders.CONTENT_TYPE, mimeType))
             .andExpect(header().string("original-file-name", fileName))

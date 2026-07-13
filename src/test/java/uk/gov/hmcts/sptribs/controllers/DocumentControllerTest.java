@@ -149,6 +149,9 @@ class DocumentControllerTest {
     @Test
     void shouldReturnDownloadedDocument() {
         // Given
+        String ccdReference = "1234567891234567";
+        String postcode = "SW11 1PD";
+        CicaCaseEntity cicaCaseEntity = CicaCaseEntity.builder().id(ccdReference).build();
         String documentId = "12345";
         Resource resource = new ByteArrayResource("test-content".getBytes());
 
@@ -157,8 +160,9 @@ class DocumentControllerTest {
                 resource,
                 "test-document.pdf",
                 "application/pdf"
-
             );
+
+        when(cicaCaseService.getCaseByCCDReference(ccdReference, TEST_AUTHORIZATION)).thenReturn(cicaCaseEntity);
 
         when(documentDownloadService.downloadDocument(
             TEST_AUTHORIZATION,
@@ -166,8 +170,10 @@ class DocumentControllerTest {
         )).thenReturn(downloadedDocumentResponse);
 
         // When
-        ResponseEntity<Resource> response = documentController.downloadDocumentById(
+        ResponseEntity<Resource> response = documentController.downloadDocumentByCaseAndId(
             TEST_AUTHORIZATION,
+            postcode,
+            ccdReference,
             documentId
         );
 
@@ -179,6 +185,8 @@ class DocumentControllerTest {
         assertThat(response.getHeaders().getFirst("original-file-name"))
             .isEqualTo("test-document.pdf");
 
+        verify(cicaCaseService).getCaseByCCDReference(ccdReference, TEST_AUTHORIZATION);
+        verify(cicaCaseService).validatePostcode(cicaCaseEntity, postcode);
         verify(documentDownloadService).downloadDocument(
             TEST_AUTHORIZATION,
             documentId
