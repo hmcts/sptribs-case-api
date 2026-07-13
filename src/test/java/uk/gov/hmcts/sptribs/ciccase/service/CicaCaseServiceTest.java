@@ -133,6 +133,29 @@ class CicaCaseServiceTest {
     }
 
     @Test
+    void whenGenericEuropeanPostcodesMatchExactly_thenShouldValidateSuccessfully() {
+        // Given
+        String ccdReference = "1234567891234567";
+        String postcode = "11180";
+        CicaCaseEntity entity = createCicaCaseEntityWithPostcode(ccdReference, postcode);
+
+        // When & Then - should not throw any exception
+        cicaCaseService.validatePostcode(entity, postcode);
+    }
+
+    @Test
+    void whenGenericEuropeanPostcodeWithDashMatchExactly_thenShouldValidateSuccessfully() {
+        // Given
+        String ccdReference = "1234567891234567";
+        String postcode = "111-80";
+        CicaCaseEntity entity = createCicaCaseEntityWithPostcode(ccdReference, postcode);
+
+        // When & Then - should not throw any exception
+        cicaCaseService.validatePostcode(entity, postcode);
+    }
+
+
+    @Test
     void whenPostcodesMatchWithDifferentCasesAndWhitespace_thenShouldValidateSuccessfully() {
         // Given
         String ccdReference = "1234567891234567";
@@ -147,18 +170,19 @@ class CicaCaseServiceTest {
         // Given
         String ccdReference = "1234567891234567";
         String postcode = "SW11 1PD";
-        CicaCaseEntity entity = createCicaCaseEntityWithRepresentativePostcode(ccdReference, postcode);
+        CicaCaseEntity entity = createCicaCaseEntityWithRepresentative(ccdReference, postcode);
 
         // When & Then - should not throw any exception
         cicaCaseService.validatePostcode(entity, postcode);
     }
+
 
     @Test
     void whenAppellantPostcodesMatchExactly_thenShouldValidateSuccessfully() {
         // Given
         String ccdReference = "1234567891234567";
         String postcode = "SW11 1PD";
-        CicaCaseEntity entity = createCicaCaseEntityWithAppellantPostcode(ccdReference, postcode);
+        CicaCaseEntity entity = createCicaCaseEntityWithAppellant(ccdReference, postcode);
 
         // When & Then - should not throw any exception
         cicaCaseService.validatePostcode(entity, postcode);
@@ -240,11 +264,12 @@ class CicaCaseServiceTest {
         return CicaCaseEntity.builder()
             .id(ccdReference)
             .state("Submitted")
-            .data(objectMapper.convertValue(caseData, new TypeReference<Map<String, JsonNode>>() {}))
+            .data(objectMapper.convertValue(caseData, new TypeReference<>() {
+            }))
             .build();
     }
 
-    private CicaCaseEntity createCicaCaseEntityWithRepresentativePostcode(String ccdReference, String postcode) {
+    private CicaCaseEntity createCicaCaseEntityWithRepresentative(String ccdReference, String postcode) {
         CaseData caseData = new CaseData();
         CicCase cicCase = new CicCase();
         AddressGlobalUK address = AddressGlobalUK.builder().postCode(postcode).build();
@@ -259,27 +284,12 @@ class CicaCaseServiceTest {
             .build();
     }
 
-    private CicaCaseEntity createCicaCaseEntityWithAppellantPostcode(String ccdReference, String postcode) {
+    private CicaCaseEntity createCicaCaseEntityWithAppellant(String ccdReference, String postcode) {
         CaseData caseData = new CaseData();
         CicCase cicCase = new CicCase();
         AddressGlobalUK address = AddressGlobalUK.builder().postCode(postcode).build();
         cicCase.setAddress(address);
         cicCase.setApplicantEmailAddress(TEST_SYSTEM_UPDATE_USER_EMAIL);
-        caseData.setCicCase(cicCase);
-
-        return CicaCaseEntity.builder()
-            .id(ccdReference)
-            .state("Submitted")
-            .data(objectMapper.convertValue(caseData, new TypeReference<Map<String, JsonNode>>() {}))
-            .build();
-    }
-
-    private CicaCaseEntity createCicaCaseEntityWithEmailAndPostcode(String ccdReference, String postcode, String email) {
-        CaseData caseData = new CaseData();
-        CicCase cicCase = new CicCase();
-        AddressGlobalUK address = AddressGlobalUK.builder().postCode(postcode).build();
-        cicCase.setAddress(address);
-        cicCase.setEmail(email);
         caseData.setCicCase(cicCase);
 
         return CicaCaseEntity.builder()

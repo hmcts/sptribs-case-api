@@ -116,7 +116,7 @@ class DocumentControllerTest {
             .containsExactly(mappedBundleDocument);
 
         verify(cicaCaseService).getCaseByCCDReference(ccdReference, TEST_AUTHORIZATION);
-        verify(cicaCaseService).validatePostcode(cicaCaseEntity, postcode, TEST_AUTHORIZATION);
+        verify(cicaCaseService).validatePostcode(cicaCaseEntity, postcode);
         verify(documentsService).getDocumentsOnCase(Long.valueOf(ccdReference));
         verify(caseworkerCICDocumentMapper).map(contactPartyDocuments);
         verify(caseworkerCICDocumentMapper).map(orderAndDecisionDocuments);
@@ -132,7 +132,7 @@ class DocumentControllerTest {
 
         when(cicaCaseService.getCaseByCCDReference(ccdReference, TEST_AUTHORIZATION)).thenReturn(cicaCaseEntity);
         org.mockito.Mockito.doThrow(new UnauthorisedCaseAccessException("Postcode match failed"))
-            .when(cicaCaseService).validatePostcode(cicaCaseEntity, postcode, TEST_AUTHORIZATION);
+            .when(cicaCaseService).validatePostcode(cicaCaseEntity, postcode);
 
         // When / Then
         org.assertj.core.api.Assertions.assertThatThrownBy(() -> documentController.getDocumentsByCCDReference(
