@@ -116,7 +116,9 @@ public class CicaCaseController {
         return ResponseEntity.ok(response);
     }
 
-    @PostMapping(value = "/{ccdReference}/validate-postcode", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/{ccdReference}/validate-postcode",
+        consumes = MediaType.APPLICATION_JSON_VALUE,
+        produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(
         summary = "Validate subject postcode against case data",
         description = "Compares the submitted postcode to the postcode held in the case data for the subject. "
@@ -129,33 +131,27 @@ public class CicaCaseController {
             content = @Content(
                 mediaType = MediaType.APPLICATION_JSON_VALUE,
                 schema = @Schema(implementation = CicaCaseResponse.class)
-            )
-        ),
+            )),
         @ApiResponse(
             responseCode = "400",
             description = "Invalid CCD reference format or invalid request body",
-            content = @Content
-        ),
+            content = @Content),
         @ApiResponse(
             responseCode = "401",
             description = "Unauthorized - Invalid or missing authorization token, or postcode match failed",
-            content = @Content
-        ),
+            content = @Content),
         @ApiResponse(
             responseCode = "403",
             description = "Forbidden - Service not authorized",
-            content = @Content
-        ),
+            content = @Content),
         @ApiResponse(
             responseCode = "404",
             description = "No case found with the given CCD reference",
-            content = @Content
-        ),
+            content = @Content),
         @ApiResponse(
             responseCode = "500",
             description = "Internal server error",
-            content = @Content
-        )
+            content = @Content)
     })
     public ResponseEntity<CicaCaseResponse> validatePostcode(
         @RequestHeader(AUTHORIZATION)
@@ -182,7 +178,9 @@ public class CicaCaseController {
     ) {
         log.info("Received request to validate postcode for CCD reference: {}", ccdReference);
 
-        CicaCaseEntity cicaCaseEntity = cicaCaseService.getCaseWithVerifiedPostcode(ccdReference, authorisation, postcodeRequest.getPostcode());
+        CicaCaseEntity cicaCaseEntity = cicaCaseService.getCaseWithVerifiedPostcode(ccdReference,
+            authorisation,
+            postcodeRequest.getPostcode());
 
         CicaCaseResponse response = cicaCaseMapper.toResponse(cicaCaseEntity);
 
