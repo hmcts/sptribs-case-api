@@ -535,6 +535,7 @@ em-ccdorc:
       IDAM_SECURITY_ALLOWED_ISSUERS_0: https://idam-web-public.aat.platform.hmcts.net/o
       IDAM_SECURITY_ALLOWED_ISSUERS_1: https://hmcts-access.aat.platform.hmcts.net/o
       IDAM_SECURITY_ALLOWED_ISSUERS_2: https://forgerock-am.service.core-compute-idam-aat2.internal:8443/openam/oauth2/realms/root/realms/hmcts
+      IDAM_WEB_API_BASE_URI: https://idam-web-public.aat.platform.hmcts.net
     keyVaults:
       em-ccdorc:
         resourceGroup: em-ccdorc
@@ -567,6 +568,7 @@ em-stitching:
       IDAM_SECURITY_ALLOWED_ISSUERS_0: https://idam-web-public.aat.platform.hmcts.net/o
       IDAM_SECURITY_ALLOWED_ISSUERS_1: https://hmcts-access.aat.platform.hmcts.net/o
       IDAM_SECURITY_ALLOWED_ISSUERS_2: https://forgerock-am.service.core-compute-idam-aat2.internal:8443/openam/oauth2/realms/root/realms/hmcts
+      IDAM_WEB_API_BASE_URI: https://idam-web-public.aat.platform.hmcts.net
     secrets:
       SPRING_DATASOURCE_PASSWORD:
         secretRef: postgres
