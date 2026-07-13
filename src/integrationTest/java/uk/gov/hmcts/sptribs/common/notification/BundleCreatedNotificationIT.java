@@ -57,7 +57,7 @@ public class BundleCreatedNotificationIT {
 
         bundleCreatedNotification.sendToRepresentative(data, TEST_CASE_ID.toString());
 
-        verify(notificationServiceCIC).sendEmail(notificationRequestCaptor.capture(), eq(TEST_CASE_ID.toString()));
+        verify(notificationServiceCIC).sendEmail(notificationRequestCaptor.capture(), eq(TEST_CASE_ID.toString()), eq(null));
 
         NotificationRequest notificationRequest = notificationRequestCaptor.getValue();
 
@@ -86,7 +86,7 @@ public class BundleCreatedNotificationIT {
 
         bundleCreatedNotification.sendToApplicant(data, TEST_CASE_ID.toString());
 
-        verify(notificationServiceCIC).sendEmail(notificationRequestCaptor.capture(), eq(TEST_CASE_ID.toString()));
+        verify(notificationServiceCIC).sendEmail(notificationRequestCaptor.capture(), eq(TEST_CASE_ID.toString()), eq(null));
 
         NotificationRequest notificationRequest = notificationRequestCaptor.getValue();
 
@@ -115,7 +115,7 @@ public class BundleCreatedNotificationIT {
 
         bundleCreatedNotification.sendToRespondent(data, TEST_CASE_ID.toString());
 
-        verify(notificationServiceCIC).sendEmail(notificationRequestCaptor.capture(), eq(TEST_CASE_ID.toString()));
+        verify(notificationServiceCIC).sendEmail(notificationRequestCaptor.capture(), eq(TEST_CASE_ID.toString()), eq(null));
 
         NotificationRequest notificationRequest = notificationRequestCaptor.getValue();
 

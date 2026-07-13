@@ -12,8 +12,11 @@ import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.sptribs.caseworker.model.DocumentManagement;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.common.repositories.DocumentsRepository;
+import uk.gov.hmcts.sptribs.common.repositories.exception.document.DocumentDeleteException;
+import uk.gov.hmcts.sptribs.common.repositories.exception.document.DocumentLookupException;
 import uk.gov.hmcts.sptribs.document.model.CaseDocumentType;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
+import uk.gov.hmcts.sptribs.document.model.ContactPartyDocumentDetails;
 import uk.gov.hmcts.sptribs.document.model.DocumentDashboardModel;
 import uk.gov.hmcts.sptribs.document.model.DocumentEntity;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
@@ -52,6 +55,14 @@ public class DocumentsServiceTest {
     private static final DocumentType DSS_SUPPORTING = DocumentType.DSS_SUPPORTING;
     private static final DocumentType ORDER_AND_DECISION_DOCUMENT = DocumentType.TRIBUNAL_DIRECTION;
 
+    private static final List<Long> ORDER_AND_DECISION_TYPE_IDS = List.of(3L, 5L, 6L);
+
+    private static final List<Party> CONTACT_PARTIES = List.of(
+        Party.APPLICANT,
+        Party.REPRESENTATIVE,
+        Party.SUBJECT
+    );
+
     @Test
     public void shouldBuildAndSaveNewCaseworkerDocumentEntity() {
         Document evidenceDocument = buildDocument(HOSPITAL_RECORDS.getCategory());
@@ -59,7 +70,8 @@ public class DocumentsServiceTest {
 
         when(caseDocumentTypesCache.getId(CaseDocumentType.DOCUMENT_MANAGEMENT)).thenReturn(2L);
 
-        documentsService.buildAndSaveNewDocumentEntity(evidenceDocument, TEST_CASE_ID, HOSPITAL_RECORDS, CaseDocumentType.DOCUMENT_MANAGEMENT);
+        documentsService.buildAndSaveNewDocumentEntity(evidenceDocument, TEST_CASE_ID, HOSPITAL_RECORDS,
+            CaseDocumentType.DOCUMENT_MANAGEMENT);
 
         verify(documentsRepository, times(1)).save(evidenceDocumentEntity);
     }
@@ -173,7 +185,7 @@ public class DocumentsServiceTest {
         Map<String, String> uploadedDocuments = buildUploadedDocuments();
 
         when(documentsRepository.findIdsByDocumentBinaryUrls(
-            List.of("my-env/binary-1/binary", "my-env/binary-2/binary"))).thenReturn(2);
+            List.of("my-env/binary-1/binary", "my-env/binary-2/binary"))).thenReturn(List.of(2L, 1L));
 
         documentsService.getDocumentsViaSentByContactParties(caseData, uploadedDocuments);
 
@@ -198,7 +210,7 @@ public class DocumentsServiceTest {
         Map<String, String> uploadedDocuments = buildUploadedDocuments();
 
         when(documentsRepository.findIdsByDocumentBinaryUrls(
-            List.of("my-env/binary-1/binary", "my-env/binary-2/binary"))).thenReturn(2);
+            List.of("my-env/binary-1/binary", "my-env/binary-2/binary"))).thenReturn(List.of(2L, 1L));
 
         documentsService.getDocumentsViaSentByContactParties(caseData, uploadedDocuments);
 
@@ -207,35 +219,57 @@ public class DocumentsServiceTest {
     }
 
     @Test
+    public void shouldThrowDocumentLookupExceptionWhenDataAccessExceptionGettingDocuments() {
+        ListValue<CaseworkerCICDocument> caseDocument1 = buildCaseworkerCicDocumentListValue("url-1", "my-env/binary-1/binary", "file-1");
+
+        DocumentManagement documentManagement = DocumentManagement.builder().caseworkerCICDocument(
+            List.of(caseDocument1)).build();
+
+        CaseData caseData = CaseData.builder().allDocManagement(documentManagement).build();
+
+        Map<String, String> uploadedDocuments = buildUploadedDocuments();
+        doThrow(new DataAccessResourceFailureException("DB error"))
+            .when(documentsRepository).findIdsByDocumentBinaryUrls(List.of("my-env/binary-1/binary"));
+
+        assertThatThrownBy(() -> documentsService.getDocumentsViaSentByContactParties(caseData, uploadedDocuments)).isInstanceOf(
+                DocumentLookupException.class).hasMessageContaining("Error getting document id's by documentBinaryUrls")
+            .hasCauseInstanceOf(DataAccessException.class);
+    }
+
+    @Test
     void shouldReturnDocumentDashboardModelForCCDRefWithDocsInCorrectPlace() {
 
-        //what happens when order/decision doc is in both orders list and sent out list? for now lets make sure its there once in order?
         //given
-
-        DocumentEntity orderDocument = buildDocumentEntity(ORDER_AND_DECISION_DOCUMENT.name(), 3L, OffsetDateTime.now());
-
-        DocumentEntity bundleDocument = buildDocumentEntity(null, 9L, OffsetDateTime.now());
-
         DocumentEntity documentSentOutViaContactParties1 = buildDocumentEntity(HOSPITAL_RECORDS.name(), 2L, OffsetDateTime.now());
         DocumentEntity documentSentOutViaContactParties2 = buildDocumentEntity(DSS_SUPPORTING.name(), 1L, OffsetDateTime.now());
 
+        ContactPartyDocumentDetails contactPartyDocumentDetails1 = new ContactPartyDocumentDetails(documentSentOutViaContactParties1,
+            OffsetDateTime.now());
+        ContactPartyDocumentDetails contactPartyDocumentDetails2 = new ContactPartyDocumentDetails(documentSentOutViaContactParties2,
+            OffsetDateTime.now());
+
+        List<ContactPartyDocumentDetails>  contactPartyDocumentDetailsList = new ArrayList<>();
+        contactPartyDocumentDetailsList.add(contactPartyDocumentDetails1);
+        contactPartyDocumentDetailsList.add(contactPartyDocumentDetails2);
+
+        DocumentEntity orderDocument = buildDocumentEntity(ORDER_AND_DECISION_DOCUMENT.name(), 3L, OffsetDateTime.now());
         DocumentEntity orderDocumentSentViaContactParties = buildDocumentEntity(ORDER_AND_DECISION_DOCUMENT.name(), 3L,
             OffsetDateTime.now());
+
+        List<DocumentEntity> orderAndDecisionDocuments = new ArrayList<>();
+        orderAndDecisionDocuments.add(orderDocument);
+        orderAndDecisionDocuments.add(orderDocumentSentViaContactParties);
+        DocumentEntity bundleDocument = buildDocumentEntity(null, 9L, OffsetDateTime.now());
 
         when(caseDocumentTypesCache.getId(CaseDocumentType.ORDER)).thenReturn(3L);
         when(caseDocumentTypesCache.getId(CaseDocumentType.DECISION)).thenReturn(5L);
         when(caseDocumentTypesCache.getId(CaseDocumentType.FINAL_DECISION)).thenReturn(6L);
         when(caseDocumentTypesCache.getId(CaseDocumentType.BUNDLE)).thenReturn(9L);
-
-        when(documentsRepository.findContactPartyDocuments(TEST_CASE_ID, List.of(
-            Party.APPLICANT,
-            Party.REPRESENTATIVE,
-            Party.SUBJECT
-        ))).thenReturn();
-
-        when(documentsRepository.findLatestBundleDocument(TEST_CASE_ID, 6L)).thenReturn(Optional.of(bundleDocument));
-
-        when(documentsRepository.findOrderAndDecisionDocuments(TEST_CASE_ID, List.of(3L, 5L, 6L))).thenReturn();
+        when(documentsRepository.findContactPartyDocuments(TEST_CASE_ID, CONTACT_PARTIES, ORDER_AND_DECISION_TYPE_IDS))
+            .thenReturn(contactPartyDocumentDetailsList);
+        when(documentsRepository.findLatestBundleDocument(TEST_CASE_ID, 9L)).thenReturn(Optional.of(bundleDocument));
+        when(documentsRepository.findOrderAndDecisionDocuments(TEST_CASE_ID, ORDER_AND_DECISION_TYPE_IDS)).thenReturn(
+            orderAndDecisionDocuments);
 
 
         //when
@@ -249,31 +283,58 @@ public class DocumentsServiceTest {
 
         assertThat(actualResult.getLatestCaseBundleDocument()).isEqualTo(bundleDocument);
 
-        assertThat(actualResult.getContactPartiesDocuments()).containsExactlyInAnyOrder(documentSentOutViaContactParties1,
-            documentSentOutViaContactParties2);
+        assertThat(actualResult.getContactPartiesDocuments()).containsExactlyInAnyOrder(contactPartyDocumentDetails1,
+            contactPartyDocumentDetails2);
 
     }
 
     @Test
-    void shouldReturnEmptyModelWhenNoConditionsMet() {
+    void shouldReturnEmptyModelWhenNoDocumentsOnCase() {
         //given
-        List<DocumentEntity> documentEntities = new ArrayList<>();
-
-        DocumentEntity applicantDoc = buildDocumentEntity(DSS_SUPPORTING.name(), 1L, false,
-            OffsetDateTime.now());
-
-        documentEntities.add(applicantDoc);
-
-        when(documentsRepository.findAllDocumentsByCaseReference(TEST_CASE_ID)).thenReturn(documentEntities);
-        when(caseDocumentTypesCache.getId(CaseDocumentType.ORDER)).thenReturn(4L);
-        when(caseDocumentTypesCache.getId(CaseDocumentType.BUNDLE)).thenReturn(10L);
+        when(caseDocumentTypesCache.getId(CaseDocumentType.ORDER)).thenReturn(3L);
+        when(caseDocumentTypesCache.getId(CaseDocumentType.DECISION)).thenReturn(5L);
+        when(caseDocumentTypesCache.getId(CaseDocumentType.FINAL_DECISION)).thenReturn(6L);
+        when(caseDocumentTypesCache.getId(CaseDocumentType.BUNDLE)).thenReturn(9L);
+        when(documentsRepository.findContactPartyDocuments(TEST_CASE_ID, CONTACT_PARTIES, ORDER_AND_DECISION_TYPE_IDS))
+            .thenReturn(List.of());
+        when(documentsRepository.findLatestBundleDocument(TEST_CASE_ID, 9L)).thenReturn(Optional.empty());
+        when(documentsRepository.findOrderAndDecisionDocuments(TEST_CASE_ID, ORDER_AND_DECISION_TYPE_IDS)).thenReturn(
+            List.of());
 
         //when
         DocumentDashboardModel actualResult = documentsService.getDocumentsOnCase(TEST_CASE_ID);
 
         //then
         assertThat(actualResult).isNotNull();
+        assertThat(actualResult.getOrderAndDecisionDocuments()).isEmpty();
+        assertThat(actualResult.getContactPartiesDocuments()).isEmpty();
+        assertThat(actualResult.getLatestCaseBundleDocument()).isNull();
+    }
 
+    @Test
+    void shouldDeleteDocumentViaBinaryURL() {
+        //given
+        String binaryURL = "binaryURL";
+
+        //when
+        documentsService.removeEntryFromDocumentTableByBinaryURL(binaryURL);
+
+        //then
+        verify(documentsRepository).deleteEntryByBinaryURL(binaryURL);
+    }
+
+    @Test
+    void shouldThrowDocumentDeleteExceptionWhenTryingToDelete() {
+        //given
+        String binaryURL = "binaryURL";
+
+        doThrow(new DataAccessResourceFailureException("DB error"))
+            .when(documentsRepository).deleteEntryByBinaryURL(binaryURL);
+
+        //when -- then
+        assertThatThrownBy(() -> documentsService.removeEntryFromDocumentTableByBinaryURL(binaryURL)).isInstanceOf(
+                DocumentDeleteException.class).hasMessageContaining("Error deleting entry from document table. BinaryUrl: " + binaryURL)
+            .hasCauseInstanceOf(DataAccessException.class);
     }
 
     private Map<String, String> buildUploadedDocuments() {

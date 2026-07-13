@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.sptribs.common.repositories.CorrespondenceDocumentRepository;
-import uk.gov.hmcts.sptribs.common.repositories.exception.correspondenceDocument.CorrespondenceDocumentSaveException;
+import uk.gov.hmcts.sptribs.common.repositories.exception.correspondencedocument.CorrespondenceDocumentSaveException;
 import uk.gov.hmcts.sptribs.common.repositories.model.CorrespondenceDocumentEntity;
 import uk.gov.hmcts.sptribs.common.repositories.model.CorrespondenceDocumentId;
 

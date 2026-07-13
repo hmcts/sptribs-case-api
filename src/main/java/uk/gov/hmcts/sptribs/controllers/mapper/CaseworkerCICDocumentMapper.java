@@ -21,6 +21,22 @@ public class CaseworkerCICDocumentMapper {
         return mapDocument(entity, documentDate);
     }
 
+    private CaseworkerCICDocument mapDocument(
+        DocumentEntity entity,
+        LocalDate date
+    ) {
+        Document document = Document.builder()
+            .filename(entity.getDocumentFilename())
+            .url(entity.getDocumentUrl())
+            .build();
+
+        return CaseworkerCICDocument.builder()
+            .documentLink(document)
+            .documentCategory(mapDocumentType(entity.getDocumentTypeName()))
+            .date(date)
+            .build();
+    }
+
     public CaseworkerCICDocument mapContactPartyDocument(
         ContactPartyDocumentDetails details
     ) {
@@ -60,22 +76,6 @@ public class CaseworkerCICDocumentMapper {
         return entity == null
             ? List.of()
             : List.of(mapDocument(entity));
-    }
-
-    private CaseworkerCICDocument mapDocument(
-        DocumentEntity entity,
-        LocalDate date
-    ) {
-        Document document = Document.builder()
-            .filename(entity.getDocumentFilename())
-            .url(entity.getDocumentUrl())
-            .build();
-
-        return CaseworkerCICDocument.builder()
-            .documentLink(document)
-            .documentCategory(mapDocumentType(entity.getDocumentTypeName()))
-            .date(date)
-            .build();
     }
 
     private DocumentType mapDocumentType(String documentTypeName) {

@@ -116,7 +116,6 @@ public class CaseworkerIssueFinalDecisionFT extends FunctionalTestSuite {
         assertThat(firstDocumentEntity.getCaseDocumentTypeId()).isEqualTo(7L);
         assertThat(firstDocumentEntity.getSavedAt()).isNotNull();
         assertThat(firstDocumentEntity.getUpdatedAt()).isNotNull();
-        assertThat(firstDocumentEntity.isSentToApplicantViaContactParties()).isFalse();
         assertThat(firstDocumentEntity.getDocumentUrl()).isNotNull();
         assertThat(firstDocumentEntity.getDocumentFilename()).isNotNull();
         assertThat(firstDocumentEntity.getDocumentBinaryUrl()).isNotNull();
@@ -152,7 +151,6 @@ public class CaseworkerIssueFinalDecisionFT extends FunctionalTestSuite {
         assertThat(firstDocumentEntity.getCaseDocumentTypeId()).isEqualTo(7L);
         assertThat(firstDocumentEntity.getSavedAt()).isNotNull();
         assertThat(firstDocumentEntity.getUpdatedAt()).isNotNull();
-        assertThat(firstDocumentEntity.isSentToApplicantViaContactParties()).isFalse();
         assertThat(firstDocumentEntity.getDocumentUrl()).isNotNull();
         assertThat(firstDocumentEntity.getDocumentFilename()).isNotNull();
         assertThat(firstDocumentEntity.getDocumentBinaryUrl()).isNotNull();

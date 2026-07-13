@@ -56,7 +56,6 @@ public class CaseworkerBundleStitchCompleteFT extends FunctionalTestSuite {
 
         assertThat(documentEntity.getCaseReferenceNumber()).isEqualTo(testCaseRef);
         assertThat(documentEntity.getSavedAt()).isNotNull();
-        assertThat(documentEntity.isSentToApplicantViaContactParties()).isFalse();
         assertThat(documentEntity.getDocumentUrl()).isNotNull();
         assertThat(documentEntity.getDocumentFilename()).isNotNull();
         assertThat(documentEntity.getDocumentBinaryUrl()).isNotNull();

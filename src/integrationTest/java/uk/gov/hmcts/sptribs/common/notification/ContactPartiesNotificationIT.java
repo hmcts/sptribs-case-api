@@ -20,11 +20,13 @@ import uk.gov.hmcts.sptribs.caseworker.model.ContactPartiesDocuments;
 import uk.gov.hmcts.sptribs.cdam.model.Document;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
+import uk.gov.hmcts.sptribs.ciccase.model.NotificationResponse;
 import uk.gov.hmcts.sptribs.common.repositories.DocumentsRepository;
 import uk.gov.hmcts.sptribs.idam.IdamService;
 import uk.gov.hmcts.sptribs.notification.NotificationServiceCIC;
 import uk.gov.hmcts.sptribs.notification.dispatcher.ContactPartiesNotification;
 import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
+import uk.gov.hmcts.sptribs.notification.model.Party;
 import uk.gov.hmcts.sptribs.services.cdam.CaseDocumentClientApi;
 
 import java.util.ArrayList;
@@ -89,6 +91,9 @@ public class ContactPartiesNotificationIT {
 
     private User systemUser;
 
+    private static final NotificationResponse NOTIFICATION_RESPONSE
+        = NotificationResponse.builder().id("123").build();
+
     @BeforeEach
     void configureMocks() {
         final User user = new User(
@@ -138,9 +143,12 @@ public class ContactPartiesNotificationIT {
             .contactPartiesDocuments(getContactPartiesDocuments())
             .build();
 
+        when(notificationServiceCIC.sendEmail(notificationRequestCaptor.capture(),
+            eq(TEST_CASE_ID.toString()), eq(Party.SUBJECT))).thenReturn(NOTIFICATION_RESPONSE);
+
         contactPartiesNotification.sendToSubject(data, TEST_CASE_ID.toString(), uploadedDocuments);
 
-        verify(notificationServiceCIC).sendEmail(notificationRequestCaptor.capture(), eq(TEST_CASE_ID.toString()));
+        verify(notificationServiceCIC).sendEmail(notificationRequestCaptor.capture(), eq(TEST_CASE_ID.toString()), eq(Party.SUBJECT));
 
         NotificationRequest notificationRequest = notificationRequestCaptor.getValue();
 
@@ -179,6 +187,8 @@ public class ContactPartiesNotificationIT {
                 .notifyPartyMessage("a message")
                 .build())
             .build();
+
+        when(notificationServiceCIC.sendLetter(any(), any())).thenReturn(NOTIFICATION_RESPONSE);
 
         contactPartiesNotification.sendToSubject(data, TEST_CASE_ID.toString(), uploadedDocuments);
 
@@ -222,9 +232,12 @@ public class ContactPartiesNotificationIT {
             .contactPartiesDocuments(getContactPartiesDocuments())
             .build();
 
+        when(notificationServiceCIC.sendEmail(notificationRequestCaptor.capture(),
+            eq(TEST_CASE_ID.toString()), eq(Party.APPLICANT))).thenReturn(NOTIFICATION_RESPONSE);
+
         contactPartiesNotification.sendToApplicant(data, TEST_CASE_ID.toString(), uploadedDocuments);
 
-        verify(notificationServiceCIC).sendEmail(notificationRequestCaptor.capture(), eq(TEST_CASE_ID.toString()));
+        verify(notificationServiceCIC).sendEmail(notificationRequestCaptor.capture(), eq(TEST_CASE_ID.toString()), eq(Party.APPLICANT));
 
         NotificationRequest notificationRequest = notificationRequestCaptor.getValue();
 
@@ -265,6 +278,8 @@ public class ContactPartiesNotificationIT {
                 .build())
             .contactPartiesDocuments(getContactPartiesDocuments())
             .build();
+
+        when(notificationServiceCIC.sendLetter(any(), any())).thenReturn(NOTIFICATION_RESPONSE);
 
         contactPartiesNotification.sendToApplicant(data, TEST_CASE_ID.toString(), uploadedDocuments);
 
@@ -307,9 +322,13 @@ public class ContactPartiesNotificationIT {
             .contactPartiesDocuments(getContactPartiesDocuments())
             .build();
 
+        when(notificationServiceCIC.sendEmail(notificationRequestCaptor.capture(),
+            eq(TEST_CASE_ID.toString()), eq(Party.REPRESENTATIVE))).thenReturn(NOTIFICATION_RESPONSE);
+
         contactPartiesNotification.sendToRepresentative(data, TEST_CASE_ID.toString(), uploadedDocuments);
 
-        verify(notificationServiceCIC).sendEmail(notificationRequestCaptor.capture(), eq(TEST_CASE_ID.toString()));
+        verify(notificationServiceCIC).sendEmail(notificationRequestCaptor.capture(),
+            eq(TEST_CASE_ID.toString()), eq(Party.REPRESENTATIVE));
 
         NotificationRequest notificationRequest = notificationRequestCaptor.getValue();
 
@@ -351,6 +370,8 @@ public class ContactPartiesNotificationIT {
                 .build())
             .build();
 
+        when(notificationServiceCIC.sendLetter(any(), any())).thenReturn(NOTIFICATION_RESPONSE);
+
         contactPartiesNotification.sendToRepresentative(data, TEST_CASE_ID.toString(), uploadedDocuments);
 
         verify(notificationServiceCIC).sendLetter(notificationRequestCaptor.capture(), eq(TEST_CASE_ID.toString()));
@@ -382,9 +403,12 @@ public class ContactPartiesNotificationIT {
                 .build())
             .build();
 
+        when(notificationServiceCIC.sendEmail(notificationRequestCaptor.capture(),
+            eq(TEST_CASE_ID.toString()), eq(Party.RESPONDENT))).thenReturn(NOTIFICATION_RESPONSE);
+
         contactPartiesNotification.sendToRespondent(data, TEST_CASE_ID.toString(), Map.of());
 
-        verify(notificationServiceCIC).sendEmail(notificationRequestCaptor.capture(), eq(TEST_CASE_ID.toString()));
+        verify(notificationServiceCIC).sendEmail(notificationRequestCaptor.capture(), eq(TEST_CASE_ID.toString()), eq(Party.RESPONDENT));
 
         NotificationRequest notificationRequest = notificationRequestCaptor.getValue();
 
@@ -422,9 +446,12 @@ public class ContactPartiesNotificationIT {
             .contactPartiesDocuments(getContactPartiesDocuments())
             .build();
 
+        when(notificationServiceCIC.sendEmail(notificationRequestCaptor.capture(),
+            eq(TEST_CASE_ID.toString()), eq(Party.RESPONDENT))).thenReturn(NOTIFICATION_RESPONSE);
+
         contactPartiesNotification.sendToRespondent(data, TEST_CASE_ID.toString(), uploadedDocuments);
 
-        verify(notificationServiceCIC).sendEmail(notificationRequestCaptor.capture(), eq(TEST_CASE_ID.toString()));
+        verify(notificationServiceCIC).sendEmail(notificationRequestCaptor.capture(), eq(TEST_CASE_ID.toString()), eq(Party.RESPONDENT));
 
         NotificationRequest notificationRequest = notificationRequestCaptor.getValue();
 
@@ -455,9 +482,12 @@ public class ContactPartiesNotificationIT {
                 .build())
             .build();
 
+        when(notificationServiceCIC.sendEmail(notificationRequestCaptor.capture(),
+            eq(TEST_CASE_ID.toString()), eq(Party.TRIBUNAL))).thenReturn(NOTIFICATION_RESPONSE);
+
         contactPartiesNotification.sendToTribunal(data, TEST_CASE_ID.toString(), Map.of());
 
-        verify(notificationServiceCIC).sendEmail(notificationRequestCaptor.capture(), eq(TEST_CASE_ID.toString()));
+        verify(notificationServiceCIC).sendEmail(notificationRequestCaptor.capture(), eq(TEST_CASE_ID.toString()), eq(Party.TRIBUNAL));
 
         NotificationRequest notificationRequest = notificationRequestCaptor.getValue();
 
@@ -495,9 +525,12 @@ public class ContactPartiesNotificationIT {
             .contactPartiesDocuments(getContactPartiesDocuments())
             .build();
 
+        when(notificationServiceCIC.sendEmail(notificationRequestCaptor.capture(),
+            eq(TEST_CASE_ID.toString()), eq(Party.TRIBUNAL))).thenReturn(NOTIFICATION_RESPONSE);
+
         contactPartiesNotification.sendToTribunal(data, TEST_CASE_ID.toString(), uploadedDocuments);
 
-        verify(notificationServiceCIC).sendEmail(notificationRequestCaptor.capture(), eq(TEST_CASE_ID.toString()));
+        verify(notificationServiceCIC).sendEmail(notificationRequestCaptor.capture(), eq(TEST_CASE_ID.toString()), eq(Party.TRIBUNAL));
 
         NotificationRequest notificationRequest = notificationRequestCaptor.getValue();
 

@@ -185,7 +185,7 @@ public class NotificationServiceCicIT {
 
         when(caseDocumentClientAPI.uploadDocuments(any(), any(), any())).thenReturn(expectedResponse);
 
-        NotificationResponse notificationResponse = notificationServiceCIC.sendEmail(request, TEST_CASE_ID.toString());
+        NotificationResponse notificationResponse = notificationServiceCIC.sendEmail(request, TEST_CASE_ID.toString(), null);
 
         assertThat(notificationResponse.getClientReference()).isEqualTo("ST_CIC email reference");
         assertThat(notificationResponse.getStatus()).isEqualTo("Received");
@@ -215,7 +215,7 @@ public class NotificationServiceCicIT {
                 anyString()
             );
 
-        assertThrows(NotificationException.class, () -> notificationServiceCIC.sendEmail(request, TEST_CASE_ID.toString()));
+        assertThrows(NotificationException.class, () -> notificationServiceCIC.sendEmail(request, TEST_CASE_ID.toString(), null));
     }
 
     @Test

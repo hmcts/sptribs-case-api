@@ -42,7 +42,6 @@ public class CaseDocumentsFTDataManager extends FunctionalTestDataManager {
                     .documentFilename(rs.getString("document_filename"))
                     .documentTypeName(rs.getString("document_type_name"))
                     .caseDocumentTypeId(rs.getLong("case_document_type_id"))
-                    .sentToApplicantViaContactParties(rs.getBoolean("sent_to_applicant_via_contact_parties"))
                     .updatedAt(rs.getTimestamp("updated_at").toInstant()
                         .atOffset(ZoneId.systemDefault().getRules().getOffset(LocalDateTime.now())))
                     .build();

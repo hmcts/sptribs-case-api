@@ -75,7 +75,6 @@ public class CaseworkerDocumentManagementAmendFT extends FunctionalTestSuite {
         assertThat(firstDocumentEntity.getCaseDocumentTypeId()).isEqualTo(3);
         assertThat(firstDocumentEntity.getSavedAt()).isNotNull();
         assertThat(firstDocumentEntity.getUpdatedAt()).isNotNull();
-        assertThat(firstDocumentEntity.isSentToApplicantViaContactParties()).isFalse();
         assertThat(firstDocumentEntity.getDocumentUrl()).isNotNull();
         assertThat(firstDocumentEntity.getDocumentFilename()).isNotNull();
         assertThat(firstDocumentEntity.getDocumentBinaryUrl()).isNotNull();

@@ -9,7 +9,6 @@ import uk.gov.hmcts.sptribs.document.model.ContactPartyDocumentDetails;
 import uk.gov.hmcts.sptribs.document.model.DocumentEntity;
 import uk.gov.hmcts.sptribs.notification.model.Party;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -59,44 +58,46 @@ public interface DocumentsRepository extends JpaRepository<DocumentEntity, Integ
         @Param("documentBinaryUrl") String documentBinaryUrl);
 
     @Query("""
-    select new uk.gov.hmcts.sptribs.document.model.ContactPartyDocumentDetails(
-        d,
-        max(c.sentOn)
-    )
-    from DocumentEntity d
-        join CorrespondenceDocumentEntity cd
-            on cd.id.documentId = d.id
-        join CorrespondenceEntity c
-            on c.id = cd.id.correspondenceId
-    where d.caseReferenceNumber = :caseReference
-        and c.receivingParty in :parties
-    group by d
-    order by d.savedAt desc
-    """)
+        select new uk.gov.hmcts.sptribs.document.model.ContactPartyDocumentDetails(
+            d,
+            max(c.sentOn)
+        )
+        from DocumentEntity d
+            join CorrespondenceDocumentEntity cd
+                on cd.id.documentId = d.id
+            join CorrespondenceEntity c
+                on c.id = cd.id.correspondenceId
+        where d.caseReferenceNumber = :caseReference
+            and c.receivingParty in :parties
+            and d.caseDocumentTypeId not in :excludedDocumentTypeIds
+            group by d
+            order by d.savedAt desc
+        """)
     List<ContactPartyDocumentDetails> findContactPartyDocuments(
         @Param("caseReference") Long caseReference,
-        @Param("parties") List<Party> parties
+        @Param("parties") List<Party> parties,
+        @Param("excludedDocumentTypeIds") List<Long> excludedDocumentTypeIds
     );
 
     @Query("""
-    select d
-    from DocumentEntity d
-    where d.caseReferenceNumber = :caseReference
-        and d.caseDocumentTypeId in :caseDocumentIds
-    order by d.savedAt desc
-    """)
+        select d
+        from DocumentEntity d
+        where d.caseReferenceNumber = :caseReference
+            and d.caseDocumentTypeId in :caseDocumentIds
+        order by d.savedAt desc
+        """)
     List<DocumentEntity> findOrderAndDecisionDocuments(
         Long caseReference,
         List<Long> caseDocumentIds
     );
 
     @Query("""
-    select d
-    from DocumentEntity d
-    where d.caseReferenceNumber = :caseReference
-        and d.caseDocumentTypeId = :bundleCategoryId
-    order by d.savedAt desc
-    """)
+        select d
+        from DocumentEntity d
+        where d.caseReferenceNumber = :caseReference
+            and d.caseDocumentTypeId = :bundleCategoryId
+        order by d.savedAt desc
+        """)
     Optional<DocumentEntity> findLatestBundleDocument(
         Long caseReference,
         Long bundleCategoryId

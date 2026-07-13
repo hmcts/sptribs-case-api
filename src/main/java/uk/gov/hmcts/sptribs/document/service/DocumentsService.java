@@ -22,7 +22,6 @@ import uk.gov.hmcts.sptribs.document.model.DocumentEntity;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
 import uk.gov.hmcts.sptribs.notification.model.Party;
 
-import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -144,11 +143,12 @@ public class DocumentsService {
             Party.SUBJECT
         );
 
-        // Documents that have been sent to contact parties, with date from when email sent.
+        // Documents that have been sent to contact parties, excluding order/decision docs with date from when email sent.
         List<ContactPartyDocumentDetails> contactPartyDocuments =
             documentsRepository.findContactPartyDocuments(
                 ccdReference,
-                contactParties
+                contactParties,
+                orderAndDecisionTypeIds
             );
 
         // Latest generated case bundle, if one exists.

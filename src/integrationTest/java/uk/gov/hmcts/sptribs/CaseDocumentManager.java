@@ -16,11 +16,10 @@ public class CaseDocumentManager implements IntegrationTestDataManager {
         jdbcTemplate.update("""
                 INSERT INTO case_documents (case_reference_number,
          document_url, document_binary_url, document_filename,
-         document_type_name, case_document_type_id,
-         sent_to_applicant_via_contact_parties)
+         document_type_name, case_document_type_id)
                 VALUES (:reference,'test/document/123',
          :binaryUrl, 'test-document.pdf', 'Test Document Type',
-         1, false)
+         1)
              """, Map.of(
             "reference", reference,
             "binaryUrl", binaryUrl
