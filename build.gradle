@@ -32,7 +32,7 @@ plugins {
   id 'com.github.ben-manes.versions' version '0.50.0'
   id 'hmcts.ccd.sdk' version 'task-mgmt-multi-create-20260617'
   id "au.com.dius.pact" version "4.3.10"
-  id 'com.github.hmcts.rse-cft-lib' version '0.19.2017'
+  id 'com.github.hmcts.rse-cft-lib' version 'tm-poc-e6d2aad1'
 }
 
 apply plugin: 'cz.habarta.typescript-generator'
@@ -108,19 +108,6 @@ configurations {
   cftlibTestImplementation.extendsFrom testImplementation
   cftlibTestRuntime.extendsFrom testRuntime
 }
-
-//configurations.configureEach {
-//  resolutionStrategy.eachDependency { details ->
-//    if (details.requested.group == 'com.github.hmcts') {
-//      if (details.requested.name == 'decentralised-runtime'
-//          || details.requested.name == 'task-management'
-//          || details.requested.name == 'ccd-config-generator') {
-//        details.useVersion 'task-mgmt-40.1-46b69557'
-//        details.because 'Ensure task-management, decentralised-runtime and ccd-config-generator stay aligned'
-//      }
-//    }
-//  }
-//}
 
 tasks.withType(JavaCompile) {
   options.compilerArgs << "-Xlint:unchecked" << "-Werror"
@@ -347,8 +334,6 @@ dependencies {
 // implementation group: 'com.github.hmcts', name: 'ccd-config-generator', version: 'DEV-SNAPSHOT'
 //  implementation 'com.github.hmcts:task-management:DEV-SNAPSHOT'
   implementation 'com.github.hmcts:task-management:task-mgmt-multi-create-20260617'
-  //  implementation 'com.github.hmcts:decentralised-runtime:task-mgmt-40.1-46b69557'
-//  implementation 'com.github.hmcts:ccd-config-generator:task-mgmt-40.1-46b69557'
 
   implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: versions.jackson
   implementation group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: versions.jackson
@@ -453,8 +438,6 @@ dependencies {
   cftlibImplementation 'org.springframework.boot:spring-boot-devtools'
   cftlibTestImplementation sourceSets.test.runtimeClasspath
   cftlibTestImplementation 'com.github.hmcts:task-management:task-mgmt-multi-create-20260617'
-//  cftlibTestImplementation 'com.github.hmcts:decentralised-runtime:task-mgmt-40.1-46b69557'
-//  cftlibTestImplementation 'com.github.hmcts:ccd-config-generator:task-mgmt-40.1-46b69557'
   cftlibTestImplementation 'com.microsoft.playwright:playwright:1.58.0'
   cftlibTestImplementation 'org.junit-pioneer:junit-pioneer:2.3.0'
   cftlibTestImplementation 'io.github.artsok:rerunner-jupiter:2.1.6'
@@ -588,58 +571,7 @@ ccd {
   configDir = file('build/definitions')
 }
 
-def localRseCftLibDir = file('../rse-cft-lib')
-def localDtsseCcdConfigGeneratorDir = file('../dtsse-ccd-config-generator')
-def localDtsseWaTaskManagementApiDir = file("${localDtsseCcdConfigGeneratorDir}/wa-task-management-api")
-def localRseWaTaskManagementApiDir = file("${localRseCftLibDir}/projects/wa-task-management-api")
-// Prefer the newer local WA API source when present so cftlib parity tests match the current /tasks response contract.
-def localWaTaskManagementApiDir = localDtsseWaTaskManagementApiDir.exists()
-    ? localDtsseWaTaskManagementApiDir
-    : localRseWaTaskManagementApiDir
-def localCftLibPublishingInit = file("${localRseCftLibDir}/cftlib/buildSrc/configurePublishing.gradle")
-def localWaPublishingFixInit = file("$rootDir/gradle/wa-publish-fix.init.gradle")
-def localWaM2Jar = file("${System.properties['user.home']}/.m2/repository/com/github/hmcts/rse-cft-lib/wa-task-management-api/0.19.2017/wa-task-management-api-0.19.2017.jar")
-def resolveLocalDtsseWaPlainJar = {
-  def jars = fileTree(dir: "${localDtsseWaTaskManagementApiDir}/build/libs", include: 'wa-task-management-api*-plain.jar')
-      .files
-      .toList()
-      .sort { it.name }
-  jars ? jars.last() : file("${localDtsseWaTaskManagementApiDir}/build/libs/wa-task-management-api-plain.jar")
-}
-def resolveLocalWaOverrideJar = {
-  localDtsseWaTaskManagementApiDir.exists() ? resolveLocalDtsseWaPlainJar() : localWaM2Jar
-}
-def useLocalWaTaskManagementApi = (
-    project.findProperty('useLocalWaTaskManagementApi')
-        ?: (localDtsseWaTaskManagementApiDir.exists() ? 'true' : 'false')
-).toString().toBoolean()
-
-tasks.register('publishLocalWaTaskManagementApiToMavenLocal', Exec) {
-  group = 'ccd tasks'
-  description = 'Publishes local WA task-management-api for cftlib (if ../rse-cft-lib is present)'
-  onlyIf {
-    useLocalWaTaskManagementApi
-        && localWaTaskManagementApiDir.exists()
-        && (
-            (localDtsseWaTaskManagementApiDir.exists() && localDtsseCcdConfigGeneratorDir.exists())
-                || (localCftLibPublishingInit.exists() && localWaPublishingFixInit.exists())
-        )
-  }
-  if (localDtsseWaTaskManagementApiDir.exists()) {
-    workingDir localDtsseCcdConfigGeneratorDir
-    commandLine './gradlew', '--no-daemon', ':wa-task-management-api:jar'
-  } else {
-    workingDir localWaTaskManagementApiDir
-    commandLine './gradlew', '--no-daemon',
-        '-I', localCftLibPublishingInit.absolutePath,
-        '-I', localWaPublishingFixInit.absolutePath,
-        'publishToMavenLocal'
-    environment 'RELEASE_VERSION', '0.19.2017'
-  }
-}
-
 tasks.withType(CftlibExec).configureEach {
-  dependsOn tasks.named('publishLocalWaTaskManagementApiToMavenLocal')
   environment.remove('SERVER_PORT')
   environment.remove('PORT')
   environment 'RSE_LIB_ADDITIONAL_DATABASES', 'sptribs'
@@ -668,16 +600,6 @@ tasks.withType(CftlibExec).configureEach {
   environment 'TASK_MANAGEMENT_PRIVILEGED_CLIENTS',
       'wa_task_management_api,xui_webapp,ccd_case_disposer,sptribs_case_api'
   doFirst {
-    def waManifest = file("$buildDir/cftlib/wa-task-management-api")
-    def waOverrideJar = resolveLocalWaOverrideJar()
-    if (useLocalWaTaskManagementApi && waManifest.exists() && waOverrideJar.exists()) {
-      def lines = waManifest.readLines()
-      if (lines.size() > 1) {
-        lines[1] = waOverrideJar.absolutePath
-        waManifest.text = lines.join(System.lineSeparator()) + System.lineSeparator()
-      }
-    }
-
     [
         'ccd-definition-store-api'    : '4451',
         'ccd-data-store-api'          : '4452',
