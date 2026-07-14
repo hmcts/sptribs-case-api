@@ -19,9 +19,9 @@ import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
-import uk.gov.hmcts.sptribs.notification.dispatcher.AnonymityAppliedNotification;
 import uk.gov.hmcts.sptribs.common.repositories.AnonymisationRepository;
 import uk.gov.hmcts.sptribs.common.service.AnonymisationService;
+import uk.gov.hmcts.sptribs.notification.dispatcher.AnonymityAppliedNotification;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -29,9 +29,9 @@ import java.util.Collections;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.doReturn;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_UPDATE_ANONYMITY;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigBuilder;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.getEventsFrom;
@@ -55,7 +55,7 @@ class CaseworkerUpdateAnonymityTest {
     @BeforeEach
     void setUp() {
         anonymisationService = Mockito.spy(new AnonymisationService(anonymisationRepository));
-        caseworkerUpdateAnonymity = new CaseworkerUpdateAnonymity(applyAnonymity, anonymisationService);
+        caseworkerUpdateAnonymity = new CaseworkerUpdateAnonymity(applyAnonymity, anonymityAppliedNotification, anonymisationService);
     }
 
     @Test

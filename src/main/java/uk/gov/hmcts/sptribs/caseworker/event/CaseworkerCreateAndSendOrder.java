@@ -43,15 +43,13 @@ import uk.gov.hmcts.sptribs.notification.dispatcher.AnonymityAppliedNotification
 import uk.gov.hmcts.sptribs.notification.dispatcher.NewOrderIssuedNotification;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.EnumSet;
-import java.util.List;
-import java.util.UUID;
 
 import static java.lang.String.format;
 import static uk.gov.hmcts.sptribs.caseworker.model.OrderIssuingType.CREATE_AND_SEND_NEW_ORDER;
 import static uk.gov.hmcts.sptribs.caseworker.model.OrderIssuingType.UPLOAD_A_NEW_ORDER_FROM_YOUR_COMPUTER;
+import static uk.gov.hmcts.sptribs.caseworker.util.CaseFlagsUtil.applyAnonymityCaseFlag;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_CREATE_AND_SEND_ORDER;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventUtil.getRecipients;
 import static uk.gov.hmcts.sptribs.caseworker.util.SendOrderUtil.updateCicCaseOrderList;
@@ -277,28 +275,5 @@ public class CaseworkerCreateAndSendOrder implements CCDConfig<CaseData, State, 
             newOrderIssuedNotification.sendToApplicant(caseData, caseNumber);
         }
 
-    }
-
-    private void applyAnonymityCaseFlag(CaseData data, ListValue<FlagDetail> existingAnonymityFlag) {
-        if (existingAnonymityFlag != null && existingAnonymityFlag.getValue() != null) {
-            existingAnonymityFlag.getValue().setStatus(CaseFlagsUtil.ACTIVE_STATUS);
-            existingAnonymityFlag.getValue().setFlagComment("Applied anonymity");
-            existingAnonymityFlag.getValue().setDateTimeModified(LocalDateTime.now());
-            return;
-        }
-
-        FlagDetail flagDetail = FlagDetail.builder()
-            .name("RRO (Restricted Reporting Order / Anonymisation)")
-            .path(List.of(ListValue.<String>builder().id(UUID.randomUUID().toString()).value("Case").build()))
-            .status(CaseFlagsUtil.ACTIVE_STATUS)
-            .nameCy("RRO (Gorchymyn Cyfyngiadau Adrodd / Anhysbys)")
-            .flagCode(CaseFlagsUtil.ANONYMITY_FLAG_CODE)
-            .flagComment("Applied anonymity")
-            .dateTimeCreated(LocalDateTime.now())
-            .hearingRelevant(YesOrNo.YES)
-            .availableExternally(YesOrNo.NO)
-            .build();
-
-        CaseFlagsUtil.addFlag(data, flagDetail);
     }
 }

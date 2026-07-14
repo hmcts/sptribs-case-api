@@ -8,24 +8,25 @@ import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.Event;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
-import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.ccd.sdk.type.FlagDetail;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
+import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.event.page.ApplyAnonymity;
 import uk.gov.hmcts.sptribs.caseworker.util.CaseFlagsUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
-import uk.gov.hmcts.sptribs.notification.dispatcher.AnonymityAppliedNotification;
 import uk.gov.hmcts.sptribs.common.service.AnonymisationService;
+import uk.gov.hmcts.sptribs.notification.dispatcher.AnonymityAppliedNotification;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
+import static java.lang.String.format;
+import static uk.gov.hmcts.sptribs.caseworker.util.CaseFlagsUtil.applyAnonymityCaseFlag;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_UPDATE_ANONYMITY;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_CASEWORKER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_HEARING_CENTRE_ADMIN;
@@ -87,41 +88,27 @@ public class CaseworkerUpdateAnonymity implements CCDConfig<CaseData, State, Use
 
     public SubmittedCallbackResponse submitted(final CaseDetails<CaseData, State> details,
                                                final CaseDetails<CaseData, State> beforeDetails) {
-        if (details.getState() != null) {
-            details.getData().setCaseStatus(details.getState());
+        try {
+            if (details.getState() != null) {
+                details.getData().setCaseStatus(details.getState());
+            }
+            anonymityAppliedNotification.sendAnonymityNotificationIfNewlyApplied(
+                details.getData(),
+                beforeDetails == null ? null : beforeDetails.getData(),
+                details.getId() == null ? null : details.getId().toString()
+            );
+        } catch (RuntimeException notificationException) {
+            log.warn("Failed to send anonymity notifications for case {}", details.getId(), notificationException);
+            return SubmittedCallbackResponse.builder()
+                .confirmationHeader(format("# Send anonymity notification failed %n## Please update the case again"))
+                .build();
         }
-
-        anonymityAppliedNotification.sendAnonymityNotificationIfNewlyApplied(
-            details.getData(),
-            beforeDetails == null ? null : beforeDetails.getData(),
-            details.getId() == null ? null : details.getId().toString()
-        );
-
         return SubmittedCallbackResponse.builder().build();
     }
 
     private void updateAnonymityCaseFlag(CaseData data, ListValue<FlagDetail> existingAnonymityFlag) {
         if (YesOrNo.YES.equals(data.getCicCase().getAnonymiseYesOrNo())) {
-            if (existingAnonymityFlag != null && existingAnonymityFlag.getValue() != null) {
-                existingAnonymityFlag.getValue().setStatus(CaseFlagsUtil.ACTIVE_STATUS);
-                existingAnonymityFlag.getValue().setFlagComment("Applied anonymity");
-                existingAnonymityFlag.getValue().setDateTimeModified(LocalDateTime.now());
-                return;
-            }
-
-            FlagDetail flagDetail = FlagDetail.builder()
-                .name("RRO (Restricted Reporting Order / Anonymisation)")
-                .path(List.of(ListValue.<String>builder().id(UUID.randomUUID().toString()).value("Case").build()))
-                .status(CaseFlagsUtil.ACTIVE_STATUS)
-                .nameCy("RRO (Gorchymyn Cyfyngiadau Adrodd / Anhysbys)")
-                .flagCode(CaseFlagsUtil.ANONYMITY_FLAG_CODE)
-                .flagComment("Applied anonymity")
-                .dateTimeCreated(LocalDateTime.now())
-                .hearingRelevant(YesOrNo.YES)
-                .availableExternally(YesOrNo.NO)
-                .build();
-
-            CaseFlagsUtil.addFlag(data, flagDetail);
+            applyAnonymityCaseFlag(data, existingAnonymityFlag);
         } else {
             if (existingAnonymityFlag != null && existingAnonymityFlag.getValue() != null) {
                 existingAnonymityFlag.getValue().setStatus("Inactive");
