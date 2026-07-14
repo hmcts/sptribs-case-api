@@ -19,7 +19,7 @@ import static uk.gov.hmcts.sptribs.testutil.TestConstants.SUBMITTED_URL;
 @SpringBootTest
 public class CaseworkerBundleStitchCompleteFT extends FunctionalTestSuite {
 
-    private static final long BUNDLE_CASE_DOCUMENT_TYPE = 10L;
+    private static final long BUNDLE_CASE_DOCUMENT_TYPE = 9L;
 
     private static final String SUBMITTED_REQUEST =
         "classpath:request/casedata/ccd-callback-casedata-caseworker-bundle-stitch-complete-submitted.json";
