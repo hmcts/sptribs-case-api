@@ -146,7 +146,7 @@ public class CaseworkerCreateAndSendOrder implements CCDConfig<CaseData, State, 
     }
 
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(CaseDetails<CaseData, State> details,
-                                                                        CaseDetails<CaseData, State> beforeDetails) {
+                                                                       CaseDetails<CaseData, State> beforeDetails) {
         final CaseData caseData = details.getData();
         final CicCase cicCase = caseData.getCicCase();
         final CaseData beforeData = beforeDetails == null ? null : beforeDetails.getData();
