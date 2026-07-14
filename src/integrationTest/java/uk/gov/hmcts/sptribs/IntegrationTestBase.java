@@ -7,6 +7,11 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.context.annotation.Import;
 import org.testcontainers.containers.PostgreSQLContainer;
+import uk.gov.hmcts.sptribs.manager.CaseCorrespondenceManager;
+import uk.gov.hmcts.sptribs.manager.CaseDataManager;
+import uk.gov.hmcts.sptribs.manager.CaseDocumentManager;
+import uk.gov.hmcts.sptribs.manager.CorrespondenceDocumentManager;
+import uk.gov.hmcts.sptribs.manager.IntegrationTestDataManager;
 
 import java.util.List;
 
@@ -20,6 +25,12 @@ public abstract class IntegrationTestBase {
     @Autowired
     private CaseDocumentManager caseDocumentManager;
 
+    @Autowired
+    private CaseCorrespondenceManager caseCorrespondenceManager;
+
+    @Autowired
+    private CorrespondenceDocumentManager correspondenceDocumentManager;
+
     private List<IntegrationTestDataManager> dataManagerList;
 
     @ServiceConnection
@@ -32,7 +43,7 @@ public abstract class IntegrationTestBase {
 
     @PostConstruct
     void setup() {
-        dataManagerList = List.of(caseDataManager, caseDocumentManager);
+        dataManagerList = List.of(caseDataManager, caseDocumentManager, caseCorrespondenceManager, correspondenceDocumentManager);
     }
 
     @AfterEach

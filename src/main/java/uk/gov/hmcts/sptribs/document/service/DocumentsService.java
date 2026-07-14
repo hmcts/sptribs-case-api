@@ -153,7 +153,7 @@ public class DocumentsService {
 
         // Latest generated case bundle, if one exists.
         Optional<DocumentEntity> latestBundle =
-            documentsRepository.findLatestBundleDocument(
+            documentsRepository.findFirstByCaseReferenceNumberAndCaseDocumentTypeIdOrderBySavedAtDesc(
                 ccdReference,
                 caseDocumentTypesCache.getId(CaseDocumentType.BUNDLE)
             );

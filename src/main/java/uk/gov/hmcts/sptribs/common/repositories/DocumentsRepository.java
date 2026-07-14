@@ -87,19 +87,12 @@ public interface DocumentsRepository extends JpaRepository<DocumentEntity, Integ
         order by d.savedAt desc
         """)
     List<DocumentEntity> findOrderAndDecisionDocuments(
-        Long caseReference,
-        List<Long> caseDocumentIds
+        @Param("caseReference") Long caseReference,
+        @Param("caseDocumentIds") List<Long> caseDocumentIds
     );
 
-    @Query("""
-        select d
-        from DocumentEntity d
-        where d.caseReferenceNumber = :caseReference
-            and d.caseDocumentTypeId = :bundleCategoryId
-        order by d.savedAt desc
-        """)
-    Optional<DocumentEntity> findLatestBundleDocument(
-        Long caseReference,
-        Long bundleCategoryId
+    Optional<DocumentEntity> findFirstByCaseReferenceNumberAndCaseDocumentTypeIdOrderBySavedAtDesc(
+        Long caseReferenceNumber,
+        Long caseDocumentTypeId
     );
 }
