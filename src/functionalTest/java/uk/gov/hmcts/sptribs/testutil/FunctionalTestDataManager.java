@@ -4,7 +4,6 @@ import io.restassured.RestAssured;
 import io.restassured.response.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
@@ -51,12 +50,6 @@ public class FunctionalTestDataManager {
     @Value("${postgres.password}")
     private String password;
 
-    @Value("${core_case_data.api.url}")
-    private String ccdDataStoreUrl;
-
-    @Autowired
-    private ServiceAuthenticationGenerator serviceAuthenticationGenerator;
-
     public void connectToDB() {
         String connectionString = String.format("jdbc:postgresql://%s:%s/%s", host, port, dbName);
 
@@ -72,37 +65,12 @@ public class FunctionalTestDataManager {
     public void clearDown(long reference) throws SQLException {
         log.info("Starting clearDown for reference: {}", reference);
 
-        cleanDatabaseViaCcdEndpoint();
         deleteCaseEvent(reference);
         deleteCaseData(reference);
         deleteCaseCorrespondences(reference);
         deleteCaseFromElasticsearch(reference);
 
         log.info("Clear down completed for reference: {}", reference);
-    }
-
-    public void cleanDatabaseViaCcdEndpoint() {
-        String changeId = System.getenv("CHANGE_ID");
-        if (changeId == null || changeId.isBlank()) {
-            changeId = "0";
-        }
-
-        String cleanUrl = ccdDataStoreUrl + "/testing-support/cleanup-case-type/" + changeId;
-        String caseTypeIds = "CriminalInjuriesCompensation";
-
-        log.info("Sending DELETE request to CCD Data Store cleanup endpoint: {}?caseTypeIds={}", cleanUrl, caseTypeIds);
-        try {
-            Response response = RestAssured.given()
-                .relaxedHTTPSValidation()
-                .header("ServiceAuthorization", serviceAuthenticationGenerator.generateCcdDataToken())
-                .queryParam("caseTypeIds", caseTypeIds)
-                .when()
-                .delete(cleanUrl);
-
-            log.info("CCD Data Store cleanup response status code: {}", response.getStatusCode());
-        } catch (Exception e) {
-            log.error("Error occurred while calling CCD Data Store cleanup endpoint", e);
-        }
     }
 
     public void deleteCaseData(long reference) {
@@ -148,22 +116,8 @@ public class FunctionalTestDataManager {
         }
     }
 
-    private String getElasticsearchBaseUrl() {
-        String hosts = System.getenv("ELASTIC_SEARCH_HOSTS");
-        if (hosts == null || hosts.isBlank()) {
-            hosts = System.getenv("ELASTIC_SEARCH_DATA_NODES_HOSTS");
-        }
-        if (hosts == null || hosts.isBlank()) {
-            hosts = "http://localhost:9200";
-        }
-        if (!hosts.startsWith("http://") && !hosts.startsWith("https://")) {
-            hosts = "http://" + hosts;
-        }
-        return hosts;
-    }
-
     public void deleteCaseFromElasticsearch(long reference) {
-        String elasticsearchBaseUrl = getElasticsearchBaseUrl();
+        String elasticsearchBaseUrl = "http://localhost:9200";
         String caseIdStr = String.valueOf(reference);
         String deleteUrl = elasticsearchBaseUrl + "/*_cases/_delete_by_query?ignore_unavailable=true&refresh=true";
 
@@ -179,7 +133,6 @@ public class FunctionalTestDataManager {
             + "  }\n"
             + "}";
 
-        log.info("Sending POST request to Elasticsearch: {}", deleteUrl);
         try {
             Response response = RestAssured.given()
                 .relaxedHTTPSValidation()
@@ -191,7 +144,7 @@ public class FunctionalTestDataManager {
             int statusCode = response.getStatusCode();
             log.info("Elasticsearch response status code: {}, body: {}", statusCode, response.getBody().asString());
         } catch (Exception e) {
-            log.error("Error occurred while deleting case {} from Elasticsearch", caseIdStr, e);
+            log.info("Error occurred while deleting case {} from Elasticsearch", caseIdStr, e);
         }
     }
 
@@ -215,5 +168,4 @@ public class FunctionalTestDataManager {
             }
         }
     }
-
 }
