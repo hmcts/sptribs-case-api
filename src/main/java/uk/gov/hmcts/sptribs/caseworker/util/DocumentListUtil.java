@@ -37,7 +37,7 @@ import static uk.gov.hmcts.sptribs.document.DocumentConstants.REINSTATE_TYPE;
 
 public final class DocumentListUtil {
 
-    private static final String DOCUMENT_BINARY_PATH = "documents/%s/binary";
+    private static final String DOCUMENT_BINARY_PATH = "/documents/%s/binary";
 
     private DocumentListUtil() {
 
@@ -127,6 +127,7 @@ public final class DocumentListUtil {
 
     public static DynamicMultiSelectList prepareDocumentList(final CaseData data, String baseUrl) {
         List<CaseworkerCICDocument> docList = prepareList(data);
+        baseUrl = baseUrl.replaceAll("/$", "");
         String apiUrl = baseUrl + DOCUMENT_BINARY_PATH;
         List<DynamicListElement> dynamicListElements = new ArrayList<>();
         for (CaseworkerCICDocument doc : docList) {
@@ -149,8 +150,8 @@ public final class DocumentListUtil {
     public static DynamicMultiSelectList prepareContactPartiesDocumentList(final CaseData data, String baseUrl) {
         List<CaseworkerCICDocument> docList = prepareList(data);
 
-
-        String apiUrl = baseUrl + "/documents/%s/binary";
+        baseUrl = baseUrl.replaceAll("/$", "");
+        String apiUrl = baseUrl + DOCUMENT_BINARY_PATH;
         List<DynamicListElement> dynamicListElements = new ArrayList<>();
         for (CaseworkerCICDocument doc : docList) {
             String fileName = doc.getDocumentLink().getFilename();
