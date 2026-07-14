@@ -194,12 +194,13 @@ class DocumentsRepositoryImplIT extends IntegrationTestBase {
     @Test
     void shouldFindContactPartyDocuments() {
         //given
+        OffsetDateTime sentOn = OffsetDateTime.now();
         String binaryUrl = UUID.randomUUID().toString();
         Long documentId = caseDocumentManager.addCaseDocument(
             123L,
             binaryUrl,
             DOCUMENT_MANAGEMENT_TYPE_ID,
-            OffsetDateTime.now()
+            OffsetDateTime.now().minusDays(1L)
         );
 
         UUID correspondenceId = UUID.randomUUID();
@@ -208,7 +209,7 @@ class DocumentsRepositoryImplIT extends IntegrationTestBase {
             correspondenceId,
             123L,
             Party.APPLICANT,
-            OffsetDateTime.now().plusHours(1)
+            sentOn
         );
 
         UUID correspondenceIdTribunal = UUID.randomUUID();
@@ -217,7 +218,7 @@ class DocumentsRepositoryImplIT extends IntegrationTestBase {
             correspondenceIdTribunal,
             123L,
             Party.TRIBUNAL,
-            OffsetDateTime.now().plusHours(1)
+            sentOn
         );
 
         correspondenceDocumentManager.linkDocument(
@@ -243,6 +244,6 @@ class DocumentsRepositoryImplIT extends IntegrationTestBase {
         ContactPartyDocumentDetails details = result.getFirst();
 
         assertThat(details.document().getDocumentBinaryUrl()).isEqualTo(binaryUrl);
-        assertThat(details.sentOn()).isEqualTo(OffsetDateTime.now().plusHours(1));
+        assertThat(details.sentOn().toLocalDateTime()).isEqualTo(sentOn.toLocalDateTime());
     }
 }

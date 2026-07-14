@@ -16,7 +16,7 @@ import uk.gov.hmcts.sptribs.manager.IntegrationTestDataManager;
 import java.util.List;
 
 @SpringBootTest(properties = "spring.flyway.enabled = true")
-@Import({CaseDataManager.class, CaseDocumentManager.class})
+@Import({CaseDataManager.class, CaseDocumentManager.class, CorrespondenceDocumentManager.class, CaseCorrespondenceManager.class})
 public abstract class IntegrationTestBase {
 
     @Autowired
