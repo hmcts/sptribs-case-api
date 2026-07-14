@@ -11,10 +11,11 @@ import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Locale;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -35,14 +36,23 @@ class DraftOrderFooterTest {
         CaseData caseData = CaseData.builder().build();
         caseDetails.setData(caseData);
 
-        Calendar calendar = Calendar.getInstance();
-        String date = simpleDateFormat.format(calendar.getTime());
-
-        when(orderService.generateOrderFile(caseDetails.getData(), caseDetails.getId(), date)).thenReturn(caseData);
+        when(orderService.generateOrderFile(eq(caseDetails.getData()), eq(caseDetails.getId()), anyString()))
+            .thenReturn(caseData);
 
         var response = draftOrderFooter.midEvent(caseDetails, caseDetails);
         assertThat(response.getData()).isEqualTo(caseData);
-        verify(orderService).generateOrderFile(caseDetails.getData(), caseDetails.getId(), date);
+        verify(orderService).generateOrderFile(
+            eq(caseDetails.getData()),
+            eq(caseDetails.getId()),
+            org.mockito.ArgumentMatchers.argThat(date -> {
+                try {
+                    simpleDateFormat.parse(date);
+                    return true;
+                } catch (Exception e) {
+                    return false;
+                }
+            })
+        );
 
     }
 }

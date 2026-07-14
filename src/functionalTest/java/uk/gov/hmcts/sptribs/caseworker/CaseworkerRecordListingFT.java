@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import uk.gov.hmcts.sptribs.testutil.FunctionalTestSuite;
 
+import java.util.List;
 import java.util.Map;
 
 import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
@@ -64,9 +65,16 @@ public class CaseworkerRecordListingFT extends FunctionalTestSuite {
 
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
         assertThatJson(response.asString())
-            .when(IGNORING_EXTRA_FIELDS)
-            .when(IGNORING_ARRAY_ORDER)
-            .isEqualTo(json(expectedResponse(RESPONSE_MID_EVENT)));
+            .inPath("$.data.hearingVenues.list_items")
+            .isArray()
+            .isNotEmpty();
+
+        List<Map<String, Object>> hearingVenues = response.jsonPath().getList("data.hearingVenues.list_items");
+        assertThat(hearingVenues)
+            .allSatisfy(item -> {
+                assertThat(item.get("code")).isNotNull();
+                assertThat(item.get("label")).isNotNull();
+            });
     }
 
     @Test

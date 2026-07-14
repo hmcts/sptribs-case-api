@@ -24,6 +24,7 @@ import uk.gov.hmcts.sptribs.document.model.CitizenCICDocument;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
 import uk.gov.hmcts.sptribs.idam.IdamService;
 import uk.gov.hmcts.sptribs.notification.dispatcher.DssUpdateCaseSubmissionNotification;
+import uk.gov.hmcts.sptribs.taskmanagement.TaskManagementService;
 
 import java.time.Clock;
 import java.time.LocalDate;
@@ -53,6 +54,7 @@ import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SYSTEM_UPDATE;
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE;
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE_DELETE;
+import static uk.gov.hmcts.sptribs.taskmanagement.model.TaskType.processFurtherEvidence;
 
 @Slf4j
 @Component
@@ -71,6 +73,9 @@ public class CicDssUpdateCaseEvent implements CCDConfig<CaseData, State, UserRol
 
     @Autowired
     private Clock clock;
+
+    @Autowired
+    private TaskManagementService taskManagementService;
 
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
@@ -94,7 +99,6 @@ public class CicDssUpdateCaseEvent implements CCDConfig<CaseData, State, UserRol
                 )
                 .aboutToSubmitCallback(this::aboutToSubmit)
                 .submittedCallback(this::submitted)
-                .publishToCamunda()
                 .grant(CREATE_READ_UPDATE, ST_CIC_WA_CONFIG_USER);
     }
 
@@ -102,6 +106,7 @@ public class CicDssUpdateCaseEvent implements CCDConfig<CaseData, State, UserRol
                                                                        CaseDetails<CaseData, State> beforeDetails) {
 
         final CaseData caseData = addDocumentsToCaseData(details.getData(), details.getData().getDssCaseData());
+        taskManagementService.enqueueInitiationTasks(List.of(processFurtherEvidence), caseData, details.getId());
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)

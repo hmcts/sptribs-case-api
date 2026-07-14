@@ -43,8 +43,7 @@ public class CaseworkerUpdateAnonymity implements CCDConfig<CaseData, State, Use
                 .aboutToSubmitCallback(this::aboutToSubmit)
                 .grant(CREATE_READ_UPDATE,
                     ST_CIC_HEARING_CENTRE_ADMIN, ST_CIC_HEARING_CENTRE_TEAM_LEADER, ST_CIC_WA_CONFIG_USER)
-                .grantHistoryOnly(ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER, ST_CIC_JUDGE, ST_CIC_SENIOR_JUDGE)
-                .publishToCamunda();
+                .grantHistoryOnly(ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER, ST_CIC_JUDGE, ST_CIC_SENIOR_JUDGE);
 
         PageBuilder pageBuilder = new PageBuilder(eventBuilder);
         applyAnonymity.addTo(pageBuilder);
