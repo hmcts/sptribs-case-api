@@ -54,12 +54,6 @@ public class FunctionalTestDataManager {
     @Value("${core_case_data.api.url}")
     private String ccdDataStoreUrl;
 
-    @Value("${elasticsearch.hosts}")
-    private String elasticSearchHosts;
-
-    @Value("${elasticsearch.data-nodes-hosts}")
-    private String elasticSearchDataNodesHosts;
-
     @Autowired
     private ServiceAuthenticationGenerator serviceAuthenticationGenerator;
 
@@ -155,11 +149,16 @@ public class FunctionalTestDataManager {
     }
 
     private String getElasticsearchBaseUrl() {
-        String hosts = elasticSearchHosts;
+        String hosts = System.getenv("ELASTIC_SEARCH_HOSTS");
+        if (hosts == null || hosts.isBlank()) {
+            hosts = System.getenv("ELASTIC_SEARCH_DATA_NODES_HOSTS");
+        }
+        if (hosts == null || hosts.isBlank()) {
+            hosts = "http://localhost:9200";
+        }
         if (!hosts.startsWith("http://") && !hosts.startsWith("https://")) {
             hosts = "http://" + hosts;
         }
-        log.warn("Using Elasticsearch hosts: {}", hosts);
         return hosts;
     }
 
