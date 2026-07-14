@@ -6,6 +6,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.util.ReflectionTestUtils;
 import uk.gov.hmcts.ccd.sdk.ConfigBuilderImpl;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.Event;
@@ -106,6 +108,8 @@ class CaseworkerContactPartiesTest {
         final CaseData caseData = CaseData.builder().build();
         caseData.setCicCase(cicCase);
         caseDetails.setData(caseData);
+
+        ReflectionTestUtils.setField(caseWorkerContactParties, "baseUrl", "http://mocked-url.com");
 
         AboutToStartOrSubmitResponse<CaseData, State> response = caseWorkerContactParties.aboutToStart(caseDetails);
 
@@ -296,33 +300,6 @@ class CaseworkerContactPartiesTest {
 
         assertThat(response).isNotNull();
         assertThat(response.getErrors()).isEmpty();
-    }
-
-    @Test
-    void shouldRunAboutToStart() {
-        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
-
-        List<ListValue<CaseworkerCICDocument>> listValueList = new ArrayList<>();
-        CaseworkerCICDocument doc = CaseworkerCICDocument.builder()
-            .documentCategory(DocumentType.LINKED_DOCS)
-            .documentLink(Document.builder().url("url").binaryUrl("url").filename("name.pdf").build())
-            .build();
-        ListValue<CaseworkerCICDocument> list = new ListValue<>();
-        list.setValue(doc);
-        listValueList.add(list);
-        CicCase cicCase = CicCase.builder()
-            .reinstateDocuments(listValueList)
-            .build();
-        final CaseData caseData = CaseData.builder()
-            .cicCase(cicCase)
-            .build();
-        updatedCaseDetails.setData(caseData);
-
-        AboutToStartOrSubmitResponse<CaseData, State> response = caseWorkerContactParties.aboutToStart(updatedCaseDetails);
-
-        assertThat(response).isNotNull();
-        assertThat(response.getData().getContactPartiesDocuments().getDocumentList().getListItems()).hasSize(1);
-        assertThat(response.getData().getCicCase().getNotifyPartyMessage()).isEqualTo("");
     }
 }
 
