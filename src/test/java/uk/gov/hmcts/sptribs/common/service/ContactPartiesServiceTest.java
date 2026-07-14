@@ -35,12 +35,6 @@ class ContactPartiesServiceTest {
     @Test
     void shouldLinkCorrespondenceIdsToDocuments() {
         //given
-        CaseData caseData = new CaseData();
-        Map<String, String> uploadedDocuments = Map.of(
-            "doc1", "yes",
-            "doc2", "yes"
-        );
-
         List<String> correspondenceIds = new ArrayList<>();
         String correspondenceId1 = UUID.randomUUID().toString();
         String correspondenceId2 = UUID.randomUUID().toString();
@@ -50,6 +44,11 @@ class ContactPartiesServiceTest {
         correspondenceIds.add(correspondenceId3);
 
         List<Long> documentIds = List.of(1L,2L);
+        CaseData caseData = new CaseData();
+        Map<String, String> uploadedDocuments = Map.of(
+            "doc1", "yes",
+            "doc2", "yes"
+        );
 
         when(documentsService.getDocumentsViaSentByContactParties(caseData, uploadedDocuments)).thenReturn(documentIds);
 
@@ -75,13 +74,6 @@ class ContactPartiesServiceTest {
         String correspondenceId1 = UUID.randomUUID().toString();
         String correspondenceId2 = UUID.randomUUID().toString();
         String correspondenceId3 = UUID.randomUUID().toString();
-
-        List<String> correspondenceIds = List.of(
-            correspondenceId1,
-            correspondenceId2,
-            correspondenceId3
-        );
-
         List<Long> documentIds = List.of(1L, 2L);
 
         when(documentsService.getDocumentsViaSentByContactParties(caseData, uploadedDocuments))
@@ -94,6 +86,12 @@ class ContactPartiesServiceTest {
             .saveCorrespondenceDocumentLink(correspondenceId2, documentIds);
 
         doNothing().when(correspondenceDocumentService).saveCorrespondenceDocumentLink(correspondenceId3, documentIds);
+
+        List<String> correspondenceIds = List.of(
+            correspondenceId1,
+            correspondenceId2,
+            correspondenceId3
+        );
 
         //when
         contactPartiesService.linkCorrespondenceIdsToDocuments(caseData, uploadedDocuments, correspondenceIds);
