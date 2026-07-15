@@ -220,12 +220,15 @@ dependencyCheck {
   suppressionFile = 'config/owasp/suppressions.xml'
   outputDirectory = 'build/reports/'
   scanConfigurations = ['runtimeClasspath']
-  yarnAuditEnabled = false
-  nodeAuditEnabled = false
 
   analyzers {
     // Disable scanning of .NET related binaries
     assemblyEnabled = false
+
+    nodeAudit {
+      enabled = false
+    }
+
   }
 }
 
