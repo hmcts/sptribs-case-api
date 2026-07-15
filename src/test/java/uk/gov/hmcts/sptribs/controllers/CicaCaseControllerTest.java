@@ -41,9 +41,10 @@ class CicaCaseControllerTest {
     void shouldReturnOkWithCaseDataWhenCaseFound() {
         // Given
         String ccdReference = "1234567891234567";
+        String postcode = "SW11 1PD";
         CicaCaseEntity cicaCaseEntity = createCicaCaseEntity(ccdReference);
         CicaCaseResponse expectedResponse = createCicaCaseResponse(ccdReference);
-        when(cicaCaseService.getCaseByCCDReference(ccdReference, TEST_AUTHORIZATION)).thenReturn(cicaCaseEntity);
+        when(cicaCaseService.getCaseByCCDReference(ccdReference, TEST_AUTHORIZATION, postcode)).thenReturn(cicaCaseEntity);
 
         when(cicaCaseMapper.toResponse(cicaCaseEntity)).thenReturn(expectedResponse);
 
@@ -51,6 +52,7 @@ class CicaCaseControllerTest {
         ResponseEntity<CicaCaseResponse> response = cicaCaseController.getCaseByCCDReference(
             TEST_AUTHORIZATION,
             TEST_SERVICE_AUTHORIZATION,
+            postcode,
             ccdReference
         );
 
@@ -60,7 +62,7 @@ class CicaCaseControllerTest {
         assertThat(response.getBody().getId()).isEqualTo("1234567891234567");
         assertThat(response.getBody().getState()).isEqualTo("Submitted");
         assertThat(response.getBody().getData()).isNull();
-        verify(cicaCaseService).getCaseByCCDReference(ccdReference, TEST_AUTHORIZATION);
+        verify(cicaCaseService).getCaseByCCDReference(ccdReference, TEST_AUTHORIZATION, postcode);
         verify(cicaCaseMapper).toResponse(cicaCaseEntity);
     }
 
@@ -68,13 +70,15 @@ class CicaCaseControllerTest {
     void shouldPropagateExceptionWhenCaseNotFound() {
         // Given
         String ccdReference = "1234567891234567";
-        when(cicaCaseService.getCaseByCCDReference(ccdReference, TEST_AUTHORIZATION))
+        String postcode = "SW11 1PD";
+        when(cicaCaseService.getCaseByCCDReference(ccdReference, TEST_AUTHORIZATION, postcode))
             .thenThrow(new CaseNotFoundException("No case found with CICA reference: X99999"));
 
         // When / Then
         assertThatThrownBy(() -> cicaCaseController.getCaseByCCDReference(
             TEST_AUTHORIZATION,
             TEST_SERVICE_AUTHORIZATION,
+            postcode,
             ccdReference
         ))
             .isExactlyInstanceOf(CaseNotFoundException.class)
@@ -87,19 +91,57 @@ class CicaCaseControllerTest {
     void shouldPropagateExceptionWhenInvalidReferenceFormat() {
         // Given
         String ccdReference = "1234567891234";
-        when(cicaCaseService.getCaseByCCDReference(ccdReference, TEST_AUTHORIZATION))
+        String postcode = "SW11 1PD";
+        when(cicaCaseService.getCaseByCCDReference(ccdReference, TEST_AUTHORIZATION, postcode))
             .thenThrow(new IllegalArgumentException("Invalid CICA reference format"));
 
         // When / Then
         assertThatThrownBy(() -> cicaCaseController.getCaseByCCDReference(
             TEST_AUTHORIZATION,
             TEST_SERVICE_AUTHORIZATION,
+            postcode,
             ccdReference
         ))
             .isExactlyInstanceOf(IllegalArgumentException.class)
             .hasMessageContaining("Invalid CICA reference format");
 
         verifyNoInteractions(cicaCaseMapper);
+    }
+
+    @Test
+    void shouldReturnOkWhenCheckingIfUserHasAccess() {
+        // Given
+        String ccdReference = "1234567891234567";
+
+        // When
+        ResponseEntity<Void> response = cicaCaseController.checkIfUserHasAccess(
+            TEST_AUTHORIZATION,
+            TEST_SERVICE_AUTHORIZATION,
+            ccdReference
+        );
+
+        // Then
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        verify(cicaCaseService).checkIfUserHasAccess(ccdReference, TEST_AUTHORIZATION);
+    }
+
+    @Test
+    void shouldReturnOkWhenCheckingIfUserHasAccessWithPostcode() {
+        // Given
+        String ccdReference = "1234567891234567";
+        String postcode = "SW11 1PD";
+
+        // When
+        ResponseEntity<Void> response = cicaCaseController.checkIfUserHasAccessWithPostcode(
+            TEST_AUTHORIZATION,
+            TEST_SERVICE_AUTHORIZATION,
+            postcode,
+            ccdReference
+        );
+
+        // Then
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        verify(cicaCaseService).checkIfUserHasAccessWithPostcode(ccdReference, TEST_AUTHORIZATION, postcode);
     }
 }
 

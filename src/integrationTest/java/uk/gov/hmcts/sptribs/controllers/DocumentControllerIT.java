@@ -18,7 +18,6 @@ import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.sptribs.cdam.model.Document;
 import uk.gov.hmcts.sptribs.ciccase.service.CicaCaseService;
 import uk.gov.hmcts.sptribs.common.config.WebMvcConfig;
-import uk.gov.hmcts.sptribs.common.repositories.model.CicaCaseEntity;
 import uk.gov.hmcts.sptribs.controllers.mapper.CaseworkerCICDocumentMapper;
 import uk.gov.hmcts.sptribs.document.model.DocumentDashboardModel;
 import uk.gov.hmcts.sptribs.document.service.DocumentsService;
@@ -83,8 +82,6 @@ class DocumentControllerIT {
 
     @BeforeEach
     void setUpMocks() {
-        CicaCaseEntity cicaCaseEntity = CicaCaseEntity.builder().id(CCD_REFERENCE).build();
-        when(cicaCaseService.getCaseByCCDReference(eq(CCD_REFERENCE), any())).thenReturn(cicaCaseEntity);
     }
 
     @Test
@@ -265,7 +262,8 @@ class DocumentControllerIT {
                 .header(SERVICE_AUTHORIZATION, TEST_SERVICE_AUTH_TOKEN)
                 .header("X-Postcode", POSTCODE))
             .andExpect(status().isOk())
-            .andExpect(content().json("{\"contactPartiesDocuments\":[],\"orderAndDecisionDocuments\":[],\"latestCaseBundleDocuments\":[]}"));
+            .andExpect(content().json(
+                "{\"contactPartiesDocuments\":[],\"orderAndDecisionDocuments\":[],\"latestCaseBundleDocuments\":[]}"));
     }
 
     @Test
@@ -273,7 +271,7 @@ class DocumentControllerIT {
         // Given
         String invalidPostcode = "INVALID";
         org.mockito.Mockito.doThrow(new uk.gov.hmcts.sptribs.exception.UnauthorisedCaseAccessException("Postcode match failed"))
-            .when(cicaCaseService).validatePostcode(any(), eq(invalidPostcode));
+            .when(cicaCaseService).checkIfUserHasAccessWithPostcode(eq(CCD_REFERENCE), any(), eq(invalidPostcode));
 
         // When & Then
         mockMvc.perform(get(GET_DOCUMENTS_URL)
@@ -289,7 +287,7 @@ class DocumentControllerIT {
         UUID documentId = UUID.randomUUID();
         String invalidPostcode = "INVALID";
         org.mockito.Mockito.doThrow(new uk.gov.hmcts.sptribs.exception.UnauthorisedCaseAccessException("Postcode match failed"))
-            .when(cicaCaseService).validatePostcode(any(), eq(invalidPostcode));
+            .when(cicaCaseService).checkIfUserHasAccessWithPostcode(eq(CCD_REFERENCE), any(), eq(invalidPostcode));
 
         // When & Then
         mockMvc.perform(get(String.format(DOWNLOAD_DOCUMENT_URL, documentId))

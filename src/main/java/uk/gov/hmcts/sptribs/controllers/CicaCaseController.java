@@ -88,6 +88,10 @@ public class CicaCaseController {
         @Parameter(description = "S2S token from the frontend service", required = true)
         String serviceAuthorisation,
 
+        @RequestHeader(value = "X-Postcode")
+        @Parameter(description = "Postcode for verification", required = true)
+        String postcode,
+
         @PathVariable
         @NotBlank(message = "CCD reference cannot be blank")
         @Pattern(regexp = "^\\d{16}$", message = "CCD reference must be 16 digits long")
@@ -100,7 +104,7 @@ public class CicaCaseController {
     ) {
         log.info("Received request to get case by CCD reference: {}", ccdReference);
 
-        CicaCaseEntity cicaCaseEntity = cicaCaseService.getCaseByCCDReference(ccdReference, authorisation);
+        CicaCaseEntity cicaCaseEntity = cicaCaseService.getCaseByCCDReference(ccdReference, authorisation, postcode);
 
         CicaCaseResponse response = cicaCaseMapper.toResponse(cicaCaseEntity);
 
@@ -110,6 +114,115 @@ public class CicaCaseController {
 
         log.info("Successfully retrieved case with CCD reference: {}", ccdReference);
         return ResponseEntity.ok(response);
+    }
+
+    @GetMapping(value = "/{ccdReference}/access", produces = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(
+        summary = "Check if user has access to the case",
+        description = "Verifies if the user has access to the given CCD reference, throwing an exception if unauthorized."
+    )
+    @ApiResponses(value = {
+        @ApiResponse(
+            responseCode = "200",
+            description = "Access verification completed successfully",
+            content = @Content),
+        @ApiResponse(
+            responseCode = "400",
+            description = "Invalid CCD reference format",
+            content = @Content),
+        @ApiResponse(
+            responseCode = "401",
+            description = "Unauthorized - Invalid or missing authorization token",
+            content = @Content),
+        @ApiResponse(
+            responseCode = "403",
+            description = "Forbidden - Service not authorized",
+            content = @Content),
+        @ApiResponse(
+            responseCode = "500",
+            description = "Internal server error",
+            content = @Content)
+    })
+    public ResponseEntity<Void> checkIfUserHasAccess(
+        @RequestHeader(AUTHORIZATION)
+        @Parameter(description = "User's IDAM access token", required = true)
+        String authorisation,
+
+        @RequestHeader(SERVICE_AUTHORIZATION)
+        @Parameter(description = "S2S token from the frontend service", required = true)
+        String serviceAuthorisation,
+
+        @PathVariable
+        @NotBlank(message = "CCD reference cannot be blank")
+        @Pattern(regexp = "^\\d{16}$", message = "CCD reference must be 16 digits long")
+        @Parameter(
+            description = "The CCD reference number.",
+            required = true,
+            example = "1740138704453399"
+        )
+        String ccdReference
+    ) {
+        log.info("Received request to check if user has access to case: {}", ccdReference);
+        cicaCaseService.checkIfUserHasAccess(ccdReference, authorisation);
+        log.info("Access check completed successfully for case: {}", ccdReference);
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping(value = "/{ccdReference}/access-with-postcode", produces = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(
+        summary = "Check if user has access to the case and the postcode matches",
+        description = "Verifies if the user has access to the given CCD reference and the postcode matches, "
+            + "throwing an exception if unauthorized."
+    )
+    @ApiResponses(value = {
+        @ApiResponse(
+            responseCode = "200",
+            description = "Access and postcode verification completed successfully",
+            content = @Content),
+        @ApiResponse(
+            responseCode = "400",
+            description = "Invalid CCD reference format",
+            content = @Content),
+        @ApiResponse(
+            responseCode = "401",
+            description = "Unauthorized - Invalid or missing authorization token",
+            content = @Content),
+        @ApiResponse(
+            responseCode = "403",
+            description = "Forbidden - Service not authorized",
+            content = @Content),
+        @ApiResponse(
+            responseCode = "500",
+            description = "Internal server error",
+            content = @Content)
+    })
+    public ResponseEntity<Void> checkIfUserHasAccessWithPostcode(
+        @RequestHeader(AUTHORIZATION)
+        @Parameter(description = "User's IDAM access token", required = true)
+        String authorisation,
+
+        @RequestHeader(SERVICE_AUTHORIZATION)
+        @Parameter(description = "S2S token from the frontend service", required = true)
+        String serviceAuthorisation,
+
+        @RequestHeader(value = "X-Postcode")
+        @Parameter(description = "Postcode for verification", required = true)
+        String postcode,
+
+        @PathVariable
+        @NotBlank(message = "CCD reference cannot be blank")
+        @Pattern(regexp = "^\\d{16}$", message = "CCD reference must be 16 digits long")
+        @Parameter(
+            description = "The CCD reference number.",
+            required = true,
+            example = "1740138704453399"
+        )
+        String ccdReference
+    ) {
+        log.info("Received request to check if user has access to case and postcode matches for: {}", ccdReference);
+        cicaCaseService.checkIfUserHasAccessWithPostcode(ccdReference, authorisation, postcode);
+        log.info("Access and postcode check completed successfully for case: {}", ccdReference);
+        return ResponseEntity.ok().build();
     }
 }
 
