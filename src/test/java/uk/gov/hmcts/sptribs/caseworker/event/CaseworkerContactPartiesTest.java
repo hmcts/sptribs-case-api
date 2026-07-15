@@ -12,6 +12,8 @@ import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.Event;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.ccd.sdk.type.Document;
+import uk.gov.hmcts.ccd.sdk.type.DynamicListElement;
+import uk.gov.hmcts.ccd.sdk.type.DynamicMultiSelectList;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.event.page.ContactPartiesSelectDocument;
@@ -33,6 +35,7 @@ import uk.gov.hmcts.sptribs.notification.exception.NotificationException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.doThrow;
@@ -98,9 +101,25 @@ class CaseworkerContactPartiesTest {
             .documentCategory(DocumentType.LINKED_DOCS)
             .documentLink(Document.builder().url("url").binaryUrl("url").filename("name.pdf").build())
             .build();
-        ListValue<CaseworkerCICDocument> list = new ListValue<>();
-        list.setValue(doc);
-        listValueList.add(list);
+
+        String orderFilename = "Order--[Subject kaikaqsrf]--14-07-2026 15:39:57.pdf";
+        String orderDocUrlUUID = UUID.randomUUID().toString();
+
+        final CaseworkerCICDocument orderDoc = CaseworkerCICDocument.builder()
+            .documentCategory(DocumentType.TRIBUNAL_DIRECTION)
+            .documentLink(Document.builder()
+                .url("http://mocked-url.com/documents/" + orderDocUrlUUID)
+                .binaryUrl("http://mocked-url.com/documents/" + orderDocUrlUUID + "/binary")
+                .filename(orderFilename)
+                .build())
+            .build();
+
+        ListValue<CaseworkerCICDocument> docListValue = new ListValue<>();
+        docListValue.setValue(doc);
+        ListValue<CaseworkerCICDocument> orderDocListValue = new ListValue<>();
+        orderDocListValue.setValue(orderDoc);
+        listValueList.add(docListValue);
+        listValueList.add(orderDocListValue);
         final CicCase cicCase = CicCase.builder()
             .reinstateDocuments(listValueList)
             .build();
@@ -112,8 +131,17 @@ class CaseworkerContactPartiesTest {
 
         AboutToStartOrSubmitResponse<CaseData, State> response = caseWorkerContactParties.aboutToStart(caseDetails);
 
+        DynamicListElement responseOrderDoc = new DynamicListElement();
+
+        for (DynamicListElement responseDocListValue : response.getData().getContactPartiesDocuments().getDocumentList().getListItems()) {
+            if (responseDocListValue.getLabel().equals(orderFilename)) {
+                responseOrderDoc =  responseDocListValue;
+            }
+        }
+
         assertThat(response.getData().getContactPartiesDocuments().getDocumentList()).isNotNull();
-        assertThat(response.getData().getContactPartiesDocuments().getDocumentList().getListItems()).hasSize(1);
+        assertThat(response.getData().getContactPartiesDocuments().getDocumentList().getListItems()).hasSize(2);
+        assertThat(responseOrderDoc.getLabel()).contains("(http://mocked-url.com/documents/" + orderDocUrlUUID + "/binary)");
     }
 
     @Test
@@ -184,22 +212,31 @@ class CaseworkerContactPartiesTest {
             .notifyPartyRespondent(Set.of(RespondentCIC.RESPONDENT)).build();
         caseData.setCicCase(cicCase);
 
+        String orderFilename = "Order--[Subject kaikaqsrf]--14-07-2026 15:39:57.pdf";
+        String orderDocUrlUUID = UUID.randomUUID().toString();
+
+        DynamicListElement selectedDocument = new DynamicListElement();
+        selectedDocument.setLabel("[" + orderFilename + "]" + "(http://mocked-url.com/documents/" + orderDocUrlUUID + "/binary)");
+        selectedDocument.setCode(UUID.randomUUID());
+        List<DynamicListElement> selectedDocuments = new ArrayList<>();
+        selectedDocuments.add(selectedDocument);
+        DynamicMultiSelectList documentsToSelect = new DynamicMultiSelectList();
+        documentsToSelect.setValue(selectedDocuments);
+        caseData.getContactPartiesDocuments().setDocumentList(documentsToSelect);
+
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
         final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
         updatedCaseDetails.setData(caseData);
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
 
-        SubmittedCallbackResponse response =
+        SubmittedCallbackResponse contactPartiesResponse =
             caseWorkerContactParties.submitted(updatedCaseDetails, beforeDetails);
 
         assertThat(caseData.getCicCase().getNotifyPartySubject()).hasSize(1);
         assertThat(caseData.getCicCase().getNotifyPartyRepresentative()).hasSize(1);
         assertThat(caseData.getCicCase().getNotifyPartyRespondent()).hasSize(1);
         assertThat(caseData.getCicCase().getNotifyPartyApplicant()).hasSize(1);
-        assertThat(response).isNotNull();
-
-        SubmittedCallbackResponse contactPartiesResponse = caseWorkerContactParties.submitted(updatedCaseDetails, beforeDetails);
 
         assertThat(contactPartiesResponse).isNotNull();
         assertThat(contactPartiesResponse.getConfirmationHeader()).contains("Subject");
@@ -232,14 +269,11 @@ class CaseworkerContactPartiesTest {
         Mockito.doNothing().when(contactPartiesNotification).sendToRepresentative(caseData, caseData.getHyphenatedCaseRef());
         Mockito.doNothing().when(contactPartiesNotification).sendToRespondent(caseData, caseData.getHyphenatedCaseRef());
 
-        SubmittedCallbackResponse response =
+        SubmittedCallbackResponse contactPartiesResponse =
             caseWorkerContactParties.submitted(updatedCaseDetails, beforeDetails);
         assertThat(caseData.getCicCase().getNotifyPartyRepresentative()).hasSize(1);
         assertThat(caseData.getCicCase().getNotifyPartyRespondent()).hasSize(1);
         assertThat(caseData.getCicCase().getNotifyPartyApplicant()).hasSize(1);
-        assertThat(response).isNotNull();
-
-        SubmittedCallbackResponse contactPartiesResponse = caseWorkerContactParties.submitted(updatedCaseDetails, beforeDetails);
 
         assertThat(contactPartiesResponse).isNotNull();
         assertThat(contactPartiesResponse.getConfirmationHeader()).doesNotContain("Subject");
