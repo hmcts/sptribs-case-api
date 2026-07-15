@@ -23,10 +23,13 @@ import uk.gov.hmcts.sptribs.caseworker.model.ContactPartiesDocuments;
 import uk.gov.hmcts.sptribs.cdam.model.Document;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
+import uk.gov.hmcts.sptribs.ciccase.model.NotificationResponse;
 import uk.gov.hmcts.sptribs.common.config.WebMvcConfig;
 import uk.gov.hmcts.sptribs.common.repositories.DocumentsRepository;
+import uk.gov.hmcts.sptribs.common.service.ContactPartiesService;
 import uk.gov.hmcts.sptribs.idam.IdamService;
 import uk.gov.hmcts.sptribs.notification.NotificationServiceCIC;
+import uk.gov.hmcts.sptribs.notification.model.Party;
 import uk.gov.hmcts.sptribs.services.cdam.CaseDocumentClientApi;
 import uk.gov.hmcts.sptribs.testutil.IdamWireMock;
 
@@ -97,6 +100,9 @@ public class CaseworkerContactPartiesIT extends IntegrationTestBase {
 
     @MockitoBean
     private NotificationServiceCIC notificationServiceCIC;
+
+    @MockitoBean
+    private ContactPartiesService contactPartiesService;
 
     private User systemUser;
 
@@ -216,6 +222,9 @@ public class CaseworkerContactPartiesIT extends IntegrationTestBase {
         );
         caseData.setContactPartiesDocuments(contactPartiesDocuments);
 
+        NotificationResponse notificationResponse = NotificationResponse.builder().id("123").build();
+        when(notificationServiceCIC.sendEmail(any(), eq(TEST_CASE_ID_HYPHENATED), any())).thenReturn(notificationResponse);
+
         String response = mockMvc.perform(post(SUBMITTED_URL)
             .contentType(APPLICATION_JSON)
             .header(SERVICE_AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
@@ -236,8 +245,12 @@ public class CaseworkerContactPartiesIT extends IntegrationTestBase {
             .isString()
             .contains("# Message sent \n## A notification has been sent to: Subject, Respondent, Representative, Applicant");
 
-        verify(notificationServiceCIC, times(4)).sendEmail(any(), eq(TEST_CASE_ID_HYPHENATED));
+        verify(notificationServiceCIC, times(1)).sendEmail(any(), eq(TEST_CASE_ID_HYPHENATED), eq(Party.SUBJECT));
+        verify(notificationServiceCIC, times(1)).sendEmail(any(), eq(TEST_CASE_ID_HYPHENATED), eq(Party.RESPONDENT));
+        verify(notificationServiceCIC, times(1)).sendEmail(any(), eq(TEST_CASE_ID_HYPHENATED), eq(Party.REPRESENTATIVE));
+        verify(notificationServiceCIC, times(1)).sendEmail(any(), eq(TEST_CASE_ID_HYPHENATED), eq(Party.APPLICANT));
         verifyNoMoreInteractions(notificationServiceCIC);
+        verify(contactPartiesService).linkCorrespondenceIdsToDocuments(any(), any(),eq(List.of("123", "123", "123", "123")));
     }
 
     @Test

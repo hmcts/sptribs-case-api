@@ -48,12 +48,13 @@ ccd {
 }
 
 project.tasks.named("generateCCDConfig") {
+  // Use PostgreSQL rather than H2 as the application uses PostgreSQL named enums.
   environment 'SPRING_PROFILES_ACTIVE', 'config-gen'
   environment 'SPRING_FLYWAY_ENABLED', 'false'
   environment 'SPRING_JMS_SERVICEBUS_ENABLED', 'false'
-  environment 'SPRING_DATASOURCE_URL', 'jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;MODE=PostgreSQL'
-  environment 'SPRING_DATASOURCE_USERNAME', 'sa'
-  environment 'SPRING_DATASOURCE_PASSWORD', ''
+  environment 'PCS_DB_USER_NAME', 'postgres'
+  environment 'PCS_DB_PASSWORD', 'postgres'
+  environment 'DB_PORT', '6432'
 }
 
 sourceSets {

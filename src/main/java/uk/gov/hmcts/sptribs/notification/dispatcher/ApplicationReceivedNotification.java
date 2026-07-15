@@ -74,6 +74,6 @@ public class ApplicationReceivedNotification implements PartiesNotification {
             destinationAddress,
             templateVars,
             TemplateName.APPLICATION_RECEIVED);
-        return notificationService.sendEmail(request, caseReferenceNumber);
+        return notificationService.sendEmail(request, caseReferenceNumber, null);
     }
 }

@@ -1,4 +1,4 @@
-package uk.gov.hmcts.sptribs;
+package uk.gov.hmcts.sptribs.manager;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.TestComponent;

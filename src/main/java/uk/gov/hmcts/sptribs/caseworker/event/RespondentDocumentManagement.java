@@ -125,7 +125,7 @@ public class RespondentDocumentManagement implements CCDConfig<CaseData, State, 
                     document.getValue().getDocumentLink(),
                     details.getId(),
                     document.getValue().getDocumentCategory(),
-                    CaseDocumentType.RESPONDENT
+                    CaseDocumentType.DOCUMENT_MANAGEMENT
                 );
             } catch (RuntimeException e) {
                 errors.add(handleDocumentException(document.getValue().getDocumentLink(), e.getMessage()));

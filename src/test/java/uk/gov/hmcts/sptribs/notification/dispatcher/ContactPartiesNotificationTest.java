@@ -10,15 +10,18 @@ import uk.gov.hmcts.sptribs.caseworker.model.ContactPartiesDocuments;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.ContactPreferenceType;
+import uk.gov.hmcts.sptribs.ciccase.model.NotificationResponse;
 import uk.gov.hmcts.sptribs.common.CommonConstants;
 import uk.gov.hmcts.sptribs.notification.NotificationHelper;
 import uk.gov.hmcts.sptribs.notification.NotificationServiceCIC;
 import uk.gov.hmcts.sptribs.notification.TemplateName;
 import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
+import uk.gov.hmcts.sptribs.notification.model.Party;
 
 import java.util.Map;
 import java.util.UUID;
 
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyMap;
@@ -58,14 +61,21 @@ class ContactPartiesNotificationTest {
             CommonConstants.CONTACT_PARTY_INFO, data.getCicCase().getNotifyPartyMessage(),
             CommonConstants.CIC_CASE_SUBJECT_NAME, data.getCicCase().getFullName());
         final Map<String, String> uploadedDocuments = getDocumentUploadMap();
+        NotificationResponse notificationResponse = new NotificationResponse();
+        notificationResponse.setId("123");
+
         //When
         when(notificationHelper.buildEmailNotificationRequest(any(), anyBoolean(), anyMap(), anyMap(), any(TemplateName.class)))
             .thenReturn(NotificationRequest.builder().uploadedDocuments(uploadedDocuments).build());
+        when(notificationService.sendEmail(any(NotificationRequest.class), eq(TEST_CASE_ID.toString()), eq(Party.SUBJECT)))
+            .thenReturn(notificationResponse);
 
-        contactPartiesNotification.sendToSubject(data, TEST_CASE_ID.toString(), uploadedDocuments);
+        String correspondenceId =
+            contactPartiesNotification.sendToSubject(data, TEST_CASE_ID.toString(), uploadedDocuments);
 
         //Then
-        verify(notificationService).sendEmail(any(NotificationRequest.class), eq(TEST_CASE_ID.toString()));
+        assertThat(correspondenceId).isEqualTo("123");
+        verify(notificationService).sendEmail(any(NotificationRequest.class), eq(TEST_CASE_ID.toString()), eq(Party.SUBJECT));
         verify(notificationHelper).buildEmailNotificationRequest(
             data.getCicCase().getEmail(),
             true,
@@ -86,13 +96,20 @@ class ContactPartiesNotificationTest {
         final Map<String, Object> comonVarsMap = Map.of(
             CommonConstants.CONTACT_PARTY_INFO, data.getCicCase().getNotifyPartyMessage(),
             CommonConstants.CIC_CASE_SUBJECT_NAME, data.getCicCase().getFullName());
+        NotificationResponse notificationResponse = new NotificationResponse();
+        notificationResponse.setId("123");
 
         //When
         when(notificationHelper.buildLetterNotificationRequest(anyMap(), any(TemplateName.class)))
             .thenReturn(NotificationRequest.builder().build());
-        contactPartiesNotification.sendToSubject(data, TEST_CASE_ID.toString(), uploadedDocuments);
+        when(notificationService.sendLetter(any(NotificationRequest.class), eq(TEST_CASE_ID.toString())))
+            .thenReturn(notificationResponse);
+
+        String correspondenceId =
+            contactPartiesNotification.sendToSubject(data, TEST_CASE_ID.toString(), uploadedDocuments);
 
         //Then
+        assertThat(correspondenceId).isEqualTo("123");
         verify(notificationService).sendLetter(any(NotificationRequest.class), eq(TEST_CASE_ID.toString()));
         verify(notificationHelper).buildLetterNotificationRequest(
             comonVarsMap,
@@ -114,15 +131,22 @@ class ContactPartiesNotificationTest {
         final Map<String, Object> comonVarsMap = Map.of(
             CommonConstants.CONTACT_PARTY_INFO, data.getCicCase().getNotifyPartyMessage(),
             CommonConstants.CIC_CASE_SUBJECT_NAME, data.getCicCase().getFullName());
+        NotificationResponse notificationResponse = new NotificationResponse();
+        notificationResponse.setId("123");
 
         //When
         when(notificationHelper.buildEmailNotificationRequest(any(), anyBoolean(), anyMap(), anyMap(), any(TemplateName.class)))
             .thenReturn(NotificationRequest.builder().uploadedDocuments(getDocumentUploadMap()).build());
 
-        contactPartiesNotification.sendToApplicant(data, TEST_CASE_ID.toString(), uploadedDocuments);
+        when(notificationService.sendEmail(any(NotificationRequest.class), eq(TEST_CASE_ID.toString()), eq(Party.APPLICANT)))
+            .thenReturn(notificationResponse);
+
+        String correspondenceId =
+            contactPartiesNotification.sendToApplicant(data, TEST_CASE_ID.toString(), uploadedDocuments);
 
         //Then
-        verify(notificationService).sendEmail(any(NotificationRequest.class), eq(TEST_CASE_ID.toString()));
+        assertThat(correspondenceId).isEqualTo("123");
+        verify(notificationService).sendEmail(any(NotificationRequest.class), eq(TEST_CASE_ID.toString()), eq(Party.APPLICANT));
         verify(notificationHelper).buildEmailNotificationRequest(
             data.getCicCase().getApplicantEmailAddress(),
             true,
@@ -145,13 +169,19 @@ class ContactPartiesNotificationTest {
         final Map<String, Object> comonVarsMap = Map.of(
             CommonConstants.CONTACT_PARTY_INFO, data.getCicCase().getNotifyPartyMessage(),
             CommonConstants.CIC_CASE_SUBJECT_NAME, data.getCicCase().getFullName());
+        NotificationResponse notificationResponse = new NotificationResponse();
+        notificationResponse.setId("123");
 
         //When
         when(notificationHelper.buildLetterNotificationRequest(anyMap(), any(TemplateName.class)))
             .thenReturn(NotificationRequest.builder().build());
-        contactPartiesNotification.sendToApplicant(data, TEST_CASE_ID.toString(), uploadedDocuments);
+        when(notificationService.sendLetter(any(NotificationRequest.class), eq(TEST_CASE_ID.toString())))
+            .thenReturn(notificationResponse);
+        String correspondenceId =
+            contactPartiesNotification.sendToApplicant(data, TEST_CASE_ID.toString(), uploadedDocuments);
 
         //Then
+        assertThat(correspondenceId).isEqualTo("123");
         verify(notificationService).sendLetter(any(NotificationRequest.class), eq(TEST_CASE_ID.toString()));
         verify(notificationHelper).buildLetterNotificationRequest(
             comonVarsMap,
@@ -173,15 +203,21 @@ class ContactPartiesNotificationTest {
         final Map<String, Object> comonVarsMap = Map.of(
             CommonConstants.CONTACT_PARTY_INFO, data.getCicCase().getNotifyPartyMessage(),
             CommonConstants.CIC_CASE_SUBJECT_NAME, data.getCicCase().getFullName());
+        NotificationResponse notificationResponse = new NotificationResponse();
+        notificationResponse.setId("123");
 
         //When
         when(notificationHelper.buildEmailNotificationRequest(any(), anyBoolean(), anyMap(), anyMap(), any(TemplateName.class)))
             .thenReturn(NotificationRequest.builder().uploadedDocuments(getDocumentUploadMap()).build());
+        when(notificationService.sendEmail(any(NotificationRequest.class), eq(TEST_CASE_ID.toString()), eq(Party.REPRESENTATIVE)))
+            .thenReturn(notificationResponse);
 
-        contactPartiesNotification.sendToRepresentative(data, TEST_CASE_ID.toString(), uploadedDocuments);
+        String correspondenceId =
+            contactPartiesNotification.sendToRepresentative(data, TEST_CASE_ID.toString(), uploadedDocuments);
 
         //Then
-        verify(notificationService).sendEmail(any(NotificationRequest.class), eq(TEST_CASE_ID.toString()));
+        assertThat(correspondenceId).isEqualTo("123");
+        verify(notificationService).sendEmail(any(NotificationRequest.class), eq(TEST_CASE_ID.toString()), eq(Party.REPRESENTATIVE));
         verify(notificationHelper).buildEmailNotificationRequest(
             data.getCicCase().getRepresentativeEmailAddress(),
             true,
@@ -204,13 +240,20 @@ class ContactPartiesNotificationTest {
         final Map<String, Object> comonVarsMap = Map.of(
             CommonConstants.CONTACT_PARTY_INFO, data.getCicCase().getNotifyPartyMessage(),
             CommonConstants.CIC_CASE_SUBJECT_NAME, data.getCicCase().getFullName());
+        NotificationResponse notificationResponse = new NotificationResponse();
+        notificationResponse.setId("123");
 
         //When
         when(notificationHelper.buildLetterNotificationRequest(anyMap(), any(TemplateName.class)))
             .thenReturn(NotificationRequest.builder().build());
-        contactPartiesNotification.sendToRepresentative(data, TEST_CASE_ID.toString(), uploadedDocuments);
+        when(notificationService.sendLetter(any(NotificationRequest.class), eq(TEST_CASE_ID.toString())))
+            .thenReturn(notificationResponse);
+
+        String correspondenceId =
+            contactPartiesNotification.sendToRepresentative(data, TEST_CASE_ID.toString(), uploadedDocuments);
 
         //Then
+        assertThat(correspondenceId).isEqualTo("123");
         verify(notificationService).sendLetter(any(NotificationRequest.class), eq(TEST_CASE_ID.toString()));
         verify(notificationHelper).buildLetterNotificationRequest(
             comonVarsMap,
@@ -228,14 +271,21 @@ class ContactPartiesNotificationTest {
         final Map<String, Object> comonVarsMap = Map.of(
             CommonConstants.CONTACT_PARTY_INFO, data.getCicCase().getNotifyPartyMessage(),
             CommonConstants.CIC_CASE_SUBJECT_NAME, data.getCicCase().getFullName());
+        NotificationResponse notificationResponse = new NotificationResponse();
+        notificationResponse.setId("123");
 
         //When
         when(notificationHelper.buildEmailNotificationRequest(any(), anyMap(), any(TemplateName.class)))
             .thenReturn(NotificationRequest.builder().build());
-        contactPartiesNotification.sendToRespondent(data, TEST_CASE_ID.toString(), uploadedDocuments);
+        when(notificationService.sendEmail(any(NotificationRequest.class), eq(TEST_CASE_ID.toString()), eq(Party.RESPONDENT)))
+            .thenReturn(notificationResponse);
+
+        String correspondenceId =
+            contactPartiesNotification.sendToRespondent(data, TEST_CASE_ID.toString(), uploadedDocuments);
 
         //Then
-        verify(notificationService).sendEmail(any(NotificationRequest.class), eq(TEST_CASE_ID.toString()));
+        assertThat(correspondenceId).isEqualTo("123");
+        verify(notificationService).sendEmail(any(NotificationRequest.class), eq(TEST_CASE_ID.toString()), eq(Party.RESPONDENT));
         verify(notificationHelper).buildEmailNotificationRequest(
             data.getCicCase().getRespondentEmail(),
             comonVarsMap,
@@ -255,15 +305,21 @@ class ContactPartiesNotificationTest {
         final Map<String, Object> comonVarsMap = Map.of(
             CommonConstants.CONTACT_PARTY_INFO, data.getCicCase().getNotifyPartyMessage(),
             CommonConstants.CIC_CASE_SUBJECT_NAME, data.getCicCase().getFullName());
+        NotificationResponse notificationResponse = new NotificationResponse();
+        notificationResponse.setId("123");
 
         //When
         when(notificationHelper.buildEmailNotificationRequest(any(), anyBoolean(), anyMap(), anyMap(), any(TemplateName.class)))
             .thenReturn(NotificationRequest.builder().uploadedDocuments(getDocumentUploadMap()).build());
+        when(notificationService.sendEmail(any(NotificationRequest.class), eq(TEST_CASE_ID.toString()), eq(Party.RESPONDENT)))
+            .thenReturn(notificationResponse);
 
-        contactPartiesNotification.sendToRespondent(data, TEST_CASE_ID.toString(), uploadedDocuments);
+        String correspondenceId =
+            contactPartiesNotification.sendToRespondent(data, TEST_CASE_ID.toString(), uploadedDocuments);
 
         //Then
-        verify(notificationService).sendEmail(any(NotificationRequest.class), eq(TEST_CASE_ID.toString()));
+        assertThat(correspondenceId).isEqualTo("123");
+        verify(notificationService).sendEmail(any(NotificationRequest.class), eq(TEST_CASE_ID.toString()), eq(Party.RESPONDENT));
         verify(notificationHelper).buildEmailNotificationRequest(
             data.getCicCase().getRespondentEmail(),
             true,
@@ -279,17 +335,24 @@ class ContactPartiesNotificationTest {
         final CaseData data = getMockCaseData();
         data.getCicCase().setRepresentativeFullName("respFullName");
         data.getCicCase().setNotifyPartyMessage("message");
+        NotificationResponse notificationResponse = new NotificationResponse();
+        notificationResponse.setId("123");
 
         //When
         when(notificationHelper.buildEmailNotificationRequest(any(), anyMap(), any(TemplateName.class)))
             .thenReturn(NotificationRequest.builder().build());
-        contactPartiesNotification.sendToTribunal(data, TEST_CASE_ID.toString(), uploadedDocuments);
+        when(notificationService.sendEmail(any(NotificationRequest.class), eq(TEST_CASE_ID.toString()), eq(Party.TRIBUNAL)))
+            .thenReturn(notificationResponse);
+
+        String correspondenceId =
+            contactPartiesNotification.sendToTribunal(data, TEST_CASE_ID.toString(), uploadedDocuments);
         final Map<String, Object> comonVarsMap = Map.of(
             CommonConstants.CONTACT_PARTY_INFO, data.getCicCase().getNotifyPartyMessage(),
             CommonConstants.CIC_CASE_TRIBUNAL_NAME, TRIBUNAL_NAME_VALUE);
 
         //Then
-        verify(notificationService).sendEmail(any(NotificationRequest.class), eq(TEST_CASE_ID.toString()));
+        assertThat(correspondenceId).isEqualTo("123");
+        verify(notificationService).sendEmail(any(NotificationRequest.class), eq(TEST_CASE_ID.toString()), eq(Party.TRIBUNAL));
         verify(notificationHelper).buildEmailNotificationRequest(
             TRIBUNAL_EMAIL_VALUE,
             comonVarsMap,
@@ -308,15 +371,22 @@ class ContactPartiesNotificationTest {
         final Map<String, Object> comonVarsMap = Map.of(
             CommonConstants.CONTACT_PARTY_INFO, data.getCicCase().getNotifyPartyMessage(),
             CommonConstants.CIC_CASE_TRIBUNAL_NAME, TRIBUNAL_NAME_VALUE);
+        NotificationResponse notificationResponse = new NotificationResponse();
+        notificationResponse.setId("123");
 
         //When
         when(notificationHelper.buildEmailNotificationRequest(any(), anyBoolean(), anyMap(), anyMap(), any(TemplateName.class)))
             .thenReturn(NotificationRequest.builder().uploadedDocuments(getDocumentUploadMap()).build());
 
-        contactPartiesNotification.sendToTribunal(data, TEST_CASE_ID.toString(), uploadedDocuments);
+        when(notificationService.sendEmail(any(NotificationRequest.class), eq(TEST_CASE_ID.toString()), eq(Party.TRIBUNAL)))
+            .thenReturn(notificationResponse);
+
+        String correspondenceId =
+            contactPartiesNotification.sendToTribunal(data, TEST_CASE_ID.toString(), uploadedDocuments);
 
         //Then
-        verify(notificationService).sendEmail(any(NotificationRequest.class), eq(TEST_CASE_ID.toString()));
+        assertThat(correspondenceId).isEqualTo("123");
+        verify(notificationService).sendEmail(any(NotificationRequest.class), eq(TEST_CASE_ID.toString()), eq(Party.TRIBUNAL));
         verify(notificationHelper).buildEmailNotificationRequest(
             TRIBUNAL_EMAIL_VALUE,
             true,
