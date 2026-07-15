@@ -1,7 +1,9 @@
 package uk.gov.hmcts.sptribs.systemupdate.schedule.migration;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.idam.client.models.User;
 import uk.gov.hmcts.sptribs.idam.IdamService;
@@ -11,9 +13,10 @@ import uk.gov.hmcts.sptribs.systemupdate.service.CcdUpdateService;
 
 import java.util.List;
 
-import static reactor.netty.http.HttpConnectionLiveness.log;
 import static uk.gov.hmcts.sptribs.systemupdate.event.SystemMigrateCaseDocumentsToDocTable.SYSTEM_MIGRATE_CASE_DOCUMENTS_TO_TABLE;
 
+@Component
+@Slf4j
 public class SystemMigrateCaseDocumentsDocumentTableTask implements Runnable {
 
     private final AuthTokenGenerator authTokenGenerator;
@@ -24,10 +27,10 @@ public class SystemMigrateCaseDocumentsDocumentTableTask implements Runnable {
 
     private final IdamService idamService;
 
-    @Value("${feature.migrate-documents-table-task.enabled}")
+    @Value("${feature.migrate-to-documents-table-task.enabled}")
     private boolean documentTableMigrationEnabled;
 
-    @Value("${feature.migrate-global-search-task.caseReference}")
+    @Value("${feature.migrate-to-documents-table-task.caseReference}")
     private String documentTableTestCaseReference;
 
     @Autowired
@@ -44,7 +47,7 @@ public class SystemMigrateCaseDocumentsDocumentTableTask implements Runnable {
     public void run() {
 
         if (!documentTableMigrationEnabled) {
-            log.info("Clean deleted documents task is not enabled");
+            log.info("Migrate documents to document table task is not enabled");
             return;
         }
 
@@ -63,8 +66,6 @@ public class SystemMigrateCaseDocumentsDocumentTableTask implements Runnable {
 
                 caseIdsToUpdate = List.of(123L);
 
-                //get all case references from case_data
-
             }
 
             if (caseIdsToUpdate.isEmpty()) {
@@ -78,9 +79,9 @@ public class SystemMigrateCaseDocumentsDocumentTableTask implements Runnable {
                 triggerSystemMigrateDocumentsToDocumentTable(user, serviceAuth, caseId);
             }
 
-            log.info("System clean deleted documents scheduled task complete.");
+            log.info("System migrate documents to document table scheduled task complete.");
         } catch (final RuntimeException e) {
-            log.error("System clean deleted documents scheduled task stopped after search error", e);
+            log.error("System migrate documents to document table scheduled task stopped after search error", e);
         }
 
     }

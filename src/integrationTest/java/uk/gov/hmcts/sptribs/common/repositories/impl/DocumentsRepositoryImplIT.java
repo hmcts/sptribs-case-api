@@ -235,7 +235,7 @@ class DocumentsRepositoryImplIT extends IntegrationTestBase {
         List<ContactPartyDocumentDetails> result =
             repository.findContactPartyDocuments(
                 123L,
-                List.of( Party.APPLICANT, Party.REPRESENTATIVE, Party.SUBJECT),
+                List.of(Party.APPLICANT, Party.REPRESENTATIVE, Party.SUBJECT),
                 List.of(ORDER_TYPE_ID, DECISION_ID, FINAL_DECISION_ID)
             );
 

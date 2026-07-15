@@ -28,7 +28,7 @@ public class CorrespondenceDocumentManager implements IntegrationTestDataManager
             :correspondenceId,
             :documentId
         )
-        """,
+            """,
             Map.of(
                 "correspondenceId", correspondenceId,
                 "documentId", documentId

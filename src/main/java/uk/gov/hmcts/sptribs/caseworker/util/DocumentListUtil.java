@@ -12,11 +12,14 @@ import uk.gov.hmcts.sptribs.caseworker.model.HearingSummary;
 import uk.gov.hmcts.sptribs.caseworker.model.Listing;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
+import uk.gov.hmcts.sptribs.document.model.CaseDocumentType;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -27,6 +30,7 @@ import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static uk.gov.hmcts.sptribs.caseworker.util.DecisionDocumentListUtil.getDecisionDocs;
 import static uk.gov.hmcts.sptribs.caseworker.util.DecisionDocumentListUtil.getFinalDecisionDocs;
 import static uk.gov.hmcts.sptribs.caseworker.util.DocumentManagementUtil.buildListValues;
+import static uk.gov.hmcts.sptribs.caseworker.util.DraftOrderDocumentListUtil.getDraftOrderDocuments;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.DOUBLE_HYPHEN;
 import static uk.gov.hmcts.sptribs.caseworker.util.OrderDocumentListUtil.getOrderDocuments;
 import static uk.gov.hmcts.sptribs.document.DocumentConstants.CASE_TYPE;
@@ -34,6 +38,12 @@ import static uk.gov.hmcts.sptribs.document.DocumentConstants.CLOSE_CASE_TYPE;
 import static uk.gov.hmcts.sptribs.document.DocumentConstants.DOC_MGMT_TYPE;
 import static uk.gov.hmcts.sptribs.document.DocumentConstants.HEARING_SUMMARY_TYPE;
 import static uk.gov.hmcts.sptribs.document.DocumentConstants.REINSTATE_TYPE;
+import static uk.gov.hmcts.sptribs.document.model.CaseDocumentType.APPLICATION;
+import static uk.gov.hmcts.sptribs.document.model.CaseDocumentType.DECISION;
+import static uk.gov.hmcts.sptribs.document.model.CaseDocumentType.DOCUMENT_MANAGEMENT;
+import static uk.gov.hmcts.sptribs.document.model.CaseDocumentType.DRAFT_ORDER;
+import static uk.gov.hmcts.sptribs.document.model.CaseDocumentType.FINAL_DECISION;
+import static uk.gov.hmcts.sptribs.document.model.CaseDocumentType.ORDER;
 
 public final class DocumentListUtil {
 
@@ -47,6 +57,23 @@ public final class DocumentListUtil {
         List<CaseworkerCICDocument> docList = new ArrayList<>(getDocumentManagementDocs(data));
         prepareOtherCaseDocuments(data, docList);
         return docList;
+    }
+
+    public static Map<CaseDocumentType, List<CaseworkerCICDocument>> prepareDocTypeAndDocMap(CaseData data) {
+        Map<CaseDocumentType, List<CaseworkerCICDocument>> docTypeAndDocMap = new HashMap<>();
+
+        docTypeAndDocMap.put(ORDER, getOrderDocuments(data.getCicCase()));
+        docTypeAndDocMap.put(DRAFT_ORDER, getDraftOrderDocuments(data.getCicCase()));
+        docTypeAndDocMap.put(APPLICATION, getApplicantCaseDocs(data.getCicCase()));
+        docTypeAndDocMap.put(DECISION, getDecisionDocs(data));
+        docTypeAndDocMap.put(FINAL_DECISION, getFinalDecisionDocs(data));
+        docTypeAndDocMap.put(DOCUMENT_MANAGEMENT, getDocumentManagementDocs(data));
+
+        TODO:
+        //docList.addAll(getCloseCaseDocuments(data));
+        //docList.addAll(getHearingSummaryDocuments(data));
+
+        return docTypeAndDocMap;
     }
 
     private static List<CaseworkerCICDocument> prepareListExcludingInitialCicaUpload(CaseData data) {

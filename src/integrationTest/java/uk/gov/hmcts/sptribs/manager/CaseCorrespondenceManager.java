@@ -54,7 +54,7 @@ public class CaseCorrespondenceManager implements IntegrationTestDataManager {
             'EMAIL',
             CAST(:receivingParty AS party)
         )
-        """,
+            """,
             Map.of(
                 "caseReference", caseReference,
                 "correspondenceId", correspondenceId,
