@@ -192,4 +192,29 @@ class DocumentControllerTest {
             documentId
         );
     }
+
+    @Test
+    void shouldThrowExceptionWhenPostcodeValidationFailsOnDocumentDownload() {
+        // Given
+        String ccdReference = "1234567891234567";
+        String postcode = "INVALID";
+        CicaCaseEntity cicaCaseEntity = CicaCaseEntity.builder().id(ccdReference).build();
+        String documentId = "12345";
+
+        when(cicaCaseService.getCaseByCCDReference(ccdReference, TEST_AUTHORIZATION)).thenReturn(cicaCaseEntity);
+        org.mockito.Mockito.doThrow(new UnauthorisedCaseAccessException("Postcode match failed"))
+            .when(cicaCaseService).validatePostcode(cicaCaseEntity, postcode);
+
+        // When / Then
+        org.assertj.core.api.Assertions.assertThatThrownBy(() -> documentController.downloadDocumentByCaseAndId(
+            TEST_AUTHORIZATION,
+            postcode,
+            ccdReference,
+            documentId
+        ))
+            .isExactlyInstanceOf(UnauthorisedCaseAccessException.class)
+            .hasMessageContaining("Postcode match failed");
+
+        org.mockito.Mockito.verifyNoInteractions(documentDownloadService);
+    }
 }

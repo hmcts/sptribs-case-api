@@ -12,9 +12,7 @@ import uk.gov.hmcts.sptribs.ciccase.service.CicaCaseService;
 import uk.gov.hmcts.sptribs.common.repositories.model.CicaCaseEntity;
 import uk.gov.hmcts.sptribs.controllers.mapper.CicaCaseMapper;
 import uk.gov.hmcts.sptribs.controllers.model.CicaCaseResponse;
-import uk.gov.hmcts.sptribs.controllers.model.PostcodeRequest;
 import uk.gov.hmcts.sptribs.exception.CaseNotFoundException;
-import uk.gov.hmcts.sptribs.exception.UnauthorisedCaseAccessException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -100,59 +98,6 @@ class CicaCaseControllerTest {
         ))
             .isExactlyInstanceOf(IllegalArgumentException.class)
             .hasMessageContaining("Invalid CICA reference format");
-
-        verifyNoInteractions(cicaCaseMapper);
-    }
-
-    @Test
-    void shouldReturnOkWithFullCaseDataWhenPostcodeValidationIsSuccessful() {
-        // Given
-        String ccdReference = "1234567891234567";
-        String postcode = "SW11 1PD";
-        PostcodeRequest postcodeRequest = PostcodeRequest.builder().postcode(postcode).build();
-
-        CicaCaseEntity cicaCaseEntity = createCicaCaseEntity(ccdReference);
-        CicaCaseResponse expectedResponse = createCicaCaseResponse(ccdReference);
-
-        when(cicaCaseService.getCaseWithVerifiedPostcode(ccdReference, TEST_AUTHORIZATION, postcode))
-            .thenReturn(cicaCaseEntity);
-        when(cicaCaseMapper.toResponse(cicaCaseEntity)).thenReturn(expectedResponse);
-
-        // When
-        ResponseEntity<CicaCaseResponse> response = cicaCaseController.validatePostcode(
-            TEST_AUTHORIZATION,
-            TEST_SERVICE_AUTHORIZATION,
-            ccdReference,
-            postcodeRequest
-        );
-
-        // Then
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(response.getBody()).isEqualTo(expectedResponse);
-        Assertions.assertNotNull(response.getBody().getData());
-        verify(cicaCaseService).getCaseWithVerifiedPostcode(ccdReference, TEST_AUTHORIZATION, postcode);
-        verify(cicaCaseMapper).toResponse(cicaCaseEntity);
-    }
-
-    @Test
-    void shouldPropagateExceptionWhenPostcodeValidationFails() {
-        // Given
-        String ccdReference = "1234567891234567";
-        String postcode = "WRONG";
-        PostcodeRequest postcodeRequest = PostcodeRequest.builder().postcode(postcode).build();
-
-        when(cicaCaseService.getCaseWithVerifiedPostcode(ccdReference, TEST_AUTHORIZATION, postcode))
-            .thenThrow(new UnauthorisedCaseAccessException("Postcode match failed"));
-
-        // When / Then
-        assertThatThrownBy(() -> cicaCaseController.validatePostcode(
-            TEST_AUTHORIZATION,
-            TEST_SERVICE_AUTHORIZATION,
-            ccdReference,
-            postcodeRequest
-        ))
-            .isExactlyInstanceOf(UnauthorisedCaseAccessException.class)
-            .hasMessageContaining("Postcode match failed");
 
         verifyNoInteractions(cicaCaseMapper);
     }

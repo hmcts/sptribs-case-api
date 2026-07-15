@@ -19,6 +19,9 @@ import uk.gov.hmcts.sptribs.cdam.model.Document;
 import uk.gov.hmcts.sptribs.ciccase.service.CicaCaseService;
 import uk.gov.hmcts.sptribs.common.config.WebMvcConfig;
 import uk.gov.hmcts.sptribs.common.repositories.model.CicaCaseEntity;
+import uk.gov.hmcts.sptribs.controllers.mapper.CaseworkerCICDocumentMapper;
+import uk.gov.hmcts.sptribs.document.model.DocumentDashboardModel;
+import uk.gov.hmcts.sptribs.document.service.DocumentsService;
 import uk.gov.hmcts.sptribs.services.cdam.CaseDocumentClientApi;
 import uk.gov.hmcts.sptribs.testutil.IdamWireMock;
 
@@ -45,8 +48,7 @@ class DocumentControllerIT {
     private static final String CCD_REFERENCE = "1234567891234567";
     private static final String POSTCODE = "SW11 1PD";
     private static final String DOWNLOAD_DOCUMENT_URL = "/cases/CIC/" + CCD_REFERENCE + "/documents/%s/download";
-
-    //add tests for other endpoint to get docs!!!
+    private static final String GET_DOCUMENTS_URL = "/cases/CIC/" + CCD_REFERENCE + "/documents";
 
     @Autowired
     private MockMvc mockMvc;
@@ -62,6 +64,12 @@ class DocumentControllerIT {
 
     @MockitoBean
     private CicaCaseService cicaCaseService;
+
+    @MockitoBean
+    private DocumentsService documentsService;
+
+    @MockitoBean
+    private CaseworkerCICDocumentMapper caseworkerCICDocumentMapper;
 
     @BeforeAll
     static void setUp() {
@@ -234,6 +242,90 @@ class DocumentControllerIT {
             .andExpect(header().string(HttpHeaders.CONTENT_TYPE, mimeType))
             .andExpect(header().string("original-file-name", fileName))
             .andExpect(content().bytes(documentContent));
+    }
+
+    @Test
+    void shouldGetDocumentsSuccessfully() throws Exception {
+        // Given
+        DocumentDashboardModel dashboardModel = DocumentDashboardModel.builder()
+            .contactPartiesDocuments(java.util.Collections.emptyList())
+            .orderAndDecisionDocuments(java.util.Collections.emptyList())
+            .latestCaseBundleDocument(null)
+            .build();
+
+        when(documentsService.getDocumentsOnCase(Long.valueOf(CCD_REFERENCE)))
+            .thenReturn(dashboardModel);
+
+        when(caseworkerCICDocumentMapper.map(org.mockito.Mockito.anyList())).thenReturn(java.util.Collections.emptyList());
+        when(caseworkerCICDocumentMapper.mapEntityToList(any())).thenReturn(java.util.Collections.emptyList());
+
+        // When & Then
+        mockMvc.perform(get(GET_DOCUMENTS_URL)
+                .header(AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
+                .header(SERVICE_AUTHORIZATION, TEST_SERVICE_AUTH_TOKEN)
+                .header("X-Postcode", POSTCODE))
+            .andExpect(status().isOk())
+            .andExpect(content().json("{\"contactPartiesDocuments\":[],\"orderAndDecisionDocuments\":[],\"latestCaseBundleDocuments\":[]}"));
+    }
+
+    @Test
+    void shouldFailToGetDocumentsWhenPostcodeValidationFails() throws Exception {
+        // Given
+        String invalidPostcode = "INVALID";
+        org.mockito.Mockito.doThrow(new uk.gov.hmcts.sptribs.exception.UnauthorisedCaseAccessException("Postcode match failed"))
+            .when(cicaCaseService).validatePostcode(any(), eq(invalidPostcode));
+
+        // When & Then
+        mockMvc.perform(get(GET_DOCUMENTS_URL)
+                .header(AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
+                .header(SERVICE_AUTHORIZATION, TEST_SERVICE_AUTH_TOKEN)
+                .header("X-Postcode", invalidPostcode))
+            .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void shouldFailToDownloadDocumentWhenPostcodeValidationFails() throws Exception {
+        // Given
+        UUID documentId = UUID.randomUUID();
+        String invalidPostcode = "INVALID";
+        org.mockito.Mockito.doThrow(new uk.gov.hmcts.sptribs.exception.UnauthorisedCaseAccessException("Postcode match failed"))
+            .when(cicaCaseService).validatePostcode(any(), eq(invalidPostcode));
+
+        // When & Then
+        mockMvc.perform(get(String.format(DOWNLOAD_DOCUMENT_URL, documentId))
+                .header(AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
+                .header(SERVICE_AUTHORIZATION, TEST_SERVICE_AUTH_TOKEN)
+                .header("X-Postcode", invalidPostcode))
+            .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void shouldReturn400WhenGetDocumentsWithInvalidCcdReference() throws Exception {
+        // Given
+        String invalidCcdReference = "1234";
+        String url = "/cases/CIC/" + invalidCcdReference + "/documents";
+
+        // When & Then
+        mockMvc.perform(get(url)
+                .header(AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
+                .header(SERVICE_AUTHORIZATION, TEST_SERVICE_AUTH_TOKEN)
+                .header("X-Postcode", POSTCODE))
+            .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void shouldReturn400WhenDownloadDocumentWithInvalidCcdReference() throws Exception {
+        // Given
+        String invalidCcdReference = "1234";
+        UUID documentId = UUID.randomUUID();
+        String url = "/cases/CIC/" + invalidCcdReference + "/documents/" + documentId + "/download";
+
+        // When & Then
+        mockMvc.perform(get(url)
+                .header(AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
+                .header(SERVICE_AUTHORIZATION, TEST_SERVICE_AUTH_TOKEN)
+                .header("X-Postcode", POSTCODE))
+            .andExpect(status().isBadRequest());
     }
 }
 
