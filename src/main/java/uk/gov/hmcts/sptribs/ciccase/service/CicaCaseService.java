@@ -23,16 +23,20 @@ public class CicaCaseService {
      *
      * @param ccdReference  the CCD reference number.
      * @param authorisation user authorization token.
+     * @throws CaseNotFoundException if the case does not exist
      * @throws UnauthorisedCaseAccessException if the user does not have access or validation fails.
      */
     public void checkIfUserHasAccess(String ccdReference, String authorisation) {
         try {
             User user = idamService.retrieveUser(authorisation);
+            if (!caseDataRepository.checkCaseExists(ccdReference)) {
+                throw new CaseNotFoundException("No case found with CCD reference: " + ccdReference);
+            }
             boolean hasAccess = caseDataRepository.checkIfUserHasAccessToCase(ccdReference, user.getUserDetails().getEmail());
             if (!hasAccess) {
                 throw new UnauthorisedCaseAccessException("User is not authorised to access case: " + ccdReference);
             }
-        } catch (UnauthorisedCaseAccessException e) {
+        } catch (CaseNotFoundException | UnauthorisedCaseAccessException e) {
             throw e;
         } catch (Exception e) {
             log.warn("Error checking case access for reference: {}", ccdReference, e);

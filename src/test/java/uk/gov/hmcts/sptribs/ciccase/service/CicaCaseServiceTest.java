@@ -131,6 +131,7 @@ class CicaCaseServiceTest {
 
         when(user.getUserDetails()).thenReturn(userDetails());
         when(idamService.retrieveUser(TEST_AUTHORIZATION)).thenReturn(user);
+        when(caseDataRepository.checkCaseExists(ccdReference)).thenReturn(true);
         when(caseDataRepository.checkIfUserHasAccessToCase(ccdReference, TEST_SYSTEM_UPDATE_USER_EMAIL)).thenReturn(true);
 
         cicaCaseService.checkIfUserHasAccess(ccdReference, TEST_AUTHORIZATION);
@@ -142,9 +143,22 @@ class CicaCaseServiceTest {
 
         when(user.getUserDetails()).thenReturn(userDetails());
         when(idamService.retrieveUser(TEST_AUTHORIZATION)).thenReturn(user);
+        when(caseDataRepository.checkCaseExists(ccdReference)).thenReturn(true);
         when(caseDataRepository.checkIfUserHasAccessToCase(ccdReference, TEST_SYSTEM_UPDATE_USER_EMAIL)).thenReturn(false);
 
         assertThrows(UnauthorisedCaseAccessException.class, () ->
+            cicaCaseService.checkIfUserHasAccess(ccdReference, TEST_AUTHORIZATION)
+        );
+    }
+
+    @Test
+    void shouldThrowCaseNotFoundExceptionWhenCheckIfUserHasAccessFailsOnNonExistentCase() {
+        String ccdReference = "1234567891234567";
+
+        when(idamService.retrieveUser(TEST_AUTHORIZATION)).thenReturn(user);
+        when(caseDataRepository.checkCaseExists(ccdReference)).thenReturn(false);
+
+        assertThrows(CaseNotFoundException.class, () ->
             cicaCaseService.checkIfUserHasAccess(ccdReference, TEST_AUTHORIZATION)
         );
     }

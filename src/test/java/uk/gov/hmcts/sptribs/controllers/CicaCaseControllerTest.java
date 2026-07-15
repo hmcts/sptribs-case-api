@@ -124,25 +124,6 @@ class CicaCaseControllerTest {
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         verify(cicaCaseService).checkIfUserHasAccess(ccdReference, TEST_AUTHORIZATION);
     }
-
-    @Test
-    void shouldReturnOkWhenCheckingIfUserHasAccessWithPostcode() {
-        // Given
-        String ccdReference = "1234567891234567";
-        String postcode = "SW11 1PD";
-
-        // When
-        ResponseEntity<Void> response = cicaCaseController.checkIfUserHasAccessWithPostcode(
-            TEST_AUTHORIZATION,
-            TEST_SERVICE_AUTHORIZATION,
-            postcode,
-            ccdReference
-        );
-
-        // Then
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        verify(cicaCaseService).checkIfUserHasAccessWithPostcode(ccdReference, TEST_AUTHORIZATION, postcode);
-    }
 }
 
 

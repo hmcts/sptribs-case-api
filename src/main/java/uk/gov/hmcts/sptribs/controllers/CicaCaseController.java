@@ -139,6 +139,10 @@ public class CicaCaseController {
             description = "Forbidden - Service not authorized",
             content = @Content),
         @ApiResponse(
+            responseCode = "404",
+            description = "No case found with the given CCD reference",
+            content = @Content),
+        @ApiResponse(
             responseCode = "500",
             description = "Internal server error",
             content = @Content)
@@ -165,63 +169,6 @@ public class CicaCaseController {
         log.info("Received request to check if user has access to case: {}", ccdReference);
         cicaCaseService.checkIfUserHasAccess(ccdReference, authorisation);
         log.info("Access check completed successfully for case: {}", ccdReference);
-        return ResponseEntity.ok().build();
-    }
-
-    @GetMapping(value = "/{ccdReference}/access-with-postcode", produces = MediaType.APPLICATION_JSON_VALUE)
-    @Operation(
-        summary = "Check if user has access to the case and the postcode matches",
-        description = "Verifies if the user has access to the given CCD reference and the postcode matches, "
-            + "throwing an exception if unauthorized."
-    )
-    @ApiResponses(value = {
-        @ApiResponse(
-            responseCode = "200",
-            description = "Access and postcode verification completed successfully",
-            content = @Content),
-        @ApiResponse(
-            responseCode = "400",
-            description = "Invalid CCD reference format",
-            content = @Content),
-        @ApiResponse(
-            responseCode = "401",
-            description = "Unauthorized - Invalid or missing authorization token",
-            content = @Content),
-        @ApiResponse(
-            responseCode = "403",
-            description = "Forbidden - Service not authorized",
-            content = @Content),
-        @ApiResponse(
-            responseCode = "500",
-            description = "Internal server error",
-            content = @Content)
-    })
-    public ResponseEntity<Void> checkIfUserHasAccessWithPostcode(
-        @RequestHeader(AUTHORIZATION)
-        @Parameter(description = "User's IDAM access token", required = true)
-        String authorisation,
-
-        @RequestHeader(SERVICE_AUTHORIZATION)
-        @Parameter(description = "S2S token from the frontend service", required = true)
-        String serviceAuthorisation,
-
-        @RequestHeader(value = "X-Postcode")
-        @Parameter(description = "Postcode for verification", required = true)
-        String postcode,
-
-        @PathVariable
-        @NotBlank(message = "CCD reference cannot be blank")
-        @Pattern(regexp = "^\\d{16}$", message = "CCD reference must be 16 digits long")
-        @Parameter(
-            description = "The CCD reference number.",
-            required = true,
-            example = "1740138704453399"
-        )
-        String ccdReference
-    ) {
-        log.info("Received request to check if user has access to case and postcode matches for: {}", ccdReference);
-        cicaCaseService.checkIfUserHasAccessWithPostcode(ccdReference, authorisation, postcode);
-        log.info("Access and postcode check completed successfully for case: {}", ccdReference);
         return ResponseEntity.ok().build();
     }
 }
