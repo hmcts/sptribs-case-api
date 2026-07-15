@@ -133,9 +133,6 @@ class CaseworkerContactPartiesTest {
 
         DynamicListElement responseOrderDoc = new DynamicListElement();
 
-        String expectedSelectedDoc = "[" + orderFilename + " " + orderDoc.getDocumentCategory().getLabel() + "]"
-            + "(http://mocked-url.com/documents/" + orderDocUrlUUID + "/binary)";
-
         for (DynamicListElement responseDocListValue : response.getData().getContactPartiesDocuments().getDocumentList().getListItems()) {
             if (responseDocListValue.getLabel().contains(orderFilename)) {
                 responseOrderDoc =  responseDocListValue;
@@ -144,6 +141,9 @@ class CaseworkerContactPartiesTest {
 
         assertThat(response.getData().getContactPartiesDocuments().getDocumentList()).isNotNull();
         assertThat(response.getData().getContactPartiesDocuments().getDocumentList().getListItems()).hasSize(2);
+
+        String expectedSelectedDoc = "[" + orderFilename + " " + orderDoc.getDocumentCategory().getLabel() + "]"
+            + "(http://mocked-url.com/documents/" + orderDocUrlUUID + "/binary)";
         assertThat(responseOrderDoc.getLabel()).isEqualTo(expectedSelectedDoc);
     }
 
