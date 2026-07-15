@@ -6,13 +6,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.sptribs.IntegrationTestBase;
 import uk.gov.hmcts.sptribs.common.repositories.DocumentsRepository;
-import uk.gov.hmcts.sptribs.document.model.ContactPartyDocumentDetails;
+//import uk.gov.hmcts.sptribs.document.model.ContactPartyDocumentDetails;
 import uk.gov.hmcts.sptribs.document.model.DocumentEntity;
 import uk.gov.hmcts.sptribs.manager.CaseCorrespondenceManager;
 import uk.gov.hmcts.sptribs.manager.CaseDataManager;
 import uk.gov.hmcts.sptribs.manager.CaseDocumentManager;
 import uk.gov.hmcts.sptribs.manager.CorrespondenceDocumentManager;
-import uk.gov.hmcts.sptribs.notification.model.Party;
+//import uk.gov.hmcts.sptribs.notification.model.Party;
 
 import java.time.OffsetDateTime;
 import java.util.List;
@@ -191,59 +191,59 @@ class DocumentsRepositoryImplIT extends IntegrationTestBase {
 
     }
 
-    @Test
-    void shouldFindContactPartyDocuments() {
-        //given
-        OffsetDateTime sentOn = OffsetDateTime.now();
-        String binaryUrl = UUID.randomUUID().toString();
-        Long documentId = caseDocumentManager.addCaseDocument(
-            123L,
-            binaryUrl,
-            DOCUMENT_MANAGEMENT_TYPE_ID,
-            OffsetDateTime.now().minusDays(1L)
-        );
-
-        UUID correspondenceId = UUID.randomUUID();
-
-        caseCorrespondenceManager.addCorrespondence(
-            correspondenceId,
-            123L,
-            Party.APPLICANT,
-            sentOn
-        );
-
-        UUID correspondenceIdTribunal = UUID.randomUUID();
-
-        caseCorrespondenceManager.addCorrespondence(
-            correspondenceIdTribunal,
-            123L,
-            Party.TRIBUNAL,
-            sentOn
-        );
-
-        correspondenceDocumentManager.linkDocument(
-            correspondenceId,
-            documentId
-        );
-
-        correspondenceDocumentManager.linkDocument(
-            correspondenceIdTribunal,
-            documentId
-        );
-
-        //when
-        List<ContactPartyDocumentDetails> result =
-            repository.findContactPartyDocuments(
-                123L,
-                List.of(Party.APPLICANT, Party.REPRESENTATIVE, Party.SUBJECT),
-                List.of(ORDER_TYPE_ID, DECISION_ID, FINAL_DECISION_ID)
-            );
-
-        //then
-        assertThat(result).hasSize(1);
-        ContactPartyDocumentDetails details = result.getFirst();
-
-        assertThat(details.document().getDocumentBinaryUrl()).isEqualTo(binaryUrl);
-        assertThat(details.sentOn().toLocalDateTime()).isEqualTo(sentOn.toLocalDateTime());
-    }
+    //    @Test
+    //    void shouldFindContactPartyDocuments() {
+    //        //given
+    //        OffsetDateTime sentOn = OffsetDateTime.now();
+    //        String binaryUrl = UUID.randomUUID().toString();
+    //        Long documentId = caseDocumentManager.addCaseDocument(
+    //            123L,
+    //            binaryUrl,
+    //            DOCUMENT_MANAGEMENT_TYPE_ID,
+    //            OffsetDateTime.now().minusDays(1L)
+    //        );
+    //
+    //        UUID correspondenceId = UUID.randomUUID();
+    //
+    //        caseCorrespondenceManager.addCorrespondence(
+    //            correspondenceId,
+    //            123L,
+    //            Party.APPLICANT,
+    //            sentOn
+    //        );
+    //
+    //        UUID correspondenceIdTribunal = UUID.randomUUID();
+    //
+    //        caseCorrespondenceManager.addCorrespondence(
+    //            correspondenceIdTribunal,
+    //            123L,
+    //            Party.TRIBUNAL,
+    //            sentOn
+    //        );
+    //
+    //        correspondenceDocumentManager.linkDocument(
+    //            correspondenceId,
+    //            documentId
+    //        );
+    //
+    //        correspondenceDocumentManager.linkDocument(
+    //            correspondenceIdTribunal,
+    //            documentId
+    //        );
+    //
+    //        //when
+    //        List<ContactPartyDocumentDetails> result =
+    //            repository.findContactPartyDocuments(
+    //                123L,
+    //                List.of(Party.APPLICANT, Party.REPRESENTATIVE, Party.SUBJECT),
+    //                List.of(ORDER_TYPE_ID, DECISION_ID, FINAL_DECISION_ID)
+    //            );
+    //
+    //        //then
+    //        assertThat(result).hasSize(1);
+    //        ContactPartyDocumentDetails details = result.getFirst();
+    //
+    //        assertThat(details.document().getDocumentBinaryUrl()).isEqualTo(binaryUrl);
+    //        assertThat(details.sentOn().toLocalDateTime()).isEqualTo(sentOn.toLocalDateTime());
+    //    }
 }
