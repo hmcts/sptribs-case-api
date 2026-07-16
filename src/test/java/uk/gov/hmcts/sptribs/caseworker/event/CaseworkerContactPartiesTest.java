@@ -101,6 +101,9 @@ class CaseworkerContactPartiesTest {
             .documentCategory(DocumentType.LINKED_DOCS)
             .documentLink(Document.builder().url("url").binaryUrl("url").filename("name.pdf").build())
             .build();
+        ListValue<CaseworkerCICDocument> docListValue = new ListValue<>();
+        docListValue.setValue(doc);
+        listValueList.add(docListValue);
 
         String orderFilename = "Order--[Subject kaikaqsrf]--14-07-2026 15:39:57.pdf";
         String orderDocUrlUUID = UUID.randomUUID().toString();
@@ -113,13 +116,10 @@ class CaseworkerContactPartiesTest {
                 .filename(orderFilename)
                 .build())
             .build();
-
-        ListValue<CaseworkerCICDocument> docListValue = new ListValue<>();
-        docListValue.setValue(doc);
         ListValue<CaseworkerCICDocument> orderDocListValue = new ListValue<>();
         orderDocListValue.setValue(orderDoc);
-        listValueList.add(docListValue);
         listValueList.add(orderDocListValue);
+
         final CicCase cicCase = CicCase.builder()
             .reinstateDocuments(listValueList)
             .build();
@@ -127,23 +127,23 @@ class CaseworkerContactPartiesTest {
         caseData.setCicCase(cicCase);
         caseDetails.setData(caseData);
 
-        ReflectionTestUtils.setField(caseWorkerContactParties, "baseUrl", "http://mocked-url.com");
+        ReflectionTestUtils.setField(caseWorkerContactParties, "baseUrl", "http://mocked-url.com/");
 
         AboutToStartOrSubmitResponse<CaseData, State> response = caseWorkerContactParties.aboutToStart(caseDetails);
-
-        DynamicListElement responseOrderDoc = new DynamicListElement();
-
-        for (DynamicListElement responseDocListValue : response.getData().getContactPartiesDocuments().getDocumentList().getListItems()) {
-            if (responseDocListValue.getLabel().contains(orderFilename)) {
-                responseOrderDoc =  responseDocListValue;
-            }
-        }
 
         assertThat(response.getData().getContactPartiesDocuments().getDocumentList()).isNotNull();
         assertThat(response.getData().getContactPartiesDocuments().getDocumentList().getListItems()).hasSize(2);
 
         String expectedSelectedDoc = "[" + orderFilename + " " + orderDoc.getDocumentCategory().getLabel() + "]"
             + "(http://mocked-url.com/documents/" + orderDocUrlUUID + "/binary)";
+        DynamicListElement responseOrderDoc = new DynamicListElement();
+
+        for (DynamicListElement responseDoc : response.getData().getContactPartiesDocuments().getDocumentList().getListItems()) {
+            if (responseDoc.getLabel().contains(orderFilename)) {
+                responseOrderDoc =  responseDoc;
+            }
+        }
+
         assertThat(responseOrderDoc.getLabel()).isEqualTo(expectedSelectedDoc);
     }
 
@@ -220,7 +220,6 @@ class CaseworkerContactPartiesTest {
 
         DynamicListElement selectedDocument = new DynamicListElement();
         selectedDocument.setLabel("[" + orderFilename + "]" + "(http://mocked-url.com/documents/" + orderDocUrlUUID + "/binary)");
-        selectedDocument.setCode(UUID.randomUUID());
         List<DynamicListElement> selectedDocuments = new ArrayList<>();
         selectedDocuments.add(selectedDocument);
         DynamicMultiSelectList documentsToSelect = new DynamicMultiSelectList();

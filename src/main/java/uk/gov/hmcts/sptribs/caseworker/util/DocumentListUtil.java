@@ -127,8 +127,7 @@ public final class DocumentListUtil {
 
     public static DynamicMultiSelectList prepareDocumentList(final CaseData data, String baseUrl) {
         List<CaseworkerCICDocument> docList = prepareList(data);
-        baseUrl = baseUrl.replaceAll("/$", "");
-        String apiUrl = baseUrl + "/" + DOCUMENT_BINARY_PATH;
+        String apiUrl = baseUrl.replaceAll("/$", "") + "/" + DOCUMENT_BINARY_PATH;
         List<DynamicListElement> dynamicListElements = new ArrayList<>();
         for (CaseworkerCICDocument doc : docList) {
             String documentId = StringUtils.substringAfterLast(doc.getDocumentLink().getUrl(),
@@ -150,8 +149,7 @@ public final class DocumentListUtil {
     public static DynamicMultiSelectList prepareContactPartiesDocumentList(final CaseData data, String baseUrl) {
         List<CaseworkerCICDocument> docList = prepareList(data);
 
-        baseUrl = baseUrl.replaceAll("/$", "");
-        String apiUrl = baseUrl + "/" + DOCUMENT_BINARY_PATH;
+        String apiUrl = baseUrl.replaceAll("/$", "") + "/" + DOCUMENT_BINARY_PATH;
         List<DynamicListElement> dynamicListElements = new ArrayList<>();
         for (CaseworkerCICDocument doc : docList) {
             String fileName = doc.getDocumentLink().getFilename();
