@@ -20,12 +20,15 @@ import uk.gov.hmcts.sptribs.common.config.WebMvcConfig;
 import uk.gov.hmcts.sptribs.controllers.mapper.CaseworkerCICDocumentMapper;
 import uk.gov.hmcts.sptribs.document.model.DocumentDashboardModel;
 import uk.gov.hmcts.sptribs.document.service.DocumentsService;
+import uk.gov.hmcts.sptribs.exception.UnauthorisedCaseAccessException;
 import uk.gov.hmcts.sptribs.services.cdam.CaseDocumentClientApi;
 import uk.gov.hmcts.sptribs.testutil.IdamWireMock;
 
 import java.util.UUID;
 
+import static java.util.Collections.emptyList;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -240,16 +243,16 @@ class DocumentControllerIT {
     void shouldGetDocumentsSuccessfully() throws Exception {
         // Given
         DocumentDashboardModel dashboardModel = DocumentDashboardModel.builder()
-            .contactPartiesDocuments(java.util.Collections.emptyList())
-            .orderAndDecisionDocuments(java.util.Collections.emptyList())
+            .contactPartiesDocuments(emptyList())
+            .orderAndDecisionDocuments(emptyList())
             .latestCaseBundleDocument(null)
             .build();
 
         when(documentsService.getDocumentsOnCase(Long.valueOf(CCD_REFERENCE)))
             .thenReturn(dashboardModel);
 
-        when(caseworkerCICDocumentMapper.map(org.mockito.Mockito.anyList())).thenReturn(java.util.Collections.emptyList());
-        when(caseworkerCICDocumentMapper.mapEntityToList(any())).thenReturn(java.util.Collections.emptyList());
+        when(caseworkerCICDocumentMapper.map(anyList())).thenReturn(emptyList());
+        when(caseworkerCICDocumentMapper.mapEntityToList(any())).thenReturn(emptyList());
 
         // When & Then
         mockMvc.perform(get(GET_DOCUMENTS_URL)
@@ -265,7 +268,7 @@ class DocumentControllerIT {
     void shouldFailToGetDocumentsWhenPostcodeValidationFails() throws Exception {
         // Given
         String invalidPostcode = "INVALID";
-        org.mockito.Mockito.doThrow(new uk.gov.hmcts.sptribs.exception.UnauthorisedCaseAccessException("Postcode match failed"))
+        org.mockito.Mockito.doThrow(new UnauthorisedCaseAccessException("Postcode match failed"))
             .when(cicaCaseService).checkIfUserHasAccessWithPostcode(eq(CCD_REFERENCE), any(), eq(invalidPostcode));
 
         // When & Then
@@ -281,7 +284,7 @@ class DocumentControllerIT {
         // Given
         UUID documentId = UUID.randomUUID();
         String invalidPostcode = "INVALID";
-        org.mockito.Mockito.doThrow(new uk.gov.hmcts.sptribs.exception.UnauthorisedCaseAccessException("Postcode match failed"))
+        org.mockito.Mockito.doThrow(new UnauthorisedCaseAccessException("Postcode match failed"))
             .when(cicaCaseService).checkIfUserHasAccessWithPostcode(eq(CCD_REFERENCE), any(), eq(invalidPostcode));
 
         // When & Then
