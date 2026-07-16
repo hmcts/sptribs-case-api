@@ -84,15 +84,13 @@ class CaseDataRepositoryImplIT extends IntegrationTestBase {
         caseDataManager.addCaseData(123L, "Submitted", """
                 {
                   "cicCaseEmail": "test@example.com",
-                  "cicCase": {
-                    "address": {
-                      "postCode": "SW11 1PD"
-                    }
+                  "cicCaseAddress": {
+                    "PostCode": "SW11 1PD"
                   }
                 }
             """);
 
-        var result = repository.findCase("123", "test@example.com", "sw111pd");
+        var result = repository.findCase("123", "test@example.com", "SW11 1PD");
 
         assertThat(result).isPresent();
     }
@@ -110,10 +108,8 @@ class CaseDataRepositoryImplIT extends IntegrationTestBase {
                       }
                     ]
                   },
-                  "cicCase": {
-                    "address": {
-                      "postCode": "  SW11 1PD  "
-                    }
+                  "cicCaseAddress": {
+                    "PostCode": "SW11 1PD"
                   }
                 }
             """);
@@ -128,10 +124,8 @@ class CaseDataRepositoryImplIT extends IntegrationTestBase {
         caseDataManager.addCaseData(123L, "Submitted", """
                 {
                   "cicCaseEmail": "test@example.com",
-                  "cicCase": {
-                    "address": {
-                      "postCode": "SW11 1PD"
-                    }
+                  "cicCaseAddress": {
+                    "PostCode": "SW11 1PD"
                   }
                 }
             """);

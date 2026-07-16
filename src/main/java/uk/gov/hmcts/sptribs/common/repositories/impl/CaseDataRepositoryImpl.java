@@ -77,7 +77,7 @@ public class CaseDataRepositoryImpl implements CaseDataRepository {
             + "    WHERE sp->'value'->>'EmailAddress' = :userEmail "
             + "  ) "
             + ") "
-            + "AND REPLACE(UPPER(c.data #>> '{cicCase,address,postCode}'), ' ', '') = REPLACE(UPPER(:postcode), ' ', '') "
+            + "AND c.data #>> '{cicCaseAddress,PostCode}' = :postcode "
             + "ORDER BY c.last_modified DESC "
             + "LIMIT 1";
 
@@ -136,6 +136,7 @@ public class CaseDataRepositoryImpl implements CaseDataRepository {
     @Override
     public Optional<CicaCaseEntity> findCase(String ccdReference, String userEmail, String postcode) {
         log.info("Checking case has correct email and postcode for CCD reference: {}", ccdReference);
+        log.info("Case postcode: {}", postcode);
 
         var params = Map.of(
             "ccdReference", Long.valueOf(ccdReference),
