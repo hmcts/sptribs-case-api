@@ -30,6 +30,7 @@ import static java.util.Collections.emptyList;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -38,7 +39,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.AUTHORIZATION;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.SERVICE_AUTHORIZATION;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_AUTHORIZATION_TOKEN;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID_STRING;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_POSTCODE;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_SERVICE_AUTH_TOKEN;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_DATA_FILE_UUID;
+
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -46,10 +51,8 @@ import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_SERVICE_AUTH_TOKE
 @ContextConfiguration(initializers = {IdamWireMock.PropertiesInitializer.class})
 class DocumentControllerIT {
 
-    private static final String CCD_REFERENCE = "1234567891234567";
-    private static final String POSTCODE = "SW11 1PD";
-    private static final String DOWNLOAD_DOCUMENT_URL = "/cases/CIC/" + CCD_REFERENCE + "/documents/%s/download";
-    private static final String GET_DOCUMENTS_URL = "/cases/CIC/" + CCD_REFERENCE + "/documents";
+    private static final String DOWNLOAD_DOCUMENT_URL = "/cases/CIC/" + TEST_CASE_ID_STRING + "/documents/%s/download";
+    private static final String GET_DOCUMENTS_URL = "/cases/CIC/" + TEST_CASE_ID_STRING + "/documents";
 
     @Autowired
     private MockMvc mockMvc;
@@ -91,27 +94,26 @@ class DocumentControllerIT {
         Document document = new Document();
         document.originalDocumentName = fileName;
         document.mimeType = mimeType;
-        UUID documentId = UUID.randomUUID();
 
         when(authTokenGenerator.generate()).thenReturn(TEST_SERVICE_AUTH_TOKEN);
         when(caseDocumentClientApi.getDocument(
             eq(TEST_AUTHORIZATION_TOKEN),
             eq(TEST_SERVICE_AUTH_TOKEN),
-            eq(documentId)
+            eq(TEST_CASE_DATA_FILE_UUID)
         )).thenReturn(ResponseEntity.ok(document));
 
         byte[] documentContent = "test document content".getBytes();
         when(caseDocumentClientApi.getDocumentBinary(
             eq(TEST_AUTHORIZATION_TOKEN),
             eq(TEST_SERVICE_AUTH_TOKEN),
-            eq(documentId)
+            eq(TEST_CASE_DATA_FILE_UUID)
         )).thenReturn(ResponseEntity.ok(documentContent));
 
         // When & Then
-        mockMvc.perform(get(String.format(DOWNLOAD_DOCUMENT_URL, documentId))
+        mockMvc.perform(get(String.format(DOWNLOAD_DOCUMENT_URL, TEST_CASE_DATA_FILE_UUID))
                 .header(AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
                 .header(SERVICE_AUTHORIZATION, TEST_SERVICE_AUTH_TOKEN)
-                .header("X-Postcode", POSTCODE))
+                .header("X-Postcode", TEST_POSTCODE))
             .andExpect(status().isOk())
             .andExpect(header().string(HttpHeaders.CONTENT_TYPE, mimeType))
             .andExpect(header().string("original-file-name", fileName))
@@ -121,20 +123,18 @@ class DocumentControllerIT {
     @Test
     void shouldReturn500WhenDocumentNotFound() throws Exception {
         // Given
-        UUID documentId = UUID.randomUUID();
-
         when(authTokenGenerator.generate()).thenReturn(TEST_SERVICE_AUTH_TOKEN);
         when(caseDocumentClientApi.getDocument(
             eq(TEST_AUTHORIZATION_TOKEN),
             eq(TEST_SERVICE_AUTH_TOKEN),
-            eq(documentId)
+            eq(TEST_CASE_DATA_FILE_UUID)
         )).thenReturn(ResponseEntity.ok(null));
 
         // When & Then
-        mockMvc.perform(get(String.format(DOWNLOAD_DOCUMENT_URL, documentId))
+        mockMvc.perform(get(String.format(DOWNLOAD_DOCUMENT_URL, TEST_CASE_DATA_FILE_UUID))
                 .header(AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
                 .header(SERVICE_AUTHORIZATION, TEST_SERVICE_AUTH_TOKEN)
-                .header("X-Postcode", POSTCODE))
+                .header("X-Postcode", TEST_POSTCODE))
             .andExpect(status().isInternalServerError());
     }
 
@@ -165,27 +165,25 @@ class DocumentControllerIT {
         mockMvc.perform(get(String.format(DOWNLOAD_DOCUMENT_URL, documentId))
                 .header(AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
                 .header(SERVICE_AUTHORIZATION, TEST_SERVICE_AUTH_TOKEN)
-                .header("X-Postcode", POSTCODE))
+                .header("X-Postcode", TEST_POSTCODE))
             .andExpect(status().isInternalServerError());
     }
 
     @Test
     void shouldReturn500WhenApiCallFails() throws Exception {
         // Given
-        UUID documentId = UUID.randomUUID();
-
         when(authTokenGenerator.generate()).thenReturn(TEST_SERVICE_AUTH_TOKEN);
         when(caseDocumentClientApi.getDocument(
             eq(TEST_AUTHORIZATION_TOKEN),
             eq(TEST_SERVICE_AUTH_TOKEN),
-            eq(documentId)
+            eq(TEST_CASE_DATA_FILE_UUID)
         )).thenThrow(new RuntimeException("API error"));
 
         // When & Then
-        mockMvc.perform(get(String.format(DOWNLOAD_DOCUMENT_URL, documentId))
+        mockMvc.perform(get(String.format(DOWNLOAD_DOCUMENT_URL, TEST_CASE_DATA_FILE_UUID))
                 .header(AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
                 .header(SERVICE_AUTHORIZATION, TEST_SERVICE_AUTH_TOKEN)
-                .header("X-Postcode", POSTCODE))
+                .header("X-Postcode", TEST_POSTCODE))
             .andExpect(status().isInternalServerError());
     }
 
@@ -198,7 +196,7 @@ class DocumentControllerIT {
         mockMvc.perform(get(String.format(DOWNLOAD_DOCUMENT_URL, invalidDocumentId))
                 .header(AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
                 .header(SERVICE_AUTHORIZATION, TEST_SERVICE_AUTH_TOKEN)
-                .header("X-Postcode", POSTCODE))
+                .header("X-Postcode", TEST_POSTCODE))
             .andExpect(status().isInternalServerError());
     }
 
@@ -212,27 +210,26 @@ class DocumentControllerIT {
         document.originalDocumentName = fileName;
         document.mimeType = mimeType;
 
-        UUID documentId = UUID.randomUUID();
 
         when(authTokenGenerator.generate()).thenReturn(TEST_SERVICE_AUTH_TOKEN);
         when(caseDocumentClientApi.getDocument(
             eq(TEST_AUTHORIZATION_TOKEN),
             eq(TEST_SERVICE_AUTH_TOKEN),
-            eq(documentId)
+            eq(TEST_CASE_DATA_FILE_UUID)
         )).thenReturn(ResponseEntity.ok(document));
 
         byte[] documentContent = "<html><body>Test</body></html>".getBytes();
         when(caseDocumentClientApi.getDocumentBinary(
             eq(TEST_AUTHORIZATION_TOKEN),
             eq(TEST_SERVICE_AUTH_TOKEN),
-            eq(documentId)
+            eq(TEST_CASE_DATA_FILE_UUID)
         )).thenReturn(ResponseEntity.ok(documentContent));
 
         // When & Then
-        mockMvc.perform(get(String.format(DOWNLOAD_DOCUMENT_URL, documentId))
+        mockMvc.perform(get(String.format(DOWNLOAD_DOCUMENT_URL, TEST_CASE_DATA_FILE_UUID))
                 .header(AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
                 .header(SERVICE_AUTHORIZATION, TEST_SERVICE_AUTH_TOKEN)
-                .header("X-Postcode", POSTCODE))
+                .header("X-Postcode", TEST_POSTCODE))
             .andExpect(status().isOk())
             .andExpect(header().string(HttpHeaders.CONTENT_TYPE, mimeType))
             .andExpect(header().string("original-file-name", fileName))
@@ -248,7 +245,7 @@ class DocumentControllerIT {
             .latestCaseBundleDocument(null)
             .build();
 
-        when(documentsService.getDocumentsOnCase(Long.valueOf(CCD_REFERENCE)))
+        when(documentsService.getDocumentsOnCase(Long.valueOf(TEST_CASE_ID_STRING)))
             .thenReturn(dashboardModel);
 
         when(caseworkerCICDocumentMapper.map(anyList())).thenReturn(emptyList());
@@ -258,7 +255,7 @@ class DocumentControllerIT {
         mockMvc.perform(get(GET_DOCUMENTS_URL)
                 .header(AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
                 .header(SERVICE_AUTHORIZATION, TEST_SERVICE_AUTH_TOKEN)
-                .header("X-Postcode", POSTCODE))
+                .header("X-Postcode", TEST_POSTCODE))
             .andExpect(status().isOk())
             .andExpect(content().json(
                 "{\"contactPartiesDocuments\":[],\"orderAndDecisionDocuments\":[],\"latestCaseBundleDocuments\":[]}"));
@@ -268,8 +265,8 @@ class DocumentControllerIT {
     void shouldFailToGetDocumentsWhenPostcodeValidationFails() throws Exception {
         // Given
         String invalidPostcode = "INVALID";
-        org.mockito.Mockito.doThrow(new UnauthorisedCaseAccessException("Postcode match failed"))
-            .when(cicaCaseService).checkIfUserHasAccessWithPostcode(eq(CCD_REFERENCE), any(), eq(invalidPostcode));
+        doThrow(new UnauthorisedCaseAccessException("Postcode match failed"))
+            .when(cicaCaseService).checkIfUserHasAccessWithPostcode(eq(TEST_CASE_ID_STRING), any(), eq(invalidPostcode));
 
         // When & Then
         mockMvc.perform(get(GET_DOCUMENTS_URL)
@@ -282,13 +279,12 @@ class DocumentControllerIT {
     @Test
     void shouldFailToDownloadDocumentWhenPostcodeValidationFails() throws Exception {
         // Given
-        UUID documentId = UUID.randomUUID();
         String invalidPostcode = "INVALID";
-        org.mockito.Mockito.doThrow(new UnauthorisedCaseAccessException("Postcode match failed"))
-            .when(cicaCaseService).checkIfUserHasAccessWithPostcode(eq(CCD_REFERENCE), any(), eq(invalidPostcode));
+        doThrow(new UnauthorisedCaseAccessException("Postcode match failed"))
+            .when(cicaCaseService).checkIfUserHasAccessWithPostcode(eq(TEST_CASE_ID_STRING), any(), eq(invalidPostcode));
 
         // When & Then
-        mockMvc.perform(get(String.format(DOWNLOAD_DOCUMENT_URL, documentId))
+        mockMvc.perform(get(String.format(DOWNLOAD_DOCUMENT_URL, TEST_CASE_DATA_FILE_UUID))
                 .header(AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
                 .header(SERVICE_AUTHORIZATION, TEST_SERVICE_AUTH_TOKEN)
                 .header("X-Postcode", invalidPostcode))
@@ -305,7 +301,7 @@ class DocumentControllerIT {
         mockMvc.perform(get(url)
                 .header(AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
                 .header(SERVICE_AUTHORIZATION, TEST_SERVICE_AUTH_TOKEN)
-                .header("X-Postcode", POSTCODE))
+                .header("X-Postcode", TEST_POSTCODE))
             .andExpect(status().isBadRequest());
     }
 
@@ -313,14 +309,13 @@ class DocumentControllerIT {
     void shouldReturn400WhenDownloadDocumentWithInvalidCcdReference() throws Exception {
         // Given
         String invalidCcdReference = "1234";
-        UUID documentId = UUID.randomUUID();
-        String url = "/cases/CIC/" + invalidCcdReference + "/documents/" + documentId + "/download";
+        String url = "/cases/CIC/" + invalidCcdReference + "/documents/" + TEST_CASE_DATA_FILE_UUID + "/download";
 
         // When & Then
         mockMvc.perform(get(url)
                 .header(AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
                 .header(SERVICE_AUTHORIZATION, TEST_SERVICE_AUTH_TOKEN)
-                .header("X-Postcode", POSTCODE))
+                .header("X-Postcode", TEST_POSTCODE))
             .andExpect(status().isBadRequest());
     }
 }
