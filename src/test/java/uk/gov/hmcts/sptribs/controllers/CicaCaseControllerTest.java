@@ -1,6 +1,5 @@
 package uk.gov.hmcts.sptribs.controllers;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -9,18 +8,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import uk.gov.hmcts.sptribs.ciccase.service.CicaCaseService;
-import uk.gov.hmcts.sptribs.common.repositories.model.CicaCaseEntity;
-import uk.gov.hmcts.sptribs.controllers.mapper.CicaCaseMapper;
-import uk.gov.hmcts.sptribs.controllers.model.CicaCaseResponse;
-import uk.gov.hmcts.sptribs.exception.CaseNotFoundException;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
-import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.sptribs.testutil.CicaCaseTestHelper.createCicaCaseEntity;
-import static uk.gov.hmcts.sptribs.testutil.CicaCaseTestHelper.createCicaCaseResponse;
 
 @ExtendWith(MockitoExtension.class)
 class CicaCaseControllerTest {
@@ -31,82 +21,8 @@ class CicaCaseControllerTest {
     @Mock
     private CicaCaseService cicaCaseService;
 
-    @Mock
-    private CicaCaseMapper cicaCaseMapper;
-
     @InjectMocks
     private CicaCaseController cicaCaseController;
-
-    @Test
-    void shouldReturnOkWithCaseDataWhenCaseFound() {
-        // Given
-        String ccdReference = "1234567891234567";
-        String postcode = "SW11 1PD";
-        CicaCaseEntity cicaCaseEntity = createCicaCaseEntity(ccdReference);
-        CicaCaseResponse expectedResponse = createCicaCaseResponse(ccdReference);
-        when(cicaCaseService.getCaseByCCDReference(ccdReference, TEST_AUTHORIZATION, postcode)).thenReturn(cicaCaseEntity);
-
-        when(cicaCaseMapper.toResponse(cicaCaseEntity)).thenReturn(expectedResponse);
-
-        // When
-        ResponseEntity<CicaCaseResponse> response = cicaCaseController.getCaseByCCDReference(
-            TEST_AUTHORIZATION,
-            TEST_SERVICE_AUTHORIZATION,
-            postcode,
-            ccdReference
-        );
-
-        // Then
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        Assertions.assertNotNull(response.getBody());
-        assertThat(response.getBody().getId()).isEqualTo("1234567891234567");
-        assertThat(response.getBody().getState()).isEqualTo("Submitted");
-        assertThat(response.getBody().getData()).isNull();
-        verify(cicaCaseService).getCaseByCCDReference(ccdReference, TEST_AUTHORIZATION, postcode);
-        verify(cicaCaseMapper).toResponse(cicaCaseEntity);
-    }
-
-    @Test
-    void shouldPropagateExceptionWhenCaseNotFound() {
-        // Given
-        String ccdReference = "1234567891234567";
-        String postcode = "SW11 1PD";
-        when(cicaCaseService.getCaseByCCDReference(ccdReference, TEST_AUTHORIZATION, postcode))
-            .thenThrow(new CaseNotFoundException("No case found with CICA reference: X99999"));
-
-        // When / Then
-        assertThatThrownBy(() -> cicaCaseController.getCaseByCCDReference(
-            TEST_AUTHORIZATION,
-            TEST_SERVICE_AUTHORIZATION,
-            postcode,
-            ccdReference
-        ))
-            .isExactlyInstanceOf(CaseNotFoundException.class)
-            .hasMessageContaining("No case found with CICA reference: X99999");
-
-        verifyNoInteractions(cicaCaseMapper);
-    }
-
-    @Test
-    void shouldPropagateExceptionWhenInvalidReferenceFormat() {
-        // Given
-        String ccdReference = "1234567891234";
-        String postcode = "SW11 1PD";
-        when(cicaCaseService.getCaseByCCDReference(ccdReference, TEST_AUTHORIZATION, postcode))
-            .thenThrow(new IllegalArgumentException("Invalid CICA reference format"));
-
-        // When / Then
-        assertThatThrownBy(() -> cicaCaseController.getCaseByCCDReference(
-            TEST_AUTHORIZATION,
-            TEST_SERVICE_AUTHORIZATION,
-            postcode,
-            ccdReference
-        ))
-            .isExactlyInstanceOf(IllegalArgumentException.class)
-            .hasMessageContaining("Invalid CICA reference format");
-
-        verifyNoInteractions(cicaCaseMapper);
-    }
 
     @Test
     void shouldReturnOkWhenCheckingIfUserHasAccess() {
