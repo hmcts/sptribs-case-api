@@ -33,8 +33,12 @@ public class CaseworkerIssueFinalDecisionFT extends FunctionalTestSuite {
     private static final String REQUEST_ABOUT_TO_START = "classpath:request/casedata/ccd-callback-casedata-general.json";
     private static final String CALLBACK_REQUEST =
         "classpath:request/casedata/ccd-callback-casedata-caseworker-issue-final-decision-callback-request.json";
+    private static final String UPLOAD_DOCUMENT_CALLBACK_REQUEST =
+        "classpath:request/casedata/ccd-callback-casedata-caseworker-issue-final-decision-upload-document-callback-request.json";
     private static final String REQUEST_UPLOAD_DOCUMENT_MID_EVENT =
         "classpath:request/casedata/ccd-callback-casedata-caseworker-issue-final-decision-upload-document-mid-event.json";
+    private static final String REQUEST_SUBMITTED_PATH =
+        "classpath:request/casedata/ccd-callback-casedata-caseworker-issue-final-decision-submitted.json";
     private static final String REQUEST_SUBMITTED_UNHAPPY_PATH =
         "classpath:request/casedata/ccd-callback-casedata-caseworker-issue-final-decision-unhappy-submitted.json";
 
@@ -82,7 +86,8 @@ public class CaseworkerIssueFinalDecisionFT extends FunctionalTestSuite {
     }
 
     @Test
-    public void shouldChangeStateWhenAboutToSubmitEventCallbackIsInvoked() throws Exception {
+    public void shouldChangeStateAndAddDateWhenAboutToSubmitEventCallbackIsInvokedForFinalDecisionDocumentCreatedFromTemplate()
+        throws Exception {
         final Map<String, Object> caseData = caseData(CALLBACK_REQUEST);
         final Response response = triggerCallback(caseData, CASEWORKER_ISSUE_FINAL_DECISION, ABOUT_TO_SUBMIT_URL, false);
 
@@ -91,6 +96,11 @@ public class CaseworkerIssueFinalDecisionFT extends FunctionalTestSuite {
             .inPath(STATE)
             .isString()
             .isEqualTo("CaseClosed");
+
+        assertThatJson(response.asString())
+            .inPath(DECISION_DATE)
+            .isString()
+            .isEqualTo(LocalDate.now().toString());
 
         long testCaseRef = Long.parseLong(caseData.get("hyphenatedCaseRef").toString().replace("-", ""));
 
@@ -113,20 +123,44 @@ public class CaseworkerIssueFinalDecisionFT extends FunctionalTestSuite {
     }
 
     @Test
-    public void shouldAddDateWhenAboutToSubmitEventCallbackIsInvoked() throws Exception {
-        final Map<String, Object> caseData = caseData(CALLBACK_REQUEST);
+    public void shouldChangeStateAndAddDateWhenAboutToSubmitEventCallbackIsInvokedForUploadedFinalDecisionDocument() throws Exception {
+        final Map<String, Object> caseData = caseData(UPLOAD_DOCUMENT_CALLBACK_REQUEST);
         final Response response = triggerCallback(caseData, CASEWORKER_ISSUE_FINAL_DECISION, ABOUT_TO_SUBMIT_URL, false);
 
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
         assertThatJson(response.asString())
-                .inPath(DECISION_DATE)
-                .isString()
-                .isEqualTo(LocalDate.now().toString());
+            .inPath(STATE)
+            .isString()
+            .isEqualTo("CaseClosed");
+
+        assertThatJson(response.asString())
+            .inPath(DECISION_DATE)
+            .isString()
+            .isEqualTo(LocalDate.now().toString());
+
+        long testCaseRef = Long.parseLong(caseData.get("hyphenatedCaseRef").toString().replace("-", ""));
+
+        List<DocumentEntity> documentEntities = caseDocumentsFTDataManager.getDocumentEntities(testCaseRef);
+        assertThat(documentEntities).hasSize(1);
+
+        DocumentEntity firstDocumentEntity = documentEntities.getFirst();
+
+        assertThat(firstDocumentEntity.getId()).isNotNull();
+        assertThat(firstDocumentEntity.getCaseReferenceNumber()).isEqualTo(Long.parseLong(caseData.get("hyphenatedCaseRef")
+            .toString().replace("-", "")));
+        assertThat(firstDocumentEntity.getDocumentTypeName()).isEqualTo(DocumentType.TRIBUNAL_DIRECTION.name());
+        assertThat(firstDocumentEntity.getCaseDocumentTypeId()).isEqualTo(7L);
+        assertThat(firstDocumentEntity.getSavedAt()).isNotNull();
+        assertThat(firstDocumentEntity.getUpdatedAt()).isNotNull();
+        assertThat(firstDocumentEntity.isSentToApplicantViaContactParties()).isFalse();
+        assertThat(firstDocumentEntity.getDocumentUrl()).isNotNull();
+        assertThat(firstDocumentEntity.getDocumentFilename()).isNotNull();
+        assertThat(firstDocumentEntity.getDocumentBinaryUrl()).isNotNull();
     }
 
     @Test
     public void shouldSuccessfullySendNotificationWhenSubmittedEventCallbackIsInvoked() throws Exception {
-        final Map<String, Object> caseData = caseData(CALLBACK_REQUEST);
+        final Map<String, Object> caseData = caseData(REQUEST_SUBMITTED_PATH);
         final Response response = triggerCallback(caseData, CASEWORKER_ISSUE_FINAL_DECISION, SUBMITTED_URL, false);
 
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
