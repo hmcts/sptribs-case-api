@@ -234,7 +234,7 @@ if (System.getenv("CI") == null) {
   check.dependsOn integration
   integration.shouldRunAfter(test)
 }
-project.tasks['sonarqube'].dependsOn jacocoTestReport
+project.tasks['sonar'].dependsOn jacocoTestReport
 
 def sonarExclusions = [
   '**/uk/gov/hmcts/sptribs/bankholidays/config/**',
@@ -252,7 +252,7 @@ def sonarExclusions = [
   '**/uk/gov/hmcts/sptribs/common/event/UpdateCaseDataEvent.java',
   '**/uk/gov/hmcts/sptribs/common/service/CaseDataFieldService.java'
 ]
-sonarqube {
+sonar {
   properties {
     property "sonar.projectName", "sptribs :: sptribs-case-api"
     property "sonar.projectKey", "uk.gov.hmcts.reform:sptribs-case-api"
