@@ -2,7 +2,6 @@ package uk.gov.hmcts.sptribs.controllers;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -78,10 +77,6 @@ class DocumentControllerIT {
     @AfterAll
     static void tearDown() {
         IdamWireMock.stopAndReset();
-    }
-
-    @BeforeEach
-    void setUpMocks() {
     }
 
     @Test
