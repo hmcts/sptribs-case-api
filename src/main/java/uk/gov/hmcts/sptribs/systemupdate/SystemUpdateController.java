@@ -21,7 +21,7 @@ public class SystemUpdateController {
     @PostMapping("/run")
     public ResponseEntity<String> runSystemUpdate(
         @RequestHeader("migration-secret") String secret) {
-        if (!"sptribs".equals(secret)) {
+        if (!"dummysecret".equals(secret)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
         systemMigrateCaseDocumentsDocumentTableTask.run();
