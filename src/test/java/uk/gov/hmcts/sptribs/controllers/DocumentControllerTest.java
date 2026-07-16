@@ -25,6 +25,8 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID_STRING;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_POSTCODE;
 
 @ExtendWith(MockitoExtension.class)
 class DocumentControllerTest {
@@ -49,8 +51,6 @@ class DocumentControllerTest {
     @Test
     void shouldReturnOkWithDocumentsForCcdReference() {
         // Given
-        String ccdReference = "1234567891234567";
-
         DocumentEntity latestBundleDocument = DocumentEntity.builder()
             .caseReferenceNumber(1L)
             .build();
@@ -77,9 +77,7 @@ class DocumentControllerTest {
             .latestCaseBundleDocument(latestBundleDocument)
             .build();
 
-        String postcode = "SW11 1PD";
-
-        when(documentsService.getDocumentsOnCase(Long.valueOf(ccdReference)))
+        when(documentsService.getDocumentsOnCase(Long.valueOf(TEST_CASE_ID_STRING)))
             .thenReturn(dashboardModel);
 
         when(caseworkerCICDocumentMapper.map(contactPartyDocuments))
@@ -94,8 +92,8 @@ class DocumentControllerTest {
         // When
         ResponseEntity<DocumentResponse> response = documentController.getDocumentsByCCDReference(
             TEST_AUTHORIZATION,
-            postcode,
-            ccdReference
+            TEST_POSTCODE,
+            TEST_CASE_ID_STRING
         );
 
         // Then
@@ -111,8 +109,12 @@ class DocumentControllerTest {
         assertThat(response.getBody().getLatestCaseBundleDocuments())
             .containsExactly(mappedBundleDocument);
 
-        verify(cicaCaseService).checkIfUserHasAccessWithPostcode(ccdReference, TEST_AUTHORIZATION, postcode);
-        verify(documentsService).getDocumentsOnCase(Long.valueOf(ccdReference));
+        verify(cicaCaseService).checkIfUserHasAccessWithPostcode(
+            TEST_CASE_ID_STRING,
+            TEST_AUTHORIZATION,
+            TEST_POSTCODE
+        );
+        verify(documentsService).getDocumentsOnCase(Long.valueOf(TEST_CASE_ID_STRING));
         verify(caseworkerCICDocumentMapper).map(contactPartyDocuments);
         verify(caseworkerCICDocumentMapper).map(orderAndDecisionDocuments);
         verify(caseworkerCICDocumentMapper).mapEntityToList(latestBundleDocument);
@@ -122,8 +124,6 @@ class DocumentControllerTest {
     @Test
     void shouldReturnDownloadedDocument() {
         // Given
-        String ccdReference = "1234567891234567";
-        String postcode = "SW11 1PD";
         String documentId = "12345";
         Resource resource = new ByteArrayResource("test-content".getBytes());
 
@@ -142,8 +142,8 @@ class DocumentControllerTest {
         // When
         ResponseEntity<Resource> response = documentController.downloadDocumentByCaseAndId(
             TEST_AUTHORIZATION,
-            postcode,
-            ccdReference,
+            TEST_POSTCODE,
+            TEST_CASE_ID_STRING,
             documentId
         );
 
@@ -155,7 +155,11 @@ class DocumentControllerTest {
         assertThat(response.getHeaders().getFirst("original-file-name"))
             .isEqualTo("test-document.pdf");
 
-        verify(cicaCaseService).checkIfUserHasAccessWithPostcode(ccdReference, TEST_AUTHORIZATION, postcode);
+        verify(cicaCaseService).checkIfUserHasAccessWithPostcode(
+            TEST_CASE_ID_STRING,
+            TEST_AUTHORIZATION,
+            TEST_POSTCODE
+        );
         verify(documentDownloadService).downloadDocument(
             TEST_AUTHORIZATION,
             documentId
@@ -165,20 +169,15 @@ class DocumentControllerTest {
     @Test
     void shouldThrowExceptionWhenPostcodeValidationFailsOnDocumentDownload() {
         // Given
-        String ccdReference = "1234567891234567";
         String postcode = "INVALID";
         String documentId = "12345";
 
         org.mockito.Mockito.doThrow(new UnauthorisedCaseAccessException("Postcode or email mismatch"))
-            .when(cicaCaseService).checkIfUserHasAccessWithPostcode(ccdReference, TEST_AUTHORIZATION, postcode);
+            .when(cicaCaseService).checkIfUserHasAccessWithPostcode(TEST_CASE_ID_STRING, TEST_AUTHORIZATION, postcode);
 
         // When / Then
         org.assertj.core.api.Assertions.assertThatThrownBy(() -> documentController.downloadDocumentByCaseAndId(
-            TEST_AUTHORIZATION,
-            postcode,
-            ccdReference,
-            documentId
-        ))
+            TEST_AUTHORIZATION, postcode, TEST_CASE_ID_STRING, documentId))
             .isExactlyInstanceOf(UnauthorisedCaseAccessException.class)
             .hasMessageContaining("Postcode or email mismatch");
 
