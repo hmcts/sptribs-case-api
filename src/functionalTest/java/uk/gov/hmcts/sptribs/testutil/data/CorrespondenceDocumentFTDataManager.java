@@ -55,11 +55,11 @@ public class CorrespondenceDocumentFTDataManager extends FunctionalTestDataManag
 
     public void deleteCorrespondenceDocuments(List<Long> caseReferences) {
         String deleteSql =
-            "DELETE FROM " + TABLE_CORRESPONDENCE_DOCUMENT +
-                " WHERE " + KEY_CORRESPONDENCE_ID + " IN (" +
-                "SELECT id FROM " + TABLE_CASE_CORRESPONDENCES +
-                " WHERE " + KEY_CASE_DOCUMENTS_REFERENCE + " = ANY (?)" +
-                ")";
+            "DELETE FROM " + TABLE_CORRESPONDENCE_DOCUMENT
+                + " WHERE " + KEY_CORRESPONDENCE_ID + " IN ("
+                + "SELECT id FROM " + TABLE_CASE_CORRESPONDENCES
+                + " WHERE " + KEY_CASE_DOCUMENTS_REFERENCE + " = ANY (?)"
+                + ")";
 
         try (PreparedStatement stmt = connection.prepareStatement(deleteSql)) {
             Array referenceArray = connection.createArrayOf("bigint", caseReferences.toArray(Long[]::new));
