@@ -2,7 +2,6 @@ package uk.gov.hmcts.sptribs.systemupdate;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Profile;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -20,10 +19,7 @@ public class SystemUpdateController {
 
     @PostMapping("/run")
     public ResponseEntity<String> runSystemUpdate(
-        @RequestHeader("migration-secret") String secret) {
-        if (!"dummysecret".equals(secret)) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-        }
+        @RequestHeader("Authorization") String authorisation) {
         systemMigrateCaseDocumentsDocumentTableTask.run();
         return ResponseEntity.ok("Document table migration started");
     }
