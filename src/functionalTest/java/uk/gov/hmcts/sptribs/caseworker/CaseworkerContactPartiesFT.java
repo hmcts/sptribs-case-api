@@ -2,10 +2,13 @@ package uk.gov.hmcts.sptribs.caseworker;
 
 import io.restassured.response.Response;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import uk.gov.hmcts.sptribs.common.repositories.model.CorrespondenceDocumentEntity;
 import uk.gov.hmcts.sptribs.notification.model.Party;
 import uk.gov.hmcts.sptribs.notification.persistence.CorrespondenceEntity;
 import uk.gov.hmcts.sptribs.testutil.FunctionalTestSuite;
+import uk.gov.hmcts.sptribs.testutil.data.CorrespondenceDocumentFTDataManager;
 
 import java.util.List;
 import java.util.Map;
@@ -33,6 +36,8 @@ public class CaseworkerContactPartiesFT extends FunctionalTestSuite {
         "classpath:request/casedata/ccd-callback-casedata-caseworker-contact-parties-submitted.json";
 
     private static final String CONFIRMATION_HEADER = "$.confirmation_header";
+    @Autowired
+    private CorrespondenceDocumentFTDataManager correspondenceDocumentFTDataManager;
 
     @Test
     public void shouldPrepareContactPartiesDocumentListInAboutToStartCallback() throws Exception {
@@ -53,7 +58,7 @@ public class CaseworkerContactPartiesFT extends FunctionalTestSuite {
         //add a test here when our document gets updated!
         final Map<String, Object> caseData = caseData(SUBMITTED_REQUEST);
 
-        final Response response = triggerCallback(caseData, CASEWORKER_CONTACT_PARTIES, SUBMITTED_URL, false);
+        final Response response = triggerCallback(caseData, CASEWORKER_CONTACT_PARTIES, SUBMITTED_URL, true);
 
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
         assertThatJson(response.asString())

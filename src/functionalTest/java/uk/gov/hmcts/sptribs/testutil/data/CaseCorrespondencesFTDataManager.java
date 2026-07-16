@@ -1,7 +1,8 @@
-package uk.gov.hmcts.sptribs.testutil;
+package uk.gov.hmcts.sptribs.testutil.data;
 
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.sptribs.notification.model.Party;
 import uk.gov.hmcts.sptribs.notification.persistence.CorrespondenceEntity;
 
 import java.sql.PreparedStatement;
@@ -41,6 +42,7 @@ public class CaseCorrespondencesFTDataManager extends FunctionalTestDataManager 
                     .documentBinaryUrl(rs.getString("document_binary_url"))
                     .documentFilename(rs.getString("document_filename"))
                     .correspondenceType(rs.getString("correspondence_type"))
+                    .receivingParty(Party.valueOf(rs.getString("receiving_party")))
                     .build();
 
                 correspondences.add(correspondenceEntity);
