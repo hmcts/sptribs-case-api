@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.sptribs.systemupdate.schedule.migration.SystemMigrateCaseDocumentsDocumentTableTask;
@@ -17,7 +18,8 @@ public class SystemUpdateController {
     private final SystemMigrateCaseDocumentsDocumentTableTask systemMigrateCaseDocumentsDocumentTableTask;
 
     @PostMapping("/run")
-    public ResponseEntity<String> runSystemUpdate() {
+    public ResponseEntity<String> runSystemUpdate(
+        @RequestHeader("Authorization") String authorisation) {
         systemMigrateCaseDocumentsDocumentTableTask.run();
         return ResponseEntity.ok("Document table migration started");
     }
