@@ -52,9 +52,6 @@ project.tasks.named("generateCCDConfig") {
   environment 'SPRING_PROFILES_ACTIVE', 'config-gen'
   environment 'SPRING_FLYWAY_ENABLED', 'false'
   environment 'SPRING_JMS_SERVICEBUS_ENABLED', 'false'
-  environment 'POSTGRES_USERNAME', 'postgres'
-  environment 'POSTGRES_PASSWORD', 'postgres'
-  environment 'POSTGRES_PORT', '6432'
 }
 
 sourceSets {
