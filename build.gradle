@@ -225,6 +225,9 @@ dependencyCheck {
   analyzers {
     // Disable scanning of .NET related binaries
     assemblyEnabled = false
+    nodeAudit {
+      yarnEnabled = false
+    }
   }
 }
 
