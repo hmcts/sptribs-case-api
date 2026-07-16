@@ -26,6 +26,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
+import uk.gov.hmcts.sptribs.common.repositories.exception.document.DocumentSaveException;
 import uk.gov.hmcts.sptribs.document.CaseDataDocumentService;
 import uk.gov.hmcts.sptribs.document.model.CICDocument;
 import uk.gov.hmcts.sptribs.document.model.CaseDocumentType;
@@ -131,21 +132,15 @@ public class CaseworkerIssueFinalDecision implements CCDConfig<CaseData, State, 
                                                                        CaseDetails<CaseData, State> beforeDetails) {
         final CaseData caseData = details.getData();
         final CICDocument finalDecisionDocument = caseData.getCaseIssueFinalDecision().getDocument();
+        final Document finalDecisionDocumentCreatedFromTemplate = caseData.getCaseIssueFinalDecision().getFinalDecisionDraft();
 
-        List<String> errors = new ArrayList<>();
+        final List<String> errors = new ArrayList<>();
 
-        if (finalDecisionDocument != null) {
+        if (finalDecisionDocument != null && finalDecisionDocument.getDocumentLink() != null) {
             finalDecisionDocument.getDocumentLink().setCategoryId(DocumentType.TRIBUNAL_DIRECTION.getCategory());
-            try {
-                documentsService.buildAndSaveNewDocumentEntity(
-                    finalDecisionDocument.getDocumentLink(),
-                    details.getId(),
-                    DocumentType.TRIBUNAL_DIRECTION,
-                    CaseDocumentType.FINAL_DECISION
-                );
-            } catch (RuntimeException e) {
-                errors.add(handleDocumentException(finalDecisionDocument.getDocumentLink(), e.getMessage()));
-            }
+            saveFinalDecisionDocumentToDB(finalDecisionDocument.getDocumentLink(), details.getId(), errors);
+        } else if (finalDecisionDocumentCreatedFromTemplate != null) {
+            saveFinalDecisionDocumentToDB(finalDecisionDocumentCreatedFromTemplate, details.getId(), errors);
         }
 
         caseData.getCaseIssueFinalDecision().setFinalDecisionDate(LocalDate.now(this.clock));
@@ -209,6 +204,18 @@ public class CaseworkerIssueFinalDecision implements CCDConfig<CaseData, State, 
             filename,
             request
         );
+    }
 
+    private void saveFinalDecisionDocumentToDB(Document finalDecisionDocument, Long caseId, List<String> errors) {
+        try {
+            documentsService.buildAndSaveNewDocumentEntity(
+                finalDecisionDocument,
+                caseId,
+                DocumentType.TRIBUNAL_DIRECTION,
+                CaseDocumentType.FINAL_DECISION
+            );
+        } catch (DocumentSaveException e) {
+            errors.add(handleDocumentException(finalDecisionDocument, e.getMessage()));
+        }
     }
 }
