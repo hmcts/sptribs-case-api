@@ -498,8 +498,8 @@ public class NotificationHelperTest {
     void shouldBuildDocumentListWhereDocumentLabelContainsMoreThanTwoSquareBrackets() {
         //Given
         final String documentLabel =
-            "[Order--[Subject kaikaqsrf]--14-07-2026 15:39:57.pdf TD - Direction / decision notices]" +
-                "(http://exui.net/documents/5e32a0d2-9b37-4548-b007-b9b2eb580d0a/binary)";
+            "[Order--[Subject kaikaqsrf]--14-07-2026 15:39:57.pdf TD - Direction / decision notices]"
+                + "(http://exui.net/documents/5e32a0d2-9b37-4548-b007-b9b2eb580d0a/binary)";
         final DynamicListElement listItem = DynamicListElement
             .builder()
             .label(documentLabel)
