@@ -1,8 +1,8 @@
 package uk.gov.hmcts.sptribs.notification.dispatcher;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseIssueDecision;
 import uk.gov.hmcts.sptribs.caseworker.model.NoticeOption;
@@ -24,6 +24,7 @@ import static uk.gov.hmcts.sptribs.common.CommonConstants.DOC_AVAILABLE;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.EMPTY_PLACEHOLDER;
 
 @Component
+@RequiredArgsConstructor
 @Slf4j
 public class DecisionIssuedNotification implements PartiesNotification {
 
@@ -34,12 +35,6 @@ public class DecisionIssuedNotification implements PartiesNotification {
     private final NotificationServiceCIC notificationService;
 
     private final NotificationHelper notificationHelper;
-
-    @Autowired
-    public DecisionIssuedNotification(NotificationServiceCIC notificationService, NotificationHelper notificationHelper) {
-        this.notificationService = notificationService;
-        this.notificationHelper = notificationHelper;
-    }
 
     @Override
     public void sendToSubject(final CaseData caseData, final String caseNumber) {

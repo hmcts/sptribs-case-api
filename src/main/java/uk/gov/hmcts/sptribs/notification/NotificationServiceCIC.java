@@ -107,11 +107,10 @@ public class NotificationServiceCIC {
                 .correspondenceType("Email")
                 .build();
             correspondenceRepository.save(correspondence);
-        } catch (java.io.IOException | RestClientException e) {
+        } catch (IOException | RestClientException e) {
             log.error("Failed to store pdf document", e);
             throw e;
         }
-
     }
 
     public void saveLetterCorrespondence(String templateName,
@@ -137,7 +136,7 @@ public class NotificationServiceCIC {
                 .correspondenceType("Letter")
                 .build();
             correspondenceRepository.save(correspondence);
-        } catch (java.io.IOException | RestClientException e) {
+        } catch (IOException | RestClientException e) {
             log.error("Failed to store pdf document", e);
             throw e;
         }
@@ -310,11 +309,8 @@ public class NotificationServiceCIC {
                 log.debug("Document available for: {}", docName);
 
                 if (!selectedDocuments.isEmpty()) {
-
                     addDocumentDescription(templateVars, selectedDocuments, item, docName);
-
                 } else {
-
                     if (uploadedDocument.length <= TWO_MEGABYTES) {
                         templateVars.put(docName, getJsonFileAttachment(uploadedDocument));
                     } else {
@@ -471,7 +467,7 @@ public class NotificationServiceCIC {
 
             return uploadedPDF;
         } catch (RestClientException e) {
-            log.error("Failed to store correspondence document [" + correspondenceDocumentFilename + "]", e);
+            log.error("Failed to store correspondence document [{}]", correspondenceDocumentFilename, e);
             throw e;
         }
     }

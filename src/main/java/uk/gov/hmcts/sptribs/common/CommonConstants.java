@@ -74,7 +74,6 @@ public final class CommonConstants {
     public static final String DASHBOARD_LINK = "http://special-tribunals.service.gov.uk/cic-update";
     public static final String DASHBOARD_KEY = "DashboardLink";
 
-
     public static final String HAS_CICA_NUMBER = "hasCicaNumber";
     public static final String CICA_REF_NUMBER = "cicaRefNumber";
 

@@ -2,6 +2,7 @@ package uk.gov.hmcts.sptribs.notification.dispatcher;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.ObjectUtils;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
@@ -16,8 +17,12 @@ import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
 
 import java.util.Map;
 
+import static uk.gov.hmcts.sptribs.common.CommonConstants.DASHBOARD_KEY;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.TRIBUNAL_EMAIL_VALUE;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.TRIBUNAL_NAME_VALUE;
+import static uk.gov.hmcts.sptribs.notification.TemplateName.CONTACT_PARTIES_EMAIL;
+import static uk.gov.hmcts.sptribs.notification.TemplateName.CONTACT_PARTIES_EMAIL_NEW_CD;
+import static uk.gov.hmcts.sptribs.notification.TemplateName.CONTACT_PARTIES_POST;
 
 @Component
 @RequiredArgsConstructor
@@ -27,26 +32,34 @@ public class ContactPartiesNotification implements PartiesNotification {
 
     private final NotificationHelper notificationHelper;
 
+    @Value("${sptribs-frontend.dashboard-url}")
+    private String citizenDashboardUrl;
+
+    @Value("${feature.citizen-dashboard.enabled}")
+    private boolean citizenDashboardEnabled;
+
     @Override
     public void sendToSubject(final CaseData caseData, final String caseNumber, final Map<String, String> uploadedDocuments) {
         final CicCase cicCase = caseData.getCicCase();
         final Map<String, Object> templateVarsSubject = notificationHelper.getSubjectCommonVars(caseNumber, caseData);
         templateVarsSubject.put(CommonConstants.CIC_CASE_SUBJECT_NAME, cicCase.getFullName());
         templateVarsSubject.put(CommonConstants.CONTACT_PARTY_INFO, cicCase.getNotifyPartyMessage());
-
+        addDashboardLink(templateVarsSubject);
         final NotificationResponse notificationResponse;
+        final TemplateName templateName;
+
         if (cicCase.getContactPreferenceType() == ContactPreferenceType.EMAIL) {
             // Send Email
             notificationResponse = sendEmailNotificationWithAttachment(
                 cicCase.getEmail(),
                 templateVarsSubject,
                 uploadedDocuments,
-                TemplateName.CONTACT_PARTIES_EMAIL,
+                getTemplateName(),
                 caseNumber);
         } else {
             notificationHelper.addAddressTemplateVars(cicCase.getAddress(), templateVarsSubject);
             //SEND POST
-            notificationResponse = sendLetterNotification(templateVarsSubject, TemplateName.CONTACT_PARTIES_POST, caseNumber);
+            notificationResponse = sendLetterNotification(templateVarsSubject, CONTACT_PARTIES_POST, caseNumber);
         }
         cicCase.setSubjectLetterNotifyList(notificationResponse);
     }
@@ -57,6 +70,7 @@ public class ContactPartiesNotification implements PartiesNotification {
         final Map<String, Object> templateVarsApplicant = notificationHelper.getApplicantCommonVars(caseNumber, caseData);
         templateVarsApplicant.put(CommonConstants.CIC_CASE_SUBJECT_NAME, cicCase.getFullName());
         templateVarsApplicant.put(CommonConstants.CONTACT_PARTY_INFO, cicCase.getNotifyPartyMessage());
+        addDashboardLink(templateVarsApplicant);
 
         final NotificationResponse notificationResponse;
         if (caseData.getCicCase().getApplicantContactDetailsPreference() == ContactPreferenceType.EMAIL) {
@@ -65,12 +79,12 @@ public class ContactPartiesNotification implements PartiesNotification {
                 cicCase.getApplicantEmailAddress(),
                 templateVarsApplicant,
                 uploadedDocuments,
-                TemplateName.CONTACT_PARTIES_EMAIL,
+                getTemplateName(),
                 caseNumber);
         } else {
             notificationHelper.addAddressTemplateVars(cicCase.getApplicantAddress(), templateVarsApplicant);
             notificationResponse = sendLetterNotification(templateVarsApplicant,
-                TemplateName.CONTACT_PARTIES_POST, caseNumber);
+                CONTACT_PARTIES_POST, caseNumber);
         }
 
         cicCase.setAppNotificationResponse(notificationResponse);
@@ -82,6 +96,7 @@ public class ContactPartiesNotification implements PartiesNotification {
         final Map<String, Object> templateVarsRepresentative = notificationHelper.getRepresentativeCommonVars(caseNumber, caseData);
         templateVarsRepresentative.put(CommonConstants.CIC_CASE_SUBJECT_NAME, cicCase.getFullName());
         templateVarsRepresentative.put(CommonConstants.CONTACT_PARTY_INFO, cicCase.getNotifyPartyMessage());
+        addDashboardLink(templateVarsRepresentative);
 
         final NotificationResponse notificationResponse;
         if (cicCase.getRepresentativeContactDetailsPreference() == ContactPreferenceType.EMAIL) {
@@ -90,13 +105,13 @@ public class ContactPartiesNotification implements PartiesNotification {
                 cicCase.getRepresentativeEmailAddress(),
                 templateVarsRepresentative,
                 uploadedDocuments,
-                TemplateName.CONTACT_PARTIES_EMAIL,
+                getTemplateName(),
                 caseNumber);
 
         } else {
             notificationHelper.addAddressTemplateVars(cicCase.getRepresentativeAddress(), templateVarsRepresentative);
             notificationResponse = sendLetterNotification(templateVarsRepresentative,
-                TemplateName.CONTACT_PARTIES_POST, caseNumber);
+                CONTACT_PARTIES_POST, caseNumber);
         }
 
         cicCase.setRepNotificationResponse(notificationResponse);
@@ -116,11 +131,11 @@ public class ContactPartiesNotification implements PartiesNotification {
             notificationResponse = sendEmailNotificationWithAttachment(cicCase.getRespondentEmail(),
                 templateVarsRespondent,
                 uploadedDocuments,
-                TemplateName.CONTACT_PARTIES_EMAIL,
+                CONTACT_PARTIES_EMAIL,
                 caseNumber);
         } else {
             notificationResponse = sendEmailNotification(templateVarsRespondent,
-                cicCase.getRespondentEmail(), TemplateName.CONTACT_PARTIES_EMAIL, caseNumber);
+                cicCase.getRespondentEmail(), CONTACT_PARTIES_EMAIL, caseNumber);
         }
 
         cicCase.setResNotificationResponse(notificationResponse);
@@ -140,10 +155,10 @@ public class ContactPartiesNotification implements PartiesNotification {
             notificationResponse = sendEmailNotificationWithAttachment(TRIBUNAL_EMAIL_VALUE,
                 templateVarsTribunal,
                 uploadedDocuments,
-                TemplateName.CONTACT_PARTIES_EMAIL, caseNumber);
+                CONTACT_PARTIES_EMAIL, caseNumber);
         } else {
             notificationResponse = sendEmailNotification(templateVarsTribunal,
-                TRIBUNAL_EMAIL_VALUE, TemplateName.CONTACT_PARTIES_EMAIL, caseNumber);
+                TRIBUNAL_EMAIL_VALUE, CONTACT_PARTIES_EMAIL, caseNumber);
         }
 
         cicCase.setTribunalNotificationResponse(notificationResponse);
@@ -158,7 +173,8 @@ public class ContactPartiesNotification implements PartiesNotification {
     }
 
     private NotificationResponse sendEmailNotificationWithAttachment(
-        String toEmail, final Map<String, Object> templateVars,
+        String toEmail,
+        final Map<String, Object> templateVars,
         Map<String, String> uploadedDocuments,
         TemplateName emailTemplateName,
         String caseReferenceNumber) {
@@ -177,5 +193,15 @@ public class ContactPartiesNotification implements PartiesNotification {
                                                         String caseReferenceNumber) {
         final NotificationRequest letterRequest = notificationHelper.buildLetterNotificationRequest(templateVarsLetter, emailTemplateName);
         return notificationService.sendLetter(letterRequest, caseReferenceNumber);
+    }
+
+    private TemplateName getTemplateName() {
+        return citizenDashboardEnabled ? CONTACT_PARTIES_EMAIL_NEW_CD : CONTACT_PARTIES_EMAIL;
+    }
+
+    private void addDashboardLink(Map<String, Object> templateVars) {
+        if (citizenDashboardEnabled) {
+            templateVars.put(DASHBOARD_KEY, citizenDashboardUrl);
+        }
     }
 }

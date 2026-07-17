@@ -87,8 +87,9 @@ uk:
           tribunalOrganisation: 'CICA'
           tribunalEmail: CIC.enquiries@justice.gov.uk
         templatesCIC:
-          APPLICATION_RECEIVED: '9b331dd4-9ec6-4aba-9f48-9a0ef760f80f'
+          APPLICATION_RECEIVED: '48ccf890-0550-48ca-8c52-fa68cec09947'
           APPLICATION_RECEIVED_CY: '86e6988c-dfc8-43de-8890-e38269ee40d1'
+          APPLICATION_RECEIVED_NEW_CD: '9b331dd4-9ec6-4aba-9f48-9a0ef760f80f'
           BUNDLE_CREATED_EMAIL: 'a40e221e-56c8-470c-99c1-b7998d806e56'
           CASE_ISSUED_CITIZEN_EMAIL: '03a0bbaa-10ee-4304-a1b1-6fdf76a2fd69'
           CASE_ISSUED_CITIZEN_POST: 'eedc916f-088f-4653-99ed-b954e1dbd58d'
@@ -104,10 +105,13 @@ uk:
           CASE_WITHDRAWN_EMAIL: '9b2df887-745d-49d6-ac98-02a081e642e1'
           CASE_WITHDRAWN_POST: '54fe1990-2213-4bcb-9027-7b595cd9db12'
           CONTACT_PARTIES_EMAIL: '1117ab2d-34d9-46d3-af7e-efcc380408c0'
+          CONTACT_PARTIES_EMAIL_NEW_CD: 'a3730a67-0086-4cb3-af6f-a925192a1131'
           CONTACT_PARTIES_POST: '59ac1cb3-7c19-4993-945b-5cd331e12feb'
           DECISION_ISSUED_EMAIL: '968c589d-f375-4a42-8c6f-3a7fb70f69de'
+          DECISION_ISSUED_EMAIL_NEW_CD: '0c006566-af4b-4cf1-8238-566f0be22a6f'
           DECISION_ISSUED_POST: 'ae833f41-30da-48bb-8384-e832a244abb9'
           FINAL_DECISION_ISSUED_EMAIL: '9e0a6a4f-96a0-4dbb-b6bd-ca31ee9b63b9'
+          FINAL_DECISION_ISSUED_EMAIL_NEW_CD: '24e87035-5a3e-40a9-a80e-a4aaf0be40b1'
           FINAL_DECISION_ISSUED_POST: 'e968c49e-7510-4997-8f6f-8d13421d4f98'
           HEARING_CANCELLED_EMAIL: '8e8bcf9f-aa29-4154-8030-c796429a29b6'
           HEARING_CANCELLED_POST: '2663b564-c361-420b-a227-c470e6be0703'
@@ -118,6 +122,7 @@ uk:
           HEARING_UPDATED_EMAIL: '96fe38c3-95e1-4db4-8d4d-2723b39c7ef2'
           HEARING_UPDATED_POST: '4c713489-bab5-4336-8452-0feb79deec65'
           NEW_ORDER_ISSUED_EMAIL: 'fa64c351-da53-489f-aa87-6dc584fbf3c4'
+          NEW_ORDER_ISSUED_EMAIL_NEW_CD: 'cc1b0734-bfe9-4369-9fde-f99b752ec372'
           NEW_ORDER_ISSUED_POST: '797e62bd-a1d4-4a6a-b15d-ddd642d2b14b'
           REINSTATED_EMAIL: '48e9f839-82e5-451c-a9bc-16269daf6561'
           REINSTATED_POST: '313e8992-8538-4485-a461-a244cc893bb3'
@@ -199,6 +204,10 @@ docmosis:
 case-api:
   url: ${CASE_API_DOCUMENT_DOWNLOAD_URL:http://manage-case.demo.platform.hmcts.net/}
 
+sptribs-frontend:
+#  dashboard-url: ${SPTRIBS_FRONTEND_URL:https://sptribs-frontend.aat.platform.hmcts.net/dashboard}
+  dashboard-url: ${SPTRIBS_FRONTEND_URL:http://localhost:3001/dashboard}
+
 doc_assembly:
   url: ${DOC_ASSEMBLY_URL:http://dg-docassembly-aat.service.core-compute-aat.internal}
 
@@ -242,6 +251,9 @@ feature:
     skipMigrated: ${INITIAL_DOCUMENTS_MIGRATION_SKIP_MIGRATED:false}
     batchSize: ${INITIAL_DOCUMENTS_MIGRATION_BATCH_SIZE:100}
     batchPauseMs: ${INITIAL_DOCUMENTS_MIGRATION_BATCH_PAUSE:5000}
+  citizen-dashboard:
+    enabled: ${CITIZEN_DASHBOARD_ENABLED:true}
+
 
 caseinfo:
   apps:
