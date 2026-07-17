@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Map;
 
 import static uk.gov.hmcts.sptribs.caseworker.util.DocumentListUtil.prepareDocTypeAndDocMap;
+import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SYSTEM_UPDATE;
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE_DELETE;
 import static uk.gov.hmcts.sptribs.document.model.CaseDocumentType.BUNDLE;
@@ -35,7 +36,7 @@ public class SystemMigrateCaseDocumentsToDocTable implements CCDConfig<CaseData,
             .name("System: Migrate Document Table")
             .description("Migrate documents to document table")
             .aboutToSubmitCallback(this::aboutToSubmit)
-            .grant(CREATE_READ_UPDATE_DELETE, SYSTEM_UPDATE);
+            .grant(CREATE_READ_UPDATE_DELETE, SYSTEM_UPDATE, SUPER_USER);
     }
 
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(CaseDetails<CaseData, State> caseDetails,
