@@ -233,7 +233,7 @@ public class DocumentListUtilTest {
         DynamicMultiSelectList result = DocumentListUtil.prepareDocumentList(caseData, baseUrl);
 
         //Then
-        assertThat(result).isNotNull();
+        assertEquals(2, result.getListItems().size());
         assertThat(result.getListItems().getFirst().getLabel().startsWith("http://mocked-url.com/documents/"));
         assertThat(result.getListItems().get(1).getLabel().startsWith("http://mocked-url.com/documents/"));
 
@@ -244,6 +244,7 @@ public class DocumentListUtilTest {
         result = DocumentListUtil.prepareDocumentList(caseData, baseUrl);
 
         //Then
+        assertEquals(2, result.getListItems().size());
         assertThat(result.getListItems().getFirst().getLabel().startsWith("http://mocked-url.com/documents/"));
         assertThat(result.getListItems().get(1).getLabel().startsWith("http://mocked-url.com/documents/"));
     }
