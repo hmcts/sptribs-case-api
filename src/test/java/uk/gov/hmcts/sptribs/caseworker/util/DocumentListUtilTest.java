@@ -177,8 +177,8 @@ public class DocumentListUtilTest {
 
         //Then
         assertEquals(2, result.getListItems().size());
-        assertThat(result.getListItems().getFirst().getLabel().startsWith("http://mocked-url.com/documents/"));
-        assertThat(result.getListItems().get(1).getLabel().startsWith("http://mocked-url.com/documents/"));
+        assertThat(result.getListItems().getFirst().getLabel().split("]\\(")[1]).startsWith("http://mocked-url.com/documents/");
+        assertThat(result.getListItems().get(1).getLabel().split("]\\(")[1]).startsWith("http://mocked-url.com/documents/");
 
         //And given
         baseUrl = "http://mocked-url.com";
@@ -188,8 +188,8 @@ public class DocumentListUtilTest {
 
         //Then
         assertEquals(2, result.getListItems().size());
-        assertThat(result.getListItems().getFirst().getLabel().startsWith("http://mocked-url.com/documents/"));
-        assertThat(result.getListItems().get(1).getLabel().startsWith("http://mocked-url.com/documents/"));
+        assertThat(result.getListItems().getFirst().getLabel().split("]\\(")[1]).startsWith("http://mocked-url.com/documents/");
+        assertThat(result.getListItems().get(1).getLabel().split("]\\(")[1]).startsWith("http://mocked-url.com/documents/");
     }
 
     @Test
@@ -234,8 +234,8 @@ public class DocumentListUtilTest {
 
         //Then
         assertEquals(2, result.getListItems().size());
-        assertThat(result.getListItems().getFirst().getLabel().startsWith("http://mocked-url.com/documents/"));
-        assertThat(result.getListItems().get(1).getLabel().startsWith("http://mocked-url.com/documents/"));
+        assertThat(result.getListItems().getFirst().getLabel().split("]\\(")[1]).startsWith("http://mocked-url.com/documents/");
+        assertThat(result.getListItems().get(1).getLabel().split("]\\(")[1]).startsWith("http://mocked-url.com/documents/");
 
         //And given
         baseUrl = "http://mocked-url.com";
@@ -245,8 +245,8 @@ public class DocumentListUtilTest {
 
         //Then
         assertEquals(2, result.getListItems().size());
-        assertThat(result.getListItems().getFirst().getLabel().startsWith("http://mocked-url.com/documents/"));
-        assertThat(result.getListItems().get(1).getLabel().startsWith("http://mocked-url.com/documents/"));
+        assertThat(result.getListItems().getFirst().getLabel().split("]\\(")[1]).startsWith("http://mocked-url.com/documents/");
+        assertThat(result.getListItems().get(1).getLabel().split("]\\(")[1]).startsWith("http://mocked-url.com/documents/");
     }
 
     @Test
