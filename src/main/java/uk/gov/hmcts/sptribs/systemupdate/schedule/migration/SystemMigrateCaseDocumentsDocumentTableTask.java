@@ -6,6 +6,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.idam.client.models.User;
+import uk.gov.hmcts.sptribs.common.repositories.CaseEventRepository;
+import uk.gov.hmcts.sptribs.common.repositories.impl.CaseDataRepositoryImpl;
 import uk.gov.hmcts.sptribs.idam.IdamService;
 import uk.gov.hmcts.sptribs.systemupdate.service.CcdManagementException;
 import uk.gov.hmcts.sptribs.systemupdate.service.CcdSearchService;
@@ -25,6 +27,8 @@ public class SystemMigrateCaseDocumentsDocumentTableTask implements Runnable {
 
     private final CcdUpdateService ccdUpdateService;
 
+    private final CaseDataRepositoryImpl caseDataRepository;
+
     private final IdamService idamService;
 
     @Value("${feature.migrate-to-documents-table-task.enabled}")
@@ -35,10 +39,11 @@ public class SystemMigrateCaseDocumentsDocumentTableTask implements Runnable {
 
     @Autowired
     public SystemMigrateCaseDocumentsDocumentTableTask(AuthTokenGenerator authTokenGenerator, CcdSearchService ccdSearchService,
-                                         CcdUpdateService ccdUpdateService, IdamService idamService) {
+                                                       CcdUpdateService ccdUpdateService, CaseDataRepositoryImpl caseDataRepository, IdamService idamService) {
         this.authTokenGenerator = authTokenGenerator;
         this.ccdSearchService = ccdSearchService;
         this.ccdUpdateService = ccdUpdateService;
+        this.caseDataRepository = caseDataRepository;
         this.idamService = idamService;
     }
 
@@ -64,7 +69,7 @@ public class SystemMigrateCaseDocumentsDocumentTableTask implements Runnable {
                 caseIdsToUpdate = List.of(caseIdToUpdate);
             } else {
 
-                caseIdsToUpdate = List.of(123L);
+                caseIdsToUpdate = caseDataRepository.returnAllCases("Submitted");
 
             }
 
