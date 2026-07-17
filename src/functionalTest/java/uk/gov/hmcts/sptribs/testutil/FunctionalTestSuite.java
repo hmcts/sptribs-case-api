@@ -56,7 +56,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_CREATE_CASE;
 import static uk.gov.hmcts.sptribs.common.config.ControllerConstants.SERVICE_AUTHORIZATION;
 import static uk.gov.hmcts.sptribs.controllers.model.DssCaseDataRequest.convertDssCaseDataToRequest;
-import static uk.gov.hmcts.sptribs.testutil.FunctionalTestConstants.DOC_TABLE_REFERENCE_ARRAY;
+//import static uk.gov.hmcts.sptribs.testutil.FunctionalTestConstants.DOC_TABLE_REFERENCE_ARRAY;
 
 @ActiveProfiles("functional")
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -536,10 +536,10 @@ public abstract class FunctionalTestSuite {
     @AfterEach
     void tearDownDataManager() throws SQLException {
 
-        for (long reference : functionalTestDataManager.getTestReferences()) {
-            functionalTestDataManager.clearDown(reference);
-        }
-        functionalTestDataManager.deleteCaseDocConstants(DOC_TABLE_REFERENCE_ARRAY);
+    //        for (long reference : functionalTestDataManager.getTestReferences()) {
+    //            functionalTestDataManager.clearDown(reference);
+    //        }
+    //        functionalTestDataManager.deleteCaseDocConstants(DOC_TABLE_REFERENCE_ARRAY);
     }
 
     @AfterAll
