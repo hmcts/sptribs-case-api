@@ -5,7 +5,7 @@ import feign.FeignException;
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
 import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.AfterEach;
+//import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.TestInstance;
 import org.slf4j.Logger;
@@ -533,14 +533,14 @@ public abstract class FunctionalTestSuite {
     }
 
 
-    @AfterEach
-    void tearDownDataManager() throws SQLException {
-
-    //        for (long reference : functionalTestDataManager.getTestReferences()) {
-    //            functionalTestDataManager.clearDown(reference);
-    //        }
-    //        functionalTestDataManager.deleteCaseDocConstants(DOC_TABLE_REFERENCE_ARRAY);
-    }
+    //    @AfterEach
+    //    void tearDownDataManager() throws SQLException {
+    //
+    //            for (long reference : functionalTestDataManager.getTestReferences()) {
+    //                functionalTestDataManager.clearDown(reference);
+    //            }
+    //            functionalTestDataManager.deleteCaseDocConstants(DOC_TABLE_REFERENCE_ARRAY);
+    //    }
 
     @AfterAll
     void closeDBConnection() {
