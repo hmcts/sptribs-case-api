@@ -11,7 +11,7 @@ import java.util.Map;
 import java.util.UUID;
 
 @TestComponent
-public class CaseCorrespondenceManager implements IntegrationTestDataManager {
+public class CaseCorrespondenceITManager implements IntegrationTestDataManager {
 
     @Autowired
     private NamedParameterJdbcTemplate jdbcTemplate;

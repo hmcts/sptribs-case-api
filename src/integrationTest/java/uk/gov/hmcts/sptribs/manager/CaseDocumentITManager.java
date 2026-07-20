@@ -12,7 +12,7 @@ import java.util.Map;
 import java.util.Optional;
 
 @TestComponent
-public class CaseDocumentManager implements IntegrationTestDataManager {
+public class CaseDocumentITManager implements IntegrationTestDataManager {
 
     @Autowired
     private NamedParameterJdbcTemplate jdbcTemplate;

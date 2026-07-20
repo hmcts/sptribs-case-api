@@ -107,7 +107,6 @@ public class CaseworkerSendOrderFT extends FunctionalTestSuite {
         assertThat(firstDocumentEntity.getCaseReferenceNumber()).isEqualTo(Long.parseLong(caseData.get("hyphenatedCaseRef")
             .toString().replace("-", "")));
         assertThat(firstDocumentEntity.getDocumentTypeName()).isEqualTo(DocumentType.HOSPITAL_RECORDS.name());
-        //should be 3 to represent order.
         assertThat(firstDocumentEntity.getCaseDocumentTypeId()).isEqualTo(3L);
         assertThat(firstDocumentEntity.getUpdatedAt()).isNotNull();
 

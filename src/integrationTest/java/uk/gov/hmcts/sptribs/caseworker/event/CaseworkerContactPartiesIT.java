@@ -41,7 +41,9 @@ import java.util.UUID;
 import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
 import static net.javacrumbs.jsonunit.assertj.JsonAssertions.json;
 import static net.javacrumbs.jsonunit.core.Option.IGNORING_EXTRA_FIELDS;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -110,6 +112,11 @@ public class CaseworkerContactPartiesIT extends IntegrationTestBase {
         "classpath:responses/caseworker-contact-parties-about-to-start-response.json";
 
     private static final String CONFIRMATION_HEADER = "$.confirmation_header";
+
+    private static final String NOTIFICATION_RESPONSE_ID_1 = "121";
+    private static final String NOTIFICATION_RESPONSE_ID_2 = "122";
+    private static final String NOTIFICATION_RESPONSE_ID_3 = "123";
+    private static final String NOTIFICATION_RESPONSE_ID_4 = "124";
 
     @BeforeAll
     static void setUp() {
@@ -222,16 +229,25 @@ public class CaseworkerContactPartiesIT extends IntegrationTestBase {
         );
         caseData.setContactPartiesDocuments(contactPartiesDocuments);
 
-        NotificationResponse notificationResponse = NotificationResponse.builder().id("123").build();
-        when(notificationServiceCIC.sendEmail(any(), eq(TEST_CASE_ID_HYPHENATED), any())).thenReturn(notificationResponse);
+        NotificationResponse notificationResponse1 = NotificationResponse.builder().id(NOTIFICATION_RESPONSE_ID_1).build();
+        NotificationResponse notificationResponse2 = NotificationResponse.builder().id(NOTIFICATION_RESPONSE_ID_2).build();
+        NotificationResponse notificationResponse3 = NotificationResponse.builder().id(NOTIFICATION_RESPONSE_ID_3).build();
+        NotificationResponse notificationResponse4 = NotificationResponse.builder().id(NOTIFICATION_RESPONSE_ID_4).build();
+
+        when(notificationServiceCIC.sendEmail(any(), eq(TEST_CASE_ID_HYPHENATED), eq(Party.SUBJECT))).thenReturn(notificationResponse1);
+        when(notificationServiceCIC.sendEmail(any(), eq(TEST_CASE_ID_HYPHENATED), eq(Party.RESPONDENT))).thenReturn(notificationResponse2);
+        when(notificationServiceCIC.sendEmail(any(), eq(TEST_CASE_ID_HYPHENATED), eq(Party.REPRESENTATIVE))).thenReturn(
+            notificationResponse3);
+        when(notificationServiceCIC.sendEmail(any(), eq(TEST_CASE_ID_HYPHENATED), eq(Party.APPLICANT))).thenReturn(notificationResponse4);
+
 
         String response = mockMvc.perform(post(SUBMITTED_URL)
-            .contentType(APPLICATION_JSON)
-            .header(SERVICE_AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
-            .header(AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
-            .content(objectMapper.writeValueAsString(
-                callbackRequest(
-                    caseData,
+                .contentType(APPLICATION_JSON)
+                .header(SERVICE_AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
+                .header(AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
+                .content(objectMapper.writeValueAsString(
+                    callbackRequest(
+                        caseData,
                     CASEWORKER_CONTACT_PARTIES)))
             .accept(APPLICATION_JSON))
             .andExpect(
@@ -250,7 +266,17 @@ public class CaseworkerContactPartiesIT extends IntegrationTestBase {
         verify(notificationServiceCIC, times(1)).sendEmail(any(), eq(TEST_CASE_ID_HYPHENATED), eq(Party.REPRESENTATIVE));
         verify(notificationServiceCIC, times(1)).sendEmail(any(), eq(TEST_CASE_ID_HYPHENATED), eq(Party.APPLICANT));
         verifyNoMoreInteractions(notificationServiceCIC);
-        verify(contactPartiesService).linkCorrespondenceIdsToDocuments(any(), any(),eq(List.of("123", "123", "123", "123")));
+        verify(contactPartiesService).linkCorrespondenceIdsToDocuments(any(), any(),
+            argThat(list -> {
+                assertThat(list).containsExactlyInAnyOrder(
+                    NOTIFICATION_RESPONSE_ID_1,
+                    NOTIFICATION_RESPONSE_ID_2,
+                    NOTIFICATION_RESPONSE_ID_3,
+                    NOTIFICATION_RESPONSE_ID_4
+                );
+                return true;
+            })
+        );
     }
 
     @Test

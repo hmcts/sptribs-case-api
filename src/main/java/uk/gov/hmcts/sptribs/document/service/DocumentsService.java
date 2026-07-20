@@ -151,16 +151,14 @@ public class DocumentsService {
                 orderAndDecisionTypeIds
             );
 
-        // Latest generated case bundle, if one exists.
         Optional<DocumentEntity> latestBundle =
             documentsRepository.findFirstByCaseReferenceNumberAndCaseDocumentTypeIdOrderBySavedAtDesc(
                 ccdReference,
                 caseDocumentTypesCache.getId(CaseDocumentType.BUNDLE)
             );
 
-        // Order and decision documents displayed on the dashboard.
         List<DocumentEntity> orderDecisionDocuments =
-            documentsRepository.findOrderAndDecisionDocuments(
+            documentsRepository.findDocumentsByReferenceAndCaseDocumentTypeIds(
                 ccdReference,
                 orderAndDecisionTypeIds
             );
