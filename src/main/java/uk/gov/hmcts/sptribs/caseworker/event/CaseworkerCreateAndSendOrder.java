@@ -125,10 +125,10 @@ public class CaseworkerCreateAndSendOrder implements CCDConfig<CaseData, State, 
 
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToStart(CaseDetails<CaseData, State> details) {
         final CaseData caseData = details.getData();
+        final CicCase cicCase = caseData.getCicCase();
 
         updateAnonymityAlreadyApplied(caseData);
 
-        CicCase cicCase = caseData.getCicCase();
         DynamicList orderIssueTypeOptions = DynamicListUtil.createDynamicListFromEnumSet(
             EnumSet.of(
                 CREATE_AND_SEND_NEW_ORDER,
@@ -151,72 +151,22 @@ public class CaseworkerCreateAndSendOrder implements CCDConfig<CaseData, State, 
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(CaseDetails<CaseData, State> details,
                                                                        CaseDetails<CaseData, State> beforeDetails) {
         final CaseData caseData = details.getData();
-
-        Order.OrderBuilder orderBuilder = Order.builder();
+        final CicCase cicCase = caseData.getCicCase();
+        final CaseData beforeData = beforeDetails == null ? null : beforeDetails.getData();
+        final ListValue<FlagDetail> mergedAnonymityFlag =
+            CaseFlagsUtil.mergeAnonymityFlagsPreserveOriginalId(caseData, beforeData);
 
         List<String> errors = new ArrayList<>();
 
-        if (caseData.getCicCase().getOrderIssuingType().equals(CREATE_AND_SEND_NEW_ORDER)) {
-            DraftOrderCIC draftOrderCIC = DraftOrderCIC.builder()
-                .draftOrderContentCIC(caseData.getDraftOrderContentCIC())
-                .templateGeneratedDocument(caseData.getCicCase().getOrderTemplateIssued())
-                .build();
-
-            orderBuilder.draftOrder(draftOrderCIC);
-
-            try {
-                documentsService.buildAndSaveNewDocumentEntity(
-                    draftOrderCIC.getTemplateGeneratedDocument(),
-                    details.getId(),
-                    DocumentType.TRIBUNAL_DIRECTION,
-                    CaseDocumentType.ORDER
-                );
-            } catch (RuntimeException e) {
-                errors.add(handleDocumentException(draftOrderCIC.getTemplateGeneratedDocument(), e.getMessage()));
-            }
-
-            caseData.setDraftOrderContentCIC(new DraftOrderContentCIC());
-            caseData.getCicCase().setOrderTemplateIssued(null);
-        }
-
-        if (caseData.getCicCase().getOrderIssuingType().equals(UPLOAD_A_NEW_ORDER_FROM_YOUR_COMPUTER)) {
-            if (caseData.getCicCase().getOrderFile() != null) {
-                updateCategoryToDocument(caseData.getCicCase().getOrderFile(), DocumentType.TRIBUNAL_DIRECTION.getCategory());
-            }
-            orderBuilder.uploadedFile(caseData.getCicCase().getOrderFile());
-
-            try {
-                documentsService.buildAndSaveNewDocumentEntity(
-                    caseData.getCicCase().getOrderFile().getFirst().getValue().getDocumentLink(),
-                    details.getId(),
-                    DocumentType.TRIBUNAL_DIRECTION,
-                    CaseDocumentType.ORDER
-                );
-            } catch (RuntimeException e) {
-                errors.add(handleDocumentException(caseData.getCicCase()
-                    .getOrderFile().getFirst().getValue().getDocumentLink(), e.getMessage()));
-            }
-        }
-
-        final Order order = orderBuilder
-            .dueDateList(caseData.getOrderDueDates())
-            .parties(getRecipients(caseData.getCicCase()))
-            .orderSentDate(LocalDate.now())
-            .build();
+        final Order order = buildOrder(caseData, cicCase, errors, details.getId());
 
         updateCicCaseOrderList(caseData, order);
 
-        if (YesOrNo.YES.equals(caseData.getCicCase().getAnonymiseYesOrNo()) && caseData.getCicCase().getAnonymisedAppellantName() != null) {
-            applyAnonymityCaseFlag(caseData);
+        if (shouldApplyAnonymityFlag(cicCase)) {
+            applyAnonymityCaseFlag(caseData, mergedAnonymityFlag);
         }
 
-        caseData.getCicCase().setOrderIssuingType(null);
-        caseData.getCicCase().setOrderFile(null);
-        caseData.getCicCase().setOrderTemplateIssued(null);
-        caseData.getCicCase().setOrderReminderYesOrNo(null);
-
-        caseData.setOrderDueDates(new ArrayList<>());
-        caseData.getCicCase().setFirstOrderDueDate(CicCaseFieldsUtil.calculateFirstDueDate(caseData.getCicCase().getOrderList()));
+        resetOrderJourneyFields(caseData, cicCase);
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
@@ -225,22 +175,103 @@ public class CaseworkerCreateAndSendOrder implements CCDConfig<CaseData, State, 
             .build();
     }
 
-    private static void updateAnonymityAlreadyApplied(CaseData caseData) {
-        if (YesOrNo.YES.equals(caseData.getCicCase().getAnonymityAlreadyApplied())) {
-            //do nothing
-        } else if (YesOrNo.YES.equals(caseData.getCicCase().getAnonymiseYesOrNo())
-            && caseData.getCicCase().getAnonymisedAppellantName() != null) {
-            caseData.getCicCase().setAnonymityAlreadyApplied(YesOrNo.YES);
-        } else {
-            caseData.getCicCase().setAnonymityAlreadyApplied(YesOrNo.NO);
+    private Order buildOrder(CaseData caseData, CicCase cicCase, List<String> errors, long caseReferenceNumber) {
+        Order.OrderBuilder orderBuilder = Order.builder()
+            .dueDateList(caseData.getOrderDueDates())
+            .parties(getRecipients(cicCase))
+            .orderSentDate(LocalDate.now());
+
+        populateDraftOrder(orderBuilder, caseData, cicCase, errors, caseReferenceNumber);
+        populateUploadedOrder(orderBuilder, cicCase, errors, caseReferenceNumber);
+
+        return orderBuilder.build();
+    }
+
+    private void populateDraftOrder(Order.OrderBuilder orderBuilder, CaseData caseData, CicCase cicCase, List<String> errors,
+                                    long caseReferenceNumber) {
+        if (!CREATE_AND_SEND_NEW_ORDER.equals(cicCase.getOrderIssuingType())) {
+            return;
+        }
+
+        DraftOrderCIC draftOrder = DraftOrderCIC.builder()
+            .draftOrderContentCIC(caseData.getDraftOrderContentCIC())
+            .templateGeneratedDocument(cicCase.getOrderTemplateIssued())
+            .build();
+
+        try {
+            documentsService.buildAndSaveNewDocumentEntity(
+                draftOrder.getTemplateGeneratedDocument(),
+                caseReferenceNumber,
+                DocumentType.TRIBUNAL_DIRECTION,
+                CaseDocumentType.ORDER
+            );
+        } catch (RuntimeException e) {
+            errors.add(handleDocumentException(draftOrder.getTemplateGeneratedDocument(), e.getMessage()));
+        }
+
+        orderBuilder.draftOrder(draftOrder);
+        caseData.setDraftOrderContentCIC(new DraftOrderContentCIC());
+        cicCase.setOrderTemplateIssued(null);
+    }
+
+    private void populateUploadedOrder(Order.OrderBuilder orderBuilder, CicCase cicCase, List<String> errors,
+                                       long caseReferenceNumber) {
+        if (!UPLOAD_A_NEW_ORDER_FROM_YOUR_COMPUTER.equals(cicCase.getOrderIssuingType())) {
+            return;
+        }
+
+        if (cicCase.getOrderFile() != null) {
+            updateCategoryToDocument(cicCase.getOrderFile(), DocumentType.TRIBUNAL_DIRECTION.getCategory());
+        }
+
+        orderBuilder.uploadedFile(cicCase.getOrderFile());
+
+        try {
+            documentsService.buildAndSaveNewDocumentEntity(
+                cicCase.getOrderFile().getFirst().getValue().getDocumentLink(),
+                caseReferenceNumber,
+                DocumentType.TRIBUNAL_DIRECTION,
+                CaseDocumentType.ORDER
+            );
+        } catch (RuntimeException e) {
+            errors.add(handleDocumentException(cicCase.getOrderFile().getFirst().getValue().getDocumentLink(), e.getMessage()));
         }
     }
 
+    private static boolean shouldApplyAnonymityFlag(CicCase cicCase) {
+        return YesOrNo.YES.equals(cicCase.getAnonymiseYesOrNo())
+            && cicCase.getAnonymisedAppellantName() != null;
+    }
+
+    private static void resetOrderJourneyFields(CaseData caseData, CicCase cicCase) {
+        cicCase.setOrderIssuingType(null);
+        cicCase.setOrderFile(null);
+        cicCase.setOrderTemplateIssued(null);
+        cicCase.setOrderReminderYesOrNo(null);
+        caseData.setOrderDueDates(new ArrayList<>());
+        cicCase.setFirstOrderDueDate(CicCaseFieldsUtil.calculateFirstDueDate(cicCase.getOrderList()));
+    }
+
+    private static void updateAnonymityAlreadyApplied(CaseData caseData) {
+        CicCase cicCase = caseData.getCicCase();
+        if (YesOrNo.YES.equals(cicCase.getAnonymityAlreadyApplied())) {
+            return;
+        }
+
+        if (shouldApplyAnonymityFlag(cicCase)) {
+            cicCase.setAnonymityAlreadyApplied(YesOrNo.YES);
+            return;
+        }
+
+        cicCase.setAnonymityAlreadyApplied(YesOrNo.NO);
+    }
+
     public SubmittedCallbackResponse submitted(CaseDetails<CaseData, State> details,
-                                                      CaseDetails<CaseData, State> beforeDetails) {
+                                               CaseDetails<CaseData, State> beforeDetails) {
         try {
             sendOrderNotification(details.getData().getHyphenatedCaseRef(), details.getData());
-        } catch (Exception notificationException) {
+        } catch (RuntimeException notificationException) {
+            log.warn("Failed to send order notifications for case {}", details.getId(), notificationException);
             return SubmittedCallbackResponse.builder()
                 .confirmationHeader(format("# Send order notification failed %n## Please resend the order"))
                 .build();
@@ -271,13 +302,20 @@ public class CaseworkerCreateAndSendOrder implements CCDConfig<CaseData, State, 
 
     }
 
-    private void applyAnonymityCaseFlag(CaseData data) {
+    private void applyAnonymityCaseFlag(CaseData data, ListValue<FlagDetail> existingAnonymityFlag) {
+        if (existingAnonymityFlag != null && existingAnonymityFlag.getValue() != null) {
+            existingAnonymityFlag.getValue().setStatus(CaseFlagsUtil.ACTIVE_STATUS);
+            existingAnonymityFlag.getValue().setFlagComment("Applied anonymity");
+            existingAnonymityFlag.getValue().setDateTimeModified(LocalDateTime.now());
+            return;
+        }
+
         FlagDetail flagDetail = FlagDetail.builder()
             .name("RRO (Restricted Reporting Order / Anonymisation)")
             .path(List.of(ListValue.<String>builder().id(UUID.randomUUID().toString()).value("Case").build()))
-            .status("Active")
+            .status(CaseFlagsUtil.ACTIVE_STATUS)
             .nameCy("RRO (Gorchymyn Cyfyngiadau Adrodd / Anhysbys)")
-            .flagCode("CF0012")
+            .flagCode(CaseFlagsUtil.ANONYMITY_FLAG_CODE)
             .flagComment("Applied anonymity")
             .dateTimeCreated(LocalDateTime.now())
             .hearingRelevant(YesOrNo.YES)
