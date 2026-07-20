@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface DocumentsRepository extends JpaRepository<DocumentEntity, Integer> {
+public interface DocumentsRepository extends JpaRepository<DocumentEntity, Long> {
 
     @Query("""
         select d.id
