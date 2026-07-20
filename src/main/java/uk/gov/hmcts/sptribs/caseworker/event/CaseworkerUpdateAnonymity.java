@@ -8,11 +8,21 @@ import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.Event;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
+import uk.gov.hmcts.ccd.sdk.type.FlagDetail;
+import uk.gov.hmcts.ccd.sdk.type.ListValue;
+import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 import uk.gov.hmcts.sptribs.caseworker.event.page.ApplyAnonymity;
+import uk.gov.hmcts.sptribs.caseworker.util.CaseFlagsUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
+import uk.gov.hmcts.sptribs.common.service.AnonymisationService;
+
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_UPDATE_ANONYMITY;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_CASEWORKER;
@@ -30,6 +40,7 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 public class CaseworkerUpdateAnonymity implements CCDConfig<CaseData, State, UserRole> {
 
     private final ApplyAnonymity applyAnonymity;
+    private final AnonymisationService anonymisationService;
 
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
@@ -54,9 +65,49 @@ public class CaseworkerUpdateAnonymity implements CCDConfig<CaseData, State, Use
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(final CaseDetails<CaseData, State> details,
                                                                        final CaseDetails<CaseData, State> beforeDetails) {
         CaseData data = details.getData();
+        CaseData beforeData = beforeDetails == null ? null : beforeDetails.getData();
+        List<String> errors = new ArrayList<>();
+
+        anonymisationService.applyAnonymitySelection(data.getCicCase(), errors, true);
+
+        final ListValue<FlagDetail> mergedAnonymityFlag =
+            CaseFlagsUtil.mergeAnonymityFlagsPreserveOriginalId(data, beforeData);
+
+        updateAnonymityCaseFlag(data, mergedAnonymityFlag);
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(data)
+            .errors(errors)
             .build();
+    }
+
+    private void updateAnonymityCaseFlag(CaseData data, ListValue<FlagDetail> existingAnonymityFlag) {
+        if (YesOrNo.YES.equals(data.getCicCase().getAnonymiseYesOrNo())) {
+            if (existingAnonymityFlag != null && existingAnonymityFlag.getValue() != null) {
+                existingAnonymityFlag.getValue().setStatus(CaseFlagsUtil.ACTIVE_STATUS);
+                existingAnonymityFlag.getValue().setFlagComment("Applied anonymity");
+                existingAnonymityFlag.getValue().setDateTimeModified(LocalDateTime.now());
+                return;
+            }
+
+            FlagDetail flagDetail = FlagDetail.builder()
+                .name("RRO (Restricted Reporting Order / Anonymisation)")
+                .path(List.of(ListValue.<String>builder().id(UUID.randomUUID().toString()).value("Case").build()))
+                .status(CaseFlagsUtil.ACTIVE_STATUS)
+                .nameCy("RRO (Gorchymyn Cyfyngiadau Adrodd / Anhysbys)")
+                .flagCode(CaseFlagsUtil.ANONYMITY_FLAG_CODE)
+                .flagComment("Applied anonymity")
+                .dateTimeCreated(LocalDateTime.now())
+                .hearingRelevant(YesOrNo.YES)
+                .availableExternally(YesOrNo.NO)
+                .build();
+
+            CaseFlagsUtil.addFlag(data, flagDetail);
+        } else {
+            if (existingAnonymityFlag != null && existingAnonymityFlag.getValue() != null) {
+                existingAnonymityFlag.getValue().setStatus("Inactive");
+                existingAnonymityFlag.getValue().setDateTimeModified(LocalDateTime.now());
+            }
+        }
     }
 }

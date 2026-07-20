@@ -221,13 +221,8 @@ dependencyCheck {
   outputDirectory = 'build/reports/'
   scanConfigurations = ['runtimeClasspath']
 
-  analyzers {
-    // Disable scanning of .NET related binaries
-    assemblyEnabled = false
-    nodeAudit {
-      yarnEnabled = false
-    }
-  }
+  analyzers.assemblyEnabled = false     // Disable scanning of .NET related binaries
+  analyzers.nodeAuditEnabled = false
 }
 
 if (System.getenv("CI") == null) {
