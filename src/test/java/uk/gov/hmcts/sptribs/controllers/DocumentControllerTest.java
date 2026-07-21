@@ -9,6 +9,7 @@ import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.sptribs.ciccase.service.CicaCaseService;
 import uk.gov.hmcts.sptribs.controllers.mapper.CaseworkerCICDocumentMapper;
 import uk.gov.hmcts.sptribs.controllers.model.DocumentResponse;
@@ -53,24 +54,36 @@ class DocumentControllerTest {
     void shouldReturnOkWithDocumentsForCcdReference() {
         // Given
         DocumentEntity latestBundleDocument = DocumentEntity.builder()
+            .id(1L)
             .caseReferenceNumber(1L)
+            .documentUrl("http://test-url-bundle")
             .build();
 
         List<DocumentEntity> contactPartyDocuments = List.of(
             DocumentEntity.builder()
+                .id(2L)
                 .caseReferenceNumber(2L)
+                .documentUrl("http://test-url-contact")
                 .build()
         );
 
         List<DocumentEntity> orderAndDecisionDocuments = List.of(
             DocumentEntity.builder()
+                .id(3L)
                 .caseReferenceNumber(3L)
+                .documentUrl("http://test-url-order")
                 .build()
         );
 
-        CaseworkerCICDocument mappedContactPartyDocument = CaseworkerCICDocument.builder().build();
-        CaseworkerCICDocument mappedOrderAndDecisionDocument = CaseworkerCICDocument.builder().build();
-        CaseworkerCICDocument mappedBundleDocument = CaseworkerCICDocument.builder().build();
+        CaseworkerCICDocument mappedContactPartyDocument = CaseworkerCICDocument.builder()
+            .documentLink(Document.builder().url("http://test-url-contact").build())
+            .build();
+        CaseworkerCICDocument mappedOrderAndDecisionDocument = CaseworkerCICDocument.builder()
+            .documentLink(Document.builder().url("http://test-url-order").build())
+            .build();
+        CaseworkerCICDocument mappedBundleDocument = CaseworkerCICDocument.builder()
+            .documentLink(Document.builder().url("http://test-url-bundle").build())
+            .build();
 
         DocumentDashboardModel dashboardModel = DocumentDashboardModel.builder()
             .contactPartiesDocuments(contactPartyDocuments)
@@ -78,7 +91,7 @@ class DocumentControllerTest {
             .latestCaseBundleDocument(latestBundleDocument)
             .build();
 
-        Set<Long> downloadedDocIds = Set.of(101L);
+        Set<Long> downloadedDocIds = Set.of(2L); // Contact document is downloaded
 
         when(documentsService.getDownloadedDocumentIds(TEST_AUTHORIZATION, TEST_CASE_ID_STRING, TEST_POSTCODE))
             .thenReturn(downloadedDocIds);
@@ -86,13 +99,13 @@ class DocumentControllerTest {
         when(documentsService.getDocumentsOnCase(Long.valueOf(TEST_CASE_ID_STRING)))
             .thenReturn(dashboardModel);
 
-        when(caseworkerCICDocumentMapper.map(contactPartyDocuments, downloadedDocIds))
+        when(caseworkerCICDocumentMapper.map(contactPartyDocuments))
             .thenReturn(List.of(mappedContactPartyDocument));
 
-        when(caseworkerCICDocumentMapper.map(orderAndDecisionDocuments, downloadedDocIds))
+        when(caseworkerCICDocumentMapper.map(orderAndDecisionDocuments))
             .thenReturn(List.of(mappedOrderAndDecisionDocument));
 
-        when(caseworkerCICDocumentMapper.mapEntityToList(latestBundleDocument, downloadedDocIds))
+        when(caseworkerCICDocumentMapper.mapEntityToList(latestBundleDocument))
             .thenReturn(List.of(mappedBundleDocument));
 
         // When
@@ -106,14 +119,20 @@ class DocumentControllerTest {
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody()).isNotNull();
 
-        assertThat(response.getBody().getContactPartiesDocuments())
-            .containsExactly(mappedContactPartyDocument);
+        assertThat(response.getBody().getContactPartiesDocuments().getFirst().getDocument())
+            .isEqualTo(mappedContactPartyDocument);
+        assertThat(response.getBody().getContactPartiesDocuments().getFirst().isDownloaded())
+            .isTrue();
 
-        assertThat(response.getBody().getOrderAndDecisionDocuments())
-            .containsExactly(mappedOrderAndDecisionDocument);
+        assertThat(response.getBody().getOrderAndDecisionDocuments().getFirst().getDocument())
+            .isEqualTo(mappedOrderAndDecisionDocument);
+        assertThat(response.getBody().getOrderAndDecisionDocuments().getFirst().isDownloaded())
+            .isFalse();
 
-        assertThat(response.getBody().getLatestCaseBundleDocuments())
-            .containsExactly(mappedBundleDocument);
+        assertThat(response.getBody().getLatestCaseBundleDocuments().getFirst().getDocument())
+            .isEqualTo(mappedBundleDocument);
+        assertThat(response.getBody().getLatestCaseBundleDocuments().getFirst().isDownloaded())
+            .isFalse();
 
         verify(cicaCaseService).checkIfUserHasAccessWithPostcode(
             TEST_CASE_ID_STRING,
@@ -122,9 +141,9 @@ class DocumentControllerTest {
         );
         verify(documentsService).getDownloadedDocumentIds(TEST_AUTHORIZATION, TEST_CASE_ID_STRING, TEST_POSTCODE);
         verify(documentsService).getDocumentsOnCase(Long.valueOf(TEST_CASE_ID_STRING));
-        verify(caseworkerCICDocumentMapper).map(contactPartyDocuments, downloadedDocIds);
-        verify(caseworkerCICDocumentMapper).map(orderAndDecisionDocuments, downloadedDocIds);
-        verify(caseworkerCICDocumentMapper).mapEntityToList(latestBundleDocument, downloadedDocIds);
+        verify(caseworkerCICDocumentMapper).map(contactPartyDocuments);
+        verify(caseworkerCICDocumentMapper).map(orderAndDecisionDocuments);
+        verify(caseworkerCICDocumentMapper).mapEntityToList(latestBundleDocument);
     }
 
 
@@ -248,6 +267,7 @@ class DocumentControllerTest {
         DocumentEntity contactDocument = DocumentEntity.builder()
             .id(201L)
             .caseReferenceNumber(2L)
+            .documentUrl("http://url")
             .build();
 
         DocumentDashboardModel dashboardModel = DocumentDashboardModel.builder()
@@ -257,7 +277,7 @@ class DocumentControllerTest {
         Set<Long> downloadedDocIds = Set.of(201L);
 
         CaseworkerCICDocument mappedDoc = CaseworkerCICDocument.builder()
-            .downloaded(true)
+            .documentLink(Document.builder().url("http://url").build())
             .build();
 
         when(documentsService.getDownloadedDocumentIds(TEST_AUTHORIZATION, TEST_CASE_ID_STRING, TEST_POSTCODE))
@@ -266,7 +286,7 @@ class DocumentControllerTest {
         when(documentsService.getDocumentsOnCase(Long.valueOf(TEST_CASE_ID_STRING)))
             .thenReturn(dashboardModel);
 
-        when(caseworkerCICDocumentMapper.map(List.of(contactDocument), downloadedDocIds))
+        when(caseworkerCICDocumentMapper.map(List.of(contactDocument)))
             .thenReturn(List.of(mappedDoc));
 
         // When
@@ -283,6 +303,6 @@ class DocumentControllerTest {
         assertThat(response.getBody().getContactPartiesDocuments().getFirst().isDownloaded()).isTrue();
 
         verify(documentsService).getDownloadedDocumentIds(TEST_AUTHORIZATION, TEST_CASE_ID_STRING, TEST_POSTCODE);
-        verify(caseworkerCICDocumentMapper).map(List.of(contactDocument), downloadedDocIds);
+        verify(caseworkerCICDocumentMapper).map(List.of(contactDocument));
     }
 }

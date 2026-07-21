@@ -22,12 +22,17 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.sptribs.ciccase.service.CicaCaseService;
 import uk.gov.hmcts.sptribs.controllers.mapper.CaseworkerCICDocumentMapper;
+import uk.gov.hmcts.sptribs.controllers.model.DashboardDocument;
 import uk.gov.hmcts.sptribs.controllers.model.DocumentResponse;
 import uk.gov.hmcts.sptribs.document.DocumentDownloadService;
+import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.document.model.DocumentDashboardModel;
+import uk.gov.hmcts.sptribs.document.model.DocumentEntity;
 import uk.gov.hmcts.sptribs.document.model.DownloadedDocumentResponse;
 import uk.gov.hmcts.sptribs.document.service.DocumentsService;
 
+import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 @Tag(name = "Document Controller")
@@ -78,12 +83,19 @@ public class DocumentController {
         DocumentDashboardModel documentDashboardModel = documentsService.getDocumentsOnCase(Long.valueOf(ccdReference));
 
         DocumentResponse documentResponse = DocumentResponse.builder()
-            .contactPartiesDocuments(
-                caseworkerCICDocumentMapper.map(documentDashboardModel.getContactPartiesDocuments(), downloadedDocIds))
-            .orderAndDecisionDocuments(
-                caseworkerCICDocumentMapper.map(documentDashboardModel.getOrderAndDecisionDocuments(), downloadedDocIds))
-            .latestCaseBundleDocuments(
-                caseworkerCICDocumentMapper.mapEntityToList(documentDashboardModel.getLatestCaseBundleDocument(), downloadedDocIds))
+            .contactPartiesDocuments(wrapWithDownloadStatus(
+                caseworkerCICDocumentMapper.map(documentDashboardModel.getContactPartiesDocuments()),
+                documentDashboardModel.getContactPartiesDocuments(),
+                downloadedDocIds))
+            .orderAndDecisionDocuments(wrapWithDownloadStatus(
+                caseworkerCICDocumentMapper.map(documentDashboardModel.getOrderAndDecisionDocuments()),
+                documentDashboardModel.getOrderAndDecisionDocuments(),
+                downloadedDocIds))
+            .latestCaseBundleDocuments(wrapWithDownloadStatus(
+                caseworkerCICDocumentMapper.mapEntityToList(documentDashboardModel.getLatestCaseBundleDocument()),
+                documentDashboardModel.getLatestCaseBundleDocument() != null
+                    ? List.of(documentDashboardModel.getLatestCaseBundleDocument()) : List.of(),
+                downloadedDocIds))
             .build();
 
         return ResponseEntity.ok()
@@ -143,6 +155,35 @@ public class DocumentController {
         return ResponseEntity.ok()
             .headers(headers)
             .body(documentResponse.file());
+    }
+
+    private List<DashboardDocument> wrapWithDownloadStatus(
+        List<CaseworkerCICDocument> mappedDocs,
+        List<DocumentEntity> entities,
+        Set<Long> downloadedDocIds) {
+
+        if (mappedDocs == null) {
+            return List.of();
+        }
+
+        return mappedDocs.stream()
+            .map(doc -> {
+                boolean downloaded = false;
+                if (doc.getDocumentLink() != null && doc.getDocumentLink().getUrl() != null) {
+                    String docUrl = doc.getDocumentLink().getUrl();
+                    Optional<DocumentEntity> matchingEntity = entities.stream()
+                        .filter(e -> docUrl.equals(e.getDocumentUrl()))
+                        .findFirst();
+                    if (matchingEntity.isPresent() && downloadedDocIds.contains(matchingEntity.get().getId())) {
+                        downloaded = true;
+                    }
+                }
+                return DashboardDocument.builder()
+                    .document(doc)
+                    .downloaded(downloaded)
+                    .build();
+            })
+            .toList();
     }
 }
 

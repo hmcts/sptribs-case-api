@@ -7,7 +7,6 @@ import uk.gov.hmcts.sptribs.document.model.DocumentEntity;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
 
 import java.util.List;
-import java.util.Set;
 
 @Component
 public class CaseworkerCICDocumentMapper {
@@ -27,14 +26,6 @@ public class CaseworkerCICDocumentMapper {
             .build();
     }
 
-    public CaseworkerCICDocument map(DocumentEntity entity, Set<Long> downloadedDocIds) {
-        CaseworkerCICDocument doc = map(entity);
-        if (downloadedDocIds != null && downloadedDocIds.contains(entity.getId())) {
-            doc.setDownloaded(true);
-        }
-        return doc;
-    }
-
     public List<CaseworkerCICDocument> map(List<DocumentEntity> entities) {
 
         if (entities == null) {
@@ -46,16 +37,6 @@ public class CaseworkerCICDocumentMapper {
             .toList();
     }
 
-    public List<CaseworkerCICDocument> map(List<DocumentEntity> entities, Set<Long> downloadedDocIds) {
-        if (entities == null) {
-            return List.of();
-        }
-
-        return entities.stream()
-            .map(entity -> map(entity, downloadedDocIds))
-            .toList();
-    }
-
     public List<CaseworkerCICDocument> mapEntityToList(DocumentEntity entity) {
 
         if (entity == null) {
@@ -63,13 +44,5 @@ public class CaseworkerCICDocumentMapper {
         }
 
         return List.of(map(entity));
-    }
-
-    public List<CaseworkerCICDocument> mapEntityToList(DocumentEntity entity, Set<Long> downloadedDocIds) {
-        if (entity == null) {
-            return List.of();
-        }
-
-        return List.of(map(entity, downloadedDocIds));
     }
 }

@@ -51,25 +51,16 @@ public class CaseworkerCICDocument {
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate date;
 
-    @CCD(
-        label = "Downloaded",
-        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
-    )
-    @JsonProperty("downloaded")
-    private boolean downloaded;
-
     //Add handwritten constructor as a workaround for @JsonUnwrapped prefix issue
     @JsonCreator
     public CaseworkerCICDocument(@JsonProperty("documentCategory") DocumentType documentCategory,
                                  @JsonProperty("documentEmailContent") String documentEmailContent,
                                  @JsonProperty("documentLink") Document documentLink,
-                                 @JsonProperty("date") LocalDate date,
-                                 @JsonProperty("downloaded") boolean downloaded) {
+                                 @JsonProperty("date") LocalDate date) {
         this.documentCategory = documentCategory;
         this.documentEmailContent = documentEmailContent;
         this.documentLink = documentLink;
         this.date = date;
-        this.downloaded = downloaded;
     }
 
     @JsonIgnore
