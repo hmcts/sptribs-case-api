@@ -1,6 +1,7 @@
 package uk.gov.hmcts.sptribs.systemupdate.event;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
@@ -24,6 +25,7 @@ import static uk.gov.hmcts.sptribs.document.model.CaseDocumentType.BUNDLE;
 
 @RequiredArgsConstructor
 @Component
+@Slf4j
 public class SystemMigrateCaseDocumentsToDocTable implements CCDConfig<CaseData, State, UserRole> {
     public static final String SYSTEM_MIGRATE_CASE_DOCUMENTS_TO_TABLE = "migrate-to-document-table";
     private final DocumentsService documentsService;
@@ -47,6 +49,7 @@ public class SystemMigrateCaseDocumentsToDocTable implements CCDConfig<CaseData,
 
         Map<CaseDocumentType, List<CaseworkerCICDocument>> documentTypeDocumentMap =  prepareDocTypeAndDocMap(caseData);
 
+        log.info("Found {} docs for case reference: {} ", documentTypeDocumentMap.size(), reference);
         documentTypeDocumentMap.forEach((caseDocumentType, caseworkerCICDocuments) ->
             caseworkerCICDocuments.forEach(caseworkerCICDocument -> documentsService.buildAndSaveNewDocumentEntity(
                 caseworkerCICDocument.getDocumentLink(),

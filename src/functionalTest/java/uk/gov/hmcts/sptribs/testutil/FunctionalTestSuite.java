@@ -5,7 +5,7 @@ import feign.FeignException;
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
 import org.junit.jupiter.api.AfterAll;
-//import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.TestInstance;
 import org.slf4j.Logger;
@@ -56,7 +56,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_CREATE_CASE;
 import static uk.gov.hmcts.sptribs.common.config.ControllerConstants.SERVICE_AUTHORIZATION;
 import static uk.gov.hmcts.sptribs.controllers.model.DssCaseDataRequest.convertDssCaseDataToRequest;
-//import static uk.gov.hmcts.sptribs.testutil.FunctionalTestConstants.DOC_TABLE_REFERENCE_ARRAY;
+import static uk.gov.hmcts.sptribs.testutil.FunctionalTestConstants.DOC_TABLE_REFERENCE_ARRAY;
 
 @ActiveProfiles("functional")
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -125,7 +125,6 @@ public abstract class FunctionalTestSuite {
             .data(Map.of(
             ))
             .build();
-
         return submitNewCase(caseDataContent, caseworkerToken, s2sTokenForCaseApi, caseworkerUserId);
     }
 
@@ -533,14 +532,14 @@ public abstract class FunctionalTestSuite {
     }
 
 
-    //    @AfterEach
-    //    void tearDownDataManager() throws SQLException {
-    //
-    //            for (long reference : functionalTestDataManager.getTestReferences()) {
-    //                functionalTestDataManager.clearDown(reference);
-    //            }
-    //            functionalTestDataManager.deleteCaseDocConstants(DOC_TABLE_REFERENCE_ARRAY);
-    //    }
+    @AfterEach
+    void tearDownDataManager() throws SQLException {
+
+        for (long reference : functionalTestDataManager.getTestReferences()) {
+            functionalTestDataManager.clearDown(reference);
+        }
+        functionalTestDataManager.deleteCaseDocConstants(DOC_TABLE_REFERENCE_ARRAY);
+    }
 
     @AfterAll
     void closeDBConnection() {

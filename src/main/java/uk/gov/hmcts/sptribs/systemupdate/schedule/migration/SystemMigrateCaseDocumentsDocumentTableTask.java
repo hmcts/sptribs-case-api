@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.idam.client.models.User;
-import uk.gov.hmcts.sptribs.common.repositories.CaseEventRepository;
 import uk.gov.hmcts.sptribs.common.repositories.impl.CaseDataRepositoryImpl;
 import uk.gov.hmcts.sptribs.idam.IdamService;
 import uk.gov.hmcts.sptribs.systemupdate.service.CcdManagementException;
@@ -37,9 +36,16 @@ public class SystemMigrateCaseDocumentsDocumentTableTask implements Runnable {
     @Value("${feature.migrate-to-documents-table-task.caseReference}")
     private String documentTableTestCaseReference;
 
+    @Value("${feature.migrate-initial-case-documents-task.batchSize:10}")
+    private int batchSize;
+
+    @Value("${migration.migrate-initial-case-documents-task.batchPauseMs:5000}")
+    private long batchPauseMs;
+
     @Autowired
     public SystemMigrateCaseDocumentsDocumentTableTask(AuthTokenGenerator authTokenGenerator, CcdSearchService ccdSearchService,
-                                                       CcdUpdateService ccdUpdateService, CaseDataRepositoryImpl caseDataRepository, IdamService idamService) {
+                                                       CcdUpdateService ccdUpdateService, CaseDataRepositoryImpl caseDataRepository,
+                                                       IdamService idamService) {
         this.authTokenGenerator = authTokenGenerator;
         this.ccdSearchService = ccdSearchService;
         this.ccdUpdateService = ccdUpdateService;
@@ -69,8 +75,7 @@ public class SystemMigrateCaseDocumentsDocumentTableTask implements Runnable {
                 caseIdsToUpdate = List.of(caseIdToUpdate);
             } else {
 
-                caseIdsToUpdate = caseDataRepository.returnAllCases("Submitted");
-
+                caseIdsToUpdate = caseDataRepository.returnAllCases("Draft");
             }
 
             if (caseIdsToUpdate.isEmpty()) {
@@ -79,10 +84,8 @@ public class SystemMigrateCaseDocumentsDocumentTableTask implements Runnable {
             }
 
             log.info("Cases:{}", caseIdsToUpdate.size());
-            for (final Long caseId : caseIdsToUpdate) {
 
-                triggerSystemMigrateDocumentsToDocumentTable(user, serviceAuth, caseId);
-            }
+            processBatches(caseIdsToUpdate, user, serviceAuth);
 
             log.info("System migrate documents to document table scheduled task complete.");
         } catch (final RuntimeException e) {
@@ -102,5 +105,38 @@ public class SystemMigrateCaseDocumentsDocumentTableTask implements Runnable {
         } catch (final IllegalArgumentException e) {
             log.error("Deserialization failed for case id: {}, continuing to next case", caseId);
         }
+    }
+
+    private void processBatches(List<Long> caseIds, User user, String serviceAuth) {
+        int total = caseIds.size();
+        int success = 0;
+        int failed = 0;
+        int batchCount = (total + batchSize - 1) / batchSize;
+
+        log.info("Processing {} cases in {} batches of {}", total, batchCount, batchSize);
+
+        for (int i = 0; i < total; i++) {
+            if (i > 0 && i % batchSize == 0) {
+                log.info("Batch {}/{} complete: {} succeeded, {} failed so far",
+                    i / batchSize, batchCount, success, failed);
+                try {
+                    Thread.sleep(batchPauseMs);
+                } catch (InterruptedException e) {
+                    log.warn("Batch processing interrupted, stopping migration");
+                    Thread.currentThread().interrupt();
+                    break;
+                }
+            }
+
+            try {
+                triggerSystemMigrateDocumentsToDocumentTable(user, serviceAuth, caseIds.get(i));
+                success++;
+            } catch (final Exception e) {
+                failed++;
+                log.error("Failed to migrate case {}", caseIds.get(i), e);
+            }
+        }
+
+        log.info("Migration complete: {} succeeded, {} failed out of {} total", success, failed, total);
     }
 }

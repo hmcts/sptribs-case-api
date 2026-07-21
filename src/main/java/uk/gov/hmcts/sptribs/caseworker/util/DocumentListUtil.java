@@ -62,18 +62,26 @@ public final class DocumentListUtil {
     public static Map<CaseDocumentType, List<CaseworkerCICDocument>> prepareDocTypeAndDocMap(CaseData data) {
         Map<CaseDocumentType, List<CaseworkerCICDocument>> docTypeAndDocMap = new HashMap<>();
 
-        docTypeAndDocMap.put(ORDER, getOrderDocuments(data.getCicCase()));
-        docTypeAndDocMap.put(DRAFT_ORDER, getDraftOrderDocuments(data.getCicCase()));
-        docTypeAndDocMap.put(APPLICATION, getApplicantCaseDocs(data.getCicCase()));
-        docTypeAndDocMap.put(DECISION, getDecisionDocs(data));
-        docTypeAndDocMap.put(FINAL_DECISION, getFinalDecisionDocs(data));
-        docTypeAndDocMap.put(DOCUMENT_MANAGEMENT, getDocumentManagementDocs(data));
+        addDocsToMapIfNotNull(docTypeAndDocMap, ORDER, getOrderDocuments(data.getCicCase()));
+        addDocsToMapIfNotNull(docTypeAndDocMap, DRAFT_ORDER, getDraftOrderDocuments(data.getCicCase()));
+        addDocsToMapIfNotNull(docTypeAndDocMap, APPLICATION, getApplicantCaseDocs(data.getCicCase()));
+        addDocsToMapIfNotNull(docTypeAndDocMap, DECISION, getDecisionDocs(data));
+        addDocsToMapIfNotNull(docTypeAndDocMap, FINAL_DECISION, getFinalDecisionDocs(data));
+        addDocsToMapIfNotNull(docTypeAndDocMap, DOCUMENT_MANAGEMENT, getDocumentManagementDocs(data));
 
         TODO:
         //docList.addAll(getCloseCaseDocuments(data));
         //docList.addAll(getHearingSummaryDocuments(data));
 
         return docTypeAndDocMap;
+    }
+
+    private static void addDocsToMapIfNotNull(Map<CaseDocumentType, List<CaseworkerCICDocument>> docTypeAndDocMap,
+                                              CaseDocumentType caseDocumentType,
+                                              List<CaseworkerCICDocument> documentList) {
+        if (documentList != null && !documentList.isEmpty()) {
+            docTypeAndDocMap.put(caseDocumentType, documentList);
+        }
     }
 
     private static List<CaseworkerCICDocument> prepareListExcludingInitialCicaUpload(CaseData data) {

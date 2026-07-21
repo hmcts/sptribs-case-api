@@ -150,4 +150,5 @@ public class CaseDataRepositoryImpl implements CaseDataRepository {
         }
 
         return results;
-    }}
+    }
+}
