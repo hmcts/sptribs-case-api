@@ -20,7 +20,6 @@ import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.common.service.AnonymisationService;
 import uk.gov.hmcts.sptribs.notification.dispatcher.AnonymityAppliedNotification;
-import uk.gov.hmcts.sptribs.notification.exception.NotificationException;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -98,7 +97,7 @@ public class CaseworkerUpdateAnonymity implements CCDConfig<CaseData, State, Use
                 details.getData(),
                 beforeDetails == null ? null : beforeDetails.getData()
             );
-        } catch (NotificationException notificationException) {
+        } catch (RuntimeException notificationException) {
             log.warn("Failed to send anonymity notifications for case {}", details.getId(), notificationException);
             return SubmittedCallbackResponse.builder()
                 .confirmationHeader(format("# Send anonymity notification failed %n## Please update the case again"))
