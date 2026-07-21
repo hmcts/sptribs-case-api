@@ -41,6 +41,7 @@ import uk.gov.hmcts.sptribs.common.event.page.PreviewDraftOrder;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
 import uk.gov.hmcts.sptribs.notification.dispatcher.AnonymityAppliedNotification;
 import uk.gov.hmcts.sptribs.notification.dispatcher.NewOrderIssuedNotification;
+import uk.gov.hmcts.sptribs.notification.exception.NotificationException;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -161,6 +162,10 @@ public class CaseworkerCreateAndSendOrder implements CCDConfig<CaseData, State, 
 
         resetOrderJourneyFields(caseData, cicCase);
 
+        if (details.getState() != null) {
+            caseData.setCaseStatus(details.getState());
+        }
+
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
             .state(details.getState())
@@ -236,16 +241,13 @@ public class CaseworkerCreateAndSendOrder implements CCDConfig<CaseData, State, 
     public SubmittedCallbackResponse submitted(CaseDetails<CaseData, State> details,
                                                        CaseDetails<CaseData, State> beforeDetails) {
         try {
-            if (details.getState() != null) {
-                details.getData().setCaseStatus(details.getState());
-            }
             sendOrderNotification(details.getData().getHyphenatedCaseRef(), details.getData());
             anonymityAppliedNotification.sendAnonymityNotificationIfNewlyApplied(
                 details.getData(),
                 beforeDetails == null ? null : beforeDetails.getData(),
                 details.getId() == null ? null : details.getId().toString()
             );
-        } catch (RuntimeException notificationException) {
+        } catch (NotificationException notificationException) {
             log.warn("Failed to send order notifications for case {}", details.getId(), notificationException);
             return SubmittedCallbackResponse.builder()
                 .confirmationHeader(format("# Send order notification failed %n## Please resend the order"))

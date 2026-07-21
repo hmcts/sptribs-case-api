@@ -80,6 +80,10 @@ public class CaseworkerCaseFlag implements CCDConfig<CaseData, State, UserRole> 
 
         anonymisationService.processAnonymityFlag(caseData, beforeData, errors);
 
+        if (details.getState() != null) {
+            caseData.setCaseStatus(details.getState());
+        }
+
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
             .errors(errors)
@@ -90,10 +94,6 @@ public class CaseworkerCaseFlag implements CCDConfig<CaseData, State, UserRole> 
                                                CaseDetails<CaseData, State> beforeDetails) {
 
         coreCaseApiService.submitSupplementaryDataToCcd(details.getId() == null ? null : details.getId().toString());
-
-        if (details.getState() != null) {
-            details.getData().setCaseStatus(details.getState());
-        }
 
         anonymityAppliedNotification.sendAnonymityNotificationIfNewlyApplied(
             details.getData(),

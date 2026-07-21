@@ -20,6 +20,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.common.service.AnonymisationService;
 import uk.gov.hmcts.sptribs.notification.dispatcher.AnonymityAppliedNotification;
+import uk.gov.hmcts.sptribs.notification.exception.NotificationException;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -80,6 +81,10 @@ public class CaseworkerUpdateAnonymity implements CCDConfig<CaseData, State, Use
 
         updateAnonymityCaseFlag(data, mergedAnonymityFlag);
 
+        if (details.getState() != null) {
+            data.setCaseStatus(details.getState());
+        }
+
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(data)
             .errors(errors)
@@ -89,9 +94,6 @@ public class CaseworkerUpdateAnonymity implements CCDConfig<CaseData, State, Use
     public SubmittedCallbackResponse submitted(final CaseDetails<CaseData, State> details,
                                                final CaseDetails<CaseData, State> beforeDetails) {
         try {
-            if (details.getState() != null) {
-                details.getData().setCaseStatus(details.getState());
-            }
             anonymityAppliedNotification.sendAnonymityNotificationIfNewlyApplied(
                 details.getData(),
                 beforeDetails == null ? null : beforeDetails.getData(),
