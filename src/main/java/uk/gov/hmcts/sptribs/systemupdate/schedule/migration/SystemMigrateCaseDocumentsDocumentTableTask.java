@@ -12,6 +12,9 @@ import uk.gov.hmcts.sptribs.systemupdate.service.CcdManagementException;
 import uk.gov.hmcts.sptribs.systemupdate.service.CcdSearchService;
 import uk.gov.hmcts.sptribs.systemupdate.service.CcdUpdateService;
 
+import java.time.Duration;
+import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 
 import static uk.gov.hmcts.sptribs.systemupdate.event.SystemMigrateCaseDocumentsToDocTable.SYSTEM_MIGRATE_CASE_DOCUMENTS_TO_TABLE;
@@ -29,6 +32,10 @@ public class SystemMigrateCaseDocumentsDocumentTableTask implements Runnable {
     private final CaseDataRepositoryImpl caseDataRepository;
 
     private final IdamService idamService;
+
+    private int totalSuccess = 0;
+    private int totalFailure = 0;
+    private List<Long> failedCaseIds = new ArrayList<>();
 
     @Value("${feature.migrate-to-documents-table-task.enabled}")
     private boolean documentTableMigrationEnabled;
@@ -56,6 +63,8 @@ public class SystemMigrateCaseDocumentsDocumentTableTask implements Runnable {
 
     @Override
     public void run() {
+        log.info("Starting document table migration");
+        Instant start = Instant.now();
 
         if (!documentTableMigrationEnabled) {
             log.info("Migrate documents to document table task is not enabled");
@@ -87,7 +96,10 @@ public class SystemMigrateCaseDocumentsDocumentTableTask implements Runnable {
 
             processBatches(caseIdsToUpdate, user, serviceAuth);
 
+            Duration elapsedTime = Duration.between(start, Instant.now());
+
             log.info("System migrate documents to document table scheduled task complete.");
+            log.info("Migrated {} cases in {} seconds", totalSuccess, elapsedTime.getSeconds());
         } catch (final RuntimeException e) {
             log.error("System migrate documents to document table scheduled task stopped after search error", e);
         }
@@ -117,7 +129,7 @@ public class SystemMigrateCaseDocumentsDocumentTableTask implements Runnable {
 
         for (int i = 0; i < total; i++) {
             if (i > 0 && i % batchSize == 0) {
-                log.info("Batch {}/{} complete: {} succeeded, {} failed so far",
+                log.info("Batch {}/{} complete: {} succeeded, {} failed",
                     i / batchSize, batchCount, success, failed);
                 try {
                     Thread.sleep(batchPauseMs);
@@ -133,10 +145,18 @@ public class SystemMigrateCaseDocumentsDocumentTableTask implements Runnable {
                 success++;
             } catch (final Exception e) {
                 failed++;
+                failedCaseIds.add(caseIds.get(i));
                 log.error("Failed to migrate case {}", caseIds.get(i), e);
             }
         }
 
+        totalSuccess = totalSuccess + success;
+        totalFailure = totalFailure + failed;
+
         log.info("Migration complete: {} succeeded, {} failed out of {} total", success, failed, total);
+
+        if (!failedCaseIds.isEmpty()) {
+            log.info("Failed case reference's: {}", failedCaseIds);
+        }
     }
 }
