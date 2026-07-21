@@ -21,6 +21,7 @@ import uk.gov.hmcts.sptribs.document.service.DocumentsService;
 import uk.gov.hmcts.sptribs.exception.UnauthorisedCaseAccessException;
 
 import java.util.List;
+import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.verify;
@@ -77,16 +78,21 @@ class DocumentControllerTest {
             .latestCaseBundleDocument(latestBundleDocument)
             .build();
 
+        Set<Long> downloadedDocIds = Set.of(101L);
+
+        when(documentsService.getDownloadedDocumentIds(TEST_AUTHORIZATION, TEST_CASE_ID_STRING, TEST_POSTCODE))
+            .thenReturn(downloadedDocIds);
+
         when(documentsService.getDocumentsOnCase(Long.valueOf(TEST_CASE_ID_STRING)))
             .thenReturn(dashboardModel);
 
-        when(caseworkerCICDocumentMapper.map(contactPartyDocuments))
+        when(caseworkerCICDocumentMapper.map(contactPartyDocuments, downloadedDocIds))
             .thenReturn(List.of(mappedContactPartyDocument));
 
-        when(caseworkerCICDocumentMapper.map(orderAndDecisionDocuments))
+        when(caseworkerCICDocumentMapper.map(orderAndDecisionDocuments, downloadedDocIds))
             .thenReturn(List.of(mappedOrderAndDecisionDocument));
 
-        when(caseworkerCICDocumentMapper.mapEntityToList(latestBundleDocument))
+        when(caseworkerCICDocumentMapper.mapEntityToList(latestBundleDocument, downloadedDocIds))
             .thenReturn(List.of(mappedBundleDocument));
 
         // When
@@ -114,10 +120,11 @@ class DocumentControllerTest {
             TEST_AUTHORIZATION,
             TEST_POSTCODE
         );
+        verify(documentsService).getDownloadedDocumentIds(TEST_AUTHORIZATION, TEST_CASE_ID_STRING, TEST_POSTCODE);
         verify(documentsService).getDocumentsOnCase(Long.valueOf(TEST_CASE_ID_STRING));
-        verify(caseworkerCICDocumentMapper).map(contactPartyDocuments);
-        verify(caseworkerCICDocumentMapper).map(orderAndDecisionDocuments);
-        verify(caseworkerCICDocumentMapper).mapEntityToList(latestBundleDocument);
+        verify(caseworkerCICDocumentMapper).map(contactPartyDocuments, downloadedDocIds);
+        verify(caseworkerCICDocumentMapper).map(orderAndDecisionDocuments, downloadedDocIds);
+        verify(caseworkerCICDocumentMapper).mapEntityToList(latestBundleDocument, downloadedDocIds);
     }
 
 

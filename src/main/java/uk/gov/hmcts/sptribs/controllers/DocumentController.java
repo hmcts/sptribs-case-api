@@ -28,6 +28,8 @@ import uk.gov.hmcts.sptribs.document.model.DocumentDashboardModel;
 import uk.gov.hmcts.sptribs.document.model.DownloadedDocumentResponse;
 import uk.gov.hmcts.sptribs.document.service.DocumentsService;
 
+import java.util.Set;
+
 @Tag(name = "Document Controller")
 @Slf4j
 @RestController
@@ -71,12 +73,17 @@ public class DocumentController {
 
         cicaCaseService.checkIfUserHasAccessWithPostcode(ccdReference, authorisation, postcode);
 
+        Set<Long> downloadedDocIds = documentsService.getDownloadedDocumentIds(authorisation, ccdReference, postcode);
+
         DocumentDashboardModel documentDashboardModel = documentsService.getDocumentsOnCase(Long.valueOf(ccdReference));
 
         DocumentResponse documentResponse = DocumentResponse.builder()
-            .contactPartiesDocuments(caseworkerCICDocumentMapper.map(documentDashboardModel.getContactPartiesDocuments()))
-            .orderAndDecisionDocuments(caseworkerCICDocumentMapper.map(documentDashboardModel.getOrderAndDecisionDocuments()))
-            .latestCaseBundleDocuments(caseworkerCICDocumentMapper.mapEntityToList(documentDashboardModel.getLatestCaseBundleDocument()))
+            .contactPartiesDocuments(
+                caseworkerCICDocumentMapper.map(documentDashboardModel.getContactPartiesDocuments(), downloadedDocIds))
+            .orderAndDecisionDocuments(
+                caseworkerCICDocumentMapper.map(documentDashboardModel.getOrderAndDecisionDocuments(), downloadedDocIds))
+            .latestCaseBundleDocuments(
+                caseworkerCICDocumentMapper.mapEntityToList(documentDashboardModel.getLatestCaseBundleDocument(), downloadedDocIds))
             .build();
 
         return ResponseEntity.ok()

@@ -12,6 +12,8 @@ import java.util.Optional;
 public interface DocumentDownloadStatusesRepository extends JpaRepository<DocumentDownloadStatusEntity, Long> {
     List<DocumentDownloadStatusEntity> findAllByCaseReferenceNumber(Long caseReferenceNumber);
 
+    List<DocumentDownloadStatusEntity> findAllByCaseReferenceNumberAndParty(Long caseReferenceNumber, Party party);
+
     List<DocumentDownloadStatusEntity> findAllByDocumentId(long documentId);
 
     Optional<DocumentDownloadStatusEntity> findByDocumentIdAndParty(long documentId, Party party);

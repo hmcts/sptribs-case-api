@@ -8,6 +8,7 @@ import uk.gov.hmcts.sptribs.document.model.DocumentType;
 
 import java.time.OffsetDateTime;
 import java.util.List;
+import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -156,6 +157,105 @@ class CaseworkerCICDocumentMapperTest {
 
         //then
         assertThat(result).isEmpty();
+    }
+
+    @Test
+    void shouldMapDocumentEntityWithDownloadedStatusTrue() {
+        // Given
+        DocumentEntity entity = DocumentEntity.builder()
+            .id(101L)
+            .documentFilename("test.pdf")
+            .documentUrl("http://url")
+            .savedAt(OffsetDateTime.now())
+            .build();
+
+        Set<Long> downloadedDocIds = Set.of(101L, 102L);
+
+        // When
+        CaseworkerCICDocument result = mapper.map(entity, downloadedDocIds);
+
+        // Then
+        assertThat(result).isNotNull();
+        assertThat(result.isDownloaded()).isTrue();
+    }
+
+    @Test
+    void shouldMapDocumentEntityWithDownloadedStatusFalse() {
+        // Given
+        DocumentEntity entity = DocumentEntity.builder()
+            .id(103L)
+            .documentFilename("test.pdf")
+            .documentUrl("http://url")
+            .savedAt(OffsetDateTime.now())
+            .build();
+
+        Set<Long> downloadedDocIds = Set.of(101L, 102L);
+
+        // When
+        CaseworkerCICDocument result = mapper.map(entity, downloadedDocIds);
+
+        // Then
+        assertThat(result).isNotNull();
+        assertThat(result.isDownloaded()).isFalse();
+    }
+
+    @Test
+    void shouldMapListOfEntitiesWithDownloadedStatus() {
+        // Given
+        DocumentEntity entity1 = DocumentEntity.builder()
+            .id(101L)
+            .documentFilename("test1.pdf")
+            .documentUrl("http://url1")
+            .savedAt(OffsetDateTime.now())
+            .build();
+
+        DocumentEntity entity2 = DocumentEntity.builder()
+            .id(102L)
+            .documentFilename("test2.pdf")
+            .documentUrl("http://url2")
+            .savedAt(OffsetDateTime.now())
+            .build();
+
+        Set<Long> downloadedDocIds = Set.of(101L);
+
+        // When
+        List<CaseworkerCICDocument> result = mapper.map(List.of(entity1, entity2), downloadedDocIds);
+
+        // Then
+        assertThat(result).hasSize(2);
+        assertThat(result.get(0).isDownloaded()).isTrue();
+        assertThat(result.get(1).isDownloaded()).isFalse();
+    }
+
+    @Test
+    void shouldMapEntityToSingleItemListWithDownloadedStatus() {
+        // Given
+        DocumentEntity entity = DocumentEntity.builder()
+            .id(102L)
+            .documentFilename("test2.pdf")
+            .documentUrl("http://url2")
+            .savedAt(OffsetDateTime.now())
+            .build();
+
+        Set<Long> downloadedDocIds = Set.of(102L);
+
+        // When
+        List<CaseworkerCICDocument> result = mapper.mapEntityToList(entity, downloadedDocIds);
+
+        // Then
+        assertThat(result).hasSize(1);
+        assertThat(result.getFirst().isDownloaded()).isTrue();
+    }
+
+    @Test
+    void shouldReturnEmptyWhenNullDocsInModelWithDownloadedStatus() {
+        // When
+        List<CaseworkerCICDocument> resultList = mapper.map((List<DocumentEntity>) null, Set.of(1L));
+        List<CaseworkerCICDocument> resultEntity = mapper.mapEntityToList(null, Set.of(1L));
+
+        // Then
+        assertThat(resultList).isEmpty();
+        assertThat(resultEntity).isEmpty();
     }
 }
 

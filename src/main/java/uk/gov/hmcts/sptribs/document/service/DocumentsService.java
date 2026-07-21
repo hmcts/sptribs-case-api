@@ -35,6 +35,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import static uk.gov.hmcts.sptribs.caseworker.util.DocumentListUtil.getAllCaseDocuments;
 
@@ -248,6 +249,36 @@ public class DocumentsService {
             }
         } catch (Exception e) {
             log.error("Error recording document download status for document: {}, case: {}", documentId, ccdReference, e);
+        }
+    }
+
+    public Set<Long> getDownloadedDocumentIds(String authorisation, String ccdReference, String postcode) {
+        try {
+            User user = idamService.retrieveUser(authorisation);
+            String userEmail = user.getUserDetails().getEmail();
+
+            Optional<CicaCaseEntity> cicaCaseOpt = caseDataRepository.findCase(ccdReference, userEmail, postcode);
+            if (cicaCaseOpt.isEmpty()) {
+                return Set.of();
+            }
+
+            CicaCaseEntity cicaCase = cicaCaseOpt.get();
+            CaseData caseData = objectMapper.convertValue(cicaCase.getData(), CaseData.class);
+            Party party = CasePartyUtil.determineParty(caseData, userEmail);
+
+            if (party == null) {
+                return Set.of();
+            }
+
+            List<DocumentDownloadStatusEntity> statuses =
+                documentDownloadStatusesRepository.findAllByCaseReferenceNumberAndParty(Long.valueOf(ccdReference), party);
+
+            return statuses.stream()
+                .map(DocumentDownloadStatusEntity::getDocumentId)
+                .collect(Collectors.toSet());
+        } catch (Exception e) {
+            log.error("Error fetching downloaded document IDs for case {}", ccdReference, e);
+            return Set.of();
         }
     }
 }
