@@ -108,9 +108,7 @@ public class AnonymityAppliedNotification implements PartiesNotification {
             && cicCaseAfter.getAnonymisedAppellantName() != null;
 
         final boolean anonymityAppliedBefore = cicCaseBefore != null
-            && (YesOrNo.YES.equals(cicCaseBefore.getAnonymityAlreadyApplied())
-            || (YesOrNo.YES.equals(cicCaseBefore.getAnonymiseYesOrNo())
-            && cicCaseBefore.getAnonymisedAppellantName() != null));
+            && YesOrNo.YES.equals(cicCaseBefore.getAnonymiseYesOrNo());
 
         return anonymityAppliedAfter && !anonymityAppliedBefore;
     }
