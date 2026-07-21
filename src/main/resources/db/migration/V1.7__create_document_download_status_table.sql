@@ -7,5 +7,5 @@ create table if not exists document_download_status (
   constraint uq_doc_download_party unique (document_id, party)
 );
 
-create index idx_doc_download_case_ref on document_download_status(case_reference_number);
+create index idx_doc_download_case_party on document_download_status(case_reference_number, party);
 create index idx_doc_download_doc_id on document_download_status(document_id);
