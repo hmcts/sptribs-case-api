@@ -218,10 +218,6 @@ withPipeline(type, product, component) {
   }
 
   before('highleveldatasetup') {
-    onMaster {
-      env.CASE_API_URL="https://sptribs-case-api-staging.aat.platform.hmcts.net"
-      env.CASE_TYPE_SUFFIX="staging"
-    }
     builder.gradle('generateCCDConfig')
     generateDefinitions()
   }
@@ -260,6 +256,7 @@ withPipeline(type, product, component) {
 
   onMaster {
     env.ENVIRONMENT="aat"
+    env.CASE_API_URL="http://sptribs-case-api-aat.service.core-compute-aat.internal"
     env.CCD_DEF_NAME="aat"
     env.ELASTIC_SEARCH_ENABLED=true
     env.SERVICE_AUTH_MICROSERVICE = "sptribs_case_api"
@@ -273,12 +270,6 @@ withPipeline(type, product, component) {
   }
 
   afterSuccess('functionalTest:aat') {
-      env.CASE_API_URL="http://sptribs-case-api-aat.service.core-compute-aat.internal"
-      env.CASE_TYPE_SUFFIX=""
-
-      builder.gradle('generateCCDConfig --rerun-tasks')
-      generateDefinitions()
-
       env.ENVIRONMENT="prod"
       env.CASE_API_URL="http://sptribs-case-api-prod.service.core-compute-prod.internal"
       env.CCD_DEF_NAME="prod"
