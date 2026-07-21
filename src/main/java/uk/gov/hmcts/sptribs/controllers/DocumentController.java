@@ -122,6 +122,12 @@ public class DocumentController {
             documentId
         );
 
+        try {
+            documentsService.recordDocumentDownload(authorisation, ccdReference, postcode, documentId);
+        } catch (Exception e) {
+            log.error("Failed to record document download status for doc: {}, case: {}", documentId, ccdReference, e);
+        }
+
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.valueOf(documentResponse.mimeType()));
         headers.set("original-file-name", documentResponse.fileName());

@@ -1,5 +1,6 @@
 package uk.gov.hmcts.sptribs.document.persistence;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -9,21 +10,32 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DataAccessResourceFailureException;
 import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
+import uk.gov.hmcts.reform.idam.client.models.User;
+import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 import uk.gov.hmcts.sptribs.caseworker.model.DocumentManagement;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
+import uk.gov.hmcts.sptribs.common.repositories.CaseDataRepository;
+import uk.gov.hmcts.sptribs.common.repositories.DocumentDownloadStatusesRepository;
 import uk.gov.hmcts.sptribs.common.repositories.DocumentsRepository;
+import uk.gov.hmcts.sptribs.common.repositories.model.CicaCaseEntity;
 import uk.gov.hmcts.sptribs.document.model.CaseDocumentType;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.document.model.DocumentDashboardModel;
+import uk.gov.hmcts.sptribs.document.model.DocumentDownloadStatusEntity;
 import uk.gov.hmcts.sptribs.document.model.DocumentEntity;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
 import uk.gov.hmcts.sptribs.document.service.CaseDocumentTypesCache;
 import uk.gov.hmcts.sptribs.document.service.DocumentsService;
+import uk.gov.hmcts.sptribs.idam.IdamService;
+import uk.gov.hmcts.sptribs.notification.model.Party;
 
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -45,6 +57,18 @@ public class DocumentsServiceTest {
 
     @Mock
     private CaseDocumentTypesCache caseDocumentTypesCache;
+
+    @Mock
+    private IdamService idamService;
+
+    @Mock
+    private CaseDataRepository caseDataRepository;
+
+    @Mock
+    private ObjectMapper objectMapper;
+
+    @Mock
+    private DocumentDownloadStatusesRepository documentDownloadStatusesRepository;
 
     private static final DocumentType HOSPITAL_RECORDS = DocumentType.HOSPITAL_RECORDS;
     private static final DocumentType DSS_SUPPORTING = DocumentType.DSS_SUPPORTING;
@@ -349,4 +373,129 @@ public class DocumentsServiceTest {
             .build();
     }
 
+    @Test
+    public void shouldRecordNewDocumentDownloadForSubject() {
+        String auth = "Bearer token";
+        String ref = "1234567890123456";
+        String postcode = "SW1 1AA";
+        String docUuid = "uuid-123";
+        String email = "subject@test.com";
+
+        User user = new User(auth, UserDetails.builder().email(email).build());
+
+        CicaCaseEntity cicaCaseEntity = CicaCaseEntity.builder()
+            .data(new HashMap<>())
+            .build();
+
+        CaseData caseData = CaseData.builder()
+            .cicCase(CicCase.builder().email(email).build())
+            .build();
+
+        DocumentEntity docEntity = DocumentEntity.builder()
+            .id(100L)
+            .build();
+
+        when(idamService.retrieveUser(auth)).thenReturn(user);
+        when(caseDataRepository.findCase(ref, email, postcode)).thenReturn(Optional.of(cicaCaseEntity));
+        when(objectMapper.convertValue(cicaCaseEntity.getData(), CaseData.class)).thenReturn(caseData);
+        when(documentsRepository.findByDocumentIdUuid(docUuid)).thenReturn(Optional.of(docEntity));
+        when(documentDownloadStatusesRepository.findByDocumentIdAndParty(100L, Party.SUBJECT)).thenReturn(Optional.empty());
+
+        documentsService.recordDocumentDownload(auth, ref, postcode, docUuid);
+
+        verify(documentDownloadStatusesRepository, times(1)).save(org.mockito.ArgumentMatchers.any(DocumentDownloadStatusEntity.class));
+    }
+
+    @Test
+    public void shouldUpdateExistingDocumentDownloadForSubject() {
+        String auth = "Bearer token";
+        String ref = "1234567890123456";
+        String postcode = "SW1 1AA";
+        String docUuid = "uuid-123";
+        String email = "subject@test.com";
+
+        User user = new User(auth, UserDetails.builder().email(email).build());
+
+        CicaCaseEntity cicaCaseEntity = CicaCaseEntity.builder()
+            .data(new HashMap<>())
+            .build();
+
+        CaseData caseData = CaseData.builder()
+            .cicCase(CicCase.builder().email(email).build())
+            .build();
+
+        DocumentEntity docEntity = DocumentEntity.builder()
+            .id(100L)
+            .build();
+
+        DocumentDownloadStatusEntity statusEntity = DocumentDownloadStatusEntity.builder()
+            .id(1L)
+            .caseReferenceNumber(1234567890123456L)
+            .documentId(100L)
+            .party(Party.SUBJECT)
+            .build();
+
+        when(idamService.retrieveUser(auth)).thenReturn(user);
+        when(caseDataRepository.findCase(ref, email, postcode)).thenReturn(Optional.of(cicaCaseEntity));
+        when(objectMapper.convertValue(cicaCaseEntity.getData(), CaseData.class)).thenReturn(caseData);
+        when(documentsRepository.findByDocumentIdUuid(docUuid)).thenReturn(Optional.of(docEntity));
+        when(documentDownloadStatusesRepository.findByDocumentIdAndParty(100L, Party.SUBJECT)).thenReturn(Optional.of(statusEntity));
+
+        documentsService.recordDocumentDownload(auth, ref, postcode, docUuid);
+
+        verify(documentDownloadStatusesRepository, times(1)).save(statusEntity);
+    }
+
+    @Test
+    public void shouldNotRecordDownloadIfUserEmailDoesNotMatchAnyParty() {
+        String auth = "Bearer token";
+        String ref = "1234567890123456";
+        String postcode = "SW1 1AA";
+        String email = "stranger@test.com";
+
+        User user = new User(auth, UserDetails.builder().email(email).build());
+
+        CicaCaseEntity cicaCaseEntity = CicaCaseEntity.builder()
+            .data(new HashMap<>())
+            .build();
+
+        CaseData caseData = CaseData.builder()
+            .cicCase(CicCase.builder().email("subject@test.com").build())
+            .build();
+
+        when(idamService.retrieveUser(auth)).thenReturn(user);
+        when(caseDataRepository.findCase(ref, email, postcode)).thenReturn(Optional.of(cicaCaseEntity));
+        when(objectMapper.convertValue(cicaCaseEntity.getData(), CaseData.class)).thenReturn(caseData);
+
+        documentsService.recordDocumentDownload(auth, ref, postcode, "uuid-123");
+
+        verify(documentDownloadStatusesRepository, times(0)).save(org.mockito.ArgumentMatchers.any());
+    }
+
+    @Test
+    public void shouldNotRecordDownloadIfDocumentNotFound() {
+        String auth = "Bearer token";
+        String ref = "1234567890123456";
+        String postcode = "SW1 1AA";
+        String email = "subject@test.com";
+
+        User user = new User(auth, UserDetails.builder().email(email).build());
+
+        CicaCaseEntity cicaCaseEntity = CicaCaseEntity.builder()
+            .data(new HashMap<>())
+            .build();
+
+        CaseData caseData = CaseData.builder()
+            .cicCase(CicCase.builder().email(email).build())
+            .build();
+
+        when(idamService.retrieveUser(auth)).thenReturn(user);
+        when(caseDataRepository.findCase(ref, email, postcode)).thenReturn(Optional.of(cicaCaseEntity));
+        when(objectMapper.convertValue(cicaCaseEntity.getData(), CaseData.class)).thenReturn(caseData);
+        when(documentsRepository.findByDocumentIdUuid("uuid-123")).thenReturn(Optional.empty());
+
+        documentsService.recordDocumentDownload(auth, ref, postcode, "uuid-123");
+
+        verify(documentDownloadStatusesRepository, times(0)).save(org.mockito.ArgumentMatchers.any());
+    }
 }

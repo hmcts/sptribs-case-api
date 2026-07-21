@@ -164,6 +164,57 @@ class DocumentControllerTest {
             TEST_AUTHORIZATION,
             documentId
         );
+        verify(documentsService).recordDocumentDownload(
+            TEST_AUTHORIZATION,
+            TEST_CASE_ID_STRING,
+            TEST_POSTCODE,
+            documentId
+        );
+    }
+
+    @Test
+    void shouldReturnDownloadedDocumentEvenIfRecordDownloadStatusFails() {
+        // Given
+        String documentId = "12345";
+        Resource resource = new ByteArrayResource("test-content".getBytes());
+
+        DownloadedDocumentResponse downloadedDocumentResponse =
+            new DownloadedDocumentResponse(
+                resource,
+                "test-document.pdf",
+                "application/pdf"
+            );
+
+        when(documentDownloadService.downloadDocument(
+            TEST_AUTHORIZATION,
+            documentId
+        )).thenReturn(downloadedDocumentResponse);
+
+        org.mockito.Mockito.doThrow(new RuntimeException("DB error"))
+            .when(documentsService).recordDocumentDownload(
+                TEST_AUTHORIZATION,
+                TEST_CASE_ID_STRING,
+                TEST_POSTCODE,
+                documentId
+            );
+
+        // When
+        ResponseEntity<Resource> response = documentController.downloadDocumentByCaseAndId(
+            TEST_AUTHORIZATION,
+            TEST_POSTCODE,
+            TEST_CASE_ID_STRING,
+            documentId
+        );
+
+        // Then
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(response.getBody()).isEqualTo(resource);
+        verify(documentsService).recordDocumentDownload(
+            TEST_AUTHORIZATION,
+            TEST_CASE_ID_STRING,
+            TEST_POSTCODE,
+            documentId
+        );
     }
 
     @Test

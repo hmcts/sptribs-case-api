@@ -1,5 +1,6 @@
 package uk.gov.hmcts.sptribs.document.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
@@ -8,22 +9,31 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
+import uk.gov.hmcts.reform.idam.client.models.User;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.ciccase.util.CasePartyUtil;
+import uk.gov.hmcts.sptribs.common.repositories.CaseDataRepository;
+import uk.gov.hmcts.sptribs.common.repositories.DocumentDownloadStatusesRepository;
 import uk.gov.hmcts.sptribs.common.repositories.DocumentsRepository;
 import uk.gov.hmcts.sptribs.common.repositories.exception.document.DocumentDeleteException;
 import uk.gov.hmcts.sptribs.common.repositories.exception.document.DocumentSaveException;
 import uk.gov.hmcts.sptribs.common.repositories.exception.document.DocumentUpdateException;
+import uk.gov.hmcts.sptribs.common.repositories.model.CicaCaseEntity;
 import uk.gov.hmcts.sptribs.document.model.CaseDocumentType;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.document.model.DocumentDashboardModel;
+import uk.gov.hmcts.sptribs.document.model.DocumentDownloadStatusEntity;
 import uk.gov.hmcts.sptribs.document.model.DocumentEntity;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
+import uk.gov.hmcts.sptribs.idam.IdamService;
+import uk.gov.hmcts.sptribs.notification.model.Party;
 
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 import static uk.gov.hmcts.sptribs.caseworker.util.DocumentListUtil.getAllCaseDocuments;
@@ -35,6 +45,10 @@ public class DocumentsService {
 
     private final DocumentsRepository documentsRepository;
     private final CaseDocumentTypesCache caseDocumentTypesCache;
+    private final IdamService idamService;
+    private final CaseDataRepository caseDataRepository;
+    private final ObjectMapper objectMapper;
+    private final DocumentDownloadStatusesRepository documentDownloadStatusesRepository;
 
     public void buildAndSaveNewDocumentEntity(Document document, Long caseReferenceNumber,
                                               DocumentType documentType, CaseDocumentType caseDocumentType) {
@@ -182,6 +196,58 @@ public class DocumentsService {
         } catch (DataAccessException e) {
             throw new DocumentDeleteException("Error deleting entry from document table. "
                 + "BinaryUrl: " + value, e);
+        }
+    }
+
+    public void recordDocumentDownload(String authorisation, String ccdReference, String postcode, String documentId) {
+        try {
+            User user = idamService.retrieveUser(authorisation);
+            String userEmail = user.getUserDetails().getEmail();
+
+            Optional<CicaCaseEntity> cicaCaseOpt = caseDataRepository.findCase(ccdReference, userEmail, postcode);
+            if (cicaCaseOpt.isEmpty()) {
+                log.warn("Could not find authorized case to record download: case = {}, email = {}", ccdReference, userEmail);
+                return;
+            }
+
+            CicaCaseEntity cicaCase = cicaCaseOpt.get();
+            CaseData caseData = objectMapper.convertValue(cicaCase.getData(), CaseData.class);
+            Party party = CasePartyUtil.determineParty(caseData, userEmail);
+
+            if (party == null) {
+                log.warn("User email {} does not match any registered party on case {}", userEmail, ccdReference);
+                return;
+            }
+
+            Optional<DocumentEntity> docEntityOpt = documentsRepository.findByDocumentIdUuid(documentId);
+            if (docEntityOpt.isEmpty()) {
+                log.warn("Could not find local DocumentEntity for CDAM document UUID: {}", documentId);
+                return;
+            }
+
+            DocumentEntity docEntity = docEntityOpt.get();
+            long docIdLong = docEntity.getId();
+
+            Optional<DocumentDownloadStatusEntity> existingStatusOpt =
+                documentDownloadStatusesRepository.findByDocumentIdAndParty(docIdLong, party);
+
+            if (existingStatusOpt.isPresent()) {
+                DocumentDownloadStatusEntity status = existingStatusOpt.get();
+                status.setDownloadedAt(OffsetDateTime.now());
+                documentDownloadStatusesRepository.save(status);
+                log.info("Updated download status for document: {}, party: {}", documentId, party);
+            } else {
+                DocumentDownloadStatusEntity status = DocumentDownloadStatusEntity.builder()
+                    .caseReferenceNumber(Long.valueOf(ccdReference))
+                    .documentId(docIdLong)
+                    .party(party)
+                    .downloadedAt(OffsetDateTime.now())
+                    .build();
+                documentDownloadStatusesRepository.save(status);
+                log.info("Recorded new download status for document: {}, party: {}", documentId, party);
+            }
+        } catch (Exception e) {
+            log.error("Error recording document download status for document: {}, case: {}", documentId, ccdReference, e);
         }
     }
 }
