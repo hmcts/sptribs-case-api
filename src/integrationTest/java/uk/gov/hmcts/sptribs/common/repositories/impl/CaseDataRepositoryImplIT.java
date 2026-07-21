@@ -81,7 +81,7 @@ class CaseDataRepositoryImplIT extends IntegrationTestBase {
 
     @Test
     void givenCCDReference_thenShouldFindCaseByEmailAndPostcode() {
-        caseDataManager.addCaseData(123L, "Submitted", """
+        caseDataITManager.addCaseData(123L, "Submitted", """
                 {
                   "cicCaseEmail": "test@example.com",
                   "cicCaseAddress": {
@@ -97,7 +97,7 @@ class CaseDataRepositoryImplIT extends IntegrationTestBase {
 
     @Test
     void givenCCDReference_thenShouldFindCaseBySearchPartiesEmailAndPostcode() {
-        caseDataManager.addCaseData(123L, "Submitted", """
+        caseDataITManager.addCaseData(123L, "Submitted", """
                 {
                   "SearchCriteria": {
                     "SearchParties": [
@@ -121,7 +121,7 @@ class CaseDataRepositoryImplIT extends IntegrationTestBase {
 
     @Test
     void givenCCDReference_thenShouldReturnEmptyWhenPostcodeDoesNotMatch() {
-        caseDataManager.addCaseData(123L, "Submitted", """
+        caseDataITManager.addCaseData(123L, "Submitted", """
                 {
                   "cicCaseEmail": "test@example.com",
                   "cicCaseAddress": {
