@@ -114,7 +114,9 @@ public final class TestConstants {
     public static final Integer TEST_JUDICIAL_USERS_PAGE_SIZE = 600;
 
     public static final Long TEST_CASE_ID = 1616591401473378L;
+    public static final String TEST_CASE_ID_STRING = "1616591401473378";
     public static final String TEST_CASE_ID_HYPHENATED = "1616-5914-0147-3378";
+    public static final String TEST_POSTCODE = "SW11 1PD";
     public static final String TEST_SERVICE_AUTH_TOKEN = "Bearer TestServiceAuth";
     public static final String TEST_CICA_REF_NUMBER = "X/12/123456-TM1A";
 

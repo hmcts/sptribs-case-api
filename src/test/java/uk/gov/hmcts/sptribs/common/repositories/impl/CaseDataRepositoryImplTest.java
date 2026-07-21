@@ -85,4 +85,101 @@ class CaseDataRepositoryImplTest {
 
         assertThat(result).isEmpty();
     }
+
+    @Test
+    void shouldReturnCaseWhenResultExistsWithPostcode() {
+        CicaCaseEntity entity = CicaCaseEntity.builder()
+            .id("123")
+            .state("Submitted")
+            .data(Map.of())
+            .build();
+
+        when(jdbcTemplate.query(
+            anyString(),
+            anyMap(),
+            org.mockito.ArgumentMatchers.<RowMapper<CicaCaseEntity>>any()
+        )).thenReturn(List.of(entity));
+
+        Optional<CicaCaseEntity> result = repository.findCase("123", "test@test.com", "SW11 1PD");
+
+        assertThat(result).isPresent();
+        assertThat(result.get().getId()).isEqualTo("123");
+    }
+
+    @Test
+    void shouldReturnEmptyWhenNoResultsWithPostcode() {
+        when(jdbcTemplate.query(
+            anyString(),
+            anyMap(),
+            org.mockito.ArgumentMatchers.<RowMapper<CicaCaseEntity>>any()
+        )).thenReturn(List.of());
+
+        Optional<CicaCaseEntity> result = repository.findCase("123", "test@test.com", "SW11 1PD");
+
+        assertThat(result).isEmpty();
+    }
+
+    @Test
+    void shouldReturnTrueWhenUserHasAccessToCase() {
+        CicaCaseEntity entity = CicaCaseEntity.builder()
+            .id("123")
+            .state("Submitted")
+            .data(Map.of())
+            .build();
+
+        when(jdbcTemplate.query(
+            anyString(),
+            anyMap(),
+            org.mockito.ArgumentMatchers.<RowMapper<CicaCaseEntity>>any()
+        )).thenReturn(List.of(entity));
+
+        boolean result = repository.checkIfUserHasAccessToCase("123", "test@test.com");
+
+        assertThat(result).isTrue();
+    }
+
+    @Test
+    void shouldReturnFalseWhenUserHasNoAccessToCase() {
+        when(jdbcTemplate.query(
+            anyString(),
+            anyMap(),
+            org.mockito.ArgumentMatchers.<RowMapper<CicaCaseEntity>>any()
+        )).thenReturn(List.of());
+
+        boolean result = repository.checkIfUserHasAccessToCase("123", "test@test.com");
+
+        assertThat(result).isFalse();
+    }
+
+    @Test
+    void shouldReturnTrueWhenUserHasAccessToCaseWithPostcode() {
+        CicaCaseEntity entity = CicaCaseEntity.builder()
+            .id("123")
+            .state("Submitted")
+            .data(Map.of())
+            .build();
+
+        when(jdbcTemplate.query(
+            anyString(),
+            anyMap(),
+            org.mockito.ArgumentMatchers.<RowMapper<CicaCaseEntity>>any()
+        )).thenReturn(List.of(entity));
+
+        boolean result = repository.checkIfUserHasAccessToCase("123", "test@test.com", "SW11 1PD");
+
+        assertThat(result).isTrue();
+    }
+
+    @Test
+    void shouldReturnFalseWhenUserHasNoAccessToCaseWithPostcode() {
+        when(jdbcTemplate.query(
+            anyString(),
+            anyMap(),
+            org.mockito.ArgumentMatchers.<RowMapper<CicaCaseEntity>>any()
+        )).thenReturn(List.of());
+
+        boolean result = repository.checkIfUserHasAccessToCase("123", "test@test.com", "SW11 1PD");
+
+        assertThat(result).isFalse();
+    }
 }
