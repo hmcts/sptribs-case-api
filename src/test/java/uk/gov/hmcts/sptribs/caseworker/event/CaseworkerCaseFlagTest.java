@@ -154,6 +154,6 @@ class CaseworkerCaseFlagTest {
         SubmittedCallbackResponse submittedResponse = caseworkerCaseFlag.submitted(caseDetails, beforeDetails);
 
         assertThat(submittedResponse.getConfirmationHeader()).contains("Flag created");
-        verify(anonymityAppliedNotification).sendAnonymityNotificationIfNewlyApplied(caseData, beforeCaseData, TEST_CASE_ID.toString());
+        verify(anonymityAppliedNotification).sendAnonymityNotificationIfNewlyApplied(caseData, beforeCaseData);
     }
 }

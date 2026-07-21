@@ -15,6 +15,7 @@ import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.common.service.AnonymisationService;
 import uk.gov.hmcts.sptribs.common.service.CcdSupplementaryDataService;
 import uk.gov.hmcts.sptribs.notification.dispatcher.AnonymityAppliedNotification;
+import uk.gov.hmcts.sptribs.notification.exception.NotificationException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -95,11 +96,17 @@ public class CaseworkerCaseFlag implements CCDConfig<CaseData, State, UserRole> 
 
         coreCaseApiService.submitSupplementaryDataToCcd(details.getId() == null ? null : details.getId().toString());
 
-        anonymityAppliedNotification.sendAnonymityNotificationIfNewlyApplied(
-            details.getData(),
-            beforeDetails == null ? null : beforeDetails.getData(),
-            details.getId() == null ? null : details.getId().toString()
-        );
+        try {
+            anonymityAppliedNotification.sendAnonymityNotificationIfNewlyApplied(
+                details.getData(),
+                beforeDetails == null ? null : beforeDetails.getData()
+            );
+        } catch (NotificationException notificationException) {
+            log.warn("Failed to send anonymity notifications for case {}", details.getId(), notificationException);
+            return SubmittedCallbackResponse.builder()
+                .confirmationHeader(format("# Create flag notification failed %n## Please try again"))
+                .build();
+        }
 
         return SubmittedCallbackResponse.builder()
             .confirmationHeader(format("# Flag created %n## This Flag has been added to case"))

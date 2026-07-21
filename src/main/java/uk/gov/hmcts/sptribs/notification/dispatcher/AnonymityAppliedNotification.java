@@ -84,13 +84,9 @@ public class AnonymityAppliedNotification implements PartiesNotification {
             .trim();
     }
 
-    public void sendAnonymityNotificationIfNewlyApplied(final CaseData caseData, final CaseData beforeData, final String caseId) {
+    public void sendAnonymityNotificationIfNewlyApplied(final CaseData caseData, final CaseData beforeData) {
         if (isAnonymityNewlyApplied(caseData, beforeData)) {
-            try {
-                sendToTribunal(caseData, caseData.getHyphenatedCaseRef());
-            } catch (RuntimeException e) {
-                log.warn("Failed to send anonymity notifications for case {}", caseId, e);
-            }
+            sendToTribunal(caseData, caseData.getHyphenatedCaseRef());
         }
     }
 

@@ -244,8 +244,7 @@ public class CaseworkerCreateAndSendOrder implements CCDConfig<CaseData, State, 
             sendOrderNotification(details.getData().getHyphenatedCaseRef(), details.getData());
             anonymityAppliedNotification.sendAnonymityNotificationIfNewlyApplied(
                 details.getData(),
-                beforeDetails == null ? null : beforeDetails.getData(),
-                details.getId() == null ? null : details.getId().toString()
+                beforeDetails == null ? null : beforeDetails.getData()
             );
         } catch (NotificationException notificationException) {
             log.warn("Failed to send order notifications for case {}", details.getId(), notificationException);

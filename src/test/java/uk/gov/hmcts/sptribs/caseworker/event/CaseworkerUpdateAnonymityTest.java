@@ -159,7 +159,7 @@ class CaseworkerUpdateAnonymityTest {
         caseworkerUpdateAnonymity.submitted(details, beforeDetails);
 
         verify(anonymityAppliedNotification, times(1))
-            .sendAnonymityNotificationIfNewlyApplied(caseDataAfter, caseDataBefore, null);
+            .sendAnonymityNotificationIfNewlyApplied(caseDataAfter, caseDataBefore);
     }
 
     @Test
@@ -188,7 +188,7 @@ class CaseworkerUpdateAnonymityTest {
         caseworkerUpdateAnonymity.submitted(details, beforeDetails);
 
         verify(anonymityAppliedNotification, times(1))
-            .sendAnonymityNotificationIfNewlyApplied(caseDataAfter, caseDataBefore, null);
+            .sendAnonymityNotificationIfNewlyApplied(caseDataAfter, caseDataBefore);
     }
 
     @Test

@@ -96,10 +96,9 @@ public class CaseworkerUpdateAnonymity implements CCDConfig<CaseData, State, Use
         try {
             anonymityAppliedNotification.sendAnonymityNotificationIfNewlyApplied(
                 details.getData(),
-                beforeDetails == null ? null : beforeDetails.getData(),
-                details.getId() == null ? null : details.getId().toString()
+                beforeDetails == null ? null : beforeDetails.getData()
             );
-        } catch (RuntimeException notificationException) {
+        } catch (NotificationException notificationException) {
             log.warn("Failed to send anonymity notifications for case {}", details.getId(), notificationException);
             return SubmittedCallbackResponse.builder()
                 .confirmationHeader(format("# Send anonymity notification failed %n## Please update the case again"))

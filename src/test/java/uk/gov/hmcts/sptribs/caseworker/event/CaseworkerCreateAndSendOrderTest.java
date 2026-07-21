@@ -597,7 +597,7 @@ class CaseworkerCreateAndSendOrderTest {
 
         assertThat(submittedResponse.getConfirmationHeader()).contains("# Order sent");
         verify(anonymityAppliedNotification, times(1))
-            .sendAnonymityNotificationIfNewlyApplied(caseData, beforeCaseData, null);
+            .sendAnonymityNotificationIfNewlyApplied(caseData, beforeCaseData);
     }
 
     @Test
@@ -621,7 +621,7 @@ class CaseworkerCreateAndSendOrderTest {
 
         assertThat(submittedResponse.getConfirmationHeader()).contains("# Order sent");
         verify(anonymityAppliedNotification, times(1))
-            .sendAnonymityNotificationIfNewlyApplied(caseData, beforeCaseData, null);
+            .sendAnonymityNotificationIfNewlyApplied(caseData, beforeCaseData);
     }
 
     private CaseDetails<CaseData, State> caseDetailsBefore() {

@@ -149,7 +149,7 @@ class AnonymityAppliedNotificationTest {
         when(notificationServiceCIC.sendEmail(any(NotificationRequest.class), eq("1234-5678-9012-3456")))
             .thenReturn(NotificationResponse.builder().id("1").build());
 
-        anonymityAppliedNotification.sendAnonymityNotificationIfNewlyApplied(caseData, null, "1234567890");
+        anonymityAppliedNotification.sendAnonymityNotificationIfNewlyApplied(caseData, null);
 
         verify(notificationServiceCIC).sendEmail(any(NotificationRequest.class), eq("1234-5678-9012-3456"));
     }
@@ -183,7 +183,7 @@ class AnonymityAppliedNotificationTest {
         when(notificationServiceCIC.sendEmail(any(NotificationRequest.class), eq("1234-5678-9012-3456")))
             .thenReturn(NotificationResponse.builder().id("1").build());
 
-        anonymityAppliedNotification.sendAnonymityNotificationIfNewlyApplied(caseData, beforeData, "1234567890");
+        anonymityAppliedNotification.sendAnonymityNotificationIfNewlyApplied(caseData, beforeData);
 
         verify(notificationServiceCIC).sendEmail(any(NotificationRequest.class), eq("1234-5678-9012-3456"));
     }
@@ -208,7 +208,7 @@ class AnonymityAppliedNotificationTest {
                 .build())
             .build();
 
-        anonymityAppliedNotification.sendAnonymityNotificationIfNewlyApplied(caseData, beforeCaseData, "1234567890");
+        anonymityAppliedNotification.sendAnonymityNotificationIfNewlyApplied(caseData, beforeCaseData);
 
         verify(notificationServiceCIC, never()).sendEmail(any(), any());
     }
@@ -224,7 +224,7 @@ class AnonymityAppliedNotificationTest {
                 .build())
             .build();
 
-        anonymityAppliedNotification.sendAnonymityNotificationIfNewlyApplied(caseData, null, "1234567890");
+        anonymityAppliedNotification.sendAnonymityNotificationIfNewlyApplied(caseData, null);
 
         verify(notificationServiceCIC, never()).sendEmail(any(), any());
     }
@@ -240,14 +240,14 @@ class AnonymityAppliedNotificationTest {
                 .build())
             .build();
 
-        anonymityAppliedNotification.sendAnonymityNotificationIfNewlyApplied(caseData, null, "1234567890");
+        anonymityAppliedNotification.sendAnonymityNotificationIfNewlyApplied(caseData, null);
 
         verify(notificationServiceCIC, never()).sendEmail(any(), any());
     }
 
     @Test
     void shouldNotSendNotificationIfCaseDataIsNull() {
-        anonymityAppliedNotification.sendAnonymityNotificationIfNewlyApplied(null, null, "1234567890");
+        anonymityAppliedNotification.sendAnonymityNotificationIfNewlyApplied(null, null);
 
         verify(notificationServiceCIC, never()).sendEmail(any(), any());
     }
@@ -258,13 +258,13 @@ class AnonymityAppliedNotificationTest {
             .cicCase(null)
             .build();
 
-        anonymityAppliedNotification.sendAnonymityNotificationIfNewlyApplied(caseData, null, "1234567890");
+        anonymityAppliedNotification.sendAnonymityNotificationIfNewlyApplied(caseData, null);
 
         verify(notificationServiceCIC, never()).sendEmail(any(), any());
     }
 
     @Test
-    void shouldHandleExceptionAndNotPropagateWhenSendToTribunalThrows() {
+    void shouldPropagateExceptionWhenSendToTribunalThrows() {
         final CaseData caseData = CaseData.builder()
             .caseStatus(State.AwaitingHearing)
             .hyphenatedCaseRef("1234-5678-9012-3456")
@@ -278,8 +278,10 @@ class AnonymityAppliedNotificationTest {
         when(notificationHelper.getTribunalCommonVars(eq("1234-5678-9012-3456"), eq(caseData)))
             .thenThrow(new RuntimeException("Service failure"));
 
-        // Should catch the exception and log warn without propagating
-        anonymityAppliedNotification.sendAnonymityNotificationIfNewlyApplied(caseData, null, "1234567890");
+        // Should propagate the exception when sendToTribunal throws
+        org.junit.jupiter.api.Assertions.assertThrows(RuntimeException.class, () ->
+            anonymityAppliedNotification.sendAnonymityNotificationIfNewlyApplied(caseData, null)
+        );
 
         verify(notificationServiceCIC, never()).sendEmail(any(), any());
     }
