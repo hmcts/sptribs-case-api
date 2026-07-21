@@ -78,4 +78,60 @@ class CaseDataRepositoryImplIT extends IntegrationTestBase {
 
         assertThat(result).isEmpty();
     }
+
+    @Test
+    void givenCCDReference_thenShouldFindCaseByEmailAndPostcode() {
+        caseDataManager.addCaseData(123L, "Submitted", """
+                {
+                  "cicCaseEmail": "test@example.com",
+                  "cicCaseAddress": {
+                    "PostCode": "SW11 1PD"
+                  }
+                }
+            """);
+
+        var result = repository.findCase("123", "test@example.com", "SW11 1PD");
+
+        assertThat(result).isPresent();
+    }
+
+    @Test
+    void givenCCDReference_thenShouldFindCaseBySearchPartiesEmailAndPostcode() {
+        caseDataManager.addCaseData(123L, "Submitted", """
+                {
+                  "SearchCriteria": {
+                    "SearchParties": [
+                      {
+                        "value": {
+                          "EmailAddress": "test@example.com"
+                        }
+                      }
+                    ]
+                  },
+                  "cicCaseAddress": {
+                    "PostCode": "SW11 1PD"
+                  }
+                }
+            """);
+
+        var result = repository.findCase("123", "test@example.com", "SW11 1PD");
+
+        assertThat(result).isPresent();
+    }
+
+    @Test
+    void givenCCDReference_thenShouldReturnEmptyWhenPostcodeDoesNotMatch() {
+        caseDataManager.addCaseData(123L, "Submitted", """
+                {
+                  "cicCaseEmail": "test@example.com",
+                  "cicCaseAddress": {
+                    "PostCode": "SW11 1PD"
+                  }
+                }
+            """);
+
+        var result = repository.findCase("123", "test@example.com", "WRONG_POSTCODE");
+
+        assertThat(result).isEmpty();
+    }
 }
