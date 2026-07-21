@@ -241,4 +241,48 @@ class DocumentControllerTest {
 
         org.mockito.Mockito.verifyNoInteractions(documentDownloadService);
     }
+
+    @Test
+    void shouldReturnCorrectRoleSpecificEmbeddedDownloadFlagsForAuthenticatedParty() {
+        // Given
+        DocumentEntity contactDocument = DocumentEntity.builder()
+            .id(201L)
+            .caseReferenceNumber(2L)
+            .build();
+
+        DocumentDashboardModel dashboardModel = DocumentDashboardModel.builder()
+            .contactPartiesDocuments(List.of(contactDocument))
+            .build();
+
+        Set<Long> downloadedDocIds = Set.of(201L);
+
+        CaseworkerCICDocument mappedDoc = CaseworkerCICDocument.builder()
+            .downloaded(true)
+            .build();
+
+        when(documentsService.getDownloadedDocumentIds(TEST_AUTHORIZATION, TEST_CASE_ID_STRING, TEST_POSTCODE))
+            .thenReturn(downloadedDocIds);
+
+        when(documentsService.getDocumentsOnCase(Long.valueOf(TEST_CASE_ID_STRING)))
+            .thenReturn(dashboardModel);
+
+        when(caseworkerCICDocumentMapper.map(List.of(contactDocument), downloadedDocIds))
+            .thenReturn(List.of(mappedDoc));
+
+        // When
+        ResponseEntity<DocumentResponse> response = documentController.getDocumentsByCCDReference(
+            TEST_AUTHORIZATION,
+            TEST_POSTCODE,
+            TEST_CASE_ID_STRING
+        );
+
+        // Then
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(response.getBody()).isNotNull();
+        assertThat(response.getBody().getContactPartiesDocuments()).hasSize(1);
+        assertThat(response.getBody().getContactPartiesDocuments().getFirst().isDownloaded()).isTrue();
+
+        verify(documentsService).getDownloadedDocumentIds(TEST_AUTHORIZATION, TEST_CASE_ID_STRING, TEST_POSTCODE);
+        verify(caseworkerCICDocumentMapper).map(List.of(contactDocument), downloadedDocIds);
+    }
 }

@@ -257,6 +257,47 @@ class CaseworkerCICDocumentMapperTest {
         assertThat(resultList).isEmpty();
         assertThat(resultEntity).isEmpty();
     }
+
+    @Test
+    void shouldMapEmbeddedDownloadStatusIndependentlyPerParty() {
+        // Given
+        DocumentEntity entity1 = DocumentEntity.builder()
+            .id(1L)
+            .documentFilename("test1.pdf")
+            .documentUrl("http://url1")
+            .savedAt(OffsetDateTime.now())
+            .build();
+
+        DocumentEntity entity2 = DocumentEntity.builder()
+            .id(2L)
+            .documentFilename("test2.pdf")
+            .documentUrl("http://url2")
+            .savedAt(OffsetDateTime.now())
+            .build();
+
+        DocumentEntity entity3 = DocumentEntity.builder()
+            .id(3L)
+            .documentFilename("test3.pdf")
+            .documentUrl("http://url3")
+            .savedAt(OffsetDateTime.now())
+            .build();
+
+        List<DocumentEntity> documentsList = List.of(entity1, entity2, entity3);
+
+        // Subject download history: Doc 1 & Doc 2
+        Set<Long> subjectDownloadedDocIds = Set.of(1L, 2L);
+        List<CaseworkerCICDocument> subjectMappedDocs = mapper.map(documentsList, subjectDownloadedDocIds);
+        assertThat(subjectMappedDocs.get(0).isDownloaded()).isTrue();
+        assertThat(subjectMappedDocs.get(1).isDownloaded()).isTrue();
+        assertThat(subjectMappedDocs.get(2).isDownloaded()).isFalse();
+
+        // Applicant download history: Doc 3 only
+        Set<Long> applicantDownloadedDocIds = Set.of(3L);
+        List<CaseworkerCICDocument> applicantMappedDocs = mapper.map(documentsList, applicantDownloadedDocIds);
+        assertThat(applicantMappedDocs.get(0).isDownloaded()).isFalse();
+        assertThat(applicantMappedDocs.get(1).isDownloaded()).isFalse();
+        assertThat(applicantMappedDocs.get(2).isDownloaded()).isTrue();
+    }
 }
 
 

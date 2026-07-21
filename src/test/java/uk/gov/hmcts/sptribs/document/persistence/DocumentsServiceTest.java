@@ -552,4 +552,62 @@ public class DocumentsServiceTest {
 
         assertThat(result).isEmpty();
     }
+
+    @Test
+    public void shouldTrackIndependentDownloadStatusesForAllParties() {
+        String auth = "Bearer token";
+        String ref = "1234567890123456";
+        String postcode = "SW1 1AA";
+        String docUuid = "uuid-123";
+
+        List<String> emails = List.of(
+            "subject@test.com",
+            "applicant@test.com",
+            "representative@test.com",
+            "respondent@test.com"
+        );
+
+        List<Party> parties = List.of(
+            Party.SUBJECT,
+            Party.APPLICANT,
+            Party.REPRESENTATIVE,
+            Party.RESPONDENT
+        );
+
+        DocumentEntity docEntity = DocumentEntity.builder()
+            .id(100L)
+            .build();
+
+        for (int i = 0; i < emails.size(); i++) {
+            String email = emails.get(i);
+            Party party = parties.get(i);
+
+            User user = new User(auth, UserDetails.builder().email(email).build());
+
+            CicaCaseEntity cicaCaseEntity = CicaCaseEntity.builder()
+                .data(new HashMap<>())
+                .build();
+
+            CaseData caseData = CaseData.builder()
+                .cicCase(CicCase.builder()
+                    .email("subject@test.com")
+                    .applicantEmailAddress("applicant@test.com")
+                    .representativeEmailAddress("representative@test.com")
+                    .respondentEmail("respondent@test.com")
+                    .build())
+                .build();
+
+            when(idamService.retrieveUser(auth)).thenReturn(user);
+            when(caseDataRepository.findCase(ref, email, postcode)).thenReturn(Optional.of(cicaCaseEntity));
+            when(objectMapper.convertValue(cicaCaseEntity.getData(), CaseData.class)).thenReturn(caseData);
+            when(documentsRepository.findByDocumentIdUuid(docUuid)).thenReturn(Optional.of(docEntity));
+            when(documentDownloadStatusesRepository.findByDocumentIdAndParty(100L, party)).thenReturn(Optional.empty());
+
+            documentsService.recordDocumentDownload(auth, ref, postcode, docUuid);
+
+            verify(documentDownloadStatusesRepository, times(1)).save(org.mockito.ArgumentMatchers.argThat(status ->
+                status.getDocumentId() == 100L && status.getParty() == party
+            ));
+        }
+    }
 }
