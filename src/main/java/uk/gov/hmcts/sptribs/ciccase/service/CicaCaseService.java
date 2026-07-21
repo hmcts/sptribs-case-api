@@ -35,11 +35,15 @@ public class CicaCaseService {
             if (!hasAccess) {
                 throw new UnauthorisedCaseAccessException("User is not authorised to access case: " + ccdReference);
             }
-        } catch (CaseNotFoundException | UnauthorisedCaseAccessException e) {
-            throw e;
         } catch (Exception e) {
-            log.warn("Error checking case access for reference: {}", ccdReference, e);
-            throw new UnauthorisedCaseAccessException("Error checking case access: " + e.getMessage());
+            switch (e) {
+                case CaseNotFoundException cnfe -> throw cnfe;
+                case UnauthorisedCaseAccessException ucae -> throw ucae;
+                default -> {
+                    log.warn("Error checking case access for reference: {}", ccdReference, e);
+                    throw new UnauthorisedCaseAccessException("Error checking case access: " + e.getMessage());
+                }
+            }
         }
     }
 
@@ -59,9 +63,10 @@ public class CicaCaseService {
             if (!hasAccess) {
                 throw new UnauthorisedCaseAccessException("Submitted postcode does not match the postcode held in case data");
             }
-        } catch (UnauthorisedCaseAccessException e) {
-            throw e;
         } catch (Exception e) {
+            if (e instanceof UnauthorisedCaseAccessException ucae) {
+                throw ucae;
+            }
             log.warn("Error checking case access and postcode for reference: {}", ccdReference, e);
             throw new UnauthorisedCaseAccessException("Error checking case access and postcode: " + e.getMessage());
         }
