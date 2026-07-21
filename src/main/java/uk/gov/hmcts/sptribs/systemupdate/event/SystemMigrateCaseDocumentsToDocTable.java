@@ -46,7 +46,6 @@ public class SystemMigrateCaseDocumentsToDocTable implements CCDConfig<CaseData,
         CaseData caseData = caseDetails.getData();
         Long reference = caseDetails.getId();
 
-
         Map<CaseDocumentType, List<CaseworkerCICDocument>> documentTypeDocumentMap =  prepareDocTypeAndDocMap(caseData);
 
         log.info("Found {} docs for case reference: {} ", documentTypeDocumentMap.size(), reference);
@@ -58,9 +57,6 @@ public class SystemMigrateCaseDocumentsToDocTable implements CCDConfig<CaseData,
                 caseDocumentType
             )));
 
-
-        //BUNDLE LOGIC - COMMENTED OUT FOR LOCAL
-
         if (caseData.getCaseBundles() != null) {
             caseData.getCaseBundles().stream()
                 .map(bundleListValue -> bundleListValue.getValue().getStitchedDocument())
@@ -71,7 +67,6 @@ public class SystemMigrateCaseDocumentsToDocTable implements CCDConfig<CaseData,
                     BUNDLE
                 ));
         }
-
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
                 .data(caseData)

@@ -23,14 +23,19 @@ import uk.gov.hmcts.reform.ccd.document.am.model.Classification;
 import uk.gov.hmcts.reform.ccd.document.am.model.DocumentUploadRequest;
 import uk.gov.hmcts.reform.ccd.document.am.util.InMemoryMultipartFile;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseManagementLocation;
+import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderCIC;
+import uk.gov.hmcts.sptribs.caseworker.model.Order;
 import uk.gov.hmcts.sptribs.caseworker.model.YesNo;
 import uk.gov.hmcts.sptribs.cdam.model.UploadResponse;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.LanguagePreference;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.config.AppsConfig;
 import uk.gov.hmcts.sptribs.common.service.CcdSupplementaryDataService;
-import uk.gov.hmcts.sptribs.document.model.CaseDocumentType;
+import uk.gov.hmcts.sptribs.document.CaseDataDocumentService;
+import uk.gov.hmcts.sptribs.document.content.PreviewDraftOrderTemplateContent;
+import uk.gov.hmcts.sptribs.document.model.CICDocument;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
 import uk.gov.hmcts.sptribs.document.service.DocumentsService;
@@ -38,11 +43,18 @@ import uk.gov.hmcts.sptribs.services.cdam.CaseDocumentClientApi;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
+import java.util.Locale;
 import java.util.UUID;
 
 import static java.lang.String.format;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
+import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.DOUBLE_HYPHEN;
+import static uk.gov.hmcts.sptribs.ciccase.model.OrderTemplate.CIC3_RULE_27;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.Draft;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SYSTEM_UPDATE;
@@ -59,6 +71,8 @@ public class SystemCreateTestCases implements CCDConfig<CaseData, State, UserRol
     private final DocumentsService documentsService;
     private static final String TEST_CASE_DATA_FILE = "classpath:data/st_cic_test_case.json";
     private static final ClassPathResource SAMPLE_PDF_FILE_RESOURCE =  new ClassPathResource("data/sample_file.pdf");
+    private final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss", Locale.ENGLISH);
+
 
     private final ObjectMapper objectMapper;
     private final CcdSupplementaryDataService ccdSupplementaryDataService;
@@ -66,6 +80,9 @@ public class SystemCreateTestCases implements CCDConfig<CaseData, State, UserRol
     private final AuthTokenGenerator authTokenGenerator;
     private final HttpServletRequest httpServletRequest;
     private final CaseDocumentClientApi caseDocumentClientApi;
+    private final CaseDataDocumentService caseDataDocumentService;
+    private final PreviewDraftOrderTemplateContent previewDraftOrderTemplateContent;
+    private final HttpServletRequest request;
 
     @Override
     public void configure(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
@@ -91,6 +108,12 @@ public class SystemCreateTestCases implements CCDConfig<CaseData, State, UserRol
         );
         final CaseData caseData = objectMapper.readValue(json, CaseData.class);
         uploadTestDocumentAndUpdateCaseData(caseData);
+        addOrderDocument(caseData);
+        addDraftOrderDocument(caseData, details.getId());
+        addDecisionDocument(caseData);
+        addFinalDecisionDocument(caseData);
+        addDocumentManagementDocument(caseData);
+
         caseData.setHyphenatedCaseRef(caseData.formatCaseRef(details.getId()));
         setDefaultCaseDetails(caseData);
 
@@ -111,12 +134,12 @@ public class SystemCreateTestCases implements CCDConfig<CaseData, State, UserRol
         if (caseData.getCicCase().getApplicantDocumentsUploaded() != null) {
             for (ListValue<CaseworkerCICDocument> document : caseData.getCicCase().getApplicantDocumentsUploaded()) {
                 try {
-                    documentsService.buildAndSaveNewDocumentEntity(
-                        document.getValue().getDocumentLink(),
-                        details.getId(),
-                        document.getValue().getDocumentCategory(),
-                        CaseDocumentType.DOCUMENT_MANAGEMENT
-                    );
+                //                    documentsService.buildAndSaveNewDocumentEntity(
+                //                        document.getValue().getDocumentLink(),
+                //                        details.getId(),
+                //                        document.getValue().getDocumentCategory(),
+                //                        CaseDocumentType.DOCUMENT_MANAGEMENT
+                //                    );
                 } catch (RuntimeException e) {
                     log.error("Saving applicant documents failed with exception : {}", e.getMessage());
                     return SubmittedCallbackResponse.builder()
@@ -205,6 +228,139 @@ public class SystemCreateTestCases implements CCDConfig<CaseData, State, UserRol
         }
         return null;
     }
+
+    private void addOrderDocument(CaseData caseData) {
+        final UploadResponse uploadResponse = uploadApplicantDocument();
+
+        if (uploadResponse != null) {
+            final uk.gov.hmcts.sptribs.cdam.model.Document cdamDocument = uploadResponse.getDocuments().getFirst();
+
+            final Document document = Document.builder()
+                .url(cdamDocument.links.self.href)
+                .filename(cdamDocument.originalDocumentName)
+                .categoryId("TD")
+                .binaryUrl(cdamDocument.links.binary.href)
+                .build();
+
+            final DraftOrderCIC draftOrderCIC = DraftOrderCIC.builder()
+                .templateGeneratedDocument(document)
+                .build();
+
+            final Order order = Order.builder()
+                .draftOrder(draftOrderCIC)
+                .orderSentDate(LocalDate.now())
+                .build();
+
+            final ListValue<Order> orderListValue = new ListValue<>();
+            orderListValue.setId(UUID.randomUUID().toString());
+            orderListValue.setValue(order);
+
+            caseData.getCicCase().setOrderList(List.of(orderListValue));
+        }
+    }
+
+    private void addDraftOrderDocument(CaseData caseData,Long caseId) {
+
+        Calendar cal = Calendar.getInstance();
+        String date = simpleDateFormat.format(cal.getTime());
+
+        final String filename = "Order" + DOUBLE_HYPHEN + "[" + "TestSubject" + "]" + DOUBLE_HYPHEN + date;
+
+        Document generalOrderDocument = caseDataDocumentService.renderDocument(
+            previewDraftOrderTemplateContent.apply(caseData, caseId),
+            caseId,
+            CIC3_RULE_27.getId(),
+            LanguagePreference.ENGLISH,
+            filename,
+            request
+        );
+
+        DraftOrderCIC draftOrderCIC = DraftOrderCIC.builder()
+            .draftOrderContentCIC(caseData.getDraftOrderContentCIC())
+            .templateGeneratedDocument(generalOrderDocument)
+            .build();
+
+        final List<ListValue<DraftOrderCIC>> listValues = new ArrayList<>();
+
+        final ListValue<DraftOrderCIC> listValue = ListValue
+            .<DraftOrderCIC>builder()
+            .id("1")
+            .value(draftOrderCIC)
+            .build();
+
+        listValues.add(listValue);
+
+        caseData.getCicCase().setDraftOrderCICList(listValues);
+    }
+
+    private void addDecisionDocument(CaseData caseData) {
+        final UploadResponse uploadResponse = uploadApplicantDocument();
+
+
+        if (uploadResponse != null) {
+            final uk.gov.hmcts.sptribs.cdam.model.Document cdamDocument = uploadResponse.getDocuments().getFirst();
+
+            final Document document = Document.builder()
+                .url(cdamDocument.links.self.href)
+                .filename(cdamDocument.originalDocumentName)
+                .categoryId("TD")
+                .binaryUrl(cdamDocument.links.binary.href)
+                .build();
+
+            CICDocument doc = CICDocument.builder()
+                .documentEmailContent("Test Decision")
+                .documentLink(document)
+                .build();
+
+            caseData.getCaseIssueDecision().setDecisionDocument(doc);
+        }
+    }
+
+    private void addFinalDecisionDocument(CaseData caseData) {
+        final UploadResponse uploadResponse = uploadApplicantDocument();
+
+        if (uploadResponse != null) {
+            final uk.gov.hmcts.sptribs.cdam.model.Document cdamDocument = uploadResponse.getDocuments().getFirst();
+
+            final Document document = Document.builder()
+                .url(cdamDocument.links.self.href)
+                .filename(cdamDocument.originalDocumentName)
+                .categoryId("TD")
+                .binaryUrl(cdamDocument.links.binary.href)
+                .build();
+
+            caseData.getCaseIssueFinalDecision().setFinalDecisionDraft(document);
+        }
+    }
+
+    private void addDocumentManagementDocument(CaseData caseData) {
+        final UploadResponse uploadResponse = uploadApplicantDocument();
+
+        if (uploadResponse != null) {
+            final uk.gov.hmcts.sptribs.cdam.model.Document cdamDocument = uploadResponse.getDocuments().getFirst();
+
+            final Document document = Document.builder()
+                .url(cdamDocument.links.self.href)
+                .filename(cdamDocument.originalDocumentName)
+                .categoryId("TD")
+                .binaryUrl(cdamDocument.links.binary.href)
+                .build();
+
+            final CaseworkerCICDocument caseworkerCICDocument = CaseworkerCICDocument.builder()
+                .documentLink(document)
+                .documentCategory(DocumentType.LINKED_DOCS)
+                .documentEmailContent("some email content")
+                .build();
+
+            List<ListValue<CaseworkerCICDocument>> documentList = new ArrayList<>();
+            ListValue<CaseworkerCICDocument> caseworkerCICDocumentListValue = new ListValue<>();
+            caseworkerCICDocumentListValue.setValue(caseworkerCICDocument);
+            documentList.add(caseworkerCICDocumentListValue);
+
+            caseData.getAllDocManagement().setCaseworkerCICDocument(documentList);
+        }
+    }
+
 
     private CaseworkerCICDocument convertCdamDocumentToCaseworkerCICDocument(uk.gov.hmcts.sptribs.cdam.model.Document cdamDocument) {
         final Document uploadedDocument = Document.builder()

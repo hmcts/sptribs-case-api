@@ -241,7 +241,7 @@ feature:
     caseReference: ${RESTORE_ORDERS_TASK_TEST_CASE_REF:}
   create-system-update-test-cases:
     enabled: ${CREATE_TEST_CASES:true}
-    count: ${TEST_CASE_COUNT:100}
+    count: ${TEST_CASE_COUNT:10}
   migrate-initial-case-documents-task:
     enabled: ${INITIAL_DOCUMENTS_MIGRATION_ENABLED:false}
     caseReference: ${INITIAL_DOCUMENTS_MIGRATION_TEST_CASE_REF:}
