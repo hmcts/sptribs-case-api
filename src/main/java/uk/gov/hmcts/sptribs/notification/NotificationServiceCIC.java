@@ -15,7 +15,6 @@ import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.ccd.document.am.model.Classification;
 import uk.gov.hmcts.reform.ccd.document.am.model.DocumentUploadRequest;
 import uk.gov.hmcts.reform.ccd.document.am.util.InMemoryMultipartFile;
-import uk.gov.hmcts.reform.idam.client.models.User;
 import uk.gov.hmcts.reform.pdf.service.client.PDFServiceClient;
 import uk.gov.hmcts.sptribs.cdam.model.UploadResponse;
 import uk.gov.hmcts.sptribs.ciccase.model.NotificationResponse;
@@ -23,6 +22,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.NotificationType;
 import uk.gov.hmcts.sptribs.common.config.EmailTemplatesConfigCIC;
 import uk.gov.hmcts.sptribs.common.repositories.CorrespondenceRepository;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
+import uk.gov.hmcts.sptribs.idam.CICUser;
 import uk.gov.hmcts.sptribs.idam.IdamService;
 import uk.gov.hmcts.sptribs.notification.exception.NotificationException;
 import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
@@ -290,7 +290,7 @@ public class NotificationServiceCIC {
                                           List<CaseworkerCICDocument> selectedDocuments,
                                           String item,
                                           String docName) {
-        final User user = idamService.retrieveUser(request.getHeader(AUTHORIZATION));
+        final CICUser user = idamService.retrieveUser(request.getHeader(AUTHORIZATION));
         final String authorisation = user.getAuthToken();
         final String serviceAuthorization = authTokenGenerator.generate();
 

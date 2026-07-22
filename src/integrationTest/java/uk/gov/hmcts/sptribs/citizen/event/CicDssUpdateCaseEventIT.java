@@ -12,11 +12,11 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
-import uk.gov.hmcts.reform.idam.client.models.User;
-import uk.gov.hmcts.reform.idam.client.models.UserDetails;
+import uk.gov.hmcts.reform.idam.client.models.UserInfo;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.DssCaseData;
 import uk.gov.hmcts.sptribs.common.config.WebMvcConfig;
+import uk.gov.hmcts.sptribs.idam.CICUser;
 import uk.gov.hmcts.sptribs.idam.IdamService;
 import uk.gov.hmcts.sptribs.notification.NotificationServiceCIC;
 import uk.gov.hmcts.sptribs.notification.exception.NotificationException;
@@ -94,11 +94,12 @@ public class CicDssUpdateCaseEventIT {
             .build();
         caseData.setDssCaseData(dssCaseData);
 
-        final User user = new User(
+        final CICUser user = new CICUser(
             TEST_AUTHORIZATION_TOKEN,
-            UserDetails.builder()
-                .forename("Test")
-                .surname("User")
+            UserInfo.builder()
+                .name("Test User")
+                .givenName("Test")
+                .familyName("User")
                 .build()
         );
 
