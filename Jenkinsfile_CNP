@@ -219,9 +219,11 @@ withPipeline(type, product, component) {
 
   before('highleveldatasetup') {
     onMaster {
-      env.CASE_API_URL="https://sptribs-case-api-staging.aat.platform.hmcts.net"
-      echo "env.CASE_API_URL is staging URL"
-      env.CCD_DEF_NAME="aat"
+      if (env.CCD_DEF_NAME != "prod") {
+        env.CASE_API_URL="https://sptribs-case-api-staging.aat.platform.hmcts.net"
+        echo "env.CASE_API_URL is staging URL"
+        env.CCD_DEF_NAME="aat"
+      }
     }
     builder.gradle('generateCCDConfig')
     generateDefinitions()
@@ -277,7 +279,6 @@ withPipeline(type, product, component) {
       env.CASE_API_URL="http://sptribs-case-api-aat.service.core-compute-aat.internal"
       echo "env.CASE_API_URL is AAT URL"
 
-      deleteAATDefinitionFile()
       builder.gradle('generateCCDConfig --rerun-tasks')
       generateDefinitions()
       echo "AAT definition file re-generated"
@@ -394,12 +395,6 @@ def generateDefinitions() {
   }
   dir("${WORKSPACE}") {
     steps.archiveArtifacts artifacts: "build/ccd-config/*.xlsx"
-  }
-}
-
-def deleteAATDefinitionFile() {
-  dir("${WORKSPACE}/bin") {
-    sh 'rm ./build/ccd-config/ccd-CriminalInjuriesCompensation-aat.xlsx'
   }
 }
 
