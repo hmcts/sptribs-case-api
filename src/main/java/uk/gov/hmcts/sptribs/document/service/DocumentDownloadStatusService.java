@@ -85,20 +85,8 @@ public class DocumentDownloadStatusService {
         }
     }
 
-    public Set<Long> getDownloadedDocumentIds(String authorisation, String ccdReference, String postcode) {
+    public Set<Long> getDownloadedDocumentIds(String ccdReference, Party party) {
         try {
-            User user = idamService.retrieveUser(authorisation);
-            String userEmail = user.getUserDetails().getEmail();
-
-            Optional<CicaCaseEntity> cicaCaseOpt = caseDataRepository.findCase(ccdReference, userEmail, postcode);
-            if (cicaCaseOpt.isEmpty()) {
-                return Set.of();
-            }
-
-            CicaCaseEntity cicaCase = cicaCaseOpt.get();
-            CaseData caseData = objectMapper.convertValue(cicaCase.getData(), CaseData.class);
-            Party party = CasePartyUtil.determineParty(caseData, userEmail);
-
             if (party == null) {
                 return Set.of();
             }

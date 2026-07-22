@@ -19,6 +19,7 @@ import uk.gov.hmcts.sptribs.ciccase.service.CicaCaseService;
 import uk.gov.hmcts.sptribs.common.config.WebMvcConfig;
 import uk.gov.hmcts.sptribs.controllers.mapper.CaseworkerCICDocumentMapper;
 import uk.gov.hmcts.sptribs.document.model.DocumentDashboardModel;
+import uk.gov.hmcts.sptribs.document.service.DocumentDownloadStatusService;
 import uk.gov.hmcts.sptribs.document.service.DocumentsService;
 import uk.gov.hmcts.sptribs.exception.UnauthorisedCaseAccessException;
 import uk.gov.hmcts.sptribs.services.cdam.CaseDocumentClientApi;
@@ -71,6 +72,9 @@ class DocumentControllerIT {
 
     @MockitoBean
     private DocumentsService documentsService;
+
+    @MockitoBean
+    private DocumentDownloadStatusService documentDownloadStatusService;
 
     @MockitoBean
     private CaseworkerCICDocumentMapper caseworkerCICDocumentMapper;

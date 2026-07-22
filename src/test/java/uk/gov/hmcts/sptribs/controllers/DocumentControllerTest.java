@@ -98,7 +98,10 @@ class DocumentControllerTest {
 
         Set<Long> downloadedDocIds = Set.of(2L); // Contact document is downloaded
 
-        when(documentDownloadStatusService.getDownloadedDocumentIds(TEST_AUTHORIZATION, TEST_CASE_ID_STRING, TEST_POSTCODE))
+        when(cicaCaseService.verifyUserAccessAndGetParty(TEST_CASE_ID_STRING, TEST_AUTHORIZATION, TEST_POSTCODE))
+            .thenReturn(Party.SUBJECT);
+
+        when(documentDownloadStatusService.getDownloadedDocumentIds(TEST_CASE_ID_STRING, Party.SUBJECT))
             .thenReturn(downloadedDocIds);
 
         when(documentsService.getDocumentsOnCase(Long.valueOf(TEST_CASE_ID_STRING)))
@@ -144,7 +147,7 @@ class DocumentControllerTest {
             TEST_AUTHORIZATION,
             TEST_POSTCODE
         );
-        verify(documentDownloadStatusService).getDownloadedDocumentIds(TEST_AUTHORIZATION, TEST_CASE_ID_STRING, TEST_POSTCODE);
+        verify(documentDownloadStatusService).getDownloadedDocumentIds(TEST_CASE_ID_STRING, Party.SUBJECT);
         verify(documentsService).getDocumentsOnCase(Long.valueOf(TEST_CASE_ID_STRING));
         verify(caseworkerCICDocumentMapper).map(contactPartyDocuments);
         verify(caseworkerCICDocumentMapper).map(orderAndDecisionDocuments);
@@ -285,7 +288,10 @@ class DocumentControllerTest {
             .documentLink(Document.builder().url("http://url").build())
             .build();
 
-        when(documentDownloadStatusService.getDownloadedDocumentIds(TEST_AUTHORIZATION, TEST_CASE_ID_STRING, TEST_POSTCODE))
+        when(cicaCaseService.verifyUserAccessAndGetParty(TEST_CASE_ID_STRING, TEST_AUTHORIZATION, TEST_POSTCODE))
+            .thenReturn(Party.SUBJECT);
+
+        when(documentDownloadStatusService.getDownloadedDocumentIds(TEST_CASE_ID_STRING, Party.SUBJECT))
             .thenReturn(downloadedDocIds);
 
         when(documentsService.getDocumentsOnCase(Long.valueOf(TEST_CASE_ID_STRING)))
@@ -307,7 +313,7 @@ class DocumentControllerTest {
         assertThat(response.getBody().getContactPartiesDocuments()).hasSize(1);
         assertThat(response.getBody().getContactPartiesDocuments().getFirst().isDownloaded()).isTrue();
 
-        verify(documentDownloadStatusService).getDownloadedDocumentIds(TEST_AUTHORIZATION, TEST_CASE_ID_STRING, TEST_POSTCODE);
+        verify(documentDownloadStatusService).getDownloadedDocumentIds(TEST_CASE_ID_STRING, Party.SUBJECT);
         verify(caseworkerCICDocumentMapper).map(List.of(contactDocument));
     }
 }

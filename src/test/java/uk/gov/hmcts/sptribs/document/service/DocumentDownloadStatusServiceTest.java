@@ -178,20 +178,7 @@ public class DocumentDownloadStatusServiceTest {
 
     @Test
     public void shouldReturnDownloadedDocumentIds() {
-        String auth = "Bearer token";
         String ref = "1234567890123456";
-        String postcode = "SW1 1AA";
-        String email = "subject@test.com";
-
-        User user = new User(auth, UserDetails.builder().email(email).build());
-
-        CicaCaseEntity cicaCaseEntity = CicaCaseEntity.builder()
-            .data(new HashMap<>())
-            .build();
-
-        CaseData caseData = CaseData.builder()
-            .cicCase(CicCase.builder().email(email).build())
-            .build();
 
         DocumentDownloadStatusEntity status1 = DocumentDownloadStatusEntity.builder()
             .documentId(101L)
@@ -201,30 +188,17 @@ public class DocumentDownloadStatusServiceTest {
             .documentId(102L)
             .build();
 
-        when(idamService.retrieveUser(auth)).thenReturn(user);
-        when(caseDataRepository.findCase(ref, email, postcode)).thenReturn(Optional.of(cicaCaseEntity));
-        when(objectMapper.convertValue(cicaCaseEntity.getData(), CaseData.class)).thenReturn(caseData);
         when(documentDownloadStatusesRepository.findAllByCaseReferenceNumberAndParty(1234567890123456L, Party.SUBJECT))
             .thenReturn(List.of(status1, status2));
 
-        Set<Long> result = documentDownloadStatusService.getDownloadedDocumentIds(auth, ref, postcode);
+        Set<Long> result = documentDownloadStatusService.getDownloadedDocumentIds(ref, Party.SUBJECT);
 
         assertThat(result).containsExactlyInAnyOrder(101L, 102L);
     }
 
     @Test
-    public void shouldReturnEmptySetIfCaseNotFoundForDownloadedDocumentIds() {
-        String auth = "Bearer token";
-        String ref = "1234567890123456";
-        String postcode = "SW1 1AA";
-        String email = "subject@test.com";
-
-        User user = new User(auth, UserDetails.builder().email(email).build());
-
-        when(idamService.retrieveUser(auth)).thenReturn(user);
-        when(caseDataRepository.findCase(ref, email, postcode)).thenReturn(Optional.empty());
-
-        Set<Long> result = documentDownloadStatusService.getDownloadedDocumentIds(auth, ref, postcode);
+    public void shouldReturnEmptySetIfPartyIsNull() {
+        Set<Long> result = documentDownloadStatusService.getDownloadedDocumentIds("1234567890123456", null);
 
         assertThat(result).isEmpty();
     }

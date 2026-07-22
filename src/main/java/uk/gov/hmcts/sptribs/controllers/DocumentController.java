@@ -31,6 +31,7 @@ import uk.gov.hmcts.sptribs.document.model.DocumentEntity;
 import uk.gov.hmcts.sptribs.document.model.DownloadedDocumentResponse;
 import uk.gov.hmcts.sptribs.document.service.DocumentDownloadStatusService;
 import uk.gov.hmcts.sptribs.document.service.DocumentsService;
+import uk.gov.hmcts.sptribs.notification.model.Party;
 
 import java.util.List;
 import java.util.Optional;
@@ -78,9 +79,9 @@ public class DocumentController {
 
         log.info("Received request to get documents with CCD reference = {}", ccdReference);
 
-        cicaCaseService.verifyUserAccessAndGetParty(ccdReference, authorisation, postcode);
+        Party party = cicaCaseService.verifyUserAccessAndGetParty(ccdReference, authorisation, postcode);
 
-        Set<Long> downloadedDocIds = documentDownloadStatusService.getDownloadedDocumentIds(authorisation, ccdReference, postcode);
+        Set<Long> downloadedDocIds = documentDownloadStatusService.getDownloadedDocumentIds(ccdReference, party);
 
         DocumentDashboardModel documentDashboardModel = documentsService.getDocumentsOnCase(Long.valueOf(ccdReference));
 
