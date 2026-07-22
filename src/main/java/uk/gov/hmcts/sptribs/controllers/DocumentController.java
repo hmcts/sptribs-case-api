@@ -78,7 +78,7 @@ public class DocumentController {
 
         log.info("Received request to get documents with CCD reference = {}", ccdReference);
 
-        cicaCaseService.checkIfUserHasAccessWithPostcode(ccdReference, authorisation, postcode);
+        cicaCaseService.verifyUserAccessAndGetParty(ccdReference, authorisation, postcode);
 
         Set<Long> downloadedDocIds = documentDownloadStatusService.getDownloadedDocumentIds(authorisation, ccdReference, postcode);
 
@@ -136,7 +136,7 @@ public class DocumentController {
 
         log.info("Received request to download document with id: {} for CCD reference: {}", documentId, ccdReference);
 
-        cicaCaseService.checkIfUserHasAccessWithPostcode(ccdReference, authorisation, postcode);
+        cicaCaseService.verifyUserAccessAndGetParty(ccdReference, authorisation, postcode);
 
         DownloadedDocumentResponse documentResponse = documentDownloadService.downloadDocument(
             authorisation,

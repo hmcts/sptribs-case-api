@@ -21,6 +21,7 @@ import uk.gov.hmcts.sptribs.document.model.DownloadedDocumentResponse;
 import uk.gov.hmcts.sptribs.document.service.DocumentDownloadStatusService;
 import uk.gov.hmcts.sptribs.document.service.DocumentsService;
 import uk.gov.hmcts.sptribs.exception.UnauthorisedCaseAccessException;
+import uk.gov.hmcts.sptribs.notification.model.Party;
 
 import java.util.List;
 import java.util.Set;
@@ -138,7 +139,7 @@ class DocumentControllerTest {
         assertThat(response.getBody().getLatestCaseBundleDocuments().getFirst().isDownloaded())
             .isFalse();
 
-        verify(cicaCaseService).checkIfUserHasAccessWithPostcode(
+        verify(cicaCaseService).verifyUserAccessAndGetParty(
             TEST_CASE_ID_STRING,
             TEST_AUTHORIZATION,
             TEST_POSTCODE
@@ -185,7 +186,7 @@ class DocumentControllerTest {
         assertThat(response.getHeaders().getFirst("original-file-name"))
             .isEqualTo("test-document.pdf");
 
-        verify(cicaCaseService).checkIfUserHasAccessWithPostcode(
+        verify(cicaCaseService).verifyUserAccessAndGetParty(
             TEST_CASE_ID_STRING,
             TEST_AUTHORIZATION,
             TEST_POSTCODE
@@ -254,7 +255,7 @@ class DocumentControllerTest {
         String documentId = "12345";
 
         org.mockito.Mockito.doThrow(new UnauthorisedCaseAccessException("Postcode or email mismatch"))
-            .when(cicaCaseService).checkIfUserHasAccessWithPostcode(TEST_CASE_ID_STRING, TEST_AUTHORIZATION, postcode);
+            .when(cicaCaseService).verifyUserAccessAndGetParty(TEST_CASE_ID_STRING, TEST_AUTHORIZATION, postcode);
 
         // When / Then
         org.assertj.core.api.Assertions.assertThatThrownBy(() -> documentController.downloadDocumentByCaseAndId(

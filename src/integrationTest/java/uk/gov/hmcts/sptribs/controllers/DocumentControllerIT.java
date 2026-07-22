@@ -266,7 +266,7 @@ class DocumentControllerIT {
         // Given
         String invalidPostcode = "INVALID";
         doThrow(new UnauthorisedCaseAccessException("Postcode match failed"))
-            .when(cicaCaseService).checkIfUserHasAccessWithPostcode(eq(TEST_CASE_ID_STRING), any(), eq(invalidPostcode));
+            .when(cicaCaseService).verifyUserAccessAndGetParty(eq(TEST_CASE_ID_STRING), any(), eq(invalidPostcode));
 
         // When & Then
         mockMvc.perform(get(GET_DOCUMENTS_URL)
@@ -281,7 +281,7 @@ class DocumentControllerIT {
         // Given
         String invalidPostcode = "INVALID";
         doThrow(new UnauthorisedCaseAccessException("Postcode match failed"))
-            .when(cicaCaseService).checkIfUserHasAccessWithPostcode(eq(TEST_CASE_ID_STRING), any(), eq(invalidPostcode));
+            .when(cicaCaseService).verifyUserAccessAndGetParty(eq(TEST_CASE_ID_STRING), any(), eq(invalidPostcode));
 
         // When & Then
         mockMvc.perform(get(String.format(DOWNLOAD_DOCUMENT_URL, TEST_CASE_DATA_FILE_UUID))
