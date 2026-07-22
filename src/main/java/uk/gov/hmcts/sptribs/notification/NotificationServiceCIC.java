@@ -158,6 +158,10 @@ public class NotificationServiceCIC {
         final String referenceId = UUID.randomUUID().toString();
 
         try {
+            if (StringUtils.isBlank(destinationAddress)) {
+                throw new NullArgumentException("destinationAddress");
+            }
+
             if (notificationRequest.isHasFileAttachments()) {
                 addAttachmentsToTemplateVars(templateVars, notificationRequest.getUploadedDocuments(), selectedDocuments);
             }
@@ -185,7 +189,7 @@ public class NotificationServiceCIC {
             );
 
             return getNotificationResponse(sendEmailResponse);
-        } catch (NotificationClientException | IOException e) {
+        } catch (NotificationClientException | IOException | NullArgumentException e) {
             log.error("Failed to send email. Reference ID: {}. Reason: {}",
                 referenceId,
                 e.getMessage(),

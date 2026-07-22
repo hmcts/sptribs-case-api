@@ -2,6 +2,7 @@ package uk.gov.hmcts.sptribs.notification;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang.NullArgumentException;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.stereotype.Component;
@@ -14,6 +15,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.HearingFormat;
 import uk.gov.hmcts.sptribs.common.CommonConstants;
+import uk.gov.hmcts.sptribs.notification.exception.NotificationException;
 import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
 
 import java.time.format.DateTimeFormatter;
@@ -52,6 +54,11 @@ import static uk.gov.hmcts.sptribs.common.ccd.CcdCaseType.CIC;
 public class NotificationHelper {
 
     public void addAddressTemplateVars(AddressGlobalUK address, Map<String, Object> templateVars) {
+        if (address == null) {
+            throw new NotificationException(
+                new NullArgumentException("address")
+            );
+        }
         templateVars.put(ADDRESS_LINE_1, address.getAddressLine1());
         templateVars.put(ADDRESS_LINE_2, address.getAddressLine2());
         templateVars.put(ADDRESS_LINE_3, address.getAddressLine3());
