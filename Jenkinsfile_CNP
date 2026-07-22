@@ -220,7 +220,6 @@ withPipeline(type, product, component) {
   before('highleveldatasetup') {
     builder.gradle('generateCCDConfig')
     generateDefinitions()
-    echo "High level data set-up definition file generated"
   }
 
   onPR {
@@ -257,7 +256,7 @@ withPipeline(type, product, component) {
 
   onMaster {
     env.ENVIRONMENT="aat"
-    env.CASE_API_URL="https://sptribs-case-api-staging.aat.platform.hmcts.net"
+    env.CASE_API_URL="http://sptribs-case-api-aat.service.core-compute-aat.internal"
     env.CCD_DEF_NAME="aat"
     env.ELASTIC_SEARCH_ENABLED=true
     env.SERVICE_AUTH_MICROSERVICE = "sptribs_case_api"
@@ -271,13 +270,6 @@ withPipeline(type, product, component) {
   }
 
   afterSuccess('functionalTest:aat') {
-      env.CASE_API_URL="http://sptribs-case-api-aat.service.core-compute-aat.internal"
-      echo "env.CASE_API_URL is AAT URL"
-
-      builder.gradle('generateCCDConfig --rerun-tasks')
-      generateDefinitions()
-      echo "AAT definition file re-generated"
-
       env.ENVIRONMENT="prod"
       env.CASE_API_URL="http://sptribs-case-api-prod.service.core-compute-prod.internal"
       env.CCD_DEF_NAME="prod"
