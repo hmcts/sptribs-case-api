@@ -277,7 +277,7 @@ withPipeline(type, product, component) {
       env.CASE_API_URL="http://sptribs-case-api-aat.service.core-compute-aat.internal"
       echo "env.CASE_API_URL is AAT URL"
 
-      rm 'build/ccd-config/ccd-CriminalInjuriesCompensation-aat.xlsx'
+      deleteAATDefinitionFile()
       builder.gradle('generateCCDConfig --rerun-tasks')
       generateDefinitions()
       echo "AAT definition file re-generated"
@@ -394,6 +394,12 @@ def generateDefinitions() {
   }
   dir("${WORKSPACE}") {
     steps.archiveArtifacts artifacts: "build/ccd-config/*.xlsx"
+  }
+}
+
+def deleteAATDefinitionFile() {
+  dir("${WORKSPACE}/bin") {
+    sh 'rm ./build/ccd-config/ccd-CriminalInjuriesCompensation-aat.xlsx'
   }
 }
 
