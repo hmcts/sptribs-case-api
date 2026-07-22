@@ -47,10 +47,7 @@ import static net.javacrumbs.jsonunit.assertj.JsonAssertions.json;
 import static net.javacrumbs.jsonunit.core.Option.IGNORING_EXTRA_FIELDS;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -323,7 +320,7 @@ public class CaseworkerCreateAndSendOrderIT {
     }
 
     @Test
-    void shouldReturnErrorMessageIfNotificationsFailOnSubmitted() throws Exception {
+    void shouldReturnErrorMessageWhenGovNotifyFailsOnSubmitted() throws Exception {
         final CaseData caseData = CaseData.builder()
             .hyphenatedCaseRef(TEST_CASE_ID_HYPHENATED)
             .cicCase(CicCase.builder()
@@ -346,7 +343,7 @@ public class CaseworkerCreateAndSendOrderIT {
             .build();
 
         when(notificationServiceCIC.sendEmail(any(), eq(TEST_CASE_ID_HYPHENATED)))
-            .thenThrow(new NotificationException(new NotificationClientException("")));
+            .thenThrow(new NotificationException(new NotificationClientException("GovNotify API Failure")));
 
         String response = mockMvc.perform(post(SUBMITTED_URL)
             .contentType(APPLICATION_JSON)
@@ -368,6 +365,40 @@ public class CaseworkerCreateAndSendOrderIT {
                 .contains("# Send order notification failed \n## Please resend the order");
 
         verify(notificationServiceCIC, times(1)).sendEmail(any(), eq(TEST_CASE_ID_HYPHENATED));
+    }
+
+    @Test
+    void shouldReturnErrorMessageWhenRequiredRecipientDetailsAreMissingOnSubmitted() throws Exception {
+        final CaseData caseData = CaseData.builder()
+            .cicCase(CicCase.builder()
+                .notifyPartySubject(Set.of(SUBJECT))
+                .notifyPartyRespondent(Set.of(RESPONDENT))
+                .notifyPartyRepresentative(Set.of(REPRESENTATIVE))
+                .notifyPartyApplicant(Set.of(APPLICANT_CIC))
+                .build()
+            )
+            .build();
+
+        String response = mockMvc.perform(post(SUBMITTED_URL)
+            .contentType(APPLICATION_JSON)
+            .header(SERVICE_AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
+            .header(AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
+            .content(objectMapper.writeValueAsString(
+                callbackRequest(
+                    caseData,
+                    CASEWORKER_CREATE_AND_SEND_ORDER)))
+            .accept(APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andReturn()
+            .getResponse()
+            .getContentAsString();
+
+        assertThatJson(response)
+                .inPath(CONFIRMATION_HEADER)
+                .isString()
+                .contains("# Send order notification failed \n## Please resend the order");
+
+        verifyNoInteractions(notificationServiceCIC);
     }
 
     @Test
