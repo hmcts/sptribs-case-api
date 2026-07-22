@@ -29,6 +29,7 @@ import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.document.model.DocumentDashboardModel;
 import uk.gov.hmcts.sptribs.document.model.DocumentEntity;
 import uk.gov.hmcts.sptribs.document.model.DownloadedDocumentResponse;
+import uk.gov.hmcts.sptribs.document.service.DocumentDownloadStatusService;
 import uk.gov.hmcts.sptribs.document.service.DocumentsService;
 
 import java.util.List;
@@ -45,6 +46,7 @@ public class DocumentController {
 
     private final DocumentDownloadService documentDownloadService;
     private final DocumentsService documentsService;
+    private final DocumentDownloadStatusService documentDownloadStatusService;
     private final CaseworkerCICDocumentMapper caseworkerCICDocumentMapper;
     private final CicaCaseService cicaCaseService;
 
@@ -78,7 +80,7 @@ public class DocumentController {
 
         cicaCaseService.checkIfUserHasAccessWithPostcode(ccdReference, authorisation, postcode);
 
-        Set<Long> downloadedDocIds = documentsService.getDownloadedDocumentIds(authorisation, ccdReference, postcode);
+        Set<Long> downloadedDocIds = documentDownloadStatusService.getDownloadedDocumentIds(authorisation, ccdReference, postcode);
 
         DocumentDashboardModel documentDashboardModel = documentsService.getDocumentsOnCase(Long.valueOf(ccdReference));
 
@@ -142,7 +144,7 @@ public class DocumentController {
         );
 
         try {
-            documentsService.recordDocumentDownload(authorisation, ccdReference, postcode, documentId);
+            documentDownloadStatusService.recordDocumentDownload(authorisation, ccdReference, postcode, documentId);
         } catch (Exception e) {
             log.error("Failed to record document download status for doc: {}, case: {}", documentId, ccdReference, e);
         }

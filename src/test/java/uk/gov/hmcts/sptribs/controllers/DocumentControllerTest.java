@@ -18,6 +18,7 @@ import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.document.model.DocumentDashboardModel;
 import uk.gov.hmcts.sptribs.document.model.DocumentEntity;
 import uk.gov.hmcts.sptribs.document.model.DownloadedDocumentResponse;
+import uk.gov.hmcts.sptribs.document.service.DocumentDownloadStatusService;
 import uk.gov.hmcts.sptribs.document.service.DocumentsService;
 import uk.gov.hmcts.sptribs.exception.UnauthorisedCaseAccessException;
 
@@ -40,6 +41,9 @@ class DocumentControllerTest {
 
     @Mock
     private DocumentsService documentsService;
+
+    @Mock
+    private DocumentDownloadStatusService documentDownloadStatusService;
 
     @Mock
     private CaseworkerCICDocumentMapper caseworkerCICDocumentMapper;
@@ -93,7 +97,7 @@ class DocumentControllerTest {
 
         Set<Long> downloadedDocIds = Set.of(2L); // Contact document is downloaded
 
-        when(documentsService.getDownloadedDocumentIds(TEST_AUTHORIZATION, TEST_CASE_ID_STRING, TEST_POSTCODE))
+        when(documentDownloadStatusService.getDownloadedDocumentIds(TEST_AUTHORIZATION, TEST_CASE_ID_STRING, TEST_POSTCODE))
             .thenReturn(downloadedDocIds);
 
         when(documentsService.getDocumentsOnCase(Long.valueOf(TEST_CASE_ID_STRING)))
@@ -139,7 +143,7 @@ class DocumentControllerTest {
             TEST_AUTHORIZATION,
             TEST_POSTCODE
         );
-        verify(documentsService).getDownloadedDocumentIds(TEST_AUTHORIZATION, TEST_CASE_ID_STRING, TEST_POSTCODE);
+        verify(documentDownloadStatusService).getDownloadedDocumentIds(TEST_AUTHORIZATION, TEST_CASE_ID_STRING, TEST_POSTCODE);
         verify(documentsService).getDocumentsOnCase(Long.valueOf(TEST_CASE_ID_STRING));
         verify(caseworkerCICDocumentMapper).map(contactPartyDocuments);
         verify(caseworkerCICDocumentMapper).map(orderAndDecisionDocuments);
@@ -190,7 +194,7 @@ class DocumentControllerTest {
             TEST_AUTHORIZATION,
             documentId
         );
-        verify(documentsService).recordDocumentDownload(
+        verify(documentDownloadStatusService).recordDocumentDownload(
             TEST_AUTHORIZATION,
             TEST_CASE_ID_STRING,
             TEST_POSTCODE,
@@ -217,7 +221,7 @@ class DocumentControllerTest {
         )).thenReturn(downloadedDocumentResponse);
 
         org.mockito.Mockito.doThrow(new RuntimeException("DB error"))
-            .when(documentsService).recordDocumentDownload(
+            .when(documentDownloadStatusService).recordDocumentDownload(
                 TEST_AUTHORIZATION,
                 TEST_CASE_ID_STRING,
                 TEST_POSTCODE,
@@ -235,7 +239,7 @@ class DocumentControllerTest {
         // Then
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody()).isEqualTo(resource);
-        verify(documentsService).recordDocumentDownload(
+        verify(documentDownloadStatusService).recordDocumentDownload(
             TEST_AUTHORIZATION,
             TEST_CASE_ID_STRING,
             TEST_POSTCODE,
@@ -280,7 +284,7 @@ class DocumentControllerTest {
             .documentLink(Document.builder().url("http://url").build())
             .build();
 
-        when(documentsService.getDownloadedDocumentIds(TEST_AUTHORIZATION, TEST_CASE_ID_STRING, TEST_POSTCODE))
+        when(documentDownloadStatusService.getDownloadedDocumentIds(TEST_AUTHORIZATION, TEST_CASE_ID_STRING, TEST_POSTCODE))
             .thenReturn(downloadedDocIds);
 
         when(documentsService.getDocumentsOnCase(Long.valueOf(TEST_CASE_ID_STRING)))
@@ -302,7 +306,7 @@ class DocumentControllerTest {
         assertThat(response.getBody().getContactPartiesDocuments()).hasSize(1);
         assertThat(response.getBody().getContactPartiesDocuments().getFirst().isDownloaded()).isTrue();
 
-        verify(documentsService).getDownloadedDocumentIds(TEST_AUTHORIZATION, TEST_CASE_ID_STRING, TEST_POSTCODE);
+        verify(documentDownloadStatusService).getDownloadedDocumentIds(TEST_AUTHORIZATION, TEST_CASE_ID_STRING, TEST_POSTCODE);
         verify(caseworkerCICDocumentMapper).map(List.of(contactDocument));
     }
 }
