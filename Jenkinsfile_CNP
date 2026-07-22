@@ -218,10 +218,6 @@ withPipeline(type, product, component) {
   }
 
   before('highleveldatasetup') {
-    onMaster {
-      env.CASE_API_URL="https://sptribs-case-api-staging.aat.platform.hmcts.net"
-      env.CASE_TYPE_SUFFIX="staging"
-    }
     builder.gradle('generateCCDConfig')
     generateDefinitions()
   }
@@ -260,6 +256,7 @@ withPipeline(type, product, component) {
 
   onMaster {
     env.ENVIRONMENT="aat"
+    env.CASE_API_URL="http://sptribs-case-api-aat.service.core-compute-aat.internal"
     env.CCD_DEF_NAME="aat"
     env.ELASTIC_SEARCH_ENABLED=true
     env.SERVICE_AUTH_MICROSERVICE = "sptribs_case_api"
@@ -273,12 +270,6 @@ withPipeline(type, product, component) {
   }
 
   afterSuccess('functionalTest:aat') {
-      env.CASE_API_URL="http://sptribs-case-api-aat.service.core-compute-aat.internal"
-      env.CASE_TYPE_SUFFIX=""
-
-      builder.gradle('generateCCDConfig --rerun-tasks')
-      generateDefinitions()
-
       env.ENVIRONMENT="prod"
       env.CASE_API_URL="http://sptribs-case-api-prod.service.core-compute-prod.internal"
       env.CCD_DEF_NAME="prod"
@@ -286,7 +277,7 @@ withPipeline(type, product, component) {
       env.CASE_API_DOCUMENT_DOWNLOAD_URL = "http://manage-case.platform.hmcts.net/"
       env.SERVICE_AUTH_MICROSERVICE = "sptribs_case_api"
       env.SERVICE_AUTH_PROVIDER_URL = "http://rpe-service-auth-provider-prod.service.core-compute-prod.internal"
-      env.IDAM_API_URL_BASE = "https://idam-api.platform.hmcts.net"
+      env.IDAM_API_URL_BASE = "https://idam-web-public.platform.hmcts.net"
       env.S2S_URL_BASE = "http://rpe-service-auth-provider-prod.service.core-compute-prod.internal"
       env.BEFTA_S2S_CLIENT_ID = "ccd_data"
       env.CAMUNDA_BASE_URL = "http://camunda-api-prod.service.core-compute-prod.internal"
@@ -317,7 +308,7 @@ withPipeline(type, product, component) {
     env.CASE_API_URL = "http://sptribs-case-api-demo.service.core-compute-demo.internal"
     env.CASE_API_DOCUMENT_DOWNLOAD_URL = "http://manage-case.demo.platform.hmcts.net/"
     env.CCD_DEF_NAME = "demo"
-    env.IDAM_API_URL_BASE = "https://idam-api.demo.platform.hmcts.net"
+    env.IDAM_API_URL_BASE = "https://idam-web-public.demo.platform.hmcts.net"
     env.S2S_URL_BASE = "http://rpe-service-auth-provider-demo.service.core-compute-demo.internal"
     env.CAMUNDA_BASE_URL = "http://camunda-api-demo.service.core-compute-demo.internal"
   }
@@ -326,7 +317,7 @@ withPipeline(type, product, component) {
     env.ENVIRONMENT="perftest"
     env.CASE_API_URL = "http://sptribs-case-api-perftest.service.core-compute-perftest.internal"
     env.CCD_DEF_NAME = "perftest"
-    env.IDAM_API_URL_BASE = "https://idam-api.perftest.platform.hmcts.net"
+    env.IDAM_API_URL_BASE = "https://idam-web-public.perftest.platform.hmcts.net"
     env.S2S_URL_BASE = "http://rpe-service-auth-provider-perftest.service.core-compute-perftest.internal"
     env.FEE_API_URL = "http://fees-register-api-demo.service.core-compute-demo.internal"
     env.CAMUNDA_BASE_URL = "http://camunda-api-perftest.service.core-compute-perftest.internal"
@@ -336,7 +327,7 @@ withPipeline(type, product, component) {
     env.ENVIRONMENT="ithc"
     env.CASE_API_URL = "http://sptribs-case-api-ithc.service.core-compute-ithc.internal"
     env.CCD_DEF_NAME = "ithc"
-    env.IDAM_API_URL_BASE = "https://idam-api.ithc.platform.hmcts.net"
+    env.IDAM_API_URL_BASE = "https://idam-web-public.ithc.platform.hmcts.net"
     env.S2S_URL_BASE = "http://rpe-service-auth-provider-ithc.service.core-compute-ithc.internal"
     env.FEE_API_URL = "http://fees-register-api-demo.service.core-compute-ithc.internal"
     env.CAMUNDA_BASE_URL = "http://camunda-api-ithc.service.core-compute-ithc.internal"
@@ -367,7 +358,7 @@ withPipeline(type, product, component) {
 }
 
 def setCommonEnvVariables() {
-    env.IDAM_API_URL_BASE = "https://idam-api.aat.platform.hmcts.net"
+    env.IDAM_API_URL_BASE = "https://idam-web-public.aat.platform.hmcts.net"
     env.S2S_URL_BASE = "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
     env.FEE_API_URL = "http://fees-register-api-aat.service.core-compute-aat.internal"
     env.BEFTA_S2S_CLIENT_ID = "ccd_data"
