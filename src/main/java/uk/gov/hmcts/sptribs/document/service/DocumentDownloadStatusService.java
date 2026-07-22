@@ -3,6 +3,7 @@ package uk.gov.hmcts.sptribs.document.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.sptribs.common.repositories.DocumentDownloadStatusesRepository;
 import uk.gov.hmcts.sptribs.common.repositories.DocumentsRepository;
 import uk.gov.hmcts.sptribs.document.model.DocumentDownloadStatusEntity;
@@ -77,6 +78,19 @@ public class DocumentDownloadStatusService {
         } catch (Exception e) {
             log.error("Error fetching downloaded document IDs for case {}", ccdReference, e);
             return Set.of();
+        }
+    }
+
+    @Transactional
+    public void deleteDocumentDownloadStatusesForCaseAndParty(Long caseReferenceNumber, Party party) {
+        try {
+            if (party == null || caseReferenceNumber == null) {
+                return;
+            }
+            documentDownloadStatusesRepository.deleteByCaseReferenceNumberAndParty(caseReferenceNumber, party);
+            log.info("Deleted document download statuses for case reference number {} and party {}", caseReferenceNumber, party);
+        } catch (Exception e) {
+            log.error("Error deleting document download statuses for case reference number {} and party {}", caseReferenceNumber, party, e);
         }
     }
 }

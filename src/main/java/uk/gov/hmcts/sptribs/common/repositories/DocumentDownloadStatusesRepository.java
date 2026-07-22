@@ -1,7 +1,9 @@
 package uk.gov.hmcts.sptribs.common.repositories;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.sptribs.document.model.DocumentDownloadStatusEntity;
 import uk.gov.hmcts.sptribs.notification.model.Party;
 
@@ -17,4 +19,8 @@ public interface DocumentDownloadStatusesRepository extends JpaRepository<Docume
     List<DocumentDownloadStatusEntity> findAllByDocumentId(long documentId);
 
     Optional<DocumentDownloadStatusEntity> findByDocumentIdAndParty(long documentId, Party party);
+
+    @Modifying
+    @Transactional
+    void deleteByCaseReferenceNumberAndParty(Long caseReferenceNumber, Party party);
 }

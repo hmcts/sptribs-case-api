@@ -146,4 +146,24 @@ public class DocumentDownloadStatusServiceTest {
             ));
         }
     }
+
+    @Test
+    public void shouldDeleteDocumentDownloadStatusesForCaseAndParty() {
+        Long caseReferenceNumber = 1234567890123456L;
+        Party party = Party.REPRESENTATIVE;
+
+        documentDownloadStatusService.deleteDocumentDownloadStatusesForCaseAndParty(caseReferenceNumber, party);
+
+        verify(documentDownloadStatusesRepository, times(1))
+            .deleteByCaseReferenceNumberAndParty(caseReferenceNumber, party);
+    }
+
+    @Test
+    public void shouldNotDeleteIfPartyOrCaseReferenceNumberIsNull() {
+        documentDownloadStatusService.deleteDocumentDownloadStatusesForCaseAndParty(null, Party.REPRESENTATIVE);
+        documentDownloadStatusService.deleteDocumentDownloadStatusesForCaseAndParty(1234567890123456L, null);
+
+        verify(documentDownloadStatusesRepository, times(0))
+            .deleteByCaseReferenceNumberAndParty(org.mockito.ArgumentMatchers.any(), org.mockito.ArgumentMatchers.any());
+    }
 }
