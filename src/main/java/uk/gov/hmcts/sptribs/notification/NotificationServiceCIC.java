@@ -1,5 +1,6 @@
 package uk.gov.hmcts.sptribs.notification;
 
+import feign.FeignException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -185,7 +186,7 @@ public class NotificationServiceCIC {
             );
 
             return getNotificationResponse(sendEmailResponse);
-        } catch (NotificationClientException | IOException e) {
+        } catch (NotificationClientException | IOException | FeignException e) {
             log.error("Failed to send email. Reference ID: {}. Reason: {}",
                 referenceId,
                 e.getMessage(),
@@ -268,6 +269,13 @@ public class NotificationServiceCIC {
                 nullArgumentException
             );
             throw new NotificationException(nullArgumentException);
+        } catch (feign.FeignException feignException) {
+            log.error("Failed to send letter due to REST client failure. Reference ID: {}. Reason: {}",
+                referenceId,
+                feignException.getMessage(),
+                feignException
+            );
+            throw new NotificationException(feignException);
         }
     }
 
