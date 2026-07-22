@@ -19,6 +19,7 @@ import uk.gov.hmcts.sptribs.ciccase.service.CicaCaseService;
 import uk.gov.hmcts.sptribs.common.config.WebMvcConfig;
 import uk.gov.hmcts.sptribs.controllers.mapper.CaseworkerCICDocumentMapper;
 import uk.gov.hmcts.sptribs.document.model.DocumentDashboardModel;
+import uk.gov.hmcts.sptribs.document.model.DocumentEntity;
 import uk.gov.hmcts.sptribs.document.service.DocumentDownloadStatusService;
 import uk.gov.hmcts.sptribs.document.service.DocumentsService;
 import uk.gov.hmcts.sptribs.exception.UnauthorisedCaseAccessException;
@@ -29,7 +30,6 @@ import java.util.UUID;
 
 import static java.util.Collections.emptyList;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
@@ -252,8 +252,7 @@ class DocumentControllerIT {
         when(documentsService.getDocumentsOnCase(Long.valueOf(TEST_CASE_ID_STRING)))
             .thenReturn(dashboardModel);
 
-        when(caseworkerCICDocumentMapper.map(anyList())).thenReturn(emptyList());
-        when(caseworkerCICDocumentMapper.mapEntityToList(any())).thenReturn(emptyList());
+        when(caseworkerCICDocumentMapper.map(any(DocumentEntity.class))).thenReturn(null);
 
         // When & Then
         mockMvc.perform(get(GET_DOCUMENTS_URL)

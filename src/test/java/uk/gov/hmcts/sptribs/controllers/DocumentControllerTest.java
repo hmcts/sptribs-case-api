@@ -107,14 +107,14 @@ class DocumentControllerTest {
         when(documentsService.getDocumentsOnCase(Long.valueOf(TEST_CASE_ID_STRING)))
             .thenReturn(dashboardModel);
 
-        when(caseworkerCICDocumentMapper.map(contactPartyDocuments))
-            .thenReturn(List.of(mappedContactPartyDocument));
+        when(caseworkerCICDocumentMapper.map(contactPartyDocuments.getFirst()))
+            .thenReturn(mappedContactPartyDocument);
 
-        when(caseworkerCICDocumentMapper.map(orderAndDecisionDocuments))
-            .thenReturn(List.of(mappedOrderAndDecisionDocument));
+        when(caseworkerCICDocumentMapper.map(orderAndDecisionDocuments.getFirst()))
+            .thenReturn(mappedOrderAndDecisionDocument);
 
-        when(caseworkerCICDocumentMapper.mapEntityToList(latestBundleDocument))
-            .thenReturn(List.of(mappedBundleDocument));
+        when(caseworkerCICDocumentMapper.map(latestBundleDocument))
+            .thenReturn(mappedBundleDocument);
 
         // When
         ResponseEntity<DocumentResponse> response = documentController.getDocumentsByCCDReference(
@@ -149,9 +149,9 @@ class DocumentControllerTest {
         );
         verify(documentDownloadStatusService).getDownloadedDocumentIds(TEST_CASE_ID_STRING, Party.SUBJECT);
         verify(documentsService).getDocumentsOnCase(Long.valueOf(TEST_CASE_ID_STRING));
-        verify(caseworkerCICDocumentMapper).map(contactPartyDocuments);
-        verify(caseworkerCICDocumentMapper).map(orderAndDecisionDocuments);
-        verify(caseworkerCICDocumentMapper).mapEntityToList(latestBundleDocument);
+        verify(caseworkerCICDocumentMapper).map(contactPartyDocuments.getFirst());
+        verify(caseworkerCICDocumentMapper).map(orderAndDecisionDocuments.getFirst());
+        verify(caseworkerCICDocumentMapper).map(latestBundleDocument);
     }
 
 
@@ -167,6 +167,9 @@ class DocumentControllerTest {
                 "test-document.pdf",
                 "application/pdf"
             );
+
+        when(cicaCaseService.verifyUserAccessAndGetParty(TEST_CASE_ID_STRING, TEST_AUTHORIZATION, TEST_POSTCODE))
+            .thenReturn(Party.SUBJECT);
 
         when(documentDownloadService.downloadDocument(
             TEST_AUTHORIZATION,
@@ -199,9 +202,8 @@ class DocumentControllerTest {
             documentId
         );
         verify(documentDownloadStatusService).recordDocumentDownload(
-            TEST_AUTHORIZATION,
             TEST_CASE_ID_STRING,
-            TEST_POSTCODE,
+            Party.SUBJECT,
             documentId
         );
     }
@@ -219,6 +221,9 @@ class DocumentControllerTest {
                 "application/pdf"
             );
 
+        when(cicaCaseService.verifyUserAccessAndGetParty(TEST_CASE_ID_STRING, TEST_AUTHORIZATION, TEST_POSTCODE))
+            .thenReturn(Party.SUBJECT);
+
         when(documentDownloadService.downloadDocument(
             TEST_AUTHORIZATION,
             documentId
@@ -226,9 +231,8 @@ class DocumentControllerTest {
 
         org.mockito.Mockito.doThrow(new RuntimeException("DB error"))
             .when(documentDownloadStatusService).recordDocumentDownload(
-                TEST_AUTHORIZATION,
                 TEST_CASE_ID_STRING,
-                TEST_POSTCODE,
+                Party.SUBJECT,
                 documentId
             );
 
@@ -244,9 +248,8 @@ class DocumentControllerTest {
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody()).isEqualTo(resource);
         verify(documentDownloadStatusService).recordDocumentDownload(
-            TEST_AUTHORIZATION,
             TEST_CASE_ID_STRING,
-            TEST_POSTCODE,
+            Party.SUBJECT,
             documentId
         );
     }
@@ -297,8 +300,8 @@ class DocumentControllerTest {
         when(documentsService.getDocumentsOnCase(Long.valueOf(TEST_CASE_ID_STRING)))
             .thenReturn(dashboardModel);
 
-        when(caseworkerCICDocumentMapper.map(List.of(contactDocument)))
-            .thenReturn(List.of(mappedDoc));
+        when(caseworkerCICDocumentMapper.map(contactDocument))
+            .thenReturn(mappedDoc);
 
         // When
         ResponseEntity<DocumentResponse> response = documentController.getDocumentsByCCDReference(
@@ -314,6 +317,6 @@ class DocumentControllerTest {
         assertThat(response.getBody().getContactPartiesDocuments().getFirst().isDownloaded()).isTrue();
 
         verify(documentDownloadStatusService).getDownloadedDocumentIds(TEST_CASE_ID_STRING, Party.SUBJECT);
-        verify(caseworkerCICDocumentMapper).map(List.of(contactDocument));
+        verify(caseworkerCICDocumentMapper).map(contactDocument);
     }
 }

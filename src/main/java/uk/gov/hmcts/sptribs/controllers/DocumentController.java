@@ -25,7 +25,6 @@ import uk.gov.hmcts.sptribs.controllers.mapper.CaseworkerCICDocumentMapper;
 import uk.gov.hmcts.sptribs.controllers.model.DashboardDocument;
 import uk.gov.hmcts.sptribs.controllers.model.DocumentResponse;
 import uk.gov.hmcts.sptribs.document.DocumentDownloadService;
-import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.document.model.DocumentDashboardModel;
 import uk.gov.hmcts.sptribs.document.model.DocumentEntity;
 import uk.gov.hmcts.sptribs.document.model.DownloadedDocumentResponse;
@@ -34,7 +33,6 @@ import uk.gov.hmcts.sptribs.document.service.DocumentsService;
 import uk.gov.hmcts.sptribs.notification.model.Party;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 
 @Tag(name = "Document Controller")
@@ -87,15 +85,12 @@ public class DocumentController {
 
         DocumentResponse documentResponse = DocumentResponse.builder()
             .contactPartiesDocuments(wrapWithDownloadStatus(
-                caseworkerCICDocumentMapper.map(documentDashboardModel.getContactPartiesDocuments()),
                 documentDashboardModel.getContactPartiesDocuments(),
                 downloadedDocIds))
             .orderAndDecisionDocuments(wrapWithDownloadStatus(
-                caseworkerCICDocumentMapper.map(documentDashboardModel.getOrderAndDecisionDocuments()),
                 documentDashboardModel.getOrderAndDecisionDocuments(),
                 downloadedDocIds))
             .latestCaseBundleDocuments(wrapWithDownloadStatus(
-                caseworkerCICDocumentMapper.mapEntityToList(documentDashboardModel.getLatestCaseBundleDocument()),
                 documentDashboardModel.getLatestCaseBundleDocument() != null
                     ? List.of(documentDashboardModel.getLatestCaseBundleDocument()) : List.of(),
                 downloadedDocIds))
@@ -137,7 +132,7 @@ public class DocumentController {
 
         log.info("Received request to download document with id: {} for CCD reference: {}", documentId, ccdReference);
 
-        cicaCaseService.verifyUserAccessAndGetParty(ccdReference, authorisation, postcode);
+        Party party =  cicaCaseService.verifyUserAccessAndGetParty(ccdReference, authorisation, postcode);
 
         DownloadedDocumentResponse documentResponse = documentDownloadService.downloadDocument(
             authorisation,
@@ -145,7 +140,7 @@ public class DocumentController {
         );
 
         try {
-            documentDownloadStatusService.recordDocumentDownload(authorisation, ccdReference, postcode, documentId);
+            documentDownloadStatusService.recordDocumentDownload(ccdReference, party, documentId);
         } catch (Exception e) {
             log.error("Failed to record document download status for doc: {}, case: {}", documentId, ccdReference, e);
         }
@@ -161,31 +156,18 @@ public class DocumentController {
     }
 
     private List<DashboardDocument> wrapWithDownloadStatus(
-        List<CaseworkerCICDocument> mappedDocs,
         List<DocumentEntity> entities,
         Set<Long> downloadedDocIds) {
 
-        if (mappedDocs == null) {
+        if (entities == null) {
             return List.of();
         }
 
-        return mappedDocs.stream()
-            .map(doc -> {
-                boolean downloaded = false;
-                if (doc.getDocumentLink() != null && doc.getDocumentLink().getUrl() != null) {
-                    String docUrl = doc.getDocumentLink().getUrl();
-                    Optional<DocumentEntity> matchingEntity = entities.stream()
-                        .filter(e -> docUrl.equals(e.getDocumentUrl()))
-                        .findFirst();
-                    if (matchingEntity.isPresent() && downloadedDocIds.contains(matchingEntity.get().getId())) {
-                        downloaded = true;
-                    }
-                }
-                return DashboardDocument.builder()
-                    .document(doc)
-                    .downloaded(downloaded)
-                    .build();
-            })
+        return entities.stream()
+            .map(entity -> DashboardDocument.builder()
+                .document(caseworkerCICDocumentMapper.map(entity))
+                .downloaded(downloadedDocIds != null && downloadedDocIds.contains(entity.getId()))
+                .build())
             .toList();
     }
 }

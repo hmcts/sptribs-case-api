@@ -1,19 +1,12 @@
 package uk.gov.hmcts.sptribs.document.service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.reform.idam.client.models.User;
-import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
-import uk.gov.hmcts.sptribs.ciccase.util.CasePartyUtil;
-import uk.gov.hmcts.sptribs.common.repositories.CaseDataRepository;
 import uk.gov.hmcts.sptribs.common.repositories.DocumentDownloadStatusesRepository;
 import uk.gov.hmcts.sptribs.common.repositories.DocumentsRepository;
-import uk.gov.hmcts.sptribs.common.repositories.model.CicaCaseEntity;
 import uk.gov.hmcts.sptribs.document.model.DocumentDownloadStatusEntity;
 import uk.gov.hmcts.sptribs.document.model.DocumentEntity;
-import uk.gov.hmcts.sptribs.idam.IdamService;
 import uk.gov.hmcts.sptribs.notification.model.Party;
 
 import java.time.OffsetDateTime;
@@ -27,29 +20,13 @@ import java.util.stream.Collectors;
 @Slf4j
 public class DocumentDownloadStatusService {
 
-    private final IdamService idamService;
-    private final CaseDataRepository caseDataRepository;
-    private final ObjectMapper objectMapper;
     private final DocumentsRepository documentsRepository;
     private final DocumentDownloadStatusesRepository documentDownloadStatusesRepository;
 
-    public void recordDocumentDownload(String authorisation, String ccdReference, String postcode, String documentId) {
+    public void recordDocumentDownload(String ccdReference, Party party, String documentId) {
         try {
-            User user = idamService.retrieveUser(authorisation);
-            String userEmail = user.getUserDetails().getEmail();
-
-            Optional<CicaCaseEntity> cicaCaseOpt = caseDataRepository.findCase(ccdReference, userEmail, postcode);
-            if (cicaCaseOpt.isEmpty()) {
-                log.warn("Could not find authorized case to record download: case = {}, email = {}", ccdReference, userEmail);
-                return;
-            }
-
-            CicaCaseEntity cicaCase = cicaCaseOpt.get();
-            CaseData caseData = objectMapper.convertValue(cicaCase.getData(), CaseData.class);
-            Party party = CasePartyUtil.determineParty(caseData, userEmail);
-
             if (party == null) {
-                log.warn("User email {} does not match any registered party on case {}", userEmail, ccdReference);
+                log.warn("Party is null, cannot record download: case = {}, document = {}", ccdReference, documentId);
                 return;
             }
 
