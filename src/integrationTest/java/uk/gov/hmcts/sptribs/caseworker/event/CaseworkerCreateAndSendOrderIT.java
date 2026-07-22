@@ -47,8 +47,10 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
+import uk.gov.hmcts.sptribs.notification.exception.NotificationException;
+import uk.gov.service.notify.NotificationClientException;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -323,14 +325,28 @@ public class CaseworkerCreateAndSendOrderIT {
     @Test
     void shouldReturnErrorMessageIfNotificationsFailOnSubmitted() throws Exception {
         final CaseData caseData = CaseData.builder()
+            .hyphenatedCaseRef(TEST_CASE_ID_HYPHENATED)
             .cicCase(CicCase.builder()
                 .notifyPartySubject(Set.of(SUBJECT))
                 .notifyPartyRespondent(Set.of(RESPONDENT))
                 .notifyPartyRepresentative(Set.of(REPRESENTATIVE))
                 .notifyPartyApplicant(Set.of(APPLICANT_CIC))
-                .build()
-            )
+                .contactPreferenceType(EMAIL)
+                .representativeContactDetailsPreference(EMAIL)
+                .applicantContactDetailsPreference(EMAIL)
+                .fullName("Test Name")
+                .email("test@test.com")
+                .representativeFullName("Rep Name")
+                .representativeEmailAddress("representative@test.com")
+                .respondentName("Respondent Name")
+                .respondentEmail("respondent@test.com")
+                .applicantFullName("Applicant Name")
+                .applicantEmailAddress("applicant@test.com")
+                .build())
             .build();
+
+        when(notificationServiceCIC.sendEmail(any(), eq(TEST_CASE_ID_HYPHENATED)))
+            .thenThrow(new NotificationException(new NotificationClientException("")));
 
         String response = mockMvc.perform(post(SUBMITTED_URL)
             .contentType(APPLICATION_JSON)
@@ -351,7 +367,7 @@ public class CaseworkerCreateAndSendOrderIT {
                 .isString()
                 .contains("# Send order notification failed \n## Please resend the order");
 
-        verifyNoInteractions(notificationServiceCIC);
+        verify(notificationServiceCIC, times(1)).sendEmail(any(), eq(TEST_CASE_ID_HYPHENATED));
     }
 
     @Test

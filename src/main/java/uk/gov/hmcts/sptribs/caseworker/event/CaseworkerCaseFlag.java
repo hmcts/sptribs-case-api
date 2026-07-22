@@ -14,7 +14,9 @@ import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.common.service.AnonymisationService;
 import uk.gov.hmcts.sptribs.common.service.CcdSupplementaryDataService;
+import org.springframework.web.client.RestClientException;
 import uk.gov.hmcts.sptribs.notification.dispatcher.AnonymityAppliedNotification;
+import uk.gov.hmcts.sptribs.notification.exception.NotificationException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -100,7 +102,7 @@ public class CaseworkerCaseFlag implements CCDConfig<CaseData, State, UserRole> 
                 details.getData(),
                 beforeDetails == null ? null : beforeDetails.getData()
             );
-        } catch (RuntimeException notificationException) {
+        } catch (NotificationException | RestClientException notificationException) {
             log.warn("Failed to send anonymity notifications for case {}", details.getId(), notificationException);
             return SubmittedCallbackResponse.builder()
                 .confirmationHeader(format("# Create flag notification failed %n## Please try again"))
