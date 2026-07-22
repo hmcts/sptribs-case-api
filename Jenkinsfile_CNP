@@ -218,13 +218,6 @@ withPipeline(type, product, component) {
   }
 
   before('highleveldatasetup') {
-    onMaster {
-      if (env.CCD_DEF_NAME != "prod") {
-        env.CASE_API_URL="https://sptribs-case-api-staging.aat.platform.hmcts.net"
-        echo "env.CASE_API_URL is staging URL"
-        env.CCD_DEF_NAME="aat"
-      }
-    }
     builder.gradle('generateCCDConfig')
     generateDefinitions()
     echo "High level data set-up definition file generated"
@@ -264,6 +257,8 @@ withPipeline(type, product, component) {
 
   onMaster {
     env.ENVIRONMENT="aat"
+    env.CASE_API_URL="https://sptribs-case-api-staging.aat.platform.hmcts.net"
+    env.CCD_DEF_NAME="aat"
     env.ELASTIC_SEARCH_ENABLED=true
     env.SERVICE_AUTH_MICROSERVICE = "sptribs_case_api"
     env.SERVICE_AUTH_PROVIDER_URL = "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
