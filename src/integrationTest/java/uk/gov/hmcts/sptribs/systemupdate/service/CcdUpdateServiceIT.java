@@ -13,11 +13,11 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDataContent;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.client.model.Event;
 import uk.gov.hmcts.reform.ccd.client.model.StartEventResponse;
-import uk.gov.hmcts.reform.idam.client.models.User;
-import uk.gov.hmcts.reform.idam.client.models.UserDetails;
+import uk.gov.hmcts.reform.idam.client.models.UserInfo;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.task.CaseTask;
+import uk.gov.hmcts.sptribs.idam.CICUser;
 
 import java.time.LocalDate;
 import java.util.HashMap;
@@ -48,7 +48,7 @@ public class CcdUpdateServiceIT {
 
     @Test
     void shouldSubmitEvent() {
-        final User user = new User(SYSTEM_UPDATE_AUTH_TOKEN, UserDetails.builder().id("1").build());
+        final CICUser user = new CICUser(SYSTEM_UPDATE_AUTH_TOKEN, UserInfo.builder().uid("1").build());
         final String eventId = "system-remove-failed-cases";
 
         final StartEventResponse startEventResponse = StartEventResponse.builder()
@@ -119,7 +119,7 @@ public class CcdUpdateServiceIT {
 
     @Test
     void shouldSubmitEventWithRetry() {
-        final User user = new User(SYSTEM_UPDATE_AUTH_TOKEN, UserDetails.builder().id("1").build());
+        final CICUser user = new CICUser(SYSTEM_UPDATE_AUTH_TOKEN, UserInfo.builder().uid("1").build());
         final String eventId = "system-remove-failed-cases";
 
         final StartEventResponse startEventResponse = StartEventResponse.builder()
