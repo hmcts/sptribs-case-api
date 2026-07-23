@@ -5,6 +5,7 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -30,7 +31,10 @@ import uk.gov.hmcts.sptribs.common.config.WebMvcConfig;
 import uk.gov.hmcts.sptribs.document.DocAssemblyService;
 import uk.gov.hmcts.sptribs.idam.IdamService;
 import uk.gov.hmcts.sptribs.notification.NotificationServiceCIC;
+import uk.gov.hmcts.sptribs.notification.exception.NotificationException;
+import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
 import uk.gov.hmcts.sptribs.testutil.IdamWireMock;
+import uk.gov.service.notify.NotificationClientException;
 
 import java.time.Clock;
 import java.time.LocalDate;
@@ -45,8 +49,8 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -59,6 +63,7 @@ import static uk.gov.hmcts.sptribs.ciccase.model.RepresentativeCIC.REPRESENTATIV
 import static uk.gov.hmcts.sptribs.ciccase.model.RespondentCIC.RESPONDENT;
 import static uk.gov.hmcts.sptribs.ciccase.model.SchemeCic.Year2012;
 import static uk.gov.hmcts.sptribs.ciccase.model.SubjectCIC.SUBJECT;
+import static uk.gov.hmcts.sptribs.notification.TemplateName.ANONYMITY_APPLIED_EMAIL;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.ABOUT_TO_START_URL;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.ABOUT_TO_SUBMIT_URL;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.AUTHORIZATION;
@@ -319,16 +324,30 @@ public class CaseworkerCreateAndSendOrderIT {
     }
 
     @Test
-    void shouldReturnErrorMessageIfNotificationsFailOnSubmitted() throws Exception {
+    void shouldReturnErrorMessageWhenGovNotifyFailsOnSubmitted() throws Exception {
         final CaseData caseData = CaseData.builder()
+            .hyphenatedCaseRef(TEST_CASE_ID_HYPHENATED)
             .cicCase(CicCase.builder()
                 .notifyPartySubject(Set.of(SUBJECT))
                 .notifyPartyRespondent(Set.of(RESPONDENT))
                 .notifyPartyRepresentative(Set.of(REPRESENTATIVE))
                 .notifyPartyApplicant(Set.of(APPLICANT_CIC))
-                .build()
-            )
+                .contactPreferenceType(EMAIL)
+                .representativeContactDetailsPreference(EMAIL)
+                .applicantContactDetailsPreference(EMAIL)
+                .fullName("Test Name")
+                .email("test@test.com")
+                .representativeFullName("Rep Name")
+                .representativeEmailAddress("representative@test.com")
+                .respondentName("Respondent Name")
+                .respondentEmail("respondent@test.com")
+                .applicantFullName("Applicant Name")
+                .applicantEmailAddress("applicant@test.com")
+                .build())
             .build();
+
+        when(notificationServiceCIC.sendEmail(any(), eq(TEST_CASE_ID_HYPHENATED), eq(null)))
+            .thenThrow(new NotificationException(new NotificationClientException("GovNotify API Failure")));
 
         String response = mockMvc.perform(post(SUBMITTED_URL)
             .contentType(APPLICATION_JSON)
@@ -349,6 +368,140 @@ public class CaseworkerCreateAndSendOrderIT {
                 .isString()
                 .contains("# Send order notification failed \n## Please resend the order");
 
-        verifyNoInteractions(notificationServiceCIC);
+        verify(notificationServiceCIC, times(1)).sendEmail(any(), eq(TEST_CASE_ID_HYPHENATED),
+            eq(null));
+    }
+
+    @Test
+    void shouldDispatchAnonymityEmailWhenAnonymityNewlyAppliedOnSubmitted() throws Exception {
+        final CaseData caseData = CaseData.builder()
+            .hyphenatedCaseRef(TEST_CASE_ID_HYPHENATED)
+            .cicCase(CicCase.builder()
+                .anonymiseYesOrNo(YesOrNo.YES)
+                .anonymisedAppellantName("AAC")
+                .notifyPartySubject(Set.of(SUBJECT))
+                .notifyPartyRespondent(Set.of(RESPONDENT))
+                .notifyPartyRepresentative(Set.of(REPRESENTATIVE))
+                .notifyPartyApplicant(Set.of(APPLICANT_CIC))
+                .contactPreferenceType(EMAIL)
+                .representativeContactDetailsPreference(EMAIL)
+                .applicantContactDetailsPreference(EMAIL)
+                .fullName("Test Name")
+                .email("test@test.com")
+                .representativeFullName("Rep Name")
+                .representativeEmailAddress("representative@test.com")
+                .respondentName("Respondent Name")
+                .respondentEmail("respondent@test.com")
+                .applicantFullName("Applicant Name")
+                .applicantEmailAddress("applicant@test.com")
+                .build())
+            .build();
+
+        final CaseData caseDataBefore = CaseData.builder()
+            .hyphenatedCaseRef(TEST_CASE_ID_HYPHENATED)
+            .cicCase(CicCase.builder()
+                .anonymiseYesOrNo(YesOrNo.NO)
+                .fullName("Test Name")
+                .build())
+            .build();
+
+        String response = mockMvc.perform(post(SUBMITTED_URL)
+            .contentType(APPLICATION_JSON)
+            .header(SERVICE_AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
+            .header(AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
+            .content(objectMapper.writeValueAsString(
+                callbackRequest(
+                    caseData,
+                    caseDataBefore,
+                    CASEWORKER_CREATE_AND_SEND_ORDER)))
+            .accept(APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andReturn()
+            .getResponse()
+            .getContentAsString();
+
+        assertThatJson(response)
+            .inPath(CONFIRMATION_HEADER)
+            .isString()
+            .contains("# Order sent \n## A notification has been sent to: Subject, Respondent, Representative, Applicant");
+
+        ArgumentCaptor<NotificationRequest> captor =
+            ArgumentCaptor.forClass(NotificationRequest.class);
+        verify(notificationServiceCIC, times(5)).sendEmail(captor.capture(), eq(TEST_CASE_ID_HYPHENATED),
+            eq(null));
+        verifyNoMoreInteractions(notificationServiceCIC);
+
+        long anonymityTemplateCalls = captor.getAllValues().stream()
+            .filter(request -> ANONYMITY_APPLIED_EMAIL.equals(request.getTemplate()))
+            .count();
+        org.assertj.core.api.Assertions.assertThat(anonymityTemplateCalls).isEqualTo(1);
+    }
+
+    @Test
+    void shouldNotDispatchAnonymityEmailWhenAnonymityAlreadyAppliedOnSubmitted() throws Exception {
+        final CaseData caseData = CaseData.builder()
+            .hyphenatedCaseRef(TEST_CASE_ID_HYPHENATED)
+            .cicCase(CicCase.builder()
+                .anonymiseYesOrNo(YesOrNo.YES)
+                .anonymisedAppellantName("AAC")
+                .anonymityAlreadyApplied(YesOrNo.YES)
+                .notifyPartySubject(Set.of(SUBJECT))
+                .notifyPartyRespondent(Set.of(RESPONDENT))
+                .notifyPartyRepresentative(Set.of(REPRESENTATIVE))
+                .notifyPartyApplicant(Set.of(APPLICANT_CIC))
+                .contactPreferenceType(EMAIL)
+                .representativeContactDetailsPreference(EMAIL)
+                .applicantContactDetailsPreference(EMAIL)
+                .fullName("Test Name")
+                .email("test@test.com")
+                .representativeFullName("Rep Name")
+                .representativeEmailAddress("representative@test.com")
+                .respondentName("Respondent Name")
+                .respondentEmail("respondent@test.com")
+                .applicantFullName("Applicant Name")
+                .applicantEmailAddress("applicant@test.com")
+                .build())
+            .build();
+
+        final CaseData caseDataBefore = CaseData.builder()
+            .hyphenatedCaseRef(TEST_CASE_ID_HYPHENATED)
+            .cicCase(CicCase.builder()
+                .anonymiseYesOrNo(YesOrNo.YES)
+                .anonymityAlreadyApplied(YesOrNo.YES)
+                .anonymisedAppellantName("AAC")
+                .fullName("Test Name")
+                .build())
+            .build();
+
+        String response = mockMvc.perform(post(SUBMITTED_URL)
+            .contentType(APPLICATION_JSON)
+            .header(SERVICE_AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
+            .header(AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
+            .content(objectMapper.writeValueAsString(
+                callbackRequest(
+                    caseData,
+                    caseDataBefore,
+                    CASEWORKER_CREATE_AND_SEND_ORDER)))
+            .accept(APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andReturn()
+            .getResponse()
+            .getContentAsString();
+
+        assertThatJson(response)
+            .inPath(CONFIRMATION_HEADER)
+            .isString()
+            .contains("# Order sent \n## A notification has been sent to: Subject, Respondent, Representative, Applicant");
+
+        ArgumentCaptor<NotificationRequest> captor =
+            ArgumentCaptor.forClass(NotificationRequest.class);
+        verify(notificationServiceCIC, times(4)).sendEmail(captor.capture(), eq(TEST_CASE_ID_HYPHENATED),
+            eq(null));
+        verifyNoMoreInteractions(notificationServiceCIC);
+
+        long anonymityTemplateCalls = captor.getAllValues().stream()
+            .filter(request -> ANONYMITY_APPLIED_EMAIL.equals(request.getTemplate()))
+            .count();
+        org.assertj.core.api.Assertions.assertThat(anonymityTemplateCalls).isZero();
     }
 }

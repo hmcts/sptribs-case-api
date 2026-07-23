@@ -87,6 +87,7 @@ uk:
           tribunalOrganisation: 'CICA'
           tribunalEmail: CIC.enquiries@justice.gov.uk
         templatesCIC:
+          ANONYMITY_APPLIED_EMAIL: 'c1f6dda2-fdfe-4a42-9174-a53857d56823'
           APPLICATION_RECEIVED: '9b331dd4-9ec6-4aba-9f48-9a0ef760f80f'
           APPLICATION_RECEIVED_CY: '86e6988c-dfc8-43de-8890-e38269ee40d1'
           BUNDLE_CREATED_EMAIL: 'a40e221e-56c8-470c-99c1-b7998d806e56'

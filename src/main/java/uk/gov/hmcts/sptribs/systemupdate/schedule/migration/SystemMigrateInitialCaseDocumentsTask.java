@@ -5,8 +5,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
-import uk.gov.hmcts.reform.idam.client.models.User;
 import uk.gov.hmcts.sptribs.common.repositories.CaseEventRepository;
+import uk.gov.hmcts.sptribs.idam.CICUser;
 import uk.gov.hmcts.sptribs.idam.IdamService;
 import uk.gov.hmcts.sptribs.systemupdate.service.CcdManagementException;
 import uk.gov.hmcts.sptribs.systemupdate.service.CcdUpdateService;
@@ -46,11 +46,11 @@ public class SystemMigrateInitialCaseDocumentsTask implements Runnable {
     @Override
     public void run() {
         if (migrateInitialDocsEnabled) {
-            final User user = idamService.retrieveSystemUpdateUserDetails();
+            final CICUser user = idamService.retrieveSystemUpdateUserDetails();
             final String serviceAuth = authTokenGenerator.generate();
 
-            log.info("User name: {}", user.getUserDetails().getEmail());
-            log.info("User roles: {}", String.join(",", user.getUserDetails().getRoles()));
+            log.info("User name: {}", user.getUserInfo().getSub());
+            log.info("User roles: {}", String.join(",", user.getUserInfo().getRoles()));
 
             final List<Long> caseIdsToUpdate = new ArrayList<>();
             try {
@@ -86,7 +86,7 @@ public class SystemMigrateInitialCaseDocumentsTask implements Runnable {
         }
     }
 
-    private void triggerSystemMigrateInitialCaseDocuments(User user, String serviceAuth, Long caseId) {
+    private void triggerSystemMigrateInitialCaseDocuments(CICUser user, String serviceAuth, Long caseId) {
         try {
             log.info("Running {} event for Case {}", SYSTEM_MIGRATE_INITIAL_CASE_DOCUMENTS, caseId);
 
@@ -99,7 +99,7 @@ public class SystemMigrateInitialCaseDocumentsTask implements Runnable {
         }
     }
 
-    private void processBatches(List<Long> caseIds, User user, String serviceAuth) {
+    private void processBatches(List<Long> caseIds, CICUser user, String serviceAuth) {
         int total = caseIds.size();
         int success = 0;
         int failed = 0;

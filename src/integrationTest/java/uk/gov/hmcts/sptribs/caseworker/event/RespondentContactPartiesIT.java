@@ -16,7 +16,7 @@ import uk.gov.hmcts.ccd.sdk.type.DynamicListElement;
 import uk.gov.hmcts.ccd.sdk.type.DynamicMultiSelectList;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.idam.client.models.User;
-import uk.gov.hmcts.reform.idam.client.models.UserDetails;
+import uk.gov.hmcts.reform.idam.client.models.UserInfo;
 import uk.gov.hmcts.sptribs.IntegrationTestBase;
 import uk.gov.hmcts.sptribs.caseworker.model.ContactParties;
 import uk.gov.hmcts.sptribs.caseworker.model.ContactPartiesDocuments;
@@ -27,6 +27,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.NotificationResponse;
 import uk.gov.hmcts.sptribs.common.config.WebMvcConfig;
 import uk.gov.hmcts.sptribs.common.repositories.DocumentsRepository;
 import uk.gov.hmcts.sptribs.common.service.ContactPartiesService;
+import uk.gov.hmcts.sptribs.idam.CICUser;
 import uk.gov.hmcts.sptribs.idam.IdamService;
 import uk.gov.hmcts.sptribs.notification.NotificationServiceCIC;
 import uk.gov.hmcts.sptribs.notification.model.Party;
@@ -130,16 +131,15 @@ public class RespondentContactPartiesIT extends IntegrationTestBase {
 
     @BeforeEach
     void configureMocks() {
-        final User user = new User(
-            TEST_AUTHORIZATION_TOKEN,
-            UserDetails.builder()
+        final CICUser cicUser = new CICUser(TEST_AUTHORIZATION_TOKEN,
+            UserInfo.builder()
                 .roles(List.of("caseworker-st_cic", "caseworker-sptribs-systemupdate"))
                 .build()
         );
 
         stubForIdamDetails(TEST_AUTHORIZATION_TOKEN, CASEWORKER_USER_ID, ST_CIC_CASEWORKER);
         when(authTokenGenerator.generate()).thenReturn(TEST_SERVICE_AUTH_TOKEN);
-        when(idamService.retrieveSystemUpdateUserDetails()).thenReturn(user);
+        when(idamService.retrieveSystemUpdateUserDetails()).thenReturn(cicUser);
 
         Document.DocumentLink testDocumentBinaryUrl = new Document.DocumentLink();
         testDocumentBinaryUrl.href = "testDoc.pdf/binary";
