@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface DocumentsRepository extends JpaRepository<DocumentEntity, Integer> {
+public interface DocumentsRepository extends JpaRepository<DocumentEntity, Long> {
 
     @Query("""
         select d.id
@@ -86,7 +86,7 @@ public interface DocumentsRepository extends JpaRepository<DocumentEntity, Integ
             and d.caseDocumentTypeId in :caseDocumentIds
         order by d.savedAt desc
         """)
-    List<DocumentEntity> findOrderAndDecisionDocuments(
+    List<DocumentEntity> findDocumentsByReferenceAndCaseDocumentTypeIds(
         @Param("caseReference") Long caseReference,
         @Param("caseDocumentIds") List<Long> caseDocumentIds
     );

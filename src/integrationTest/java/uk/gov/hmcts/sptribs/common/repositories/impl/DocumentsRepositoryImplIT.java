@@ -6,13 +6,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.sptribs.IntegrationTestBase;
 import uk.gov.hmcts.sptribs.common.repositories.DocumentsRepository;
-//import uk.gov.hmcts.sptribs.document.model.ContactPartyDocumentDetails;
+import uk.gov.hmcts.sptribs.document.model.ContactPartyDocumentDetails;
 import uk.gov.hmcts.sptribs.document.model.DocumentEntity;
-import uk.gov.hmcts.sptribs.manager.CaseCorrespondenceManager;
-import uk.gov.hmcts.sptribs.manager.CaseDataManager;
-import uk.gov.hmcts.sptribs.manager.CaseDocumentManager;
-import uk.gov.hmcts.sptribs.manager.CorrespondenceDocumentManager;
-//import uk.gov.hmcts.sptribs.notification.model.Party;
+import uk.gov.hmcts.sptribs.manager.CaseCorrespondenceITManager;
+import uk.gov.hmcts.sptribs.manager.CaseDataITManager;
+import uk.gov.hmcts.sptribs.manager.CaseDocumentITManager;
+import uk.gov.hmcts.sptribs.manager.CorrespondenceDocumentITManager;
+import uk.gov.hmcts.sptribs.notification.model.Party;
 
 import java.time.OffsetDateTime;
 import java.util.List;
@@ -28,16 +28,16 @@ class DocumentsRepositoryImplIT extends IntegrationTestBase {
     private DocumentsRepository repository;
 
     @Autowired
-    private CaseDataManager caseDataManager;
+    private CaseDataITManager caseDataITManager;
 
     @Autowired
-    private CaseDocumentManager caseDocumentManager;
+    private CaseDocumentITManager caseDocumentITManager;
 
     @Autowired
-    private CaseCorrespondenceManager caseCorrespondenceManager;
+    private CaseCorrespondenceITManager caseCorrespondenceITManager;
 
     @Autowired
-    private CorrespondenceDocumentManager correspondenceDocumentManager;
+    private CorrespondenceDocumentITManager correspondenceDocumentITManager;
 
     private static final long APPLICATION_TYPE_ID = 1L;
     private static final long DOCUMENT_MANAGEMENT_TYPE_ID = 2L;
@@ -49,7 +49,7 @@ class DocumentsRepositoryImplIT extends IntegrationTestBase {
 
     @BeforeEach
     void setUp() {
-        caseDataManager.addCaseData(123L, "test", "{}");
+        caseDataITManager.addCaseData(123L, "test", "{}");
     }
 
     @Test
@@ -57,13 +57,13 @@ class DocumentsRepositoryImplIT extends IntegrationTestBase {
 
         String binaryUrl = UUID.randomUUID().toString();
 
-        caseDocumentManager.addCaseDocument(123L, binaryUrl, DOCUMENT_MANAGEMENT_TYPE_ID, OffsetDateTime.now());
+        caseDocumentITManager.addCaseDocument(123L, binaryUrl, DOCUMENT_MANAGEMENT_TYPE_ID, OffsetDateTime.now());
 
-        assertThat(caseDocumentManager.getCount(binaryUrl)).isEqualTo(1);
+        assertThat(caseDocumentITManager.getCount(binaryUrl)).isEqualTo(1);
 
         repository.deleteEntryByBinaryURL(binaryUrl);
 
-        assertThat(caseDocumentManager.getCount(binaryUrl)).isZero();
+        assertThat(caseDocumentITManager.getCount(binaryUrl)).isZero();
     }
 
     @Test
@@ -72,9 +72,9 @@ class DocumentsRepositoryImplIT extends IntegrationTestBase {
         String binaryUrl1 = UUID.randomUUID().toString();
         String binaryUrl2 = UUID.randomUUID().toString();
 
-        Long documentId1 = caseDocumentManager.addCaseDocument(123L, binaryUrl1, DOCUMENT_MANAGEMENT_TYPE_ID,
+        Long documentId1 = caseDocumentITManager.addCaseDocument(123L, binaryUrl1, DOCUMENT_MANAGEMENT_TYPE_ID,
             OffsetDateTime.now());
-        Long documentId2 = caseDocumentManager.addCaseDocument(123L, binaryUrl2, DOCUMENT_MANAGEMENT_TYPE_ID,
+        Long documentId2 = caseDocumentITManager.addCaseDocument(123L, binaryUrl2, DOCUMENT_MANAGEMENT_TYPE_ID,
             OffsetDateTime.now());
 
         //when
@@ -93,7 +93,7 @@ class DocumentsRepositoryImplIT extends IntegrationTestBase {
         //given
         String binaryUrl = UUID.randomUUID().toString();
 
-        caseDocumentManager.addCaseDocument(123L, binaryUrl, DOCUMENT_MANAGEMENT_TYPE_ID, OffsetDateTime.now());
+        caseDocumentITManager.addCaseDocument(123L, binaryUrl, DOCUMENT_MANAGEMENT_TYPE_ID, OffsetDateTime.now());
 
         //when
         repository.setDocumentTypeNameByDocumentBinaryUrl(
@@ -103,7 +103,7 @@ class DocumentsRepositoryImplIT extends IntegrationTestBase {
 
         //then
         DocumentEntity entity =
-            caseDocumentManager.findByBinaryUrl(binaryUrl);
+            caseDocumentITManager.findByBinaryUrl(binaryUrl);
 
         assertThat(entity.getDocumentTypeName())
             .isEqualTo("ORDER");
@@ -117,7 +117,7 @@ class DocumentsRepositoryImplIT extends IntegrationTestBase {
         //given
         String binaryUrl = UUID.randomUUID().toString();
 
-        caseDocumentManager.addCaseDocument(123L, binaryUrl, DRAFT_ORDER_ID, OffsetDateTime.now());
+        caseDocumentITManager.addCaseDocument(123L, binaryUrl, DRAFT_ORDER_ID, OffsetDateTime.now());
 
         //when
         repository.updateCaseDocumentTypeIdByDocumentBinaryUrl(
@@ -127,7 +127,7 @@ class DocumentsRepositoryImplIT extends IntegrationTestBase {
 
         //then
         DocumentEntity entity =
-            caseDocumentManager.findByBinaryUrl(binaryUrl);
+            caseDocumentITManager.findByBinaryUrl(binaryUrl);
 
         assertThat(entity.getCaseDocumentTypeId())
             .isEqualTo(ORDER_TYPE_ID);
@@ -138,7 +138,7 @@ class DocumentsRepositoryImplIT extends IntegrationTestBase {
     }
 
     @Test
-    void shouldFindOrderAndDecisionDocuments() {
+    void shouldFindDocumentsByReferenceAndCaseDocumentTypeIds() {
 
         //given
         String binaryUrl1 = UUID.randomUUID().toString();
@@ -146,14 +146,14 @@ class DocumentsRepositoryImplIT extends IntegrationTestBase {
         String binaryUrl3 = UUID.randomUUID().toString();
         String binaryUrl4 = UUID.randomUUID().toString();
 
-        caseDocumentManager.addCaseDocument(123L, binaryUrl1, APPLICATION_TYPE_ID, OffsetDateTime.now());
-        caseDocumentManager.addCaseDocument(123L, binaryUrl2, ORDER_TYPE_ID, OffsetDateTime.now());
-        caseDocumentManager.addCaseDocument(123L, binaryUrl3, DECISION_ID, OffsetDateTime.now().plusHours(1));
-        caseDocumentManager.addCaseDocument(123L, binaryUrl4, FINAL_DECISION_ID, OffsetDateTime.now().plusHours(2));
+        caseDocumentITManager.addCaseDocument(123L, binaryUrl1, APPLICATION_TYPE_ID, OffsetDateTime.now());
+        caseDocumentITManager.addCaseDocument(123L, binaryUrl2, ORDER_TYPE_ID, OffsetDateTime.now());
+        caseDocumentITManager.addCaseDocument(123L, binaryUrl3, DECISION_ID, OffsetDateTime.now().plusHours(1));
+        caseDocumentITManager.addCaseDocument(123L, binaryUrl4, FINAL_DECISION_ID, OffsetDateTime.now().plusHours(2));
 
         //when
         List<DocumentEntity> orderAndDecisionDocs =
-            repository.findOrderAndDecisionDocuments(123L, List.of(3L, 5L, 6L));
+            repository.findDocumentsByReferenceAndCaseDocumentTypeIds(123L, List.of(3L, 5L, 6L));
 
         //then
         assertThat(orderAndDecisionDocs).hasSize(3);
@@ -174,8 +174,8 @@ class DocumentsRepositoryImplIT extends IntegrationTestBase {
         String binaryUrl1 = UUID.randomUUID().toString();
         String binaryUrl2 = UUID.randomUUID().toString();
 
-        caseDocumentManager.addCaseDocument(123L, binaryUrl1, BUNDLE_ID, OffsetDateTime.now());
-        caseDocumentManager.addCaseDocument(123L, binaryUrl2, BUNDLE_ID, OffsetDateTime.now().plusHours(1));
+        caseDocumentITManager.addCaseDocument(123L, binaryUrl1, BUNDLE_ID, OffsetDateTime.now());
+        caseDocumentITManager.addCaseDocument(123L, binaryUrl2, BUNDLE_ID, OffsetDateTime.now().plusHours(1));
 
         //when
         Optional<DocumentEntity> result =
@@ -191,59 +191,59 @@ class DocumentsRepositoryImplIT extends IntegrationTestBase {
 
     }
 
-    //    @Test
-    //    void shouldFindContactPartyDocuments() {
-    //        //given
-    //        OffsetDateTime sentOn = OffsetDateTime.now();
-    //        String binaryUrl = UUID.randomUUID().toString();
-    //        Long documentId = caseDocumentManager.addCaseDocument(
-    //            123L,
-    //            binaryUrl,
-    //            DOCUMENT_MANAGEMENT_TYPE_ID,
-    //            OffsetDateTime.now().minusDays(1L)
-    //        );
-    //
-    //        UUID correspondenceId = UUID.randomUUID();
-    //
-    //        caseCorrespondenceManager.addCorrespondence(
-    //            correspondenceId,
-    //            123L,
-    //            Party.APPLICANT,
-    //            sentOn
-    //        );
-    //
-    //        UUID correspondenceIdTribunal = UUID.randomUUID();
-    //
-    //        caseCorrespondenceManager.addCorrespondence(
-    //            correspondenceIdTribunal,
-    //            123L,
-    //            Party.TRIBUNAL,
-    //            sentOn
-    //        );
-    //
-    //        correspondenceDocumentManager.linkDocument(
-    //            correspondenceId,
-    //            documentId
-    //        );
-    //
-    //        correspondenceDocumentManager.linkDocument(
-    //            correspondenceIdTribunal,
-    //            documentId
-    //        );
-    //
-    //        //when
-    //        List<ContactPartyDocumentDetails> result =
-    //            repository.findContactPartyDocuments(
-    //                123L,
-    //                List.of(Party.APPLICANT, Party.REPRESENTATIVE, Party.SUBJECT),
-    //                List.of(ORDER_TYPE_ID, DECISION_ID, FINAL_DECISION_ID)
-    //            );
-    //
-    //        //then
-    //        assertThat(result).hasSize(1);
-    //        ContactPartyDocumentDetails details = result.getFirst();
-    //
-    //        assertThat(details.document().getDocumentBinaryUrl()).isEqualTo(binaryUrl);
-    //        assertThat(details.sentOn().toLocalDateTime()).isEqualTo(sentOn.toLocalDateTime());
-    //    }
+    @Test
+    void shouldFindContactPartyDocuments() {
+        //given
+        OffsetDateTime sentOn = OffsetDateTime.now();
+        String binaryUrl = UUID.randomUUID().toString();
+        Long documentId = caseDocumentITManager.addCaseDocument(
+            123L,
+            binaryUrl,
+            DOCUMENT_MANAGEMENT_TYPE_ID,
+            OffsetDateTime.now().minusDays(1L)
+        );
+
+        UUID correspondenceId = UUID.randomUUID();
+
+        caseCorrespondenceITManager.addCorrespondence(
+            correspondenceId,
+            123L,
+            Party.APPLICANT,
+            sentOn
+        );
+
+        UUID correspondenceIdTribunal = UUID.randomUUID();
+
+        caseCorrespondenceITManager.addCorrespondence(
+            correspondenceIdTribunal,
+            123L,
+            Party.TRIBUNAL,
+            sentOn
+        );
+
+        correspondenceDocumentITManager.linkDocument(
+            correspondenceId,
+            documentId
+        );
+
+        correspondenceDocumentITManager.linkDocument(
+            correspondenceIdTribunal,
+            documentId
+        );
+
+        //when
+        List<ContactPartyDocumentDetails> result =
+            repository.findContactPartyDocuments(
+                123L,
+                List.of(Party.APPLICANT, Party.REPRESENTATIVE, Party.SUBJECT),
+                List.of(ORDER_TYPE_ID, DECISION_ID, FINAL_DECISION_ID)
+            );
+
+        //then
+        assertThat(result).hasSize(1);
+        ContactPartyDocumentDetails details = result.getFirst();
+
+        assertThat(details.document().getDocumentBinaryUrl()).isEqualTo(binaryUrl);
+        assertThat(details.sentOn().toLocalDateTime()).isEqualTo(sentOn.toLocalDateTime());
+    }
 }

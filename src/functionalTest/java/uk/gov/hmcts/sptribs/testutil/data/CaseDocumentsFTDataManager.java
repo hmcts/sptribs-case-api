@@ -1,4 +1,4 @@
-package uk.gov.hmcts.sptribs.testutil;
+package uk.gov.hmcts.sptribs.testutil.data;
 
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;

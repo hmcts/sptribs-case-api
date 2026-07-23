@@ -8,7 +8,7 @@ import java.util.Map;
 import java.util.UUID;
 
 @TestComponent
-public class CorrespondenceDocumentManager implements IntegrationTestDataManager {
+public class CorrespondenceDocumentITManager implements IntegrationTestDataManager {
 
     @Autowired
     private NamedParameterJdbcTemplate jdbcTemplate;
@@ -20,15 +20,15 @@ public class CorrespondenceDocumentManager implements IntegrationTestDataManager
 
     public void linkDocument(UUID correspondenceId, Long documentId) {
         jdbcTemplate.update("""
-        INSERT INTO correspondence_document (
-            correspondence_id,
-            document_id
-        )
-        VALUES (
-            :correspondenceId,
-            :documentId
-        )
-            """,
+                INSERT INTO correspondence_document (
+                    correspondence_id,
+                    document_id
+                )
+                VALUES (
+                    :correspondenceId,
+                    :documentId
+                )
+                """,
             Map.of(
                 "correspondenceId", correspondenceId,
                 "documentId", documentId

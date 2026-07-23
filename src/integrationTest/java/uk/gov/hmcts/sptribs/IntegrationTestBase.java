@@ -7,29 +7,29 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.context.annotation.Import;
 import org.testcontainers.containers.PostgreSQLContainer;
-import uk.gov.hmcts.sptribs.manager.CaseCorrespondenceManager;
-import uk.gov.hmcts.sptribs.manager.CaseDataManager;
-import uk.gov.hmcts.sptribs.manager.CaseDocumentManager;
-import uk.gov.hmcts.sptribs.manager.CorrespondenceDocumentManager;
+import uk.gov.hmcts.sptribs.manager.CaseCorrespondenceITManager;
+import uk.gov.hmcts.sptribs.manager.CaseDataITManager;
+import uk.gov.hmcts.sptribs.manager.CaseDocumentITManager;
+import uk.gov.hmcts.sptribs.manager.CorrespondenceDocumentITManager;
 import uk.gov.hmcts.sptribs.manager.IntegrationTestDataManager;
 
 import java.util.List;
 
 @SpringBootTest(properties = "spring.flyway.enabled = true")
-@Import({CaseDataManager.class, CaseDocumentManager.class, CorrespondenceDocumentManager.class, CaseCorrespondenceManager.class})
+@Import({CaseDataITManager.class, CaseDocumentITManager.class, CorrespondenceDocumentITManager.class, CaseCorrespondenceITManager.class})
 public abstract class IntegrationTestBase {
 
     @Autowired
-    private CaseDataManager caseDataManager;
+    private CaseDataITManager caseDataITManager;
 
     @Autowired
-    private CaseDocumentManager caseDocumentManager;
+    private CaseDocumentITManager caseDocumentITManager;
 
     @Autowired
-    private CaseCorrespondenceManager caseCorrespondenceManager;
+    private CaseCorrespondenceITManager caseCorrespondenceITManager;
 
     @Autowired
-    private CorrespondenceDocumentManager correspondenceDocumentManager;
+    private CorrespondenceDocumentITManager correspondenceDocumentITManager;
 
     private List<IntegrationTestDataManager> dataManagerList;
 
@@ -43,7 +43,7 @@ public abstract class IntegrationTestBase {
 
     @PostConstruct
     void setup() {
-        dataManagerList = List.of(caseDataManager, caseDocumentManager, caseCorrespondenceManager, correspondenceDocumentManager);
+        dataManagerList = List.of(caseDataITManager, caseDocumentITManager, caseCorrespondenceITManager, correspondenceDocumentITManager);
     }
 
     @AfterEach

@@ -11,7 +11,7 @@ import java.util.Map;
 import java.util.UUID;
 
 @TestComponent
-public class CaseCorrespondenceManager implements IntegrationTestDataManager {
+public class CaseCorrespondenceITManager implements IntegrationTestDataManager {
 
     @Autowired
     private NamedParameterJdbcTemplate jdbcTemplate;
@@ -28,33 +28,33 @@ public class CaseCorrespondenceManager implements IntegrationTestDataManager {
         OffsetDateTime sentOn
     ) {
         jdbcTemplate.update("""
-        INSERT INTO case_correspondences (
-            case_reference_number,
-            id,
-            event_type,
-            sent_on,
-            sent_from,
-            sent_to,
-            document_url,
-            document_binary_url,
-            document_filename,
-            correspondence_type,
-            receiving_party
-        )
-        VALUES (
-            :caseReference,
-            :correspondenceId,
-            'TEST_EVENT',
-            :sentOn,
-            'tribunal@test.com',
-            'recipient@test.com',
-            'test/document/123',
-            'test/document/123/binary',
-            'test-document.pdf',
-            'EMAIL',
-            CAST(:receivingParty AS party)
-        )
-            """,
+                INSERT INTO case_correspondences (
+                    case_reference_number,
+                    id,
+                    event_type,
+                    sent_on,
+                    sent_from,
+                    sent_to,
+                    document_url,
+                    document_binary_url,
+                    document_filename,
+                    correspondence_type,
+                    receiving_party
+                )
+                VALUES (
+                    :caseReference,
+                    :correspondenceId,
+                    'TEST_EVENT',
+                    :sentOn,
+                    'tribunal@test.com',
+                    'recipient@test.com',
+                    'test/document/123',
+                    'test/document/123/binary',
+                    'test-document.pdf',
+                    'EMAIL',
+                    CAST(:receivingParty AS party)
+                )
+                """,
             Map.of(
                 "caseReference", caseReference,
                 "correspondenceId", correspondenceId,

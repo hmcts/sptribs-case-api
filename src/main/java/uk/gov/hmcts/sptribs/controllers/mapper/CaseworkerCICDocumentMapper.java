@@ -13,7 +13,7 @@ import java.util.List;
 @Component
 public class CaseworkerCICDocumentMapper {
 
-    CaseworkerCICDocument mapDocument(DocumentEntity entity) {
+    public CaseworkerCICDocument mapDocument(DocumentEntity entity) {
         LocalDate documentDate = entity.getUpdatedAt() != null
             ? entity.getUpdatedAt().toLocalDate()
             : entity.getSavedAt().toLocalDate();

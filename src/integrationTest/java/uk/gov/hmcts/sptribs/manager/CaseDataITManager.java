@@ -7,7 +7,7 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import java.util.Map;
 
 @TestComponent
-public class CaseDataManager implements IntegrationTestDataManager {
+public class CaseDataITManager implements IntegrationTestDataManager {
 
     @Autowired
     private NamedParameterJdbcTemplate jdbcTemplate;
