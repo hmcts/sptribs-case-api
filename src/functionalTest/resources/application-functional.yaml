@@ -8,14 +8,13 @@ spring:
   autoconfigure:
     exclude:
       - com.azure.spring.cloud.autoconfigure.implementation.context.AzureTokenCredentialAutoConfiguration
-  datasource:
-    url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;MODE=PostgreSQL
-    username: sa
-    password:
-    driver-class-name: org.h2.Driver
   jms:
     servicebus:
       enabled: false
+  datasource:
+    hikari:
+      maximum-pool-size: 2
+      minimum-idle: 0
 
 s2s:
   name: sptribs_case_api

@@ -45,7 +45,7 @@ public class AnonymityAppliedNotification implements PartiesNotification {
             TemplateName.ANONYMITY_APPLIED_EMAIL
         );
 
-        NotificationResponse response = notificationService.sendEmail(request, caseNumber);
+        NotificationResponse response = notificationService.sendEmail(request, caseNumber, null);
         caseData.getCicCase().setTribunalNotificationResponse(response);
     }
 

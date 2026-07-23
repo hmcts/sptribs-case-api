@@ -36,6 +36,10 @@ import uk.gov.hmcts.sptribs.common.config.AppsConfig;
 import uk.gov.hmcts.sptribs.idam.IdamService;
 import uk.gov.hmcts.sptribs.services.cdam.CaseDocumentClientApi;
 import uk.gov.hmcts.sptribs.systemupdate.service.CcdSearchService;
+import uk.gov.hmcts.sptribs.testutil.data.CaseCorrespondencesFTDataManager;
+import uk.gov.hmcts.sptribs.testutil.data.CaseDocumentsFTDataManager;
+import uk.gov.hmcts.sptribs.testutil.data.CorrespondenceDocumentFTDataManager;
+import uk.gov.hmcts.sptribs.testutil.data.FunctionalTestDataManager;
 import uk.gov.hmcts.sptribs.util.AppsUtil;
 import wiremock.org.eclipse.jetty.util.ajax.JSON;
 
@@ -100,6 +104,9 @@ public abstract class FunctionalTestSuite {
 
     @Autowired
     protected CaseCorrespondencesFTDataManager caseCorrespondencesFTDataManager;
+
+    @Autowired
+    protected CorrespondenceDocumentFTDataManager correspondenceDocumentFTDataManager;
 
     @Autowired
     protected CaseDocumentsFTDataManager caseDocumentsFTDataManager;
@@ -535,7 +542,6 @@ public abstract class FunctionalTestSuite {
 
     @AfterEach
     void tearDownDataManager() throws SQLException {
-
         for (long reference : functionalTestDataManager.getTestReferences()) {
             functionalTestDataManager.clearDown(reference);
         }
@@ -544,6 +550,8 @@ public abstract class FunctionalTestSuite {
 
     @AfterAll
     void closeDBConnection() {
+        //delete link between docs and correspondence first
+        correspondenceDocumentFTDataManager.deleteCorrespondenceDocuments(functionalTestDataManager.getTestReferences());
         functionalTestDataManager.closeAll();
     }
 }

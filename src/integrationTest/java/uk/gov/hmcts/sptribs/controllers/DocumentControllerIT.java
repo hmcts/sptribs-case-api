@@ -248,8 +248,8 @@ class DocumentControllerIT {
         when(documentsService.getDocumentsOnCase(Long.valueOf(TEST_CASE_ID_STRING)))
             .thenReturn(dashboardModel);
 
-        when(caseworkerCICDocumentMapper.map(anyList())).thenReturn(emptyList());
-        when(caseworkerCICDocumentMapper.mapEntityToList(any())).thenReturn(emptyList());
+        when(caseworkerCICDocumentMapper.mapDocuments(anyList())).thenReturn(emptyList());
+        when(caseworkerCICDocumentMapper.mapDocumentToList(any())).thenReturn(emptyList());
 
         // When & Then
         mockMvc.perform(get(GET_DOCUMENTS_URL)

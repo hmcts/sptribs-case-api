@@ -54,6 +54,7 @@ project.tasks.named("generateCCDConfig") {
   environment 'SPRING_DATASOURCE_URL', 'jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;MODE=PostgreSQL'
   environment 'SPRING_DATASOURCE_USERNAME', 'sa'
   environment 'SPRING_DATASOURCE_PASSWORD', ''
+  environment 'SPRING_JPA_HIBERNATE_DDL_AUTO', 'none'
 }
 
 sourceSets {
