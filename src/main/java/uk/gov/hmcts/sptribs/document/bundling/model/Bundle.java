@@ -142,6 +142,12 @@ public class Bundle {
     private YesOrNo hasFolderCoversheets;
 
     @CCD(
+        label = "Should this bundle include document subtitles on the index page?",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private YesOrNo hasDocumentSubtitles;
+
+    @CCD(
         label = "Should this bundle be notified by email?",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
