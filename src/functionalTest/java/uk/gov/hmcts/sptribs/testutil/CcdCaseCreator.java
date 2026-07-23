@@ -36,7 +36,7 @@ public class CcdCaseCreator {
 
         final String userToken = idamTokenGenerator.generateIdamTokenForWASeniorCaseworker();
         final String serviceToken = serviceAuthenticationGenerator.generateCcdDataToken();
-        final String userId = idamService.retrieveUser(userToken).getUserDetails().getId();
+        final String userId = idamService.retrieveUser(userToken).getUserInfo().getUid();
 
         //Fire start event
         final StartEventResponse startCase = coreCaseDataApi.startEventForCaseWorker(
@@ -84,7 +84,7 @@ public class CcdCaseCreator {
 
         final String userToken = idamTokenGenerator.generateIdamTokenForWARegionalHearingCentreTeamLead();
         final String serviceToken = serviceAuthenticationGenerator.generateCcdDataToken();
-        final String userId = idamService.retrieveUser(userToken).getUserDetails().getId();
+        final String userId = idamService.retrieveUser(userToken).getUserInfo().getUid();
 
         //Fire start event
         final StartEventResponse startCase = coreCaseDataApi.startEventForCaseWorker(
@@ -130,7 +130,7 @@ public class CcdCaseCreator {
 
         final String userToken = idamTokenGenerator.generateIdamTokenForSystemUser();
         final String serviceToken = serviceAuthenticationGenerator.generateCcdDataToken();
-        final String userId = idamService.retrieveUser(userToken).getUserDetails().getId();
+        final String userId = idamService.retrieveUser(userToken).getUserInfo().getUid();
 
         //Fire start event
         final StartEventResponse startCase = coreCaseDataApi.startEventForCaseWorker(

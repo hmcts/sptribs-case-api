@@ -11,6 +11,7 @@ import uk.gov.hmcts.ccd.sdk.api.Event;
 import uk.gov.hmcts.ccd.sdk.type.FlagDetail;
 import uk.gov.hmcts.ccd.sdk.type.Flags;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
+import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.util.CaseFlagsUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
@@ -20,6 +21,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.repositories.AnonymisationRepository;
 import uk.gov.hmcts.sptribs.common.service.AnonymisationService;
 import uk.gov.hmcts.sptribs.common.service.CcdSupplementaryDataService;
+import uk.gov.hmcts.sptribs.notification.dispatcher.AnonymityAppliedNotification;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -43,6 +45,9 @@ class CaseworkerCaseFlagTest {
     private CcdSupplementaryDataService coreCaseApiService;
 
     @Mock
+    private AnonymityAppliedNotification anonymityAppliedNotification;
+
+    @Mock
     private AnonymisationRepository anonymisationRepository;
 
     private AnonymisationService anonymisationService;
@@ -52,7 +57,7 @@ class CaseworkerCaseFlagTest {
     @BeforeEach
     void setUp() {
         anonymisationService = spy(new AnonymisationService(anonymisationRepository));
-        caseworkerCaseFlag = new CaseworkerCaseFlag(coreCaseApiService, anonymisationService);
+        caseworkerCaseFlag = new CaseworkerCaseFlag(coreCaseApiService, anonymisationService, anonymityAppliedNotification);
     }
 
     @Test
@@ -120,5 +125,35 @@ class CaseworkerCaseFlagTest {
                 .dateTimeCreated("1".equals(id) ? LocalDateTime.of(2024, 1, 1, 10, 0) : LocalDateTime.of(2025, 1, 1, 10, 0))
                 .build())
             .build();
+    }
+
+    @Test
+    void shouldSendAnonymityNotificationWhenAnonymityIsNewlyApplied() {
+        final CaseData caseData = CaseData.builder()
+            .hyphenatedCaseRef("1234-5678-9012-3456")
+            .cicCase(CicCase.builder()
+                .anonymiseYesOrNo(YesOrNo.YES)
+                .anonymisedAppellantName("AAC")
+                .build())
+            .build();
+
+        final CaseData beforeCaseData = CaseData.builder()
+            .cicCase(CicCase.builder()
+                .anonymiseYesOrNo(YesOrNo.NO)
+                .anonymityAlreadyApplied(YesOrNo.NO)
+                .anonymisedAppellantName(null)
+                .build())
+            .build();
+
+        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+        caseDetails.setId(TEST_CASE_ID);
+        caseDetails.setData(caseData);
+        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        beforeDetails.setData(beforeCaseData);
+
+        SubmittedCallbackResponse submittedResponse = caseworkerCaseFlag.submitted(caseDetails, beforeDetails);
+
+        assertThat(submittedResponse.getConfirmationHeader()).contains("Flag created");
+        verify(anonymityAppliedNotification).sendAnonymityNotificationIfNewlyApplied(caseData, beforeCaseData);
     }
 }

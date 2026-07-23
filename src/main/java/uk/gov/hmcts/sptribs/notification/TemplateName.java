@@ -1,6 +1,7 @@
 package uk.gov.hmcts.sptribs.notification;
 
 public enum TemplateName {
+    ANONYMITY_APPLIED_EMAIL,
     RESPONDENT_SOLICITOR_HAS_NOT_RESPONDED,
     APPLICATION_RECEIVED,
     APPLICATION_RECEIVED_CY,

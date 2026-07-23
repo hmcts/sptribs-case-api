@@ -12,9 +12,9 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.ccd.client.CoreCaseDataApi;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.client.model.SearchResult;
-import uk.gov.hmcts.reform.idam.client.models.User;
-import uk.gov.hmcts.reform.idam.client.models.UserDetails;
+import uk.gov.hmcts.reform.idam.client.models.UserInfo;
 import uk.gov.hmcts.sptribs.common.ccd.CcdCaseType;
+import uk.gov.hmcts.sptribs.idam.CICUser;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -50,7 +50,7 @@ public class CcdSearchServiceIT {
     void shouldSearchForCases() {
         final List<String> caseReferences = singletonList(TEST_CASE_ID.toString());
 
-        final User user = new User(SYSTEM_UPDATE_AUTH_TOKEN, UserDetails.builder().build());
+        final CICUser user = new CICUser(SYSTEM_UPDATE_AUTH_TOKEN, UserInfo.builder().build());
 
         final List<CaseDetails> caseDetailsList = singletonList(CaseDetails.builder().build());
 
@@ -87,7 +87,7 @@ public class CcdSearchServiceIT {
             .must(matchQuery(STATE, Submitted))
             .filter(rangeQuery(DUE_DATE).lte(LocalDate.now()));
 
-        final User user = new User(SYSTEM_UPDATE_AUTH_TOKEN, UserDetails.builder().build());
+        final CICUser user = new CICUser(SYSTEM_UPDATE_AUTH_TOKEN, UserInfo.builder().build());
 
         final List<CaseDetails> caseDetailsList = singletonList(CaseDetails.builder().build());
 
@@ -119,7 +119,7 @@ public class CcdSearchServiceIT {
 
     @Test
     void shouldSearchForCasesWithLessThanVersion() {
-        final User user = new User(SYSTEM_UPDATE_AUTH_TOKEN, UserDetails.builder().build());
+        final CICUser user = new CICUser(SYSTEM_UPDATE_AUTH_TOKEN, UserInfo.builder().build());
 
         final List<CaseDetails> caseDetailsList = singletonList(CaseDetails.builder().build());
 
