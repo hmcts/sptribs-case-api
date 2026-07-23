@@ -81,8 +81,15 @@ public class HighLevelDataSetupApp extends DataLoaderToDefinitionStore {
     protected List<String> getAllDefinitionFilesToLoadAt(String definitionsPath) {
         String environmentName = environment.name().toLowerCase(Locale.UK);
 
-        return new ArrayList<>(
+        List<String> files = new ArrayList<>(
             List.of("build/ccd-config/ccd-" + CcdServiceCode.ST_CIC.getCaseType().getCaseTypeName() + "-" + environmentName + ".xlsx")
         );
+
+        if ("aat".equals(environmentName)) {
+            files.add("build/ccd-config/ccd-" + CcdServiceCode.ST_CIC.getCaseType().getCaseTypeName()
+                + "-staging-" + environmentName + ".xlsx");
+        }
+
+        return files;
     }
 }
