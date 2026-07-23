@@ -75,7 +75,8 @@ class AnonymityAppliedNotificationIT {
 
         anonymityAppliedNotification.sendToTribunal(data, TEST_CASE_ID.toString());
 
-        verify(notificationServiceCIC).sendEmail(notificationRequestCaptor.capture(), eq(TEST_CASE_ID.toString()));
+        verify(notificationServiceCIC).sendEmail(notificationRequestCaptor.capture(), eq(TEST_CASE_ID.toString()),
+            eq(null));
 
         final NotificationRequest notificationRequest = notificationRequestCaptor.getValue();
 
@@ -111,7 +112,7 @@ class AnonymityAppliedNotificationIT {
 
         anonymityAppliedNotification.sendToTribunal(data, TEST_CASE_ID.toString());
 
-        verify(notificationServiceCIC).sendEmail(notificationRequestCaptor.capture(), eq(TEST_CASE_ID.toString()));
+        verify(notificationServiceCIC).sendEmail(notificationRequestCaptor.capture(), eq(TEST_CASE_ID.toString()), eq(null));
 
         final NotificationRequest notificationRequest = notificationRequestCaptor.getValue();
 

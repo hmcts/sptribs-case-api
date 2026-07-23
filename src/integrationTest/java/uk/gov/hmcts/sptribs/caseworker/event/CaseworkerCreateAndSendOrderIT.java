@@ -346,7 +346,7 @@ public class CaseworkerCreateAndSendOrderIT {
                 .build())
             .build();
 
-        when(notificationServiceCIC.sendEmail(any(), eq(TEST_CASE_ID_HYPHENATED)))
+        when(notificationServiceCIC.sendEmail(any(), eq(TEST_CASE_ID_HYPHENATED), eq(null)))
             .thenThrow(new NotificationException(new NotificationClientException("GovNotify API Failure")));
 
         String response = mockMvc.perform(post(SUBMITTED_URL)
@@ -368,7 +368,8 @@ public class CaseworkerCreateAndSendOrderIT {
                 .isString()
                 .contains("# Send order notification failed \n## Please resend the order");
 
-        verify(notificationServiceCIC, times(1)).sendEmail(any(), eq(TEST_CASE_ID_HYPHENATED));
+        verify(notificationServiceCIC, times(1)).sendEmail(any(), eq(TEST_CASE_ID_HYPHENATED),
+            eq(null));
     }
 
     @Test
@@ -426,7 +427,8 @@ public class CaseworkerCreateAndSendOrderIT {
 
         ArgumentCaptor<NotificationRequest> captor =
             ArgumentCaptor.forClass(NotificationRequest.class);
-        verify(notificationServiceCIC, times(5)).sendEmail(captor.capture(), eq(TEST_CASE_ID_HYPHENATED));
+        verify(notificationServiceCIC, times(5)).sendEmail(captor.capture(), eq(TEST_CASE_ID_HYPHENATED),
+            eq(null));
         verifyNoMoreInteractions(notificationServiceCIC);
 
         long anonymityTemplateCalls = captor.getAllValues().stream()
@@ -493,7 +495,8 @@ public class CaseworkerCreateAndSendOrderIT {
 
         ArgumentCaptor<NotificationRequest> captor =
             ArgumentCaptor.forClass(NotificationRequest.class);
-        verify(notificationServiceCIC, times(4)).sendEmail(captor.capture(), eq(TEST_CASE_ID_HYPHENATED));
+        verify(notificationServiceCIC, times(4)).sendEmail(captor.capture(), eq(TEST_CASE_ID_HYPHENATED),
+            eq(null));
         verifyNoMoreInteractions(notificationServiceCIC);
 
         long anonymityTemplateCalls = captor.getAllValues().stream()
