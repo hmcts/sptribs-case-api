@@ -15,7 +15,6 @@ import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.ccd.sdk.type.Flags;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
-import uk.gov.hmcts.reform.idam.client.models.User;
 import uk.gov.hmcts.sptribs.caseworker.model.YesNo;
 import uk.gov.hmcts.sptribs.caseworker.util.DocumentManagementUtil;
 import uk.gov.hmcts.sptribs.caseworker.util.MessageUtil;
@@ -37,6 +36,7 @@ import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.document.model.CitizenCICDocument;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
 import uk.gov.hmcts.sptribs.document.service.DocumentsService;
+import uk.gov.hmcts.sptribs.idam.CICUser;
 import uk.gov.hmcts.sptribs.idam.IdamService;
 import uk.gov.hmcts.sptribs.util.AppsUtil;
 
@@ -250,11 +250,11 @@ public class CicSubmitCaseEvent implements CCDConfig<CaseData, State, UserRole> 
         }
 
         if (isNotBlank(dssCaseData.getAdditionalInformation())) {
-            final User caseworkerUser = idamService.retrieveUser(request.getHeader(AUTHORIZATION));
+            final CICUser caseworkerUser = idamService.retrieveUser(request.getHeader(AUTHORIZATION));
             final DssMessage message = DssMessage.builder()
                 .message(dssCaseData.getAdditionalInformation())
                 .dateReceived(LocalDate.now())
-                .receivedFrom(caseworkerUser.getUserDetails().getFullName())
+                .receivedFrom(caseworkerUser.getUserInfo().getName())
                 .build();
 
             final ListValue<DssMessage> listValue = ListValue

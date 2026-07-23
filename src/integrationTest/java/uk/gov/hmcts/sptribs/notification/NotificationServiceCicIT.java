@@ -13,8 +13,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
-import uk.gov.hmcts.reform.idam.client.models.User;
-import uk.gov.hmcts.reform.idam.client.models.UserDetails;
+import uk.gov.hmcts.reform.idam.client.models.UserInfo;
 import uk.gov.hmcts.reform.pdf.service.client.PDFServiceClient;
 import uk.gov.hmcts.sptribs.cdam.model.Document;
 import uk.gov.hmcts.sptribs.cdam.model.UploadResponse;
@@ -25,6 +24,7 @@ import uk.gov.hmcts.sptribs.common.repositories.DocumentsRepository;
 import uk.gov.hmcts.sptribs.document.CaseDataDocumentService;
 import uk.gov.hmcts.sptribs.document.DocAssemblyService;
 import uk.gov.hmcts.sptribs.document.DocumentClient;
+import uk.gov.hmcts.sptribs.idam.CICUser;
 import uk.gov.hmcts.sptribs.idam.IdamService;
 import uk.gov.hmcts.sptribs.notification.exception.NotificationException;
 import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
@@ -150,9 +150,9 @@ public class NotificationServiceCicIT {
             anyString()
         )).thenReturn(sendEmailResponse);
 
-        final User user = new User(
+        final CICUser user = new CICUser(
             TEST_AUTHORIZATION_TOKEN,
-            UserDetails.builder()
+            UserInfo.builder()
                 .roles(List.of("caseworker-st_cic"))
                 .build()
         );
@@ -244,9 +244,9 @@ public class NotificationServiceCicIT {
             anyString()
         )).thenReturn(sendLetterResponse);
 
-        final User user = new User(
+        final CICUser user = new CICUser(
             TEST_AUTHORIZATION_TOKEN,
-            UserDetails.builder()
+            UserInfo.builder()
                 .roles(List.of("caseworker-st_cic"))
                 .build()
         );
