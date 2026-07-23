@@ -3,7 +3,6 @@ package uk.gov.hmcts.sptribs.common.repositories.impl;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
-import uk.gov.hmcts.sptribs.manager.CaseDataManager;
 import uk.gov.hmcts.sptribs.IntegrationTestBase;
 import uk.gov.hmcts.sptribs.common.repositories.CaseDataRepository;
 import uk.gov.hmcts.sptribs.manager.CaseDataITManager;
