@@ -256,8 +256,8 @@ withPipeline(type, product, component) {
 
   onMaster {
     env.ENVIRONMENT="aat"
-    env.CASE_API_URL="https://sptribs-case-api-staging.aat.platform.hmcts.net"
-    env.CCD_DEF_NAME="staging-aat"
+    env.CASE_API_URL="http://sptribs-case-api-aat.service.core-compute-aat.internal"
+    env.CCD_DEF_NAME="aat"
     env.ELASTIC_SEARCH_ENABLED=true
     env.SERVICE_AUTH_MICROSERVICE = "sptribs_case_api"
     env.SERVICE_AUTH_PROVIDER_URL = "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
@@ -270,8 +270,6 @@ withPipeline(type, product, component) {
   }
 
   afterSuccess('functionalTest:aat') {
-      runAatHighLevelDataSetup()
-
       env.ENVIRONMENT="prod"
       env.CASE_API_URL="http://sptribs-case-api-prod.service.core-compute-prod.internal"
       env.CCD_DEF_NAME="prod"
@@ -402,35 +400,6 @@ def uploadBpmnDiagram() {
       ./wa/pull-latest-camunda-wa-files.sh ${bpmnBranch}
       ./wa/import-wa-bpmn-diagram.sh .
     """
-  }
-}
-
-def runAatHighLevelDataSetup() {
-  env.ENVIRONMENT="aat"
-  env.CASE_API_URL="http://sptribs-case-api-aat.service.core-compute-aat.internal"
-  echo "env.CASE_API_URL is AAT URL"
-  env.CCD_DEF_NAME="aat"
-  builder.gradle('generateCCDConfig --rerun-tasks')
-  generateDefinitions()
-  echo "AAT definition file re-generated"
-
-  withEnv([
-    'ENVIRONMENT=aat',
-    'CASE_API_URL=http://sptribs-case-api-aat.service.core-compute-aat.internal',
-    'CCD_DEF_NAME=aat',
-    'ELASTIC_SEARCH_ENABLED=true',
-    'SERVICE_AUTH_MICROSERVICE=sptribs_case_api',
-    'SERVICE_AUTH_PROVIDER_URL=http://rpe-service-auth-provider-aat.service.core-compute-aat.internal',
-    'CAMUNDA_BASE_URL=http://camunda-api-aat.service.core-compute-aat.internal',
-    'FT_POSTGRES_HOST=sptribs-aat-flexible-db-v15-aat.postgres.database.azure.com',
-    'FT_POSTGRES_PORT=5432',
-    'IDAM_API_URL_BASE=https://idam-api.aat.platform.hmcts.net',
-    'S2S_URL_BASE=http://rpe-service-auth-provider-aat.service.core-compute-aat.internal',
-    'FEE_API_URL=http://fees-register-api-aat.service.core-compute-aat.internal',
-    'BEFTA_S2S_CLIENT_ID=ccd_data'
-  ]) {
-    sh './gradlew --rerun-tasks highLevelDataSetup --args=aat'
-    echo 'High level data setup completed for AAT'
   }
 }
 
