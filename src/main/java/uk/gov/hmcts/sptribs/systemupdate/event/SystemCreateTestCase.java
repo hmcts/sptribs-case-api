@@ -68,7 +68,7 @@ import static uk.gov.hmcts.sptribs.constants.CommonConstants.ST_CIC_WA_CASE_REGI
 @Component
 @Slf4j
 public class SystemCreateTestCase implements CCDConfig<CaseData, State, UserRole> {
-    public static final String SYSTEM_CREATE_TEST_CASE = "create-test-case";
+    public static final String SYSTEM_CREATE_TEST_CASE = "system-create-test-case";
     private final DocumentsService documentsService;
     private static final String TEST_CASE_DATA_FILE = "classpath:data/st_cic_test_case.json";
     private static final ClassPathResource SAMPLE_PDF_FILE_RESOURCE =  new ClassPathResource("data/sample_file.pdf");

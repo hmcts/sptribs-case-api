@@ -44,7 +44,7 @@ public class DraftOrderDocumentListUtil {
                 }
             }
             return draftOrderList;
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             log.error("ERROR GETTING DRAFT ORDERS:  ", e);
             throw e;
         }
