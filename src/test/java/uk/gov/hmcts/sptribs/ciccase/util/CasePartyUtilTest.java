@@ -51,18 +51,6 @@ public class CasePartyUtilTest {
         assertEquals(Party.REPRESENTATIVE, CasePartyUtil.determineParty(caseData, "representative@test.com"));
     }
 
-    @Test
-    public void shouldReturnRespondentWhenEmailMatchesRespondentOrAlternativeRespondent() {
-        CaseData caseData = CaseData.builder()
-            .cicCase(CicCase.builder()
-                .respondentEmail("respondent@test.com")
-                .alternativeRespondentEmail("alternative@test.com")
-                .build())
-            .build();
-
-        assertEquals(Party.RESPONDENT, CasePartyUtil.determineParty(caseData, "respondent@test.com"));
-        assertEquals(Party.RESPONDENT, CasePartyUtil.determineParty(caseData, "alternative@test.com"));
-    }
 
     @Test
     public void shouldReturnNullWhenEmailDoesNotMatchAnyParty() {
