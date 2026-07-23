@@ -31,6 +31,7 @@ import uk.gov.hmcts.sptribs.document.model.CICDocument;
 import uk.gov.hmcts.sptribs.document.model.CaseDocumentType;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
 import uk.gov.hmcts.sptribs.document.service.DocumentsService;
+import uk.gov.hmcts.sptribs.notification.dispatcher.AnonymityAppliedNotification;
 import uk.gov.hmcts.sptribs.notification.dispatcher.NewOrderIssuedNotification;
 import uk.gov.hmcts.sptribs.notification.exception.NotificationException;
 
@@ -88,6 +89,13 @@ class CaseworkerCreateAndSendOrderTest {
 
     @Mock
     private DocumentsService documentsService;
+
+    @Mock
+    private AnonymityAppliedNotification anonymityAppliedNotification;
+
+    private DateModel dateModel = DateModel.builder()
+        .dueDate(LocalDate.of(2026, 1, 2))
+        .build();
 
     @Test
     void shouldAddConfigurationToConfigBuilder() {
@@ -628,6 +636,54 @@ class CaseworkerCreateAndSendOrderTest {
     }
 
     @Test
+    void shouldSendAnonymityNotificationWhenAnonymityIsNewlyApplied() {
+        final CaseData caseData = caseData();
+        caseData.setHyphenatedCaseRef("1234-5678-9012-3456");
+        caseData.getCicCase().setAnonymiseYesOrNo(YesOrNo.YES);
+        caseData.getCicCase().setAnonymisedAppellantName("AAC");
+
+        final CaseData beforeCaseData = caseData();
+        beforeCaseData.getCicCase().setAnonymiseYesOrNo(YesOrNo.NO);
+        beforeCaseData.getCicCase().setAnonymityAlreadyApplied(YesOrNo.NO);
+        beforeCaseData.getCicCase().setAnonymisedAppellantName(null);
+
+        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+        caseDetails.setData(caseData);
+        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        beforeDetails.setData(beforeCaseData);
+
+        SubmittedCallbackResponse submittedResponse = caseworkerCreateAndSendOrder.submitted(caseDetails, beforeDetails);
+
+        assertThat(submittedResponse.getConfirmationHeader()).contains("# Order sent");
+        verify(anonymityAppliedNotification, times(1))
+            .sendAnonymityNotificationIfNewlyApplied(caseData, beforeCaseData);
+    }
+
+    @Test
+    void shouldNotSendAnonymityNotificationWhenAnonymityAlreadyAppliedBefore() {
+        final CaseData caseData = caseData();
+        caseData.setHyphenatedCaseRef("1234-5678-9012-3456");
+        caseData.getCicCase().setAnonymiseYesOrNo(YesOrNo.YES);
+        caseData.getCicCase().setAnonymisedAppellantName("AAC");
+
+        final CaseData beforeCaseData = caseData();
+        beforeCaseData.getCicCase().setAnonymiseYesOrNo(YesOrNo.YES);
+        beforeCaseData.getCicCase().setAnonymityAlreadyApplied(YesOrNo.YES);
+        beforeCaseData.getCicCase().setAnonymisedAppellantName("AAC");
+
+        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+        caseDetails.setData(caseData);
+        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        beforeDetails.setData(beforeCaseData);
+
+        SubmittedCallbackResponse submittedResponse = caseworkerCreateAndSendOrder.submitted(caseDetails, beforeDetails);
+
+        assertThat(submittedResponse.getConfirmationHeader()).contains("# Order sent");
+        verify(anonymityAppliedNotification, times(1))
+            .sendAnonymityNotificationIfNewlyApplied(caseData, beforeCaseData);
+    }
+
+    @Test
     void shouldStoreErrorsWhenBuildAndSaveNewDocumentEntityThrowsRuntimeExceptionForNewOrder() {
         DraftOrderContentCIC draftOrderContentCIC = DraftOrderContentCIC.builder()
             .orderTemplate(OrderTemplate.CIC3_RULE_27)
@@ -667,6 +723,13 @@ class CaseworkerCreateAndSendOrderTest {
         verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
             any(), eq(TEST_CASE_ID), eq(DocumentType.TRIBUNAL_DIRECTION), eq(CaseDocumentType.ORDER)
         );
+    }
+
+    private CaseDetails<CaseData, State> caseDetailsBefore() {
+        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+        final CaseData caseData = CaseData.builder().build();
+        caseDetails.setData(caseData);
+        return caseDetails;
     }
 
     @Test

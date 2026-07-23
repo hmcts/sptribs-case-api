@@ -12,11 +12,11 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
-import uk.gov.hmcts.reform.idam.client.models.User;
-import uk.gov.hmcts.reform.idam.client.models.UserDetails;
+import uk.gov.hmcts.reform.idam.client.models.UserInfo;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.DssCaseData;
 import uk.gov.hmcts.sptribs.common.config.WebMvcConfig;
+import uk.gov.hmcts.sptribs.idam.CICUser;
 import uk.gov.hmcts.sptribs.idam.IdamService;
 import uk.gov.hmcts.sptribs.notification.NotificationServiceCIC;
 import uk.gov.hmcts.sptribs.notification.exception.NotificationException;
@@ -95,11 +95,12 @@ public class CicDssUpdateCaseEventIT {
         caseData.setDssCaseData(dssCaseData);
         caseData.setHyphenatedCaseRef(TEST_CASE_ID_HYPHENATED);
 
-        final User user = new User(
+        final CICUser user = new CICUser(
             TEST_AUTHORIZATION_TOKEN,
-            UserDetails.builder()
-                .forename("Test")
-                .surname("User")
+            UserInfo.builder()
+                .name("Test User")
+                .givenName("Test")
+                .familyName("User")
                 .build()
         );
 
@@ -149,7 +150,7 @@ public class CicDssUpdateCaseEventIT {
             .isString()
             .contains("# CIC Dss Update Case Event Email notifications sent");
 
-        verify(notificationServiceCIC, times(2)).sendEmail(any(), eq(TEST_CASE_ID.toString()));
+        verify(notificationServiceCIC, times(2)).sendEmail(any(), eq(TEST_CASE_ID.toString()), eq(null));
         verifyNoMoreInteractions(notificationServiceCIC);
     }
 
@@ -160,7 +161,7 @@ public class CicDssUpdateCaseEventIT {
 
         doThrow(NotificationException.class)
             .when(notificationServiceCIC)
-            .sendEmail(any(NotificationRequest.class), eq(TEST_CASE_ID.toString()));
+            .sendEmail(any(NotificationRequest.class), eq(TEST_CASE_ID.toString()), eq(null));
 
         String response = mockMvc.perform(post(SUBMITTED_URL)
             .contentType(APPLICATION_JSON)

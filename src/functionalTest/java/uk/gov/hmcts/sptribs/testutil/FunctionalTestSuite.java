@@ -36,6 +36,10 @@ import uk.gov.hmcts.sptribs.common.config.AppsConfig;
 import uk.gov.hmcts.sptribs.idam.IdamService;
 import uk.gov.hmcts.sptribs.services.cdam.CaseDocumentClientApi;
 import uk.gov.hmcts.sptribs.systemupdate.service.CcdSearchService;
+import uk.gov.hmcts.sptribs.testutil.data.CaseCorrespondencesFTDataManager;
+import uk.gov.hmcts.sptribs.testutil.data.CaseDocumentsFTDataManager;
+import uk.gov.hmcts.sptribs.testutil.data.CorrespondenceDocumentFTDataManager;
+import uk.gov.hmcts.sptribs.testutil.data.FunctionalTestDataManager;
 import uk.gov.hmcts.sptribs.util.AppsUtil;
 import wiremock.org.eclipse.jetty.util.ajax.JSON;
 
@@ -102,6 +106,9 @@ public abstract class FunctionalTestSuite {
     protected CaseCorrespondencesFTDataManager caseCorrespondencesFTDataManager;
 
     @Autowired
+    protected CorrespondenceDocumentFTDataManager correspondenceDocumentFTDataManager;
+
+    @Autowired
     protected CaseDocumentsFTDataManager caseDocumentsFTDataManager;
 
     protected static final String EVENT_PARAM = "event";
@@ -112,7 +119,7 @@ public abstract class FunctionalTestSuite {
     protected CaseDetails createCaseInCcd() {
         String caseworkerToken = idamTokenGenerator.generateIdamTokenForCaseworker();
         String s2sTokenForCaseApi = serviceAuthenticationGenerator.generate();
-        String caseworkerUserId = idamTokenGenerator.getUserDetailsFor(caseworkerToken).getId();
+        String caseworkerUserId = idamTokenGenerator.getUserInfoFor(caseworkerToken).getUid();
         StartEventResponse startEventResponse = startEventForCreateCase(caseworkerToken, s2sTokenForCaseApi, caseworkerUserId);
 
         CaseDataContent caseDataContent = CaseDataContent.builder()
@@ -335,7 +342,7 @@ public abstract class FunctionalTestSuite {
 
     protected CaseDetails updateCitizenCase(String eventId, Long caseId, CaseData caseData) {
         final String citizenToken = idamTokenGenerator.generateIdamTokenForCitizen();
-        final String userId = idamService.retrieveUser(citizenToken).getUserDetails().getId();
+        final String userId = idamService.retrieveUser(citizenToken).getUserInfo().getUid();
         AppsConfig.AppsDetails details = AppsUtil.getExactAppsDetails(appsConfig, caseData.getDssCaseData());
 
         final StartEventResponse startEventResponse = coreCaseDataApi.startEventForCitizen(
@@ -385,7 +392,7 @@ public abstract class FunctionalTestSuite {
 
     private CaseDetails createCitizenCase() {
         final String citizenToken = idamTokenGenerator.generateIdamTokenForCitizen();
-        final String userId = idamService.retrieveUser(citizenToken).getUserDetails().getId();
+        final String userId = idamService.retrieveUser(citizenToken).getUserInfo().getUid();
         final AppsConfig.AppsDetails appsDetails = AppsUtil.getExactAppsDetails(this.appsConfig, getDssCaseData());
         final StartEventResponse createEventResponse = coreCaseDataApi.startForCitizen(
             citizenToken,
@@ -535,7 +542,6 @@ public abstract class FunctionalTestSuite {
 
     @AfterEach
     void tearDownDataManager() throws SQLException {
-
         for (long reference : functionalTestDataManager.getTestReferences()) {
             functionalTestDataManager.clearDown(reference);
         }
@@ -544,6 +550,8 @@ public abstract class FunctionalTestSuite {
 
     @AfterAll
     void closeDBConnection() {
+        //delete link between docs and correspondence first
+        correspondenceDocumentFTDataManager.deleteCorrespondenceDocuments(functionalTestDataManager.getTestReferences());
         functionalTestDataManager.closeAll();
     }
 }

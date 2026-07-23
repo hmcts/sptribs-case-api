@@ -10,12 +10,13 @@ public interface PartiesNotification {
         //No operation
     }
 
-    default void sendToSubject(
+    default String sendToSubject(
         final CaseData caseData,
         final String caseNumber,
         final Map<String, String> uploadedDocuments
     ) {
         sendToSubject(caseData, caseNumber);
+        return null;
     }
 
     default void sendToSubject(final DssCaseData dssCaseData, final String caseNumber) {
@@ -26,12 +27,13 @@ public interface PartiesNotification {
         //No operation
     }
 
-    default void sendToApplicant(
+    default String sendToApplicant(
         final CaseData caseData,
         final String caseNumber,
         final Map<String, String> uploadedDocuments
     ) {
         sendToApplicant(caseData, caseNumber);
+        return null;
     }
 
 
@@ -39,12 +41,13 @@ public interface PartiesNotification {
         //No operation
     }
 
-    default void sendToRepresentative(
+    default String sendToRepresentative(
         final CaseData caseData,
         final String caseNumber,
         final Map<String, String> uploadedDocuments
     ) {
         sendToRepresentative(caseData, caseNumber);
+        return null;
     }
 
     default void sendToRepresentative(final DssCaseData dssCaseData, final String caseNumber) {
@@ -55,24 +58,26 @@ public interface PartiesNotification {
         //No operation
     }
 
-    default void sendToRespondent(
+    default String sendToRespondent(
         final CaseData caseData,
         final String caseNumber,
         final Map<String, String> uploadedDocuments
     ) {
         sendToRespondent(caseData, caseNumber);
+        return null;
     }
 
     default void sendToTribunal(final CaseData caseData, final String caseNumber) {
         //No operation
     }
 
-    default void sendToTribunal(
+    default String sendToTribunal(
         final CaseData caseData,
         final String caseNumber,
         final Map<String, String> uploadedDocuments
     ) {
         sendToTribunal(caseData, caseNumber);
+        return null;
     }
 
 }

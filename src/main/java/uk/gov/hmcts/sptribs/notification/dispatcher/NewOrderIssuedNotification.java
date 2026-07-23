@@ -111,7 +111,7 @@ public class NewOrderIssuedNotification implements PartiesNotification {
             uploadedDocuments,
             templateVars,
             TemplateName.NEW_ORDER_ISSUED_EMAIL);
-        return notificationService.sendEmail(emailRequest, caseReferenceNumber);
+        return notificationService.sendEmail(emailRequest, caseReferenceNumber, null);
     }
 
     private NotificationResponse sendLetterNotification(Map<String, Object> templateVarsLetter, String caseReferenceNumber) {

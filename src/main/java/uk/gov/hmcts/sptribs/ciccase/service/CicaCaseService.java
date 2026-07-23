@@ -3,10 +3,10 @@ package uk.gov.hmcts.sptribs.ciccase.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.reform.idam.client.models.User;
 import uk.gov.hmcts.sptribs.common.repositories.CaseDataRepository;
 import uk.gov.hmcts.sptribs.exception.CaseNotFoundException;
 import uk.gov.hmcts.sptribs.exception.UnauthorisedCaseAccessException;
+import uk.gov.hmcts.sptribs.idam.CICUser;
 import uk.gov.hmcts.sptribs.idam.IdamService;
 
 @Slf4j
@@ -27,11 +27,11 @@ public class CicaCaseService {
      */
     public void checkIfUserHasAccess(String ccdReference, String authorisation) {
         try {
-            User user = idamService.retrieveUser(authorisation);
+            CICUser user = idamService.retrieveUser(authorisation);
             if (!caseDataRepository.checkCaseExists(ccdReference)) {
                 throw new CaseNotFoundException("No case found with CCD reference: " + ccdReference);
             }
-            boolean hasAccess = caseDataRepository.checkIfUserHasAccessToCase(ccdReference, user.getUserDetails().getEmail());
+            boolean hasAccess = caseDataRepository.checkIfUserHasAccessToCase(ccdReference, user.getUserInfo().getSub());
             if (!hasAccess) {
                 throw new UnauthorisedCaseAccessException("User is not authorised to access case: " + ccdReference);
             }
@@ -57,9 +57,9 @@ public class CicaCaseService {
      */
     public void checkIfUserHasAccessWithPostcode(String ccdReference, String authorisation, String submittedPostcode) {
         try {
-            User user = idamService.retrieveUser(authorisation);
+            CICUser user = idamService.retrieveUser(authorisation);
             boolean hasAccess = caseDataRepository.checkIfUserHasAccessToCase(
-                ccdReference, user.getUserDetails().getEmail(), submittedPostcode);
+                ccdReference, user.getUserInfo().getSub(), submittedPostcode);
             if (!hasAccess) {
                 throw new UnauthorisedCaseAccessException("Submitted postcode does not match the postcode held in case data");
             }

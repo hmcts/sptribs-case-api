@@ -36,9 +36,8 @@ public class DocumentEntity {
     @Column(name = "saved_at", nullable = false)
     private OffsetDateTime savedAt =  OffsetDateTime.now();
 
-    @Builder.Default
-    @Column(name = "updated_at", nullable = false)
-    private OffsetDateTime updatedAt =  OffsetDateTime.now();
+    @Column(name = "updated_at")
+    private OffsetDateTime updatedAt;
 
     @Column(name = "document_url", nullable = false)
     private String documentUrl;
@@ -54,10 +53,6 @@ public class DocumentEntity {
 
     @Column(name = "case_document_type_id", nullable = false)
     private Long caseDocumentTypeId;
-
-    //this is going to be removed
-    @Column(name = "sent_to_applicant_via_contact_parties", nullable = false)
-    private boolean sentToApplicantViaContactParties;
 
     @Override
     public boolean equals(Object documentEntityObject) {

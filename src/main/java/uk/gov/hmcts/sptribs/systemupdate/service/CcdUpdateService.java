@@ -8,8 +8,8 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.ccd.client.CoreCaseDataApi;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDataContent;
 import uk.gov.hmcts.reform.ccd.client.model.StartEventResponse;
-import uk.gov.hmcts.reform.idam.client.models.User;
 import uk.gov.hmcts.sptribs.ciccase.task.CaseTask;
+import uk.gov.hmcts.sptribs.idam.CICUser;
 
 import static java.lang.String.format;
 import static org.springframework.http.HttpStatus.CONFLICT;
@@ -40,10 +40,10 @@ public class CcdUpdateService {
 
     public void submitEvent(final Long caseId,
                             final String eventId,
-                            final User user,
+                            final CICUser user,
                             final String serviceAuth) {
 
-        final String userId = user.getUserDetails().getId();
+        final String userId = user.getUserInfo().getUid();
         final String authorization = user.getAuthToken();
 
         try {
@@ -65,10 +65,10 @@ public class CcdUpdateService {
     public void submitEventWithRetry(final String caseId,
                                      final String eventId,
                                      final CaseTask caseTask,
-                                     final User user,
+                                     final CICUser user,
                                      final String serviceAuth) {
 
-        final String userId = user.getUserDetails().getId();
+        final String userId = user.getUserInfo().getUid();
         final String authorization = user.getAuthToken();
 
         try {

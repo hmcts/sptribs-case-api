@@ -14,8 +14,7 @@ import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.idam.client.models.User;
-import uk.gov.hmcts.reform.idam.client.models.UserDetails;
+import uk.gov.hmcts.reform.idam.client.models.UserInfo;
 import uk.gov.hmcts.sptribs.caseworker.model.CloseCase;
 import uk.gov.hmcts.sptribs.caseworker.model.CloseReason;
 import uk.gov.hmcts.sptribs.caseworker.model.DateModel;
@@ -42,6 +41,7 @@ import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocumentUpload;
 import uk.gov.hmcts.sptribs.document.model.CitizenCICDocument;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
+import uk.gov.hmcts.sptribs.idam.CICUser;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -235,37 +235,38 @@ public class TestDataHelper {
             .build();
     }
 
-    public static User getUser() {
-        UserDetails userDetails = UserDetails
+    public static CICUser getUser() {
+        UserInfo userInfo = UserInfo
             .builder()
-            .forename("testFname")
-            .surname("testSname")
+            .givenName("testFname")
+            .familyName("testSname")
+            .name("testFname testSname")
             .roles(List.of(""))
             .build();
 
-        return new User(TEST_AUTHORIZATION_TOKEN, userDetails);
+        return new CICUser(TEST_AUTHORIZATION_TOKEN, userInfo);
     }
 
-    public static User getUserWithHmctsJudiciary() {
-        UserDetails userDetails = UserDetails
+    public static CICUser getUserWithHmctsJudiciary() {
+        UserInfo userInfo = UserInfo
             .builder()
-            .forename("testFname")
-            .surname("testSname")
+            .givenName("testFname")
+            .familyName("testSname")
             .roles(List.of("hmcts-judiciary"))
             .build();
 
-        return new User(TEST_AUTHORIZATION_TOKEN, userDetails);
+        return new CICUser(TEST_AUTHORIZATION_TOKEN, userInfo);
     }
 
-    public static User getUserWithSeniorJudge() {
-        UserDetails userDetails = UserDetails
+    public static CICUser getUserWithSeniorJudge() {
+        UserInfo userInfo = UserInfo
             .builder()
-            .forename("testFname")
-            .surname("testSname")
+            .givenName("testFname")
+            .familyName("testSname")
             .roles(List.of("caseworker-st_cic-senior-judge"))
             .build();
 
-        return new User(TEST_AUTHORIZATION_TOKEN, userDetails);
+        return new CICUser(TEST_AUTHORIZATION_TOKEN, userInfo);
     }
 
     public static Listing getRecordListing() {

@@ -1,5 +1,6 @@
 package uk.gov.hmcts.sptribs.notification;
 
+import feign.FeignException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -15,7 +16,6 @@ import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.ccd.document.am.model.Classification;
 import uk.gov.hmcts.reform.ccd.document.am.model.DocumentUploadRequest;
 import uk.gov.hmcts.reform.ccd.document.am.util.InMemoryMultipartFile;
-import uk.gov.hmcts.reform.idam.client.models.User;
 import uk.gov.hmcts.reform.pdf.service.client.PDFServiceClient;
 import uk.gov.hmcts.sptribs.cdam.model.UploadResponse;
 import uk.gov.hmcts.sptribs.ciccase.model.NotificationResponse;
@@ -24,9 +24,11 @@ import uk.gov.hmcts.sptribs.common.config.EmailTemplatesConfigCIC;
 import uk.gov.hmcts.sptribs.common.repositories.CorrespondenceRepository;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
+import uk.gov.hmcts.sptribs.idam.CICUser;
 import uk.gov.hmcts.sptribs.idam.IdamService;
 import uk.gov.hmcts.sptribs.notification.exception.NotificationException;
 import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
+import uk.gov.hmcts.sptribs.notification.model.Party;
 import uk.gov.hmcts.sptribs.notification.persistence.CorrespondenceEntity;
 import uk.gov.hmcts.sptribs.services.cdam.CaseDocumentClientApi;
 import uk.gov.service.notify.NotificationClient;
@@ -82,7 +84,8 @@ public class NotificationServiceCIC {
     public void saveEmailCorrespondence(String templateName,
                                         SendEmailResponse sendEmailResponse,
                                         String sentTo,
-                                        String caseReferenceNumber) throws IOException, RestClientException {
+                                        String caseReferenceNumber,
+                                        Party receivingParty) throws IOException, RestClientException {
 
         Long longCaseRef = Long.parseLong(caseReferenceNumber.replace("-", ""));
         final OffsetDateTime sentOn = OffsetDateTime.now(ZoneId.systemDefault());
@@ -105,6 +108,7 @@ public class NotificationServiceCIC {
                 .documentFilename(correspondencePDF.getFilename())
                 .documentBinaryUrl(correspondencePDF.getBinaryUrl())
                 .correspondenceType("Email")
+                .receivingParty(receivingParty)
                 .build();
             correspondenceRepository.save(correspondence);
         } catch (java.io.IOException | RestClientException e) {
@@ -143,13 +147,14 @@ public class NotificationServiceCIC {
         }
     }
 
-    public NotificationResponse sendEmail(NotificationRequest notificationRequest, String caseReferenceNumber) {
-        return sendEmail(notificationRequest, Collections.emptyList(), caseReferenceNumber);
+    public NotificationResponse sendEmail(NotificationRequest notificationRequest, String caseReferenceNumber, Party receivingParty) {
+        return sendEmail(notificationRequest, Collections.emptyList(), caseReferenceNumber, receivingParty);
     }
 
     public NotificationResponse sendEmail(NotificationRequest notificationRequest,
                                           List<CaseworkerCICDocument> selectedDocuments,
-                                          String caseReferenceNumber) {
+                                          String caseReferenceNumber,
+                                          Party receivingParty) {
         final SendEmailResponse sendEmailResponse;
         final String destinationAddress = notificationRequest.getDestinationAddress();
         final TemplateName template = notificationRequest.getTemplate();
@@ -177,7 +182,8 @@ public class NotificationServiceCIC {
                 templateName,
                 sendEmailResponse,
                 destinationAddress,
-                caseReferenceNumber
+                caseReferenceNumber,
+                receivingParty
             );
 
             log.debug("Successfully sent email with notification id {} and reference {}",
@@ -186,7 +192,7 @@ public class NotificationServiceCIC {
             );
 
             return getNotificationResponse(sendEmailResponse);
-        } catch (NotificationClientException | IOException e) {
+        } catch (NotificationClientException | IOException | FeignException e) {
             log.error("Failed to send email. Reference ID: {}. Reason: {}",
                 referenceId,
                 e.getMessage(),
@@ -269,6 +275,13 @@ public class NotificationServiceCIC {
                 nullArgumentException
             );
             throw new NotificationException(nullArgumentException);
+        } catch (feign.FeignException feignException) {
+            log.error("Failed to send letter due to REST client failure. Reference ID: {}. Reason: {}",
+                referenceId,
+                feignException.getMessage(),
+                feignException
+            );
+            throw new NotificationException(feignException);
         }
     }
 
@@ -291,7 +304,7 @@ public class NotificationServiceCIC {
                                           List<CaseworkerCICDocument> selectedDocuments,
                                           String item,
                                           String docName) {
-        final User user = idamService.retrieveUser(request.getHeader(AUTHORIZATION));
+        final CICUser user = idamService.retrieveUser(request.getHeader(AUTHORIZATION));
         final String authorisation = user.getAuthToken();
         final String serviceAuthorization = authTokenGenerator.generate();
 
