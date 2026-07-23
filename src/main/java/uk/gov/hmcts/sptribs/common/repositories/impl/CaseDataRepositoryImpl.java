@@ -6,9 +6,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 import uk.gov.hmcts.sptribs.common.repositories.CaseDataRepository;
+import uk.gov.hmcts.sptribs.common.repositories.exception.CaseEventRepositoryException;
 import uk.gov.hmcts.sptribs.common.repositories.model.CicaCaseEntity;
 
 import java.sql.ResultSet;
@@ -31,6 +33,9 @@ public class CaseDataRepositoryImpl implements CaseDataRepository {
     private static final TypeReference<Map<String, JsonNode>> JSON_NODE_MAP = new TypeReference<>() { };
     private static final String CASE_TYPE = "CriminalInjuriesCompensation";
     private static final String JURISDICTION = "ST_CIC";
+    public static final String STATE = "state";
+    public static final String STATES = "states";
+    public static final String REFERENCE = "reference";
     private static final List<String> INVALID_STATES = List.of(Draft.getName(), DSS_Draft.getName(),
         DSS_Expired.getName());
     private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
@@ -80,6 +85,16 @@ public class CaseDataRepositoryImpl implements CaseDataRepository {
             + "AND c.data #>> '{cicCaseAddress,PostCode}' = :postcode "
             + "ORDER BY c.last_modified DESC "
             + "LIMIT 1";
+
+    private static final String SELECT_LIST_OF_CASE_IDS_BY_STATE =
+        "SELECT c.reference "
+            + "FROM ccd.case_data c "
+            + "WHERE c.state = :state ";
+
+    private static final String SELECT_LIST_OF_CASE_IDS_EXCLUDING_STATES =
+        "SELECT c.reference "
+            + "FROM ccd.case_data c "
+            + "WHERE c.state NOT IN (:states) ";
 
     @Override
     public boolean checkCaseExists(String ccdReference) {
@@ -168,5 +183,59 @@ public class CaseDataRepositoryImpl implements CaseDataRepository {
             .state(state)
             .data(caseData)
             .build();
+    }
+
+    public List<Long> returnAllCases(String state) {
+        List<Long> results;
+        var params = Map.of(
+            STATE, state
+        );
+
+        try {
+            results = namedParameterJdbcTemplate.query(SELECT_LIST_OF_CASE_IDS_BY_STATE,
+                params,
+                (rs, rowNum) -> rs.getLong(REFERENCE)
+            );
+
+        } catch (DataAccessException dataAccessException) {
+            log.error("Failed to retrieve affected cases for state = {}",
+                state, dataAccessException);
+            throw new CaseEventRepositoryException(
+                "Error whilst retrieving case events to clean further documents", dataAccessException);
+        }
+
+        if (results.isEmpty()) {
+            log.info("No results found for state = {}", state);
+            return results;
+        }
+
+        return results;
+    }
+
+    public List<Long> returnAllCasesExlcudingStates(List<String> states) {
+        List<Long> results;
+        var params = Map.of(
+            STATES, states
+        );
+
+        try {
+            results = namedParameterJdbcTemplate.query(SELECT_LIST_OF_CASE_IDS_EXCLUDING_STATES,
+                params,
+                (rs, rowNum) -> rs.getLong(REFERENCE)
+            );
+
+        } catch (DataAccessException dataAccessException) {
+            log.error("Failed to retrieve affected cases excluding states = {}",
+                states, dataAccessException);
+            throw new CaseEventRepositoryException(
+                "Error whilst retrieving case events to clean further documents", dataAccessException);
+        }
+
+        if (results.isEmpty()) {
+            log.info("No results found when excluding states = {}", states);
+            return results;
+        }
+
+        return results;
     }
 }
