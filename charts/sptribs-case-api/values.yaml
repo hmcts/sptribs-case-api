@@ -96,4 +96,3 @@ java:
     S2S_AUTHORISED_SERVICES: ccd_definition,ccd_data,xui_webapp,sptribs_case_api,ccd_gw,sptribs_frontend,sptribs_dss_update_case_web
 
     CCD_SERVICEBUS_DESTINATION: ccd-case-events-{{ .Values.global.environment }}
-
