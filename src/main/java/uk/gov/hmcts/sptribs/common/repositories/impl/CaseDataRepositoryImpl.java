@@ -34,6 +34,7 @@ public class CaseDataRepositoryImpl implements CaseDataRepository {
     private static final String CASE_TYPE = "CriminalInjuriesCompensation";
     private static final String JURISDICTION = "ST_CIC";
     public static final String STATE = "state";
+    public static final String STATES = "states";
     public static final String REFERENCE = "reference";
     private static final List<String> INVALID_STATES = List.of(Draft.getName(), DSS_Draft.getName(),
         DSS_Expired.getName());
@@ -214,7 +215,7 @@ public class CaseDataRepositoryImpl implements CaseDataRepository {
     public List<Long> returnAllCasesExlcudingStates(List<String> states) {
         List<Long> results;
         var params = Map.of(
-            STATE, states
+            STATES, states
         );
 
         try {
