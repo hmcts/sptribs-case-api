@@ -21,6 +21,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.repositories.AnonymisationRepository;
 import uk.gov.hmcts.sptribs.common.service.AnonymisationService;
+import uk.gov.hmcts.sptribs.notification.dispatcher.AnonymityAppliedNotification;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -29,6 +30,8 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_UPDATE_ANONYMITY;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigBuilder;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.getEventsFrom;
@@ -42,6 +45,9 @@ class CaseworkerUpdateAnonymityTest {
     private ApplyAnonymity applyAnonymity;
 
     @Mock
+    private AnonymityAppliedNotification anonymityAppliedNotification;
+
+    @Mock
     private AnonymisationRepository anonymisationRepository;
 
     private AnonymisationService anonymisationService;
@@ -49,7 +55,7 @@ class CaseworkerUpdateAnonymityTest {
     @BeforeEach
     void setUp() {
         anonymisationService = Mockito.spy(new AnonymisationService(anonymisationRepository));
-        caseworkerUpdateAnonymity = new CaseworkerUpdateAnonymity(applyAnonymity, anonymisationService);
+        caseworkerUpdateAnonymity = new CaseworkerUpdateAnonymity(applyAnonymity, anonymityAppliedNotification, anonymisationService);
     }
 
     @Test
@@ -125,6 +131,64 @@ class CaseworkerUpdateAnonymityTest {
         assertThat(response.getData().getCaseFlags().getDetails()).hasSize(1);
         assertThat(response.getData().getCaseFlags().getDetails().get(0).getId()).isEqualTo("existing-id");
         assertThat(response.getData().getCaseFlags().getDetails().get(0).getValue().getStatus()).isEqualTo("Active");
+    }
+
+    @Test
+    void shouldSendAnonymityNotificationWhenAnonymityIsNewlyApplied() {
+        CaseData caseDataAfter = CaseData.builder()
+            .hyphenatedCaseRef("1234-5678-9012-3456")
+            .cicCase(CicCase.builder()
+                .anonymiseYesOrNo(YesOrNo.YES)
+                .anonymisedAppellantName("AAC")
+                .build())
+            .build();
+
+        CaseData caseDataBefore = CaseData.builder()
+            .cicCase(CicCase.builder()
+                .anonymiseYesOrNo(YesOrNo.NO)
+                .anonymityAlreadyApplied(YesOrNo.NO)
+                .anonymisedAppellantName(null)
+                .build())
+            .build();
+
+        CaseDetails<CaseData, State> details = new CaseDetails<>();
+        details.setData(caseDataAfter);
+        CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        beforeDetails.setData(caseDataBefore);
+
+        caseworkerUpdateAnonymity.submitted(details, beforeDetails);
+
+        verify(anonymityAppliedNotification, times(1))
+            .sendAnonymityNotificationIfNewlyApplied(caseDataAfter, caseDataBefore);
+    }
+
+    @Test
+    void shouldNotSendAnonymityNotificationWhenAlreadyAppliedBefore() {
+        CaseData caseDataAfter = CaseData.builder()
+            .hyphenatedCaseRef("1234-5678-9012-3456")
+            .cicCase(CicCase.builder()
+                .anonymiseYesOrNo(YesOrNo.YES)
+                .anonymisedAppellantName("AAC")
+                .build())
+            .build();
+
+        CaseData caseDataBefore = CaseData.builder()
+            .cicCase(CicCase.builder()
+                .anonymiseYesOrNo(YesOrNo.YES)
+                .anonymityAlreadyApplied(YesOrNo.YES)
+                .anonymisedAppellantName("AAC")
+                .build())
+            .build();
+
+        CaseDetails<CaseData, State> details = new CaseDetails<>();
+        details.setData(caseDataAfter);
+        CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        beforeDetails.setData(caseDataBefore);
+
+        caseworkerUpdateAnonymity.submitted(details, beforeDetails);
+
+        verify(anonymityAppliedNotification, times(1))
+            .sendAnonymityNotificationIfNewlyApplied(caseDataAfter, caseDataBefore);
     }
 
     @Test
