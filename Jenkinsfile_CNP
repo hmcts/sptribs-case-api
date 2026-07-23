@@ -218,11 +218,6 @@ withPipeline(type, product, component) {
   }
 
   before('highleveldatasetup') {
-    if (env.ENVIRONMENT == "prod") {
-      env.ENVIRONMENT
-      builder.gradle('generateCCDConfig --rerun-tasks')
-      generateDefinitions()
-    }
     builder.gradle('generateCCDConfig')
     generateDefinitions()
   }
