@@ -237,10 +237,12 @@ feature:
   migrate-to-documents-table-task:
     enabled: ${MIGRATE_CASE_DOCUMENTS_TO_TABLE_ENABLED:true}
     caseReference: ${MIGRATE_CASE_DOCUMENTS_TO_TABLE_TEST_CASE_REF:}
+    batchSize: ${MIGRATE_CASE_DOCUMENTS_TO_TABLE_BATCH_SIZE:100}
+    batchPauseMs: ${MIGRATE_CASE_DOCUMENTS_TO_TABLE_BATCH_PAUSE:5000}
   restore-orders-task:
     enabled: ${RESTORE_ORDERS_TASK_ENABLED:false}
     caseReference: ${RESTORE_ORDERS_TASK_TEST_CASE_REF:}
-  create-system-update-test-cases:
+  create-system-update-test-case:
     enabled: ${CREATE_TEST_CASES:true}
     count: ${TEST_CASE_COUNT:10}
   migrate-initial-case-documents-task:

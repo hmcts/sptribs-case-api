@@ -46,10 +46,10 @@ public class SystemMigrateCaseDocumentsDocumentTableTask implements Runnable {
     @Value("${feature.migrate-to-documents-table-task.caseReference}")
     private String documentTableTestCaseReference;
 
-    @Value("${feature.migrate-initial-case-documents-task.batchSize:10}")
+    @Value("${feature.migrate-initial-case-documents-task.batchSize}")
     private int batchSize;
 
-    @Value("${migration.migrate-initial-case-documents-task.batchPauseMs:5000}")
+    @Value("${feature.migrate-initial-case-documents-task.batchPauseMs}")
     private long batchPauseMs;
 
     @Autowired
@@ -92,7 +92,7 @@ public class SystemMigrateCaseDocumentsDocumentTableTask implements Runnable {
             }
 
             if (caseIdsToUpdate.isEmpty()) {
-                log.info("Nothing to update");
+                log.info("Found no cases");
                 return;
             }
 
@@ -133,7 +133,7 @@ public class SystemMigrateCaseDocumentsDocumentTableTask implements Runnable {
 
         for (int i = 0; i < total; i++) {
             if (i > 0 && i % batchSize == 0) {
-                log.info("Batch {}/{} complete: {} succeeded, {} failed",
+                log.info("Batch {}/{} complete: {} processed, {} failed",
                     i / batchSize, batchCount, success, failed);
                 try {
                     Thread.sleep(batchPauseMs);
@@ -157,7 +157,7 @@ public class SystemMigrateCaseDocumentsDocumentTableTask implements Runnable {
         totalSuccess = totalSuccess + success;
         totalFailure = totalFailure + failed;
 
-        log.info("Migration complete: {} succeeded, {} failed out of {} total", success, failed, total);
+        log.info("Migration complete: {} processed, {} failed out of {} total", success, failed, total);
 
         if (!failedCaseIds.isEmpty()) {
             log.error("Failed case reference's: {}", failedCaseIds);

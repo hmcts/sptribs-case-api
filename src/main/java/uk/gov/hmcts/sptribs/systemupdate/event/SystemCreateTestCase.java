@@ -56,6 +56,7 @@ import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.DOUBLE_HYPHEN;
 import static uk.gov.hmcts.sptribs.ciccase.model.OrderTemplate.CIC3_RULE_27;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.Draft;
+import static uk.gov.hmcts.sptribs.ciccase.model.State.Submitted;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SUPER_USER;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.SYSTEM_UPDATE;
 import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_UPDATE_DELETE;
@@ -66,8 +67,8 @@ import static uk.gov.hmcts.sptribs.constants.CommonConstants.ST_CIC_WA_CASE_REGI
 @RequiredArgsConstructor
 @Component
 @Slf4j
-public class SystemCreateTestCases implements CCDConfig<CaseData, State, UserRole> {
-    public static final String SYSTEM_CREATE_TEST_CASES = "create-test-cases";
+public class SystemCreateTestCase implements CCDConfig<CaseData, State, UserRole> {
+    public static final String SYSTEM_CREATE_TEST_CASE = "create-test-case";
     private final DocumentsService documentsService;
     private static final String TEST_CASE_DATA_FILE = "classpath:data/st_cic_test_case.json";
     private static final ClassPathResource SAMPLE_PDF_FILE_RESOURCE =  new ClassPathResource("data/sample_file.pdf");
@@ -87,10 +88,10 @@ public class SystemCreateTestCases implements CCDConfig<CaseData, State, UserRol
     @Override
     public void configure(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         configBuilder
-            .event(SYSTEM_CREATE_TEST_CASES)
+            .event(SYSTEM_CREATE_TEST_CASE)
             .initialState(Draft)
-            .name("System: Create Test Cases")
-            .description("Create Test Cases")
+            .name("System: Create Test Case")
+            .description("Create Test Case")
             .aboutToSubmitCallback(this::aboutToSubmit)
             .submittedCallback(this::submitted)
             .grant(CREATE_READ_UPDATE_DELETE, SYSTEM_UPDATE, SUPER_USER);
@@ -119,7 +120,7 @@ public class SystemCreateTestCases implements CCDConfig<CaseData, State, UserRol
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
-            .state(Draft)
+            .state(Submitted)
             .build();
     }
 

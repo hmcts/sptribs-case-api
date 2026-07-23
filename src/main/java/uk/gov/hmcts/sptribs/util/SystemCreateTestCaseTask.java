@@ -10,32 +10,32 @@ import uk.gov.hmcts.sptribs.idam.IdamService;
 import uk.gov.hmcts.sptribs.systemupdate.service.CcdManagementException;
 import uk.gov.hmcts.sptribs.systemupdate.service.CcdUpdateService;
 
-import static uk.gov.hmcts.sptribs.systemupdate.event.SystemCreateTestCases.SYSTEM_CREATE_TEST_CASES;
+import static uk.gov.hmcts.sptribs.systemupdate.event.SystemCreateTestCase.SYSTEM_CREATE_TEST_CASE;
 
 @Component
 @Slf4j
 @RequiredArgsConstructor
-public class SystemCreateTestCasesTask implements Runnable {
+public class SystemCreateTestCaseTask implements Runnable {
 
     private final IdamService idamService;
     private final AuthTokenGenerator authTokenGenerator;
     private final CcdUpdateService ccdUpdateService;
 
 
-    @Value("${feature.create-system-update-test-cases.enabled}")
-    private boolean createTestCasesEnabled;
+    @Value("${feature.create-system-update-test-case.enabled}")
+    private boolean createTestCaseEnabled;
 
-    @Value("${feature.create-system-update-test-cases.count}")
+    @Value("${feature.create-system-update-test-case.count}")
     private int testCaseCount;
 
     @Override
     public void run() {
-        if (!createTestCasesEnabled) {
-            log.info("SystemCreateTestCasesTask is disabled. Skipping execution.");
+        if (!createTestCaseEnabled) {
+            log.info("SystemCreateTestCaseTask is disabled. Skipping execution.");
             return;
         }
 
-        log.info("SystemCreateTestCasesTask started. Attempting to create {} test case(s).", testCaseCount);
+        log.info("SystemCreateTestCaseTask started. Attempting to create {} test case(s).", testCaseCount);
 
         final CICUser user = idamService.retrieveSystemUpdateUserDetails();
         final String serviceAuth = authTokenGenerator.generate();
@@ -45,7 +45,7 @@ public class SystemCreateTestCasesTask implements Runnable {
 
         for (int i = 0; i < testCaseCount; i++) {
             try {
-                triggerSystemCreateTestCases(user, serviceAuth);
+                triggerSystemCreateTestCase(user, serviceAuth);
                 successCount++;
             } catch (RuntimeException e) {
                 log.error("Failed to create test case on iteration {}. Error: {}", i + 1, e.getMessage());
@@ -54,15 +54,15 @@ public class SystemCreateTestCasesTask implements Runnable {
         }
 
         log.info(
-            "SystemCreateTestCasesTask completed. Successfully created: {} case(s), Failed: {} case(s).",
+            "SystemCreateTestCaseTask completed. Successfully created: {} case(s), Failed: {} case(s).",
             successCount, failureCount
         );
     }
 
 
-    private void triggerSystemCreateTestCases(CICUser user, String serviceAuth) {
+    private void triggerSystemCreateTestCase(CICUser user, String serviceAuth) {
         try {
-            ccdUpdateService.createCase(SYSTEM_CREATE_TEST_CASES, user, serviceAuth);
+            ccdUpdateService.createCase(SYSTEM_CREATE_TEST_CASE, user, serviceAuth);
 
         } catch (final CcdManagementException e) {
             log.error("Create test case event failed");
