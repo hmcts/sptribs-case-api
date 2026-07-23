@@ -43,7 +43,7 @@ public final class IdamWireMock {
     public static void stubForIdamDetails(final String authorizationToken,
                                           final String userId,
                                           final String userRole) {
-        IDAM_SERVER.stubFor(get("/details")
+        IDAM_SERVER.stubFor(get("/o/userinfo")
             .withHeader(HttpHeaders.AUTHORIZATION, new EqualToPattern(BEARER + authorizationToken))
             .willReturn(aResponse()
                 .withStatus(OK.value())
@@ -53,7 +53,7 @@ public final class IdamWireMock {
 
 
     public static void stubForIdamFailure() {
-        IDAM_SERVER.stubFor(get("/details")
+        IDAM_SERVER.stubFor(get("/o/userinfo")
             .withHeader(HttpHeaders.AUTHORIZATION, new EqualToPattern(BEARER + TEST_AUTHORIZATION_TOKEN))
             .willReturn(aResponse()
                 .withStatus(HttpStatus.UNAUTHORIZED.value())
@@ -71,9 +71,9 @@ public final class IdamWireMock {
     }
 
     private static String getUserDetailsForRole(final String userId, final String role) {
-        return "{\"id\":\"" + userId
-            + "\",\"email\":\"" + TEST_USER_EMAIL
-            + "\",\"forename\":\"forename\",\"surname\":\"Surname\",\"roles\":[\"" + role + "\"]}";
+        return "{\"uid\":\"" + userId
+            + "\",\"sub\":\"" + TEST_USER_EMAIL
+            + "\",\"given_name\":\"Name\",\"family_name\":\"Surname\",\"roles\":[\"" + role + "\"]}";
     }
 
 }

@@ -8,8 +8,8 @@ import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
-import uk.gov.hmcts.reform.idam.client.models.User;
-import uk.gov.hmcts.reform.idam.client.models.UserDetails;
+import uk.gov.hmcts.reform.idam.client.models.UserInfo;
+import uk.gov.hmcts.sptribs.idam.CICUser;
 import uk.gov.hmcts.sptribs.idam.IdamService;
 
 import java.util.ArrayList;
@@ -39,7 +39,7 @@ class SystemMigrateCasesTaskTest {
     @Test
     void shouldCallEachMigrationInMigrationsList() {
 
-        final User user = new User(SYSTEM_UPDATE_AUTH_TOKEN, UserDetails.builder().build());
+        final CICUser user = new CICUser(SYSTEM_UPDATE_AUTH_TOKEN, UserInfo.builder().build());
 
         final Migration migration1 = mock(Migration.class);
         final Migration migration2 = mock(Migration.class);

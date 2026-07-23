@@ -7,9 +7,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.ccd.sdk.type.Document;
-import uk.gov.hmcts.reform.idam.client.models.User;
 import uk.gov.hmcts.sptribs.ciccase.model.LanguagePreference;
 import uk.gov.hmcts.sptribs.document.model.DocumentInfo;
+import uk.gov.hmcts.sptribs.idam.CICUser;
 import uk.gov.hmcts.sptribs.idam.IdamService;
 import uk.gov.hmcts.sptribs.testutil.TestDataHelper;
 
@@ -42,7 +42,7 @@ public class CaseDataDocumentServiceTest {
     @Test
     public void shouldGenerateAndStoreDraftApplicationAndReturnDocumentUrl() {
         final Map<String, Object> templateContent = new HashMap<>();
-        final User user = TestDataHelper.getUser();
+        final CICUser user = TestDataHelper.getUser();
         final DocumentInfo info = new DocumentInfo("", FILENAME, "", "");
         when(idamService.retrieveUser(any())).thenReturn(user);
         when(docAssemblyService.renderDocument(any(), any(), any(), any(), any(), any())).thenReturn(info);
