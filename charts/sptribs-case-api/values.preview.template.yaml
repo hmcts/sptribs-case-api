@@ -524,6 +524,7 @@ em-ccdorc:
   java:
     imagePullPolicy: Always
     releaseNameOverride: ${SERVICE_NAME}-em-ccdorc
+#    image: hmctsprod.azurecr.io/em/ccdorc:pr-2334-5e36840-20260707093857
     image: hmctsprod.azurecr.io/em/ccdorc:latest
     ingressHost: em-ccdorc-${SERVICE_FQDN}
     environment:
@@ -554,6 +555,7 @@ em-stitching:
     ingressHost: em-stitching-${SERVICE_FQDN}
     environment:
       CDAM_URL: http://${SERVICE_NAME}-ccd-case-document-am-api
+      IDAM_WEB_API_BASE_URI: 'https://idam-web-public.{{ .Values.global.environment }}.platform.hmcts.net'
       SPRING_DATASOURCE_HOST: '{{ tpl .Values.global.postgresHostname $}}'
       SPRING_DATASOURCE_NAME: "pr-${CHANGE_ID}-emstitch"
       SPRING_DATASOURCE_OPTIONS: "?ssl=disable"
