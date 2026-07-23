@@ -146,4 +146,65 @@ public class DocumentDownloadStatusServiceTest {
             ));
         }
     }
+
+    @Test
+    public void shouldFindDownloadStatusByDocumentIdAndParty() {
+        DocumentDownloadStatusEntity statusEntity = DocumentDownloadStatusEntity.builder().build();
+        when(documentDownloadStatusesRepository.findByDocumentIdAndParty(100L, Party.SUBJECT))
+            .thenReturn(Optional.of(statusEntity));
+
+        Optional<DocumentDownloadStatusEntity> result =
+            documentDownloadStatusService.findDownloadStatusByDocumentIdAndParty(100L, Party.SUBJECT);
+
+        assertThat(result).contains(statusEntity);
+    }
+
+    @Test
+    public void shouldFindDownloadStatusesByCaseAndParty() {
+        DocumentDownloadStatusEntity statusEntity = DocumentDownloadStatusEntity.builder().build();
+        when(documentDownloadStatusesRepository.findAllByCaseReferenceNumberAndParty(1234567890123456L, Party.SUBJECT))
+            .thenReturn(List.of(statusEntity));
+
+        List<DocumentDownloadStatusEntity> result =
+            documentDownloadStatusService.findDownloadStatusesByCaseAndParty(1234567890123456L, Party.SUBJECT);
+
+        assertThat(result).containsExactly(statusEntity);
+    }
+
+    @Test
+    public void shouldSaveOrUpdateStatusWhenExisting() {
+        DocumentDownloadStatusEntity statusEntity = DocumentDownloadStatusEntity.builder()
+            .caseReferenceNumber(1234567890123456L)
+            .documentId(100L)
+            .party(Party.SUBJECT)
+            .build();
+
+        when(documentDownloadStatusesRepository.findByDocumentIdAndParty(100L, Party.SUBJECT))
+            .thenReturn(Optional.of(statusEntity));
+        when(documentDownloadStatusesRepository.save(statusEntity)).thenReturn(statusEntity);
+
+        DocumentDownloadStatusEntity result =
+            documentDownloadStatusService.saveOrUpdateStatus(1234567890123456L, 100L, Party.SUBJECT);
+
+        assertThat(result).isEqualTo(statusEntity);
+        assertThat(result.getDownloadedAt()).isNotNull();
+        verify(documentDownloadStatusesRepository, times(1)).save(statusEntity);
+    }
+
+    @Test
+    public void shouldSaveOrUpdateStatusWhenNew() {
+        when(documentDownloadStatusesRepository.findByDocumentIdAndParty(100L, Party.SUBJECT))
+            .thenReturn(Optional.empty());
+        when(documentDownloadStatusesRepository.save(org.mockito.ArgumentMatchers.any(DocumentDownloadStatusEntity.class)))
+            .thenAnswer(invocation -> invocation.getArgument(0));
+
+        DocumentDownloadStatusEntity result =
+            documentDownloadStatusService.saveOrUpdateStatus(1234567890123456L, 100L, Party.SUBJECT);
+
+        assertThat(result.getCaseReferenceNumber()).isEqualTo(1234567890123456L);
+        assertThat(result.getDocumentId()).isEqualTo(100L);
+        assertThat(result.getParty()).isEqualTo(Party.SUBJECT);
+        assertThat(result.getDownloadedAt()).isNotNull();
+        verify(documentDownloadStatusesRepository, times(1)).save(org.mockito.ArgumentMatchers.any(DocumentDownloadStatusEntity.class));
+    }
 }

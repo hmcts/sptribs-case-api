@@ -39,24 +39,7 @@ public class DocumentDownloadStatusService {
             DocumentEntity docEntity = docEntityOpt.get();
             long docIdLong = docEntity.getId();
 
-            Optional<DocumentDownloadStatusEntity> existingStatusOpt =
-                documentDownloadStatusesRepository.findByDocumentIdAndParty(docIdLong, party);
-
-            if (existingStatusOpt.isPresent()) {
-                DocumentDownloadStatusEntity status = existingStatusOpt.get();
-                status.setDownloadedAt(OffsetDateTime.now());
-                documentDownloadStatusesRepository.save(status);
-                log.info("Updated download status for document: {}, party: {}", documentId, party);
-            } else {
-                DocumentDownloadStatusEntity status = DocumentDownloadStatusEntity.builder()
-                    .caseReferenceNumber(Long.valueOf(ccdReference))
-                    .documentId(docIdLong)
-                    .party(party)
-                    .downloadedAt(OffsetDateTime.now())
-                    .build();
-                documentDownloadStatusesRepository.save(status);
-                log.info("Recorded new download status for document: {}, party: {}", documentId, party);
-            }
+            saveOrUpdateStatus(Long.valueOf(ccdReference), docIdLong, party);
         } catch (Exception e) {
             log.error("Error recording document download status for document: {}, case: {}", documentId, ccdReference, e);
         }
@@ -69,7 +52,7 @@ public class DocumentDownloadStatusService {
             }
 
             List<DocumentDownloadStatusEntity> statuses =
-                documentDownloadStatusesRepository.findAllByCaseReferenceNumberAndParty(Long.valueOf(ccdReference), party);
+                findDownloadStatusesByCaseAndParty(Long.valueOf(ccdReference), party);
 
             return statuses.stream()
                 .map(DocumentDownloadStatusEntity::getDocumentId)
@@ -78,5 +61,34 @@ public class DocumentDownloadStatusService {
             log.error("Error fetching downloaded document IDs for case {}", ccdReference, e);
             return Set.of();
         }
+    }
+
+    public Optional<DocumentDownloadStatusEntity> findDownloadStatusByDocumentIdAndParty(long documentId, Party party) {
+        return documentDownloadStatusesRepository.findByDocumentIdAndParty(documentId, party);
+    }
+
+    public List<DocumentDownloadStatusEntity> findDownloadStatusesByCaseAndParty(Long caseReferenceNumber, Party party) {
+        return documentDownloadStatusesRepository.findAllByCaseReferenceNumberAndParty(caseReferenceNumber, party);
+    }
+
+    public DocumentDownloadStatusEntity saveOrUpdateStatus(Long caseReferenceNumber, long documentId, Party party) {
+        Optional<DocumentDownloadStatusEntity> existingStatusOpt =
+            findDownloadStatusByDocumentIdAndParty(documentId, party);
+
+        DocumentDownloadStatusEntity status;
+        if (existingStatusOpt.isPresent()) {
+            status = existingStatusOpt.get();
+            status.setDownloadedAt(OffsetDateTime.now());
+            log.info("Updated download status for document: {}, party: {}", documentId, party);
+        } else {
+            status = DocumentDownloadStatusEntity.builder()
+                .caseReferenceNumber(caseReferenceNumber)
+                .documentId(documentId)
+                .party(party)
+                .downloadedAt(OffsetDateTime.now())
+                .build();
+            log.info("Recorded new download status for document: {}, party: {}", documentId, party);
+        }
+        return documentDownloadStatusesRepository.save(status);
     }
 }
