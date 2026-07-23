@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 import uk.gov.hmcts.sptribs.document.model.DocumentEntity;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface DocumentsRepository extends JpaRepository<DocumentEntity, Integer> {
@@ -63,4 +64,12 @@ public interface DocumentsRepository extends JpaRepository<DocumentEntity, Integ
         """)
     void deleteEntryByBinaryURL(
         @Param("documentBinaryUrl") String documentBinaryUrl);
+
+    @Query("""
+            SELECT d
+            FROM DocumentEntity d
+            WHERE d.documentUrl LIKE %:documentId% OR d.documentBinaryUrl LIKE %:documentId%
+        """)
+    Optional<DocumentEntity> findByDocumentIdUuid(
+        @Param("documentId") String documentId);
 }

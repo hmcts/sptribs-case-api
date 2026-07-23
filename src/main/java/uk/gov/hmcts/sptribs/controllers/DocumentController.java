@@ -22,11 +22,18 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.sptribs.ciccase.service.CicaCaseService;
 import uk.gov.hmcts.sptribs.controllers.mapper.CaseworkerCICDocumentMapper;
+import uk.gov.hmcts.sptribs.controllers.model.DashboardDocument;
 import uk.gov.hmcts.sptribs.controllers.model.DocumentResponse;
 import uk.gov.hmcts.sptribs.document.DocumentDownloadService;
 import uk.gov.hmcts.sptribs.document.model.DocumentDashboardModel;
+import uk.gov.hmcts.sptribs.document.model.DocumentEntity;
 import uk.gov.hmcts.sptribs.document.model.DownloadedDocumentResponse;
+import uk.gov.hmcts.sptribs.document.service.DocumentDownloadStatusService;
 import uk.gov.hmcts.sptribs.document.service.DocumentsService;
+import uk.gov.hmcts.sptribs.notification.model.Party;
+
+import java.util.List;
+import java.util.Set;
 
 @Tag(name = "Document Controller")
 @Slf4j
@@ -38,6 +45,7 @@ public class DocumentController {
 
     private final DocumentDownloadService documentDownloadService;
     private final DocumentsService documentsService;
+    private final DocumentDownloadStatusService documentDownloadStatusService;
     private final CaseworkerCICDocumentMapper caseworkerCICDocumentMapper;
     private final CicaCaseService cicaCaseService;
 
@@ -69,14 +77,23 @@ public class DocumentController {
 
         log.info("Received request to get documents with CCD reference = {}", ccdReference);
 
-        cicaCaseService.checkIfUserHasAccessWithPostcode(ccdReference, authorisation, postcode);
+        Party party = cicaCaseService.verifyUserAccessAndGetParty(ccdReference, authorisation, postcode);
+
+        Set<Long> downloadedDocIds = documentDownloadStatusService.getDownloadedDocumentIds(ccdReference, party);
 
         DocumentDashboardModel documentDashboardModel = documentsService.getDocumentsOnCase(Long.valueOf(ccdReference));
 
         DocumentResponse documentResponse = DocumentResponse.builder()
-            .contactPartiesDocuments(caseworkerCICDocumentMapper.map(documentDashboardModel.getContactPartiesDocuments()))
-            .orderAndDecisionDocuments(caseworkerCICDocumentMapper.map(documentDashboardModel.getOrderAndDecisionDocuments()))
-            .latestCaseBundleDocuments(caseworkerCICDocumentMapper.mapEntityToList(documentDashboardModel.getLatestCaseBundleDocument()))
+            .contactPartiesDocuments(wrapWithDownloadStatus(
+                documentDashboardModel.getContactPartiesDocuments(),
+                downloadedDocIds))
+            .orderAndDecisionDocuments(wrapWithDownloadStatus(
+                documentDashboardModel.getOrderAndDecisionDocuments(),
+                downloadedDocIds))
+            .latestCaseBundleDocuments(wrapWithDownloadStatus(
+                documentDashboardModel.getLatestCaseBundleDocument() != null
+                    ? List.of(documentDashboardModel.getLatestCaseBundleDocument()) : List.of(),
+                downloadedDocIds))
             .build();
 
         return ResponseEntity.ok()
@@ -115,12 +132,18 @@ public class DocumentController {
 
         log.info("Received request to download document with id: {} for CCD reference: {}", documentId, ccdReference);
 
-        cicaCaseService.checkIfUserHasAccessWithPostcode(ccdReference, authorisation, postcode);
+        Party party =  cicaCaseService.verifyUserAccessAndGetParty(ccdReference, authorisation, postcode);
 
         DownloadedDocumentResponse documentResponse = documentDownloadService.downloadDocument(
             authorisation,
             documentId
         );
+
+        try {
+            documentDownloadStatusService.recordDocumentDownload(ccdReference, party, documentId);
+        } catch (Exception e) {
+            log.error("Failed to record document download status for doc: {}, case: {}", documentId, ccdReference, e);
+        }
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.valueOf(documentResponse.mimeType()));
@@ -130,6 +153,22 @@ public class DocumentController {
         return ResponseEntity.ok()
             .headers(headers)
             .body(documentResponse.file());
+    }
+
+    private List<DashboardDocument> wrapWithDownloadStatus(
+        List<DocumentEntity> entities,
+        Set<Long> downloadedDocIds) {
+
+        if (entities == null) {
+            return List.of();
+        }
+
+        return entities.stream()
+            .map(entity -> DashboardDocument.builder()
+                .document(caseworkerCICDocumentMapper.map(entity))
+                .downloaded(downloadedDocIds != null && downloadedDocIds.contains(entity.getId()))
+                .build())
+            .toList();
     }
 }
 

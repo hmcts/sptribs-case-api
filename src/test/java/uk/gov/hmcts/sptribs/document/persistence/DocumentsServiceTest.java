@@ -348,5 +348,4 @@ public class DocumentsServiceTest {
             .categoryId(categoryId)
             .build();
     }
-
 }

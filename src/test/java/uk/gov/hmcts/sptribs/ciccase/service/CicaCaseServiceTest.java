@@ -9,11 +9,19 @@ import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.idam.client.models.User;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
+import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.common.repositories.CaseDataRepository;
+import uk.gov.hmcts.sptribs.common.repositories.model.CicaCaseEntity;
 import uk.gov.hmcts.sptribs.exception.CaseNotFoundException;
 import uk.gov.hmcts.sptribs.exception.UnauthorisedCaseAccessException;
 import uk.gov.hmcts.sptribs.idam.IdamService;
+import uk.gov.hmcts.sptribs.notification.model.Party;
 
+import java.util.HashMap;
+import java.util.Optional;
+
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
@@ -92,33 +100,65 @@ class CicaCaseServiceTest {
     }
 
     @Test
-    void shouldNotThrowExceptionWhenCheckIfUserHasAccessWithPostcodeSuccessful() {
+    void shouldReturnPartyWhenVerifyUserAccessAndGetPartySuccessful() {
+        CicaCaseEntity cicaCaseEntity = CicaCaseEntity.builder()
+            .data(new HashMap<>())
+            .build();
+
+        CaseData caseData = CaseData.builder()
+            .cicCase(CicCase.builder().email(TEST_SYSTEM_UPDATE_USER_EMAIL).build())
+            .build();
+
         when(user.getUserDetails()).thenReturn(userDetails());
         when(idamService.retrieveUser(TEST_AUTHORIZATION)).thenReturn(user);
-        when(caseDataRepository.checkIfUserHasAccessToCase(TEST_CASE_ID_STRING, TEST_SYSTEM_UPDATE_USER_EMAIL, TEST_POSTCODE))
-            .thenReturn(true);
+        when(caseDataRepository.findCase(TEST_CASE_ID_STRING, TEST_SYSTEM_UPDATE_USER_EMAIL, TEST_POSTCODE))
+            .thenReturn(Optional.of(cicaCaseEntity));
+        when(objectMapper.convertValue(cicaCaseEntity.getData(), CaseData.class)).thenReturn(caseData);
 
-        assertDoesNotThrow(() -> cicaCaseService.checkIfUserHasAccessWithPostcode(TEST_CASE_ID_STRING, TEST_AUTHORIZATION, TEST_POSTCODE));
+        Party result = cicaCaseService.verifyUserAccessAndGetParty(TEST_CASE_ID_STRING, TEST_AUTHORIZATION, TEST_POSTCODE);
+
+        assertThat(result).isEqualTo(Party.SUBJECT);
     }
 
     @Test
-    void shouldThrowUnauthorisedCaseAccessExceptionWhenCheckIfUserHasAccessWithPostcodeFails() {
+    void shouldThrowUnauthorisedCaseAccessExceptionWhenVerifyUserAccessAndGetPartyFailsPostcode() {
         when(user.getUserDetails()).thenReturn(userDetails());
         when(idamService.retrieveUser(TEST_AUTHORIZATION)).thenReturn(user);
-        when(caseDataRepository.checkIfUserHasAccessToCase(TEST_CASE_ID_STRING, TEST_SYSTEM_UPDATE_USER_EMAIL, TEST_POSTCODE))
-            .thenReturn(false);
+        when(caseDataRepository.findCase(TEST_CASE_ID_STRING, TEST_SYSTEM_UPDATE_USER_EMAIL, TEST_POSTCODE))
+            .thenReturn(Optional.empty());
 
         assertThrows(UnauthorisedCaseAccessException.class, () ->
-            cicaCaseService.checkIfUserHasAccessWithPostcode(TEST_CASE_ID_STRING, TEST_AUTHORIZATION, TEST_POSTCODE)
+            cicaCaseService.verifyUserAccessAndGetParty(TEST_CASE_ID_STRING, TEST_AUTHORIZATION, TEST_POSTCODE)
         );
     }
 
     @Test
-    void shouldThrowUnauthorisedCaseAccessExceptionWhenCheckIfUserHasAccessWithPostcodeFailsDueToIdamException() {
+    void shouldThrowUnauthorisedCaseAccessExceptionWhenVerifyUserAccessAndGetPartyFailsNoMatchingParty() {
+        CicaCaseEntity cicaCaseEntity = CicaCaseEntity.builder()
+            .data(new HashMap<>())
+            .build();
+
+        CaseData caseData = CaseData.builder()
+            .cicCase(CicCase.builder().email("stranger@test.com").build())
+            .build();
+
+        when(user.getUserDetails()).thenReturn(userDetails());
+        when(idamService.retrieveUser(TEST_AUTHORIZATION)).thenReturn(user);
+        when(caseDataRepository.findCase(TEST_CASE_ID_STRING, TEST_SYSTEM_UPDATE_USER_EMAIL, TEST_POSTCODE))
+            .thenReturn(Optional.of(cicaCaseEntity));
+        when(objectMapper.convertValue(cicaCaseEntity.getData(), CaseData.class)).thenReturn(caseData);
+
+        assertThrows(UnauthorisedCaseAccessException.class, () ->
+            cicaCaseService.verifyUserAccessAndGetParty(TEST_CASE_ID_STRING, TEST_AUTHORIZATION, TEST_POSTCODE)
+        );
+    }
+
+    @Test
+    void shouldThrowUnauthorisedCaseAccessExceptionWhenVerifyUserAccessAndGetPartyFailsDueToIdamException() {
         when(idamService.retrieveUser(TEST_AUTHORIZATION)).thenThrow(new RuntimeException("IDAM down"));
 
         assertThrows(UnauthorisedCaseAccessException.class, () ->
-            cicaCaseService.checkIfUserHasAccessWithPostcode(TEST_CASE_ID_STRING, TEST_AUTHORIZATION, TEST_POSTCODE)
+            cicaCaseService.verifyUserAccessAndGetParty(TEST_CASE_ID_STRING, TEST_AUTHORIZATION, TEST_POSTCODE)
         );
     }
 }

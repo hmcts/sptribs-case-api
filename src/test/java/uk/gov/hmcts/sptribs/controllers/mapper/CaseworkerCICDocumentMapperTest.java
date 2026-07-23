@@ -158,5 +158,3 @@ class CaseworkerCICDocumentMapperTest {
         assertThat(result).isEmpty();
     }
 }
-
-
