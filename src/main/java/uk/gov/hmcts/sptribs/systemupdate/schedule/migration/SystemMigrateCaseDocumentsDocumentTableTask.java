@@ -5,8 +5,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
-import uk.gov.hmcts.reform.idam.client.models.User;
 import uk.gov.hmcts.sptribs.common.repositories.impl.CaseDataRepositoryImpl;
+import uk.gov.hmcts.sptribs.idam.CICUser;
 import uk.gov.hmcts.sptribs.idam.IdamService;
 import uk.gov.hmcts.sptribs.systemupdate.service.CcdManagementException;
 import uk.gov.hmcts.sptribs.systemupdate.service.CcdSearchService;
@@ -74,7 +74,7 @@ public class SystemMigrateCaseDocumentsDocumentTableTask implements Runnable {
             return;
         }
 
-        final User user = idamService.retrieveSystemUpdateUserDetails();
+        final CICUser user = idamService.retrieveSystemUpdateUserDetails();
         final String serviceAuth = authTokenGenerator.generate();
 
 
@@ -110,7 +110,7 @@ public class SystemMigrateCaseDocumentsDocumentTableTask implements Runnable {
 
     }
 
-    private void triggerSystemMigrateDocumentsToDocumentTable(User user, String serviceAuth, Long caseId) {
+    private void triggerSystemMigrateDocumentsToDocumentTable(CICUser user, String serviceAuth, Long caseId) {
         try {
             log.info("System migrate documents to document table Event for Case {}", caseId);
 
@@ -123,7 +123,7 @@ public class SystemMigrateCaseDocumentsDocumentTableTask implements Runnable {
         }
     }
 
-    private void processBatches(List<Long> caseIds, User user, String serviceAuth) {
+    private void processBatches(List<Long> caseIds, CICUser user, String serviceAuth) {
         int total = caseIds.size();
         int success = 0;
         int failed = 0;

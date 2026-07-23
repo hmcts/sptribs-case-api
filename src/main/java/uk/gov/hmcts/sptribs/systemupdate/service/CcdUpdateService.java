@@ -62,10 +62,10 @@ public class CcdUpdateService {
     }
 
     public void createCase(final String eventId,
-                           final User user,
+                           final CICUser user,
                            final String serviceAuth) {
 
-        final String userId = user.getUserDetails().getId();
+        final String userId = user.getUserInfo().getUid();
         final String authorization = user.getAuthToken();
 
         try {

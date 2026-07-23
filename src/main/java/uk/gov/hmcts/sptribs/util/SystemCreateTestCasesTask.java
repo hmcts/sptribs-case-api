@@ -5,7 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
-import uk.gov.hmcts.reform.idam.client.models.User;
+import uk.gov.hmcts.sptribs.idam.CICUser;
 import uk.gov.hmcts.sptribs.idam.IdamService;
 import uk.gov.hmcts.sptribs.systemupdate.service.CcdManagementException;
 import uk.gov.hmcts.sptribs.systemupdate.service.CcdUpdateService;
@@ -37,7 +37,7 @@ public class SystemCreateTestCasesTask implements Runnable {
 
         log.info("SystemCreateTestCasesTask started. Attempting to create {} test case(s).", testCaseCount);
 
-        final User user = idamService.retrieveSystemUpdateUserDetails();
+        final CICUser user = idamService.retrieveSystemUpdateUserDetails();
         final String serviceAuth = authTokenGenerator.generate();
 
         int successCount = 0;
@@ -60,7 +60,7 @@ public class SystemCreateTestCasesTask implements Runnable {
     }
 
 
-    private void triggerSystemCreateTestCases(User user, String serviceAuth) {
+    private void triggerSystemCreateTestCases(CICUser user, String serviceAuth) {
         try {
             ccdUpdateService.createCase(SYSTEM_CREATE_TEST_CASES, user, serviceAuth);
 
