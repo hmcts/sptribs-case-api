@@ -26,19 +26,26 @@ import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
+import uk.gov.hmcts.sptribs.common.repositories.exception.document.DocumentSaveException;
 import uk.gov.hmcts.sptribs.document.CaseDataDocumentService;
 import uk.gov.hmcts.sptribs.document.model.CICDocument;
+import uk.gov.hmcts.sptribs.document.model.CaseDocumentType;
+import uk.gov.hmcts.sptribs.document.model.DocumentType;
+import uk.gov.hmcts.sptribs.document.service.DocumentsService;
 import uk.gov.hmcts.sptribs.notification.dispatcher.CaseFinalDecisionIssuedNotification;
 
 import java.time.Clock;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static java.lang.String.format;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_ISSUE_FINAL_DECISION;
+import static uk.gov.hmcts.sptribs.caseworker.util.MessageUtil.handleDocumentException;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingOutcome;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseClosed;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_CASEWORKER;
@@ -82,6 +89,8 @@ public class CaseworkerIssueFinalDecision implements CCDConfig<CaseData, State, 
 
     private final Clock clock;
 
+    private final DocumentsService documentsService;
+
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
         Event.EventBuilder<CaseData, UserRole, State> eventBuilder =
@@ -123,9 +132,15 @@ public class CaseworkerIssueFinalDecision implements CCDConfig<CaseData, State, 
                                                                        CaseDetails<CaseData, State> beforeDetails) {
         final CaseData caseData = details.getData();
         final CICDocument finalDecisionDocument = caseData.getCaseIssueFinalDecision().getDocument();
+        final Document finalDecisionDocumentCreatedFromTemplate = caseData.getCaseIssueFinalDecision().getFinalDecisionDraft();
 
-        if (finalDecisionDocument != null) {
-            finalDecisionDocument.getDocumentLink().setCategoryId("TD");
+        final List<String> errors = new ArrayList<>();
+
+        if (finalDecisionDocument != null && finalDecisionDocument.getDocumentLink() != null) {
+            finalDecisionDocument.getDocumentLink().setCategoryId(DocumentType.TRIBUNAL_DIRECTION.getCategory());
+            saveFinalDecisionDocumentToDB(finalDecisionDocument.getDocumentLink(), details.getId(), errors);
+        } else if (finalDecisionDocumentCreatedFromTemplate != null) {
+            saveFinalDecisionDocumentToDB(finalDecisionDocumentCreatedFromTemplate, details.getId(), errors);
         }
 
         caseData.getCaseIssueFinalDecision().setFinalDecisionDate(LocalDate.now(this.clock));
@@ -133,6 +148,7 @@ public class CaseworkerIssueFinalDecision implements CCDConfig<CaseData, State, 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
             .state(CaseClosed)
+            .errors(errors)
             .build();
     }
 
@@ -188,6 +204,18 @@ public class CaseworkerIssueFinalDecision implements CCDConfig<CaseData, State, 
             filename,
             request
         );
+    }
 
+    private void saveFinalDecisionDocumentToDB(Document finalDecisionDocument, Long caseId, List<String> errors) {
+        try {
+            documentsService.buildAndSaveNewDocumentEntity(
+                finalDecisionDocument,
+                caseId,
+                DocumentType.TRIBUNAL_DIRECTION,
+                CaseDocumentType.FINAL_DECISION
+            );
+        } catch (DocumentSaveException e) {
+            errors.add(handleDocumentException(finalDecisionDocument, e.getMessage()));
+        }
     }
 }

@@ -28,7 +28,7 @@ public class SystemMigrateOldHearingFT extends FunctionalTestSuite {
     @Test
     public void shouldMigrateOldHearingOnAboutToSubmit() throws Exception {
         final Map<String, Object> caseData = caseData(REQUEST);
-        final Response response = triggerCallback(caseData, SYSTEM_MIGRATE_OLD_HEARING, ABOUT_TO_SUBMIT_URL);
+        final Response response = triggerCallback(caseData, SYSTEM_MIGRATE_OLD_HEARING, ABOUT_TO_SUBMIT_URL, false);
 
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
         assertThatJson(response.asString())

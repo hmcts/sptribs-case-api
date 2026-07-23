@@ -171,11 +171,12 @@ public class CaseworkerCreateAndSendOrderIT {
         Document document = Document.builder()
             .categoryId("TD")
             .filename("Order--[AAC]--09-05-2024 09:04:04.pdf")
-            .binaryUrl("http://dm-store-aat.service.core-compute-aat.internal/documents/6bcdb209-ba65-4f31-a12a-5abbdf250fb6/binary")
-            .url("http://dm-store-aat.service.core-compute-aat.internal/documents/6bcdb209-ba65-4f31-a12a-5abbdf250fb6")
+            .binaryUrl("http://url/binary")
+            .url("http://url/")
             .build();
 
         final CaseData caseData = CaseData.builder()
+            .hyphenatedCaseRef(TEST_CASE_ID_HYPHENATED)
             .draftOrderContentCIC(draftOrderContentCIC)
             .cicCase(CicCase.builder()
                 .orderIssuingType(CREATE_AND_SEND_NEW_ORDER)

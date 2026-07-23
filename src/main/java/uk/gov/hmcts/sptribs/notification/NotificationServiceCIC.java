@@ -23,6 +23,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.NotificationType;
 import uk.gov.hmcts.sptribs.common.config.EmailTemplatesConfigCIC;
 import uk.gov.hmcts.sptribs.common.repositories.CorrespondenceRepository;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
+import uk.gov.hmcts.sptribs.document.model.DocumentType;
 import uk.gov.hmcts.sptribs.idam.CICUser;
 import uk.gov.hmcts.sptribs.idam.IdamService;
 import uk.gov.hmcts.sptribs.notification.exception.NotificationException;
@@ -316,10 +317,17 @@ public class NotificationServiceCIC {
             if (uploadedDocument != null) {
                 log.debug("Document available for: {}", docName);
 
-                if (uploadedDocument.length <= TWO_MEGABYTES) {
-                    templateVars.put(docName, getJsonFileAttachment(uploadedDocument));
+                if (!selectedDocuments.isEmpty()) {
+
+                    addDocumentDescription(templateVars, selectedDocuments, item, docName);
+
                 } else {
-                    addDocumentDetails(templateVars, selectedDocuments, item, docName);
+
+                    if (uploadedDocument.length <= TWO_MEGABYTES) {
+                        templateVars.put(docName, getJsonFileAttachment(uploadedDocument));
+                    } else {
+                        addDocumentDetails(templateVars, selectedDocuments, item, docName);
+                    }
                 }
             } else {
                 templateVars.put(docName, "");
@@ -328,6 +336,23 @@ public class NotificationServiceCIC {
             log.info("Document not available for: {}", docName);
             templateVars.put(docName, "");
         }
+    }
+
+    private static void addDocumentDescription(Map<String, Object> templateVars,
+                                               List<CaseworkerCICDocument> selectedDocuments,
+                                               String item,
+                                               String docName) {
+        CaseworkerCICDocument document = selectedDocuments.stream()
+            .filter(doc -> doc.getDocumentLink().getBinaryUrl().contains(item))
+            .findFirst()
+            .orElseThrow(() -> new NotificationException(
+                new Exception(String.format("Unable to find document details for document id: %s", item))));
+
+        String documentNotification = String.format(
+            "%nFilename: %s%nDescription: %s%n",
+            document.getDocumentLink().getFilename(), document.getDocumentEmailContent());
+
+        templateVars.put(docName, documentNotification);
     }
 
     private static void addDocumentDetails(Map<String, Object> templateVars,
@@ -450,6 +475,7 @@ public class NotificationServiceCIC {
             uploadedPDF.setBinaryUrl(uploadResponse.getDocuments().getFirst().links.binary.href);
             uploadedPDF.setFilename(correspondenceDocumentFilename);
             uploadedPDF.setUrl(uploadResponse.getDocuments().getFirst().links.self.href);
+            uploadedPDF.setCategoryId(DocumentType.CORRESPONDENCE.getCategory());
 
             return uploadedPDF;
         } catch (RestClientException e) {

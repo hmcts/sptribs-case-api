@@ -42,6 +42,8 @@ import static uk.gov.hmcts.sptribs.common.CommonConstants.CIC_CASE_REPRESENTATIV
 import static uk.gov.hmcts.sptribs.common.CommonConstants.CIC_CASE_SUBJECT_NAME;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.CONTACT_NAME;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.CONTACT_PARTY_INFO;
+import static uk.gov.hmcts.sptribs.common.CommonConstants.DASHBOARD_KEY;
+import static uk.gov.hmcts.sptribs.common.CommonConstants.DASHBOARD_LINK;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.HAS_CICA_NUMBER;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.TRIBUNAL_NAME;
 import static uk.gov.hmcts.sptribs.common.ccd.CcdCaseType.CIC;
@@ -139,7 +141,8 @@ public class CicSubmitCaseEventIT {
                 CONTACT_NAME, "Test Subject",
                 CIC_CASE_NUMBER, TEST_CASE_ID_HYPHENATED,
                 HAS_CICA_NUMBER, true,
-                CICA_REF_NUMBER, TEST_CICA_REF_NUMBER
+                CICA_REF_NUMBER, TEST_CICA_REF_NUMBER,
+                DASHBOARD_KEY, DASHBOARD_LINK
             )),
             anyString()
         );
@@ -183,7 +186,8 @@ public class CicSubmitCaseEventIT {
                 CONTACT_NAME, "Test Subject",
                 CIC_CASE_NUMBER, TEST_CASE_ID_HYPHENATED,
                 HAS_CICA_NUMBER, true,
-                CICA_REF_NUMBER, TEST_CICA_REF_NUMBER
+                CICA_REF_NUMBER, TEST_CICA_REF_NUMBER,
+                DASHBOARD_KEY, DASHBOARD_LINK
             )),
             anyString()
         );
@@ -218,7 +222,7 @@ public class CicSubmitCaseEventIT {
                 status().isOk());
 
         verify(notificationClient).sendEmail(
-            eq("48ccf890-0550-48ca-8c52-fa68cec09947"),
+            eq("86e6988c-dfc8-43de-8890-e38269ee40d1"),
             eq("test@representative.com"),
             eq(Map.of(
                 TRIBUNAL_NAME, CIC,
@@ -228,7 +232,8 @@ public class CicSubmitCaseEventIT {
                 CONTACT_NAME, "Test Representative",
                 CIC_CASE_NUMBER, TEST_CASE_ID_HYPHENATED,
                 HAS_CICA_NUMBER, true,
-                CICA_REF_NUMBER, TEST_CICA_REF_NUMBER
+                CICA_REF_NUMBER, TEST_CICA_REF_NUMBER,
+                DASHBOARD_KEY, DASHBOARD_LINK
             )),
             anyString()
         );
