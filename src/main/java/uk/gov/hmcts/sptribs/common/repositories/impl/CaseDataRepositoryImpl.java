@@ -70,6 +70,11 @@ public class CaseDataRepositoryImpl implements CaseDataRepository {
             + "FROM ccd.case_data c "
             + "WHERE c.state = :state ";
 
+    private static final String SELECT_LIST_OF_CASE_IDS_EXCLUDING_STATES =
+        "SELECT c.reference "
+            + "FROM ccd.case_data c "
+            + "WHERE c.state NOT IN (:states) ";
+
     @Override
     public boolean checkCaseExists(String ccdReference) {
         log.info("Searching for case with CCD reference: {}", ccdReference);
@@ -146,6 +151,33 @@ public class CaseDataRepositoryImpl implements CaseDataRepository {
 
         if (results.isEmpty()) {
             log.info("No results found for state = {}", state);
+            return results;
+        }
+
+        return results;
+    }
+
+    public List<Long> returnAllCasesExlcudingStates(List<String> states) {
+        List<Long> results;
+        var params = Map.of(
+            STATE, states
+        );
+
+        try {
+            results = namedParameterJdbcTemplate.query(SELECT_LIST_OF_CASE_IDS_EXCLUDING_STATES,
+                params,
+                (rs, rowNum) -> rs.getLong(REFERENCE)
+            );
+
+        } catch (DataAccessException dataAccessException) {
+            log.error("Failed to retrieve affected cases excluding states = {}",
+                states, dataAccessException);
+            throw new CaseEventRepositoryException(
+                "Error whilst retrieving case events to clean further documents", dataAccessException);
+        }
+
+        if (results.isEmpty()) {
+            log.info("No results found when excluding states = {}", states);
             return results;
         }
 

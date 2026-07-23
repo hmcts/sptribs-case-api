@@ -14,6 +14,7 @@ import uk.gov.hmcts.sptribs.document.model.CaseDocumentType;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.document.service.DocumentsService;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -29,6 +30,8 @@ import static uk.gov.hmcts.sptribs.document.model.CaseDocumentType.BUNDLE;
 public class SystemMigrateCaseDocumentsToDocTable implements CCDConfig<CaseData, State, UserRole> {
     public static final String SYSTEM_MIGRATE_CASE_DOCUMENTS_TO_TABLE = "migrate-to-document-table";
     private final DocumentsService documentsService;
+
+    final Map<String, String> failedDocs = new HashMap<>();
 
     @Override
     public void configure(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
@@ -46,30 +49,60 @@ public class SystemMigrateCaseDocumentsToDocTable implements CCDConfig<CaseData,
         CaseData caseData = caseDetails.getData();
         Long reference = caseDetails.getId();
 
-        Map<CaseDocumentType, List<CaseworkerCICDocument>> documentTypeDocumentMap =  prepareDocTypeAndDocMap(caseData);
+        Map<CaseDocumentType, List<CaseworkerCICDocument>> documentTypeDocumentMap = prepareDocTypeAndDocMap(caseData);
 
         log.info("Found {} docs for case reference: {} ", documentTypeDocumentMap.size(), reference);
-        documentTypeDocumentMap.forEach((caseDocumentType, caseworkerCICDocuments) ->
-            caseworkerCICDocuments.forEach(caseworkerCICDocument -> documentsService.buildAndSaveNewDocumentEntity(
-                caseworkerCICDocument.getDocumentLink(),
-                reference,
-                caseworkerCICDocument.getDocumentCategory(),
-                caseDocumentType
-            )));
+
+        saveDocumentsToDocTable(documentTypeDocumentMap, reference);
 
         if (caseData.getCaseBundles() != null) {
-            caseData.getCaseBundles().stream()
-                .map(bundleListValue -> bundleListValue.getValue().getStitchedDocument())
-                .forEach(document -> documentsService.buildAndSaveNewDocumentEntity(
-                    document,
-                    reference,
-                    null,
-                    BUNDLE
-                ));
+            saveBundlesToDocTable(caseData, reference);
+        }
+
+        if (!failedDocs.isEmpty()) {
+            log.error("Following documents failed to save: {}", failedDocs.keySet());
         }
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
-                .data(caseData)
-                .build();
+            .data(caseData)
+            .build();
+    }
+
+    private void saveBundlesToDocTable(CaseData caseData, Long reference) {
+        caseData.getCaseBundles().stream()
+            .map(bundleListValue -> bundleListValue.getValue().getStitchedDocument())
+            .forEach(document -> {
+                try {
+                    documentsService.buildAndSaveNewDocumentEntity(
+                        document,
+                        reference,
+                        null,
+                        BUNDLE
+                    );
+                } catch (Exception exception) {
+                    failedDocs.put(document.getBinaryUrl(), exception.getMessage());
+                    log.info("Failed to save bundle document {} to table: {}", document.getBinaryUrl(), exception.getMessage());
+                }
+
+            });
+    }
+
+    private void saveDocumentsToDocTable(Map<CaseDocumentType, List<CaseworkerCICDocument>> documentTypeDocumentMap, Long
+        reference) {
+        documentTypeDocumentMap.forEach((caseDocumentType, caseworkerCICDocuments) ->
+            caseworkerCICDocuments.forEach(caseworkerCICDocument -> {
+                try {
+                    documentsService.buildAndSaveNewDocumentEntity(
+                        caseworkerCICDocument.getDocumentLink(),
+                        reference,
+                        caseworkerCICDocument.getDocumentCategory(),
+                        caseDocumentType
+                    );
+                } catch (Exception exception) {
+                    failedDocs.put(caseworkerCICDocument.getDocumentLink().getBinaryUrl(), exception.getMessage());
+                    log.info("Failed to save document {} to table: {}",
+                        caseworkerCICDocument.getDocumentLink().getBinaryUrl(), exception.getMessage());
+                }
+            }));
     }
 }

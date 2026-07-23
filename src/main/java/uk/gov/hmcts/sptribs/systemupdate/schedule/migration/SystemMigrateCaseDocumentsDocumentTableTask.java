@@ -17,6 +17,9 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
+import static uk.gov.hmcts.sptribs.ciccase.model.State.DSS_Draft;
+import static uk.gov.hmcts.sptribs.ciccase.model.State.DSS_Expired;
+import static uk.gov.hmcts.sptribs.ciccase.model.State.Draft;
 import static uk.gov.hmcts.sptribs.systemupdate.event.SystemMigrateCaseDocumentsToDocTable.SYSTEM_MIGRATE_CASE_DOCUMENTS_TO_TABLE;
 
 @Component
@@ -84,7 +87,8 @@ public class SystemMigrateCaseDocumentsDocumentTableTask implements Runnable {
                 caseIdsToUpdate = List.of(caseIdToUpdate);
             } else {
 
-                caseIdsToUpdate = caseDataRepository.returnAllCases("Draft");
+                caseIdsToUpdate = caseDataRepository.returnAllCasesExlcudingStates(
+                    List.of(DSS_Draft.name(), Draft.name(), DSS_Expired.name()));
             }
 
             if (caseIdsToUpdate.isEmpty()) {
@@ -156,7 +160,7 @@ public class SystemMigrateCaseDocumentsDocumentTableTask implements Runnable {
         log.info("Migration complete: {} succeeded, {} failed out of {} total", success, failed, total);
 
         if (!failedCaseIds.isEmpty()) {
-            log.info("Failed case reference's: {}", failedCaseIds);
+            log.error("Failed case reference's: {}", failedCaseIds);
         }
     }
 }
