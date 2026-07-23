@@ -117,6 +117,7 @@
     "Country": "United Kingdom"
   },
   "cicCaseRepresentativePhoneNumber": "0745435345356",
+  "cicCaseRepresentativeEmailAddress": "test@test.com",
   "cicCaseRepresentativeContactDetailsPreference": "Email",
   "cicCaseIsRepresentativeQualified": "No",
   "cicCaseFormReceivedInTime": "Yes",

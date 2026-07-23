@@ -212,7 +212,7 @@ class CicSubmitCaseEventTest {
         assertThat(response.getData().getMessages().getFirst().getValue().getDateReceived())
             .isEqualTo(LocalDate.now());
         assertThat(response.getData().getMessages().getFirst().getValue().getReceivedFrom())
-            .isEqualTo(TestDataHelper.getUser().getUserDetails().getFullName());
+            .isEqualTo(TestDataHelper.getUser().getUserInfo().getName());
     }
 
     @Test

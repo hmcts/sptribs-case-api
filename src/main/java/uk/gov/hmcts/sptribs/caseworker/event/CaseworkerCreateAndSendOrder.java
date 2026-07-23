@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
+import org.springframework.web.client.RestClientException;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
@@ -41,18 +42,19 @@ import uk.gov.hmcts.sptribs.common.event.page.PreviewDraftOrder;
 import uk.gov.hmcts.sptribs.document.model.CaseDocumentType;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
 import uk.gov.hmcts.sptribs.document.service.DocumentsService;
+import uk.gov.hmcts.sptribs.notification.dispatcher.AnonymityAppliedNotification;
 import uk.gov.hmcts.sptribs.notification.dispatcher.NewOrderIssuedNotification;
+import uk.gov.hmcts.sptribs.notification.exception.NotificationException;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
-import java.util.UUID;
 
 import static java.lang.String.format;
 import static uk.gov.hmcts.sptribs.caseworker.model.OrderIssuingType.CREATE_AND_SEND_NEW_ORDER;
 import static uk.gov.hmcts.sptribs.caseworker.model.OrderIssuingType.UPLOAD_A_NEW_ORDER_FROM_YOUR_COMPUTER;
+import static uk.gov.hmcts.sptribs.caseworker.util.CaseFlagsUtil.applyAnonymityCaseFlag;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_CREATE_AND_SEND_ORDER;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventUtil.getRecipients;
 import static uk.gov.hmcts.sptribs.caseworker.util.MessageUtil.handleDocumentException;
@@ -89,6 +91,7 @@ public class CaseworkerCreateAndSendOrder implements CCDConfig<CaseData, State, 
     private final ApplyAnonymity applyAnonymitySelect;
     private final DraftOrderFooter draftOrderFooter;
     private final NewOrderIssuedNotification newOrderIssuedNotification;
+    private final AnonymityAppliedNotification anonymityAppliedNotification;
     private final SendOrderOrderDueDates orderDueDates;
     private final DocumentsService documentsService;
 
@@ -167,6 +170,10 @@ public class CaseworkerCreateAndSendOrder implements CCDConfig<CaseData, State, 
         }
 
         resetOrderJourneyFields(caseData, cicCase);
+
+        if (details.getState() != null) {
+            caseData.setCaseStatus(details.getState());
+        }
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
@@ -270,7 +277,11 @@ public class CaseworkerCreateAndSendOrder implements CCDConfig<CaseData, State, 
                                                CaseDetails<CaseData, State> beforeDetails) {
         try {
             sendOrderNotification(details.getData().getHyphenatedCaseRef(), details.getData());
-        } catch (RuntimeException notificationException) {
+            anonymityAppliedNotification.sendAnonymityNotificationIfNewlyApplied(
+                details.getData(),
+                beforeDetails == null ? null : beforeDetails.getData()
+            );
+        } catch (NotificationException | RestClientException notificationException) {
             log.warn("Failed to send order notifications for case {}", details.getId(), notificationException);
             return SubmittedCallbackResponse.builder()
                 .confirmationHeader(format("# Send order notification failed %n## Please resend the order"))
@@ -300,28 +311,5 @@ public class CaseworkerCreateAndSendOrder implements CCDConfig<CaseData, State, 
             newOrderIssuedNotification.sendToApplicant(caseData, caseNumber);
         }
 
-    }
-
-    private void applyAnonymityCaseFlag(CaseData data, ListValue<FlagDetail> existingAnonymityFlag) {
-        if (existingAnonymityFlag != null && existingAnonymityFlag.getValue() != null) {
-            existingAnonymityFlag.getValue().setStatus(CaseFlagsUtil.ACTIVE_STATUS);
-            existingAnonymityFlag.getValue().setFlagComment("Applied anonymity");
-            existingAnonymityFlag.getValue().setDateTimeModified(LocalDateTime.now());
-            return;
-        }
-
-        FlagDetail flagDetail = FlagDetail.builder()
-            .name("RRO (Restricted Reporting Order / Anonymisation)")
-            .path(List.of(ListValue.<String>builder().id(UUID.randomUUID().toString()).value("Case").build()))
-            .status(CaseFlagsUtil.ACTIVE_STATUS)
-            .nameCy("RRO (Gorchymyn Cyfyngiadau Adrodd / Anhysbys)")
-            .flagCode(CaseFlagsUtil.ANONYMITY_FLAG_CODE)
-            .flagComment("Applied anonymity")
-            .dateTimeCreated(LocalDateTime.now())
-            .hearingRelevant(YesOrNo.YES)
-            .availableExternally(YesOrNo.NO)
-            .build();
-
-        CaseFlagsUtil.addFlag(data, flagDetail);
     }
 }
