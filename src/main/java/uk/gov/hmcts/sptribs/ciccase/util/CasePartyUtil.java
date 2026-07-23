@@ -22,9 +22,6 @@ public final class CasePartyUtil {
             return Party.APPLICANT;
         } else if (userEmail.equalsIgnoreCase(cicCase.getRepresentativeEmailAddress())) {
             return Party.REPRESENTATIVE;
-        } else if (userEmail.equalsIgnoreCase(cicCase.getRespondentEmail())
-            || userEmail.equalsIgnoreCase(cicCase.getAlternativeRespondentEmail())) {
-            return Party.RESPONDENT;
         }
 
         return null;
