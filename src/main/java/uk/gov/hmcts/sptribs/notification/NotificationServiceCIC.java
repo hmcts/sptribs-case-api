@@ -287,6 +287,12 @@ public class NotificationServiceCIC {
     private void addAttachmentsToTemplateVars(Map<String, Object> templateVars,
                                               Map<String, String> uploadedDocuments,
                                               List<CaseworkerCICDocument> selectedDocuments) {
+        if (selectedDocuments.isEmpty()) {
+            throw new NotificationException(
+                    new Exception("No documents selected")
+            );
+        }
+
         for (Map.Entry<String, String> uploadDocumentEntry : uploadedDocuments.entrySet()) {
             final String docName = uploadDocumentEntry.getKey();
             final String item = uploadDocumentEntry.getValue();
@@ -294,9 +300,26 @@ public class NotificationServiceCIC {
             if (docName.contains(DOC_AVAILABLE)) {
                 templateVars.put(docName, item);
             } else {
-                addLinkOrDocumentDetails(templateVars, selectedDocuments, item, docName);
+                addDocumentDetailsToTemplate(templateVars, selectedDocuments, item, docName);
             }
         }
+    }
+
+    private void addDocumentDetailsToTemplate(Map<String, Object> templateVars,
+                                              List<CaseworkerCICDocument> selectedDocuments,
+                                              String docTemplateVar,
+                                              String documentId) {
+        CaseworkerCICDocument document = selectedDocuments.stream()
+            .filter(doc -> doc.getDocumentLink().getBinaryUrl().contains(documentId))
+            .findFirst()
+            .orElseThrow(() -> new NotificationException(
+                    new Exception(String.format("Unable to find document details for document id: %s", documentId))));
+
+        String documentNotification = String.format(
+                "%nFilename: %s%nDescription: %s%n",
+                document.getDocumentLink().getFilename(), document.getDocumentEmailContent());
+
+        templateVars.put(docTemplateVar, documentNotification);
     }
 
     private void addLinkOrDocumentDetails(Map<String, Object> templateVars,

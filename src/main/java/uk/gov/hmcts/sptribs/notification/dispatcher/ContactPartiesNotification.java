@@ -4,11 +4,13 @@ import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.sptribs.caseworker.util.DocumentListUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.ContactPreferenceType;
 import uk.gov.hmcts.sptribs.ciccase.model.NotificationResponse;
 import uk.gov.hmcts.sptribs.common.CommonConstants;
+import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.notification.NotificationHelper;
 import uk.gov.hmcts.sptribs.notification.NotificationServiceCIC;
 import uk.gov.hmcts.sptribs.notification.PartiesNotification;
@@ -16,6 +18,7 @@ import uk.gov.hmcts.sptribs.notification.TemplateName;
 import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
 import uk.gov.hmcts.sptribs.notification.model.Party;
 
+import java.util.List;
 import java.util.Map;
 
 import static uk.gov.hmcts.sptribs.common.CommonConstants.DASHBOARD_KEY;
@@ -46,6 +49,8 @@ public class ContactPartiesNotification implements PartiesNotification {
         templateVarsSubject.put(CommonConstants.CIC_CASE_SUBJECT_NAME, cicCase.getFullName());
         templateVarsSubject.put(CommonConstants.CONTACT_PARTY_INFO, cicCase.getNotifyPartyMessage());
         addDashboardLink(templateVarsSubject);
+        final List<CaseworkerCICDocument> selectedDocuments = DocumentListUtil.getSelectedDocumentsFromDynamicList(caseData, caseData.getContactPartiesDocuments().getDocumentList());
+        addDocumentDetails(templateVarsSubject, cicCase);
         final NotificationResponse notificationResponse;
         final TemplateName templateName;
 
@@ -65,6 +70,11 @@ public class ContactPartiesNotification implements PartiesNotification {
         }
         cicCase.setSubjectLetterNotifyList(notificationResponse);
         return notificationResponse.getId();
+    }
+
+    private void addDocumentDetails(Map<String, Object> templateVarsSubject, CicCase cicCase) {
+        var selectedContactPartyDocuments = cicCase.getSelectedContactPartiesDocs();
+
     }
 
     @Override
@@ -189,6 +199,7 @@ public class ContactPartiesNotification implements PartiesNotification {
         String toEmail,
         final Map<String, Object> templateVars,
         Map<String, String> uploadedDocuments,
+        List<CaseworkerCICDocument> selectedDocuments,
         TemplateName emailTemplateName,
         String caseReferenceNumber,
         Party receivingParty) {
@@ -199,7 +210,7 @@ public class ContactPartiesNotification implements PartiesNotification {
             templateVars,
             emailTemplateName);
 
-        return notificationService.sendEmail(request, caseReferenceNumber, receivingParty);
+        return notificationService.sendEmail(request, selectedDocuments, caseReferenceNumber, receivingParty);
     }
 
     private NotificationResponse sendLetterNotification(Map<String, Object> templateVarsLetter,

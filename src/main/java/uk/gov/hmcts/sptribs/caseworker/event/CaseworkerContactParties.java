@@ -27,6 +27,7 @@ import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.common.event.page.PartiesToContact;
 import uk.gov.hmcts.sptribs.common.service.ContactPartiesService;
+import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.notification.NotificationHelper;
 import uk.gov.hmcts.sptribs.notification.dispatcher.ContactPartiesNotification;
 
@@ -146,6 +147,9 @@ public class CaseworkerContactParties implements CCDConfig<CaseData, State, User
 
         String sentDocList = sentDocListBuilder.toString();
 
+        List<CaseworkerCICDocument> selectedDocuments = DocumentListUtil.getSelectedDocumentsFromDynamicList(caseData, caseData.getContactPartiesDocuments().getDocumentList());
+        caseData.getCicCase().setSelectedContactPartiesDocs(selectedDocuments);
+
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
             .eventMetadata(EventMetadata.builder().summary(numberOfSentDocs +  " Selected documents sent").description(sentDocList).build())
@@ -178,6 +182,8 @@ public class CaseworkerContactParties implements CCDConfig<CaseData, State, User
 
         final Map<String, String> uploadedDocuments = notificationHelper
             .buildDocumentList(details.getData().getContactPartiesDocuments().getDocumentList(), DOC_ATTACH_LIMIT);
+
+        var selectedDocuments = cicCase.getSelectedContactPartiesDocs();
 
         List<String> correspondenceIds = new ArrayList<>();
 

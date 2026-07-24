@@ -262,6 +262,14 @@ public final class DocumentListUtil {
         return allDocuments.stream().filter(document -> document.getDocumentLink().getBinaryUrl().contains(id)).findFirst();
     }
 
+    public static List<CaseworkerCICDocument> getSelectedDocumentsFromDynamicList(CaseData caseData, DynamicMultiSelectList list) {
+        var selectedDocIds = extractDocumentIds(list.getValue());
+        return selectedDocIds.stream().map(id -> DocumentListUtil.getCaseDocumentById(id, caseData))
+            .filter(Optional::isPresent)
+            .map(Optional::get)
+            .toList();
+    }
+
     public static List<String> extractDocumentIds(List<DynamicListElement> elements) {
         if (elements == null || elements.isEmpty()) {
             return List.of();
