@@ -115,7 +115,7 @@ public class DecisionIssuedNotification implements PartiesNotification {
             uploadedDocumentIds,
             templateVars,
             TemplateName.DECISION_ISSUED_EMAIL);
-        return notificationService.sendEmail(emailRequest, caseReferenceNumber);
+        return notificationService.sendEmail(emailRequest, caseReferenceNumber, null);
     }
 
     private NotificationResponse sendLetterNotification(Map<String, Object> templateVarsLetter, String caseReferenceNumber) {

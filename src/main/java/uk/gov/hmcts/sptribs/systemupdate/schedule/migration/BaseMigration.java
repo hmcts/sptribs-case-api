@@ -4,8 +4,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.idam.client.models.User;
 import uk.gov.hmcts.sptribs.ciccase.model.RetiredFields;
+import uk.gov.hmcts.sptribs.idam.CICUser;
 import uk.gov.hmcts.sptribs.systemupdate.schedule.migration.task.MigrateRetiredFields;
 import uk.gov.hmcts.sptribs.systemupdate.schedule.migration.task.SetFailedMigrationVersionToZero;
 import uk.gov.hmcts.sptribs.systemupdate.service.CcdConflictException;
@@ -42,7 +42,7 @@ public class BaseMigration implements Migration {
     }
 
     @Override
-    public void apply(final User user, final String serviceAuthorization) {
+    public void apply(final CICUser user, final String serviceAuthorization) {
         try {
             ccdSearchService
                     .searchForCasesWithVersionLessThan(RetiredFields.getVersion(), user, serviceAuthorization)
@@ -54,7 +54,7 @@ public class BaseMigration implements Migration {
         }
     }
 
-    private void migrateCase(final CaseDetails caseDetails, final User user, final String serviceAuthorization) {
+    private void migrateCase(final CaseDetails caseDetails, final CICUser user, final String serviceAuthorization) {
         final String caseId = caseDetails.getId().toString();
 
         try {

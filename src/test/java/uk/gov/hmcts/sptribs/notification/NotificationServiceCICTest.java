@@ -13,7 +13,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestClientException;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
-import uk.gov.hmcts.reform.idam.client.models.User;
 import uk.gov.hmcts.reform.pdf.service.client.PDFServiceClient;
 import uk.gov.hmcts.sptribs.cdam.model.Document;
 import uk.gov.hmcts.sptribs.cdam.model.UploadResponse;
@@ -21,9 +20,11 @@ import uk.gov.hmcts.sptribs.common.config.EmailTemplatesConfigCIC;
 import uk.gov.hmcts.sptribs.common.repositories.CorrespondenceRepository;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
+import uk.gov.hmcts.sptribs.idam.CICUser;
 import uk.gov.hmcts.sptribs.idam.IdamService;
 import uk.gov.hmcts.sptribs.notification.exception.NotificationException;
 import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
+import uk.gov.hmcts.sptribs.notification.model.Party;
 import uk.gov.hmcts.sptribs.services.cdam.CaseDocumentClientApi;
 import uk.gov.hmcts.sptribs.testutil.TestDataHelper;
 import uk.gov.service.notify.NotificationClient;
@@ -127,7 +128,7 @@ public class NotificationServiceCICTest {
             .uploadedDocuments(uploadedDocuments)
             .build();
 
-        final User user = TestDataHelper.getUser();
+        final CICUser user = TestDataHelper.getUser();
 
         when(idamService.retrieveUser(any())).thenReturn(user);
         when(sendEmailResponse.getReference()).thenReturn(Optional.of(randomUUID().toString()));
@@ -152,7 +153,7 @@ public class NotificationServiceCICTest {
         when(caseDocumentClientAPI.uploadDocuments(any(), any(), any())).thenReturn(expectedResponse);
 
         //When
-        notificationService.sendEmail(request, TEST_CASE_ID.toString());
+        notificationService.sendEmail(request, TEST_CASE_ID.toString(), Party.APPLICANT);
 
         //Then
         verify(notificationClient).sendEmail(
@@ -184,7 +185,7 @@ public class NotificationServiceCICTest {
             .uploadedDocuments(uploadedDocuments)
             .build();
 
-        final User user = TestDataHelper.getUser();
+        final CICUser user = TestDataHelper.getUser();
 
         when(idamService.retrieveUser(any())).thenReturn(user);
         when(sendEmailResponse.getReference()).thenReturn(Optional.of(randomUUID().toString()));
@@ -209,7 +210,7 @@ public class NotificationServiceCICTest {
         when(caseDocumentClientAPI.uploadDocuments(any(), any(), any())).thenReturn(expectedResponse);
 
         //When
-        notificationService.sendEmail(request, TEST_CASE_ID.toString());
+        notificationService.sendEmail(request, TEST_CASE_ID.toString(), null);
 
         //Then
         verify(notificationClient).sendEmail(
@@ -241,7 +242,7 @@ public class NotificationServiceCICTest {
             .uploadedDocuments(uploadedDocuments)
             .build();
 
-        final User user = TestDataHelper.getUser();
+        final CICUser user = TestDataHelper.getUser();
 
         when(idamService.retrieveUser(any())).thenReturn(user);
         when(sendEmailResponse.getReference()).thenReturn(Optional.of(randomUUID().toString()));
@@ -285,7 +286,7 @@ public class NotificationServiceCICTest {
         when(caseDocumentClientAPI.uploadDocuments(any(), any(), any())).thenReturn(expectedResponse);
 
         //When
-        notificationService.sendEmail(request, TEST_CASE_ID.toString());
+        notificationService.sendEmail(request, TEST_CASE_ID.toString(), null);
 
         //Then
         verify(notificationClient).sendEmail(
@@ -375,7 +376,7 @@ public class NotificationServiceCICTest {
         String testCaseRef = TEST_CASE_ID.toString();
 
         //When&Then
-        assertThatThrownBy(() -> notificationService.sendEmail(request, testCaseRef))
+        assertThatThrownBy(() -> notificationService.sendEmail(request, testCaseRef, null))
             .isInstanceOf(NotificationException.class)
             .hasMessageContaining("some message");
 
@@ -415,7 +416,7 @@ public class NotificationServiceCICTest {
 
         String testCaseRef = TEST_CASE_ID.toString();
 
-        assertThatThrownBy(() -> notificationService.sendEmail(request, testCaseRef))
+        assertThatThrownBy(() -> notificationService.sendEmail(request, testCaseRef, null))
             .isInstanceOf(NotificationException.class)
             .satisfies(e -> assertAll(
                 () -> assertInstanceOf(IOException.class, e.getCause())
@@ -450,7 +451,7 @@ public class NotificationServiceCICTest {
             .build();
 
         final byte[] sample = new byte[1];
-        final User user = TestDataHelper.getUser();
+        final CICUser user = TestDataHelper.getUser();
 
         when(idamService.retrieveUser(any())).thenReturn(user);
         when(httpServletRequest.getHeader(AUTHORIZATION)).thenReturn(TEST_AUTHORIZATION_TOKEN);
@@ -464,7 +465,7 @@ public class NotificationServiceCICTest {
 
         String testCaseRef = TEST_CASE_ID.toString();
 
-        assertThatThrownBy(() -> notificationService.sendEmail(request, testCaseRef))
+        assertThatThrownBy(() -> notificationService.sendEmail(request, testCaseRef, null))
             .isInstanceOf(NotificationException.class)
             .hasMessageContaining("uk.gov.service.notify.NotificationClientException");
     }
@@ -522,7 +523,7 @@ public class NotificationServiceCICTest {
             .uploadedDocuments(uploadedDocuments)
             .build();
 
-        final User user = TestDataHelper.getUser();
+        final CICUser user = TestDataHelper.getUser();
 
         //When&Then
         when(idamService.retrieveUser(any())).thenReturn(user);
@@ -550,7 +551,7 @@ public class NotificationServiceCICTest {
 
         String testCaseRef = TEST_CASE_ID.toString();
 
-        assertThatThrownBy(() -> notificationService.sendEmail(request, testCaseRef))
+        assertThatThrownBy(() -> notificationService.sendEmail(request, testCaseRef, null))
             .isInstanceOf(RestClientException.class)
             .hasMessageContaining("some message");
 
@@ -596,11 +597,11 @@ public class NotificationServiceCICTest {
             String testDestinationAddress = request.getDestinationAddress();
 
             assertThatThrownBy(() -> notificationService.saveEmailCorrespondence(testTemplateName,
-                sendEmailResponse, testDestinationAddress, testCaseRef))
+                sendEmailResponse, testDestinationAddress, testCaseRef, null))
                 .isInstanceOf(IOException.class)
                 .hasMessageContaining("some message");
 
-            assertThatThrownBy(() -> notificationService.sendEmail(request, testCaseRef))
+            assertThatThrownBy(() -> notificationService.sendEmail(request, testCaseRef, null))
                 .isInstanceOf(NotificationException.class)
                 .hasMessageContaining("some message");
 
@@ -715,7 +716,7 @@ public class NotificationServiceCICTest {
             .uploadedDocuments(uploadedDocuments)
             .build();
 
-        final User user = TestDataHelper.getUser();
+        final CICUser user = TestDataHelper.getUser();
         when(idamService.retrieveUser(any())).thenReturn(user);
         when(emailTemplatesConfig.getTemplatesCIC()).thenReturn(templateNameMap);
         when(httpServletRequest.getHeader(AUTHORIZATION)).thenReturn(TEST_AUTHORIZATION_TOKEN);
@@ -734,7 +735,7 @@ public class NotificationServiceCICTest {
         when(caseDocumentClientAPI.uploadDocuments(any(), any(), any())).thenReturn(expectedResponse);
 
         //When
-        notificationService.sendEmail(request, TEST_CASE_ID.toString());
+        notificationService.sendEmail(request, TEST_CASE_ID.toString(), null);
 
         //Then
         verify(notificationClient).sendEmail(
@@ -780,7 +781,7 @@ public class NotificationServiceCICTest {
             .uploadedDocuments(uploadedDocuments)
             .build();
 
-        final User user = TestDataHelper.getUser();
+        final CICUser user = TestDataHelper.getUser();
         when(idamService.retrieveUser(any())).thenReturn(user);
         when(emailTemplatesConfig.getTemplatesCIC()).thenReturn(templateNameMap);
         when(httpServletRequest.getHeader(AUTHORIZATION)).thenReturn(TEST_AUTHORIZATION_TOKEN);
@@ -803,7 +804,7 @@ public class NotificationServiceCICTest {
         when(caseDocumentClientAPI.uploadDocuments(any(), any(), any())).thenReturn(expectedResponse);
 
         //When
-        notificationService.sendEmail(request, List.of(cicDocument), TEST_CASE_ID.toString());
+        notificationService.sendEmail(request, List.of(cicDocument), TEST_CASE_ID.toString(), null);
 
         String expectedDocumentDescription = String.format("%nFilename: %s%nDescription: %s%n",
             cicDocument.getDocumentLink().getFilename(), cicDocument.getDocumentEmailContent());
@@ -859,7 +860,7 @@ public class NotificationServiceCICTest {
             .uploadedDocuments(uploadedDocuments)
             .build();
 
-        final User user = TestDataHelper.getUser();
+        final CICUser user = TestDataHelper.getUser();
         when(idamService.retrieveUser(any())).thenReturn(user);
         when(httpServletRequest.getHeader(AUTHORIZATION)).thenReturn(TEST_AUTHORIZATION_TOKEN);
         when(authTokenGenerator.generate()).thenReturn(TEST_SERVICE_AUTH_TOKEN);
@@ -867,7 +868,7 @@ public class NotificationServiceCICTest {
         when(caseDocumentClientAPI.getDocumentBinary(anyString(), anyString(), any(UUID.class)))
             .thenReturn(ResponseEntity.notFound().build());
 
-        assertThatThrownBy(() -> notificationService.sendEmail(request, List.of(cicDocument), TEST_CASE_ID.toString()))
+        assertThatThrownBy(() -> notificationService.sendEmail(request, List.of(cicDocument), TEST_CASE_ID.toString(), null))
             .isInstanceOf(NotificationException.class)
             .hasMessageContaining("Failed to get document binary for id " + docId);
     }
@@ -904,7 +905,7 @@ public class NotificationServiceCICTest {
             .uploadedDocuments(uploadedDocuments)
             .build();
 
-        final User user = TestDataHelper.getUser();
+        final CICUser user = TestDataHelper.getUser();
         when(idamService.retrieveUser(any())).thenReturn(user);
         when(emailTemplatesConfig.getTemplatesCIC()).thenReturn(templateNameMap);
         when(httpServletRequest.getHeader(AUTHORIZATION)).thenReturn(TEST_AUTHORIZATION_TOKEN);
@@ -926,7 +927,7 @@ public class NotificationServiceCICTest {
         when(caseDocumentClientAPI.uploadDocuments(any(), any(), any())).thenReturn(expectedResponse);
 
         //When
-        notificationService.sendEmail(request, List.of(cicDocument), TEST_CASE_ID.toString());
+        notificationService.sendEmail(request, List.of(cicDocument), TEST_CASE_ID.toString(), null);
 
         //Then
         verify(notificationClient).sendEmail(
@@ -971,7 +972,7 @@ public class NotificationServiceCICTest {
             .uploadedDocuments(uploadedDocuments)
             .build();
 
-        final User user = TestDataHelper.getUser();
+        final CICUser user = TestDataHelper.getUser();
         when(idamService.retrieveUser(any())).thenReturn(user);
         when(httpServletRequest.getHeader(AUTHORIZATION)).thenReturn(TEST_AUTHORIZATION_TOKEN);
         when(authTokenGenerator.generate()).thenReturn(TEST_SERVICE_AUTH_TOKEN);
@@ -980,7 +981,7 @@ public class NotificationServiceCICTest {
         when(caseDocumentClientAPI.getDocumentBinary(anyString(), anyString(), any(UUID.class))).thenReturn(sample);
 
         String expectedErrorMessage = String.format("Unable to find document details for document id: %s", docId);
-        assertThatThrownBy(() -> notificationService.sendEmail(request, List.of(), TEST_CASE_ID.toString()))
+        assertThatThrownBy(() -> notificationService.sendEmail(request, List.of(), TEST_CASE_ID.toString(), null))
             .isInstanceOf(NotificationException.class)
             .hasMessageContaining(expectedErrorMessage);
     }

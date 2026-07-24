@@ -1,0 +1,30 @@
+{
+  "caseFlags": {
+    "details": [
+      {
+        "id": "new-anon-id",
+        "value": {
+          "flagCode": "CF0012",
+          "status": "Active",
+          "dateTimeCreated": "2025-01-01T10:00:00.000Z"
+        }
+      },
+      {
+        "id": "original-anon-id",
+        "value": {
+          "flagCode": "CF0012",
+          "status": "Inactive",
+          "dateTimeCreated": "2024-01-01T10:00:00.000Z"
+        }
+      },
+      {
+        "id": "non-anon-id",
+        "value": {
+          "flagCode": "CF0001",
+          "status": "Active",
+          "dateTimeCreated": "2023-01-01T10:00:00.000Z"
+        }
+      }
+    ]
+  }
+}

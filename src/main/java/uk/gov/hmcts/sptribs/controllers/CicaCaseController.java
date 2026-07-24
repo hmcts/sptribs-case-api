@@ -3,7 +3,6 @@ package uk.gov.hmcts.sptribs.controllers;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -20,9 +19,6 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.sptribs.ciccase.service.CicaCaseService;
-import uk.gov.hmcts.sptribs.common.repositories.model.CicaCaseEntity;
-import uk.gov.hmcts.sptribs.controllers.mapper.CicaCaseMapper;
-import uk.gov.hmcts.sptribs.controllers.model.CicaCaseResponse;
 
 import static uk.gov.hmcts.sptribs.common.config.ControllerConstants.AUTHORIZATION;
 import static uk.gov.hmcts.sptribs.common.config.ControllerConstants.SERVICE_AUTHORIZATION;
@@ -36,50 +32,39 @@ import static uk.gov.hmcts.sptribs.common.config.ControllerConstants.SERVICE_AUT
 public class CicaCaseController {
 
     private final CicaCaseService cicaCaseService;
-    private final CicaCaseMapper cicaCaseMapper;
 
-    @GetMapping(value = "/{ccdReference}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/{ccdReference}/access", produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(
-        summary = "Get case by CCD reference",
-        description = "Retrieves a case by its CCD (Criminal case data) reference number. "
-            + "Reference numbers must be 16 digits long."
+        summary = "Check if user has access to the case",
+        description = "Verifies if the user has access to the given CCD reference, throwing an exception if unauthorized."
     )
     @ApiResponses(value = {
         @ApiResponse(
             responseCode = "200",
-            description = "Case found successfully",
-            content = @Content(
-                mediaType = MediaType.APPLICATION_JSON_VALUE,
-                schema = @Schema(implementation = CicaCaseResponse.class)
-            )
-            ),
+            description = "Access verification completed successfully",
+            content = @Content),
         @ApiResponse(
             responseCode = "400",
             description = "Invalid CCD reference format",
-            content = @Content
-            ),
+            content = @Content),
         @ApiResponse(
             responseCode = "401",
             description = "Unauthorized - Invalid or missing authorization token",
-            content = @Content
-            ),
+            content = @Content),
         @ApiResponse(
             responseCode = "403",
             description = "Forbidden - Service not authorized",
-            content = @Content
-            ),
+            content = @Content),
         @ApiResponse(
             responseCode = "404",
             description = "No case found with the given CCD reference",
-            content = @Content
-            ),
+            content = @Content),
         @ApiResponse(
             responseCode = "500",
             description = "Internal server error",
-            content = @Content
-            )
+            content = @Content)
     })
-    public ResponseEntity<CicaCaseResponse> getCaseByCCDReference(
+    public ResponseEntity<Void> checkIfUserHasAccess(
         @RequestHeader(AUTHORIZATION)
         @Parameter(description = "User's IDAM access token", required = true)
         String authorisation,
@@ -92,23 +77,17 @@ public class CicaCaseController {
         @NotBlank(message = "CCD reference cannot be blank")
         @Pattern(regexp = "^\\d{16}$", message = "CCD reference must be 16 digits long")
         @Parameter(
-            description = "The CCD reference number. ",
+            description = "The CCD reference number.",
             required = true,
             example = "1740138704453399"
         )
         String ccdReference
     ) {
-        log.info("Received request to get case by CCD reference: {}", ccdReference);
-
-        CicaCaseEntity cicaCaseEntity = cicaCaseService.getCaseByCCDReference(ccdReference, authorisation);
-
-        CicaCaseResponse response = cicaCaseMapper.toResponse(cicaCaseEntity);
-
-        log.info("Successfully retrieved case with CCD reference: {}", ccdReference);
-        return ResponseEntity.ok(response);
+        log.info("Received request to check if user has access to case: {}", ccdReference);
+        cicaCaseService.checkIfUserHasAccess(ccdReference, authorisation);
+        log.info("Access check completed successfully for case: {}", ccdReference);
+        return ResponseEntity.ok().build();
     }
-
-
 }
 
 

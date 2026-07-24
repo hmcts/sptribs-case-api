@@ -2,19 +2,20 @@ package uk.gov.hmcts.sptribs.idam;
 
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.idam.client.IdamClient;
-import uk.gov.hmcts.reform.idam.client.models.User;
-import uk.gov.hmcts.reform.idam.client.models.UserDetails;
+import uk.gov.hmcts.reform.idam.client.models.UserInfo;
 
 import java.util.concurrent.TimeUnit;
 
 import static uk.gov.hmcts.sptribs.common.config.ControllerConstants.BEARER_PREFIX;
 
 @Service
+@Slf4j
 public class IdamService {
 
     private final String systemUpdateUserName;
@@ -35,15 +36,16 @@ public class IdamService {
         this.idamClient = idamClient;
     }
 
-    public User retrieveUser(String authorisation) {
+    public CICUser retrieveUser(String authorisation) {
         final String bearerToken = getBearerToken(authorisation);
-        //update this to new url..
-        final UserDetails userDetails = idamClient.getUserDetails(bearerToken);
+        final UserInfo userInfo = idamClient.getUserInfo(bearerToken);
+        log.info("Retrieved IDAM user info: uid={}, rolesCount={}", userInfo.getUid(),
+            userInfo.getRoles() == null ? 0 : userInfo.getRoles().size());
 
-        return new User(bearerToken, userDetails);
+        return new CICUser(bearerToken, userInfo);
     }
 
-    public User retrieveSystemUpdateUserDetails() {
+    public CICUser retrieveSystemUpdateUserDetails() {
         return retrieveUser(getCachedIdamOauth2Token(systemUpdateUserName, systemUpdatePassword));
     }
 

@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import uk.gov.hmcts.sptribs.cdam.model.Document;
 import uk.gov.hmcts.sptribs.cdam.model.UploadResponse;
+import uk.gov.hmcts.sptribs.notification.model.Party;
 import uk.gov.hmcts.sptribs.notification.persistence.CorrespondenceEntity;
 import uk.gov.hmcts.sptribs.testutil.FunctionalTestSuite;
 
@@ -217,6 +218,7 @@ public class RespondentContactPartiesFT extends FunctionalTestSuite {
         assertThat(firstCorrespondenceEntity.getDocumentUrl()).isNotNull();
         assertThat(firstCorrespondenceEntity.getDocumentFilename()).isNotNull();
         assertThat(firstCorrespondenceEntity.getDocumentBinaryUrl()).isNotNull();
+        assertThat(firstCorrespondenceEntity.getReceivingParty()).isEqualTo(Party.SUBJECT);
     }
 
     @Test

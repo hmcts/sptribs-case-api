@@ -1,6 +1,7 @@
 package uk.gov.hmcts.sptribs.common.config.advice;
 
 import feign.FeignException;
+import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -71,6 +72,12 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<Object> handleIllegalArgumentException(IllegalArgumentException exception) {
         log.warn("Bad request: {}", exception.getMessage());
+        return status(HttpStatus.BAD_REQUEST).body(exception.getMessage());
+    }
+
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ResponseEntity<Object> handleConstraintViolationException(ConstraintViolationException exception) {
+        log.warn("Constraint violation: {}", exception.getMessage());
         return status(HttpStatus.BAD_REQUEST).body(exception.getMessage());
     }
 

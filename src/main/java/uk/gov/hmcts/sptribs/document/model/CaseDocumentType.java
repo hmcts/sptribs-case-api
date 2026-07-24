@@ -7,9 +7,8 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum CaseDocumentType {
 
-    APPLICANT("APPLICANT"),
-    RESPONDENT("RESPONDENT"),
-    CASEWORKER("CASEWORKER"),
+    APPLICATION("APPLICATION"),
+    DOCUMENT_MANAGEMENT("DOCUMENT_MANAGEMENT"),
     ORDER("ORDER"),
     DRAFT_ORDER("DRAFT_ORDER"),
     DECISION("DECISION"),
