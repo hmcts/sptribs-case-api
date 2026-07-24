@@ -98,7 +98,7 @@ class DocumentControllerTest {
         CicaCaseEntity cicaCaseEntity = CicaCaseEntity.builder().build();
         CicaCaseResponse cicaCaseResponse = CicaCaseResponse.builder().build();
 
-        when(cicaCaseService.getCaseByCCDReference(TEST_CASE_ID_STRING, TEST_AUTHORIZATION))
+        when(cicaCaseService.checkIfUserHasAccessWithPostcode(TEST_CASE_ID_STRING, TEST_AUTHORIZATION, TEST_POSTCODE))
             .thenReturn(cicaCaseEntity);
 
         when(cicaCaseMapper.toResponse(cicaCaseEntity))
@@ -143,11 +143,6 @@ class DocumentControllerTest {
             TEST_CASE_ID_STRING,
             TEST_AUTHORIZATION,
             TEST_POSTCODE
-        );
-
-        verify(cicaCaseService).getCaseByCCDReference(
-            TEST_CASE_ID_STRING,
-            TEST_AUTHORIZATION
         );
 
         verify(cicaCaseMapper).toResponse(cicaCaseEntity);
@@ -217,8 +212,8 @@ class DocumentControllerTest {
         String postcode = "INVALID";
         String documentId = "12345";
 
-        org.mockito.Mockito.doThrow(new UnauthorisedCaseAccessException("Postcode or email mismatch"))
-            .when(cicaCaseService).checkIfUserHasAccessWithPostcode(TEST_CASE_ID_STRING, TEST_AUTHORIZATION, postcode);
+        when(cicaCaseService.checkIfUserHasAccessWithPostcode(TEST_CASE_ID_STRING, TEST_AUTHORIZATION, postcode))
+            .thenThrow(new UnauthorisedCaseAccessException("Postcode or email mismatch"));
 
         // When / Then
         org.assertj.core.api.Assertions.assertThatThrownBy(() -> documentController.downloadDocumentByCaseAndId(

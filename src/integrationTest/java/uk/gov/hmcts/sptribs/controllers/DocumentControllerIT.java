@@ -31,7 +31,6 @@ import static java.util.Collections.emptyList;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -245,7 +244,7 @@ class DocumentControllerIT {
             .state("CaseManagement")
             .build();
 
-        when(cicaCaseService.getCaseByCCDReference(TEST_CASE_ID_STRING, TEST_AUTHORIZATION_TOKEN))
+        when(cicaCaseService.checkIfUserHasAccessWithPostcode(TEST_CASE_ID_STRING, TEST_AUTHORIZATION_TOKEN, TEST_POSTCODE))
             .thenReturn(cicaCaseEntity);
 
         DocumentDashboardModel dashboardModel = DocumentDashboardModel.builder()
@@ -276,8 +275,8 @@ class DocumentControllerIT {
     void shouldFailToGetDocumentsWhenPostcodeValidationFails() throws Exception {
         // Given
         String invalidPostcode = "INVALID";
-        doThrow(new UnauthorisedCaseAccessException("Postcode match failed"))
-            .when(cicaCaseService).checkIfUserHasAccessWithPostcode(eq(TEST_CASE_ID_STRING), any(), eq(invalidPostcode));
+        when(cicaCaseService.checkIfUserHasAccessWithPostcode(eq(TEST_CASE_ID_STRING), any(), eq(invalidPostcode)))
+            .thenThrow(new UnauthorisedCaseAccessException("Postcode match failed"));
 
         // When & Then
         mockMvc.perform(get(GET_DOCUMENTS_URL)
@@ -291,8 +290,8 @@ class DocumentControllerIT {
     void shouldFailToDownloadDocumentWhenPostcodeValidationFails() throws Exception {
         // Given
         String invalidPostcode = "INVALID";
-        doThrow(new UnauthorisedCaseAccessException("Postcode match failed"))
-            .when(cicaCaseService).checkIfUserHasAccessWithPostcode(eq(TEST_CASE_ID_STRING), any(), eq(invalidPostcode));
+        when(cicaCaseService.checkIfUserHasAccessWithPostcode(eq(TEST_CASE_ID_STRING), any(), eq(invalidPostcode)))
+            .thenThrow(new UnauthorisedCaseAccessException("Postcode match failed"));
 
         // When & Then
         mockMvc.perform(get(String.format(DOWNLOAD_DOCUMENT_URL, TEST_CASE_DATA_FILE_UUID))

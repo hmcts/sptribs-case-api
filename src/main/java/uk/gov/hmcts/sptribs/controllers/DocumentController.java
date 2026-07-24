@@ -74,9 +74,7 @@ public class DocumentController {
 
         log.info("Received request to get documents with CCD reference = {}", ccdReference);
 
-        cicaCaseService.checkIfUserHasAccessWithPostcode(ccdReference, authorisation, postcode);
-
-        CicaCaseEntity cicaCaseEntity = cicaCaseService.getCaseByCCDReference(ccdReference, authorisation);
+        CicaCaseEntity cicaCaseEntity = cicaCaseService.checkIfUserHasAccessWithPostcode(ccdReference, authorisation, postcode);
 
         CicaCaseResponse response = cicaCaseMapper.toResponse(cicaCaseEntity);
 

@@ -54,43 +54,20 @@ public class CicaCaseService {
      * @param ccdReference      the CCD reference number.
      * @param authorisation     user authorization token.
      * @param submittedPostcode the postcode submitted by the user.
+     * @return the CicaCaseEntity.
      * @throws UnauthorisedCaseAccessException if the user does not have access, postcode does not match, or validation fails.
      */
-    public void checkIfUserHasAccessWithPostcode(String ccdReference, String authorisation, String submittedPostcode) {
+    public CicaCaseEntity checkIfUserHasAccessWithPostcode(String ccdReference, String authorisation, String submittedPostcode) {
         try {
             CICUser user = idamService.retrieveUser(authorisation);
-            boolean hasAccess = caseDataRepository.checkIfUserHasAccessToCase(
-                ccdReference, user.getUserInfo().getSub(), submittedPostcode);
-            if (!hasAccess) {
-                throw new UnauthorisedCaseAccessException("Submitted postcode does not match the postcode held in case data");
-            }
+            return caseDataRepository.findCase(ccdReference, user.getUserInfo().getSub(), submittedPostcode)
+                .orElseThrow(() -> new UnauthorisedCaseAccessException("Submitted postcode does not match the postcode held in case data"));
         } catch (Exception e) {
             if (e instanceof UnauthorisedCaseAccessException ucae) {
                 throw ucae;
             }
             log.warn("Error checking case access and postcode for reference: {}", ccdReference, e);
             throw new UnauthorisedCaseAccessException("Error checking case access and postcode: " + e.getMessage());
-        }
-    }
-
-    /**
-     * Retrieves the case by CCD reference.
-     *
-     * @param ccdReference  the CCD reference number.
-     * @param authorisation user authorization token.
-     * @return the CicaCaseEntity.
-     */
-    public CicaCaseEntity getCaseByCCDReference(String ccdReference, String authorisation) {
-        try {
-            CICUser user = idamService.retrieveUser(authorisation);
-            return caseDataRepository.findCase(ccdReference, user.getUserInfo().getSub())
-                .orElseThrow(() -> new CaseNotFoundException("No case found with CCD reference: " + ccdReference));
-        } catch (Exception e) {
-            if (e instanceof CaseNotFoundException cnfe) {
-                throw cnfe;
-            }
-            log.warn("Error retrieving case for reference: {}", ccdReference, e);
-            throw new UnauthorisedCaseAccessException("Error retrieving case: " + e.getMessage());
         }
     }
 }
