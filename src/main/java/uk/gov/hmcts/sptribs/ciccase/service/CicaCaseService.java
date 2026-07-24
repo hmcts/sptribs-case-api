@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.sptribs.common.repositories.CaseDataRepository;
+import uk.gov.hmcts.sptribs.common.repositories.model.CicaCaseEntity;
 import uk.gov.hmcts.sptribs.exception.CaseNotFoundException;
 import uk.gov.hmcts.sptribs.exception.UnauthorisedCaseAccessException;
 import uk.gov.hmcts.sptribs.idam.CICUser;
@@ -53,16 +54,14 @@ public class CicaCaseService {
      * @param ccdReference      the CCD reference number.
      * @param authorisation     user authorization token.
      * @param submittedPostcode the postcode submitted by the user.
+     * @return the CicaCaseEntity.
      * @throws UnauthorisedCaseAccessException if the user does not have access, postcode does not match, or validation fails.
      */
-    public void checkIfUserHasAccessWithPostcode(String ccdReference, String authorisation, String submittedPostcode) {
+    public CicaCaseEntity checkIfUserHasAccessWithPostcode(String ccdReference, String authorisation, String submittedPostcode) {
         try {
             CICUser user = idamService.retrieveUser(authorisation);
-            boolean hasAccess = caseDataRepository.checkIfUserHasAccessToCase(
-                ccdReference, user.getUserInfo().getSub(), submittedPostcode);
-            if (!hasAccess) {
-                throw new UnauthorisedCaseAccessException("Submitted postcode does not match the postcode held in case data");
-            }
+            return caseDataRepository.findCase(ccdReference, user.getUserInfo().getSub(), submittedPostcode)
+                .orElseThrow(() -> new UnauthorisedCaseAccessException("Submitted postcode does not match the postcode held in case data"));
         } catch (Exception e) {
             if (e instanceof UnauthorisedCaseAccessException ucae) {
                 throw ucae;

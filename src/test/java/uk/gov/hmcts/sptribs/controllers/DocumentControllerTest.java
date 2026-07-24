@@ -10,8 +10,11 @@ import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import uk.gov.hmcts.sptribs.ciccase.service.CicaCaseService;
+import uk.gov.hmcts.sptribs.common.repositories.model.CicaCaseEntity;
 import uk.gov.hmcts.sptribs.controllers.mapper.CaseworkerCICDocumentMapper;
-import uk.gov.hmcts.sptribs.controllers.model.DocumentResponse;
+import uk.gov.hmcts.sptribs.controllers.mapper.CicaCaseMapper;
+import uk.gov.hmcts.sptribs.controllers.model.CicaCaseResponse;
+import uk.gov.hmcts.sptribs.controllers.model.DashboardResponse;
 import uk.gov.hmcts.sptribs.document.DocumentDownloadService;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.document.model.ContactPartyDocumentDetails;
@@ -46,6 +49,9 @@ class DocumentControllerTest {
 
     @Mock
     private CicaCaseService cicaCaseService;
+
+    @Mock
+    private CicaCaseMapper cicaCaseMapper;
 
     @InjectMocks
     private DocumentController documentController;
@@ -89,6 +95,15 @@ class DocumentControllerTest {
             .latestCaseBundleDocument(latestBundleDocument)
             .build();
 
+        CicaCaseEntity cicaCaseEntity = CicaCaseEntity.builder().build();
+        CicaCaseResponse cicaCaseResponse = CicaCaseResponse.builder().build();
+
+        when(cicaCaseService.checkIfUserHasAccessWithPostcode(TEST_CASE_ID_STRING, TEST_AUTHORIZATION, TEST_POSTCODE))
+            .thenReturn(cicaCaseEntity);
+
+        when(cicaCaseMapper.toResponse(cicaCaseEntity))
+            .thenReturn(cicaCaseResponse);
+
         when(documentsService.getDocumentsOnCase(Long.valueOf(TEST_CASE_ID_STRING)))
             .thenReturn(dashboardModel);
 
@@ -102,7 +117,7 @@ class DocumentControllerTest {
             .thenReturn(List.of(mappedBundleDocument));
 
         // When
-        ResponseEntity<DocumentResponse> response =
+        ResponseEntity<DashboardResponse> response =
             documentController.getDocumentsByCCDReference(
                 TEST_AUTHORIZATION,
                 TEST_POSTCODE,
@@ -113,13 +128,15 @@ class DocumentControllerTest {
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody()).isNotNull();
 
-        assertThat(response.getBody().getContactPartiesDocuments())
+        assertThat(response.getBody().getCicaCaseResponse()).isEqualTo(cicaCaseResponse);
+
+        assertThat(response.getBody().getDocumentResponse().getContactPartiesDocuments())
             .containsExactly(mappedContactPartyDocument);
 
-        assertThat(response.getBody().getOrderAndDecisionDocuments())
+        assertThat(response.getBody().getDocumentResponse().getOrderAndDecisionDocuments())
             .containsExactly(mappedOrderAndDecisionDocument);
 
-        assertThat(response.getBody().getLatestCaseBundleDocuments())
+        assertThat(response.getBody().getDocumentResponse().getLatestCaseBundleDocuments())
             .containsExactly(mappedBundleDocument);
 
         verify(cicaCaseService).checkIfUserHasAccessWithPostcode(
@@ -127,6 +144,8 @@ class DocumentControllerTest {
             TEST_AUTHORIZATION,
             TEST_POSTCODE
         );
+
+        verify(cicaCaseMapper).toResponse(cicaCaseEntity);
 
         verify(documentsService)
             .getDocumentsOnCase(Long.valueOf(TEST_CASE_ID_STRING));
@@ -193,8 +212,8 @@ class DocumentControllerTest {
         String postcode = "INVALID";
         String documentId = "12345";
 
-        org.mockito.Mockito.doThrow(new UnauthorisedCaseAccessException("Postcode or email mismatch"))
-            .when(cicaCaseService).checkIfUserHasAccessWithPostcode(TEST_CASE_ID_STRING, TEST_AUTHORIZATION, postcode);
+        when(cicaCaseService.checkIfUserHasAccessWithPostcode(TEST_CASE_ID_STRING, TEST_AUTHORIZATION, postcode))
+            .thenThrow(new UnauthorisedCaseAccessException("Postcode or email mismatch"));
 
         // When / Then
         org.assertj.core.api.Assertions.assertThatThrownBy(() -> documentController.downloadDocumentByCaseAndId(
