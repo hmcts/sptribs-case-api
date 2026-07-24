@@ -255,10 +255,16 @@ withPipeline(type, product, component) {
   }
 
   onMaster {
-    generateAatAndStagingDefinitions()
+    env.ENVIRONMENT="aat"
+    env.CCD_DEF_NAME="aat"
+    builder.gradle('generateCCDConfig --rerun-tasks')
+    generateDefinitions()
+
+    env.CCD_DEF_NAME="staging-aat"
+    builder.gradle('generateCCDConfig --rerun-tasks')
+    generateDefinitions()
 
     env.CASE_API_URL="https://sptribs-case-api-staging.aat.platform.hmcts.net"
-    env.CCD_DEF_NAME="staging-aat"
     env.ELASTIC_SEARCH_ENABLED=true
     env.SERVICE_AUTH_MICROSERVICE = "sptribs_case_api"
     env.SERVICE_AUTH_PROVIDER_URL = "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
@@ -271,7 +277,6 @@ withPipeline(type, product, component) {
   }
 
   afterSuccess('functionalTest:aat') {
-      env.ENVIRONMENT="aat"
       env.CASE_API_URL="http://sptribs-case-api-aat.service.core-compute-aat.internal"
       echo "env.CASE_API_URL is AAT URL"
       env.CCD_DEF_NAME="aat"
@@ -411,17 +416,6 @@ def uploadBpmnDiagram() {
       ./wa/import-wa-bpmn-diagram.sh .
     """
   }
-}
-
-def generateAatAndStagingDefinitions() {
-  env.ENVIRONMENT="aat"
-  env.CCD_DEF_NAME="aat"
-  builder.gradle('generateCCDConfig --rerun-tasks')
-  generateDefinitions()
-
-  env.CCD_DEF_NAME="staging-aat"
-  builder.gradle('generateCCDConfig --rerun-tasks')
-  generateDefinitions()
 }
 
 def runAatHighLevelDataSetup() {
