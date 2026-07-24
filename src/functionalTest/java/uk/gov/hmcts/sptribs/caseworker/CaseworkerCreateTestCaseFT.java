@@ -74,7 +74,7 @@ public class CaseworkerCreateTestCaseFT extends FunctionalTestSuite {
         assertThat(firstDocumentEntity.getCaseReferenceNumber()).isEqualTo(Long.parseLong(caseData.get("hyphenatedCaseRef")
             .toString().replace("-", "")));
         assertThat(firstDocumentEntity.getDocumentTypeName()).isEqualTo(DocumentType.APPLICATION_FORM.name());
-        assertThat(firstDocumentEntity.getCaseDocumentTypeId()).isEqualTo(2L);
+        assertThat(firstDocumentEntity.getCaseDocumentTypeId()).isEqualTo(1L);
         assertThat(firstDocumentEntity.getSavedAt()).isNotNull();
         assertThat(firstDocumentEntity.getDocumentUrl()).isNotNull();
         assertThat(firstDocumentEntity.getDocumentFilename()).isNotNull();
