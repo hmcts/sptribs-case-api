@@ -10,7 +10,7 @@ import java.util.List;
 public class DocumentDashboardModel {
 
     DocumentEntity latestCaseBundleDocument;
-    List<DocumentEntity> contactPartiesDocuments;
+    List<ContactPartyDocumentDetails> contactPartiesDocuments;
     List<DocumentEntity> orderAndDecisionDocuments;
 
 }

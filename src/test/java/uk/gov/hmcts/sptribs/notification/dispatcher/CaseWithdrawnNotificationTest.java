@@ -57,7 +57,7 @@ public class CaseWithdrawnNotificationTest {
         when(notificationHelper.getSubjectCommonVars(any(), any(CaseData.class))).thenReturn(new HashMap<>());
         caseWithdrawnNotification.sendToSubject(data, TEST_CASE_ID.toString());
 
-        verify(notificationService).sendEmail(any(NotificationRequest.class), eq(TEST_CASE_ID.toString()));
+        verify(notificationService).sendEmail(any(NotificationRequest.class), eq(TEST_CASE_ID.toString()), eq(null));
         verify(notificationHelper).buildEmailNotificationRequest(
             data.getCicCase().getEmail(),
             Map.of(
@@ -78,7 +78,7 @@ public class CaseWithdrawnNotificationTest {
         when(notificationHelper.getSubjectCommonVars(any(), any(CaseData.class))).thenReturn(new HashMap<>());
         caseWithdrawnNotification.sendToSubject(data, TEST_CASE_ID.toString());
 
-        verify(notificationService).sendEmail(any(NotificationRequest.class), eq(TEST_CASE_ID.toString()));
+        verify(notificationService).sendEmail(any(NotificationRequest.class), eq(TEST_CASE_ID.toString()), eq(null));
         verify(notificationHelper).buildEmailNotificationRequest(
             data.getCicCase().getEmail(),
             Map.of(
@@ -120,7 +120,7 @@ public class CaseWithdrawnNotificationTest {
         when(notificationHelper.getRespondentCommonVars(any(), any(CaseData.class))).thenReturn(new HashMap<>());
         caseWithdrawnNotification.sendToRespondent(data, TEST_CASE_ID.toString());
 
-        verify(notificationService).sendEmail(any(NotificationRequest.class), eq(TEST_CASE_ID.toString()));
+        verify(notificationService).sendEmail(any(NotificationRequest.class), eq(TEST_CASE_ID.toString()), eq(null));
         verify(notificationHelper).buildEmailNotificationRequest(
             data.getCicCase().getRespondentEmail(),
             Map.of(
@@ -141,7 +141,7 @@ public class CaseWithdrawnNotificationTest {
         when(notificationHelper.getRepresentativeCommonVars(any(), any(CaseData.class))).thenReturn(new HashMap<>());
         caseWithdrawnNotification.sendToRepresentative(data, TEST_CASE_ID.toString());
 
-        verify(notificationService).sendEmail(any(NotificationRequest.class), eq(TEST_CASE_ID.toString()));
+        verify(notificationService).sendEmail(any(NotificationRequest.class), eq(TEST_CASE_ID.toString()), eq(null));
         verify(notificationHelper).buildEmailNotificationRequest(
             data.getCicCase().getRepresentativeEmailAddress(),
             Map.of(
@@ -182,7 +182,7 @@ public class CaseWithdrawnNotificationTest {
         when(notificationHelper.getApplicantCommonVars(any(), any(CaseData.class))).thenReturn(new HashMap<>());
         caseWithdrawnNotification.sendToApplicant(data, TEST_CASE_ID.toString());
 
-        verify(notificationService).sendEmail(any(NotificationRequest.class), eq(TEST_CASE_ID.toString()));
+        verify(notificationService).sendEmail(any(NotificationRequest.class), eq(TEST_CASE_ID.toString()), eq(null));
         verify(notificationHelper).buildEmailNotificationRequest(
             data.getCicCase().getApplicantEmailAddress(),
             Map.of(

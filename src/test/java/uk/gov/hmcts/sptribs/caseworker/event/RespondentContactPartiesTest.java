@@ -24,11 +24,12 @@ import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.SubjectCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.TribunalCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
-import uk.gov.hmcts.sptribs.document.service.DocumentsService;
+import uk.gov.hmcts.sptribs.common.service.ContactPartiesService;
 import uk.gov.hmcts.sptribs.notification.NotificationHelper;
 import uk.gov.hmcts.sptribs.notification.dispatcher.ContactPartiesNotification;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -63,7 +64,7 @@ class RespondentContactPartiesTest {
     private ContactPartiesSelectDocument contactPartiesSelectDocument;
 
     @Mock
-    private DocumentsService documentsService;
+    private ContactPartiesService contactPartiesService;
 
     @Mock
     private NotificationHelper notificationHelper;
@@ -180,7 +181,7 @@ class RespondentContactPartiesTest {
     }
 
     @Test
-    void shouldDisplayTheCorrectMessageWithCommaSeparation() {
+    void shouldDisplayTheCorrectMessageWithCommaSeparationAndInsertToDocCorrespondence() {
         //Given
         DynamicMultiSelectList documentList = buildDynamicMultiSelectDocumentList();
         final ContactPartiesDocuments contactPartiesDocuments = ContactPartiesDocuments.builder()
@@ -203,6 +204,7 @@ class RespondentContactPartiesTest {
         final CaseData caseData = caseData();
         caseData.setContactParties(contactParties);
         caseData.setContactPartiesDocuments(contactPartiesDocuments);
+        caseData.setHyphenatedCaseRef(String.valueOf(TEST_CASE_ID));
 
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
         final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
@@ -213,6 +215,10 @@ class RespondentContactPartiesTest {
         Map<String, String> emailDocs = getDocumentUploadMap();
 
         when(notificationHelper.buildDocumentList(documentList, docAttachLimit)).thenReturn(emailDocs);
+        when(contactPartiesNotification.sendToSubject(caseData, String.valueOf(TEST_CASE_ID), emailDocs)).thenReturn("UUID1");
+        when(contactPartiesNotification.sendToRepresentative(caseData, String.valueOf(TEST_CASE_ID), emailDocs)).thenReturn("UUID2");
+        when(contactPartiesNotification.sendToApplicant(caseData, String.valueOf(TEST_CASE_ID), emailDocs)).thenReturn("UUID3");
+        when(contactPartiesNotification.sendToTribunal(caseData, String.valueOf(TEST_CASE_ID), emailDocs)).thenReturn("UUID4");
 
         //When
         SubmittedCallbackResponse response =
@@ -236,25 +242,19 @@ class RespondentContactPartiesTest {
         assertThat(resContactPartiesResponse.getConfirmationHeader()).contains("Tribunal");
         assertThat(resContactPartiesResponse.getConfirmationHeader()).contains(",");
 
-        verify(documentsService, times(2)).updateDocumentsToSentViaContactParties(caseData, emailDocs);
+        verify(contactPartiesService, times(2)).linkCorrespondenceIdsToDocuments(caseData, emailDocs,
+            List.of("UUID1", "UUID2", "UUID3", "UUID4"));
     }
 
     @Test
-    void shouldNotUpdateDocumentToSentViaContactPartiesWithTribunalOnly() {
+    void shouldNotCallDocumentCorrespondenceServiceAsNoEmailsSent() {
         //Given
         DynamicMultiSelectList documentList = buildDynamicMultiSelectDocumentList();
         ContactPartiesDocuments contactPartiesDocuments = ContactPartiesDocuments.builder()
             .documentList(documentList)
             .build();
 
-        Set<TribunalCIC> tri = new HashSet<>();
-        tri.add(TribunalCIC.TRIBUNAL);
-
-        ContactParties contactParties = ContactParties.builder()
-            .tribunal(tri)
-            .build();
         final CaseData caseData = caseData();
-        caseData.setContactParties(contactParties);
         caseData.setContactPartiesDocuments(contactPartiesDocuments);
 
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
@@ -272,7 +272,6 @@ class RespondentContactPartiesTest {
             respondentContactParties.submitted(updatedCaseDetails, beforeDetails);
 
         //Then
-        assertThat(caseData.getContactParties().getTribunal()).hasSize(1);
         assertThat(response).isNotNull();
 
         //When
@@ -280,9 +279,8 @@ class RespondentContactPartiesTest {
 
         //Then
         assertThat(resContactPartiesResponse).isNotNull();
-        assertThat(resContactPartiesResponse.getConfirmationHeader()).contains("Tribunal");
 
-        verifyNoInteractions(documentsService);
+        verifyNoInteractions(contactPartiesService);
     }
 
     @Test

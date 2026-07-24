@@ -86,6 +86,6 @@ public class BundleCreatedNotification implements PartiesNotification {
             notificationHelper.buildEmailNotificationRequest(toEmail,
                 templateVars,
                 TemplateName.BUNDLE_CREATED_EMAIL),
-            caseReferenceNumber);
+            caseReferenceNumber, null);
     }
 }

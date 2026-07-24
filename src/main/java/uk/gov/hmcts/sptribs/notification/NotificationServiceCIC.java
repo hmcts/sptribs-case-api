@@ -28,6 +28,7 @@ import uk.gov.hmcts.sptribs.idam.CICUser;
 import uk.gov.hmcts.sptribs.idam.IdamService;
 import uk.gov.hmcts.sptribs.notification.exception.NotificationException;
 import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
+import uk.gov.hmcts.sptribs.notification.model.Party;
 import uk.gov.hmcts.sptribs.notification.persistence.CorrespondenceEntity;
 import uk.gov.hmcts.sptribs.services.cdam.CaseDocumentClientApi;
 import uk.gov.service.notify.NotificationClient;
@@ -83,7 +84,8 @@ public class NotificationServiceCIC {
     public void saveEmailCorrespondence(String templateName,
                                         SendEmailResponse sendEmailResponse,
                                         String sentTo,
-                                        String caseReferenceNumber) throws IOException, RestClientException {
+                                        String caseReferenceNumber,
+                                        Party receivingParty) throws IOException, RestClientException {
 
         Long longCaseRef = Long.parseLong(caseReferenceNumber.replace("-", ""));
         final OffsetDateTime sentOn = OffsetDateTime.now(ZoneId.systemDefault());
@@ -106,6 +108,7 @@ public class NotificationServiceCIC {
                 .documentFilename(correspondencePDF.getFilename())
                 .documentBinaryUrl(correspondencePDF.getBinaryUrl())
                 .correspondenceType("Email")
+                .receivingParty(receivingParty)
                 .build();
             correspondenceRepository.save(correspondence);
         } catch (java.io.IOException | RestClientException e) {
@@ -144,13 +147,14 @@ public class NotificationServiceCIC {
         }
     }
 
-    public NotificationResponse sendEmail(NotificationRequest notificationRequest, String caseReferenceNumber) {
-        return sendEmail(notificationRequest, Collections.emptyList(), caseReferenceNumber);
+    public NotificationResponse sendEmail(NotificationRequest notificationRequest, String caseReferenceNumber, Party receivingParty) {
+        return sendEmail(notificationRequest, Collections.emptyList(), caseReferenceNumber, receivingParty);
     }
 
     public NotificationResponse sendEmail(NotificationRequest notificationRequest,
                                           List<CaseworkerCICDocument> selectedDocuments,
-                                          String caseReferenceNumber) {
+                                          String caseReferenceNumber,
+                                          Party receivingParty) {
         final SendEmailResponse sendEmailResponse;
         final String destinationAddress = notificationRequest.getDestinationAddress();
         final TemplateName template = notificationRequest.getTemplate();
@@ -178,7 +182,8 @@ public class NotificationServiceCIC {
                 templateName,
                 sendEmailResponse,
                 destinationAddress,
-                caseReferenceNumber
+                caseReferenceNumber,
+                receivingParty
             );
 
             log.debug("Successfully sent email with notification id {} and reference {}",

@@ -79,7 +79,7 @@ public class CaseUnlinkedNotification implements PartiesNotification {
             destinationAddress,
             templateVars,
             TemplateName.CASE_UNLINKED_EMAIL);
-        return notificationService.sendEmail(request, caseReferenceNumber);
+        return notificationService.sendEmail(request, caseReferenceNumber, null);
     }
 
     private void sendLetterNotification(Map<String, Object> templateVarsLetter, String caseReferenceNumber) {

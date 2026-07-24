@@ -74,9 +74,21 @@ public class DocumentController {
         DocumentDashboardModel documentDashboardModel = documentsService.getDocumentsOnCase(Long.valueOf(ccdReference));
 
         DocumentResponse documentResponse = DocumentResponse.builder()
-            .contactPartiesDocuments(caseworkerCICDocumentMapper.map(documentDashboardModel.getContactPartiesDocuments()))
-            .orderAndDecisionDocuments(caseworkerCICDocumentMapper.map(documentDashboardModel.getOrderAndDecisionDocuments()))
-            .latestCaseBundleDocuments(caseworkerCICDocumentMapper.mapEntityToList(documentDashboardModel.getLatestCaseBundleDocument()))
+            .contactPartiesDocuments(
+                caseworkerCICDocumentMapper.mapContactPartyDocuments(
+                    documentDashboardModel.getContactPartiesDocuments()
+                )
+            )
+            .orderAndDecisionDocuments(
+                caseworkerCICDocumentMapper.mapDocuments(
+                    documentDashboardModel.getOrderAndDecisionDocuments()
+                )
+            )
+            .latestCaseBundleDocuments(
+                caseworkerCICDocumentMapper.mapDocumentToList(
+                    documentDashboardModel.getLatestCaseBundleDocument()
+                )
+            )
             .build();
 
         return ResponseEntity.ok()

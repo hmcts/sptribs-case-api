@@ -1,7 +1,8 @@
-package uk.gov.hmcts.sptribs.testutil;
+package uk.gov.hmcts.sptribs.testutil.data;
 
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.sptribs.notification.model.Party;
 import uk.gov.hmcts.sptribs.notification.persistence.CorrespondenceEntity;
 
 import java.sql.PreparedStatement;
@@ -29,6 +30,9 @@ public class CaseCorrespondencesFTDataManager extends FunctionalTestDataManager 
 
             List<CorrespondenceEntity> correspondences = new ArrayList<>();
             while (rs.next()) {
+
+                String receivingParty = rs.getString("receiving_party");
+
                 CorrespondenceEntity correspondenceEntity = CorrespondenceEntity.builder()
                     .caseReferenceNumber(rs.getLong(KEY_CASE_CORRESPONDENCES_REFERENCE))
                     .id(UUID.fromString(rs.getString("id")))
@@ -41,6 +45,7 @@ public class CaseCorrespondencesFTDataManager extends FunctionalTestDataManager 
                     .documentBinaryUrl(rs.getString("document_binary_url"))
                     .documentFilename(rs.getString("document_filename"))
                     .correspondenceType(rs.getString("correspondence_type"))
+                    .receivingParty(receivingParty == null ? null : Party.valueOf(receivingParty))
                     .build();
 
                 correspondences.add(correspondenceEntity);

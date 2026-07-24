@@ -120,7 +120,7 @@ public class CaseFinalDecisionIssuedNotification implements PartiesNotification 
             uploadedDocuments,
             templateVars,
             TemplateName.FINAL_DECISION_ISSUED_EMAIL);
-        return notificationService.sendEmail(request, caseReferenceNumber);
+        return notificationService.sendEmail(request, caseReferenceNumber, null);
     }
 
     private NotificationResponse sendLetterNotification(Map<String, Object> templateVarsLetter, String caseReferenceNumber) {

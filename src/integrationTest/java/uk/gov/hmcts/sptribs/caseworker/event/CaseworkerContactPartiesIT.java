@@ -23,11 +23,14 @@ import uk.gov.hmcts.sptribs.caseworker.model.ContactPartiesDocuments;
 import uk.gov.hmcts.sptribs.cdam.model.Document;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
+import uk.gov.hmcts.sptribs.ciccase.model.NotificationResponse;
 import uk.gov.hmcts.sptribs.common.config.WebMvcConfig;
 import uk.gov.hmcts.sptribs.common.repositories.DocumentsRepository;
+import uk.gov.hmcts.sptribs.common.service.ContactPartiesService;
 import uk.gov.hmcts.sptribs.idam.CICUser;
 import uk.gov.hmcts.sptribs.idam.IdamService;
 import uk.gov.hmcts.sptribs.notification.NotificationServiceCIC;
+import uk.gov.hmcts.sptribs.notification.model.Party;
 import uk.gov.hmcts.sptribs.services.cdam.CaseDocumentClientApi;
 import uk.gov.hmcts.sptribs.testutil.IdamWireMock;
 
@@ -39,7 +42,9 @@ import java.util.UUID;
 import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
 import static net.javacrumbs.jsonunit.assertj.JsonAssertions.json;
 import static net.javacrumbs.jsonunit.core.Option.IGNORING_EXTRA_FIELDS;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -99,12 +104,20 @@ public class CaseworkerContactPartiesIT extends IntegrationTestBase {
     @MockitoBean
     private NotificationServiceCIC notificationServiceCIC;
 
+    @MockitoBean
+    private ContactPartiesService contactPartiesService;
+
     private User systemUser;
 
     private static final String CASEWORKER_CONTACT_PARTIES_ABOUT_TO_START_RESPONSE =
         "classpath:responses/caseworker-contact-parties-about-to-start-response.json";
 
     private static final String CONFIRMATION_HEADER = "$.confirmation_header";
+
+    private static final String NOTIFICATION_RESPONSE_ID_1 = "121";
+    private static final String NOTIFICATION_RESPONSE_ID_2 = "122";
+    private static final String NOTIFICATION_RESPONSE_ID_3 = "123";
+    private static final String NOTIFICATION_RESPONSE_ID_4 = "124";
 
     @BeforeAll
     static void setUp() {
@@ -122,7 +135,7 @@ public class CaseworkerContactPartiesIT extends IntegrationTestBase {
             UserInfo.builder()
                 .roles(List.of("caseworker-st_cic", "caseworker-sptribs-systemupdate"))
                 .build()
-        );
+            );
 
         stubForIdamDetails(TEST_AUTHORIZATION_TOKEN, CASEWORKER_USER_ID, ST_CIC_CASEWORKER);
         when(authTokenGenerator.generate()).thenReturn(TEST_SERVICE_AUTH_TOKEN);
@@ -216,13 +229,25 @@ public class CaseworkerContactPartiesIT extends IntegrationTestBase {
         );
         caseData.setContactPartiesDocuments(contactPartiesDocuments);
 
+        NotificationResponse notificationResponse1 = NotificationResponse.builder().id(NOTIFICATION_RESPONSE_ID_1).build();
+        NotificationResponse notificationResponse2 = NotificationResponse.builder().id(NOTIFICATION_RESPONSE_ID_2).build();
+        NotificationResponse notificationResponse3 = NotificationResponse.builder().id(NOTIFICATION_RESPONSE_ID_3).build();
+        NotificationResponse notificationResponse4 = NotificationResponse.builder().id(NOTIFICATION_RESPONSE_ID_4).build();
+
+        when(notificationServiceCIC.sendEmail(any(), eq(TEST_CASE_ID_HYPHENATED), eq(Party.SUBJECT))).thenReturn(notificationResponse1);
+        when(notificationServiceCIC.sendEmail(any(), eq(TEST_CASE_ID_HYPHENATED), eq(Party.RESPONDENT))).thenReturn(notificationResponse2);
+        when(notificationServiceCIC.sendEmail(any(), eq(TEST_CASE_ID_HYPHENATED), eq(Party.REPRESENTATIVE))).thenReturn(
+            notificationResponse3);
+        when(notificationServiceCIC.sendEmail(any(), eq(TEST_CASE_ID_HYPHENATED), eq(Party.APPLICANT))).thenReturn(notificationResponse4);
+
+
         String response = mockMvc.perform(post(SUBMITTED_URL)
-            .contentType(APPLICATION_JSON)
-            .header(SERVICE_AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
-            .header(AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
-            .content(objectMapper.writeValueAsString(
-                callbackRequest(
-                    caseData,
+                .contentType(APPLICATION_JSON)
+                .header(SERVICE_AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
+                .header(AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
+                .content(objectMapper.writeValueAsString(
+                    callbackRequest(
+                        caseData,
                     CASEWORKER_CONTACT_PARTIES)))
             .accept(APPLICATION_JSON))
             .andExpect(
@@ -236,8 +261,22 @@ public class CaseworkerContactPartiesIT extends IntegrationTestBase {
             .isString()
             .contains("# Message sent \n## A notification has been sent to: Subject, Respondent, Representative, Applicant");
 
-        verify(notificationServiceCIC, times(4)).sendEmail(any(), eq(TEST_CASE_ID_HYPHENATED));
+        verify(notificationServiceCIC, times(1)).sendEmail(any(), eq(TEST_CASE_ID_HYPHENATED), eq(Party.SUBJECT));
+        verify(notificationServiceCIC, times(1)).sendEmail(any(), eq(TEST_CASE_ID_HYPHENATED), eq(Party.RESPONDENT));
+        verify(notificationServiceCIC, times(1)).sendEmail(any(), eq(TEST_CASE_ID_HYPHENATED), eq(Party.REPRESENTATIVE));
+        verify(notificationServiceCIC, times(1)).sendEmail(any(), eq(TEST_CASE_ID_HYPHENATED), eq(Party.APPLICANT));
         verifyNoMoreInteractions(notificationServiceCIC);
+        verify(contactPartiesService).linkCorrespondenceIdsToDocuments(any(), any(),
+            argThat(list -> {
+                assertThat(list).containsExactlyInAnyOrder(
+                    NOTIFICATION_RESPONSE_ID_1,
+                    NOTIFICATION_RESPONSE_ID_2,
+                    NOTIFICATION_RESPONSE_ID_3,
+                    NOTIFICATION_RESPONSE_ID_4
+                );
+                return true;
+            })
+        );
     }
 
     @Test

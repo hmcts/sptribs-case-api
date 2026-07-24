@@ -4,7 +4,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.ccd.sdk.ConfigBuilderImpl;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
@@ -27,9 +26,9 @@ import uk.gov.hmcts.sptribs.ciccase.model.SubjectCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.ciccase.model.access.Permissions;
 import uk.gov.hmcts.sptribs.common.event.page.PartiesToContact;
+import uk.gov.hmcts.sptribs.common.service.ContactPartiesService;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
-import uk.gov.hmcts.sptribs.document.service.DocumentsService;
 import uk.gov.hmcts.sptribs.notification.NotificationHelper;
 import uk.gov.hmcts.sptribs.notification.dispatcher.ContactPartiesNotification;
 import uk.gov.hmcts.sptribs.notification.exception.NotificationException;
@@ -41,7 +40,9 @@ import java.util.Set;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -77,7 +78,7 @@ class CaseworkerContactPartiesTest {
     private ContactPartiesSelectDocument contactPartiesSelectDocument;
 
     @Mock
-    private DocumentsService documentsService;
+    private ContactPartiesService contactPartiesService;
 
     @Mock
     private NotificationHelper notificationHelper;
@@ -186,7 +187,7 @@ class CaseworkerContactPartiesTest {
     }
 
     @Test
-    void shouldDisplayTheCorrectMessageWithCommaSeparation() {
+    void shouldDisplayTheCorrectMessageWithCommaSeparationAndLinkDocumentsToCorrespondence() {
         //given
         DynamicMultiSelectList documentList = buildDynamicMultiSelectDocumentList();
         ContactPartiesDocuments contactPartiesDocuments = ContactPartiesDocuments.builder()
@@ -195,6 +196,7 @@ class CaseworkerContactPartiesTest {
 
         final CaseData caseData = caseData();
         caseData.setContactPartiesDocuments(contactPartiesDocuments);
+        caseData.setHyphenatedCaseRef(String.valueOf(TEST_CASE_ID));
 
         final CicCase cicCase = CicCase.builder()
             .fullName(TEST_FIRST_NAME)
@@ -218,6 +220,10 @@ class CaseworkerContactPartiesTest {
         Map<String, String> emailDocs = getDocumentUploadMap();
 
         when(notificationHelper.buildDocumentList(documentList, docAttachLimit)).thenReturn(emailDocs);
+        when(contactPartiesNotification.sendToSubject(caseData, String.valueOf(TEST_CASE_ID), emailDocs)).thenReturn("UUID1");
+        when(contactPartiesNotification.sendToRepresentative(caseData, String.valueOf(TEST_CASE_ID), emailDocs)).thenReturn("UUID2");
+        when(contactPartiesNotification.sendToApplicant(caseData, String.valueOf(TEST_CASE_ID), emailDocs)).thenReturn("UUID3");
+        when(contactPartiesNotification.sendToRespondent(caseData, String.valueOf(TEST_CASE_ID), emailDocs)).thenReturn("UUID4");
 
         SubmittedCallbackResponse response =
             caseWorkerContactParties.submitted(updatedCaseDetails, beforeDetails);
@@ -236,11 +242,12 @@ class CaseworkerContactPartiesTest {
         assertThat(contactPartiesResponse.getConfirmationHeader()).contains("Respondent");
         assertThat(contactPartiesResponse.getConfirmationHeader()).contains(",");
 
-        verify(documentsService, times(2)).updateDocumentsToSentViaContactParties(caseData, emailDocs);
+        verify(contactPartiesService, times(2)).linkCorrespondenceIdsToDocuments(caseData, emailDocs,
+            List.of("UUID1", "UUID2", "UUID3", "UUID4"));
     }
 
     @Test
-    void shouldDisplayTheCorrectMessageWithCommaSeparationIfSubjectIsNull() {
+    void shouldDisplayTheCorrectMessageWithCommaSeparationIfSubjectIsNullAndLinkDocumentsToCorrespondence() {
         //given
         DynamicMultiSelectList documentList = buildDynamicMultiSelectDocumentList();
         ContactPartiesDocuments contactPartiesDocuments = ContactPartiesDocuments.builder()
@@ -249,6 +256,7 @@ class CaseworkerContactPartiesTest {
 
         final CaseData caseData = caseData();
         caseData.setContactPartiesDocuments(contactPartiesDocuments);
+        caseData.setHyphenatedCaseRef(String.valueOf(TEST_CASE_ID));
 
         final CicCase cicCase = CicCase.builder()
             .fullName(TEST_FIRST_NAME)
@@ -272,9 +280,9 @@ class CaseworkerContactPartiesTest {
         Map<String, String> emailDocs = getDocumentUploadMap();
 
         when(notificationHelper.buildDocumentList(documentList, docAttachLimit)).thenReturn(emailDocs);
-        Mockito.doNothing().when(contactPartiesNotification).sendToApplicant(caseData, caseData.getHyphenatedCaseRef(), emailDocs);
-        Mockito.doNothing().when(contactPartiesNotification).sendToRepresentative(caseData, caseData.getHyphenatedCaseRef(), emailDocs);
-        Mockito.doNothing().when(contactPartiesNotification).sendToRespondent(caseData, caseData.getHyphenatedCaseRef(), emailDocs);
+        when(contactPartiesNotification.sendToRepresentative(caseData, String.valueOf(TEST_CASE_ID), emailDocs)).thenReturn("UUID2");
+        when(contactPartiesNotification.sendToApplicant(caseData, String.valueOf(TEST_CASE_ID), emailDocs)).thenReturn("UUID3");
+        when(contactPartiesNotification.sendToRespondent(caseData, String.valueOf(TEST_CASE_ID), emailDocs)).thenReturn("UUID4");
 
         SubmittedCallbackResponse response =
             caseWorkerContactParties.submitted(updatedCaseDetails, beforeDetails);
@@ -292,11 +300,12 @@ class CaseworkerContactPartiesTest {
         assertThat(contactPartiesResponse.getConfirmationHeader()).contains("Respondent");
         assertThat(contactPartiesResponse.getConfirmationHeader()).contains(",");
 
-        verify(documentsService, times(2)).updateDocumentsToSentViaContactParties(caseData, emailDocs);
+        verify(contactPartiesNotification, never()).sendToSubject(any(), any(), any());
+        verify(contactPartiesService, times(2)).linkCorrespondenceIdsToDocuments(caseData, emailDocs, List.of("UUID2", "UUID3", "UUID4"));
     }
 
     @Test
-    void shouldNotUpdateDocumentsToSentViaContactPartiesWhenOnlySentToRespondent() {
+    void shouldNotCallDocumentCorrespondenceServiceAsNoEmailsSent() {
 
         //given
         DynamicMultiSelectList documentList = buildDynamicMultiSelectDocumentList();
@@ -311,7 +320,6 @@ class CaseworkerContactPartiesTest {
             .fullName(TEST_FIRST_NAME)
             .address(SUBJECT_ADDRESS)
             .representativeAddress(SOLICITOR_ADDRESS)
-            .notifyPartyRespondent(Set.of(RespondentCIC.RESPONDENT))
             .build();
         caseData.setCicCase(cicCase);
 
@@ -325,20 +333,18 @@ class CaseworkerContactPartiesTest {
         Map<String, String> emailDocs = getDocumentUploadMap();
 
         when(notificationHelper.buildDocumentList(documentList, docAttachLimit)).thenReturn(emailDocs);
-        Mockito.doNothing().when(contactPartiesNotification).sendToRespondent(caseData, caseData.getHyphenatedCaseRef(), emailDocs);
 
         //when
         SubmittedCallbackResponse contactPartiesResponse = caseWorkerContactParties.submitted(updatedCaseDetails, beforeDetails);
-
 
         //then
         assertThat(contactPartiesResponse).isNotNull();
         assertThat(contactPartiesResponse.getConfirmationHeader()).doesNotContain("Subject");
         assertThat(contactPartiesResponse.getConfirmationHeader()).doesNotContain("Applicant");
         assertThat(contactPartiesResponse.getConfirmationHeader()).doesNotContain("Representative");
-        assertThat(contactPartiesResponse.getConfirmationHeader()).contains("Respondent");
+        assertThat(contactPartiesResponse.getConfirmationHeader()).doesNotContain("Respondent");
 
-        verifyNoInteractions(documentsService);
+        verifyNoInteractions(contactPartiesService);
 
     }
 

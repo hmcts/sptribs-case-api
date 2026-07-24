@@ -176,7 +176,7 @@ public class CicDssUpdateCaseEvent implements CCDConfig<CaseData, State, UserRol
                     document.getValue().getDocumentLink(),
                     Long.parseLong(caseData.getHyphenatedCaseRef().replace("-", "")),
                     document.getValue().getDocumentCategory(),
-                    CaseDocumentType.APPLICANT
+                    CaseDocumentType.APPLICATION
                 );
             } catch (RuntimeException e) {
                 errors.add(handleDocumentException(document.getValue().getDocumentLink(), e.getMessage()));
