@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.sptribs.common.repositories.CaseDataRepository;
+import uk.gov.hmcts.sptribs.common.repositories.model.CicaCaseEntity;
 import uk.gov.hmcts.sptribs.exception.CaseNotFoundException;
 import uk.gov.hmcts.sptribs.exception.UnauthorisedCaseAccessException;
 import uk.gov.hmcts.sptribs.idam.CICUser;
@@ -69,6 +70,27 @@ public class CicaCaseService {
             }
             log.warn("Error checking case access and postcode for reference: {}", ccdReference, e);
             throw new UnauthorisedCaseAccessException("Error checking case access and postcode: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Retrieves the case by CCD reference.
+     *
+     * @param ccdReference  the CCD reference number.
+     * @param authorisation user authorization token.
+     * @return the CicaCaseEntity.
+     */
+    public CicaCaseEntity getCaseByCCDReference(String ccdReference, String authorisation) {
+        try {
+            CICUser user = idamService.retrieveUser(authorisation);
+            return caseDataRepository.findCase(ccdReference, user.getUserInfo().getSub())
+                .orElseThrow(() -> new CaseNotFoundException("No case found with CCD reference: " + ccdReference));
+        } catch (Exception e) {
+            if (e instanceof CaseNotFoundException cnfe) {
+                throw cnfe;
+            }
+            log.warn("Error retrieving case for reference: {}", ccdReference, e);
+            throw new UnauthorisedCaseAccessException("Error retrieving case: " + e.getMessage());
         }
     }
 }
