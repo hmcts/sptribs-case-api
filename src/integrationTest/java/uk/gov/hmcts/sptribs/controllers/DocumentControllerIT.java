@@ -17,6 +17,7 @@ import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.sptribs.cdam.model.Document;
 import uk.gov.hmcts.sptribs.ciccase.service.CicaCaseService;
 import uk.gov.hmcts.sptribs.common.config.WebMvcConfig;
+import uk.gov.hmcts.sptribs.common.repositories.model.CicaCaseEntity;
 import uk.gov.hmcts.sptribs.controllers.mapper.CaseworkerCICDocumentMapper;
 import uk.gov.hmcts.sptribs.document.model.DocumentDashboardModel;
 import uk.gov.hmcts.sptribs.document.service.DocumentsService;
@@ -239,6 +240,14 @@ class DocumentControllerIT {
     @Test
     void shouldGetDocumentsSuccessfully() throws Exception {
         // Given
+        CicaCaseEntity cicaCaseEntity = CicaCaseEntity.builder()
+            .id(TEST_CASE_ID_STRING)
+            .state("CaseManagement")
+            .build();
+
+        when(cicaCaseService.getCaseByCCDReference(TEST_CASE_ID_STRING, TEST_AUTHORIZATION_TOKEN))
+            .thenReturn(cicaCaseEntity);
+
         DocumentDashboardModel dashboardModel = DocumentDashboardModel.builder()
             .contactPartiesDocuments(emptyList())
             .orderAndDecisionDocuments(emptyList())
@@ -258,7 +267,9 @@ class DocumentControllerIT {
                 .header("X-Postcode", TEST_POSTCODE))
             .andExpect(status().isOk())
             .andExpect(content().json(
-                "{\"contactPartiesDocuments\":[],\"orderAndDecisionDocuments\":[],\"latestCaseBundleDocuments\":[]}"));
+                "{\"cicaCaseResponse\":{\"id\":\"" + TEST_CASE_ID_STRING + "\",\"state\":\"CaseManagement\"}"
+                    + ",\"documentResponse\":{\"contactPartiesDocuments\":[],\"orderAndDecisionDocuments\":[],"
+                    + "\"latestCaseBundleDocuments\":[]}}"));
     }
 
     @Test
