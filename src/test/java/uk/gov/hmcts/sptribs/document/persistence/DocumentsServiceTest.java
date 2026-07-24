@@ -259,7 +259,8 @@ public class DocumentsServiceTest {
         when(caseDocumentTypesCache.getId(CaseDocumentType.DECISION)).thenReturn(5L);
         when(caseDocumentTypesCache.getId(CaseDocumentType.FINAL_DECISION)).thenReturn(6L);
         when(caseDocumentTypesCache.getId(CaseDocumentType.BUNDLE)).thenReturn(9L);
-        when(documentsRepository.findContactPartyDocuments(TEST_CASE_ID, CasePartyUtil.CITIZEN_CONTACT_PARTIES, ORDER_AND_DECISION_TYPE_IDS))
+        when(documentsRepository
+            .findContactPartyDocuments(TEST_CASE_ID, CasePartyUtil.CITIZEN_CONTACT_PARTIES, ORDER_AND_DECISION_TYPE_IDS))
             .thenReturn(contactPartyDocumentDetailsList);
         when(documentsRepository
             .findFirstByCaseReferenceNumberAndCaseDocumentTypeIdOrderBySavedAtDesc(TEST_CASE_ID, 9L))
@@ -291,7 +292,8 @@ public class DocumentsServiceTest {
         when(caseDocumentTypesCache.getId(CaseDocumentType.DECISION)).thenReturn(5L);
         when(caseDocumentTypesCache.getId(CaseDocumentType.FINAL_DECISION)).thenReturn(6L);
         when(caseDocumentTypesCache.getId(CaseDocumentType.BUNDLE)).thenReturn(9L);
-        when(documentsRepository.findContactPartyDocuments(TEST_CASE_ID, CasePartyUtil.CITIZEN_CONTACT_PARTIES, ORDER_AND_DECISION_TYPE_IDS))
+        when(documentsRepository
+            .findContactPartyDocuments(TEST_CASE_ID, CasePartyUtil.CITIZEN_CONTACT_PARTIES, ORDER_AND_DECISION_TYPE_IDS))
             .thenReturn(List.of());
         when(documentsRepository
             .findFirstByCaseReferenceNumberAndCaseDocumentTypeIdOrderBySavedAtDesc(TEST_CASE_ID, 9L))
