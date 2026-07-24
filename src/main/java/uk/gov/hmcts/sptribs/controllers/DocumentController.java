@@ -21,7 +21,11 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.sptribs.ciccase.service.CicaCaseService;
+import uk.gov.hmcts.sptribs.common.repositories.model.CicaCaseEntity;
 import uk.gov.hmcts.sptribs.controllers.mapper.CaseworkerCICDocumentMapper;
+import uk.gov.hmcts.sptribs.controllers.mapper.CicaCaseMapper;
+import uk.gov.hmcts.sptribs.controllers.model.CicaCaseResponse;
+import uk.gov.hmcts.sptribs.controllers.model.DashboardResponse;
 import uk.gov.hmcts.sptribs.controllers.model.DocumentResponse;
 import uk.gov.hmcts.sptribs.document.DocumentDownloadService;
 import uk.gov.hmcts.sptribs.document.model.DocumentDashboardModel;
@@ -40,6 +44,7 @@ public class DocumentController {
     private final DocumentsService documentsService;
     private final CaseworkerCICDocumentMapper caseworkerCICDocumentMapper;
     private final CicaCaseService cicaCaseService;
+    private final CicaCaseMapper cicaCaseMapper;
 
     @GetMapping(value = "/{ccdReference}/documents")
     @Operation(summary = "Get Documents for CIC case from a CCD reference number")
@@ -50,7 +55,7 @@ public class DocumentController {
         @ApiResponse(responseCode = "404", description = "Document not found"),
         @ApiResponse(responseCode = "500", description = "Internal server error")
     })
-    public ResponseEntity<DocumentResponse> getDocumentsByCCDReference(
+    public ResponseEntity<DashboardResponse> getDocumentsByCCDReference(
         @RequestHeader(HttpHeaders.AUTHORIZATION)
         @Parameter(description = "Authorization token", required = true)
         String authorisation,
@@ -69,7 +74,9 @@ public class DocumentController {
 
         log.info("Received request to get documents with CCD reference = {}", ccdReference);
 
-        cicaCaseService.checkIfUserHasAccessWithPostcode(ccdReference, authorisation, postcode);
+        CicaCaseEntity cicaCaseEntity = cicaCaseService.checkIfUserHasAccessWithPostcode(ccdReference, authorisation, postcode);
+
+        CicaCaseResponse response = cicaCaseMapper.toResponse(cicaCaseEntity);
 
         DocumentDashboardModel documentDashboardModel = documentsService.getDocumentsOnCase(Long.valueOf(ccdReference));
 
@@ -91,8 +98,13 @@ public class DocumentController {
             )
             .build();
 
+        DashboardResponse dashboardResponse = DashboardResponse.builder()
+            .cicaCaseResponse(response)
+            .documentResponse(documentResponse)
+            .build();
+
         return ResponseEntity.ok()
-            .body(documentResponse);
+            .body(dashboardResponse);
     }
 
     @GetMapping(value = "/{ccdReference}/documents/{documentId}/download")

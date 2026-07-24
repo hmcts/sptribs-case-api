@@ -17,6 +17,7 @@ import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.sptribs.cdam.model.Document;
 import uk.gov.hmcts.sptribs.ciccase.service.CicaCaseService;
 import uk.gov.hmcts.sptribs.common.config.WebMvcConfig;
+import uk.gov.hmcts.sptribs.common.repositories.model.CicaCaseEntity;
 import uk.gov.hmcts.sptribs.controllers.mapper.CaseworkerCICDocumentMapper;
 import uk.gov.hmcts.sptribs.document.model.DocumentDashboardModel;
 import uk.gov.hmcts.sptribs.document.service.DocumentsService;
@@ -30,7 +31,6 @@ import static java.util.Collections.emptyList;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -239,6 +239,14 @@ class DocumentControllerIT {
     @Test
     void shouldGetDocumentsSuccessfully() throws Exception {
         // Given
+        CicaCaseEntity cicaCaseEntity = CicaCaseEntity.builder()
+            .id(TEST_CASE_ID_STRING)
+            .state("CaseManagement")
+            .build();
+
+        when(cicaCaseService.checkIfUserHasAccessWithPostcode(TEST_CASE_ID_STRING, TEST_AUTHORIZATION_TOKEN, TEST_POSTCODE))
+            .thenReturn(cicaCaseEntity);
+
         DocumentDashboardModel dashboardModel = DocumentDashboardModel.builder()
             .contactPartiesDocuments(emptyList())
             .orderAndDecisionDocuments(emptyList())
@@ -258,15 +266,17 @@ class DocumentControllerIT {
                 .header("X-Postcode", TEST_POSTCODE))
             .andExpect(status().isOk())
             .andExpect(content().json(
-                "{\"contactPartiesDocuments\":[],\"orderAndDecisionDocuments\":[],\"latestCaseBundleDocuments\":[]}"));
+                "{\"cicaCaseResponse\":{\"id\":\"" + TEST_CASE_ID_STRING + "\",\"state\":\"CaseManagement\"}"
+                    + ",\"documentResponse\":{\"contactPartiesDocuments\":[],\"orderAndDecisionDocuments\":[],"
+                    + "\"latestCaseBundleDocuments\":[]}}"));
     }
 
     @Test
     void shouldFailToGetDocumentsWhenPostcodeValidationFails() throws Exception {
         // Given
         String invalidPostcode = "INVALID";
-        doThrow(new UnauthorisedCaseAccessException("Postcode match failed"))
-            .when(cicaCaseService).checkIfUserHasAccessWithPostcode(eq(TEST_CASE_ID_STRING), any(), eq(invalidPostcode));
+        when(cicaCaseService.checkIfUserHasAccessWithPostcode(eq(TEST_CASE_ID_STRING), any(), eq(invalidPostcode)))
+            .thenThrow(new UnauthorisedCaseAccessException("Postcode match failed"));
 
         // When & Then
         mockMvc.perform(get(GET_DOCUMENTS_URL)
@@ -280,8 +290,8 @@ class DocumentControllerIT {
     void shouldFailToDownloadDocumentWhenPostcodeValidationFails() throws Exception {
         // Given
         String invalidPostcode = "INVALID";
-        doThrow(new UnauthorisedCaseAccessException("Postcode match failed"))
-            .when(cicaCaseService).checkIfUserHasAccessWithPostcode(eq(TEST_CASE_ID_STRING), any(), eq(invalidPostcode));
+        when(cicaCaseService.checkIfUserHasAccessWithPostcode(eq(TEST_CASE_ID_STRING), any(), eq(invalidPostcode)))
+            .thenThrow(new UnauthorisedCaseAccessException("Postcode match failed"));
 
         // When & Then
         mockMvc.perform(get(String.format(DOWNLOAD_DOCUMENT_URL, TEST_CASE_DATA_FILE_UUID))

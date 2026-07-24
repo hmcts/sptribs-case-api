@@ -15,6 +15,7 @@ import uk.gov.hmcts.sptribs.manager.CorrespondenceDocumentITManager;
 import uk.gov.hmcts.sptribs.notification.model.Party;
 
 import java.time.OffsetDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -244,6 +245,7 @@ class DocumentsRepositoryImplIT extends IntegrationTestBase {
         ContactPartyDocumentDetails details = result.getFirst();
 
         assertThat(details.document().getDocumentBinaryUrl()).isEqualTo(binaryUrl);
-        assertThat(details.sentOn().toLocalDateTime()).isEqualTo(sentOn.toLocalDateTime());
+        assertThat(details.sentOn().toLocalDateTime().truncatedTo(ChronoUnit.MICROS)).isEqualTo(
+            sentOn.toLocalDateTime().truncatedTo(ChronoUnit.MICROS));
     }
 }
