@@ -4,7 +4,15 @@ import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.notification.model.Party;
 
+import java.util.List;
+
 public final class CasePartyUtil {
+
+    public static final List<Party> CITIZEN_CONTACT_PARTIES = List.of(
+        Party.APPLICANT,
+        Party.REPRESENTATIVE,
+        Party.SUBJECT
+    );
 
     private CasePartyUtil() {
     }

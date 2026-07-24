@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.ciccase.util.CasePartyUtil;
 import uk.gov.hmcts.sptribs.common.repositories.DocumentsRepository;
 import uk.gov.hmcts.sptribs.common.repositories.exception.document.DocumentDeleteException;
 import uk.gov.hmcts.sptribs.common.repositories.exception.document.DocumentLookupException;
@@ -20,7 +21,6 @@ import uk.gov.hmcts.sptribs.document.model.ContactPartyDocumentDetails;
 import uk.gov.hmcts.sptribs.document.model.DocumentDashboardModel;
 import uk.gov.hmcts.sptribs.document.model.DocumentEntity;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
-import uk.gov.hmcts.sptribs.notification.model.Party;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -137,17 +137,11 @@ public class DocumentsService {
             .map(caseDocumentTypesCache::getId)
             .toList();
 
-        final List<Party> contactParties = List.of(
-            Party.APPLICANT,
-            Party.REPRESENTATIVE,
-            Party.SUBJECT
-        );
-
         // Documents that have been sent to contact parties, excluding order/decision docs with date from when email sent.
         List<ContactPartyDocumentDetails> contactPartyDocuments =
             documentsRepository.findContactPartyDocuments(
                 ccdReference,
-                contactParties,
+                CasePartyUtil.CITIZEN_CONTACT_PARTIES,
                 orderAndDecisionTypeIds
             );
 
