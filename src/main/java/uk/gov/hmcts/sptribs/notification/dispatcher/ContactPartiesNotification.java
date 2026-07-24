@@ -50,7 +50,6 @@ public class ContactPartiesNotification implements PartiesNotification {
         templateVarsSubject.put(CommonConstants.CONTACT_PARTY_INFO, cicCase.getNotifyPartyMessage());
         addDashboardLink(templateVarsSubject);
         final List<CaseworkerCICDocument> selectedDocuments = DocumentListUtil.getSelectedDocumentsFromDynamicList(caseData, caseData.getContactPartiesDocuments().getDocumentList());
-        addDocumentDetails(templateVarsSubject, cicCase);
         final NotificationResponse notificationResponse;
         final TemplateName templateName;
 
@@ -60,6 +59,7 @@ public class ContactPartiesNotification implements PartiesNotification {
                 cicCase.getEmail(),
                 templateVarsSubject,
                 uploadedDocuments,
+                selectedDocuments,
                 getTemplateName(),
                 caseNumber,
                 Party.SUBJECT);
@@ -72,11 +72,6 @@ public class ContactPartiesNotification implements PartiesNotification {
         return notificationResponse.getId();
     }
 
-    private void addDocumentDetails(Map<String, Object> templateVarsSubject, CicCase cicCase) {
-        var selectedContactPartyDocuments = cicCase.getSelectedContactPartiesDocs();
-
-    }
-
     @Override
     public String sendToApplicant(final CaseData caseData, final String caseNumber, final Map<String, String> uploadedDocuments) {
         final CicCase cicCase = caseData.getCicCase();
@@ -84,6 +79,7 @@ public class ContactPartiesNotification implements PartiesNotification {
         templateVarsApplicant.put(CommonConstants.CIC_CASE_SUBJECT_NAME, cicCase.getFullName());
         templateVarsApplicant.put(CommonConstants.CONTACT_PARTY_INFO, cicCase.getNotifyPartyMessage());
         addDashboardLink(templateVarsApplicant);
+        final List<CaseworkerCICDocument> selectedDocuments = DocumentListUtil.getSelectedDocumentsFromDynamicList(caseData, caseData.getContactPartiesDocuments().getDocumentList());
 
         final NotificationResponse notificationResponse;
         if (caseData.getCicCase().getApplicantContactDetailsPreference() == ContactPreferenceType.EMAIL) {
@@ -92,6 +88,7 @@ public class ContactPartiesNotification implements PartiesNotification {
                 cicCase.getApplicantEmailAddress(),
                 templateVarsApplicant,
                 uploadedDocuments,
+                selectedDocuments,
                 getTemplateName(),
                 caseNumber,
                 Party.APPLICANT);
@@ -112,6 +109,7 @@ public class ContactPartiesNotification implements PartiesNotification {
         templateVarsRepresentative.put(CommonConstants.CIC_CASE_SUBJECT_NAME, cicCase.getFullName());
         templateVarsRepresentative.put(CommonConstants.CONTACT_PARTY_INFO, cicCase.getNotifyPartyMessage());
         addDashboardLink(templateVarsRepresentative);
+        final List<CaseworkerCICDocument> selectedDocuments = DocumentListUtil.getSelectedDocumentsFromDynamicList(caseData, caseData.getContactPartiesDocuments().getDocumentList());
 
         final NotificationResponse notificationResponse;
         if (cicCase.getRepresentativeContactDetailsPreference() == ContactPreferenceType.EMAIL) {
@@ -120,6 +118,7 @@ public class ContactPartiesNotification implements PartiesNotification {
                 cicCase.getRepresentativeEmailAddress(),
                 templateVarsRepresentative,
                 uploadedDocuments,
+                selectedDocuments,
                 getTemplateName(),
                 caseNumber,
                 Party.REPRESENTATIVE);
@@ -140,6 +139,7 @@ public class ContactPartiesNotification implements PartiesNotification {
         final Map<String, Object> templateVarsRespondent = notificationHelper.getRespondentCommonVars(caseNumber, caseData);
         templateVarsRespondent.put(CommonConstants.CIC_CASE_SUBJECT_NAME, cicCase.getFullName());
         templateVarsRespondent.put(CommonConstants.CONTACT_PARTY_INFO, cicCase.getNotifyPartyMessage());
+        final List<CaseworkerCICDocument> selectedDocuments = DocumentListUtil.getSelectedDocumentsFromDynamicList(caseData, caseData.getContactPartiesDocuments().getDocumentList());
 
         // Send Email
         final NotificationResponse notificationResponse;
@@ -148,6 +148,7 @@ public class ContactPartiesNotification implements PartiesNotification {
             notificationResponse = sendEmailNotificationWithAttachment(cicCase.getRespondentEmail(),
                 templateVarsRespondent,
                 uploadedDocuments,
+                selectedDocuments,
                 CONTACT_PARTIES_EMAIL,
                 caseNumber,
                 Party.RESPONDENT);
@@ -166,6 +167,7 @@ public class ContactPartiesNotification implements PartiesNotification {
         final Map<String, Object> templateVarsTribunal = notificationHelper.getTribunalCommonVars(caseNumber, caseData);
         templateVarsTribunal.put(CommonConstants.CIC_CASE_TRIBUNAL_NAME, TRIBUNAL_NAME_VALUE);
         templateVarsTribunal.put(CommonConstants.CONTACT_PARTY_INFO, cicCase.getNotifyPartyMessage());
+        final List<CaseworkerCICDocument> selectedDocuments = DocumentListUtil.getSelectedDocumentsFromDynamicList(caseData, caseData.getContactPartiesDocuments().getDocumentList());
 
         // Send Email
         final NotificationResponse notificationResponse;
@@ -174,6 +176,7 @@ public class ContactPartiesNotification implements PartiesNotification {
             notificationResponse = sendEmailNotificationWithAttachment(TRIBUNAL_EMAIL_VALUE,
                 templateVarsTribunal,
                 uploadedDocuments,
+                selectedDocuments,
                 CONTACT_PARTIES_EMAIL,
                 caseNumber,
                 Party.TRIBUNAL);
