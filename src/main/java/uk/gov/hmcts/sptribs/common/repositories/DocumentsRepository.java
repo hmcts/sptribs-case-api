@@ -16,16 +16,6 @@ import java.util.Optional;
 public interface DocumentsRepository extends JpaRepository<DocumentEntity, Long> {
 
 
-    @Modifying
-    @Query("""
-        update DocumentEntity d
-        set d.sentToApplicantViaContactParties = true
-        where d.documentBinaryUrl in :documentUrls
-        """)
-    int setSentToApplicantViaContactPartiesToTrueByDocumentBinaryUrl(
-        @Param("documentUrls") List<String> documentUrls
-    );
-
     @Query("""
         select d.id
         from DocumentEntity d
@@ -58,15 +48,6 @@ public interface DocumentsRepository extends JpaRepository<DocumentEntity, Long>
         @Param("documentBinaryUrl") String documentBinaryUrl,
         @Param("caseDocumentTypeId") Long caseDocumentTypeId
     );
-
-    @Query("""
-            SELECT d
-            FROM DocumentEntity d
-            WHERE d.caseReferenceNumber = :caseReferenceNumber
-            ORDER BY d.savedAt DESC
-        """)
-    List<DocumentEntity> findAllDocumentsByCaseReference(
-        @Param("caseReferenceNumber") Long caseReferenceNumber);
 
     @Modifying
     @Query("""
