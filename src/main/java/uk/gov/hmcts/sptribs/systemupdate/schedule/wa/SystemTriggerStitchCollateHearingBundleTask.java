@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.idam.client.models.User;
+import uk.gov.hmcts.sptribs.idam.CICUser;
 import uk.gov.hmcts.sptribs.idam.IdamService;
 import uk.gov.hmcts.sptribs.systemupdate.service.CcdConflictException;
 import uk.gov.hmcts.sptribs.systemupdate.service.CcdManagementException;
@@ -45,7 +45,7 @@ public class SystemTriggerStitchCollateHearingBundleTask implements Runnable {
 
     @Override
     public void run() {
-        final User user = idamService.retrieveSystemUpdateUserDetails();
+        final CICUser user = idamService.retrieveSystemUpdateUserDetails();
         final String serviceAuth = authTokenGenerator.generate();
 
         try {
@@ -71,7 +71,7 @@ public class SystemTriggerStitchCollateHearingBundleTask implements Runnable {
         }
     }
 
-    private void triggerSystemStitchCollateHearingBundleEvent(User user, String serviceAuth, CaseDetails caseDetails) {
+    private void triggerSystemStitchCollateHearingBundleEvent(CICUser user, String serviceAuth, CaseDetails caseDetails) {
         try {
             log.info("Submitting System Trigger Stitch Collate Hearing Bundle Event for Case {}", caseDetails.getId());
             ccdUpdateService.submitEvent(caseDetails.getId(), SYSTEM_TRIGGER_STITCH_COLLATE_HEARING_BUNDLE, user, serviceAuth);

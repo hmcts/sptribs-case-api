@@ -4,13 +4,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.reform.idam.client.models.User;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.util.CasePartyUtil;
 import uk.gov.hmcts.sptribs.common.repositories.CaseDataRepository;
 import uk.gov.hmcts.sptribs.common.repositories.model.CicaCaseEntity;
+import uk.gov.hmcts.sptribs.common.repositories.model.CicaCaseEntity;
 import uk.gov.hmcts.sptribs.exception.CaseNotFoundException;
 import uk.gov.hmcts.sptribs.exception.UnauthorisedCaseAccessException;
+import uk.gov.hmcts.sptribs.idam.CICUser;
 import uk.gov.hmcts.sptribs.idam.IdamService;
 import uk.gov.hmcts.sptribs.notification.model.Party;
 
@@ -35,11 +36,11 @@ public class CicaCaseService {
      */
     public void checkIfUserHasAccess(String ccdReference, String authorisation) {
         try {
-            User user = idamService.retrieveUser(authorisation);
+            CICUser user = idamService.retrieveUser(authorisation);
             if (!caseDataRepository.checkCaseExists(ccdReference)) {
                 throw new CaseNotFoundException("No case found with CCD reference: " + ccdReference);
             }
-            boolean hasAccess = caseDataRepository.checkIfUserHasAccessToCase(ccdReference, user.getUserDetails().getEmail());
+            boolean hasAccess = caseDataRepository.checkIfUserHasAccessToCase(ccdReference, user.getUserInfo().getSub());
             if (!hasAccess) {
                 throw new UnauthorisedCaseAccessException("User is not authorised to access case: " + ccdReference);
             }
@@ -56,6 +57,29 @@ public class CicaCaseService {
     }
 
     /**
+     * Checks if the user has access to the case and the postcode matches.
+     *
+     * @param ccdReference      the CCD reference number.
+     * @param authorisation     user authorization token.
+     * @param submittedPostcode the postcode submitted by the user.
+     * @return the CicaCaseEntity.
+     * @throws UnauthorisedCaseAccessException if the user does not have access, postcode does not match, or validation fails.
+     */
+    public CicaCaseEntity checkIfUserHasAccessWithPostcode(String ccdReference, String authorisation, String submittedPostcode) {
+        try {
+            CICUser user = idamService.retrieveUser(authorisation);
+            return caseDataRepository.findCase(ccdReference, user.getUserInfo().getSub(), submittedPostcode)
+                .orElseThrow(() -> new UnauthorisedCaseAccessException("Submitted postcode does not match the postcode held in case data"));
+        } catch (Exception e) {
+            if (e instanceof UnauthorisedCaseAccessException ucae) {
+                throw ucae;
+            }
+            log.warn("Error checking case access and postcode for reference: {}", ccdReference, e);
+            throw new UnauthorisedCaseAccessException("Error checking case access and postcode: " + e.getMessage());
+        }
+    }
+
+    /**
      * Checks if the user has access to the case and the postcode matches, then returns the user's party.
      *
      * @param ccdReference      the CCD reference number.
@@ -66,7 +90,7 @@ public class CicaCaseService {
      */
     public Party verifyUserAccessAndGetParty(String ccdReference, String authorisation, String submittedPostcode) {
         try {
-            User user = idamService.retrieveUser(authorisation);
+            CICUser user = idamService.retrieveUser(authorisation);
             String userEmail = user.getUserDetails().getEmail();
 
             Optional<CicaCaseEntity> cicaCaseOpt = caseDataRepository.findCase(ccdReference, userEmail, submittedPostcode);
@@ -91,4 +115,5 @@ public class CicaCaseService {
             throw new UnauthorisedCaseAccessException("Error checking case access and postcode: " + e.getMessage());
         }
     }
+
 }

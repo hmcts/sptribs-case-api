@@ -3,6 +3,7 @@ package uk.gov.hmcts.sptribs.caseworker;
 import io.restassured.response.Response;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
+import uk.gov.hmcts.sptribs.notification.model.Party;
 import uk.gov.hmcts.sptribs.notification.persistence.CorrespondenceEntity;
 import uk.gov.hmcts.sptribs.testutil.FunctionalTestSuite;
 
@@ -52,7 +53,7 @@ public class CaseworkerContactPartiesFT extends FunctionalTestSuite {
         //add a test here when our document gets updated!
         final Map<String, Object> caseData = caseData(SUBMITTED_REQUEST);
 
-        final Response response = triggerCallback(caseData, CASEWORKER_CONTACT_PARTIES, SUBMITTED_URL, false);
+        final Response response = triggerCallback(caseData, CASEWORKER_CONTACT_PARTIES, SUBMITTED_URL, true);
 
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
         assertThatJson(response.asString())
@@ -77,5 +78,6 @@ public class CaseworkerContactPartiesFT extends FunctionalTestSuite {
         assertThat(firstCorrespondenceEntity.getDocumentUrl()).isNotNull();
         assertThat(firstCorrespondenceEntity.getDocumentFilename()).isNotNull();
         assertThat(firstCorrespondenceEntity.getDocumentBinaryUrl()).isNotNull();
+        assertThat(firstCorrespondenceEntity.getReceivingParty()).isEqualTo(Party.SUBJECT);
     }
 }

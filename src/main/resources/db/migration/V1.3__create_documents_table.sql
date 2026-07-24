@@ -7,6 +7,5 @@ create table if not exists case_documents (
   document_filename varChar(200) not null,
   document_type_name varChar(100),
   case_document_type_id BIGINT NOT NULL REFERENCES case_document_types(id),
-  sent_to_applicant_via_contact_parties boolean not null,
-  updated_at timestamp not null default current_timestamp
+  updated_at timestamp default current_timestamp
 );

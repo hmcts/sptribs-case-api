@@ -1,4 +1,4 @@
-package uk.gov.hmcts.sptribs.testutil;
+package uk.gov.hmcts.sptribs.testutil.data;
 
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
@@ -32,6 +32,7 @@ public class CaseDocumentsFTDataManager extends FunctionalTestDataManager {
 
             List<DocumentEntity> documents = new ArrayList<>();
             while (rs.next()) {
+                Timestamp updatedAt = rs.getTimestamp("updated_at");
                 DocumentEntity documentEntity = DocumentEntity.builder()
                     .caseReferenceNumber(rs.getLong(KEY_CASE_DOCUMENTS_REFERENCE))
                     .id(rs.getInt("id"))
@@ -42,9 +43,11 @@ public class CaseDocumentsFTDataManager extends FunctionalTestDataManager {
                     .documentFilename(rs.getString("document_filename"))
                     .documentTypeName(rs.getString("document_type_name"))
                     .caseDocumentTypeId(rs.getLong("case_document_type_id"))
-                    .sentToApplicantViaContactParties(rs.getBoolean("sent_to_applicant_via_contact_parties"))
-                    .updatedAt(rs.getTimestamp("updated_at").toInstant()
-                        .atOffset(ZoneId.systemDefault().getRules().getOffset(LocalDateTime.now())))
+                    .updatedAt(updatedAt == null
+                        ? null
+                        : updatedAt.toInstant()
+                        .atZone(ZoneId.systemDefault())
+                        .toOffsetDateTime())
                     .build();
 
                 documents.add(documentEntity);
@@ -54,6 +57,7 @@ public class CaseDocumentsFTDataManager extends FunctionalTestDataManager {
     }
 
     public void saveTestDocumentEntity(long reference, String docUrlUuid) throws SQLException {
+        //always sets case-document type to doc management (2)
         String sql = "INSERT INTO " + TABLE_CASE_DOCUMENTS + " ("
             + KEY_CASE_DOCUMENTS_REFERENCE
             + ", saved_at"
@@ -62,9 +66,8 @@ public class CaseDocumentsFTDataManager extends FunctionalTestDataManager {
             + ", document_filename"
             + ", document_type_name"
             + ", case_document_type_id"
-            + ", sent_to_applicant_via_contact_parties"
             + ", updated_at"
-            + ") VALUES (?, ?, ?, ?, ?, ?, CAST(3 AS bigint), ?, ?)";
+            + ") VALUES (?, ?, ?, ?, ?, ?, CAST(2 AS bigint), ?)";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setLong(1, reference);
             stmt.setTimestamp(2, Timestamp.valueOf(LocalDateTime.now()));
@@ -74,8 +77,7 @@ public class CaseDocumentsFTDataManager extends FunctionalTestDataManager {
                 "http://dm-store.service.core-compute.internal/documents/" + docUrlUuid + "/binary");
             stmt.setString(5, "mockFile.pdf");
             stmt.setString(6, "HOSPITAL_RECORDS");
-            stmt.setBoolean(7, false);
-            stmt.setTimestamp(8, Timestamp.valueOf(LocalDateTime.now()));
+            stmt.setTimestamp(7, Timestamp.valueOf(LocalDateTime.now()));
             stmt.executeUpdate();
         }
     }

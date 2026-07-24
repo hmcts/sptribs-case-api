@@ -8,6 +8,8 @@ public final class FunctionalTestConstants {
 
     public static final String TABLE_CASE_CORRESPONDENCES = "public.case_correspondences";
 
+    public static final String TABLE_CORRESPONDENCE_DOCUMENT = "public.correspondence_document";
+
     public static final String TABLE_CASE_DOCUMENTS = "public.case_documents";
 
     public static final String KEY_CASE_DATA_REFERENCE = "reference";
@@ -19,6 +21,8 @@ public final class FunctionalTestConstants {
     public static final String KEY_CASE_DOCUMENTS_REFERENCE = "case_reference_number";
 
     public static final String KEY_CASE_DATA_ID = "id";
+
+    public static final String KEY_CORRESPONDENCE_ID = "correspondence_id";
 
     public static final long[] DOC_TABLE_REFERENCE_ARRAY = {1616591401473378L, 1234567890123456L};
 
