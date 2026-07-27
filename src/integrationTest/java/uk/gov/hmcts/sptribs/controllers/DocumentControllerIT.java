@@ -21,6 +21,7 @@ import uk.gov.hmcts.sptribs.common.repositories.model.CicaCaseEntity;
 import uk.gov.hmcts.sptribs.controllers.mapper.CaseworkerCICDocumentMapper;
 import uk.gov.hmcts.sptribs.document.model.DocumentDashboardModel;
 import uk.gov.hmcts.sptribs.document.service.DocumentsService;
+import uk.gov.hmcts.sptribs.exception.InvalidPostcodeException;
 import uk.gov.hmcts.sptribs.exception.UnauthorisedCaseAccessException;
 import uk.gov.hmcts.sptribs.services.cdam.CaseDocumentClientApi;
 import uk.gov.hmcts.sptribs.testutil.IdamWireMock;
@@ -287,6 +288,21 @@ class DocumentControllerIT {
     }
 
     @Test
+    void shouldFailToGetDocumentsWhenPostcodeDoesNotMatch() throws Exception {
+        // Given
+        String invalidPostcode = "INVALID";
+        when(cicaCaseService.checkIfUserHasAccessWithPostcode(eq(TEST_CASE_ID_STRING), any(), eq(invalidPostcode)))
+            .thenThrow(new InvalidPostcodeException("Postcode match failed"));
+
+        // When & Then
+        mockMvc.perform(get(GET_DOCUMENTS_URL)
+                .header(AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
+                .header(SERVICE_AUTHORIZATION, TEST_SERVICE_AUTH_TOKEN)
+                .header("X-Postcode", invalidPostcode))
+            .andExpect(status().isUnauthorized());
+    }
+
+    @Test
     void shouldFailToDownloadDocumentWhenPostcodeValidationFails() throws Exception {
         // Given
         String invalidPostcode = "INVALID";
@@ -299,6 +315,21 @@ class DocumentControllerIT {
                 .header(SERVICE_AUTHORIZATION, TEST_SERVICE_AUTH_TOKEN)
                 .header("X-Postcode", invalidPostcode))
             .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void shouldFailToDownloadDocumentWhenPostcodeDoesNotMatch() throws Exception {
+        // Given
+        String invalidPostcode = "INVALID";
+        when(cicaCaseService.checkIfUserHasAccessWithPostcode(eq(TEST_CASE_ID_STRING), any(), eq(invalidPostcode)))
+            .thenThrow(new InvalidPostcodeException("Postcode match failed"));
+
+        // When & Then
+        mockMvc.perform(get(String.format(DOWNLOAD_DOCUMENT_URL, TEST_CASE_DATA_FILE_UUID))
+                .header(AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
+                .header(SERVICE_AUTHORIZATION, TEST_SERVICE_AUTH_TOKEN)
+                .header("X-Postcode", invalidPostcode))
+            .andExpect(status().isUnauthorized());
     }
 
     @Test

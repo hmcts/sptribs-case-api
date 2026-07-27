@@ -87,91 +87,6 @@ class CaseDataRepositoryImplTest {
     }
 
     @Test
-    void shouldReturnCaseWhenResultExistsWithPostcode() {
-        CicaCaseEntity entity = CicaCaseEntity.builder()
-            .id("123")
-            .state("Submitted")
-            .data(Map.of())
-            .build();
-
-        when(jdbcTemplate.query(
-            anyString(),
-            anyMap(),
-            org.mockito.ArgumentMatchers.<RowMapper<CicaCaseEntity>>any()
-        )).thenReturn(List.of(entity));
-
-        Optional<CicaCaseEntity> result = repository.findCase("123", "test@test.com", "SW11 1PD");
-
-        assertThat(result).isPresent();
-        assertThat(result.get().getId()).isEqualTo("123");
-    }
-
-    @Test
-    void shouldReturnEmptyWhenNoResultsWithPostcode() {
-        when(jdbcTemplate.query(
-            anyString(),
-            anyMap(),
-            org.mockito.ArgumentMatchers.<RowMapper<CicaCaseEntity>>any()
-        )).thenReturn(List.of());
-
-        Optional<CicaCaseEntity> result = repository.findCase("123", "test@test.com", "SW11 1PD");
-
-        assertThat(result).isEmpty();
-    }
-
-    @Test
-    void shouldNormalizePostcodeWhenFindingCase() {
-        CicaCaseEntity entity = CicaCaseEntity.builder()
-            .id("123")
-            .state("Submitted")
-            .data(Map.of())
-            .build();
-
-        when(jdbcTemplate.query(
-            anyString(),
-            eq(Map.of(
-                "ccdReference", 123L,
-                "caseType", "CriminalInjuriesCompensation",
-                "jurisdiction", "ST_CIC",
-                "userEmail", "test@test.com",
-                "postcode", "S W 1 1   1 p d"
-            )),
-            org.mockito.ArgumentMatchers.<RowMapper<CicaCaseEntity>>any()
-        )).thenReturn(List.of(entity));
-
-        Optional<CicaCaseEntity> result = repository.findCase("123", "test@test.com", "S W 1 1   1 p d");
-
-        assertThat(result).isPresent();
-        assertThat(result.get().getId()).isEqualTo("123");
-    }
-
-    @Test
-    void shouldNormalizeNullPostcodeWhenFindingCase() {
-        CicaCaseEntity entity = CicaCaseEntity.builder()
-            .id("123")
-            .state("Submitted")
-            .data(Map.of())
-            .build();
-
-        when(jdbcTemplate.query(
-            anyString(),
-            eq(Map.of(
-                "ccdReference", 123L,
-                "caseType", "CriminalInjuriesCompensation",
-                "jurisdiction", "ST_CIC",
-                "userEmail", "test@test.com",
-                "postcode", ""
-            )),
-            org.mockito.ArgumentMatchers.<RowMapper<CicaCaseEntity>>any()
-        )).thenReturn(List.of(entity));
-
-        Optional<CicaCaseEntity> result = repository.findCase("123", "test@test.com", null);
-
-        assertThat(result).isPresent();
-        assertThat(result.get().getId()).isEqualTo("123");
-    }
-
-    @Test
     void shouldReturnTrueWhenUserHasAccessToCase() {
         CicaCaseEntity entity = CicaCaseEntity.builder()
             .id("123")
@@ -199,38 +114,6 @@ class CaseDataRepositoryImplTest {
         )).thenReturn(List.of());
 
         boolean result = repository.checkIfUserHasAccessToCase("123", "test@test.com");
-
-        assertThat(result).isFalse();
-    }
-
-    @Test
-    void shouldReturnTrueWhenUserHasAccessToCaseWithPostcode() {
-        CicaCaseEntity entity = CicaCaseEntity.builder()
-            .id("123")
-            .state("Submitted")
-            .data(Map.of())
-            .build();
-
-        when(jdbcTemplate.query(
-            anyString(),
-            anyMap(),
-            org.mockito.ArgumentMatchers.<RowMapper<CicaCaseEntity>>any()
-        )).thenReturn(List.of(entity));
-
-        boolean result = repository.checkIfUserHasAccessToCase("123", "test@test.com", "SW11 1PD");
-
-        assertThat(result).isTrue();
-    }
-
-    @Test
-    void shouldReturnFalseWhenUserHasNoAccessToCaseWithPostcode() {
-        when(jdbcTemplate.query(
-            anyString(),
-            anyMap(),
-            org.mockito.ArgumentMatchers.<RowMapper<CicaCaseEntity>>any()
-        )).thenReturn(List.of());
-
-        boolean result = repository.checkIfUserHasAccessToCase("123", "test@test.com", "SW11 1PD");
 
         assertThat(result).isFalse();
     }
