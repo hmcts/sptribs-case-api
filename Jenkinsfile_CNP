@@ -430,7 +430,7 @@ def runAatHighLevelDataSetup() {
     'CAMUNDA_BASE_URL=http://camunda-api-aat.service.core-compute-aat.internal',
     'FT_POSTGRES_HOST=sptribs-aat-flexible-db-v15-aat.postgres.database.azure.com',
     'FT_POSTGRES_PORT=5432',
-    'IDAM_API_URL_BASE=https://idam-api.aat.platform.hmcts.net',
+    'IDAM_API_URL_BASE=https://idam-web-public.aat.platform.hmcts.net',
     'S2S_URL_BASE=http://rpe-service-auth-provider-aat.service.core-compute-aat.internal',
     'FEE_API_URL=http://fees-register-api-aat.service.core-compute-aat.internal',
     'BEFTA_S2S_CLIENT_ID=ccd_data'
