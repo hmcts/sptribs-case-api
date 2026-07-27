@@ -419,8 +419,10 @@ def uploadBpmnDiagram() {
 }
 
 def runAatHighLevelDataSetup() {
-  sh './gradlew -DTEST_DATA_LOAD_SKIP_PERIOD=0 --rerun-tasks highLevelDataSetup --args=aat'
-  echo 'High level data setup completed for AAT'
+  dir("${WORKSPACE}") {
+    sh './gradlew -DTEST_DATA_LOAD_SKIP_PERIOD=0 --rerun-tasks highLevelDataSetup --args=aat'
+    echo 'High level data setup completed for AAT'
+  }
 }
 
 def setupRoleAssignments() {
