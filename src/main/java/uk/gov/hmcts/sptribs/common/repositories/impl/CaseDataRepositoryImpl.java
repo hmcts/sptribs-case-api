@@ -77,7 +77,7 @@ public class CaseDataRepositoryImpl implements CaseDataRepository {
             + "    WHERE sp->'value'->>'EmailAddress' = :userEmail "
             + "  ) "
             + ") "
-            + "AND c.data #>> '{cicCaseAddress,PostCode}' = :postcode "
+            + "AND LOWER(REPLACE(c.data #>> '{cicCaseAddress,PostCode}', ' ', '')) = :postcode "
             + "ORDER BY c.last_modified DESC "
             + "LIMIT 1";
 
@@ -138,12 +138,14 @@ public class CaseDataRepositoryImpl implements CaseDataRepository {
         log.info("Checking case has correct email and postcode for CCD reference: {}", ccdReference);
         log.info("Case postcode: {}", postcode);
 
+        String normalizedPostcode = postcode != null ? postcode.replace(" ", "").toLowerCase() : "";
+
         var params = Map.of(
             "ccdReference", Long.valueOf(ccdReference),
             "caseType", CASE_TYPE,
             "jurisdiction", JURISDICTION,
             "userEmail", userEmail,
-            "postcode", postcode
+            "postcode", normalizedPostcode
         );
 
         List<CicaCaseEntity> results = namedParameterJdbcTemplate.query(

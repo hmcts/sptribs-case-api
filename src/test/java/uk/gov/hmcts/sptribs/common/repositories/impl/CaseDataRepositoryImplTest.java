@@ -120,6 +120,58 @@ class CaseDataRepositoryImplTest {
     }
 
     @Test
+    void shouldNormalizePostcodeWhenFindingCase() {
+        CicaCaseEntity entity = CicaCaseEntity.builder()
+            .id("123")
+            .state("Submitted")
+            .data(Map.of())
+            .build();
+
+        when(jdbcTemplate.query(
+            anyString(),
+            eq(Map.of(
+                "ccdReference", 123L,
+                "caseType", "CriminalInjuriesCompensation",
+                "jurisdiction", "ST_CIC",
+                "userEmail", "test@test.com",
+                "postcode", "sw111pd"
+            )),
+            org.mockito.ArgumentMatchers.<RowMapper<CicaCaseEntity>>any()
+        )).thenReturn(List.of(entity));
+
+        Optional<CicaCaseEntity> result = repository.findCase("123", "test@test.com", "S W 1 1   1 p d");
+
+        assertThat(result).isPresent();
+        assertThat(result.get().getId()).isEqualTo("123");
+    }
+
+    @Test
+    void shouldNormalizeNullPostcodeWhenFindingCase() {
+        CicaCaseEntity entity = CicaCaseEntity.builder()
+            .id("123")
+            .state("Submitted")
+            .data(Map.of())
+            .build();
+
+        when(jdbcTemplate.query(
+            anyString(),
+            eq(Map.of(
+                "ccdReference", 123L,
+                "caseType", "CriminalInjuriesCompensation",
+                "jurisdiction", "ST_CIC",
+                "userEmail", "test@test.com",
+                "postcode", ""
+            )),
+            org.mockito.ArgumentMatchers.<RowMapper<CicaCaseEntity>>any()
+        )).thenReturn(List.of(entity));
+
+        Optional<CicaCaseEntity> result = repository.findCase("123", "test@test.com", null);
+
+        assertThat(result).isPresent();
+        assertThat(result.get().getId()).isEqualTo("123");
+    }
+
+    @Test
     void shouldReturnTrueWhenUserHasAccessToCase() {
         CicaCaseEntity entity = CicaCaseEntity.builder()
             .id("123")
