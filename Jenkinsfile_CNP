@@ -420,7 +420,7 @@ def uploadBpmnDiagram() {
 
 def runAatHighLevelDataSetup() {
   dir("${WORKSPACE}") {
-    sh './gradlew -DTEST_DATA_LOAD_SKIP_PERIOD=0 --rerun-tasks highLevelDataSetup --args=aat'
+    sh 'TEST_DATA_LOAD_SKIP_PERIOD=0 ./gradlew --rerun-tasks highLevelDataSetup --args=aat'
     echo 'High level data setup completed for AAT'
   }
 }
