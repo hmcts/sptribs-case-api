@@ -134,7 +134,7 @@ class CaseDataRepositoryImplTest {
                 "caseType", "CriminalInjuriesCompensation",
                 "jurisdiction", "ST_CIC",
                 "userEmail", "test@test.com",
-                "postcode", "sw111pd"
+                "postcode", "S W 1 1   1 p d"
             )),
             org.mockito.ArgumentMatchers.<RowMapper<CicaCaseEntity>>any()
         )).thenReturn(List.of(entity));
