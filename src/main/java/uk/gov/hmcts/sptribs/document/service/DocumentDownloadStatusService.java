@@ -1,5 +1,6 @@
 package uk.gov.hmcts.sptribs.document.service;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -90,5 +91,18 @@ public class DocumentDownloadStatusService {
             log.info("Recorded new download status for document: {}, party: {}", documentId, party);
         }
         return documentDownloadStatusesRepository.save(status);
+    }
+
+    @Transactional
+    public void deleteDocumentDownloadStatusesForCaseAndParty(Long caseReferenceNumber, Party party) {
+        try {
+            if (party == null || caseReferenceNumber == null) {
+                return;
+            }
+            documentDownloadStatusesRepository.deleteByCaseReferenceNumberAndParty(caseReferenceNumber, party);
+            log.info("Deleted document download statuses for case reference number {} and party {}", caseReferenceNumber, party);
+        } catch (Exception e) {
+            log.error("Error deleting document download statuses for case reference number {} and party {}", caseReferenceNumber, party, e);
+        }
     }
 }
