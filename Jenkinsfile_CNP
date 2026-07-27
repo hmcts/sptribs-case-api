@@ -283,6 +283,8 @@ withPipeline(type, product, component) {
       builder.gradle('generateCCDConfig --rerun-tasks')
       generateDefinitions()
       echo "AAT definition file re-generated, running AAT high level data setup. . ."
+      echo env.IDAM_API_URL_BASE
+      echo env.IDAM_CLIENT_ID
       runAatHighLevelDataSetup()
 
       env.ENVIRONMENT="prod"
