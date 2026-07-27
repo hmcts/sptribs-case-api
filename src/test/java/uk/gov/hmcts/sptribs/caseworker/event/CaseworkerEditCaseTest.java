@@ -23,12 +23,16 @@ import uk.gov.hmcts.sptribs.ciccase.model.SubjectCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.ciccase.model.access.Permissions;
 import uk.gov.hmcts.sptribs.common.service.SubmissionService;
+import uk.gov.hmcts.sptribs.document.service.DocumentDownloadStatusService;
+import uk.gov.hmcts.sptribs.notification.model.Party;
 
 import java.util.HashSet;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_WA_CONFIG_USER;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigBuilder;
@@ -49,9 +53,12 @@ class CaseworkerEditCaseTest {
     @Mock
     private SubmissionService submissionService;
 
+    @Mock
+    private DocumentDownloadStatusService documentDownloadStatusService;
+
     @BeforeEach
     public void setUp() {
-        caseworkerEditCase = new CaseworkerEditCase(submissionService);
+        caseworkerEditCase = new CaseworkerEditCase(submissionService, documentDownloadStatusService);
     }
 
     @Test
@@ -600,5 +607,93 @@ class CaseworkerEditCaseTest {
         assertThat(response.getData().getSubjectFlags()).isNotNull();
         assertThat(response.getData().getApplicantFlags()).isNull();
         assertThat(response.getData().getRepresentativeFlags()).isNull();
+    }
+
+    @Test
+    void shouldNotDeleteDownloadStatusesWhenRepresentativeEmailChangesButNameDoesNot() {
+        //Given
+        final CaseData afterData = caseData();
+        final CaseData beforeData = caseData();
+
+        Set<PartiesCIC> parties = new HashSet<>();
+        parties.add(PartiesCIC.SUBJECT);
+        parties.add(PartiesCIC.REPRESENTATIVE);
+
+        final CicCase beforeCicCase = CicCase.builder()
+            .partiesCIC(parties)
+            .representativeFullName("John Doe")
+            .representativeEmailAddress("before@test.com")
+            .build();
+
+        final CicCase newCicCase = CicCase.builder()
+            .partiesCIC(parties)
+            .representativeFullName("John Doe")
+            .representativeEmailAddress("after@test.com")
+            .build();
+
+        afterData.setCicCase(newCicCase);
+        beforeData.setCicCase(beforeCicCase);
+
+        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
+        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        beforeDetails.setData(beforeData);
+        updatedCaseDetails.setData(afterData);
+        updatedCaseDetails.setId(TEST_CASE_ID);
+        updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
+
+        when(submissionService.submitApplication(any())).thenReturn(updatedCaseDetails);
+
+        //When
+        AboutToStartOrSubmitResponse<CaseData, State> response =
+            caseworkerEditCase.aboutToSubmit(updatedCaseDetails, beforeDetails);
+
+        //Then
+        assertThat(response.getData()).isNotNull();
+        verify(documentDownloadStatusService, times(0))
+            .deleteDocumentDownloadStatusesForCaseAndParty(any(), any());
+    }
+
+    @Test
+    void shouldDeleteDownloadStatusesWhenRepresentativeNameChanges() {
+        //Given
+        final CaseData afterData = caseData();
+        final CaseData beforeData = caseData();
+
+        Set<PartiesCIC> parties = new HashSet<>();
+        parties.add(PartiesCIC.SUBJECT);
+        parties.add(PartiesCIC.REPRESENTATIVE);
+
+        final CicCase beforeCicCase = CicCase.builder()
+            .partiesCIC(parties)
+            .representativeFullName("John Doe")
+            .representativeEmailAddress("same@test.com")
+            .build();
+
+        final CicCase newCicCase = CicCase.builder()
+            .partiesCIC(parties)
+            .representativeFullName("Jane Smith")
+            .representativeEmailAddress("same@test.com")
+            .build();
+
+        afterData.setCicCase(newCicCase);
+        beforeData.setCicCase(beforeCicCase);
+
+        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
+        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+        beforeDetails.setData(beforeData);
+        updatedCaseDetails.setData(afterData);
+        updatedCaseDetails.setId(TEST_CASE_ID);
+        updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
+
+        when(submissionService.submitApplication(any())).thenReturn(updatedCaseDetails);
+
+        //When
+        AboutToStartOrSubmitResponse<CaseData, State> response =
+            caseworkerEditCase.aboutToSubmit(updatedCaseDetails, beforeDetails);
+
+        //Then
+        assertThat(response.getData()).isNotNull();
+        verify(documentDownloadStatusService, times(1))
+            .deleteDocumentDownloadStatusesForCaseAndParty(TEST_CASE_ID, Party.REPRESENTATIVE);
     }
 }
