@@ -14,6 +14,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
+import uk.gov.hmcts.reform.idam.client.models.UserInfo;
 import uk.gov.hmcts.sptribs.cdam.model.Document;
 import uk.gov.hmcts.sptribs.ciccase.service.CicaCaseService;
 import uk.gov.hmcts.sptribs.common.config.WebMvcConfig;
@@ -23,6 +24,8 @@ import uk.gov.hmcts.sptribs.document.model.DocumentDashboardModel;
 import uk.gov.hmcts.sptribs.document.service.DocumentsService;
 import uk.gov.hmcts.sptribs.exception.InvalidPostcodeException;
 import uk.gov.hmcts.sptribs.exception.UnauthorisedCaseAccessException;
+import uk.gov.hmcts.sptribs.idam.CICUser;
+import uk.gov.hmcts.sptribs.idam.IdamService;
 import uk.gov.hmcts.sptribs.services.cdam.CaseDocumentClientApi;
 import uk.gov.hmcts.sptribs.testutil.IdamWireMock;
 
@@ -76,6 +79,12 @@ class DocumentControllerIT {
     @MockitoBean
     private CaseworkerCICDocumentMapper caseworkerCICDocumentMapper;
 
+    @MockitoBean
+    private IdamService idamService;
+
+    private static final CICUser CIC_USER
+        = new CICUser(TEST_AUTHORIZATION_TOKEN, UserInfo.builder().build());
+
     @BeforeAll
     static void setUp() {
         IdamWireMock.start();
@@ -97,6 +106,7 @@ class DocumentControllerIT {
         document.mimeType = mimeType;
 
         when(authTokenGenerator.generate()).thenReturn(TEST_SERVICE_AUTH_TOKEN);
+        when(idamService.retrieveSystemUpdateUserDetails()).thenReturn(CIC_USER);
         when(caseDocumentClientApi.getDocument(
             eq(TEST_AUTHORIZATION_TOKEN),
             eq(TEST_SERVICE_AUTH_TOKEN),
@@ -213,6 +223,7 @@ class DocumentControllerIT {
 
 
         when(authTokenGenerator.generate()).thenReturn(TEST_SERVICE_AUTH_TOKEN);
+        when(idamService.retrieveSystemUpdateUserDetails()).thenReturn(CIC_USER);
         when(caseDocumentClientApi.getDocument(
             eq(TEST_AUTHORIZATION_TOKEN),
             eq(TEST_SERVICE_AUTH_TOKEN),
