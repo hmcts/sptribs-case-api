@@ -103,8 +103,13 @@ public class CaseworkerEditCase implements CCDConfig<CaseData, State, UserRole> 
 
         final String currentName = data.getCicCase() != null ? data.getCicCase().getRepresentativeFullName() : null;
         final String beforeName = beforeData.getCicCase() != null ? beforeData.getCicCase().getRepresentativeFullName() : null;
+        boolean hasNameChanged = beforeName != null && !beforeName.isBlank() && !beforeName.equalsIgnoreCase(currentName);
 
-        if (beforeName != null && !beforeName.isBlank() && !beforeName.equalsIgnoreCase(currentName)) {
+        final String currentEmail = data.getCicCase() != null ? data.getCicCase().getRepresentativeEmailAddress() : null;
+        final String beforeEmail = beforeData.getCicCase() != null ? beforeData.getCicCase().getRepresentativeEmailAddress() : null;
+        boolean hasEmailChanged = beforeEmail != null && !beforeEmail.isBlank() && !beforeEmail.equalsIgnoreCase(currentEmail);
+
+        if (hasNameChanged && hasEmailChanged) {
             documentDownloadStatusService.deleteDocumentDownloadStatusesForCaseAndParty(details.getId(), Party.REPRESENTATIVE);
         }
 

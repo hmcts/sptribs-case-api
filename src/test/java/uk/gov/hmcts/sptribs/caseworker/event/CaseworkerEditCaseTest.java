@@ -654,7 +654,7 @@ class CaseworkerEditCaseTest {
     }
 
     @Test
-    void shouldDeleteDownloadStatusesWhenRepresentativeNameChanges() {
+    void shouldDeleteDownloadStatusesWhenRepresentativeNameAndEmailChanges() {
         //Given
         final CaseData afterData = caseData();
         final CaseData beforeData = caseData();
@@ -672,7 +672,7 @@ class CaseworkerEditCaseTest {
         final CicCase newCicCase = CicCase.builder()
             .partiesCIC(parties)
             .representativeFullName("Jane Smith")
-            .representativeEmailAddress("same@test.com")
+            .representativeEmailAddress("notsame@test.com")
             .build();
 
         afterData.setCicCase(newCicCase);
