@@ -11,10 +11,12 @@ import uk.gov.hmcts.reform.idam.client.models.UserInfo;
 import uk.gov.hmcts.sptribs.common.repositories.CaseDataRepository;
 import uk.gov.hmcts.sptribs.common.repositories.model.CicaCaseEntity;
 import uk.gov.hmcts.sptribs.exception.CaseNotFoundException;
+import uk.gov.hmcts.sptribs.exception.InvalidPostcodeException;
 import uk.gov.hmcts.sptribs.exception.UnauthorisedCaseAccessException;
 import uk.gov.hmcts.sptribs.idam.CICUser;
 import uk.gov.hmcts.sptribs.idam.IdamService;
 
+import java.util.Map;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -99,11 +101,15 @@ class CicaCaseServiceTest {
     void shouldReturnCaseWhenCheckIfUserHasAccessWithPostcodeSuccessful() {
         CicaCaseEntity expectedCase = CicaCaseEntity.builder()
             .id(TEST_CASE_ID_STRING)
+            .data(Map.of(
+                "cicCaseAddress", new ObjectMapper().createObjectNode()
+                    .put("PostCode", TEST_POSTCODE)
+            ))
             .build();
 
         when(user.getUserInfo()).thenReturn(userInfo());
         when(idamService.retrieveUser(TEST_AUTHORIZATION)).thenReturn(user);
-        when(caseDataRepository.findCase(TEST_CASE_ID_STRING, TEST_SYSTEM_UPDATE_USER_EMAIL, TEST_POSTCODE))
+        when(caseDataRepository.findCase(TEST_CASE_ID_STRING, TEST_SYSTEM_UPDATE_USER_EMAIL))
             .thenReturn(Optional.of(expectedCase));
 
         CicaCaseEntity result = cicaCaseService.checkIfUserHasAccessWithPostcode(TEST_CASE_ID_STRING, TEST_AUTHORIZATION, TEST_POSTCODE);
@@ -115,10 +121,30 @@ class CicaCaseServiceTest {
     void shouldThrowUnauthorisedCaseAccessExceptionWhenCheckIfUserHasAccessWithPostcodeFails() {
         when(user.getUserInfo()).thenReturn(userInfo());
         when(idamService.retrieveUser(TEST_AUTHORIZATION)).thenReturn(user);
-        when(caseDataRepository.findCase(TEST_CASE_ID_STRING, TEST_SYSTEM_UPDATE_USER_EMAIL, TEST_POSTCODE))
+        when(caseDataRepository.findCase(TEST_CASE_ID_STRING, TEST_SYSTEM_UPDATE_USER_EMAIL))
             .thenReturn(Optional.empty());
 
         assertThrows(UnauthorisedCaseAccessException.class, () ->
+            cicaCaseService.checkIfUserHasAccessWithPostcode(TEST_CASE_ID_STRING, TEST_AUTHORIZATION, TEST_POSTCODE)
+        );
+    }
+
+    @Test
+    void shouldThrowInvalidPostcodeExceptionWhenCheckIfUserHasAccessWithPostcodeFails() {
+        CicaCaseEntity expectedCase = CicaCaseEntity.builder()
+            .id(TEST_CASE_ID_STRING)
+            .data(Map.of(
+                "cicCaseAddress", new ObjectMapper().createObjectNode()
+                    .put("PostCode", "WRONG_POSTCODE")
+            ))
+            .build();
+
+        when(user.getUserInfo()).thenReturn(userInfo());
+        when(idamService.retrieveUser(TEST_AUTHORIZATION)).thenReturn(user);
+        when(caseDataRepository.findCase(TEST_CASE_ID_STRING, TEST_SYSTEM_UPDATE_USER_EMAIL))
+            .thenReturn(Optional.of(expectedCase));
+
+        assertThrows(InvalidPostcodeException.class, () ->
             cicaCaseService.checkIfUserHasAccessWithPostcode(TEST_CASE_ID_STRING, TEST_AUTHORIZATION, TEST_POSTCODE)
         );
     }
