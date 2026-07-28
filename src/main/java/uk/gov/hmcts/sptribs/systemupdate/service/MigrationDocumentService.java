@@ -38,7 +38,7 @@ public class MigrationDocumentService {
 
         try {
 
-            documentsRepository.save(DocumentEntity.builder()
+            documentsRepository.saveAndFlush(DocumentEntity.builder()
                 .caseReferenceNumber(caseReferenceNumber)
                 .documentUrl(document.getUrl())
                 .documentFilename(document.getFilename())
