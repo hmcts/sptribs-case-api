@@ -229,7 +229,6 @@ withPipeline(type, product, component) {
       env.CCD_DEF_NAME="staging-aat"
     }
     builder.gradle('generateCCDConfig --rerun-tasks')
-    echo "IDAM address before STAGING high level data setup but after generateCCDConfig: ${env.IDAM_API_URL_BASE}"
     generateDefinitions()
     echo "IDAM address before STAGING high level data setup but after generateDefinitions: ${env.IDAM_API_URL_BASE}"
   }
