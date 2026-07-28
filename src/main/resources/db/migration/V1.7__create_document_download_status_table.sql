@@ -3,9 +3,9 @@ create table if not exists document_download_status (
   case_reference_number bigint not null references ccd.case_data(reference) on delete cascade,
   document_id bigint not null references case_documents(id) on delete cascade,
   party party not null,
-  downloaded boolean not null default false,
   downloaded_at timestamp,
   constraint uq_doc_download_party unique (document_id, party)
 );
 
-create index idx_doc_download_case_ref on document_download_status(case_reference_number);
+create index idx_doc_download_case_party on document_download_status(case_reference_number, party);
+create index idx_doc_download_doc_id on document_download_status(document_id);

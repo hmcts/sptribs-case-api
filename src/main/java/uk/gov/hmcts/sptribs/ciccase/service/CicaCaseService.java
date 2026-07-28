@@ -1,5 +1,6 @@
 package uk.gov.hmcts.sptribs.ciccase.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -17,6 +18,7 @@ public class CicaCaseService {
 
     private final CaseDataRepository caseDataRepository;
     private final IdamService idamService;
+    private final ObjectMapper objectMapper;
 
     /**
      * Checks if the user has access to the case.
@@ -70,4 +72,5 @@ public class CicaCaseService {
             throw new UnauthorisedCaseAccessException("Error checking case access and postcode: " + e.getMessage());
         }
     }
+
 }

@@ -51,10 +51,6 @@ public class DocumentDownloadStatusEntity {
     @JdbcTypeCode(SqlTypes.NAMED_ENUM)
     private Party party;
 
-    @Builder.Default
-    @Column(name = "downloaded", nullable = false)
-    private boolean downloaded = false;
-
     @Column(name = "downloaded_at")
     private OffsetDateTime downloadedAt;
 
