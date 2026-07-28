@@ -218,15 +218,20 @@ withPipeline(type, product, component) {
   }
 
   before('highleveldatasetup') {
+    echo "IDAM address before AAT & staging high level data setup: ${env.IDAM_API_URL_BASE}"
     if (env.ENVIRONMENT == "aat") {
       env.CCD_DEF_NAME="aat"
       builder.gradle('generateCCDConfig --rerun-tasks')
+      echo "IDAM address before AAT high level data setup (file generation) but after generateCCDConfig: ${env.IDAM_API_URL_BASE}"
       generateDefinitions()
+      echo "IDAM address before AAT high level data setup (file generation) but after generateDefinitions: ${env.IDAM_API_URL_BASE}"
 
       env.CCD_DEF_NAME="staging-aat"
     }
     builder.gradle('generateCCDConfig --rerun-tasks')
+    echo "IDAM address before STAGING high level data setup but after generateCCDConfig: ${env.IDAM_API_URL_BASE}"
     generateDefinitions()
+    echo "IDAM address before STAGING high level data setup but after generateDefinitions: ${env.IDAM_API_URL_BASE}"
   }
 
   onPR {
