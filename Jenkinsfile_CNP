@@ -218,15 +218,20 @@ withPipeline(type, product, component) {
   }
 
   before('highleveldatasetup') {
+    echo env.IDAM_API_URL_BASE
     if (env.ENVIRONMENT == "aat") {
       env.CCD_DEF_NAME="aat"
       builder.gradle('generateCCDConfig --rerun-tasks')
+      echo env.IDAM_API_URL_BASE
       generateDefinitions()
+      echo env.IDAM_API_URL_BASE
 
       env.CCD_DEF_NAME="staging-aat"
     }
     builder.gradle('generateCCDConfig --rerun-tasks')
+    echo env.IDAM_API_URL_BASE
     generateDefinitions()
+    echo env.IDAM_API_URL_BASE
   }
 
   onPR {
