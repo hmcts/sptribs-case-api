@@ -45,6 +45,7 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -306,6 +307,7 @@ public class SystemCreateTestCase implements CCDConfig<CaseData, State, UserRole
                 .filename(cdamDocument.originalDocumentName)
                 .categoryId("TD")
                 .binaryUrl(cdamDocument.links.binary.href)
+                .uploadTimestamp(LocalDateTime.now())
                 .build();
 
             CICDocument doc = CICDocument.builder()
@@ -328,6 +330,7 @@ public class SystemCreateTestCase implements CCDConfig<CaseData, State, UserRole
                 .filename(cdamDocument.originalDocumentName)
                 .categoryId("TD")
                 .binaryUrl(cdamDocument.links.binary.href)
+                .uploadTimestamp(LocalDateTime.now())
                 .build();
 
             caseData.getCaseIssueFinalDecision().setFinalDecisionDraft(document);
@@ -345,6 +348,7 @@ public class SystemCreateTestCase implements CCDConfig<CaseData, State, UserRole
                 .filename(cdamDocument.originalDocumentName)
                 .categoryId("TD")
                 .binaryUrl(cdamDocument.links.binary.href)
+                .uploadTimestamp(LocalDateTime.now())
                 .build();
 
             final CaseworkerCICDocument caseworkerCICDocument = CaseworkerCICDocument.builder()
@@ -369,6 +373,7 @@ public class SystemCreateTestCase implements CCDConfig<CaseData, State, UserRole
             .filename(cdamDocument.originalDocumentName)
             .categoryId("A")
             .binaryUrl(cdamDocument.links.binary.href)
+            .uploadTimestamp(LocalDateTime.now())
             .build();
         return  CaseworkerCICDocument.builder()
             .documentLink(uploadedDocument)
