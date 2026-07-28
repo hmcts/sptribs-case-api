@@ -30,7 +30,7 @@ public class MigrationDocumentService {
         OffsetDateTime savedDatetime;
 
         if (uploadedTime != null) {
-            savedDatetime = convertLocalDateTime(uploadedTime);
+            savedDatetime = uploadedTime.atOffset(ZoneOffset.ofHours(0));
         } else {
             savedDatetime = OffsetDateTime.now();
         }
@@ -50,9 +50,5 @@ public class MigrationDocumentService {
         } catch (DataAccessException e) {
             throw new DocumentSaveException("Error saving document entity to database", e);
         }
-    }
-
-    private OffsetDateTime convertLocalDateTime(LocalDateTime uploadedTime) {
-        return uploadedTime.atOffset(ZoneOffset.ofHours(0));
     }
 }
