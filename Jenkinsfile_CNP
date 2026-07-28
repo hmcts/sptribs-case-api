@@ -218,6 +218,7 @@ withPipeline(type, product, component) {
   }
 
   before('highleveldatasetup') {
+    echo "IDAM address before AAT & staging high level data setup: ${env.IDAM_API_URL_BASE}"
     builder.gradle('generateCCDConfig')
     generateDefinitions()
   }
@@ -270,6 +271,7 @@ withPipeline(type, product, component) {
   }
 
   afterSuccess('functionalTest:aat') {
+      echo "IDAM address before prod high level data setup: ${env.IDAM_API_URL_BASE}"
       env.ENVIRONMENT="prod"
       env.CASE_API_URL="http://sptribs-case-api-prod.service.core-compute-prod.internal"
       env.CCD_DEF_NAME="prod"
