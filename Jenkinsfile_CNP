@@ -219,8 +219,19 @@ withPipeline(type, product, component) {
 
   before('highleveldatasetup') {
     echo "IDAM address before AAT & staging high level data setup: ${env.IDAM_API_URL_BASE}"
-    builder.gradle('generateCCDConfig')
+    if (env.ENVIRONMENT == "aat") {
+      env.CCD_DEF_NAME="aat"
+      builder.gradle('generateCCDConfig --rerun-tasks')
+      echo "IDAM address before AAT high level data setup (file generation) but after generateCCDConfig: ${env.IDAM_API_URL_BASE}"
+      generateDefinitions()
+      echo "IDAM address before AAT high level data setup (file generation) but after generateDefinitions: ${env.IDAM_API_URL_BASE}"
+
+      env.CCD_DEF_NAME="staging-aat"
+    }
+    builder.gradle('generateCCDConfig --rerun-tasks')
+    echo "IDAM address before STAGING high level data setup but after generateCCDConfig: ${env.IDAM_API_URL_BASE}"
     generateDefinitions()
+    echo "IDAM address before STAGING high level data setup but after generateDefinitions: ${env.IDAM_API_URL_BASE}"
   }
 
   onPR {
@@ -257,8 +268,8 @@ withPipeline(type, product, component) {
 
   onMaster {
     env.ENVIRONMENT="aat"
-    env.CASE_API_URL="http://sptribs-case-api-aat.service.core-compute-aat.internal"
-    env.CCD_DEF_NAME="aat"
+    env.CASE_API_URL="https://sptribs-case-api-staging.aat.platform.hmcts.net"
+    echo "env.CASE_API_URL is staging URL"
     env.ELASTIC_SEARCH_ENABLED=true
     env.SERVICE_AUTH_MICROSERVICE = "sptribs_case_api"
     env.SERVICE_AUTH_PROVIDER_URL = "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
@@ -271,7 +282,16 @@ withPipeline(type, product, component) {
   }
 
   afterSuccess('functionalTest:aat') {
-      echo "IDAM address before prod high level data setup: ${env.IDAM_API_URL_BASE}"
+      env.CASE_API_URL="http://sptribs-case-api-aat.service.core-compute-aat.internal"
+      echo "env.CASE_API_URL is AAT URL"
+      env.CCD_DEF_NAME="aat"
+      builder.gradle('generateCCDConfig --rerun-tasks')
+      generateDefinitions()
+      echo "AAT definition file re-generated, running AAT high level data setup. . ."
+      echo env.IDAM_API_URL_BASE
+      echo env.IDAM_CLIENT_ID
+      runAatHighLevelDataSetup()
+
       env.ENVIRONMENT="prod"
       env.CASE_API_URL="http://sptribs-case-api-prod.service.core-compute-prod.internal"
       env.CCD_DEF_NAME="prod"
@@ -402,6 +422,13 @@ def uploadBpmnDiagram() {
       ./wa/pull-latest-camunda-wa-files.sh ${bpmnBranch}
       ./wa/import-wa-bpmn-diagram.sh .
     """
+  }
+}
+
+def runAatHighLevelDataSetup() {
+  dir("${WORKSPACE}") {
+    sh 'TEST_DATA_LOAD_SKIP_PERIOD=0 ./gradlew --rerun-tasks --no-daemon --init-script init.gradle highLevelDataSetup --args=aat'
+    echo 'High level data setup completed for AAT'
   }
 }
 
