@@ -106,7 +106,10 @@ public class SystemMigrateCaseDocumentsToDocTable implements CCDConfig<CaseData,
                         caseDocumentType,
                         caseworkerCICDocument.getDate().atTime(0,0)
                     );
-                } catch (Exception exception) {
+                } catch (DataIntegrityViolationException e) {
+                    log.info("Document already exists in document table: {}", caseworkerCICDocument.getDocumentLink().getBinaryUrl());
+
+                } catch (RuntimeException exception) {
                     failedDocs.put(caseworkerCICDocument.getDocumentLink().getBinaryUrl(), exception.getMessage());
                     log.info("Failed to save document {} to table: {}",
                         caseworkerCICDocument.getDocumentLink().getBinaryUrl(), exception.getMessage());

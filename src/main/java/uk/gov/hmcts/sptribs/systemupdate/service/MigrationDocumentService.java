@@ -3,6 +3,7 @@ package uk.gov.hmcts.sptribs.systemupdate.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataAccessException;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.sptribs.common.repositories.DocumentsRepository;
@@ -47,6 +48,8 @@ public class MigrationDocumentService {
                 .savedAt(savedDatetime)
                 .build());
 
+        } catch (DataIntegrityViolationException e) {
+            throw e;
         } catch (DataAccessException e) {
             throw new DocumentSaveException("Error saving document entity to database", e);
         }
