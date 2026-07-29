@@ -14,6 +14,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
+import uk.gov.hmcts.reform.idam.client.models.UserInfo;
 import uk.gov.hmcts.sptribs.cdam.model.Document;
 import uk.gov.hmcts.sptribs.ciccase.service.CicaCaseService;
 import uk.gov.hmcts.sptribs.common.config.WebMvcConfig;
@@ -21,7 +22,10 @@ import uk.gov.hmcts.sptribs.common.repositories.model.CicaCaseEntity;
 import uk.gov.hmcts.sptribs.controllers.mapper.CaseworkerCICDocumentMapper;
 import uk.gov.hmcts.sptribs.document.model.DocumentDashboardModel;
 import uk.gov.hmcts.sptribs.document.service.DocumentsService;
+import uk.gov.hmcts.sptribs.exception.InvalidPostcodeException;
 import uk.gov.hmcts.sptribs.exception.UnauthorisedCaseAccessException;
+import uk.gov.hmcts.sptribs.idam.CICUser;
+import uk.gov.hmcts.sptribs.idam.IdamService;
 import uk.gov.hmcts.sptribs.services.cdam.CaseDocumentClientApi;
 import uk.gov.hmcts.sptribs.testutil.IdamWireMock;
 
@@ -75,6 +79,12 @@ class DocumentControllerIT {
     @MockitoBean
     private CaseworkerCICDocumentMapper caseworkerCICDocumentMapper;
 
+    @MockitoBean
+    private IdamService idamService;
+
+    private static final CICUser CIC_USER
+        = new CICUser(TEST_AUTHORIZATION_TOKEN, UserInfo.builder().build());
+
     @BeforeAll
     static void setUp() {
         IdamWireMock.start();
@@ -96,6 +106,7 @@ class DocumentControllerIT {
         document.mimeType = mimeType;
 
         when(authTokenGenerator.generate()).thenReturn(TEST_SERVICE_AUTH_TOKEN);
+        when(idamService.retrieveSystemUpdateUserDetails()).thenReturn(CIC_USER);
         when(caseDocumentClientApi.getDocument(
             eq(TEST_AUTHORIZATION_TOKEN),
             eq(TEST_SERVICE_AUTH_TOKEN),
@@ -212,6 +223,7 @@ class DocumentControllerIT {
 
 
         when(authTokenGenerator.generate()).thenReturn(TEST_SERVICE_AUTH_TOKEN);
+        when(idamService.retrieveSystemUpdateUserDetails()).thenReturn(CIC_USER);
         when(caseDocumentClientApi.getDocument(
             eq(TEST_AUTHORIZATION_TOKEN),
             eq(TEST_SERVICE_AUTH_TOKEN),
@@ -287,6 +299,21 @@ class DocumentControllerIT {
     }
 
     @Test
+    void shouldFailToGetDocumentsWhenPostcodeDoesNotMatch() throws Exception {
+        // Given
+        String invalidPostcode = "INVALID";
+        when(cicaCaseService.checkIfUserHasAccessWithPostcode(eq(TEST_CASE_ID_STRING), any(), eq(invalidPostcode)))
+            .thenThrow(new InvalidPostcodeException("Postcode match failed"));
+
+        // When & Then
+        mockMvc.perform(get(GET_DOCUMENTS_URL)
+                .header(AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
+                .header(SERVICE_AUTHORIZATION, TEST_SERVICE_AUTH_TOKEN)
+                .header("X-Postcode", invalidPostcode))
+            .andExpect(status().isUnauthorized());
+    }
+
+    @Test
     void shouldFailToDownloadDocumentWhenPostcodeValidationFails() throws Exception {
         // Given
         String invalidPostcode = "INVALID";
@@ -299,6 +326,21 @@ class DocumentControllerIT {
                 .header(SERVICE_AUTHORIZATION, TEST_SERVICE_AUTH_TOKEN)
                 .header("X-Postcode", invalidPostcode))
             .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void shouldFailToDownloadDocumentWhenPostcodeDoesNotMatch() throws Exception {
+        // Given
+        String invalidPostcode = "INVALID";
+        when(cicaCaseService.checkIfUserHasAccessWithPostcode(eq(TEST_CASE_ID_STRING), any(), eq(invalidPostcode)))
+            .thenThrow(new InvalidPostcodeException("Postcode match failed"));
+
+        // When & Then
+        mockMvc.perform(get(String.format(DOWNLOAD_DOCUMENT_URL, TEST_CASE_DATA_FILE_UUID))
+                .header(AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
+                .header(SERVICE_AUTHORIZATION, TEST_SERVICE_AUTH_TOKEN)
+                .header("X-Postcode", invalidPostcode))
+            .andExpect(status().isUnauthorized());
     }
 
     @Test

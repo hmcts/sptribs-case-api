@@ -13,6 +13,7 @@ import uk.gov.hmcts.reform.authorisation.exceptions.InvalidTokenException;
 import uk.gov.hmcts.sptribs.common.config.interceptors.UnAuthorisedServiceException;
 import uk.gov.hmcts.sptribs.exception.CaseNotFoundException;
 import uk.gov.hmcts.sptribs.exception.DocumentDownloadException;
+import uk.gov.hmcts.sptribs.exception.InvalidPostcodeException;
 import uk.gov.hmcts.sptribs.exception.UnauthorisedCaseAccessException;
 import uk.gov.hmcts.sptribs.notification.exception.NotificationException;
 import uk.gov.service.notify.NotificationClientException;
@@ -85,5 +86,11 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     public ResponseEntity<Object> handleUnauthorisedCaseAccessException(UnauthorisedCaseAccessException exception) {
         log.warn("User is not associated with this case: {}", exception.getMessage());
         return status(HttpStatus.FORBIDDEN).build();
+    }
+
+    @ExceptionHandler(InvalidPostcodeException.class)
+    public ResponseEntity<Object> handleInvalidPostcodeException(InvalidPostcodeException exception) {
+        log.warn("Postcode verification failed: {}", exception.getMessage());
+        return status(HttpStatus.UNAUTHORIZED).build();
     }
 }
