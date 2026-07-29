@@ -435,7 +435,7 @@ def runAatHighLevelDataSetup() {
     "S2S_URL_BASE=${env.S2S_URL_BASE}",
     "CCD_API_GATEWAY_S2S_ID=${env.CCD_API_GATEWAY_S2S_ID}",
     "CCD_API_GATEWAY_OAUTH2_CLIENT_ID=${env.CCD_API_GATEWAY_OAUTH2_CLIENT_ID}",
-    "CCD_API_GATEWAY_OAUTH2_REDIRECT_URL=${env.CCD_API_GATEWAY_OAUTH2_CLIENT_SECRET}",
+    "CCD_API_GATEWAY_OAUTH2_REDIRECT_URL=${env.CCD_API_GATEWAY_OAUTH2_REDIRECT_URL}",
     "DEFINITION_STORE_URL_BASE=${env.DEFINITION_STORE_URL_BASE}"
   ]) {
     sh './gradlew --rerun-tasks --no-daemon --init-script init.gradle highLevelDataSetup --args=aat'
