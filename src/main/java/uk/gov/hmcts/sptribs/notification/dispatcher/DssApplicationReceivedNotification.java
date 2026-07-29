@@ -49,7 +49,12 @@ public class DssApplicationReceivedNotification extends PartiesNotification {
         LanguagePreference languagePreference = dssCaseData.getLanguagePreference();
         TemplateName templateName = languagePreference == ENGLISH ? getTemplateName() : APPLICATION_RECEIVED_CY;
 
-        return emailOnly(dssCaseData.getSubjectEmailAddress(), templateVarsSubject, templateName, saveToDssData(DssCaseData::setSubjectNotificationResponse));
+        return emailOnly(
+                dssCaseData.getSubjectEmailAddress(),
+                templateVarsSubject,
+                templateName,
+                saveToDssData(DssCaseData::setSubjectNotificationResponse)
+        );
     }
 
     @Override
@@ -64,7 +69,12 @@ public class DssApplicationReceivedNotification extends PartiesNotification {
         LanguagePreference languagePreference = dssCaseData.getLanguagePreference();
         TemplateName templateName = languagePreference == ENGLISH ? getTemplateName() : APPLICATION_RECEIVED_CY;
 
-        return emailOnly(dssCaseData.getRepresentativeEmailAddress(), templateVarsRep, templateName, saveToDssData(DssCaseData::setRepNotificationResponse));
+        return emailOnly(
+                dssCaseData.getRepresentativeEmailAddress(),
+                templateVarsRep,
+                templateName,
+                saveToDssData(DssCaseData::setRepNotificationResponse)
+        );
     }
 
     private TemplateName getTemplateName() {

@@ -35,7 +35,12 @@ public class ApplicationReceivedNotification extends PartiesNotification {
         addDashboardLink(templateVars);
         CicCase cicCase = caseData.getCicCase();
 
-        return PartiesNotification.emailOnly(cicCase.getEmail(), templateVars, getTemplateName(), saveToCicCase(CicCase::setSubjectNotifyList));
+        return emailOnly(
+                cicCase.getEmail(),
+                templateVars,
+                getTemplateName(),
+                saveToCicCase(CicCase::setSubjectNotifyList)
+        );
     }
 
     @Override
@@ -44,7 +49,12 @@ public class ApplicationReceivedNotification extends PartiesNotification {
         Map<String, Object> templateVars = notificationHelper().getApplicantCommonVars(caseNumber, caseData);
         addDashboardLink(templateVars);
 
-        return PartiesNotification.emailOnly(cicCase.getApplicantEmailAddress(), templateVars, getTemplateName(), saveToCicCase(CicCase::setAppNotificationResponse));
+        return emailOnly(
+                cicCase.getApplicantEmailAddress(),
+                templateVars,
+                getTemplateName(),
+                saveToCicCase(CicCase::setAppNotificationResponse)
+        );
     }
 
     @Override
@@ -53,7 +63,12 @@ public class ApplicationReceivedNotification extends PartiesNotification {
         Map<String, Object> templateVars = notificationHelper().getRepresentativeCommonVars(caseNumber, caseData);
         addDashboardLink(templateVars);
 
-        return PartiesNotification.emailOnly(cicCase.getRepresentativeEmailAddress(), templateVars, getTemplateName(), saveToCicCase(CicCase::setRepNotificationResponse));
+        return emailOnly(
+                cicCase.getRepresentativeEmailAddress(),
+                templateVars,
+                getTemplateName(),
+                saveToCicCase(CicCase::setRepNotificationResponse)
+        );
     }
 
     private TemplateName getTemplateName() {

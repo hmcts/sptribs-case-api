@@ -27,10 +27,19 @@ public class HearingPostponedNotification extends PartiesNotification {
         notificationHelper().addHearingPostponedTemplateVars(cicCase, templateVars);
 
         if (cicCase.getContactPreferenceType() == ContactPreferenceType.EMAIL) {
-            return emailOnly(cicCase.getEmail(), templateVars, TemplateName.HEARING_POSTPONED_EMAIL, saveToCicCase(CicCase::setSubjectNotifyList));
+            return emailOnly(
+                    cicCase.getEmail(),
+                    templateVars,
+                    TemplateName.HEARING_POSTPONED_EMAIL,
+                    saveToCicCase(CicCase::setSubjectNotifyList)
+            );
         } else {
             notificationHelper().addAddressTemplateVars(cicCase.getAddress(), templateVars);
-            return new LetterNotification(cicCase.getAddress(), templateVars, TemplateName.HEARING_POSTPONED_POST, saveToCicCase(CicCase::setSubjectLetterNotifyList));
+            return new LetterNotification(
+                    cicCase.getAddress(),
+                    templateVars,
+                    TemplateName.HEARING_POSTPONED_POST,
+                    saveToCicCase(CicCase::setSubjectLetterNotifyList));
         }
     }
 
@@ -41,10 +50,20 @@ public class HearingPostponedNotification extends PartiesNotification {
         notificationHelper().addHearingPostponedTemplateVars(cicCase, templateVars);
 
         if (cicCase.getRepresentativeContactDetailsPreference() == ContactPreferenceType.EMAIL) {
-            return emailOnly(cicCase.getRepresentativeEmailAddress(), templateVars, TemplateName.HEARING_POSTPONED_EMAIL, saveToCicCase(CicCase::setRepNotificationResponse));
+            return emailOnly(
+                    cicCase.getRepresentativeEmailAddress(),
+                    templateVars,
+                    TemplateName.HEARING_POSTPONED_EMAIL,
+                    saveToCicCase(CicCase::setRepNotificationResponse)
+            );
         } else {
             notificationHelper().addAddressTemplateVars(cicCase.getRepresentativeAddress(), templateVars);
-            return new LetterNotification(cicCase.getRepresentativeAddress(), templateVars, TemplateName.HEARING_POSTPONED_POST, saveToCicCase(CicCase::setRepLetterNotificationResponse));
+            return new LetterNotification(
+                    cicCase.getRepresentativeAddress(),
+                    templateVars,
+                    TemplateName.HEARING_POSTPONED_POST,
+                    saveToCicCase(CicCase::setRepLetterNotificationResponse)
+            );
         }
     }
 
@@ -54,6 +73,10 @@ public class HearingPostponedNotification extends PartiesNotification {
         Map<String, Object> respondentTemplateVars = notificationHelper().getRespondentCommonVars(caseNumber, caseData);
         notificationHelper().addHearingPostponedTemplateVars(cicCase, respondentTemplateVars);
 
-        return emailOnly(cicCase.getRespondentEmail(), respondentTemplateVars, TemplateName.HEARING_POSTPONED_EMAIL, saveToCicCase(CicCase::setResNotificationResponse));
+        return emailOnly(
+                cicCase.getRespondentEmail(),
+                respondentTemplateVars,
+                TemplateName.HEARING_POSTPONED_EMAIL,
+                saveToCicCase(CicCase::setResNotificationResponse));
     }
 }

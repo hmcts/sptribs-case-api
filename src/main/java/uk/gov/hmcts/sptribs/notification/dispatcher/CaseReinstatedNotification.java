@@ -29,9 +29,19 @@ public class CaseReinstatedNotification extends PartiesNotification {
         addCaseReInstateTemplateVars(cicCase, templateVars);
 
         if (cicCase.getContactPreferenceType() == ContactPreferenceType.EMAIL) {
-            return PartiesNotification.emailOnly(cicCase.getEmail(), templateVars, TemplateName.REINSTATED_EMAIL, saveToCicCase(CicCase::setSubjectNotifyList));
+            return emailOnly(
+                    cicCase.getEmail(),
+                    templateVars,
+                    TemplateName.REINSTATED_EMAIL,
+                    saveToCicCase(CicCase::setSubjectNotifyList)
+            );
         } else {
-            return new LetterNotification(cicCase.getAddress(), templateVars, TemplateName.REINSTATED_POST, saveToCicCase(CicCase::setSubjectLetterNotifyList));
+            return new LetterNotification(
+                    cicCase.getAddress(),
+                    templateVars,
+                    TemplateName.REINSTATED_POST,
+                    saveToCicCase(CicCase::setSubjectLetterNotifyList
+                    ));
         }
     }
 
@@ -42,9 +52,19 @@ public class CaseReinstatedNotification extends PartiesNotification {
         addCaseReInstateTemplateVars(cicCase, templateVars);
 
         if (cicCase.getContactPreferenceType() == ContactPreferenceType.EMAIL) {
-            return PartiesNotification.emailOnly(cicCase.getApplicantEmailAddress(), templateVars, TemplateName.REINSTATED_EMAIL, saveToCicCase(CicCase::setAppNotificationResponse));
+            return emailOnly(
+                    cicCase.getApplicantEmailAddress(),
+                    templateVars,
+                    TemplateName.REINSTATED_EMAIL,
+                    saveToCicCase(CicCase::setAppNotificationResponse)
+            );
         } else {
-            return new LetterNotification(cicCase.getApplicantAddress(), templateVars, TemplateName.REINSTATED_POST, saveToCicCase(CicCase::setAppLetterNotificationResponse));
+            return new LetterNotification(
+                    cicCase.getApplicantAddress(),
+                    templateVars,
+                    TemplateName.REINSTATED_POST,
+                    saveToCicCase(CicCase::setAppLetterNotificationResponse)
+            );
         }
     }
 
@@ -55,9 +75,19 @@ public class CaseReinstatedNotification extends PartiesNotification {
         addCaseReInstateTemplateVars(cicCase, templateVars);
 
         if (cicCase.getRepresentativeContactDetailsPreference() == ContactPreferenceType.EMAIL) {
-            return PartiesNotification.emailOnly(cicCase.getRepresentativeEmailAddress(), templateVars, TemplateName.REINSTATED_EMAIL, saveToCicCase(CicCase::setRepNotificationResponse));
+            return emailOnly(
+                    cicCase.getRepresentativeEmailAddress(),
+                    templateVars,
+                    TemplateName.REINSTATED_EMAIL,
+                    saveToCicCase(CicCase::setRepNotificationResponse)
+            );
         } else {
-            return new LetterNotification(cicCase.getRepresentativeAddress(), templateVars, TemplateName.REINSTATED_POST, saveToCicCase(CicCase::setRepLetterNotificationResponse));
+            return new LetterNotification(
+                    cicCase.getRepresentativeAddress(),
+                    templateVars,
+                    TemplateName.REINSTATED_POST,
+                    saveToCicCase(CicCase::setRepLetterNotificationResponse)
+            );
         }
     }
 
@@ -67,7 +97,12 @@ public class CaseReinstatedNotification extends PartiesNotification {
         Map<String, Object> templateVars = notificationHelper().getRespondentCommonVars(caseNumber, caseData);
         addCaseReInstateTemplateVars(cicCase, templateVars);
 
-        return PartiesNotification.emailOnly(cicCase.getRespondentEmail(), templateVars, TemplateName.REINSTATED_EMAIL, saveToCicCase(CicCase::setResNotificationResponse));
+        return emailOnly(
+                cicCase.getRespondentEmail(),
+                templateVars,
+                TemplateName.REINSTATED_EMAIL,
+                saveToCicCase(CicCase::setResNotificationResponse)
+        );
     }
 
     private void addCaseReInstateTemplateVars(CicCase cicCase, Map<String, Object> templateVars) {

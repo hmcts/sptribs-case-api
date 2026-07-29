@@ -105,15 +105,23 @@ public abstract class PartiesNotification {
         return (caseData, response) -> setter.accept(caseData.getDssCaseData(), response);
     }
 
-    protected static EmailNotification emailOnly(String emailAddress, Map<String, Object> templateVars, TemplateName templateName, BiConsumer<CaseData, NotificationResponse> onSent) {
-         return new EmailNotification(emailAddress, templateVars, templateName, new HashMap<>(), new ArrayList<>(), onSent);
+    protected static EmailNotification emailOnly(String emailAddress,
+                                                 Map<String, Object> templateVars,
+                                                 TemplateName templateName,
+                                                 BiConsumer<CaseData, NotificationResponse> onSent) {
+        return new EmailNotification(emailAddress, templateVars, templateName, new HashMap<>(), new ArrayList<>(), onSent);
     }
 
     private String sendNotification(Party party, String caseNumber, CaseData caseData, PartyNotification partyNotification) {
         return switch (partyNotification) {
             case EmailNotification emailNotification -> {
-                NotificationRequest request = notificationHelper().buildEmailNotificationRequest(
-                        emailNotification.emailAddress(), true, emailNotification.documentTemplateVars(), emailNotification.templateVars(), emailNotification.templateName());
+                NotificationRequest request = notificationHelper()
+                    .buildEmailNotificationRequest(
+                        emailNotification.emailAddress(),
+                        true,
+                        emailNotification.documentTemplateVars(),
+                        emailNotification.templateVars(),
+                        emailNotification.templateName());
                 NotificationResponse response = notificationService().sendEmail(
                         request, emailNotification.attachedDocuments(), caseNumber, party);
                 emailNotification.onSent().accept(caseData, response);

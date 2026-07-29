@@ -9,7 +9,6 @@ import uk.gov.hmcts.sptribs.caseworker.model.NoticeOption;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.ContactPreferenceType;
-import uk.gov.hmcts.sptribs.ciccase.model.NotificationResponse;
 import uk.gov.hmcts.sptribs.notification.NotificationHelper;
 import uk.gov.hmcts.sptribs.notification.NotificationServiceCIC;
 import uk.gov.hmcts.sptribs.notification.PartiesNotification;
@@ -23,6 +22,9 @@ import static uk.gov.hmcts.sptribs.common.CommonConstants.DASHBOARD_KEY;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.DECISION_NOTICE;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.DOC_AVAILABLE;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.EMPTY_PLACEHOLDER;
+import static uk.gov.hmcts.sptribs.notification.TemplateName.DECISION_ISSUED_EMAIL;
+import static uk.gov.hmcts.sptribs.notification.TemplateName.DECISION_ISSUED_EMAIL_NEW_CD;
+import static uk.gov.hmcts.sptribs.notification.TemplateName.DECISION_ISSUED_POST;
 
 @Component
 @Slf4j
@@ -50,10 +52,22 @@ public class DecisionIssuedNotification extends PartiesNotification {
 
         if (cicCase.getContactPreferenceType() == ContactPreferenceType.EMAIL) {
             Map<String, String> uploadedDocumentIds = getUploadedDocuments(caseData);
-            return new EmailNotification(cicCase.getEmail(), templateVars, getTemplateName(), uploadedDocumentIds, new ArrayList<>(), saveToCicCase(CicCase::setSubjectNotifyList));
+            return new EmailNotification(
+                    cicCase.getEmail(),
+                    templateVars,
+                    getTemplateName(),
+                    uploadedDocumentIds,
+                    new ArrayList<>(),
+                    saveToCicCase(CicCase::setSubjectNotifyList)
+            );
         } else {
             notificationHelper().addAddressTemplateVars(cicCase.getAddress(), templateVars);
-            return new LetterNotification(cicCase.getAddress(), templateVars, TemplateName.DECISION_ISSUED_POST, saveToCicCase(CicCase::setSubjectLetterNotifyList));
+            return new LetterNotification(
+                    cicCase.getAddress(),
+                    templateVars,
+                    DECISION_ISSUED_POST,
+                    saveToCicCase(CicCase::setSubjectLetterNotifyList)
+            );
         }
     }
 
@@ -65,10 +79,22 @@ public class DecisionIssuedNotification extends PartiesNotification {
 
         if (cicCase.getContactPreferenceType() == ContactPreferenceType.EMAIL) {
             Map<String, String> uploadedDocumentIds = getUploadedDocuments(caseData);
-            return new EmailNotification(cicCase.getApplicantEmailAddress(), templateVars, getTemplateName(), uploadedDocumentIds, new ArrayList<>(), saveToCicCase(CicCase::setAppNotificationResponse));
+            return new EmailNotification(
+                    cicCase.getApplicantEmailAddress(),
+                    templateVars,
+                    getTemplateName(),
+                    uploadedDocumentIds,
+                    new ArrayList<>(),
+                    saveToCicCase(CicCase::setAppNotificationResponse)
+            );
         } else {
             notificationHelper().addAddressTemplateVars(cicCase.getApplicantAddress(), templateVars);
-            return new LetterNotification(cicCase.getApplicantAddress(), templateVars, TemplateName.DECISION_ISSUED_POST, saveToCicCase(CicCase::setSubjectLetterNotifyList));
+            return new LetterNotification(
+                    cicCase.getApplicantAddress(),
+                    templateVars,
+                    DECISION_ISSUED_POST,
+                    saveToCicCase(CicCase::setSubjectLetterNotifyList)
+            );
         }
     }
 
@@ -80,10 +106,21 @@ public class DecisionIssuedNotification extends PartiesNotification {
 
         if (cicCase.getRepresentativeContactDetailsPreference() == ContactPreferenceType.EMAIL) {
             Map<String, String> uploadedDocumentIds = getUploadedDocuments(caseData);
-            return new EmailNotification(cicCase.getRepresentativeEmailAddress(), templateVars, getTemplateName(), uploadedDocumentIds, new ArrayList<>(), saveToCicCase(CicCase::setRepNotificationResponse));
+            return new EmailNotification(
+                    cicCase.getRepresentativeEmailAddress(),
+                    templateVars,
+                    getTemplateName(),
+                    uploadedDocumentIds,
+                    new ArrayList<>(),
+                    saveToCicCase(CicCase::setRepNotificationResponse));
         } else {
             notificationHelper().addAddressTemplateVars(cicCase.getRepresentativeAddress(), templateVars);
-            return new LetterNotification(cicCase.getRepresentativeAddress(), templateVars, TemplateName.DECISION_ISSUED_POST, saveToCicCase(CicCase::setRepLetterNotificationResponse));
+            return new LetterNotification(
+                    cicCase.getRepresentativeAddress(),
+                    templateVars,
+                    DECISION_ISSUED_POST,
+                    saveToCicCase(CicCase::setRepLetterNotificationResponse)
+            );
         }
     }
 
@@ -93,7 +130,14 @@ public class DecisionIssuedNotification extends PartiesNotification {
         Map<String, Object> templateVars = notificationHelper().getRespondentCommonVars(caseNumber, caseData);
         Map<String, String> uploadedDocuments = getUploadedDocuments(caseData);
 
-        return new EmailNotification(cicCase.getRespondentEmail(), templateVars, TemplateName.DECISION_ISSUED_EMAIL, uploadedDocuments, new ArrayList<>(), saveToCicCase(CicCase::setResNotificationResponse));
+        return new EmailNotification(
+                cicCase.getRespondentEmail(),
+                templateVars,
+                DECISION_ISSUED_EMAIL,
+                uploadedDocuments,
+                new ArrayList<>(),
+                saveToCicCase(CicCase::setResNotificationResponse)
+        );
     }
 
     private Map<String, String> getUploadedDocuments(CaseData caseData) {
@@ -127,7 +171,7 @@ public class DecisionIssuedNotification extends PartiesNotification {
     }
 
     private TemplateName getTemplateName() {
-        return citizenDashboardEnabled ? TemplateName.DECISION_ISSUED_EMAIL_NEW_CD : TemplateName.DECISION_ISSUED_EMAIL;
+        return citizenDashboardEnabled ? DECISION_ISSUED_EMAIL_NEW_CD : DECISION_ISSUED_EMAIL;
     }
 
     private void addDashboardLink(Map<String, Object> templateVars) {

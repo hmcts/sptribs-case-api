@@ -26,10 +26,20 @@ public class CaseUnstayedNotification extends PartiesNotification {
         Map<String, Object> templateVars = notificationHelper().getSubjectCommonVars(caseNumber, caseData);
 
         if (cicCase.getContactPreferenceType() == ContactPreferenceType.EMAIL) {
-            return emailOnly(cicCase.getEmail(), templateVars, TemplateName.CASE_UNSTAYED_EMAIL, saveToCicCase(CicCase::setSubjectNotifyList));
+            return emailOnly(
+                    cicCase.getEmail(),
+                    templateVars,
+                    TemplateName.CASE_UNSTAYED_EMAIL,
+                    saveToCicCase(CicCase::setSubjectNotifyList)
+            );
         } else {
             notificationHelper().addAddressTemplateVars(cicCase.getAddress(), templateVars);
-            return new LetterNotification(cicCase.getAddress(), templateVars, TemplateName.CASE_UNSTAYED_POST, saveToCicCase(CicCase::setSubjectLetterNotifyList));
+            return new LetterNotification(
+                    cicCase.getAddress(),
+                    templateVars,
+                    TemplateName.CASE_UNSTAYED_POST,
+                    saveToCicCase(CicCase::setSubjectLetterNotifyList)
+            );
         }
     }
 
@@ -39,10 +49,20 @@ public class CaseUnstayedNotification extends PartiesNotification {
         Map<String, Object> templateVars = notificationHelper().getApplicantCommonVars(caseNumber, caseData);
 
         if (cicCase.getApplicantContactDetailsPreference() == ContactPreferenceType.EMAIL) {
-            return emailOnly(cicCase.getApplicantEmailAddress(), templateVars, TemplateName.CASE_UNSTAYED_EMAIL, saveToCicCase(CicCase::setAppNotificationResponse));
+            return emailOnly(
+                    cicCase.getApplicantEmailAddress(),
+                    templateVars,
+                    TemplateName.CASE_UNSTAYED_EMAIL,
+                    saveToCicCase(CicCase::setAppNotificationResponse)
+            );
         } else {
             notificationHelper().addAddressTemplateVars(cicCase.getApplicantAddress(), templateVars);
-            return new LetterNotification(cicCase.getApplicantAddress(), templateVars, TemplateName.CASE_UNSTAYED_POST, saveToCicCase(CicCase::setAppLetterNotificationResponse));
+            return new LetterNotification(
+                    cicCase.getApplicantAddress(),
+                    templateVars,
+                    TemplateName.CASE_UNSTAYED_POST,
+                    saveToCicCase(CicCase::setAppLetterNotificationResponse)
+            );
         }
     }
 
@@ -52,10 +72,20 @@ public class CaseUnstayedNotification extends PartiesNotification {
         Map<String, Object> templateVars = notificationHelper().getRepresentativeCommonVars(caseNumber, caseData);
 
         if (cicCase.getRepresentativeContactDetailsPreference() == ContactPreferenceType.EMAIL) {
-            return emailOnly(cicCase.getRepresentativeEmailAddress(), templateVars, TemplateName.CASE_UNSTAYED_EMAIL, saveToCicCase(CicCase::setRepNotificationResponse));
+            return emailOnly(
+                    cicCase.getRepresentativeEmailAddress(),
+                    templateVars,
+                    TemplateName.CASE_UNSTAYED_EMAIL,
+                    saveToCicCase(CicCase::setRepNotificationResponse)
+            );
         } else {
             notificationHelper().addAddressTemplateVars(cicCase.getRepresentativeAddress(), templateVars);
-            return new LetterNotification(cicCase.getRepresentativeAddress(), templateVars, TemplateName.CASE_UNSTAYED_POST, saveToCicCase(CicCase::setRepLetterNotificationResponse));
+            return new LetterNotification(
+                    cicCase.getRepresentativeAddress(),
+                    templateVars,
+                    TemplateName.CASE_UNSTAYED_POST,
+                    saveToCicCase(CicCase::setRepLetterNotificationResponse)
+            );
         }
     }
 }

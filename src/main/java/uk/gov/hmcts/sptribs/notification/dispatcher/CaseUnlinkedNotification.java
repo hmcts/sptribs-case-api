@@ -8,9 +8,11 @@ import uk.gov.hmcts.sptribs.ciccase.model.ContactPreferenceType;
 import uk.gov.hmcts.sptribs.notification.NotificationHelper;
 import uk.gov.hmcts.sptribs.notification.NotificationServiceCIC;
 import uk.gov.hmcts.sptribs.notification.PartiesNotification;
-import uk.gov.hmcts.sptribs.notification.TemplateName;
 
 import java.util.Map;
+
+import static uk.gov.hmcts.sptribs.notification.TemplateName.CASE_UNLINKED_EMAIL;
+import static uk.gov.hmcts.sptribs.notification.TemplateName.CASE_UNLINKED_POST;
 
 @Component
 @Slf4j
@@ -26,9 +28,19 @@ public class CaseUnlinkedNotification extends PartiesNotification {
         Map<String, Object> templateVars = notificationHelper().getSubjectCommonVars(caseNumber, caseData);
 
         if (cicCase.getContactPreferenceType() == ContactPreferenceType.EMAIL) {
-            return emailOnly(cicCase.getEmail(), templateVars, TemplateName.CASE_UNLINKED_EMAIL, saveToCicCase(CicCase::setSubjectNotifyList));
+            return emailOnly(
+                    cicCase.getEmail(),
+                    templateVars,
+                    CASE_UNLINKED_EMAIL,
+                    saveToCicCase(CicCase::setSubjectNotifyList)
+            );
         } else {
-            return new LetterNotification(cicCase.getAddress(), templateVars, TemplateName.CASE_UNLINKED_POST, saveToCicCase(CicCase::setSubjectLetterNotifyList));
+            return new LetterNotification(
+                    cicCase.getAddress(),
+                    templateVars,
+                    CASE_UNLINKED_POST,
+                    saveToCicCase(CicCase::setSubjectLetterNotifyList)
+            );
         }
     }
 
@@ -37,9 +49,19 @@ public class CaseUnlinkedNotification extends PartiesNotification {
         CicCase cicCase = caseData.getCicCase();
         Map<String, Object> templateVars = notificationHelper().getApplicantCommonVars(caseNumber, caseData);
         if (cicCase.getApplicantContactDetailsPreference() == ContactPreferenceType.EMAIL) {
-            return emailOnly(cicCase.getApplicantEmailAddress(), templateVars, TemplateName.CASE_UNLINKED_EMAIL, saveToCicCase(CicCase::setAppNotificationResponse));
+            return emailOnly(
+                    cicCase.getApplicantEmailAddress(),
+                    templateVars,
+                    CASE_UNLINKED_EMAIL,
+                    saveToCicCase(CicCase::setAppNotificationResponse)
+            );
         } else {
-            return new LetterNotification(cicCase.getApplicantAddress(), templateVars, TemplateName.CASE_UNLINKED_POST, saveToCicCase(CicCase::setAppLetterNotificationResponse));
+            return new LetterNotification(
+                    cicCase.getApplicantAddress(),
+                    templateVars,
+                    CASE_UNLINKED_POST,
+                    saveToCicCase(CicCase::setAppLetterNotificationResponse)
+            );
         }
     }
 
@@ -49,10 +71,20 @@ public class CaseUnlinkedNotification extends PartiesNotification {
         Map<String, Object> templateVars = notificationHelper().getRepresentativeCommonVars(caseNumber, caseData);
 
         if (cicCase.getRepresentativeContactDetailsPreference() == ContactPreferenceType.EMAIL) {
-            return emailOnly(cicCase.getRepresentativeEmailAddress(), templateVars, TemplateName.CASE_UNLINKED_EMAIL, saveToCicCase(CicCase::setRepNotificationResponse));
+            return emailOnly(
+                    cicCase.getRepresentativeEmailAddress(),
+                    templateVars,
+                    CASE_UNLINKED_EMAIL,
+                    saveToCicCase(CicCase::setRepNotificationResponse)
+            );
 
         } else {
-            return new LetterNotification(cicCase.getRepresentativeAddress(), templateVars, TemplateName.CASE_UNLINKED_POST, saveToCicCase(CicCase::setRepLetterNotificationResponse));
+            return new LetterNotification(
+                    cicCase.getRepresentativeAddress(),
+                    templateVars,
+                    CASE_UNLINKED_POST,
+                    saveToCicCase(CicCase::setRepLetterNotificationResponse)
+            );
         }
     }
 }
