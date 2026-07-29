@@ -423,6 +423,11 @@ def uploadBpmnDiagram() {
 }
 
 def runAatHighLevelDataSetup() {
+  echo env.S2S_URL_BASE
+  echo env.CCD_API_GATEWAY_S2S_ID
+  echo env.CCD_API_GATEWAY_OAUTH2_CLIENT_ID
+  echo env.CCD_API_GATEWAY_OAUTH2_CLIENT_SECRET
+  echo env.DEFINITION_STORE_URL_BASE
   withEnv([
     'ENVIRONMENT=aat',
     'TEST_DATA_LOAD_SKIP_PERIOD=0',
