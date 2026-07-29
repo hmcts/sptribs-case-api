@@ -307,7 +307,6 @@ public class SystemCreateTestCase implements CCDConfig<CaseData, State, UserRole
                 .filename(cdamDocument.originalDocumentName)
                 .categoryId("TD")
                 .binaryUrl(cdamDocument.links.binary.href)
-                .uploadTimestamp(LocalDateTime.now())
                 .build();
 
             CICDocument doc = CICDocument.builder()
@@ -330,7 +329,6 @@ public class SystemCreateTestCase implements CCDConfig<CaseData, State, UserRole
                 .filename(cdamDocument.originalDocumentName)
                 .categoryId("TD")
                 .binaryUrl(cdamDocument.links.binary.href)
-                .uploadTimestamp(LocalDateTime.now())
                 .build();
 
             caseData.getCaseIssueFinalDecision().setFinalDecisionDraft(document);
@@ -348,7 +346,6 @@ public class SystemCreateTestCase implements CCDConfig<CaseData, State, UserRole
                 .filename(cdamDocument.originalDocumentName)
                 .categoryId("TD")
                 .binaryUrl(cdamDocument.links.binary.href)
-                .uploadTimestamp(LocalDateTime.now())
                 .build();
 
             final CaseworkerCICDocument caseworkerCICDocument = CaseworkerCICDocument.builder()
@@ -373,7 +370,6 @@ public class SystemCreateTestCase implements CCDConfig<CaseData, State, UserRole
             .filename(cdamDocument.originalDocumentName)
             .categoryId("A")
             .binaryUrl(cdamDocument.links.binary.href)
-            .uploadTimestamp(LocalDateTime.now())
             .build();
         return  CaseworkerCICDocument.builder()
             .documentLink(uploadedDocument)
