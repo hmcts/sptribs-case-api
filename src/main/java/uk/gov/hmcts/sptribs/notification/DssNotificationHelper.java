@@ -20,7 +20,7 @@ import static uk.gov.hmcts.sptribs.common.ccd.CcdCaseType.CIC;
 @Component
 public class DssNotificationHelper {
 
-    public Map<String, Object> getSubjectCommonVars(String caseNumber, CaseData caseData) {
+    public static Map<String, Object> getSubjectCommonVars(String caseNumber, CaseData caseData) {
         final DssCaseData dssCaseData = caseData.getDssCaseData();
         Map<String, Object> templateVars = commonTemplateVars(caseNumber, dssCaseData);
         templateVars.put(CONTACT_NAME, dssCaseData.getSubjectFullName());
@@ -34,7 +34,7 @@ public class DssNotificationHelper {
         return templateVars;
     }
 
-    public Map<String, Object> getRepresentativeCommonVars(String caseNumber, CaseData caseData) {
+    public static Map<String, Object> getRepresentativeCommonVars(String caseNumber, CaseData caseData) {
         final DssCaseData dssCaseData = caseData.getDssCaseData();
         Map<String, Object> templateVars = commonTemplateVars(caseNumber, dssCaseData);
         templateVars.put(CONTACT_NAME, dssCaseData.getRepresentativeFullName());
@@ -48,7 +48,7 @@ public class DssNotificationHelper {
         return templateVars;
     }
 
-    public NotificationRequest buildEmailNotificationRequest(String destinationAddress,
+    public static NotificationRequest buildEmailNotificationRequest(String destinationAddress,
                                                              Map<String, Object> templateVars,
                                                              TemplateName emailTemplateName) {
         return NotificationRequest.builder()
@@ -58,7 +58,7 @@ public class DssNotificationHelper {
             .build();
     }
 
-    private Map<String, Object> commonTemplateVars(final String caseNumber, final DssCaseData dssCaseData) {
+    private static Map<String, Object> commonTemplateVars(final String caseNumber, final DssCaseData dssCaseData) {
         final Map<String, Object> templateVars = new HashMap<>();
         templateVars.put(TRIBUNAL_NAME, CIC);
         templateVars.put(CIC_CASE_NUMBER, caseNumber);

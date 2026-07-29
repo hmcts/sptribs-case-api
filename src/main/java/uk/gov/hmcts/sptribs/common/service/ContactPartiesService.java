@@ -3,9 +3,12 @@ package uk.gov.hmcts.sptribs.common.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.sptribs.caseworker.util.DocumentListUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.common.repositories.exception.correspondencedocument.CorrespondenceDocumentSaveException;
 import uk.gov.hmcts.sptribs.common.repositories.exception.document.DocumentLookupException;
+import uk.gov.hmcts.sptribs.document.DocumentUtil;
+import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.document.service.CorrespondenceDocumentService;
 import uk.gov.hmcts.sptribs.document.service.DocumentsService;
 
@@ -20,11 +23,15 @@ public class ContactPartiesService {
     private final DocumentsService documentsService;
     private final CorrespondenceDocumentService correspondenceDocumentService;
 
-    public void linkCorrespondenceIdsToDocuments(CaseData caseData, Map<String, String> uploadedDocuments,
+    public void linkCorrespondenceIdsToDocuments(CaseData caseData,
                                                  List<String> correspondenceIds) {
         try {
-            List<Long> documentIds =
-                documentsService.getDocumentsViaSentByContactParties(caseData, uploadedDocuments);
+            List<CaseworkerCICDocument> sentDocuments =
+                DocumentListUtil.getSelectedDocumentsFromDynamicList(caseData, caseData.getContactPartiesDocuments().getDocumentList());
+
+            List<Long> documentIds = sentDocuments.stream().map(DocumentUtil::getDocumentId).map(Long::valueOf).toList();
+//            List<Long> documentIds =
+//                documentsService.getDocumentsViaSentByContactParties(caseData, uploadedDocuments);
 
             for (String correspondenceId : correspondenceIds) {
                 try {

@@ -1,79 +1,68 @@
 package uk.gov.hmcts.sptribs.notification.dispatcher;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
-import uk.gov.hmcts.sptribs.ciccase.model.ContactPreferenceType;
-import uk.gov.hmcts.sptribs.ciccase.model.NotificationResponse;
-import uk.gov.hmcts.sptribs.common.CommonConstants;
 import uk.gov.hmcts.sptribs.notification.NotificationHelper;
 import uk.gov.hmcts.sptribs.notification.NotificationServiceCIC;
 import uk.gov.hmcts.sptribs.notification.PartiesNotification;
 import uk.gov.hmcts.sptribs.notification.TemplateName;
-import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
 
 import java.util.Map;
 
+import static uk.gov.hmcts.sptribs.common.CommonConstants.DASHBOARD_KEY;
+import static uk.gov.hmcts.sptribs.notification.TemplateName.APPLICATION_RECEIVED;
+import static uk.gov.hmcts.sptribs.notification.TemplateName.APPLICATION_RECEIVED_NEW_CD;
+
 @Component
 @Slf4j
-public class ApplicationReceivedNotification implements PartiesNotification {
+public class ApplicationReceivedNotification extends PartiesNotification {
+    @Value("${sptribs-frontend.dashboard-url}")
+    private String citizenDashboardUrl;
 
-    private final NotificationServiceCIC notificationService;
+    @Value("${feature.citizen-dashboard.enabled}")
+    private boolean citizenDashboardEnabled;
 
-    private final NotificationHelper notificationHelper;
-
-    @Autowired
     public ApplicationReceivedNotification(NotificationServiceCIC notificationService, NotificationHelper notificationHelper) {
-        this.notificationService = notificationService;
-        this.notificationHelper = notificationHelper;
+        super(notificationService, notificationHelper);
     }
 
     @Override
-    public void sendToSubject(final CaseData caseData, final String caseNumber) {
-        final Map<String, Object> templateVars = notificationHelper.getSubjectCommonVars(caseNumber, caseData);
-        templateVars.put(CommonConstants.DASHBOARD_KEY, CommonConstants.DASHBOARD_LINK);
+    protected PartyNotification buildSubjectNotification(CaseData caseData, String caseNumber) {
+        Map<String, Object> templateVars = notificationHelper().getSubjectCommonVars(caseNumber, caseData);
+        addDashboardLink(templateVars);
+        CicCase cicCase = caseData.getCicCase();
 
-        if (caseData.getCicCase().getContactPreferenceType() == ContactPreferenceType.EMAIL) {
-            NotificationResponse notificationResponse = sendEmailNotification(caseData.getCicCase().getEmail(), templateVars, caseNumber);
-            caseData.getCicCase().setSubjectNotifyList(notificationResponse);
-        }
+        return PartiesNotification.emailOnly(cicCase.getEmail(), templateVars, getTemplateName(), saveToCicCase(CicCase::setSubjectNotifyList));
     }
 
     @Override
-    public void sendToApplicant(final CaseData caseData, final String caseNumber) {
-        final CicCase cicCase = caseData.getCicCase();
-        final Map<String, Object> templateVars = notificationHelper.getApplicantCommonVars(caseNumber, caseData);
-        templateVars.put(CommonConstants.DASHBOARD_KEY, CommonConstants.DASHBOARD_LINK);
+    protected PartyNotification buildApplicantNotification(CaseData caseData, String caseNumber) {
+        CicCase cicCase = caseData.getCicCase();
+        Map<String, Object> templateVars = notificationHelper().getApplicantCommonVars(caseNumber, caseData);
+        addDashboardLink(templateVars);
 
-        if (cicCase.getApplicantContactDetailsPreference() == ContactPreferenceType.EMAIL) {
-            NotificationResponse notificationResponse = sendEmailNotification(cicCase.getApplicantEmailAddress(), templateVars, caseNumber);
-            cicCase.setAppNotificationResponse(notificationResponse);
-        }
+        return PartiesNotification.emailOnly(cicCase.getApplicantEmailAddress(), templateVars, getTemplateName(), saveToCicCase(CicCase::setAppNotificationResponse));
     }
 
     @Override
-    public void sendToRepresentative(final CaseData caseData, final String caseNumber) {
-        final CicCase cicCase = caseData.getCicCase();
-        final Map<String, Object> templateVars = notificationHelper.getRepresentativeCommonVars(caseNumber, caseData);
-        templateVars.put(CommonConstants.DASHBOARD_KEY, CommonConstants.DASHBOARD_LINK);
+    protected PartyNotification buildRepresentativeNotification(CaseData caseData, String caseNumber) {
+        CicCase cicCase = caseData.getCicCase();
+        Map<String, Object> templateVars = notificationHelper().getRepresentativeCommonVars(caseNumber, caseData);
+        addDashboardLink(templateVars);
 
-        if (cicCase.getRepresentativeContactDetailsPreference() == ContactPreferenceType.EMAIL) {
-            NotificationResponse notificationResponse = sendEmailNotification(cicCase.getRepresentativeEmailAddress(),
-                templateVars, caseNumber);
-            cicCase.setRepNotificationResponse(notificationResponse);
-        }
+        return PartiesNotification.emailOnly(cicCase.getRepresentativeEmailAddress(), templateVars, getTemplateName(), saveToCicCase(CicCase::setRepNotificationResponse));
     }
 
-    private NotificationResponse sendEmailNotification(final String destinationAddress,
-                                                       final Map<String, Object> templateVars,
-                                                       String caseReferenceNumber) {
+    private TemplateName getTemplateName() {
+        return citizenDashboardEnabled ? APPLICATION_RECEIVED : APPLICATION_RECEIVED_NEW_CD;
+    }
 
-        final NotificationRequest request = notificationHelper.buildEmailNotificationRequest(
-            destinationAddress,
-            templateVars,
-            TemplateName.APPLICATION_RECEIVED);
-        return notificationService.sendEmail(request, caseReferenceNumber, null);
+    private void addDashboardLink(Map<String, Object> templateVars) {
+        if (citizenDashboardEnabled) {
+            templateVars.put(DASHBOARD_KEY, citizenDashboardUrl);
+        }
     }
 }

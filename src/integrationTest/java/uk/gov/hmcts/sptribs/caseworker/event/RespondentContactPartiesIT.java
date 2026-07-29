@@ -269,7 +269,7 @@ public class RespondentContactPartiesIT extends IntegrationTestBase {
         verify(notificationServiceCIC, times(1)).sendEmail(any(), eq(TEST_CASE_ID_HYPHENATED), eq(Party.REPRESENTATIVE));
         verify(notificationServiceCIC, times(1)).sendEmail(any(), eq(TEST_CASE_ID_HYPHENATED), eq(Party.TRIBUNAL));
         verifyNoMoreInteractions(notificationServiceCIC);
-        verify(contactPartiesService).linkCorrespondenceIdsToDocuments(any(), any(),
+        verify(contactPartiesService).linkCorrespondenceIdsToDocuments(any(),
             argThat(list -> {
                 assertThat(list).containsExactlyInAnyOrder(
                     NOTIFICATION_RESPONSE_ID_1,

@@ -220,10 +220,10 @@ class CaseworkerContactPartiesTest {
         Map<String, String> emailDocs = getDocumentUploadMap();
 
         when(notificationHelper.buildDocumentList(documentList, docAttachLimit)).thenReturn(emailDocs);
-        when(contactPartiesNotification.sendToSubject(caseData, String.valueOf(TEST_CASE_ID), emailDocs)).thenReturn("UUID1");
-        when(contactPartiesNotification.sendToRepresentative(caseData, String.valueOf(TEST_CASE_ID), emailDocs)).thenReturn("UUID2");
-        when(contactPartiesNotification.sendToApplicant(caseData, String.valueOf(TEST_CASE_ID), emailDocs)).thenReturn("UUID3");
-        when(contactPartiesNotification.sendToRespondent(caseData, String.valueOf(TEST_CASE_ID), emailDocs)).thenReturn("UUID4");
+        when(contactPartiesNotification.sendToSubject(caseData, String.valueOf(TEST_CASE_ID))).thenReturn("UUID1");
+        when(contactPartiesNotification.sendToRepresentative(caseData, String.valueOf(TEST_CASE_ID))).thenReturn("UUID2");
+        when(contactPartiesNotification.sendToApplicant(caseData, String.valueOf(TEST_CASE_ID))).thenReturn("UUID3");
+        when(contactPartiesNotification.sendToRespondent(caseData, String.valueOf(TEST_CASE_ID))).thenReturn("UUID4");
 
         SubmittedCallbackResponse response =
             caseWorkerContactParties.submitted(updatedCaseDetails, beforeDetails);
@@ -242,7 +242,7 @@ class CaseworkerContactPartiesTest {
         assertThat(contactPartiesResponse.getConfirmationHeader()).contains("Respondent");
         assertThat(contactPartiesResponse.getConfirmationHeader()).contains(",");
 
-        verify(contactPartiesService, times(2)).linkCorrespondenceIdsToDocuments(caseData, emailDocs,
+        verify(contactPartiesService, times(2)).linkCorrespondenceIdsToDocuments(caseData,
             List.of("UUID1", "UUID2", "UUID3", "UUID4"));
     }
 
@@ -280,9 +280,9 @@ class CaseworkerContactPartiesTest {
         Map<String, String> emailDocs = getDocumentUploadMap();
 
         when(notificationHelper.buildDocumentList(documentList, docAttachLimit)).thenReturn(emailDocs);
-        when(contactPartiesNotification.sendToRepresentative(caseData, String.valueOf(TEST_CASE_ID), emailDocs)).thenReturn("UUID2");
-        when(contactPartiesNotification.sendToApplicant(caseData, String.valueOf(TEST_CASE_ID), emailDocs)).thenReturn("UUID3");
-        when(contactPartiesNotification.sendToRespondent(caseData, String.valueOf(TEST_CASE_ID), emailDocs)).thenReturn("UUID4");
+        when(contactPartiesNotification.sendToRepresentative(caseData, String.valueOf(TEST_CASE_ID))).thenReturn("UUID2");
+        when(contactPartiesNotification.sendToApplicant(caseData, String.valueOf(TEST_CASE_ID))).thenReturn("UUID3");
+        when(contactPartiesNotification.sendToRespondent(caseData, String.valueOf(TEST_CASE_ID))).thenReturn("UUID4");
 
         SubmittedCallbackResponse response =
             caseWorkerContactParties.submitted(updatedCaseDetails, beforeDetails);
@@ -300,8 +300,8 @@ class CaseworkerContactPartiesTest {
         assertThat(contactPartiesResponse.getConfirmationHeader()).contains("Respondent");
         assertThat(contactPartiesResponse.getConfirmationHeader()).contains(",");
 
-        verify(contactPartiesNotification, never()).sendToSubject(any(), any(), any());
-        verify(contactPartiesService, times(2)).linkCorrespondenceIdsToDocuments(caseData, emailDocs, List.of("UUID2", "UUID3", "UUID4"));
+        verify(contactPartiesNotification, never()).sendToSubject(any(), any());
+        verify(contactPartiesService, times(2)).linkCorrespondenceIdsToDocuments(caseData, List.of("UUID2", "UUID3", "UUID4"));
     }
 
     @Test

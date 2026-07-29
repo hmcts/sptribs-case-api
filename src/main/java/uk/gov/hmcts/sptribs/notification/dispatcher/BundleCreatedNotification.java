@@ -1,11 +1,9 @@
 package uk.gov.hmcts.sptribs.notification.dispatcher;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
-import uk.gov.hmcts.sptribs.ciccase.model.NotificationResponse;
 import uk.gov.hmcts.sptribs.common.CommonConstants;
 import uk.gov.hmcts.sptribs.notification.EmailBundleCreatedResponses;
 import uk.gov.hmcts.sptribs.notification.NotificationHelper;
@@ -17,75 +15,45 @@ import java.util.Map;
 
 @Component
 @Slf4j
-public class BundleCreatedNotification implements PartiesNotification {
+public class BundleCreatedNotification extends PartiesNotification {
 
-    private final NotificationServiceCIC notificationService;
-
-    private final NotificationHelper notificationHelper;
-
-    @Autowired
     public BundleCreatedNotification(NotificationServiceCIC notificationService, NotificationHelper notificationHelper) {
-        this.notificationService = notificationService;
-        this.notificationHelper = notificationHelper;
+        super(notificationService, notificationHelper);
     }
 
     @Override
-    public void sendToApplicant(final CaseData caseData, final String caseNumber) {
-        final CicCase cicCase = caseData.getCicCase();
-        final Map<String, Object> templateVarsApplicant = notificationHelper.getApplicantCommonVars(caseNumber, caseData);
+    protected PartyNotification buildApplicantNotification(CaseData caseData, String caseNumber) {
+        CicCase cicCase = caseData.getCicCase();
+        Map<String, Object> templateVarsApplicant = notificationHelper().getApplicantCommonVars(caseNumber, caseData);
         templateVarsApplicant.put(CommonConstants.CIC_CASE_APPLICANT_NAME, cicCase.getApplicantFullName());
 
         templateVarsApplicant.put(CommonConstants.BUNDLE_CREATED_EMAIL_TEXT,
             EmailBundleCreatedResponses.REPRESENTATIVE_APPLICANT_RESPONSE.getEmailResponse());
 
-        final NotificationResponse notificationResponse;
-
-        notificationResponse = sendEmailNotification(templateVarsApplicant,
-        cicCase.getApplicantEmailAddress(), caseNumber);
-
-        cicCase.setAppNotificationResponse(notificationResponse);
+        return PartiesNotification.emailOnly(cicCase.getApplicantEmailAddress(), templateVarsApplicant, TemplateName.BUNDLE_CREATED_EMAIL, saveToCicCase(CicCase::setAppNotificationResponse));
     }
 
     @Override
-    public void sendToRepresentative(final CaseData caseData, final String caseNumber) {
-        final CicCase cicCase = caseData.getCicCase();
-        final Map<String, Object> templateVarsRepresentative = notificationHelper.getRepresentativeCommonVars(caseNumber, caseData);
+    protected PartyNotification buildRepresentativeNotification(CaseData caseData, String caseNumber) {
+        CicCase cicCase = caseData.getCicCase();
+        Map<String, Object> templateVarsRepresentative = notificationHelper().getRepresentativeCommonVars(caseNumber, caseData);
         templateVarsRepresentative.put(CommonConstants.CIC_CASE_REPRESENTATIVE_NAME, cicCase.getRepresentativeFullName());
 
         templateVarsRepresentative.put(CommonConstants.BUNDLE_CREATED_EMAIL_TEXT,
             EmailBundleCreatedResponses.REPRESENTATIVE_APPLICANT_RESPONSE.getEmailResponse());
 
-        final NotificationResponse notificationResponse;
-
-        notificationResponse = sendEmailNotification(templateVarsRepresentative,
-        cicCase.getRepresentativeEmailAddress(), caseNumber);
-
-        cicCase.setRepNotificationResponse(notificationResponse);
+        return PartiesNotification.emailOnly(cicCase.getRepresentativeEmailAddress(), templateVarsRepresentative, TemplateName.BUNDLE_CREATED_EMAIL, saveToCicCase(CicCase::setRepNotificationResponse));
     }
 
     @Override
-    public void sendToRespondent(final CaseData caseData, final String caseNumber) {
-        final CicCase cicCase = caseData.getCicCase();
-        final Map<String, Object> templateVarsRespondent = notificationHelper.getRespondentCommonVars(caseNumber, caseData);
+    protected PartyNotification buildRespondentNotification(CaseData caseData, String caseNumber) {
+        CicCase cicCase = caseData.getCicCase();
+        Map<String, Object> templateVarsRespondent = notificationHelper().getRespondentCommonVars(caseNumber, caseData);
         templateVarsRespondent.put(CommonConstants.CIC_CASE_RESPONDENT_NAME, cicCase.getRespondentName());
 
         templateVarsRespondent.put(CommonConstants.BUNDLE_CREATED_EMAIL_TEXT,
             EmailBundleCreatedResponses.RESPONDENT_RESPONSE.getEmailResponse());
 
-        final NotificationResponse notificationResponse;
-
-        notificationResponse = sendEmailNotification(templateVarsRespondent,
-            cicCase.getRespondentEmail(), caseNumber);
-
-        cicCase.setResNotificationResponse(notificationResponse);
-    }
-
-    private NotificationResponse sendEmailNotification(final Map<String, Object> templateVars, String toEmail,
-                                                       String caseReferenceNumber) {
-        return notificationService.sendEmail(
-            notificationHelper.buildEmailNotificationRequest(toEmail,
-                templateVars,
-                TemplateName.BUNDLE_CREATED_EMAIL),
-            caseReferenceNumber, null);
+        return PartiesNotification.emailOnly(cicCase.getRespondentEmail(), templateVarsRespondent, TemplateName.BUNDLE_CREATED_EMAIL, saveToCicCase(CicCase::setResNotificationResponse));
     }
 }

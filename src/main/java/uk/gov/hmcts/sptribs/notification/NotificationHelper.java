@@ -220,19 +220,25 @@ public class NotificationHelper {
         templateVars.put(HEARING_TIME, hearingTime);
     }
 
+    public void addCicaReferenceNumber(CaseData caseData, Map<String, Object> templateVarsSubject) {
+        if (caseData.getEditCicaCaseDetails() != null && !StringUtils.isEmpty(caseData.getEditCicaCaseDetails().getCicaReferenceNumber())) {
+            templateVarsSubject.put(HAS_CICA_NUMBER, true);
+            templateVarsSubject.put(CICA_REF_NUMBER, caseData.getEditCicaCaseDetails().getCicaReferenceNumber());
+        } else {
+            templateVarsSubject.put(HAS_CICA_NUMBER, false);
+            templateVarsSubject.put(CICA_REF_NUMBER, "");
+        }
+    }
+
+
     private Map<String, Object> commonTemplateVars(final CaseData caseData, final String caseNumber) {
         final CicCase cicCase = caseData.getCicCase();
         final Map<String, Object> templateVars = new HashMap<>();
         templateVars.put(TRIBUNAL_NAME, CIC);
         templateVars.put(CIC_CASE_NUMBER, caseNumber);
         templateVars.put(CIC_CASE_SUBJECT_NAME, cicCase.getFullName());
-        if (caseData.getEditCicaCaseDetails() != null && !StringUtils.isEmpty(caseData.getEditCicaCaseDetails().getCicaReferenceNumber())) {
-            templateVars.put(HAS_CICA_NUMBER, true);
-            templateVars.put(CICA_REF_NUMBER, caseData.getEditCicaCaseDetails().getCicaReferenceNumber());
-        } else {
-            templateVars.put(HAS_CICA_NUMBER, false);
-            templateVars.put(CICA_REF_NUMBER, "");
-        }
+        addCicaReferenceNumber(caseData, templateVars);
+
         return templateVars;
     }
 

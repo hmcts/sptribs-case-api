@@ -200,4 +200,13 @@ public final class DocumentUtil {
         String fileExtension = substringAfterLast(fileName, ".");
         return fileExtension != null && validExtensions.contains(fileExtension.toLowerCase(ROOT));
     }
+
+    public static String getDocumentId(CaseworkerCICDocument document) {
+        String binaryUrl = document.getDocumentLink().getBinaryUrl();
+
+        return StringUtils.substringAfterLast(
+                binaryUrl.replaceFirst("/binary$", ""),
+                "/"
+        );
+    }
 }

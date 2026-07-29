@@ -18,38 +18,24 @@ import static uk.gov.hmcts.sptribs.notification.TemplateName.UPDATE_RECEIVED_CIC
 
 @Component
 @Slf4j
-public class DssUpdateCaseSubmissionNotification implements PartiesNotification {
+public class DssUpdateCaseSubmissionNotification extends PartiesNotification {
 
-    private final NotificationServiceCIC notificationService;
-
-    private final NotificationHelper notificationHelper;
-
-    @Autowired
     public DssUpdateCaseSubmissionNotification(NotificationServiceCIC notificationService, NotificationHelper notificationHelper) {
-        this.notificationService = notificationService;
-        this.notificationHelper = notificationHelper;
+        super(notificationService, notificationHelper);
     }
 
     @Override
-    public void sendToApplicant(final CaseData caseData, final String caseNumber) {
-        final CicCase cicCase = caseData.getCicCase();
-        final Map<String, Object> templateVars = notificationHelper.getSubjectCommonVars(caseNumber, caseData);
-        final NotificationRequest request = notificationHelper.buildEmailNotificationRequest(
-            cicCase.getEmail(),
-            templateVars,
-                UPDATE_RECEIVED);
+    protected PartyNotification buildApplicantNotification(CaseData caseData, String caseNumber) {
+        CicCase cicCase = caseData.getCicCase();
+        Map<String, Object> templateVars = notificationHelper().getSubjectCommonVars(caseNumber, caseData);
 
-        notificationService.sendEmail(request, caseNumber, null);
+        return emailOnly(cicCase.getEmail(), templateVars, UPDATE_RECEIVED, saveToCicCase(CicCase::setAppNotificationResponse));
     }
 
     @Override
-    public void sendToTribunal(final CaseData caseData, final String caseNumber) {
-        final Map<String, Object> templateVars = notificationHelper.getTribunalCommonVars(caseNumber, caseData);
-        final NotificationRequest request = notificationHelper.buildEmailNotificationRequest(
-            TRIBUNAL_EMAIL_VALUE,
-            templateVars,
-                UPDATE_RECEIVED_CIC);
+    protected PartyNotification buildTribunalNotification(CaseData caseData, String caseNumber) {
+        Map<String, Object> templateVars = notificationHelper().getTribunalCommonVars(caseNumber, caseData);
 
-        notificationService.sendEmail(request, caseNumber, null);
+        return emailOnly(TRIBUNAL_EMAIL_VALUE, templateVars, UPDATE_RECEIVED_CIC, saveToCicCase(CicCase::setTribunalNotificationResponse));
     }
 }

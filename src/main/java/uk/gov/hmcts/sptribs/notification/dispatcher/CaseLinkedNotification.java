@@ -1,97 +1,58 @@
 package uk.gov.hmcts.sptribs.notification.dispatcher;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.ContactPreferenceType;
-import uk.gov.hmcts.sptribs.ciccase.model.NotificationResponse;
 import uk.gov.hmcts.sptribs.notification.NotificationHelper;
 import uk.gov.hmcts.sptribs.notification.NotificationServiceCIC;
 import uk.gov.hmcts.sptribs.notification.PartiesNotification;
 import uk.gov.hmcts.sptribs.notification.TemplateName;
-import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
 
 import java.util.Map;
 
 @Component
 @Slf4j
-public class CaseLinkedNotification implements PartiesNotification {
+public class CaseLinkedNotification extends PartiesNotification {
 
-    private final NotificationServiceCIC notificationService;
-
-    private final NotificationHelper notificationHelper;
-
-
-    @Autowired
     public CaseLinkedNotification(NotificationServiceCIC notificationService, NotificationHelper notificationHelper) {
-        this.notificationService = notificationService;
-        this.notificationHelper = notificationHelper;
+        super(notificationService, notificationHelper);
     }
 
     @Override
-    public void sendToSubject(final CaseData caseData, final String caseNumber) {
-        final CicCase cicCase = caseData.getCicCase();
-        final Map<String, Object> templateVars = notificationHelper.getSubjectCommonVars(caseNumber, caseData);
+    protected PartyNotification buildSubjectNotification(CaseData caseData, String caseNumber) {
+        CicCase cicCase = caseData.getCicCase();
+        Map<String, Object> templateVars = notificationHelper().getSubjectCommonVars(caseNumber, caseData);
 
-        final NotificationResponse notificationResponse;
         if (cicCase.getContactPreferenceType() == ContactPreferenceType.EMAIL) {
-            notificationResponse = sendEmailNotification(cicCase.getEmail(), templateVars, caseNumber);
+            return PartiesNotification.emailOnly(cicCase.getEmail(), templateVars, TemplateName.CASE_LINKED_EMAIL, saveToCicCase(CicCase::setSubjectNotifyList));
         } else {
-            notificationHelper.addAddressTemplateVars(cicCase.getAddress(), templateVars);
-            notificationResponse = sendLetterNotification(templateVars, caseNumber);
+            return new LetterNotification(cicCase.getAddress(), templateVars, TemplateName.CASE_LINKED_POST, saveToCicCase(CicCase::setSubjectLetterNotifyList));
         }
-
-        cicCase.setSubjectNotifyList(notificationResponse);
     }
 
     @Override
-    public void sendToApplicant(final CaseData caseData, final String caseNumber) {
-        final CicCase cicCase = caseData.getCicCase();
-        final Map<String, Object> applicantCommonVars = notificationHelper.getApplicantCommonVars(caseNumber, caseData);
+    protected PartyNotification buildApplicantNotification(CaseData caseData, String caseNumber) {
+        CicCase cicCase = caseData.getCicCase();
+        Map<String, Object> applicantCommonVars = notificationHelper().getApplicantCommonVars(caseNumber, caseData);
 
-        final NotificationResponse notificationResponse;
         if (cicCase.getApplicantContactDetailsPreference() == ContactPreferenceType.EMAIL) {
-            notificationResponse = sendEmailNotification(cicCase.getApplicantEmailAddress(), applicantCommonVars, caseNumber);
+            return PartiesNotification.emailOnly(cicCase.getApplicantEmailAddress(), applicantCommonVars, TemplateName.CASE_LINKED_EMAIL, saveToCicCase(CicCase::setAppNotificationResponse));
         } else {
-            notificationHelper.addAddressTemplateVars(cicCase.getApplicantAddress(), applicantCommonVars);
-            notificationResponse = sendLetterNotification(applicantCommonVars, caseNumber);
+            return new LetterNotification(cicCase.getApplicantAddress(), applicantCommonVars, TemplateName.CASE_LINKED_POST, saveToCicCase(CicCase::setAppLetterNotificationResponse));
         }
-
-        cicCase.setAppNotificationResponse(notificationResponse);
     }
 
     @Override
-    public void sendToRepresentative(final CaseData caseData, final String caseNumber) {
-        final CicCase cicCase = caseData.getCicCase();
-        final Map<String, Object> representativeCommonVars = notificationHelper.getRepresentativeCommonVars(caseNumber, caseData);
+    protected PartyNotification buildRepresentativeNotification(CaseData caseData, String caseNumber) {
+        CicCase cicCase = caseData.getCicCase();
+        Map<String, Object> representativeCommonVars = notificationHelper().getRepresentativeCommonVars(caseNumber, caseData);
 
-        final NotificationResponse notificationResponse;
         if (cicCase.getRepresentativeContactDetailsPreference() == ContactPreferenceType.EMAIL) {
-            notificationResponse = sendEmailNotification(cicCase.getRepresentativeEmailAddress(), representativeCommonVars, caseNumber);
+            return PartiesNotification.emailOnly(cicCase.getRepresentativeEmailAddress(), representativeCommonVars, TemplateName.CASE_LINKED_EMAIL, saveToCicCase(CicCase::setRepNotificationResponse));
         } else {
-            notificationHelper.addAddressTemplateVars(cicCase.getRepresentativeAddress(), representativeCommonVars);
-            notificationResponse = sendLetterNotification(representativeCommonVars, caseNumber);
+            return new LetterNotification(cicCase.getRepresentativeAddress(), representativeCommonVars, TemplateName.CASE_LINKED_POST, saveToCicCase(CicCase::setRepLetterNotificationResponse));
         }
-
-        cicCase.setRepNotificationResponse(notificationResponse);
     }
-
-    private NotificationResponse sendEmailNotification(final String destinationAddress,
-                                                       final Map<String, Object> templateVars,
-                                                       String caseReferenceNumber) {
-        final NotificationRequest request = notificationHelper.buildEmailNotificationRequest(
-            destinationAddress,
-            templateVars,
-            TemplateName.CASE_LINKED_EMAIL);
-        return notificationService.sendEmail(request, caseReferenceNumber, null);
-    }
-
-    private NotificationResponse sendLetterNotification(Map<String, Object> templateVarsLetter, String caseReferenceNumber) {
-        final NotificationRequest letterRequest = notificationHelper.buildLetterNotificationRequest(templateVarsLetter,
-            TemplateName.CASE_LINKED_POST);
-        return notificationService.sendLetter(letterRequest, caseReferenceNumber);
-    }
-
 }

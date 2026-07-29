@@ -1,12 +1,10 @@
 package uk.gov.hmcts.sptribs.notification.dispatcher;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
-import uk.gov.hmcts.sptribs.ciccase.model.NotificationResponse;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.common.CommonConstants;
 import uk.gov.hmcts.sptribs.notification.NotificationConstants;
@@ -14,7 +12,6 @@ import uk.gov.hmcts.sptribs.notification.NotificationHelper;
 import uk.gov.hmcts.sptribs.notification.NotificationServiceCIC;
 import uk.gov.hmcts.sptribs.notification.PartiesNotification;
 import uk.gov.hmcts.sptribs.notification.TemplateName;
-import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -22,36 +19,24 @@ import java.util.Map;
 
 @Component
 @Slf4j
-public class AnonymityAppliedNotification implements PartiesNotification {
+public class AnonymityAppliedNotification extends PartiesNotification {
 
     private static final DateTimeFormatter UK_DATE_FORMATTER = DateTimeFormatter.ofPattern(CommonConstants.CIC_CASE_UK_DATE_FORMAT);
 
-    private final NotificationServiceCIC notificationService;
-    private final NotificationHelper notificationHelper;
-
-    @Autowired
-    public AnonymityAppliedNotification(NotificationServiceCIC notificationService,
-                                        NotificationHelper notificationHelper) {
-        this.notificationService = notificationService;
-        this.notificationHelper = notificationHelper;
+    public AnonymityAppliedNotification(NotificationServiceCIC notificationService, NotificationHelper notificationHelper) {
+        super(notificationService, notificationHelper);
     }
 
     @Override
-    public void sendToTribunal(final CaseData caseData, final String caseNumber) {
-        final Map<String, Object> templateVars = buildTemplateVars(caseData, caseNumber);
-        final NotificationRequest request = notificationHelper.buildEmailNotificationRequest(
-            NotificationConstants.ANONYMITY_RECIPIENT_EMAIL,
-            templateVars,
-            TemplateName.ANONYMITY_APPLIED_EMAIL
-        );
+    protected PartyNotification buildTribunalNotification(CaseData caseData, String caseNumber) {
+        Map<String, Object> templateVars = buildTemplateVars(caseData, caseNumber);
 
-        NotificationResponse response = notificationService.sendEmail(request, caseNumber, null);
-        caseData.getCicCase().setTribunalNotificationResponse(response);
+        return PartiesNotification.emailOnly(NotificationConstants.ANONYMITY_RECIPIENT_EMAIL, templateVars, TemplateName.ANONYMITY_APPLIED_EMAIL, saveToCicCase(CicCase::setTribunalNotificationResponse));
     }
 
     private Map<String, Object> buildTemplateVars(CaseData caseData, String caseNumber) {
         final CicCase cicCase = caseData.getCicCase();
-        final Map<String, Object> templateVars = notificationHelper.getTribunalCommonVars(caseNumber, caseData);
+        final Map<String, Object> templateVars = notificationHelper().getTribunalCommonVars(caseNumber, caseData);
 
         templateVars.put(CommonConstants.CIC_CASE_HEARING_DATE, cicCase.getAnonymisationDate() != null
             ? cicCase.getAnonymisationDate().format(UK_DATE_FORMATTER) : LocalDate.now().format(UK_DATE_FORMATTER));
