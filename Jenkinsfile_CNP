@@ -426,7 +426,7 @@ def runAatHighLevelDataSetup() {
   withEnv([
     'ENVIRONMENT=aat',
     'TEST_DATA_LOAD_SKIP_PERIOD=0',
-    'IDAM_API_URL_BASE=https://idam-web-public.aat.platform.hmcts.net',
+    'IDAM_API_URL_BASE=https://idam-api.aat.platform.hmcts.net',
     "CCD_API_GATEWAY_OAUTH2_CLIENT_SECRET=${env.CCD_API_GATEWAY_OAUTH2_CLIENT_SECRET}",
     "CCD_API_GATEWAY_IDAM_CLIENT_SECRET=${env.CCD_API_GATEWAY_IDAM_CLIENT_SECRET}",
     "IDAM_DATA_STORE_SYSTEM_USER_USERNAME=${env.IDAM_DATA_STORE_SYSTEM_USER_USERNAME}",
