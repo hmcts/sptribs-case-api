@@ -58,6 +58,7 @@ public class HearingService {
                 firstListing.getValue().setPostponeAdditionalInformation(data.getRetiredFields().getCicCasePostponeAdditionalInformation());
             }
         }
+        updateHearingDate(data);
     }
 
     public DynamicList getCompletedHearingDynamicList(final CaseData data) {
@@ -107,6 +108,7 @@ public class HearingService {
                 caseNoteListValue -> caseNoteListValue.setId(String.valueOf(listValueIndex.incrementAndGet())));
 
         }
+        updateHearingDate(caseData);
     }
 
     @SneakyThrows
@@ -119,6 +121,15 @@ public class HearingService {
                 listingListValue.setValue(listingDeepCopy);
                 break;
             }
+        }
+        updateHearingDate(caseData);
+    }
+
+    private void updateHearingDate(CaseData caseData) {
+        if (caseData.getNextListedHearing() != null && caseData.getNextListedHearing().getDate() != null) {
+            caseData.setHearingDate(caseData.getNextListedHearing().getDate());
+        } else {
+            caseData.setHearingDate(null);
         }
     }
 
