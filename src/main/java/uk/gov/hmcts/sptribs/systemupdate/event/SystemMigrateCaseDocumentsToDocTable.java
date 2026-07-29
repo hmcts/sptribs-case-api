@@ -13,7 +13,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.document.model.CaseDocumentType;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
-import uk.gov.hmcts.sptribs.document.service.DocumentsService;
+import uk.gov.hmcts.sptribs.systemupdate.service.MigrationDocumentService;
 
 import java.util.HashMap;
 import java.util.List;
@@ -30,7 +30,7 @@ import static uk.gov.hmcts.sptribs.document.model.CaseDocumentType.BUNDLE;
 @Slf4j
 public class SystemMigrateCaseDocumentsToDocTable implements CCDConfig<CaseData, State, UserRole> {
     public static final String SYSTEM_MIGRATE_CASE_DOCUMENTS_TO_TABLE = "migrate-to-document-table";
-    private final DocumentsService documentsService;
+    private final MigrationDocumentService documentsService;
 
     final Map<String, String> failedDocs = new HashMap<>();
 
@@ -71,14 +71,17 @@ public class SystemMigrateCaseDocumentsToDocTable implements CCDConfig<CaseData,
 
     private void saveBundlesToDocTable(CaseData caseData, Long reference) {
         caseData.getCaseBundles().stream()
-            .map(bundleListValue -> bundleListValue.getValue().getStitchedDocument())
-            .forEach(document -> {
+            .forEach(bundleListValue -> {
+                var localDateTime = bundleListValue.getValue().getDateAndTime();
+                var document = bundleListValue.getValue().getStitchedDocument();
                 try {
-                    documentsService.buildAndSaveNewDocumentEntity(
+                    documentsService.buildAndSaveNewDocumentEntityWithDocDateTime(
                         document,
                         reference,
                         null,
-                        BUNDLE
+                        BUNDLE,
+                        localDateTime
+
                     );
                 } catch (DataIntegrityViolationException e) {
                     log.info("Document already exists in document table: {}", document.getBinaryUrl());
@@ -96,13 +99,17 @@ public class SystemMigrateCaseDocumentsToDocTable implements CCDConfig<CaseData,
         documentTypeDocumentMap.forEach((caseDocumentType, caseworkerCICDocuments) ->
             caseworkerCICDocuments.forEach(caseworkerCICDocument -> {
                 try {
-                    documentsService.buildAndSaveNewDocumentEntity(
+                    documentsService.buildAndSaveNewDocumentEntityWithDocDateTime(
                         caseworkerCICDocument.getDocumentLink(),
                         reference,
                         caseworkerCICDocument.getDocumentCategory(),
-                        caseDocumentType
+                        caseDocumentType,
+                        caseworkerCICDocument.getDate().atTime(0,0)
                     );
-                } catch (Exception exception) {
+                } catch (DataIntegrityViolationException e) {
+                    log.info("Document already exists in document table: {}", caseworkerCICDocument.getDocumentLink().getBinaryUrl());
+
+                } catch (RuntimeException exception) {
                     failedDocs.put(caseworkerCICDocument.getDocumentLink().getBinaryUrl(), exception.getMessage());
                     log.info("Failed to save document {} to table: {}",
                         caseworkerCICDocument.getDocumentLink().getBinaryUrl(), exception.getMessage());
