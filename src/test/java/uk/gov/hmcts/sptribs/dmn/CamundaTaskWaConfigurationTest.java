@@ -1429,4 +1429,87 @@ class CamundaTaskWaConfigurationTest extends DmnDecisionTableBaseUnitTest {
             && (expected.isEqual(result) || expected.isBefore(result))
             && (now.isEqual(result) || now.isAfter(result));
     }
+
+    @Test
+    void priority_should_be_determined_by_urgency_and_hearing_status() {
+        // 1. Urgent Case
+        Map<String, Object> urgentCase = CaseDataBuilder.defaultCase()
+            .isUrgent()
+            .build();
+        DmnDecisionTableResult urgentResult = evaluateConfiguration(urgentCase);
+        assertEquals("2000", getConfigurationValue(urgentResult, "majorPriority"));
+
+        // 2. Non-urgent Case with Listed Hearing (hearingDate)
+        Map<String, Object> hearingDateCase = CaseDataBuilder.defaultCase()
+            .withHearingDate(LocalDate.of(2026, 7, 28))
+            .build();
+        DmnDecisionTableResult hearingDateResult = evaluateConfiguration(hearingDateCase);
+        assertEquals("3000", getConfigurationValue(hearingDateResult, "majorPriority"));
+
+        // 3. Non-urgent Case with Listed Hearing (date)
+        Map<String, Object> dateCase = CaseDataBuilder.defaultCase()
+            .withDate(LocalDate.of(2026, 7, 28))
+            .build();
+        DmnDecisionTableResult dateResult = evaluateConfiguration(dateCase);
+        assertEquals("3000", getConfigurationValue(dateResult, "majorPriority"));
+
+        // 4. Default Non-urgent Case with No Hearing
+        Map<String, Object> defaultCase = CaseDataBuilder.defaultCase().build();
+        DmnDecisionTableResult defaultResult = evaluateConfiguration(defaultCase);
+        assertEquals("5000", getConfigurationValue(defaultResult, "majorPriority"));
+    }
+
+    @Test
+    void next_hearing_date_should_be_properly_mapped_for_sorting() {
+        // 1. Map from hearingDate
+        Map<String, Object> hearingDateCase = CaseDataBuilder.defaultCase()
+            .withHearingDate(LocalDate.of(2026, 7, 28))
+            .build();
+        DmnDecisionTableResult result1 = evaluateConfiguration(hearingDateCase);
+        assertEquals("2026-07-28", getConfigurationValue(result1, "nextHearingDate"));
+        assertTrue(canReconfigure(result1, "nextHearingDate"));
+
+        // 2. Map from date (unwrapped listing date)
+        Map<String, Object> dateCase = CaseDataBuilder.defaultCase()
+            .withDate(LocalDate.of(2026, 7, 29))
+            .build();
+        DmnDecisionTableResult result2 = evaluateConfiguration(dateCase);
+        assertEquals("2026-07-29", getConfigurationValue(result2, "nextHearingDate"));
+        assertTrue(canReconfigure(result2, "nextHearingDate"));
+
+        // 3. Map to empty when no hearing listed
+        Map<String, Object> defaultCase = CaseDataBuilder.defaultCase().build();
+        DmnDecisionTableResult result3 = evaluateConfiguration(defaultCase);
+        assertEquals("", getConfigurationValue(result3, "nextHearingDate"));
+        assertTrue(canReconfigure(result3, "nextHearingDate"));
+    }
+
+    private DmnDecisionTableResult evaluateConfiguration(Map<String, Object> caseData) {
+        VariableMap inputVariables = new VariableMapImpl();
+        Map<String, String> taskAttributes = Map.of(
+            "taskType", PROCESS_CASE_WITHDRAWAL_DIR_TASK,
+            "roleAssignmentId", roleAssignmentId,
+            "taskId", taskId
+        );
+        inputVariables.putValue("taskAttributes", taskAttributes);
+        inputVariables.putValue("taskType", PROCESS_CASE_WITHDRAWAL_DIR_TASK);
+        inputVariables.putValue("caseData", caseData);
+        return evaluateDmnTable(inputVariables);
+    }
+
+    private String getConfigurationValue(DmnDecisionTableResult results, String name) {
+        return results.getResultList().stream()
+            .filter(r -> name.equals(r.get("name")))
+            .map(r -> r.get("value").toString())
+            .findFirst()
+            .orElse(null);
+    }
+
+    private boolean canReconfigure(DmnDecisionTableResult results, String name) {
+        return results.getResultList().stream()
+            .filter(r -> name.equals(r.get("name")))
+            .map(r -> (Boolean) r.get("canReconfigure"))
+            .findFirst()
+            .orElse(false);
+    }
 }
