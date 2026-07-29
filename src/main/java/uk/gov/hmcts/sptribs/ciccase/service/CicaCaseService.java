@@ -1,11 +1,13 @@
 package uk.gov.hmcts.sptribs.ciccase.service;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.sptribs.common.repositories.CaseDataRepository;
 import uk.gov.hmcts.sptribs.common.repositories.model.CicaCaseEntity;
 import uk.gov.hmcts.sptribs.exception.CaseNotFoundException;
+import uk.gov.hmcts.sptribs.exception.InvalidPostcodeException;
 import uk.gov.hmcts.sptribs.exception.UnauthorisedCaseAccessException;
 import uk.gov.hmcts.sptribs.idam.CICUser;
 import uk.gov.hmcts.sptribs.idam.IdamService;
@@ -60,14 +62,34 @@ public class CicaCaseService {
     public CicaCaseEntity checkIfUserHasAccessWithPostcode(String ccdReference, String authorisation, String submittedPostcode) {
         try {
             CICUser user = idamService.retrieveUser(authorisation);
-            return caseDataRepository.findCase(ccdReference, user.getUserInfo().getSub(), submittedPostcode)
-                .orElseThrow(() -> new UnauthorisedCaseAccessException("Submitted postcode does not match the postcode held in case data"));
+            String userEmail = user.getUserInfo().getSub();
+
+            CicaCaseEntity cicaCaseEntity = caseDataRepository.findCase(ccdReference, userEmail)
+                .orElseThrow(() -> new UnauthorisedCaseAccessException("User is not authorised to access case: " + ccdReference));
+
+            String storedPostcode = "";
+            if (cicaCaseEntity.getData() != null) {
+                JsonNode addressNode = cicaCaseEntity.getData().get("cicCaseAddress");
+                if (addressNode != null && addressNode.has("PostCode")) {
+                    storedPostcode = addressNode.get("PostCode").asText();
+                }
+            }
+
+            if (!normalize(storedPostcode).equals(normalize(submittedPostcode))) {
+                throw new InvalidPostcodeException("Submitted postcode does not match the postcode held in case data");
+            }
+
+            return cicaCaseEntity;
         } catch (Exception e) {
-            if (e instanceof UnauthorisedCaseAccessException ucae) {
-                throw ucae;
+            if (e instanceof UnauthorisedCaseAccessException || e instanceof InvalidPostcodeException) {
+                throw e;
             }
             log.warn("Error checking case access and postcode for reference: {}", ccdReference, e);
             throw new UnauthorisedCaseAccessException("Error checking case access and postcode: " + e.getMessage());
         }
+    }
+
+    private String normalize(String postcode) {
+        return postcode != null ? postcode.replace(" ", "").toLowerCase() : "";
     }
 }

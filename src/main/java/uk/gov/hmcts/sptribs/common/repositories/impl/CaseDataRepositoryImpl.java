@@ -66,26 +66,6 @@ public class CaseDataRepositoryImpl implements CaseDataRepository {
             + "ORDER BY c.last_modified DESC "
             + "LIMIT 1";
 
-    private static final String SELECT_CASE_DATA_BY_CCD_REF_EMAIL_AND_POSTCODE =
-        "SELECT c.id, c.reference, c.state, c.data::text AS case_data, c.last_modified "
-            + "FROM ccd.case_data c "
-            + "WHERE c.case_type_id = :caseType "
-            + "AND c.jurisdiction = :jurisdiction "
-            + "AND c.reference = :ccdReference "
-            + "AND ( "
-            + "  c.data #>> '{cicCaseEmail}' = :userEmail "
-            + "  OR EXISTS ( "
-            + "    SELECT 1 "
-            + "    FROM jsonb_array_elements( "
-            + "      COALESCE(c.data->'SearchCriteria'->'SearchParties', '[]'::jsonb) "
-            + "    ) sp "
-            + "    WHERE sp->'value'->>'EmailAddress' = :userEmail "
-            + "  ) "
-            + ") "
-            + "AND c.data #>> '{cicCaseAddress,PostCode}' = :postcode "
-            + "ORDER BY c.last_modified DESC "
-            + "LIMIT 1";
-
     private static final String SELECT_LIST_OF_CASE_IDS_BY_STATE =
         "SELECT c.reference "
             + "FROM ccd.case_data c "
@@ -95,6 +75,7 @@ public class CaseDataRepositoryImpl implements CaseDataRepository {
         "SELECT c.reference "
             + "FROM ccd.case_data c "
             + "WHERE c.state NOT IN (:states) ";
+
 
     @Override
     public boolean checkCaseExists(String ccdReference) {
@@ -123,12 +104,6 @@ public class CaseDataRepositoryImpl implements CaseDataRepository {
     }
 
     @Override
-    public boolean checkIfUserHasAccessToCase(String ccdReference, String userEmail, String postcode) {
-        log.info("Checking if user has access to case and postcode for CCD reference: {}", ccdReference);
-        return findCase(ccdReference, userEmail, postcode).isPresent();
-    }
-
-    @Override
     public Optional<CicaCaseEntity> findCase(String ccdReference, String userEmail) {
         log.info("Checking case has correct email for CCD reference: {}", ccdReference);
 
@@ -141,28 +116,6 @@ public class CaseDataRepositoryImpl implements CaseDataRepository {
 
         List<CicaCaseEntity> results = namedParameterJdbcTemplate.query(
             SELECT_CASE_DATA_BY_CCD_REF_AND_EMAIL,
-            params,
-            (rs, rowNum) -> mapToCicaCaseEntity(rs)
-        );
-
-        return results.stream().findFirst();
-    }
-
-    @Override
-    public Optional<CicaCaseEntity> findCase(String ccdReference, String userEmail, String postcode) {
-        log.info("Checking case has correct email and postcode for CCD reference: {}", ccdReference);
-        log.info("Case postcode: {}", postcode);
-
-        var params = Map.of(
-            "ccdReference", Long.valueOf(ccdReference),
-            "caseType", CASE_TYPE,
-            "jurisdiction", JURISDICTION,
-            "userEmail", userEmail,
-            "postcode", postcode
-        );
-
-        List<CicaCaseEntity> results = namedParameterJdbcTemplate.query(
-            SELECT_CASE_DATA_BY_CCD_REF_EMAIL_AND_POSTCODE,
             params,
             (rs, rowNum) -> mapToCicaCaseEntity(rs)
         );
