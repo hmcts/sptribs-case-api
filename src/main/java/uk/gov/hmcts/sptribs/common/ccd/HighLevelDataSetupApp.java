@@ -7,7 +7,6 @@ import uk.gov.hmcts.befta.dse.ccd.CcdRoleConfig;
 import uk.gov.hmcts.befta.dse.ccd.DataLoaderToDefinitionStore;
 import uk.gov.hmcts.befta.exception.ImportException;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
