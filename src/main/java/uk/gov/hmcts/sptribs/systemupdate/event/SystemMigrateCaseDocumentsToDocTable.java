@@ -47,8 +47,14 @@ public class SystemMigrateCaseDocumentsToDocTable implements CCDConfig<CaseData,
 
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(CaseDetails<CaseData, State> caseDetails,
                                                                        CaseDetails<CaseData, State> beforeDetails) {
+
+
+
         CaseData caseData = caseDetails.getData();
         Long reference = caseDetails.getId();
+
+        long startTime = System.currentTimeMillis();
+        log.info("{} task started for reference={}", SYSTEM_MIGRATE_CASE_DOCUMENTS_TO_TABLE, reference);
 
         Map<CaseDocumentType, List<CaseworkerCICDocument>> documentTypeDocumentMap = prepareDocTypeAndDocMap(caseData);
 
@@ -63,6 +69,13 @@ public class SystemMigrateCaseDocumentsToDocTable implements CCDConfig<CaseData,
         if (!failedDocs.isEmpty()) {
             log.error("Following documents failed to save: {}", failedDocs.keySet());
         }
+
+        long duration = System.currentTimeMillis() - startTime;
+
+        log.info("{} task completed for reference={} in {} ms",
+            SYSTEM_MIGRATE_CASE_DOCUMENTS_TO_TABLE,
+            reference,
+            duration);
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
