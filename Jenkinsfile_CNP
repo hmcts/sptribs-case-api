@@ -281,7 +281,6 @@ withPipeline(type, product, component) {
   }
 
   afterSuccess('functionalTest:aat') {
-      env.IDAM_API_URL_BASE = "https://idam-web-public.platform.hmcts.net"
       env.CASE_API_URL="http://sptribs-case-api-aat.service.core-compute-aat.internal"
       echo "env.CASE_API_URL is AAT URL"
       env.CCD_DEF_NAME="aat"
@@ -424,10 +423,24 @@ def uploadBpmnDiagram() {
 }
 
 def runAatHighLevelDataSetup() {
-  dir("${WORKSPACE}") {
-    sh 'TEST_DATA_LOAD_SKIP_PERIOD=0 ./gradlew --rerun-tasks --no-daemon --init-script init.gradle highLevelDataSetup --args=aat'
-    echo 'High level data setup completed for AAT'
+  echo env.S2S_URL_BASE
+  echo env.CCD_API_GATEWAY_S2S_ID
+  echo env.CCD_API_GATEWAY_OAUTH2_CLIENT_ID
+  echo env.CCD_API_GATEWAY_OAUTH2_REDIRECT_URL
+  echo env.DEFINITION_STORE_URL_BASE
+  withEnv([
+    'ENVIRONMENT=aat',
+    'TEST_DATA_LOAD_SKIP_PERIOD=0',
+    'IDAM_API_URL_BASE=https://idam-web-public.aat.platform.hmcts.net',
+    "S2S_URL_BASE=${env.S2S_URL_BASE}",
+    "CCD_API_GATEWAY_S2S_ID=${env.CCD_API_GATEWAY_S2S_ID}",
+    "CCD_API_GATEWAY_OAUTH2_CLIENT_ID=${env.CCD_API_GATEWAY_OAUTH2_CLIENT_ID}",
+    "CCD_API_GATEWAY_OAUTH2_REDIRECT_URL=${env.CCD_API_GATEWAY_OAUTH2_CLIENT_SECRET}",
+    "DEFINITION_STORE_URL_BASE=${env.DEFINITION_STORE_URL_BASE}"
+  ]) {
+    sh './gradlew --rerun-tasks --no-daemon --init-script init.gradle highLevelDataSetup --args=aat'
   }
+  echo 'High level data setup completed for AAT'
 }
 
 def setupRoleAssignments() {
