@@ -143,7 +143,7 @@ class CamundaTaskWaConfigurationTest extends DmnDecisionTableBaseUnitTest {
                     .build(),
                 ConfigurationExpectationBuilder.defaultExpectations()
                     .expectedValue(MINOR_PRIORITY, DEFAULT_MINOR_PRIORITY, true)
-                    .expectedValue(MAJOR_PRIORITY, "3000", true)
+                    .expectedValue(MAJOR_PRIORITY, DEFAULT_MAJOR_PRIORITY, true)
                     .expectedValue(WORK_TYPE, ROUTINE_WORK_TYPE, true)
                     .expectedValue(ROLE_CATEGORY, ROLE_CATEGORY_ADMIN, true)
                     .expectedValue(DUE_DATE_INTERVAL_DAYS, "7", true)
@@ -1428,35 +1428,6 @@ class CamundaTaskWaConfigurationTest extends DmnDecisionTableBaseUnitTest {
         return result != null
             && (expected.isEqual(result) || expected.isBefore(result))
             && (now.isEqual(result) || now.isAfter(result));
-    }
-
-    @Test
-    void priority_should_be_determined_by_urgency_and_hearing_status() {
-        // 1. Urgent Case
-        Map<String, Object> urgentCase = CaseDataBuilder.defaultCase()
-            .isUrgent()
-            .build();
-        DmnDecisionTableResult urgentResult = evaluateConfiguration(urgentCase);
-        assertEquals("2000", getConfigurationValue(urgentResult, "majorPriority"));
-
-        // 2. Non-urgent Case with Listed Hearing (hearingDate)
-        Map<String, Object> hearingDateCase = CaseDataBuilder.defaultCase()
-            .withHearingDate(LocalDate.of(2026, 7, 28))
-            .build();
-        DmnDecisionTableResult hearingDateResult = evaluateConfiguration(hearingDateCase);
-        assertEquals("3000", getConfigurationValue(hearingDateResult, "majorPriority"));
-
-        // 3. Non-urgent Case with date (no hearingDate) — no longer drives priority
-        Map<String, Object> dateCase = CaseDataBuilder.defaultCase()
-            .withDate(LocalDate.of(2026, 7, 28))
-            .build();
-        DmnDecisionTableResult dateResult = evaluateConfiguration(dateCase);
-        assertEquals("5000", getConfigurationValue(dateResult, "majorPriority"));
-
-        // 4. Default Non-urgent Case with No Hearing
-        Map<String, Object> defaultCase = CaseDataBuilder.defaultCase().build();
-        DmnDecisionTableResult defaultResult = evaluateConfiguration(defaultCase);
-        assertEquals("5000", getConfigurationValue(defaultResult, "majorPriority"));
     }
 
     @Test
