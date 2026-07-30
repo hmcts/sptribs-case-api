@@ -12,6 +12,7 @@ import uk.gov.hmcts.sptribs.caseworker.model.Listing;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.HearingState;
 
+import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
@@ -126,8 +127,18 @@ public class HearingService {
     }
 
     private void updateHearingDate(CaseData caseData) {
-        if (caseData.getNextListedHearing() != null && caseData.getNextListedHearing().getDate() != null) {
-            caseData.setHearingDate(caseData.getNextListedHearing().getDate());
+        if (!CollectionUtils.isEmpty(caseData.getHearingList())) {
+            LocalDate earliestDate = null;
+            for (ListValue<Listing> listing : caseData.getHearingList()) {
+                if (listing.getValue() != null
+                    && listing.getValue().getHearingStatus() == HearingState.Listed
+                    && listing.getValue().getDate() != null) {
+                    if (earliestDate == null || listing.getValue().getDate().isBefore(earliestDate)) {
+                        earliestDate = listing.getValue().getDate();
+                    }
+                }
+            }
+            caseData.setHearingDate(earliestDate);
         } else {
             caseData.setHearingDate(null);
         }
