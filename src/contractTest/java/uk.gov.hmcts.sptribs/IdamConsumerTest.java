@@ -27,7 +27,7 @@ import static org.springframework.http.HttpStatus.OK;
 @PactDirectory("pacts")
 class IdamConsumerTest {
 
-    private static final String IDAM_USER_DETAILS = "/details";
+    private static final String IDAM_USER_INFO = "/o/userinfo";
 
     @Pact(provider = "idam_user_details", consumer = "sptribs-case-api")
     V4Pact executeIdamUserDetailApi(PactDslWithProvider builder) {
@@ -36,7 +36,7 @@ class IdamConsumerTest {
         return builder
             .given("a user exists")
             .uponReceiving("Provider receives a token request and send user details to the API")
-            .path(IDAM_USER_DETAILS)
+            .path(IDAM_USER_INFO)
             .method(GET.toString())
             .willRespondWith()
             .status(OK.value())
@@ -53,7 +53,7 @@ class IdamConsumerTest {
             .contentType(MediaType.APPLICATION_FORM_URLENCODED_VALUE)
             .log().all(true)
             .when()
-            .get(mockServer.getUrl() + IDAM_USER_DETAILS)
+            .get(mockServer.getUrl() + IDAM_USER_INFO)
             .then()
             .statusCode(200)
             .and()

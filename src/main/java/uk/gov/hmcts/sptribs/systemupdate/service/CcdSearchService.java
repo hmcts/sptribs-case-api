@@ -11,9 +11,9 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.ccd.client.CoreCaseDataApi;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.client.model.SearchResult;
-import uk.gov.hmcts.reform.idam.client.models.User;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.common.ccd.CcdCaseType;
+import uk.gov.hmcts.sptribs.idam.CICUser;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -39,7 +39,7 @@ public class CcdSearchService {
     private CoreCaseDataApi coreCaseDataApi;
 
     public List<CaseDetails> searchForAllCasesWithQuery(
-        final BoolQueryBuilder query, User user, String serviceAuth, final State... states) {
+        final BoolQueryBuilder query, CICUser user, String serviceAuth, final State... states) {
 
         final List<CaseDetails> allCaseDetails = new ArrayList<>();
         int from = 0;
@@ -63,7 +63,7 @@ public class CcdSearchService {
         return allCaseDetails;
     }
 
-    public List<CaseDetails> searchForCasesWithVersionLessThan(int latestVersion, User user, String serviceAuth) {
+    public List<CaseDetails> searchForCasesWithVersionLessThan(int latestVersion, CICUser user, String serviceAuth) {
 
         final SearchSourceBuilder sourceBuilder = SearchSourceBuilder
             .searchSource()
@@ -85,7 +85,7 @@ public class CcdSearchService {
 
     public List<CaseDetails> searchForCases(
         final List<String> caseReferences,
-        final User user,
+        final CICUser user,
         final String serviceAuth) {
 
         final QueryBuilder bulkCaseDetailsExist = termsQuery("reference", caseReferences);
@@ -109,7 +109,7 @@ public class CcdSearchService {
     private SearchResult searchForCasesWithQuery(final int from,
                                                  final int size,
                                                  final BoolQueryBuilder query,
-                                                 final User user,
+                                                 final CICUser user,
                                                  final String serviceAuth) {
 
         final SearchSourceBuilder sourceBuilder = SearchSourceBuilder
