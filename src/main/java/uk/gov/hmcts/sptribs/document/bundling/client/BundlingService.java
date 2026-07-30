@@ -194,8 +194,6 @@ public class BundlingService {
     }
 
     private Bundle buildBundle(LinkedHashMap<String, Object> objectLinkedHashMap) {
-
-
         return Bundle.builder()
             .stitchStatus(NEW)
             .description(MapUtils.getString(objectLinkedHashMap, DESCRIPTION, ""))
@@ -218,6 +216,7 @@ public class BundlingService {
         if (StringUtils.isEmpty(stitchingFailureMessage)) {
             return false;
         }
+        log.error(stitchingFailureMessage);
         return true;
     }
 
