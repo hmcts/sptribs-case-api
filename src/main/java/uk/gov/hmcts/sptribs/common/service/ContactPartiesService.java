@@ -10,7 +10,6 @@ import uk.gov.hmcts.sptribs.common.repositories.exception.document.DocumentLooku
 import uk.gov.hmcts.sptribs.document.DocumentUtil;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.document.service.CorrespondenceDocumentService;
-import uk.gov.hmcts.sptribs.document.service.DocumentsService;
 
 import java.util.List;
 
@@ -19,7 +18,6 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ContactPartiesService {
 
-    private final DocumentsService documentsService;
     private final CorrespondenceDocumentService correspondenceDocumentService;
 
     public void linkCorrespondenceIdsToDocuments(CaseData caseData,
@@ -35,8 +33,6 @@ public class ContactPartiesService {
                 .map(DocumentUtil::getDocumentId)
                 .map(Long::valueOf)
                 .toList();
-//            List<Long> documentIds =
-//                documentsService.getDocumentsViaSentByContactParties(caseData, uploadedDocuments);
 
             for (String correspondenceId : correspondenceIds) {
                 try {
