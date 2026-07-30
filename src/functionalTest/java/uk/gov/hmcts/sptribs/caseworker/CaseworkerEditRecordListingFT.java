@@ -123,4 +123,16 @@ public class CaseworkerEditRecordListingFT extends FunctionalTestSuite {
             .isString()
             .contains("# Update listing notification failed \n## Please resend the notification");
     }
+
+    @Test
+    public void shouldReturnHearingDateAfterEditInAboutToSubmit() throws Exception {
+        final Map<String, Object> caseData = caseData(CALLBACK_REQUEST_HAPPY);
+
+        final Response response = triggerCallback(caseData, CASEWORKER_EDIT_RECORD_LISTING, ABOUT_TO_SUBMIT_URL);
+
+        assertThat(response.getStatusCode()).isEqualTo(OK.value());
+        assertThatJson(response.asString())
+            .inPath("$.data.hearingDate")
+            .isNull();
+    }
 }

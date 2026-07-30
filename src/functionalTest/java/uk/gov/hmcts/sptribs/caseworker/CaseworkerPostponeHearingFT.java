@@ -90,4 +90,16 @@ public class CaseworkerPostponeHearingFT extends FunctionalTestSuite {
 
                 ## A notification has been sent to: Subject""");
     }
+
+    @Test
+    public void shouldReturnHearingDateNullAfterPostponeInAboutToSubmit() throws Exception {
+        final Map<String, Object> caseData = caseData(CALLBACK_REQUEST);
+
+        final Response response = triggerCallback(caseData, CASEWORKER_POSTPONE_HEARING, ABOUT_TO_SUBMIT_URL);
+
+        assertThat(response.getStatusCode()).isEqualTo(OK.value());
+        assertThatJson(response.asString())
+            .inPath("$.data.hearingDate")
+            .isNull();
+    }
 }

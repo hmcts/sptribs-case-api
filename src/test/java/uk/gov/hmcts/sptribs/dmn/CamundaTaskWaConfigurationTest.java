@@ -1484,6 +1484,19 @@ class CamundaTaskWaConfigurationTest extends DmnDecisionTableBaseUnitTest {
         assertTrue(canReconfigure(result3, "nextHearingDate"));
     }
 
+    @Test
+    void urgent_case_with_hearing_date_should_use_urgent_priority() {
+        Map<String, Object> caseData = CaseDataBuilder.defaultCase()
+            .isUrgent()
+            .withHearingDate(LocalDate.of(2026, 7, 28))
+            .build();
+
+        DmnDecisionTableResult result = evaluateConfiguration(caseData);
+
+        assertEquals("2000", getConfigurationValue(result, "majorPriority"));
+        assertEquals("2026-07-28", getConfigurationValue(result, "nextHearingDate"));
+    }
+
     private DmnDecisionTableResult evaluateConfiguration(Map<String, Object> caseData) {
         VariableMap inputVariables = new VariableMapImpl();
         Map<String, String> taskAttributes = Map.of(

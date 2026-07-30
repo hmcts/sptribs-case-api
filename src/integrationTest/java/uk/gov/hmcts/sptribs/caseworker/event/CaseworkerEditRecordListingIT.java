@@ -14,9 +14,11 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.hmcts.ccd.sdk.type.DynamicList;
 import uk.gov.hmcts.ccd.sdk.type.DynamicListElement;
+import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.idam.client.models.UserInfo;
 import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderContentCIC;
+import uk.gov.hmcts.sptribs.caseworker.model.Listing;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.common.config.WebMvcConfig;
@@ -28,6 +30,8 @@ import uk.gov.hmcts.sptribs.judicialrefdata.model.UserProfileRefreshResponse;
 import uk.gov.hmcts.sptribs.notification.dispatcher.ListingUpdatedNotification;
 import uk.gov.hmcts.sptribs.testutil.IdamWireMock;
 
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -69,6 +73,7 @@ import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_SERVICE_AUTH_TOKE
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.callbackRequest;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.caseData;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getHearingList;
+import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getRecordListing;
 import static uk.gov.hmcts.sptribs.testutil.TestResourceUtil.expectedResponse;
 
 @ExtendWith(SpringExtension.class)
@@ -331,5 +336,44 @@ public class CaseworkerEditRecordListingIT {
             .build();
 
         return List.of(userResponse1, userResponse2);
+    }
+
+    @Test
+    void shouldUpdateHearingDateWhenListingEdited() throws Exception {
+        final Listing hearing = getRecordListing(); // Listed, date 2023-04-21
+        final List<ListValue<Listing>> hearingList = new ArrayList<>();
+        hearingList.add(new ListValue<>("1", hearing));
+
+        final CaseData caseData = CaseData.builder()
+            .cicCase(CicCase.builder()
+                .fullName("Test Name")
+                .hearingList(DynamicList.builder()
+                    .value(DynamicListElement.builder()
+                        .label("1 - Final - 21 Apr 2023 10:00")
+                        .build())
+                    .build())
+                .build())
+            .hearingList(hearingList)
+            .build();
+
+        final Listing updatedListing = getRecordListing();
+        updatedListing.setDate(LocalDate.of(2023, 5, 25));
+        caseData.setListing(updatedListing);
+
+        String response = mockMvc.perform(post(ABOUT_TO_SUBMIT_URL)
+                .contentType(APPLICATION_JSON)
+                .header(SERVICE_AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
+                .header(AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
+                .content(objectMapper.writeValueAsString(
+                    callbackRequest(caseData, CASEWORKER_EDIT_RECORD_LISTING)))
+                .accept(APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andReturn()
+            .getResponse()
+            .getContentAsString();
+
+        assertThatJson(response)
+            .inPath("$.data.hearingDate")
+            .isEqualTo("2023-05-25");
     }
 }

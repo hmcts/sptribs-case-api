@@ -120,4 +120,16 @@ public class CaseworkerCancelHearingFT extends FunctionalTestSuite {
             .isArray()
             .contains("One recipient must be selected.");
     }
+
+    @Test
+    public void shouldReturnHearingDateNullAfterCancelInAboutToSubmit() throws Exception {
+        final Map<String, Object> caseData = caseData(REQUEST_ABOUT_TO_SUBMIT);
+
+        final Response response = triggerCallback(caseData, CASEWORKER_CANCEL_HEARING, ABOUT_TO_SUBMIT_URL);
+
+        assertThat(response.getStatusCode()).isEqualTo(OK.value());
+        assertThatJson(response.asString())
+            .inPath("$.data.hearingDate")
+            .isNull();
+    }
 }

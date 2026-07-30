@@ -14,12 +14,16 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.hmcts.ccd.sdk.type.DynamicList;
 import uk.gov.hmcts.ccd.sdk.type.DynamicListElement;
+import uk.gov.hmcts.ccd.sdk.type.ListValue;
+import uk.gov.hmcts.sptribs.caseworker.model.Listing;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.common.config.WebMvcConfig;
 import uk.gov.hmcts.sptribs.notification.NotificationServiceCIC;
 import uk.gov.hmcts.sptribs.testutil.IdamWireMock;
 
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -52,6 +56,7 @@ import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID_HYPHENATE
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.callbackRequest;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.caseData;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getHearingList;
+import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getRecordListing;
 import static uk.gov.hmcts.sptribs.testutil.TestResourceUtil.expectedResponse;
 
 @ExtendWith(SpringExtension.class)
@@ -235,5 +240,47 @@ public class CaseworkerCancelHearingIT {
             .contains("# Cancel hearing notification failed \n## Please resend the notification");
 
         verifyNoInteractions(notificationServiceCIC);
+    }
+
+    @Test
+    void shouldKeepEarliestHearingDateWhenOneOfMultipleIsCancelled() throws Exception {
+        final Listing hearing1 = getRecordListing(); // Listed, 2023-04-21
+        final Listing hearing2 = getRecordListing();
+        hearing2.setDate(LocalDate.of(2023, 6, 15));
+
+        final List<ListValue<Listing>> hearingList = new ArrayList<>();
+        hearingList.add(new ListValue<>("1", hearing1));
+        hearingList.add(new ListValue<>("2", hearing2));
+
+        final CaseData caseData = caseData();
+        caseData.setHearingList(hearingList);
+        caseData.setListing(new Listing());
+        caseData.getCicCase().setHearingList(
+            DynamicList.builder()
+                .value(DynamicListElement.builder()
+                    .label("2 - Final - 15 Jun 2023 10:00")
+                    .build())
+                .listItems(List.of(
+                    DynamicListElement.builder().label("1 - Final - 21 Apr 2023 10:00").build(),
+                    DynamicListElement.builder().label("2 - Final - 15 Jun 2023 10:00").build()
+                ))
+                .build()
+        );
+
+        String response = mockMvc.perform(post(ABOUT_TO_SUBMIT_URL)
+                .contentType(APPLICATION_JSON)
+                .header(SERVICE_AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
+                .header(AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
+                .content(objectMapper.writeValueAsString(
+                    callbackRequest(caseData, CASEWORKER_CANCEL_HEARING)))
+                .accept(APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andReturn()
+            .getResponse()
+            .getContentAsString();
+
+        assertThatJson(response)
+            .inPath("$.data.hearingDate")
+            .isEqualTo("2023-04-21");
     }
 }
