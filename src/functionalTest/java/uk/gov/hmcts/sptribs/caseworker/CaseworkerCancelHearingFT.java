@@ -130,6 +130,6 @@ public class CaseworkerCancelHearingFT extends FunctionalTestSuite {
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
         assertThatJson(response.asString())
             .inPath("$.data.hearingDate")
-            .isNull();
+            .isAbsent();
     }
 }
