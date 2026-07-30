@@ -30,10 +30,20 @@ public class ListingUpdatedNotification extends PartiesNotification {
         notificationHelper().setRecordingTemplateVars(templateVarsSubject, listing);
 
         if (cicCase.getContactPreferenceType() == ContactPreferenceType.EMAIL) {
-            return emailOnly(cicCase.getEmail(), templateVarsSubject, TemplateName.HEARING_UPDATED_EMAIL, saveToCicCase(CicCase::setSubjectNotifyList));
+            return emailOnly(
+                    cicCase.getEmail(),
+                    templateVarsSubject,
+                    TemplateName.HEARING_UPDATED_EMAIL,
+                    saveToCicCase(CicCase::setSubjectNotifyList)
+            );
         } else {
             notificationHelper().addAddressTemplateVars(cicCase.getAddress(), templateVarsSubject);
-            return new LetterNotification(cicCase.getAddress(), templateVarsSubject, TemplateName.HEARING_UPDATED_POST, saveToCicCase(CicCase::setSubjectLetterNotifyList));
+            return new LetterNotification(
+                    cicCase.getAddress(),
+                    templateVarsSubject,
+                    TemplateName.HEARING_UPDATED_POST,
+                    saveToCicCase(CicCase::setSubjectLetterNotifyList)
+            );
         }
     }
 
@@ -46,10 +56,20 @@ public class ListingUpdatedNotification extends PartiesNotification {
         notificationHelper().setRecordingTemplateVars(templateVarsRepresentative, listing);
 
         if (cicCase.getRepresentativeContactDetailsPreference() == ContactPreferenceType.EMAIL) {
-            return emailOnly(cicCase.getRepresentativeEmailAddress(), templateVarsRepresentative, TemplateName.HEARING_UPDATED_EMAIL, saveToCicCase(CicCase::setRepNotificationResponse));
+            return emailOnly(
+                    cicCase.getRepresentativeEmailAddress(),
+                    templateVarsRepresentative,
+                    TemplateName.HEARING_UPDATED_EMAIL,
+                    saveToCicCase(CicCase::setRepNotificationResponse)
+            );
         } else {
             notificationHelper().addAddressTemplateVars(cicCase.getRepresentativeAddress(), templateVarsRepresentative);
-            return new LetterNotification(cicCase.getRepresentativeAddress(), templateVarsRepresentative, TemplateName.HEARING_UPDATED_POST, saveToCicCase(CicCase::setRepLetterNotificationResponse));
+            return new LetterNotification(
+                    cicCase.getRepresentativeAddress(),
+                    templateVarsRepresentative,
+                    TemplateName.HEARING_UPDATED_POST,
+                    saveToCicCase(CicCase::setRepLetterNotificationResponse)
+            );
         }
     }
 
@@ -61,6 +81,11 @@ public class ListingUpdatedNotification extends PartiesNotification {
         Listing listing = caseData.getListing();
         notificationHelper().setRecordingTemplateVars(templateVarsRespondent, listing);
 
-        return emailOnly(cicCase.getRespondentEmail(), templateVarsRespondent, TemplateName.HEARING_UPDATED_EMAIL, saveToCicCase(CicCase::setResNotificationResponse));
+        return emailOnly(
+                cicCase.getRespondentEmail(),
+                templateVarsRespondent,
+                TemplateName.HEARING_UPDATED_EMAIL,
+                saveToCicCase(CicCase::setResNotificationResponse)
+        );
     }
 }

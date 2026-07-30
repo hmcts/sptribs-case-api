@@ -31,7 +31,12 @@ public class AnonymityAppliedNotification extends PartiesNotification {
     protected PartyNotification buildTribunalNotification(CaseData caseData, String caseNumber) {
         Map<String, Object> templateVars = buildTemplateVars(caseData, caseNumber);
 
-        return PartiesNotification.emailOnly(NotificationConstants.ANONYMITY_RECIPIENT_EMAIL, templateVars, TemplateName.ANONYMITY_APPLIED_EMAIL, saveToCicCase(CicCase::setTribunalNotificationResponse));
+        return PartiesNotification.emailOnly(
+                NotificationConstants.ANONYMITY_RECIPIENT_EMAIL,
+                templateVars,
+                TemplateName.ANONYMITY_APPLIED_EMAIL,
+                saveToCicCase(CicCase::setTribunalNotificationResponse)
+        );
     }
 
     private Map<String, Object> buildTemplateVars(CaseData caseData, String caseNumber) {

@@ -13,7 +13,6 @@ import uk.gov.hmcts.sptribs.document.service.CorrespondenceDocumentService;
 import uk.gov.hmcts.sptribs.document.service.DocumentsService;
 
 import java.util.List;
-import java.util.Map;
 
 @Service
 @Slf4j
@@ -27,9 +26,15 @@ public class ContactPartiesService {
                                                  List<String> correspondenceIds) {
         try {
             List<CaseworkerCICDocument> sentDocuments =
-                DocumentListUtil.getSelectedDocumentsFromDynamicList(caseData, caseData.getContactPartiesDocuments().getDocumentList());
+                DocumentListUtil.getSelectedDocumentsFromDynamicList(caseData, caseData
+                    .getContactPartiesDocuments()
+                    .getDocumentList());
 
-            List<Long> documentIds = sentDocuments.stream().map(DocumentUtil::getDocumentId).map(Long::valueOf).toList();
+            List<Long> documentIds = sentDocuments
+                .stream()
+                .map(DocumentUtil::getDocumentId)
+                .map(Long::valueOf)
+                .toList();
 //            List<Long> documentIds =
 //                documentsService.getDocumentsViaSentByContactParties(caseData, uploadedDocuments);
 

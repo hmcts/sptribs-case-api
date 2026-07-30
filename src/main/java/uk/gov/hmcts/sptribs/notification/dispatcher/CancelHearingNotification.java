@@ -32,19 +32,19 @@ public class CancelHearingNotification extends PartiesNotification {
 
         if (cicCase.getContactPreferenceType() == ContactPreferenceType.EMAIL) {
             return new EmailNotification(
-                    cicCase.getEmail(),
-                    subjectTemplateVars,
-                    HEARING_CANCELLED_EMAIL,
-                    new HashMap<>(),
-                    new ArrayList<>(),
-                    saveToCicCase(CicCase::setSubjectNotifyList)
+                cicCase.getEmail(),
+                subjectTemplateVars,
+                HEARING_CANCELLED_EMAIL,
+                new HashMap<>(),
+                new ArrayList<>(),
+                saveToCicCase(CicCase::setSubjectNotifyList)
             );
         } else {
             return new LetterNotification(
-                    cicCase.getAddress(),
-                    subjectTemplateVars,
-                    HEARING_CANCELLED_POST,
-                    saveToCicCase(CicCase::setSubjectLetterNotifyList)
+                cicCase.getAddress(),
+                subjectTemplateVars,
+                HEARING_CANCELLED_POST,
+                saveToCicCase(CicCase::setSubjectLetterNotifyList)
             );
         }
     }
@@ -57,19 +57,19 @@ public class CancelHearingNotification extends PartiesNotification {
 
         if (cicCase.getApplicantContactDetailsPreference() == ContactPreferenceType.EMAIL) {
             return new EmailNotification(
-                    cicCase.getApplicantEmailAddress(),
-                    applicantCommonVars,
-                    HEARING_CANCELLED_EMAIL,
-                    new HashMap<>(),
-                    new ArrayList<>(),
-                    saveToCicCase(CicCase::setAppNotificationResponse)
+                cicCase.getApplicantEmailAddress(),
+                applicantCommonVars,
+                HEARING_CANCELLED_EMAIL,
+                new HashMap<>(),
+                new ArrayList<>(),
+                saveToCicCase(CicCase::setAppNotificationResponse)
             );
         } else {
             return new LetterNotification(
-                    cicCase.getApplicantAddress(),
-                    applicantCommonVars,
-                    HEARING_CANCELLED_POST,
-                    saveToCicCase(CicCase::setAppLetterNotificationResponse)
+                cicCase.getApplicantAddress(),
+                applicantCommonVars,
+                HEARING_CANCELLED_POST,
+                saveToCicCase(CicCase::setAppLetterNotificationResponse)
             );
         }
     }
@@ -82,19 +82,19 @@ public class CancelHearingNotification extends PartiesNotification {
 
         if (cicCase.getRepresentativeContactDetailsPreference() == ContactPreferenceType.EMAIL) {
             return new EmailNotification(
-                    cicCase.getRepresentativeEmailAddress(),
-                    repTemplateVars,
-                    HEARING_CANCELLED_EMAIL,
-                    new HashMap<>(),
-                    new ArrayList<>(),
-                    saveToCicCase(CicCase::setRepNotificationResponse)
+                cicCase.getRepresentativeEmailAddress(),
+                repTemplateVars,
+                HEARING_CANCELLED_EMAIL,
+                new HashMap<>(),
+                new ArrayList<>(),
+                saveToCicCase(CicCase::setRepNotificationResponse)
             );
         } else {
             return new LetterNotification(
-                    cicCase.getRepresentativeAddress(),
-                    repTemplateVars,
-                    HEARING_CANCELLED_POST,
-                    saveToCicCase(CicCase::setRepLetterNotificationResponse)
+                cicCase.getRepresentativeAddress(),
+                repTemplateVars,
+                HEARING_CANCELLED_POST,
+                saveToCicCase(CicCase::setRepLetterNotificationResponse)
             );
         }
     }
@@ -106,6 +106,11 @@ public class CancelHearingNotification extends PartiesNotification {
             notificationHelper().getRespondentCommonVars(caseNumber, caseData);
         notificationHelper().addHearingPostponedTemplateVars(cicCase, respondentTemplateVars);
 
-        return PartiesNotification.emailOnly(cicCase.getRespondentEmail(), respondentTemplateVars, HEARING_CANCELLED_EMAIL, saveToCicCase(CicCase::setResNotificationResponse));
+        return emailOnly(
+            cicCase.getRespondentEmail(),
+            respondentTemplateVars,
+            HEARING_CANCELLED_EMAIL,
+            saveToCicCase(CicCase::setResNotificationResponse)
+        );
     }
 }

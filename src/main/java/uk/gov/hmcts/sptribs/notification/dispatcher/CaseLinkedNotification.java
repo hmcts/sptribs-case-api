@@ -26,9 +26,19 @@ public class CaseLinkedNotification extends PartiesNotification {
         Map<String, Object> templateVars = notificationHelper().getSubjectCommonVars(caseNumber, caseData);
 
         if (cicCase.getContactPreferenceType() == ContactPreferenceType.EMAIL) {
-            return PartiesNotification.emailOnly(cicCase.getEmail(), templateVars, TemplateName.CASE_LINKED_EMAIL, saveToCicCase(CicCase::setSubjectNotifyList));
+            return emailOnly(
+                    cicCase.getEmail(),
+                    templateVars,
+                    TemplateName.CASE_LINKED_EMAIL,
+                    saveToCicCase(CicCase::setSubjectNotifyList)
+            );
         } else {
-            return new LetterNotification(cicCase.getAddress(), templateVars, TemplateName.CASE_LINKED_POST, saveToCicCase(CicCase::setSubjectLetterNotifyList));
+            return new LetterNotification(
+                    cicCase.getAddress(),
+                    templateVars,
+                    TemplateName.CASE_LINKED_POST,
+                    saveToCicCase(CicCase::setSubjectLetterNotifyList)
+            );
         }
     }
 
@@ -38,9 +48,19 @@ public class CaseLinkedNotification extends PartiesNotification {
         Map<String, Object> applicantCommonVars = notificationHelper().getApplicantCommonVars(caseNumber, caseData);
 
         if (cicCase.getApplicantContactDetailsPreference() == ContactPreferenceType.EMAIL) {
-            return PartiesNotification.emailOnly(cicCase.getApplicantEmailAddress(), applicantCommonVars, TemplateName.CASE_LINKED_EMAIL, saveToCicCase(CicCase::setAppNotificationResponse));
+            return emailOnly(
+                    cicCase.getApplicantEmailAddress(),
+                    applicantCommonVars,
+                    TemplateName.CASE_LINKED_EMAIL,
+                    saveToCicCase(CicCase::setAppNotificationResponse)
+            );
         } else {
-            return new LetterNotification(cicCase.getApplicantAddress(), applicantCommonVars, TemplateName.CASE_LINKED_POST, saveToCicCase(CicCase::setAppLetterNotificationResponse));
+            return new LetterNotification(
+                    cicCase.getApplicantAddress(),
+                    applicantCommonVars,
+                    TemplateName.CASE_LINKED_POST,
+                    saveToCicCase(CicCase::setAppLetterNotificationResponse)
+            );
         }
     }
 
@@ -50,9 +70,19 @@ public class CaseLinkedNotification extends PartiesNotification {
         Map<String, Object> representativeCommonVars = notificationHelper().getRepresentativeCommonVars(caseNumber, caseData);
 
         if (cicCase.getRepresentativeContactDetailsPreference() == ContactPreferenceType.EMAIL) {
-            return PartiesNotification.emailOnly(cicCase.getRepresentativeEmailAddress(), representativeCommonVars, TemplateName.CASE_LINKED_EMAIL, saveToCicCase(CicCase::setRepNotificationResponse));
+            return emailOnly(
+                    cicCase.getRepresentativeEmailAddress(),
+                    representativeCommonVars,
+                    TemplateName.CASE_LINKED_EMAIL,
+                    saveToCicCase(CicCase::setRepNotificationResponse)
+            );
         } else {
-            return new LetterNotification(cicCase.getRepresentativeAddress(), representativeCommonVars, TemplateName.CASE_LINKED_POST, saveToCicCase(CicCase::setRepLetterNotificationResponse));
+            return new LetterNotification(
+                    cicCase.getRepresentativeAddress(),
+                    representativeCommonVars,
+                    TemplateName.CASE_LINKED_POST,
+                    saveToCicCase(CicCase::setRepLetterNotificationResponse)
+            );
         }
     }
 }

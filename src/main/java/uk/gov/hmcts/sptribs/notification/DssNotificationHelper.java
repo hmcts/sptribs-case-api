@@ -20,6 +20,10 @@ import static uk.gov.hmcts.sptribs.common.ccd.CcdCaseType.CIC;
 @Component
 public class DssNotificationHelper {
 
+    private DssNotificationHelper() {
+        //Hide constructor
+    }
+
     public static Map<String, Object> getSubjectCommonVars(String caseNumber, CaseData caseData) {
         final DssCaseData dssCaseData = caseData.getDssCaseData();
         Map<String, Object> templateVars = commonTemplateVars(caseNumber, dssCaseData);

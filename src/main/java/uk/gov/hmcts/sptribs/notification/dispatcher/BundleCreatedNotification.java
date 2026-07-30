@@ -30,7 +30,8 @@ public class BundleCreatedNotification extends PartiesNotification {
         templateVarsApplicant.put(CommonConstants.BUNDLE_CREATED_EMAIL_TEXT,
             EmailBundleCreatedResponses.REPRESENTATIVE_APPLICANT_RESPONSE.getEmailResponse());
 
-        return PartiesNotification.emailOnly(cicCase.getApplicantEmailAddress(), templateVarsApplicant, TemplateName.BUNDLE_CREATED_EMAIL, saveToCicCase(CicCase::setAppNotificationResponse));
+        return PartiesNotification.emailOnly(cicCase.getApplicantEmailAddress(), templateVarsApplicant, TemplateName.BUNDLE_CREATED_EMAIL,
+            saveToCicCase(CicCase::setAppNotificationResponse));
     }
 
     @Override
@@ -42,7 +43,8 @@ public class BundleCreatedNotification extends PartiesNotification {
         templateVarsRepresentative.put(CommonConstants.BUNDLE_CREATED_EMAIL_TEXT,
             EmailBundleCreatedResponses.REPRESENTATIVE_APPLICANT_RESPONSE.getEmailResponse());
 
-        return PartiesNotification.emailOnly(cicCase.getRepresentativeEmailAddress(), templateVarsRepresentative, TemplateName.BUNDLE_CREATED_EMAIL, saveToCicCase(CicCase::setRepNotificationResponse));
+        return PartiesNotification.emailOnly(cicCase.getRepresentativeEmailAddress(), templateVarsRepresentative,
+            TemplateName.BUNDLE_CREATED_EMAIL, saveToCicCase(CicCase::setRepNotificationResponse));
     }
 
     @Override
@@ -54,6 +56,7 @@ public class BundleCreatedNotification extends PartiesNotification {
         templateVarsRespondent.put(CommonConstants.BUNDLE_CREATED_EMAIL_TEXT,
             EmailBundleCreatedResponses.RESPONDENT_RESPONSE.getEmailResponse());
 
-        return PartiesNotification.emailOnly(cicCase.getRespondentEmail(), templateVarsRespondent, TemplateName.BUNDLE_CREATED_EMAIL, saveToCicCase(CicCase::setResNotificationResponse));
+        return PartiesNotification.emailOnly(cicCase.getRespondentEmail(), templateVarsRespondent, TemplateName.BUNDLE_CREATED_EMAIL,
+            saveToCicCase(CicCase::setResNotificationResponse));
     }
 }

@@ -44,13 +44,18 @@ public class CaseIssuedNotification extends PartiesNotification {
         templateVarsSubject.put(CommonConstants.CIC_CASE_SUBJECT_NAME, cicCase.getFullName());
 
         if (cicCase.getContactPreferenceType() == ContactPreferenceType.EMAIL) {
-            return PartiesNotification.emailOnly(cicCase.getEmail(), templateVarsSubject, CASE_ISSUED_CITIZEN_EMAIL, saveToCicCase(CicCase::setSubjectNotifyList));
+            return emailOnly(
+                cicCase.getEmail(),
+                templateVarsSubject,
+                CASE_ISSUED_CITIZEN_EMAIL,
+                saveToCicCase(CicCase::setSubjectNotifyList)
+            );
         } else {
             return new LetterNotification(
-                    cicCase.getAddress(),
-                    templateVarsSubject,
-                    CASE_ISSUED_CITIZEN_POST,
-                    saveToCicCase(CicCase::setSubjectLetterNotifyList)
+                cicCase.getAddress(),
+                templateVarsSubject,
+                CASE_ISSUED_CITIZEN_POST,
+                saveToCicCase(CicCase::setSubjectLetterNotifyList)
             );
         }
     }
@@ -61,11 +66,21 @@ public class CaseIssuedNotification extends PartiesNotification {
         Map<String, Object> templateVarsApplicant = notificationHelper().getApplicantCommonVars(caseNumber, caseData);
         templateVarsApplicant.put(CommonConstants.CIC_CASE_APPLICANT_NAME, cicCase.getApplicantFullName());
 
-        if (caseData.getCicCase().getApplicantContactDetailsPreference() == ContactPreferenceType.EMAIL) {
-            return PartiesNotification.emailOnly(cicCase.getApplicantEmailAddress(), templateVarsApplicant, CASE_ISSUED_CITIZEN_EMAIL, saveToCicCase(CicCase::setAppNotificationResponse));
+        if (caseData
+            .getCicCase()
+            .getApplicantContactDetailsPreference() == ContactPreferenceType.EMAIL) {
+            return emailOnly(
+                cicCase.getApplicantEmailAddress(),
+                templateVarsApplicant,
+                CASE_ISSUED_CITIZEN_EMAIL,
+                saveToCicCase(CicCase::setAppNotificationResponse)
+            );
         } else {
             return new LetterNotification(
-                    cicCase.getApplicantAddress(), templateVarsApplicant, CASE_ISSUED_CITIZEN_POST, saveToCicCase(CicCase::setAppLetterNotificationResponse)
+                cicCase.getApplicantAddress(),
+                templateVarsApplicant,
+                CASE_ISSUED_CITIZEN_POST,
+                saveToCicCase(CicCase::setAppLetterNotificationResponse)
             );
         }
     }
@@ -77,9 +92,18 @@ public class CaseIssuedNotification extends PartiesNotification {
         templateVarsRepresentative.put(CommonConstants.CIC_CASE_REPRESENTATIVE_NAME, cicCase.getRepresentativeFullName());
 
         if (cicCase.getRepresentativeContactDetailsPreference() == ContactPreferenceType.EMAIL) {
-            return PartiesNotification.emailOnly(cicCase.getRepresentativeEmailAddress(), templateVarsRepresentative, CASE_ISSUED_CITIZEN_EMAIL, saveToCicCase(CicCase::setRepNotificationResponse));
+            return emailOnly(
+                cicCase.getRepresentativeEmailAddress(),
+                templateVarsRepresentative,
+                CASE_ISSUED_CITIZEN_EMAIL,
+                saveToCicCase(CicCase::setRepNotificationResponse)
+            );
         } else {
-            return new LetterNotification(cicCase.getRepresentativeAddress(), templateVarsRepresentative, CASE_ISSUED_CITIZEN_POST, saveToCicCase(CicCase::setRepLetterNotificationResponse));
+            return new LetterNotification(
+                cicCase.getRepresentativeAddress(),
+                templateVarsRepresentative,
+                CASE_ISSUED_CITIZEN_POST,
+                saveToCicCase(CicCase::setRepLetterNotificationResponse));
         }
     }
 
@@ -87,19 +111,34 @@ public class CaseIssuedNotification extends PartiesNotification {
     protected PartyNotification buildRespondentNotification(CaseData caseData, String caseNumber) {
         CicCase cicCase = caseData.getCicCase();
         Map<String, Object> templateVarsRespondent = notificationHelper().getRespondentCommonVars(caseNumber, caseData);
-        templateVarsRespondent.put(CommonConstants.CIC_CASE_RESPONDENT_NAME, caseData.getCicCase().getRespondentName());
+        templateVarsRespondent.put(CommonConstants.CIC_CASE_RESPONDENT_NAME, caseData
+            .getCicCase()
+            .getRespondentName());
 
         LocalDate dueDate = cicCase.getRespondentBundleDueDate();
         templateVarsRespondent.put(CommonConstants.CIC_BUNDLE_DUE_DATE_TEXT,
-            cicCase.getIsCaseInTime().toBoolean() ? buildTimeString(true, dueDate) : buildTimeString(false, dueDate));
+            cicCase
+                .getIsCaseInTime()
+                .toBoolean() ? buildTimeString(true, dueDate) : buildTimeString(false, dueDate));
 
-        if (ObjectUtils.isNotEmpty(caseData.getCaseIssue().getDocumentList())) {
-            DynamicMultiSelectList selectList = caseData.getCaseIssue().getDocumentList();
+        if (ObjectUtils.isNotEmpty(caseData
+            .getCaseIssue()
+            .getDocumentList())) {
+            DynamicMultiSelectList selectList = caseData
+                .getCaseIssue()
+                .getDocumentList();
             Map<String, String> uploadedDocuments = getUploadedDocuments(caseData);
             List<CaseworkerCICDocument> selectedDocuments = DocumentListUtil.getSelectedDocumentsFromDynamicList(caseData, selectList);
-            return new EmailNotification(cicCase.getAlternativeRespondentEmail(), templateVarsRespondent, CASE_ISSUED_RESPONDENT_EMAIL, uploadedDocuments, selectedDocuments, saveToCicCase(CicCase::setResNotificationResponse));
+            return new EmailNotification(
+                cicCase.getAlternativeRespondentEmail(),
+                templateVarsRespondent,
+                CASE_ISSUED_RESPONDENT_EMAIL,
+                uploadedDocuments,
+                selectedDocuments,
+                saveToCicCase(CicCase::setResNotificationResponse));
         } else {
-            return PartiesNotification.emailOnly(cicCase.getAlternativeRespondentEmail(), templateVarsRespondent, CASE_ISSUED_RESPONDENT_EMAIL, saveToCicCase(CicCase::setResNotificationResponse));
+            return emailOnly(cicCase.getAlternativeRespondentEmail(), templateVarsRespondent, CASE_ISSUED_RESPONDENT_EMAIL,
+                saveToCicCase(CicCase::setResNotificationResponse));
         }
     }
 

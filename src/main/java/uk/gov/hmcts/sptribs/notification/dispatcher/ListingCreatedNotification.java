@@ -30,10 +30,12 @@ public class ListingCreatedNotification extends PartiesNotification {
         notificationHelper().setRecordingTemplateVars(templateVarsSubject, listingSubject);
 
         if (cicCase.getContactPreferenceType() == ContactPreferenceType.EMAIL) {
-            return emailOnly(cicCase.getEmail(), templateVarsSubject, TemplateName.HEARING_CREATED_EMAIL, saveToCicCase(CicCase::setSubHearingNotificationResponse));
+            return emailOnly(cicCase.getEmail(), templateVarsSubject, TemplateName.HEARING_CREATED_EMAIL,
+                saveToCicCase(CicCase::setSubHearingNotificationResponse));
         } else {
             notificationHelper().addAddressTemplateVars(cicCase.getAddress(), templateVarsSubject);
-            return new LetterNotification(cicCase.getAddress(), templateVarsSubject, TemplateName.HEARING_CREATED_POST, saveToCicCase(CicCase::setSubHearingNotificationResponse));
+            return new LetterNotification(cicCase.getAddress(), templateVarsSubject, TemplateName.HEARING_CREATED_POST,
+                saveToCicCase(CicCase::setSubHearingNotificationResponse));
         }
     }
 
@@ -45,10 +47,12 @@ public class ListingCreatedNotification extends PartiesNotification {
         notificationHelper().setRecordingTemplateVars(templateVars, listing);
 
         if (cicCase.getContactPreferenceType() == ContactPreferenceType.EMAIL) {
-            return emailOnly(cicCase.getApplicantEmailAddress(), templateVars, TemplateName.HEARING_CREATED_EMAIL, saveToCicCase(CicCase::setSubHearingNotificationResponse));
+            return emailOnly(cicCase.getApplicantEmailAddress(), templateVars, TemplateName.HEARING_CREATED_EMAIL,
+                saveToCicCase(CicCase::setSubHearingNotificationResponse));
         } else {
             notificationHelper().addAddressTemplateVars(cicCase.getApplicantAddress(), templateVars);
-            return new LetterNotification(cicCase.getApplicantAddress(), templateVars, TemplateName.HEARING_CREATED_POST, saveToCicCase(CicCase::setSubHearingNotificationResponse));
+            return new LetterNotification(cicCase.getApplicantAddress(), templateVars, TemplateName.HEARING_CREATED_POST,
+                saveToCicCase(CicCase::setSubHearingNotificationResponse));
         }
     }
 
@@ -62,10 +66,12 @@ public class ListingCreatedNotification extends PartiesNotification {
         notificationHelper().setRecordingTemplateVars(templateVarsRepresentative, listing);
 
         if (cicCase.getRepresentativeContactDetailsPreference() == ContactPreferenceType.EMAIL) {
-            return emailOnly(cicCase.getRepresentativeEmailAddress(), templateVarsRepresentative, TemplateName.HEARING_CREATED_EMAIL, saveToCicCase(CicCase::setRepHearingNotificationResponse));
+            return emailOnly(cicCase.getRepresentativeEmailAddress(), templateVarsRepresentative, TemplateName.HEARING_CREATED_EMAIL,
+                saveToCicCase(CicCase::setRepHearingNotificationResponse));
         } else {
             notificationHelper().addAddressTemplateVars(cicCase.getRepresentativeAddress(), templateVarsRepresentative);
-            return new LetterNotification(cicCase.getRepresentativeAddress(), templateVarsRepresentative, TemplateName.HEARING_CREATED_POST, saveToCicCase(CicCase::setRepHearingNotificationResponse));
+            return new LetterNotification(cicCase.getRepresentativeAddress(), templateVarsRepresentative, TemplateName.HEARING_CREATED_POST,
+                saveToCicCase(CicCase::setRepHearingNotificationResponse));
         }
     }
 
@@ -73,10 +79,13 @@ public class ListingCreatedNotification extends PartiesNotification {
     protected PartyNotification buildRespondentNotification(CaseData caseData, String caseNumber) {
         CicCase cicCase = caseData.getCicCase();
         Map<String, Object> templateVarsRespondent = notificationHelper().getRespondentCommonVars(caseNumber, caseData);
-        templateVarsRespondent.put(CommonConstants.CIC_CASE_RESPONDENT_NAME, caseData.getCicCase().getRespondentName());
+        templateVarsRespondent.put(CommonConstants.CIC_CASE_RESPONDENT_NAME, caseData
+            .getCicCase()
+            .getRespondentName());
         Listing listing = caseData.getListing();
         notificationHelper().setRecordingTemplateVars(templateVarsRespondent, listing);
 
-        return emailOnly(cicCase.getRespondentEmail(), templateVarsRespondent, TemplateName.HEARING_CREATED_EMAIL, saveToCicCase(CicCase::setResHearingNotificationResponse));
+        return emailOnly(cicCase.getRespondentEmail(), templateVarsRespondent, TemplateName.HEARING_CREATED_EMAIL,
+            saveToCicCase(CicCase::setResHearingNotificationResponse));
     }
 }
