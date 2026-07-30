@@ -194,6 +194,7 @@ public class BundlingService {
     }
 
     private Bundle buildBundle(LinkedHashMap<String, Object> objectLinkedHashMap) {
+        String stitchingFailureMessage = MapUtils.getString(objectLinkedHashMap, STITCHING_FAILURE_MESSAGE, "");
         return Bundle.builder()
             .stitchStatus(NEW)
             .description(MapUtils.getString(objectLinkedHashMap, DESCRIPTION, ""))
@@ -206,8 +207,11 @@ public class BundlingService {
             .pageNumberFormat(PageNumberFormat.valueOf(
                 MapUtils.getObject(objectLinkedHashMap, PAGE_NUMBER_FORMAT, PageNumberFormat.numberOfPages).toString()))
             .stitchingFailureMessage(
-                stitchingFailed(MapUtils.getString(objectLinkedHashMap, STITCHING_FAILURE_MESSAGE, ""))
-                    ? "Could not stitch bundle" : "")
+                stitchingFailed(stitchingFailureMessage)
+                    ? "There was a problem stitching this bundle" : "")
+//          .stitchingFailureMessage(
+//              getUpdatedStitchingFailureMessage(stitchingFailureMessage)
+//          )
             .stitchStatus(MapUtils.getString(objectLinkedHashMap, STITCHING_STATUS, ""))
             .build();
     }
@@ -219,6 +223,14 @@ public class BundlingService {
         log.error(stitchingFailureMessage);
         return true;
     }
+
+//    private String getUpdatedStitchingFailureMessage(String stitchingFailureMessage) {
+//        if (stitchingFailureMessage.contains("\"error\":")) {
+//            log.error(stitchingFailureMessage);
+//            stitchingFailureMessage = stitchingFailureMessage.split("\"error\":")[1].split("\",")[0];
+//        }
+//        return stitchingFailureMessage;
+//    }
 
     private Document getStitchedDocument(LinkedHashMap<String, Object> objectLinkedHashMap) {
         if (ObjectUtils.isEmpty(objectLinkedHashMap.get(STITCHED_DOCUMENT))) {
