@@ -206,9 +206,7 @@ public class BundlingService {
                 MapUtils.getObject(objectLinkedHashMap, PAGINATION_STYLE, BundlePaginationStyle.off).toString()))
             .pageNumberFormat(PageNumberFormat.valueOf(
                 MapUtils.getObject(objectLinkedHashMap, PAGE_NUMBER_FORMAT, PageNumberFormat.numberOfPages).toString()))
-            .stitchingFailureMessage(
-                stitchingFailed(stitchingFailureMessage)
-                    ? "There was a problem stitching this bundle" : "")
+            .stitchingFailureMessage(stitchingFailed(stitchingFailureMessage) ? "There was a problem stitching this bundle" : "")
 //          .stitchingFailureMessage(
 //              getUpdatedStitchingFailureMessage(stitchingFailureMessage)
 //          )
