@@ -15,6 +15,7 @@ import uk.gov.hmcts.sptribs.systemupdate.service.CcdUpdateService;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static uk.gov.hmcts.sptribs.ciccase.model.State.DSS_Draft;
@@ -80,15 +81,16 @@ public class SystemMigrateCaseDocumentsDocumentTableTask implements Runnable {
 
         try {
 
-            final List<Long> caseIdsToUpdate;
+            final List<Long> caseIdsToUpdate = new ArrayList<>();
 
             if (documentTableTestCaseReference != null && !documentTableTestCaseReference.isEmpty()) {
-                Long caseIdToUpdate = Long.valueOf(documentTableTestCaseReference);
-                caseIdsToUpdate = List.of(caseIdToUpdate);
+                List<Long> casesToUpdate = Arrays.stream(
+                    documentTableTestCaseReference.split(",")).map(s -> Long.parseLong(s.trim())).toList();
+                caseIdsToUpdate.addAll(casesToUpdate);
             } else {
 
-                caseIdsToUpdate = caseDataRepository.returnAllCasesExlcudingStates(
-                    List.of(DSS_Draft.name(), Draft.name(), DSS_Expired.name()));
+                caseIdsToUpdate.addAll(caseDataRepository.returnAllCasesExlcudingStates(
+                    List.of(DSS_Draft.name(), Draft.name(), DSS_Expired.name())));
             }
 
             if (caseIdsToUpdate.isEmpty()) {
