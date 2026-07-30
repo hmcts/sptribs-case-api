@@ -88,14 +88,15 @@ public class SystemMigrateCaseDocumentsToDocTable implements CCDConfig<CaseData,
                 var localDateTime = bundleListValue.getValue().getDateAndTime();
                 var document = bundleListValue.getValue().getStitchedDocument();
                 try {
-                    documentsService.buildAndSaveNewDocumentEntityWithDocDateTime(
-                        document,
-                        reference,
-                        null,
-                        BUNDLE,
-                        localDateTime
-
-                    );
+                    if (document != null) {
+                        documentsService.buildAndSaveNewDocumentEntityWithDocDateTime(
+                            document,
+                            reference,
+                            null,
+                            BUNDLE,
+                            localDateTime
+                        );
+                    }
                 } catch (DataIntegrityViolationException e) {
                     log.info("Document already exists in document table: {}", document.getBinaryUrl());
 
