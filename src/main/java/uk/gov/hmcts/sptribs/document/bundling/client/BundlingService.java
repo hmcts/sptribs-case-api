@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
+import org.springframework.util.StringUtils;
 import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
@@ -193,6 +194,8 @@ public class BundlingService {
     }
 
     private Bundle buildBundle(LinkedHashMap<String, Object> objectLinkedHashMap) {
+
+
         return Bundle.builder()
             .stitchStatus(NEW)
             .description(MapUtils.getString(objectLinkedHashMap, DESCRIPTION, ""))
@@ -204,9 +207,18 @@ public class BundlingService {
                 MapUtils.getObject(objectLinkedHashMap, PAGINATION_STYLE, BundlePaginationStyle.off).toString()))
             .pageNumberFormat(PageNumberFormat.valueOf(
                 MapUtils.getObject(objectLinkedHashMap, PAGE_NUMBER_FORMAT, PageNumberFormat.numberOfPages).toString()))
-            .stitchingFailureMessage(MapUtils.getString(objectLinkedHashMap, STITCHING_FAILURE_MESSAGE, ""))
+            .stitchingFailureMessage(
+                stitchingFailed(MapUtils.getString(objectLinkedHashMap, STITCHING_FAILURE_MESSAGE, ""))
+                    ? "Could not stitch bundle" : "")
             .stitchStatus(MapUtils.getString(objectLinkedHashMap, STITCHING_STATUS, ""))
             .build();
+    }
+
+    private boolean stitchingFailed(String stitchingFailureMessage) {
+        if (StringUtils.isEmpty(stitchingFailureMessage)) {
+            return false;
+        }
+        return true;
     }
 
     private Document getStitchedDocument(LinkedHashMap<String, Object> objectLinkedHashMap) {
