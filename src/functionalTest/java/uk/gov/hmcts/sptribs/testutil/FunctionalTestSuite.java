@@ -310,7 +310,9 @@ public abstract class FunctionalTestSuite {
         AppsConfig.AppsDetails details = AppsUtil.getExactAppsDetails(appsConfig, caseData.getDssCaseData());
         CaseDetails caseDetails = createCitizenCase();
 
-        return updateCitizenCase(EventConstants.CITIZEN_CIC_SUBMIT_CASE, caseDetails.getId(),caseData);
+        CaseDetails updatedCase = updateCitizenCase(EventConstants.CITIZEN_CIC_SUBMIT_CASE, caseDetails.getId(), caseData);
+        functionalTestDataManager.addReference(updatedCase.getId());
+        return updatedCase;
     }
 
     protected CaseDetails updateCitizenCase(String eventId, Long caseId, CaseData caseData) {
@@ -387,7 +389,7 @@ public abstract class FunctionalTestSuite {
 
         final CaseDataContent caseDataContent = CaseDataContent.builder()
             .data(convertDssCaseDataToRequest(getDssCaseData()))
-            .event(uk.gov.hmcts.reform.ccd.client.model.Event.builder().id(appsDetails.getEventIds().getCreateEvent()).build())
+            .event(Event.builder().id(appsDetails.getEventIds().getCreateEvent()).build())
             .eventToken(createEventResponseToken)
             .build();
         return coreCaseDataApi.submitForCitizen(

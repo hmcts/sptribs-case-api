@@ -95,6 +95,7 @@ ccd:
     java:
       imagePullPolicy: Always
       environment:
+        TESTING_SUPPORT_ENDPOINT_ENABLED: true
         CASE_DOCUMENT_AM_API_ATTACH_DOCUMENT_ENABLED: true
         DATA_STORE_DB_HOST: '{{ tpl .Values.global.postgresHostname $}}'
         DATA_STORE_DB_USERNAME: ${CCD_DATA_STORE_DB_USERNAME_PREVIEW}

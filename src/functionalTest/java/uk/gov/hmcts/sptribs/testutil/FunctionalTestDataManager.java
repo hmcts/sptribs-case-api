@@ -1,5 +1,7 @@
 package uk.gov.hmcts.sptribs.testutil;
 
+import io.restassured.RestAssured;
+import io.restassured.response.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -66,6 +68,7 @@ public class FunctionalTestDataManager {
         deleteCaseEvent(reference);
         deleteCaseData(reference);
         deleteCaseCorrespondences(reference);
+        deleteCaseFromElasticsearch(reference);
 
         log.info("Clear down completed for reference: {}", reference);
     }
@@ -110,6 +113,38 @@ public class FunctionalTestDataManager {
                 return rs.getLong(KEY_CASE_DATA_ID);
             }
             return -1;
+        }
+    }
+
+    public void deleteCaseFromElasticsearch(long reference) {
+        String elasticsearchBaseUrl = "http://localhost:9200";
+        String caseIdStr = String.valueOf(reference);
+        String deleteUrl = elasticsearchBaseUrl + "/*_cases/_delete_by_query?ignore_unavailable=true&refresh=true";
+
+        String jsonPayload = "{\n"
+            + "  \"query\": {\n"
+            + "    \"bool\": {\n"
+            + "      \"should\": [\n"
+            + "        { \"term\": { \"reference\": " + reference + " } },\n"
+            + "        { \"term\": { \"reference\": \"" + reference + "\" } },\n"
+            + "        { \"term\": { \"id\": " + reference + " } }\n"
+            + "      ]\n"
+            + "    }\n"
+            + "  }\n"
+            + "}";
+
+        try {
+            Response response = RestAssured.given()
+                .relaxedHTTPSValidation()
+                .header("Content-Type", "application/json")
+                .body(jsonPayload)
+                .when()
+                .post(deleteUrl);
+
+            int statusCode = response.getStatusCode();
+            log.info("Elasticsearch response status code: {}, body: {}", statusCode, response.getBody().asString());
+        } catch (Exception e) {
+            log.info("Error occurred while deleting case {} from Elasticsearch", caseIdStr, e);
         }
     }
 
