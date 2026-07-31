@@ -9,70 +9,77 @@
           "description": "",
           "folders": [
             {
-              "id": "46",
+              "id": "${json-unit.any-string}",
+              "value": {
+                "name": "Audio/video evidence document",
+                "sortIndex": 10
+              }
+            },
+            {
+              "id": "${json-unit.any-string}",
               "value": {
                 "name": "Further Documents",
                 "sortIndex": 9
               }
             },
             {
-              "id": "47",
+              "id": "${json-unit.any-string}",
               "value": {
                 "name": "General evidence",
                 "sortIndex": 8
               }
             },
             {
-              "id": "48",
+              "id": "${json-unit.any-string}",
               "value": {
                 "name": "Direction - decision notices",
                 "sortIndex": 7
               }
             },
             {
-              "id": "49",
+              "id": "${json-unit.any-string}",
               "value": {
                 "name": "Witness Statements",
                 "sortIndex": 6
               }
             },
             {
-              "id": "50",
+              "id": "${json-unit.any-string}",
               "value": {
                 "name": "Linked documents",
                 "sortIndex": 5
               }
             },
             {
-              "id": "51",
+              "id": "${json-unit.any-string}",
               "value": {
                 "name": "Other evidence",
                 "sortIndex": 4
               }
             },
             {
-              "id": "52",
+              "id": "${json-unit.any-string}",
               "value": {
                 "name": "Financial records",
                 "sortIndex": 3
               }
             },
             {
-              "id": "53",
+              "id": "${json-unit.any-string}",
               "value": {
                 "name": "Medical records",
                 "sortIndex": 2
               }
             },
             {
-              "id": "54",
+              "id": "${json-unit.any-string}",
               "value": {
                 "name": "Police evidence",
                 "sortIndex": 1
               }
             },
             {
-              "id": "55",
+              "id": "${json-unit.any-string}",
               "value": {
                 "name": "Application Documents",
                 "sortIndex": 0
