@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
+import org.springframework.util.StringUtils;
 import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
@@ -193,6 +194,7 @@ public class BundlingService {
     }
 
     private Bundle buildBundle(LinkedHashMap<String, Object> objectLinkedHashMap) {
+        String stitchingFailureMessage = MapUtils.getString(objectLinkedHashMap, STITCHING_FAILURE_MESSAGE, "");
         return Bundle.builder()
             .stitchStatus(NEW)
             .description(MapUtils.getString(objectLinkedHashMap, DESCRIPTION, ""))
@@ -204,10 +206,29 @@ public class BundlingService {
                 MapUtils.getObject(objectLinkedHashMap, PAGINATION_STYLE, BundlePaginationStyle.off).toString()))
             .pageNumberFormat(PageNumberFormat.valueOf(
                 MapUtils.getObject(objectLinkedHashMap, PAGE_NUMBER_FORMAT, PageNumberFormat.numberOfPages).toString()))
-            .stitchingFailureMessage(MapUtils.getString(objectLinkedHashMap, STITCHING_FAILURE_MESSAGE, ""))
+            .stitchingFailureMessage(stitchingFailed(stitchingFailureMessage) ? "There was a problem stitching this bundle" : "")
+//          .stitchingFailureMessage(
+//              getUpdatedStitchingFailureMessage(stitchingFailureMessage)
+//          )
             .stitchStatus(MapUtils.getString(objectLinkedHashMap, STITCHING_STATUS, ""))
             .build();
     }
+
+    private boolean stitchingFailed(String stitchingFailureMessage) {
+        if (StringUtils.isEmpty(stitchingFailureMessage)) {
+            return false;
+        }
+        log.error(stitchingFailureMessage);
+        return true;
+    }
+
+//    private String getUpdatedStitchingFailureMessage(String stitchingFailureMessage) {
+//        if (stitchingFailureMessage.contains("\"error\":")) {
+//            log.error(stitchingFailureMessage);
+//            stitchingFailureMessage = stitchingFailureMessage.split("\"error\":")[1].split("\",")[0];
+//        }
+//        return stitchingFailureMessage;
+//    }
 
     private Document getStitchedDocument(LinkedHashMap<String, Object> objectLinkedHashMap) {
         if (ObjectUtils.isEmpty(objectLinkedHashMap.get(STITCHED_DOCUMENT))) {
