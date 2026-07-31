@@ -236,7 +236,7 @@ feature:
     caseReference: ${CLEAN_DELETED_DOCUMENTS_TEST_CASE_REF:}
   migrate-to-documents-table-task:
     enabled: ${MIGRATE_CASE_DOCUMENTS_TO_TABLE_ENABLED:true}
-    caseReference: ${MIGRATE_CASE_DOCUMENTS_TO_TABLE_TEST_CASE_REF:}
+    caseReference: ${MIGRATE_CASE_DOCUMENTS_TO_TABLE_TEST_CASE_REF:1785490722910611}
     batchSize: ${MIGRATE_CASE_DOCUMENTS_TO_TABLE_BATCH_SIZE:100}
     batchPauseMs: ${MIGRATE_CASE_DOCUMENTS_TO_TABLE_BATCH_PAUSE:5000}
   restore-orders-task:

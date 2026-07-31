@@ -38,18 +38,20 @@ public class MigrationDocumentService {
 
         try {
 
-            documentsRepository.save(DocumentEntity.builder()
-                .caseReferenceNumber(caseReferenceNumber)
-                .documentUrl(document.getUrl())
-                .documentFilename(document.getFilename())
-                .documentBinaryUrl(document.getBinaryUrl())
-                .documentTypeName(documentType != null ? documentType.name() : null)
-                .caseDocumentTypeId(caseDocumentTypesCache.getId(caseDocumentType))
-                .savedAt(savedDatetime)
-                .build());
+            int rowsInserted = documentsRepository.insertIgnoreDuplicate(
+                caseReferenceNumber,
+                document.getUrl(),
+                document.getFilename(),
+                document.getBinaryUrl(),
+                documentType != null ? documentType.name() : null,
+                caseDocumentTypesCache.getId(caseDocumentType),
+                savedDatetime
+            );
 
-        } catch (DataIntegrityViolationException e) {
-            throw e;
+            if (rowsInserted == 0) {
+                log.info("Document already exists in document table: {}", document.getBinaryUrl());
+            }
+
         } catch (DataAccessException e) {
             throw new DocumentSaveException("Error saving document entity to database", e);
         }

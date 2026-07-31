@@ -2,19 +2,22 @@ package uk.gov.hmcts.sptribs.systemupdate.event;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
+import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
+import uk.gov.hmcts.sptribs.common.repositories.exception.document.DocumentSaveException;
 import uk.gov.hmcts.sptribs.document.model.CaseDocumentType;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
+import uk.gov.hmcts.sptribs.document.model.DocumentType;
 import uk.gov.hmcts.sptribs.systemupdate.service.MigrationDocumentService;
 
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -83,51 +86,56 @@ public class SystemMigrateCaseDocumentsToDocTable implements CCDConfig<CaseData,
     }
 
     private void saveBundlesToDocTable(CaseData caseData, Long reference) {
-        caseData.getCaseBundles().stream()
-            .forEach(bundleListValue -> {
-                var localDateTime = bundleListValue.getValue().getDateAndTime();
-                var document = bundleListValue.getValue().getStitchedDocument();
-                try {
-                    if (document != null) {
-                        documentsService.buildAndSaveNewDocumentEntityWithDocDateTime(
-                            document,
-                            reference,
-                            null,
-                            BUNDLE,
-                            localDateTime
-                        );
-                    }
-                } catch (DataIntegrityViolationException e) {
-                    log.info("Document already exists in document table: {}", document.getBinaryUrl());
-
-                } catch (RuntimeException exception) {
-                    failedDocs.put(document.getBinaryUrl(), exception.getMessage());
-                    log.info("Failed to save bundle document {} to table: {}", document.getBinaryUrl(), exception.getMessage());
-                }
-
-            });
+        caseData.getCaseBundles().forEach(bundle ->
+            saveDocument(
+                bundle.getValue().getStitchedDocument(),
+                reference,
+                null,
+                BUNDLE,
+                bundle.getValue().getDateAndTime()
+            )
+        );
     }
 
-    private void saveDocumentsToDocTable(Map<CaseDocumentType, List<CaseworkerCICDocument>> documentTypeDocumentMap, Long
-        reference) {
-        documentTypeDocumentMap.forEach((caseDocumentType, caseworkerCICDocuments) ->
-            caseworkerCICDocuments.forEach(caseworkerCICDocument -> {
-                try {
-                    documentsService.buildAndSaveNewDocumentEntityWithDocDateTime(
-                        caseworkerCICDocument.getDocumentLink(),
-                        reference,
-                        caseworkerCICDocument.getDocumentCategory(),
-                        caseDocumentType,
-                        caseworkerCICDocument.getDate() != null ? caseworkerCICDocument.getDate().atTime(0, 0) : null
-                    );
-                } catch (DataIntegrityViolationException e) {
-                    log.info("Document already exists in document table: {}", caseworkerCICDocument.getDocumentLink().getBinaryUrl());
+    private void saveDocumentsToDocTable(
+        Map<CaseDocumentType, List<CaseworkerCICDocument>> documentTypeDocumentMap,
+        Long reference
+    ) {
+        documentTypeDocumentMap.forEach((caseDocumentType, documents) ->
+            documents.forEach(document ->
+                saveDocument(
+                    document.getDocumentLink(),
+                    reference,
+                    document.getDocumentCategory(),
+                    caseDocumentType,
+                    document.getDate() != null
+                        ? document.getDate().atTime(0, 0)
+                        : null
+                )
+            )
+        );
+    }
 
-                } catch (RuntimeException exception) {
-                    failedDocs.put(caseworkerCICDocument.getDocumentLink().getBinaryUrl(), exception.getMessage());
-                    log.info("Failed to save document {} to table: {}",
-                        caseworkerCICDocument.getDocumentLink().getBinaryUrl(), exception.getMessage());
-                }
-            }));
+    private void saveDocument(Document document, Long reference, DocumentType documentType, CaseDocumentType caseDocumentType,
+                              LocalDateTime uploadedTime
+    ) {
+        if (document == null) {
+            return;
+        }
+
+        String binaryUrl = document.getBinaryUrl();
+
+        try {
+            documentsService.buildAndSaveNewDocumentEntityWithDocDateTime(
+                document,
+                reference,
+                documentType,
+                caseDocumentType,
+                uploadedTime
+            );
+        } catch (DocumentSaveException e) {
+            failedDocs.put(binaryUrl, e.getMessage());
+            log.info("Failed to save document {} to table: {}", binaryUrl, e.getMessage());
+        }
     }
 }
