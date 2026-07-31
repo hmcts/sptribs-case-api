@@ -14,19 +14,28 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
+import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
+import uk.gov.hmcts.reform.pdf.service.client.PDFServiceClient;
+import uk.gov.hmcts.sptribs.cdam.model.UploadResponse;
 import uk.gov.hmcts.sptribs.caseworker.model.Order;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.common.config.WebMvcConfig;
 import uk.gov.hmcts.sptribs.document.bundling.client.BundleResponse;
 import uk.gov.hmcts.sptribs.document.bundling.client.BundlingClient;
 import uk.gov.hmcts.sptribs.document.bundling.model.Bundle;
 import uk.gov.hmcts.sptribs.document.bundling.model.BundleCallback;
+import uk.gov.hmcts.sptribs.document.model.AbstractCaseworkerCICDocument;
+import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
+import uk.gov.hmcts.sptribs.document.model.DocumentType;
+import uk.gov.hmcts.sptribs.services.cdam.CaseDocumentClientApi;
 import uk.gov.hmcts.sptribs.testutil.IdamWireMock;
 
 import java.time.Clock;
 import java.time.Instant;
+import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -34,12 +43,14 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicReference;
 
 import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
 import static net.javacrumbs.jsonunit.assertj.JsonAssertions.json;
 import static net.javacrumbs.jsonunit.core.Option.IGNORING_EXTRA_FIELDS;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -84,6 +95,12 @@ public class CaseworkerCreateBundleIT {
 
     @MockitoBean
     private Clock clock;
+
+    @MockitoBean
+    private PDFServiceClient pdfServiceClient;
+
+    @MockitoBean
+    private CaseDocumentClientApi caseDocumentClientApi;
 
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper().findAndRegisterModules();
     private static final TypeReference<HashMap<String, Object>> TYPE_REFERENCE = new TypeReference<>() {
@@ -146,6 +163,94 @@ public class CaseworkerCreateBundleIT {
                 eq(TEST_AUTHORIZATION_TOKEN),
                 any(BundleCallback.class)
             );
+    }
+
+    @Test
+    void shouldAttachGeneratedAudioVideoEvidenceDocumentToBundlingCallback() throws Exception {
+        final CaseData caseData = caseData();
+        CicCase cicCase = CicCase.builder().build();
+        cicCase.setApplicantDocumentsUploaded(
+            List.of(
+                toListValue(buildCaseworkerDoc(
+                    "media-1.mp3",
+                    "http://dm/documents/1/binary",
+                    DocumentType.LINKED_DOCS,
+                    LocalDate.of(2026, 1, 10)
+                )),
+                toListValue(buildCaseworkerDoc(
+                    "media-2.mp4",
+                    "http://dm/documents/2/binary",
+                    DocumentType.POLICE_EVIDENCE,
+                    LocalDate.of(2026, 1, 12)
+                )),
+                toListValue(buildCaseworkerDoc(
+                    "paper.pdf",
+                    "http://dm/documents/3/binary",
+                    DocumentType.APPLICATION_FORM,
+                    LocalDate.of(2026, 1, 8)
+                ))
+            )
+        );
+        caseData.setCicCase(cicCase);
+
+        final BundleResponse bundleResponse = mock(BundleResponse.class);
+        when(bundleResponse.getData()).thenReturn(new LinkedHashMap<>());
+
+        when(authTokenGenerator.generate()).thenReturn(SERVICE_AUTHORIZATION);
+        when(pdfServiceClient.generateFromHtml(any(byte[].class), anyMap())).thenReturn("pdf".getBytes());
+
+        UploadResponse uploadResponse = new UploadResponse();
+        uk.gov.hmcts.sptribs.cdam.model.Document uploadedDoc = new uk.gov.hmcts.sptribs.cdam.model.Document();
+        uk.gov.hmcts.sptribs.cdam.model.Document.Links links = new uk.gov.hmcts.sptribs.cdam.model.Document.Links();
+        uk.gov.hmcts.sptribs.cdam.model.Document.DocumentLink self =
+            new uk.gov.hmcts.sptribs.cdam.model.Document.DocumentLink();
+        self.href = "http://dm-store/documents/generated";
+        uk.gov.hmcts.sptribs.cdam.model.Document.DocumentLink binary =
+            new uk.gov.hmcts.sptribs.cdam.model.Document.DocumentLink();
+        binary.href = "http://dm-store/documents/generated/binary";
+        links.self = self;
+        links.binary = binary;
+        uploadedDoc.links = links;
+        uploadResponse.setDocuments(List.of(uploadedDoc));
+
+        when(caseDocumentClientApi.uploadDocuments(eq(TEST_AUTHORIZATION_TOKEN), eq(SERVICE_AUTHORIZATION), any()))
+            .thenReturn(uploadResponse);
+
+        AtomicReference<Document> callbackAudioVideoDocument = new AtomicReference<>();
+        AtomicReference<List<String>> callbackCaseDocumentNames = new AtomicReference<>(List.of());
+
+        when(bundlingClient.createBundle(
+            eq(SERVICE_AUTHORIZATION),
+            eq(TEST_AUTHORIZATION_TOKEN),
+            any(BundleCallback.class)
+        )).thenAnswer(invocation -> {
+            BundleCallback bundleCallback = invocation.getArgument(2);
+            callbackAudioVideoDocument.set(bundleCallback.getCaseDetails().getData().getAudioVideoEvidenceBundleDocument());
+            callbackCaseDocumentNames.set(
+                bundleCallback.getCaseDetails().getData().getCaseDocuments().stream()
+                    .map(AbstractCaseworkerCICDocument::getValue)
+                    .map(CaseworkerCICDocument::getDocumentLink)
+                    .filter(Objects::nonNull)
+                    .map(Document::getFilename)
+                    .toList()
+            );
+            return bundleResponse;
+        });
+
+        mockMvc.perform(post(ABOUT_TO_SUBMIT_URL)
+                .contentType(APPLICATION_JSON)
+                .header(SERVICE_AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
+                .header(AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
+                .content(objectMapper.writeValueAsString(callbackRequest(caseData, CREATE_BUNDLE)))
+                .accept(APPLICATION_JSON))
+            .andExpect(status().isOk());
+
+        assertThat(callbackAudioVideoDocument.get()).isNotNull();
+        assertThat(callbackAudioVideoDocument.get().getBinaryUrl())
+            .isEqualTo("http://dm-store/documents/generated/binary");
+        assertThat(callbackCaseDocumentNames.get())
+            .containsExactly("paper.pdf")
+            .doesNotContain("media-1.mp3", "media-2.mp4");
     }
 
     @Test
@@ -319,5 +424,24 @@ public class CaseworkerCreateBundleIT {
                 getCaseworkerCICDocument("reinstate_doc.pdf")
             )
         );
+    }
+
+    private ListValue<CaseworkerCICDocument> toListValue(CaseworkerCICDocument document) {
+        return ListValue.<CaseworkerCICDocument>builder()
+            .id(UUID.randomUUID().toString())
+            .value(document)
+            .build();
+    }
+
+    private CaseworkerCICDocument buildCaseworkerDoc(String filename,
+                                                     String binaryUrl,
+                                                     DocumentType type,
+                                                     LocalDate date) {
+        return CaseworkerCICDocument.builder()
+            .documentCategory(type)
+            .documentEmailContent("desc")
+            .date(date)
+            .documentLink(Document.builder().filename(filename).binaryUrl(binaryUrl).url(binaryUrl).build())
+            .build();
     }
 }

@@ -17,6 +17,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
+import uk.gov.hmcts.sptribs.document.bundling.AudioVideoEvidenceBundleService;
 import uk.gov.hmcts.sptribs.document.bundling.client.BundlingService;
 import uk.gov.hmcts.sptribs.document.bundling.model.Bundle;
 import uk.gov.hmcts.sptribs.document.bundling.model.BundleCallback;
@@ -62,6 +63,7 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 public class CaseworkerCreateBundle implements CCDConfig<CaseData, State, UserRole> {
 
     private final BundlingService bundlingService;
+    private final AudioVideoEvidenceBundleService audioVideoEvidenceBundleService;
 
     @Autowired
     private final Clock clock;
@@ -107,6 +109,9 @@ public class CaseworkerCreateBundle implements CCDConfig<CaseData, State, UserRo
         caseData.setCaseNumber(String.valueOf(details.getId()));
         caseData.setSubjectRepFullName(caseData.getCicCase().getFullName());
         caseData.setSchemeLabel(caseData.getCicCase().getSchemeCic() != null ? caseData.getCicCase().getSchemeCic().getLabel() : "");
+        caseData.setAudioVideoEvidenceBundleDocument(
+            audioVideoEvidenceBundleService.createAudioVideoEvidenceBundleDocument(caseData, details.getId())
+        );
         details.setData(caseData);
 
         final Callback callback = new Callback(details, beforeDetails, CREATE_BUNDLE, true);
@@ -118,6 +123,7 @@ public class CaseworkerCreateBundle implements CCDConfig<CaseData, State, UserRo
         caseData.setMultiBundleConfiguration(null);
         caseData.setCaseDocuments(null);
         caseData.setFurtherCaseDocuments(null);
+        caseData.setAudioVideoEvidenceBundleDocument(null);
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
