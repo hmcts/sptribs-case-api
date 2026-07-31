@@ -9,7 +9,6 @@ import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.sptribs.cdam.model.Document;
 import uk.gov.hmcts.sptribs.document.model.DownloadedDocumentResponse;
 import uk.gov.hmcts.sptribs.exception.DocumentDownloadException;
-import uk.gov.hmcts.sptribs.idam.IdamService;
 import uk.gov.hmcts.sptribs.services.cdam.CaseDocumentClientApi;
 
 import java.net.URLConnection;
@@ -22,7 +21,6 @@ public class DocumentDownloadService {
 
     private final CaseDocumentClientApi caseDocumentClientApi;
     private final AuthTokenGenerator authTokenGenerator;
-    private final IdamService idamService;
 
     public DownloadedDocumentResponse downloadDocument(String authorisation, String documentId) {
         log.info("Downloading document with id: {}", documentId);
@@ -31,11 +29,10 @@ public class DocumentDownloadService {
             UUID documentUuid = UUID.fromString(documentId);
             String serviceAuth = authTokenGenerator.generate();
 
-            String systemAuth = idamService.retrieveSystemUpdateUserDetails().getAuthToken();
-            Document documentMetadata = getDocumentMetadata(systemAuth, serviceAuth, documentUuid);
+            Document documentMetadata = getDocumentMetadata(authorisation, serviceAuth, documentUuid);
 
             ResponseEntity<byte[]> binaryResponse = caseDocumentClientApi.getDocumentBinary(
-                systemAuth,
+                authorisation,
                 serviceAuth,
                 documentUuid
             );

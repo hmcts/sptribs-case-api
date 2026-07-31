@@ -8,12 +8,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.ResponseEntity;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
-import uk.gov.hmcts.reform.idam.client.models.UserInfo;
 import uk.gov.hmcts.sptribs.cdam.model.Document;
 import uk.gov.hmcts.sptribs.document.model.DownloadedDocumentResponse;
 import uk.gov.hmcts.sptribs.exception.DocumentDownloadException;
-import uk.gov.hmcts.sptribs.idam.CICUser;
-import uk.gov.hmcts.sptribs.idam.IdamService;
 import uk.gov.hmcts.sptribs.services.cdam.CaseDocumentClientApi;
 
 import java.util.UUID;
@@ -35,14 +32,8 @@ class DocumentDownloadServiceTest {
     @Mock
     private AuthTokenGenerator authTokenGenerator;
 
-    @Mock
-    private IdamService idamService;
-
     @InjectMocks
     private DocumentDownloadService documentDownloadService;
-
-    private static final CICUser CIC_USER
-        = new CICUser(TEST_AUTHORIZATION_TOKEN, UserInfo.builder().build());
 
     @Test
     void shouldDownloadDocumentSuccessfully() {
@@ -55,7 +46,6 @@ class DocumentDownloadServiceTest {
         document.mimeType = mimeType;
 
         UUID documentId = UUID.randomUUID();
-        when(idamService.retrieveSystemUpdateUserDetails()).thenReturn(CIC_USER);
         when(authTokenGenerator.generate()).thenReturn(TEST_SERVICE_AUTH_TOKEN);
         when(caseDocumentClientApi.getDocument(TEST_AUTHORIZATION_TOKEN, TEST_SERVICE_AUTH_TOKEN, documentId))
             .thenReturn(ResponseEntity.ok(document));
@@ -93,7 +83,6 @@ class DocumentDownloadServiceTest {
         document.mimeType = null;
 
         UUID documentId = UUID.randomUUID();
-        when(idamService.retrieveSystemUpdateUserDetails()).thenReturn(CIC_USER);
         when(authTokenGenerator.generate()).thenReturn(TEST_SERVICE_AUTH_TOKEN);
         when(caseDocumentClientApi.getDocument(TEST_AUTHORIZATION_TOKEN, TEST_SERVICE_AUTH_TOKEN, documentId))
             .thenReturn(ResponseEntity.ok(document));
@@ -124,7 +113,6 @@ class DocumentDownloadServiceTest {
         document.mimeType = null;
 
         UUID documentId = UUID.randomUUID();
-        when(idamService.retrieveSystemUpdateUserDetails()).thenReturn(CIC_USER);
         when(authTokenGenerator.generate()).thenReturn(TEST_SERVICE_AUTH_TOKEN);
         when(caseDocumentClientApi.getDocument(TEST_AUTHORIZATION_TOKEN, TEST_SERVICE_AUTH_TOKEN, documentId))
             .thenReturn(ResponseEntity.ok(document));
@@ -165,7 +153,6 @@ class DocumentDownloadServiceTest {
         UUID documentId = UUID.randomUUID();
         String documentIdString = documentId.toString();
 
-        when(idamService.retrieveSystemUpdateUserDetails()).thenReturn(CIC_USER);
         when(authTokenGenerator.generate()).thenReturn(TEST_SERVICE_AUTH_TOKEN);
         when(caseDocumentClientApi.getDocument(TEST_AUTHORIZATION_TOKEN, TEST_SERVICE_AUTH_TOKEN, documentId))
             .thenReturn(ResponseEntity.ok(null));
@@ -189,7 +176,6 @@ class DocumentDownloadServiceTest {
         document.mimeType = "application/pdf";
 
         UUID documentId = UUID.randomUUID();
-        when(idamService.retrieveSystemUpdateUserDetails()).thenReturn(CIC_USER);
         when(authTokenGenerator.generate()).thenReturn(TEST_SERVICE_AUTH_TOKEN);
         when(caseDocumentClientApi.getDocument(TEST_AUTHORIZATION_TOKEN, TEST_SERVICE_AUTH_TOKEN, documentId))
             .thenReturn(ResponseEntity.ok(document));
@@ -212,7 +198,6 @@ class DocumentDownloadServiceTest {
         UUID documentId = UUID.randomUUID();
         String documentIdString = documentId.toString();
 
-        when(idamService.retrieveSystemUpdateUserDetails()).thenReturn(CIC_USER);
         when(authTokenGenerator.generate()).thenReturn(TEST_SERVICE_AUTH_TOKEN);
         when(caseDocumentClientApi.getDocument(TEST_AUTHORIZATION_TOKEN, TEST_SERVICE_AUTH_TOKEN, documentId))
             .thenThrow(new RuntimeException("API error"));
@@ -232,7 +217,6 @@ class DocumentDownloadServiceTest {
         UUID documentId = UUID.randomUUID();
         String documentIdString = documentId.toString();
 
-        when(idamService.retrieveSystemUpdateUserDetails()).thenReturn(CIC_USER);
         when(authTokenGenerator.generate()).thenReturn(TEST_SERVICE_AUTH_TOKEN);
         when(caseDocumentClientApi.getDocument(TEST_AUTHORIZATION_TOKEN, TEST_SERVICE_AUTH_TOKEN, documentId))
             .thenReturn(null);
@@ -256,7 +240,6 @@ class DocumentDownloadServiceTest {
         document.mimeType = "application/pdf";
         UUID documentId = UUID.randomUUID();
 
-        when(idamService.retrieveSystemUpdateUserDetails()).thenReturn(CIC_USER);
         when(authTokenGenerator.generate()).thenReturn(TEST_SERVICE_AUTH_TOKEN);
         when(caseDocumentClientApi.getDocument(TEST_AUTHORIZATION_TOKEN, TEST_SERVICE_AUTH_TOKEN, documentId))
             .thenReturn(ResponseEntity.ok(document));
