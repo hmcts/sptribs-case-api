@@ -56,6 +56,7 @@ import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -255,6 +256,60 @@ public class CaseworkerCreateBundleIT {
         assertThat(callbackCaseDocumentNames.get())
             .containsExactly("paper.pdf")
             .doesNotContain("media-1.mp3", "media-2.mp4");
+    }
+
+    @Test
+    void shouldNotGenerateAudioVideoBundleWhenNoValidMediaDocumentsExist() throws Exception {
+        final CaseData caseData = caseData();
+        CicCase cicCase = CicCase.builder().build();
+        cicCase.setApplicantDocumentsUploaded(
+            List.of(
+                toListValue(buildCaseworkerDoc(
+                    "paper.pdf",
+                    "http://dm/documents/3/binary",
+                    DocumentType.APPLICATION_FORM,
+                    LocalDate.of(2026, 1, 8)
+                ))
+            )
+        );
+        caseData.setCicCase(cicCase);
+
+        final BundleResponse bundleResponse = mock(BundleResponse.class);
+        when(bundleResponse.getData()).thenReturn(new LinkedHashMap<>());
+        when(authTokenGenerator.generate()).thenReturn(SERVICE_AUTHORIZATION);
+
+        AtomicReference<Document> callbackAudioVideoDocument = new AtomicReference<>();
+        AtomicReference<List<String>> callbackCaseDocumentNames = new AtomicReference<>(List.of());
+
+        when(bundlingClient.createBundle(
+            eq(SERVICE_AUTHORIZATION),
+            eq(TEST_AUTHORIZATION_TOKEN),
+            any(BundleCallback.class)
+        )).thenAnswer(invocation -> {
+            BundleCallback bundleCallback = invocation.getArgument(2);
+            callbackAudioVideoDocument.set(bundleCallback.getCaseDetails().getData().getAudioVideoEvidenceBundleDocument());
+            callbackCaseDocumentNames.set(
+                bundleCallback.getCaseDetails().getData().getCaseDocuments().stream()
+                    .map(AbstractCaseworkerCICDocument::getValue)
+                    .map(CaseworkerCICDocument::getDocumentLink)
+                    .filter(Objects::nonNull)
+                    .map(Document::getFilename)
+                    .toList()
+            );
+            return bundleResponse;
+        });
+
+        mockMvc.perform(post(ABOUT_TO_SUBMIT_URL)
+                .contentType(APPLICATION_JSON)
+                .header(SERVICE_AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
+                .header(AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
+                .content(objectMapper.writeValueAsString(callbackRequest(caseData, CREATE_BUNDLE)))
+                .accept(APPLICATION_JSON))
+            .andExpect(status().isOk());
+
+        assertThat(callbackAudioVideoDocument.get()).isNull();
+        assertThat(callbackCaseDocumentNames.get()).containsExactly("paper.pdf");
+        verifyNoInteractions(pdfServiceClient, caseDocumentClientApi);
     }
 
     @Test

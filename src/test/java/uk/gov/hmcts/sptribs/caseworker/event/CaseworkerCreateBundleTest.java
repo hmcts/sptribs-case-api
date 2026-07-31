@@ -115,9 +115,16 @@ class CaseworkerCreateBundleTest {
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
 
         final Bundle bundle = Bundle.builder().build();
+        Document audioVideoBundleDocument = Document.builder()
+            .filename("audio-video-evidence-123.pdf")
+            .url("http://dm-store/documents/generated")
+            .binaryUrl("http://dm-store/documents/generated/binary")
+            .build();
 
         when(bundlingService.getMultiBundleConfig()).thenCallRealMethod();
         when(bundlingService.getMultiBundleConfigs()).thenCallRealMethod();
+        when(audioVideoEvidenceBundleService.createAudioVideoEvidenceBundleDocument(caseData, TEST_CASE_ID))
+            .thenReturn(audioVideoBundleDocument);
 
         when(bundlingService.createBundle(any(BundleCallback.class))).thenAnswer(callback -> {
             final BundleCallback callbackAtMockTime = (BundleCallback) callback.getArguments()[0];
@@ -127,6 +134,7 @@ class CaseworkerCreateBundleTest {
             assertThat(dataAtMockTime.getCaseDocuments().getFirst().getValue()).isEqualTo(cicDocuments.getFirst().getValue());
             assertThat(dataAtMockTime.getBundleConfiguration()).isEqualTo(MULTI_BUNDLE_CONFIG);
             assertThat(dataAtMockTime.getMultiBundleConfiguration()).isEqualTo(List.of(MULTI_BUNDLE_CONFIG));
+            assertThat(dataAtMockTime.getAudioVideoEvidenceBundleDocument()).isEqualTo(audioVideoBundleDocument);
             return List.of(bundle);
         });
 
@@ -136,6 +144,7 @@ class CaseworkerCreateBundleTest {
         verify(bundlingService).getMultiBundleConfig();
         verify(bundlingService).getMultiBundleConfigs();
         verify(bundlingService).buildBundleListValues(anyList());
+        verify(audioVideoEvidenceBundleService).createAudioVideoEvidenceBundleDocument(caseData, TEST_CASE_ID);
 
         final CaseData responseData = response.getData();
         assertThat(responseData)
@@ -147,6 +156,7 @@ class CaseworkerCreateBundleTest {
         //i.e. not in their respective child objects as well (CicCase.applicantDocumentsUploaded)
         assertThat(responseData.getCaseDocuments()).isNull();
         assertThat(responseData.getMultiBundleConfiguration()).isNull();
+        assertThat(responseData.getAudioVideoEvidenceBundleDocument()).isNull();
     }
 
     @Test

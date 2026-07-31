@@ -81,4 +81,53 @@ public class CaseworkerCreateBundleFT extends FunctionalTestSuite {
             .inPath("$.errors")
             .isAbsent();
     }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void shouldNotIncludeAudioVideoDocumentsInCaseBundlesDuringAboutToSubmit() throws Exception {
+        final Map<String, Object> caseData = caseData(REQUEST);
+
+        Map<String, Object> mp3Doc = new HashMap<>();
+        mp3Doc.put("id", UUID.randomUUID().toString());
+        Map<String, Object> mp3Value = new HashMap<>();
+        mp3Value.put("documentCategory", "Linked docs");
+        mp3Value.put("documentEmailContent", "Audio evidence");
+        Map<String, Object> mp3Link = new HashMap<>();
+        mp3Link.put("document_url", "http://dm-store/documents/media-a");
+        mp3Link.put("document_binary_url", "http://dm-store/documents/media-a/binary");
+        mp3Link.put("document_filename", "media-a.mp3");
+        mp3Value.put("documentLink", mp3Link);
+        mp3Value.put("date", "2026-01-10");
+        mp3Doc.put("value", mp3Value);
+
+        Map<String, Object> mp4Doc = new HashMap<>();
+        mp4Doc.put("id", UUID.randomUUID().toString());
+        Map<String, Object> mp4Value = new HashMap<>();
+        mp4Value.put("documentCategory", "PoliceEvidence");
+        mp4Value.put("documentEmailContent", "Video evidence");
+        Map<String, Object> mp4Link = new HashMap<>();
+        mp4Link.put("document_url", "http://dm-store/documents/media-b");
+        mp4Link.put("document_binary_url", "http://dm-store/documents/media-b/binary");
+        mp4Link.put("document_filename", "media-b.mp4");
+        mp4Value.put("documentLink", mp4Link);
+        mp4Value.put("date", "2026-01-12");
+        mp4Doc.put("value", mp4Value);
+
+        List<Map<String, Object>> applicantDocs = (List<Map<String, Object>>) caseData.get("cicCaseApplicantDocumentsUploaded");
+        applicantDocs.add(mp3Doc);
+        applicantDocs.add(mp4Doc);
+
+        final Response response = triggerCallback(caseData, CREATE_BUNDLE, ABOUT_TO_SUBMIT_URL);
+
+        assertThat(response.getStatusCode()).isEqualTo(OK.value());
+        assertThatJson(response.asString())
+            .when(IGNORING_EXTRA_FIELDS)
+            .inPath("$.errors")
+            .isAbsent();
+        assertThatJson(response.asString())
+            .when(IGNORING_EXTRA_FIELDS)
+            .inPath("$.data.cicCaseApplicantDocumentsUploaded[*].value.documentLink.document_filename")
+            .isArray()
+            .contains("media-a.mp3", "media-b.mp4", "pdf.pdf");
+    }
 }
