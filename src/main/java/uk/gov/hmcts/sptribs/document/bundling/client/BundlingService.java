@@ -15,6 +15,7 @@ import uk.gov.hmcts.sptribs.document.bundling.model.Bundle;
 import uk.gov.hmcts.sptribs.document.bundling.model.BundleDocument;
 import uk.gov.hmcts.sptribs.document.bundling.model.BundleFolder;
 import uk.gov.hmcts.sptribs.document.bundling.model.BundlePaginationStyle;
+import uk.gov.hmcts.sptribs.document.bundling.model.BundleSubFolder;
 import uk.gov.hmcts.sptribs.document.bundling.model.Callback;
 import uk.gov.hmcts.sptribs.document.bundling.model.MultiBundleConfig;
 import uk.gov.hmcts.sptribs.document.model.PageNumberFormat;
@@ -36,6 +37,7 @@ import static uk.gov.hmcts.sptribs.document.bundling.BundlingConstants.DOCUMENT_
 import static uk.gov.hmcts.sptribs.document.bundling.BundlingConstants.DOCUMENT_FILENAME;
 import static uk.gov.hmcts.sptribs.document.bundling.BundlingConstants.DOCUMENT_URL;
 import static uk.gov.hmcts.sptribs.document.bundling.BundlingConstants.FOLDERS;
+import static uk.gov.hmcts.sptribs.document.bundling.BundlingConstants.FURTHER_DOCUMENTS;
 import static uk.gov.hmcts.sptribs.document.bundling.BundlingConstants.ID;
 import static uk.gov.hmcts.sptribs.document.bundling.BundlingConstants.NAME;
 import static uk.gov.hmcts.sptribs.document.bundling.BundlingConstants.NEW;
@@ -77,8 +79,9 @@ public class BundlingService {
 
             return getBundleFromResponse((List<LinkedHashMap<String, Object>>) response.getData().get(CASE_BUNDLES));
         } catch (FeignException exception) {
-            log.error("Unable to create bundle {}",
-                exception.getMessage());
+            log.error("Unable to create bundle - status: {}, body: {}",
+                exception.status(),
+                exception.contentUTF8());
             return null;
         }
     }
@@ -121,6 +124,26 @@ public class BundlingService {
         for (BundleFolder doc : bundleList) {
             ListValue<BundleFolder> listValue = ListValue
                 .<BundleFolder>builder()
+                .value(doc)
+                .build();
+
+            newList.add(0, listValue);
+            newList.forEach(
+                document -> document.setId(String.valueOf(listValueIndex.incrementAndGet())));
+        }
+        return newList;
+    }
+
+    public List<ListValue<BundleSubFolder>> buildBundleSubFolderListValues(List<BundleSubFolder> bundleList) {
+        if (CollectionUtils.isEmpty(bundleList)) {
+            return null;
+        }
+
+        List<ListValue<BundleSubFolder>> newList = new ArrayList<>();
+        AtomicInteger listValueIndex = new AtomicInteger(0);
+        for (BundleSubFolder doc : bundleList) {
+            ListValue<BundleSubFolder> listValue = ListValue
+                .<BundleSubFolder>builder()
                 .value(doc)
                 .build();
 
@@ -185,7 +208,35 @@ public class BundlingService {
                     List<Map<String, Object>> folderDocumentsList = (List<Map<String, Object>>) foldersObject.get(DOCUMENTS);
                     bundleFolder.setDocuments(buildBundleDocumentListValues(getDocuments(folderDocumentsList)));
                 }
+
+                if (bundleFolder.getName().equals(FURTHER_DOCUMENTS) && foldersObject.get(FOLDERS) != null) {
+                    bundleFolder.setFolders(buildBundleSubFolderListValues(buildFurtherDocumentsSubFolders(foldersObject)));
+                }
+
                 folders.add(bundleFolder);
+            }
+
+        }
+        return folders;
+    }
+
+    private List<BundleSubFolder> buildFurtherDocumentsSubFolders(LinkedHashMap<String, Object> objectLinkedHashMap) {
+        List<BundleSubFolder> folders = new ArrayList<>();
+        if (objectLinkedHashMap.get(FOLDERS) != null) {
+            List<LinkedHashMap<String, Object>> responseFolders
+                = (List<LinkedHashMap<String, Object>>) objectLinkedHashMap.get(FOLDERS);
+            for (LinkedHashMap<String, Object> responseFolder : responseFolders) {
+                LinkedHashMap<String, Object> foldersObject = (LinkedHashMap<String, Object>) responseFolder.get(VALUE);
+                BundleSubFolder bundleSubFolder = BundleSubFolder.builder()
+                    .name(MapUtils.getString(foldersObject, NAME, ""))
+                    .sortIndex(MapUtils.getIntValue(foldersObject, SORT_INDEX))
+                    .build();
+
+                if (foldersObject.get(DOCUMENTS) != null) {
+                    List<Map<String, Object>> folderDocumentsList = (List<Map<String, Object>>) foldersObject.get(DOCUMENTS);
+                    bundleSubFolder.setDocuments(buildBundleDocumentListValues(getDocuments(folderDocumentsList)));
+                }
+                folders.add(bundleSubFolder);
             }
 
         }
