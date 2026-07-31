@@ -15,6 +15,7 @@ import uk.gov.hmcts.ccd.sdk.External;
 import uk.gov.hmcts.ccd.sdk.api.CCD;
 import uk.gov.hmcts.ccd.sdk.type.CaseLink;
 import uk.gov.hmcts.ccd.sdk.type.ComponentLauncher;
+import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.ccd.sdk.type.DynamicList;
 import uk.gov.hmcts.ccd.sdk.type.FlagLauncher;
 import uk.gov.hmcts.ccd.sdk.type.Flags;
@@ -255,6 +256,12 @@ public class CaseData {
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private List<MultiBundleConfig> multiBundleConfiguration;
+
+    @CCD(
+        label = "Audio/video evidence bundle document",
+        access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
+    )
+    private Document audioVideoEvidenceBundleDocument; // bundle field
 
     @CCD(
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
