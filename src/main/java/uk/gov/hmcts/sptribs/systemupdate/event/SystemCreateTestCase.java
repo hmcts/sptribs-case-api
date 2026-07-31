@@ -132,24 +132,6 @@ public class SystemCreateTestCase implements CCDConfig<CaseData, State, UserRole
 
         setSupplementaryData(details.getId());
 
-        if (caseData.getCicCase().getApplicantDocumentsUploaded() != null) {
-            for (ListValue<CaseworkerCICDocument> document : caseData.getCicCase().getApplicantDocumentsUploaded()) {
-                try {
-                //                    documentsService.buildAndSaveNewDocumentEntity(
-                //                        document.getValue().getDocumentLink(),
-                //                        details.getId(),
-                //                        document.getValue().getDocumentCategory(),
-                //                        CaseDocumentType.DOCUMENT_MANAGEMENT
-                //                    );
-                } catch (RuntimeException e) {
-                    log.error("Saving applicant documents failed with exception : {}", e.getMessage());
-                    return SubmittedCallbackResponse.builder()
-                        .confirmationHeader(format("# Create case notification failed %n## Please resend the notification"))
-                        .build();
-                }
-            }
-        }
-
         return SubmittedCallbackResponse.builder()
             .confirmationHeader(format("# Case Created %n## Case reference number: %n## %s", caseReference))
             .build();
