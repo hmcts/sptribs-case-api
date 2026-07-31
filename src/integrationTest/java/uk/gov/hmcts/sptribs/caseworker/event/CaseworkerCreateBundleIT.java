@@ -18,8 +18,10 @@ import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.pdf.service.client.PDFServiceClient;
-import uk.gov.hmcts.sptribs.cdam.model.UploadResponse;
 import uk.gov.hmcts.sptribs.caseworker.model.Order;
+import uk.gov.hmcts.sptribs.cdam.model.Document.DocumentLink;
+import uk.gov.hmcts.sptribs.cdam.model.Document.Links;
+import uk.gov.hmcts.sptribs.cdam.model.UploadResponse;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.common.config.WebMvcConfig;
@@ -199,18 +201,20 @@ public class CaseworkerCreateBundleIT {
         when(authTokenGenerator.generate()).thenReturn(SERVICE_AUTHORIZATION);
         when(pdfServiceClient.generateFromHtml(any(byte[].class), anyMap())).thenReturn("pdf".getBytes());
 
-        UploadResponse uploadResponse = new UploadResponse();
-        uk.gov.hmcts.sptribs.cdam.model.Document uploadedDoc = new uk.gov.hmcts.sptribs.cdam.model.Document();
-        uk.gov.hmcts.sptribs.cdam.model.Document.Links links = new uk.gov.hmcts.sptribs.cdam.model.Document.Links();
-        uk.gov.hmcts.sptribs.cdam.model.Document.DocumentLink self =
-            new uk.gov.hmcts.sptribs.cdam.model.Document.DocumentLink();
+        DocumentLink self = new DocumentLink();
         self.href = "http://dm-store/documents/generated";
-        uk.gov.hmcts.sptribs.cdam.model.Document.DocumentLink binary =
-            new uk.gov.hmcts.sptribs.cdam.model.Document.DocumentLink();
+
+        DocumentLink binary = new DocumentLink();
         binary.href = "http://dm-store/documents/generated/binary";
+
+        Links links = new Links();
         links.self = self;
         links.binary = binary;
+
+        uk.gov.hmcts.sptribs.cdam.model.Document uploadedDoc = new uk.gov.hmcts.sptribs.cdam.model.Document();
         uploadedDoc.links = links;
+
+        UploadResponse uploadResponse = new UploadResponse();
         uploadResponse.setDocuments(List.of(uploadedDoc));
 
         when(caseDocumentClientApi.uploadDocuments(eq(TEST_AUTHORIZATION_TOKEN), eq(SERVICE_AUTHORIZATION), any()))
