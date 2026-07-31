@@ -21,6 +21,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.ciccase.model.access.Permissions;
+import uk.gov.hmcts.sptribs.document.bundling.AudioVideoEvidenceBundleService;
 import uk.gov.hmcts.sptribs.document.bundling.client.BundlingService;
 import uk.gov.hmcts.sptribs.document.bundling.model.Bundle;
 import uk.gov.hmcts.sptribs.document.bundling.model.BundleCallback;
@@ -67,6 +68,9 @@ class CaseworkerCreateBundleTest {
 
     @Mock
     private BundlingService bundlingService;
+
+    @Mock
+    private AudioVideoEvidenceBundleService audioVideoEvidenceBundleService;
 
     @Mock
     private Clock clock;
