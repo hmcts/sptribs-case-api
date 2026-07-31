@@ -11,6 +11,7 @@ import uk.gov.hmcts.sptribs.exception.InvalidPostcodeException;
 import uk.gov.hmcts.sptribs.exception.UnauthorisedCaseAccessException;
 import uk.gov.hmcts.sptribs.idam.CICUser;
 import uk.gov.hmcts.sptribs.idam.IdamService;
+import uk.gov.hmcts.sptribs.services.roleassignment.RoleAssignmentService;
 
 @Slf4j
 @Service
@@ -19,6 +20,7 @@ public class CicaCaseService {
 
     private final CaseDataRepository caseDataRepository;
     private final IdamService idamService;
+    private final RoleAssignmentService roleAssignmentService;
 
     /**
      * Checks if the user has access to the case.
@@ -38,6 +40,7 @@ public class CicaCaseService {
             if (!hasAccess) {
                 throw new UnauthorisedCaseAccessException("User is not authorised to access case: " + ccdReference);
             }
+            roleAssignmentService.assignCaseRoleForActor(Long.valueOf(ccdReference), user.getUserInfo().getUid());
         } catch (Exception e) {
             switch (e) {
                 case CaseNotFoundException cnfe -> throw cnfe;
@@ -78,6 +81,8 @@ public class CicaCaseService {
             if (!normalize(storedPostcode).equals(normalize(submittedPostcode))) {
                 throw new InvalidPostcodeException("Submitted postcode does not match the postcode held in case data");
             }
+
+            roleAssignmentService.assignCaseRoleForActor(Long.valueOf(ccdReference), user.getUserInfo().getUid());
 
             return cicaCaseEntity;
         } catch (Exception e) {

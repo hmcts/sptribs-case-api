@@ -15,6 +15,7 @@ import uk.gov.hmcts.sptribs.exception.InvalidPostcodeException;
 import uk.gov.hmcts.sptribs.exception.UnauthorisedCaseAccessException;
 import uk.gov.hmcts.sptribs.idam.CICUser;
 import uk.gov.hmcts.sptribs.idam.IdamService;
+import uk.gov.hmcts.sptribs.services.roleassignment.RoleAssignmentService;
 
 import java.util.Map;
 import java.util.Optional;
@@ -41,6 +42,9 @@ class CicaCaseServiceTest {
 
     @Mock
     private CICUser user;
+
+    @Mock
+    private RoleAssignmentService roleAssignmentService;
 
     @Spy
     private ObjectMapper objectMapper = new ObjectMapper();
