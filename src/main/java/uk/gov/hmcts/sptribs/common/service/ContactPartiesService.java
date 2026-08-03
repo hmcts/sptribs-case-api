@@ -24,7 +24,7 @@ public class ContactPartiesService {
 
     public void linkCorrespondenceIdsToDocuments(CaseData caseData,
                                                  List<String> correspondenceIds) {
-        if (correspondenceIds.isEmpty()){
+        if (correspondenceIds.isEmpty()) {
             return;
         }
 
