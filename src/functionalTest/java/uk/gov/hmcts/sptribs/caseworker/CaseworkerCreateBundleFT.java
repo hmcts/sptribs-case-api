@@ -116,6 +116,7 @@ public class CaseworkerCreateBundleFT extends FunctionalTestSuite {
                 ## A notification could not be sent to: Respondent\s
                 ## Please resend the notification.""");
     }
+
     @Test
     @SuppressWarnings("unchecked")
     public void shouldNotIncludeAudioVideoDocumentsInCaseBundlesDuringAboutToSubmit() throws Exception {
