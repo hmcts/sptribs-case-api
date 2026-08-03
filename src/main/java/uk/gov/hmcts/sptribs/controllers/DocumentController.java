@@ -141,6 +141,7 @@ public class DocumentController {
         log.info("Received request to download document with id: {} for CCD reference: {}", documentId, ccdReference);
 
         cicaCaseService.checkIfUserHasAccessWithPostcode(ccdReference, authorisation, postcode);
+        cicaCaseService.assignCaseRoleForUser(ccdReference, authorisation);
 
 
         DownloadedDocumentResponse documentResponse;

@@ -29,7 +29,6 @@ import java.time.OffsetDateTime;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -207,7 +206,7 @@ class DocumentControllerTest {
             TEST_AUTHORIZATION,
             documentId
         );
-        verify(cicaCaseService, never()).assignCaseRoleForUser(TEST_CASE_ID_STRING, TEST_AUTHORIZATION);
+        verify(cicaCaseService).assignCaseRoleForUser(TEST_CASE_ID_STRING, TEST_AUTHORIZATION);
     }
 
     @Test
@@ -248,7 +247,7 @@ class DocumentControllerTest {
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody()).isEqualTo(resource);
-        verify(cicaCaseService).assignCaseRoleForUser(TEST_CASE_ID_STRING, TEST_AUTHORIZATION);
+        verify(cicaCaseService, times(2)).assignCaseRoleForUser(TEST_CASE_ID_STRING, TEST_AUTHORIZATION);
         verify(documentDownloadService, times(2)).downloadDocument(TEST_AUTHORIZATION, documentId);
     }
 
@@ -270,7 +269,7 @@ class DocumentControllerTest {
             )
         ).isSameAs(firstException);
 
-        verify(cicaCaseService).assignCaseRoleForUser(TEST_CASE_ID_STRING, TEST_AUTHORIZATION);
+        verify(cicaCaseService, times(2)).assignCaseRoleForUser(TEST_CASE_ID_STRING, TEST_AUTHORIZATION);
         verify(documentDownloadService, times(2)).downloadDocument(TEST_AUTHORIZATION, documentId);
     }
 }
