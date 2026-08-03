@@ -53,6 +53,7 @@ public class DocumentDownloadService {
             log.error("Invalid document ID format: {}", documentId, e);
             throw new DocumentDownloadException("Invalid document ID format: " + documentId, e);
         } catch (DocumentDownloadException e) {
+            log.error("Failed to download document with id: {}", documentId, e);
             throw e;
         } catch (Exception e) {
             log.error("Failed to download document with id: {}", documentId, e);
