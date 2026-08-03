@@ -40,7 +40,6 @@ public class CicaCaseService {
             if (!hasAccess) {
                 throw new UnauthorisedCaseAccessException("User is not authorised to access case: " + ccdReference);
             }
-            roleAssignmentService.assignCaseRoleForActor(Long.valueOf(ccdReference), user.getUserInfo().getUid());
         } catch (Exception e) {
             switch (e) {
                 case CaseNotFoundException cnfe -> throw cnfe;
@@ -81,9 +80,6 @@ public class CicaCaseService {
             if (!normalize(storedPostcode).equals(normalize(submittedPostcode))) {
                 throw new InvalidPostcodeException("Submitted postcode does not match the postcode held in case data");
             }
-
-            roleAssignmentService.assignCaseRoleForActor(Long.valueOf(ccdReference), user.getUserInfo().getUid());
-
             return cicaCaseEntity;
         } catch (Exception e) {
             if (e instanceof UnauthorisedCaseAccessException || e instanceof InvalidPostcodeException) {
@@ -91,6 +87,15 @@ public class CicaCaseService {
             }
             log.warn("Error checking case access and postcode for reference: {}", ccdReference, e);
             throw new UnauthorisedCaseAccessException("Error checking case access and postcode: " + e.getMessage());
+        }
+    }
+
+    public void assignCaseRoleForUser(String ccdReference, String authorisation) {
+        try {
+            CICUser user = idamService.retrieveUser(authorisation);
+            roleAssignmentService.assignCaseRoleForActor(Long.valueOf(ccdReference), user.getUserInfo().getUid());
+        } catch (Exception e) {
+            log.warn("Failed to assign case role for reference: {}", ccdReference, e);
         }
     }
 

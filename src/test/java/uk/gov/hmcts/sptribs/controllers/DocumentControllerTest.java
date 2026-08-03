@@ -22,12 +22,15 @@ import uk.gov.hmcts.sptribs.document.model.DocumentDashboardModel;
 import uk.gov.hmcts.sptribs.document.model.DocumentEntity;
 import uk.gov.hmcts.sptribs.document.model.DownloadedDocumentResponse;
 import uk.gov.hmcts.sptribs.document.service.DocumentsService;
+import uk.gov.hmcts.sptribs.exception.DocumentDownloadException;
 import uk.gov.hmcts.sptribs.exception.UnauthorisedCaseAccessException;
 
 import java.time.OffsetDateTime;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID_STRING;
@@ -204,6 +207,7 @@ class DocumentControllerTest {
             TEST_AUTHORIZATION,
             documentId
         );
+        verify(cicaCaseService, never()).assignCaseRoleForUser(TEST_CASE_ID_STRING, TEST_AUTHORIZATION);
     }
 
     @Test
@@ -222,5 +226,51 @@ class DocumentControllerTest {
             .hasMessageContaining("Postcode or email mismatch");
 
         org.mockito.Mockito.verifyNoInteractions(documentDownloadService);
+    }
+
+    @Test
+    void shouldAssignRoleAndRetryWhenFirstDownloadAttemptFails() {
+        String documentId = "12345";
+        Resource resource = new ByteArrayResource("test-content".getBytes());
+        DownloadedDocumentResponse downloadedDocumentResponse =
+            new DownloadedDocumentResponse(resource, "test-document.pdf", "application/pdf");
+
+        when(documentDownloadService.downloadDocument(TEST_AUTHORIZATION, documentId))
+            .thenThrow(new DocumentDownloadException("first attempt failed"))
+            .thenReturn(downloadedDocumentResponse);
+
+        ResponseEntity<Resource> response = documentController.downloadDocumentByCaseAndId(
+            TEST_AUTHORIZATION,
+            TEST_POSTCODE,
+            TEST_CASE_ID_STRING,
+            documentId
+        );
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(response.getBody()).isEqualTo(resource);
+        verify(cicaCaseService).assignCaseRoleForUser(TEST_CASE_ID_STRING, TEST_AUTHORIZATION);
+        verify(documentDownloadService, times(2)).downloadDocument(TEST_AUTHORIZATION, documentId);
+    }
+
+    @Test
+    void shouldThrowOriginalExceptionWhenRetryAfterRoleAssignmentFails() {
+        String documentId = "12345";
+        DocumentDownloadException firstException = new DocumentDownloadException("first attempt failed");
+
+        when(documentDownloadService.downloadDocument(TEST_AUTHORIZATION, documentId))
+            .thenThrow(firstException)
+            .thenThrow(new DocumentDownloadException("second attempt failed"));
+
+        org.assertj.core.api.Assertions.assertThatThrownBy(() ->
+            documentController.downloadDocumentByCaseAndId(
+                TEST_AUTHORIZATION,
+                TEST_POSTCODE,
+                TEST_CASE_ID_STRING,
+                documentId
+            )
+        ).isSameAs(firstException);
+
+        verify(cicaCaseService).assignCaseRoleForUser(TEST_CASE_ID_STRING, TEST_AUTHORIZATION);
+        verify(documentDownloadService, times(2)).downloadDocument(TEST_AUTHORIZATION, documentId);
     }
 }

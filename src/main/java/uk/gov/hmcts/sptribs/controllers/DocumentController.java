@@ -31,6 +31,7 @@ import uk.gov.hmcts.sptribs.document.DocumentDownloadService;
 import uk.gov.hmcts.sptribs.document.model.DocumentDashboardModel;
 import uk.gov.hmcts.sptribs.document.model.DownloadedDocumentResponse;
 import uk.gov.hmcts.sptribs.document.service.DocumentsService;
+import uk.gov.hmcts.sptribs.exception.DocumentDownloadException;
 
 @Tag(name = "Document Controller")
 @Slf4j
@@ -141,10 +142,18 @@ public class DocumentController {
 
         cicaCaseService.checkIfUserHasAccessWithPostcode(ccdReference, authorisation, postcode);
 
-        DownloadedDocumentResponse documentResponse = documentDownloadService.downloadDocument(
-            authorisation,
-            documentId
-        );
+
+        DownloadedDocumentResponse documentResponse;
+        try {
+            documentResponse = documentDownloadService.downloadDocument(authorisation, documentId);
+        } catch (DocumentDownloadException firstFailure) {
+            cicaCaseService.assignCaseRoleForUser(ccdReference, authorisation);
+            try {
+                documentResponse = documentDownloadService.downloadDocument(authorisation, documentId);
+            } catch (DocumentDownloadException retryFailure) {
+                throw firstFailure;
+            }
+        }
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.valueOf(documentResponse.mimeType()));
@@ -156,4 +165,3 @@ public class DocumentController {
             .body(documentResponse.file());
     }
 }
-
