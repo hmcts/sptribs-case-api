@@ -32,6 +32,7 @@ import uk.gov.hmcts.sptribs.document.bundling.model.BundleCallback;
 import uk.gov.hmcts.sptribs.document.model.AbstractCaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
+import uk.gov.hmcts.sptribs.document.service.DocumentsService;
 import uk.gov.hmcts.sptribs.services.cdam.CaseDocumentClientApi;
 import uk.gov.hmcts.sptribs.testutil.IdamWireMock;
 
@@ -43,6 +44,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicReference;
@@ -104,6 +106,9 @@ public class CaseworkerCreateBundleIT {
 
     @MockitoBean
     private CaseDocumentClientApi caseDocumentClientApi;
+
+    @MockitoBean
+    private DocumentsService documentsService;
 
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper().findAndRegisterModules();
     private static final TypeReference<HashMap<String, Object>> TYPE_REFERENCE = new TypeReference<>() {
@@ -201,6 +206,7 @@ public class CaseworkerCreateBundleIT {
 
         when(authTokenGenerator.generate()).thenReturn(SERVICE_AUTHORIZATION);
         when(pdfServiceClient.generateFromHtml(any(byte[].class), anyMap())).thenReturn("pdf".getBytes());
+        when(documentsService.getCaseDocumentsByBinaryUrls(any(), any())).thenReturn(Map.of());
 
         DocumentLink self = new DocumentLink();
         self.href = "http://dm-store/documents/generated";
@@ -277,6 +283,7 @@ public class CaseworkerCreateBundleIT {
         final BundleResponse bundleResponse = mock(BundleResponse.class);
         when(bundleResponse.getData()).thenReturn(new LinkedHashMap<>());
         when(authTokenGenerator.generate()).thenReturn(SERVICE_AUTHORIZATION);
+        when(documentsService.getCaseDocumentsByBinaryUrls(any(), any())).thenReturn(Map.of());
 
         AtomicReference<Document> callbackAudioVideoDocument = new AtomicReference<>();
         AtomicReference<List<String>> callbackCaseDocumentNames = new AtomicReference<>(List.of());

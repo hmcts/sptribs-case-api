@@ -151,7 +151,7 @@ public class CaseworkerCreateBundleFT extends FunctionalTestSuite {
         applicantDocs.add(mp3Doc);
         applicantDocs.add(mp4Doc);
 
-        final Response response = triggerCallback(caseData, CREATE_BUNDLE, ABOUT_TO_SUBMIT_URL);
+        final Response response = triggerCallback(caseData, CREATE_BUNDLE, ABOUT_TO_SUBMIT_URL, false);
 
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
         assertThatJson(response.asString())
