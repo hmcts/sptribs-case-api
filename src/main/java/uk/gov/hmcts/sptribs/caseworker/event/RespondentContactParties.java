@@ -149,9 +149,7 @@ public class RespondentContactParties implements CCDConfig<CaseData, State, User
             }
         }
 
-        if (!correspondenceIds.isEmpty()) {
-            contactPartiesService.linkCorrespondenceIdsToDocuments(caseData, correspondenceIds);
-        }
+        contactPartiesService.linkCorrespondenceIdsToDocuments(caseData, correspondenceIds);
 
     }
 }

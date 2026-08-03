@@ -185,9 +185,7 @@ public class CaseworkerContactParties implements CCDConfig<CaseData, State, User
             correspondenceIds.add(contactPartiesNotification.sendToRespondent(details.getData(), caseNumber));
         }
 
-        if (!correspondenceIds.isEmpty()) {
-            contactPartiesService.linkCorrespondenceIdsToDocuments(details.getData(), correspondenceIds);
-        }
+        contactPartiesService.linkCorrespondenceIdsToDocuments(details.getData(), correspondenceIds);
     }
 
     private String extractDocNameAndCategory(String label) {

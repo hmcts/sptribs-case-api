@@ -201,7 +201,7 @@ public final class DocumentUtil {
         return fileExtension != null && validExtensions.contains(fileExtension.toLowerCase(ROOT));
     }
 
-    public static String getDocumentId(CaseworkerCICDocument document) {
+    public static String getDocumentUUID(CaseworkerCICDocument document) {
         String binaryUrl = document.getDocumentLink().getBinaryUrl();
 
         return StringUtils.substringAfterLast(

@@ -545,16 +545,20 @@ public class TestDataHelper {
         return documentList;
     }
 
-    public static List<ListValue<CaseworkerCICDocument>> getCaseworkerCICDocumentList(String fileName) {
-        final CaseworkerCICDocument caseworkerCICDocument = CaseworkerCICDocument.builder()
-            .documentLink(Document.builder().filename(fileName).build())
-            .documentCategory(DocumentType.LINKED_DOCS)
-            .documentEmailContent("some email content")
-            .build();
+    public static List<ListValue<CaseworkerCICDocument>> getCaseworkerCICDocumentList(String... fileNames) {
         List<ListValue<CaseworkerCICDocument>> documentList = new ArrayList<>();
+        for (String fileName : fileNames) {
+            String url = String.format("test.url/documents/%s", UUID.randomUUID());
+            String binaryUrl = String.format("%s/binary", url);
+            CaseworkerCICDocument caseworkerCICDocument = CaseworkerCICDocument.builder()
+                .documentLink(Document.builder().filename(fileName).url(url).binaryUrl(binaryUrl).build())
+                .documentCategory(DocumentType.LINKED_DOCS)
+                .documentEmailContent("some email content")
+                .build();
         ListValue<CaseworkerCICDocument> caseworkerCICDocumentListValue = new ListValue<>();
         caseworkerCICDocumentListValue.setValue(caseworkerCICDocument);
         documentList.add(caseworkerCICDocumentListValue);
+        }
         return documentList;
     }
 

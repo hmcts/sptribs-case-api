@@ -173,7 +173,7 @@ public class ContactPartiesNotification extends PartiesNotification {
                 CONTACT_PARTIES_EMAIL,
                 uploadedDocuments,
                 selectedDocuments,
-                saveToCicCase(CicCase::setResNotificationResponse)
+                saveToCicCase(CicCase::setTribunalNotificationResponse)
         );
     }
 
