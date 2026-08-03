@@ -17,16 +17,21 @@ import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.common.ccd.CcdCaseType;
 import uk.gov.hmcts.sptribs.common.ccd.CcdJurisdiction;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
+import uk.gov.hmcts.sptribs.document.model.DocumentEntity;
+import uk.gov.hmcts.sptribs.document.service.DocumentsService;
 import uk.gov.hmcts.sptribs.services.cdam.CaseDocumentClientApi;
 
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
+import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 
 import static java.util.Collections.singletonList;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
@@ -39,11 +44,14 @@ public class AudioVideoEvidenceBundleService {
     private static final String DOCUMENT_TYPE_HEADER = "Document type";
     private static final String DOCUMENT_URL_HEADER = "Document URL";
     private static final String DATE_ADDED_HEADER = "Date added";
+    private static final String DATE_APPROVED_HEADER = "Date approved";
+    private static final String UPLOADED_BY_HEADER = "Uploaded by";
     private static final String UNKNOWN_TYPE = "Unknown";
-    private static final String UNKNOWN_DATE = "Unknown";
+    private static final String EMPTY_VALUE = "";
 
     private final PDFServiceClient pdfServiceClient;
     private final CaseDocumentClientApi caseDocumentClientApi;
+    private final DocumentsService documentsService;
     private final AuthTokenGenerator authTokenGenerator;
     private final HttpServletRequest request;
 
@@ -60,6 +68,7 @@ public class AudioVideoEvidenceBundleService {
     List<AudioVideoDocumentRow> extractRows(CaseData caseData) {
         List<AudioVideoDocumentRow> rows = new ArrayList<>();
         List<ListValue<CaseworkerCICDocument>> allDocuments = DocumentListUtil.getAllCaseDocuments(caseData);
+        Map<String, DocumentEntity> persistedDocuments = getPersistedDocuments(caseData, allDocuments);
 
         for (ListValue<CaseworkerCICDocument> documentListValue : allDocuments) {
             if (documentListValue == null || documentListValue.getValue() == null) {
@@ -75,9 +84,18 @@ public class AudioVideoEvidenceBundleService {
                 ? document.getDocumentCategory().getLabel()
                 : UNKNOWN_TYPE;
             String documentUrl = document.getDocumentLink().getBinaryUrl();
-            String dateAdded = formatDate(document.getDate());
+            DocumentEntity persistedDocument = persistedDocuments.get(documentUrl);
+            String dateAdded = formatDate(getSavedAtDate(persistedDocument));
 
-            rows.add(new AudioVideoDocumentRow(documentType, documentUrl, dateAdded, document.getDate()));
+            rows.add(new AudioVideoDocumentRow(
+                documentType,
+                document.getDocumentLink().getFilename(),
+                documentUrl,
+                dateAdded,
+                EMPTY_VALUE,
+                EMPTY_VALUE,
+                getSavedAtDate(persistedDocument)
+            ));
         }
 
         rows.sort(
@@ -87,6 +105,29 @@ public class AudioVideoEvidenceBundleService {
             )
         );
         return rows;
+    }
+
+    private Map<String, DocumentEntity> getPersistedDocuments(CaseData caseData,
+                                                              List<ListValue<CaseworkerCICDocument>> allDocuments) {
+        Long caseReference = caseData.getCaseNumber() != null
+            ? Long.valueOf(caseData.getCaseNumber())
+            : null;
+        if (caseReference == null) {
+            return Map.of();
+        }
+
+        Set<String> binaryUrls = new LinkedHashSet<>();
+        for (ListValue<CaseworkerCICDocument> documentListValue : allDocuments) {
+            if (documentListValue == null || documentListValue.getValue() == null) {
+                continue;
+            }
+            CaseworkerCICDocument document = documentListValue.getValue();
+            if (isAudioVideoDocument(document)) {
+                binaryUrls.add(document.getDocumentLink().getBinaryUrl());
+            }
+        }
+
+        return documentsService.getCaseDocumentsByBinaryUrls(caseReference, List.copyOf(binaryUrls));
     }
 
     private boolean isAudioVideoDocument(CaseworkerCICDocument document) {
@@ -106,9 +147,17 @@ public class AudioVideoEvidenceBundleService {
 
     private String formatDate(LocalDate date) {
         if (date == null) {
-            return UNKNOWN_DATE;
+            return EMPTY_VALUE;
         }
         return DATE_FORMATTER.format(date);
+    }
+
+    private LocalDate getSavedAtDate(DocumentEntity documentEntity) {
+        if (documentEntity == null) {
+            return null;
+        }
+        OffsetDateTime savedAt = documentEntity.getSavedAt();
+        return savedAt == null ? null : savedAt.toLocalDate();
     }
 
     private byte[] generatePdf(List<AudioVideoDocumentRow> rows, Long caseId) {
@@ -134,24 +183,42 @@ public class AudioVideoEvidenceBundleService {
             .append(DOCUMENT_URL_HEADER)
             .append("</th><th>")
             .append(DATE_ADDED_HEADER)
+            .append("</th><th>")
+            .append(DATE_APPROVED_HEADER)
+            .append("</th><th>")
+            .append(UPLOADED_BY_HEADER)
             .append("</th></tr></thead><tbody>");
 
         if (rows.isEmpty()) {
-            html.append("<tr><td colspan=\"3\">No active MP3/MP4 documents found.</td></tr>");
+            html.append("<tr><td colspan=\"5\">No active MP3/MP4 documents found.</td></tr>");
         } else {
             for (AudioVideoDocumentRow row : rows) {
                 html.append("<tr><td>")
                     .append(escapeHtml(row.documentType()))
                     .append("</td><td>")
-                    .append(escapeHtml(row.documentUrl()))
+                    .append(buildDocumentLink(row.documentFilename(), row.documentUrl()))
                     .append("</td><td>")
                     .append(escapeHtml(row.dateAdded()))
+                    .append("</td><td>")
+                    .append(escapeHtml(row.dateApproved()))
+                    .append("</td><td>")
+                    .append(escapeHtml(row.uploadedBy()))
                     .append("</td></tr>");
             }
         }
 
         html.append("</tbody></table></body></html>");
         return html.toString();
+    }
+
+    private String buildDocumentLink(String filename, String documentUrl) {
+        if (StringUtils.isBlank(documentUrl)) {
+            return "";
+        }
+
+        String safeFileName = escapeHtml(StringUtils.defaultIfBlank(filename, documentUrl));
+        String safeUrl = escapeHtml(documentUrl);
+        return "<a href=\"" + safeUrl + "\">" + safeFileName + "</a>";
     }
 
     private String escapeHtml(String value) {
@@ -195,6 +262,14 @@ public class AudioVideoEvidenceBundleService {
         return document;
     }
 
-    record AudioVideoDocumentRow(String documentType, String documentUrl, String dateAdded, LocalDate sortableDate) {
+    record AudioVideoDocumentRow(
+        String documentType,
+        String documentFilename,
+        String documentUrl,
+        String dateAdded,
+        String dateApproved,
+        String uploadedBy,
+        LocalDate sortableDate
+    ) {
     }
 }

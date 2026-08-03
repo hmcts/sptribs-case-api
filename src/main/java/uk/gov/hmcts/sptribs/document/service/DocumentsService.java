@@ -23,6 +23,8 @@ import uk.gov.hmcts.sptribs.document.model.DocumentType;
 import uk.gov.hmcts.sptribs.notification.model.Party;
 
 import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -168,6 +170,26 @@ public class DocumentsService {
             .latestCaseBundleDocument(latestBundle.orElse(null))
             .orderAndDecisionDocuments(orderDecisionDocuments)
             .build();
+    }
+
+    public Map<String, DocumentEntity> getCaseDocumentsByBinaryUrls(Long caseReferenceNumber, List<String> binaryUrls) {
+        if (caseReferenceNumber == null || binaryUrls == null || binaryUrls.isEmpty()) {
+            return Map.of();
+        }
+
+        try {
+            List<DocumentEntity> documents =
+                documentsRepository.findByCaseReferenceNumberAndDocumentBinaryUrlIn(caseReferenceNumber, binaryUrls);
+
+            Map<String, DocumentEntity> documentMap = new HashMap<>();
+            documents.stream()
+                .sorted(Comparator.comparing(DocumentEntity::getSavedAt, Comparator.nullsLast(Comparator.reverseOrder())))
+                .forEach(document -> documentMap.putIfAbsent(document.getDocumentBinaryUrl(), document));
+
+            return documentMap;
+        } catch (DataAccessException e) {
+            throw new DocumentLookupException("Error getting documents by case reference and binary urls", e);
+        }
     }
 
     @Transactional

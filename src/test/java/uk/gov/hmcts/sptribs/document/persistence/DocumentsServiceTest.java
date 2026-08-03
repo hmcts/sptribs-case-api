@@ -328,6 +328,44 @@ public class DocumentsServiceTest {
     }
 
     @Test
+    void shouldGetCaseDocumentsByBinaryUrlsAndPreferLatestSavedAtPerBinaryUrl() {
+        String binaryUrl = "example.com/test-document.pdf/binary";
+        OffsetDateTime olderTime = OffsetDateTime.parse("2026-01-10T10:00:00Z");
+        OffsetDateTime newerTime = OffsetDateTime.parse("2026-01-12T10:00:00Z");
+
+        DocumentEntity olderDocument = buildDocumentEntity(HOSPITAL_RECORDS.name(), 2L, olderTime);
+        DocumentEntity newerDocument = buildDocumentEntity(HOSPITAL_RECORDS.name(), 2L, newerTime);
+
+        when(documentsRepository.findByCaseReferenceNumberAndDocumentBinaryUrlIn(TEST_CASE_ID, List.of(binaryUrl)))
+            .thenReturn(List.of(olderDocument, newerDocument));
+
+        Map<String, DocumentEntity> result = documentsService.getCaseDocumentsByBinaryUrls(TEST_CASE_ID, List.of(binaryUrl));
+
+        assertThat(result).containsOnlyKeys(binaryUrl);
+        assertThat(result.get(binaryUrl).getSavedAt()).isEqualTo(newerTime);
+    }
+
+    @Test
+    void shouldReturnEmptyMapWhenCaseReferenceOrBinaryUrlsInvalidForCaseDocumentLookup() {
+        assertThat(documentsService.getCaseDocumentsByBinaryUrls(null, List.of("url"))).isEmpty();
+        assertThat(documentsService.getCaseDocumentsByBinaryUrls(TEST_CASE_ID, List.of())).isEmpty();
+        assertThat(documentsService.getCaseDocumentsByBinaryUrls(TEST_CASE_ID, null)).isEmpty();
+    }
+
+    @Test
+    void shouldThrowDocumentLookupExceptionWhenCaseDocumentLookupFails() {
+        String binaryUrl = "example.com/test-document.pdf/binary";
+
+        when(documentsRepository.findByCaseReferenceNumberAndDocumentBinaryUrlIn(TEST_CASE_ID, List.of(binaryUrl)))
+            .thenThrow(new DataAccessResourceFailureException("DB error"));
+
+        assertThatThrownBy(() -> documentsService.getCaseDocumentsByBinaryUrls(TEST_CASE_ID, List.of(binaryUrl)))
+            .isInstanceOf(DocumentLookupException.class)
+            .hasMessageContaining("Error getting documents by case reference and binary urls")
+            .hasCauseInstanceOf(DataAccessException.class);
+    }
+
+    @Test
     void shouldThrowDocumentDeleteExceptionWhenTryingToDelete() {
         //given
         String binaryURL = "binaryURL";

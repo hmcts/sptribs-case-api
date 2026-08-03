@@ -16,15 +16,19 @@ import uk.gov.hmcts.sptribs.cdam.model.UploadResponse;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
+import uk.gov.hmcts.sptribs.document.model.DocumentEntity;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
+import uk.gov.hmcts.sptribs.document.service.DocumentsService;
 import uk.gov.hmcts.sptribs.services.cdam.CaseDocumentClientApi;
 
 import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -51,10 +55,13 @@ class AudioVideoEvidenceBundleServiceTest {
     private AuthTokenGenerator authTokenGenerator;
 
     @Mock
+    private DocumentsService documentsService;
+
+    @Mock
     private HttpServletRequest request;
 
     @Test
-    void shouldExtractOnlyAudioVideoRowsFromCaseDocumentsAndSortByDateWithUnknownValues() {
+    void shouldExtractOnlyAudioVideoRowsFromCaseDocumentsAndSortBySavedDateWithEmptyValues() {
         List<ListValue<CaseworkerCICDocument>> docs = new ArrayList<>();
         docs.add(ListValue.<CaseworkerCICDocument>builder().id(UUID.randomUUID().toString()).value(null).build());
         docs.add(toListValue("notes.pdf", "http://dm/documents/notes/binary", DocumentType.APPLICATION_FORM, LocalDate.of(2026, 1, 8)));
@@ -68,6 +75,7 @@ class AudioVideoEvidenceBundleServiceTest {
 
 
         CaseData caseData = CaseData.builder().build();
+        caseData.setCaseNumber("12345");
         CicCase cicCase = CicCase.builder().build();
 
         cicCase.setApplicantDocumentsUploaded(docs);
@@ -76,9 +84,16 @@ class AudioVideoEvidenceBundleServiceTest {
         AudioVideoEvidenceBundleService service = new AudioVideoEvidenceBundleService(
             pdfServiceClient,
             caseDocumentClientApi,
+            documentsService,
             authTokenGenerator,
             request
         );
+
+        when(documentsService.getCaseDocumentsByBinaryUrls(eq(12345L), any()))
+            .thenReturn(Map.of(
+                "http://dm/documents/audio/binary",
+                DocumentEntity.builder().savedAt(OffsetDateTime.parse("2026-01-10T10:15:30Z")).build()
+            ));
 
         List<AudioVideoEvidenceBundleService.AudioVideoDocumentRow> rows = service.extractRows(caseData);
 
@@ -88,7 +103,7 @@ class AudioVideoEvidenceBundleServiceTest {
             .containsExactly("http://dm/documents/audio/binary", "http://dm/documents/video/binary");
         assertThat(rows)
             .extracting(AudioVideoEvidenceBundleService.AudioVideoDocumentRow::dateAdded)
-            .containsExactly("2026-01-10", "Unknown");
+            .containsExactly("2026-01-10", "");
         assertThat(rows)
             .extracting(AudioVideoEvidenceBundleService.AudioVideoDocumentRow::documentType)
             .containsExactly("L - Linked docs", "Unknown");
@@ -99,6 +114,7 @@ class AudioVideoEvidenceBundleServiceTest {
         AudioVideoEvidenceBundleService service = new AudioVideoEvidenceBundleService(
             pdfServiceClient,
             caseDocumentClientApi,
+            documentsService,
             authTokenGenerator,
             request
         );
@@ -121,6 +137,7 @@ class AudioVideoEvidenceBundleServiceTest {
         AudioVideoEvidenceBundleService service = new AudioVideoEvidenceBundleService(
             pdfServiceClient,
             caseDocumentClientApi,
+            documentsService,
             authTokenGenerator,
             request
         );
@@ -143,6 +160,7 @@ class AudioVideoEvidenceBundleServiceTest {
     @Test
     void shouldGenerateUploadAndReturnAudioVideoEvidenceBundleDocument() {
         CaseData caseData = CaseData.builder().build();
+        caseData.setCaseNumber("12345");
         CicCase cicCase = CicCase.builder().build();
         cicCase.setApplicantDocumentsUploaded(List.of(
             toListValue(
@@ -160,10 +178,16 @@ class AudioVideoEvidenceBundleServiceTest {
         when(request.getHeader(AUTHORIZATION)).thenReturn("Bearer user-token");
         when(caseDocumentClientApi.uploadDocuments(eq("Bearer user-token"), eq("service-token"), any()))
             .thenReturn(buildUploadResponse("http://dm-store/documents/generated", "http://dm-store/documents/generated/binary"));
+        when(documentsService.getCaseDocumentsByBinaryUrls(eq(12345L), any()))
+            .thenReturn(Map.of(
+                "http://dm/documents/audio/binary?a=1&b=<x>\"'",
+                DocumentEntity.builder().savedAt(OffsetDateTime.parse("2026-01-10T12:00:00Z")).build()
+            ));
 
         AudioVideoEvidenceBundleService service = new AudioVideoEvidenceBundleService(
             pdfServiceClient,
             caseDocumentClientApi,
+            documentsService,
             authTokenGenerator,
             request
         );
@@ -178,7 +202,9 @@ class AudioVideoEvidenceBundleServiceTest {
         verify(pdfServiceClient).generateFromHtml(htmlCaptor.capture(), eq(Collections.emptyMap()));
         String html = new String(htmlCaptor.getValue(), StandardCharsets.UTF_8);
         assertThat(html).contains("Audio/video evidence document - case 12345");
-        assertThat(html).contains("http://dm/documents/audio/binary?a=1&amp;b=&lt;x&gt;&quot;&#39;");
+        assertThat(html).contains("<th>Date approved</th>");
+        assertThat(html).contains("<th>Uploaded by</th>");
+        assertThat(html).contains("<a href=\"http://dm/documents/audio/binary?a=1&amp;b=&lt;x&gt;&quot;&#39;\">hearing-audio.mp3</a>");
         verify(caseDocumentClientApi).uploadDocuments(eq("Bearer user-token"), eq("service-token"), any());
     }
 
@@ -192,6 +218,7 @@ class AudioVideoEvidenceBundleServiceTest {
         AudioVideoEvidenceBundleService service = new AudioVideoEvidenceBundleService(
             pdfServiceClient,
             caseDocumentClientApi,
+            documentsService,
             authTokenGenerator,
             request
         );
@@ -213,6 +240,7 @@ class AudioVideoEvidenceBundleServiceTest {
         AudioVideoEvidenceBundleService service = new AudioVideoEvidenceBundleService(
             pdfServiceClient,
             caseDocumentClientApi,
+            documentsService,
             authTokenGenerator,
             request
         );
@@ -234,6 +262,7 @@ class AudioVideoEvidenceBundleServiceTest {
         AudioVideoEvidenceBundleService service = new AudioVideoEvidenceBundleService(
             pdfServiceClient,
             caseDocumentClientApi,
+            documentsService,
             authTokenGenerator,
             request
         );
@@ -247,6 +276,7 @@ class AudioVideoEvidenceBundleServiceTest {
         AudioVideoEvidenceBundleService service = new AudioVideoEvidenceBundleService(
             pdfServiceClient,
             caseDocumentClientApi,
+            documentsService,
             authTokenGenerator,
             request
         );
