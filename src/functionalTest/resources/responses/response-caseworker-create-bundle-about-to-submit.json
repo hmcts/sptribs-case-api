@@ -9,77 +9,70 @@
           "description": "",
           "folders": [
             {
-              "id": "${json-unit.any-string}",
-              "value": {
-                "name": "Audio/video evidence document",
-                "sortIndex": 10
-              }
-            },
-            {
-              "id": "${json-unit.any-string}",
+              "id": "46",
               "value": {
                 "name": "Further Documents",
                 "sortIndex": 9
               }
             },
             {
-              "id": "${json-unit.any-string}",
+              "id": "47",
               "value": {
                 "name": "General evidence",
                 "sortIndex": 8
               }
             },
             {
-              "id": "${json-unit.any-string}",
+              "id": "48",
               "value": {
                 "name": "Direction - decision notices",
                 "sortIndex": 7
               }
             },
             {
-              "id": "${json-unit.any-string}",
+              "id": "49",
               "value": {
                 "name": "Witness Statements",
                 "sortIndex": 6
               }
             },
             {
-              "id": "${json-unit.any-string}",
+              "id": "50",
               "value": {
                 "name": "Linked documents",
                 "sortIndex": 5
               }
             },
             {
-              "id": "${json-unit.any-string}",
+              "id": "51",
               "value": {
                 "name": "Other evidence",
                 "sortIndex": 4
               }
             },
             {
-              "id": "${json-unit.any-string}",
+              "id": "52",
               "value": {
                 "name": "Financial records",
                 "sortIndex": 3
               }
             },
             {
-              "id": "${json-unit.any-string}",
+              "id": "53",
               "value": {
                 "name": "Medical records",
                 "sortIndex": 2
               }
             },
             {
-              "id": "${json-unit.any-string}",
+              "id": "54",
               "value": {
                 "name": "Police evidence",
                 "sortIndex": 1
               }
             },
             {
-              "id": "${json-unit.any-string}",
+              "id": "55",
               "value": {
                 "name": "Application Documents",
                 "sortIndex": 0
@@ -105,30 +98,6 @@
           "documentEmailContent": "Lorem ipsum",
           "documentLink": {
             "document_filename": "pdf.pdf"
-          }
-        }
-      },
-      {
-        "id": "${json-unit.any-string}",
-        "value": {
-          "documentCategory": "Linked docs",
-          "documentEmailContent": "Audio evidence",
-          "documentLink": {
-            "document_url": "http://dm-store/documents/media-a",
-            "document_binary_url": "http://dm-store/documents/media-a/binary",
-            "document_filename": "media-a.mp3"
-          }
-        }
-      },
-      {
-        "id": "${json-unit.any-string}",
-        "value": {
-          "documentCategory": "PoliceEvidence",
-          "documentEmailContent": "Video evidence",
-          "documentLink": {
-            "document_url": "http://dm-store/documents/media-b",
-            "document_binary_url": "http://dm-store/documents/media-b/binary",
-            "document_filename": "media-b.mp4"
           }
         }
       }

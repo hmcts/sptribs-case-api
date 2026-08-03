@@ -20,30 +20,6 @@
           "document_filename": "pdf.pdf"
         }
       }
-    },
-    {
-      "id": "b9e56c57-7b2c-4f8e-9895-3ccf5f4d2088",
-      "value": {
-        "documentCategory": "Linked docs",
-        "documentEmailContent": "Audio evidence",
-        "documentLink": {
-          "document_url": "http://dm-store/documents/media-a",
-          "document_binary_url": "http://dm-store/documents/media-a/binary",
-          "document_filename": "media-a.mp3"
-        }
-      }
-    },
-    {
-      "id": "25f51c67-93e6-4ec1-91c2-4f34d2cc3c2f",
-      "value": {
-        "documentCategory": "PoliceEvidence",
-        "documentEmailContent": "Video evidence",
-        "documentLink": {
-          "document_url": "http://dm-store/documents/media-b",
-          "document_binary_url": "http://dm-store/documents/media-b/binary",
-          "document_filename": "media-b.mp4"
-        }
-      }
     }
   ],
   "hyphenatedCaseRef": "1234-5678-9012-3456",
@@ -53,14 +29,6 @@
       {
         "code": "a17fa26b-6e91-48ba-841e-8ab75c772463",
         "label": "[pdf.pdf A - Application Form](http://manage-case.demo.platform.hmcts.net/documents/null/binary)"
-      },
-      {
-        "code": "f2b88f42-b86d-4472-a9c4-e5e6d8be1c6b",
-        "label": "[media-a.mp3 L - Linked docs](http://manage-case.demo.platform.hmcts.net/documents/media-a/binary)"
-      },
-      {
-        "code": "7f9b34fd-42d7-4cb2-8f73-33856d06a435",
-        "label": "[media-b.mp4 B - Police evidence](http://manage-case.demo.platform.hmcts.net/documents/media-b/binary)"
       }
     ]
   }
