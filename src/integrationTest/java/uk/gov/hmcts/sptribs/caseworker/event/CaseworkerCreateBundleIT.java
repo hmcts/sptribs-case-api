@@ -7,6 +7,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -262,6 +263,19 @@ public class CaseworkerCreateBundleIT {
         assertThat(callbackCaseDocumentNames.get())
             .containsExactly("paper.pdf")
             .doesNotContain("media-1.mp3", "media-2.mp4");
+
+        ArgumentCaptor<byte[]> htmlCaptor = ArgumentCaptor.forClass(byte[].class);
+        verify(pdfServiceClient).generateFromHtml(htmlCaptor.capture(), eq(Map.of()));
+        String html = new String(htmlCaptor.getValue(), java.nio.charset.StandardCharsets.UTF_8);
+        assertThat(html)
+            .contains("<th>Document type</th>")
+            .contains("<th>Document URL</th>")
+            .contains("<th>Date added</th>")
+            .contains("<th>Date approved</th>")
+            .contains("<th>Uploaded by</th>")
+            .contains("<a href=\"http://dm/documents/1/binary\">media-1.mp3</a>")
+            .contains("<a href=\"http://dm/documents/2/binary\">media-2.mp4</a>")
+            .doesNotContain("paper.pdf");
     }
 
     @Test
