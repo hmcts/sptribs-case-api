@@ -107,6 +107,30 @@
             "document_filename": "pdf.pdf"
           }
         }
+      },
+      {
+        "id": "${json-unit.any-string}",
+        "value": {
+          "documentCategory": "Linked docs",
+          "documentEmailContent": "Audio evidence",
+          "documentLink": {
+            "document_url": "http://dm-store/documents/media-a",
+            "document_binary_url": "http://dm-store/documents/media-a/binary",
+            "document_filename": "media-a.mp3"
+          }
+        }
+      },
+      {
+        "id": "${json-unit.any-string}",
+        "value": {
+          "documentCategory": "PoliceEvidence",
+          "documentEmailContent": "Video evidence",
+          "documentLink": {
+            "document_url": "http://dm-store/documents/media-b",
+            "document_binary_url": "http://dm-store/documents/media-b/binary",
+            "document_filename": "media-b.mp4"
+          }
+        }
       }
     ],
     "schemeLabel": "1996",
