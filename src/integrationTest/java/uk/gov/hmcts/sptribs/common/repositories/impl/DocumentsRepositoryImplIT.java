@@ -195,7 +195,7 @@ class DocumentsRepositoryImplIT extends IntegrationTestBase {
     @Test
     void shouldFindContactPartyDocuments() {
         //given
-        OffsetDateTime sentOn = OffsetDateTime.now();
+        OffsetDateTime sentOn = OffsetDateTime.now().truncatedTo(ChronoUnit.MICROS);
         String binaryUrl = UUID.randomUUID().toString();
         Long documentId = caseDocumentITManager.addCaseDocument(
             123L,
