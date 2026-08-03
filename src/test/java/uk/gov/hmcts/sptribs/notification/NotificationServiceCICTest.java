@@ -2,7 +2,6 @@ package uk.gov.hmcts.sptribs.notification;
 
 import jakarta.servlet.http.HttpServletRequest;
 import org.apache.commons.io.IOUtils;
-import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -25,6 +24,7 @@ import uk.gov.hmcts.sptribs.idam.CICUser;
 import uk.gov.hmcts.sptribs.idam.IdamService;
 import uk.gov.hmcts.sptribs.notification.exception.NotificationException;
 import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
+import uk.gov.hmcts.sptribs.notification.model.Party;
 import uk.gov.hmcts.sptribs.services.cdam.CaseDocumentClientApi;
 import uk.gov.hmcts.sptribs.testutil.TestDataHelper;
 import uk.gov.service.notify.NotificationClient;
@@ -153,7 +153,7 @@ public class NotificationServiceCICTest {
         when(caseDocumentClientAPI.uploadDocuments(any(), any(), any())).thenReturn(expectedResponse);
 
         //When
-        notificationService.sendEmail(request, TEST_CASE_ID.toString());
+        notificationService.sendEmail(request, TEST_CASE_ID.toString(), Party.APPLICANT);
 
         //Then
         verify(notificationClient).sendEmail(
@@ -210,7 +210,7 @@ public class NotificationServiceCICTest {
         when(caseDocumentClientAPI.uploadDocuments(any(), any(), any())).thenReturn(expectedResponse);
 
         //When
-        notificationService.sendEmail(request, TEST_CASE_ID.toString());
+        notificationService.sendEmail(request, TEST_CASE_ID.toString(), null);
 
         //Then
         verify(notificationClient).sendEmail(
@@ -286,7 +286,7 @@ public class NotificationServiceCICTest {
         when(caseDocumentClientAPI.uploadDocuments(any(), any(), any())).thenReturn(expectedResponse);
 
         //When
-        notificationService.sendEmail(request, TEST_CASE_ID.toString());
+        notificationService.sendEmail(request, TEST_CASE_ID.toString(), null);
 
         //Then
         verify(notificationClient).sendEmail(
@@ -376,7 +376,7 @@ public class NotificationServiceCICTest {
         String testCaseRef = TEST_CASE_ID.toString();
 
         //When&Then
-        assertThatThrownBy(() -> notificationService.sendEmail(request, testCaseRef))
+        assertThatThrownBy(() -> notificationService.sendEmail(request, testCaseRef, null))
             .isInstanceOf(NotificationException.class)
             .hasMessageContaining("some message");
 
@@ -416,7 +416,7 @@ public class NotificationServiceCICTest {
 
         String testCaseRef = TEST_CASE_ID.toString();
 
-        assertThatThrownBy(() -> notificationService.sendEmail(request, testCaseRef))
+        assertThatThrownBy(() -> notificationService.sendEmail(request, testCaseRef, null))
             .isInstanceOf(NotificationException.class)
             .satisfies(e -> assertAll(
                 () -> assertInstanceOf(IOException.class, e.getCause())
@@ -465,7 +465,7 @@ public class NotificationServiceCICTest {
 
         String testCaseRef = TEST_CASE_ID.toString();
 
-        assertThatThrownBy(() -> notificationService.sendEmail(request, testCaseRef))
+        assertThatThrownBy(() -> notificationService.sendEmail(request, testCaseRef, null))
             .isInstanceOf(NotificationException.class)
             .hasMessageContaining("uk.gov.service.notify.NotificationClientException");
     }
@@ -551,7 +551,7 @@ public class NotificationServiceCICTest {
 
         String testCaseRef = TEST_CASE_ID.toString();
 
-        assertThatThrownBy(() -> notificationService.sendEmail(request, testCaseRef))
+        assertThatThrownBy(() -> notificationService.sendEmail(request, testCaseRef, null))
             .isInstanceOf(RestClientException.class)
             .hasMessageContaining("some message");
 
@@ -597,11 +597,11 @@ public class NotificationServiceCICTest {
             String testDestinationAddress = request.getDestinationAddress();
 
             assertThatThrownBy(() -> notificationService.saveEmailCorrespondence(testTemplateName,
-                sendEmailResponse, testDestinationAddress, testCaseRef))
+                sendEmailResponse, testDestinationAddress, testCaseRef, null))
                 .isInstanceOf(IOException.class)
                 .hasMessageContaining("some message");
 
-            assertThatThrownBy(() -> notificationService.sendEmail(request, testCaseRef))
+            assertThatThrownBy(() -> notificationService.sendEmail(request, testCaseRef, null))
                 .isInstanceOf(NotificationException.class)
                 .hasMessageContaining("some message");
 
@@ -735,7 +735,7 @@ public class NotificationServiceCICTest {
         when(caseDocumentClientAPI.uploadDocuments(any(), any(), any())).thenReturn(expectedResponse);
 
         //When
-        notificationService.sendEmail(request, TEST_CASE_ID.toString());
+        notificationService.sendEmail(request, TEST_CASE_ID.toString(), null);
 
         //Then
         verify(notificationClient).sendEmail(
@@ -804,7 +804,10 @@ public class NotificationServiceCICTest {
         when(caseDocumentClientAPI.uploadDocuments(any(), any(), any())).thenReturn(expectedResponse);
 
         //When
-        notificationService.sendEmail(request, List.of(cicDocument), TEST_CASE_ID.toString());
+        notificationService.sendEmail(request, List.of(cicDocument), TEST_CASE_ID.toString(), null);
+
+        String expectedDocumentDescription = String.format("%nFilename: %s%nDescription: %s%n",
+            cicDocument.getDocumentLink().getFilename(), cicDocument.getDocumentEmailContent());
 
         //Then
         verify(notificationClient).sendEmail(
@@ -818,7 +821,8 @@ public class NotificationServiceCICTest {
             .containsEntry("DocumentAvailable1", "yes");
         assertThat(templateVarsArgCaptor.getValue())
             .extracting("CaseDocument1")
-            .isInstanceOf(JSONObject.class);
+            .isInstanceOf(String.class)
+            .isEqualTo(expectedDocumentDescription);
 
         verify(sendEmailResponse, times(3)).getNotificationId();
         verify(sendEmailResponse, times(2)).getReference();
@@ -864,7 +868,7 @@ public class NotificationServiceCICTest {
         when(caseDocumentClientAPI.getDocumentBinary(anyString(), anyString(), any(UUID.class)))
             .thenReturn(ResponseEntity.notFound().build());
 
-        assertThatThrownBy(() -> notificationService.sendEmail(request, List.of(cicDocument), TEST_CASE_ID.toString()))
+        assertThatThrownBy(() -> notificationService.sendEmail(request, List.of(cicDocument), TEST_CASE_ID.toString(), null))
             .isInstanceOf(NotificationException.class)
             .hasMessageContaining("Failed to get document binary for id " + docId);
     }
@@ -923,7 +927,7 @@ public class NotificationServiceCICTest {
         when(caseDocumentClientAPI.uploadDocuments(any(), any(), any())).thenReturn(expectedResponse);
 
         //When
-        notificationService.sendEmail(request, List.of(cicDocument), TEST_CASE_ID.toString());
+        notificationService.sendEmail(request, List.of(cicDocument), TEST_CASE_ID.toString(), null);
 
         //Then
         verify(notificationClient).sendEmail(
@@ -936,8 +940,8 @@ public class NotificationServiceCICTest {
             .containsEntry(CASE_ISSUED_RESPONDENT_EMAIL.name(), templateId)
             .containsEntry("DocumentAvailable1", "yes");
 
-        String expectedDocumentDescription = String.format("%nFilename: %s%nDescription: %s%nUpload Date: %s",
-            cicDocument.getDocumentLink().getFilename(), cicDocument.getDocumentEmailContent(), cicDocument.getDate());
+        String expectedDocumentDescription = String.format("%nFilename: %s%nDescription: %s%n",
+            cicDocument.getDocumentLink().getFilename(), cicDocument.getDocumentEmailContent());
 
         assertThat(templateVarsArgCaptor.getValue())
             .extracting("CaseDocument1")
@@ -977,7 +981,7 @@ public class NotificationServiceCICTest {
         when(caseDocumentClientAPI.getDocumentBinary(anyString(), anyString(), any(UUID.class))).thenReturn(sample);
 
         String expectedErrorMessage = String.format("Unable to find document details for document id: %s", docId);
-        assertThatThrownBy(() -> notificationService.sendEmail(request, List.of(), TEST_CASE_ID.toString()))
+        assertThatThrownBy(() -> notificationService.sendEmail(request, List.of(), TEST_CASE_ID.toString(), null))
             .isInstanceOf(NotificationException.class)
             .hasMessageContaining(expectedErrorMessage);
     }

@@ -8,7 +8,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -16,6 +15,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.ccd.sdk.type.DynamicListElement;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
+import uk.gov.hmcts.sptribs.IntegrationTestBase;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.common.config.WebMvcConfig;
 import uk.gov.hmcts.sptribs.document.bundling.model.Bundle;
@@ -49,10 +49,9 @@ import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.caseData;
 import static uk.gov.hmcts.sptribs.testutil.TestResourceUtil.expectedResponse;
 
 @ExtendWith(SpringExtension.class)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
 @ContextConfiguration(initializers = {IdamWireMock.PropertiesInitializer.class})
-public class CaseworkerRemoveBundlesIT {
+public class CaseworkerRemoveBundlesIT extends IntegrationTestBase {
 
     private static final String CASEWORKER_REMOVE_BUNDLES_ABOUT_TO_START_RESPONSE =
         "classpath:responses/caseworker-remove-bundles-about-to-start-response.json";
@@ -216,8 +215,10 @@ public class CaseworkerRemoveBundlesIT {
         assertThat(caseDataAfterAboutToSubmit.getCaseBundles().getFirst().getId()).isEqualTo("1");
         assertThat(caseDataAfterAboutToSubmit.getCaseBundles().getFirst().getValue().getId()).isEqualTo(bundleUUID3);
         assertThat(caseDataAfterAboutToSubmit.getCaseBundleIdsAndTimestamps()).hasSize(1);
-        assertThat(caseDataAfterAboutToSubmit.getCaseBundleIdsAndTimestamps().getFirst().getId()).isEqualTo("1");
-        assertThat(caseDataAfterAboutToSubmit.getCaseBundleIdsAndTimestamps().getFirst().getValue().getBundleId()).isEqualTo(bundleUUID3);
+        assertThat(caseDataAfterAboutToSubmit.getCaseBundleIdsAndTimestamps()
+        .getFirst().getId()).isEqualTo("1");
+        assertThat(caseDataAfterAboutToSubmit.getCaseBundleIdsAndTimestamps()
+        .getFirst().getValue().getBundleId()).isEqualTo(bundleUUID3);
         assertThat(caseDataAfterAboutToSubmit.getCicCase().getRemoveBundlesList().getValue()).isNull();
     }
 

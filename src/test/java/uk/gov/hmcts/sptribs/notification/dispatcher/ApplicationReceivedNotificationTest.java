@@ -8,12 +8,14 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.ContactPreferenceType;
+import uk.gov.hmcts.sptribs.common.CommonConstants;
 import uk.gov.hmcts.sptribs.notification.NotificationHelper;
 import uk.gov.hmcts.sptribs.notification.NotificationServiceCIC;
 import uk.gov.hmcts.sptribs.notification.TemplateName;
 import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
 
 import java.util.HashMap;
+import java.util.Map;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
@@ -48,11 +50,13 @@ public class ApplicationReceivedNotificationTest {
 
         applicationReceivedNotification.sendToSubject(data, TEST_CASE_ID.toString());
 
+        HashMap<String, Object> templateVars = new HashMap<>(Map.of(CommonConstants.DASHBOARD_KEY, CommonConstants.DASHBOARD_LINK));
+
         //Then
-        verify(notificationService).sendEmail(any(NotificationRequest.class), eq(TEST_CASE_ID.toString()));
+        verify(notificationService).sendEmail(any(NotificationRequest.class), eq(TEST_CASE_ID.toString()), eq(null));
         verify(notificationHelper).buildEmailNotificationRequest(
             data.getCicCase().getEmail(),
-            new HashMap<>(),
+            templateVars,
             TemplateName.APPLICATION_RECEIVED);
     }
 
@@ -64,7 +68,7 @@ public class ApplicationReceivedNotificationTest {
 
         applicationReceivedNotification.sendToSubject(data, TEST_CASE_ID.toString());
 
-        verify(notificationService, never()).sendEmail(any(NotificationRequest.class), eq(TEST_CASE_ID.toString()));
+        verify(notificationService, never()).sendEmail(any(NotificationRequest.class), eq(TEST_CASE_ID.toString()), eq(null));
     }
 
     @Test
@@ -81,11 +85,13 @@ public class ApplicationReceivedNotificationTest {
         when(notificationHelper.getApplicantCommonVars(any(), any(CaseData.class))).thenReturn(new HashMap<>());
         applicationReceivedNotification.sendToApplicant(data, TEST_CASE_ID.toString());
 
+        HashMap<String, Object> templateVars = new HashMap<>(Map.of(CommonConstants.DASHBOARD_KEY, CommonConstants.DASHBOARD_LINK));
+
         //Then
-        verify(notificationService).sendEmail(any(NotificationRequest.class), eq(TEST_CASE_ID.toString()));
+        verify(notificationService).sendEmail(any(NotificationRequest.class), eq(TEST_CASE_ID.toString()), eq(null));
         verify(notificationHelper).buildEmailNotificationRequest(
             data.getCicCase().getApplicantEmailAddress(),
-            new HashMap<>(),
+            templateVars,
             TemplateName.APPLICATION_RECEIVED);
     }
 
@@ -98,7 +104,7 @@ public class ApplicationReceivedNotificationTest {
 
         applicationReceivedNotification.sendToApplicant(data, TEST_CASE_ID.toString());
 
-        verify(notificationService, never()).sendEmail(any(NotificationRequest.class), eq(TEST_CASE_ID.toString()));
+        verify(notificationService, never()).sendEmail(any(NotificationRequest.class), eq(TEST_CASE_ID.toString()), eq(null));
     }
 
     @Test
@@ -115,11 +121,13 @@ public class ApplicationReceivedNotificationTest {
         when(notificationHelper.getRepresentativeCommonVars(any(), any(CaseData.class))).thenReturn(new HashMap<>());
         applicationReceivedNotification.sendToRepresentative(data, TEST_CASE_ID.toString());
 
+        HashMap<String, Object> templateVars = new HashMap<>(Map.of(CommonConstants.DASHBOARD_KEY, CommonConstants.DASHBOARD_LINK));
+
         //Then
-        verify(notificationService).sendEmail(any(NotificationRequest.class), eq(TEST_CASE_ID.toString()));
+        verify(notificationService).sendEmail(any(NotificationRequest.class), eq(TEST_CASE_ID.toString()), eq(null));
         verify(notificationHelper).buildEmailNotificationRequest(
             data.getCicCase().getRepresentativeEmailAddress(),
-            new HashMap<>(),
+            templateVars,
             TemplateName.APPLICATION_RECEIVED);
     }
 
@@ -132,7 +140,7 @@ public class ApplicationReceivedNotificationTest {
 
         applicationReceivedNotification.sendToRepresentative(data, TEST_CASE_ID.toString());
 
-        verify(notificationService, never()).sendEmail(any(NotificationRequest.class), eq(TEST_CASE_ID.toString()));
+        verify(notificationService, never()).sendEmail(any(NotificationRequest.class), eq(TEST_CASE_ID.toString()), eq(null));
     }
 
     private CaseData getMockCaseData() {

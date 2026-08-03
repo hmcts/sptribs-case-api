@@ -68,11 +68,11 @@ class DssApplicationReceivedNotificationTest {
         when(dssNotificationHelper.buildEmailNotificationRequest(any(), anyMap(), any(TemplateName.class)))
             .thenReturn(NotificationRequest.builder().build());
         when(dssNotificationHelper.getSubjectCommonVars(any(), any(CaseData.class))).thenReturn(templateVars);
-        when(notificationService.sendEmail(any(NotificationRequest.class), eq(CASE_NUMBER))).thenReturn(notificationResponse);
+        when(notificationService.sendEmail(any(NotificationRequest.class), eq(CASE_NUMBER), eq(null))).thenReturn(notificationResponse);
 
         dssApplicationReceivedNotification.sendToSubject(caseData, CASE_NUMBER);
 
-        verify(notificationService).sendEmail(any(NotificationRequest.class), eq(CASE_NUMBER));
+        verify(notificationService).sendEmail(any(NotificationRequest.class), eq(CASE_NUMBER), eq(null));
         verify(dssNotificationHelper).buildEmailNotificationRequest(
             dssCaseData.getSubjectEmailAddress(),
             templateVars,
@@ -97,11 +97,11 @@ class DssApplicationReceivedNotificationTest {
         when(dssNotificationHelper.buildEmailNotificationRequest(any(), anyMap(), any(TemplateName.class)))
                 .thenReturn(NotificationRequest.builder().build());
         when(dssNotificationHelper.getSubjectCommonVars(any(), any(CaseData.class))).thenReturn(templateVars);
-        when(notificationService.sendEmail(any(NotificationRequest.class), eq(CASE_NUMBER))).thenReturn(notificationResponse);
+        when(notificationService.sendEmail(any(NotificationRequest.class), eq(CASE_NUMBER), eq(null))).thenReturn(notificationResponse);
 
         dssApplicationReceivedNotification.sendToSubject(caseData, CASE_NUMBER);
 
-        verify(notificationService).sendEmail(any(NotificationRequest.class), eq(CASE_NUMBER));
+        verify(notificationService).sendEmail(any(NotificationRequest.class), eq(CASE_NUMBER), eq(null));
         verify(dssNotificationHelper).buildEmailNotificationRequest(
                 dssCaseData.getSubjectEmailAddress(),
                 templateVars,
@@ -124,11 +124,11 @@ class DssApplicationReceivedNotificationTest {
         when(dssNotificationHelper.buildEmailNotificationRequest(any(), anyMap(), any(TemplateName.class)))
             .thenReturn(NotificationRequest.builder().build());
         when(dssNotificationHelper.getSubjectCommonVars(any(), any(CaseData.class))).thenReturn(templateVars);
-        when(notificationService.sendEmail(any(NotificationRequest.class), eq(CASE_NUMBER))).thenReturn(notificationResponse);
+        when(notificationService.sendEmail(any(NotificationRequest.class), eq(CASE_NUMBER), eq(null))).thenReturn(notificationResponse);
 
         dssApplicationReceivedNotification.sendToSubject(caseData, CASE_NUMBER);
 
-        verify(notificationService).sendEmail(any(NotificationRequest.class), eq(CASE_NUMBER));
+        verify(notificationService).sendEmail(any(NotificationRequest.class), eq(CASE_NUMBER), eq(null));
         verify(dssNotificationHelper).buildEmailNotificationRequest(
             dssCaseData.getSubjectEmailAddress(),
             templateVars,
@@ -141,6 +141,7 @@ class DssApplicationReceivedNotificationTest {
         final DssCaseData dssCaseData = getMockDssCaseData();
         dssCaseData.setRepresentativeFullName("Rep Full Name");
         dssCaseData.setRepresentativeEmailAddress("rep@outlook.com");
+        dssCaseData.setLanguagePreference(ENGLISH);
         final CaseData caseData = CaseData.builder().dssCaseData(dssCaseData).editCicaCaseDetails(CICA_CASE_DETAILS).build();
         final NotificationResponse notificationResponse = getMockNotificationResponse();
 
@@ -153,11 +154,11 @@ class DssApplicationReceivedNotificationTest {
         when(dssNotificationHelper.buildEmailNotificationRequest(any(), anyMap(), any(TemplateName.class)))
             .thenReturn(NotificationRequest.builder().build());
         when(dssNotificationHelper.getRepresentativeCommonVars(any(), any(CaseData.class))).thenReturn(templateVars);
-        when(notificationService.sendEmail(any(NotificationRequest.class), eq(CASE_NUMBER))).thenReturn(notificationResponse);
+        when(notificationService.sendEmail(any(NotificationRequest.class), eq(CASE_NUMBER), eq(null))).thenReturn(notificationResponse);
 
         dssApplicationReceivedNotification.sendToRepresentative(caseData, CASE_NUMBER);
 
-        verify(notificationService).sendEmail(any(NotificationRequest.class), eq(CASE_NUMBER));
+        verify(notificationService).sendEmail(any(NotificationRequest.class), eq(CASE_NUMBER), eq(null));
         verify(dssNotificationHelper).buildEmailNotificationRequest(
             dssCaseData.getRepresentativeEmailAddress(),
             templateVars,
@@ -170,6 +171,7 @@ class DssApplicationReceivedNotificationTest {
         final DssCaseData dssCaseData = getMockDssCaseData();
         dssCaseData.setRepresentativeFullName("Rep Full Name");
         dssCaseData.setRepresentativeEmailAddress("rep@outlook.com");
+        dssCaseData.setLanguagePreference(ENGLISH);
         final CaseData caseData = CaseData.builder().dssCaseData(dssCaseData).build();
         final NotificationResponse notificationResponse = getMockNotificationResponse();
 
@@ -180,11 +182,11 @@ class DssApplicationReceivedNotificationTest {
         when(dssNotificationHelper.buildEmailNotificationRequest(any(), anyMap(), any(TemplateName.class)))
                 .thenReturn(NotificationRequest.builder().build());
         when(dssNotificationHelper.getRepresentativeCommonVars(any(), any(CaseData.class))).thenReturn(templateVars);
-        when(notificationService.sendEmail(any(NotificationRequest.class), eq(CASE_NUMBER))).thenReturn(notificationResponse);
+        when(notificationService.sendEmail(any(NotificationRequest.class), eq(CASE_NUMBER), eq(null))).thenReturn(notificationResponse);
 
         dssApplicationReceivedNotification.sendToRepresentative(caseData, CASE_NUMBER);
 
-        verify(notificationService).sendEmail(any(NotificationRequest.class), eq(CASE_NUMBER));
+        verify(notificationService).sendEmail(any(NotificationRequest.class), eq(CASE_NUMBER), eq(null));
         verify(dssNotificationHelper).buildEmailNotificationRequest(
                 dssCaseData.getRepresentativeEmailAddress(),
                 templateVars,

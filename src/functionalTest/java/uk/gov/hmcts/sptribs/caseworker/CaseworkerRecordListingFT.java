@@ -3,8 +3,10 @@ package uk.gov.hmcts.sptribs.caseworker;
 import io.restassured.response.Response;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
+import uk.gov.hmcts.sptribs.notification.persistence.CorrespondenceEntity;
 import uk.gov.hmcts.sptribs.testutil.FunctionalTestSuite;
 
+import java.util.List;
 import java.util.Map;
 
 import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
@@ -47,7 +49,7 @@ public class CaseworkerRecordListingFT extends FunctionalTestSuite {
     public void shouldSetListingPopulateRegionDataAndSetCurrentEventWhenAboutToStartCallbackIsInvoked() throws Exception {
         final Map<String, Object> caseData = caseData(REQUEST_ABOUT_TO_START);
 
-        final Response response = triggerCallback(caseData, CASEWORKER_RECORD_LISTING, ABOUT_TO_START_URL);
+        final Response response = triggerCallback(caseData, CASEWORKER_RECORD_LISTING, ABOUT_TO_START_URL, false);
 
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
         assertThatJson(response.asString())
@@ -60,7 +62,7 @@ public class CaseworkerRecordListingFT extends FunctionalTestSuite {
     public void shouldVenuesDataWhenMidEventCallbackIsInvoked() throws Exception {
         final Map<String, Object> caseData = caseData(REQUEST_MID_EVENT);
 
-        final Response response = triggerCallback(caseData, CASEWORKER_RECORD_LISTING, MID_EVENT_URL);
+        final Response response = triggerCallback(caseData, CASEWORKER_RECORD_LISTING, MID_EVENT_URL, false);
 
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
         assertThatJson(response.asString())
@@ -73,7 +75,7 @@ public class CaseworkerRecordListingFT extends FunctionalTestSuite {
     public void shouldSetCurrentEventAndUpdateDataWhenAboutToSubmitCallbackIsInvoked() throws Exception {
         final Map<String, Object> caseData = caseData(CALLBACK_REQUEST);
 
-        final Response response = triggerCallback(caseData, CASEWORKER_RECORD_LISTING, ABOUT_TO_SUBMIT_URL);
+        final Response response = triggerCallback(caseData, CASEWORKER_RECORD_LISTING, ABOUT_TO_SUBMIT_URL, false);
 
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
         assertThatJson(response.asString())
@@ -86,7 +88,7 @@ public class CaseworkerRecordListingFT extends FunctionalTestSuite {
     public void shouldBeUnsuccessfulWhenBadSubmittedCallbackIsInvoked() throws Exception {
         final Map<String, Object> caseData = caseData(CALLBACK_REQUEST);
 
-        final Response response = triggerCallback(caseData, CASEWORKER_RECORD_LISTING, SUBMITTED_URL);
+        final Response response = triggerCallback(caseData, CASEWORKER_RECORD_LISTING, SUBMITTED_URL, false);
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
         assertThatJson(response.asString())
             .inPath(CONFIRMATION_HEADER)
@@ -98,11 +100,31 @@ public class CaseworkerRecordListingFT extends FunctionalTestSuite {
     public void shouldBeSuccessfulWhenHappySubmittedCallbackIsInvoked() throws Exception {
         final Map<String, Object> caseData = caseData(REQUEST_HAPPY_SUBMITTED);
 
-        final Response response = triggerCallback(caseData, CASEWORKER_RECORD_LISTING, SUBMITTED_URL);
+        final Response response = triggerCallback(caseData, CASEWORKER_RECORD_LISTING, SUBMITTED_URL, false);
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
         assertThatJson(response.asString())
             .inPath(CONFIRMATION_HEADER)
             .isString()
             .contains("# Listing record created \n## A notification has been sent to: Subject");
+
+        long testCaseRef = Long.parseLong(caseData.get("hyphenatedCaseRef").toString().replace("-", ""));
+
+        List<CorrespondenceEntity> correspondenceEntities = caseCorrespondencesFTDataManager.getCorrespondenceEntities(testCaseRef);
+        assertThat(correspondenceEntities).hasSize(1);
+
+        CorrespondenceEntity firstCorrespondenceEntity = correspondenceEntities.getFirst();
+
+        assertThat(caseCorrespondencesFTDataManager.getCorrespondenceEntities(testCaseRef)).hasSize(1);
+        assertThat(firstCorrespondenceEntity.getId()).isNotNull();
+        assertThat(firstCorrespondenceEntity.getCaseReferenceNumber()).isEqualTo(Long.parseLong(caseData.get("hyphenatedCaseRef")
+            .toString().replace("-", "")));
+        assertThat(firstCorrespondenceEntity.getEventType()).isEqualTo("HEARING_CREATED_EMAIL");
+        assertThat(firstCorrespondenceEntity.getSentOn()).isNotNull();
+        assertThat(firstCorrespondenceEntity.getSentFrom()).isNotNull();
+        assertThat(firstCorrespondenceEntity.getSentTo()).isNotNull();
+        assertThat(firstCorrespondenceEntity.getCorrespondenceType()).isEqualTo("Email");
+        assertThat(firstCorrespondenceEntity.getDocumentUrl()).isNotNull();
+        assertThat(firstCorrespondenceEntity.getDocumentFilename()).isNotNull();
+        assertThat(firstCorrespondenceEntity.getDocumentBinaryUrl()).isNotNull();
     }
 }

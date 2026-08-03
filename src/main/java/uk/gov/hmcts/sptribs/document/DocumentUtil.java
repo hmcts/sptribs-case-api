@@ -200,5 +200,4 @@ public final class DocumentUtil {
         String fileExtension = substringAfterLast(fileName, ".");
         return fileExtension != null && validExtensions.contains(fileExtension.toLowerCase(ROOT));
     }
-
 }

@@ -1,11 +1,10 @@
 {
-  "hyphenatedCaseRef": "1234-5678-9012-3456",
   "dssCaseDataCaseTypeOfApplication": "CIC",
   "dssCaseDataSubjectFullName": "test_first_name",
   "dssCaseDataSubjectDateOfBirth": null,
   "dssCaseDataSubjectEmailAddress": "citizen@test.com",
   "dssCaseDataSubjectContactNumber": null,
-  "dssCaseDataSubjectLanguagePreference": "english",
+  "dssCaseDataLanguagePreference": "english",
   "dssCaseDataSubjectAgreeContact": null,
   "dssCaseDataRepresentation": "Yes",
   "dssCaseDataRepresentationQualified": "Yes",
