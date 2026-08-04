@@ -18,8 +18,7 @@ public interface RoleAssignmentApi {
 
     @PostMapping(
         value = "/am/role-assignments",
-        consumes = APPLICATION_JSON_VALUE,
-        produces = APPLICATION_JSON_VALUE
+        consumes = APPLICATION_JSON_VALUE
     )
     void assignRole(
         @RequestHeader(AUTHORIZATION) String authorization,
