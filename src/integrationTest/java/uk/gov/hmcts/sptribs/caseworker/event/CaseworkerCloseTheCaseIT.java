@@ -14,14 +14,14 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
-import uk.gov.hmcts.reform.idam.client.models.User;
-import uk.gov.hmcts.reform.idam.client.models.UserDetails;
+import uk.gov.hmcts.reform.idam.client.models.UserInfo;
 import uk.gov.hmcts.sptribs.caseworker.model.CloseCase;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.common.config.WebMvcConfig;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocumentUpload;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
+import uk.gov.hmcts.sptribs.idam.CICUser;
 import uk.gov.hmcts.sptribs.idam.IdamService;
 import uk.gov.hmcts.sptribs.judicialrefdata.JudicialClient;
 import uk.gov.hmcts.sptribs.judicialrefdata.JudicialUsersRequest;
@@ -194,9 +194,9 @@ public class CaseworkerCloseTheCaseIT {
             )
             .build();
 
-        final User user = new User(
+        final CICUser user = new CICUser(
             TEST_AUTHORIZATION_TOKEN,
-            UserDetails.builder()
+            UserInfo.builder()
                 .roles(List.of("caseworker-st_cic", "caseworker-sptribs-systemupdate"))
                 .build()
         );

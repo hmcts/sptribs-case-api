@@ -101,7 +101,7 @@ public abstract class FunctionalTestSuite {
     protected CaseDetails createCaseInCcd() {
         String caseworkerToken = idamTokenGenerator.generateIdamTokenForCaseworker();
         String s2sTokenForCaseApi = serviceAuthenticationGenerator.generate();
-        String caseworkerUserId = idamTokenGenerator.getUserDetailsFor(caseworkerToken).getId();
+        String caseworkerUserId = idamTokenGenerator.getUserInfoFor(caseworkerToken).getUid();
         StartEventResponse startEventResponse = startEventForCreateCase(caseworkerToken, s2sTokenForCaseApi, caseworkerUserId);
 
         CaseDataContent caseDataContent = CaseDataContent.builder()
@@ -315,7 +315,7 @@ public abstract class FunctionalTestSuite {
 
     protected CaseDetails updateCitizenCase(String eventId, Long caseId, CaseData caseData) {
         final String citizenToken = idamTokenGenerator.generateIdamTokenForCitizen();
-        final String userId = idamService.retrieveUser(citizenToken).getUserDetails().getId();
+        final String userId = idamService.retrieveUser(citizenToken).getUserInfo().getUid();
         AppsConfig.AppsDetails details = AppsUtil.getExactAppsDetails(appsConfig, caseData.getDssCaseData());
 
         final StartEventResponse startEventResponse = coreCaseDataApi.startEventForCitizen(
@@ -372,7 +372,7 @@ public abstract class FunctionalTestSuite {
 
     private CaseDetails createCitizenCase() {
         final String citizenToken = idamTokenGenerator.generateIdamTokenForCitizen();
-        final String userId = idamService.retrieveUser(citizenToken).getUserDetails().getId();
+        final String userId = idamService.retrieveUser(citizenToken).getUserInfo().getUid();
         final AppsConfig.AppsDetails appsDetails = AppsUtil.getExactAppsDetails(this.appsConfig, getDssCaseData());
         final StartEventResponse createEventResponse = coreCaseDataApi.startForCitizen(
             citizenToken,

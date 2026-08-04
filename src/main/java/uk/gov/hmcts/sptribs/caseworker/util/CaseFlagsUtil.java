@@ -3,6 +3,7 @@ package uk.gov.hmcts.sptribs.caseworker.util;
 import uk.gov.hmcts.ccd.sdk.type.FlagDetail;
 import uk.gov.hmcts.ccd.sdk.type.Flags;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
+import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.PartiesCIC;
 
@@ -66,6 +67,29 @@ public final class CaseFlagsUtil {
             flags.getDetails().add(ListValue.<FlagDetail>builder().id(UUID.randomUUID().toString()).value(flagDetail).build());
             data.setCaseFlags(flags);
         }
+    }
+
+    public static void applyAnonymityCaseFlag(CaseData data, ListValue<FlagDetail> existingAnonymityFlag) {
+        if (existingAnonymityFlag != null && existingAnonymityFlag.getValue() != null) {
+            existingAnonymityFlag.getValue().setStatus(CaseFlagsUtil.ACTIVE_STATUS);
+            existingAnonymityFlag.getValue().setFlagComment("Applied anonymity");
+            existingAnonymityFlag.getValue().setDateTimeModified(LocalDateTime.now());
+            return;
+        }
+
+        FlagDetail flagDetail = FlagDetail.builder()
+            .name("RRO (Restricted Reporting Order / Anonymisation)")
+            .path(List.of(ListValue.<String>builder().id(UUID.randomUUID().toString()).value("Case").build()))
+            .status(CaseFlagsUtil.ACTIVE_STATUS)
+            .nameCy("RRO (Gorchymyn Cyfyngiadau Adrodd / Anhysbys)")
+            .flagCode(CaseFlagsUtil.ANONYMITY_FLAG_CODE)
+            .flagComment("Applied anonymity")
+            .dateTimeCreated(LocalDateTime.now())
+            .hearingRelevant(YesOrNo.YES)
+            .availableExternally(YesOrNo.NO)
+            .build();
+
+        CaseFlagsUtil.addFlag(data, flagDetail);
     }
 
     public static ListValue<FlagDetail> mergeAnonymityFlagsPreserveOriginalId(CaseData data, CaseData beforeData) {

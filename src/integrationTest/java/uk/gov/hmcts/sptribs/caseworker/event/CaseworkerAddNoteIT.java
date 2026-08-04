@@ -2,21 +2,20 @@ package uk.gov.hmcts.sptribs.caseworker.event;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import feign.FeignException;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
+import uk.gov.hmcts.reform.idam.client.models.UserInfo;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.common.config.WebMvcConfig;
-import uk.gov.hmcts.sptribs.testutil.IdamWireMock;
+import uk.gov.hmcts.sptribs.idam.CICUser;
+import uk.gov.hmcts.sptribs.idam.IdamService;
 
 import java.time.Clock;
 import java.time.Instant;
@@ -24,28 +23,25 @@ import java.time.ZoneId;
 
 import static java.util.Objects.requireNonNull;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.sptribs.testutil.ITEventConstants.CASEWORKER_ADD_NOTE;
-import static uk.gov.hmcts.sptribs.testutil.IdamWireMock.ST_CIC_CASEWORKER;
-import static uk.gov.hmcts.sptribs.testutil.IdamWireMock.stubForIdamDetails;
-import static uk.gov.hmcts.sptribs.testutil.IdamWireMock.stubForIdamFailure;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.ABOUT_TO_SUBMIT_URL;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.AUTHORIZATION;
-import static uk.gov.hmcts.sptribs.testutil.TestConstants.CASEWORKER_USER_ID;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.SERVICE_AUTHORIZATION;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_AUTHORIZATION_TOKEN;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.callbackRequest;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.caseData;
+import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.feignException;
 import static uk.gov.hmcts.sptribs.testutil.TestResourceUtil.expectedResponse;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
-@ContextConfiguration(initializers = {IdamWireMock.PropertiesInitializer.class})
 class CaseworkerAddNoteIT {
 
     private static final String CASEWORKER_ADD_NOTE_RESPONSE =
@@ -63,15 +59,8 @@ class CaseworkerAddNoteIT {
     @MockitoBean
     private Clock clock;
 
-    @BeforeAll
-    static void setUp() {
-        IdamWireMock.start();
-    }
-
-    @AfterAll
-    static void tearDown() {
-        IdamWireMock.stopAndReset();
-    }
+    @MockitoBean
+    private IdamService idamService;
 
     @BeforeEach
     void setClock() {
@@ -84,7 +73,16 @@ class CaseworkerAddNoteIT {
         final CaseData caseData = caseData();
         caseData.setNote("This is a test note");
 
-        stubForIdamDetails(TEST_AUTHORIZATION_TOKEN, CASEWORKER_USER_ID, ST_CIC_CASEWORKER);
+        final CICUser user = new CICUser(
+            TEST_AUTHORIZATION_TOKEN,
+            UserInfo.builder()
+                .name("forename Surname")
+                .givenName("forename")
+                .familyName("Surname")
+                .build()
+        );
+
+        when(idamService.retrieveUser(eq(TEST_AUTHORIZATION_TOKEN))).thenReturn(user);
 
         mockMvc.perform(post(ABOUT_TO_SUBMIT_URL)
             .contentType(APPLICATION_JSON)
@@ -107,7 +105,8 @@ class CaseworkerAddNoteIT {
         final CaseData caseData = caseData();
         caseData.setNote("This is a test note");
 
-        stubForIdamFailure();
+        when(idamService.retrieveUser(eq(TEST_AUTHORIZATION_TOKEN)))
+            .thenThrow(feignException(401, "Invalid idam credentials"));
 
         mockMvc.perform(post(ABOUT_TO_SUBMIT_URL)
             .contentType(APPLICATION_JSON)
