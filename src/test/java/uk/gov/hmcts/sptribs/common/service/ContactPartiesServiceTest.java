@@ -40,14 +40,14 @@ class ContactPartiesServiceTest {
     @Mock
     private CorrespondenceDocumentService correspondenceDocumentService;
 
-    private List<ListValue<CaseworkerCICDocument>> docs;
     private List<String> docIds;
     private CaseData caseData;
 
     @BeforeEach
     void setUp() {
-        docs = TestDataHelper.getCaseworkerCICDocumentList("test.pdf", "test1.doc", "test2.pdf");
-        docIds = docs.stream().map(ListValue::getValue).map(DocumentUtil::getDocumentUUID).toList();
+        List<ListValue<CaseworkerCICDocument>> docs = TestDataHelper.getCaseworkerCICDocumentList("test.pdf", "test1.doc", "test2.pdf");
+        docIds = docs
+            .stream().map(ListValue::getValue).map(DocumentUtil::getDocumentUUID).toList();
 
         caseData = new CaseData();
         caseData.setContactPartiesDocuments(ContactPartiesDocuments.builder().build());

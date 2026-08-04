@@ -2,10 +2,12 @@ package uk.gov.hmcts.sptribs.notification.dispatcher;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.ccd.sdk.type.AddressGlobalUK;
 import uk.gov.hmcts.sptribs.caseworker.util.DocumentListUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.ContactPreferenceType;
+import uk.gov.hmcts.sptribs.ciccase.model.NotificationResponse;
 import uk.gov.hmcts.sptribs.common.CommonConstants;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.notification.NotificationHelper;
@@ -15,7 +17,12 @@ import uk.gov.hmcts.sptribs.notification.TemplateName;
 
 import java.util.List;
 import java.util.Map;
+import java.util.function.BiConsumer;
+import java.util.function.BiFunction;
+import java.util.function.Function;
 
+import static uk.gov.hmcts.sptribs.common.CommonConstants.CIC_CASE_SUBJECT_NAME;
+import static uk.gov.hmcts.sptribs.common.CommonConstants.CONTACT_PARTY_INFO;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.DASHBOARD_KEY;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.TRIBUNAL_EMAIL_VALUE;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.TRIBUNAL_NAME_VALUE;
@@ -34,103 +41,63 @@ public class ContactPartiesNotification extends PartiesNotification {
     @Value("${feature.citizen-dashboard.enabled}")
     private boolean citizenDashboardEnabled;
 
+    private record PartyFieldConfig(
+        BiFunction<NotificationHelper, CaseData, Map<String, Object>> commonVars,
+        Function<CicCase, String> emailAddress,
+        Function<CicCase, AddressGlobalUK> postalAddress,
+        Function<CicCase, ContactPreferenceType> preference,
+        BiConsumer<CicCase, NotificationResponse> onEmailSent,
+        BiConsumer<CicCase, NotificationResponse> onLetterSent
+    ) {
+    }
+
     public ContactPartiesNotification(NotificationServiceCIC notificationService, NotificationHelper notificationHelper) {
         super(notificationService, notificationHelper);
     }
 
     @Override
     public PartyNotification buildSubjectNotification(CaseData caseData, String caseNumber) {
-        CicCase cicCase = caseData.getCicCase();
-        Map<String, Object> templateVarsSubject = notificationHelper().getSubjectCommonVars(caseNumber, caseData);
-        templateVarsSubject.put(CommonConstants.CIC_CASE_SUBJECT_NAME, cicCase.getFullName());
-        templateVarsSubject.put(CommonConstants.CONTACT_PARTY_INFO, cicCase.getNotifyPartyMessage());
-        addDashboardLink(templateVarsSubject);
-
-        Map<String, String> uploadedDocuments =
-                notificationHelper().buildDocumentList(caseData.getContactPartiesDocuments().getDocumentList(), DOC_ATTACH_LIMIT);
-        List<CaseworkerCICDocument> selectedDocuments =
-            DocumentListUtil.getSelectedDocumentsFromDynamicList(caseData, caseData.getContactPartiesDocuments().getDocumentList());
-
-        if (cicCase.getContactPreferenceType() == ContactPreferenceType.EMAIL) {
-            return new EmailNotification(
-                    cicCase.getEmail(),
-                    templateVarsSubject,
-                    getTemplateName(),
-                    uploadedDocuments,
-                    selectedDocuments,
-                    saveToCicCase(CicCase::setSubjectNotifyList)
-            );
-        } else {
-            return new LetterNotification(
-                    cicCase.getAddress(),
-                    templateVarsSubject,
-                    CONTACT_PARTIES_POST,
-                    saveToCicCase(CicCase::setSubjectLetterNotifyList)
-            );
-        }
+        return buildNotification(
+            caseData,
+            new PartyFieldConfig(
+                ((helper, cd) -> helper.getSubjectCommonVars(caseNumber, cd)),
+                CicCase::getEmail,
+                CicCase::getAddress,
+                CicCase::getContactPreferenceType,
+                CicCase::setSubjectNotifyList,
+                CicCase::setSubjectLetterNotifyList
+            )
+        );
     }
 
     @Override
     public PartyNotification buildApplicantNotification(CaseData caseData, String caseNumber) {
-        CicCase cicCase = caseData.getCicCase();
-        Map<String, Object> templateVarsApplicant = notificationHelper().getApplicantCommonVars(caseNumber, caseData);
-        templateVarsApplicant.put(CommonConstants.CIC_CASE_SUBJECT_NAME, cicCase.getFullName());
-        templateVarsApplicant.put(CommonConstants.CONTACT_PARTY_INFO, cicCase.getNotifyPartyMessage());
-        addDashboardLink(templateVarsApplicant);
-
-        Map<String, String> uploadedDocuments =
-                notificationHelper().buildDocumentList(caseData.getContactPartiesDocuments().getDocumentList(), DOC_ATTACH_LIMIT);
-        List<CaseworkerCICDocument> selectedDocuments =
-            DocumentListUtil.getSelectedDocumentsFromDynamicList(caseData, caseData.getContactPartiesDocuments().getDocumentList());
-
-        if (cicCase.getApplicantContactDetailsPreference() == ContactPreferenceType.EMAIL) {
-            return new EmailNotification(
-                    cicCase.getApplicantEmailAddress(),
-                    templateVarsApplicant,getTemplateName(),
-                    uploadedDocuments,
-                    selectedDocuments,
-                    saveToCicCase(CicCase::setAppNotificationResponse)
-            );
-        } else {
-            return new LetterNotification(
-                    cicCase.getApplicantAddress(),
-                    templateVarsApplicant,
-                    CONTACT_PARTIES_POST,
-                    saveToCicCase(CicCase::setAppLetterNotificationResponse)
-            );
-        }
+        return buildNotification(
+            caseData,
+            new PartyFieldConfig(
+                ((helper, cd) -> helper.getApplicantCommonVars(caseNumber, cd)),
+                CicCase::getApplicantEmailAddress,
+                CicCase::getApplicantAddress,
+                CicCase::getApplicantContactDetailsPreference,
+                CicCase::setAppNotificationResponse,
+                CicCase::setAppLetterNotificationResponse
+            )
+        );
     }
 
     @Override
     public PartyNotification buildRepresentativeNotification(CaseData caseData, String caseNumber) {
-        CicCase cicCase = caseData.getCicCase();
-        Map<String, Object> templateVarsRepresentative = notificationHelper().getRepresentativeCommonVars(caseNumber, caseData);
-        templateVarsRepresentative.put(CommonConstants.CIC_CASE_SUBJECT_NAME, cicCase.getFullName());
-        templateVarsRepresentative.put(CommonConstants.CONTACT_PARTY_INFO, cicCase.getNotifyPartyMessage());
-        addDashboardLink(templateVarsRepresentative);
-
-        Map<String, String> uploadedDocuments =
-                notificationHelper().buildDocumentList(caseData.getContactPartiesDocuments().getDocumentList(), DOC_ATTACH_LIMIT);
-        List<CaseworkerCICDocument> selectedDocuments =
-            DocumentListUtil.getSelectedDocumentsFromDynamicList(caseData, caseData.getContactPartiesDocuments().getDocumentList());
-
-        if (cicCase.getRepresentativeContactDetailsPreference() == ContactPreferenceType.EMAIL) {
-            return new EmailNotification(
-                    cicCase.getRepresentativeEmailAddress(),
-                    templateVarsRepresentative,
-                    getTemplateName(),
-                    uploadedDocuments,
-                    selectedDocuments,
-                    saveToCicCase(CicCase::setRepNotificationResponse)
-            );
-        } else {
-            return new LetterNotification(
-                    cicCase.getRepresentativeAddress(),
-                    templateVarsRepresentative,
-                    CONTACT_PARTIES_POST,
-                    saveToCicCase(CicCase::setRepLetterNotificationResponse)
-            );
-        }
+        return buildNotification(
+            caseData,
+            new PartyFieldConfig(
+                ((helper, cd) -> helper.getRepresentativeCommonVars(caseNumber, cd)),
+                CicCase::getRepresentativeEmailAddress,
+                CicCase::getRepresentativeAddress,
+                CicCase::getRepresentativeContactDetailsPreference,
+                CicCase::setRepNotificationResponse,
+                CicCase::setRepLetterNotificationResponse
+            )
+        );
     }
 
     @Override
@@ -141,17 +108,21 @@ public class ContactPartiesNotification extends PartiesNotification {
         templateVarsRespondent.put(CommonConstants.CONTACT_PARTY_INFO, cicCase.getNotifyPartyMessage());
 
         Map<String, String> uploadedDocuments =
-                notificationHelper().buildDocumentList(caseData.getContactPartiesDocuments().getDocumentList(), DOC_ATTACH_LIMIT);
+            notificationHelper().buildDocumentList(caseData
+                .getContactPartiesDocuments()
+                .getDocumentList(), DOC_ATTACH_LIMIT);
         List<CaseworkerCICDocument> selectedDocuments =
-            DocumentListUtil.getSelectedDocumentsFromDynamicList(caseData, caseData.getContactPartiesDocuments().getDocumentList());
+            DocumentListUtil.getSelectedDocumentsFromDynamicList(caseData, caseData
+                .getContactPartiesDocuments()
+                .getDocumentList());
 
         return new EmailNotification(
-                cicCase.getRespondentEmail(),
-                templateVarsRespondent,
-                CONTACT_PARTIES_EMAIL,
-                uploadedDocuments,
-                selectedDocuments,
-                saveToCicCase(CicCase::setResNotificationResponse)
+            cicCase.getRespondentEmail(),
+            templateVarsRespondent,
+            CONTACT_PARTIES_EMAIL,
+            uploadedDocuments,
+            selectedDocuments,
+            saveToCicCase(CicCase::setResNotificationResponse)
         );
     }
 
@@ -163,18 +134,66 @@ public class ContactPartiesNotification extends PartiesNotification {
         templateVarsTribunal.put(CommonConstants.CONTACT_PARTY_INFO, cicCase.getNotifyPartyMessage());
 
         Map<String, String> uploadedDocuments =
-                notificationHelper().buildDocumentList(caseData.getContactPartiesDocuments().getDocumentList(), DOC_ATTACH_LIMIT);
+            notificationHelper().buildDocumentList(caseData
+                .getContactPartiesDocuments()
+                .getDocumentList(), DOC_ATTACH_LIMIT);
         List<CaseworkerCICDocument> selectedDocuments =
-            DocumentListUtil.getSelectedDocumentsFromDynamicList(caseData, caseData.getContactPartiesDocuments().getDocumentList());
+            DocumentListUtil.getSelectedDocumentsFromDynamicList(caseData, caseData
+                .getContactPartiesDocuments()
+                .getDocumentList());
 
         return new EmailNotification(
-                TRIBUNAL_EMAIL_VALUE,
-                templateVarsTribunal,
-                CONTACT_PARTIES_EMAIL,
+            TRIBUNAL_EMAIL_VALUE,
+            templateVarsTribunal,
+            CONTACT_PARTIES_EMAIL,
+            uploadedDocuments,
+            selectedDocuments,
+            saveToCicCase(CicCase::setTribunalNotificationResponse)
+        );
+    }
+
+    private PartyNotification buildNotification(CaseData caseData, PartyFieldConfig fieldConfig) {
+        CicCase cicCase = caseData.getCicCase();
+        Map<String, Object> templateVars = fieldConfig
+            .commonVars()
+            .apply(notificationHelper(), caseData);
+        templateVars.put(CIC_CASE_SUBJECT_NAME, cicCase.getFullName());
+        templateVars.put(CONTACT_PARTY_INFO, cicCase.getNotifyPartyMessage());
+        addDashboardLink(templateVars);
+
+        Map<String, String> uploadedDocuments =
+            notificationHelper().buildDocumentList(caseData
+                .getContactPartiesDocuments()
+                .getDocumentList(), DOC_ATTACH_LIMIT);
+        List<CaseworkerCICDocument> selectedDocuments =
+            DocumentListUtil.getSelectedDocumentsFromDynamicList(caseData, caseData
+                .getContactPartiesDocuments()
+                .getDocumentList());
+
+        ContactPreferenceType preference = fieldConfig
+            .preference()
+            .apply(cicCase);
+        if (preference == ContactPreferenceType.EMAIL) {
+            return new EmailNotification(
+                fieldConfig
+                    .emailAddress()
+                    .apply(cicCase),
+                templateVars,
+                getTemplateName(),
                 uploadedDocuments,
                 selectedDocuments,
-                saveToCicCase(CicCase::setTribunalNotificationResponse)
-        );
+                saveToCicCase(fieldConfig.onEmailSent())
+            );
+        } else {
+            return new LetterNotification(
+                fieldConfig
+                    .postalAddress()
+                    .apply(cicCase),
+                templateVars,
+                CONTACT_PARTIES_POST,
+                saveToCicCase(fieldConfig.onLetterSent())
+            );
+        }
     }
 
     private TemplateName getTemplateName() {
