@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Audio/video evidence</title>
+  <style>
+    body { font-family: Arial, sans-serif; font-size: 12px; color: #111; }
+    h1 { font-size: 18px; margin-bottom: 12px; }
+    table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+    th, td { border: 1px solid #ccc; padding: 6px; vertical-align: top; word-wrap: break-word; }
+    th { background: #f3f3f3; text-align: left; }
+  </style>
+</head>
+<body>
+<h1>Audio/video evidence document - case {{caseId}}</h1>
+<table>
+  <thead>
+  <tr>
+    <th>Document type</th>
+    <th>Document URL</th>
+    <th>Date added</th>
+    <th>Date approved</th>
+    <th>Uploaded by</th>
+  </tr>
+  </thead>
+  <tbody>
+  {{rowsHtml | raw}}
+  </tbody>
+</table>
+</body>
+</html>
