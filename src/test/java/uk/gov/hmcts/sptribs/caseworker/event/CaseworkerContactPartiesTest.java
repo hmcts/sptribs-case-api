@@ -29,13 +29,11 @@ import uk.gov.hmcts.sptribs.common.event.page.PartiesToContact;
 import uk.gov.hmcts.sptribs.common.service.ContactPartiesService;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
-import uk.gov.hmcts.sptribs.notification.NotificationHelper;
 import uk.gov.hmcts.sptribs.notification.dispatcher.ContactPartiesNotification;
 import uk.gov.hmcts.sptribs.notification.exception.NotificationException;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
@@ -59,7 +57,6 @@ import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_SOLICITOR_NAME;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.LOCAL_DATE_TIME;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.buildDynamicMultiSelectDocumentList;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.caseData;
-import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getDocumentUploadMap;
 import static uk.gov.hmcts.sptribs.testutil.TestEventConstants.CASEWORKER_CONTACT_PARTIES;
 
 @ExtendWith(MockitoExtension.class)
@@ -78,9 +75,6 @@ class CaseworkerContactPartiesTest {
 
     @Mock
     private ContactPartiesService contactPartiesService;
-
-    @Mock
-    private NotificationHelper notificationHelper;
 
     @Test
     void shouldAddPublishToCamundaWhenWAIsEnabled() {
@@ -270,9 +264,6 @@ class CaseworkerContactPartiesTest {
         updatedCaseDetails.setData(caseData);
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
-
-        final int docAttachLimit = 10;
-        Map<String, String> emailDocs = getDocumentUploadMap();
 
         when(contactPartiesNotification.sendToRepresentative(caseData, String.valueOf(TEST_CASE_ID))).thenReturn("UUID2");
         when(contactPartiesNotification.sendToApplicant(caseData, String.valueOf(TEST_CASE_ID))).thenReturn("UUID3");
