@@ -1,4 +1,4 @@
-package uk.gov.hmcts.sptribs.testutil;
+package uk.gov.hmcts.sptribs.testutil.data;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -83,6 +83,7 @@ public class FunctionalTestDataManager {
         deleteCaseCorrespondences(reference);
         deleteCaseDocuments(reference);
 
+        //are we doing the same ref many times?? as we dont clear the list
         log.info("Clear down completed for reference: {}", reference);
     }
 

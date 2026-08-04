@@ -8,6 +8,8 @@ public interface CaseDataRepository {
 
     boolean checkCaseExists(String ccdReference);
 
+    boolean checkIfUserHasAccessToCase(String ccdReference, String userEmail);
+
     Optional<CicaCaseEntity> findCase(String ccdReference, String userEmail);
 
 }

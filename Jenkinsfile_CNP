@@ -218,8 +218,19 @@ withPipeline(type, product, component) {
   }
 
   before('highleveldatasetup') {
-    builder.gradle('generateCCDConfig')
+    echo "IDAM address before AAT & staging high level data setup: ${env.IDAM_API_URL_BASE}"
+    if (env.ENVIRONMENT == "aat") {
+      env.CCD_DEF_NAME="aat"
+      builder.gradle('generateCCDConfig --rerun-tasks')
+      echo "IDAM address before AAT high level data setup (file generation) but after generateCCDConfig: ${env.IDAM_API_URL_BASE}"
+      generateDefinitions()
+      echo "IDAM address before AAT high level data setup (file generation) but after generateDefinitions: ${env.IDAM_API_URL_BASE}"
+
+      env.CCD_DEF_NAME="staging-aat"
+    }
+    builder.gradle('generateCCDConfig --rerun-tasks')
     generateDefinitions()
+    echo "IDAM address before STAGING high level data setup but after generateDefinitions: ${env.IDAM_API_URL_BASE}"
   }
 
   onPR {
@@ -256,8 +267,8 @@ withPipeline(type, product, component) {
 
   onMaster {
     env.ENVIRONMENT="aat"
-    env.CASE_API_URL="http://sptribs-case-api-aat.service.core-compute-aat.internal"
-    env.CCD_DEF_NAME="aat"
+    env.CASE_API_URL="https://sptribs-case-api-staging.aat.platform.hmcts.net"
+    echo "env.CASE_API_URL is staging URL"
     env.ELASTIC_SEARCH_ENABLED=true
     env.SERVICE_AUTH_MICROSERVICE = "sptribs_case_api"
     env.SERVICE_AUTH_PROVIDER_URL = "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
@@ -270,6 +281,14 @@ withPipeline(type, product, component) {
   }
 
   afterSuccess('functionalTest:aat') {
+      env.CASE_API_URL="http://sptribs-case-api-aat.service.core-compute-aat.internal"
+      echo "env.CASE_API_URL is AAT URL"
+      env.CCD_DEF_NAME="aat"
+      builder.gradle('generateCCDConfig --rerun-tasks')
+      generateDefinitions()
+      echo "AAT definition file re-generated, running AAT high level data setup. . ."
+      runAatHighLevelDataSetup()
+
       env.ENVIRONMENT="prod"
       env.CASE_API_URL="http://sptribs-case-api-prod.service.core-compute-prod.internal"
       env.CCD_DEF_NAME="prod"
@@ -277,7 +296,7 @@ withPipeline(type, product, component) {
       env.CASE_API_DOCUMENT_DOWNLOAD_URL = "http://manage-case.platform.hmcts.net/"
       env.SERVICE_AUTH_MICROSERVICE = "sptribs_case_api"
       env.SERVICE_AUTH_PROVIDER_URL = "http://rpe-service-auth-provider-prod.service.core-compute-prod.internal"
-      env.IDAM_API_URL_BASE = "https://idam-api.platform.hmcts.net"
+      env.IDAM_API_URL_BASE = "https://idam-web-public.platform.hmcts.net"
       env.S2S_URL_BASE = "http://rpe-service-auth-provider-prod.service.core-compute-prod.internal"
       env.BEFTA_S2S_CLIENT_ID = "ccd_data"
       env.CAMUNDA_BASE_URL = "http://camunda-api-prod.service.core-compute-prod.internal"
@@ -308,7 +327,7 @@ withPipeline(type, product, component) {
     env.CASE_API_URL = "http://sptribs-case-api-demo.service.core-compute-demo.internal"
     env.CASE_API_DOCUMENT_DOWNLOAD_URL = "http://manage-case.demo.platform.hmcts.net/"
     env.CCD_DEF_NAME = "demo"
-    env.IDAM_API_URL_BASE = "https://idam-api.demo.platform.hmcts.net"
+    env.IDAM_API_URL_BASE = "https://idam-web-public.demo.platform.hmcts.net"
     env.S2S_URL_BASE = "http://rpe-service-auth-provider-demo.service.core-compute-demo.internal"
     env.CAMUNDA_BASE_URL = "http://camunda-api-demo.service.core-compute-demo.internal"
   }
@@ -317,7 +336,7 @@ withPipeline(type, product, component) {
     env.ENVIRONMENT="perftest"
     env.CASE_API_URL = "http://sptribs-case-api-perftest.service.core-compute-perftest.internal"
     env.CCD_DEF_NAME = "perftest"
-    env.IDAM_API_URL_BASE = "https://idam-api.perftest.platform.hmcts.net"
+    env.IDAM_API_URL_BASE = "https://idam-web-public.perftest.platform.hmcts.net"
     env.S2S_URL_BASE = "http://rpe-service-auth-provider-perftest.service.core-compute-perftest.internal"
     env.FEE_API_URL = "http://fees-register-api-demo.service.core-compute-demo.internal"
     env.CAMUNDA_BASE_URL = "http://camunda-api-perftest.service.core-compute-perftest.internal"
@@ -327,7 +346,7 @@ withPipeline(type, product, component) {
     env.ENVIRONMENT="ithc"
     env.CASE_API_URL = "http://sptribs-case-api-ithc.service.core-compute-ithc.internal"
     env.CCD_DEF_NAME = "ithc"
-    env.IDAM_API_URL_BASE = "https://idam-api.ithc.platform.hmcts.net"
+    env.IDAM_API_URL_BASE = "https://idam-web-public.ithc.platform.hmcts.net"
     env.S2S_URL_BASE = "http://rpe-service-auth-provider-ithc.service.core-compute-ithc.internal"
     env.FEE_API_URL = "http://fees-register-api-demo.service.core-compute-ithc.internal"
     env.CAMUNDA_BASE_URL = "http://camunda-api-ithc.service.core-compute-ithc.internal"
@@ -358,7 +377,7 @@ withPipeline(type, product, component) {
 }
 
 def setCommonEnvVariables() {
-    env.IDAM_API_URL_BASE = "https://idam-api.aat.platform.hmcts.net"
+    env.IDAM_API_URL_BASE = "https://idam-web-public.aat.platform.hmcts.net"
     env.S2S_URL_BASE = "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
     env.FEE_API_URL = "http://fees-register-api-aat.service.core-compute-aat.internal"
     env.BEFTA_S2S_CLIENT_ID = "ccd_data"
@@ -401,6 +420,27 @@ def uploadBpmnDiagram() {
       ./wa/import-wa-bpmn-diagram.sh .
     """
   }
+}
+
+def runAatHighLevelDataSetup() {
+  echo env.S2S_URL_BASE
+  echo env.CCD_API_GATEWAY_S2S_ID
+  echo env.CCD_API_GATEWAY_OAUTH2_CLIENT_ID
+  echo env.CCD_API_GATEWAY_OAUTH2_REDIRECT_URL
+  echo env.DEFINITION_STORE_URL_BASE
+  withEnv([
+    'ENVIRONMENT=aat',
+    'TEST_DATA_LOAD_SKIP_PERIOD=0',
+    'IDAM_API_URL_BASE=https://idam-web-public.aat.platform.hmcts.net',
+    "S2S_URL_BASE=${env.S2S_URL_BASE}",
+    "CCD_API_GATEWAY_S2S_ID=${env.CCD_API_GATEWAY_S2S_ID}",
+    "CCD_API_GATEWAY_OAUTH2_CLIENT_ID=${env.CCD_API_GATEWAY_OAUTH2_CLIENT_ID}",
+    "CCD_API_GATEWAY_OAUTH2_REDIRECT_URL=${env.CCD_API_GATEWAY_OAUTH2_CLIENT_SECRET}",
+    "DEFINITION_STORE_URL_BASE=${env.DEFINITION_STORE_URL_BASE}"
+  ]) {
+    sh './gradlew --rerun-tasks --no-daemon --init-script init.gradle highLevelDataSetup --args=aat'
+  }
+  echo 'High level data setup completed for AAT'
 }
 
 def setupRoleAssignments() {

@@ -193,15 +193,15 @@ class CicSubmitCaseEventTest {
             cicSubmitCaseEvent.aboutToSubmit(updatedCaseDetails, beforeDetails);
 
         verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
-            eq(genericTestDocument), eq(TEST_CASE_ID), eq(DocumentType.DSS_TRIBUNAL_FORM), eq(CaseDocumentType.APPLICANT)
+            eq(genericTestDocument), eq(TEST_CASE_ID), eq(DocumentType.DSS_TRIBUNAL_FORM), eq(CaseDocumentType.APPLICATION)
         );
 
         verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
-            eq(genericTestDocument), eq(TEST_CASE_ID), eq(DocumentType.DSS_SUPPORTING), eq(CaseDocumentType.APPLICANT)
+            eq(genericTestDocument), eq(TEST_CASE_ID), eq(DocumentType.DSS_SUPPORTING), eq(CaseDocumentType.APPLICATION)
         );
 
         verify(documentsService, times(2)).buildAndSaveNewDocumentEntity(
-            eq(genericTestDocument), eq(TEST_CASE_ID), eq(DocumentType.DSS_OTHER), eq(CaseDocumentType.APPLICANT)
+            eq(genericTestDocument), eq(TEST_CASE_ID), eq(DocumentType.DSS_OTHER), eq(CaseDocumentType.APPLICATION)
         );
 
         assertThat(response.getData().getCicCase().getApplicantDocumentsUploaded().getFirst().getValue().getDocumentEmailContent())
@@ -212,7 +212,7 @@ class CicSubmitCaseEventTest {
         assertThat(response.getData().getMessages().getFirst().getValue().getDateReceived())
             .isEqualTo(LocalDate.now());
         assertThat(response.getData().getMessages().getFirst().getValue().getReceivedFrom())
-            .isEqualTo(TestDataHelper.getUser().getUserDetails().getFullName());
+            .isEqualTo(TestDataHelper.getUser().getUserInfo().getName());
     }
 
     @Test
@@ -248,15 +248,15 @@ class CicSubmitCaseEventTest {
             cicSubmitCaseEvent.aboutToSubmit(updatedCaseDetails, beforeDetails);
 
         verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
-            eq(dssDoc.getDocumentLink()), eq(TEST_CASE_ID), eq(DocumentType.DSS_OTHER), eq(CaseDocumentType.APPLICANT)
+            eq(dssDoc.getDocumentLink()), eq(TEST_CASE_ID), eq(DocumentType.DSS_OTHER), eq(CaseDocumentType.APPLICATION)
         );
 
         verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
-            eq(dssDoc.getDocumentLink()), eq(TEST_CASE_ID), eq(DocumentType.DSS_SUPPORTING), eq(CaseDocumentType.APPLICANT)
+            eq(dssDoc.getDocumentLink()), eq(TEST_CASE_ID), eq(DocumentType.DSS_SUPPORTING), eq(CaseDocumentType.APPLICATION)
         );
 
         verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
-            eq(dssDoc.getDocumentLink()), eq(TEST_CASE_ID), eq(DocumentType.DSS_TRIBUNAL_FORM), eq(CaseDocumentType.APPLICANT)
+            eq(dssDoc.getDocumentLink()), eq(TEST_CASE_ID), eq(DocumentType.DSS_TRIBUNAL_FORM), eq(CaseDocumentType.APPLICATION)
         );
 
         assertThat(response).isNotNull();
@@ -432,7 +432,7 @@ class CicSubmitCaseEventTest {
 
         doThrow(new RuntimeException("Error saving document entity to database"))
             .when(documentsService).buildAndSaveNewDocumentEntity(any(), eq(TEST_CASE_ID),
-                eq(DocumentType.DSS_TRIBUNAL_FORM), eq(CaseDocumentType.APPLICANT));
+                eq(DocumentType.DSS_TRIBUNAL_FORM), eq(CaseDocumentType.APPLICATION));
 
         final AboutToStartOrSubmitResponse<CaseData, State> response =
             cicSubmitCaseEvent.aboutToSubmit(updatedCaseDetails, beforeDetails);
@@ -441,7 +441,7 @@ class CicSubmitCaseEventTest {
         assertThat(response.getErrors()).contains("Error saving document with filename: " + genericTestDocument.getFilename());
 
         verify(documentsService, times(1)).buildAndSaveNewDocumentEntity(
-            any(), eq(TEST_CASE_ID), eq(DocumentType.DSS_TRIBUNAL_FORM), eq(CaseDocumentType.APPLICANT)
+            any(), eq(TEST_CASE_ID), eq(DocumentType.DSS_TRIBUNAL_FORM), eq(CaseDocumentType.APPLICATION)
         );
 
         genericTestDocument.setFilename(null);
@@ -518,11 +518,11 @@ class CicSubmitCaseEventTest {
             .when(documentsService).buildAndSaveNewDocumentEntity(
                 argThat(doc -> "unhappy_file.pdf".equals(doc.getFilename())
                     || "".equals(doc.getFilename())),
-                eq(TEST_CASE_ID), eq(DocumentType.DSS_TRIBUNAL_FORM), eq(CaseDocumentType.APPLICANT));
+                eq(TEST_CASE_ID), eq(DocumentType.DSS_TRIBUNAL_FORM), eq(CaseDocumentType.APPLICATION));
 
         doNothing().when(documentsService).buildAndSaveNewDocumentEntity(
             argThat(doc -> "happy_file.pdf".equals(doc.getFilename())),
-            eq(TEST_CASE_ID), eq(DocumentType.DSS_SUPPORTING), eq(CaseDocumentType.APPLICANT));
+            eq(TEST_CASE_ID), eq(DocumentType.DSS_SUPPORTING), eq(CaseDocumentType.APPLICATION));
 
         final AboutToStartOrSubmitResponse<CaseData, State> response =
             cicSubmitCaseEvent.aboutToSubmit(updatedCaseDetails, beforeDetails);

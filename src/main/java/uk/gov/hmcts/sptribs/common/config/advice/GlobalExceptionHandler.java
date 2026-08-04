@@ -1,6 +1,7 @@
 package uk.gov.hmcts.sptribs.common.config.advice;
 
 import feign.FeignException;
+import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -12,6 +13,7 @@ import uk.gov.hmcts.reform.authorisation.exceptions.InvalidTokenException;
 import uk.gov.hmcts.sptribs.common.config.interceptors.UnAuthorisedServiceException;
 import uk.gov.hmcts.sptribs.exception.CaseNotFoundException;
 import uk.gov.hmcts.sptribs.exception.DocumentDownloadException;
+import uk.gov.hmcts.sptribs.exception.InvalidPostcodeException;
 import uk.gov.hmcts.sptribs.exception.UnauthorisedCaseAccessException;
 import uk.gov.hmcts.sptribs.notification.exception.NotificationException;
 import uk.gov.service.notify.NotificationClientException;
@@ -74,9 +76,21 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return status(HttpStatus.BAD_REQUEST).body(exception.getMessage());
     }
 
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ResponseEntity<Object> handleConstraintViolationException(ConstraintViolationException exception) {
+        log.warn("Constraint violation: {}", exception.getMessage());
+        return status(HttpStatus.BAD_REQUEST).body(exception.getMessage());
+    }
+
     @ExceptionHandler(UnauthorisedCaseAccessException.class)
     public ResponseEntity<Object> handleUnauthorisedCaseAccessException(UnauthorisedCaseAccessException exception) {
         log.warn("User is not associated with this case: {}", exception.getMessage());
         return status(HttpStatus.FORBIDDEN).build();
+    }
+
+    @ExceptionHandler(InvalidPostcodeException.class)
+    public ResponseEntity<Object> handleInvalidPostcodeException(InvalidPostcodeException exception) {
+        log.warn("Postcode verification failed: {}", exception.getMessage());
+        return status(HttpStatus.UNAUTHORIZED).build();
     }
 }

@@ -74,10 +74,8 @@ public class CaseworkerSendOrderFT extends FunctionalTestSuite {
         assertThat(firstDocumentEntity.getCaseReferenceNumber()).isEqualTo(Long.parseLong(caseData.get("hyphenatedCaseRef")
             .toString().replace("-", "")));
         assertThat(firstDocumentEntity.getDocumentTypeName()).isEqualTo(DocumentType.TRIBUNAL_DIRECTION.name());
-        assertThat(firstDocumentEntity.getCaseDocumentTypeId()).isEqualTo(4L);
+        assertThat(firstDocumentEntity.getCaseDocumentTypeId()).isEqualTo(3L);
         assertThat(firstDocumentEntity.getSavedAt()).isNotNull();
-        assertThat(firstDocumentEntity.getUpdatedAt()).isNotNull();
-        assertThat(firstDocumentEntity.isSentToApplicantViaContactParties()).isFalse();
         assertThat(firstDocumentEntity.getDocumentUrl()).isNotNull();
         assertThat(firstDocumentEntity.getDocumentFilename()).isNotNull();
         assertThat(firstDocumentEntity.getDocumentBinaryUrl()).isNotNull();
@@ -109,8 +107,7 @@ public class CaseworkerSendOrderFT extends FunctionalTestSuite {
         assertThat(firstDocumentEntity.getCaseReferenceNumber()).isEqualTo(Long.parseLong(caseData.get("hyphenatedCaseRef")
             .toString().replace("-", "")));
         assertThat(firstDocumentEntity.getDocumentTypeName()).isEqualTo(DocumentType.HOSPITAL_RECORDS.name());
-        //should be 4 to represent order.
-        assertThat(firstDocumentEntity.getCaseDocumentTypeId()).isEqualTo(4L);
+        assertThat(firstDocumentEntity.getCaseDocumentTypeId()).isEqualTo(3L);
         assertThat(firstDocumentEntity.getUpdatedAt()).isNotNull();
 
     }

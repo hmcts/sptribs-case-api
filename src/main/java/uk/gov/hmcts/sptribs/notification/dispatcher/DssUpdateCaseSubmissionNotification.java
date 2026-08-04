@@ -39,7 +39,7 @@ public class DssUpdateCaseSubmissionNotification implements PartiesNotification 
             templateVars,
                 UPDATE_RECEIVED);
 
-        notificationService.sendEmail(request, caseNumber);
+        notificationService.sendEmail(request, caseNumber, null);
     }
 
     @Override
@@ -50,6 +50,6 @@ public class DssUpdateCaseSubmissionNotification implements PartiesNotification 
             templateVars,
                 UPDATE_RECEIVED_CIC);
 
-        notificationService.sendEmail(request, caseNumber);
+        notificationService.sendEmail(request, caseNumber, null);
     }
 }

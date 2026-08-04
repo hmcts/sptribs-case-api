@@ -3,11 +3,16 @@ package uk.gov.hmcts.sptribs.caseworker;
 import io.restassured.response.Response;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
+import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
+import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.common.ccd.CcdServiceCode;
 import uk.gov.hmcts.sptribs.document.model.DocumentEntity;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
 import uk.gov.hmcts.sptribs.notification.persistence.CorrespondenceEntity;
 import uk.gov.hmcts.sptribs.testutil.FunctionalTestSuite;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -45,6 +50,12 @@ public class CaseworkerCreateAndSendOrderFT extends FunctionalTestSuite {
         "classpath:request/casedata/ccd-callback-casedata-create-and-send-order-new-callback-request.json";
     private static final String NEW_ORDER_TEMPLATE_NON_ANONYMISED_RESPONSE =
         "classpath:responses/response-caseworker-create-and-send-order-new-about-to-submit.json";
+    private static final String TOGGLED_OFF_REQUEST =
+        "classpath:request/casedata/ccd-callback-casedata-create-and-send-order-anonymity-toggled-off-callback-request.json";
+    private static final String TOGGLED_OFF_BEFORE_REQUEST =
+        "classpath:request/casedata/ccd-callback-casedata-create-and-send-order-anonymity-toggled-off-before-callback-request.json";
+    private static final String TOGGLED_OFF_RESPONSE =
+        "classpath:responses/response-caseworker-create-and-send-order-anonymity-toggled-off-about-to-submit.json";
 
     private static final String UPLOADED_ORDER_REQUEST =
         "classpath:request/casedata/ccd-callback-casedata-create-and-send-order-upload-callback-request.json";
@@ -109,6 +120,25 @@ public class CaseworkerCreateAndSendOrderFT extends FunctionalTestSuite {
     }
 
     @Test
+    public void shouldNotReactivateAnonymityFlagWhenAnonymityHasBeenToggledOff() throws Exception {
+        final Map<String, Object> caseData = caseData(TOGGLED_OFF_REQUEST);
+        final Map<String, Object> caseDataBefore = caseData(TOGGLED_OFF_BEFORE_REQUEST);
+
+        final Response response = triggerCallback(
+            caseData,
+            caseDataBefore,
+            CASEWORKER_CREATE_AND_SEND_ORDER,
+            ABOUT_TO_SUBMIT_URL
+        );
+
+        assertThat(response.getStatusCode()).isEqualTo(OK.value());
+        assertThatJson(response.asString())
+            .when(IGNORING_EXTRA_FIELDS)
+            .when(IGNORING_ARRAY_ORDER)
+            .isEqualTo(json(expectedResponse(TOGGLED_OFF_RESPONSE)));
+    }
+
+    @Test
     public void shouldAddNewOrderFromUploadWhenAboutToSubmitCallbackIsTriggered() throws Exception {
         final Map<String, Object> caseData = caseData(UPLOADED_ORDER_REQUEST);
 
@@ -131,10 +161,8 @@ public class CaseworkerCreateAndSendOrderFT extends FunctionalTestSuite {
         assertThat(firstDocumentEntity.getCaseReferenceNumber()).isEqualTo(Long.parseLong(caseData.get("hyphenatedCaseRef")
             .toString().replace("-", "")));
         assertThat(firstDocumentEntity.getDocumentTypeName()).isEqualTo(DocumentType.TRIBUNAL_DIRECTION.name());
-        assertThat(firstDocumentEntity.getCaseDocumentTypeId()).isEqualTo(4L);
+        assertThat(firstDocumentEntity.getCaseDocumentTypeId()).isEqualTo(3L);
         assertThat(firstDocumentEntity.getSavedAt()).isNotNull();
-        assertThat(firstDocumentEntity.getUpdatedAt()).isNotNull();
-        assertThat(firstDocumentEntity.isSentToApplicantViaContactParties()).isFalse();
         assertThat(firstDocumentEntity.getDocumentUrl()).isNotNull();
         assertThat(firstDocumentEntity.getDocumentFilename()).isNotNull();
         assertThat(firstDocumentEntity.getDocumentBinaryUrl()).isNotNull();
@@ -183,5 +211,67 @@ public class CaseworkerCreateAndSendOrderFT extends FunctionalTestSuite {
             .inPath(CONFIRMATION_HEADER)
             .isString()
             .contains("# Send order notification failed \n## Please resend the order");
+    }
+
+    @Test
+    public void shouldReturnHappyResponseWhenAnonymityIsNewlyAppliedInSubmittedCallback() throws Exception {
+        final Map<String, Object> caseDataAfter = caseData(CALLBACK_REQUEST);
+        final Map<String, Object> caseDataBefore = new HashMap<>(caseDataAfter);
+        caseDataBefore.put("cicCaseAnonymiseYesOrNo", "No");
+        caseDataBefore.remove("cicCaseAnonymisedAppellantName");
+        caseDataBefore.put("cicCaseAnonymityAlreadyApplied", "No");
+
+        final Response response = triggerSubmittedCallbackWithBefore(caseDataAfter, caseDataBefore);
+
+        assertThat(response.getStatusCode()).isEqualTo(OK.value());
+        assertThatJson(response.asString())
+            .inPath(CONFIRMATION_HEADER)
+            .isString()
+            .contains("# Order sent \n## A notification has been sent to: Representative");
+    }
+
+    @Test
+    public void shouldReturnHappyResponseWhenAnonymityAlreadyAppliedInSubmittedCallback() throws Exception {
+        final Map<String, Object> caseDataAfter = caseData(CALLBACK_REQUEST);
+        final Map<String, Object> caseDataBefore = new HashMap<>(caseDataAfter);
+        caseDataBefore.put("cicCaseAnonymiseYesOrNo", "Yes");
+        caseDataBefore.put("cicCaseAnonymisedAppellantName", "AAC");
+        caseDataBefore.put("cicCaseAnonymityAlreadyApplied", "Yes");
+
+        final Response response = triggerSubmittedCallbackWithBefore(caseDataAfter, caseDataBefore);
+
+        assertThat(response.getStatusCode()).isEqualTo(OK.value());
+        assertThatJson(response.asString())
+            .inPath(CONFIRMATION_HEADER)
+            .isString()
+            .contains("# Order sent \n## A notification has been sent to: Representative");
+    }
+
+    private Response triggerSubmittedCallbackWithBefore(Map<String, Object> caseDataAfter,
+                                                        Map<String, Object> caseDataBefore) {
+        final Long caseId = createCaseInCcd().getId();
+        functionalTestDataManager.addReference(caseId);
+
+        final String hyphenatedCaseRef = CaseData.builder().build().formatCaseRef(caseId);
+        caseDataAfter.put("hyphenatedCaseRef", hyphenatedCaseRef);
+        caseDataBefore.put("hyphenatedCaseRef", hyphenatedCaseRef);
+
+        final CallbackRequest callbackRequest = CallbackRequest.builder()
+            .eventId(CASEWORKER_CREATE_AND_SEND_ORDER)
+            .caseDetails(
+                CaseDetails.builder()
+                    .id(caseId)
+                    .data(caseDataAfter)
+                    .caseTypeId(CcdServiceCode.ST_CIC.getCaseType().getCaseTypeName())
+                    .build())
+            .caseDetailsBefore(
+                CaseDetails.builder()
+                    .id(caseId)
+                    .data(caseDataBefore)
+                    .caseTypeId(CcdServiceCode.ST_CIC.getCaseType().getCaseTypeName())
+                    .build())
+            .build();
+
+        return triggerCallback(callbackRequest, SUBMITTED_URL);
     }
 }

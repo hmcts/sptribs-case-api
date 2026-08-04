@@ -82,6 +82,12 @@ public class CaseDataRepositoryImpl implements CaseDataRepository {
     }
 
     @Override
+    public boolean checkIfUserHasAccessToCase(String ccdReference, String userEmail) {
+        log.info("Checking if user has access to case for CCD reference: {}", ccdReference);
+        return findCase(ccdReference, userEmail).isPresent();
+    }
+
+    @Override
     public Optional<CicaCaseEntity> findCase(String ccdReference, String userEmail) {
         log.info("Checking case has correct email for CCD reference: {}", ccdReference);
 

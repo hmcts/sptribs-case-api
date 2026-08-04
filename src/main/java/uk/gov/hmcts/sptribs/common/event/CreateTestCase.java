@@ -136,7 +136,7 @@ public class CreateTestCase implements CCDConfig<CaseData, State, UserRole> {
                         document.getValue().getDocumentLink(),
                         details.getId(),
                         document.getValue().getDocumentCategory(),
-                        CaseDocumentType.CASEWORKER
+                        CaseDocumentType.APPLICATION
                     );
                 } catch (RuntimeException e) {
                     log.error("Saving applicant documents failed with exception : {}", e.getMessage());

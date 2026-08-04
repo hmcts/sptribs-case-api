@@ -70,7 +70,7 @@ public class NewOrderIssuedNotificationTest {
         newOrderIssuedNotification.sendToSubject(data, TEST_CASE_ID.toString());
 
         //Then
-        verify(notificationService).sendEmail(any(NotificationRequest.class), eq(TEST_CASE_ID.toString()));
+        verify(notificationService).sendEmail(any(NotificationRequest.class), eq(TEST_CASE_ID.toString()), eq(null));
         verify(notificationHelper).buildEmailNotificationRequest(
             eq(data.getCicCase().getEmail()),
             eq(true),
@@ -107,7 +107,7 @@ public class NewOrderIssuedNotificationTest {
             argument.capture(), eq(new HashMap<>()), eq(TemplateName.NEW_ORDER_ISSUED_EMAIL));
         assertThat(argument.getValue())
             .containsEntry(TRIBUNAL_ORDER, recentOrder.getUploadedFile().get(0).getValue().getDocumentLink().getFilename());
-        verify(notificationService).sendEmail(any(NotificationRequest.class), eq(TEST_CASE_ID.toString()));
+        verify(notificationService).sendEmail(any(NotificationRequest.class), eq(TEST_CASE_ID.toString()), eq(null));
 
     }
 
@@ -163,7 +163,7 @@ public class NewOrderIssuedNotificationTest {
             argument.capture(), eq(new HashMap<>()), eq(TemplateName.NEW_ORDER_ISSUED_EMAIL));
         assertThat(argument.getValue())
             .containsEntry(TRIBUNAL_ORDER, recentOrder.getUploadedFile().get(0).getValue().getDocumentLink().getFilename());
-        verify(notificationService).sendEmail(any(NotificationRequest.class), eq(TEST_CASE_ID.toString()));
+        verify(notificationService).sendEmail(any(NotificationRequest.class), eq(TEST_CASE_ID.toString()), eq(null));
     }
 
 
@@ -201,7 +201,7 @@ public class NewOrderIssuedNotificationTest {
             argument.capture(), eq(new HashMap<>()), eq(TemplateName.NEW_ORDER_ISSUED_EMAIL));
         assertThat(argument.getValue())
             .containsEntry(TRIBUNAL_ORDER, recentOrder.getDraftOrder().getTemplateGeneratedDocument().getFilename());
-        verify(notificationService).sendEmail(any(NotificationRequest.class), eq(TEST_CASE_ID.toString()));
+        verify(notificationService).sendEmail(any(NotificationRequest.class), eq(TEST_CASE_ID.toString()), eq(null));
     }
 
     @Test
@@ -255,7 +255,7 @@ public class NewOrderIssuedNotificationTest {
         verify(notificationHelper).buildEmailNotificationRequest(eq(data.getCicCase().getApplicantEmailAddress()), eq(true),
             argument.capture(), eq(new HashMap<>()), eq(TemplateName.NEW_ORDER_ISSUED_EMAIL));
         assertThat(argument.getValue().get(TRIBUNAL_ORDER)).isNull();
-        verify(notificationService).sendEmail(any(NotificationRequest.class), eq(TEST_CASE_ID.toString()));
+        verify(notificationService).sendEmail(any(NotificationRequest.class), eq(TEST_CASE_ID.toString()), eq(null));
     }
 
     @Test
@@ -275,7 +275,7 @@ public class NewOrderIssuedNotificationTest {
         newOrderIssuedNotification.sendToApplicant(data, TEST_CASE_ID.toString());
 
         //Then
-        verify(notificationService).sendEmail(any(NotificationRequest.class), eq(TEST_CASE_ID.toString()));
+        verify(notificationService).sendEmail(any(NotificationRequest.class), eq(TEST_CASE_ID.toString()), eq(null));
         verify(notificationHelper).buildEmailNotificationRequest(
             eq(data.getCicCase().getApplicantEmailAddress()),
             eq(true),

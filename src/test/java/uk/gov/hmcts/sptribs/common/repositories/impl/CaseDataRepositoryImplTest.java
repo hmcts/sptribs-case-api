@@ -85,4 +85,36 @@ class CaseDataRepositoryImplTest {
 
         assertThat(result).isEmpty();
     }
+
+    @Test
+    void shouldReturnTrueWhenUserHasAccessToCase() {
+        CicaCaseEntity entity = CicaCaseEntity.builder()
+            .id("123")
+            .state("Submitted")
+            .data(Map.of())
+            .build();
+
+        when(jdbcTemplate.query(
+            anyString(),
+            anyMap(),
+            org.mockito.ArgumentMatchers.<RowMapper<CicaCaseEntity>>any()
+        )).thenReturn(List.of(entity));
+
+        boolean result = repository.checkIfUserHasAccessToCase("123", "test@test.com");
+
+        assertThat(result).isTrue();
+    }
+
+    @Test
+    void shouldReturnFalseWhenUserHasNoAccessToCase() {
+        when(jdbcTemplate.query(
+            anyString(),
+            anyMap(),
+            org.mockito.ArgumentMatchers.<RowMapper<CicaCaseEntity>>any()
+        )).thenReturn(List.of());
+
+        boolean result = repository.checkIfUserHasAccessToCase("123", "test@test.com");
+
+        assertThat(result).isFalse();
+    }
 }

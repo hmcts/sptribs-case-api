@@ -6,8 +6,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
-import uk.gov.hmcts.reform.idam.client.models.User;
 import uk.gov.hmcts.sptribs.caseworker.service.ExtendedCaseDataApi;
+import uk.gov.hmcts.sptribs.idam.CICUser;
 import uk.gov.hmcts.sptribs.idam.IdamService;
 import uk.gov.hmcts.sptribs.services.model.AuditEvent;
 import uk.gov.hmcts.sptribs.services.model.AuditEventsResponse;
@@ -22,7 +22,7 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class AuditEventServiceTest {
 
-    private static final User SYSTEM_USER = new User("sys-token", null);
+    private static final CICUser SYSTEM_USER = new CICUser("sys-token", null);
 
     private static final String SERVICE_TOKEN = "service-token";
 
