@@ -163,11 +163,9 @@ class CaseworkerCreateBundleTest {
             .isEqualTo(updatedCaseDetails.getData());
         assertThat(responseData.getCaseBundles()).isNotNull();
 
-        //case documents should remain null so that they are not duplicated
-        //i.e. not in their respective child objects as well (CicCase.applicantDocumentsUploaded)
-        assertThat(responseData.getCaseDocuments()).isNull();
+        assertThat(responseData.getCaseDocuments()).hasSize(1);
         assertThat(responseData.getMultiBundleConfiguration()).isNull();
-        assertThat(responseData.getAudioVideoEvidenceBundleDocument()).isNull();
+        assertThat(responseData.getAudioVideoEvidenceBundleDocument()).isEqualTo(audioVideoBundleDocument);
     }
 
     @Test
@@ -319,7 +317,8 @@ class CaseworkerCreateBundleTest {
             .isNotNull()
             .isEqualTo(caseDetails.getData());
         assertThat(responseData.getCaseBundles()).isNotNull();
-        assertThat(responseData.getCaseDocuments()).isNull();
+        assertThat(responseData.getCaseDocuments()).hasSize(4);
+        assertThat(responseData.getFurtherCaseDocuments()).isNull();
         assertThat(responseData.getMultiBundleConfiguration()).isNull();
     }
 
@@ -399,7 +398,8 @@ class CaseworkerCreateBundleTest {
             .isNotNull()
             .isEqualTo(caseDetails.getData());
         assertThat(responseData.getCaseBundles()).isNotNull();
-        assertThat(responseData.getCaseDocuments()).isNull();
+        assertThat(responseData.getCaseDocuments()).hasSize(3);
+        assertThat(responseData.getFurtherCaseDocuments()).hasSize(6);
         assertThat(responseData.getMultiBundleConfiguration()).isNull();
     }
 
@@ -463,7 +463,8 @@ class CaseworkerCreateBundleTest {
             .isNotNull()
             .isEqualTo(updatedCaseDetails.getData());
         assertThat(responseData.getCaseBundles()).isNotNull();
-        assertThat(responseData.getCaseDocuments()).isNull();
+        assertThat(responseData.getCaseDocuments()).hasSize(1);
+        assertThat(responseData.getFurtherCaseDocuments()).isNull();
         assertThat(responseData.getMultiBundleConfiguration()).isNull();
     }
 
@@ -506,7 +507,7 @@ class CaseworkerCreateBundleTest {
             .isNotNull()
             .isEqualTo(updatedCaseDetails.getData());
         assertThat(responseData.getCaseBundles()).isNotNull();
-        assertThat(responseData.getCaseDocuments()).isNull();
+        assertThat(responseData.getCaseDocuments()).isEmpty();
         assertThat(responseData.getMultiBundleConfiguration()).isNull();
     }
 
@@ -594,7 +595,7 @@ class CaseworkerCreateBundleTest {
             .isEqualTo(updatedCaseDetails.getData());
         assertThat(responseData.getCaseBundles()).isNotNull();
 
-        assertThat(responseData.getCaseDocuments()).isNull();
+        assertThat(responseData.getCaseDocuments()).hasSize(1);
         assertThat(responseData.getMultiBundleConfiguration()).isNull();
 
         assertThat(responseData.getCaseBundles()).hasSize((1));

@@ -140,9 +140,6 @@ public class CaseworkerCreateBundle implements CCDConfig<CaseData, State, UserRo
         caseData.setCaseBundles(getConfiguredCaseBundles(caseData, bundleCallback, existingBundles));
 
         caseData.setMultiBundleConfiguration(null);
-        caseData.setCaseDocuments(null);
-        caseData.setFurtherCaseDocuments(null);
-        caseData.setAudioVideoEvidenceBundleDocument(null);
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
