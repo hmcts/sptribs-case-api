@@ -99,9 +99,9 @@ class ContactPartiesNotificationTest {
 
         Map<String, Object> baseVars = new HashMap<>();
         Map<String, String> uploadedDocuments = Map.of("doc1", "content");
-        NotificationRequest builtRequest = mock(NotificationRequest.class);
         NotificationResponse response = new NotificationResponse();
         response.setId("resp-id-123");
+        NotificationRequest builtRequest = mock(NotificationRequest.class);
 
         when(notificationHelper.getSubjectCommonVars(TEST_CASE_ID.toString(), caseData)).thenReturn(baseVars);
         when(notificationHelper.buildDocumentList(any(), eq(DOC_ATTACH_LIMIT))).thenReturn(uploadedDocuments);
@@ -165,9 +165,9 @@ class ContactPartiesNotificationTest {
 
         Map<String, Object> baseVars = new HashMap<>();
         Map<String, String> uploadedDocuments = Map.of("doc1", "content");
-        NotificationRequest builtRequest = mock(NotificationRequest.class);
         NotificationResponse response = new NotificationResponse();
         response.setId("resp-applicant-id");
+        NotificationRequest builtRequest = mock(NotificationRequest.class);
 
         when(notificationHelper.getApplicantCommonVars(TEST_CASE_ID.toString(), caseData)).thenReturn(baseVars);
         when(notificationHelper.buildDocumentList(any(), eq(DOC_ATTACH_LIMIT))).thenReturn(uploadedDocuments);
@@ -228,9 +228,9 @@ class ContactPartiesNotificationTest {
 
         Map<String, Object> baseVars = new HashMap<>();
         Map<String, String> uploadedDocuments = Map.of("doc1", "content");
-        NotificationRequest builtRequest = mock(NotificationRequest.class);
         NotificationResponse response = new NotificationResponse();
         response.setId("resp-representative-id");
+        NotificationRequest builtRequest = mock(NotificationRequest.class);
 
         when(notificationHelper.getRepresentativeCommonVars(TEST_CASE_ID.toString(), caseData)).thenReturn(baseVars);
         when(notificationHelper.buildDocumentList(any(), eq(DOC_ATTACH_LIMIT))).thenReturn(uploadedDocuments);
@@ -288,9 +288,9 @@ class ContactPartiesNotificationTest {
         //given
         cicCase.setRespondentEmail("respondent@example.com");
         Map<String, Object> baseVars = new HashMap<>();
-        NotificationRequest builtRequest = mock(NotificationRequest.class);
         NotificationResponse response = new NotificationResponse();
         response.setId("resp-respondent-id");
+        NotificationRequest builtRequest = mock(NotificationRequest.class);
 
         when(notificationHelper.getRespondentCommonVars(TEST_CASE_ID.toString(), caseData)).thenReturn(baseVars);
         when(notificationHelper.buildDocumentList(any(), eq(DOC_ATTACH_LIMIT))).thenReturn(Map.of());
@@ -311,9 +311,9 @@ class ContactPartiesNotificationTest {
     void shouldNotifyTribunalAndWriteToTribunalField() {
         //given
         Map<String, Object> baseVars = new HashMap<>();
-        NotificationRequest builtRequest = mock(NotificationRequest.class);
         NotificationResponse response = new NotificationResponse();
         response.setId("resp-tribunal-id");
+        NotificationRequest builtRequest = mock(NotificationRequest.class);
 
         when(notificationHelper.getTribunalCommonVars(TEST_CASE_ID.toString(), caseData)).thenReturn(baseVars);
         when(notificationHelper.buildDocumentList(any(), eq(DOC_ATTACH_LIMIT))).thenReturn(Map.of());
@@ -339,9 +339,9 @@ class ContactPartiesNotificationTest {
         cicCase.setEmail("subject@example.com");
 
         Map<String, Object> baseVars = new HashMap<>();
-        NotificationRequest builtRequest = mock(NotificationRequest.class);
         NotificationResponse response = new NotificationResponse();
         response.setId("resp-id");
+        NotificationRequest builtRequest = mock(NotificationRequest.class);
 
         when(notificationHelper.getSubjectCommonVars(TEST_CASE_ID.toString(), caseData)).thenReturn(baseVars);
         when(notificationHelper.buildDocumentList(any(), eq(DOC_ATTACH_LIMIT))).thenReturn(Map.of());
@@ -372,9 +372,9 @@ class ContactPartiesNotificationTest {
         cicCase.setEmail("subject@example.com");
 
         Map<String, Object> baseVars = new HashMap<>();
-        NotificationRequest builtRequest = mock(NotificationRequest.class);
         NotificationResponse response = new NotificationResponse();
         response.setId("resp-id");
+        NotificationRequest builtRequest = mock(NotificationRequest.class);
 
         when(notificationHelper.getSubjectCommonVars(TEST_CASE_ID.toString(), caseData)).thenReturn(baseVars);
         when(notificationHelper.buildDocumentList(any(), eq(DOC_ATTACH_LIMIT))).thenReturn(Map.of());

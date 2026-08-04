@@ -550,14 +550,19 @@ public class TestDataHelper {
         for (String fileName : fileNames) {
             String url = String.format("test.url/documents/%s", UUID.randomUUID());
             String binaryUrl = String.format("%s/binary", url);
+            Document document = Document.builder()
+                .filename(fileName)
+                .url(url)
+                .binaryUrl(binaryUrl)
+                .build();
             CaseworkerCICDocument caseworkerCICDocument = CaseworkerCICDocument.builder()
-                .documentLink(Document.builder().filename(fileName).url(url).binaryUrl(binaryUrl).build())
+                .documentLink(document)
                 .documentCategory(DocumentType.LINKED_DOCS)
                 .documentEmailContent("some email content")
                 .build();
-        ListValue<CaseworkerCICDocument> caseworkerCICDocumentListValue = new ListValue<>();
-        caseworkerCICDocumentListValue.setValue(caseworkerCICDocument);
-        documentList.add(caseworkerCICDocumentListValue);
+            ListValue<CaseworkerCICDocument> caseworkerCICDocumentListValue = new ListValue<>();
+            caseworkerCICDocumentListValue.setValue(caseworkerCICDocument);
+            documentList.add(caseworkerCICDocumentListValue);
         }
         return documentList;
     }
