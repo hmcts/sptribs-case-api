@@ -2,6 +2,8 @@ package uk.gov.hmcts.sptribs.document.bundling;
 
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.ccd.sdk.type.Document;
@@ -21,7 +23,8 @@ import uk.gov.hmcts.sptribs.document.model.DocumentEntity;
 import uk.gov.hmcts.sptribs.document.service.DocumentsService;
 import uk.gov.hmcts.sptribs.services.cdam.CaseDocumentClientApi;
 
-import java.nio.charset.StandardCharsets;
+import java.io.IOException;
+import java.io.InputStream;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
@@ -31,6 +34,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 import static java.util.Collections.singletonList;
@@ -38,16 +42,13 @@ import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class AudioVideoEvidenceBundleService {
 
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-    private static final String DOCUMENT_TYPE_HEADER = "Document type";
-    private static final String DOCUMENT_URL_HEADER = "Document URL";
-    private static final String DATE_ADDED_HEADER = "Date added";
-    private static final String DATE_APPROVED_HEADER = "Date approved";
-    private static final String UPLOADED_BY_HEADER = "Uploaded by";
     private static final String UNKNOWN_TYPE = "Unknown";
     private static final String EMPTY_VALUE = "";
+    private static final String AUDIO_VIDEO_EVIDENCE_TEMPLATE = "/templates/audio_video_evidence.html";
 
     private final PDFServiceClient pdfServiceClient;
     private final CaseDocumentClientApi caseDocumentClientApi;
@@ -161,39 +162,22 @@ public class AudioVideoEvidenceBundleService {
     }
 
     private byte[] generatePdf(List<AudioVideoDocumentRow> rows, Long caseId) {
-        String html = buildHtml(rows, caseId);
-        return pdfServiceClient.generateFromHtml(html.getBytes(StandardCharsets.UTF_8), Map.of());
+        byte[] template = loadTemplate();
+        Map<String, Object> placeholders = Map.of(
+            "caseId", String.valueOf(caseId),
+            "rowsHtml", buildRowsHtml(rows)
+        );
+        log.info("Generating audio/video evidence PDF for case {} with {} rows", caseId, rows.size());
+        return pdfServiceClient.generateFromHtml(template, placeholders);
     }
 
-    private String buildHtml(List<AudioVideoDocumentRow> rows, Long caseId) {
-        StringBuilder html = new StringBuilder();
-        html.append("<!DOCTYPE html><html><head><meta charset=\"UTF-8\"><title>Audio/video evidence</title>")
-            .append("<style>")
-            .append("body{font-family:Arial,sans-serif;font-size:12px;color:#111;}")
-            .append("h1{font-size:18px;margin-bottom:12px;}")
-            .append("table{width:100%;border-collapse:collapse;table-layout:fixed;}")
-            .append("th,td{border:1px solid #ccc;padding:6px;vertical-align:top;word-wrap:break-word;}")
-            .append("th{background:#f3f3f3;text-align:left;}")
-            .append("</style></head><body>")
-            .append("<h1>Audio/video evidence document - case ")
-            .append(caseId)
-            .append("</h1><table><thead><tr><th>")
-            .append(DOCUMENT_TYPE_HEADER)
-            .append("</th><th>")
-            .append(DOCUMENT_URL_HEADER)
-            .append("</th><th>")
-            .append(DATE_ADDED_HEADER)
-            .append("</th><th>")
-            .append(DATE_APPROVED_HEADER)
-            .append("</th><th>")
-            .append(UPLOADED_BY_HEADER)
-            .append("</th></tr></thead><tbody>");
-
+    private String buildRowsHtml(List<AudioVideoDocumentRow> rows) {
+        StringBuilder rowsHtml = new StringBuilder();
         if (rows.isEmpty()) {
-            html.append("<tr><td colspan=\"5\">No active MP3/MP4 documents found.</td></tr>");
+            rowsHtml.append("<tr><td colspan=\"5\">No active MP3/MP4 documents found.</td></tr>");
         } else {
             for (AudioVideoDocumentRow row : rows) {
-                html.append("<tr><td>")
+                rowsHtml.append("<tr><td>")
                     .append(escapeHtml(row.documentType()))
                     .append("</td><td>")
                     .append(buildDocumentLink(row.documentFilename(), row.documentUrl()))
@@ -206,9 +190,15 @@ public class AudioVideoEvidenceBundleService {
                     .append("</td></tr>");
             }
         }
+        return rowsHtml.toString();
+    }
 
-        html.append("</tbody></table></body></html>");
-        return html.toString();
+    private byte[] loadTemplate() {
+        try (InputStream inputStream = getClass().getResourceAsStream(AUDIO_VIDEO_EVIDENCE_TEMPLATE)) {
+            return IOUtils.toByteArray(Objects.requireNonNull(inputStream));
+        } catch (IOException exception) {
+            throw new IllegalStateException("Unable to load audio/video evidence PDF template", exception);
+        }
     }
 
     private String buildDocumentLink(String filename, String documentUrl) {

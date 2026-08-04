@@ -26,7 +26,6 @@ import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -198,13 +197,18 @@ class AudioVideoEvidenceBundleServiceTest {
         assertThat(result.getUrl()).isEqualTo("http://dm-store/documents/generated");
         assertThat(result.getBinaryUrl()).isEqualTo("http://dm-store/documents/generated/binary");
 
-        ArgumentCaptor<byte[]> htmlCaptor = ArgumentCaptor.forClass(byte[].class);
-        verify(pdfServiceClient).generateFromHtml(htmlCaptor.capture(), eq(Collections.emptyMap()));
-        String html = new String(htmlCaptor.getValue(), StandardCharsets.UTF_8);
-        assertThat(html).contains("Audio/video evidence document - case 12345");
-        assertThat(html).contains("<th>Date approved</th>");
-        assertThat(html).contains("<th>Uploaded by</th>");
-        assertThat(html).contains("<a href=\"http://dm/documents/audio/binary?a=1&amp;b=&lt;x&gt;&quot;&#39;\">hearing-audio.mp3</a>");
+        ArgumentCaptor<byte[]> htmlTemplateCaptor = ArgumentCaptor.forClass(byte[].class);
+        @SuppressWarnings("unchecked")
+        ArgumentCaptor<Map<String, Object>> placeholdersCaptor = ArgumentCaptor.forClass(Map.class);
+        verify(pdfServiceClient).generateFromHtml(htmlTemplateCaptor.capture(), placeholdersCaptor.capture());
+        String htmlTemplate = new String(htmlTemplateCaptor.getValue(), StandardCharsets.UTF_8);
+        assertThat(htmlTemplate).contains("Audio/video evidence document - case {{caseId}}");
+        assertThat(htmlTemplate).contains("{{rowsHtml | raw}}");
+
+        assertThat(placeholdersCaptor.getValue()).containsEntry("caseId", "12345");
+        assertThat(placeholdersCaptor.getValue().get("rowsHtml").toString())
+            .contains("<a href=\"http://dm/documents/audio/binary?a=1&amp;b=&lt;x&gt;&quot;&#39;\">hearing-audio.mp3</a>")
+            .contains("<td>2026-01-10</td>");
         verify(caseDocumentClientApi).uploadDocuments(eq("Bearer user-token"), eq("service-token"), any());
     }
 
@@ -281,11 +285,11 @@ class AudioVideoEvidenceBundleServiceTest {
             request
         );
 
-        Method buildHtml = AudioVideoEvidenceBundleService.class.getDeclaredMethod("buildHtml", List.class, Long.class);
-        buildHtml.setAccessible(true);
+        Method buildRowsHtml = AudioVideoEvidenceBundleService.class.getDeclaredMethod("buildRowsHtml", List.class);
+        buildRowsHtml.setAccessible(true);
 
-        String html = (String) buildHtml.invoke(service, List.of(), 42L);
-        assertThat(html).contains("No active MP3/MP4 documents found.");
+        String rowsHtml = (String) buildRowsHtml.invoke(service, List.of());
+        assertThat(rowsHtml).contains("No active MP3/MP4 documents found.");
 
         Method escapeHtml = AudioVideoEvidenceBundleService.class.getDeclaredMethod("escapeHtml", String.class);
         escapeHtml.setAccessible(true);
