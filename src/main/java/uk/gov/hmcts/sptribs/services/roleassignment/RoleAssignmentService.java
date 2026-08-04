@@ -20,6 +20,8 @@ import java.util.List;
 import java.util.Map;
 
 import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
+import static uk.gov.hmcts.sptribs.constants.CommonConstants.ST_CIC_CASE_TYPE;
+import static uk.gov.hmcts.sptribs.constants.CommonConstants.ST_CIC_JURISDICTION;
 
 @Service
 @Slf4j
@@ -91,13 +93,14 @@ public class RoleAssignmentService {
     private void assignRoleForUser(Long caseId, String actorId, String assignerId, String authToken, String serviceAuthToken) {
         final Map<String, String> attributes = new HashMap<>();
         attributes.put("caseId", caseId.toString());
-        attributes.put("caseType", "CriminalInjuriesCompensation");
-        attributes.put("jurisdiction", "ST_CIC");
+        attributes.put("caseType", ST_CIC_CASE_TYPE);
+        attributes.put("jurisdiction", ST_CIC_JURISDICTION);
+        attributes.put("substantive", "Y");
 
         final RoleRequest roleRequest = RoleRequest.builder()
             .assignerId(assignerId)
             .process("case-allocation")
-            .reference(caseId + "/[CREATOR]")
+            .reference(caseId + "/[CREATOR]/" + actorId)
             .replaceExisting(true)
             .build();
 
