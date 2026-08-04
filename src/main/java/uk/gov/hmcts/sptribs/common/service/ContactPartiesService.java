@@ -3,6 +3,7 @@ package uk.gov.hmcts.sptribs.common.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 import uk.gov.hmcts.sptribs.caseworker.util.DocumentListUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.common.repositories.exception.correspondencedocument.CorrespondenceDocumentSaveException;
@@ -24,7 +25,7 @@ public class ContactPartiesService {
 
     public void linkCorrespondenceIdsToDocuments(CaseData caseData,
                                                  List<String> correspondenceIds) {
-        if (correspondenceIds.isEmpty()) {
+        if (CollectionUtils.isEmpty(correspondenceIds)) {
             return;
         }
 

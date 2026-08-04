@@ -45,7 +45,6 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.sptribs.caseworker.util.ErrorConstants.SELECT_AT_LEAST_ONE_CONTACT_PARTY;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_WA_CONFIG_USER;
@@ -66,7 +65,7 @@ import static uk.gov.hmcts.sptribs.testutil.TestEventConstants.CASEWORKER_CONTAC
 @ExtendWith(MockitoExtension.class)
 class CaseworkerContactPartiesTest {
     @InjectMocks
-    private CaseworkerContactParties caseWorkerContactParties;
+    private CaseworkerContactParties caseworkerContactParties;
 
     @InjectMocks
     private PartiesToContact partiesToContact;
@@ -88,7 +87,7 @@ class CaseworkerContactPartiesTest {
 
         final ConfigBuilderImpl<CaseData, State, UserRole> configBuilder = createCaseDataConfigBuilder();
 
-        caseWorkerContactParties.configure(configBuilder);
+        caseworkerContactParties.configure(configBuilder);
 
         assertThat(getEventsFrom(configBuilder).values())
             .extracting(Event::getId)
@@ -127,7 +126,7 @@ class CaseworkerContactPartiesTest {
         caseData.setCicCase(cicCase);
         caseDetails.setData(caseData);
 
-        AboutToStartOrSubmitResponse<CaseData, State> response = caseWorkerContactParties.aboutToStart(caseDetails);
+        AboutToStartOrSubmitResponse<CaseData, State> response = caseworkerContactParties.aboutToStart(caseDetails);
 
         assertThat(response.getData().getContactPartiesDocuments().getDocumentList()).isNotNull();
         assertThat(response.getData().getContactPartiesDocuments().getDocumentList().getListItems()).hasSize(1);
@@ -179,7 +178,7 @@ class CaseworkerContactPartiesTest {
         assertThat(response.getErrors()).hasSize(1);
         assertThat(response.getErrors()).contains(SELECT_AT_LEAST_ONE_CONTACT_PARTY);
 
-        SubmittedCallbackResponse contactPartiesResponse = caseWorkerContactParties.submitted(updatedCaseDetails, beforeDetails);
+        SubmittedCallbackResponse contactPartiesResponse = caseworkerContactParties.submitted(updatedCaseDetails, beforeDetails);
         assertThat(contactPartiesResponse).isNotNull();
         assertThat(contactPartiesResponse.getConfirmationHeader()).doesNotContain("Subject");
         assertThat(contactPartiesResponse.getConfirmationHeader()).doesNotContain("Representative");
@@ -216,17 +215,13 @@ class CaseworkerContactPartiesTest {
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
 
-        final int docAttachLimit = 10;
-        Map<String, String> emailDocs = getDocumentUploadMap();
-
-        when(notificationHelper.buildDocumentList(documentList, docAttachLimit)).thenReturn(emailDocs);
         when(contactPartiesNotification.sendToSubject(caseData, String.valueOf(TEST_CASE_ID))).thenReturn("UUID1");
         when(contactPartiesNotification.sendToRepresentative(caseData, String.valueOf(TEST_CASE_ID))).thenReturn("UUID2");
         when(contactPartiesNotification.sendToApplicant(caseData, String.valueOf(TEST_CASE_ID))).thenReturn("UUID3");
         when(contactPartiesNotification.sendToRespondent(caseData, String.valueOf(TEST_CASE_ID))).thenReturn("UUID4");
 
         SubmittedCallbackResponse response =
-            caseWorkerContactParties.submitted(updatedCaseDetails, beforeDetails);
+            caseworkerContactParties.submitted(updatedCaseDetails, beforeDetails);
 
         assertThat(caseData.getCicCase().getNotifyPartySubject()).hasSize(1);
         assertThat(caseData.getCicCase().getNotifyPartyRepresentative()).hasSize(1);
@@ -234,7 +229,7 @@ class CaseworkerContactPartiesTest {
         assertThat(caseData.getCicCase().getNotifyPartyApplicant()).hasSize(1);
         assertThat(response).isNotNull();
 
-        SubmittedCallbackResponse contactPartiesResponse = caseWorkerContactParties.submitted(updatedCaseDetails, beforeDetails);
+        SubmittedCallbackResponse contactPartiesResponse = caseworkerContactParties.submitted(updatedCaseDetails, beforeDetails);
 
         assertThat(contactPartiesResponse).isNotNull();
         assertThat(contactPartiesResponse.getConfirmationHeader()).contains("Subject");
@@ -279,19 +274,18 @@ class CaseworkerContactPartiesTest {
         final int docAttachLimit = 10;
         Map<String, String> emailDocs = getDocumentUploadMap();
 
-        when(notificationHelper.buildDocumentList(documentList, docAttachLimit)).thenReturn(emailDocs);
         when(contactPartiesNotification.sendToRepresentative(caseData, String.valueOf(TEST_CASE_ID))).thenReturn("UUID2");
         when(contactPartiesNotification.sendToApplicant(caseData, String.valueOf(TEST_CASE_ID))).thenReturn("UUID3");
         when(contactPartiesNotification.sendToRespondent(caseData, String.valueOf(TEST_CASE_ID))).thenReturn("UUID4");
 
         SubmittedCallbackResponse response =
-            caseWorkerContactParties.submitted(updatedCaseDetails, beforeDetails);
+            caseworkerContactParties.submitted(updatedCaseDetails, beforeDetails);
         assertThat(caseData.getCicCase().getNotifyPartyRepresentative()).hasSize(1);
         assertThat(caseData.getCicCase().getNotifyPartyRespondent()).hasSize(1);
         assertThat(caseData.getCicCase().getNotifyPartyApplicant()).hasSize(1);
         assertThat(response).isNotNull();
 
-        SubmittedCallbackResponse contactPartiesResponse = caseWorkerContactParties.submitted(updatedCaseDetails, beforeDetails);
+        SubmittedCallbackResponse contactPartiesResponse = caseworkerContactParties.submitted(updatedCaseDetails, beforeDetails);
 
         assertThat(contactPartiesResponse).isNotNull();
         assertThat(contactPartiesResponse.getConfirmationHeader()).doesNotContain("Subject");
@@ -302,50 +296,6 @@ class CaseworkerContactPartiesTest {
 
         verify(contactPartiesNotification, never()).sendToSubject(any(), any());
         verify(contactPartiesService, times(2)).linkCorrespondenceIdsToDocuments(caseData, List.of("UUID2", "UUID3", "UUID4"));
-    }
-
-    @Test
-    void shouldNotCallDocumentCorrespondenceServiceAsNoEmailsSent() {
-
-        //given
-        DynamicMultiSelectList documentList = buildDynamicMultiSelectDocumentList();
-        ContactPartiesDocuments contactPartiesDocuments = ContactPartiesDocuments.builder()
-            .documentList(documentList)
-            .build();
-
-        final CaseData caseData = caseData();
-        caseData.setContactPartiesDocuments(contactPartiesDocuments);
-
-        final CicCase cicCase = CicCase.builder()
-            .fullName(TEST_FIRST_NAME)
-            .address(SUBJECT_ADDRESS)
-            .representativeAddress(SOLICITOR_ADDRESS)
-            .build();
-        caseData.setCicCase(cicCase);
-
-        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
-        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
-        updatedCaseDetails.setData(caseData);
-        updatedCaseDetails.setId(TEST_CASE_ID);
-        updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
-
-        final int docAttachLimit = 10;
-        Map<String, String> emailDocs = getDocumentUploadMap();
-
-        when(notificationHelper.buildDocumentList(documentList, docAttachLimit)).thenReturn(emailDocs);
-
-        //when
-        SubmittedCallbackResponse contactPartiesResponse = caseWorkerContactParties.submitted(updatedCaseDetails, beforeDetails);
-
-        //then
-        assertThat(contactPartiesResponse).isNotNull();
-        assertThat(contactPartiesResponse.getConfirmationHeader()).doesNotContain("Subject");
-        assertThat(contactPartiesResponse.getConfirmationHeader()).doesNotContain("Applicant");
-        assertThat(contactPartiesResponse.getConfirmationHeader()).doesNotContain("Representative");
-        assertThat(contactPartiesResponse.getConfirmationHeader()).doesNotContain("Respondent");
-
-        verifyNoInteractions(contactPartiesService);
-
     }
 
     @Test
@@ -366,7 +316,7 @@ class CaseworkerContactPartiesTest {
             .when(contactPartiesNotification).sendToRepresentative(caseData, caseData.getHyphenatedCaseRef());
 
         SubmittedCallbackResponse response =
-            caseWorkerContactParties.submitted(updatedCaseDetails, beforeDetails);
+            caseworkerContactParties.submitted(updatedCaseDetails, beforeDetails);
 
         assertThat(response.getConfirmationHeader()).contains("Contact Parties notification failed");
         assertThat(response.getConfirmationHeader()).contains("Please resend the notification");
@@ -420,7 +370,7 @@ class CaseworkerContactPartiesTest {
             .build();
         updatedCaseDetails.setData(caseData);
 
-        AboutToStartOrSubmitResponse<CaseData, State> response = caseWorkerContactParties.aboutToStart(updatedCaseDetails);
+        AboutToStartOrSubmitResponse<CaseData, State> response = caseworkerContactParties.aboutToStart(updatedCaseDetails);
 
         assertThat(response).isNotNull();
         assertThat(response.getData().getContactPartiesDocuments().getDocumentList().getListItems()).hasSize(1);
@@ -452,7 +402,7 @@ class CaseworkerContactPartiesTest {
         updatedCaseDetails.setData(caseData);
         updatedCaseDetails.setId(TEST_CASE_ID);
 
-        AboutToStartOrSubmitResponse<CaseData, State> contactPartiesResponse = caseWorkerContactParties
+        AboutToStartOrSubmitResponse<CaseData, State> contactPartiesResponse = caseworkerContactParties
             .aboutToSubmit(updatedCaseDetails, beforeDetails);
 
         assertThat(contactPartiesResponse.getEventMetadata().getSummary()).isEqualTo("1 Selected documents sent");
