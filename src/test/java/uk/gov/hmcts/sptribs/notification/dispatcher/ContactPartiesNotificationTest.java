@@ -29,7 +29,6 @@ import uk.gov.hmcts.sptribs.testutil.TestDataHelper;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -57,7 +56,6 @@ class ContactPartiesNotificationTest {
     @InjectMocks
     private ContactPartiesNotification contactPartiesNotification;
 
-    private static final UUID TEST_DOCUMENT_ID = UUID.randomUUID();
     private static final int DOC_ATTACH_LIMIT = 10;
 
     private CaseData caseData;
@@ -394,20 +392,5 @@ class ContactPartiesNotificationTest {
             argThat(vars -> !vars.containsKey(CommonConstants.DASHBOARD_KEY)),
             eq(TemplateName.CONTACT_PARTIES_EMAIL)
         );
-    }
-
-    private java.util.Map<String, String> getDocumentUploadMap() {
-        return java.util.Map.of(
-            "CaseDocument1", TEST_DOCUMENT_ID.toString(),
-            "CaseDocument2", "",
-            "CaseDocument3", "",
-            "CaseDocument4", "",
-            "CaseDocument5", "",
-            "DocumentAvailable1", "yes",
-            "DocumentAvailable2", "no",
-            "DocumentAvailable3", "no",
-            "DocumentAvailable4", "no",
-            "DocumentAvailable5", "no");
-
     }
 }
