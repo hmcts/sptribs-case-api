@@ -57,6 +57,13 @@ public class CaseDocumentsFTDataManager extends FunctionalTestDataManager {
     }
 
     public void saveTestDocumentEntity(long reference, String docUrlUuid) throws SQLException {
+        saveTestDocumentEntity(reference, docUrlUuid, "mockFile.pdf", "HOSPITAL_RECORDS");
+    }
+
+    public void saveTestDocumentEntity(long reference,
+                                       String docUrlUuid,
+                                       String fileName,
+                                       String documentTypeName) throws SQLException {
         //always sets case-document type to doc management (2)
         String sql = "INSERT INTO " + TABLE_CASE_DOCUMENTS + " ("
             + KEY_CASE_DOCUMENTS_REFERENCE
@@ -75,8 +82,8 @@ public class CaseDocumentsFTDataManager extends FunctionalTestDataManager {
                 "http://dm-store.service.core-compute.internal/documents/" + docUrlUuid);
             stmt.setString(4,
                 "http://dm-store.service.core-compute.internal/documents/" + docUrlUuid + "/binary");
-            stmt.setString(5, "mockFile.pdf");
-            stmt.setString(6, "HOSPITAL_RECORDS");
+            stmt.setString(5, fileName);
+            stmt.setString(6, documentTypeName);
             stmt.setTimestamp(7, Timestamp.valueOf(LocalDateTime.now()));
             stmt.executeUpdate();
         }
