@@ -1,13 +1,12 @@
 package uk.gov.hmcts.sptribs.systemupdate.event;
 
 import io.restassured.response.Response;
-import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import uk.gov.hmcts.sptribs.testutil.FunctionalTestSuite;
-import uk.gov.hmcts.sptribs.testutil.data.FunctionalTestDataManager;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -17,14 +16,18 @@ import static uk.gov.hmcts.sptribs.testutil.CaseDataUtil.caseData;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.ABOUT_TO_SUBMIT_URL;
 
 @SpringBootTest
-@Slf4j
 public class SystemMigrateCaseDocumentsToDocumentTableFT extends FunctionalTestSuite {
-
-    @Autowired
-    protected FunctionalTestDataManager functionalTestDataManager;
 
     private static final String REQUEST =
         "classpath:request/casedata/ccd-callback-casedata-system-migrate-documents-to-table-about-to-submit.json";
+
+    private final List<String> listOfTestBinarys = List.of(
+        "http://dm-store-aat.service.core-compute-aat.internal/documents/f54afe26-172e-44ad-be48-bd68ad53ffbc/binary",
+        "http://dm-store-aat.service.core-compute-aat.internal/documents/7c6ca230-c5ee-42ac-96c4-e340b110808e/binary",
+        "http://dm-store-aat.service.core-compute-aat.internal/documents/50d3cdd5-20ce-47b7-ae9e-7a798849c19b/binary",
+        "http://dm-store-aat.service.core-compute-aat.internal/documents/8ccefd85-a0b1-4acb-bc90-6ce676a3b7a4/binary",
+        "http://dm-store-aat.service.core-compute-aat.internal/documents/f045922d-d08b-4864-a5f3-3145911f0086/binary",
+        "http://dm-store-aat.service.core-compute-aat.internal/documents/d4748cf4-de21-4e49-8d1e-f5cb2971e2d5/binary");
 
     @Test
     public void shouldMigrateCaseDocumentsOnAboutToSubmit() throws Exception {
@@ -36,10 +39,14 @@ public class SystemMigrateCaseDocumentsToDocumentTableFT extends FunctionalTestS
         Long caseId = functionalTestDataManager.getTestReferences()
             .get(functionalTestDataManager.getTestReferences().size() - 1);
 
-        log.info("Case ID used in test: {}", caseId);
-        log.info("Migration response body: {}", response.asString());
-
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
-        assertThat(functionalTestDataManager.countCaseDocuments(caseId)).isEqualTo(6);
+
+        List<String> migratedDocBinarys = new ArrayList<>();
+
+        caseDocumentsFTDataManager.getDocumentEntities(caseId).forEach(documentEntity ->
+            migratedDocBinarys.add(documentEntity.getDocumentBinaryUrl()));
+
+        assertThat(migratedDocBinarys)
+            .containsExactlyInAnyOrderElementsOf(listOfTestBinarys);
     }
 }
