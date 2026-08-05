@@ -130,11 +130,17 @@ public class CaseworkerCreateBundle implements CCDConfig<CaseData, State, UserRo
         bundleRequestCaseData.setSubjectRepFullName(caseData.getSubjectRepFullName());
         bundleRequestCaseData.setSchemeLabel(caseData.getSchemeLabel());
 
-        var audioVideoEvidenceBundleDocument =
-            audioVideoEvidenceBundleService.createAudioVideoEvidenceBundleDocument(caseData, details.getId())
-        ;
-        caseData.setAudioVideoEvidenceBundleDocument(audioVideoEvidenceBundleDocument);
-        bundleRequestCaseData.setAudioVideoEvidenceBundleDocument(audioVideoEvidenceBundleDocument);
+        try {
+            var audioVideoEvidenceBundleDocument =
+                audioVideoEvidenceBundleService.createAudioVideoEvidenceBundleDocument(caseData, details.getId())
+                ;
+            caseData.setAudioVideoEvidenceBundleDocument(audioVideoEvidenceBundleDocument);
+            bundleRequestCaseData.setAudioVideoEvidenceBundleDocument(audioVideoEvidenceBundleDocument);
+        } catch (RuntimeException exception) {
+            log.warn("Unable to create audio/video evidence bundle document for case {}", details.getId(), exception);
+            caseData.setAudioVideoEvidenceBundleDocument(null);
+            bundleRequestCaseData.setAudioVideoEvidenceBundleDocument(null);
+        }
         details.setData(caseData);
         CaseDetails<CaseData, State> bundleRequestDetails = buildBundleRequestDetails(details, bundleRequestCaseData);
 
@@ -155,7 +161,7 @@ public class CaseworkerCreateBundle implements CCDConfig<CaseData, State, UserRo
     }
 
     private CaseDetails<CaseData, State> buildBundleRequestDetails(CaseDetails<CaseData, State> details,
-                                                                    CaseData bundleRequestCaseData) {
+                                                                   CaseData bundleRequestCaseData) {
         CaseDetails<CaseData, State> bundleRequestDetails = new CaseDetails<>();
         bundleRequestDetails.setId(details.getId());
         bundleRequestDetails.setState(details.getState());

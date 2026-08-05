@@ -58,7 +58,6 @@ import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
 import static net.javacrumbs.jsonunit.assertj.JsonAssertions.json;
 import static net.javacrumbs.jsonunit.core.Option.IGNORING_EXTRA_FIELDS;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.eq;
@@ -139,18 +138,6 @@ public class CaseworkerCreateBundleIT {
     void setClock() {
         when(clock.instant()).thenReturn(instant);
         when(clock.getZone()).thenReturn(zoneId);
-        when(authTokenGenerator.generate()).thenReturn(SERVICE_AUTHORIZATION);
-        when(pdfServiceClient.generateFromHtml(any(byte[].class), anyMap())).thenReturn("pdf".getBytes());
-        when(caseDocumentClientApi.uploadDocuments(eq(TEST_AUTHORIZATION_TOKEN), eq(SERVICE_AUTHORIZATION), any()))
-            .thenReturn(buildUploadResponse("http://dm-store/documents/generated", "http://dm-store/documents/generated/binary"));
-        when(documentsService.getAudioVideoDocuments(any())).thenAnswer(invocation -> Stream.of(
-            DocumentEntity.builder()
-                .documentFilename("default-media.mp3")
-                .documentBinaryUrl("http://dm/documents/default-media/binary")
-                .documentTypeName(DocumentType.LINKED_DOCS.name())
-                .savedAt(OffsetDateTime.parse("2026-01-10T10:00:00Z"))
-                .build()
-        ));
     }
 
     @Test
@@ -168,11 +155,11 @@ public class CaseworkerCreateBundleIT {
         when(authTokenGenerator.generate()).thenReturn(SERVICE_AUTHORIZATION);
 
         String response = mockMvc.perform(post(ABOUT_TO_SUBMIT_URL)
-            .contentType(APPLICATION_JSON)
-            .header(SERVICE_AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
-            .header(AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
-            .content(objectMapper.writeValueAsString(callbackRequest(caseData, CREATE_BUNDLE)))
-            .accept(APPLICATION_JSON))
+                .contentType(APPLICATION_JSON)
+                .header(SERVICE_AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
+                .header(AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
+                .content(objectMapper.writeValueAsString(callbackRequest(caseData, CREATE_BUNDLE)))
+                .accept(APPLICATION_JSON))
             .andExpect(
                 status().isOk())
             .andReturn()
@@ -443,18 +430,17 @@ public class CaseworkerCreateBundleIT {
             return bundleResponse;
         });
 
-        assertThatThrownBy(() -> mockMvc.perform(post(ABOUT_TO_SUBMIT_URL)
+        mockMvc.perform(post(ABOUT_TO_SUBMIT_URL)
                 .contentType(APPLICATION_JSON)
                 .header(SERVICE_AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
                 .header(AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
                 .content(objectMapper.writeValueAsString(callbackRequest(caseData, CREATE_BUNDLE)))
-                .accept(APPLICATION_JSON)))
-            .hasRootCauseInstanceOf(IllegalStateException.class)
-            .hasRootCauseMessage("No audio/video evidence documents found for case 1616591401473378");
+                .accept(APPLICATION_JSON))
+            .andExpect(status().isOk());
 
         assertThat(callbackAudioVideoDocument.get()).isNull();
-        assertThat(callbackCaseDocumentNames.get()).isEmpty();
-        verifyNoInteractions(pdfServiceClient, caseDocumentClientApi, bundlingClient);
+        assertThat(callbackCaseDocumentNames.get()).containsExactly("paper.pdf");
+        verifyNoInteractions(pdfServiceClient, caseDocumentClientApi);
     }
 
     @Test
@@ -647,24 +633,5 @@ public class CaseworkerCreateBundleIT {
             .date(date)
             .documentLink(Document.builder().filename(filename).binaryUrl(binaryUrl).url(binaryUrl).build())
             .build();
-    }
-
-    private UploadResponse buildUploadResponse(String selfUrl, String binaryUrl) {
-        DocumentLink self = new DocumentLink();
-        self.href = selfUrl;
-
-        DocumentLink binary = new DocumentLink();
-        binary.href = binaryUrl;
-
-        Links links = new Links();
-        links.self = self;
-        links.binary = binary;
-
-        uk.gov.hmcts.sptribs.cdam.model.Document uploadedDoc = new uk.gov.hmcts.sptribs.cdam.model.Document();
-        uploadedDoc.links = links;
-
-        UploadResponse uploadResponse = new UploadResponse();
-        uploadResponse.setDocuments(List.of(uploadedDoc));
-        return uploadResponse;
     }
 }

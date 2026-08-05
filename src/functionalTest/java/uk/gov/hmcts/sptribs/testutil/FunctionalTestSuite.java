@@ -190,14 +190,8 @@ public abstract class FunctionalTestSuite {
             testCaseRef = createPersistedCaseReference(caseData);
         }
 
-        if (!createTestDocument
-            && createCaseForSubmittedOrAboutToSubmitEvent
-            && EventConstants.CREATE_BUNDLE.equals(eventId)) {
-            saveAudioVideoDocumentsForBundleEvent(caseData, testCaseRef, eventId);
-        }
-
         if (createTestDocument) {
-            generateAndSetUuidInCaseDataAndDB(caseData, testCaseRef, eventId);
+            generateAndSetUuidInCaseDataAndDB(caseData, testCaseRef);
         }
 
         if (createCaseForSubmittedOrAboutToSubmitEvent) {
@@ -285,7 +279,7 @@ public abstract class FunctionalTestSuite {
     }
 
     protected Response triggerCallback(Map<String, Object> caseData, Map<String, Object> caseDataBefore,
-                                        String eventId, String url) throws IOException {
+                                       String eventId, String url) throws IOException {
         CallbackRequest request = CallbackRequest
             .builder()
             .eventId(eventId)
@@ -514,9 +508,7 @@ public abstract class FunctionalTestSuite {
         caseData.put("cicCaseDraftOrderCICList", draftOrderList);
     }
 
-    private void generateAndSetUuidInCaseDataAndDB(Map<String, Object> caseData,
-                                                   Long testCaseRef,
-                                                   String eventId) throws SQLException, IOException {
+    private void generateAndSetUuidInCaseDataAndDB(Map<String, Object> caseData, Long testCaseRef) throws SQLException, IOException {
         String caseDataJsonString = JSON.getDefault().toJSON(caseData);
 
         Pattern placeholderPattern = Pattern.compile("\\$\\{UUID(\\d+)}");
@@ -540,39 +532,6 @@ public abstract class FunctionalTestSuite {
 
         caseData.clear();
         caseData.putAll(CaseDataUtil.caseDataFromString(caseDataJsonString));
-
-        saveAudioVideoDocumentsForBundleEvent(caseData, testCaseRef, eventId);
-    }
-
-    @SuppressWarnings("unchecked")
-    private void saveAudioVideoDocumentsForBundleEvent(Map<String, Object> caseData,
-                                                       Long testCaseRef,
-                                                       String eventId) throws SQLException {
-        if (!EventConstants.CREATE_BUNDLE.equals(eventId)) {
-            return;
-        }
-
-        Map<String, Object> applicantDocument = new HashMap<>();
-        applicantDocument.put("id", UUID.randomUUID().toString());
-        Map<String, Object> applicantDocumentValue = new HashMap<>();
-        applicantDocumentValue.put("documentCategory", "ApplicationForm");
-        applicantDocumentValue.put("documentEmailContent", "Lorem ipsum");
-        Map<String, Object> applicantDocumentLink = new HashMap<>();
-        applicantDocumentLink.put("document_filename", "pdf.pdf");
-        applicantDocumentValue.put("documentLink", applicantDocumentLink);
-        applicantDocument.put("value", applicantDocumentValue);
-
-        List<Map<String, Object>> applicantDocuments =
-            (List<Map<String, Object>>) caseData.computeIfAbsent("cicCaseApplicantDocumentsUploaded", key -> new java.util.ArrayList<>());
-        if (applicantDocuments.isEmpty()) {
-            applicantDocuments.add(applicantDocument);
-        }
-
-        String audioUuid = UUID.randomUUID().toString();
-        caseDocumentsFTDataManager.saveTestDocumentEntity(testCaseRef, audioUuid, "media-a.mp3", "LINKED_DOCS");
-
-        String videoUuid = UUID.randomUUID().toString();
-        caseDocumentsFTDataManager.saveTestDocumentEntity(testCaseRef, videoUuid, "media-b.mp4", "POLICE_EVIDENCE");
     }
 
     @BeforeAll
