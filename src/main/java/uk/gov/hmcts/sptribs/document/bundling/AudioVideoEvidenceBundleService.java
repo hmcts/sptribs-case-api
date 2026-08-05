@@ -56,7 +56,7 @@ public class AudioVideoEvidenceBundleService {
     public AudioVideoEvidenceBundleDocument createAudioVideoEvidenceBundleDocument(CaseData caseData, Long caseId) {
         List<AudioVideoDocumentRow> rows = extractRows(caseData);
         if (rows.isEmpty()) {
-            return null;
+            throw new IllegalStateException("No audio/video evidence documents found for case " + caseId);
         }
         byte[] pdf = generatePdf(rows, caseId);
         String fileName = "audio-video-evidence-" + caseId + ".pdf";

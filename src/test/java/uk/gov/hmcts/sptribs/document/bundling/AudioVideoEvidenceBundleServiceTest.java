@@ -108,7 +108,7 @@ class AudioVideoEvidenceBundleServiceTest {
     }
 
     @Test
-    void shouldReturnNullAndSkipPdfUploadWhenNoAudioVideoRows() {
+    void shouldThrowAndSkipPdfUploadWhenNoAudioVideoRows() {
         AudioVideoEvidenceBundleService service = new AudioVideoEvidenceBundleService(
             pdfServiceClient,
             caseDocumentClientApi,
@@ -124,9 +124,9 @@ class AudioVideoEvidenceBundleServiceTest {
         when(documentsService.getAudioVideoDocuments(12345L))
             .thenReturn(Stream.empty());
 
-        AudioVideoEvidenceBundleDocument result = service.createAudioVideoEvidenceBundleDocument(caseData, 12345L);
-
-        assertThat(result).isNull();
+        assertThatThrownBy(() -> service.createAudioVideoEvidenceBundleDocument(caseData, 12345L))
+            .isInstanceOf(IllegalStateException.class)
+            .hasMessage("No audio/video evidence documents found for case 12345");
         verifyNoInteractions(pdfServiceClient, caseDocumentClientApi, authTokenGenerator);
     }
 
