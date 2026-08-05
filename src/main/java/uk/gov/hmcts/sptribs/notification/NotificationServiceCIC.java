@@ -6,9 +6,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.NullArgumentException;
-import org.apache.commons.lang.StringUtils;
-import org.json.JSONObject;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
 import uk.gov.hmcts.ccd.sdk.type.Document;
@@ -24,7 +21,6 @@ import uk.gov.hmcts.sptribs.common.config.EmailTemplatesConfigCIC;
 import uk.gov.hmcts.sptribs.common.repositories.CorrespondenceRepository;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
-import uk.gov.hmcts.sptribs.idam.CICUser;
 import uk.gov.hmcts.sptribs.idam.IdamService;
 import uk.gov.hmcts.sptribs.notification.exception.NotificationException;
 import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
@@ -315,96 +311,11 @@ public class NotificationServiceCIC {
             .orElseThrow(() -> new NotificationException(
                     new Exception(String.format("Unable to find document details for document id: %s", documentId))));
 
-        String documentNotification = String.format(
+        String documentDetails = String.format(
                 "%nFilename: %s%nDescription: %s%n",
                 document.getDocumentLink().getFilename(), document.getDocumentEmailContent());
 
-        templateVars.put(docTemplateVar, documentNotification);
-    }
-
-    private void addLinkOrDocumentDetails(Map<String, Object> templateVars,
-                                          List<CaseworkerCICDocument> selectedDocuments,
-                                          String item,
-                                          String docName) {
-        final CICUser user = idamService.retrieveUser(request.getHeader(AUTHORIZATION));
-        final String authorisation = user.getAuthToken();
-        final String serviceAuthorization = authTokenGenerator.generate();
-
-        if (StringUtils.isNotEmpty(item)) {
-            ResponseEntity<byte[]> documentBinaryResponse =
-                caseDocumentClientApi.getDocumentBinary(authorisation, serviceAuthorization, UUID.fromString(item));
-            if (!documentBinaryResponse.getStatusCode().is2xxSuccessful()) {
-                log.error("Response code {} received when fetching document binary for id {}",
-                    documentBinaryResponse.getStatusCode(), item);
-                throw new NotificationException(
-                    new Exception(String.format("Failed to get document binary for id %s", item)));
-            }
-
-            byte[] uploadedDocument = documentBinaryResponse.getBody();
-            if (uploadedDocument != null) {
-                log.debug("Document available for: {}", docName);
-
-                if (!selectedDocuments.isEmpty()) {
-                    addDocumentDescription(templateVars, selectedDocuments, item, docName);
-                } else {
-                    if (uploadedDocument.length <= TWO_MEGABYTES) {
-                        templateVars.put(docName, getJsonFileAttachment(uploadedDocument));
-                    } else {
-                        addDocumentDetails(templateVars, selectedDocuments, item, docName);
-                    }
-                }
-            } else {
-                templateVars.put(docName, "");
-            }
-        } else {
-            log.info("Document not available for: {}", docName);
-            templateVars.put(docName, "");
-        }
-    }
-
-    private static void addDocumentDescription(Map<String, Object> templateVars,
-                                               List<CaseworkerCICDocument> selectedDocuments,
-                                               String item,
-                                               String docName) {
-        CaseworkerCICDocument document = selectedDocuments.stream()
-            .filter(doc -> doc.getDocumentLink().getBinaryUrl().contains(item))
-            .findFirst()
-            .orElseThrow(() -> new NotificationException(
-                new Exception(String.format("Unable to find document details for document id: %s", item))));
-
-        String documentNotification = String.format(
-            "%nFilename: %s%nDescription: %s%n",
-            document.getDocumentLink().getFilename(), document.getDocumentEmailContent());
-
-        templateVars.put(docName, documentNotification);
-    }
-
-    private static void addDocumentDetails(Map<String, Object> templateVars,
-                                           List<CaseworkerCICDocument> selectedDocuments,
-                                           String item,
-                                           String docName) {
-        CaseworkerCICDocument document = selectedDocuments.stream()
-            .filter(doc -> doc.getDocumentLink().getBinaryUrl().contains(item))
-            .findFirst()
-            .orElseThrow(() -> new NotificationException(
-                new Exception(String.format("Unable to find document details for document id: %s", item))));
-
-        String documentNotification = String.format("%nFilename: %s%nDescription: %s%nUpload Date: %s",
-            document.getDocumentLink().getFilename(), document.getDocumentEmailContent(), document.getDate());
-        templateVars.put(docName, documentNotification);
-    }
-
-    private JSONObject getJsonFileAttachment(byte[] fileContents) {
-        JSONObject jsonObject = null;
-        try {
-            if (Objects.nonNull(fileContents)) {
-                jsonObject = NotificationClient.prepareUpload(fileContents);
-            }
-        } catch (NotificationClientException e) {
-            log.error("Unable to upload file to Notification - {}", e.getMessage());
-            throw new NotificationException(e);
-        }
-        return jsonObject;
+        templateVars.put(docTemplateVar, documentDetails);
     }
 
     private NotificationResponse getNotificationResponse(final SendEmailResponse sendEmailResponse) {

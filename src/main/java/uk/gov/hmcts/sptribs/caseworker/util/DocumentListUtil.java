@@ -3,6 +3,7 @@ package uk.gov.hmcts.sptribs.caseworker.util;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.Strings;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.ObjectUtils;
 import uk.gov.hmcts.ccd.sdk.type.DynamicList;
 import uk.gov.hmcts.ccd.sdk.type.DynamicListElement;
 import uk.gov.hmcts.ccd.sdk.type.DynamicMultiSelectList;
@@ -263,6 +264,9 @@ public final class DocumentListUtil {
     }
 
     public static List<CaseworkerCICDocument> getSelectedDocumentsFromDynamicList(CaseData caseData, DynamicMultiSelectList list) {
+        if (ObjectUtils.isEmpty(list)) {
+            return new ArrayList<>();
+        }
         var selectedDocIds = extractDocumentIds(list.getValue());
         return selectedDocIds.stream().map(id -> DocumentListUtil.getCaseDocumentById(id, caseData))
             .filter(Optional::isPresent)

@@ -177,7 +177,9 @@ public class NotificationHelper {
 
     public Map<String, String> buildDocumentList(DynamicMultiSelectList documentList, int docAttachLimit) {
         final Map<String, String> uploadedDocuments = new HashMap<>();
-
+        if (ObjectUtils.isEmpty(documentList)) {
+            return uploadedDocuments;
+        }
         int count = 0;
         if (ObjectUtils.isNotEmpty(documentList.getValue())) {
             final List<DynamicListElement> documents = documentList.getValue();
