@@ -26,7 +26,6 @@ import uk.gov.hmcts.sptribs.document.service.DocumentsService;
 import uk.gov.hmcts.sptribs.idam.CICUser;
 import uk.gov.hmcts.sptribs.idam.IdamService;
 import uk.gov.hmcts.sptribs.notification.dispatcher.DssUpdateCaseSubmissionNotification;
-import uk.gov.hmcts.sptribs.services.roleassignment.RoleAssignmentService;
 
 import java.time.Clock;
 import java.time.LocalDate;
@@ -78,9 +77,6 @@ public class CicDssUpdateCaseEvent implements CCDConfig<CaseData, State, UserRol
 
     @Autowired
     private DocumentsService documentsService;
-
-    @Autowired
-    private RoleAssignmentService roleAssignmentService;
 
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
@@ -195,12 +191,6 @@ public class CicDssUpdateCaseEvent implements CCDConfig<CaseData, State, UserRol
 
     public SubmittedCallbackResponse submitted(CaseDetails<CaseData, State> details,
                                                CaseDetails<CaseData, State> beforeDetails) {
-        try {
-            roleAssignmentService.assignCaseRoles(details.getId(), details.getData());
-        } catch (Exception e) {
-            log.error("Failed to assign case roles during DSS update submission for case ID: {}", details.getId(), e);
-        }
-
         try {
             dssUpdateCaseSubmissionNotification.sendToApplicant(details.getData(), String.valueOf(details.getId()));
             dssUpdateCaseSubmissionNotification.sendToTribunal(details.getData(), String.valueOf(details.getId()));

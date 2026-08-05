@@ -1,5 +1,6 @@
 package uk.gov.hmcts.sptribs.controllers;
 
+import feign.FeignException;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -32,6 +33,8 @@ import static java.util.Collections.emptyList;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -95,6 +98,7 @@ class DocumentControllerIT {
         Document document = new Document();
         document.originalDocumentName = fileName;
         document.mimeType = mimeType;
+        document.metadata = java.util.Map.of("case_id", TEST_CASE_ID_STRING);
 
         when(authTokenGenerator.generate()).thenReturn(TEST_SERVICE_AUTH_TOKEN);
         when(caseDocumentClientApi.getDocument(
@@ -148,6 +152,7 @@ class DocumentControllerIT {
         Document document = new Document();
         document.originalDocumentName = fileName;
         document.mimeType = mimeType;
+        document.metadata = java.util.Map.of("case_id", TEST_CASE_ID_STRING);
         UUID documentId = UUID.randomUUID();
 
         when(authTokenGenerator.generate()).thenReturn(TEST_SERVICE_AUTH_TOKEN);
@@ -210,6 +215,7 @@ class DocumentControllerIT {
         Document document = new Document();
         document.originalDocumentName = fileName;
         document.mimeType = mimeType;
+        document.metadata = java.util.Map.of("case_id", TEST_CASE_ID_STRING);
 
 
         when(authTokenGenerator.generate()).thenReturn(TEST_SERVICE_AUTH_TOKEN);
@@ -333,6 +339,69 @@ class DocumentControllerIT {
     }
 
     @Test
+    void shouldLinkAndRetryDocumentDownloadAfterForbidden() throws Exception {
+        Document document = new Document();
+        document.originalDocumentName = "test-document.pdf";
+        document.mimeType = "application/pdf";
+        document.metadata = java.util.Map.of("case_id", TEST_CASE_ID_STRING);
+        byte[] documentContent = "test document content".getBytes();
+
+        FeignException forbidden = org.mockito.Mockito.mock(FeignException.class);
+        when(forbidden.status()).thenReturn(403);
+
+        when(authTokenGenerator.generate()).thenReturn(TEST_SERVICE_AUTH_TOKEN);
+        when(caseDocumentClientApi.getDocument(eq(TEST_AUTHORIZATION_TOKEN), eq(TEST_SERVICE_AUTH_TOKEN), eq(TEST_CASE_DATA_FILE_UUID)))
+            .thenThrow(forbidden)
+            .thenReturn(ResponseEntity.ok(document));
+        when(caseDocumentClientApi.getDocumentBinary(eq(TEST_AUTHORIZATION_TOKEN), eq(TEST_SERVICE_AUTH_TOKEN), eq(TEST_CASE_DATA_FILE_UUID)))
+            .thenReturn(ResponseEntity.ok(documentContent));
+
+        mockMvc.perform(get(String.format(DOWNLOAD_DOCUMENT_URL, TEST_CASE_DATA_FILE_UUID))
+                .header(AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
+                .header(SERVICE_AUTHORIZATION, TEST_SERVICE_AUTH_TOKEN)
+                .header("X-Postcode", TEST_POSTCODE))
+            .andExpect(status().isOk());
+
+        verify(cicaCaseService).linkCaseToUser(TEST_CASE_ID_STRING, TEST_AUTHORIZATION_TOKEN, TEST_POSTCODE);
+    }
+
+    @Test
+    void shouldNotLinkWhenDownloadFailsWithNonForbidden() throws Exception {
+        FeignException serverError = org.mockito.Mockito.mock(FeignException.class);
+        when(serverError.status()).thenReturn(500);
+
+        when(authTokenGenerator.generate()).thenReturn(TEST_SERVICE_AUTH_TOKEN);
+        when(caseDocumentClientApi.getDocument(eq(TEST_AUTHORIZATION_TOKEN), eq(TEST_SERVICE_AUTH_TOKEN), eq(TEST_CASE_DATA_FILE_UUID)))
+            .thenThrow(serverError);
+
+        mockMvc.perform(get(String.format(DOWNLOAD_DOCUMENT_URL, TEST_CASE_DATA_FILE_UUID))
+                .header(AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
+                .header(SERVICE_AUTHORIZATION, TEST_SERVICE_AUTH_TOKEN)
+                .header("X-Postcode", TEST_POSTCODE))
+            .andExpect(status().isInternalServerError());
+
+        verify(cicaCaseService, never()).linkCaseToUser(TEST_CASE_ID_STRING, TEST_AUTHORIZATION_TOKEN, TEST_POSTCODE);
+    }
+
+    @Test
+    void shouldReturnForbiddenWhenDocumentBelongsToAnotherCase() throws Exception {
+        Document document = new Document();
+        document.originalDocumentName = "test-document.pdf";
+        document.mimeType = "application/pdf";
+        document.metadata = java.util.Map.of("case_id", "1111222233334444");
+
+        when(authTokenGenerator.generate()).thenReturn(TEST_SERVICE_AUTH_TOKEN);
+        when(caseDocumentClientApi.getDocument(eq(TEST_AUTHORIZATION_TOKEN), eq(TEST_SERVICE_AUTH_TOKEN), eq(TEST_CASE_DATA_FILE_UUID)))
+            .thenReturn(ResponseEntity.ok(document));
+
+        mockMvc.perform(get(String.format(DOWNLOAD_DOCUMENT_URL, TEST_CASE_DATA_FILE_UUID))
+                .header(AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
+                .header(SERVICE_AUTHORIZATION, TEST_SERVICE_AUTH_TOKEN)
+                .header("X-Postcode", TEST_POSTCODE))
+            .andExpect(status().isForbidden());
+    }
+
+    @Test
     void shouldReturn400WhenGetDocumentsWithInvalidCcdReference() throws Exception {
         // Given
         String invalidCcdReference = "1234";
@@ -360,7 +429,6 @@ class DocumentControllerIT {
             .andExpect(status().isBadRequest());
     }
 }
-
 
 
 

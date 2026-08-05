@@ -11,7 +11,6 @@ import uk.gov.hmcts.sptribs.exception.InvalidPostcodeException;
 import uk.gov.hmcts.sptribs.exception.UnauthorisedCaseAccessException;
 import uk.gov.hmcts.sptribs.idam.CICUser;
 import uk.gov.hmcts.sptribs.idam.IdamService;
-import uk.gov.hmcts.sptribs.services.roleassignment.RoleAssignmentService;
 
 @Slf4j
 @Service
@@ -20,7 +19,7 @@ public class CicaCaseService {
 
     private final CaseDataRepository caseDataRepository;
     private final IdamService idamService;
-    private final RoleAssignmentService roleAssignmentService;
+    private final CcdCaseRoleService ccdCaseRoleService;
 
     /**
      * Checks if the user has access to the case.
@@ -90,13 +89,11 @@ public class CicaCaseService {
         }
     }
 
-    public void assignCaseRoleForUser(String ccdReference, String authorisation) {
-        try {
-            CICUser user = idamService.retrieveUser(authorisation);
-            roleAssignmentService.assignCaseRoleForActor(Long.valueOf(ccdReference), user.getUserInfo().getUid());
-        } catch (Exception e) {
-            log.warn("Failed to assign case role for reference: {}", ccdReference, e);
-        }
+    public void linkCaseToUser(String ccdReference, String authorisation, String submittedPostcode) {
+        checkIfUserHasAccessWithPostcode(ccdReference, authorisation, submittedPostcode);
+
+        CICUser user = idamService.retrieveUser(authorisation);
+        ccdCaseRoleService.assignCreatorRole(ccdReference, user.getUserInfo().getUid());
     }
 
     private String normalize(String postcode) {

@@ -15,7 +15,6 @@ import uk.gov.hmcts.sptribs.exception.InvalidPostcodeException;
 import uk.gov.hmcts.sptribs.exception.UnauthorisedCaseAccessException;
 import uk.gov.hmcts.sptribs.idam.CICUser;
 import uk.gov.hmcts.sptribs.idam.IdamService;
-import uk.gov.hmcts.sptribs.services.roleassignment.RoleAssignmentService;
 
 import java.util.Map;
 import java.util.Optional;
@@ -23,6 +22,7 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.SYSTEM_USER_USER_ID;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID_STRING;
@@ -44,7 +44,7 @@ class CicaCaseServiceTest {
     private CICUser user;
 
     @Mock
-    private RoleAssignmentService roleAssignmentService;
+    private CcdCaseRoleService ccdCaseRoleService;
 
     @Spy
     private ObjectMapper objectMapper = new ObjectMapper();
@@ -161,8 +161,27 @@ class CicaCaseServiceTest {
             cicaCaseService.checkIfUserHasAccessWithPostcode(TEST_CASE_ID_STRING, TEST_AUTHORIZATION, TEST_POSTCODE)
         );
     }
-}
 
+    @Test
+    void shouldAssignCreatorRoleAfterEmailAndPostcodeValidation() {
+        CicaCaseEntity expectedCase = CicaCaseEntity.builder()
+            .id(TEST_CASE_ID_STRING)
+            .data(Map.of(
+                "cicCaseAddress", new ObjectMapper().createObjectNode()
+                    .put("PostCode", TEST_POSTCODE)
+            ))
+            .build();
+
+        when(user.getUserInfo()).thenReturn(userInfo());
+        when(idamService.retrieveUser(TEST_AUTHORIZATION)).thenReturn(user);
+        when(caseDataRepository.findCase(TEST_CASE_ID_STRING, TEST_SYSTEM_UPDATE_USER_EMAIL))
+            .thenReturn(Optional.of(expectedCase));
+
+        cicaCaseService.linkCaseToUser(TEST_CASE_ID_STRING, TEST_AUTHORIZATION, TEST_POSTCODE);
+
+        verify(ccdCaseRoleService).assignCreatorRole(TEST_CASE_ID_STRING, SYSTEM_USER_USER_ID);
+    }
+}
 
 
 

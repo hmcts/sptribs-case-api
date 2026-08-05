@@ -38,7 +38,6 @@ import uk.gov.hmcts.sptribs.document.model.DocumentType;
 import uk.gov.hmcts.sptribs.document.service.DocumentsService;
 import uk.gov.hmcts.sptribs.idam.CICUser;
 import uk.gov.hmcts.sptribs.idam.IdamService;
-import uk.gov.hmcts.sptribs.services.roleassignment.RoleAssignmentService;
 import uk.gov.hmcts.sptribs.util.AppsUtil;
 
 import java.time.LocalDate;
@@ -80,7 +79,6 @@ public class CicSubmitCaseEvent implements CCDConfig<CaseData, State, UserRole> 
     private final AppsConfig appsConfig;
     private final DssApplicationReceivedNotification dssApplicationReceivedNotification;
     private final DocumentsService documentsService;
-    private final RoleAssignmentService roleAssignmentService;
 
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
@@ -130,12 +128,6 @@ public class CicSubmitCaseEvent implements CCDConfig<CaseData, State, UserRole> 
         generateNotifyParties(dssCaseData);
 
         final String caseNumber = data.getHyphenatedCaseRef();
-
-        try {
-            roleAssignmentService.assignCaseRoles(details.getId(), data);
-        } catch (Exception e) {
-            log.error("Failed to assign case roles during submission for case ID: {}", details.getId(), e);
-        }
 
         try {
             sendApplicationReceivedNotification(caseNumber, data);

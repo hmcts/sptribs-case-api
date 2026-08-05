@@ -21,6 +21,7 @@ import uk.gov.hmcts.sptribs.testutil.IdamWireMock;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.AUTHORIZATION;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.SERVICE_AUTHORIZATION;
@@ -35,6 +36,7 @@ class CicaCaseControllerIT {
 
     private static final String VALID_CCD_REFERENCE = "1234567891234567";
     private static final String ACCESS_CHECK_URL = "/cases/cica/" + VALID_CCD_REFERENCE + "/access";
+    private static final String LINK_URL = "/cases/cica/" + VALID_CCD_REFERENCE + "/link";
 
     @Autowired
     private MockMvc mockMvc;
@@ -120,5 +122,28 @@ class CicaCaseControllerIT {
                 .header(AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
                 .header(SERVICE_AUTHORIZATION, TEST_SERVICE_AUTH_TOKEN))
             .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void shouldLinkCaseSuccessfully() throws Exception {
+        doNothing().when(cicaCaseService).linkCaseToUser(VALID_CCD_REFERENCE, TEST_AUTHORIZATION_TOKEN, "SW1A 1AA");
+
+        mockMvc.perform(post(LINK_URL)
+                .header(AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
+                .header(SERVICE_AUTHORIZATION, TEST_SERVICE_AUTH_TOKEN)
+                .header("X-Postcode", "SW1A 1AA"))
+            .andExpect(status().isNoContent());
+    }
+
+    @Test
+    void shouldReturn400WhenLinkCcdReferenceIsInvalid() throws Exception {
+        String invalidCcdReference = "12345";
+        String url = "/cases/cica/" + invalidCcdReference + "/link";
+
+        mockMvc.perform(post(url)
+                .header(AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
+                .header(SERVICE_AUTHORIZATION, TEST_SERVICE_AUTH_TOKEN)
+                .header("X-Postcode", "SW1A 1AA"))
+            .andExpect(status().isBadRequest());
     }
 }

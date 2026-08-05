@@ -1,5 +1,6 @@
 package uk.gov.hmcts.sptribs.controllers;
 
+import feign.FeignException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -31,7 +32,6 @@ import uk.gov.hmcts.sptribs.document.DocumentDownloadService;
 import uk.gov.hmcts.sptribs.document.model.DocumentDashboardModel;
 import uk.gov.hmcts.sptribs.document.model.DownloadedDocumentResponse;
 import uk.gov.hmcts.sptribs.document.service.DocumentsService;
-import uk.gov.hmcts.sptribs.exception.DocumentDownloadException;
 
 @Tag(name = "Document Controller")
 @Slf4j
@@ -141,19 +141,17 @@ public class DocumentController {
         log.info("Received request to download document with id: {} for CCD reference: {}", documentId, ccdReference);
 
         cicaCaseService.checkIfUserHasAccessWithPostcode(ccdReference, authorisation, postcode);
-        cicaCaseService.assignCaseRoleForUser(ccdReference, authorisation);
-
 
         DownloadedDocumentResponse documentResponse;
         try {
-            documentResponse = documentDownloadService.downloadDocument(authorisation, documentId);
-        } catch (DocumentDownloadException firstFailure) {
-            cicaCaseService.assignCaseRoleForUser(ccdReference, authorisation);
-            try {
-                documentResponse = documentDownloadService.downloadDocument(authorisation, documentId);
-            } catch (DocumentDownloadException retryFailure) {
+            documentResponse = documentDownloadService.downloadDocument(authorisation, ccdReference, documentId);
+        } catch (FeignException firstFailure) {
+            if (firstFailure.status() != 403) {
                 throw firstFailure;
             }
+
+            cicaCaseService.linkCaseToUser(ccdReference, authorisation, postcode);
+            documentResponse = documentDownloadService.downloadDocument(authorisation, ccdReference, documentId);
         }
 
         HttpHeaders headers = new HttpHeaders();

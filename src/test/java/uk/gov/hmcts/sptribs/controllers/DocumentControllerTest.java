@@ -1,5 +1,6 @@
 package uk.gov.hmcts.sptribs.controllers;
 
+import feign.FeignException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -22,13 +23,14 @@ import uk.gov.hmcts.sptribs.document.model.DocumentDashboardModel;
 import uk.gov.hmcts.sptribs.document.model.DocumentEntity;
 import uk.gov.hmcts.sptribs.document.model.DownloadedDocumentResponse;
 import uk.gov.hmcts.sptribs.document.service.DocumentsService;
-import uk.gov.hmcts.sptribs.exception.DocumentDownloadException;
 import uk.gov.hmcts.sptribs.exception.UnauthorisedCaseAccessException;
 
 import java.time.OffsetDateTime;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -178,6 +180,7 @@ class DocumentControllerTest {
 
         when(documentDownloadService.downloadDocument(
             TEST_AUTHORIZATION,
+            TEST_CASE_ID_STRING,
             documentId
         )).thenReturn(downloadedDocumentResponse);
 
@@ -204,9 +207,10 @@ class DocumentControllerTest {
         );
         verify(documentDownloadService).downloadDocument(
             TEST_AUTHORIZATION,
+            TEST_CASE_ID_STRING,
             documentId
         );
-        verify(cicaCaseService).assignCaseRoleForUser(TEST_CASE_ID_STRING, TEST_AUTHORIZATION);
+        verify(cicaCaseService, never()).linkCaseToUser(TEST_CASE_ID_STRING, TEST_AUTHORIZATION, TEST_POSTCODE);
     }
 
     @Test
@@ -228,14 +232,16 @@ class DocumentControllerTest {
     }
 
     @Test
-    void shouldAssignRoleAndRetryWhenFirstDownloadAttemptFails() {
+    void shouldLinkAndRetryOnceWhenFirstDownloadFailsWithForbidden() {
         String documentId = "12345";
         Resource resource = new ByteArrayResource("test-content".getBytes());
         DownloadedDocumentResponse downloadedDocumentResponse =
             new DownloadedDocumentResponse(resource, "test-document.pdf", "application/pdf");
+        FeignException forbiddenException = mock(FeignException.class);
+        when(forbiddenException.status()).thenReturn(403);
 
-        when(documentDownloadService.downloadDocument(TEST_AUTHORIZATION, documentId))
-            .thenThrow(new DocumentDownloadException("first attempt failed"))
+        when(documentDownloadService.downloadDocument(TEST_AUTHORIZATION, TEST_CASE_ID_STRING, documentId))
+            .thenThrow(forbiddenException)
             .thenReturn(downloadedDocumentResponse);
 
         ResponseEntity<Resource> response = documentController.downloadDocumentByCaseAndId(
@@ -247,18 +253,18 @@ class DocumentControllerTest {
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody()).isEqualTo(resource);
-        verify(cicaCaseService, times(2)).assignCaseRoleForUser(TEST_CASE_ID_STRING, TEST_AUTHORIZATION);
-        verify(documentDownloadService, times(2)).downloadDocument(TEST_AUTHORIZATION, documentId);
+        verify(cicaCaseService).linkCaseToUser(TEST_CASE_ID_STRING, TEST_AUTHORIZATION, TEST_POSTCODE);
+        verify(documentDownloadService, times(2)).downloadDocument(TEST_AUTHORIZATION, TEST_CASE_ID_STRING, documentId);
     }
 
     @Test
-    void shouldThrowOriginalExceptionWhenRetryAfterRoleAssignmentFails() {
+    void shouldNotLinkOrRetryWhenFirstDownloadFailsWithNonForbidden() {
         String documentId = "12345";
-        DocumentDownloadException firstException = new DocumentDownloadException("first attempt failed");
+        FeignException serverError = mock(FeignException.class);
+        when(serverError.status()).thenReturn(500);
 
-        when(documentDownloadService.downloadDocument(TEST_AUTHORIZATION, documentId))
-            .thenThrow(firstException)
-            .thenThrow(new DocumentDownloadException("second attempt failed"));
+        when(documentDownloadService.downloadDocument(TEST_AUTHORIZATION, TEST_CASE_ID_STRING, documentId))
+            .thenThrow(serverError);
 
         org.assertj.core.api.Assertions.assertThatThrownBy(() ->
             documentController.downloadDocumentByCaseAndId(
@@ -267,9 +273,9 @@ class DocumentControllerTest {
                 TEST_CASE_ID_STRING,
                 documentId
             )
-        ).isSameAs(firstException);
+        ).isSameAs(serverError);
 
-        verify(cicaCaseService, times(2)).assignCaseRoleForUser(TEST_CASE_ID_STRING, TEST_AUTHORIZATION);
-        verify(documentDownloadService, times(2)).downloadDocument(TEST_AUTHORIZATION, documentId);
+        verify(cicaCaseService, never()).linkCaseToUser(TEST_CASE_ID_STRING, TEST_AUTHORIZATION, TEST_POSTCODE);
+        verify(documentDownloadService).downloadDocument(TEST_AUTHORIZATION, TEST_CASE_ID_STRING, documentId);
     }
 }
