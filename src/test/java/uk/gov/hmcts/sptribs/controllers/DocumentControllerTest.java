@@ -1,5 +1,6 @@
 package uk.gov.hmcts.sptribs.controllers;
 
+import feign.FeignException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -28,6 +29,9 @@ import java.time.OffsetDateTime;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID_STRING;
@@ -176,6 +180,7 @@ class DocumentControllerTest {
 
         when(documentDownloadService.downloadDocument(
             TEST_AUTHORIZATION,
+            TEST_CASE_ID_STRING,
             documentId
         )).thenReturn(downloadedDocumentResponse);
 
@@ -202,8 +207,10 @@ class DocumentControllerTest {
         );
         verify(documentDownloadService).downloadDocument(
             TEST_AUTHORIZATION,
+            TEST_CASE_ID_STRING,
             documentId
         );
+        verify(cicaCaseService, never()).linkCaseToUser(TEST_CASE_ID_STRING, TEST_AUTHORIZATION, TEST_POSTCODE);
     }
 
     @Test
@@ -222,5 +229,53 @@ class DocumentControllerTest {
             .hasMessageContaining("Postcode or email mismatch");
 
         org.mockito.Mockito.verifyNoInteractions(documentDownloadService);
+    }
+
+    @Test
+    void shouldLinkAndRetryOnceWhenFirstDownloadFailsWithForbidden() {
+        String documentId = "12345";
+        Resource resource = new ByteArrayResource("test-content".getBytes());
+        DownloadedDocumentResponse downloadedDocumentResponse =
+            new DownloadedDocumentResponse(resource, "test-document.pdf", "application/pdf");
+        FeignException forbiddenException = mock(FeignException.class);
+        when(forbiddenException.status()).thenReturn(403);
+
+        when(documentDownloadService.downloadDocument(TEST_AUTHORIZATION, TEST_CASE_ID_STRING, documentId))
+            .thenThrow(forbiddenException)
+            .thenReturn(downloadedDocumentResponse);
+
+        ResponseEntity<Resource> response = documentController.downloadDocumentByCaseAndId(
+            TEST_AUTHORIZATION,
+            TEST_POSTCODE,
+            TEST_CASE_ID_STRING,
+            documentId
+        );
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(response.getBody()).isEqualTo(resource);
+        verify(cicaCaseService).linkCaseToUser(TEST_CASE_ID_STRING, TEST_AUTHORIZATION, TEST_POSTCODE);
+        verify(documentDownloadService, times(2)).downloadDocument(TEST_AUTHORIZATION, TEST_CASE_ID_STRING, documentId);
+    }
+
+    @Test
+    void shouldNotLinkOrRetryWhenFirstDownloadFailsWithNonForbidden() {
+        String documentId = "12345";
+        FeignException serverError = mock(FeignException.class);
+        when(serverError.status()).thenReturn(500);
+
+        when(documentDownloadService.downloadDocument(TEST_AUTHORIZATION, TEST_CASE_ID_STRING, documentId))
+            .thenThrow(serverError);
+
+        org.assertj.core.api.Assertions.assertThatThrownBy(() ->
+            documentController.downloadDocumentByCaseAndId(
+                TEST_AUTHORIZATION,
+                TEST_POSTCODE,
+                TEST_CASE_ID_STRING,
+                documentId
+            )
+        ).isSameAs(serverError);
+
+        verify(cicaCaseService, never()).linkCaseToUser(TEST_CASE_ID_STRING, TEST_AUTHORIZATION, TEST_POSTCODE);
+        verify(documentDownloadService).downloadDocument(TEST_AUTHORIZATION, TEST_CASE_ID_STRING, documentId);
     }
 }

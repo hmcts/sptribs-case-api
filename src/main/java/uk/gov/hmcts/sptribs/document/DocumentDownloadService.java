@@ -1,5 +1,6 @@
 package uk.gov.hmcts.sptribs.document;
 
+import feign.FeignException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.ByteArrayResource;
@@ -9,7 +10,7 @@ import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.sptribs.cdam.model.Document;
 import uk.gov.hmcts.sptribs.document.model.DownloadedDocumentResponse;
 import uk.gov.hmcts.sptribs.exception.DocumentDownloadException;
-import uk.gov.hmcts.sptribs.idam.IdamService;
+import uk.gov.hmcts.sptribs.exception.UnauthorisedCaseAccessException;
 import uk.gov.hmcts.sptribs.services.cdam.CaseDocumentClientApi;
 
 import java.net.URLConnection;
@@ -22,20 +23,25 @@ public class DocumentDownloadService {
 
     private final CaseDocumentClientApi caseDocumentClientApi;
     private final AuthTokenGenerator authTokenGenerator;
-    private final IdamService idamService;
 
-    public DownloadedDocumentResponse downloadDocument(String authorisation, String documentId) {
+    public DownloadedDocumentResponse downloadDocument(String authorisation, String ccdReference, String documentId) {
         log.info("Downloading document with id: {}", documentId);
 
         try {
             UUID documentUuid = UUID.fromString(documentId);
             String serviceAuth = authTokenGenerator.generate();
 
-            String systemAuth = idamService.retrieveSystemUpdateUserDetails().getAuthToken();
-            Document documentMetadata = getDocumentMetadata(systemAuth, serviceAuth, documentUuid);
+            Document documentMetadata = getDocumentMetadata(authorisation, serviceAuth, documentUuid);
+
+            String documentCaseId = documentMetadata.metadata == null
+                ? null
+                : documentMetadata.metadata.get("case_id");
+            if (!ccdReference.equals(documentCaseId)) {
+                throw new UnauthorisedCaseAccessException("Document does not belong to case: " + ccdReference);
+            }
 
             ResponseEntity<byte[]> binaryResponse = caseDocumentClientApi.getDocumentBinary(
-                systemAuth,
+                authorisation,
                 serviceAuth,
                 documentUuid
             );
@@ -55,7 +61,10 @@ public class DocumentDownloadService {
         } catch (IllegalArgumentException e) {
             log.error("Invalid document ID format: {}", documentId, e);
             throw new DocumentDownloadException("Invalid document ID format: " + documentId, e);
+        } catch (FeignException | UnauthorisedCaseAccessException e) {
+            throw e;
         } catch (DocumentDownloadException e) {
+            log.error("Failed to download document with id: {}", documentId, e);
             throw e;
         } catch (Exception e) {
             log.error("Failed to download document with id: {}", documentId, e);
@@ -94,7 +103,6 @@ public class DocumentDownloadService {
         return "application/octet-stream";
     }
 }
-
 
 
 

@@ -19,6 +19,7 @@ public class CicaCaseService {
 
     private final CaseDataRepository caseDataRepository;
     private final IdamService idamService;
+    private final CcdCaseRoleService ccdCaseRoleService;
 
     /**
      * Checks if the user has access to the case.
@@ -78,7 +79,6 @@ public class CicaCaseService {
             if (!normalize(storedPostcode).equals(normalize(submittedPostcode))) {
                 throw new InvalidPostcodeException("Submitted postcode does not match the postcode held in case data");
             }
-
             return cicaCaseEntity;
         } catch (Exception e) {
             if (e instanceof UnauthorisedCaseAccessException || e instanceof InvalidPostcodeException) {
@@ -87,6 +87,13 @@ public class CicaCaseService {
             log.warn("Error checking case access and postcode for reference: {}", ccdReference, e);
             throw new UnauthorisedCaseAccessException("Error checking case access and postcode: " + e.getMessage());
         }
+    }
+
+    public void linkCaseToUser(String ccdReference, String authorisation, String submittedPostcode) {
+        checkIfUserHasAccessWithPostcode(ccdReference, authorisation, submittedPostcode);
+
+        CICUser user = idamService.retrieveUser(authorisation);
+        ccdCaseRoleService.assignCreatorRole(ccdReference, user.getUserInfo().getUid());
     }
 
     private String normalize(String postcode) {

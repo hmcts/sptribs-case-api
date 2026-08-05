@@ -84,6 +84,7 @@ java:
     IDAM_API_BASEURL: "https://idam-web-public.{{ .Values.global.environment }}.platform.hmcts.net"
     CASE_DATA_STORE_BASEURL: "http://ccd-data-store-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal"
     CASE_DOCUMENT_AM_BASEURL: http://ccd-case-document-am-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal
+    ROLE_ASSIGNMENT_URL: http://am-role-assignment-service-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal
     DOC_ASSEMBLY_URL: http://dg-docassembly-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal
     DOCUMENT_MANAGEMENT_URL: http://dm-store-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal
     PDF_API_URL: "http://rpe-pdf-service-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal"

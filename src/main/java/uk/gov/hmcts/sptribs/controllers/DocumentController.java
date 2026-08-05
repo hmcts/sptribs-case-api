@@ -1,5 +1,6 @@
 package uk.gov.hmcts.sptribs.controllers;
 
+import feign.FeignException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -141,10 +142,17 @@ public class DocumentController {
 
         cicaCaseService.checkIfUserHasAccessWithPostcode(ccdReference, authorisation, postcode);
 
-        DownloadedDocumentResponse documentResponse = documentDownloadService.downloadDocument(
-            authorisation,
-            documentId
-        );
+        DownloadedDocumentResponse documentResponse;
+        try {
+            documentResponse = documentDownloadService.downloadDocument(authorisation, ccdReference, documentId);
+        } catch (FeignException firstFailure) {
+            if (firstFailure.status() != 403) {
+                throw firstFailure;
+            }
+
+            cicaCaseService.linkCaseToUser(ccdReference, authorisation, postcode);
+            documentResponse = documentDownloadService.downloadDocument(authorisation, ccdReference, documentId);
+        }
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.valueOf(documentResponse.mimeType()));
@@ -156,4 +164,3 @@ public class DocumentController {
             .body(documentResponse.file());
     }
 }
-

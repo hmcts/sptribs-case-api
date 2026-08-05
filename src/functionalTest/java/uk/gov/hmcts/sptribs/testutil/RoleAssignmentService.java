@@ -13,7 +13,7 @@ import static java.util.Collections.singletonList;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static uk.gov.hmcts.sptribs.common.config.ControllerConstants.SERVICE_AUTHORIZATION;
 
-@Service
+@Service("testRoleAssignmentService")
 public class RoleAssignmentService {
 
     @Autowired

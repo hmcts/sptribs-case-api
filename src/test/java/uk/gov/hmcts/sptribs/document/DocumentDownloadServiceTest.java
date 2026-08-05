@@ -8,22 +8,23 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.ResponseEntity;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
-import uk.gov.hmcts.reform.idam.client.models.UserInfo;
 import uk.gov.hmcts.sptribs.cdam.model.Document;
 import uk.gov.hmcts.sptribs.document.model.DownloadedDocumentResponse;
 import uk.gov.hmcts.sptribs.exception.DocumentDownloadException;
-import uk.gov.hmcts.sptribs.idam.CICUser;
-import uk.gov.hmcts.sptribs.idam.IdamService;
+import uk.gov.hmcts.sptribs.exception.UnauthorisedCaseAccessException;
 import uk.gov.hmcts.sptribs.services.cdam.CaseDocumentClientApi;
 
+import java.util.Map;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_AUTHORIZATION_TOKEN;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID_STRING;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_SERVICE_AUTH_TOKEN;
 
 @ExtendWith(MockitoExtension.class)
@@ -35,14 +36,8 @@ class DocumentDownloadServiceTest {
     @Mock
     private AuthTokenGenerator authTokenGenerator;
 
-    @Mock
-    private IdamService idamService;
-
     @InjectMocks
     private DocumentDownloadService documentDownloadService;
-
-    private static final CICUser CIC_USER
-        = new CICUser(TEST_AUTHORIZATION_TOKEN, UserInfo.builder().build());
 
     @Test
     void shouldDownloadDocumentSuccessfully() {
@@ -53,9 +48,9 @@ class DocumentDownloadServiceTest {
         Document document = new Document();
         document.originalDocumentName = fileName;
         document.mimeType = mimeType;
+        document.metadata = Map.of("case_id", TEST_CASE_ID_STRING);
 
         UUID documentId = UUID.randomUUID();
-        when(idamService.retrieveSystemUpdateUserDetails()).thenReturn(CIC_USER);
         when(authTokenGenerator.generate()).thenReturn(TEST_SERVICE_AUTH_TOKEN);
         when(caseDocumentClientApi.getDocument(TEST_AUTHORIZATION_TOKEN, TEST_SERVICE_AUTH_TOKEN, documentId))
             .thenReturn(ResponseEntity.ok(document));
@@ -68,6 +63,7 @@ class DocumentDownloadServiceTest {
         // When
         DownloadedDocumentResponse response = documentDownloadService.downloadDocument(
             TEST_AUTHORIZATION_TOKEN,
+            TEST_CASE_ID_STRING,
             documentIdString
         );
 
@@ -91,9 +87,9 @@ class DocumentDownloadServiceTest {
         Document document = new Document();
         document.originalDocumentName = fileName;
         document.mimeType = null;
+        document.metadata = Map.of("case_id", TEST_CASE_ID_STRING);
 
         UUID documentId = UUID.randomUUID();
-        when(idamService.retrieveSystemUpdateUserDetails()).thenReturn(CIC_USER);
         when(authTokenGenerator.generate()).thenReturn(TEST_SERVICE_AUTH_TOKEN);
         when(caseDocumentClientApi.getDocument(TEST_AUTHORIZATION_TOKEN, TEST_SERVICE_AUTH_TOKEN, documentId))
             .thenReturn(ResponseEntity.ok(document));
@@ -105,6 +101,7 @@ class DocumentDownloadServiceTest {
         // When
         DownloadedDocumentResponse response = documentDownloadService.downloadDocument(
             TEST_AUTHORIZATION_TOKEN,
+            TEST_CASE_ID_STRING,
             documentIdString
         );
 
@@ -122,9 +119,9 @@ class DocumentDownloadServiceTest {
         Document document = new Document();
         document.originalDocumentName = fileName;
         document.mimeType = null;
+        document.metadata = Map.of("case_id", TEST_CASE_ID_STRING);
 
         UUID documentId = UUID.randomUUID();
-        when(idamService.retrieveSystemUpdateUserDetails()).thenReturn(CIC_USER);
         when(authTokenGenerator.generate()).thenReturn(TEST_SERVICE_AUTH_TOKEN);
         when(caseDocumentClientApi.getDocument(TEST_AUTHORIZATION_TOKEN, TEST_SERVICE_AUTH_TOKEN, documentId))
             .thenReturn(ResponseEntity.ok(document));
@@ -137,6 +134,7 @@ class DocumentDownloadServiceTest {
         // When
         DownloadedDocumentResponse response = documentDownloadService.downloadDocument(
             TEST_AUTHORIZATION_TOKEN,
+            TEST_CASE_ID_STRING,
             documentIdString
         );
 
@@ -153,6 +151,7 @@ class DocumentDownloadServiceTest {
         // When & Then
         assertThatThrownBy(() -> documentDownloadService.downloadDocument(
             TEST_AUTHORIZATION_TOKEN,
+            TEST_CASE_ID_STRING,
             invalidDocumentId
         ))
             .isInstanceOf(DocumentDownloadException.class)
@@ -165,7 +164,6 @@ class DocumentDownloadServiceTest {
         UUID documentId = UUID.randomUUID();
         String documentIdString = documentId.toString();
 
-        when(idamService.retrieveSystemUpdateUserDetails()).thenReturn(CIC_USER);
         when(authTokenGenerator.generate()).thenReturn(TEST_SERVICE_AUTH_TOKEN);
         when(caseDocumentClientApi.getDocument(TEST_AUTHORIZATION_TOKEN, TEST_SERVICE_AUTH_TOKEN, documentId))
             .thenReturn(ResponseEntity.ok(null));
@@ -173,6 +171,7 @@ class DocumentDownloadServiceTest {
         // When & Then
         assertThatThrownBy(() -> documentDownloadService.downloadDocument(
             TEST_AUTHORIZATION_TOKEN,
+            TEST_CASE_ID_STRING,
             documentIdString
         ))
             .isInstanceOf(DocumentDownloadException.class)
@@ -187,9 +186,9 @@ class DocumentDownloadServiceTest {
         Document document = new Document();
         document.originalDocumentName = fileName;
         document.mimeType = "application/pdf";
+        document.metadata = Map.of("case_id", TEST_CASE_ID_STRING);
 
         UUID documentId = UUID.randomUUID();
-        when(idamService.retrieveSystemUpdateUserDetails()).thenReturn(CIC_USER);
         when(authTokenGenerator.generate()).thenReturn(TEST_SERVICE_AUTH_TOKEN);
         when(caseDocumentClientApi.getDocument(TEST_AUTHORIZATION_TOKEN, TEST_SERVICE_AUTH_TOKEN, documentId))
             .thenReturn(ResponseEntity.ok(document));
@@ -200,6 +199,7 @@ class DocumentDownloadServiceTest {
         // When & Then
         assertThatThrownBy(() -> documentDownloadService.downloadDocument(
             TEST_AUTHORIZATION_TOKEN,
+            TEST_CASE_ID_STRING,
             documentIdString
         ))
             .isInstanceOf(DocumentDownloadException.class)
@@ -212,7 +212,6 @@ class DocumentDownloadServiceTest {
         UUID documentId = UUID.randomUUID();
         String documentIdString = documentId.toString();
 
-        when(idamService.retrieveSystemUpdateUserDetails()).thenReturn(CIC_USER);
         when(authTokenGenerator.generate()).thenReturn(TEST_SERVICE_AUTH_TOKEN);
         when(caseDocumentClientApi.getDocument(TEST_AUTHORIZATION_TOKEN, TEST_SERVICE_AUTH_TOKEN, documentId))
             .thenThrow(new RuntimeException("API error"));
@@ -220,6 +219,7 @@ class DocumentDownloadServiceTest {
         // When & Then
         assertThatThrownBy(() -> documentDownloadService.downloadDocument(
             TEST_AUTHORIZATION_TOKEN,
+            TEST_CASE_ID_STRING,
             documentIdString
         ))
             .isInstanceOf(DocumentDownloadException.class)
@@ -232,7 +232,6 @@ class DocumentDownloadServiceTest {
         UUID documentId = UUID.randomUUID();
         String documentIdString = documentId.toString();
 
-        when(idamService.retrieveSystemUpdateUserDetails()).thenReturn(CIC_USER);
         when(authTokenGenerator.generate()).thenReturn(TEST_SERVICE_AUTH_TOKEN);
         when(caseDocumentClientApi.getDocument(TEST_AUTHORIZATION_TOKEN, TEST_SERVICE_AUTH_TOKEN, documentId))
             .thenReturn(null);
@@ -240,6 +239,7 @@ class DocumentDownloadServiceTest {
         // When & Then
         assertThatThrownBy(() -> documentDownloadService.downloadDocument(
             TEST_AUTHORIZATION_TOKEN,
+            TEST_CASE_ID_STRING,
             documentIdString
         ))
             .isInstanceOf(DocumentDownloadException.class)
@@ -254,9 +254,9 @@ class DocumentDownloadServiceTest {
         Document document = new Document();
         document.originalDocumentName = fileName;
         document.mimeType = "application/pdf";
+        document.metadata = Map.of("case_id", TEST_CASE_ID_STRING);
         UUID documentId = UUID.randomUUID();
 
-        when(idamService.retrieveSystemUpdateUserDetails()).thenReturn(CIC_USER);
         when(authTokenGenerator.generate()).thenReturn(TEST_SERVICE_AUTH_TOKEN);
         when(caseDocumentClientApi.getDocument(TEST_AUTHORIZATION_TOKEN, TEST_SERVICE_AUTH_TOKEN, documentId))
             .thenReturn(ResponseEntity.ok(document));
@@ -267,13 +267,35 @@ class DocumentDownloadServiceTest {
         // When & Then
         assertThatThrownBy(() -> documentDownloadService.downloadDocument(
             TEST_AUTHORIZATION_TOKEN,
+            TEST_CASE_ID_STRING,
             documentIdString
         ))
             .isInstanceOf(DocumentDownloadException.class)
             .hasMessageContaining("Failed to download document binary");
     }
-}
 
+    @Test
+    void shouldRejectDocumentThatBelongsToAnotherCase() {
+        Document document = new Document();
+        document.metadata = Map.of("case_id", "1111222233334444");
+
+        UUID documentId = UUID.randomUUID();
+        when(authTokenGenerator.generate()).thenReturn(TEST_SERVICE_AUTH_TOKEN);
+        when(caseDocumentClientApi.getDocument(TEST_AUTHORIZATION_TOKEN, TEST_SERVICE_AUTH_TOKEN, documentId))
+            .thenReturn(ResponseEntity.ok(document));
+
+        assertThatThrownBy(() -> documentDownloadService.downloadDocument(
+            TEST_AUTHORIZATION_TOKEN,
+            TEST_CASE_ID_STRING,
+            documentId.toString()
+        ))
+            .isInstanceOf(UnauthorisedCaseAccessException.class)
+            .hasMessageContaining("Document does not belong to case");
+
+        verify(caseDocumentClientApi, never())
+            .getDocumentBinary(TEST_AUTHORIZATION_TOKEN, TEST_SERVICE_AUTH_TOKEN, documentId);
+    }
+}
 
 
 
