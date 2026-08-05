@@ -353,7 +353,8 @@ class DocumentControllerIT {
         when(caseDocumentClientApi.getDocument(eq(TEST_AUTHORIZATION_TOKEN), eq(TEST_SERVICE_AUTH_TOKEN), eq(TEST_CASE_DATA_FILE_UUID)))
             .thenThrow(forbidden)
             .thenReturn(ResponseEntity.ok(document));
-        when(caseDocumentClientApi.getDocumentBinary(eq(TEST_AUTHORIZATION_TOKEN), eq(TEST_SERVICE_AUTH_TOKEN), eq(TEST_CASE_DATA_FILE_UUID)))
+        when(caseDocumentClientApi.getDocumentBinary(eq(TEST_AUTHORIZATION_TOKEN),
+            eq(TEST_SERVICE_AUTH_TOKEN), eq(TEST_CASE_DATA_FILE_UUID)))
             .thenReturn(ResponseEntity.ok(documentContent));
 
         mockMvc.perform(get(String.format(DOWNLOAD_DOCUMENT_URL, TEST_CASE_DATA_FILE_UUID))
