@@ -6,6 +6,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.ResponseEntity;
 import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
@@ -78,17 +79,22 @@ class AudioVideoEvidenceBundleServiceTest {
 
         DocumentEntity audioDoc = DocumentEntity.builder()
             .documentFilename("hearing-audio.MP3")
-            .documentBinaryUrl("http://dm/documents/audio/binary")
+            .documentBinaryUrl("http://dm/documents/11111111-1111-1111-1111-111111111111/binary")
             .documentTypeName(DocumentType.LINKED_DOCS.name())
             .savedAt(OffsetDateTime.parse("2026-01-10T10:15:30Z"))
             .build();
 
         DocumentEntity videoDoc = DocumentEntity.builder()
             .documentFilename("hearing-video.mp4")
-            .documentBinaryUrl("http://dm/documents/video/binary")
+            .documentBinaryUrl("http://dm/documents/22222222-2222-2222-2222-222222222222/binary")
             .documentTypeName(null)
             .savedAt(null)
             .build();
+
+        when(authTokenGenerator.generate()).thenReturn("service-token");
+        when(request.getHeader(AUTHORIZATION)).thenReturn("Bearer user-token");
+        when(caseDocumentClientApi.getDocument(eq("Bearer user-token"), eq("service-token"), any()))
+            .thenReturn(ResponseEntity.ok(buildMetadataResponse("caseworker.user@hmcts.net")));
 
         when(documentsService.getAudioVideoDocuments(12345L))
             .thenReturn(Stream.of(audioDoc, videoDoc));
@@ -98,13 +104,22 @@ class AudioVideoEvidenceBundleServiceTest {
         assertThat(rows).hasSize(2);
         assertThat(rows)
             .extracting(AudioVideoEvidenceBundleService.AudioVideoDocumentRow::documentUrl)
-            .containsExactly("http://dm/documents/audio/binary", "http://dm/documents/video/binary");
+            .containsExactly(
+                "http://dm/documents/11111111-1111-1111-1111-111111111111/binary",
+                "http://dm/documents/22222222-2222-2222-2222-222222222222/binary"
+            );
         assertThat(rows)
             .extracting(AudioVideoEvidenceBundleService.AudioVideoDocumentRow::dateAdded)
             .containsExactly("2026-01-10", "");
         assertThat(rows)
             .extracting(AudioVideoEvidenceBundleService.AudioVideoDocumentRow::documentType)
+            .containsExactly("Audio Document", "Video Document");
+        assertThat(rows)
+            .extracting(AudioVideoEvidenceBundleService.AudioVideoDocumentRow::documentCategory)
             .containsExactly("L - Linked docs", "Unknown");
+        assertThat(rows)
+            .extracting(AudioVideoEvidenceBundleService.AudioVideoDocumentRow::uploadedBy)
+            .containsExactly("caseworker.user@hmcts.net", "caseworker.user@hmcts.net");
     }
 
     @Test
@@ -156,7 +171,7 @@ class AudioVideoEvidenceBundleServiceTest {
 
         DocumentEntity audioDoc = DocumentEntity.builder()
             .documentFilename("hearing-audio.mp3")
-            .documentBinaryUrl("http://dm/documents/audio/binary?a=1&b=<x>\"'")
+            .documentBinaryUrl("http://dm/documents/33333333-3333-3333-3333-333333333333/binary?a=1&b=<x>\"'")
             .documentTypeName(DocumentType.LINKED_DOCS.name())
             .savedAt(OffsetDateTime.parse("2026-01-10T12:00:00Z"))
             .build();
@@ -165,6 +180,8 @@ class AudioVideoEvidenceBundleServiceTest {
         when(pdfServiceClient.generateFromHtml(any(byte[].class), anyMap())).thenReturn(generatedPdf);
         when(authTokenGenerator.generate()).thenReturn("service-token");
         when(request.getHeader(AUTHORIZATION)).thenReturn("Bearer user-token");
+        when(caseDocumentClientApi.getDocument(eq("Bearer user-token"), eq("service-token"), any()))
+            .thenReturn(ResponseEntity.ok(buildMetadataResponse("caseworker.user@hmcts.net")));
         when(caseDocumentClientApi.uploadDocuments(eq("Bearer user-token"), eq("service-token"), any()))
             .thenReturn(buildUploadResponse("http://dm-store/documents/generated", "http://dm-store/documents/generated/binary"));
         when(documentsService.getAudioVideoDocuments(12345L))
@@ -200,8 +217,11 @@ class AudioVideoEvidenceBundleServiceTest {
 
         assertThat(placeholdersCaptor.getValue()).containsEntry("caseId", "12345");
         assertThat(placeholdersCaptor.getValue().get("rowsHtml").toString())
-            .contains("<a href=\"http://dm/documents/audio/binary?a=1&amp;b=&lt;x&gt;&quot;&#39;\">hearing-audio.mp3</a>")
-            .contains("<td>2026-01-10</td>");
+            .contains("<a href=\"http://dm/documents/33333333-3333-3333-3333-333333333333/binary?a=1&amp;b=&lt;x&gt;&quot;&#39;\">"
+                + "hearing-audio.mp3</a>")
+            .contains("<td>2026-01-10</td>")
+            .contains("<td>L - Linked docs</td>")
+            .contains("<td>caseworker.user@hmcts.net</td>");
         verify(caseDocumentClientApi).uploadDocuments(eq("Bearer user-token"), eq("service-token"), any());
     }
 
@@ -210,6 +230,8 @@ class AudioVideoEvidenceBundleServiceTest {
         when(pdfServiceClient.generateFromHtml(any(byte[].class), anyMap())).thenReturn("pdf".getBytes(StandardCharsets.UTF_8));
         when(authTokenGenerator.generate()).thenReturn("service-token");
         when(request.getHeader(AUTHORIZATION)).thenReturn("Bearer user-token");
+        when(caseDocumentClientApi.getDocument(eq("Bearer user-token"), eq("service-token"), any()))
+            .thenReturn(ResponseEntity.ok(buildMetadataResponse("caseworker.user@hmcts.net")));
         when(caseDocumentClientApi.uploadDocuments(eq("Bearer user-token"), eq("service-token"), any())).thenReturn(null);
 
         AudioVideoEvidenceBundleService service = new AudioVideoEvidenceBundleService(
@@ -233,6 +255,8 @@ class AudioVideoEvidenceBundleServiceTest {
         when(pdfServiceClient.generateFromHtml(any(byte[].class), anyMap())).thenReturn("pdf".getBytes(StandardCharsets.UTF_8));
         when(authTokenGenerator.generate()).thenReturn("service-token");
         when(request.getHeader(AUTHORIZATION)).thenReturn("Bearer user-token");
+        when(caseDocumentClientApi.getDocument(eq("Bearer user-token"), eq("service-token"), any()))
+            .thenReturn(ResponseEntity.ok(buildMetadataResponse("caseworker.user@hmcts.net")));
         when(caseDocumentClientApi.uploadDocuments(eq("Bearer user-token"), eq("service-token"), any())).thenReturn(uploadResponse);
 
         AudioVideoEvidenceBundleService service = new AudioVideoEvidenceBundleService(
@@ -256,6 +280,8 @@ class AudioVideoEvidenceBundleServiceTest {
         when(pdfServiceClient.generateFromHtml(any(byte[].class), anyMap())).thenReturn("pdf".getBytes(StandardCharsets.UTF_8));
         when(authTokenGenerator.generate()).thenReturn("service-token");
         when(request.getHeader(AUTHORIZATION)).thenReturn("Bearer user-token");
+        when(caseDocumentClientApi.getDocument(eq("Bearer user-token"), eq("service-token"), any()))
+            .thenReturn(ResponseEntity.ok(buildMetadataResponse("caseworker.user@hmcts.net")));
         when(caseDocumentClientApi.uploadDocuments(eq("Bearer user-token"), eq("service-token"), any())).thenReturn(uploadResponse);
 
         AudioVideoEvidenceBundleService service = new AudioVideoEvidenceBundleService(
@@ -331,7 +357,7 @@ class AudioVideoEvidenceBundleServiceTest {
         caseData.setCaseNumber("111");
         DocumentEntity mediaDoc = DocumentEntity.builder()
             .documentFilename("media.mp4")
-            .documentBinaryUrl("http://dm/documents/media/binary")
+            .documentBinaryUrl("http://dm/documents/44444444-4444-4444-4444-444444444444/binary")
             .documentTypeName(DocumentType.LINKED_DOCS.name())
             .savedAt(OffsetDateTime.parse("2026-02-05T10:00:00Z"))
             .build();
@@ -355,5 +381,11 @@ class AudioVideoEvidenceBundleServiceTest {
         UploadResponse uploadResponse = new UploadResponse();
         uploadResponse.setDocuments(List.of(uploadedDoc));
         return uploadResponse;
+    }
+
+    private uk.gov.hmcts.sptribs.cdam.model.Document buildMetadataResponse(String createdBy) {
+        uk.gov.hmcts.sptribs.cdam.model.Document metadata = new uk.gov.hmcts.sptribs.cdam.model.Document();
+        metadata.createdBy = createdBy;
+        return metadata;
     }
 }

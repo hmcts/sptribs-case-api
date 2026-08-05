@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
@@ -31,6 +32,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.UUID;
 import java.util.stream.Stream;
 
 import static java.util.Collections.singletonList;
@@ -43,6 +45,8 @@ public class AudioVideoEvidenceBundleService {
 
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
     private static final String UNKNOWN_TYPE = "Unknown";
+    private static final String AUDIO_DOCUMENT_TYPE = "Audio Document";
+    private static final String VIDEO_DOCUMENT_TYPE = "Video Document";
     private static final String EMPTY_VALUE = "";
     private static final String AUDIO_VIDEO_EVIDENCE_TEMPLATE = "/templates/audio_video_evidence.html";
 
@@ -83,18 +87,39 @@ public class AudioVideoEvidenceBundleService {
         }
 
         try (Stream<DocumentEntity> stream = documentsService.getAudioVideoDocuments(caseReference)) {
-            return stream
+            List<DocumentEntity> documents = stream.toList();
+            if (documents.isEmpty()) {
+                return List.of();
+            }
+
+            String serviceToken = authTokenGenerator.generate();
+            String authorisation = request.getHeader(AUTHORIZATION);
+            return documents.stream()
                 .map(entity -> new AudioVideoDocumentRow(
-                    resolveDocumentType(entity.getDocumentTypeName()),
+                    resolveMediaType(entity.getDocumentFilename()),
                     entity.getDocumentFilename(),
                     entity.getDocumentBinaryUrl(),
                     formatDate(getSavedAtDate(entity)),
-                    EMPTY_VALUE,
-                    EMPTY_VALUE,
+                    resolveDocumentType(entity.getDocumentTypeName()),
+                    resolveUploadedBy(entity, authorisation, serviceToken),
                     getSavedAtDate(entity)
                 ))
                 .toList();
         }
+    }
+
+    private String resolveMediaType(String documentFilename) {
+        String extension = StringUtils.substringAfterLast(
+            StringUtils.defaultString(documentFilename),
+            "."
+        ).toLowerCase();
+        if ("mp3".equals(extension)) {
+            return AUDIO_DOCUMENT_TYPE;
+        }
+        if ("mp4".equals(extension)) {
+            return VIDEO_DOCUMENT_TYPE;
+        }
+        return UNKNOWN_TYPE;
     }
 
     private String resolveDocumentType(String documentTypeName) {
@@ -123,6 +148,54 @@ public class AudioVideoEvidenceBundleService {
         return savedAt == null ? null : savedAt.toLocalDate();
     }
 
+    private String resolveUploadedBy(DocumentEntity entity, String authorisation, String serviceToken) {
+        if (entity == null || StringUtils.isBlank(authorisation) || StringUtils.isBlank(serviceToken)) {
+            return EMPTY_VALUE;
+        }
+
+        UUID documentId = extractDocumentId(entity.getDocumentBinaryUrl());
+        if (documentId == null) {
+            return EMPTY_VALUE;
+        }
+
+        try {
+            ResponseEntity<uk.gov.hmcts.sptribs.cdam.model.Document> metadataResponse = caseDocumentClientApi.getDocument(
+                authorisation,
+                serviceToken,
+                documentId
+            );
+
+            if (metadataResponse == null || metadataResponse.getBody() == null) {
+                return EMPTY_VALUE;
+            }
+
+            return StringUtils.defaultString(metadataResponse.getBody().createdBy);
+        } catch (RuntimeException exception) {
+            log.warn("Unable to resolve uploadedBy for document: {}", entity.getDocumentBinaryUrl(), exception);
+            return EMPTY_VALUE;
+        }
+    }
+
+    private UUID extractDocumentId(String documentBinaryUrl) {
+        if (StringUtils.isBlank(documentBinaryUrl)) {
+            return null;
+        }
+
+        try {
+            String sanitizedUrl = StringUtils.substringBefore(documentBinaryUrl, "?");
+            sanitizedUrl = StringUtils.substringBefore(sanitizedUrl, "#");
+            if (StringUtils.isBlank(sanitizedUrl)) {
+                return null;
+            }
+
+            String withoutBinarySuffix = StringUtils.removeEnd(sanitizedUrl, "/binary");
+            String documentId = StringUtils.substringAfterLast(withoutBinarySuffix, "/");
+            return UUID.fromString(documentId);
+        } catch (IllegalArgumentException exception) {
+            return null;
+        }
+    }
+
     private byte[] generatePdf(List<AudioVideoDocumentRow> rows, Long caseId) {
         byte[] template = loadTemplate();
         Map<String, Object> placeholders = Map.of(
@@ -146,7 +219,7 @@ public class AudioVideoEvidenceBundleService {
                     .append("</td><td>")
                     .append(escapeHtml(row.dateAdded()))
                     .append("</td><td>")
-                    .append(escapeHtml(row.dateApproved()))
+                    .append(escapeHtml(row.documentCategory()))
                     .append("</td><td>")
                     .append(escapeHtml(row.uploadedBy()))
                     .append("</td></tr>");
@@ -220,7 +293,7 @@ public class AudioVideoEvidenceBundleService {
         String documentFilename,
         String documentUrl,
         String dateAdded,
-        String dateApproved,
+        String documentCategory,
         String uploadedBy,
         LocalDate sortableDate
     ) {

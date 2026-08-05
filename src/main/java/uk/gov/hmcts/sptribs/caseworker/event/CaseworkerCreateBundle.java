@@ -132,8 +132,7 @@ public class CaseworkerCreateBundle implements CCDConfig<CaseData, State, UserRo
 
         try {
             var audioVideoEvidenceBundleDocument =
-                audioVideoEvidenceBundleService.createAudioVideoEvidenceBundleDocument(caseData, details.getId())
-                ;
+                audioVideoEvidenceBundleService.createAudioVideoEvidenceBundleDocument(caseData, details.getId());
             caseData.setAudioVideoEvidenceBundleDocument(audioVideoEvidenceBundleDocument);
             bundleRequestCaseData.setAudioVideoEvidenceBundleDocument(audioVideoEvidenceBundleDocument);
         } catch (RuntimeException exception) {

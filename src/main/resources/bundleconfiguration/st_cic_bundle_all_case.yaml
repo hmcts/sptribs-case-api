@@ -79,7 +79,7 @@ folders:
       documents:
           - type: documentSet
             property: /furtherCaseDocuments
-    - name: Audio/video evidence document
+    - name: Audio/video evidence documents
       documents:
           - type: document
             property: /audioVideoEvidenceBundleDocument
