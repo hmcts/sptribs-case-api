@@ -165,7 +165,7 @@ public class CaseDataRepositoryImpl implements CaseDataRepository {
         return results;
     }
 
-    public List<Long> returnAllCasesExlcudingStates(List<String> states) {
+    public List<Long> returnAllCasesExcludingStates(List<String> states) {
         List<Long> results;
         var params = Map.of(
             STATES, states

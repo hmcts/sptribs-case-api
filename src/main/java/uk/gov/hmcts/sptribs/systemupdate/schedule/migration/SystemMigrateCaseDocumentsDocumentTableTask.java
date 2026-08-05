@@ -89,7 +89,7 @@ public class SystemMigrateCaseDocumentsDocumentTableTask implements Runnable {
                 caseIdsToUpdate.addAll(casesToUpdate);
             } else {
 
-                caseIdsToUpdate.addAll(caseDataRepository.returnAllCasesExlcudingStates(
+                caseIdsToUpdate.addAll(caseDataRepository.returnAllCasesExcludingStates(
                     List.of(DSS_Draft.name(), Draft.name(), DSS_Expired.name())));
             }
 

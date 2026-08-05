@@ -101,7 +101,7 @@ class SystemMigrateCaseDocumentsDocumentsTableTaskTest {
 
         @Test
         void shouldDoNothingWhenNoCasesFound() {
-            when(caseDataRepository.returnAllCasesExlcudingStates(
+            when(caseDataRepository.returnAllCasesExcludingStates(
                 List.of(DSS_Draft.name(), Draft.name(), DSS_Expired.name())))
                 .thenReturn(List.of());
 
@@ -112,7 +112,7 @@ class SystemMigrateCaseDocumentsDocumentsTableTaskTest {
 
         @Test
         void shouldTriggerEventForEachCaseFound() {
-            when(caseDataRepository.returnAllCasesExlcudingStates(
+            when(caseDataRepository.returnAllCasesExcludingStates(
                 List.of(DSS_Draft.name(), Draft.name(), DSS_Expired.name())))
                 .thenReturn(List.of(111L, 222L, 333L));
 
@@ -146,7 +146,7 @@ class SystemMigrateCaseDocumentsDocumentsTableTaskTest {
 
         @Test
         void shouldContinueToNextCaseWhenCcdManagementExceptionThrown() {
-            when(caseDataRepository.returnAllCasesExlcudingStates(
+            when(caseDataRepository.returnAllCasesExcludingStates(
                 List.of(DSS_Draft.name(), Draft.name(), DSS_Expired.name())))
                 .thenReturn(List.of(111L, 222L, 333L));
 
@@ -162,7 +162,7 @@ class SystemMigrateCaseDocumentsDocumentsTableTaskTest {
 
         @Test
         void shouldContinueToNextCaseWhenIllegalArgumentExceptionThrown() {
-            when(caseDataRepository.returnAllCasesExlcudingStates(
+            when(caseDataRepository.returnAllCasesExcludingStates(
                 List.of(DSS_Draft.name(), Draft.name(), DSS_Expired.name())))
                 .thenReturn(List.of(111L, 222L));
 
@@ -177,7 +177,7 @@ class SystemMigrateCaseDocumentsDocumentsTableTaskTest {
 
         @Test
         void shouldStopAndLogWhenRepositoryThrowsRuntimeException() {
-            when(caseDataRepository.returnAllCasesExlcudingStates(
+            when(caseDataRepository.returnAllCasesExcludingStates(
                 List.of(DSS_Draft.name(), Draft.name(), DSS_Expired.name())))
                 .thenThrow(new CaseEventRepositoryException("DB error", new RuntimeException()));
 
@@ -191,7 +191,7 @@ class SystemMigrateCaseDocumentsDocumentsTableTaskTest {
             ReflectionTestUtils.setField(systemMigrateCaseDocumentsDocumentsTableTask, "batchSize", 2);
             ReflectionTestUtils.setField(systemMigrateCaseDocumentsDocumentsTableTask, "batchPauseMs", 100L);
 
-            when(caseDataRepository.returnAllCasesExlcudingStates(
+            when(caseDataRepository.returnAllCasesExcludingStates(
                 List.of(DSS_Draft.name(), Draft.name(), DSS_Expired.name())))
                 .thenReturn(List.of(111L, 222L, 333L, 444L, 555L));
 
@@ -210,7 +210,7 @@ class SystemMigrateCaseDocumentsDocumentsTableTaskTest {
             ReflectionTestUtils.setField(systemMigrateCaseDocumentsDocumentsTableTask, "batchSize", 2);
             ReflectionTestUtils.setField(systemMigrateCaseDocumentsDocumentsTableTask, "batchPauseMs", 100L);
 
-            when(caseDataRepository.returnAllCasesExlcudingStates(
+            when(caseDataRepository.returnAllCasesExcludingStates(
                 List.of(DSS_Draft.name(), Draft.name(), DSS_Expired.name())))
                 .thenReturn(List.of(111L, 222L, 333L));
 
@@ -229,7 +229,7 @@ class SystemMigrateCaseDocumentsDocumentsTableTaskTest {
             ReflectionTestUtils.setField(systemMigrateCaseDocumentsDocumentsTableTask, "batchSize", 3);
             ReflectionTestUtils.setField(systemMigrateCaseDocumentsDocumentsTableTask, "batchPauseMs", 100L);
 
-            when(caseDataRepository.returnAllCasesExlcudingStates(
+            when(caseDataRepository.returnAllCasesExcludingStates(
                 List.of(DSS_Draft.name(), Draft.name(), DSS_Expired.name())))
                 .thenReturn(List.of(111L, 222L, 333L));
 
@@ -247,7 +247,7 @@ class SystemMigrateCaseDocumentsDocumentsTableTaskTest {
             ReflectionTestUtils.setField(systemMigrateCaseDocumentsDocumentsTableTask, "batchSize", 2);
             ReflectionTestUtils.setField(systemMigrateCaseDocumentsDocumentsTableTask, "batchPauseMs", 5000L);
 
-            when(caseDataRepository.returnAllCasesExlcudingStates(
+            when(caseDataRepository.returnAllCasesExcludingStates(
                 List.of(DSS_Draft.name(), Draft.name(), DSS_Expired.name())))
                 .thenReturn(List.of(111L, 222L, 333L, 444L));
 

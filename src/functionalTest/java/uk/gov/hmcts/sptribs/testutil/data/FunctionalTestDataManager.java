@@ -128,6 +128,18 @@ public class FunctionalTestDataManager {
         }
     }
 
+    public int countCaseDocuments(long caseId) {
+        String sql = "SELECT COUNT(*) FROM public.case_documents WHERE case_reference_number = ?";
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setLong(1, caseId);
+            ResultSet rs = stmt.executeQuery();
+            rs.next();
+            return rs.getInt(1);
+        } catch (SQLException e) {
+            throw new RuntimeException("Failed to count case documents for caseId: " + caseId, e);
+        }
+    }
+
     private long getCaseDataId(long reference) throws SQLException {
         String sql = "SELECT " + KEY_CASE_DATA_ID + " FROM " + TABLE_CASE_DATA + " WHERE " + KEY_CASE_DATA_REFERENCE + " = ?";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
