@@ -21,13 +21,18 @@ public class SystemMigrateCaseDocumentsToDocumentTableFT extends FunctionalTestS
     private static final String REQUEST =
         "classpath:request/casedata/ccd-callback-casedata-system-migrate-documents-to-table-about-to-submit.json";
 
-    private final List<String> listOfTestBinarys = List.of(
-        "http://dm-store-aat.service.core-compute-aat.internal/documents/f54afe26-172e-44ad-be48-bd68ad53ffbc/binary",
-        "http://dm-store-aat.service.core-compute-aat.internal/documents/7c6ca230-c5ee-42ac-96c4-e340b110808e/binary",
-        "http://dm-store-aat.service.core-compute-aat.internal/documents/50d3cdd5-20ce-47b7-ae9e-7a798849c19b/binary",
-        "http://dm-store-aat.service.core-compute-aat.internal/documents/8ccefd85-a0b1-4acb-bc90-6ce676a3b7a4/binary",
-        "http://dm-store-aat.service.core-compute-aat.internal/documents/f045922d-d08b-4864-a5f3-3145911f0086/binary",
-        "http://dm-store-aat.service.core-compute-aat.internal/documents/d4748cf4-de21-4e49-8d1e-f5cb2971e2d5/binary");
+    private final List<String> listOfTestBinarys;
+
+    {
+        String binaryURL = "http://dm-store-aat.service.core-compute-aat.internal/documents/";
+        listOfTestBinarys = List.of(
+            binaryURL + "f54afe26-172e-44ad-be48-bd68ad53ffbc/binary",
+            binaryURL + "7c6ca230-c5ee-42ac-96c4-e340b110808e/binary",
+            binaryURL + "50d3cdd5-20ce-47b7-ae9e-7a798849c19b/binary",
+            binaryURL + "8ccefd85-a0b1-4acb-bc90-6ce676a3b7a4/binary",
+            binaryURL + "f045922d-d08b-4864-a5f3-3145911f0086/binary",
+            binaryURL + "d4748cf4-de21-4e49-8d1e-f5cb2971e2d5/binary");
+    }
 
     @Test
     public void shouldMigrateCaseDocumentsOnAboutToSubmit() throws Exception {
