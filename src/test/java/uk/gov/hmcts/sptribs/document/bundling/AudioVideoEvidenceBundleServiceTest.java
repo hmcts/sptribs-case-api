@@ -15,6 +15,7 @@ import uk.gov.hmcts.sptribs.caseworker.util.DocumentListUtil;
 import uk.gov.hmcts.sptribs.cdam.model.UploadResponse;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
+import uk.gov.hmcts.sptribs.document.bundling.model.AudioVideoEvidenceBundleDocument;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.document.model.DocumentEntity;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
@@ -23,8 +24,11 @@ import uk.gov.hmcts.sptribs.services.cdam.CaseDocumentClientApi;
 
 import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
+import java.time.Clock;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -59,6 +63,9 @@ class AudioVideoEvidenceBundleServiceTest {
     @Mock
     private HttpServletRequest request;
 
+    @Mock
+    private Clock clock;
+
     @Test
     void shouldExtractOnlyAudioVideoRowsFromCaseDocumentsAndSortBySavedDateWithEmptyValues() {
         List<ListValue<CaseworkerCICDocument>> docs = new ArrayList<>();
@@ -85,7 +92,8 @@ class AudioVideoEvidenceBundleServiceTest {
             caseDocumentClientApi,
             documentsService,
             authTokenGenerator,
-            request
+            request,
+            clock
         );
 
         when(documentsService.getCaseDocumentsByBinaryUrls(eq(12345L), any()))
@@ -115,7 +123,8 @@ class AudioVideoEvidenceBundleServiceTest {
             caseDocumentClientApi,
             documentsService,
             authTokenGenerator,
-            request
+            request,
+            clock
         );
 
         CaseData caseData = CaseData.builder().build();
@@ -125,7 +134,7 @@ class AudioVideoEvidenceBundleServiceTest {
         ));
         caseData.setCicCase(cicCase);
 
-        Document result = service.createAudioVideoEvidenceBundleDocument(caseData, 12345L);
+        AudioVideoEvidenceBundleDocument result = service.createAudioVideoEvidenceBundleDocument(caseData, 12345L);
 
         assertThat(result).isNull();
         verifyNoInteractions(pdfServiceClient, caseDocumentClientApi, authTokenGenerator);
@@ -138,7 +147,8 @@ class AudioVideoEvidenceBundleServiceTest {
             caseDocumentClientApi,
             documentsService,
             authTokenGenerator,
-            request
+            request,
+            clock
         );
 
         List<ListValue<CaseworkerCICDocument>> documents = new ArrayList<>();
@@ -183,19 +193,25 @@ class AudioVideoEvidenceBundleServiceTest {
                 DocumentEntity.builder().savedAt(OffsetDateTime.parse("2026-01-10T12:00:00Z")).build()
             ));
 
+        when(clock.instant()).thenReturn(Instant.parse("2026-08-05T00:00:00Z"));
+        when(clock.getZone()).thenReturn(ZoneId.of("UTC"));
+
         AudioVideoEvidenceBundleService service = new AudioVideoEvidenceBundleService(
             pdfServiceClient,
             caseDocumentClientApi,
             documentsService,
             authTokenGenerator,
-            request
+            request,
+            clock
         );
-        Document result = service.createAudioVideoEvidenceBundleDocument(caseData, 12345L);
+        AudioVideoEvidenceBundleDocument result = service.createAudioVideoEvidenceBundleDocument(caseData, 12345L);
 
         assertThat(result).isNotNull();
-        assertThat(result.getFilename()).isEqualTo("audio-video-evidence-12345.pdf");
-        assertThat(result.getUrl()).isEqualTo("http://dm-store/documents/generated");
-        assertThat(result.getBinaryUrl()).isEqualTo("http://dm-store/documents/generated/binary");
+        assertThat(result.getDocumentLink()).isNotNull();
+        assertThat(result.getDocumentLink().getFilename()).isEqualTo("audio-video-evidence-12345.pdf");
+        assertThat(result.getDocumentLink().getUrl()).isEqualTo("http://dm-store/documents/generated");
+        assertThat(result.getDocumentLink().getBinaryUrl()).isEqualTo("http://dm-store/documents/generated/binary");
+        assertThat(result.getDate()).isEqualTo(LocalDate.of(2026, 8, 5));
 
         ArgumentCaptor<byte[]> htmlTemplateCaptor = ArgumentCaptor.forClass(byte[].class);
         @SuppressWarnings("unchecked")
@@ -224,7 +240,8 @@ class AudioVideoEvidenceBundleServiceTest {
             caseDocumentClientApi,
             documentsService,
             authTokenGenerator,
-            request
+            request,
+            clock
         );
         assertThatThrownBy(() -> service.createAudioVideoEvidenceBundleDocument(caseDataWithAudioVideoDoc(), 111L))
             .isInstanceOf(IllegalStateException.class)
@@ -246,7 +263,8 @@ class AudioVideoEvidenceBundleServiceTest {
             caseDocumentClientApi,
             documentsService,
             authTokenGenerator,
-            request
+            request,
+            clock
         );
         assertThatThrownBy(() -> service.createAudioVideoEvidenceBundleDocument(caseDataWithAudioVideoDoc(), 111L))
             .isInstanceOf(IllegalStateException.class)
@@ -268,7 +286,8 @@ class AudioVideoEvidenceBundleServiceTest {
             caseDocumentClientApi,
             documentsService,
             authTokenGenerator,
-            request
+            request,
+            clock
         );
         assertThatThrownBy(() -> service.createAudioVideoEvidenceBundleDocument(caseDataWithAudioVideoDoc(), 111L))
             .isInstanceOf(IllegalStateException.class)
@@ -282,7 +301,8 @@ class AudioVideoEvidenceBundleServiceTest {
             caseDocumentClientApi,
             documentsService,
             authTokenGenerator,
-            request
+            request,
+            clock
         );
 
         Method buildRowsHtml = AudioVideoEvidenceBundleService.class.getDeclaredMethod("buildRowsHtml", List.class);

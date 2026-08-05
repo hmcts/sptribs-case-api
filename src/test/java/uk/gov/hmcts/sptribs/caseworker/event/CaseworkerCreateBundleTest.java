@@ -27,6 +27,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.ciccase.model.access.Permissions;
 import uk.gov.hmcts.sptribs.document.bundling.AudioVideoEvidenceBundleService;
 import uk.gov.hmcts.sptribs.document.bundling.client.BundlingService;
+import uk.gov.hmcts.sptribs.document.bundling.model.AudioVideoEvidenceBundleDocument;
 import uk.gov.hmcts.sptribs.document.bundling.model.Bundle;
 import uk.gov.hmcts.sptribs.document.bundling.model.BundleCallback;
 import uk.gov.hmcts.sptribs.document.bundling.model.BundleIdAndTimestamp;
@@ -126,10 +127,13 @@ class CaseworkerCreateBundleTest {
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
 
         final Bundle bundle = Bundle.builder().build();
-        Document audioVideoBundleDocument = Document.builder()
-            .filename("audio-video-evidence-123.pdf")
-            .url("http://dm-store/documents/generated")
-            .binaryUrl("http://dm-store/documents/generated/binary")
+        AudioVideoEvidenceBundleDocument audioVideoBundleDocument = AudioVideoEvidenceBundleDocument.builder()
+            .documentLink(Document.builder()
+                .filename("audio-video-evidence-123.pdf")
+                .url("http://dm-store/documents/generated")
+                .binaryUrl("http://dm-store/documents/generated/binary")
+                .build())
+            .date(LocalDate.of(2026, 8, 5))
             .build();
 
         when(bundlingService.getMultiBundleConfig()).thenCallRealMethod();

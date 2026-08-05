@@ -28,6 +28,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.common.config.WebMvcConfig;
 import uk.gov.hmcts.sptribs.document.bundling.client.BundleResponse;
 import uk.gov.hmcts.sptribs.document.bundling.client.BundlingClient;
+import uk.gov.hmcts.sptribs.document.bundling.model.AudioVideoEvidenceBundleDocument;
 import uk.gov.hmcts.sptribs.document.bundling.model.Bundle;
 import uk.gov.hmcts.sptribs.document.bundling.model.BundleCallback;
 import uk.gov.hmcts.sptribs.document.model.AbstractCaseworkerCICDocument;
@@ -228,7 +229,7 @@ public class CaseworkerCreateBundleIT {
         when(caseDocumentClientApi.uploadDocuments(eq(TEST_AUTHORIZATION_TOKEN), eq(SERVICE_AUTHORIZATION), any()))
             .thenReturn(uploadResponse);
 
-        AtomicReference<Document> callbackAudioVideoDocument = new AtomicReference<>();
+        AtomicReference<AudioVideoEvidenceBundleDocument> callbackAudioVideoDocument = new AtomicReference<>();
         AtomicReference<List<String>> callbackCaseDocumentNames = new AtomicReference<>(List.of());
 
         when(bundlingClient.createBundle(
@@ -258,8 +259,10 @@ public class CaseworkerCreateBundleIT {
             .andExpect(status().isOk());
 
         assertThat(callbackAudioVideoDocument.get()).isNotNull();
-        assertThat(callbackAudioVideoDocument.get().getBinaryUrl())
+        assertThat(callbackAudioVideoDocument.get().getDocumentLink()).isNotNull();
+        assertThat(callbackAudioVideoDocument.get().getDocumentLink().getBinaryUrl())
             .isEqualTo("http://dm-store/documents/generated/binary");
+        assertThat(callbackAudioVideoDocument.get().getDate()).isNotNull();
         assertThat(callbackCaseDocumentNames.get())
             .containsExactly("paper.pdf")
             .doesNotContain("media-1.mp3", "media-2.mp4");
@@ -276,6 +279,85 @@ public class CaseworkerCreateBundleIT {
             .contains("<a href=\"http://dm/documents/1/binary\">media-1.mp3</a>")
             .contains("<a href=\"http://dm/documents/2/binary\">media-2.mp4</a>")
             .doesNotContain("paper.pdf");
+    }
+
+    @Test
+    void shouldSerializeAudioVideoEvidenceBundleDocumentCorrectlyInCallback() throws Exception {
+        final CaseData caseData = caseData();
+        CicCase cicCase = CicCase.builder().build();
+        cicCase.setApplicantDocumentsUploaded(
+            List.of(
+                toListValue(buildCaseworkerDoc(
+                    "media-1.mp3",
+                    "http://dm/documents/1/binary",
+                    DocumentType.LINKED_DOCS,
+                    LocalDate.of(2026, 1, 10)
+                ))
+            )
+        );
+        caseData.setCicCase(cicCase);
+
+        final BundleResponse bundleResponse = mock(BundleResponse.class);
+        when(bundleResponse.getData()).thenReturn(new LinkedHashMap<>());
+
+        when(authTokenGenerator.generate()).thenReturn(SERVICE_AUTHORIZATION);
+        when(pdfServiceClient.generateFromHtml(any(byte[].class), anyMap())).thenReturn("pdf".getBytes());
+        when(documentsService.getCaseDocumentsByBinaryUrls(any(), any())).thenReturn(Map.of());
+
+        DocumentLink self = new DocumentLink();
+        self.href = "http://dm-store/documents/generated";
+
+        DocumentLink binary = new DocumentLink();
+        binary.href = "http://dm-store/documents/generated/binary";
+
+        Links links = new Links();
+        links.self = self;
+        links.binary = binary;
+
+        uk.gov.hmcts.sptribs.cdam.model.Document uploadedDoc = new uk.gov.hmcts.sptribs.cdam.model.Document();
+        uploadedDoc.links = links;
+
+        UploadResponse uploadResponse = new UploadResponse();
+        uploadResponse.setDocuments(List.of(uploadedDoc));
+
+        when(caseDocumentClientApi.uploadDocuments(eq(TEST_AUTHORIZATION_TOKEN), eq(SERVICE_AUTHORIZATION), any()))
+            .thenReturn(uploadResponse);
+
+        when(clock.instant()).thenReturn(Instant.parse("2026-08-05T00:00:00Z"));
+        when(clock.getZone()).thenReturn(ZoneId.of("UTC"));
+
+        AtomicReference<String> serializedCallbackRef = new AtomicReference<>();
+
+        when(bundlingClient.createBundle(
+            eq(SERVICE_AUTHORIZATION),
+            eq(TEST_AUTHORIZATION_TOKEN),
+            any(BundleCallback.class)
+        )).thenAnswer(invocation -> {
+            BundleCallback bundleCallback = invocation.getArgument(2);
+            serializedCallbackRef.set(objectMapper.writeValueAsString(bundleCallback));
+            return bundleResponse;
+        });
+
+        mockMvc.perform(post(ABOUT_TO_SUBMIT_URL)
+                .contentType(APPLICATION_JSON)
+                .header(SERVICE_AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
+                .header(AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
+                .content(objectMapper.writeValueAsString(callbackRequest(caseData, CREATE_BUNDLE)))
+                .accept(APPLICATION_JSON))
+            .andExpect(status().isOk());
+
+        assertThatJson(serializedCallbackRef.get())
+            .inPath("case_details.data.audioVideoEvidenceBundleDocument")
+            .isEqualTo(json("""
+                {
+                  "documentLink": {
+                    "document_url": "http://dm-store/documents/generated",
+                    "document_binary_url": "http://dm-store/documents/generated/binary",
+                    "document_filename": "audio-video-evidence-123.pdf"
+                  },
+                  "date": "2026-08-05"
+                }
+                """));
     }
 
     @Test
@@ -299,7 +381,7 @@ public class CaseworkerCreateBundleIT {
         when(authTokenGenerator.generate()).thenReturn(SERVICE_AUTHORIZATION);
         when(documentsService.getCaseDocumentsByBinaryUrls(any(), any())).thenReturn(Map.of());
 
-        AtomicReference<Document> callbackAudioVideoDocument = new AtomicReference<>();
+        AtomicReference<AudioVideoEvidenceBundleDocument> callbackAudioVideoDocument = new AtomicReference<>();
         AtomicReference<List<String>> callbackCaseDocumentNames = new AtomicReference<>(List.of());
 
         when(bundlingClient.createBundle(

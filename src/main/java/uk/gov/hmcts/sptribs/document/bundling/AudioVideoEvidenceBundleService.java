@@ -18,6 +18,7 @@ import uk.gov.hmcts.sptribs.cdam.model.UploadResponse;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.common.ccd.CcdCaseType;
 import uk.gov.hmcts.sptribs.common.ccd.CcdJurisdiction;
+import uk.gov.hmcts.sptribs.document.bundling.model.AudioVideoEvidenceBundleDocument;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.document.model.DocumentEntity;
 import uk.gov.hmcts.sptribs.document.service.DocumentsService;
@@ -25,6 +26,7 @@ import uk.gov.hmcts.sptribs.services.cdam.CaseDocumentClientApi;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.time.Clock;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
@@ -55,15 +57,27 @@ public class AudioVideoEvidenceBundleService {
     private final DocumentsService documentsService;
     private final AuthTokenGenerator authTokenGenerator;
     private final HttpServletRequest request;
+    private final Clock clock;
 
-    public Document createAudioVideoEvidenceBundleDocument(CaseData caseData, Long caseId) {
+    public AudioVideoEvidenceBundleDocument createAudioVideoEvidenceBundleDocument(CaseData caseData, Long caseId) {
         List<AudioVideoDocumentRow> rows = extractRows(caseData);
         if (rows.isEmpty()) {
             return null;
         }
         byte[] pdf = generatePdf(rows, caseId);
         String fileName = "audio-video-evidence-" + caseId + ".pdf";
-        return upload(pdf, fileName);
+        Document generatedPdf = upload(pdf, fileName);
+
+        if (generatedPdf == null || StringUtils.isBlank(generatedPdf.getUrl())
+            || StringUtils.isBlank(generatedPdf.getBinaryUrl())
+            || StringUtils.isBlank(generatedPdf.getFilename())) {
+            throw new IllegalStateException("Generated audio/video evidence document missing mandatory properties");
+        }
+
+        return AudioVideoEvidenceBundleDocument.builder()
+            .documentLink(generatedPdf)
+            .date(LocalDate.now(clock))
+            .build();
     }
 
     List<AudioVideoDocumentRow> extractRows(CaseData caseData) {

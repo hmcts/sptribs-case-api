@@ -15,7 +15,6 @@ import uk.gov.hmcts.ccd.sdk.External;
 import uk.gov.hmcts.ccd.sdk.api.CCD;
 import uk.gov.hmcts.ccd.sdk.type.CaseLink;
 import uk.gov.hmcts.ccd.sdk.type.ComponentLauncher;
-import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.ccd.sdk.type.DynamicList;
 import uk.gov.hmcts.ccd.sdk.type.FlagLauncher;
 import uk.gov.hmcts.ccd.sdk.type.Flags;
@@ -56,6 +55,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.access.DefaultAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.GlobalSearchAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.NonRespondentAccess;
 import uk.gov.hmcts.sptribs.ciccase.model.access.SuperUserOnlyAccess;
+import uk.gov.hmcts.sptribs.document.bundling.model.AudioVideoEvidenceBundleDocument;
 import uk.gov.hmcts.sptribs.document.bundling.model.Bundle;
 import uk.gov.hmcts.sptribs.document.bundling.model.BundleIdAndTimestamp;
 import uk.gov.hmcts.sptribs.document.bundling.model.MultiBundleConfig;
@@ -261,7 +261,7 @@ public class CaseData {
         label = "Audio/video evidence bundle document",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
-    private Document audioVideoEvidenceBundleDocument; // bundle field
+    private AudioVideoEvidenceBundleDocument audioVideoEvidenceBundleDocument; // bundle field
 
     @CCD(
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
