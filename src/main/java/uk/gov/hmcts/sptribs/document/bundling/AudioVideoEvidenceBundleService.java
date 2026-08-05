@@ -7,20 +7,18 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.ccd.sdk.type.Document;
-import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.ccd.document.am.model.Classification;
 import uk.gov.hmcts.reform.ccd.document.am.model.DocumentUploadRequest;
 import uk.gov.hmcts.reform.ccd.document.am.util.InMemoryMultipartFile;
 import uk.gov.hmcts.reform.pdf.service.client.PDFServiceClient;
-import uk.gov.hmcts.sptribs.caseworker.util.DocumentListUtil;
 import uk.gov.hmcts.sptribs.cdam.model.UploadResponse;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.common.ccd.CcdCaseType;
 import uk.gov.hmcts.sptribs.common.ccd.CcdJurisdiction;
 import uk.gov.hmcts.sptribs.document.bundling.model.AudioVideoEvidenceBundleDocument;
-import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.document.model.DocumentEntity;
+import uk.gov.hmcts.sptribs.document.model.DocumentType;
 import uk.gov.hmcts.sptribs.document.service.DocumentsService;
 import uk.gov.hmcts.sptribs.services.cdam.CaseDocumentClientApi;
 
@@ -30,14 +28,10 @@ import java.time.Clock;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Set;
+import java.util.stream.Stream;
 
 import static java.util.Collections.singletonList;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
@@ -81,83 +75,37 @@ public class AudioVideoEvidenceBundleService {
     }
 
     List<AudioVideoDocumentRow> extractRows(CaseData caseData) {
-        List<AudioVideoDocumentRow> rows = new ArrayList<>();
-        List<ListValue<CaseworkerCICDocument>> allDocuments = DocumentListUtil.getAllCaseDocuments(caseData);
-        Map<String, DocumentEntity> persistedDocuments = getPersistedDocuments(caseData, allDocuments);
-
-        for (ListValue<CaseworkerCICDocument> documentListValue : allDocuments) {
-            if (documentListValue == null || documentListValue.getValue() == null) {
-                continue;
-            }
-
-            CaseworkerCICDocument document = documentListValue.getValue();
-            if (!isAudioVideoDocument(document)) {
-                continue;
-            }
-
-            String documentType = document.getDocumentCategory() != null
-                ? document.getDocumentCategory().getLabel()
-                : UNKNOWN_TYPE;
-            String documentUrl = document.getDocumentLink().getBinaryUrl();
-            DocumentEntity persistedDocument = persistedDocuments.get(documentUrl);
-            String dateAdded = formatDate(getSavedAtDate(persistedDocument));
-
-            rows.add(new AudioVideoDocumentRow(
-                documentType,
-                document.getDocumentLink().getFilename(),
-                documentUrl,
-                dateAdded,
-                EMPTY_VALUE,
-                EMPTY_VALUE,
-                getSavedAtDate(persistedDocument)
-            ));
-        }
-
-        rows.sort(
-            Comparator.comparing(
-                AudioVideoDocumentRow::sortableDate,
-                Comparator.nullsLast(Comparator.naturalOrder())
-            )
-        );
-        return rows;
-    }
-
-    private Map<String, DocumentEntity> getPersistedDocuments(CaseData caseData,
-                                                              List<ListValue<CaseworkerCICDocument>> allDocuments) {
         Long caseReference = caseData.getCaseNumber() != null
             ? Long.valueOf(caseData.getCaseNumber())
             : null;
         if (caseReference == null) {
-            return Map.of();
+            return List.of();
         }
 
-        Set<String> binaryUrls = new LinkedHashSet<>();
-        for (ListValue<CaseworkerCICDocument> documentListValue : allDocuments) {
-            if (documentListValue == null || documentListValue.getValue() == null) {
-                continue;
-            }
-            CaseworkerCICDocument document = documentListValue.getValue();
-            if (isAudioVideoDocument(document)) {
-                binaryUrls.add(document.getDocumentLink().getBinaryUrl());
-            }
+        try (Stream<DocumentEntity> stream = documentsService.getAudioVideoDocuments(caseReference)) {
+            return stream
+                .map(entity -> new AudioVideoDocumentRow(
+                    resolveDocumentType(entity.getDocumentTypeName()),
+                    entity.getDocumentFilename(),
+                    entity.getDocumentBinaryUrl(),
+                    formatDate(getSavedAtDate(entity)),
+                    EMPTY_VALUE,
+                    EMPTY_VALUE,
+                    getSavedAtDate(entity)
+                ))
+                .toList();
         }
-
-        return documentsService.getCaseDocumentsByBinaryUrls(caseReference, List.copyOf(binaryUrls));
     }
 
-    private boolean isAudioVideoDocument(CaseworkerCICDocument document) {
-        if (document.getDocumentLink() == null || StringUtils.isBlank(document.getDocumentLink().getFilename())) {
-            return false;
+    private String resolveDocumentType(String documentTypeName) {
+        if (StringUtils.isBlank(documentTypeName)) {
+            return UNKNOWN_TYPE;
         }
-        if (StringUtils.isBlank(document.getDocumentLink().getBinaryUrl())) {
-            return false;
+        try {
+            return DocumentType.valueOf(documentTypeName).getLabel();
+        } catch (IllegalArgumentException e) {
+            return documentTypeName;
         }
-
-        String extension = StringUtils.substringAfterLast(
-            document.getDocumentLink().getFilename(),
-            "."
-        ).toLowerCase(Locale.ROOT);
-        return "mp3".equals(extension) || "mp4".equals(extension);
     }
 
     private String formatDate(LocalDate date) {

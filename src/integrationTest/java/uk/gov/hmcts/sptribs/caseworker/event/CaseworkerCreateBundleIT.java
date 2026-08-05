@@ -33,6 +33,7 @@ import uk.gov.hmcts.sptribs.document.bundling.model.Bundle;
 import uk.gov.hmcts.sptribs.document.bundling.model.BundleCallback;
 import uk.gov.hmcts.sptribs.document.model.AbstractCaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
+import uk.gov.hmcts.sptribs.document.model.DocumentEntity;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
 import uk.gov.hmcts.sptribs.document.service.DocumentsService;
 import uk.gov.hmcts.sptribs.services.cdam.CaseDocumentClientApi;
@@ -41,6 +42,7 @@ import uk.gov.hmcts.sptribs.testutil.IdamWireMock;
 import java.time.Clock;
 import java.time.Instant;
 import java.time.LocalDate;
+import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -50,6 +52,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.Stream;
 
 import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
 import static net.javacrumbs.jsonunit.assertj.JsonAssertions.json;
@@ -178,6 +181,7 @@ public class CaseworkerCreateBundleIT {
     @Test
     void shouldAttachGeneratedAudioVideoEvidenceDocumentToBundlingCallback() throws Exception {
         final CaseData caseData = caseData();
+        caseData.setCaseNumber("1616591401473378");
         CicCase cicCase = CicCase.builder().build();
         cicCase.setApplicantDocumentsUploaded(
             List.of(
@@ -208,7 +212,19 @@ public class CaseworkerCreateBundleIT {
 
         when(authTokenGenerator.generate()).thenReturn(SERVICE_AUTHORIZATION);
         when(pdfServiceClient.generateFromHtml(any(byte[].class), anyMap())).thenReturn("pdf".getBytes());
-        when(documentsService.getCaseDocumentsByBinaryUrls(any(), any())).thenReturn(Map.of());
+        DocumentEntity audioDoc1 = DocumentEntity.builder()
+            .documentFilename("media-1.mp3")
+            .documentBinaryUrl("http://dm/documents/1/binary")
+            .documentTypeName(DocumentType.LINKED_DOCS.name())
+            .savedAt(OffsetDateTime.parse("2026-01-10T10:00:00Z"))
+            .build();
+        DocumentEntity audioDoc2 = DocumentEntity.builder()
+            .documentFilename("media-2.mp4")
+            .documentBinaryUrl("http://dm/documents/2/binary")
+            .documentTypeName(DocumentType.POLICE_EVIDENCE.name())
+            .savedAt(OffsetDateTime.parse("2026-01-12T10:00:00Z"))
+            .build();
+        when(documentsService.getAudioVideoDocuments(any())).thenAnswer(inv -> Stream.of(audioDoc1, audioDoc2));
 
         DocumentLink self = new DocumentLink();
         self.href = "http://dm-store/documents/generated";
@@ -268,14 +284,19 @@ public class CaseworkerCreateBundleIT {
             .doesNotContain("media-1.mp3", "media-2.mp4");
 
         ArgumentCaptor<byte[]> htmlCaptor = ArgumentCaptor.forClass(byte[].class);
-        verify(pdfServiceClient).generateFromHtml(htmlCaptor.capture(), eq(Map.of()));
+        @SuppressWarnings("unchecked")
+        ArgumentCaptor<Map<String, Object>> placeholdersCaptor = ArgumentCaptor.forClass(Map.class);
+        verify(pdfServiceClient).generateFromHtml(htmlCaptor.capture(), placeholdersCaptor.capture());
         String html = new String(htmlCaptor.getValue(), java.nio.charset.StandardCharsets.UTF_8);
         assertThat(html)
             .contains("<th>Document type</th>")
             .contains("<th>Document URL</th>")
             .contains("<th>Date added</th>")
             .contains("<th>Date approved</th>")
-            .contains("<th>Uploaded by</th>")
+            .contains("<th>Uploaded by</th>");
+
+        assertThat(placeholdersCaptor.getValue()).containsEntry("caseId", "1616591401473378");
+        assertThat(placeholdersCaptor.getValue().get("rowsHtml").toString())
             .contains("<a href=\"http://dm/documents/1/binary\">media-1.mp3</a>")
             .contains("<a href=\"http://dm/documents/2/binary\">media-2.mp4</a>")
             .doesNotContain("paper.pdf");
@@ -284,6 +305,7 @@ public class CaseworkerCreateBundleIT {
     @Test
     void shouldSerializeAudioVideoEvidenceBundleDocumentCorrectlyInCallback() throws Exception {
         final CaseData caseData = caseData();
+        caseData.setCaseNumber("1616591401473378");
         CicCase cicCase = CicCase.builder().build();
         cicCase.setApplicantDocumentsUploaded(
             List.of(
@@ -302,7 +324,13 @@ public class CaseworkerCreateBundleIT {
 
         when(authTokenGenerator.generate()).thenReturn(SERVICE_AUTHORIZATION);
         when(pdfServiceClient.generateFromHtml(any(byte[].class), anyMap())).thenReturn("pdf".getBytes());
-        when(documentsService.getCaseDocumentsByBinaryUrls(any(), any())).thenReturn(Map.of());
+        DocumentEntity audioDoc = DocumentEntity.builder()
+            .documentFilename("media-1.mp3")
+            .documentBinaryUrl("http://dm/documents/1/binary")
+            .documentTypeName(DocumentType.LINKED_DOCS.name())
+            .savedAt(OffsetDateTime.parse("2026-01-10T10:00:00Z"))
+            .build();
+        when(documentsService.getAudioVideoDocuments(any())).thenAnswer(inv -> Stream.of(audioDoc));
 
         DocumentLink self = new DocumentLink();
         self.href = "http://dm-store/documents/generated";
@@ -347,13 +375,13 @@ public class CaseworkerCreateBundleIT {
             .andExpect(status().isOk());
 
         assertThatJson(serializedCallbackRef.get())
-            .inPath("case_details.data.audioVideoEvidenceBundleDocument")
+            .inPath("case_details.case_data.audioVideoEvidenceBundleDocument")
             .isEqualTo(json("""
                 {
                   "documentLink": {
                     "document_url": "http://dm-store/documents/generated",
                     "document_binary_url": "http://dm-store/documents/generated/binary",
-                    "document_filename": "audio-video-evidence-123.pdf"
+                    "document_filename": "audio-video-evidence-1616591401473378.pdf"
                   },
                   "date": "2026-08-05"
                 }
@@ -379,7 +407,7 @@ public class CaseworkerCreateBundleIT {
         final BundleResponse bundleResponse = mock(BundleResponse.class);
         when(bundleResponse.getData()).thenReturn(new LinkedHashMap<>());
         when(authTokenGenerator.generate()).thenReturn(SERVICE_AUTHORIZATION);
-        when(documentsService.getCaseDocumentsByBinaryUrls(any(), any())).thenReturn(Map.of());
+        when(documentsService.getAudioVideoDocuments(any())).thenReturn(Stream.empty());
 
         AtomicReference<AudioVideoEvidenceBundleDocument> callbackAudioVideoDocument = new AtomicReference<>();
         AtomicReference<List<String>> callbackCaseDocumentNames = new AtomicReference<>(List.of());

@@ -23,10 +23,9 @@ import uk.gov.hmcts.sptribs.document.model.DocumentType;
 import uk.gov.hmcts.sptribs.notification.model.Party;
 
 import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -172,24 +171,32 @@ public class DocumentsService {
             .build();
     }
 
-    public Map<String, DocumentEntity> getCaseDocumentsByBinaryUrls(Long caseReferenceNumber, List<String> binaryUrls) {
-        if (caseReferenceNumber == null || binaryUrls == null || binaryUrls.isEmpty()) {
-            return Map.of();
+    public Stream<DocumentEntity> getAudioVideoDocuments(Long caseReferenceNumber) {
+        if (caseReferenceNumber == null) {
+            return Stream.empty();
         }
 
         try {
-            List<DocumentEntity> documents =
-                documentsRepository.findByCaseReferenceNumberAndDocumentBinaryUrlIn(caseReferenceNumber, binaryUrls);
-
-            Map<String, DocumentEntity> documentMap = new HashMap<>();
-            documents.stream()
-                .sorted(Comparator.comparing(DocumentEntity::getSavedAt, Comparator.nullsLast(Comparator.reverseOrder())))
-                .forEach(document -> documentMap.putIfAbsent(document.getDocumentBinaryUrl(), document));
-
-            return documentMap;
+            return documentsRepository.findByCaseReferenceNumberOrderBySavedAtAsc(caseReferenceNumber)
+                .stream()
+                .filter(this::isAudioVideo);
         } catch (DataAccessException e) {
-            throw new DocumentLookupException("Error getting documents by case reference and binary urls", e);
+            throw new DocumentLookupException("Error getting audio video documents by case reference", e);
         }
+    }
+
+    private boolean isAudioVideo(DocumentEntity document) {
+        if (document == null
+            || StringUtils.isBlank(document.getDocumentFilename())
+            || StringUtils.isBlank(document.getDocumentBinaryUrl())) {
+            return false;
+        }
+
+        String extension = StringUtils.substringAfterLast(
+            document.getDocumentFilename(),
+            "."
+        ).toLowerCase(Locale.ROOT);
+        return "mp3".equals(extension) || "mp4".equals(extension);
     }
 
     @Transactional

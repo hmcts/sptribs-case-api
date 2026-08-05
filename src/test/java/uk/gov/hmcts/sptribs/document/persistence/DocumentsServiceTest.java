@@ -328,40 +328,49 @@ public class DocumentsServiceTest {
     }
 
     @Test
-    void shouldGetCaseDocumentsByBinaryUrlsAndPreferLatestSavedAtPerBinaryUrl() {
-        String binaryUrl = "example.com/test-document.pdf/binary";
+    void shouldGetAudioVideoDocumentsFilteredAndOrdered() {
         OffsetDateTime olderTime = OffsetDateTime.parse("2026-01-10T10:00:00Z");
         OffsetDateTime newerTime = OffsetDateTime.parse("2026-01-12T10:00:00Z");
 
-        DocumentEntity olderDocument = buildDocumentEntity(HOSPITAL_RECORDS.name(), 2L, olderTime);
-        DocumentEntity newerDocument = buildDocumentEntity(HOSPITAL_RECORDS.name(), 2L, newerTime);
+        DocumentEntity audioDocument = DocumentEntity.builder()
+            .caseReferenceNumber(TEST_CASE_ID)
+            .documentFilename("test-audio.mp3")
+            .documentBinaryUrl("example.com/test-audio.mp3/binary")
+            .documentTypeName(HOSPITAL_RECORDS.name())
+            .savedAt(olderTime)
+            .build();
 
-        when(documentsRepository.findByCaseReferenceNumberAndDocumentBinaryUrlIn(TEST_CASE_ID, List.of(binaryUrl)))
-            .thenReturn(List.of(olderDocument, newerDocument));
+        DocumentEntity videoDocument = DocumentEntity.builder()
+            .caseReferenceNumber(TEST_CASE_ID)
+            .documentFilename("test-video.mp4")
+            .documentBinaryUrl("example.com/test-video.mp4/binary")
+            .documentTypeName(HOSPITAL_RECORDS.name())
+            .savedAt(newerTime)
+            .build();
 
-        Map<String, DocumentEntity> result = documentsService.getCaseDocumentsByBinaryUrls(TEST_CASE_ID, List.of(binaryUrl));
+        DocumentEntity pdfDocument = buildDocumentEntity(HOSPITAL_RECORDS.name(), 2L, olderTime);
 
-        assertThat(result).containsOnlyKeys(binaryUrl);
-        assertThat(result.get(binaryUrl).getSavedAt()).isEqualTo(newerTime);
+        when(documentsRepository.findByCaseReferenceNumberOrderBySavedAtAsc(TEST_CASE_ID))
+            .thenReturn(List.of(audioDocument, pdfDocument, videoDocument));
+
+        List<DocumentEntity> result = documentsService.getAudioVideoDocuments(TEST_CASE_ID).toList();
+
+        assertThat(result).containsExactly(audioDocument, videoDocument);
     }
 
     @Test
-    void shouldReturnEmptyMapWhenCaseReferenceOrBinaryUrlsInvalidForCaseDocumentLookup() {
-        assertThat(documentsService.getCaseDocumentsByBinaryUrls(null, List.of("url"))).isEmpty();
-        assertThat(documentsService.getCaseDocumentsByBinaryUrls(TEST_CASE_ID, List.of())).isEmpty();
-        assertThat(documentsService.getCaseDocumentsByBinaryUrls(TEST_CASE_ID, null)).isEmpty();
+    void shouldReturnEmptyStreamWhenCaseReferenceNullForAudioVideoLookup() {
+        assertThat(documentsService.getAudioVideoDocuments(null)).isEmpty();
     }
 
     @Test
-    void shouldThrowDocumentLookupExceptionWhenCaseDocumentLookupFails() {
-        String binaryUrl = "example.com/test-document.pdf/binary";
-
-        when(documentsRepository.findByCaseReferenceNumberAndDocumentBinaryUrlIn(TEST_CASE_ID, List.of(binaryUrl)))
+    void shouldThrowDocumentLookupExceptionWhenAudioVideoLookupFails() {
+        when(documentsRepository.findByCaseReferenceNumberOrderBySavedAtAsc(TEST_CASE_ID))
             .thenThrow(new DataAccessResourceFailureException("DB error"));
 
-        assertThatThrownBy(() -> documentsService.getCaseDocumentsByBinaryUrls(TEST_CASE_ID, List.of(binaryUrl)))
+        assertThatThrownBy(() -> documentsService.getAudioVideoDocuments(TEST_CASE_ID).toList())
             .isInstanceOf(DocumentLookupException.class)
-            .hasMessageContaining("Error getting documents by case reference and binary urls")
+            .hasMessageContaining("Error getting audio video documents by case reference")
             .hasCauseInstanceOf(DataAccessException.class);
     }
 

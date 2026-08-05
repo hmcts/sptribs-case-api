@@ -91,10 +91,7 @@ public interface DocumentsRepository extends JpaRepository<DocumentEntity, Long>
         @Param("caseDocumentIds") List<Long> caseDocumentIds
     );
 
-    List<DocumentEntity> findByCaseReferenceNumberAndDocumentBinaryUrlIn(
-        Long caseReferenceNumber,
-        List<String> documentBinaryUrls
-    );
+    List<DocumentEntity> findByCaseReferenceNumberOrderBySavedAtAsc(Long caseReferenceNumber);
 
     Optional<DocumentEntity> findFirstByCaseReferenceNumberAndCaseDocumentTypeIdOrderBySavedAtDesc(
         Long caseReferenceNumber,

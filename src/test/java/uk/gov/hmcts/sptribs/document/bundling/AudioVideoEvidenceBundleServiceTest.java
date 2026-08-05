@@ -5,16 +5,13 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
-import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.pdf.service.client.PDFServiceClient;
-import uk.gov.hmcts.sptribs.caseworker.util.DocumentListUtil;
 import uk.gov.hmcts.sptribs.cdam.model.UploadResponse;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
-import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.document.bundling.model.AudioVideoEvidenceBundleDocument;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.document.model.DocumentEntity;
@@ -29,17 +26,16 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
@@ -68,24 +64,8 @@ class AudioVideoEvidenceBundleServiceTest {
 
     @Test
     void shouldExtractOnlyAudioVideoRowsFromCaseDocumentsAndSortBySavedDateWithEmptyValues() {
-        List<ListValue<CaseworkerCICDocument>> docs = new ArrayList<>();
-        docs.add(ListValue.<CaseworkerCICDocument>builder().id(UUID.randomUUID().toString()).value(null).build());
-        docs.add(toListValue("notes.pdf", "http://dm/documents/notes/binary", DocumentType.APPLICATION_FORM, LocalDate.of(2026, 1, 8)));
-        docs.add(toListValue("hearing-audio.MP3", "http://dm/documents/audio/binary", DocumentType.LINKED_DOCS, LocalDate.of(2026, 1, 10)));
-        docs.add(toListValue("bad-video.mp4", "", DocumentType.POLICE_EVIDENCE, LocalDate.of(2026, 1, 14)));
-        docs.add(toListValueWithNullDocumentLink(DocumentType.POLICE_EVIDENCE, LocalDate.of(2026, 1, 13)));
-        docs.add(toListValue("", "http://dm/documents/no-name/binary", DocumentType.POLICE_EVIDENCE, LocalDate.of(2026, 1, 12)));
-        docs.add(toListValue("no-link.mp4", null, DocumentType.POLICE_EVIDENCE, LocalDate.of(2026, 1, 12)));
-        docs.add(toListValue("unsupported.wav", "http://dm/documents/wav/binary", DocumentType.LINKED_DOCS, LocalDate.of(2026, 1, 11)));
-        docs.add(toListValue("hearing-video.mp4", "http://dm/documents/video/binary", null, null));
-
-
         CaseData caseData = CaseData.builder().build();
         caseData.setCaseNumber("12345");
-        CicCase cicCase = CicCase.builder().build();
-
-        cicCase.setApplicantDocumentsUploaded(docs);
-        caseData.setCicCase(cicCase);
 
         AudioVideoEvidenceBundleService service = new AudioVideoEvidenceBundleService(
             pdfServiceClient,
@@ -96,11 +76,22 @@ class AudioVideoEvidenceBundleServiceTest {
             clock
         );
 
-        when(documentsService.getCaseDocumentsByBinaryUrls(eq(12345L), any()))
-            .thenReturn(Map.of(
-                "http://dm/documents/audio/binary",
-                DocumentEntity.builder().savedAt(OffsetDateTime.parse("2026-01-10T10:15:30Z")).build()
-            ));
+        DocumentEntity audioDoc = DocumentEntity.builder()
+            .documentFilename("hearing-audio.MP3")
+            .documentBinaryUrl("http://dm/documents/audio/binary")
+            .documentTypeName(DocumentType.LINKED_DOCS.name())
+            .savedAt(OffsetDateTime.parse("2026-01-10T10:15:30Z"))
+            .build();
+
+        DocumentEntity videoDoc = DocumentEntity.builder()
+            .documentFilename("hearing-video.mp4")
+            .documentBinaryUrl("http://dm/documents/video/binary")
+            .documentTypeName(null)
+            .savedAt(null)
+            .build();
+
+        when(documentsService.getAudioVideoDocuments(12345L))
+            .thenReturn(Stream.of(audioDoc, videoDoc));
 
         List<AudioVideoEvidenceBundleService.AudioVideoDocumentRow> rows = service.extractRows(caseData);
 
@@ -128,11 +119,10 @@ class AudioVideoEvidenceBundleServiceTest {
         );
 
         CaseData caseData = CaseData.builder().build();
-        CicCase cicCase = CicCase.builder().build();
-        cicCase.setApplicantDocumentsUploaded(List.of(
-            toListValue("notes.pdf", "http://dm/documents/notes/binary", DocumentType.APPLICATION_FORM, LocalDate.of(2026, 1, 8))
-        ));
-        caseData.setCicCase(cicCase);
+        caseData.setCaseNumber("12345");
+
+        when(documentsService.getAudioVideoDocuments(12345L))
+            .thenReturn(Stream.empty());
 
         AudioVideoEvidenceBundleDocument result = service.createAudioVideoEvidenceBundleDocument(caseData, 12345L);
 
@@ -141,7 +131,7 @@ class AudioVideoEvidenceBundleServiceTest {
     }
 
     @Test
-    void shouldSkipNullListValueAndNullDocumentValue() {
+    void shouldReturnEmptyRowsWhenCaseNumberIsNull() {
         AudioVideoEvidenceBundleService service = new AudioVideoEvidenceBundleService(
             pdfServiceClient,
             caseDocumentClientApi,
@@ -151,35 +141,25 @@ class AudioVideoEvidenceBundleServiceTest {
             clock
         );
 
-        List<ListValue<CaseworkerCICDocument>> documents = new ArrayList<>();
-        documents.add(null);
-        documents.add(ListValue.<CaseworkerCICDocument>builder().id(UUID.randomUUID().toString()).value(null).build());
-        documents.add(toListValue("valid-media.mp4", "http://dm/documents/media/binary", DocumentType.LINKED_DOCS, LocalDate.of(2026, 1, 15)));
+        CaseData caseData = CaseData.builder().build();
 
-        try (MockedStatic<DocumentListUtil> documentListUtil = mockStatic(DocumentListUtil.class)) {
-            documentListUtil.when(() -> DocumentListUtil.getAllCaseDocuments(any(CaseData.class))).thenReturn(documents);
+        List<AudioVideoEvidenceBundleService.AudioVideoDocumentRow> rows = service.extractRows(caseData);
 
-            List<AudioVideoEvidenceBundleService.AudioVideoDocumentRow> rows = service.extractRows(CaseData.builder().build());
-
-            assertThat(rows).hasSize(1);
-            assertThat(rows.getFirst().documentUrl()).isEqualTo("http://dm/documents/media/binary");
-        }
+        assertThat(rows).isEmpty();
+        verifyNoInteractions(documentsService);
     }
 
     @Test
     void shouldGenerateUploadAndReturnAudioVideoEvidenceBundleDocument() {
         CaseData caseData = CaseData.builder().build();
         caseData.setCaseNumber("12345");
-        CicCase cicCase = CicCase.builder().build();
-        cicCase.setApplicantDocumentsUploaded(List.of(
-            toListValue(
-                "hearing-audio.mp3",
-                "http://dm/documents/audio/binary?a=1&b=<x>\"'",
-                DocumentType.LINKED_DOCS,
-                LocalDate.of(2026, 1, 10)
-            )
-        ));
-        caseData.setCicCase(cicCase);
+
+        DocumentEntity audioDoc = DocumentEntity.builder()
+            .documentFilename("hearing-audio.mp3")
+            .documentBinaryUrl("http://dm/documents/audio/binary?a=1&b=<x>\"'")
+            .documentTypeName(DocumentType.LINKED_DOCS.name())
+            .savedAt(OffsetDateTime.parse("2026-01-10T12:00:00Z"))
+            .build();
 
         byte[] generatedPdf = "generated-pdf".getBytes(StandardCharsets.UTF_8);
         when(pdfServiceClient.generateFromHtml(any(byte[].class), anyMap())).thenReturn(generatedPdf);
@@ -187,11 +167,8 @@ class AudioVideoEvidenceBundleServiceTest {
         when(request.getHeader(AUTHORIZATION)).thenReturn("Bearer user-token");
         when(caseDocumentClientApi.uploadDocuments(eq("Bearer user-token"), eq("service-token"), any()))
             .thenReturn(buildUploadResponse("http://dm-store/documents/generated", "http://dm-store/documents/generated/binary"));
-        when(documentsService.getCaseDocumentsByBinaryUrls(eq(12345L), any()))
-            .thenReturn(Map.of(
-                "http://dm/documents/audio/binary?a=1&b=<x>\"'",
-                DocumentEntity.builder().savedAt(OffsetDateTime.parse("2026-01-10T12:00:00Z")).build()
-            ));
+        when(documentsService.getAudioVideoDocuments(12345L))
+            .thenReturn(Stream.of(audioDoc));
 
         when(clock.instant()).thenReturn(Instant.parse("2026-08-05T00:00:00Z"));
         when(clock.getZone()).thenReturn(ZoneId.of("UTC"));
@@ -351,11 +328,14 @@ class AudioVideoEvidenceBundleServiceTest {
 
     private CaseData caseDataWithAudioVideoDoc() {
         CaseData caseData = CaseData.builder().build();
-        CicCase cicCase = CicCase.builder().build();
-        cicCase.setApplicantDocumentsUploaded(List.of(
-            toListValue("media.mp4", "http://dm/documents/media/binary", DocumentType.LINKED_DOCS, LocalDate.of(2026, 2, 5))
-        ));
-        caseData.setCicCase(cicCase);
+        caseData.setCaseNumber("111");
+        DocumentEntity mediaDoc = DocumentEntity.builder()
+            .documentFilename("media.mp4")
+            .documentBinaryUrl("http://dm/documents/media/binary")
+            .documentTypeName(DocumentType.LINKED_DOCS.name())
+            .savedAt(OffsetDateTime.parse("2026-02-05T10:00:00Z"))
+            .build();
+        when(documentsService.getAudioVideoDocuments(111L)).thenReturn(Stream.of(mediaDoc));
         return caseData;
     }
 
