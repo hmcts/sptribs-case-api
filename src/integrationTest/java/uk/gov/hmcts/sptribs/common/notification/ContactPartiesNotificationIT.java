@@ -52,6 +52,7 @@ import static uk.gov.hmcts.sptribs.common.CommonConstants.TRIBUNAL_NAME;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.TRIBUNAL_NAME_VALUE;
 import static uk.gov.hmcts.sptribs.common.ccd.CcdCaseType.CIC;
 import static uk.gov.hmcts.sptribs.notification.TemplateName.CONTACT_PARTIES_EMAIL;
+import static uk.gov.hmcts.sptribs.notification.TemplateName.CONTACT_PARTIES_EMAIL_NEW_CD;
 import static uk.gov.hmcts.sptribs.notification.TemplateName.CONTACT_PARTIES_POST;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID;
 
@@ -590,6 +591,247 @@ public class ContactPartiesNotificationIT {
                 "a message"));
             assertThat(notificationRequest.getUploadedDocuments()).isEmpty();
             assertThat(data.getCicCase().getTribunalNotificationResponse()).isEqualTo(NOTIFICATION_RESPONSE);
+        }
+
+        @Test
+        void shouldSendEmailToTribunal() {
+            final CaseData data = CaseData.builder()
+                .cicCase(CicCase.builder()
+                    .fullName("Subject Name")
+                    .respondentName("Respondent Name")
+                    .respondentEmail("respondent@email.com")
+                    .notifyPartyMessage("a message")
+                    .build())
+                .build();
+            setUpCaseContactPartyDocuments(data);
+
+            when(notificationServiceCIC.sendEmail(any(NotificationRequest.class),
+                anyList(),
+                eq(TEST_CASE_ID.toString()),
+                eq(Party.TRIBUNAL))).thenReturn(NOTIFICATION_RESPONSE);
+
+            contactPartiesNotification.sendToTribunal(data, TEST_CASE_ID.toString());
+
+            verify(notificationServiceCIC).sendEmail(notificationRequestCaptor.capture(),
+                anyList(),
+                eq(TEST_CASE_ID.toString()),
+                eq(Party.TRIBUNAL));
+
+            NotificationRequest notificationRequest = notificationRequestCaptor.getValue();
+
+            List<String> expectedDocUUIDs = getAttachedDocumentUUIDs(data);
+
+            assertThat(notificationRequest.getDestinationAddress()).isEqualTo(TRIBUNAL_EMAIL_VALUE);
+            assertThat(notificationRequest.getTemplate()).isEqualTo(CONTACT_PARTIES_EMAIL);
+            assertThat(notificationRequest.getTemplateVars()).containsAllEntriesOf(Map.of(TRIBUNAL_NAME,
+                CIC,
+                CIC_CASE_NUMBER,
+                TEST_CASE_ID.toString(),
+                CIC_CASE_SUBJECT_NAME,
+                "Subject Name",
+                CONTACT_NAME,
+                TRIBUNAL_NAME_VALUE,
+                CONTACT_PARTY_INFO,
+                "a message"));
+            assertThat(notificationRequest.getUploadedDocuments()).hasSize(20);
+            assertThat(notificationRequest.getUploadedDocuments().values()).containsAll(expectedDocUUIDs);
+            assertThat(data.getCicCase().getTribunalNotificationResponse()).isEqualTo(NOTIFICATION_RESPONSE);
+        }
+    }
+
+    @Nested
+    @TestPropertySource(properties = "feature.citizen-dashboard.enabled=true")
+    class WhenCitizenDashboardEnabled {
+        @Autowired
+        private ContactPartiesNotification contactPartiesNotification;
+
+        @MockitoBean
+        private NotificationServiceCIC notificationServiceCIC;
+
+        @Test
+        void shouldSendEmailToSubject() {
+            final CaseData data = CaseData.builder()
+                .cicCase(CicCase.builder()
+                    .contactPreferenceType(EMAIL)
+                    .fullName("Subject Name")
+                    .email("subject@email.com")
+                    .notifyPartyMessage("a message")
+                    .build())
+                .build();
+
+            setUpCaseContactPartyDocuments(data);
+
+            when(notificationServiceCIC.sendEmail(any(NotificationRequest.class),
+                anyList(),
+                eq(TEST_CASE_ID.toString()),
+                eq(Party.SUBJECT))).thenReturn(NOTIFICATION_RESPONSE);
+
+            contactPartiesNotification.sendToSubject(data, TEST_CASE_ID.toString());
+
+            verify(notificationServiceCIC).sendEmail(notificationRequestCaptor.capture(),
+                anyList(),
+                eq(TEST_CASE_ID.toString()),
+                eq(Party.SUBJECT));
+
+            NotificationRequest notificationRequest = notificationRequestCaptor.getValue();
+
+            assertThat(notificationRequest.getDestinationAddress()).isEqualTo("subject@email.com");
+            assertThat(notificationRequest.getTemplate()).isEqualTo(CONTACT_PARTIES_EMAIL_NEW_CD);
+            assertThat(notificationRequest.getTemplateVars()).containsAllEntriesOf(Map.of(TRIBUNAL_NAME,
+                CIC,
+                CIC_CASE_NUMBER,
+                TEST_CASE_ID.toString(),
+                CIC_CASE_SUBJECT_NAME,
+                "Subject Name",
+                CONTACT_NAME,
+                "Subject Name",
+                CONTACT_PARTY_INFO,
+                "a message"));
+
+            List<String> expectedDocUUIDs = getAttachedDocumentUUIDs(data);
+
+            assertThat(notificationRequest.getUploadedDocuments()).hasSize(20);
+            assertThat(notificationRequest.getUploadedDocuments().values()).containsAll(expectedDocUUIDs);
+            assertThat(data.getCicCase().getSubjectNotifyList()).isEqualTo(NOTIFICATION_RESPONSE);
+        }
+
+        @Test
+        void shouldSendEmailToApplicant() {
+            final CaseData data = CaseData.builder()
+                .cicCase(CicCase.builder()
+                    .applicantContactDetailsPreference(EMAIL)
+                    .fullName("Subject Name")
+                    .applicantFullName("Applicant Name")
+                    .applicantEmailAddress("applicant@email.com")
+                    .notifyPartyMessage("a message")
+                    .build())
+                .build();
+            setUpCaseContactPartyDocuments(data);
+
+            when(notificationServiceCIC.sendEmail(any(NotificationRequest.class),
+                anyList(),
+                eq(TEST_CASE_ID.toString()),
+                eq(Party.APPLICANT))).thenReturn(NOTIFICATION_RESPONSE);
+
+            contactPartiesNotification.sendToApplicant(data, TEST_CASE_ID.toString());
+
+            verify(notificationServiceCIC).sendEmail(notificationRequestCaptor.capture(),
+                anyList(),
+                eq(TEST_CASE_ID.toString()),
+                eq(Party.APPLICANT));
+
+            NotificationRequest notificationRequest = notificationRequestCaptor.getValue();
+
+            assertThat(notificationRequest.getDestinationAddress()).isEqualTo("applicant@email.com");
+            assertThat(notificationRequest.getTemplate()).isEqualTo(CONTACT_PARTIES_EMAIL_NEW_CD);
+            assertThat(notificationRequest.getTemplateVars()).containsAllEntriesOf(Map.of(TRIBUNAL_NAME,
+                CIC,
+                CIC_CASE_NUMBER,
+                TEST_CASE_ID.toString(),
+                CIC_CASE_SUBJECT_NAME,
+                "Subject Name",
+                CONTACT_NAME,
+                "Applicant Name",
+                CONTACT_PARTY_INFO,
+                "a message"));
+
+            List<String> expectedDocUUIDs = getAttachedDocumentUUIDs(data);
+
+            assertThat(notificationRequest.getUploadedDocuments()).hasSize(20);
+            assertThat(notificationRequest.getUploadedDocuments().values()).containsAll(expectedDocUUIDs);
+            assertThat(data.getCicCase().getAppNotificationResponse()).isEqualTo(NOTIFICATION_RESPONSE);
+        }
+
+        @Test
+        void shouldSendEmailToRepresentative() {
+            final CaseData data = CaseData.builder()
+                .cicCase(CicCase.builder()
+                    .fullName("Subject Name")
+                    .representativeContactDetailsPreference(EMAIL)
+                    .representativeFullName("Representative Name")
+                    .representativeEmailAddress("representative@email.com")
+                    .notifyPartyMessage("a message")
+                    .build())
+                .build();
+
+            setUpCaseContactPartyDocuments(data);
+
+            when(notificationServiceCIC.sendEmail(any(NotificationRequest.class),
+                anyList(),
+                eq(TEST_CASE_ID.toString()),
+                eq(Party.REPRESENTATIVE))).thenReturn(NOTIFICATION_RESPONSE);
+
+            contactPartiesNotification.sendToRepresentative(data, TEST_CASE_ID.toString());
+
+            verify(notificationServiceCIC).sendEmail(notificationRequestCaptor.capture(),
+                anyList(),
+                eq(TEST_CASE_ID.toString()),
+                eq(Party.REPRESENTATIVE));
+
+            NotificationRequest notificationRequest = notificationRequestCaptor.getValue();
+
+            List<String> expectedDocUUIDs = getAttachedDocumentUUIDs(data);
+
+            assertThat(notificationRequest.getDestinationAddress()).isEqualTo("representative@email.com");
+            assertThat(notificationRequest.getTemplate()).isEqualTo(CONTACT_PARTIES_EMAIL_NEW_CD);
+            assertThat(notificationRequest.getTemplateVars()).containsAllEntriesOf(Map.of(TRIBUNAL_NAME,
+                CIC,
+                CIC_CASE_NUMBER,
+                TEST_CASE_ID.toString(),
+                CIC_CASE_SUBJECT_NAME,
+                "Subject Name",
+                CONTACT_NAME,
+                "Representative Name",
+                CONTACT_PARTY_INFO,
+                "a message"));
+            assertThat(notificationRequest.getUploadedDocuments()).hasSize(20);
+            assertThat(notificationRequest.getUploadedDocuments().values()).containsAll(expectedDocUUIDs);
+            assertThat(data.getCicCase().getRepNotificationResponse()).isEqualTo(NOTIFICATION_RESPONSE);
+        }
+
+        @Test
+        void shouldSendEmailToRespondent() {
+            final CaseData data = CaseData.builder()
+                .cicCase(CicCase.builder()
+                    .fullName("Subject Name")
+                    .respondentName("Respondent Name")
+                    .respondentEmail("respondent@email.com")
+                    .notifyPartyMessage("a message")
+                    .build())
+                .build();
+            setUpCaseContactPartyDocuments(data);
+
+            when(notificationServiceCIC.sendEmail(any(NotificationRequest.class),
+                anyList(),
+                eq(TEST_CASE_ID.toString()),
+                eq(Party.RESPONDENT))).thenReturn(NOTIFICATION_RESPONSE);
+
+            contactPartiesNotification.sendToRespondent(data, TEST_CASE_ID.toString());
+
+            verify(notificationServiceCIC).sendEmail(notificationRequestCaptor.capture(),
+                anyList(),
+                eq(TEST_CASE_ID.toString()),
+                eq(Party.RESPONDENT));
+
+            NotificationRequest notificationRequest = notificationRequestCaptor.getValue();
+
+            List<String> expectedDocUUIDs = getAttachedDocumentUUIDs(data);
+
+            assertThat(notificationRequest.getDestinationAddress()).isEqualTo("respondent@email.com");
+            assertThat(notificationRequest.getTemplate()).isEqualTo(CONTACT_PARTIES_EMAIL);
+            assertThat(notificationRequest.getTemplateVars()).containsAllEntriesOf(Map.of(TRIBUNAL_NAME,
+                CIC,
+                CIC_CASE_NUMBER,
+                TEST_CASE_ID.toString(),
+                CIC_CASE_SUBJECT_NAME,
+                "Subject Name",
+                CONTACT_NAME,
+                "Respondent Name",
+                CONTACT_PARTY_INFO,
+                "a message"));
+            assertThat(notificationRequest.getUploadedDocuments()).hasSize(20);
+            assertThat(notificationRequest.getUploadedDocuments().values()).containsAll(expectedDocUUIDs);
+            assertThat(data.getCicCase().getResNotificationResponse()).isEqualTo(NOTIFICATION_RESPONSE);
         }
 
         @Test
