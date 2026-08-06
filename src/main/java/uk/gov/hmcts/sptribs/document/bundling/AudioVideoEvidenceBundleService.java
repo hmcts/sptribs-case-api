@@ -20,6 +20,9 @@ import uk.gov.hmcts.sptribs.common.ccd.CcdJurisdiction;
 import uk.gov.hmcts.sptribs.document.bundling.model.AudioVideoEvidenceBundleDocument;
 import uk.gov.hmcts.sptribs.document.model.DocumentEntity;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
+import uk.gov.hmcts.sptribs.services.model.AuditEvent;
+import uk.gov.hmcts.sptribs.services.model.AuditEventsResponse;
+import uk.gov.hmcts.sptribs.caseworker.service.ExtendedCaseDataApi;
 import uk.gov.hmcts.sptribs.document.service.DocumentsService;
 import uk.gov.hmcts.sptribs.services.cdam.CaseDocumentClientApi;
 
@@ -31,6 +34,7 @@ import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
+import java.util.HashMap;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.stream.Stream;
@@ -48,10 +52,14 @@ public class AudioVideoEvidenceBundleService {
     private static final String AUDIO_DOCUMENT_TYPE = "Audio Document";
     private static final String VIDEO_DOCUMENT_TYPE = "Video Document";
     private static final String EMPTY_VALUE = "";
+    private static final String APPELLANT = "Appellant";
+    private static final String RESPONDENT = "Respondent";
+    private static final String CASEWORKER = "Caseworker";
     private static final String AUDIO_VIDEO_EVIDENCE_TEMPLATE = "/templates/audio_video_evidence.html";
 
     private final PDFServiceClient pdfServiceClient;
     private final CaseDocumentClientApi caseDocumentClientApi;
+    private final ExtendedCaseDataApi extendedCaseDataApi;
     private final DocumentsService documentsService;
     private final AuthTokenGenerator authTokenGenerator;
     private final HttpServletRequest request;
@@ -94,6 +102,7 @@ public class AudioVideoEvidenceBundleService {
 
             String serviceToken = authTokenGenerator.generate();
             String authorisation = request.getHeader(AUTHORIZATION);
+            Map<String, String> uploaderRoleByUserId = resolveUploaderRoles(caseReference, authorisation, serviceToken);
             return documents.stream()
                 .map(entity -> new AudioVideoDocumentRow(
                     resolveMediaType(entity.getDocumentFilename()),
@@ -101,7 +110,7 @@ public class AudioVideoEvidenceBundleService {
                     entity.getDocumentBinaryUrl(),
                     formatDate(getSavedAtDate(entity)),
                     resolveDocumentType(entity.getDocumentTypeName()),
-                    resolveUploadedBy(entity, authorisation, serviceToken),
+                    resolveUploadedBy(entity, authorisation, serviceToken, uploaderRoleByUserId),
                     getSavedAtDate(entity)
                 ))
                 .toList();
@@ -148,7 +157,10 @@ public class AudioVideoEvidenceBundleService {
         return savedAt == null ? null : savedAt.toLocalDate();
     }
 
-    private String resolveUploadedBy(DocumentEntity entity, String authorisation, String serviceToken) {
+    private String resolveUploadedBy(DocumentEntity entity,
+                                     String authorisation,
+                                     String serviceToken,
+                                     Map<String, String> uploaderRoleByUserId) {
         if (entity == null || StringUtils.isBlank(authorisation) || StringUtils.isBlank(serviceToken)) {
             return EMPTY_VALUE;
         }
@@ -169,11 +181,76 @@ public class AudioVideoEvidenceBundleService {
                 return EMPTY_VALUE;
             }
 
-            return extractUploadedBy(metadataResponse.getBody());
+            String uploaderIdentifier = extractUploadedBy(metadataResponse.getBody());
+            return resolveUploaderRole(uploaderIdentifier, uploaderRoleByUserId);
         } catch (RuntimeException exception) {
             log.warn("Unable to resolve uploadedBy for document: {}", entity.getDocumentBinaryUrl(), exception);
             return EMPTY_VALUE;
         }
+    }
+
+    private Map<String, String> resolveUploaderRoles(Long caseReference, String authorisation, String serviceToken) {
+        if (caseReference == null || StringUtils.isBlank(authorisation) || StringUtils.isBlank(serviceToken)) {
+            return Map.of();
+        }
+
+        try {
+            AuditEventsResponse response = extendedCaseDataApi.getAuditEvents(
+                authorisation,
+                serviceToken,
+                String.valueOf(caseReference)
+            );
+
+            if (response == null || response.getAuditEvents() == null || response.getAuditEvents().isEmpty()) {
+                return Map.of();
+            }
+
+            Map<String, String> uploaderRoleByUserId = new HashMap<>();
+            for (AuditEvent auditEvent : response.getAuditEvents()) {
+                if (auditEvent == null || StringUtils.isBlank(auditEvent.getUserId()) || StringUtils.isBlank(auditEvent.getId())) {
+                    continue;
+                }
+
+                String role = mapEventToRole(auditEvent.getId());
+                if (role != null) {
+                    uploaderRoleByUserId.put(auditEvent.getUserId(), role);
+                }
+            }
+
+            return uploaderRoleByUserId;
+        } catch (RuntimeException exception) {
+            log.warn("Unable to resolve uploader roles for case {}", caseReference, exception);
+            return Map.of();
+        }
+    }
+
+    private String mapEventToRole(String eventId) {
+        if (StringUtils.startsWith(eventId, "respondent-")) {
+            return RESPONDENT;
+        }
+
+        if (StringUtils.startsWith(eventId, "citizen-")) {
+            return APPELLANT;
+        }
+
+        if (StringUtils.startsWith(eventId, "caseworker-")) {
+            return CASEWORKER;
+        }
+
+        return null;
+    }
+
+    private String resolveUploaderRole(String uploaderIdentifier, Map<String, String> uploaderRoleByUserId) {
+        if (StringUtils.isBlank(uploaderIdentifier)) {
+            return EMPTY_VALUE;
+        }
+
+        String role = uploaderRoleByUserId.get(uploaderIdentifier);
+        if (StringUtils.isNotBlank(role)) {
+            return role;
+        }
+
+        return uploaderIdentifier;
     }
 
     private String extractUploadedBy(uk.gov.hmcts.sptribs.cdam.model.Document metadata) {
