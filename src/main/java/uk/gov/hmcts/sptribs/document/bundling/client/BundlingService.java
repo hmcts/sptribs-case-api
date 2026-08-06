@@ -237,23 +237,10 @@ public class BundlingService {
                 .name(MapUtils.getString(document, NAME, ""))
                 .description(MapUtils.getString(document, DESCRIPTION, ""))
                 .sortIndex(MapUtils.getIntValue(document, SORT_INDEX))
-                .sourceDocument(getSourceDocument(document))
                 .build();
             documents.add(bundleDocument);
         });
 
         return documents;
-    }
-
-    private Document getSourceDocument(Map<String, Object> document) {
-        if (ObjectUtils.isEmpty(document.get("sourceDocument"))) {
-            return null;
-        }
-        LinkedHashMap<String, Object> sourceDocMap = (LinkedHashMap<String, Object>) document.get("sourceDocument");
-        return Document.builder()
-            .url(MapUtils.getString(sourceDocMap, DOCUMENT_URL, ""))
-            .binaryUrl(MapUtils.getString(sourceDocMap, DOCUMENT_BINARY_URL, ""))
-            .filename(MapUtils.getString(sourceDocMap, DOCUMENT_FILENAME, ""))
-            .build();
     }
 }
