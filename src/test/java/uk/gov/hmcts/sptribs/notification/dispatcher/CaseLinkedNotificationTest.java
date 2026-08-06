@@ -14,10 +14,13 @@ import uk.gov.hmcts.sptribs.notification.NotificationServiceCIC;
 import uk.gov.hmcts.sptribs.notification.TemplateName;
 import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyMap;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.verify;
@@ -43,7 +46,7 @@ class CaseLinkedNotificationTest {
         data.getCicCase().setEmail("testSubject@outlook.com");
 
         //When
-        when(notificationHelper.buildEmailNotificationRequest(any(), anyMap(), any(TemplateName.class)))
+        when(notificationHelper.buildEmailNotificationRequest(anyString(), anyList(), anyMap(), anyMap(), any(TemplateName.class)))
             .thenReturn(NotificationRequest.builder().build());
         when(notificationHelper.getSubjectCommonVars(any(), any(CaseData.class))).thenReturn(new HashMap<>());
         caseLinkedNotification.sendToSubject(data, TEST_CASE_ID.toString());
@@ -52,6 +55,8 @@ class CaseLinkedNotificationTest {
         verify(notificationService).sendEmail(any(NotificationRequest.class), eq(TEST_CASE_ID.toString()), eq(null));
         verify(notificationHelper).buildEmailNotificationRequest(
             data.getCicCase().getEmail(),
+            new ArrayList<>(),
+            new HashMap<>(),
             new HashMap<>(),
             TemplateName.CASE_LINKED_EMAIL);
     }
@@ -86,7 +91,7 @@ class CaseLinkedNotificationTest {
         data.getCicCase().setApplicantEmailAddress("testApplicant@outlook.com");
 
         //When
-        when(notificationHelper.buildEmailNotificationRequest(any(), anyMap(), any(TemplateName.class)))
+        when(notificationHelper.buildEmailNotificationRequest(anyString(), anyList(), anyMap(), anyMap(), any(TemplateName.class)))
             .thenReturn(NotificationRequest.builder().build());
         when(notificationHelper.getApplicantCommonVars(any(), any(CaseData.class))).thenReturn(new HashMap<>());
         caseLinkedNotification.sendToApplicant(data, TEST_CASE_ID.toString());
@@ -95,6 +100,8 @@ class CaseLinkedNotificationTest {
         verify(notificationService).sendEmail(any(NotificationRequest.class), eq(TEST_CASE_ID.toString()), eq(null));
         verify(notificationHelper).buildEmailNotificationRequest(
             data.getCicCase().getApplicantEmailAddress(),
+            new ArrayList<>(),
+            new HashMap<>(),
             new HashMap<>(),
             TemplateName.CASE_LINKED_EMAIL);
     }
@@ -130,7 +137,7 @@ class CaseLinkedNotificationTest {
         data.getCicCase().setRepresentativeEmailAddress("testrepr@outlook.com");
 
         //When
-        when(notificationHelper.buildEmailNotificationRequest(any(), anyMap(), any(TemplateName.class)))
+        when(notificationHelper.buildEmailNotificationRequest(anyString(), anyList(), anyMap(), anyMap(), any(TemplateName.class)))
             .thenReturn(NotificationRequest.builder().build());
         when(notificationHelper.getRepresentativeCommonVars(any(), any(CaseData.class))).thenReturn(new HashMap<>());
         caseLinkedNotification.sendToRepresentative(data, TEST_CASE_ID.toString());
@@ -139,6 +146,8 @@ class CaseLinkedNotificationTest {
         verify(notificationService).sendEmail(any(NotificationRequest.class), eq(TEST_CASE_ID.toString()), eq(null));
         verify(notificationHelper).buildEmailNotificationRequest(
             data.getCicCase().getRepresentativeEmailAddress(),
+            new ArrayList<>(),
+            new HashMap<>(),
             new HashMap<>(),
             TemplateName.CASE_LINKED_EMAIL);
 

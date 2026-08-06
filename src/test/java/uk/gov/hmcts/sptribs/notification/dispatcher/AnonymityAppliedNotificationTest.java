@@ -24,6 +24,7 @@ import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
@@ -70,6 +71,8 @@ class AnonymityAppliedNotificationTest {
         when(notificationHelper.getTribunalCommonVars(eq("1234-5678-9012-3456"), eq(caseData))).thenReturn(templateVars);
         when(notificationHelper.buildEmailNotificationRequest(
             eq(NotificationConstants.ANONYMITY_RECIPIENT_EMAIL),
+            anyList(),
+            anyMap(),
             anyMap(),
             eq(TemplateName.ANONYMITY_APPLIED_EMAIL)
         )).thenReturn(NotificationRequest.builder().build());
@@ -108,6 +111,8 @@ class AnonymityAppliedNotificationTest {
         when(notificationHelper.getTribunalCommonVars(eq("1234-5678-9012-3456"), eq(caseData))).thenReturn(templateVars);
         when(notificationHelper.buildEmailNotificationRequest(
             eq(NotificationConstants.ANONYMITY_RECIPIENT_EMAIL),
+            anyList(),
+            anyMap(),
             anyMap(),
             eq(TemplateName.ANONYMITY_APPLIED_EMAIL)
         )).thenReturn(NotificationRequest.builder().build());
@@ -143,6 +148,8 @@ class AnonymityAppliedNotificationTest {
         when(notificationHelper.getTribunalCommonVars(eq("1234-5678-9012-3456"), eq(caseData))).thenReturn(templateVars);
         when(notificationHelper.buildEmailNotificationRequest(
             eq(NotificationConstants.ANONYMITY_RECIPIENT_EMAIL),
+            anyList(),
+            anyMap(),
             anyMap(),
             eq(TemplateName.ANONYMITY_APPLIED_EMAIL)
         )).thenReturn(NotificationRequest.builder().build());
@@ -177,6 +184,8 @@ class AnonymityAppliedNotificationTest {
         when(notificationHelper.getTribunalCommonVars(eq("1234-5678-9012-3456"), eq(caseData))).thenReturn(templateVars);
         when(notificationHelper.buildEmailNotificationRequest(
             eq(NotificationConstants.ANONYMITY_RECIPIENT_EMAIL),
+            anyList(),
+            anyMap(),
             anyMap(),
             eq(TemplateName.ANONYMITY_APPLIED_EMAIL)
         )).thenReturn(NotificationRequest.builder().build());

@@ -26,15 +26,16 @@ import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
 import uk.gov.hmcts.sptribs.notification.model.Party;
 import uk.gov.hmcts.sptribs.testutil.TestDataHelper;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyMap;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
@@ -105,9 +106,9 @@ class ContactPartiesNotificationTest {
 
         when(notificationHelper.getSubjectCommonVars(TEST_CASE_ID.toString(), caseData)).thenReturn(baseVars);
         when(notificationHelper.buildDocumentList(any(), eq(DOC_ATTACH_LIMIT))).thenReturn(uploadedDocuments);
-        when(notificationHelper.buildEmailNotificationRequest(any(), anyBoolean(), anyMap(), anyMap(), any(TemplateName.class)))
+        when(notificationHelper.buildEmailNotificationRequest(anyString(), anyList(), anyMap(), anyMap(), any(TemplateName.class)))
             .thenReturn(builtRequest);
-        when(notificationService.sendEmail(eq(builtRequest), anyList(), eq(TEST_CASE_ID.toString()), eq(Party.SUBJECT)))
+        when(notificationService.sendEmail(eq(builtRequest), eq(TEST_CASE_ID.toString()), eq(Party.SUBJECT)))
             .thenReturn(response);
 
         //when
@@ -115,10 +116,10 @@ class ContactPartiesNotificationTest {
 
         //then
         assertThat(correspondenceId).isEqualTo("resp-id-123");
-        verify(notificationService).sendEmail(eq(builtRequest), anyList(), eq(TEST_CASE_ID.toString()), eq(Party.SUBJECT));
+        verify(notificationService).sendEmail(eq(builtRequest), eq(TEST_CASE_ID.toString()), eq(Party.SUBJECT));
         verify(notificationHelper).buildEmailNotificationRequest(
             eq("subject@example.com"),
-            eq(true),
+            eq(new ArrayList<>()),
             eq(uploadedDocuments),
             argThat(vars -> "message".equals(vars.get(CommonConstants.CONTACT_PARTY_INFO))
                 && "fullName".equals(vars.get(CommonConstants.CIC_CASE_SUBJECT_NAME))),
@@ -153,7 +154,7 @@ class ContactPartiesNotificationTest {
         //then
         assertThat(correspondenceId).isEqualTo("letter-resp-id");
         verify(notificationHelper).addAddressTemplateVars(eq(address), anyMap());
-        verify(notificationService, never()).sendEmail(any(), any(), any(), any());
+        verify(notificationService, never()).sendEmail(any(), any(), any());
         assertThat(cicCase.getSubjectLetterNotifyList()).isEqualTo(response);
     }
 
@@ -171,9 +172,9 @@ class ContactPartiesNotificationTest {
 
         when(notificationHelper.getApplicantCommonVars(TEST_CASE_ID.toString(), caseData)).thenReturn(baseVars);
         when(notificationHelper.buildDocumentList(any(), eq(DOC_ATTACH_LIMIT))).thenReturn(uploadedDocuments);
-        when(notificationHelper.buildEmailNotificationRequest(any(), anyBoolean(), anyMap(), anyMap(), any(TemplateName.class)))
+        when(notificationHelper.buildEmailNotificationRequest(anyString(), anyList(), anyMap(), anyMap(), any(TemplateName.class)))
             .thenReturn(builtRequest);
-        when(notificationService.sendEmail(eq(builtRequest), anyList(), eq(TEST_CASE_ID.toString()), eq(Party.APPLICANT)))
+        when(notificationService.sendEmail(eq(builtRequest), eq(TEST_CASE_ID.toString()), eq(Party.APPLICANT)))
             .thenReturn(response);
 
         //when
@@ -181,10 +182,10 @@ class ContactPartiesNotificationTest {
 
         //then
         assertThat(correspondenceId).isEqualTo("resp-applicant-id");
-        verify(notificationService).sendEmail(eq(builtRequest), anyList(), eq(TEST_CASE_ID.toString()), eq(Party.APPLICANT));
+        verify(notificationService).sendEmail(eq(builtRequest), eq(TEST_CASE_ID.toString()), eq(Party.APPLICANT));
         verify(notificationHelper).buildEmailNotificationRequest(
             eq("applicant@example.com"),
-            eq(true),
+            eq(new ArrayList<>()),
             eq(uploadedDocuments),
             argThat(vars -> "message".equals(vars.get(CommonConstants.CONTACT_PARTY_INFO))
                 && "fullName".equals(vars.get(CommonConstants.CIC_CASE_SUBJECT_NAME))),
@@ -216,7 +217,7 @@ class ContactPartiesNotificationTest {
         //then
         assertThat(correspondenceId).isEqualTo("letter-applicant-id");
         verify(notificationHelper).addAddressTemplateVars(eq(address), anyMap());
-        verify(notificationService, never()).sendEmail(any(), any(), any(), any());
+        verify(notificationService, never()).sendEmail(any(), any(), any());
         assertThat(cicCase.getAppLetterNotificationResponse()).isEqualTo(response);
     }
 
@@ -234,9 +235,9 @@ class ContactPartiesNotificationTest {
 
         when(notificationHelper.getRepresentativeCommonVars(TEST_CASE_ID.toString(), caseData)).thenReturn(baseVars);
         when(notificationHelper.buildDocumentList(any(), eq(DOC_ATTACH_LIMIT))).thenReturn(uploadedDocuments);
-        when(notificationHelper.buildEmailNotificationRequest(any(), anyBoolean(), anyMap(), anyMap(), any(TemplateName.class)))
+        when(notificationHelper.buildEmailNotificationRequest(anyString(), anyList(), anyMap(), anyMap(), any(TemplateName.class)))
             .thenReturn(builtRequest);
-        when(notificationService.sendEmail(eq(builtRequest), anyList(), eq(TEST_CASE_ID.toString()), eq(Party.REPRESENTATIVE)))
+        when(notificationService.sendEmail(eq(builtRequest), eq(TEST_CASE_ID.toString()), eq(Party.REPRESENTATIVE)))
             .thenReturn(response);
 
         //when
@@ -244,10 +245,10 @@ class ContactPartiesNotificationTest {
 
         //then
         assertThat(correspondenceId).isEqualTo("resp-representative-id");
-        verify(notificationService).sendEmail(eq(builtRequest), anyList(), eq(TEST_CASE_ID.toString()), eq(Party.REPRESENTATIVE));
+        verify(notificationService).sendEmail(eq(builtRequest), eq(TEST_CASE_ID.toString()), eq(Party.REPRESENTATIVE));
         verify(notificationHelper).buildEmailNotificationRequest(
             eq("representative@example.com"),
-            eq(true),
+            eq(new ArrayList<>()),
             eq(uploadedDocuments),
             argThat(vars -> "message".equals(vars.get(CommonConstants.CONTACT_PARTY_INFO))
                 && "fullName".equals(vars.get(CommonConstants.CIC_CASE_SUBJECT_NAME))),
@@ -279,7 +280,7 @@ class ContactPartiesNotificationTest {
         //then
         assertThat(correspondenceId).isEqualTo("letter-representative-id");
         verify(notificationHelper).addAddressTemplateVars(eq(address), anyMap());
-        verify(notificationService, never()).sendEmail(any(), any(), any(), any());
+        verify(notificationService, never()).sendEmail(any(), any(), any());
         assertThat(cicCase.getRepLetterNotificationResponse()).isEqualTo(response);
     }
 
@@ -294,16 +295,16 @@ class ContactPartiesNotificationTest {
 
         when(notificationHelper.getRespondentCommonVars(TEST_CASE_ID.toString(), caseData)).thenReturn(baseVars);
         when(notificationHelper.buildDocumentList(any(), eq(DOC_ATTACH_LIMIT))).thenReturn(Map.of());
-        when(notificationHelper.buildEmailNotificationRequest(any(), anyBoolean(), anyMap(), anyMap(), any(TemplateName.class)))
+        when(notificationHelper.buildEmailNotificationRequest(anyString(), anyList(), anyMap(), anyMap(), any(TemplateName.class)))
             .thenReturn(builtRequest);
-        when(notificationService.sendEmail(eq(builtRequest), anyList(), eq(TEST_CASE_ID.toString()), eq(Party.RESPONDENT)))
+        when(notificationService.sendEmail(eq(builtRequest), eq(TEST_CASE_ID.toString()), eq(Party.RESPONDENT)))
             .thenReturn(response);
 
         //when
         contactPartiesNotification.sendToRespondent(caseData, TEST_CASE_ID.toString());
 
         //then
-        verify(notificationService).sendEmail(eq(builtRequest), anyList(), eq(TEST_CASE_ID.toString()), eq(Party.RESPONDENT));
+        verify(notificationService).sendEmail(eq(builtRequest), eq(TEST_CASE_ID.toString()), eq(Party.RESPONDENT));
         assertThat(cicCase.getResNotificationResponse()).isEqualTo(response);
     }
 
@@ -317,9 +318,9 @@ class ContactPartiesNotificationTest {
 
         when(notificationHelper.getTribunalCommonVars(TEST_CASE_ID.toString(), caseData)).thenReturn(baseVars);
         when(notificationHelper.buildDocumentList(any(), eq(DOC_ATTACH_LIMIT))).thenReturn(Map.of());
-        when(notificationHelper.buildEmailNotificationRequest(any(), anyBoolean(), anyMap(), anyMap(), any(TemplateName.class)))
+        when(notificationHelper.buildEmailNotificationRequest(anyString(), anyList(), anyMap(), anyMap(), any(TemplateName.class)))
             .thenReturn(builtRequest);
-        when(notificationService.sendEmail(eq(builtRequest), anyList(), eq(TEST_CASE_ID.toString()), eq(Party.TRIBUNAL)))
+        when(notificationService.sendEmail(eq(builtRequest), eq(TEST_CASE_ID.toString()), eq(Party.TRIBUNAL)))
             .thenReturn(response);
 
         //when
@@ -345,9 +346,9 @@ class ContactPartiesNotificationTest {
 
         when(notificationHelper.getSubjectCommonVars(TEST_CASE_ID.toString(), caseData)).thenReturn(baseVars);
         when(notificationHelper.buildDocumentList(any(), eq(DOC_ATTACH_LIMIT))).thenReturn(Map.of());
-        when(notificationHelper.buildEmailNotificationRequest(any(), anyBoolean(), anyMap(), anyMap(), any(TemplateName.class)))
+        when(notificationHelper.buildEmailNotificationRequest(anyString(), anyList(), anyMap(), anyMap(), any(TemplateName.class)))
             .thenReturn(builtRequest);
-        when(notificationService.sendEmail(eq(builtRequest), anyList(), eq(TEST_CASE_ID.toString()), eq(Party.SUBJECT)))
+        when(notificationService.sendEmail(eq(builtRequest), eq(TEST_CASE_ID.toString()), eq(Party.SUBJECT)))
             .thenReturn(response);
 
         //when
@@ -355,7 +356,7 @@ class ContactPartiesNotificationTest {
 
         //then
         verify(notificationHelper).buildEmailNotificationRequest(
-            any(), anyBoolean(), anyMap(),
+            anyString(), anyList(), anyMap(),
             argThat(vars -> "https://frontend.url/dashboard".equals(vars.get(CommonConstants.DASHBOARD_KEY))),
             eq(TemplateName.CONTACT_PARTIES_EMAIL_NEW_CD)
         );
@@ -378,9 +379,9 @@ class ContactPartiesNotificationTest {
 
         when(notificationHelper.getSubjectCommonVars(TEST_CASE_ID.toString(), caseData)).thenReturn(baseVars);
         when(notificationHelper.buildDocumentList(any(), eq(DOC_ATTACH_LIMIT))).thenReturn(Map.of());
-        when(notificationHelper.buildEmailNotificationRequest(any(), anyBoolean(), anyMap(), anyMap(), any(TemplateName.class)))
+        when(notificationHelper.buildEmailNotificationRequest(anyString(), anyList(), anyMap(), anyMap(), any(TemplateName.class)))
             .thenReturn(builtRequest);
-        when(notificationService.sendEmail(eq(builtRequest), anyList(), eq(TEST_CASE_ID.toString()), eq(Party.SUBJECT)))
+        when(notificationService.sendEmail(eq(builtRequest), eq(TEST_CASE_ID.toString()), eq(Party.SUBJECT)))
             .thenReturn(response);
 
         //when
@@ -388,7 +389,7 @@ class ContactPartiesNotificationTest {
 
         //then
         verify(notificationHelper).buildEmailNotificationRequest(
-            any(), anyBoolean(), anyMap(),
+            anyString(), anyList(), anyMap(),
             argThat(vars -> !vars.containsKey(CommonConstants.DASHBOARD_KEY)),
             eq(TemplateName.CONTACT_PARTIES_EMAIL)
         );

@@ -21,13 +21,14 @@ import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
 import uk.gov.hmcts.sptribs.notification.model.Party;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyMap;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.verify;
@@ -58,21 +59,20 @@ class CaseReinstatedNotificationTest {
         data.getCicCase().setReinstateReason(ReinstateReason.REQUEST_FOLLOWING_A_STRIKE_OUT_DECISION);
 
         //When
-        when(notificationHelper.buildEmailNotificationRequest(any(), anyBoolean(), anyMap(), anyMap(), any(TemplateName.class)))
+        when(notificationHelper.buildEmailNotificationRequest(anyString(), anyList(), anyMap(), anyMap(), any(TemplateName.class)))
             .thenReturn(NotificationRequest.builder().build());
         when(notificationHelper.getSubjectCommonVars(any(), any(CaseData.class))).thenReturn(new HashMap<>());
         when(notificationService.sendEmail(any(NotificationRequest.class),
-            anyList(),
             eq(TEST_CASE_ID.toString()),
             any(Party.class))).thenReturn(NOTIFICATION_RESPONSE);
 
         reinstatedNotification.sendToSubject(data, TEST_CASE_ID.toString());
 
         //Then
-        verify(notificationService).sendEmail(any(NotificationRequest.class), anyList(), eq(TEST_CASE_ID.toString()), eq(Party.SUBJECT));
+        verify(notificationService).sendEmail(any(NotificationRequest.class), eq(TEST_CASE_ID.toString()), eq(Party.SUBJECT));
         verify(notificationHelper).buildEmailNotificationRequest(
             data.getCicCase().getEmail(),
-            true,
+            new ArrayList<>(),
             new HashMap<>(),
             Map.of(CommonConstants.REINSTATE_REASON,data.getCicCase().getReinstateReason().getType()),
             TemplateName.REINSTATED_EMAIL);
@@ -113,21 +113,20 @@ class CaseReinstatedNotificationTest {
         data.getCicCase().setReinstateReason(ReinstateReason.OTHER);
 
         //When
-        when(notificationHelper.buildEmailNotificationRequest(any(), anyBoolean(), anyMap(), anyMap(), any(TemplateName.class)))
+        when(notificationHelper.buildEmailNotificationRequest(anyString(), anyList(), anyMap(), anyMap(), any(TemplateName.class)))
             .thenReturn(NotificationRequest.builder().build());
         when(notificationHelper.getRespondentCommonVars(any(), any(CaseData.class))).thenReturn(new HashMap<>());
         when(notificationService.sendEmail(any(NotificationRequest.class),
-            anyList(),
             eq(TEST_CASE_ID.toString()),
             any(Party.class))).thenReturn(NOTIFICATION_RESPONSE);
 
         reinstatedNotification.sendToRespondent(data, TEST_CASE_ID.toString());
 
         //Then
-        verify(notificationService).sendEmail(any(NotificationRequest.class), anyList(), eq(TEST_CASE_ID.toString()), eq(Party.RESPONDENT));
+        verify(notificationService).sendEmail(any(NotificationRequest.class), eq(TEST_CASE_ID.toString()), eq(Party.RESPONDENT));
         verify(notificationHelper).buildEmailNotificationRequest(
             data.getCicCase().getRespondentEmail(),
-            true,
+            new ArrayList<>(),
             new HashMap<>(),
             Map.of(CommonConstants.REINSTATE_REASON,data.getCicCase().getReinstateReason().getType()),
             TemplateName.REINSTATED_EMAIL);
@@ -144,11 +143,10 @@ class CaseReinstatedNotificationTest {
         data.getCicCase().setReinstateReason(ReinstateReason.CASE_HAD_BEEN_CLOSED_IN_ERROR);
 
         //When
-        when(notificationHelper.buildEmailNotificationRequest(any(), anyBoolean(), anyMap(), anyMap(), any(TemplateName.class)))
+        when(notificationHelper.buildEmailNotificationRequest(anyString(), anyList(), anyMap(), anyMap(), any(TemplateName.class)))
             .thenReturn(NotificationRequest.builder().build());
         when(notificationHelper.getRepresentativeCommonVars(any(), any(CaseData.class))).thenReturn(new HashMap<>());
         when(notificationService.sendEmail(any(NotificationRequest.class),
-            anyList(),
             eq(TEST_CASE_ID.toString()),
             any(Party.class))).thenReturn(NOTIFICATION_RESPONSE);
 
@@ -156,12 +154,11 @@ class CaseReinstatedNotificationTest {
 
         //Then
         verify(notificationService).sendEmail(any(NotificationRequest.class),
-            anyList(),
             eq(TEST_CASE_ID.toString()),
             eq(Party.REPRESENTATIVE));
         verify(notificationHelper).buildEmailNotificationRequest(
             data.getCicCase().getRepresentativeEmailAddress(),
-            true,
+            new ArrayList<>(),
             new HashMap<>(),
             Map.of(CommonConstants.REINSTATE_REASON,data.getCicCase().getReinstateReason().getType()),
             TemplateName.REINSTATED_EMAIL);
@@ -203,21 +200,20 @@ class CaseReinstatedNotificationTest {
         data.getCicCase().setReinstateReason(ReinstateReason.REQUEST_FOLLOWING_A_WITHDRAWAL_DECISION);
 
         //When
-        when(notificationHelper.buildEmailNotificationRequest(any(), anyBoolean(), anyMap(), anyMap(), any(TemplateName.class)))
+        when(notificationHelper.buildEmailNotificationRequest(anyString(), anyList(), anyMap(), anyMap(), any(TemplateName.class)))
             .thenReturn(NotificationRequest.builder().build());
         when(notificationHelper.getApplicantCommonVars(any(), any(CaseData.class))).thenReturn(new HashMap<>());
         when(notificationService.sendEmail(any(NotificationRequest.class),
-            anyList(),
             eq(TEST_CASE_ID.toString()),
             any(Party.class))).thenReturn(NOTIFICATION_RESPONSE);
 
         reinstatedNotification.sendToApplicant(data, TEST_CASE_ID.toString());
 
         //Then
-        verify(notificationService).sendEmail(any(NotificationRequest.class), anyList(), eq(TEST_CASE_ID.toString()), eq(Party.APPLICANT));
+        verify(notificationService).sendEmail(any(NotificationRequest.class), eq(TEST_CASE_ID.toString()), eq(Party.APPLICANT));
         verify(notificationHelper).buildEmailNotificationRequest(
             data.getCicCase().getApplicantEmailAddress(),
-            true,
+            new ArrayList<>(),
             new HashMap<>(),
             Map.of(CommonConstants.REINSTATE_REASON,data.getCicCase().getReinstateReason().getType()),
             TemplateName.REINSTATED_EMAIL);

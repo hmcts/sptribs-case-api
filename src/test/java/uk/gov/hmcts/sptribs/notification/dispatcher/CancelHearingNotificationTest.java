@@ -23,14 +23,15 @@ import uk.gov.hmcts.sptribs.notification.model.Party;
 import uk.gov.hmcts.sptribs.testutil.TestEventConstants;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyMap;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.verify;
@@ -65,21 +66,19 @@ public class CancelHearingNotificationTest {
         data.getCicCase().setHearingList(getDynamicList());
 
         //When
-        when(notificationHelper.buildEmailNotificationRequest(any(), anyBoolean(), anyMap(), anyMap(), any(TemplateName.class)))
+        when(notificationHelper.buildEmailNotificationRequest(anyString(), anyList(), anyMap(), anyMap(), any(TemplateName.class)))
             .thenReturn(NotificationRequest.builder().build());
         when(notificationHelper.getSubjectCommonVars(any(), any(CaseData.class))).thenReturn(new HashMap<>());
-        when(notificationService.sendEmail(any(NotificationRequest.class),
-            anyList(),
-            eq(TEST_CASE_ID.toString()),
-            any(Party.class))).thenReturn(NOTIFICATION_RESPONSE);
+        when(notificationService.sendEmail(any(NotificationRequest.class), eq(TEST_CASE_ID.toString()), any(Party.class))).thenReturn(
+            NOTIFICATION_RESPONSE);
 
         cancelHearingNotification.sendToSubject(data, TEST_CASE_ID.toString());
 
         //Then
-        verify(notificationService).sendEmail(any(NotificationRequest.class), anyList(), eq(TEST_CASE_ID.toString()), eq(Party.SUBJECT));
+        verify(notificationService).sendEmail(any(NotificationRequest.class), eq(TEST_CASE_ID.toString()), eq(Party.SUBJECT));
         verify(notificationHelper).buildEmailNotificationRequest(
             data.getCicCase().getEmail(),
-            true,
+            new ArrayList<>(),
             new HashMap<>(),
             new HashMap<>(),
             TemplateName.HEARING_CANCELLED_EMAIL);
@@ -120,21 +119,19 @@ public class CancelHearingNotificationTest {
         data.getCicCase().setReinstateReason(ReinstateReason.OTHER);
 
         //When
-        when(notificationHelper.buildEmailNotificationRequest(any(), anyBoolean(), anyMap(), anyMap(), any(TemplateName.class)))
+        when(notificationHelper.buildEmailNotificationRequest(anyString(), anyList(), anyMap(), anyMap(), any(TemplateName.class)))
             .thenReturn(NotificationRequest.builder().build());
         when(notificationHelper.getRespondentCommonVars(any(), any(CaseData.class))).thenReturn(new HashMap<>());
-        when(notificationService.sendEmail(any(NotificationRequest.class),
-            anyList(),
-            eq(TEST_CASE_ID.toString()),
-            any(Party.class))).thenReturn(NOTIFICATION_RESPONSE);
+        when(notificationService.sendEmail(any(NotificationRequest.class), eq(TEST_CASE_ID.toString()), any(Party.class))).thenReturn(
+            NOTIFICATION_RESPONSE);
 
         cancelHearingNotification.sendToRespondent(data, TEST_CASE_ID.toString());
 
         //Then
-        verify(notificationService).sendEmail(any(NotificationRequest.class), anyList(), eq(TEST_CASE_ID.toString()), eq(Party.RESPONDENT));
+        verify(notificationService).sendEmail(any(NotificationRequest.class), eq(TEST_CASE_ID.toString()), eq(Party.RESPONDENT));
         verify(notificationHelper).buildEmailNotificationRequest(
             data.getCicCase().getRespondentEmail(),
-            true,
+            new ArrayList<>(),
             new HashMap<>(),
             new HashMap<>(),
             TemplateName.HEARING_CANCELLED_EMAIL);
@@ -151,24 +148,21 @@ public class CancelHearingNotificationTest {
         data.getCicCase().setHearingList(getDynamicList());
 
         //When
-        when(notificationHelper.buildEmailNotificationRequest(any(), anyBoolean(), anyMap(), anyMap(), any(TemplateName.class)))
+        when(notificationHelper.buildEmailNotificationRequest(anyString(), anyList(), anyMap(), anyMap(), any(TemplateName.class)))
             .thenReturn(NotificationRequest.builder().build());
         when(notificationHelper.getRepresentativeCommonVars(any(), any(CaseData.class))).thenReturn(new HashMap<>());
-        when(notificationService.sendEmail(any(NotificationRequest.class),
-            anyList(),
-            eq(TEST_CASE_ID.toString()),
-            any(Party.class))).thenReturn(NOTIFICATION_RESPONSE);
+        when(notificationService.sendEmail(any(NotificationRequest.class), eq(TEST_CASE_ID.toString()), any(Party.class))).thenReturn(
+            NOTIFICATION_RESPONSE);
 
         cancelHearingNotification.sendToRepresentative(data, TEST_CASE_ID.toString());
 
         //Then
         verify(notificationService).sendEmail(any(NotificationRequest.class),
-            anyList(),
             eq(TEST_CASE_ID.toString()),
             eq(Party.REPRESENTATIVE));
         verify(notificationHelper).buildEmailNotificationRequest(
             data.getCicCase().getRepresentativeEmailAddress(),
-            true,
+            new ArrayList<>(),
             new HashMap<>(),
             new HashMap<>(),
             TemplateName.HEARING_CANCELLED_EMAIL);
@@ -212,21 +206,19 @@ public class CancelHearingNotificationTest {
         data.getCicCase().setHearingList(getDynamicList());
 
         //When
-        when(notificationHelper.buildEmailNotificationRequest(any(), anyBoolean(), anyMap(), anyMap(), any(TemplateName.class)))
+        when(notificationHelper.buildEmailNotificationRequest(anyString(), anyList(), anyMap(), anyMap(), any(TemplateName.class)))
             .thenReturn(NotificationRequest.builder().build());
         when(notificationHelper.getApplicantCommonVars(any(), any(CaseData.class))).thenReturn(new HashMap<>());
-        when(notificationService.sendEmail(any(NotificationRequest.class),
-            anyList(),
-            eq(TEST_CASE_ID.toString()),
-            any(Party.class))).thenReturn(NOTIFICATION_RESPONSE);
+        when(notificationService.sendEmail(any(NotificationRequest.class), eq(TEST_CASE_ID.toString()), any(Party.class))).thenReturn(
+            NOTIFICATION_RESPONSE);
 
         cancelHearingNotification.sendToApplicant(data, TEST_CASE_ID.toString());
 
         //Then
-        verify(notificationService).sendEmail(any(NotificationRequest.class), anyList(), eq(TEST_CASE_ID.toString()), eq(Party.APPLICANT));
+        verify(notificationService).sendEmail(any(NotificationRequest.class), eq(TEST_CASE_ID.toString()), eq(Party.APPLICANT));
         verify(notificationHelper).buildEmailNotificationRequest(
             data.getCicCase().getApplicantEmailAddress(),
-            true,
+            new ArrayList<>(),
             new HashMap<>(),
             new HashMap<>(),
             TemplateName.HEARING_CANCELLED_EMAIL);

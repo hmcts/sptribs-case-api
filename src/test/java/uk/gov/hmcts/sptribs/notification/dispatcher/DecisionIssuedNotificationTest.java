@@ -24,9 +24,9 @@ import java.util.HashMap;
 import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyMap;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.verify;
@@ -65,21 +65,20 @@ public class DecisionIssuedNotificationTest {
         data.setCaseIssueDecision(caseIssueDecision);
 
         //When
-        when(notificationHelper.buildEmailNotificationRequest(any(), anyBoolean(), anyMap(), anyMap(), any(TemplateName.class)))
+        when(notificationHelper.buildEmailNotificationRequest(anyString(), anyList(), anyMap(), anyMap(), any(TemplateName.class)))
             .thenReturn(NotificationRequest.builder().build());
         when(notificationHelper.getSubjectCommonVars(any(), any(CaseData.class))).thenReturn(new HashMap<>());
         when(notificationService.sendEmail(any(NotificationRequest.class),
-            anyList(),
             eq(TEST_CASE_ID.toString()),
             any(Party.class))).thenReturn(NOTIFICATION_RESPONSE);
 
         decisionIssuedNotification.sendToSubject(data, TEST_CASE_ID.toString());
 
         //Then
-        verify(notificationService).sendEmail(any(NotificationRequest.class), anyList(), eq(TEST_CASE_ID.toString()), eq(Party.SUBJECT));
+        verify(notificationService).sendEmail(any(NotificationRequest.class), eq(TEST_CASE_ID.toString()), eq(Party.SUBJECT));
         verify(notificationHelper).buildEmailNotificationRequest(
             eq(data.getCicCase().getEmail()),
-            eq(true),
+            anyList(),
             anyMap(),
             anyMap(),
             eq(TemplateName.DECISION_ISSUED_EMAIL));
@@ -93,21 +92,20 @@ public class DecisionIssuedNotificationTest {
         data.getCicCase().setEmail("testSubject@outlook.com");
 
         //When
-        when(notificationHelper.buildEmailNotificationRequest(any(), anyBoolean(), anyMap(), anyMap(), any(TemplateName.class)))
+        when(notificationHelper.buildEmailNotificationRequest(anyString(), anyList(), anyMap(), anyMap(), any(TemplateName.class)))
             .thenReturn(NotificationRequest.builder().build());
         when(notificationHelper.getSubjectCommonVars(any(), any(CaseData.class))).thenReturn(new HashMap<>());
         when(notificationService.sendEmail(any(NotificationRequest.class),
-            anyList(),
             eq(TEST_CASE_ID.toString()),
             any(Party.class))).thenReturn(NOTIFICATION_RESPONSE);
 
         decisionIssuedNotification.sendToSubject(data, TEST_CASE_ID.toString());
 
         //Then
-        verify(notificationService).sendEmail(any(NotificationRequest.class), anyList(), eq(TEST_CASE_ID.toString()), eq(Party.SUBJECT));
+        verify(notificationService).sendEmail(any(NotificationRequest.class), eq(TEST_CASE_ID.toString()), eq(Party.SUBJECT));
         verify(notificationHelper).buildEmailNotificationRequest(
             eq(data.getCicCase().getEmail()),
-            eq(true),
+            anyList(),
             anyMap(),
             anyMap(),
             eq(TemplateName.DECISION_ISSUED_EMAIL));
@@ -159,21 +157,20 @@ public class DecisionIssuedNotificationTest {
         data.setCaseIssueDecision(caseIssueDecision);
 
         //When
-        when(notificationHelper.buildEmailNotificationRequest(any(), anyBoolean(), anyMap(), anyMap(), any(TemplateName.class)))
+        when(notificationHelper.buildEmailNotificationRequest(anyString(), anyList(), anyMap(), anyMap(), any(TemplateName.class)))
             .thenReturn(NotificationRequest.builder().build());
         when(notificationHelper.getRespondentCommonVars(any(), any(CaseData.class))).thenReturn(new HashMap<>());
         when(notificationService.sendEmail(any(NotificationRequest.class),
-            anyList(),
             eq(TEST_CASE_ID.toString()),
             any(Party.class))).thenReturn(NOTIFICATION_RESPONSE);
 
         decisionIssuedNotification.sendToRespondent(data, TEST_CASE_ID.toString());
 
         //Then
-        verify(notificationService).sendEmail(any(NotificationRequest.class), anyList(), eq(TEST_CASE_ID.toString()), eq(Party.RESPONDENT));
+        verify(notificationService).sendEmail(any(NotificationRequest.class), eq(TEST_CASE_ID.toString()), eq(Party.RESPONDENT));
         verify(notificationHelper).buildEmailNotificationRequest(
             eq(data.getCicCase().getRespondentEmail()),
-            eq(true),
+            anyList(),
             anyMap(),
             anyMap(),
             eq(TemplateName.DECISION_ISSUED_EMAIL));
@@ -186,21 +183,20 @@ public class DecisionIssuedNotificationTest {
         data.getCicCase().setRespondentEmail("testRespondent@outlook.com");
 
         //When
-        when(notificationHelper.buildEmailNotificationRequest(any(), anyBoolean(), anyMap(), anyMap(), any(TemplateName.class)))
+        when(notificationHelper.buildEmailNotificationRequest(anyString(), anyList(), anyMap(), anyMap(), any(TemplateName.class)))
             .thenReturn(NotificationRequest.builder().build());
         when(notificationHelper.getRespondentCommonVars(any(), any(CaseData.class))).thenReturn(new HashMap<>());
         when(notificationService.sendEmail(any(NotificationRequest.class),
-            anyList(),
             eq(TEST_CASE_ID.toString()),
             any(Party.class))).thenReturn(NOTIFICATION_RESPONSE);
 
         decisionIssuedNotification.sendToRespondent(data, TEST_CASE_ID.toString());
 
         //Then
-        verify(notificationService).sendEmail(any(NotificationRequest.class), anyList(), eq(TEST_CASE_ID.toString()), eq(Party.RESPONDENT));
+        verify(notificationService).sendEmail(any(NotificationRequest.class), eq(TEST_CASE_ID.toString()), eq(Party.RESPONDENT));
         verify(notificationHelper).buildEmailNotificationRequest(
             eq(data.getCicCase().getRespondentEmail()),
-            eq(true),
+            anyList(),
             anyMap(),
             anyMap(),
             eq(TemplateName.DECISION_ISSUED_EMAIL));
@@ -227,11 +223,10 @@ public class DecisionIssuedNotificationTest {
         data.setCaseIssueDecision(caseIssueDecision);
 
         //When
-        when(notificationHelper.buildEmailNotificationRequest(any(), anyBoolean(), anyMap(), anyMap(), any(TemplateName.class)))
+        when(notificationHelper.buildEmailNotificationRequest(anyString(), anyList(), anyMap(), anyMap(), any(TemplateName.class)))
             .thenReturn(NotificationRequest.builder().build());
         when(notificationHelper.getRepresentativeCommonVars(any(), any(CaseData.class))).thenReturn(new HashMap<>());
         when(notificationService.sendEmail(any(NotificationRequest.class),
-            anyList(),
             eq(TEST_CASE_ID.toString()),
             any(Party.class))).thenReturn(NOTIFICATION_RESPONSE);
 
@@ -239,12 +234,11 @@ public class DecisionIssuedNotificationTest {
 
         //Then
         verify(notificationService).sendEmail(any(NotificationRequest.class),
-            anyList(),
             eq(TEST_CASE_ID.toString()),
             eq(Party.REPRESENTATIVE));
         verify(notificationHelper).buildEmailNotificationRequest(
             eq(data.getCicCase().getRepresentativeEmailAddress()),
-            eq(true),
+            anyList(),
             anyMap(),
             anyMap(),
             eq(TemplateName.DECISION_ISSUED_EMAIL));
@@ -259,11 +253,10 @@ public class DecisionIssuedNotificationTest {
         data.getCicCase().setRepresentativeEmailAddress("testrepr@outlook.com");
 
         //When
-        when(notificationHelper.buildEmailNotificationRequest(any(), anyBoolean(), anyMap(), anyMap(), any(TemplateName.class)))
+        when(notificationHelper.buildEmailNotificationRequest(anyString(), anyList(), anyMap(), anyMap(), any(TemplateName.class)))
             .thenReturn(NotificationRequest.builder().build());
         when(notificationHelper.getRepresentativeCommonVars(any(), any(CaseData.class))).thenReturn(new HashMap<>());
         when(notificationService.sendEmail(any(NotificationRequest.class),
-            anyList(),
             eq(TEST_CASE_ID.toString()),
             any(Party.class))).thenReturn(NOTIFICATION_RESPONSE);
 
@@ -272,12 +265,11 @@ public class DecisionIssuedNotificationTest {
 
         //Then
         verify(notificationService).sendEmail(any(NotificationRequest.class),
-            anyList(),
             eq(TEST_CASE_ID.toString()),
             eq(Party.REPRESENTATIVE));
         verify(notificationHelper).buildEmailNotificationRequest(
             eq(data.getCicCase().getRepresentativeEmailAddress()),
-            eq(true),
+            anyList(),
             anyMap(),
             anyMap(),
             eq(TemplateName.DECISION_ISSUED_EMAIL));
@@ -325,21 +317,20 @@ public class DecisionIssuedNotificationTest {
         data.setCaseIssueDecision(caseIssueDecision);
 
         //When
-        when(notificationHelper.buildEmailNotificationRequest(any(), anyBoolean(), anyMap(), anyMap(), any(TemplateName.class)))
+        when(notificationHelper.buildEmailNotificationRequest(anyString(), anyList(), anyMap(), anyMap(), any(TemplateName.class)))
             .thenReturn(NotificationRequest.builder().build());
         when(notificationHelper.getApplicantCommonVars(any(), any(CaseData.class))).thenReturn(new HashMap<>());
         when(notificationService.sendEmail(any(NotificationRequest.class),
-            anyList(),
             eq(TEST_CASE_ID.toString()),
             any(Party.class))).thenReturn(NOTIFICATION_RESPONSE);
 
         decisionIssuedNotification.sendToApplicant(data, TEST_CASE_ID.toString());
 
         //Then
-        verify(notificationService).sendEmail(any(NotificationRequest.class), anyList(), eq(TEST_CASE_ID.toString()), eq(Party.APPLICANT));
+        verify(notificationService).sendEmail(any(NotificationRequest.class), eq(TEST_CASE_ID.toString()), eq(Party.APPLICANT));
         verify(notificationHelper).buildEmailNotificationRequest(
             eq(data.getCicCase().getApplicantEmailAddress()),
-            eq(true),
+            anyList(),
             anyMap(),
             anyMap(),
             eq(TemplateName.DECISION_ISSUED_EMAIL));
@@ -353,21 +344,20 @@ public class DecisionIssuedNotificationTest {
         data.getCicCase().setApplicantEmailAddress("testApplicant@outlook.com");
 
         //When
-        when(notificationHelper.buildEmailNotificationRequest(any(), anyBoolean(), anyMap(), anyMap(), any(TemplateName.class)))
+        when(notificationHelper.buildEmailNotificationRequest(anyString(), anyList(), anyMap(), anyMap(), any(TemplateName.class)))
             .thenReturn(NotificationRequest.builder().build());
         when(notificationHelper.getApplicantCommonVars(any(), any(CaseData.class))).thenReturn(new HashMap<>());
         when(notificationService.sendEmail(any(NotificationRequest.class),
-            anyList(),
             eq(TEST_CASE_ID.toString()),
             any(Party.class))).thenReturn(NOTIFICATION_RESPONSE);
 
         decisionIssuedNotification.sendToApplicant(data, TEST_CASE_ID.toString());
 
         //Then
-        verify(notificationService).sendEmail(any(NotificationRequest.class), anyList(), eq(TEST_CASE_ID.toString()), eq(Party.APPLICANT));
+        verify(notificationService).sendEmail(any(NotificationRequest.class), eq(TEST_CASE_ID.toString()), eq(Party.APPLICANT));
         verify(notificationHelper).buildEmailNotificationRequest(
             eq(data.getCicCase().getApplicantEmailAddress()),
-            eq(true),
+            anyList(),
             anyMap(),
             anyMap(),
             eq(TemplateName.DECISION_ISSUED_EMAIL));

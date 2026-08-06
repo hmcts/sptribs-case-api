@@ -18,10 +18,13 @@ import uk.gov.hmcts.sptribs.notification.NotificationServiceCIC;
 import uk.gov.hmcts.sptribs.notification.TemplateName;
 import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyMap;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -46,7 +49,7 @@ public class ListingCreatedNotificationTest {
         data.getCicCase().setEmail("testSubject@outlook.com");
 
         //When
-        when(notificationHelper.buildEmailNotificationRequest(any(), anyMap(), any(TemplateName.class)))
+        when(notificationHelper.buildEmailNotificationRequest(anyString(), anyList(), anyMap(), anyMap(), any(TemplateName.class)))
             .thenReturn(NotificationRequest.builder().build());
         listingCreatedNotification.sendToSubject(data, TEST_CASE_ID.toString());
 
@@ -54,6 +57,8 @@ public class ListingCreatedNotificationTest {
         verify(notificationService).sendEmail(any(NotificationRequest.class), eq(TEST_CASE_ID.toString()), eq(null));
         verify(notificationHelper).buildEmailNotificationRequest(
             data.getCicCase().getEmail(),
+            new ArrayList<>(),
+            new HashMap<>(),
             new HashMap<>(),
             TemplateName.HEARING_CREATED_EMAIL);
     }
@@ -74,7 +79,7 @@ public class ListingCreatedNotificationTest {
         data.setListing(listing);
 
         //When
-        when(notificationHelper.buildEmailNotificationRequest(any(), anyMap(), any(TemplateName.class)))
+        when(notificationHelper.buildEmailNotificationRequest(anyString(), anyList(), anyMap(), anyMap(), any(TemplateName.class)))
             .thenReturn(NotificationRequest.builder().build());
         listingCreatedNotification.sendToSubject(data, TEST_CASE_ID.toString());
 
@@ -82,6 +87,8 @@ public class ListingCreatedNotificationTest {
         verify(notificationService).sendEmail(any(NotificationRequest.class), eq(TEST_CASE_ID.toString()), eq(null));
         verify(notificationHelper).buildEmailNotificationRequest(
             data.getCicCase().getEmail(),
+            new ArrayList<>(),
+            new HashMap<>(),
             new HashMap<>(),
             TemplateName.HEARING_CREATED_EMAIL);
 
@@ -116,7 +123,7 @@ public class ListingCreatedNotificationTest {
         data.getCicCase().setRepresentativeEmailAddress("testrepr@outlook.com");
 
         //When
-        when(notificationHelper.buildEmailNotificationRequest(any(), anyMap(), any(TemplateName.class)))
+        when(notificationHelper.buildEmailNotificationRequest(anyString(), anyList(), anyMap(), anyMap(), any(TemplateName.class)))
             .thenReturn(NotificationRequest.builder().build());
         listingCreatedNotification.sendToRepresentative(data, TEST_CASE_ID.toString());
 
@@ -124,6 +131,8 @@ public class ListingCreatedNotificationTest {
         verify(notificationService).sendEmail(any(NotificationRequest.class), eq(TEST_CASE_ID.toString()), eq(null));
         verify(notificationHelper).buildEmailNotificationRequest(
             data.getCicCase().getRepresentativeEmailAddress(),
+            new ArrayList<>(),
+            new HashMap<>(),
             Map.of(CommonConstants.CIC_CASE_REPRESENTATIVE_NAME, data.getCicCase().getRepresentativeFullName()),
             TemplateName.HEARING_CREATED_EMAIL);
     }
@@ -156,7 +165,7 @@ public class ListingCreatedNotificationTest {
         data.getCicCase().setRespondentEmail("testrespondent@outlook.com");
 
         //When
-        when(notificationHelper.buildEmailNotificationRequest(any(), anyMap(), any(TemplateName.class)))
+        when(notificationHelper.buildEmailNotificationRequest(anyString(), anyList(), anyMap(), anyMap(), any(TemplateName.class)))
             .thenReturn(NotificationRequest.builder().build());
         listingCreatedNotification.sendToRespondent(data, TEST_CASE_ID.toString());
 
@@ -164,6 +173,8 @@ public class ListingCreatedNotificationTest {
         verify(notificationService).sendEmail(any(NotificationRequest.class), eq(TEST_CASE_ID.toString()), eq(null));
         verify(notificationHelper).buildEmailNotificationRequest(
             data.getCicCase().getRespondentEmail(),
+            new ArrayList<>(),
+            new HashMap<>(),
             Map.of(
                 CommonConstants.CIC_CASE_RESPONDENT_NAME, data.getCicCase().getRespondentName()),
             TemplateName.HEARING_CREATED_EMAIL);
@@ -176,7 +187,7 @@ public class ListingCreatedNotificationTest {
         data.getCicCase().setContactPreferenceType(ContactPreferenceType.EMAIL);
         data.getCicCase().setApplicantEmailAddress("testapp@outlook.com");
         //When
-        when(notificationHelper.buildEmailNotificationRequest(any(), anyMap(), any(TemplateName.class)))
+        when(notificationHelper.buildEmailNotificationRequest(anyString(), anyList(), anyMap(), anyMap(), any(TemplateName.class)))
             .thenReturn(NotificationRequest.builder().build());
         listingCreatedNotification.sendToApplicant(data, TEST_CASE_ID.toString());
 
@@ -184,6 +195,8 @@ public class ListingCreatedNotificationTest {
         verify(notificationService).sendEmail(any(NotificationRequest.class), eq(TEST_CASE_ID.toString()), eq(null));
         verify(notificationHelper).buildEmailNotificationRequest(
             data.getCicCase().getApplicantEmailAddress(),
+            new ArrayList<>(),
+            new HashMap<>(),
             new HashMap<>(),
             TemplateName.HEARING_CREATED_EMAIL);
     }

@@ -11,6 +11,7 @@ import uk.gov.hmcts.sptribs.notification.NotificationHelper;
 import uk.gov.hmcts.sptribs.notification.NotificationServiceCIC;
 import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -48,13 +49,12 @@ class DssUpdateCaseSubmissionNotificationTest {
             .templateVars(templateVars)
             .build();
 
-        when(notificationHelper.getSubjectCommonVars(caseReference, caseData))
-            .thenReturn(templateVars);
-        when(notificationHelper.buildEmailNotificationRequest(
-            TEST_APPLICANT_EMAIL,
+        when(notificationHelper.getSubjectCommonVars(caseReference, caseData)).thenReturn(templateVars);
+        when(notificationHelper.buildEmailNotificationRequest(TEST_APPLICANT_EMAIL,
+            new ArrayList<>(),
+            new HashMap<>(),
             templateVars,
-                UPDATE_RECEIVED
-        )).thenReturn(notificationRequest);
+            UPDATE_RECEIVED)).thenReturn(notificationRequest);
 
         dssUpdateCaseSubmissionNotification.sendToApplicant(caseData, caseReference);
 
@@ -75,11 +75,11 @@ class DssUpdateCaseSubmissionNotificationTest {
 
         when(notificationHelper.getTribunalCommonVars(caseReference, caseData))
             .thenReturn(templateVars);
-        when(notificationHelper.buildEmailNotificationRequest(
-            TRIBUNAL_EMAIL_VALUE,
+        when(notificationHelper.buildEmailNotificationRequest(TRIBUNAL_EMAIL_VALUE,
+            new ArrayList<>(),
+            new HashMap<>(),
             templateVars,
-                UPDATE_RECEIVED_CIC
-        )).thenReturn(notificationRequest);
+            UPDATE_RECEIVED_CIC)).thenReturn(notificationRequest);
 
         dssUpdateCaseSubmissionNotification.sendToTribunal(caseData, String.valueOf(TEST_CASE_ID));
 

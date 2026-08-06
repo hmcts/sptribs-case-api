@@ -89,7 +89,7 @@ public class CaseFinalDecisionIssuedNotificationIT {
 
         NotificationRequest notificationRequest = notificationRequestCaptor.getValue();
 
-        assertThat(notificationRequest.isHasFileAttachments()).isTrue();
+        assertThat(notificationRequest.getAttachedDocuments()).isNotNull();
         assertThat(notificationRequest.getDestinationAddress())
             .isEqualTo("subject@email.com");
         assertThat(notificationRequest.getTemplate())
@@ -101,7 +101,7 @@ public class CaseFinalDecisionIssuedNotificationIT {
                 CIC_CASE_SUBJECT_NAME, "Subject Name",
                 CONTACT_NAME, "Subject Name"
             ));
-        assertThat(notificationRequest.getUploadedDocuments())
+        assertThat(notificationRequest.getTemplateDocumentVars())
             .isEqualTo(Map.of(
                 FINAL_DECISION_NOTICE, "0ebad3a7-223e-4185-b8ce-ccb50a87e982",
                 FINAL_DECISION_GUIDANCE, "b7377096-880b-4dab-b9f9-97bd62f14589"
@@ -192,7 +192,7 @@ public class CaseFinalDecisionIssuedNotificationIT {
 
         NotificationRequest notificationRequest = notificationRequestCaptor.getValue();
 
-        assertThat(notificationRequest.isHasFileAttachments()).isTrue();
+        assertThat(notificationRequest.getAttachedDocuments()).isNotNull();
         assertThat(notificationRequest.getDestinationAddress())
             .isEqualTo("representative@email.com");
         assertThat(notificationRequest.getTemplate())
@@ -204,7 +204,7 @@ public class CaseFinalDecisionIssuedNotificationIT {
                 CIC_CASE_SUBJECT_NAME, "Subject Name",
                 CONTACT_NAME, "Representative Name"
             ));
-        assertThat(notificationRequest.getUploadedDocuments())
+        assertThat(notificationRequest.getTemplateDocumentVars())
             .isEqualTo(Map.of(
                 FINAL_DECISION_NOTICE, "0ebad3a7-223e-4185-b8ce-ccb50a87e982",
                 FINAL_DECISION_GUIDANCE, "b7377096-880b-4dab-b9f9-97bd62f14589"
@@ -295,7 +295,7 @@ public class CaseFinalDecisionIssuedNotificationIT {
 
         NotificationRequest notificationRequest = notificationRequestCaptor.getValue();
 
-        assertThat(notificationRequest.isHasFileAttachments()).isTrue();
+        assertThat(notificationRequest.getAttachedDocuments()).isNotNull();
         assertThat(notificationRequest.getDestinationAddress())
             .isEqualTo("respondent@email.com");
         assertThat(notificationRequest.getTemplate())
@@ -307,7 +307,7 @@ public class CaseFinalDecisionIssuedNotificationIT {
                 CIC_CASE_SUBJECT_NAME, "Subject Name",
                 CONTACT_NAME, "Respondent Name"
             ));
-        assertThat(notificationRequest.getUploadedDocuments())
+        assertThat(notificationRequest.getTemplateDocumentVars())
             .isEqualTo(Map.of(
                 FINAL_DECISION_NOTICE, "0ebad3a7-223e-4185-b8ce-ccb50a87e982",
                 FINAL_DECISION_GUIDANCE, "b7377096-880b-4dab-b9f9-97bd62f14589"
@@ -356,7 +356,7 @@ public class CaseFinalDecisionIssuedNotificationIT {
 
         NotificationRequest notificationRequest = notificationRequestCaptor.getValue();
 
-        assertThat(notificationRequest.isHasFileAttachments()).isTrue();
+        assertThat(notificationRequest.getAttachedDocuments()).isNotNull();
         assertThat(notificationRequest.getDestinationAddress())
             .isEqualTo("applicant@email.com");
         assertThat(notificationRequest.getTemplate())
@@ -368,7 +368,7 @@ public class CaseFinalDecisionIssuedNotificationIT {
                 CIC_CASE_SUBJECT_NAME, "Subject Name",
                 CONTACT_NAME, "Applicant Name"
             ));
-        assertThat(notificationRequest.getUploadedDocuments())
+        assertThat(notificationRequest.getTemplateDocumentVars())
             .isEqualTo(Map.of(
                 FINAL_DECISION_NOTICE, "0ebad3a7-223e-4185-b8ce-ccb50a87e982",
                 FINAL_DECISION_GUIDANCE, "b7377096-880b-4dab-b9f9-97bd62f14589"

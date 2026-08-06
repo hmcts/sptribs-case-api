@@ -37,7 +37,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
@@ -124,8 +123,7 @@ public class NotificationServiceCICTest {
             .destinationAddress(EMAIL_ADDRESS)
             .template(TemplateName.APPLICATION_RECEIVED)
             .templateVars(templateVars)
-            .hasFileAttachments(true)
-            .uploadedDocuments(uploadedDocuments)
+            .templateDocumentVars(uploadedDocuments)
             .build();
 
         final CICUser user = TestDataHelper.getUser();
@@ -181,8 +179,7 @@ public class NotificationServiceCICTest {
             .destinationAddress(EMAIL_ADDRESS)
             .template(TemplateName.APPLICATION_RECEIVED)
             .templateVars(templateVars)
-            .hasFileAttachments(true)
-            .uploadedDocuments(uploadedDocuments)
+            .templateDocumentVars(uploadedDocuments)
             .build();
 
         final CICUser user = TestDataHelper.getUser();
@@ -238,8 +235,7 @@ public class NotificationServiceCICTest {
             .destinationAddress(EMAIL_ADDRESS)
             .template(TemplateName.APPLICATION_RECEIVED)
             .templateVars(templateVars)
-            .hasFileAttachments(true)
-            .uploadedDocuments(uploadedDocuments)
+            .templateDocumentVars(uploadedDocuments)
             .build();
 
         final CICUser user = TestDataHelper.getUser();
@@ -360,8 +356,7 @@ public class NotificationServiceCICTest {
             .destinationAddress(EMAIL_ADDRESS)
             .template(TemplateName.APPLICATION_RECEIVED)
             .templateVars(templateVars)
-            .hasFileAttachments(false)
-            .uploadedDocuments(new HashMap<>())
+            .templateDocumentVars(new HashMap<>())
             .build();
 
         doThrow(new NotificationClientException("some message"))
@@ -401,8 +396,7 @@ public class NotificationServiceCICTest {
             .destinationAddress(EMAIL_ADDRESS)
             .template(TemplateName.APPLICATION_RECEIVED)
             .templateVars(templateVars)
-            .hasFileAttachments(false)
-            .uploadedDocuments(new HashMap<>())
+            .templateDocumentVars(new HashMap<>())
             .build();
 
         doThrow(new NotificationException(new IOException()))
@@ -446,8 +440,7 @@ public class NotificationServiceCICTest {
             .destinationAddress(EMAIL_ADDRESS)
             .template(TemplateName.APPLICATION_RECEIVED)
             .templateVars(templateVars)
-            .hasFileAttachments(true)
-            .uploadedDocuments(uploadedDocuments)
+            .templateDocumentVars(uploadedDocuments)
             .build();
 
         final byte[] sample = new byte[1];
@@ -519,8 +512,7 @@ public class NotificationServiceCICTest {
             .destinationAddress(EMAIL_ADDRESS)
             .template(TemplateName.APPLICATION_RECEIVED)
             .templateVars(templateVars)
-            .hasFileAttachments(true)
-            .uploadedDocuments(uploadedDocuments)
+            .templateDocumentVars(uploadedDocuments)
             .build();
 
         final CICUser user = TestDataHelper.getUser();
@@ -552,8 +544,8 @@ public class NotificationServiceCICTest {
         String testCaseRef = TEST_CASE_ID.toString();
 
         assertThatThrownBy(() -> notificationService.sendEmail(request, testCaseRef, null))
-            .isInstanceOf(RestClientException.class)
-            .hasMessageContaining("some message");
+            .isInstanceOf(NotificationException.class)
+            .hasMessageContaining("No documents selected");
 
         verify(notificationClient).sendEmail(
             eq(templateId),
@@ -576,7 +568,6 @@ public class NotificationServiceCICTest {
                 .destinationAddress(EMAIL_ADDRESS)
                 .template(TemplateName.APPLICATION_RECEIVED)
                 .templateVars(templateVars)
-                .hasFileAttachments(false)
                 .build();
 
             //When&Then
@@ -712,8 +703,7 @@ public class NotificationServiceCICTest {
             .destinationAddress(EMAIL_ADDRESS)
             .template(CASE_ISSUED_RESPONDENT_EMAIL)
             .templateVars(templateVars)
-            .hasFileAttachments(true)
-            .uploadedDocuments(uploadedDocuments)
+            .templateDocumentVars(uploadedDocuments)
             .build();
 
         final CICUser user = TestDataHelper.getUser();
@@ -777,8 +767,7 @@ public class NotificationServiceCICTest {
             .destinationAddress(EMAIL_ADDRESS)
             .template(CASE_ISSUED_RESPONDENT_EMAIL)
             .templateVars(templateVars)
-            .hasFileAttachments(true)
-            .uploadedDocuments(uploadedDocuments)
+            .templateDocumentVars(uploadedDocuments)
             .build();
 
         final CICUser user = TestDataHelper.getUser();
@@ -804,7 +793,7 @@ public class NotificationServiceCICTest {
         when(caseDocumentClientAPI.uploadDocuments(any(), any(), any())).thenReturn(expectedResponse);
 
         //When
-        notificationService.sendEmail(request, List.of(cicDocument), TEST_CASE_ID.toString(), null);
+        notificationService.sendEmail(request, TEST_CASE_ID.toString(), null);
 
         String expectedDocumentDescription = String.format("%nFilename: %s%nDescription: %s%n",
             cicDocument.getDocumentLink().getFilename(), cicDocument.getDocumentEmailContent());
@@ -856,8 +845,7 @@ public class NotificationServiceCICTest {
             .destinationAddress(EMAIL_ADDRESS)
             .template(CASE_ISSUED_RESPONDENT_EMAIL)
             .templateVars(templateVars)
-            .hasFileAttachments(true)
-            .uploadedDocuments(uploadedDocuments)
+            .templateDocumentVars(uploadedDocuments)
             .build();
 
         final CICUser user = TestDataHelper.getUser();
@@ -868,89 +856,9 @@ public class NotificationServiceCICTest {
         when(caseDocumentClientAPI.getDocumentBinary(anyString(), anyString(), any(UUID.class)))
             .thenReturn(ResponseEntity.notFound().build());
 
-        assertThatThrownBy(() -> notificationService.sendEmail(request, List.of(cicDocument), TEST_CASE_ID.toString(), null))
+        assertThatThrownBy(() -> notificationService.sendEmail(request, TEST_CASE_ID.toString(), null))
             .isInstanceOf(NotificationException.class)
             .hasMessageContaining("Failed to get document binary for id " + docId);
-    }
-
-    @Test
-    void shouldSuccessfullySendEmail_attachmentMoreThan2MB() throws NotificationClientException {
-        final String templateId = UUID.randomUUID().toString();
-        final Map<String, String> templateNameMap = Map.of(CASE_ISSUED_RESPONDENT_EMAIL.name(), templateId);
-        final Map<String, Object> templateVars = new HashMap<>();
-        templateVars.put(CASE_ISSUED_RESPONDENT_EMAIL.name(), templateId);
-
-        String docId = randomUUID().toString();
-        final Map<String, String> uploadedDocuments = Map.of(
-            "CaseDocument1", docId,
-            "DocumentAvailable1", "yes");
-
-        final uk.gov.hmcts.ccd.sdk.type.Document document = uk.gov.hmcts.ccd.sdk.type.Document.builder()
-            .filename("test file")
-            .url("test.url/" + docId)
-            .binaryUrl("test.url/" + docId + "/binary")
-            .build();
-        final CaseworkerCICDocument cicDocument = CaseworkerCICDocument.builder()
-            .date(LocalDate.of(2025, 12, 11))
-            .documentCategory(DocumentType.APPLICATION_FOR_AN_EXTENSION_OF_TIME)
-            .documentEmailContent("description")
-            .documentLink(document)
-            .build();
-
-        final NotificationRequest request = NotificationRequest.builder()
-            .destinationAddress(EMAIL_ADDRESS)
-            .template(CASE_ISSUED_RESPONDENT_EMAIL)
-            .templateVars(templateVars)
-            .hasFileAttachments(true)
-            .uploadedDocuments(uploadedDocuments)
-            .build();
-
-        final CICUser user = TestDataHelper.getUser();
-        when(idamService.retrieveUser(any())).thenReturn(user);
-        when(emailTemplatesConfig.getTemplatesCIC()).thenReturn(templateNameMap);
-        when(httpServletRequest.getHeader(AUTHORIZATION)).thenReturn(TEST_AUTHORIZATION_TOKEN);
-        when(authTokenGenerator.generate()).thenReturn(TEST_SERVICE_AUTH_TOKEN);
-
-        final ResponseEntity<byte[]> sample = ResponseEntity.ok(new byte[TWO_MEGABYTES + 1]);
-        when(caseDocumentClientAPI.getDocumentBinary(anyString(), anyString(), any(UUID.class))).thenReturn(sample);
-
-        when(notificationClient.sendEmail(
-            eq(templateId),
-            eq(EMAIL_ADDRESS),
-            any(),
-            any()
-        )).thenReturn(sendEmailResponse);
-        when(sendEmailResponse.getReference()).thenReturn(Optional.of(randomUUID().toString()));
-        when(sendEmailResponse.getNotificationId()).thenReturn(UUID.randomUUID());
-
-        UploadResponse expectedResponse = uploadResponseWithSampleDocument();
-        when(caseDocumentClientAPI.uploadDocuments(any(), any(), any())).thenReturn(expectedResponse);
-
-        //When
-        notificationService.sendEmail(request, List.of(cicDocument), TEST_CASE_ID.toString(), null);
-
-        //Then
-        verify(notificationClient).sendEmail(
-            eq(templateId),
-            eq(EMAIL_ADDRESS),
-            templateVarsArgCaptor.capture(),
-            any());
-
-        assertThat(templateVarsArgCaptor.getValue())
-            .containsEntry(CASE_ISSUED_RESPONDENT_EMAIL.name(), templateId)
-            .containsEntry("DocumentAvailable1", "yes");
-
-        String expectedDocumentDescription = String.format("%nFilename: %s%nDescription: %s%n",
-            cicDocument.getDocumentLink().getFilename(), cicDocument.getDocumentEmailContent());
-
-        assertThat(templateVarsArgCaptor.getValue())
-            .extracting("CaseDocument1")
-            .isInstanceOf(String.class)
-            .isEqualTo(expectedDocumentDescription);
-
-        verify(sendEmailResponse, times(3)).getNotificationId();
-        verify(sendEmailResponse, times(2)).getReference();
-        verify(correspondenceRepository, times(1)).save(any());
     }
 
     @Test
@@ -968,8 +876,7 @@ public class NotificationServiceCICTest {
             .destinationAddress(EMAIL_ADDRESS)
             .template(CASE_ISSUED_RESPONDENT_EMAIL)
             .templateVars(templateVars)
-            .hasFileAttachments(true)
-            .uploadedDocuments(uploadedDocuments)
+            .templateDocumentVars(uploadedDocuments)
             .build();
 
         final CICUser user = TestDataHelper.getUser();
@@ -981,7 +888,7 @@ public class NotificationServiceCICTest {
         when(caseDocumentClientAPI.getDocumentBinary(anyString(), anyString(), any(UUID.class))).thenReturn(sample);
 
         String expectedErrorMessage = String.format("Unable to find document details for document id: %s", docId);
-        assertThatThrownBy(() -> notificationService.sendEmail(request, List.of(), TEST_CASE_ID.toString(), null))
+        assertThatThrownBy(() -> notificationService.sendEmail(request, TEST_CASE_ID.toString(), null))
             .isInstanceOf(NotificationException.class)
             .hasMessageContaining(expectedErrorMessage);
     }

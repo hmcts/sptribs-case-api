@@ -35,7 +35,6 @@ import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -95,14 +94,12 @@ public class ContactPartiesNotificationIT {
             setUpCaseContactPartyDocuments(data);
 
             when(notificationServiceCIC.sendEmail(any(NotificationRequest.class),
-                anyList(),
                 eq(TEST_CASE_ID.toString()),
                 eq(Party.SUBJECT))).thenReturn(NOTIFICATION_RESPONSE);
 
             contactPartiesNotification.sendToSubject(data, TEST_CASE_ID.toString());
 
             verify(notificationServiceCIC).sendEmail(notificationRequestCaptor.capture(),
-                anyList(),
                 eq(TEST_CASE_ID.toString()),
                 eq(Party.SUBJECT));
 
@@ -123,8 +120,8 @@ public class ContactPartiesNotificationIT {
 
             List<String> expectedDocUUIDs = getAttachedDocumentUUIDs(data);
 
-            assertThat(notificationRequest.getUploadedDocuments()).hasSize(20);
-            assertThat(notificationRequest.getUploadedDocuments().values()).containsAll(expectedDocUUIDs);
+            assertThat(notificationRequest.getTemplateDocumentVars()).hasSize(20);
+            assertThat(notificationRequest.getTemplateDocumentVars().values()).containsAll(expectedDocUUIDs);
             assertThat(data.getCicCase().getSubjectNotifyList()).isEqualTo(NOTIFICATION_RESPONSE);
         }
 
@@ -140,14 +137,12 @@ public class ContactPartiesNotificationIT {
                 .build();
 
             when(notificationServiceCIC.sendEmail(any(NotificationRequest.class),
-                anyList(),
                 eq(TEST_CASE_ID.toString()),
                 eq(Party.SUBJECT))).thenReturn(NOTIFICATION_RESPONSE);
 
             contactPartiesNotification.sendToSubject(data, TEST_CASE_ID.toString());
 
             verify(notificationServiceCIC).sendEmail(notificationRequestCaptor.capture(),
-                anyList(),
                 eq(TEST_CASE_ID.toString()),
                 eq(Party.SUBJECT));
 
@@ -165,7 +160,7 @@ public class ContactPartiesNotificationIT {
                 "Subject Name",
                 CONTACT_PARTY_INFO,
                 "a message"));
-            assertThat(notificationRequest.getUploadedDocuments()).isEmpty();
+            assertThat(notificationRequest.getTemplateDocumentVars()).isEmpty();
             assertThat(data.getCicCase().getSubjectNotifyList()).isEqualTo(NOTIFICATION_RESPONSE);
         }
 
@@ -203,7 +198,7 @@ public class ContactPartiesNotificationIT {
                 "10 Buckingham Palace",
                 ADDRESS_LINE_7,
                 "W1 1BW"));
-            assertThat(notificationRequest.getUploadedDocuments()).isNull();
+            assertThat(notificationRequest.getTemplateDocumentVars()).isNull();
             assertThat(data.getCicCase().getSubjectLetterNotifyList()).isEqualTo(NOTIFICATION_RESPONSE);
         }
 
@@ -221,14 +216,12 @@ public class ContactPartiesNotificationIT {
             setUpCaseContactPartyDocuments(data);
 
             when(notificationServiceCIC.sendEmail(any(NotificationRequest.class),
-                anyList(),
                 eq(TEST_CASE_ID.toString()),
                 eq(Party.APPLICANT))).thenReturn(NOTIFICATION_RESPONSE);
 
             contactPartiesNotification.sendToApplicant(data, TEST_CASE_ID.toString());
 
             verify(notificationServiceCIC).sendEmail(notificationRequestCaptor.capture(),
-                anyList(),
                 eq(TEST_CASE_ID.toString()),
                 eq(Party.APPLICANT));
 
@@ -249,8 +242,8 @@ public class ContactPartiesNotificationIT {
 
             List<String> expectedDocUUIDs = getAttachedDocumentUUIDs(data);
 
-            assertThat(notificationRequest.getUploadedDocuments()).hasSize(20);
-            assertThat(notificationRequest.getUploadedDocuments().values()).containsAll(expectedDocUUIDs);
+            assertThat(notificationRequest.getTemplateDocumentVars()).hasSize(20);
+            assertThat(notificationRequest.getTemplateDocumentVars().values()).containsAll(expectedDocUUIDs);
             assertThat(data.getCicCase().getAppNotificationResponse()).isEqualTo(NOTIFICATION_RESPONSE);
         }
 
@@ -267,14 +260,12 @@ public class ContactPartiesNotificationIT {
                 .build();
 
             when(notificationServiceCIC.sendEmail(any(NotificationRequest.class),
-                anyList(),
                 eq(TEST_CASE_ID.toString()),
                 eq(Party.APPLICANT))).thenReturn(NOTIFICATION_RESPONSE);
 
             contactPartiesNotification.sendToApplicant(data, TEST_CASE_ID.toString());
 
             verify(notificationServiceCIC).sendEmail(notificationRequestCaptor.capture(),
-                anyList(),
                 eq(TEST_CASE_ID.toString()),
                 eq(Party.APPLICANT));
 
@@ -293,7 +284,7 @@ public class ContactPartiesNotificationIT {
                 CONTACT_PARTY_INFO,
                 "a message"));
 
-            assertThat(notificationRequest.getUploadedDocuments()).isEmpty();
+            assertThat(notificationRequest.getTemplateDocumentVars()).isEmpty();
             assertThat(data.getCicCase().getAppNotificationResponse()).isEqualTo(NOTIFICATION_RESPONSE);
         }
 
@@ -333,7 +324,7 @@ public class ContactPartiesNotificationIT {
                 "10 Buckingham Palace",
                 ADDRESS_LINE_7,
                 "W1 1BW"));
-            assertThat(notificationRequest.getUploadedDocuments()).isNull();
+            assertThat(notificationRequest.getTemplateDocumentVars()).isNull();
             assertThat(data.getCicCase().getAppLetterNotificationResponse()).isEqualTo(NOTIFICATION_RESPONSE);
         }
 
@@ -352,14 +343,12 @@ public class ContactPartiesNotificationIT {
             setUpCaseContactPartyDocuments(data);
 
             when(notificationServiceCIC.sendEmail(any(NotificationRequest.class),
-                anyList(),
                 eq(TEST_CASE_ID.toString()),
                 eq(Party.REPRESENTATIVE))).thenReturn(NOTIFICATION_RESPONSE);
 
             contactPartiesNotification.sendToRepresentative(data, TEST_CASE_ID.toString());
 
             verify(notificationServiceCIC).sendEmail(notificationRequestCaptor.capture(),
-                anyList(),
                 eq(TEST_CASE_ID.toString()),
                 eq(Party.REPRESENTATIVE));
 
@@ -379,8 +368,8 @@ public class ContactPartiesNotificationIT {
                 "Representative Name",
                 CONTACT_PARTY_INFO,
                 "a message"));
-            assertThat(notificationRequest.getUploadedDocuments()).hasSize(20);
-            assertThat(notificationRequest.getUploadedDocuments().values()).containsAll(expectedDocUUIDs);
+            assertThat(notificationRequest.getTemplateDocumentVars()).hasSize(20);
+            assertThat(notificationRequest.getTemplateDocumentVars().values()).containsAll(expectedDocUUIDs);
             assertThat(data.getCicCase().getRepNotificationResponse()).isEqualTo(NOTIFICATION_RESPONSE);
         }
 
@@ -397,14 +386,12 @@ public class ContactPartiesNotificationIT {
                 .build();
 
             when(notificationServiceCIC.sendEmail(any(NotificationRequest.class),
-                anyList(),
                 eq(TEST_CASE_ID.toString()),
                 eq(Party.REPRESENTATIVE))).thenReturn(NOTIFICATION_RESPONSE);
 
             contactPartiesNotification.sendToRepresentative(data, TEST_CASE_ID.toString());
 
             verify(notificationServiceCIC).sendEmail(notificationRequestCaptor.capture(),
-                anyList(),
                 eq(TEST_CASE_ID.toString()),
                 eq(Party.REPRESENTATIVE));
 
@@ -422,7 +409,7 @@ public class ContactPartiesNotificationIT {
                 "Representative Name",
                 CONTACT_PARTY_INFO,
                 "a message"));
-            assertThat(notificationRequest.getUploadedDocuments()).isEmpty();
+            assertThat(notificationRequest.getTemplateDocumentVars()).isEmpty();
             assertThat(data.getCicCase().getRepNotificationResponse()).isEqualTo(NOTIFICATION_RESPONSE);
         }
 
@@ -462,7 +449,7 @@ public class ContactPartiesNotificationIT {
                 "10 Buckingham Palace",
                 ADDRESS_LINE_7,
                 "W1 1BW"));
-            assertThat(notificationRequest.getUploadedDocuments()).isNull();
+            assertThat(notificationRequest.getTemplateDocumentVars()).isNull();
             assertThat(data.getCicCase().getRepLetterNotificationResponse()).isEqualTo(NOTIFICATION_RESPONSE);
         }
 
@@ -478,14 +465,12 @@ public class ContactPartiesNotificationIT {
                 .build();
 
             when(notificationServiceCIC.sendEmail(any(NotificationRequest.class),
-                anyList(),
                 eq(TEST_CASE_ID.toString()),
                 eq(Party.RESPONDENT))).thenReturn(NOTIFICATION_RESPONSE);
 
             contactPartiesNotification.sendToRespondent(data, TEST_CASE_ID.toString());
 
             verify(notificationServiceCIC).sendEmail(notificationRequestCaptor.capture(),
-                anyList(),
                 eq(TEST_CASE_ID.toString()),
                 eq(Party.RESPONDENT));
 
@@ -503,7 +488,7 @@ public class ContactPartiesNotificationIT {
                 "Respondent Name",
                 CONTACT_PARTY_INFO,
                 "a message"));
-            assertThat(notificationRequest.getUploadedDocuments()).isEmpty();
+            assertThat(notificationRequest.getTemplateDocumentVars()).isEmpty();
             assertThat(data.getCicCase().getResNotificationResponse()).isEqualTo(NOTIFICATION_RESPONSE);
         }
 
@@ -520,14 +505,12 @@ public class ContactPartiesNotificationIT {
             setUpCaseContactPartyDocuments(data);
 
             when(notificationServiceCIC.sendEmail(any(NotificationRequest.class),
-                anyList(),
                 eq(TEST_CASE_ID.toString()),
                 eq(Party.RESPONDENT))).thenReturn(NOTIFICATION_RESPONSE);
 
             contactPartiesNotification.sendToRespondent(data, TEST_CASE_ID.toString());
 
             verify(notificationServiceCIC).sendEmail(notificationRequestCaptor.capture(),
-                anyList(),
                 eq(TEST_CASE_ID.toString()),
                 eq(Party.RESPONDENT));
 
@@ -547,8 +530,8 @@ public class ContactPartiesNotificationIT {
                 "Respondent Name",
                 CONTACT_PARTY_INFO,
                 "a message"));
-            assertThat(notificationRequest.getUploadedDocuments()).hasSize(20);
-            assertThat(notificationRequest.getUploadedDocuments().values()).containsAll(expectedDocUUIDs);
+            assertThat(notificationRequest.getTemplateDocumentVars()).hasSize(20);
+            assertThat(notificationRequest.getTemplateDocumentVars().values()).containsAll(expectedDocUUIDs);
             assertThat(data.getCicCase().getResNotificationResponse()).isEqualTo(NOTIFICATION_RESPONSE);
         }
 
@@ -564,14 +547,12 @@ public class ContactPartiesNotificationIT {
                 .build();
 
             when(notificationServiceCIC.sendEmail(any(NotificationRequest.class),
-                anyList(),
                 eq(TEST_CASE_ID.toString()),
                 eq(Party.TRIBUNAL))).thenReturn(NOTIFICATION_RESPONSE);
 
             contactPartiesNotification.sendToTribunal(data, TEST_CASE_ID.toString());
 
             verify(notificationServiceCIC).sendEmail(notificationRequestCaptor.capture(),
-                anyList(),
                 eq(TEST_CASE_ID.toString()),
                 eq(Party.TRIBUNAL));
 
@@ -589,7 +570,7 @@ public class ContactPartiesNotificationIT {
                 TRIBUNAL_NAME_VALUE,
                 CONTACT_PARTY_INFO,
                 "a message"));
-            assertThat(notificationRequest.getUploadedDocuments()).isEmpty();
+            assertThat(notificationRequest.getTemplateDocumentVars()).isEmpty();
             assertThat(data.getCicCase().getTribunalNotificationResponse()).isEqualTo(NOTIFICATION_RESPONSE);
         }
 
@@ -606,14 +587,12 @@ public class ContactPartiesNotificationIT {
             setUpCaseContactPartyDocuments(data);
 
             when(notificationServiceCIC.sendEmail(any(NotificationRequest.class),
-                anyList(),
                 eq(TEST_CASE_ID.toString()),
                 eq(Party.TRIBUNAL))).thenReturn(NOTIFICATION_RESPONSE);
 
             contactPartiesNotification.sendToTribunal(data, TEST_CASE_ID.toString());
 
             verify(notificationServiceCIC).sendEmail(notificationRequestCaptor.capture(),
-                anyList(),
                 eq(TEST_CASE_ID.toString()),
                 eq(Party.TRIBUNAL));
 
@@ -633,8 +612,8 @@ public class ContactPartiesNotificationIT {
                 TRIBUNAL_NAME_VALUE,
                 CONTACT_PARTY_INFO,
                 "a message"));
-            assertThat(notificationRequest.getUploadedDocuments()).hasSize(20);
-            assertThat(notificationRequest.getUploadedDocuments().values()).containsAll(expectedDocUUIDs);
+            assertThat(notificationRequest.getTemplateDocumentVars()).hasSize(20);
+            assertThat(notificationRequest.getTemplateDocumentVars().values()).containsAll(expectedDocUUIDs);
             assertThat(data.getCicCase().getTribunalNotificationResponse()).isEqualTo(NOTIFICATION_RESPONSE);
         }
     }
@@ -662,14 +641,12 @@ public class ContactPartiesNotificationIT {
             setUpCaseContactPartyDocuments(data);
 
             when(notificationServiceCIC.sendEmail(any(NotificationRequest.class),
-                anyList(),
                 eq(TEST_CASE_ID.toString()),
                 eq(Party.SUBJECT))).thenReturn(NOTIFICATION_RESPONSE);
 
             contactPartiesNotification.sendToSubject(data, TEST_CASE_ID.toString());
 
             verify(notificationServiceCIC).sendEmail(notificationRequestCaptor.capture(),
-                anyList(),
                 eq(TEST_CASE_ID.toString()),
                 eq(Party.SUBJECT));
 
@@ -690,8 +667,8 @@ public class ContactPartiesNotificationIT {
 
             List<String> expectedDocUUIDs = getAttachedDocumentUUIDs(data);
 
-            assertThat(notificationRequest.getUploadedDocuments()).hasSize(20);
-            assertThat(notificationRequest.getUploadedDocuments().values()).containsAll(expectedDocUUIDs);
+            assertThat(notificationRequest.getTemplateDocumentVars()).hasSize(20);
+            assertThat(notificationRequest.getTemplateDocumentVars().values()).containsAll(expectedDocUUIDs);
             assertThat(data.getCicCase().getSubjectNotifyList()).isEqualTo(NOTIFICATION_RESPONSE);
         }
 
@@ -709,14 +686,12 @@ public class ContactPartiesNotificationIT {
             setUpCaseContactPartyDocuments(data);
 
             when(notificationServiceCIC.sendEmail(any(NotificationRequest.class),
-                anyList(),
                 eq(TEST_CASE_ID.toString()),
                 eq(Party.APPLICANT))).thenReturn(NOTIFICATION_RESPONSE);
 
             contactPartiesNotification.sendToApplicant(data, TEST_CASE_ID.toString());
 
             verify(notificationServiceCIC).sendEmail(notificationRequestCaptor.capture(),
-                anyList(),
                 eq(TEST_CASE_ID.toString()),
                 eq(Party.APPLICANT));
 
@@ -737,8 +712,8 @@ public class ContactPartiesNotificationIT {
 
             List<String> expectedDocUUIDs = getAttachedDocumentUUIDs(data);
 
-            assertThat(notificationRequest.getUploadedDocuments()).hasSize(20);
-            assertThat(notificationRequest.getUploadedDocuments().values()).containsAll(expectedDocUUIDs);
+            assertThat(notificationRequest.getTemplateDocumentVars()).hasSize(20);
+            assertThat(notificationRequest.getTemplateDocumentVars().values()).containsAll(expectedDocUUIDs);
             assertThat(data.getCicCase().getAppNotificationResponse()).isEqualTo(NOTIFICATION_RESPONSE);
         }
 
@@ -757,14 +732,12 @@ public class ContactPartiesNotificationIT {
             setUpCaseContactPartyDocuments(data);
 
             when(notificationServiceCIC.sendEmail(any(NotificationRequest.class),
-                anyList(),
                 eq(TEST_CASE_ID.toString()),
                 eq(Party.REPRESENTATIVE))).thenReturn(NOTIFICATION_RESPONSE);
 
             contactPartiesNotification.sendToRepresentative(data, TEST_CASE_ID.toString());
 
             verify(notificationServiceCIC).sendEmail(notificationRequestCaptor.capture(),
-                anyList(),
                 eq(TEST_CASE_ID.toString()),
                 eq(Party.REPRESENTATIVE));
 
@@ -784,8 +757,8 @@ public class ContactPartiesNotificationIT {
                 "Representative Name",
                 CONTACT_PARTY_INFO,
                 "a message"));
-            assertThat(notificationRequest.getUploadedDocuments()).hasSize(20);
-            assertThat(notificationRequest.getUploadedDocuments().values()).containsAll(expectedDocUUIDs);
+            assertThat(notificationRequest.getTemplateDocumentVars()).hasSize(20);
+            assertThat(notificationRequest.getTemplateDocumentVars().values()).containsAll(expectedDocUUIDs);
             assertThat(data.getCicCase().getRepNotificationResponse()).isEqualTo(NOTIFICATION_RESPONSE);
         }
 
@@ -802,14 +775,12 @@ public class ContactPartiesNotificationIT {
             setUpCaseContactPartyDocuments(data);
 
             when(notificationServiceCIC.sendEmail(any(NotificationRequest.class),
-                anyList(),
                 eq(TEST_CASE_ID.toString()),
                 eq(Party.RESPONDENT))).thenReturn(NOTIFICATION_RESPONSE);
 
             contactPartiesNotification.sendToRespondent(data, TEST_CASE_ID.toString());
 
             verify(notificationServiceCIC).sendEmail(notificationRequestCaptor.capture(),
-                anyList(),
                 eq(TEST_CASE_ID.toString()),
                 eq(Party.RESPONDENT));
 
@@ -829,8 +800,8 @@ public class ContactPartiesNotificationIT {
                 "Respondent Name",
                 CONTACT_PARTY_INFO,
                 "a message"));
-            assertThat(notificationRequest.getUploadedDocuments()).hasSize(20);
-            assertThat(notificationRequest.getUploadedDocuments().values()).containsAll(expectedDocUUIDs);
+            assertThat(notificationRequest.getTemplateDocumentVars()).hasSize(20);
+            assertThat(notificationRequest.getTemplateDocumentVars().values()).containsAll(expectedDocUUIDs);
             assertThat(data.getCicCase().getResNotificationResponse()).isEqualTo(NOTIFICATION_RESPONSE);
         }
 
@@ -847,14 +818,12 @@ public class ContactPartiesNotificationIT {
             setUpCaseContactPartyDocuments(data);
 
             when(notificationServiceCIC.sendEmail(any(NotificationRequest.class),
-                anyList(),
                 eq(TEST_CASE_ID.toString()),
                 eq(Party.TRIBUNAL))).thenReturn(NOTIFICATION_RESPONSE);
 
             contactPartiesNotification.sendToTribunal(data, TEST_CASE_ID.toString());
 
             verify(notificationServiceCIC).sendEmail(notificationRequestCaptor.capture(),
-                anyList(),
                 eq(TEST_CASE_ID.toString()),
                 eq(Party.TRIBUNAL));
 
@@ -874,8 +843,8 @@ public class ContactPartiesNotificationIT {
                 TRIBUNAL_NAME_VALUE,
                 CONTACT_PARTY_INFO,
                 "a message"));
-            assertThat(notificationRequest.getUploadedDocuments()).hasSize(20);
-            assertThat(notificationRequest.getUploadedDocuments().values()).containsAll(expectedDocUUIDs);
+            assertThat(notificationRequest.getTemplateDocumentVars()).hasSize(20);
+            assertThat(notificationRequest.getTemplateDocumentVars().values()).containsAll(expectedDocUUIDs);
             assertThat(data.getCicCase().getTribunalNotificationResponse()).isEqualTo(NOTIFICATION_RESPONSE);
         }
     }
