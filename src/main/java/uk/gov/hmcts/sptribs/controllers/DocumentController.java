@@ -44,6 +44,7 @@ import uk.gov.hmcts.sptribs.idam.IdamService;
 import uk.gov.hmcts.sptribs.notification.model.Party;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 @Tag(name = "Document Controller")
@@ -92,16 +93,11 @@ public class DocumentController {
         log.info("Received request to get documents with CCD reference = {}", ccdReference);
 
         CicaCaseEntity cicaCaseEntity = cicaCaseService.checkIfUserHasAccessWithPostcode(ccdReference, authorisation, postcode);
+        validateCaseEntity(cicaCaseEntity, ccdReference);
 
         CicaCaseResponse response = cicaCaseMapper.toResponse(cicaCaseEntity);
 
-        CICUser user = idamService.retrieveUser(authorisation);
-        CaseData caseData = objectMapper.convertValue(cicaCaseEntity.getData(), CaseData.class);
-        Party party = CasePartyUtil.determineParty(caseData, user.getUserInfo().getSub());
-
-        if (party == null) {
-            throw new UnauthorisedCaseAccessException("User email does not match any registered party on case");
-        }
+        Party party = resolveParty(authorisation, cicaCaseEntity);
 
         Set<Long> downloadedDocIds = documentDownloadStatusService.getDownloadedDocumentIds(ccdReference, party);
 
@@ -162,14 +158,9 @@ public class DocumentController {
         log.info("Received request to download document with id: {} for CCD reference: {}", documentId, ccdReference);
 
         CicaCaseEntity cicaCaseEntity = cicaCaseService.checkIfUserHasAccessWithPostcode(ccdReference, authorisation, postcode);
+        validateCaseEntity(cicaCaseEntity, ccdReference);
 
-        CICUser user = idamService.retrieveUser(authorisation);
-        CaseData caseData = objectMapper.convertValue(cicaCaseEntity.getData(), CaseData.class);
-        Party party = CasePartyUtil.determineParty(caseData, user.getUserInfo().getSub());
-
-        if (party == null) {
-            throw new UnauthorisedCaseAccessException("User email does not match any registered party on case");
-        }
+        Party party = resolveParty(authorisation, cicaCaseEntity);
 
         DownloadedDocumentResponse documentResponse = documentDownloadService.downloadDocument(
             authorisation,
@@ -206,6 +197,32 @@ public class DocumentController {
                 .downloaded(downloadedDocIds != null && downloadedDocIds.contains(entity.getId()))
                 .build())
             .toList();
+    }
+
+    private Party resolveParty(String authorisation, CicaCaseEntity cicaCaseEntity) {
+        CICUser user = idamService.retrieveUser(authorisation);
+        if (user == null || user.getUserInfo() == null || user.getUserInfo().getSub() == null) {
+            throw new UnauthorisedCaseAccessException("Unable to determine user identity from authorisation token");
+        }
+
+        CaseData caseData = objectMapper.convertValue(cicaCaseEntity.getData(), CaseData.class);
+        Party party = CasePartyUtil.determineParty(caseData, user.getUserInfo().getSub());
+        if (party == null) {
+            throw new UnauthorisedCaseAccessException("User email does not match any registered party on case");
+        }
+
+        return party;
+    }
+
+    private void validateCaseEntity(CicaCaseEntity cicaCaseEntity, String ccdReference) {
+        if (cicaCaseEntity == null) {
+            throw new UnauthorisedCaseAccessException("No case found with CCD reference: " + ccdReference);
+        }
+
+        Map<String, ?> caseData = cicaCaseEntity.getData();
+        if (caseData == null) {
+            throw new UnauthorisedCaseAccessException("Case data is missing for CCD reference: " + ccdReference);
+        }
     }
 
     private List<DashboardDocument> wrapContactPartyWithDownloadStatus(

@@ -41,7 +41,9 @@ import java.util.Map;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID_STRING;
@@ -273,11 +275,72 @@ class DocumentControllerTest {
             .thenThrow(new UnauthorisedCaseAccessException("Postcode or email mismatch"));
 
         // When / Then
-        org.assertj.core.api.Assertions.assertThatThrownBy(() -> documentController.downloadDocumentByCaseAndId(
+        assertThatThrownBy(() -> documentController.downloadDocumentByCaseAndId(
             TEST_AUTHORIZATION, postcode, TEST_CASE_ID_STRING, documentId))
             .isExactlyInstanceOf(UnauthorisedCaseAccessException.class)
             .hasMessageContaining("Postcode or email mismatch");
 
-        org.mockito.Mockito.verifyNoInteractions(documentDownloadService);
+        verifyNoInteractions(documentDownloadService);
+    }
+
+    @Test
+    void shouldThrowExceptionWhenCaseDataMissingOnGetDocuments() {
+        // Given
+        final CicaCaseEntity cicaCaseEntity = CicaCaseEntity.builder()
+            .data(null)
+            .build();
+
+        when(cicaCaseService.checkIfUserHasAccessWithPostcode(TEST_CASE_ID_STRING, TEST_AUTHORIZATION, TEST_POSTCODE))
+            .thenReturn(cicaCaseEntity);
+
+        // When / Then
+        assertThatThrownBy(() -> documentController.getDocumentsByCCDReference(
+            TEST_AUTHORIZATION,
+            TEST_POSTCODE,
+            TEST_CASE_ID_STRING
+        ))
+            .isExactlyInstanceOf(UnauthorisedCaseAccessException.class)
+            .hasMessageContaining("Case data is missing");
+
+        verifyNoInteractions(cicaCaseMapper, documentsService, documentDownloadStatusService);
+    }
+
+    @Test
+    void shouldThrowExceptionWhenUserInfoMissingOnGetDocuments() {
+        // Given
+        final CaseData caseData = new CaseData();
+        final CicCase cicCase = new CicCase();
+        cicCase.setEmail("test-email@hmcts.net");
+        caseData.setCicCase(cicCase);
+
+        final Map<String, JsonNode> dataMap = objectMapper.convertValue(
+            caseData,
+            new TypeReference<>() {}
+        );
+
+        final CicaCaseEntity cicaCaseEntity = CicaCaseEntity.builder()
+            .data(dataMap)
+            .build();
+
+        final CicaCaseResponse cicaCaseResponse = CicaCaseResponse.builder().build();
+
+        final CICUser user = mock(CICUser.class);
+        when(user.getUserInfo()).thenReturn(null);
+
+        when(cicaCaseService.checkIfUserHasAccessWithPostcode(TEST_CASE_ID_STRING, TEST_AUTHORIZATION, TEST_POSTCODE))
+            .thenReturn(cicaCaseEntity);
+        when(cicaCaseMapper.toResponse(cicaCaseEntity)).thenReturn(cicaCaseResponse);
+        when(idamService.retrieveUser(TEST_AUTHORIZATION)).thenReturn(user);
+
+        // When / Then
+        assertThatThrownBy(() -> documentController.getDocumentsByCCDReference(
+            TEST_AUTHORIZATION,
+            TEST_POSTCODE,
+            TEST_CASE_ID_STRING
+        ))
+            .isExactlyInstanceOf(UnauthorisedCaseAccessException.class)
+            .hasMessageContaining("Unable to determine user identity");
+
+        verifyNoInteractions(documentsService, documentDownloadStatusService);
     }
 }
