@@ -278,7 +278,7 @@ public abstract class FunctionalTestSuite {
     }
 
     protected Response triggerCallback(Map<String, Object> caseData, Map<String, Object> caseDataBefore,
-                                        String eventId, String url) throws IOException {
+                                       String eventId, String url) throws IOException {
         CallbackRequest request = CallbackRequest
             .builder()
             .eventId(eventId)

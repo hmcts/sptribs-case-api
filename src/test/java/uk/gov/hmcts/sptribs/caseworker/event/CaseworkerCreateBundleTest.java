@@ -25,7 +25,9 @@ import uk.gov.hmcts.sptribs.ciccase.model.RepresentativeCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.ciccase.model.access.Permissions;
+import uk.gov.hmcts.sptribs.document.bundling.AudioVideoEvidenceBundleService;
 import uk.gov.hmcts.sptribs.document.bundling.client.BundlingService;
+import uk.gov.hmcts.sptribs.document.bundling.model.AudioVideoEvidenceBundleDocument;
 import uk.gov.hmcts.sptribs.document.bundling.model.Bundle;
 import uk.gov.hmcts.sptribs.document.bundling.model.BundleCallback;
 import uk.gov.hmcts.sptribs.document.bundling.model.BundleIdAndTimestamp;
@@ -80,6 +82,9 @@ class CaseworkerCreateBundleTest {
     private BundlingService bundlingService;
 
     @Mock
+    private AudioVideoEvidenceBundleService audioVideoEvidenceBundleService;
+
+    @Mock
     private Clock clock;
 
     @Test
@@ -122,9 +127,19 @@ class CaseworkerCreateBundleTest {
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
 
         final Bundle bundle = Bundle.builder().build();
+        AudioVideoEvidenceBundleDocument audioVideoBundleDocument = AudioVideoEvidenceBundleDocument.builder()
+            .documentLink(Document.builder()
+                .filename("audio-video-evidence-123.pdf")
+                .url("http://dm-store/documents/generated")
+                .binaryUrl("http://dm-store/documents/generated/binary")
+                .build())
+            .date(LocalDate.of(2026, 8, 5))
+            .build();
 
         when(bundlingService.getMultiBundleConfig()).thenCallRealMethod();
         when(bundlingService.getMultiBundleConfigs()).thenCallRealMethod();
+        when(audioVideoEvidenceBundleService.createAudioVideoEvidenceBundleDocument(caseData, TEST_CASE_ID))
+            .thenReturn(audioVideoBundleDocument);
 
         when(bundlingService.createBundle(any(BundleCallback.class), eq(TEST_CASE_ID))).thenAnswer(callback -> {
             final BundleCallback callbackAtMockTime = (BundleCallback) callback.getArguments()[0];
@@ -134,6 +149,7 @@ class CaseworkerCreateBundleTest {
             assertThat(dataAtMockTime.getCaseDocuments().getFirst().getValue()).isEqualTo(cicDocuments.getFirst().getValue());
             assertThat(dataAtMockTime.getBundleConfiguration()).isEqualTo(MULTI_BUNDLE_CONFIG);
             assertThat(dataAtMockTime.getMultiBundleConfiguration()).isEqualTo(List.of(MULTI_BUNDLE_CONFIG));
+            assertThat(dataAtMockTime.getAudioVideoEvidenceBundleDocument()).isEqualTo(audioVideoBundleDocument);
             return List.of(bundle);
         });
 
@@ -143,6 +159,7 @@ class CaseworkerCreateBundleTest {
         verify(bundlingService).getMultiBundleConfig();
         verify(bundlingService).getMultiBundleConfigs();
         verify(bundlingService).buildBundleListValues(anyList());
+        verify(audioVideoEvidenceBundleService).createAudioVideoEvidenceBundleDocument(caseData, TEST_CASE_ID);
 
         final CaseData responseData = response.getData();
         assertThat(responseData)
@@ -150,10 +167,9 @@ class CaseworkerCreateBundleTest {
             .isEqualTo(updatedCaseDetails.getData());
         assertThat(responseData.getCaseBundles()).isNotNull();
 
-        //case documents should remain null so that they are not duplicated
-        //i.e. not in their respective child objects as well (CicCase.applicantDocumentsUploaded)
         assertThat(responseData.getCaseDocuments()).isNull();
         assertThat(responseData.getMultiBundleConfiguration()).isNull();
+        assertThat(responseData.getAudioVideoEvidenceBundleDocument()).isNull();
     }
 
     @Test
@@ -306,6 +322,7 @@ class CaseworkerCreateBundleTest {
             .isEqualTo(caseDetails.getData());
         assertThat(responseData.getCaseBundles()).isNotNull();
         assertThat(responseData.getCaseDocuments()).isNull();
+        assertThat(responseData.getFurtherCaseDocuments()).isNull();
         assertThat(responseData.getMultiBundleConfiguration()).isNull();
     }
 
@@ -386,6 +403,7 @@ class CaseworkerCreateBundleTest {
             .isEqualTo(caseDetails.getData());
         assertThat(responseData.getCaseBundles()).isNotNull();
         assertThat(responseData.getCaseDocuments()).isNull();
+        assertThat(responseData.getFurtherCaseDocuments()).isNull();
         assertThat(responseData.getMultiBundleConfiguration()).isNull();
     }
 
@@ -450,6 +468,7 @@ class CaseworkerCreateBundleTest {
             .isEqualTo(updatedCaseDetails.getData());
         assertThat(responseData.getCaseBundles()).isNotNull();
         assertThat(responseData.getCaseDocuments()).isNull();
+        assertThat(responseData.getFurtherCaseDocuments()).isNull();
         assertThat(responseData.getMultiBundleConfiguration()).isNull();
     }
 
