@@ -128,5 +128,13 @@ public interface DocumentsRepository extends JpaRepository<DocumentEntity, Long>
         @Param("caseDocumentTypeId") Long caseDocumentTypeId,
         @Param("savedAt") OffsetDateTime savedAt
     );
+
+    @Query("""
+            SELECT d
+            FROM DocumentEntity d
+            WHERE d.documentUrl LIKE %:documentId% OR d.documentBinaryUrl LIKE %:documentId%
+        """)
+    Optional<DocumentEntity> findByDocumentIdUuid(
+        @Param("documentId") String documentId);
 }
 
