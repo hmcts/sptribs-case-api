@@ -115,7 +115,7 @@ public class CaseworkerContactParties implements CCDConfig<CaseData, State, User
 
         List<ListValue<CaseworkerCICDocument>> allCaseDocuments =
             DocumentListUtil.getAllCaseDocuments(caseData);
-        caseData.getContactPartiesDocuments().setAvailableCaseDocuments(allCaseDocuments);
+        caseData.getContactPartiesDocuments().setPreviewDocuments(allCaseDocuments);
 
         DynamicMultiSelectList documentList =
             DocumentListUtil.prepareContactPartiesDocumentListForPreview(caseData, baseUrl, documentBaseUrl);
