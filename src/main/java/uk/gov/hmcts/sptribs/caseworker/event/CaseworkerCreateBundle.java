@@ -109,14 +109,13 @@ public class CaseworkerCreateBundle implements CCDConfig<CaseData, State, UserRo
                                                                        CaseDetails<CaseData, State> beforeDetails) {
 
         final CaseData caseData = details.getData();
-        final CaseData bundleRequestCaseData = caseData.toBuilder().build();
         final List<CaseworkerCICDocument> allCaseDocuments = extractDocumentsFromListValues(getAllCaseDocuments(caseData));
 
         if (caseData.isBundleOrderEnabled()) {
-            setCaseBundleRequestDocuments(bundleRequestCaseData, allCaseDocuments);
+            setCaseBundleRequestDocuments(caseData, allCaseDocuments);
         } else {
             var cicDocumentList = convertToBundleDocumentType(allCaseDocuments);
-            bundleRequestCaseData.setCaseDocuments(cicDocumentList);
+            caseData.setCaseDocuments(cicDocumentList);
         }
 
         caseData.setBundleConfiguration(bundlingService.getMultiBundleConfig());
@@ -124,26 +123,19 @@ public class CaseworkerCreateBundle implements CCDConfig<CaseData, State, UserRo
         caseData.setCaseNumber(String.valueOf(details.getId()));
         caseData.setSubjectRepFullName(caseData.getCicCase().getFullName());
         caseData.setSchemeLabel(caseData.getCicCase().getSchemeCic() != null ? caseData.getCicCase().getSchemeCic().getLabel() : "");
-        bundleRequestCaseData.setBundleConfiguration(caseData.getBundleConfiguration());
-        bundleRequestCaseData.setMultiBundleConfiguration(caseData.getMultiBundleConfiguration());
-        bundleRequestCaseData.setCaseNumber(caseData.getCaseNumber());
-        bundleRequestCaseData.setSubjectRepFullName(caseData.getSubjectRepFullName());
-        bundleRequestCaseData.setSchemeLabel(caseData.getSchemeLabel());
 
         try {
             var audioVideoEvidenceBundleDocument =
                 audioVideoEvidenceBundleService.createAudioVideoEvidenceBundleDocument(caseData, details.getId());
             caseData.setAudioVideoEvidenceBundleDocument(audioVideoEvidenceBundleDocument);
-            bundleRequestCaseData.setAudioVideoEvidenceBundleDocument(audioVideoEvidenceBundleDocument);
         } catch (RuntimeException exception) {
             log.warn("Unable to create audio/video evidence bundle document for case {}", details.getId(), exception);
             caseData.setAudioVideoEvidenceBundleDocument(null);
-            bundleRequestCaseData.setAudioVideoEvidenceBundleDocument(null);
         }
-        details.setData(caseData);
-        CaseDetails<CaseData, State> bundleRequestDetails = buildBundleRequestDetails(details, bundleRequestCaseData);
 
-        final Callback callback = new Callback(bundleRequestDetails, beforeDetails, CREATE_BUNDLE, true);
+        details.setData(caseData);
+
+        final Callback callback = new Callback(details, beforeDetails, CREATE_BUNDLE, true);
         final BundleCallback bundleCallback = new BundleCallback(callback);
 
         List<ListValue<Bundle>> existingBundles = getExistingBundles(beforeDetails);
@@ -157,18 +149,6 @@ public class CaseworkerCreateBundle implements CCDConfig<CaseData, State, UserRo
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
             .build();
-    }
-
-    private CaseDetails<CaseData, State> buildBundleRequestDetails(CaseDetails<CaseData, State> details,
-                                                                   CaseData bundleRequestCaseData) {
-        CaseDetails<CaseData, State> bundleRequestDetails = new CaseDetails<>();
-        bundleRequestDetails.setId(details.getId());
-        bundleRequestDetails.setState(details.getState());
-        bundleRequestDetails.setCreatedDate(details.getCreatedDate());
-        bundleRequestDetails.setCaseTypeId(details.getCaseTypeId());
-        bundleRequestDetails.setJurisdiction(details.getJurisdiction());
-        bundleRequestDetails.setData(bundleRequestCaseData);
-        return bundleRequestDetails;
     }
 
     public SubmittedCallbackResponse submitted(CaseDetails<CaseData, State> details,

@@ -258,7 +258,7 @@ public class CaseData {
     private List<MultiBundleConfig> multiBundleConfiguration;
 
     @CCD(
-        label = "Audio/video evidence bundle document",
+        label = "Audio/video evidence bundle documents",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private AudioVideoEvidenceBundleDocument audioVideoEvidenceBundleDocument; // bundle field
