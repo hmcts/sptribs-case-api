@@ -55,7 +55,7 @@ public class DocumentDownloadStatusEntity {
     private OffsetDateTime downloadedAt;
 
     @Override
-    public final boolean equals(Object o) {
+    public boolean equals(Object o) {
         if (this == o) {
             return true;
         }
@@ -76,7 +76,7 @@ public class DocumentDownloadStatusEntity {
     }
 
     @Override
-    public final int hashCode() {
+    public int hashCode() {
         return Objects.hash(id);
     }
 }
