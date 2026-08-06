@@ -52,6 +52,7 @@ public class CaseIssuedNotificationTest {
 
     public static final LocalDate TODAY = LocalDate.now();
     public static final String TODAY_FORMATTED = TODAY.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+    private static final String TEST_DOCUMENT_ID = "5540a2c0-4982-411d-b3c4-b28a511a688d";
 
     @Test
     void shouldNotifySubjectOfCaseIssuedCitizenWithEmail() {
@@ -237,8 +238,8 @@ public class CaseIssuedNotificationTest {
     void shouldNotifyRespondentOfCaseIssuedCitizenWithEmailWithAttachmentsDateInTime() {
         final Document document = Document.builder()
             .filename("test file")
-            .url("test.url/documentId")
-            .binaryUrl("test.url/documentId/binary")
+            .url("test.url/" + TEST_DOCUMENT_ID)
+            .binaryUrl("test.url/" + TEST_DOCUMENT_ID + "/binary")
             .build();
         final CaseworkerCICDocument cicDocument = CaseworkerCICDocument.builder()
             .date(LocalDate.of(2025, 12, 11))
@@ -299,8 +300,8 @@ public class CaseIssuedNotificationTest {
     void shouldNotifyRespondentOfCaseIssuedCitizenWithEmailWithAttachmentsDateOutOfTime() {
         final Document document = Document.builder()
             .filename("test file")
-            .url("test.url/documentId")
-            .binaryUrl("test.url/documentId/binary")
+            .url("test.url/" + TEST_DOCUMENT_ID)
+            .binaryUrl("test.url/" + TEST_DOCUMENT_ID + "/binary")
             .build();
         final CaseworkerCICDocument cicDocument = CaseworkerCICDocument.builder()
             .date(LocalDate.of(2025, 12, 11))
@@ -368,7 +369,7 @@ public class CaseIssuedNotificationTest {
 
     private Map<String, String> getDocumentUploadMap() {
         return Map.of(
-            "CaseDocument1", "documentId",
+            "CaseDocument1", TEST_DOCUMENT_ID,
             "CaseDocument2", "",
             "CaseDocument3", "",
             "CaseDocument4", "",
