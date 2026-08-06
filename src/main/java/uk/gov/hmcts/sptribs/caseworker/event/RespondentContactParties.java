@@ -9,6 +9,7 @@ import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.ccd.sdk.type.DynamicMultiSelectList;
+import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.caseworker.event.page.ContactPartiesSelectDocument;
 import uk.gov.hmcts.sptribs.caseworker.event.page.RespondentPartiesToContact;
@@ -20,7 +21,10 @@ import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
+import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.notification.dispatcher.ContactPartiesNotification;
+
+import java.util.List;
 
 import static java.lang.String.format;
 import static org.apache.commons.collections4.CollectionUtils.isEmpty;
@@ -98,6 +102,10 @@ public class RespondentContactParties implements CCDConfig<CaseData, State, User
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToStart(CaseDetails<CaseData, State> details) {
         final CaseData caseData = details.getData();
         caseData.setContactParties(new ContactParties());
+
+        List<ListValue<CaseworkerCICDocument>> allCaseDocuments = DocumentListUtil.getAllCaseDocuments(caseData);
+        caseData.getContactPartiesDocuments().setAvailableCaseDocuments(allCaseDocuments);
+
         DynamicMultiSelectList documentList =
             DocumentListUtil.prepareContactPartiesDocumentListForPreview(caseData, baseUrl, documentBaseUrl);
         caseData.getContactPartiesDocuments().setDocumentList(documentList);
