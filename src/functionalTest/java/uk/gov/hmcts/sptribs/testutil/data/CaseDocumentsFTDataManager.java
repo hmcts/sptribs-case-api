@@ -56,6 +56,19 @@ public class CaseDocumentsFTDataManager extends FunctionalTestDataManager {
         }
     }
 
+    public int countCaseDocuments(long caseId) {
+        String sql = "SELECT COUNT(*) FROM public.case_documents WHERE case_reference_number = ?";
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setLong(1, caseId);
+            ResultSet rs = stmt.executeQuery();
+            rs.next();
+            return rs.getInt(1);
+        } catch (SQLException e) {
+            throw new RuntimeException("Failed to count case documents for caseId: " + caseId, e);
+        }
+    }
+
+
     public void saveTestDocumentEntity(long reference, String docUrlUuid) throws SQLException {
         //always sets case-document type to doc management (2)
         String sql = "INSERT INTO " + TABLE_CASE_DOCUMENTS + " ("

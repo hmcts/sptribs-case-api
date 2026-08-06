@@ -9,12 +9,12 @@ import uk.gov.hmcts.sptribs.document.model.ContactPartyDocumentDetails;
 import uk.gov.hmcts.sptribs.document.model.DocumentEntity;
 import uk.gov.hmcts.sptribs.notification.model.Party;
 
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Optional;
 
 @Repository
 public interface DocumentsRepository extends JpaRepository<DocumentEntity, Long> {
-
 
     @Query("""
         select d.id
@@ -97,6 +97,38 @@ public interface DocumentsRepository extends JpaRepository<DocumentEntity, Long>
         Long caseDocumentTypeId
     );
 
+    @Modifying
+    @Query(value = """
+        INSERT INTO case_documents (
+            case_reference_number,
+            document_url,
+            document_filename,
+            document_binary_url,
+            document_type_name,
+            case_document_type_id,
+            saved_at
+        )
+        VALUES (
+            :caseReferenceNumber,
+            :documentUrl,
+            :documentFilename,
+            :documentBinaryUrl,
+            :documentTypeName,
+            :caseDocumentTypeId,
+            :savedAt
+        )
+        ON CONFLICT (document_binary_url) DO NOTHING
+        """, nativeQuery = true)
+    int insertIgnoreDuplicate(
+        @Param("caseReferenceNumber") Long caseReferenceNumber,
+        @Param("documentUrl") String documentUrl,
+        @Param("documentFilename") String documentFilename,
+        @Param("documentBinaryUrl") String documentBinaryUrl,
+        @Param("documentTypeName") String documentTypeName,
+        @Param("caseDocumentTypeId") Long caseDocumentTypeId,
+        @Param("savedAt") OffsetDateTime savedAt
+    );
+
     @Query("""
             SELECT d
             FROM DocumentEntity d
@@ -105,3 +137,4 @@ public interface DocumentsRepository extends JpaRepository<DocumentEntity, Long>
     Optional<DocumentEntity> findByDocumentIdUuid(
         @Param("documentId") String documentId);
 }
+
