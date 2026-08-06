@@ -1,9 +1,9 @@
 package uk.gov.hmcts.sptribs.citizen.event;
 
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ObjectUtils;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
@@ -31,9 +31,11 @@ import uk.gov.hmcts.sptribs.ciccase.model.SubjectCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.CcdCaseType;
 import uk.gov.hmcts.sptribs.common.config.AppsConfig;
+import uk.gov.hmcts.sptribs.document.model.CaseDocumentType;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.document.model.CitizenCICDocument;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
+import uk.gov.hmcts.sptribs.document.service.DocumentsService;
 import uk.gov.hmcts.sptribs.idam.CICUser;
 import uk.gov.hmcts.sptribs.idam.IdamService;
 import uk.gov.hmcts.sptribs.util.AppsUtil;
@@ -49,6 +51,7 @@ import static java.lang.String.format;
 import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
 import static org.apache.commons.lang.StringUtils.isNotBlank;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
+import static uk.gov.hmcts.sptribs.caseworker.util.MessageUtil.handleDocumentException;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.DSS_Draft;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.DSS_Submitted;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.CITIZEN;
@@ -68,21 +71,14 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 @Component
 @Slf4j
 @Setter
+@RequiredArgsConstructor
 public class CicSubmitCaseEvent implements CCDConfig<CaseData, State, UserRole> {
 
-    private HttpServletRequest request;
-    private IdamService idamService;
-    private AppsConfig appsConfig;
-    private DssApplicationReceivedNotification dssApplicationReceivedNotification;
-
-    @Autowired
-    public CicSubmitCaseEvent(HttpServletRequest request, IdamService idamService, AppsConfig appsConfig,
-                              DssApplicationReceivedNotification dssApplicationReceivedNotification) {
-        this.request = request;
-        this.idamService = idamService;
-        this.appsConfig = appsConfig;
-        this.dssApplicationReceivedNotification = dssApplicationReceivedNotification;
-    }
+    private final HttpServletRequest request;
+    private final IdamService idamService;
+    private final AppsConfig appsConfig;
+    private final DssApplicationReceivedNotification dssApplicationReceivedNotification;
+    private final DocumentsService documentsService;
 
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
@@ -113,12 +109,14 @@ public class CicSubmitCaseEvent implements CCDConfig<CaseData, State, UserRole> 
                                                                        CaseDetails<CaseData, State> beforeDetails) {
         final CaseData data = details.getData();
         final DssCaseData dssData = details.getData().getDssCaseData();
-        final CaseData caseData = getCaseData(data, dssData);
+        List<String> errors = new ArrayList<>();
+        final CaseData caseData = getCaseData(data, dssData, errors);
         setDssMetaData(data);
         data.setNewBundleOrderEnabled(YesNo.YES);
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
+            .errors(errors)
             .state(State.DSS_Submitted)
             .build();
     }
@@ -185,72 +183,70 @@ public class CicSubmitCaseEvent implements CCDConfig<CaseData, State, UserRole> 
         }
     }
 
-    private CaseData getCaseData(final CaseData caseData, final DssCaseData dssCaseData) {
+    private CaseData getCaseData(final CaseData caseData, final DssCaseData dssCaseData, List<String> errors) {
+        populateCoreCaseData(caseData, dssCaseData);
+        populateRepresentativeData(caseData, dssCaseData);
+        addAdditionalInformationMessageIfPresent(caseData, dssCaseData);
+
+        List<CaseworkerCICDocument> docList = collectApplicantDocuments(dssCaseData);
+        List<ListValue<CaseworkerCICDocument>> applicantDocs = DocumentManagementUtil.buildListValues(docList);
+        caseData.getCicCase().setApplicantDocumentsUploaded(applicantDocs);
+        persistDocumentsAndCollectErrors(caseData, errors, applicantDocs);
+
+        clearUploadedDssDocuments(dssCaseData);
+        caseData.setDssCaseData(dssCaseData);
+        return caseData;
+    }
+
+    private void populateCoreCaseData(CaseData caseData, DssCaseData dssCaseData) {
         caseData.getCicCase().setCaseReceivedDate(LocalDate.now());
         CicCaseFieldsUtil.calculateAndSetIsCaseInTime(caseData);
         caseData.getCicCase().setFullName(dssCaseData.getSubjectFullName());
         caseData.getCicCase().setDateOfBirth(dssCaseData.getSubjectDateOfBirth());
         caseData.getCicCase().setEmail(dssCaseData.getSubjectEmailAddress());
         caseData.getCicCase().setPhoneNumber(dssCaseData.getSubjectContactNumber());
+        caseData.getCicCase().setContactPreferenceType(ContactPreferenceType.EMAIL);
         caseData.setCaseNameHmctsInternal(dssCaseData.getSubjectFullName());
-        caseData.setCaseFlags(Flags.builder()
-            .details(new ArrayList<>())
-            .build());
+        caseData.setCaseFlags(Flags.builder().details(new ArrayList<>()).build());
         caseData.setSubjectFlags(Flags.builder()
             .details(new ArrayList<>())
             .partyName(dssCaseData.getSubjectFullName())
             .roleOnCase("subject")
-            .build()
-        );
+            .build());
 
-        final Set<PartiesCIC> setParty = new HashSet<>();
-        setParty.add(PartiesCIC.SUBJECT);
-        caseData.getCicCase().setPartiesCIC(setParty);
+        final Set<PartiesCIC> parties = new HashSet<>();
+        parties.add(PartiesCIC.SUBJECT);
+        caseData.getCicCase().setPartiesCIC(parties);
 
-        final Set<SubjectCIC> set = new HashSet<>();
-        set.add(SubjectCIC.SUBJECT);
-        caseData.getCicCase().setSubjectCIC(set);
-        caseData.getCicCase().setContactPreferenceType(ContactPreferenceType.EMAIL);
+        final Set<SubjectCIC> subjects = new HashSet<>();
+        subjects.add(SubjectCIC.SUBJECT);
+        caseData.getCicCase().setSubjectCIC(subjects);
+    }
 
-        if (!ObjectUtils.isEmpty(dssCaseData.getRepresentativeFullName())) {
-            caseData.getCicCase().setRepresentativeFullName(dssCaseData.getRepresentativeFullName());
-            caseData.getCicCase().setRepresentativeOrgName(dssCaseData.getRepresentativeOrganisationName());
-            caseData.getCicCase().setRepresentativePhoneNumber(dssCaseData.getRepresentativeContactNumber());
-            caseData.getCicCase().setRepresentativeEmailAddress(dssCaseData.getRepresentativeEmailAddress());
-            caseData.getCicCase().setIsRepresentativeQualified(dssCaseData.getRepresentationQualified());
-            caseData.getCicCase().getPartiesCIC().add(PartiesCIC.REPRESENTATIVE);
-            final Set<RepresentativeCIC> setRep = new HashSet<>();
-            setRep.add(RepresentativeCIC.REPRESENTATIVE);
-            caseData.getCicCase().setRepresentativeCIC(setRep);
-            caseData.getCicCase().setRepresentativeContactDetailsPreference(ContactPreferenceType.EMAIL);
-            caseData.setRepresentativeFlags(Flags.builder()
-                .details(new ArrayList<>())
-                .partyName(dssCaseData.getRepresentativeFullName())
-                .roleOnCase("Representative")
-                .build()
-            );
+    private void populateRepresentativeData(CaseData caseData, DssCaseData dssCaseData) {
+        if (ObjectUtils.isEmpty(dssCaseData.getRepresentativeFullName())) {
+            return;
         }
 
-        List<CaseworkerCICDocument> docList = new ArrayList<>();
+        caseData.getCicCase().setRepresentativeFullName(dssCaseData.getRepresentativeFullName());
+        caseData.getCicCase().setRepresentativeOrgName(dssCaseData.getRepresentativeOrganisationName());
+        caseData.getCicCase().setRepresentativePhoneNumber(dssCaseData.getRepresentativeContactNumber());
+        caseData.getCicCase().setRepresentativeEmailAddress(dssCaseData.getRepresentativeEmailAddress());
+        caseData.getCicCase().setIsRepresentativeQualified(dssCaseData.getRepresentationQualified());
+        caseData.getCicCase().getPartiesCIC().add(PartiesCIC.REPRESENTATIVE);
 
-        if (isNotEmpty(dssCaseData.getOtherInfoDocuments())) {
-            for (ListValue<CitizenCICDocument> documentListValue : dssCaseData.getOtherInfoDocuments()) {
-                Document doc = documentListValue.getValue().getDocumentLink();
-                String documentComment = documentListValue.getValue().getComment();
-                doc.setCategoryId(DocumentType.DSS_OTHER.getCategory());
-                CaseworkerCICDocument caseworkerCICDocument = CaseworkerCICDocument.builder()
-                    .documentLink(doc)
-                    .documentCategory(DocumentType.DSS_OTHER)
-                    .documentEmailContent(documentComment)
-                    .date(LocalDate.now())
-                    .build();
+        final Set<RepresentativeCIC> representativeSet = new HashSet<>();
+        representativeSet.add(RepresentativeCIC.REPRESENTATIVE);
+        caseData.getCicCase().setRepresentativeCIC(representativeSet);
+        caseData.getCicCase().setRepresentativeContactDetailsPreference(ContactPreferenceType.EMAIL);
+        caseData.setRepresentativeFlags(Flags.builder()
+            .details(new ArrayList<>())
+            .partyName(dssCaseData.getRepresentativeFullName())
+            .roleOnCase("Representative")
+            .build());
+    }
 
-                if (!docList.contains(caseworkerCICDocument)) {
-                    docList.add(caseworkerCICDocument);
-                }
-            }
-        }
-
+    private void addAdditionalInformationMessageIfPresent(CaseData caseData, DssCaseData dssCaseData) {
         if (isNotBlank(dssCaseData.getAdditionalInformation())) {
             final CICUser caseworkerUser = idamService.retrieveUser(request.getHeader(AUTHORIZATION));
             final DssMessage message = DssMessage.builder()
@@ -268,42 +264,77 @@ public class CicSubmitCaseEvent implements CCDConfig<CaseData, State, UserRole> 
             messagesList.add(listValue);
             caseData.setMessages(messagesList);
         }
+    }
 
-        if (isNotEmpty(dssCaseData.getSupportingDocuments())) {
-            for (ListValue<CitizenCICDocument> documentListValue : dssCaseData.getSupportingDocuments()) {
+    private List<CaseworkerCICDocument> collectApplicantDocuments(DssCaseData dssCaseData) {
+        List<CaseworkerCICDocument> docList = new ArrayList<>();
+        addOtherInfoDocuments(docList, dssCaseData.getOtherInfoDocuments());
+        addDocumentsByType(docList, dssCaseData.getSupportingDocuments(), DocumentType.DSS_SUPPORTING);
+        addDocumentsByType(docList, dssCaseData.getTribunalFormDocuments(), DocumentType.DSS_TRIBUNAL_FORM);
+        return docList;
+    }
+
+    private void addOtherInfoDocuments(List<CaseworkerCICDocument> docList,
+                                       List<ListValue<CitizenCICDocument>> otherInfoDocuments) {
+        if (isNotEmpty(otherInfoDocuments)) {
+            for (ListValue<CitizenCICDocument> documentListValue : otherInfoDocuments) {
                 Document doc = documentListValue.getValue().getDocumentLink();
-                doc.setCategoryId(DocumentType.DSS_SUPPORTING.getCategory());
+                String documentComment = documentListValue.getValue().getComment();
+                doc.setCategoryId(DocumentType.DSS_OTHER.getCategory());
                 CaseworkerCICDocument caseworkerCICDocument = CaseworkerCICDocument.builder()
                     .documentLink(doc)
-                    .documentCategory(DocumentType.DSS_SUPPORTING)
+                    .documentCategory(DocumentType.DSS_OTHER)
+                    .documentEmailContent(documentComment)
                     .date(LocalDate.now())
                     .build();
-                if (!docList.contains(caseworkerCICDocument)) {
-                    docList.add(caseworkerCICDocument);
-                }
+                addDocumentIfMissing(docList, caseworkerCICDocument);
             }
         }
+    }
 
-        if (isNotEmpty(dssCaseData.getTribunalFormDocuments())) {
-            for (ListValue<CitizenCICDocument> documentListValue : dssCaseData.getTribunalFormDocuments()) {
+    private void addDocumentsByType(List<CaseworkerCICDocument> docList,
+                                    List<ListValue<CitizenCICDocument>> documents,
+                                    DocumentType documentType) {
+        if (isNotEmpty(documents)) {
+            for (ListValue<CitizenCICDocument> documentListValue : documents) {
                 Document doc = documentListValue.getValue().getDocumentLink();
-                doc.setCategoryId(DocumentType.DSS_TRIBUNAL_FORM.getCategory());
+                doc.setCategoryId(documentType.getCategory());
                 CaseworkerCICDocument caseworkerCICDocument = CaseworkerCICDocument.builder()
                     .documentLink(doc)
-                    .documentCategory(DocumentType.DSS_TRIBUNAL_FORM)
+                    .documentCategory(documentType)
                     .date(LocalDate.now())
                     .build();
-                if (!docList.contains(caseworkerCICDocument)) {
-                    docList.add(caseworkerCICDocument);
-                }
+                addDocumentIfMissing(docList, caseworkerCICDocument);
             }
         }
+    }
 
-        caseData.getCicCase().setApplicantDocumentsUploaded(DocumentManagementUtil.buildListValues(docList));
+    private void addDocumentIfMissing(List<CaseworkerCICDocument> docList, CaseworkerCICDocument caseworkerCICDocument) {
+        if (!docList.contains(caseworkerCICDocument)) {
+            docList.add(caseworkerCICDocument);
+        }
+    }
+
+    private void persistDocumentsAndCollectErrors(CaseData caseData,
+                                                  List<String> errors,
+                                                  List<ListValue<CaseworkerCICDocument>> applicantDocs) {
+        for (ListValue<CaseworkerCICDocument> document : applicantDocs) {
+            try {
+                documentsService.buildAndSaveNewDocumentEntity(
+                    document.getValue().getDocumentLink(),
+                    Long.parseLong(caseData.getHyphenatedCaseRef().replace("-", "")),
+                    document.getValue().getDocumentCategory(),
+                    CaseDocumentType.APPLICATION
+                );
+            } catch (RuntimeException e) {
+                errors.add(handleDocumentException(document.getValue().getDocumentLink(), e.getMessage()));
+            }
+        }
+    }
+
+    private void clearUploadedDssDocuments(DssCaseData dssCaseData) {
         dssCaseData.setTribunalFormDocuments(new ArrayList<>());
         dssCaseData.setSupportingDocuments(new ArrayList<>());
         dssCaseData.setOtherInfoDocuments(new ArrayList<>());
-        caseData.setDssCaseData(dssCaseData);
-        return caseData;
     }
 }

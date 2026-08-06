@@ -73,12 +73,12 @@ class AnonymityAppliedNotificationTest {
             anyMap(),
             eq(TemplateName.ANONYMITY_APPLIED_EMAIL)
         )).thenReturn(NotificationRequest.builder().build());
-        when(notificationServiceCIC.sendEmail(any(NotificationRequest.class), eq("1234-5678-9012-3456")))
+        when(notificationServiceCIC.sendEmail(any(NotificationRequest.class), eq("1234-5678-9012-3456"), eq(null)))
             .thenReturn(response);
 
         anonymityAppliedNotification.sendToTribunal(caseData, "1234-5678-9012-3456");
 
-        verify(notificationServiceCIC).sendEmail(any(NotificationRequest.class), eq("1234-5678-9012-3456"));
+        verify(notificationServiceCIC).sendEmail(any(NotificationRequest.class), eq("1234-5678-9012-3456"), eq(null));
         assertThat(caseData.getCicCase().getTribunalNotificationResponse()).isEqualTo(response);
         assertThat(templateVars)
             .containsEntry(CommonConstants.CIC_CASE_HEARING_DATE, "02-07-2026")
@@ -111,12 +111,12 @@ class AnonymityAppliedNotificationTest {
             anyMap(),
             eq(TemplateName.ANONYMITY_APPLIED_EMAIL)
         )).thenReturn(NotificationRequest.builder().build());
-        when(notificationServiceCIC.sendEmail(any(NotificationRequest.class), eq("1234-5678-9012-3456")))
+        when(notificationServiceCIC.sendEmail(any(NotificationRequest.class), eq("1234-5678-9012-3456"), eq(null)))
             .thenReturn(response);
 
         anonymityAppliedNotification.sendToTribunal(caseData, "1234-5678-9012-3456");
 
-        verify(notificationServiceCIC).sendEmail(any(NotificationRequest.class), eq("1234-5678-9012-3456"));
+        verify(notificationServiceCIC).sendEmail(any(NotificationRequest.class), eq("1234-5678-9012-3456"), eq(null));
         assertThat(caseData.getCicCase().getTribunalNotificationResponse()).isEqualTo(response);
         assertThat(templateVars)
             .containsEntry(CommonConstants.CIC_CASE_HEARING_DATE, LocalDate.now().format(UK_DATE_FORMATTER))
@@ -146,12 +146,12 @@ class AnonymityAppliedNotificationTest {
             anyMap(),
             eq(TemplateName.ANONYMITY_APPLIED_EMAIL)
         )).thenReturn(NotificationRequest.builder().build());
-        when(notificationServiceCIC.sendEmail(any(NotificationRequest.class), eq("1234-5678-9012-3456")))
+        when(notificationServiceCIC.sendEmail(any(NotificationRequest.class), eq("1234-5678-9012-3456"), eq(null)))
             .thenReturn(NotificationResponse.builder().id("1").build());
 
         anonymityAppliedNotification.sendAnonymityNotificationIfNewlyApplied(caseData, null);
 
-        verify(notificationServiceCIC).sendEmail(any(NotificationRequest.class), eq("1234-5678-9012-3456"));
+        verify(notificationServiceCIC).sendEmail(any(NotificationRequest.class), eq("1234-5678-9012-3456"), eq(null));
     }
 
     @Test
@@ -180,12 +180,12 @@ class AnonymityAppliedNotificationTest {
             anyMap(),
             eq(TemplateName.ANONYMITY_APPLIED_EMAIL)
         )).thenReturn(NotificationRequest.builder().build());
-        when(notificationServiceCIC.sendEmail(any(NotificationRequest.class), eq("1234-5678-9012-3456")))
+        when(notificationServiceCIC.sendEmail(any(NotificationRequest.class), eq("1234-5678-9012-3456"), eq(null)))
             .thenReturn(NotificationResponse.builder().id("1").build());
 
         anonymityAppliedNotification.sendAnonymityNotificationIfNewlyApplied(caseData, beforeData);
 
-        verify(notificationServiceCIC).sendEmail(any(NotificationRequest.class), eq("1234-5678-9012-3456"));
+        verify(notificationServiceCIC).sendEmail(any(NotificationRequest.class), eq("1234-5678-9012-3456"), eq(null));
     }
 
     @Test
@@ -210,7 +210,7 @@ class AnonymityAppliedNotificationTest {
 
         anonymityAppliedNotification.sendAnonymityNotificationIfNewlyApplied(caseData, beforeCaseData);
 
-        verify(notificationServiceCIC, never()).sendEmail(any(), any());
+        verify(notificationServiceCIC, never()).sendEmail(any(), any(), any());
     }
 
     @Test
@@ -226,7 +226,7 @@ class AnonymityAppliedNotificationTest {
 
         anonymityAppliedNotification.sendAnonymityNotificationIfNewlyApplied(caseData, null);
 
-        verify(notificationServiceCIC, never()).sendEmail(any(), any());
+        verify(notificationServiceCIC, never()).sendEmail(any(), any(), any());
     }
 
     @Test
@@ -242,14 +242,14 @@ class AnonymityAppliedNotificationTest {
 
         anonymityAppliedNotification.sendAnonymityNotificationIfNewlyApplied(caseData, null);
 
-        verify(notificationServiceCIC, never()).sendEmail(any(), any());
+        verify(notificationServiceCIC, never()).sendEmail(any(), any(), any());
     }
 
     @Test
     void shouldNotSendNotificationIfCaseDataIsNull() {
         anonymityAppliedNotification.sendAnonymityNotificationIfNewlyApplied(null, null);
 
-        verify(notificationServiceCIC, never()).sendEmail(any(), any());
+        verify(notificationServiceCIC, never()).sendEmail(any(), any(), any());
     }
 
     @Test
@@ -260,7 +260,7 @@ class AnonymityAppliedNotificationTest {
 
         anonymityAppliedNotification.sendAnonymityNotificationIfNewlyApplied(caseData, null);
 
-        verify(notificationServiceCIC, never()).sendEmail(any(), any());
+        verify(notificationServiceCIC, never()).sendEmail(any(), any(), any());
     }
 
     @Test
@@ -283,6 +283,6 @@ class AnonymityAppliedNotificationTest {
             anonymityAppliedNotification.sendAnonymityNotificationIfNewlyApplied(caseData, null)
         );
 
-        verify(notificationServiceCIC, never()).sendEmail(any(), any());
+        verify(notificationServiceCIC, never()).sendEmail(any(), any(), any());
     }
 }

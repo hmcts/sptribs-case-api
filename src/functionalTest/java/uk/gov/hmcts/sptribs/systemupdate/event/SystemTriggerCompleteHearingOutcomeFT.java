@@ -22,7 +22,7 @@ public class SystemTriggerCompleteHearingOutcomeFT extends FunctionalTestSuite {
     @Test
     public void shouldSetCompleteHearingOutcomeTaskToYesInAboutToSubmit() throws Exception {
         final Map<String, Object> caseData = caseData(REQUEST);
-        final Response response = triggerCallback(caseData, SYSTEM_TRIGGER_COMPLETE_HEARING_OUTCOME, ABOUT_TO_SUBMIT_URL);
+        final Response response = triggerCallback(caseData, SYSTEM_TRIGGER_COMPLETE_HEARING_OUTCOME, ABOUT_TO_SUBMIT_URL, false);
 
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
         assertThatJson(response.asString())

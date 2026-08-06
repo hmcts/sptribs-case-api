@@ -157,15 +157,16 @@ public class BundlingServiceTest {
 
         final Callback callback = new Callback(updatedCaseDetails, beforeCaseDetails, CREATE_BUNDLE, true);
         final BundleCallback bundleCallback = new BundleCallback(callback);
-        final List<Bundle> result = bundlingService.createBundle(bundleCallback);
+        final List<Bundle> result = bundlingService.createBundle(bundleCallback, TEST_CASE_ID);
 
         verify(bundlingClient).createBundle(any(), any(), any());
+
         assertThat(result).hasSize(1);
-        assertThat(result.get(0)).isNotNull();
-        assertThat(result.get(0)).isEqualTo(expectedBundle);
-        assertThat(result.get(0).getDocuments()).isEqualTo(expectedBundle.getDocuments());
-        assertThat(result.get(0).getFolders()).isEqualTo(expectedBundle.getFolders());
-        assertThat(result.get(0).getStitchedDocument()).isEqualTo(expectedBundle.getStitchedDocument());
+        assertThat(result.getFirst()).isNotNull();
+        assertThat(result.getFirst()).isEqualTo(expectedBundle);
+        assertThat(result.getFirst().getDocuments()).isEqualTo(expectedBundle.getDocuments());
+        assertThat(result.getFirst().getFolders()).isEqualTo(expectedBundle.getFolders());
+        assertThat(result.getFirst().getStitchedDocument()).isEqualTo(expectedBundle.getStitchedDocument());
     }
 
     @Test
@@ -178,7 +179,7 @@ public class BundlingServiceTest {
         final Callback callback = new Callback(updatedCaseDetails, beforeCaseDetails, CREATE_BUNDLE, true);
         final BundleCallback bundleCallback = new BundleCallback(callback);
 
-        final List<Bundle> result = bundlingService.createBundle(bundleCallback);
+        final List<Bundle> result = bundlingService.createBundle(bundleCallback, TEST_CASE_ID);
 
         verify(bundlingClient).createBundle(any(), any(), any());
         assertThat(result).isNull();
@@ -189,8 +190,8 @@ public class BundlingServiceTest {
         final List<MultiBundleConfig> result = bundlingService.getMultiBundleConfigs();
 
         assertThat(result).hasSize(1);
-        assertThat(result.get(0)).isNotNull();
-        assertThat(result.get(0).getValue()).isEqualTo(BUNDLE_FILE_NAME);
+        assertThat(result.getFirst()).isNotNull();
+        assertThat(result.getFirst().getValue()).isEqualTo(BUNDLE_FILE_NAME);
     }
 
     @Test
@@ -224,10 +225,11 @@ public class BundlingServiceTest {
         final Callback callback = new Callback(updatedCaseDetails, beforeCaseDetails, CREATE_BUNDLE, true);
         final BundleCallback bundleCallback = new BundleCallback(callback);
 
-        final List<Bundle> result = bundlingService.createBundle(bundleCallback);
+        final List<Bundle> result = bundlingService.createBundle(bundleCallback, TEST_CASE_ID);
         final List<ListValue<Bundle>> resultList = bundlingService.buildBundleListValues(result);
 
         verify(bundlingClient).createBundle(any(), any(), any());
+
         assertThat(result).hasSize(expectedBundles.size()).containsAll(expectedBundles);
         assertThat(resultList.stream().map(ListValue::getValue).toList()).containsAll(expectedBundles);
     }
@@ -247,7 +249,7 @@ public class BundlingServiceTest {
         final Callback callback = new Callback(updatedCaseDetails, beforeCaseDetails, CREATE_BUNDLE, true);
         final BundleCallback bundleCallback = new BundleCallback(callback);
 
-        final List<Bundle> result = bundlingService.createBundle(bundleCallback);
+        final List<Bundle> result = bundlingService.createBundle(bundleCallback, TEST_CASE_ID);
         final List<ListValue<Bundle>> resultList = bundlingService.buildBundleListValues(result);
 
         verify(bundlingClient).createBundle(any(), any(), any());

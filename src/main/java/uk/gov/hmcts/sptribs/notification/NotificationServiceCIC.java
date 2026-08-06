@@ -23,10 +23,12 @@ import uk.gov.hmcts.sptribs.ciccase.model.NotificationType;
 import uk.gov.hmcts.sptribs.common.config.EmailTemplatesConfigCIC;
 import uk.gov.hmcts.sptribs.common.repositories.CorrespondenceRepository;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
+import uk.gov.hmcts.sptribs.document.model.DocumentType;
 import uk.gov.hmcts.sptribs.idam.CICUser;
 import uk.gov.hmcts.sptribs.idam.IdamService;
 import uk.gov.hmcts.sptribs.notification.exception.NotificationException;
 import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
+import uk.gov.hmcts.sptribs.notification.model.Party;
 import uk.gov.hmcts.sptribs.notification.persistence.CorrespondenceEntity;
 import uk.gov.hmcts.sptribs.services.cdam.CaseDocumentClientApi;
 import uk.gov.service.notify.NotificationClient;
@@ -82,7 +84,8 @@ public class NotificationServiceCIC {
     public void saveEmailCorrespondence(String templateName,
                                         SendEmailResponse sendEmailResponse,
                                         String sentTo,
-                                        String caseReferenceNumber) throws IOException, RestClientException {
+                                        String caseReferenceNumber,
+                                        Party receivingParty) throws IOException, RestClientException {
 
         Long longCaseRef = Long.parseLong(caseReferenceNumber.replace("-", ""));
         final OffsetDateTime sentOn = OffsetDateTime.now(ZoneId.systemDefault());
@@ -105,6 +108,7 @@ public class NotificationServiceCIC {
                 .documentFilename(correspondencePDF.getFilename())
                 .documentBinaryUrl(correspondencePDF.getBinaryUrl())
                 .correspondenceType("Email")
+                .receivingParty(receivingParty)
                 .build();
             correspondenceRepository.save(correspondence);
         } catch (java.io.IOException | RestClientException e) {
@@ -143,13 +147,14 @@ public class NotificationServiceCIC {
         }
     }
 
-    public NotificationResponse sendEmail(NotificationRequest notificationRequest, String caseReferenceNumber) {
-        return sendEmail(notificationRequest, Collections.emptyList(), caseReferenceNumber);
+    public NotificationResponse sendEmail(NotificationRequest notificationRequest, String caseReferenceNumber, Party receivingParty) {
+        return sendEmail(notificationRequest, Collections.emptyList(), caseReferenceNumber, receivingParty);
     }
 
     public NotificationResponse sendEmail(NotificationRequest notificationRequest,
                                           List<CaseworkerCICDocument> selectedDocuments,
-                                          String caseReferenceNumber) {
+                                          String caseReferenceNumber,
+                                          Party receivingParty) {
         final SendEmailResponse sendEmailResponse;
         final String destinationAddress = notificationRequest.getDestinationAddress();
         final TemplateName template = notificationRequest.getTemplate();
@@ -177,7 +182,8 @@ public class NotificationServiceCIC {
                 templateName,
                 sendEmailResponse,
                 destinationAddress,
-                caseReferenceNumber
+                caseReferenceNumber,
+                receivingParty
             );
 
             log.debug("Successfully sent email with notification id {} and reference {}",
@@ -316,10 +322,17 @@ public class NotificationServiceCIC {
             if (uploadedDocument != null) {
                 log.debug("Document available for: {}", docName);
 
-                if (uploadedDocument.length <= TWO_MEGABYTES) {
-                    templateVars.put(docName, getJsonFileAttachment(uploadedDocument));
+                if (!selectedDocuments.isEmpty()) {
+
+                    addDocumentDescription(templateVars, selectedDocuments, item, docName);
+
                 } else {
-                    addDocumentDetails(templateVars, selectedDocuments, item, docName);
+
+                    if (uploadedDocument.length <= TWO_MEGABYTES) {
+                        templateVars.put(docName, getJsonFileAttachment(uploadedDocument));
+                    } else {
+                        addDocumentDetails(templateVars, selectedDocuments, item, docName);
+                    }
                 }
             } else {
                 templateVars.put(docName, "");
@@ -328,6 +341,23 @@ public class NotificationServiceCIC {
             log.info("Document not available for: {}", docName);
             templateVars.put(docName, "");
         }
+    }
+
+    private static void addDocumentDescription(Map<String, Object> templateVars,
+                                               List<CaseworkerCICDocument> selectedDocuments,
+                                               String item,
+                                               String docName) {
+        CaseworkerCICDocument document = selectedDocuments.stream()
+            .filter(doc -> doc.getDocumentLink().getBinaryUrl().contains(item))
+            .findFirst()
+            .orElseThrow(() -> new NotificationException(
+                new Exception(String.format("Unable to find document details for document id: %s", item))));
+
+        String documentNotification = String.format(
+            "%nFilename: %s%nDescription: %s%n",
+            document.getDocumentLink().getFilename(), document.getDocumentEmailContent());
+
+        templateVars.put(docName, documentNotification);
     }
 
     private static void addDocumentDetails(Map<String, Object> templateVars,
@@ -450,6 +480,7 @@ public class NotificationServiceCIC {
             uploadedPDF.setBinaryUrl(uploadResponse.getDocuments().getFirst().links.binary.href);
             uploadedPDF.setFilename(correspondenceDocumentFilename);
             uploadedPDF.setUrl(uploadResponse.getDocuments().getFirst().links.self.href);
+            uploadedPDF.setCategoryId(DocumentType.CORRESPONDENCE.getCategory());
 
             return uploadedPDF;
         } catch (RestClientException e) {
