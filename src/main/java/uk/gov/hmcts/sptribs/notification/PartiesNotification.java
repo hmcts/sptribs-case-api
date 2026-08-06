@@ -32,23 +32,17 @@ public abstract class PartiesNotification {
         return notificationHelper;
     }
 
-    public sealed interface PartyNotification permits EmailNotification, LetterNotification {}
+    public sealed interface PartyNotification permits EmailNotification, LetterNotification {
+    }
 
-    public record EmailNotification(
-            String emailAddress,
-            Map<String, Object> templateVars,
-            TemplateName templateName,
-            Map<String, String> documentTemplateVars,
-            List<CaseworkerCICDocument> attachedDocuments,
-            BiConsumer<CaseData, NotificationResponse> onSent
-    ) implements PartyNotification {}
+    public record EmailNotification(String emailAddress, Map<String, Object> templateVars, TemplateName templateName,
+                                    Map<String, String> documentTemplateVars, List<CaseworkerCICDocument> attachedDocuments,
+                                    BiConsumer<CaseData, NotificationResponse> onSent) implements PartyNotification {
+    }
 
-    public record LetterNotification(
-            AddressGlobalUK postalAddress,
-            Map<String, Object> templateVars,
-            TemplateName templateName,
-            BiConsumer<CaseData, NotificationResponse> onSent
-    ) implements PartyNotification {}
+    public record LetterNotification(AddressGlobalUK postalAddress, Map<String, Object> templateVars, TemplateName templateName,
+                                     BiConsumer<CaseData, NotificationResponse> onSent) implements PartyNotification {
+    }
 
     public final String sendToSubject(CaseData caseData, String caseNumber) {
         PartyNotification partyNotification = buildSubjectNotification(caseData, caseNumber);
@@ -96,41 +90,42 @@ public abstract class PartiesNotification {
     }
 
     protected static BiConsumer<CaseData, NotificationResponse> saveToCicCase(
-            BiConsumer<CicCase, NotificationResponse> setter) {
+        BiConsumer<CicCase, NotificationResponse> setter
+    ) {
         return (caseData, response) -> setter.accept(caseData.getCicCase(), response);
     }
 
     protected static BiConsumer<CaseData, NotificationResponse> saveToDssData(
-            BiConsumer<DssCaseData, NotificationResponse> setter) {
+        BiConsumer<DssCaseData, NotificationResponse> setter
+    ) {
         return (caseData, response) -> setter.accept(caseData.getDssCaseData(), response);
     }
 
-    protected static EmailNotification emailOnly(String emailAddress,
-                                                 Map<String, Object> templateVars,
-                                                 TemplateName templateName,
-                                                 BiConsumer<CaseData, NotificationResponse> onSent) {
+    protected static EmailNotification emailOnly(
+        String emailAddress,
+        Map<String, Object> templateVars,
+        TemplateName templateName,
+        BiConsumer<CaseData, NotificationResponse> onSent
+    ) {
         return new EmailNotification(emailAddress, templateVars, templateName, new HashMap<>(), new ArrayList<>(), onSent);
     }
 
     private String sendNotification(Party party, String caseNumber, CaseData caseData, PartyNotification partyNotification) {
         return switch (partyNotification) {
             case EmailNotification emailNotification -> {
-                NotificationRequest request = notificationHelper()
-                    .buildEmailNotificationRequest(
-                        emailNotification.emailAddress(),
-                        true,
-                        emailNotification.documentTemplateVars(),
-                        emailNotification.templateVars(),
-                        emailNotification.templateName());
-                NotificationResponse response = notificationService().sendEmail(
-                        request, emailNotification.attachedDocuments(), caseNumber, party);
+                NotificationRequest request = notificationHelper().buildEmailNotificationRequest(emailNotification.emailAddress(),
+                    emailNotification.attachedDocuments(),
+                    emailNotification.documentTemplateVars(),
+                    emailNotification.templateVars(),
+                    emailNotification.templateName());
+                NotificationResponse response = notificationService().sendEmail(request, caseNumber, party);
                 emailNotification.onSent().accept(caseData, response);
                 yield response.getId();
             }
             case LetterNotification letterNotification -> {
                 notificationHelper().addAddressTemplateVars(letterNotification.postalAddress(), letterNotification.templateVars());
-                NotificationRequest request = notificationHelper()
-                        .buildLetterNotificationRequest(letterNotification.templateVars(), letterNotification.templateName());
+                NotificationRequest request = notificationHelper().buildLetterNotificationRequest(letterNotification.templateVars(),
+                    letterNotification.templateName());
                 NotificationResponse response = notificationService().sendLetter(request, caseNumber);
                 letterNotification.onSent().accept(caseData, response);
                 yield response.getId();

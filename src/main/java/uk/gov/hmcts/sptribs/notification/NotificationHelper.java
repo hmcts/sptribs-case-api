@@ -15,6 +15,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.DssCaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.HearingFormat;
 import uk.gov.hmcts.sptribs.common.CommonConstants;
+import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
 
 import java.time.format.DateTimeFormatter;
@@ -93,24 +94,14 @@ public class NotificationHelper {
     }
 
     public NotificationRequest buildEmailNotificationRequest(String destinationAddress,
-                                                             Map<String, Object> templateVars,
-                                                             TemplateName emailTemplateName) {
-        return NotificationRequest.builder()
-            .destinationAddress(destinationAddress)
-            .template(emailTemplateName)
-            .templateVars(templateVars)
-            .build();
-    }
-
-    public NotificationRequest buildEmailNotificationRequest(String destinationAddress,
-                                                             boolean hasFileAttachment,
+                                                             List<CaseworkerCICDocument> attachedDocuments,
                                                              Map<String, String> uploadedDocuments,
                                                              Map<String, Object> templateVars,
                                                              TemplateName emailTemplateName) {
         return NotificationRequest.builder()
             .destinationAddress(destinationAddress)
-            .hasFileAttachments(hasFileAttachment)
-            .uploadedDocuments(uploadedDocuments)
+            .attachedDocuments(attachedDocuments)
+            .templateDocumentVars(uploadedDocuments)
             .template(emailTemplateName)
             .templateVars(templateVars)
             .build();
