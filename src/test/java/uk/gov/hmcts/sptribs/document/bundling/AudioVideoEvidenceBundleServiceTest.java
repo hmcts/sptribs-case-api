@@ -123,6 +123,41 @@ class AudioVideoEvidenceBundleServiceTest {
     }
 
     @Test
+    void shouldUseLastModifiedByWhenCreatedByIsBlank() {
+        CaseData caseData = CaseData.builder().build();
+        caseData.setCaseNumber("12345");
+
+        AudioVideoEvidenceBundleService service = new AudioVideoEvidenceBundleService(
+            pdfServiceClient,
+            caseDocumentClientApi,
+            documentsService,
+            authTokenGenerator,
+            request,
+            clock
+        );
+
+        DocumentEntity audioDoc = DocumentEntity.builder()
+            .documentFilename("hearing-audio.mp3")
+            .documentBinaryUrl("http://dm/documents/11111111-1111-1111-1111-111111111111/binary")
+            .documentTypeName(DocumentType.LINKED_DOCS.name())
+            .savedAt(OffsetDateTime.parse("2026-01-10T10:15:30Z"))
+            .build();
+
+        when(authTokenGenerator.generate()).thenReturn("service-token");
+        when(request.getHeader(AUTHORIZATION)).thenReturn("Bearer user-token");
+        when(caseDocumentClientApi.getDocument(eq("Bearer user-token"), eq("service-token"), any()))
+            .thenReturn(ResponseEntity.ok(buildMetadataResponse("", "updated.user@hmcts.net")));
+        when(documentsService.getAudioVideoDocuments(12345L)).thenReturn(Stream.of(audioDoc));
+
+        List<AudioVideoEvidenceBundleService.AudioVideoDocumentRow> rows = service.extractRows(caseData);
+
+        assertThat(rows).hasSize(1);
+        assertThat(rows)
+            .extracting(AudioVideoEvidenceBundleService.AudioVideoDocumentRow::uploadedBy)
+            .containsExactly("updated.user@hmcts.net");
+    }
+
+    @Test
     void shouldReturnNullAndSkipPdfUploadWhenNoAudioVideoRows() {
         AudioVideoEvidenceBundleService service = new AudioVideoEvidenceBundleService(
             pdfServiceClient,
@@ -384,8 +419,13 @@ class AudioVideoEvidenceBundleServiceTest {
     }
 
     private uk.gov.hmcts.sptribs.cdam.model.Document buildMetadataResponse(String createdBy) {
+        return buildMetadataResponse(createdBy, null);
+    }
+
+    private uk.gov.hmcts.sptribs.cdam.model.Document buildMetadataResponse(String createdBy, String lastModifiedBy) {
         uk.gov.hmcts.sptribs.cdam.model.Document metadata = new uk.gov.hmcts.sptribs.cdam.model.Document();
         metadata.createdBy = createdBy;
+        metadata.lastModifiedBy = lastModifiedBy;
         return metadata;
     }
 }

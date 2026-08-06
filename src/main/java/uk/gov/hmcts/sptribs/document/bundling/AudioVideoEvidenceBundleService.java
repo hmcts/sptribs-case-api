@@ -66,7 +66,7 @@ public class AudioVideoEvidenceBundleService {
         String fileName = "audio-video-evidence-" + caseId + ".pdf";
         Document generatedPdf = upload(pdf, fileName);
 
-        if (generatedPdf == null || StringUtils.isBlank(generatedPdf.getUrl())
+        if (StringUtils.isBlank(generatedPdf.getUrl())
             || StringUtils.isBlank(generatedPdf.getBinaryUrl())
             || StringUtils.isBlank(generatedPdf.getFilename())) {
             throw new IllegalStateException("Generated audio/video evidence document missing mandatory properties");
@@ -169,11 +169,23 @@ public class AudioVideoEvidenceBundleService {
                 return EMPTY_VALUE;
             }
 
-            return StringUtils.defaultString(metadataResponse.getBody().createdBy);
+            return extractUploadedBy(metadataResponse.getBody());
         } catch (RuntimeException exception) {
             log.warn("Unable to resolve uploadedBy for document: {}", entity.getDocumentBinaryUrl(), exception);
             return EMPTY_VALUE;
         }
+    }
+
+    private String extractUploadedBy(uk.gov.hmcts.sptribs.cdam.model.Document metadata) {
+        if (metadata == null) {
+            return EMPTY_VALUE;
+        }
+
+        if (StringUtils.isNotBlank(metadata.createdBy)) {
+            return metadata.createdBy;
+        }
+
+        return StringUtils.defaultString(metadata.lastModifiedBy);
     }
 
     private UUID extractDocumentId(String documentBinaryUrl) {
