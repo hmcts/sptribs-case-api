@@ -12,15 +12,19 @@ import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.ContactPreferenceType;
 import uk.gov.hmcts.sptribs.ciccase.model.HearingFormat;
+import uk.gov.hmcts.sptribs.ciccase.model.NotificationResponse;
 import uk.gov.hmcts.sptribs.common.CommonConstants;
 import uk.gov.hmcts.sptribs.notification.NotificationHelper;
 import uk.gov.hmcts.sptribs.notification.NotificationServiceCIC;
 import uk.gov.hmcts.sptribs.notification.TemplateName;
 import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
+import uk.gov.hmcts.sptribs.notification.model.Party;
 
 import java.util.HashMap;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
@@ -38,6 +42,9 @@ public class ListingUpdatedNotificationTest {
     @InjectMocks
     private ListingUpdatedNotification listingUpdatedNotification;
 
+    private static final NotificationResponse NOTIFICATION_RESPONSE = NotificationResponse.builder().id("123").build();
+
+
     @Test
     void shouldNotifySubjectOfListingUpdatedCitizenWithEmail() {
         //Given
@@ -46,14 +53,21 @@ public class ListingUpdatedNotificationTest {
         data.getCicCase().setEmail("testSubject@outlook.com");
 
         //When
-        when(notificationHelper.buildEmailNotificationRequest(any(), anyMap(), any(TemplateName.class)))
+        when(notificationHelper.buildEmailNotificationRequest(any(),anyBoolean(), anyMap(), anyMap(), any(TemplateName.class)))
             .thenReturn(NotificationRequest.builder().build());
+        when(notificationService.sendEmail(any(NotificationRequest.class),
+            anyList(),
+            eq(TEST_CASE_ID.toString()),
+            any(Party.class))).thenReturn(NOTIFICATION_RESPONSE);
+
         listingUpdatedNotification.sendToSubject(data, TEST_CASE_ID.toString());
 
         //Then
-        verify(notificationService).sendEmail(any(NotificationRequest.class), eq(TEST_CASE_ID.toString()), eq(null));
+        verify(notificationService).sendEmail(any(NotificationRequest.class), anyList(), eq(TEST_CASE_ID.toString()), eq(Party.SUBJECT));
         verify(notificationHelper).buildEmailNotificationRequest(
             data.getCicCase().getEmail(),
+            true,
+            new HashMap<>(),
             new HashMap<>(),
             TemplateName.HEARING_UPDATED_EMAIL);
     }
@@ -72,14 +86,21 @@ public class ListingUpdatedNotificationTest {
                                 .build();
         data.setListing(listing);
         //When
-        when(notificationHelper.buildEmailNotificationRequest(any(), anyMap(), any(TemplateName.class)))
+        when(notificationHelper.buildEmailNotificationRequest(any(), anyBoolean(), anyMap(), anyMap(), any(TemplateName.class)))
             .thenReturn(NotificationRequest.builder().build());
+        when(notificationService.sendEmail(any(NotificationRequest.class),
+            anyList(),
+            eq(TEST_CASE_ID.toString()),
+            any(Party.class))).thenReturn(NOTIFICATION_RESPONSE);
+
         listingUpdatedNotification.sendToSubject(data, TEST_CASE_ID.toString());
 
         //Then
-        verify(notificationService).sendEmail(any(NotificationRequest.class), eq(TEST_CASE_ID.toString()), eq(null));
+        verify(notificationService).sendEmail(any(NotificationRequest.class), anyList(), eq(TEST_CASE_ID.toString()), eq(Party.SUBJECT));
         verify(notificationHelper).buildEmailNotificationRequest(
             "testSubject@outlook.com",
+            true,
+            new HashMap<>(),
             new HashMap<>(),
             TemplateName.HEARING_UPDATED_EMAIL);
     }
@@ -94,6 +115,8 @@ public class ListingUpdatedNotificationTest {
         //When
         when(notificationHelper.buildLetterNotificationRequest(anyMap(), any(TemplateName.class)))
             .thenReturn(NotificationRequest.builder().build());
+        when(notificationService.sendLetter(any(NotificationRequest.class), eq(TEST_CASE_ID.toString()))).thenReturn(NOTIFICATION_RESPONSE);
+
         listingUpdatedNotification.sendToSubject(data, TEST_CASE_ID.toString());
 
         //Then
@@ -113,14 +136,24 @@ public class ListingUpdatedNotificationTest {
         data.getCicCase().setRepresentativeEmailAddress("testrepr@outlook.com");
 
         //When
-        when(notificationHelper.buildEmailNotificationRequest(any(), anyMap(), any(TemplateName.class)))
+        when(notificationHelper.buildEmailNotificationRequest(any(), anyBoolean(), anyMap(), anyMap(), any(TemplateName.class)))
             .thenReturn(NotificationRequest.builder().build());
+        when(notificationService.sendEmail(any(NotificationRequest.class),
+            anyList(),
+            eq(TEST_CASE_ID.toString()),
+            any(Party.class))).thenReturn(NOTIFICATION_RESPONSE);
+
         listingUpdatedNotification.sendToRepresentative(data, TEST_CASE_ID.toString());
 
         //Then
-        verify(notificationService).sendEmail(any(NotificationRequest.class), eq(TEST_CASE_ID.toString()), eq(null));
+        verify(notificationService).sendEmail(any(NotificationRequest.class),
+            anyList(),
+            eq(TEST_CASE_ID.toString()),
+            eq(Party.REPRESENTATIVE));
         verify(notificationHelper).buildEmailNotificationRequest(
             data.getCicCase().getRepresentativeEmailAddress(),
+            true,
+            new HashMap<>(),
             Map.of(CommonConstants.CIC_CASE_REPRESENTATIVE_NAME, data.getCicCase().getRepresentativeFullName()),
             TemplateName.HEARING_UPDATED_EMAIL);
     }
@@ -136,6 +169,8 @@ public class ListingUpdatedNotificationTest {
         //When
         when(notificationHelper.buildLetterNotificationRequest(anyMap(), any(TemplateName.class)))
             .thenReturn(NotificationRequest.builder().build());
+        when(notificationService.sendLetter(any(NotificationRequest.class), eq(TEST_CASE_ID.toString()))).thenReturn(NOTIFICATION_RESPONSE);
+
         listingUpdatedNotification.sendToRepresentative(data, TEST_CASE_ID.toString());
 
         //Then
@@ -153,14 +188,21 @@ public class ListingUpdatedNotificationTest {
         data.getCicCase().setRespondentEmail("testRespondent@outlook.com");
 
         //When
-        when(notificationHelper.buildEmailNotificationRequest(any(), anyMap(), any(TemplateName.class)))
+        when(notificationHelper.buildEmailNotificationRequest(any(), anyBoolean(), anyMap(), anyMap(), any(TemplateName.class)))
             .thenReturn(NotificationRequest.builder().build());
+        when(notificationService.sendEmail(any(NotificationRequest.class),
+            anyList(),
+            eq(TEST_CASE_ID.toString()),
+            any(Party.class))).thenReturn(NOTIFICATION_RESPONSE);
+
         listingUpdatedNotification.sendToRespondent(data, TEST_CASE_ID.toString());
 
         //Then
-        verify(notificationService).sendEmail(any(NotificationRequest.class), eq(TEST_CASE_ID.toString()), eq(null));
+        verify(notificationService).sendEmail(any(NotificationRequest.class), anyList(), eq(TEST_CASE_ID.toString()), eq(Party.RESPONDENT));
         verify(notificationHelper).buildEmailNotificationRequest(
             data.getCicCase().getRespondentEmail(),
+            true,
+            new HashMap<>(),
             Map.of(CommonConstants.CIC_CASE_RESPONDENT_NAME, data.getCicCase().getRespondentName()),
             TemplateName.HEARING_UPDATED_EMAIL);
     }

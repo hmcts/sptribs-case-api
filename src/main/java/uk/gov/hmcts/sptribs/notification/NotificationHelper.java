@@ -12,6 +12,7 @@ import uk.gov.hmcts.sptribs.caseworker.model.Listing;
 import uk.gov.hmcts.sptribs.ciccase.CicCaseFieldsUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
+import uk.gov.hmcts.sptribs.ciccase.model.DssCaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.HearingFormat;
 import uk.gov.hmcts.sptribs.common.CommonConstants;
 import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
@@ -254,6 +255,30 @@ public class NotificationHelper {
 
     private boolean isTelephoneFormat(Listing listing) {
         return listing.getHearingFormat() != null && listing.getHearingFormat().equals(HearingFormat.TELEPHONE);
+    }
+
+    public Map<String, Object> getDssSubjectCommonVars(String caseNumber, CaseData caseData) {
+        final DssCaseData dssCaseData = caseData.getDssCaseData();
+        Map<String, Object> templateVars = dssCommonTemplateVars(caseNumber, dssCaseData);
+        templateVars.put(CONTACT_NAME, dssCaseData.getSubjectFullName());
+        addCicaReferenceNumber(caseData, templateVars);
+        return templateVars;
+    }
+
+    public Map<String, Object> getDssRepresentativeCommonVars(String caseNumber, CaseData caseData) {
+        final DssCaseData dssCaseData = caseData.getDssCaseData();
+        Map<String, Object> templateVars = dssCommonTemplateVars(caseNumber, dssCaseData);
+        templateVars.put(CONTACT_NAME, dssCaseData.getRepresentativeFullName());
+        addCicaReferenceNumber(caseData, templateVars);
+        return templateVars;
+    }
+
+    private Map<String, Object> dssCommonTemplateVars(final String caseNumber, final DssCaseData dssCaseData) {
+        final Map<String, Object> templateVars = new HashMap<>();
+        templateVars.put(TRIBUNAL_NAME, CIC);
+        templateVars.put(CIC_CASE_NUMBER, caseNumber);
+        templateVars.put(CIC_CASE_SUBJECT_NAME, dssCaseData.getSubjectFullName());
+        return templateVars;
     }
 
 }

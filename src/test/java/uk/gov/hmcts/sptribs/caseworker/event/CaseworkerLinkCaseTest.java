@@ -23,8 +23,6 @@ import java.util.Set;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigBuilder;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.getEventsFrom;
@@ -68,9 +66,6 @@ class CaseworkerLinkCaseTest {
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
         //When
-        doNothing().when(caseLinkedNotification).sendToSubject(any(CaseData.class), eq(null));
-        doNothing().when(caseLinkedNotification).sendToApplicant(any(CaseData.class), eq(null));
-        doNothing().when(caseLinkedNotification).sendToRepresentative(any(CaseData.class), eq(null));
         SubmittedCallbackResponse response =
             caseWorkerLinkCase.submitted(updatedCaseDetails, beforeDetails);
         //Then

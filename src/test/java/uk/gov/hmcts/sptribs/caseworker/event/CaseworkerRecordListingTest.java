@@ -125,10 +125,6 @@ class CaseworkerRecordListingTest {
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
 
-        doNothing().when(listingCreatedNotification).sendToSubject(caseData, caseData.getHyphenatedCaseRef());
-        doNothing().when(listingCreatedNotification).sendToRepresentative(caseData, caseData.getHyphenatedCaseRef());
-        doNothing().when(listingCreatedNotification).sendToRespondent(caseData, caseData.getHyphenatedCaseRef());
-        doNothing().when(listingCreatedNotification).sendToApplicant(caseData, caseData.getHyphenatedCaseRef());
         when(recordListHelper.checkAndUpdateVenueInformation(any())).thenReturn(listing);
 
         //When
@@ -264,17 +260,6 @@ class CaseworkerRecordListingTest {
         final CaseDetails<CaseData, State> beforeCaseDetails = new CaseDetails<>();
         final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
         updatedCaseDetails.setData(caseData);
-        switch (notificationParty) {
-            case SUBJECT ->
-                doNothing().when(listingCreatedNotification).sendToSubject(any(CaseData.class), anyString());
-            case REPRESENTATIVE ->
-                doNothing().when(listingCreatedNotification).sendToRepresentative(any(CaseData.class), anyString());
-            case RESPONDENT ->
-                doNothing().when(listingCreatedNotification).sendToRespondent(any(CaseData.class), anyString());
-            case APPLICANT ->
-                doNothing().when(listingCreatedNotification).sendToApplicant(any(CaseData.class), anyString());
-            default -> doNothing();
-        }
 
         final SubmittedCallbackResponse response = caseworkerRecordListing.submitted(updatedCaseDetails, beforeCaseDetails);
 

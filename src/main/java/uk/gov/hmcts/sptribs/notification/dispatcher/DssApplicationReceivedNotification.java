@@ -6,7 +6,6 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.DssCaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.LanguagePreference;
-import uk.gov.hmcts.sptribs.notification.DssNotificationHelper;
 import uk.gov.hmcts.sptribs.notification.NotificationHelper;
 import uk.gov.hmcts.sptribs.notification.NotificationServiceCIC;
 import uk.gov.hmcts.sptribs.notification.PartiesNotification;
@@ -40,7 +39,7 @@ public class DssApplicationReceivedNotification extends PartiesNotification {
     @Override
     protected PartyNotification buildSubjectNotification(CaseData caseData, String caseNumber) {
         DssCaseData dssCaseData = caseData.getDssCaseData();
-        Map<String, Object> templateVarsSubject = DssNotificationHelper.getSubjectCommonVars(caseNumber, caseData);
+        Map<String, Object> templateVarsSubject = notificationHelper().getDssSubjectCommonVars(caseNumber, caseData);
         templateVarsSubject.put(CIC_CASE_SUBJECT_NAME, dssCaseData.getSubjectFullName());
         templateVarsSubject.put(CONTACT_PARTY_INFO, dssCaseData.getNotifyPartyMessage());
         addDashboardLink(templateVarsSubject);
@@ -60,7 +59,7 @@ public class DssApplicationReceivedNotification extends PartiesNotification {
     @Override
     protected PartyNotification buildRepresentativeNotification(CaseData caseData, String caseNumber) {
         DssCaseData dssCaseData = caseData.getDssCaseData();
-        Map<String, Object> templateVarsRep = DssNotificationHelper.getRepresentativeCommonVars(caseNumber, caseData);
+        Map<String, Object> templateVarsRep = notificationHelper().getDssRepresentativeCommonVars(caseNumber, caseData);
         templateVarsRep.put(CIC_CASE_REPRESENTATIVE_NAME, dssCaseData.getRepresentativeFullName());
         templateVarsRep.put(CONTACT_PARTY_INFO, dssCaseData.getNotifyPartyMessage());
         addDashboardLink(templateVarsRep);
