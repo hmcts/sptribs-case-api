@@ -235,7 +235,7 @@ feature:
     enabled: ${CLEAN_DELETED_DOCUMENTS_ENABLED:false}
     caseReference: ${CLEAN_DELETED_DOCUMENTS_TEST_CASE_REF:}
   migrate-to-documents-table-task:
-    enabled: ${MIGRATE_CASE_DOCUMENTS_TO_TABLE_ENABLED:true}
+    enabled: ${MIGRATE_CASE_DOCUMENTS_TO_TABLE_ENABLED:false}
     caseReference: ${MIGRATE_CASE_DOCUMENTS_TO_TABLE_TEST_CASE_REF:}
     batchSize: ${MIGRATE_CASE_DOCUMENTS_TO_TABLE_BATCH_SIZE:100}
     batchPauseMs: ${MIGRATE_CASE_DOCUMENTS_TO_TABLE_BATCH_PAUSE:5000}
@@ -243,7 +243,7 @@ feature:
     enabled: ${RESTORE_ORDERS_TASK_ENABLED:false}
     caseReference: ${RESTORE_ORDERS_TASK_TEST_CASE_REF:}
   create-system-update-test-case:
-    enabled: ${CREATE_TEST_CASES:true}
+    enabled: ${CREATE_TEST_CASES:false}
     count: ${TEST_CASE_COUNT:10}
   migrate-initial-case-documents-task:
     enabled: ${INITIAL_DOCUMENTS_MIGRATION_ENABLED:false}
