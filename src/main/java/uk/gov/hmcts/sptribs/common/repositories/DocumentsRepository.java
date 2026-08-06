@@ -15,6 +15,7 @@ import java.util.Optional;
 @Repository
 public interface DocumentsRepository extends JpaRepository<DocumentEntity, Long> {
 
+
     @Query("""
         select d.id
         from DocumentEntity d
@@ -95,4 +96,12 @@ public interface DocumentsRepository extends JpaRepository<DocumentEntity, Long>
         Long caseReferenceNumber,
         Long caseDocumentTypeId
     );
+
+    @Query("""
+            SELECT d
+            FROM DocumentEntity d
+            WHERE d.documentUrl LIKE %:documentId% OR d.documentBinaryUrl LIKE %:documentId%
+        """)
+    Optional<DocumentEntity> findByDocumentIdUuid(
+        @Param("documentId") String documentId);
 }
