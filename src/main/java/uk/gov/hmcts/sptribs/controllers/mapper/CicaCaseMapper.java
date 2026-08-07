@@ -9,7 +9,7 @@ public class CicaCaseMapper {
 
     public CicaCaseResponse toResponse(CicaCaseEntity entity) {
         if (entity == null) {
-            return null;
+            return CicaCaseResponse.builder().build();
         }
 
         return CicaCaseResponse.builder()
