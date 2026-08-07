@@ -154,6 +154,7 @@ public final class EventUtil {
     public static AboutToStartOrSubmitResponse<CaseData, State> getCaseDataStateAboutToStartOrSubmitResponse(
         CaseDetails<CaseData, State> details, String baseUrl, String documentBaseUrl) {
         final CaseData caseData = details.getData();
+        caseData.getContactPartiesDocuments().setShowPreview(YesOrNo.NO);
         caseData.setContactParties(new ContactParties());
 
         List<ListValue<CaseworkerCICDocument>> allCaseDocuments =
