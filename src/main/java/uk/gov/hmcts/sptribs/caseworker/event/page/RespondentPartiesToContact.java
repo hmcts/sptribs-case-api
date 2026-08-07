@@ -6,7 +6,6 @@ import org.springframework.util.CollectionUtils;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.sptribs.caseworker.model.ContactParties;
-import uk.gov.hmcts.sptribs.caseworker.model.ContactPartiesDocuments;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseSubcategory;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
@@ -33,9 +32,6 @@ public class RespondentPartiesToContact implements CcdPageConfiguration {
             .page("partiesToContact", this::midEvent)
             .pageLabel("Contact Parties")
             .label("LabelPartiesToContact", "Which parties do you want to contact?")
-            .complex(CaseData::getContactPartiesDocuments)
-            .readonly(ContactPartiesDocuments::getPreviewDoc)
-            .done()
             .complex(CaseData::getCicCase)
             .readonly(CicCase::getFullName, ALWAYS_HIDE)
             .readonly(CicCase::getApplicantFullName, ALWAYS_HIDE)
