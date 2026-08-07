@@ -661,6 +661,64 @@ public class DocumentListUtilTest {
     }
 
     @Test
+    void shouldPreferIdFromUrlWhenCodeAndLabelDisagree() {
+        String urlDocumentId = UUID.randomUUID().toString();
+        UUID codeDocumentId = UUID.randomUUID();
+        String label = "[file.docx L - Linked docs](http://exui.net/documents/" + urlDocumentId + "/binary)";
+
+        DynamicListElement element = DynamicListElement.builder()
+            .label(label)
+            .code(codeDocumentId)
+            .build();
+
+        List<String> documentIds = DocumentListUtil.extractDocumentIds(List.of(element));
+        assertThat(documentIds).contains(urlDocumentId).doesNotContain(codeDocumentId.toString()).hasSize(1);
+    }
+
+    @Test
+    void shouldExtractDocumentIdFromCodeWhenLabelHasNoDocumentId() {
+        UUID codeDocumentId = UUID.randomUUID();
+
+        DynamicListElement element = DynamicListElement.builder()
+            .label("[file.docx L - Linked docs](http://exui.net/documents/not-a-uuid/binary)")
+            .code(codeDocumentId)
+            .build();
+
+        List<String> documentIds = DocumentListUtil.extractDocumentIds(List.of(element));
+        assertThat(documentIds).contains(codeDocumentId.toString()).hasSize(1);
+    }
+
+    @Test
+    void shouldSetContactPartiesPreviewElementCodeAsDocumentId() {
+        String documentId = UUID.randomUUID().toString();
+        CaseworkerCICDocument doc = CaseworkerCICDocument.builder()
+            .documentCategory(DocumentType.LINKED_DOCS)
+            .documentLink(Document.builder()
+                .url("http://doc-store/documents/" + documentId)
+                .binaryUrl("http://doc-store/documents/" + documentId + "/binary")
+                .filename("name.pdf")
+                .build())
+            .build();
+
+        ListValue<CaseworkerCICDocument> listValue = new ListValue<>();
+        listValue.setValue(doc);
+
+        CicCase cicCase = CicCase.builder()
+            .reinstateDocuments(List.of(listValue))
+            .build();
+        CaseData caseData = CaseData.builder().cicCase(cicCase).build();
+
+        DynamicMultiSelectList result = DocumentListUtil.prepareContactPartiesDocumentListForPreview(
+            caseData,
+            "http://exui",
+            "http://doc-store"
+        );
+
+        assertThat(result.getListItems()).hasSize(1);
+        assertThat(result.getListItems().getFirst().getCode()).isEqualTo(UUID.fromString(documentId));
+    }
+
+    @Test
     void shouldReturnEmptyListIfNoIdFound() {
         DynamicMultiSelectList dynamicMultiSelectList = DynamicMultiSelectList.builder().build();
         List<String> documentIds = DocumentListUtil.extractDocumentIds(dynamicMultiSelectList.getListItems());

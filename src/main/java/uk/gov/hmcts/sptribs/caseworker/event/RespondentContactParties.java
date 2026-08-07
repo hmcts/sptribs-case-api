@@ -95,7 +95,7 @@ public class RespondentContactParties implements CCDConfig<CaseData, State, User
     }
 
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToStart(CaseDetails<CaseData, State> details) {
-        return getCaseDataStateAboutToStartOrSubmitResponse(details, baseUrl, documentBaseUrl);
+        return getCaseDataStateAboutToStartOrSubmitResponse(details, baseUrl);
     }
 
     public SubmittedCallbackResponse submitted(CaseDetails<CaseData, State> details,

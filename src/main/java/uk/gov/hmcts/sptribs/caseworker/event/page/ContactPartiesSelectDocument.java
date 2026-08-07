@@ -21,7 +21,10 @@ import uk.gov.hmcts.sptribs.services.cdam.CaseDocumentClientApi;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
+
+import static uk.gov.hmcts.sptribs.caseworker.util.DocumentManagementUtil.buildListValues;
 
 @Component
 @Slf4j
@@ -45,7 +48,6 @@ public class ContactPartiesSelectDocument implements CcdPageConfiguration {
                 "Note: Gov.Notify only supports sending documents in the formats of PDF, CSV, txt, rtf, MS Word Document "
                     + "file and MS Excel File. Your file must be smaller than 2MB")
             .complex(CaseData::getContactPartiesDocuments)
-            .readonly(ContactPartiesDocuments::getPreviewDoc)
             .optionalWithLabel(ContactPartiesDocuments::getDocumentList,"Selected Documents")
             .done();
     }
@@ -64,10 +66,26 @@ public class ContactPartiesSelectDocument implements CcdPageConfiguration {
             validateDocumentFileSizes(list.getValue(), errors);
         }
 
+        setPreviewDocuments(data, list);
+
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(data)
             .errors(errors)
             .build();
+    }
+
+    private void setPreviewDocuments(CaseData data, DynamicMultiSelectList list) {
+        if (list == null || list.getValue() == null || list.getValue().isEmpty()) {
+            data.getContactPartiesDocuments().setPreviewDoc(new ArrayList<>());
+            return;
+        }
+
+        var selectedDocuments = DocumentListUtil.extractDocumentIds(list.getValue()).stream()
+            .map(id -> DocumentListUtil.getCaseDocumentById(id, data))
+            .flatMap(Optional::stream)
+            .toList();
+
+        data.getContactPartiesDocuments().setPreviewDoc(buildListValues(selectedDocuments));
     }
 
     private void validateDocumentFileSizes(List<DynamicListElement> userSelection, List<String> errors) {

@@ -460,12 +460,14 @@ public class NotificationHelperTest {
     @Test
     void shouldBuildDocumentList() {
         //Given
+        final UUID documentId = UUID.fromString("5e32a0d2-9b37-4548-b007-b9b2eb580d0a");
         final String documentLabel =
-            "[Document 1.pdf A - First decision](http://exui.net/documents/5e32a0d2-9b37-4548-b007-b9b2eb580d0a/binary)";
+            "[Document 1.pdf A - First decision](http://exui.net/documents/"
+                + documentId + "/binary)";
         final DynamicListElement listItem = DynamicListElement
             .builder()
             .label(documentLabel)
-            .code(UUID.randomUUID())
+            .code(documentId)
             .build();
 
         final List<DynamicListElement> listItems = new ArrayList<>();
@@ -488,7 +490,7 @@ public class NotificationHelperTest {
             .containsKey("CaseDocument2")
             .containsKey("DocumentAvailable1")
             .containsKey("DocumentAvailable2")
-            .containsEntry("CaseDocument1", "5e32a0d2-9b37-4548-b007-b9b2eb580d0a")
+            .containsEntry("CaseDocument1", documentId.toString())
             .containsEntry("CaseDocument2", EMPTY_PLACEHOLDER)
             .containsEntry("DocumentAvailable1", YES)
             .containsEntry("DocumentAvailable2", NO);

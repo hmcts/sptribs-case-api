@@ -16,7 +16,6 @@ import uk.gov.hmcts.sptribs.ciccase.model.OrderTemplate;
 import uk.gov.hmcts.sptribs.ciccase.model.PanelMember;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.document.content.DocmosisTemplateConstants;
-import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -151,17 +150,14 @@ public final class EventUtil {
     }
 
     public static AboutToStartOrSubmitResponse<CaseData, State> getCaseDataStateAboutToStartOrSubmitResponse(
-        CaseDetails<CaseData, State> details, String baseUrl, String documentBaseUrl) {
+        CaseDetails<CaseData, State> details, String baseUrl) {
         final CaseData caseData = details.getData();
         caseData.setContactParties(new ContactParties());
 
-        List<ListValue<CaseworkerCICDocument>> allCaseDocuments =
-            DocumentListUtil.getAllCaseDocuments(caseData);
-        caseData.getContactPartiesDocuments().setPreviewDoc(allCaseDocuments);
-
         DynamicMultiSelectList documentList =
-            DocumentListUtil.prepareContactPartiesDocumentListForPreview(caseData, baseUrl, documentBaseUrl);
+            DocumentListUtil.prepareContactPartiesDocumentList(caseData, baseUrl);
         caseData.getContactPartiesDocuments().setDocumentList(documentList);
+        caseData.getContactPartiesDocuments().setPreviewDoc(new ArrayList<>());
         caseData.getCicCase().setNotifyPartyMessage("");
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()

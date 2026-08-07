@@ -140,9 +140,10 @@ public final class DocumentListUtil {
             String documentId = StringUtils.substringAfterLast(doc.getDocumentLink().getUrl(),
                 "/");
             String url = String.format(apiUrl, documentId);
+            UUID elementCode = extractUuid(documentId).map(UUID::fromString).orElse(UUID.randomUUID());
             DynamicListElement element = DynamicListElement.builder().label("[" + doc.getDocumentLink().getFilename()
                 + " " + doc.getDocumentCategory().getLabel()
-                + "](" + url + ")").code(UUID.randomUUID()).build();
+                + "](" + url + ")").code(elementCode).build();
             dynamicListElements.add(element);
         }
 
@@ -186,9 +187,10 @@ public final class DocumentListUtil {
             if (ContactPartiesAllowedFileTypes.isFileTypeValid(fileExtension)) {
                 String documentId = StringUtils.substringAfterLast(doc.getDocumentLink().getUrl(), "/");
                 String previewUrl = buildMediaViewerUrl(viewerBaseUrl, documentBaseUrl, documentId);
+                UUID elementCode = extractUuid(documentId).map(UUID::fromString).orElse(UUID.randomUUID());
                 DynamicListElement element = DynamicListElement.builder().label("[" + doc.getDocumentLink().getFilename()
                     + " " + doc.getDocumentCategory().getLabel()
-                    + "](" + previewUrl + ")").code(UUID.randomUUID()).build();
+                    + "](" + previewUrl + ")").code(elementCode).build();
                 dynamicListElements.add(element);
             }
         }
@@ -214,9 +216,10 @@ public final class DocumentListUtil {
         String documentId = StringUtils.substringAfterLast(doc.getDocumentLink().getUrl(),
             "/");
         String url = String.format(apiUrl, documentId);
+        UUID elementCode = extractUuid(documentId).map(UUID::fromString).orElse(UUID.randomUUID());
         DynamicListElement element = DynamicListElement.builder().label("[" + doc.getDocumentLink().getFilename()
             + " " + doc.getDocumentCategory().getLabel()
-            + "](" + url + ")").code(UUID.randomUUID()).build();
+            + "](" + url + ")").code(elementCode).build();
         dynamicListElements.add(element);
     }
 
@@ -319,25 +322,44 @@ public final class DocumentListUtil {
     }
 
     public static Optional<String> extractDocumentId(DynamicListElement element) {
-        if (element == null || element.getLabel() == null) {
+        if (element == null) {
             return Optional.empty();
+        }
+
+        Optional<String> fromCode = extractUuid(String.valueOf(element.getCode()));
+
+        if (element.getLabel() == null) {
+            return fromCode;
         }
 
         String label = element.getLabel();
         int open = label.lastIndexOf('(');
         int close = label.lastIndexOf(')');
 
+        Optional<String> fromLabel = extractUuid(label);
+
         if (open < 0 || close <= open) {
-            return Optional.empty();
+            return fromCode.isPresent() ? fromCode : fromLabel;
         }
 
         String url = label.substring(open + 1, close).trim();
         Optional<String> fromUrl = extractUuid(url);
+
+        if (fromCode.isPresent()) {
+            if (fromUrl.isPresent() && !fromCode.get().equals(fromUrl.get())) {
+                return fromUrl;
+            }
+            if (fromLabel.isPresent() && !fromCode.get().equals(fromLabel.get())) {
+                return fromLabel;
+            }
+            return fromCode;
+        }
+
         if (fromUrl.isPresent()) {
             return fromUrl;
         }
 
-        return extractUuid(label);
+        return fromLabel;
     }
 
     private static Optional<String> extractUuid(String value) {
