@@ -9,6 +9,7 @@ import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.ccd.sdk.type.DynamicListElement;
 import uk.gov.hmcts.ccd.sdk.type.DynamicMultiSelectList;
+import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.sptribs.caseworker.model.ContactPartiesDocuments;
 import uk.gov.hmcts.sptribs.caseworker.util.DocumentListUtil;
@@ -44,8 +45,8 @@ public class ContactPartiesSelectDocument implements CcdPageConfiguration {
             .label("LabelContactPartiesSelectDocumentNote",
                 "Note: Gov.Notify only supports sending documents in the formats of PDF, CSV, txt, rtf, MS Word Document "
                     + "file and MS Excel File. Your file must be smaller than 2MB")
-            .complex(CaseData::getContactPartiesDocuments)
-            .optionalWithLabel(ContactPartiesDocuments::getPreviewDoc,"Selected Documents")
+            .complex(CaseData::getContactPartiesDocuments,"contactPartiesDocumentsShowPreview = \"No\"")
+            .complex(ContactPartiesDocuments::getPreviewDoc,"contactPartiesDocumentsShowPreview = \"Yes\"","Selected Documents")
             .done();
     }
 
@@ -62,7 +63,9 @@ public class ContactPartiesSelectDocument implements CcdPageConfiguration {
         if (list != null && list.getValue() != null) {
             validateDocumentFileSizes(list.getValue(), errors);
         }
-
+        if (errors.isEmpty()) {
+            data.getContactPartiesDocuments().setShowPreview(YesOrNo.YES);
+        }
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(data)
             .errors(errors)
