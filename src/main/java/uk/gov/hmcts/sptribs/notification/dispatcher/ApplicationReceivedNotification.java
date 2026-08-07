@@ -72,7 +72,7 @@ public class ApplicationReceivedNotification extends PartiesNotification {
     }
 
     private TemplateName getTemplateName() {
-        return citizenDashboardEnabled ? APPLICATION_RECEIVED : APPLICATION_RECEIVED_NEW_CD;
+        return citizenDashboardEnabled ?  APPLICATION_RECEIVED_NEW_CD : APPLICATION_RECEIVED;
     }
 
     private void addDashboardLink(Map<String, Object> templateVars) {

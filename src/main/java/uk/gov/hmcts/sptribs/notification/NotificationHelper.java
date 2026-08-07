@@ -95,15 +95,15 @@ public class NotificationHelper {
 
     public NotificationRequest buildEmailNotificationRequest(String destinationAddress,
                                                              List<CaseworkerCICDocument> attachedDocuments,
-                                                             Map<String, String> uploadedDocuments,
+                                                             Map<String, String> templateDocumentVars,
                                                              Map<String, Object> templateVars,
                                                              TemplateName emailTemplateName) {
         return NotificationRequest.builder()
             .destinationAddress(destinationAddress)
             .attachedDocuments(attachedDocuments)
-            .templateDocumentVars(uploadedDocuments)
-            .template(emailTemplateName)
+            .templateDocumentVars(templateDocumentVars)
             .templateVars(templateVars)
+            .template(emailTemplateName)
             .build();
     }
 
