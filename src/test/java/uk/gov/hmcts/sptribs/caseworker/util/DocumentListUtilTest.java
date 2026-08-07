@@ -6,6 +6,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.type.Document;
+import uk.gov.hmcts.ccd.sdk.type.DynamicListElement;
 import uk.gov.hmcts.ccd.sdk.type.DynamicMultiSelectList;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseIssueDecision;
@@ -27,6 +28,7 @@ import uk.gov.hmcts.sptribs.testutil.TestDataHelper;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID;
@@ -609,10 +611,11 @@ public class DocumentListUtilTest {
 
     @Test
     void shouldExtractDocumentIds() {
+        String documentId = UUID.randomUUID().toString();
         final Document document = Document.builder()
             .filename("test file")
-            .url("test.url/documentId")
-            .binaryUrl("test.url/documentId/binary")
+            .url("test.url/" + documentId)
+            .binaryUrl("test.url/" + documentId + "/binary")
             .build();
         final CaseworkerCICDocument cicDocument = CaseworkerCICDocument.builder()
             .date(LocalDate.of(2025, 12, 11))
@@ -639,7 +642,22 @@ public class DocumentListUtilTest {
         dynamicMultiSelectList.setValue(dynamicMultiSelectList.getListItems());
 
         List<String> documentIds = DocumentListUtil.extractDocumentIds(dynamicMultiSelectList.getListItems());
-        assertThat(documentIds).contains("documentId").hasSize(1);
+        assertThat(documentIds).contains(documentId).hasSize(1);
+    }
+
+    @Test
+    void shouldExtractDocumentIdsFromPreviewUrl() {
+        String documentId = UUID.randomUUID().toString();
+        String label = "[file.docx L - Linked docs](http://exui.net/media-viewer?document_url="
+            + "http%3A%2F%2Fdoc-store%2Fdocuments%2F" + documentId + ")";
+
+        DynamicListElement element = DynamicListElement.builder()
+            .label(label)
+            .code(UUID.randomUUID())
+            .build();
+
+        List<String> documentIds = DocumentListUtil.extractDocumentIds(List.of(element));
+        assertThat(documentIds).contains(documentId).hasSize(1);
     }
 
     @Test

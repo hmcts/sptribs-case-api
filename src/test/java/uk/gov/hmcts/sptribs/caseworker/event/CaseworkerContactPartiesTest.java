@@ -111,6 +111,47 @@ class CaseworkerContactPartiesTest {
 
         assertThat(response.getData().getContactPartiesDocuments().getDocumentList()).isNotNull();
         assertThat(response.getData().getContactPartiesDocuments().getDocumentList().getListItems()).hasSize(1);
+        assertThat(response.getData().getContactPartiesDocuments().getPreviewDoc()).hasSize(1);
+    }
+
+    @Test
+    void shouldKeepPreviewDocumentsInSyncWithContactPartiesDocumentList() {
+        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+        List<ListValue<CaseworkerCICDocument>> listValueList = new ArrayList<>();
+
+        final CaseworkerCICDocument validDocument = CaseworkerCICDocument.builder()
+            .documentCategory(DocumentType.LINKED_DOCS)
+            .documentLink(Document.builder().url("valid-url").binaryUrl("valid-url").filename("valid.pdf").build())
+            .build();
+
+        final CaseworkerCICDocument invalidDocument = CaseworkerCICDocument.builder()
+            .documentCategory(DocumentType.LINKED_DOCS)
+            .documentLink(Document.builder().url("invalid-url").binaryUrl("invalid-url").filename("invalid.exe").build())
+            .build();
+
+        ListValue<CaseworkerCICDocument> validListValue = new ListValue<>();
+        validListValue.setValue(validDocument);
+        listValueList.add(validListValue);
+
+        ListValue<CaseworkerCICDocument> invalidListValue = new ListValue<>();
+        invalidListValue.setValue(invalidDocument);
+        listValueList.add(invalidListValue);
+
+        final CicCase cicCase = CicCase.builder()
+            .reinstateDocuments(listValueList)
+            .build();
+
+        final CaseData caseData = CaseData.builder().build();
+        caseData.setCicCase(cicCase);
+        caseDetails.setData(caseData);
+
+        AboutToStartOrSubmitResponse<CaseData, State> response = caseWorkerContactParties.aboutToStart(caseDetails);
+
+        assertThat(response.getData().getContactPartiesDocuments().getDocumentList()).isNotNull();
+        assertThat(response.getData().getContactPartiesDocuments().getDocumentList().getListItems()).hasSize(1);
+        assertThat(response.getData().getContactPartiesDocuments().getPreviewDoc()).hasSize(1);
+        assertThat(response.getData().getContactPartiesDocuments().getPreviewDoc().get(0).getValue().getDocumentLink().getFilename())
+            .isEqualTo("valid.pdf");
     }
 
     @Test
@@ -325,4 +366,3 @@ class CaseworkerContactPartiesTest {
         assertThat(response.getData().getCicCase().getNotifyPartyMessage()).isEqualTo("");
     }
 }
-

@@ -9,6 +9,7 @@ import uk.gov.hmcts.ccd.sdk.type.AddressGlobalUK;
 import uk.gov.hmcts.ccd.sdk.type.DynamicListElement;
 import uk.gov.hmcts.ccd.sdk.type.DynamicMultiSelectList;
 import uk.gov.hmcts.sptribs.caseworker.model.Listing;
+import uk.gov.hmcts.sptribs.caseworker.util.DocumentListUtil;
 import uk.gov.hmcts.sptribs.ciccase.CicCaseFieldsUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
@@ -20,6 +21,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.HYPHEN;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.SPACE;
@@ -40,7 +42,6 @@ import static uk.gov.hmcts.sptribs.common.CommonConstants.EMPTY_PLACEHOLDER;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.HAS_CICA_NUMBER;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.HEARING_DATE;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.HEARING_TIME;
-import static uk.gov.hmcts.sptribs.common.CommonConstants.MARKUP_SEPARATOR;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.NO;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.TRIBUNAL_NAME;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.TRIBUNAL_NAME_VALUE;
@@ -183,11 +184,9 @@ public class NotificationHelper {
             final List<DynamicListElement> documents = documentList.getValue();
             for (DynamicListElement element : documents) {
                 count++;
-                final String[] labels = element.getLabel().split(MARKUP_SEPARATOR);
+                Optional<String> docId = DocumentListUtil.extractDocumentId(element);
                 uploadedDocuments.put(DOC_AVAILABLE + count, YES);
-                uploadedDocuments.put(CASE_DOCUMENT + count,
-                    StringUtils.substringAfterLast(labels[1].substring(1, labels[1].length() - 8),
-                        "/"));
+                uploadedDocuments.put(CASE_DOCUMENT + count, docId.orElse(EMPTY_PLACEHOLDER));
                 log.debug("Document when Available: {}, {} with value {}", count, uploadedDocuments.get(DOC_AVAILABLE + count),
                     uploadedDocuments.get(CASE_DOCUMENT + count));
             }
