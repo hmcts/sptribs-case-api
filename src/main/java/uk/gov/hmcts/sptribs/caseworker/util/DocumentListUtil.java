@@ -82,6 +82,10 @@ public final class DocumentListUtil {
         return buildListValues(prepareList(data));
     }
 
+    public static List<ListValue<CaseworkerCICDocument>> getContactPartiesCaseDocuments(final CaseData data) {
+        return buildListValues(getContactPartiesAllowedDocuments(data));
+    }
+
     public static DynamicList prepareCICDocumentListWithAllDocuments(final CaseData data) {
         List<DynamicListElement> dynamicListElements = new ArrayList<>();
 
@@ -154,16 +158,12 @@ public final class DocumentListUtil {
     }
 
     public static DynamicMultiSelectList prepareContactPartiesDocumentList(final CaseData data, String baseUrl) {
-        List<CaseworkerCICDocument> docList = prepareList(data);
+        List<CaseworkerCICDocument> docList = getContactPartiesAllowedDocuments(data);
 
         String apiUrl = appendPath(baseUrl, DOCUMENT_BINARY_PATH);
         List<DynamicListElement> dynamicListElements = new ArrayList<>();
         for (CaseworkerCICDocument doc : docList) {
-            String fileName = doc.getDocumentLink().getFilename();
-            String fileExtension = StringUtils.substringAfterLast(fileName, ".");
-            if (ContactPartiesAllowedFileTypes.isFileTypeValid(fileExtension)) {
-                createDocumentList(apiUrl, dynamicListElements, doc);
-            }
+            createDocumentList(apiUrl, dynamicListElements, doc);
         }
 
         return DynamicMultiSelectList
@@ -178,19 +178,15 @@ public final class DocumentListUtil {
         String viewerBaseUrl,
         String documentBaseUrl
     ) {
-        List<CaseworkerCICDocument> docList = prepareList(data);
+        List<CaseworkerCICDocument> docList = getContactPartiesAllowedDocuments(data);
         List<DynamicListElement> dynamicListElements = new ArrayList<>();
         for (CaseworkerCICDocument doc : docList) {
-            String fileName = doc.getDocumentLink().getFilename();
-            String fileExtension = StringUtils.substringAfterLast(fileName, ".");
-            if (ContactPartiesAllowedFileTypes.isFileTypeValid(fileExtension)) {
-                String documentId = StringUtils.substringAfterLast(doc.getDocumentLink().getUrl(), "/");
-                String previewUrl = buildMediaViewerUrl(viewerBaseUrl, documentBaseUrl, documentId);
-                DynamicListElement element = DynamicListElement.builder().label("[" + doc.getDocumentLink().getFilename()
-                    + " " + doc.getDocumentCategory().getLabel()
-                    + "](" + previewUrl + ")").code(UUID.randomUUID()).build();
-                dynamicListElements.add(element);
-            }
+            String documentId = StringUtils.substringAfterLast(doc.getDocumentLink().getUrl(), "/");
+            String previewUrl = buildMediaViewerUrl(viewerBaseUrl, documentBaseUrl, documentId);
+            DynamicListElement element = DynamicListElement.builder().label("[" + doc.getDocumentLink().getFilename()
+                + " " + doc.getDocumentCategory().getLabel()
+                + "](" + previewUrl + ")").code(UUID.randomUUID()).build();
+            dynamicListElements.add(element);
         }
 
         return DynamicMultiSelectList
@@ -218,6 +214,18 @@ public final class DocumentListUtil {
             + " " + doc.getDocumentCategory().getLabel()
             + "](" + url + ")").code(UUID.randomUUID()).build();
         dynamicListElements.add(element);
+    }
+
+    private static List<CaseworkerCICDocument> getContactPartiesAllowedDocuments(CaseData data) {
+        return prepareList(data).stream()
+            .filter(DocumentListUtil::isContactPartiesFileTypeAllowed)
+            .toList();
+    }
+
+    private static boolean isContactPartiesFileTypeAllowed(CaseworkerCICDocument document) {
+        String fileName = document.getDocumentLink().getFilename();
+        String fileExtension = StringUtils.substringAfterLast(fileName, ".");
+        return ContactPartiesAllowedFileTypes.isFileTypeValid(fileExtension);
     }
 
     public static String buildMediaViewerUrl(String viewerBaseUrl, String documentBaseUrl, String documentId) {

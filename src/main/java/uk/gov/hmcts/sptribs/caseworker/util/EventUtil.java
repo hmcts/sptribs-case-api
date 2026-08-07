@@ -156,7 +156,7 @@ public final class EventUtil {
         caseData.setContactParties(new ContactParties());
 
         List<ListValue<CaseworkerCICDocument>> allCaseDocuments =
-            DocumentListUtil.getAllCaseDocuments(caseData);
+            DocumentListUtil.getContactPartiesCaseDocuments(caseData);
         caseData.getContactPartiesDocuments().setPreviewDoc(allCaseDocuments);
 
         DynamicMultiSelectList documentList =
