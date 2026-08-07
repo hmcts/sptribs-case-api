@@ -1,8 +1,12 @@
 package uk.gov.hmcts.sptribs.caseworker.util;
 
 import org.springframework.util.CollectionUtils;
+import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
+import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.ccd.sdk.type.DynamicList;
+import uk.gov.hmcts.ccd.sdk.type.DynamicMultiSelectList;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
+import uk.gov.hmcts.sptribs.caseworker.model.ContactParties;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseSubcategory;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
@@ -10,7 +14,9 @@ import uk.gov.hmcts.sptribs.ciccase.model.DecisionTemplate;
 import uk.gov.hmcts.sptribs.ciccase.model.NotificationParties;
 import uk.gov.hmcts.sptribs.ciccase.model.OrderTemplate;
 import uk.gov.hmcts.sptribs.ciccase.model.PanelMember;
+import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.document.content.DocmosisTemplateConstants;
+import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -142,6 +148,25 @@ public final class EventUtil {
 
         listValues.add(listValue);
         return listValues;
+    }
+
+    public static AboutToStartOrSubmitResponse<CaseData, State> getCaseDataStateAboutToStartOrSubmitResponse(
+        CaseDetails<CaseData, State> details, String baseUrl, String documentBaseUrl) {
+        final CaseData caseData = details.getData();
+        caseData.setContactParties(new ContactParties());
+
+        List<ListValue<CaseworkerCICDocument>> allCaseDocuments =
+            DocumentListUtil.getAllCaseDocuments(caseData);
+        caseData.getContactPartiesDocuments().setPreviewDoc(allCaseDocuments);
+
+        DynamicMultiSelectList documentList =
+            DocumentListUtil.prepareContactPartiesDocumentListForPreview(caseData, baseUrl, documentBaseUrl);
+        caseData.getContactPartiesDocuments().setDocumentList(documentList);
+        caseData.getCicCase().setNotifyPartyMessage("");
+
+        return AboutToStartOrSubmitResponse.<CaseData, State>builder()
+            .data(caseData)
+            .build();
     }
 
 
