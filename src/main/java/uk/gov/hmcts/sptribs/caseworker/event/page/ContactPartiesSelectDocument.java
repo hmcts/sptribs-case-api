@@ -45,7 +45,7 @@ public class ContactPartiesSelectDocument implements CcdPageConfiguration {
                 "Note: Gov.Notify only supports sending documents in the formats of PDF, CSV, txt, rtf, MS Word Document "
                     + "file and MS Excel File. Your file must be smaller than 2MB")
             .complex(CaseData::getContactPartiesDocuments)
-            .readonly(ContactPartiesDocuments::getPreviewDocuments)
+            .readonly(ContactPartiesDocuments::getDocumentListPreview)
             .optionalWithLabel(ContactPartiesDocuments::getDocumentList,"Selected Documents")
             .done();
     }

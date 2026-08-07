@@ -30,7 +30,7 @@ public class ContactPartiesDocuments {
         label = "Case Documents Preview",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
-    private List<ListValue<CaseworkerCICDocument>> previewDocuments;
+    private List<ListValue<CaseworkerCICDocument>> documentListPreview;
 
 
     @CCD(typeOverride = DynamicMultiSelectList,

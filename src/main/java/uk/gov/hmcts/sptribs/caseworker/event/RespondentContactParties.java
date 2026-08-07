@@ -104,7 +104,7 @@ public class RespondentContactParties implements CCDConfig<CaseData, State, User
         caseData.setContactParties(new ContactParties());
 
         List<ListValue<CaseworkerCICDocument>> allCaseDocuments = DocumentListUtil.getAllCaseDocuments(caseData);
-        caseData.getContactPartiesDocuments().setPreviewDocuments(allCaseDocuments);
+        caseData.getContactPartiesDocuments().setDocumentListPreview(allCaseDocuments);
 
         DynamicMultiSelectList documentList =
             DocumentListUtil.prepareContactPartiesDocumentListForPreview(caseData, baseUrl, documentBaseUrl);
