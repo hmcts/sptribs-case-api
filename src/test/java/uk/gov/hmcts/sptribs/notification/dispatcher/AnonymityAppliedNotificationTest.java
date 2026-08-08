@@ -16,6 +16,7 @@ import uk.gov.hmcts.sptribs.notification.NotificationHelper;
 import uk.gov.hmcts.sptribs.notification.NotificationServiceCIC;
 import uk.gov.hmcts.sptribs.notification.TemplateName;
 import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
+import uk.gov.hmcts.sptribs.notification.model.Party;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -76,12 +77,12 @@ class AnonymityAppliedNotificationTest {
             anyMap(),
             eq(TemplateName.ANONYMITY_APPLIED_EMAIL)
         )).thenReturn(NotificationRequest.builder().build());
-        when(notificationServiceCIC.sendEmail(any(NotificationRequest.class), eq("1234-5678-9012-3456"), eq(null)))
+        when(notificationServiceCIC.sendEmail(any(NotificationRequest.class), eq("1234-5678-9012-3456"), eq(Party.TRIBUNAL)))
             .thenReturn(response);
 
         anonymityAppliedNotification.sendToTribunal(caseData, "1234-5678-9012-3456");
 
-        verify(notificationServiceCIC).sendEmail(any(NotificationRequest.class), eq("1234-5678-9012-3456"), eq(null));
+        verify(notificationServiceCIC).sendEmail(any(NotificationRequest.class), eq("1234-5678-9012-3456"), eq(Party.TRIBUNAL));
         assertThat(caseData.getCicCase().getTribunalNotificationResponse()).isEqualTo(response);
         assertThat(templateVars)
             .containsEntry(CommonConstants.CIC_CASE_HEARING_DATE, "02-07-2026")
@@ -116,12 +117,12 @@ class AnonymityAppliedNotificationTest {
             anyMap(),
             eq(TemplateName.ANONYMITY_APPLIED_EMAIL)
         )).thenReturn(NotificationRequest.builder().build());
-        when(notificationServiceCIC.sendEmail(any(NotificationRequest.class), eq("1234-5678-9012-3456"), eq(null)))
+        when(notificationServiceCIC.sendEmail(any(NotificationRequest.class), eq("1234-5678-9012-3456"), eq(Party.TRIBUNAL)))
             .thenReturn(response);
 
         anonymityAppliedNotification.sendToTribunal(caseData, "1234-5678-9012-3456");
 
-        verify(notificationServiceCIC).sendEmail(any(NotificationRequest.class), eq("1234-5678-9012-3456"), eq(null));
+        verify(notificationServiceCIC).sendEmail(any(NotificationRequest.class), eq("1234-5678-9012-3456"), eq(Party.TRIBUNAL));
         assertThat(caseData.getCicCase().getTribunalNotificationResponse()).isEqualTo(response);
         assertThat(templateVars)
             .containsEntry(CommonConstants.CIC_CASE_HEARING_DATE, LocalDate.now().format(UK_DATE_FORMATTER))
@@ -153,12 +154,12 @@ class AnonymityAppliedNotificationTest {
             anyMap(),
             eq(TemplateName.ANONYMITY_APPLIED_EMAIL)
         )).thenReturn(NotificationRequest.builder().build());
-        when(notificationServiceCIC.sendEmail(any(NotificationRequest.class), eq("1234-5678-9012-3456"), eq(null)))
+        when(notificationServiceCIC.sendEmail(any(NotificationRequest.class), eq("1234-5678-9012-3456"), eq(Party.TRIBUNAL)))
             .thenReturn(NotificationResponse.builder().id("1").build());
 
         anonymityAppliedNotification.sendAnonymityNotificationIfNewlyApplied(caseData, null);
 
-        verify(notificationServiceCIC).sendEmail(any(NotificationRequest.class), eq("1234-5678-9012-3456"), eq(null));
+        verify(notificationServiceCIC).sendEmail(any(NotificationRequest.class), eq("1234-5678-9012-3456"), eq(Party.TRIBUNAL));
     }
 
     @Test
@@ -189,12 +190,12 @@ class AnonymityAppliedNotificationTest {
             anyMap(),
             eq(TemplateName.ANONYMITY_APPLIED_EMAIL)
         )).thenReturn(NotificationRequest.builder().build());
-        when(notificationServiceCIC.sendEmail(any(NotificationRequest.class), eq("1234-5678-9012-3456"), eq(null)))
+        when(notificationServiceCIC.sendEmail(any(NotificationRequest.class), eq("1234-5678-9012-3456"), eq(Party.TRIBUNAL)))
             .thenReturn(NotificationResponse.builder().id("1").build());
 
         anonymityAppliedNotification.sendAnonymityNotificationIfNewlyApplied(caseData, beforeData);
 
-        verify(notificationServiceCIC).sendEmail(any(NotificationRequest.class), eq("1234-5678-9012-3456"), eq(null));
+        verify(notificationServiceCIC).sendEmail(any(NotificationRequest.class), eq("1234-5678-9012-3456"), eq(Party.TRIBUNAL));
     }
 
     @Test

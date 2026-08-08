@@ -852,7 +852,7 @@ public class ContactPartiesNotificationIT {
     private static List<String> getAttachedDocumentUUIDs(CaseData data) {
         var selectedDocuments = DocumentListUtil.getSelectedDocumentsFromDynamicList(data,
             data.getContactPartiesDocuments().getDocumentList());
-        return selectedDocuments.stream().map(DocumentUtil::getDocumentUUID).toList();
+        return selectedDocuments.stream().map(DocumentUtil::getDocumentUuidFromCaseworkerCICDocument).toList();
     }
 
     private void setUpCaseContactPartyDocuments(CaseData caseData) {

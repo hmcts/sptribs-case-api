@@ -25,7 +25,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyMap;
@@ -175,13 +175,10 @@ public class ApplicationReceivedNotificationTest {
                 templateVarsCaptor.capture(),
                 eq(TemplateName.APPLICATION_RECEIVED_NEW_CD));
 
-            assertThat(templateVarsCaptor.getValue()).hasFieldOrPropertyWithValue(CommonConstants.DASHBOARD_KEY,
-                "https://sptribs.frontend/dashboard");
+            assertThat(templateVarsCaptor.getValue())
+                .containsEntry(CommonConstants.DASHBOARD_KEY, "https://sptribs.frontend/dashboard");
         }
-
     }
-
-
 
     private CaseData getMockCaseData() {
         CicCase cicCase = CicCase.builder().fullName("fullName").caseNumber(TEST_CASE_ID.toString()).build();

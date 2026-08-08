@@ -62,7 +62,7 @@ public class ContactPartiesService {
                     .getContactPartiesDocuments()
                     .getDocumentList())
                 .stream()
-                .map(DocumentUtil::getDocumentUUID)
+                .map(DocumentUtil::getDocumentUuidFromCaseworkerCICDocument)
                 .toList();
 
         return documentsService.getDocumentIdsByDocumentBinaryUrls(documentUUIDs);

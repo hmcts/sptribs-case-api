@@ -47,7 +47,7 @@ class ContactPartiesServiceTest {
     void setUp() {
         List<ListValue<CaseworkerCICDocument>> docs = TestDataHelper.getCaseworkerCICDocumentList("test.pdf", "test1.doc", "test2.pdf");
         docIds = docs
-            .stream().map(ListValue::getValue).map(DocumentUtil::getDocumentUUID).toList();
+            .stream().map(ListValue::getValue).map(DocumentUtil::getDocumentUuidFromCaseworkerCICDocument).toList();
 
         caseData = new CaseData();
         caseData.setContactPartiesDocuments(ContactPartiesDocuments.builder().build());

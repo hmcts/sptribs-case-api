@@ -45,10 +45,10 @@ public class CaseFinalDecisionIssuedNotification extends PartiesNotification {
     protected PartyNotification buildSubjectNotification(CaseData caseData, String caseNumber) {
         CicCase cicCase = caseData.getCicCase();
         Map<String, Object> templateVarsSubject = notificationHelper().getSubjectCommonVars(caseNumber, caseData);
-        Map<String, String> uploadedDocuments = getUploadedDocuments(caseData);
         addDashboardLink(templateVarsSubject);
 
         if (cicCase.getContactPreferenceType() == ContactPreferenceType.EMAIL) {
+            Map<String, String> uploadedDocuments = getUploadedDocuments(caseData);
             return new EmailNotification(
                     cicCase.getEmail(),
                     templateVarsSubject,
@@ -71,9 +71,10 @@ public class CaseFinalDecisionIssuedNotification extends PartiesNotification {
     protected PartyNotification buildApplicantNotification(CaseData caseData, String caseNumber) {
         CicCase cicCase = caseData.getCicCase();
         Map<String, Object> templateVars = notificationHelper().getApplicantCommonVars(caseNumber, caseData);
-        Map<String, String> uploadedDocuments = getUploadedDocuments(caseData);
+        addDashboardLink(templateVars);
 
         if (cicCase.getApplicantContactDetailsPreference() == ContactPreferenceType.EMAIL) {
+            Map<String, String> uploadedDocuments = getUploadedDocuments(caseData);
             return new EmailNotification(
                     cicCase.getApplicantEmailAddress(),
                     templateVars,
@@ -96,9 +97,10 @@ public class CaseFinalDecisionIssuedNotification extends PartiesNotification {
     protected PartyNotification buildRepresentativeNotification(CaseData caseData, String caseNumber) {
         CicCase cicCase = caseData.getCicCase();
         Map<String, Object> templateVarsRepresentative = notificationHelper().getRepresentativeCommonVars(caseNumber, caseData);
-        Map<String, String> uploadedDocuments = getUploadedDocuments(caseData);
+        addDashboardLink(templateVarsRepresentative);
 
         if (cicCase.getRepresentativeContactDetailsPreference() == ContactPreferenceType.EMAIL) {
+            Map<String, String> uploadedDocuments = getUploadedDocuments(caseData);
             return new EmailNotification(
                     cicCase.getRepresentativeEmailAddress(),
                     templateVarsRepresentative,
