@@ -1,117 +1,116 @@
 package uk.gov.hmcts.sptribs.notification.dispatcher;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.ContactPreferenceType;
-import uk.gov.hmcts.sptribs.ciccase.model.NotificationResponse;
 import uk.gov.hmcts.sptribs.notification.NotificationHelper;
 import uk.gov.hmcts.sptribs.notification.NotificationServiceCIC;
 import uk.gov.hmcts.sptribs.notification.PartiesNotification;
-import uk.gov.hmcts.sptribs.notification.TemplateName;
-import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
+
+import static uk.gov.hmcts.sptribs.notification.TemplateName.HEARING_CANCELLED_EMAIL;
+import static uk.gov.hmcts.sptribs.notification.TemplateName.HEARING_CANCELLED_POST;
 
 @Component
 @Slf4j
-public class CancelHearingNotification implements PartiesNotification {
+public class CancelHearingNotification extends PartiesNotification {
 
-    private final NotificationServiceCIC notificationService;
-
-    private final NotificationHelper notificationHelper;
-
-    @Autowired
     public CancelHearingNotification(NotificationServiceCIC notificationService, NotificationHelper notificationHelper) {
-        this.notificationService = notificationService;
-        this.notificationHelper = notificationHelper;
+        super(notificationService, notificationHelper);
     }
 
     @Override
-    public void sendToSubject(final CaseData caseData, final String caseNumber) {
-        final CicCase cicCase = caseData.getCicCase();
+    protected PartyNotification buildSubjectNotification(CaseData caseData, String caseNumber) {
+        CicCase cicCase = caseData.getCicCase();
+        Map<String, Object> subjectTemplateVars = notificationHelper().getSubjectCommonVars(caseNumber, caseData);
+        notificationHelper().addHearingPostponedTemplateVars(cicCase, subjectTemplateVars);
 
-        final Map<String, Object> subjectTemplateVars = notificationHelper.getSubjectCommonVars(caseNumber, caseData);
-        notificationHelper.addHearingPostponedTemplateVars(cicCase, subjectTemplateVars);
-
-        final NotificationResponse subjectNotificationResponse;
         if (cicCase.getContactPreferenceType() == ContactPreferenceType.EMAIL) {
-            subjectNotificationResponse = sendEmailNotification(cicCase.getEmail(), subjectTemplateVars, caseNumber);
+            return new EmailNotification(
+                cicCase.getEmail(),
+                subjectTemplateVars,
+                HEARING_CANCELLED_EMAIL,
+                new HashMap<>(),
+                new ArrayList<>(),
+                saveToCicCase(CicCase::setSubjectNotifyList)
+            );
         } else {
-            notificationHelper.addAddressTemplateVars(cicCase.getAddress(), subjectTemplateVars);
-            subjectNotificationResponse = sendLetterNotification(subjectTemplateVars, caseNumber);
+            return new LetterNotification(
+                cicCase.getAddress(),
+                subjectTemplateVars,
+                HEARING_CANCELLED_POST,
+                saveToCicCase(CicCase::setSubjectLetterNotifyList)
+            );
         }
-
-        cicCase.setSubjectNotifyList(subjectNotificationResponse);
     }
 
     @Override
-    public void sendToRepresentative(final CaseData caseData, final String caseNumber) {
-        final CicCase cicCase = caseData.getCicCase();
+    protected PartyNotification buildApplicantNotification(CaseData caseData, String caseNumber) {
+        CicCase cicCase = caseData.getCicCase();
+        Map<String, Object> applicantCommonVars = notificationHelper().getApplicantCommonVars(caseNumber, caseData);
+        notificationHelper().addHearingPostponedTemplateVars(cicCase, applicantCommonVars);
 
-        final Map<String, Object> reprTemplateVars = notificationHelper.getRepresentativeCommonVars(caseNumber, caseData);
-        notificationHelper.addHearingPostponedTemplateVars(cicCase, reprTemplateVars);
-
-        final NotificationResponse representativeNotificationResponse;
-        if (cicCase.getRepresentativeContactDetailsPreference() == ContactPreferenceType.EMAIL) {
-            representativeNotificationResponse = sendEmailNotification(cicCase.getRepresentativeEmailAddress(),
-                reprTemplateVars, caseNumber);
-        } else {
-            notificationHelper.addAddressTemplateVars(cicCase.getRepresentativeAddress(), reprTemplateVars);
-            representativeNotificationResponse = sendLetterNotification(reprTemplateVars, caseNumber);
-        }
-
-        cicCase.setRepNotificationResponse(representativeNotificationResponse);
-    }
-
-    @Override
-    public void sendToRespondent(final CaseData caseData, final String caseNumber) {
-        final CicCase cicCase = caseData.getCicCase();
-
-        final Map<String, Object> respondentTemplateVars =
-            notificationHelper.getRespondentCommonVars(caseNumber, caseData);
-        notificationHelper.addHearingPostponedTemplateVars(cicCase, respondentTemplateVars);
-
-        final NotificationResponse respondentNotificationResponse =
-            sendEmailNotification(cicCase.getRespondentEmail(), respondentTemplateVars, caseNumber);
-
-        cicCase.setResNotificationResponse(respondentNotificationResponse);
-    }
-
-    @Override
-    public void sendToApplicant(final CaseData caseData, final String caseNumber) {
-        final CicCase cicCase = caseData.getCicCase();
-
-        final Map<String, Object> applicantCommonVars = notificationHelper.getApplicantCommonVars(caseNumber, caseData);
-        notificationHelper.addHearingPostponedTemplateVars(cicCase, applicantCommonVars);
-
-        final NotificationResponse applicantNotificationResponse;
         if (cicCase.getApplicantContactDetailsPreference() == ContactPreferenceType.EMAIL) {
-            applicantNotificationResponse = sendEmailNotification(cicCase.getApplicantEmailAddress(), applicantCommonVars, caseNumber);
+            return new EmailNotification(
+                cicCase.getApplicantEmailAddress(),
+                applicantCommonVars,
+                HEARING_CANCELLED_EMAIL,
+                new HashMap<>(),
+                new ArrayList<>(),
+                saveToCicCase(CicCase::setAppNotificationResponse)
+            );
         } else {
-            notificationHelper.addAddressTemplateVars(cicCase.getApplicantAddress(), applicantCommonVars);
-            applicantNotificationResponse = sendLetterNotification(applicantCommonVars, caseNumber);
+            return new LetterNotification(
+                cicCase.getApplicantAddress(),
+                applicantCommonVars,
+                HEARING_CANCELLED_POST,
+                saveToCicCase(CicCase::setAppLetterNotificationResponse)
+            );
         }
-
-        cicCase.setAppNotificationResponse(applicantNotificationResponse);
     }
 
-    private NotificationResponse sendEmailNotification(final String destinationAddress,
-                                                       final Map<String, Object> templateVars,
-                                                       String caseReferenceNumber) {
-        final NotificationRequest request = notificationHelper.buildEmailNotificationRequest(
-            destinationAddress,
-            templateVars,
-            TemplateName.HEARING_CANCELLED_EMAIL);
-        return notificationService.sendEmail(request, caseReferenceNumber, null);
+    @Override
+    protected PartyNotification buildRepresentativeNotification(CaseData caseData, String caseNumber) {
+        CicCase cicCase = caseData.getCicCase();
+        Map<String, Object> repTemplateVars = notificationHelper().getRepresentativeCommonVars(caseNumber, caseData);
+        notificationHelper().addHearingPostponedTemplateVars(cicCase, repTemplateVars);
+
+        if (cicCase.getRepresentativeContactDetailsPreference() == ContactPreferenceType.EMAIL) {
+            return new EmailNotification(
+                cicCase.getRepresentativeEmailAddress(),
+                repTemplateVars,
+                HEARING_CANCELLED_EMAIL,
+                new HashMap<>(),
+                new ArrayList<>(),
+                saveToCicCase(CicCase::setRepNotificationResponse)
+            );
+        } else {
+            return new LetterNotification(
+                cicCase.getRepresentativeAddress(),
+                repTemplateVars,
+                HEARING_CANCELLED_POST,
+                saveToCicCase(CicCase::setRepLetterNotificationResponse)
+            );
+        }
     }
 
-    private NotificationResponse sendLetterNotification(Map<String, Object> templateVarsLetter, String caseReferenceNumber) {
-        final NotificationRequest letterRequest = notificationHelper.buildLetterNotificationRequest(
-            templateVarsLetter,
-            TemplateName.HEARING_CANCELLED_POST);
-        return notificationService.sendLetter(letterRequest, caseReferenceNumber);
+    @Override
+    protected PartyNotification buildRespondentNotification(CaseData caseData, String caseNumber) {
+        CicCase cicCase = caseData.getCicCase();
+        Map<String, Object> respondentTemplateVars =
+            notificationHelper().getRespondentCommonVars(caseNumber, caseData);
+        notificationHelper().addHearingPostponedTemplateVars(cicCase, respondentTemplateVars);
+
+        return emailOnly(
+            cicCase.getRespondentEmail(),
+            respondentTemplateVars,
+            HEARING_CANCELLED_EMAIL,
+            saveToCicCase(CicCase::setResNotificationResponse)
+        );
     }
 }

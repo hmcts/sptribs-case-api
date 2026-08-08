@@ -27,9 +27,6 @@ import java.util.Set;
 
 import static java.util.Collections.emptySet;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigBuilder;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.getEventsFrom;
@@ -109,10 +106,6 @@ class CaseworkerStayTheCaseTest {
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
 
         //When
-        doNothing().when(caseStayedNotification).sendToSubject(any(CaseData.class), eq(null));
-        doNothing().when(caseStayedNotification).sendToApplicant(any(CaseData.class), eq(null));
-        doNothing().when(caseStayedNotification).sendToRepresentative(any(CaseData.class), eq(null));
-
         AboutToStartOrSubmitResponse<CaseData, State> response =
             caseworkerStayTheCase.aboutToSubmit(updatedCaseDetails, beforeDetails);
         SubmittedCallbackResponse stayedResponse = caseworkerStayTheCase.submitted(updatedCaseDetails, beforeDetails);

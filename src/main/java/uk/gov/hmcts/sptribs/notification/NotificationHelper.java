@@ -12,8 +12,10 @@ import uk.gov.hmcts.sptribs.caseworker.model.Listing;
 import uk.gov.hmcts.sptribs.ciccase.CicCaseFieldsUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
+import uk.gov.hmcts.sptribs.ciccase.model.DssCaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.HearingFormat;
 import uk.gov.hmcts.sptribs.common.CommonConstants;
+import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
 
 import java.time.format.DateTimeFormatter;
@@ -92,26 +94,16 @@ public class NotificationHelper {
     }
 
     public NotificationRequest buildEmailNotificationRequest(String destinationAddress,
+                                                             List<CaseworkerCICDocument> attachedDocuments,
+                                                             Map<String, String> templateDocumentVars,
                                                              Map<String, Object> templateVars,
                                                              TemplateName emailTemplateName) {
         return NotificationRequest.builder()
             .destinationAddress(destinationAddress)
-            .template(emailTemplateName)
+            .attachedDocuments(attachedDocuments)
+            .templateDocumentVars(templateDocumentVars)
             .templateVars(templateVars)
-            .build();
-    }
-
-    public NotificationRequest buildEmailNotificationRequest(String destinationAddress,
-                                                             boolean hasFileAttachment,
-                                                             Map<String, String> uploadedDocuments,
-                                                             Map<String, Object> templateVars,
-                                                             TemplateName emailTemplateName) {
-        return NotificationRequest.builder()
-            .destinationAddress(destinationAddress)
-            .hasFileAttachments(hasFileAttachment)
-            .uploadedDocuments(uploadedDocuments)
             .template(emailTemplateName)
-            .templateVars(templateVars)
             .build();
     }
 
@@ -177,7 +169,9 @@ public class NotificationHelper {
 
     public Map<String, String> buildDocumentList(DynamicMultiSelectList documentList, int docAttachLimit) {
         final Map<String, String> uploadedDocuments = new HashMap<>();
-
+        if (ObjectUtils.isEmpty(documentList)) {
+            return uploadedDocuments;
+        }
         int count = 0;
         if (ObjectUtils.isNotEmpty(documentList.getValue())) {
             final List<DynamicListElement> documents = documentList.getValue();
@@ -220,19 +214,25 @@ public class NotificationHelper {
         templateVars.put(HEARING_TIME, hearingTime);
     }
 
+    public void addCicaReferenceNumber(CaseData caseData, Map<String, Object> templateVarsSubject) {
+        if (caseData.getEditCicaCaseDetails() != null && !StringUtils.isEmpty(caseData.getEditCicaCaseDetails().getCicaReferenceNumber())) {
+            templateVarsSubject.put(HAS_CICA_NUMBER, true);
+            templateVarsSubject.put(CICA_REF_NUMBER, caseData.getEditCicaCaseDetails().getCicaReferenceNumber());
+        } else {
+            templateVarsSubject.put(HAS_CICA_NUMBER, false);
+            templateVarsSubject.put(CICA_REF_NUMBER, "");
+        }
+    }
+
+
     private Map<String, Object> commonTemplateVars(final CaseData caseData, final String caseNumber) {
         final CicCase cicCase = caseData.getCicCase();
         final Map<String, Object> templateVars = new HashMap<>();
         templateVars.put(TRIBUNAL_NAME, CIC);
         templateVars.put(CIC_CASE_NUMBER, caseNumber);
         templateVars.put(CIC_CASE_SUBJECT_NAME, cicCase.getFullName());
-        if (caseData.getEditCicaCaseDetails() != null && !StringUtils.isEmpty(caseData.getEditCicaCaseDetails().getCicaReferenceNumber())) {
-            templateVars.put(HAS_CICA_NUMBER, true);
-            templateVars.put(CICA_REF_NUMBER, caseData.getEditCicaCaseDetails().getCicaReferenceNumber());
-        } else {
-            templateVars.put(HAS_CICA_NUMBER, false);
-            templateVars.put(CICA_REF_NUMBER, "");
-        }
+        addCicaReferenceNumber(caseData, templateVars);
+
         return templateVars;
     }
 
@@ -246,6 +246,30 @@ public class NotificationHelper {
 
     private boolean isTelephoneFormat(Listing listing) {
         return listing.getHearingFormat() != null && listing.getHearingFormat().equals(HearingFormat.TELEPHONE);
+    }
+
+    public Map<String, Object> getDssSubjectCommonVars(String caseNumber, CaseData caseData) {
+        final DssCaseData dssCaseData = caseData.getDssCaseData();
+        Map<String, Object> templateVars = dssCommonTemplateVars(caseNumber, dssCaseData);
+        templateVars.put(CONTACT_NAME, dssCaseData.getSubjectFullName());
+        addCicaReferenceNumber(caseData, templateVars);
+        return templateVars;
+    }
+
+    public Map<String, Object> getDssRepresentativeCommonVars(String caseNumber, CaseData caseData) {
+        final DssCaseData dssCaseData = caseData.getDssCaseData();
+        Map<String, Object> templateVars = dssCommonTemplateVars(caseNumber, dssCaseData);
+        templateVars.put(CONTACT_NAME, dssCaseData.getRepresentativeFullName());
+        addCicaReferenceNumber(caseData, templateVars);
+        return templateVars;
+    }
+
+    private Map<String, Object> dssCommonTemplateVars(final String caseNumber, final DssCaseData dssCaseData) {
+        final Map<String, Object> templateVars = new HashMap<>();
+        templateVars.put(TRIBUNAL_NAME, CIC);
+        templateVars.put(CIC_CASE_NUMBER, caseNumber);
+        templateVars.put(CIC_CASE_SUBJECT_NAME, dssCaseData.getSubjectFullName());
+        return templateVars;
     }
 
 }

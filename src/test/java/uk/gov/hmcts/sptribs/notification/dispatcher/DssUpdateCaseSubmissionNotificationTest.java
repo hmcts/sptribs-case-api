@@ -7,13 +7,18 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
+import uk.gov.hmcts.sptribs.ciccase.model.NotificationResponse;
 import uk.gov.hmcts.sptribs.notification.NotificationHelper;
 import uk.gov.hmcts.sptribs.notification.NotificationServiceCIC;
 import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
+import uk.gov.hmcts.sptribs.notification.model.Party;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.TRIBUNAL_EMAIL_VALUE;
@@ -34,6 +39,8 @@ class DssUpdateCaseSubmissionNotificationTest {
     @InjectMocks
     private DssUpdateCaseSubmissionNotification dssUpdateCaseSubmissionNotification;
 
+    private static final NotificationResponse NOTIFICATION_RESPONSE = NotificationResponse.builder().id("123").build();
+
     @Test
     void shouldSendEmailToApplicant() {
         final CicCase cicCase = CicCase.builder().email(TEST_APPLICANT_EMAIL).build();
@@ -48,17 +55,18 @@ class DssUpdateCaseSubmissionNotificationTest {
             .templateVars(templateVars)
             .build();
 
-        when(notificationHelper.getSubjectCommonVars(caseReference, caseData))
-            .thenReturn(templateVars);
-        when(notificationHelper.buildEmailNotificationRequest(
-            TEST_APPLICANT_EMAIL,
+        when(notificationHelper.getSubjectCommonVars(caseReference, caseData)).thenReturn(templateVars);
+        when(notificationHelper.buildEmailNotificationRequest(TEST_APPLICANT_EMAIL,
+            new ArrayList<>(),
+            new HashMap<>(),
             templateVars,
-                UPDATE_RECEIVED
-        )).thenReturn(notificationRequest);
+            UPDATE_RECEIVED)).thenReturn(notificationRequest);
+        when(notificationService.sendEmail(any(NotificationRequest.class), eq(TEST_CASE_ID.toString()), any(Party.class))).thenReturn(
+            NOTIFICATION_RESPONSE);
 
         dssUpdateCaseSubmissionNotification.sendToApplicant(caseData, caseReference);
 
-        verify(notificationService).sendEmail(notificationRequest, caseReference, null);
+        verify(notificationService).sendEmail(notificationRequest, caseReference, Party.APPLICANT);
     }
 
     @Test
@@ -75,14 +83,16 @@ class DssUpdateCaseSubmissionNotificationTest {
 
         when(notificationHelper.getTribunalCommonVars(caseReference, caseData))
             .thenReturn(templateVars);
-        when(notificationHelper.buildEmailNotificationRequest(
-            TRIBUNAL_EMAIL_VALUE,
+        when(notificationHelper.buildEmailNotificationRequest(TRIBUNAL_EMAIL_VALUE,
+            new ArrayList<>(),
+            new HashMap<>(),
             templateVars,
-                UPDATE_RECEIVED_CIC
-        )).thenReturn(notificationRequest);
+            UPDATE_RECEIVED_CIC)).thenReturn(notificationRequest);
+        when(notificationService.sendEmail(any(NotificationRequest.class), eq(TEST_CASE_ID.toString()), any(Party.class))).thenReturn(
+            NOTIFICATION_RESPONSE);
 
         dssUpdateCaseSubmissionNotification.sendToTribunal(caseData, String.valueOf(TEST_CASE_ID));
 
-        verify(notificationService).sendEmail(notificationRequest, String.valueOf(TEST_CASE_ID), null);
+        verify(notificationService).sendEmail(notificationRequest, String.valueOf(TEST_CASE_ID), Party.TRIBUNAL);
     }
 }

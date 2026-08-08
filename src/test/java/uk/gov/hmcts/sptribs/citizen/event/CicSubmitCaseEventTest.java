@@ -31,6 +31,7 @@ import uk.gov.hmcts.sptribs.document.model.CitizenCICDocument;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
 import uk.gov.hmcts.sptribs.document.service.DocumentsService;
 import uk.gov.hmcts.sptribs.idam.IdamService;
+import uk.gov.hmcts.sptribs.notification.dispatcher.DssApplicationReceivedNotification;
 import uk.gov.hmcts.sptribs.notification.exception.NotificationException;
 import uk.gov.hmcts.sptribs.testutil.TestDataHelper;
 import uk.gov.hmcts.sptribs.util.AppsUtil;
@@ -388,9 +389,6 @@ class CicSubmitCaseEventTest {
         doThrow(NotificationException.class)
             .when(dssApplicationReceivedNotification)
             .sendToSubject(any(CaseData.class), anyString());
-        doThrow(NotificationException.class)
-            .when(dssApplicationReceivedNotification)
-            .sendToRepresentative(any(DssCaseData.class), anyString());
 
         SubmittedCallbackResponse response = cicSubmitCaseEvent.submitted(details, details);
 

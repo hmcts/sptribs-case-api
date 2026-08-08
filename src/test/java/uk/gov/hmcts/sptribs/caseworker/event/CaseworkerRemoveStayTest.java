@@ -25,9 +25,6 @@ import java.util.Collections;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.doNothing;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigBuilder;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.getEventsFrom;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID;
@@ -76,7 +73,6 @@ class CaseworkerRemoveStayTest {
         AboutToStartOrSubmitResponse<CaseData, State> response =
             caseworkerRemoveStay.aboutToStart(caseDetails);
 
-
         //Then
         assertThat(response.getData().getRemoveCaseStay().getStayRemoveReason()).isNull();
     }
@@ -106,7 +102,6 @@ class CaseworkerRemoveStayTest {
             caseworkerRemoveStay.aboutToSubmit(updatedCaseDetails, beforeDetails);
         SubmittedCallbackResponse stayedResponse = caseworkerRemoveStay.submitted(updatedCaseDetails, beforeDetails);
 
-
         //Then
         assert (response.getState().equals(State.CaseManagement));
         assertThat(stayedResponse).isNotNull();
@@ -133,14 +128,9 @@ class CaseworkerRemoveStayTest {
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
 
         //When
-        doNothing().when(caseUnstayedNotification).sendToSubject(any(CaseData.class), eq(null));
-        doNothing().when(caseUnstayedNotification).sendToApplicant(any(CaseData.class), eq(null));
-        doNothing().when(caseUnstayedNotification).sendToRepresentative(any(CaseData.class), eq(null));
-
         AboutToStartOrSubmitResponse<CaseData, State> response =
             caseworkerRemoveStay.aboutToSubmit(updatedCaseDetails, beforeDetails);
         SubmittedCallbackResponse stayedResponse = caseworkerRemoveStay.submitted(updatedCaseDetails, beforeDetails);
-
 
         //Then
         assert (response.getState().equals(State.CaseManagement));

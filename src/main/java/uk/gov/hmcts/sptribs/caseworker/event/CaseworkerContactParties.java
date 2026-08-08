@@ -27,12 +27,10 @@ import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
 import uk.gov.hmcts.sptribs.common.event.page.PartiesToContact;
 import uk.gov.hmcts.sptribs.common.service.ContactPartiesService;
-import uk.gov.hmcts.sptribs.notification.NotificationHelper;
 import uk.gov.hmcts.sptribs.notification.dispatcher.ContactPartiesNotification;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -73,9 +71,7 @@ public class CaseworkerContactParties implements CCDConfig<CaseData, State, User
     private final ContactPartiesSelectDocument contactPartiesSelectDocument;
 
     private final ContactPartiesNotification contactPartiesNotification;
-    private final NotificationHelper notificationHelper;
     private final ContactPartiesService contactPartiesService;
-    private static final int DOC_ATTACH_LIMIT = 10;
 
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
@@ -138,9 +134,7 @@ public class CaseworkerContactParties implements CCDConfig<CaseData, State, User
         sentDocListBuilder.append("| ");
 
         caseData.getContactPartiesDocuments().getDocumentList().getValue()
-            .forEach(doc -> {
-                sentDocListBuilder.append(extractDocNameAndCategory(doc.getLabel())).append(" | ");
-            });
+            .forEach(doc -> sentDocListBuilder.append(extractDocNameAndCategory(doc.getLabel())).append(" | "));
 
         int numberOfSentDocs = caseData.getContactPartiesDocuments().getDocumentList().getValue().size();
 
@@ -176,30 +170,22 @@ public class CaseworkerContactParties implements CCDConfig<CaseData, State, User
 
     private void sendContactPartiesNotification(CaseDetails<CaseData, State> details, CicCase cicCase, String caseNumber) {
 
-        final Map<String, String> uploadedDocuments = notificationHelper
-            .buildDocumentList(details.getData().getContactPartiesDocuments().getDocumentList(), DOC_ATTACH_LIMIT);
-
         List<String> correspondenceIds = new ArrayList<>();
 
         if (!CollectionUtils.isEmpty(cicCase.getNotifyPartySubject())) {
-            correspondenceIds.add(contactPartiesNotification.sendToSubject(details.getData(), caseNumber, uploadedDocuments));
+            correspondenceIds.add(contactPartiesNotification.sendToSubject(details.getData(), caseNumber));
         }
         if (!CollectionUtils.isEmpty(cicCase.getNotifyPartyRepresentative())) {
-            correspondenceIds.add(contactPartiesNotification.sendToRepresentative(details.getData(), caseNumber,
-                uploadedDocuments));
+            correspondenceIds.add(contactPartiesNotification.sendToRepresentative(details.getData(), caseNumber));
         }
         if (!CollectionUtils.isEmpty(cicCase.getNotifyPartyApplicant())) {
-            correspondenceIds.add(contactPartiesNotification.sendToApplicant(details.getData(), caseNumber,
-                uploadedDocuments));
+            correspondenceIds.add(contactPartiesNotification.sendToApplicant(details.getData(), caseNumber));
         }
         if (!CollectionUtils.isEmpty(cicCase.getNotifyPartyRespondent())) {
-            correspondenceIds.add(contactPartiesNotification.sendToRespondent(details.getData(), caseNumber,
-                uploadedDocuments));
+            correspondenceIds.add(contactPartiesNotification.sendToRespondent(details.getData(), caseNumber));
         }
 
-        if (!correspondenceIds.isEmpty()) {
-            contactPartiesService.linkCorrespondenceIdsToDocuments(details.getData(), uploadedDocuments, correspondenceIds);
-        }
+        contactPartiesService.linkCorrespondenceIdsToDocuments(details.getData(), correspondenceIds);
     }
 
     private String extractDocNameAndCategory(String label) {

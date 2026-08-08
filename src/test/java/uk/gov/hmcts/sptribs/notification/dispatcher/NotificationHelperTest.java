@@ -389,11 +389,13 @@ public class NotificationHelperTest {
         // When
         final NotificationRequest emailNotificationRequest = notificationHelper.buildEmailNotificationRequest(
             "id@email.com",
+            new ArrayList<>(),
+            new HashMap<>(),
             new HashMap<>(),
             TemplateName.CASE_ISSUED_CITIZEN_EMAIL);
         final NotificationRequest emailNotificationRequestWithAttachment = notificationHelper.buildEmailNotificationRequest(
             "id@email.com",
-            false,
+            new ArrayList<>(),
             new HashMap<>(),
             new HashMap<>(),
             TemplateName.CASE_ISSUED_CITIZEN_EMAIL);

@@ -90,7 +90,7 @@ public class DocumentsService {
             .getBinaryUrl();
     }
 
-    private List<Long> getDocumentIdsByDocumentBinaryUrls(List<String> documentBinaryUrls) {
+    public List<Long> getDocumentIdsByDocumentBinaryUrls(List<String> documentBinaryUrls) {
         try {
             List<Long> documentIds = documentsRepository.findIdsByDocumentBinaryUrls(documentBinaryUrls);
             log.info("Document Repository found the following documentIds {}.", documentIds);

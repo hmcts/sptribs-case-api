@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
@@ -35,6 +36,9 @@ public class ContactPartiesSelectDocument implements CcdPageConfiguration {
     private final IdamService idamService;
     private final AuthTokenGenerator authTokenGenerator;
 
+    @Value("${feature.citizen-dashboard.enabled}")
+    private boolean citizenDashboardEnabled;
+
     @Override
     public void addTo(PageBuilder pageBuilder) {
 
@@ -59,7 +63,7 @@ public class ContactPartiesSelectDocument implements CcdPageConfiguration {
             errors.add("Select up to 10 documents");
         }
 
-        if (list != null && list.getValue() != null) {
+        if (!citizenDashboardEnabled && list != null && list.getValue() != null) {
             validateDocumentFileSizes(list.getValue(), errors);
         }
 

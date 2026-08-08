@@ -9,15 +9,20 @@ import uk.gov.hmcts.ccd.sdk.type.AddressGlobalUK;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.ContactPreferenceType;
+import uk.gov.hmcts.sptribs.ciccase.model.NotificationResponse;
 import uk.gov.hmcts.sptribs.notification.NotificationHelper;
 import uk.gov.hmcts.sptribs.notification.NotificationServiceCIC;
 import uk.gov.hmcts.sptribs.notification.TemplateName;
 import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
+import uk.gov.hmcts.sptribs.notification.model.Party;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyMap;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.verify;
@@ -35,6 +40,8 @@ class CaseUnstayedNotificationTest {
     @InjectMocks
     private CaseUnstayedNotification caseUnstayedNotification;
 
+    private static final NotificationResponse NOTIFICATION_RESPONSE = NotificationResponse.builder().id("123").build();
+
     @Test
     void shouldNotifySubjectOfCaseUnstayedWithEmail() {
         //Given
@@ -43,15 +50,19 @@ class CaseUnstayedNotificationTest {
         data.getCicCase().setEmail("testSubject@outlook.com");
 
         //When
-        when(notificationHelper.buildEmailNotificationRequest(any(), anyMap(), any(TemplateName.class)))
+        when(notificationHelper.buildEmailNotificationRequest(anyString(), anyList(), anyMap(), anyMap(), any(TemplateName.class)))
             .thenReturn(NotificationRequest.builder().build());
         when(notificationHelper.getSubjectCommonVars(any(), any(CaseData.class))).thenReturn(new HashMap<>());
+        when(notificationService.sendEmail(any(NotificationRequest.class), eq(TEST_CASE_ID.toString()), any(Party.class))).thenReturn(
+            NOTIFICATION_RESPONSE);
         caseUnstayedNotification.sendToSubject(data, TEST_CASE_ID.toString());
 
         //Then
-        verify(notificationService).sendEmail(any(NotificationRequest.class), eq(TEST_CASE_ID.toString()), eq(null));
+        verify(notificationService).sendEmail(any(NotificationRequest.class), eq(TEST_CASE_ID.toString()), eq(Party.SUBJECT));
         verify(notificationHelper).buildEmailNotificationRequest(
             data.getCicCase().getEmail(),
+            new ArrayList<>(),
+            new HashMap<>(),
             new HashMap<>(),
             TemplateName.CASE_UNSTAYED_EMAIL);
 
@@ -69,6 +80,7 @@ class CaseUnstayedNotificationTest {
             .thenReturn(NotificationRequest.builder().build());
         when(notificationHelper.getSubjectCommonVars(any(), any(CaseData.class))).thenReturn(new HashMap<>());
         doNothing().when(notificationHelper).addAddressTemplateVars(any(AddressGlobalUK.class), anyMap());
+        when(notificationService.sendLetter(any(NotificationRequest.class), eq(TEST_CASE_ID.toString()))).thenReturn(NOTIFICATION_RESPONSE);
         caseUnstayedNotification.sendToSubject(data, TEST_CASE_ID.toString());
 
         //Then
@@ -87,15 +99,19 @@ class CaseUnstayedNotificationTest {
         data.getCicCase().setApplicantEmailAddress("testApplicant@outlook.com");
 
         //When
-        when(notificationHelper.buildEmailNotificationRequest(any(), anyMap(), any(TemplateName.class)))
+        when(notificationHelper.buildEmailNotificationRequest(anyString(), anyList(), anyMap(), anyMap(), any(TemplateName.class)))
             .thenReturn(NotificationRequest.builder().build());
         when(notificationHelper.getApplicantCommonVars(any(), any(CaseData.class))).thenReturn(new HashMap<>());
+        when(notificationService.sendEmail(any(NotificationRequest.class), eq(TEST_CASE_ID.toString()), any(Party.class))).thenReturn(
+            NOTIFICATION_RESPONSE);
         caseUnstayedNotification.sendToApplicant(data, TEST_CASE_ID.toString());
 
         //Then
-        verify(notificationService).sendEmail(any(NotificationRequest.class), eq(TEST_CASE_ID.toString()), eq(null));
+        verify(notificationService).sendEmail(any(NotificationRequest.class), eq(TEST_CASE_ID.toString()), eq(Party.APPLICANT));
         verify(notificationHelper).buildEmailNotificationRequest(
             data.getCicCase().getApplicantEmailAddress(),
+            new ArrayList<>(),
+            new HashMap<>(),
             new HashMap<>(),
             TemplateName.CASE_UNSTAYED_EMAIL);
     }
@@ -113,6 +129,7 @@ class CaseUnstayedNotificationTest {
             .thenReturn(NotificationRequest.builder().build());
         when(notificationHelper.getApplicantCommonVars(any(), any(CaseData.class))).thenReturn(new HashMap<>());
         doNothing().when(notificationHelper).addAddressTemplateVars(any(AddressGlobalUK.class), anyMap());
+        when(notificationService.sendLetter(any(NotificationRequest.class), eq(TEST_CASE_ID.toString()))).thenReturn(NOTIFICATION_RESPONSE);
         caseUnstayedNotification.sendToApplicant(data, TEST_CASE_ID.toString());
 
         //Then
@@ -131,15 +148,19 @@ class CaseUnstayedNotificationTest {
         data.getCicCase().setRepresentativeEmailAddress("testrepr@outlook.com");
 
         //When
-        when(notificationHelper.buildEmailNotificationRequest(any(), anyMap(), any(TemplateName.class)))
+        when(notificationHelper.buildEmailNotificationRequest(anyString(), anyList(), anyMap(), anyMap(), any(TemplateName.class)))
             .thenReturn(NotificationRequest.builder().build());
         when(notificationHelper.getRepresentativeCommonVars(any(), any(CaseData.class))).thenReturn(new HashMap<>());
+        when(notificationService.sendEmail(any(NotificationRequest.class), eq(TEST_CASE_ID.toString()), any(Party.class))).thenReturn(
+            NOTIFICATION_RESPONSE);
         caseUnstayedNotification.sendToRepresentative(data, TEST_CASE_ID.toString());
 
         //Then
-        verify(notificationService).sendEmail(any(NotificationRequest.class), eq(TEST_CASE_ID.toString()), eq(null));
+        verify(notificationService).sendEmail(any(NotificationRequest.class), eq(TEST_CASE_ID.toString()), eq(Party.REPRESENTATIVE));
         verify(notificationHelper).buildEmailNotificationRequest(
             data.getCicCase().getRepresentativeEmailAddress(),
+            new ArrayList<>(),
+            new HashMap<>(),
             new HashMap<>(),
             TemplateName.CASE_UNSTAYED_EMAIL);
     }
@@ -157,6 +178,7 @@ class CaseUnstayedNotificationTest {
             .thenReturn(NotificationRequest.builder().build());
         when(notificationHelper.getRepresentativeCommonVars(any(), any(CaseData.class))).thenReturn(new HashMap<>());
         doNothing().when(notificationHelper).addAddressTemplateVars(any(AddressGlobalUK.class), anyMap());
+        when(notificationService.sendLetter(any(NotificationRequest.class), eq(TEST_CASE_ID.toString()))).thenReturn(NOTIFICATION_RESPONSE);
         caseUnstayedNotification.sendToRepresentative(data, TEST_CASE_ID.toString());
 
         //Then

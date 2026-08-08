@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
@@ -73,11 +73,12 @@ public class CaseworkerCreateBundle implements CCDConfig<CaseData, State, UserRo
 
     private final BundlingService bundlingService;
 
-    @Autowired
     private final Clock clock;
 
-    @Autowired
     private final BundleCreatedNotification bundleCreatedNotification;
+
+    @Value("${feature.citizen-dashboard.enabled}")
+    private boolean citizenDashboardEnabled;
 
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
@@ -89,12 +90,15 @@ public class CaseworkerCreateBundle implements CCDConfig<CaseData, State, UserRo
                 .description("Bundle: Create a bundle")
                 .showSummary()
                 .aboutToSubmitCallback(this::aboutToSubmit)
-                .submittedCallback(this::submitted)
                 .grant(CREATE_READ_UPDATE, SUPER_USER,
                     ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER, ST_CIC_HEARING_CENTRE_ADMIN,
                     ST_CIC_HEARING_CENTRE_TEAM_LEADER, ST_CIC_WA_CONFIG_USER)
                 .grantHistoryOnly(ST_CIC_SENIOR_JUDGE, ST_CIC_JUDGE)
                 .publishToCamunda();
+
+        if (citizenDashboardEnabled) {
+            eventBuilder.submittedCallback(this::submitted);
+        }
 
         new PageBuilder(eventBuilder)
             .page("createBundle")

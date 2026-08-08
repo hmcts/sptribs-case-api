@@ -30,13 +30,11 @@ import uk.gov.hmcts.sptribs.notification.dispatcher.ContactPartiesNotification;
 
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.sptribs.caseworker.util.ErrorConstants.SELECT_AT_LEAST_ONE_CONTACT_PARTY;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.RESPONDENT_CONTACT_PARTIES;
@@ -46,7 +44,6 @@ import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.LOCAL_DATE_TIME;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.buildDynamicMultiSelectDocumentList;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.caseData;
-import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getDocumentUploadMap;
 
 @ExtendWith(MockitoExtension.class)
 class RespondentContactPartiesTest {
@@ -211,14 +208,11 @@ class RespondentContactPartiesTest {
         updatedCaseDetails.setData(caseData);
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
-        final int docAttachLimit = 10;
-        Map<String, String> emailDocs = getDocumentUploadMap();
 
-        when(notificationHelper.buildDocumentList(documentList, docAttachLimit)).thenReturn(emailDocs);
-        when(contactPartiesNotification.sendToSubject(caseData, String.valueOf(TEST_CASE_ID), emailDocs)).thenReturn("UUID1");
-        when(contactPartiesNotification.sendToRepresentative(caseData, String.valueOf(TEST_CASE_ID), emailDocs)).thenReturn("UUID2");
-        when(contactPartiesNotification.sendToApplicant(caseData, String.valueOf(TEST_CASE_ID), emailDocs)).thenReturn("UUID3");
-        when(contactPartiesNotification.sendToTribunal(caseData, String.valueOf(TEST_CASE_ID), emailDocs)).thenReturn("UUID4");
+        when(contactPartiesNotification.sendToSubject(caseData, String.valueOf(TEST_CASE_ID))).thenReturn("UUID1");
+        when(contactPartiesNotification.sendToRepresentative(caseData, String.valueOf(TEST_CASE_ID))).thenReturn("UUID2");
+        when(contactPartiesNotification.sendToApplicant(caseData, String.valueOf(TEST_CASE_ID))).thenReturn("UUID3");
+        when(contactPartiesNotification.sendToTribunal(caseData, String.valueOf(TEST_CASE_ID))).thenReturn("UUID4");
 
         //When
         SubmittedCallbackResponse response =
@@ -242,45 +236,8 @@ class RespondentContactPartiesTest {
         assertThat(resContactPartiesResponse.getConfirmationHeader()).contains("Tribunal");
         assertThat(resContactPartiesResponse.getConfirmationHeader()).contains(",");
 
-        verify(contactPartiesService, times(2)).linkCorrespondenceIdsToDocuments(caseData, emailDocs,
+        verify(contactPartiesService, times(2)).linkCorrespondenceIdsToDocuments(caseData,
             List.of("UUID1", "UUID2", "UUID3", "UUID4"));
-    }
-
-    @Test
-    void shouldNotCallDocumentCorrespondenceServiceAsNoEmailsSent() {
-        //Given
-        DynamicMultiSelectList documentList = buildDynamicMultiSelectDocumentList();
-        ContactPartiesDocuments contactPartiesDocuments = ContactPartiesDocuments.builder()
-            .documentList(documentList)
-            .build();
-
-        final CaseData caseData = caseData();
-        caseData.setContactPartiesDocuments(contactPartiesDocuments);
-
-        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
-        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
-        updatedCaseDetails.setData(caseData);
-        updatedCaseDetails.setId(TEST_CASE_ID);
-        updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
-        final int docAttachLimit = 10;
-        Map<String, String> emailDocs = getDocumentUploadMap();
-
-        when(notificationHelper.buildDocumentList(documentList, docAttachLimit)).thenReturn(emailDocs);
-
-        //When
-        SubmittedCallbackResponse response =
-            respondentContactParties.submitted(updatedCaseDetails, beforeDetails);
-
-        //Then
-        assertThat(response).isNotNull();
-
-        //When
-        SubmittedCallbackResponse resContactPartiesResponse = respondentContactParties.submitted(updatedCaseDetails, beforeDetails);
-
-        //Then
-        assertThat(resContactPartiesResponse).isNotNull();
-
-        verifyNoInteractions(contactPartiesService);
     }
 
     @Test

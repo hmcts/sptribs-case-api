@@ -10,6 +10,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.test.util.ReflectionTestUtils;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.ccd.sdk.type.DynamicListElement;
@@ -33,6 +34,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -53,13 +55,11 @@ class ContactPartiesSelectDocumentTest {
     @Mock
     private AuthTokenGenerator authTokenGenerator;
 
-    private CICUser systemUser;
-
     @Nested
     class RequireStubbing {
         @BeforeEach
         void setUp() {
-            systemUser = mock(CICUser.class);
+            CICUser systemUser = mock(CICUser.class);
             when(idamService.retrieveSystemUpdateUserDetails()).thenReturn(systemUser);
             when(systemUser.getAuthToken()).thenReturn(SYSTEM_AUTH);
             when(authTokenGenerator.generate()).thenReturn(SERVICE_AUTH);
@@ -111,8 +111,6 @@ class ContactPartiesSelectDocumentTest {
             assertThat(response.getErrors()).hasSize(1);
             assertThat(response.getErrors()).contains("Select up to 10 documents");
         }
-
-
 
         @Test
         void midEventReturnsErrorWhenDocumentSizeExceedsLimit() {
@@ -305,6 +303,39 @@ class ContactPartiesSelectDocumentTest {
             assertThat(exception.getMessage()).isEqualTo("Failed to retrieve document with id " + documentId);
         }
 
+
+    }
+
+    @Test
+    void shouldNotCheck2MBLimitWhenCitizenDashboardEnabled() {
+        ReflectionTestUtils.setField(contactPartiesSelectDocument, "citizenDashboardEnabled", true);
+        final CaseDetails<CaseData, State> caseDetails = new CaseDetails<>();
+        UUID documentId = UUID.randomUUID();
+        String label = "[Large Document](http://example/documents/" + documentId + ")";
+
+        ContactPartiesDocuments contactPartiesDocuments = new ContactPartiesDocuments();
+        DynamicListElement element = DynamicListElement.builder()
+            .code(documentId)
+            .label(label)
+            .build();
+        List<DynamicListElement> selection = List.of(element);
+        contactPartiesDocuments.setDocumentList(DynamicMultiSelectList.builder()
+            .value(selection)
+            .listItems(selection)
+            .build());
+
+        Document oversizedDocument = new Document();
+        oversizedDocument.size = 3_000_000;
+
+        final CaseData caseData = CaseData.builder()
+            .contactPartiesDocuments(contactPartiesDocuments)
+            .build();
+        caseDetails.setData(caseData);
+
+        final AboutToStartOrSubmitResponse<CaseData, State> response = contactPartiesSelectDocument.midEvent(caseDetails, caseDetails);
+
+        verifyNoInteractions(idamService, authTokenGenerator, caseDocumentClientApi);
+        assertThat(response.getErrors()).isEmpty();
     }
 
     @Test
@@ -320,5 +351,4 @@ class ContactPartiesSelectDocumentTest {
         final AboutToStartOrSubmitResponse<CaseData, State> response = contactPartiesSelectDocument.midEvent(caseDetails, caseDetails);
         assertThat(response.getErrors()).isEmpty();
     }
-
 }

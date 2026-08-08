@@ -2,9 +2,9 @@ package uk.gov.hmcts.sptribs.document.bundling.client;
 
 import feign.FeignException;
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.MapUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
@@ -49,23 +49,20 @@ import static uk.gov.hmcts.sptribs.document.bundling.BundlingConstants.TITLE;
 import static uk.gov.hmcts.sptribs.document.bundling.BundlingConstants.VALUE;
 
 @Service
+@RequiredArgsConstructor
 @Slf4j
 @SuppressWarnings("unchecked")
 public class BundlingService {
 
     private static final String BUNDLE_FILE_NAME = "st_cic_bundle_all_case.yaml";
 
-    @Autowired
-    private HttpServletRequest httpServletRequest;
+    private final HttpServletRequest httpServletRequest;
 
-    @Autowired
-    private AuthTokenGenerator authTokenGenerator;
+    private final AuthTokenGenerator authTokenGenerator;
 
-    @Autowired
-    private BundlingClient bundlingClient;
+    private final BundlingClient bundlingClient;
 
-    @Autowired
-    private Clock clock;
+    private final Clock clock;
 
     public List<Bundle> createBundle(Callback callback, Long caseNumber) {
         BundleResponse response;
@@ -124,7 +121,7 @@ public class BundlingService {
                 .value(doc)
                 .build();
 
-            newList.add(0, listValue);
+            newList.addFirst(listValue);
             newList.forEach(
                 document -> document.setId(String.valueOf(listValueIndex.incrementAndGet())));
         }
@@ -144,7 +141,7 @@ public class BundlingService {
                 .value(doc)
                 .build();
 
-            newList.add(0, listValue);
+            newList.addFirst(listValue);
             newList.forEach(
                 document -> document.setId(String.valueOf(listValueIndex.incrementAndGet())));
         }
