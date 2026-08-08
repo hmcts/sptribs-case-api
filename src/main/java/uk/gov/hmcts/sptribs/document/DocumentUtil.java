@@ -206,7 +206,6 @@ public final class DocumentUtil {
         return getUuid(documentLink);
     }
 
-
     public static String getDocumentUuidFromCICDocument(CICDocument cicDocument) {
         Document document = cicDocument.getDocumentLink();
         return getUuid(document);
