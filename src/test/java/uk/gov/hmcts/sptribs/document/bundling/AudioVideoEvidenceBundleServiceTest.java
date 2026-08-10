@@ -6,7 +6,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.http.ResponseEntity;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.pdf.service.client.PDFServiceClient;
 import uk.gov.hmcts.sptribs.cdam.model.UploadResponse;
@@ -36,7 +35,6 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
-import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 
 @ExtendWith(MockitoExtension.class)
 class AudioVideoEvidenceBundleServiceTest {
@@ -87,11 +85,6 @@ class AudioVideoEvidenceBundleServiceTest {
             .savedAt(null)
             .build();
 
-        when(authTokenGenerator.generate()).thenReturn("service-token");
-        when(request.getHeader(AUTHORIZATION)).thenReturn("Bearer user-token");
-        when(caseDocumentClientApi.getDocument(eq("Bearer user-token"), eq("service-token"), any()))
-            .thenReturn(ResponseEntity.ok(buildMetadataResponse("caseworker.user@hmcts.net")));
-
         when(documentsService.getAudioVideoDocuments(12345L))
             .thenReturn(Stream.of(audioDoc, videoDoc));
 
@@ -136,10 +129,6 @@ class AudioVideoEvidenceBundleServiceTest {
             .savedAt(OffsetDateTime.parse("2026-01-10T10:15:30Z"))
             .build();
 
-        when(authTokenGenerator.generate()).thenReturn("service-token");
-        when(request.getHeader(AUTHORIZATION)).thenReturn("Bearer user-token");
-        when(caseDocumentClientApi.getDocument(eq("Bearer user-token"), eq("service-token"), any()))
-            .thenReturn(ResponseEntity.ok(buildMetadataResponse("", "updated.user@hmcts.net")));
         when(documentsService.getAudioVideoDocuments(12345L)).thenReturn(Stream.of(audioDoc));
 
         List<AudioVideoEvidenceBundleService.AudioVideoDocumentRow> rows = service.extractRows(caseData);
@@ -204,9 +193,7 @@ class AudioVideoEvidenceBundleServiceTest {
         byte[] generatedPdf = "generated-pdf".getBytes(StandardCharsets.UTF_8);
         when(pdfServiceClient.generateFromHtml(any(byte[].class), anyMap())).thenReturn(generatedPdf);
         when(authTokenGenerator.generate()).thenReturn("service-token");
-        when(request.getHeader(AUTHORIZATION)).thenReturn("Bearer user-token");
-        when(caseDocumentClientApi.getDocument(eq("Bearer user-token"), eq("service-token"), any()))
-            .thenReturn(ResponseEntity.ok(buildMetadataResponse("caseworker.user@hmcts.net")));
+        when(request.getHeader("Authorization")).thenReturn("Bearer user-token");
         when(caseDocumentClientApi.uploadDocuments(eq("Bearer user-token"), eq("service-token"), any()))
             .thenReturn(buildUploadResponse("http://dm-store/documents/generated", "http://dm-store/documents/generated/binary"));
         when(documentsService.getAudioVideoDocuments(12345L))
@@ -245,8 +232,7 @@ class AudioVideoEvidenceBundleServiceTest {
             .contains("<a href=\"http://dm/documents/33333333-3333-3333-3333-333333333333/binary?a=1&amp;b=&lt;x&gt;&quot;&#39;\">"
                 + "hearing-audio.mp3</a>")
             .contains("<td>2026-01-10</td>")
-            .contains("<td>L - Linked docs</td>")
-            .contains("<td>caseworker.user@hmcts.net</td>");
+            .contains("<td>L - Linked docs</td>");
         verify(caseDocumentClientApi).uploadDocuments(eq("Bearer user-token"), eq("service-token"), any());
     }
 
@@ -254,9 +240,7 @@ class AudioVideoEvidenceBundleServiceTest {
     void shouldThrowWhenUploadResponseIsNull() {
         when(pdfServiceClient.generateFromHtml(any(byte[].class), anyMap())).thenReturn("pdf".getBytes(StandardCharsets.UTF_8));
         when(authTokenGenerator.generate()).thenReturn("service-token");
-        when(request.getHeader(AUTHORIZATION)).thenReturn("Bearer user-token");
-        when(caseDocumentClientApi.getDocument(eq("Bearer user-token"), eq("service-token"), any()))
-            .thenReturn(ResponseEntity.ok(buildMetadataResponse("caseworker.user@hmcts.net")));
+        when(request.getHeader("Authorization")).thenReturn("Bearer user-token");
         when(caseDocumentClientApi.uploadDocuments(eq("Bearer user-token"), eq("service-token"), any())).thenReturn(null);
 
         AudioVideoEvidenceBundleService service = new AudioVideoEvidenceBundleService(
@@ -279,9 +263,7 @@ class AudioVideoEvidenceBundleServiceTest {
 
         when(pdfServiceClient.generateFromHtml(any(byte[].class), anyMap())).thenReturn("pdf".getBytes(StandardCharsets.UTF_8));
         when(authTokenGenerator.generate()).thenReturn("service-token");
-        when(request.getHeader(AUTHORIZATION)).thenReturn("Bearer user-token");
-        when(caseDocumentClientApi.getDocument(eq("Bearer user-token"), eq("service-token"), any()))
-            .thenReturn(ResponseEntity.ok(buildMetadataResponse("caseworker.user@hmcts.net")));
+        when(request.getHeader("Authorization")).thenReturn("Bearer user-token");
         when(caseDocumentClientApi.uploadDocuments(eq("Bearer user-token"), eq("service-token"), any())).thenReturn(uploadResponse);
 
         AudioVideoEvidenceBundleService service = new AudioVideoEvidenceBundleService(
@@ -304,9 +286,7 @@ class AudioVideoEvidenceBundleServiceTest {
 
         when(pdfServiceClient.generateFromHtml(any(byte[].class), anyMap())).thenReturn("pdf".getBytes(StandardCharsets.UTF_8));
         when(authTokenGenerator.generate()).thenReturn("service-token");
-        when(request.getHeader(AUTHORIZATION)).thenReturn("Bearer user-token");
-        when(caseDocumentClientApi.getDocument(eq("Bearer user-token"), eq("service-token"), any()))
-            .thenReturn(ResponseEntity.ok(buildMetadataResponse("caseworker.user@hmcts.net")));
+        when(request.getHeader("Authorization")).thenReturn("Bearer user-token");
         when(caseDocumentClientApi.uploadDocuments(eq("Bearer user-token"), eq("service-token"), any())).thenReturn(uploadResponse);
 
         AudioVideoEvidenceBundleService service = new AudioVideoEvidenceBundleService(
@@ -379,14 +359,4 @@ class AudioVideoEvidenceBundleServiceTest {
         return uploadResponse;
     }
 
-    private uk.gov.hmcts.sptribs.cdam.model.Document buildMetadataResponse(String createdBy) {
-        return buildMetadataResponse(createdBy, null);
-    }
-
-    private uk.gov.hmcts.sptribs.cdam.model.Document buildMetadataResponse(String createdBy, String lastModifiedBy) {
-        uk.gov.hmcts.sptribs.cdam.model.Document metadata = new uk.gov.hmcts.sptribs.cdam.model.Document();
-        metadata.createdBy = createdBy;
-        metadata.lastModifiedBy = lastModifiedBy;
-        return metadata;
-    }
 }

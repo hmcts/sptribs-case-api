@@ -292,8 +292,7 @@ public class CaseworkerCreateBundleIT {
             .contains("<th>Document type</th>")
             .contains("<th>Document URL</th>")
             .contains("<th>Date added</th>")
-            .contains("<th>Date approved</th>")
-            .contains("<th>Uploaded by</th>");
+            .contains("<th>Document category</th>");
 
         assertThat(placeholdersCaptor.getValue()).containsEntry("caseId", "1616591401473378");
         assertThat(placeholdersCaptor.getValue().get("rowsHtml").toString())
