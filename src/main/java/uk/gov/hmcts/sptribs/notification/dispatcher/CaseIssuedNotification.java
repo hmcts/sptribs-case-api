@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.type.DynamicMultiSelectList;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseIssue;
 import uk.gov.hmcts.sptribs.caseworker.util.DocumentListUtil;
+import uk.gov.hmcts.sptribs.ciccase.CicCaseFieldsUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.ContactPreferenceType;
@@ -116,17 +117,16 @@ public class CaseIssuedNotification extends PartiesNotification {
             .getRespondentName());
 
         LocalDate dueDate = cicCase.getRespondentBundleDueDate();
+        if (cicCase.getIsCaseInTime() == null) {
+            CicCaseFieldsUtil.calculateAndSetIsCaseInTime(caseData);
+        }
         templateVarsRespondent.put(CommonConstants.CIC_BUNDLE_DUE_DATE_TEXT,
             cicCase
                 .getIsCaseInTime()
                 .toBoolean() ? buildTimeString(true, dueDate) : buildTimeString(false, dueDate));
 
-        if (ObjectUtils.isNotEmpty(caseData
-            .getCaseIssue()
-            .getDocumentList())) {
-            DynamicMultiSelectList selectList = caseData
-                .getCaseIssue()
-                .getDocumentList();
+        if (ObjectUtils.isNotEmpty(caseData.getCaseIssue().getDocumentList())) {
+            DynamicMultiSelectList selectList = caseData.getCaseIssue().getDocumentList();
             Map<String, String> uploadedDocuments = getUploadedDocuments(caseData);
             List<CaseworkerCICDocument> selectedDocuments = DocumentListUtil.getSelectedDocumentsFromDynamicList(caseData, selectList);
             return new EmailNotification(
@@ -137,7 +137,9 @@ public class CaseIssuedNotification extends PartiesNotification {
                 selectedDocuments,
                 saveToCicCase(CicCase::setResNotificationResponse));
         } else {
-            return emailOnly(cicCase.getAlternativeRespondentEmail(), templateVarsRespondent, CASE_ISSUED_RESPONDENT_EMAIL,
+            return emailOnly(cicCase.getAlternativeRespondentEmail(),
+                templateVarsRespondent,
+                CASE_ISSUED_RESPONDENT_EMAIL,
                 saveToCicCase(CicCase::setResNotificationResponse));
         }
     }

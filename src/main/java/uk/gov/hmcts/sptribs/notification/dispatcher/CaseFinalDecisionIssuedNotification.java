@@ -7,9 +7,12 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseIssueFinalDecision;
 import uk.gov.hmcts.sptribs.caseworker.model.NoticeOption;
+import uk.gov.hmcts.sptribs.caseworker.util.DecisionDocumentListUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.ContactPreferenceType;
+import uk.gov.hmcts.sptribs.document.DocumentUtil;
+import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.notification.NotificationHelper;
 import uk.gov.hmcts.sptribs.notification.NotificationServiceCIC;
 import uk.gov.hmcts.sptribs.notification.PartiesNotification;
@@ -17,6 +20,7 @@ import uk.gov.hmcts.sptribs.notification.TemplateName;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static uk.gov.hmcts.sptribs.common.CommonConstants.DASHBOARD_KEY;
@@ -54,7 +58,7 @@ public class CaseFinalDecisionIssuedNotification extends PartiesNotification {
                     templateVarsSubject,
                     getTemplateName(),
                     uploadedDocuments,
-                    new ArrayList<>(),
+                    getFinalDecisionDocumentsAttachments(caseData),
                     saveToCicCase(CicCase::setSubjectNotifyList)
             );
         } else {
@@ -80,7 +84,7 @@ public class CaseFinalDecisionIssuedNotification extends PartiesNotification {
                     templateVars,
                     getTemplateName(),
                     uploadedDocuments,
-                    new ArrayList<>(),
+                    getFinalDecisionDocumentsAttachments(caseData),
                     saveToCicCase(CicCase::setAppNotificationResponse)
             );
         } else {
@@ -101,21 +105,17 @@ public class CaseFinalDecisionIssuedNotification extends PartiesNotification {
 
         if (cicCase.getRepresentativeContactDetailsPreference() == ContactPreferenceType.EMAIL) {
             Map<String, String> uploadedDocuments = getUploadedDocuments(caseData);
-            return new EmailNotification(
-                    cicCase.getRepresentativeEmailAddress(),
-                    templateVarsRepresentative,
-                    getTemplateName(),
-                    uploadedDocuments,
-                    new ArrayList<>(),
-                    saveToCicCase(CicCase::setRepNotificationResponse)
-            );
+            return new EmailNotification(cicCase.getRepresentativeEmailAddress(),
+                templateVarsRepresentative,
+                getTemplateName(),
+                uploadedDocuments,
+                getFinalDecisionDocumentsAttachments(caseData),
+                saveToCicCase(CicCase::setRepNotificationResponse));
         } else {
-            return new LetterNotification(
-                    cicCase.getRepresentativeAddress(),
-                    templateVarsRepresentative,
-                    FINAL_DECISION_ISSUED_POST,
-                    saveToCicCase(CicCase::setRepLetterNotificationResponse)
-            );
+            return new LetterNotification(cicCase.getRepresentativeAddress(),
+                templateVarsRepresentative,
+                FINAL_DECISION_ISSUED_POST,
+                saveToCicCase(CicCase::setRepLetterNotificationResponse));
         }
     }
 
@@ -123,17 +123,14 @@ public class CaseFinalDecisionIssuedNotification extends PartiesNotification {
     protected PartyNotification buildRespondentNotification(CaseData caseData, String caseNumber) {
         Map<String, Object> templateVarsRespondent = notificationHelper().getRespondentCommonVars(caseNumber, caseData);
         CicCase cicCase = caseData.getCicCase();
-
         Map<String, String> uploadedDocuments = getUploadedDocuments(caseData);
 
-        return new EmailNotification(
-                cicCase.getRespondentEmail(),
-                templateVarsRespondent,
-                FINAL_DECISION_ISSUED_EMAIL,
-                uploadedDocuments,
-                new ArrayList<>(),
-                saveToCicCase(CicCase::setResNotificationResponse)
-        );
+        return new EmailNotification(cicCase.getRespondentEmail(),
+            templateVarsRespondent,
+            FINAL_DECISION_ISSUED_EMAIL,
+            uploadedDocuments,
+            getFinalDecisionDocumentsAttachments(caseData),
+            saveToCicCase(CicCase::setResNotificationResponse));
     }
 
     private Map<String, String> getUploadedDocuments(CaseData caseData) {
@@ -163,6 +160,25 @@ public class CaseFinalDecisionIssuedNotification extends PartiesNotification {
         }
 
         return finalDecisionNotice;
+    }
+
+    private List<CaseworkerCICDocument> getFinalDecisionDocumentsAttachments(CaseData caseData) {
+        CaseIssueFinalDecision caseIssueFinalDecision = caseData.getCaseIssueFinalDecision();
+        List<CaseworkerCICDocument> finalDecisionDocuments = DecisionDocumentListUtil.getFinalDecisionDocs(caseData);
+        List<String> uuids = new ArrayList<>();
+        if (NoticeOption.UPLOAD_FROM_COMPUTER.equals(caseIssueFinalDecision.getFinalDecisionNotice())) {
+            uuids.add(DocumentUtil.getDocumentUuidFromCICDocument(caseIssueFinalDecision.getDocument()));
+        } else if (NoticeOption.CREATE_FROM_TEMPLATE.equals(caseIssueFinalDecision.getFinalDecisionNotice())) {
+            uuids.add(DocumentUtil.getUuid(caseIssueFinalDecision.getFinalDecisionDraft()));
+        }
+        List<CaseworkerCICDocument> filteredList = new ArrayList<>(finalDecisionDocuments.stream()
+            .filter(doc -> uuids.stream().anyMatch(uuid -> DocumentUtil.getDocumentUuidFromCaseworkerCICDocument(doc).contains(uuid)))
+            .toList());
+        CaseworkerCICDocument guidanceDocument = CaseworkerCICDocument.builder()
+            .documentLink(caseIssueFinalDecision.getFinalDecisionGuidance())
+            .build();
+        filteredList.add(guidanceDocument);
+        return filteredList;
     }
 
     private TemplateName getTemplateName() {

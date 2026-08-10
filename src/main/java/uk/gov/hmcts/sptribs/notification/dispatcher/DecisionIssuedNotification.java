@@ -6,16 +6,19 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseIssueDecision;
 import uk.gov.hmcts.sptribs.caseworker.model.NoticeOption;
+import uk.gov.hmcts.sptribs.caseworker.util.DecisionDocumentListUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.ContactPreferenceType;
+import uk.gov.hmcts.sptribs.document.DocumentUtil;
+import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.notification.NotificationHelper;
 import uk.gov.hmcts.sptribs.notification.NotificationServiceCIC;
 import uk.gov.hmcts.sptribs.notification.PartiesNotification;
 import uk.gov.hmcts.sptribs.notification.TemplateName;
 
-import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static uk.gov.hmcts.sptribs.common.CommonConstants.DASHBOARD_KEY;
@@ -52,22 +55,18 @@ public class DecisionIssuedNotification extends PartiesNotification {
 
         if (cicCase.getContactPreferenceType() == ContactPreferenceType.EMAIL) {
             Map<String, String> uploadedDocumentIds = getUploadedDocuments(caseData);
-            return new EmailNotification(
-                    cicCase.getEmail(),
-                    templateVars,
-                    getTemplateName(),
-                    uploadedDocumentIds,
-                    new ArrayList<>(),
-                    saveToCicCase(CicCase::setSubjectNotifyList)
-            );
+            return new EmailNotification(cicCase.getEmail(),
+                templateVars,
+                getTemplateName(),
+                uploadedDocumentIds,
+                getDecisionDocuments(caseData),
+                saveToCicCase(CicCase::setSubjectNotifyList));
         } else {
             notificationHelper().addAddressTemplateVars(cicCase.getAddress(), templateVars);
-            return new LetterNotification(
-                    cicCase.getAddress(),
-                    templateVars,
-                    DECISION_ISSUED_POST,
-                    saveToCicCase(CicCase::setSubjectLetterNotifyList)
-            );
+            return new LetterNotification(cicCase.getAddress(),
+                templateVars,
+                DECISION_ISSUED_POST,
+                saveToCicCase(CicCase::setSubjectLetterNotifyList));
         }
     }
 
@@ -79,22 +78,18 @@ public class DecisionIssuedNotification extends PartiesNotification {
 
         if (cicCase.getContactPreferenceType() == ContactPreferenceType.EMAIL) {
             Map<String, String> uploadedDocumentIds = getUploadedDocuments(caseData);
-            return new EmailNotification(
-                    cicCase.getApplicantEmailAddress(),
-                    templateVars,
-                    getTemplateName(),
-                    uploadedDocumentIds,
-                    new ArrayList<>(),
-                    saveToCicCase(CicCase::setAppNotificationResponse)
-            );
+            return new EmailNotification(cicCase.getApplicantEmailAddress(),
+                templateVars,
+                getTemplateName(),
+                uploadedDocumentIds,
+                getDecisionDocuments(caseData),
+                saveToCicCase(CicCase::setAppNotificationResponse));
         } else {
             notificationHelper().addAddressTemplateVars(cicCase.getApplicantAddress(), templateVars);
-            return new LetterNotification(
-                    cicCase.getApplicantAddress(),
-                    templateVars,
-                    DECISION_ISSUED_POST,
-                    saveToCicCase(CicCase::setSubjectLetterNotifyList)
-            );
+            return new LetterNotification(cicCase.getApplicantAddress(),
+                templateVars,
+                DECISION_ISSUED_POST,
+                saveToCicCase(CicCase::setSubjectLetterNotifyList));
         }
     }
 
@@ -106,20 +101,18 @@ public class DecisionIssuedNotification extends PartiesNotification {
 
         if (cicCase.getRepresentativeContactDetailsPreference() == ContactPreferenceType.EMAIL) {
             Map<String, String> uploadedDocumentIds = getUploadedDocuments(caseData);
-            return new EmailNotification(
-                    cicCase.getRepresentativeEmailAddress(),
-                    templateVars,
-                    getTemplateName(),
-                    uploadedDocumentIds,
-                    new ArrayList<>(),
-                    saveToCicCase(CicCase::setRepNotificationResponse));
+            return new EmailNotification(cicCase.getRepresentativeEmailAddress(),
+                templateVars,
+                getTemplateName(),
+                uploadedDocumentIds,
+                getDecisionDocuments(caseData),
+                saveToCicCase(CicCase::setRepNotificationResponse));
         } else {
             notificationHelper().addAddressTemplateVars(cicCase.getRepresentativeAddress(), templateVars);
-            return new LetterNotification(
-                    cicCase.getRepresentativeAddress(),
-                    templateVars,
-                    DECISION_ISSUED_POST,
-                    saveToCicCase(CicCase::setRepLetterNotificationResponse)
+            return new LetterNotification(cicCase.getRepresentativeAddress(),
+                templateVars,
+                DECISION_ISSUED_POST,
+                saveToCicCase(CicCase::setRepLetterNotificationResponse)
             );
         }
     }
@@ -131,12 +124,12 @@ public class DecisionIssuedNotification extends PartiesNotification {
         Map<String, String> uploadedDocuments = getUploadedDocuments(caseData);
 
         return new EmailNotification(
-                cicCase.getRespondentEmail(),
-                templateVars,
-                DECISION_ISSUED_EMAIL,
-                uploadedDocuments,
-                new ArrayList<>(),
-                saveToCicCase(CicCase::setResNotificationResponse)
+            cicCase.getRespondentEmail(),
+            templateVars,
+            DECISION_ISSUED_EMAIL,
+            uploadedDocuments,
+            getDecisionDocuments(caseData),
+            saveToCicCase(CicCase::setResNotificationResponse)
         );
     }
 
@@ -168,6 +161,20 @@ public class DecisionIssuedNotification extends PartiesNotification {
         }
 
         return uploadedDocuments;
+    }
+
+    private List<CaseworkerCICDocument> getDecisionDocuments(CaseData caseData) {
+        CaseIssueDecision caseIssueDecision = caseData.getCaseIssueDecision();
+        List<CaseworkerCICDocument> decisionDocuments = DecisionDocumentListUtil.getDecisionDocs(caseData);
+        String uuid;
+        if (NoticeOption.UPLOAD_FROM_COMPUTER.equals(caseIssueDecision.getDecisionNotice())) {
+            uuid = DocumentUtil.getUuid(caseIssueDecision.getDecisionDocument().getDocumentLink());
+        } else if (NoticeOption.CREATE_FROM_TEMPLATE.equals(caseIssueDecision.getDecisionNotice())) {
+            uuid = DocumentUtil.getUuid(caseIssueDecision.getIssueDecisionDraft());
+        } else {
+            uuid = "";
+        }
+        return decisionDocuments.stream().filter(doc -> doc.getDocumentLink().getBinaryUrl().contains(uuid)).toList();
     }
 
     private TemplateName getTemplateName() {
