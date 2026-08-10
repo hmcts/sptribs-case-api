@@ -408,6 +408,32 @@ class CaseworkerContactPartiesTest {
         assertThat(review.getContactParties().getRepresentativeContactParties()).contains(RepresentativeCIC.REPRESENTATIVE);
         assertThat(review.getContactParties().getApplicantContactParties()).contains(ApplicantCIC.APPLICANT_CIC);
         assertThat(review.getContactParties().getRespondent()).contains(RespondentCIC.RESPONDENT);
+        assertThat(review.getContactParties().getMessage()).isEqualTo("message");
         assertThat(review.getMessage()).isEqualTo("message");
+    }
+
+    @Test
+    void shouldBuildContactPartiesReviewWithNoRecipientsInAboutToSubmit() {
+        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
+        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+
+        final CaseData caseData = CaseData.builder()
+            .cicCase(CicCase.builder().notifyPartyMessage("message only").build())
+            .build();
+        updatedCaseDetails.setData(caseData);
+
+        AboutToStartOrSubmitResponse<CaseData, State> response =
+            caseWorkerContactParties.aboutToSubmit(updatedCaseDetails, beforeDetails);
+
+        uk.gov.hmcts.sptribs.caseworker.model.ContactPartiesReview review = response.getData().getContactPartiesReview();
+        assertThat(review).isNotNull();
+        assertThat(review.getPreviewDoc()).isNull();
+        assertThat(review.getContactParties()).isNotNull();
+        assertThat(review.getContactParties().getSubjectContactParties()).isNull();
+        assertThat(review.getContactParties().getRepresentativeContactParties()).isNull();
+        assertThat(review.getContactParties().getApplicantContactParties()).isNull();
+        assertThat(review.getContactParties().getRespondent()).isNull();
+        assertThat(review.getContactParties().getMessage()).isEqualTo("message only");
+        assertThat(review.getMessage()).isEqualTo("message only");
     }
 }
