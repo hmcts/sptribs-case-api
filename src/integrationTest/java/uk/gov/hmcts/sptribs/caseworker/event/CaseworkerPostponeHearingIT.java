@@ -316,6 +316,6 @@ public class CaseworkerPostponeHearingIT {
 
         assertThatJson(response)
             .inPath("$.data.hearingDate")
-            .isNull();
+            .isAbsent();
     }
 }
