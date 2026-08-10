@@ -29,6 +29,7 @@ public class ContactPartiesDocuments {
 
     @CCD(
         label = "Case Documents Preview",
+        showSummaryContent = true,
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
     private List<ListValue<CaseworkerCICDocument>> previewDoc;
