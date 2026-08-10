@@ -46,7 +46,7 @@ public class ContactPartiesSelectDocument implements CcdPageConfiguration {
                     + "file and MS Excel File. Your file must be smaller than 2MB")
             .complex(CaseData::getContactPartiesDocuments)
             .optionalNoSummary(ContactPartiesDocuments::getDocumentList, null, "Selected documents")
-            .readonlyNoSummary(ContactPartiesDocuments::getPreviewDoc,"[STATE] = \"ALWAYS_HIDE\"")
+            .readonlyNoSummary(ContactPartiesDocuments::getPreviewDoc)
             .done();
     }
 
