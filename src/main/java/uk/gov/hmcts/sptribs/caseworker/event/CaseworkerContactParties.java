@@ -12,7 +12,9 @@ import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.Event;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
+import uk.gov.hmcts.sptribs.caseworker.event.page.ContactPartiesReview;
 import uk.gov.hmcts.sptribs.caseworker.event.page.ContactPartiesSelectDocument;
+import uk.gov.hmcts.sptribs.caseworker.model.ContactParties;
 import uk.gov.hmcts.sptribs.caseworker.util.MessageUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
@@ -62,7 +64,7 @@ public class CaseworkerContactParties implements CCDConfig<CaseData, State, User
 
     private static final CcdPageConfiguration partiesToContact = new PartiesToContact();
     private final ContactPartiesSelectDocument contactPartiesSelectDocument;
-
+    private final ContactPartiesReview contactPartiesReview;
     private final ContactPartiesNotification contactPartiesNotification;
 
     @Override
@@ -82,8 +84,9 @@ public class CaseworkerContactParties implements CCDConfig<CaseData, State, User
                     CaseClosed,
                     CaseStayed)
                 .name("Case: Contact parties")
-                .showSummary()
+                .showSummary(false)
                 .aboutToStartCallback(this::aboutToStart)
+                .aboutToSubmitCallback(this::aboutToSubmit)
                 .submittedCallback(this::submitted)
                 .grant(CREATE_READ_UPDATE, SUPER_USER,
                     ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER, ST_CIC_HEARING_CENTRE_ADMIN,
@@ -101,10 +104,36 @@ public class CaseworkerContactParties implements CCDConfig<CaseData, State, User
         PageBuilder pageBuilder = new PageBuilder(eventBuilder);
         contactPartiesSelectDocument.addTo(pageBuilder);
         partiesToContact.addTo(pageBuilder);
+        contactPartiesReview.addTo(pageBuilder);
     }
 
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToStart(CaseDetails<CaseData, State> details) {
         return getCaseDataStateAboutToStartOrSubmitResponse(details, baseUrl, documentBaseUrl);
+    }
+
+    public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(CaseDetails<CaseData, State> details,
+                                                                        CaseDetails<CaseData, State> beforeDetails) {
+        final CaseData data = details.getData();
+        final CicCase cicCase = data.getCicCase();
+
+        data.setContactPartiesReview(
+            uk.gov.hmcts.sptribs.caseworker.model.ContactPartiesReview.builder()
+                .previewDoc(data.getContactPartiesDocuments().getPreviewDoc())
+                .contactParties(ContactParties.builder()
+                    .subjectContactParties(cicCase.getNotifyPartySubject())
+                    .representativeContactParties(cicCase.getNotifyPartyRepresentative())
+                    .applicantContactParties(cicCase.getNotifyPartyApplicant())
+                    .respondent(cicCase.getNotifyPartyRespondent())
+                    .message(cicCase.getNotifyPartyMessage())
+                    .build())
+                .message(cicCase.getNotifyPartyMessage())
+                .build()
+        );
+
+        return AboutToStartOrSubmitResponse.<CaseData, State>builder()
+            .data(data)
+            .state(details.getState())
+            .build();
     }
 
     public SubmittedCallbackResponse submitted(CaseDetails<CaseData, State> details,

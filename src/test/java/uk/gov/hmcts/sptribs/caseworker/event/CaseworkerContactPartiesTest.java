@@ -13,6 +13,7 @@ import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
+import uk.gov.hmcts.sptribs.caseworker.event.page.ContactPartiesReview;
 import uk.gov.hmcts.sptribs.caseworker.event.page.ContactPartiesSelectDocument;
 import uk.gov.hmcts.sptribs.ciccase.model.ApplicantCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
@@ -62,6 +63,9 @@ class CaseworkerContactPartiesTest {
 
     @Mock
     private ContactPartiesSelectDocument contactPartiesSelectDocument;
+
+    @Mock
+    private ContactPartiesReview contactPartiesReview;
 
     @Test
     void shouldAddPublishToCamundaWhenWAIsEnabled() {
@@ -364,5 +368,46 @@ class CaseworkerContactPartiesTest {
         assertThat(response).isNotNull();
         assertThat(response.getData().getContactPartiesDocuments().getDocumentList().getListItems()).hasSize(1);
         assertThat(response.getData().getCicCase().getNotifyPartyMessage()).isEqualTo("");
+    }
+
+    @Test
+    void shouldBuildContactPartiesReviewInAboutToSubmit() {
+        final CaseDetails<CaseData, State> updatedCaseDetails = new CaseDetails<>();
+        final CaseDetails<CaseData, State> beforeDetails = new CaseDetails<>();
+
+        List<ListValue<CaseworkerCICDocument>> selectedDocuments = new ArrayList<>();
+        CaseworkerCICDocument doc = CaseworkerCICDocument.builder()
+            .documentCategory(DocumentType.LINKED_DOCS)
+            .documentLink(Document.builder().url("url").binaryUrl("url").filename("name.pdf").build())
+            .build();
+        ListValue<CaseworkerCICDocument> list = new ListValue<>();
+        list.setValue(doc);
+        selectedDocuments.add(list);
+
+        CicCase cicCase = CicCase.builder()
+            .notifyPartySubject(Set.of(SubjectCIC.SUBJECT))
+            .notifyPartyRepresentative(Set.of(RepresentativeCIC.REPRESENTATIVE))
+            .notifyPartyApplicant(Set.of(ApplicantCIC.APPLICANT_CIC))
+            .notifyPartyRespondent(Set.of(RespondentCIC.RESPONDENT))
+            .notifyPartyMessage("message")
+            .build();
+
+        final CaseData caseData = CaseData.builder()
+            .cicCase(cicCase)
+            .build();
+        caseData.getContactPartiesDocuments().setPreviewDoc(selectedDocuments);
+        updatedCaseDetails.setData(caseData);
+
+        AboutToStartOrSubmitResponse<CaseData, State> response =
+            caseWorkerContactParties.aboutToSubmit(updatedCaseDetails, beforeDetails);
+
+        uk.gov.hmcts.sptribs.caseworker.model.ContactPartiesReview review = response.getData().getContactPartiesReview();
+        assertThat(review).isNotNull();
+        assertThat(review.getPreviewDoc()).hasSize(1);
+        assertThat(review.getContactParties().getSubjectContactParties()).contains(SubjectCIC.SUBJECT);
+        assertThat(review.getContactParties().getRepresentativeContactParties()).contains(RepresentativeCIC.REPRESENTATIVE);
+        assertThat(review.getContactParties().getApplicantContactParties()).contains(ApplicantCIC.APPLICANT_CIC);
+        assertThat(review.getContactParties().getRespondent()).contains(RespondentCIC.RESPONDENT);
+        assertThat(review.getMessage()).isEqualTo("message");
     }
 }

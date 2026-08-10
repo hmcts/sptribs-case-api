@@ -66,7 +66,6 @@ public class PartiesToContact implements CcdPageConfiguration {
                 errors.add(MINOR_FATAL_SUBJECT_ERROR_MESSAGE);
             }
         }
-
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(data)
             .errors(errors)
