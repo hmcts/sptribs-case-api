@@ -12,6 +12,7 @@ import uk.gov.hmcts.sptribs.caseworker.model.Listing;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.HearingState;
 
+import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
@@ -58,6 +59,7 @@ public class HearingService {
                 firstListing.getValue().setPostponeAdditionalInformation(data.getRetiredFields().getCicCasePostponeAdditionalInformation());
             }
         }
+        updateHearingDate(data);
     }
 
     public DynamicList getCompletedHearingDynamicList(final CaseData data) {
@@ -107,6 +109,7 @@ public class HearingService {
                 caseNoteListValue -> caseNoteListValue.setId(String.valueOf(listValueIndex.incrementAndGet())));
 
         }
+        updateHearingDate(caseData);
     }
 
     @SneakyThrows
@@ -119,6 +122,25 @@ public class HearingService {
                 listingListValue.setValue(listingDeepCopy);
                 break;
             }
+        }
+        updateHearingDate(caseData);
+    }
+
+    private void updateHearingDate(CaseData caseData) {
+        if (!CollectionUtils.isEmpty(caseData.getHearingList())) {
+            LocalDate earliestDate = null;
+            for (ListValue<Listing> listing : caseData.getHearingList()) {
+                if (listing.getValue() != null
+                    && listing.getValue().getHearingStatus() == HearingState.Listed
+                    && listing.getValue().getDate() != null) {
+                    if (earliestDate == null || listing.getValue().getDate().isBefore(earliestDate)) {
+                        earliestDate = listing.getValue().getDate();
+                    }
+                }
+            }
+            caseData.setHearingDate(earliestDate);
+        } else {
+            caseData.setHearingDate(null);
         }
     }
 
