@@ -143,7 +143,7 @@ class CamundaTaskWaConfigurationTest extends DmnDecisionTableBaseUnitTest {
                     .build(),
                 ConfigurationExpectationBuilder.defaultExpectations()
                     .expectedValue(MINOR_PRIORITY, DEFAULT_MINOR_PRIORITY, true)
-                    .expectedValue(MAJOR_PRIORITY, "3000", true)
+                    .expectedValue(MAJOR_PRIORITY, DEFAULT_MAJOR_PRIORITY, true)
                     .expectedValue(WORK_TYPE, ROUTINE_WORK_TYPE, true)
                     .expectedValue(ROLE_CATEGORY, ROLE_CATEGORY_ADMIN, true)
                     .expectedValue(DUE_DATE_INTERVAL_DAYS, "7", true)
@@ -1431,6 +1431,32 @@ class CamundaTaskWaConfigurationTest extends DmnDecisionTableBaseUnitTest {
     }
 
     @Test
+    void next_hearing_date_should_be_properly_mapped_for_sorting() {
+        // 1. Map from hearingDate
+        Map<String, Object> hearingDateCase = CaseDataBuilder.defaultCase()
+            .withHearingDate(LocalDate.of(2026, 7, 28))
+            .build();
+        DmnDecisionTableResult result1 = evaluateConfiguration(hearingDateCase);
+        assertEquals("2026-07-28", getConfigurationValue(result1, "nextHearingDate"));
+        assertTrue(canReconfigure(result1, "nextHearingDate"));
+
+        // 2. Map from date (unwrapped listing date) — no longer used, returns empty
+        Map<String, Object> dateCase = CaseDataBuilder.defaultCase()
+            .withDate(LocalDate.of(2026, 7, 29))
+            .build();
+        DmnDecisionTableResult result2 = evaluateConfiguration(dateCase);
+        assertEquals("", getConfigurationValue(result2, "nextHearingDate"));
+        assertTrue(canReconfigure(result2, "nextHearingDate"));
+
+        // 3. Map to empty when no hearing listed
+        Map<String, Object> defaultCase = CaseDataBuilder.defaultCase().build();
+        DmnDecisionTableResult result3 = evaluateConfiguration(defaultCase);
+        assertEquals("", getConfigurationValue(result3, "nextHearingDate"));
+        assertTrue(canReconfigure(result3, "nextHearingDate"));
+    }
+
+
+    @Test
     void priority_should_be_determined_by_urgency_and_hearing_status() {
         // 1. Urgent Case
         Map<String, Object> urgentCase = CaseDataBuilder.defaultCase()
@@ -1457,31 +1483,6 @@ class CamundaTaskWaConfigurationTest extends DmnDecisionTableBaseUnitTest {
         Map<String, Object> defaultCase = CaseDataBuilder.defaultCase().build();
         DmnDecisionTableResult defaultResult = evaluateConfiguration(defaultCase);
         assertEquals("5000", getConfigurationValue(defaultResult, "majorPriority"));
-    }
-
-    @Test
-    void next_hearing_date_should_be_properly_mapped_for_sorting() {
-        // 1. Map from hearingDate
-        Map<String, Object> hearingDateCase = CaseDataBuilder.defaultCase()
-            .withHearingDate(LocalDate.of(2026, 7, 28))
-            .build();
-        DmnDecisionTableResult result1 = evaluateConfiguration(hearingDateCase);
-        assertEquals("2026-07-28", getConfigurationValue(result1, "nextHearingDate"));
-        assertTrue(canReconfigure(result1, "nextHearingDate"));
-
-        // 2. Map from date (unwrapped listing date) — no longer used, returns empty
-        Map<String, Object> dateCase = CaseDataBuilder.defaultCase()
-            .withDate(LocalDate.of(2026, 7, 29))
-            .build();
-        DmnDecisionTableResult result2 = evaluateConfiguration(dateCase);
-        assertEquals("", getConfigurationValue(result2, "nextHearingDate"));
-        assertTrue(canReconfigure(result2, "nextHearingDate"));
-
-        // 3. Map to empty when no hearing listed
-        Map<String, Object> defaultCase = CaseDataBuilder.defaultCase().build();
-        DmnDecisionTableResult result3 = evaluateConfiguration(defaultCase);
-        assertEquals("", getConfigurationValue(result3, "nextHearingDate"));
-        assertTrue(canReconfigure(result3, "nextHearingDate"));
     }
 
     @Test

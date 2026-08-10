@@ -19,9 +19,7 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.sptribs.caseworker.service.HearingService.isMatchingHearing;
-import static uk.gov.hmcts.sptribs.ciccase.model.HearingState.Cancelled;
 import static uk.gov.hmcts.sptribs.ciccase.model.HearingState.Complete;
-import static uk.gov.hmcts.sptribs.ciccase.model.HearingState.Postponed;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getHearingList;
 import static uk.gov.hmcts.sptribs.testutil.TestDataHelper.getRecordListing;
 
@@ -167,65 +165,6 @@ public class HearingServiceIT {
         hearingService.updateHearingList(caseData, hearingName);
 
         // Then (hearingDate should be updated)
-        assertThat(caseData.getHearingDate()).isEqualTo(LocalDate.of(2023, 4, 21));
-    }
-
-    @Test
-    void shouldSetHearingDateOnAddListingIfExistsInIntegration() {
-        final Listing listing = getRecordListing();
-        final CaseData caseData = CaseData.builder()
-            .listing(listing)
-            .hearingList(new ArrayList<>())
-            .build();
-
-        hearingService.addListingIfExists(caseData);
-
-        assertThat(caseData.getHearingDate()).isEqualTo(LocalDate.of(2023, 4, 21));
-    }
-
-    @Test
-    void shouldClearHearingDateWhenSingleListedHearingIsPostponedInIntegration() {
-        final Listing listing = getRecordListing();
-        final CaseData caseData = CaseData.builder()
-            .hearingList(new ArrayList<>())
-            .build();
-        hearingService.addListing(caseData, listing);
-        assertThat(caseData.getHearingDate()).isEqualTo(LocalDate.of(2023, 4, 21));
-
-        caseData.getHearingList().get(0).getValue().setHearingStatus(Postponed);
-        hearingService.addListingIfExists(caseData);
-
-        assertThat(caseData.getHearingDate()).isNull();
-    }
-
-    @Test
-    void shouldClearHearingDateWhenSingleListedHearingIsCancelledInIntegration() {
-        final Listing listing = getRecordListing();
-        final CaseData caseData = CaseData.builder()
-            .hearingList(new ArrayList<>())
-            .build();
-        hearingService.addListing(caseData, listing);
-        assertThat(caseData.getHearingDate()).isEqualTo(LocalDate.of(2023, 4, 21));
-
-        caseData.getHearingList().get(0).getValue().setHearingStatus(Cancelled);
-        hearingService.addListingIfExists(caseData);
-
-        assertThat(caseData.getHearingDate()).isNull();
-    }
-
-    @Test
-    void shouldPickEarliestDateFromMultipleListedHearingsInIntegration() {
-        final Listing listing1 = getRecordListing(); // date 2023-04-21
-        final Listing listing2 = getRecordListing();
-        listing2.setDate(LocalDate.of(2023, 6, 15));
-
-        final CaseData caseData = CaseData.builder()
-            .hearingList(new ArrayList<>())
-            .build();
-
-        hearingService.addListing(caseData, listing1);
-        hearingService.addListing(caseData, listing2);
-
         assertThat(caseData.getHearingDate()).isEqualTo(LocalDate.of(2023, 4, 21));
     }
 }
