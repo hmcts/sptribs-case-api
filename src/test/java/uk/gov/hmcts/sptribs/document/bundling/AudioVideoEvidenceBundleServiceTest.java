@@ -7,21 +7,15 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.ResponseEntity;
-import uk.gov.hmcts.ccd.sdk.type.Document;
-import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.pdf.service.client.PDFServiceClient;
-import uk.gov.hmcts.sptribs.caseworker.service.ExtendedCaseDataApi;
 import uk.gov.hmcts.sptribs.cdam.model.UploadResponse;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.document.bundling.model.AudioVideoEvidenceBundleDocument;
-import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.document.model.DocumentEntity;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
 import uk.gov.hmcts.sptribs.document.service.DocumentsService;
 import uk.gov.hmcts.sptribs.services.cdam.CaseDocumentClientApi;
-import uk.gov.hmcts.sptribs.services.model.AuditEvent;
-import uk.gov.hmcts.sptribs.services.model.AuditEventsResponse;
 
 import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
@@ -32,7 +26,6 @@ import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -55,9 +48,6 @@ class AudioVideoEvidenceBundleServiceTest {
     private CaseDocumentClientApi caseDocumentClientApi;
 
     @Mock
-    private ExtendedCaseDataApi extendedCaseDataApi;
-
-    @Mock
     private AuthTokenGenerator authTokenGenerator;
 
     @Mock
@@ -77,7 +67,6 @@ class AudioVideoEvidenceBundleServiceTest {
         AudioVideoEvidenceBundleService service = new AudioVideoEvidenceBundleService(
             pdfServiceClient,
             caseDocumentClientApi,
-            extendedCaseDataApi,
             documentsService,
             authTokenGenerator,
             request,
@@ -124,9 +113,6 @@ class AudioVideoEvidenceBundleServiceTest {
         assertThat(rows)
             .extracting(AudioVideoEvidenceBundleService.AudioVideoDocumentRow::documentCategory)
             .containsExactly("L - Linked docs", "Unknown");
-        assertThat(rows)
-            .extracting(AudioVideoEvidenceBundleService.AudioVideoDocumentRow::uploadedBy)
-            .containsExactly("caseworker.user@hmcts.net", "caseworker.user@hmcts.net");
     }
 
     @Test
@@ -137,7 +123,6 @@ class AudioVideoEvidenceBundleServiceTest {
         AudioVideoEvidenceBundleService service = new AudioVideoEvidenceBundleService(
             pdfServiceClient,
             caseDocumentClientApi,
-            extendedCaseDataApi,
             documentsService,
             authTokenGenerator,
             request,
@@ -160,9 +145,6 @@ class AudioVideoEvidenceBundleServiceTest {
         List<AudioVideoEvidenceBundleService.AudioVideoDocumentRow> rows = service.extractRows(caseData);
 
         assertThat(rows).hasSize(1);
-        assertThat(rows)
-            .extracting(AudioVideoEvidenceBundleService.AudioVideoDocumentRow::uploadedBy)
-            .containsExactly("updated.user@hmcts.net");
     }
 
     @Test
@@ -170,7 +152,6 @@ class AudioVideoEvidenceBundleServiceTest {
         AudioVideoEvidenceBundleService service = new AudioVideoEvidenceBundleService(
             pdfServiceClient,
             caseDocumentClientApi,
-            extendedCaseDataApi,
             documentsService,
             authTokenGenerator,
             request,
@@ -194,7 +175,6 @@ class AudioVideoEvidenceBundleServiceTest {
         AudioVideoEvidenceBundleService service = new AudioVideoEvidenceBundleService(
             pdfServiceClient,
             caseDocumentClientApi,
-            extendedCaseDataApi,
             documentsService,
             authTokenGenerator,
             request,
@@ -238,7 +218,6 @@ class AudioVideoEvidenceBundleServiceTest {
         AudioVideoEvidenceBundleService service = new AudioVideoEvidenceBundleService(
             pdfServiceClient,
             caseDocumentClientApi,
-            extendedCaseDataApi,
             documentsService,
             authTokenGenerator,
             request,
@@ -283,7 +262,6 @@ class AudioVideoEvidenceBundleServiceTest {
         AudioVideoEvidenceBundleService service = new AudioVideoEvidenceBundleService(
             pdfServiceClient,
             caseDocumentClientApi,
-            extendedCaseDataApi,
             documentsService,
             authTokenGenerator,
             request,
@@ -309,7 +287,6 @@ class AudioVideoEvidenceBundleServiceTest {
         AudioVideoEvidenceBundleService service = new AudioVideoEvidenceBundleService(
             pdfServiceClient,
             caseDocumentClientApi,
-            extendedCaseDataApi,
             documentsService,
             authTokenGenerator,
             request,
@@ -335,7 +312,6 @@ class AudioVideoEvidenceBundleServiceTest {
         AudioVideoEvidenceBundleService service = new AudioVideoEvidenceBundleService(
             pdfServiceClient,
             caseDocumentClientApi,
-            extendedCaseDataApi,
             documentsService,
             authTokenGenerator,
             request,
@@ -351,7 +327,6 @@ class AudioVideoEvidenceBundleServiceTest {
         AudioVideoEvidenceBundleService service = new AudioVideoEvidenceBundleService(
             pdfServiceClient,
             caseDocumentClientApi,
-            extendedCaseDataApi,
             documentsService,
             authTokenGenerator,
             request,
@@ -371,97 +346,6 @@ class AudioVideoEvidenceBundleServiceTest {
         String escapedValue = (String) escapeHtml.invoke(service, "a&b<c>d\"e'f");
         assertThat(escapedNull).isEmpty();
         assertThat(escapedValue).isEqualTo("a&amp;b&lt;c&gt;d&quot;e&#39;f");
-    }
-
-    @Test
-    void shouldCategoriseUploaderAsRespondentAppellantAndCaseworker() {
-        CaseData caseData = CaseData.builder().build();
-        caseData.setCaseNumber("12345");
-
-        AudioVideoEvidenceBundleService service = new AudioVideoEvidenceBundleService(
-            pdfServiceClient,
-            caseDocumentClientApi,
-            extendedCaseDataApi,
-            documentsService,
-            authTokenGenerator,
-            request,
-            clock
-        );
-
-        DocumentEntity respondentDoc = DocumentEntity.builder()
-            .documentFilename("respondent.mp3")
-            .documentBinaryUrl("http://dm/documents/11111111-1111-1111-1111-111111111111/binary")
-            .documentTypeName(DocumentType.LINKED_DOCS.name())
-            .savedAt(OffsetDateTime.parse("2026-01-10T10:15:30Z"))
-            .build();
-        DocumentEntity appellantDoc = DocumentEntity.builder()
-            .documentFilename("appellant.mp4")
-            .documentBinaryUrl("http://dm/documents/22222222-2222-2222-2222-222222222222/binary")
-            .documentTypeName(DocumentType.LINKED_DOCS.name())
-            .savedAt(OffsetDateTime.parse("2026-01-11T10:15:30Z"))
-            .build();
-        DocumentEntity caseworkerDoc = DocumentEntity.builder()
-            .documentFilename("caseworker.mp4")
-            .documentBinaryUrl("http://dm/documents/33333333-3333-3333-3333-333333333333/binary")
-            .documentTypeName(DocumentType.LINKED_DOCS.name())
-            .savedAt(OffsetDateTime.parse("2026-01-12T10:15:30Z"))
-            .build();
-
-        String respondentUserId = "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa";
-        String appellantUserId = "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb";
-        String caseworkerUserId = "cccccccc-cccc-cccc-cccc-cccccccccccc";
-
-        when(authTokenGenerator.generate()).thenReturn("service-token");
-        when(request.getHeader(AUTHORIZATION)).thenReturn("Bearer user-token");
-        when(extendedCaseDataApi.getAuditEvents("Bearer user-token", "service-token", "12345"))
-            .thenReturn(AuditEventsResponse.builder().auditEvents(List.of(
-                AuditEvent.builder().id("respondent-document-management").userId(respondentUserId).build(),
-                AuditEvent.builder().id("citizen-cic-update-dss-application").userId(appellantUserId).build(),
-                AuditEvent.builder().id("caseworker-document-management").userId(caseworkerUserId).build()
-            )).build());
-
-        when(caseDocumentClientApi.getDocument(eq("Bearer user-token"), eq("service-token"), any()))
-            .thenReturn(ResponseEntity.ok(buildMetadataResponse(respondentUserId)))
-            .thenReturn(ResponseEntity.ok(buildMetadataResponse(appellantUserId)))
-            .thenReturn(ResponseEntity.ok(buildMetadataResponse(caseworkerUserId)));
-
-        when(documentsService.getAudioVideoDocuments(12345L))
-            .thenReturn(Stream.of(respondentDoc, appellantDoc, caseworkerDoc));
-
-        List<AudioVideoEvidenceBundleService.AudioVideoDocumentRow> rows = service.extractRows(caseData);
-
-        assertThat(rows)
-            .extracting(AudioVideoEvidenceBundleService.AudioVideoDocumentRow::uploadedBy)
-            .containsExactly("Respondent", "Appellant", "Caseworker");
-    }
-
-    private ListValue<CaseworkerCICDocument> toListValue(String filename,
-                                                         String binaryUrl,
-                                                         DocumentType type,
-                                                         LocalDate date) {
-        CaseworkerCICDocument document = CaseworkerCICDocument.builder()
-            .documentCategory(type)
-            .documentEmailContent("desc")
-            .date(date)
-            .documentLink(Document.builder().filename(filename).binaryUrl(binaryUrl).url(binaryUrl).build())
-            .build();
-        return ListValue.<CaseworkerCICDocument>builder()
-            .id(UUID.randomUUID().toString())
-            .value(document)
-            .build();
-    }
-
-    private ListValue<CaseworkerCICDocument> toListValueWithNullDocumentLink(DocumentType type, LocalDate date) {
-        CaseworkerCICDocument document = CaseworkerCICDocument.builder()
-            .documentCategory(type)
-            .documentEmailContent("desc")
-            .date(date)
-            .documentLink(null)
-            .build();
-        return ListValue.<CaseworkerCICDocument>builder()
-            .id(UUID.randomUUID().toString())
-            .value(document)
-            .build();
     }
 
     private CaseData caseDataWithAudioVideoDoc() {
