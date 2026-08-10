@@ -6,7 +6,6 @@ import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.ccd.sdk.type.DynamicList;
 import uk.gov.hmcts.ccd.sdk.type.DynamicMultiSelectList;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
-import uk.gov.hmcts.ccd.sdk.type.YesOrNo;
 import uk.gov.hmcts.sptribs.caseworker.model.ContactParties;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseSubcategory;
@@ -154,7 +153,6 @@ public final class EventUtil {
     public static AboutToStartOrSubmitResponse<CaseData, State> getCaseDataStateAboutToStartOrSubmitResponse(
         CaseDetails<CaseData, State> details, String baseUrl, String documentBaseUrl) {
         final CaseData caseData = details.getData();
-        caseData.getContactPartiesDocuments().setShowPreview(YesOrNo.NO);
         caseData.setContactParties(new ContactParties());
 
         List<ListValue<CaseworkerCICDocument>> allCaseDocuments =
@@ -165,11 +163,8 @@ public final class EventUtil {
             DocumentListUtil.prepareContactPartiesDocumentListForPreview(caseData, baseUrl, documentBaseUrl);
         caseData.getContactPartiesDocuments().setDocumentList(documentList);
         caseData.getCicCase().setNotifyPartyMessage("");
-        caseData.getContactPartiesDocuments().setShowPreview(YesOrNo.NO);
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
             .build();
     }
-
-
 }
