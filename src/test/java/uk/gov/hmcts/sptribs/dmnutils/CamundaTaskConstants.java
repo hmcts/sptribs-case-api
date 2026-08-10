@@ -39,6 +39,8 @@ public class CamundaTaskConstants {
     public static final String DEFAULT_MINOR_PRIORITY = "500";
     public static final String DEFAULT_MAJOR_PRIORITY = "5000";
     public static final String URGENT_MAJOR_PRIORITY = "2000";
+    public static final String HEARING_MAJOR_PRIORITY = "3000";
+    public static final String URGENT_WITH_HEARING_MAJOR_PRIORITY = "1000";
     public static final String DEFAULT_CASE_MANAGEMENT_CATEGORY = "Criminal Injuries Compensation";
     public static final String DEFAULT_REGION = "1";
     public static final String DEFAULT_LOCATION = "336559";

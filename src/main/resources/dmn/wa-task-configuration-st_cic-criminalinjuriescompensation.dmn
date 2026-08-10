@@ -137,7 +137,10 @@ Short name</description>
           <text>"majorPriority"</text>
         </outputEntry>
         <outputEntry id="LiteralExpression_0jvji8s">
-          <text>if (caseData != null and caseData.isUrgent != null and caseData.isUrgent = "Yes") then 2000 else if (caseData != null and caseData.hearingDate != null) then 3000 else 5000</text>
+          <text>if (caseData != null and caseData.isUrgent != null and caseData.isUrgent = "Yes" and caseData.hearingDate != null) then 1000
+          else if (caseData != null and caseData.isUrgent != null and caseData.isUrgent = "Yes") then 2000
+          else if (caseData != null and caseData.hearingDate != null) then 3000
+          else 5000</text>
         </outputEntry>
         <outputEntry id="LiteralExpression_180437s">
           <text>true</text>

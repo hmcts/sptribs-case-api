@@ -40,6 +40,7 @@ import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.DUE_DATE_INTERV
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.DUE_DATE_ORIGIN;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.FOLLOW_UP_NONCOMPLIANCE_OF_DIR_TASK;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.HEARING_WORK_TYPE;
+import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.HEARING_MAJOR_PRIORITY;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.ISSUE_CASE_TO_RESPONDENT_TASK;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.ISSUE_DECISION_NOTICE_TASK;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.LOCATION;
@@ -119,6 +120,7 @@ import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.ROLE_CATEGORY_L
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.ROUTINE_WORK_TYPE;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.STITCH_COLLATE_HEARING_BUNDLE_TASK;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.URGENT_MAJOR_PRIORITY;
+import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.URGENT_WITH_HEARING_MAJOR_PRIORITY;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.VET_NEW_CASE_DOCUMENTS_TASK;
 import static uk.gov.hmcts.sptribs.dmnutils.CamundaTaskConstants.WORK_TYPE;
 
@@ -143,7 +145,7 @@ class CamundaTaskWaConfigurationTest extends DmnDecisionTableBaseUnitTest {
                     .build(),
                 ConfigurationExpectationBuilder.defaultExpectations()
                     .expectedValue(MINOR_PRIORITY, DEFAULT_MINOR_PRIORITY, true)
-                    .expectedValue(MAJOR_PRIORITY, DEFAULT_MAJOR_PRIORITY, true)
+                    .expectedValue(MAJOR_PRIORITY, HEARING_MAJOR_PRIORITY, true)
                     .expectedValue(WORK_TYPE, ROUTINE_WORK_TYPE, true)
                     .expectedValue(ROLE_CATEGORY, ROLE_CATEGORY_ADMIN, true)
                     .expectedValue(DUE_DATE_INTERVAL_DAYS, "7", true)
@@ -1457,56 +1459,62 @@ class CamundaTaskWaConfigurationTest extends DmnDecisionTableBaseUnitTest {
 
 
     @Test
-    void priority_should_be_determined_by_urgency_and_hearing_status() {
-        // 1. Urgent Case
-        Map<String, Object> urgentCase = CaseDataBuilder.defaultCase()
+    void priority_should_follow_urgency_and_hearing_ordering() {
+        Map<String, Object> urgentWithHearingCase = CaseDataBuilder.defaultCase()
             .isUrgent()
-            .build();
-        DmnDecisionTableResult urgentResult = evaluateConfiguration(urgentCase);
-        assertEquals("2000", getConfigurationValue(urgentResult, "majorPriority"));
-
-        // 2. Non-urgent Case with Listed Hearing (hearingDate)
-        Map<String, Object> hearingDateCase = CaseDataBuilder.defaultCase()
             .withHearingDate(LocalDate.of(2026, 7, 28))
             .build();
-        DmnDecisionTableResult hearingDateResult = evaluateConfiguration(hearingDateCase);
-        assertEquals("3000", getConfigurationValue(hearingDateResult, "majorPriority"));
+        DmnDecisionTableResult priorityWithHearingResult = evaluateConfiguration(urgentWithHearingCase);
+        assertEquals(
+            URGENT_WITH_HEARING_MAJOR_PRIORITY,
+            getConfigurationValue(priorityWithHearingResult, "majorPriority")
+        );
 
-        // 3. Non-urgent Case with date (no hearingDate) — no longer drives priority
-        Map<String, Object> dateCase = CaseDataBuilder.defaultCase()
-            .withDate(LocalDate.of(2026, 7, 28))
+        Map<String, Object> urgentWithoutHearingCase = CaseDataBuilder.defaultCase()
+            .isUrgent()
             .build();
-        DmnDecisionTableResult dateResult = evaluateConfiguration(dateCase);
-        assertEquals("5000", getConfigurationValue(dateResult, "majorPriority"));
+        DmnDecisionTableResult priorityWithoutHearingResult = evaluateConfiguration(urgentWithoutHearingCase);
+        assertEquals(URGENT_MAJOR_PRIORITY, getConfigurationValue(priorityWithoutHearingResult, "majorPriority"));
 
-        // 4. Default Non-urgent Case with No Hearing
-        Map<String, Object> defaultCase = CaseDataBuilder.defaultCase().build();
-        DmnDecisionTableResult defaultResult = evaluateConfiguration(defaultCase);
-        assertEquals("5000", getConfigurationValue(defaultResult, "majorPriority"));
+        Map<String, Object> nonPriorityWithHearingCase = CaseDataBuilder.defaultCase()
+            .withHearingDate(LocalDate.of(2026, 7, 28))
+            .build();
+        DmnDecisionTableResult nonPriorityWithHearingResult = evaluateConfiguration(nonPriorityWithHearingCase);
+        assertEquals(HEARING_MAJOR_PRIORITY, getConfigurationValue(nonPriorityWithHearingResult, "majorPriority"));
+
+        Map<String, Object> nonPriorityWithoutHearingCase = CaseDataBuilder.defaultCase().build();
+        DmnDecisionTableResult nonPriorityWithoutHearingResult = evaluateConfiguration(nonPriorityWithoutHearingCase);
+        assertEquals(DEFAULT_MAJOR_PRIORITY, getConfigurationValue(nonPriorityWithoutHearingResult, "majorPriority"));
     }
 
     @Test
-    void urgent_case_with_hearing_date_should_use_urgent_priority() {
-        Map<String, Object> caseData = CaseDataBuilder.defaultCase()
-            .isUrgent()
+    void non_priority_task_with_hearing_date_should_become_high_priority() {
+        Map<String, Object> caseDataBeforeListing = CaseDataBuilder.defaultCase().build();
+        DmnDecisionTableResult beforeListingResult = evaluateConfiguration(caseDataBeforeListing);
+        assertEquals(DEFAULT_MAJOR_PRIORITY, getConfigurationValue(beforeListingResult, "majorPriority"));
+
+        Map<String, Object> caseDataAfterListing = CaseDataBuilder.defaultCase()
             .withHearingDate(LocalDate.of(2026, 7, 28))
             .build();
+        DmnDecisionTableResult afterListingResult = evaluateConfiguration(caseDataAfterListing);
 
-        DmnDecisionTableResult result = evaluateConfiguration(caseData);
-
-        assertEquals("2000", getConfigurationValue(result, "majorPriority"));
-        assertEquals("2026-07-28", getConfigurationValue(result, "nextHearingDate"));
+        assertEquals(HEARING_MAJOR_PRIORITY, getConfigurationValue(afterListingResult, "majorPriority"));
+        assertEquals("2026-07-28", getConfigurationValue(afterListingResult, "nextHearingDate"));
     }
 
     private DmnDecisionTableResult evaluateConfiguration(Map<String, Object> caseData) {
+        return evaluateConfiguration(caseData, PROCESS_CASE_WITHDRAWAL_DIR_TASK);
+    }
+
+    private DmnDecisionTableResult evaluateConfiguration(Map<String, Object> caseData, String taskType) {
         VariableMap inputVariables = new VariableMapImpl();
         Map<String, String> taskAttributes = Map.of(
-            "taskType", PROCESS_CASE_WITHDRAWAL_DIR_TASK,
+            "taskType", taskType,
             "roleAssignmentId", roleAssignmentId,
             "taskId", taskId
         );
         inputVariables.putValue("taskAttributes", taskAttributes);
-        inputVariables.putValue("taskType", PROCESS_CASE_WITHDRAWAL_DIR_TASK);
+        inputVariables.putValue("taskType", taskType);
         inputVariables.putValue("caseData", caseData);
         return evaluateDmnTable(inputVariables);
     }
