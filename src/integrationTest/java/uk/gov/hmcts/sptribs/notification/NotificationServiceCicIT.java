@@ -137,7 +137,6 @@ public class NotificationServiceCicIT {
             .destinationAddress("test@email.com")
             .template(APPLICATION_RECEIVED)
             .templateVars(templateVars)
-            .hasFileAttachments(false)
             .build();
 
         final String sendEmailResponseJsonString = expectedResponse(NOTIFICATION_RESPONSE_JSON);
@@ -204,7 +203,6 @@ public class NotificationServiceCicIT {
             .destinationAddress("test@email.com")
             .template(APPLICATION_RECEIVED)
             .templateVars(templateVars)
-            .hasFileAttachments(false)
             .build();
 
         doThrow(NotificationClientException.class)
