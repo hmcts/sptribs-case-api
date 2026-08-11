@@ -3,9 +3,6 @@ package uk.gov.hmcts.sptribs.caseworker;
 import io.restassured.response.Response;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
-import uk.gov.hmcts.sptribs.document.bundling.AudioVideoEvidenceBundleException;
-import uk.gov.hmcts.sptribs.document.bundling.AudioVideoEvidenceBundleService;
 import uk.gov.hmcts.sptribs.testutil.FunctionalTestSuite;
 
 import java.time.OffsetDateTime;
@@ -19,8 +16,6 @@ import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
 import static net.javacrumbs.jsonunit.assertj.JsonAssertions.json;
 import static net.javacrumbs.jsonunit.core.Option.IGNORING_EXTRA_FIELDS;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.Mockito.doThrow;
 import static org.springframework.http.HttpStatus.OK;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CREATE_BUNDLE;
 import static uk.gov.hmcts.sptribs.testutil.CaseDataUtil.caseData;
@@ -30,9 +25,6 @@ import static uk.gov.hmcts.sptribs.testutil.TestResourceUtil.expectedResponse;
 
 @SpringBootTest
 public class CaseworkerCreateBundleFT extends FunctionalTestSuite {
-
-    @MockitoSpyBean
-    private AudioVideoEvidenceBundleService audioVideoEvidenceBundleService;
 
     private static final String REQUEST =
         "classpath:request/casedata/ccd-callback-casedata-caseworker-create-bundle-about-to-submit.json";
@@ -342,33 +334,4 @@ public class CaseworkerCreateBundleFT extends FunctionalTestSuite {
             .isAbsent();
     }
 
-    @Test
-    public void shouldReturnErrorWhenAudioVideoPdfGenerationFails() throws Exception {
-        final Map<String, Object> caseData = caseData(REQUEST);
-        doThrow(new AudioVideoEvidenceBundleException(1234567890123456L, new RuntimeException("PDF generation failed")))
-            .when(audioVideoEvidenceBundleService)
-            .createAudioVideoEvidenceBundleDocument(anyLong());
-
-        final Response response = triggerCallback(caseData, CREATE_BUNDLE, ABOUT_TO_SUBMIT_URL, false);
-
-        assertThat(response.getStatusCode()).isEqualTo(OK.value());
-        assertThatJson(response.asString())
-            .inPath("$.errors[0]")
-            .isEqualTo("The audio/video evidence document could not be created. No bundle has been created. Please try again.");
-    }
-
-    @Test
-    public void shouldReturnErrorWhenAudioVideoUploadFails() throws Exception {
-        final Map<String, Object> caseData = caseData(REQUEST);
-        doThrow(new AudioVideoEvidenceBundleException(1234567890123456L, new RuntimeException("CDAM upload failed")))
-            .when(audioVideoEvidenceBundleService)
-            .createAudioVideoEvidenceBundleDocument(anyLong());
-
-        final Response response = triggerCallback(caseData, CREATE_BUNDLE, ABOUT_TO_SUBMIT_URL, false);
-
-        assertThat(response.getStatusCode()).isEqualTo(OK.value());
-        assertThatJson(response.asString())
-            .inPath("$.errors[0]")
-            .isEqualTo("The audio/video evidence document could not be created. No bundle has been created. Please try again.");
-    }
 }

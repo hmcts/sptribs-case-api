@@ -62,6 +62,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
@@ -123,6 +124,8 @@ public class CaseworkerCreateBundleIT {
 
     private static final Instant instant = Instant.now();
     private static final ZoneId zoneId = ZoneId.systemDefault();
+    private static final String VALID_DOCUMENT_ID_1 = "00000000-0000-0000-0000-000000000001";
+    private static final String VALID_DOCUMENT_ID_2 = "00000000-0000-0000-0000-000000000002";
 
     @BeforeAll
     static void setUp() {
@@ -214,13 +217,13 @@ public class CaseworkerCreateBundleIT {
         when(pdfServiceClient.generateFromHtml(any(byte[].class), anyMap())).thenReturn("pdf".getBytes());
         DocumentEntity audioDoc1 = DocumentEntity.builder()
             .documentFilename("media-1.mp3")
-            .documentBinaryUrl("http://dm/documents/1/binary")
+            .documentBinaryUrl(buildDmStoreBinaryUrl(VALID_DOCUMENT_ID_1))
             .documentTypeName(DocumentType.LINKED_DOCS.name())
             .savedAt(OffsetDateTime.parse("2026-01-10T10:00:00Z"))
             .build();
         DocumentEntity audioDoc2 = DocumentEntity.builder()
             .documentFilename("media-2.mp4")
-            .documentBinaryUrl("http://dm/documents/2/binary")
+            .documentBinaryUrl(buildDmStoreBinaryUrl(VALID_DOCUMENT_ID_2))
             .documentTypeName(DocumentType.POLICE_EVIDENCE.name())
             .savedAt(OffsetDateTime.parse("2026-01-12T10:00:00Z"))
             .build();
@@ -238,6 +241,7 @@ public class CaseworkerCreateBundleIT {
 
         uk.gov.hmcts.sptribs.cdam.model.Document uploadedDoc = new uk.gov.hmcts.sptribs.cdam.model.Document();
         uploadedDoc.links = links;
+        uploadedDoc.originalDocumentName = "audio-video-evidence-1616591401473378.pdf";
 
         UploadResponse uploadResponse = new UploadResponse();
         uploadResponse.setDocuments(List.of(uploadedDoc));
@@ -296,8 +300,8 @@ public class CaseworkerCreateBundleIT {
 
         assertThat(placeholdersCaptor.getValue()).containsEntry("caseId", "1616591401473378");
         assertThat(placeholdersCaptor.getValue().get("rowsHtml").toString())
-            .contains("<a href=\"http://dm/documents/1/binary\">media-1.mp3</a>")
-            .contains("<a href=\"http://dm/documents/2/binary\">media-2.mp4</a>")
+            .contains("<a href=\"https://manage-case.demo.platform.hmcts.net/documents/" + VALID_DOCUMENT_ID_1 + "/binary\">media-1.mp3</a>")
+            .contains("<a href=\"https://manage-case.demo.platform.hmcts.net/documents/" + VALID_DOCUMENT_ID_2 + "/binary\">media-2.mp4</a>")
             .doesNotContain("paper.pdf");
     }
 
@@ -325,7 +329,7 @@ public class CaseworkerCreateBundleIT {
         when(pdfServiceClient.generateFromHtml(any(byte[].class), anyMap())).thenReturn("pdf".getBytes());
         DocumentEntity audioDoc = DocumentEntity.builder()
             .documentFilename("media-1.mp3")
-            .documentBinaryUrl("http://dm/documents/1/binary")
+            .documentBinaryUrl(buildDmStoreBinaryUrl(VALID_DOCUMENT_ID_1))
             .documentTypeName(DocumentType.LINKED_DOCS.name())
             .savedAt(OffsetDateTime.parse("2026-01-10T10:00:00Z"))
             .build();
@@ -343,6 +347,7 @@ public class CaseworkerCreateBundleIT {
 
         uk.gov.hmcts.sptribs.cdam.model.Document uploadedDoc = new uk.gov.hmcts.sptribs.cdam.model.Document();
         uploadedDoc.links = links;
+        uploadedDoc.originalDocumentName = "audio-video-evidence-1616591401473378.pdf";
 
         UploadResponse uploadResponse = new UploadResponse();
         uploadResponse.setDocuments(List.of(uploadedDoc));
@@ -440,6 +445,62 @@ public class CaseworkerCreateBundleIT {
         assertThat(callbackAudioVideoDocument.get()).isNull();
         assertThat(callbackCaseDocumentNames.get()).containsExactly("paper.pdf");
         verifyNoInteractions(pdfServiceClient, caseDocumentClientApi);
+    }
+
+    @Test
+    void shouldReturnErrorWhenAudioVideoPdfGenerationFails() throws Exception {
+        final CaseData caseData = caseData();
+        caseData.setCaseNumber("1616591401473378");
+
+        when(documentsService.getAudioVideoDocuments(any()))
+            .thenReturn(Stream.of(buildAudioVideoDocumentEntity("media-1.mp3", VALID_DOCUMENT_ID_1)));
+        when(pdfServiceClient.generateFromHtml(any(byte[].class), anyMap()))
+            .thenThrow(new RuntimeException("PDF generation failed"));
+
+        String response = mockMvc.perform(post(ABOUT_TO_SUBMIT_URL)
+                .contentType(APPLICATION_JSON)
+                .header(SERVICE_AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
+                .header(AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
+                .content(objectMapper.writeValueAsString(callbackRequest(caseData, CREATE_BUNDLE)))
+                .accept(APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andReturn()
+            .getResponse()
+            .getContentAsString();
+
+        assertThatJson(response)
+            .inPath("$.errors[0]")
+            .isEqualTo("The audio/video evidence document could not be created. No bundle has been created. Please try again.");
+        verify(bundlingClient, never()).createBundle(any(), any(), any());
+    }
+
+    @Test
+    void shouldReturnErrorWhenAudioVideoUploadFails() throws Exception {
+        final CaseData caseData = caseData();
+        caseData.setCaseNumber("1616591401473378");
+
+        when(authTokenGenerator.generate()).thenReturn(SERVICE_AUTHORIZATION);
+        when(documentsService.getAudioVideoDocuments(any()))
+            .thenReturn(Stream.of(buildAudioVideoDocumentEntity("media-2.mp4", VALID_DOCUMENT_ID_2)));
+        when(pdfServiceClient.generateFromHtml(any(byte[].class), anyMap())).thenReturn("pdf".getBytes());
+        when(caseDocumentClientApi.uploadDocuments(any(), any(), any()))
+            .thenThrow(new RuntimeException("CDAM upload failed"));
+
+        String response = mockMvc.perform(post(ABOUT_TO_SUBMIT_URL)
+                .contentType(APPLICATION_JSON)
+                .header(SERVICE_AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
+                .header(AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
+                .content(objectMapper.writeValueAsString(callbackRequest(caseData, CREATE_BUNDLE)))
+                .accept(APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andReturn()
+            .getResponse()
+            .getContentAsString();
+
+        assertThatJson(response)
+            .inPath("$.errors[0]")
+            .isEqualTo("The audio/video evidence document could not be created. No bundle has been created. Please try again.");
+        verify(bundlingClient, never()).createBundle(any(), any(), any());
     }
 
     @Test
@@ -632,5 +693,18 @@ public class CaseworkerCreateBundleIT {
             .date(date)
             .documentLink(Document.builder().filename(filename).binaryUrl(binaryUrl).url(binaryUrl).build())
             .build();
+    }
+
+    private DocumentEntity buildAudioVideoDocumentEntity(String filename, String documentId) {
+        return DocumentEntity.builder()
+            .documentFilename(filename)
+            .documentBinaryUrl(buildDmStoreBinaryUrl(documentId))
+            .documentTypeName(DocumentType.LINKED_DOCS.name())
+            .savedAt(OffsetDateTime.parse("2026-01-10T10:00:00Z"))
+            .build();
+    }
+
+    private String buildDmStoreBinaryUrl(String documentId) {
+        return "http://dm-store/documents/" + documentId + "/binary";
     }
 }
