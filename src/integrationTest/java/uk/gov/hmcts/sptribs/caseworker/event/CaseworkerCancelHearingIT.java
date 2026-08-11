@@ -254,6 +254,7 @@ public class CaseworkerCancelHearingIT {
 
         final CaseData caseData = caseData();
         caseData.setHearingList(hearingList);
+        caseData.setHearingDate(LocalDate.of(2023, 4, 21));
         caseData.setListing(new Listing());
         caseData.getCicCase().setHearingList(
             DynamicList.builder()
@@ -282,5 +283,48 @@ public class CaseworkerCancelHearingIT {
         assertThatJson(response)
             .inPath("$.data.hearingDate")
             .isEqualTo("2023-04-21");
+    }
+
+    @Test
+    void shouldMoveHearingDateToNextEarliestWhenEarliestIsCancelled() throws Exception {
+        final Listing hearing1 = getRecordListing();
+        final Listing hearing2 = getRecordListing();
+        hearing2.setDate(LocalDate.of(2023, 6, 15));
+
+        final List<ListValue<Listing>> hearingList = new ArrayList<>();
+        hearingList.add(new ListValue<>("1", hearing1));
+        hearingList.add(new ListValue<>("2", hearing2));
+
+        final CaseData caseData = caseData();
+        caseData.setHearingList(hearingList);
+        caseData.setHearingDate(LocalDate.of(2023, 4, 21));
+        caseData.setListing(new Listing());
+        caseData.getCicCase().setHearingList(
+            DynamicList.builder()
+                .value(DynamicListElement.builder()
+                    .label("1 - Final - 21 Apr 2023 10:00")
+                    .build())
+                .listItems(List.of(
+                    DynamicListElement.builder().label("1 - Final - 21 Apr 2023 10:00").build(),
+                    DynamicListElement.builder().label("2 - Final - 15 Jun 2023 10:00").build()
+                ))
+                .build()
+        );
+
+        String response = mockMvc.perform(post(ABOUT_TO_SUBMIT_URL)
+                .contentType(APPLICATION_JSON)
+                .header(SERVICE_AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
+                .header(AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
+                .content(objectMapper.writeValueAsString(
+                    callbackRequest(caseData, CASEWORKER_CANCEL_HEARING)))
+                .accept(APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andReturn()
+            .getResponse()
+            .getContentAsString();
+
+        assertThatJson(response)
+            .inPath("$.data.hearingDate")
+            .isEqualTo("2023-06-15");
     }
 }

@@ -1457,49 +1457,120 @@ class CamundaTaskWaConfigurationTest extends DmnDecisionTableBaseUnitTest {
         assertTrue(canReconfigure(result3, "nextHearingDate"));
     }
 
+    @ParameterizedTest(name = "task={0}, urgent={1}, hearingDate={2}")
+    @MethodSource("priorityTruthTableProvider")
+    void priority_truth_table_should_be_consistent_across_task_types(
+        String taskType,
+        String urgentValue,
+        LocalDate hearingDate,
+        boolean includeUrgentField,
+        String expectedMajorPriority,
+        String expectedNextHearingDate,
+        boolean expectedCanReconfigure
+    ) {
+        Map<String, Object> caseData = buildCaseData(urgentValue, hearingDate, includeUrgentField);
 
-    @Test
-    void priority_should_follow_urgency_and_hearing_ordering() {
-        Map<String, Object> urgentWithHearingCase = CaseDataBuilder.defaultCase()
-            .isUrgent()
-            .withHearingDate(LocalDate.of(2026, 7, 28))
-            .build();
-        DmnDecisionTableResult priorityWithHearingResult = evaluateConfiguration(urgentWithHearingCase);
-        assertEquals(
-            URGENT_WITH_HEARING_MAJOR_PRIORITY,
-            getConfigurationValue(priorityWithHearingResult, "majorPriority")
-        );
+        DmnDecisionTableResult result = evaluateConfiguration(caseData, taskType);
 
-        Map<String, Object> urgentWithoutHearingCase = CaseDataBuilder.defaultCase()
-            .isUrgent()
-            .build();
-        DmnDecisionTableResult priorityWithoutHearingResult = evaluateConfiguration(urgentWithoutHearingCase);
-        assertEquals(URGENT_MAJOR_PRIORITY, getConfigurationValue(priorityWithoutHearingResult, "majorPriority"));
-
-        Map<String, Object> nonPriorityWithHearingCase = CaseDataBuilder.defaultCase()
-            .withHearingDate(LocalDate.of(2026, 7, 28))
-            .build();
-        DmnDecisionTableResult nonPriorityWithHearingResult = evaluateConfiguration(nonPriorityWithHearingCase);
-        assertEquals(HEARING_MAJOR_PRIORITY, getConfigurationValue(nonPriorityWithHearingResult, "majorPriority"));
-
-        Map<String, Object> nonPriorityWithoutHearingCase = CaseDataBuilder.defaultCase().build();
-        DmnDecisionTableResult nonPriorityWithoutHearingResult = evaluateConfiguration(nonPriorityWithoutHearingCase);
-        assertEquals(DEFAULT_MAJOR_PRIORITY, getConfigurationValue(nonPriorityWithoutHearingResult, "majorPriority"));
+        assertEquals(expectedMajorPriority, getConfigurationValue(result, "majorPriority"));
+        assertEquals(expectedNextHearingDate, getConfigurationValue(result, "nextHearingDate"));
+        assertEquals(expectedCanReconfigure, canReconfigure(result, "majorPriority"));
+        assertEquals(expectedCanReconfigure, canReconfigure(result, "nextHearingDate"));
     }
 
     @Test
-    void non_priority_task_with_hearing_date_should_become_high_priority() {
-        Map<String, Object> caseDataBeforeListing = CaseDataBuilder.defaultCase().build();
-        DmnDecisionTableResult beforeListingResult = evaluateConfiguration(caseDataBeforeListing);
-        assertEquals(DEFAULT_MAJOR_PRIORITY, getConfigurationValue(beforeListingResult, "majorPriority"));
+    void priority_truth_table_should_fallback_when_case_data_is_null() {
+        DmnDecisionTableResult result = evaluateConfiguration(null, PROCESS_CASE_WITHDRAWAL_DIR_TASK);
 
-        Map<String, Object> caseDataAfterListing = CaseDataBuilder.defaultCase()
-            .withHearingDate(LocalDate.of(2026, 7, 28))
-            .build();
-        DmnDecisionTableResult afterListingResult = evaluateConfiguration(caseDataAfterListing);
+        assertEquals(DEFAULT_MAJOR_PRIORITY, getConfigurationValue(result, "majorPriority"));
+        assertEquals("", getConfigurationValue(result, "nextHearingDate"));
+        assertTrue(canReconfigure(result, "majorPriority"));
+        assertTrue(canReconfigure(result, "nextHearingDate"));
+    }
 
-        assertEquals(HEARING_MAJOR_PRIORITY, getConfigurationValue(afterListingResult, "majorPriority"));
-        assertEquals("2026-07-28", getConfigurationValue(afterListingResult, "nextHearingDate"));
+    private static Stream<Arguments> priorityTruthTableProvider() {
+        LocalDate today = LocalDate.now();
+        return Stream.of(
+            Arguments.of(
+                PROCESS_CASE_WITHDRAWAL_DIR_TASK,
+                "Yes",
+                today.plusDays(10),
+                true,
+                URGENT_WITH_HEARING_MAJOR_PRIORITY,
+                today.plusDays(10).toString(),
+                true
+            ),
+            Arguments.of(
+                PROCESS_CASE_WITHDRAWAL_DIR_TASK,
+                "Yes",
+                null,
+                true,
+                URGENT_MAJOR_PRIORITY,
+                "",
+                true
+            ),
+            Arguments.of(
+                REVIEW_LIST_CASE_LO_TASK,
+                "No",
+                today.plusDays(5),
+                true,
+                HEARING_MAJOR_PRIORITY,
+                today.plusDays(5).toString(),
+                true
+            ),
+            Arguments.of(
+                REVIEW_LIST_CASE_JUDGE_TASK,
+                "No",
+                null,
+                true,
+                DEFAULT_MAJOR_PRIORITY,
+                "",
+                true
+            ),
+            Arguments.of(
+                REVIEW_LIST_CASE_JUDGE_TASK,
+                null,
+                today,
+                false,
+                HEARING_MAJOR_PRIORITY,
+                today.toString(),
+                true
+            ),
+            Arguments.of(
+                REVIEW_LIST_CASE_LO_TASK,
+                "No",
+                today.minusDays(1),
+                true,
+                HEARING_MAJOR_PRIORITY,
+                today.minusDays(1).toString(),
+                true
+            ),
+            Arguments.of(
+                PROCESS_CASE_WITHDRAWAL_DIR_TASK,
+                "No",
+                today,
+                true,
+                HEARING_MAJOR_PRIORITY,
+                today.toString(),
+                true
+            )
+        );
+    }
+
+    private Map<String, Object> buildCaseData(String urgentValue, LocalDate hearingDate, boolean includeUrgentField) {
+        Map<String, Object> caseData = CaseDataBuilder.defaultCase().build();
+        if (!includeUrgentField) {
+            caseData.remove("isUrgent");
+        } else {
+            caseData.put("isUrgent", urgentValue);
+        }
+
+        if (hearingDate != null) {
+            caseData.put("hearingDate", hearingDate);
+        } else {
+            caseData.remove("hearingDate");
+        }
+        return caseData;
     }
 
     private DmnDecisionTableResult evaluateConfiguration(Map<String, Object> caseData) {

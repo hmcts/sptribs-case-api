@@ -7,6 +7,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import uk.gov.hmcts.sptribs.testutil.FunctionalTestSuite;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
@@ -124,6 +125,22 @@ public class CaseworkerCancelHearingFT extends FunctionalTestSuite {
     @Test
     public void shouldReturnHearingDateNullAfterCancelInAboutToSubmit() throws Exception {
         final Map<String, Object> caseData = caseData(REQUEST_ABOUT_TO_SUBMIT);
+        caseData.put("hearingDate", "2023-04-21");
+        caseData.put("hearingList", List.of(
+            Map.of(
+                "id", "1",
+                "value", Map.of(
+                    "hearingType", "CaseManagement",
+                    "date", "2023-04-21",
+                    "hearingTime", "09:00",
+                    "hearingStatus", "Listed"
+                )
+            )
+        ));
+        caseData.put("cicCaseHearingList", Map.of(
+            "value", Map.of("code", "test-code", "label", "1 - Case management - 21 Apr 2023 09:00"),
+            "list_items", List.of(Map.of("code", "test-code", "label", "1 - Case management - 21 Apr 2023 09:00"))
+        ));
 
         final Response response = triggerCallback(caseData, CASEWORKER_CANCEL_HEARING, ABOUT_TO_SUBMIT_URL);
 

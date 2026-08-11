@@ -30,6 +30,7 @@ import uk.gov.hmcts.sptribs.common.config.WebMvcConfig;
 import uk.gov.hmcts.sptribs.notification.dispatcher.HearingPostponedNotification;
 import uk.gov.hmcts.sptribs.testutil.IdamWireMock;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -291,6 +292,7 @@ public class CaseworkerPostponeHearingIT {
 
         final CaseData caseData = caseData();
         caseData.setHearingList(hearingList);
+        caseData.setHearingDate(LocalDate.of(2023, 4, 21));
         caseData.setListing(postponeListing);
         caseData.getCicCase().setHearingList(
             DynamicList.builder()
@@ -317,5 +319,120 @@ public class CaseworkerPostponeHearingIT {
         assertThatJson(response)
             .inPath("$.data.hearingDate")
             .isAbsent();
+    }
+
+    @Test
+    void shouldMoveHearingDateWhenEarliestHearingIsPostponed() throws Exception {
+        final Listing earliestHearing = getRecordListing();
+        final Listing laterHearing = getRecordListing();
+        laterHearing.setDate(LocalDate.of(2023, 6, 15));
+
+        final List<ListValue<Listing>> hearingList = new ArrayList<>();
+        hearingList.add(new ListValue<>("1", earliestHearing));
+        hearingList.add(new ListValue<>("2", laterHearing));
+
+        final Listing postponeListing = Listing.builder()
+            .regionList(getMockedRegionData())
+            .hearingVenues(getMockedHearingVenueData())
+            .venueNotListedOption(emptySet())
+            .roomAtVenue("G.01")
+            .addlInstr("Ground floor")
+            .hearingFormat(FACE_TO_FACE)
+            .shortNotice(YES)
+            .postponeReason(PostponeReason.BEREAVEMENT)
+            .build();
+
+        final CaseData caseData = caseData();
+        caseData.setHearingList(hearingList);
+        caseData.setHearingDate(LocalDate.of(2023, 4, 21));
+        caseData.setListing(postponeListing);
+        caseData.getCicCase().setHearingList(
+            DynamicList.builder()
+                .value(DynamicListElement.builder()
+                    .label("1 - Final - 21 Apr 2023 10:00")
+                    .build())
+                .listItems(List.of(
+                    DynamicListElement.builder().label("1 - Final - 21 Apr 2023 10:00").build(),
+                    DynamicListElement.builder().label("2 - Final - 15 Jun 2023 10:00").build()
+                ))
+                .build()
+        );
+
+        stubForIdamDetails(TEST_AUTHORIZATION_TOKEN, CASEWORKER_USER_ID, ST_CIC_CASEWORKER);
+
+        String response = mockMvc.perform(post(ABOUT_TO_SUBMIT_URL)
+                .contentType(APPLICATION_JSON)
+                .header(SERVICE_AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
+                .header(AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
+                .content(objectMapper.writeValueAsString(
+                    callbackRequest(caseData, CASEWORKER_POSTPONE_HEARING)))
+                .accept(APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andReturn()
+            .getResponse()
+            .getContentAsString();
+
+        assertThatJson(response)
+            .inPath("$.data.hearingDate")
+            .isEqualTo("2023-06-15");
+    }
+
+    @Test
+    void shouldKeepEarliestHearingDateWhenLaterHearingIsPostponed() throws Exception {
+        final Listing earliestHearing = getRecordListing();
+        final Listing laterHearing = getRecordListing();
+        laterHearing.setDate(LocalDate.of(2023, 6, 15));
+
+        final List<ListValue<Listing>> hearingList = new ArrayList<>();
+        hearingList.add(new ListValue<>("1", earliestHearing));
+        hearingList.add(new ListValue<>("2", laterHearing));
+
+        final Listing postponeListing = Listing.builder()
+            .regionList(getMockedRegionData())
+            .hearingVenues(getMockedHearingVenueData())
+            .venueNotListedOption(emptySet())
+            .roomAtVenue("G.01")
+            .addlInstr("Ground floor")
+            .hearingFormat(FACE_TO_FACE)
+            .shortNotice(YES)
+            .postponeReason(PostponeReason.BEREAVEMENT)
+            .date(LocalDate.of(2023, 6, 15))
+            .hearingType(earliestHearing.getHearingType())
+            .hearingTime(earliestHearing.getHearingTime())
+            .build();
+
+        final CaseData caseData = caseData();
+        caseData.setHearingList(hearingList);
+        caseData.setHearingDate(LocalDate.of(2023, 4, 21));
+        caseData.setListing(postponeListing);
+        caseData.getCicCase().setHearingList(
+            DynamicList.builder()
+                .value(DynamicListElement.builder()
+                    .label("2 - Final - 15 Jun 2023 10:00")
+                    .build())
+                .listItems(List.of(
+                    DynamicListElement.builder().label("1 - Final - 21 Apr 2023 10:00").build(),
+                    DynamicListElement.builder().label("2 - Final - 15 Jun 2023 10:00").build()
+                ))
+                .build()
+        );
+
+        stubForIdamDetails(TEST_AUTHORIZATION_TOKEN, CASEWORKER_USER_ID, ST_CIC_CASEWORKER);
+
+        String response = mockMvc.perform(post(ABOUT_TO_SUBMIT_URL)
+                .contentType(APPLICATION_JSON)
+                .header(SERVICE_AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
+                .header(AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
+                .content(objectMapper.writeValueAsString(
+                    callbackRequest(caseData, CASEWORKER_POSTPONE_HEARING)))
+                .accept(APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andReturn()
+            .getResponse()
+            .getContentAsString();
+
+        assertThatJson(response)
+            .inPath("$.data.hearingDate")
+            .isEqualTo("2023-04-21");
     }
 }

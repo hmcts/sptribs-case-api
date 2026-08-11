@@ -376,4 +376,100 @@ public class CaseworkerEditRecordListingIT {
             .inPath("$.data.hearingDate")
             .isEqualTo("2023-05-25");
     }
+
+    @Test
+    void shouldUpdateToNextEarliestWhenEarliestListingIsEditedLater() throws Exception {
+        final Listing earliestHearing = getRecordListing();
+        final Listing laterHearing = getRecordListing();
+        laterHearing.setDate(LocalDate.of(2023, 6, 15));
+
+        final List<ListValue<Listing>> hearingList = new ArrayList<>();
+        hearingList.add(new ListValue<>("1", earliestHearing));
+        hearingList.add(new ListValue<>("2", laterHearing));
+
+        final CaseData caseData = CaseData.builder()
+            .cicCase(CicCase.builder()
+                .fullName("Test Name")
+                .hearingList(DynamicList.builder()
+                    .value(DynamicListElement.builder()
+                        .label("1 - Final - 21 Apr 2023 10:00")
+                        .build())
+                    .listItems(List.of(
+                        DynamicListElement.builder().label("1 - Final - 21 Apr 2023 10:00").build(),
+                        DynamicListElement.builder().label("2 - Final - 15 Jun 2023 10:00").build()
+                    ))
+                    .build())
+                .build())
+            .hearingDate(LocalDate.of(2023, 4, 21))
+            .hearingList(hearingList)
+            .build();
+
+        final Listing updatedListing = getRecordListing();
+        updatedListing.setDate(LocalDate.of(2023, 7, 10));
+        caseData.setListing(updatedListing);
+
+        String response = mockMvc.perform(post(ABOUT_TO_SUBMIT_URL)
+                .contentType(APPLICATION_JSON)
+                .header(SERVICE_AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
+                .header(AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
+                .content(objectMapper.writeValueAsString(
+                    callbackRequest(caseData, CASEWORKER_EDIT_RECORD_LISTING)))
+                .accept(APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andReturn()
+            .getResponse()
+            .getContentAsString();
+
+        assertThatJson(response)
+            .inPath("$.data.hearingDate")
+            .isEqualTo("2023-06-15");
+    }
+
+    @Test
+    void shouldUpdateToEditedHearingDateWhenLaterListingBecomesEarliest() throws Exception {
+        final Listing earliestHearing = getRecordListing();
+        final Listing laterHearing = getRecordListing();
+        laterHearing.setDate(LocalDate.of(2023, 6, 15));
+
+        final List<ListValue<Listing>> hearingList = new ArrayList<>();
+        hearingList.add(new ListValue<>("1", earliestHearing));
+        hearingList.add(new ListValue<>("2", laterHearing));
+
+        final CaseData caseData = CaseData.builder()
+            .cicCase(CicCase.builder()
+                .fullName("Test Name")
+                .hearingList(DynamicList.builder()
+                    .value(DynamicListElement.builder()
+                        .label("2 - Final - 15 Jun 2023 10:00")
+                        .build())
+                    .listItems(List.of(
+                        DynamicListElement.builder().label("1 - Final - 21 Apr 2023 10:00").build(),
+                        DynamicListElement.builder().label("2 - Final - 15 Jun 2023 10:00").build()
+                    ))
+                    .build())
+                .build())
+            .hearingDate(LocalDate.of(2023, 4, 21))
+            .hearingList(hearingList)
+            .build();
+
+        final Listing updatedListing = getRecordListing();
+        updatedListing.setDate(LocalDate.of(2023, 3, 12));
+        caseData.setListing(updatedListing);
+
+        String response = mockMvc.perform(post(ABOUT_TO_SUBMIT_URL)
+                .contentType(APPLICATION_JSON)
+                .header(SERVICE_AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
+                .header(AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
+                .content(objectMapper.writeValueAsString(
+                    callbackRequest(caseData, CASEWORKER_EDIT_RECORD_LISTING)))
+                .accept(APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andReturn()
+            .getResponse()
+            .getContentAsString();
+
+        assertThatJson(response)
+            .inPath("$.data.hearingDate")
+            .isEqualTo("2023-03-12");
+    }
 }
