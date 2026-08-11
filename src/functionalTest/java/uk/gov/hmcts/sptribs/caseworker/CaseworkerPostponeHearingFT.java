@@ -95,6 +95,7 @@ public class CaseworkerPostponeHearingFT extends FunctionalTestSuite {
     @Test
     public void shouldReturnHearingDateNullAfterPostponeInAboutToSubmit() throws Exception {
         final Map<String, Object> caseData = caseData(CALLBACK_REQUEST);
+        final String hearingCode = "c03c79c6-5d53-4176-88f9-edbe154074cb";
         caseData.put("hearingDate", "2027-01-01");
         caseData.put("hearingList", List.of(
             Map.of(
@@ -108,8 +109,8 @@ public class CaseworkerPostponeHearingFT extends FunctionalTestSuite {
             )
         ));
         caseData.put("cicCaseHearingList", Map.of(
-            "value", Map.of("code", "test-code", "label", "1 - Case management - 01 Jan 2027 09:00"),
-            "list_items", List.of(Map.of("code", "test-code", "label", "1 - Case management - 01 Jan 2027 09:00"))
+            "value", Map.of("code", hearingCode, "label", "1 - Case management - 01 Jan 2027 09:00"),
+            "list_items", List.of(Map.of("code", hearingCode, "label", "1 - Case management - 01 Jan 2027 09:00"))
         ));
 
         final Response response = triggerCallback(caseData, CASEWORKER_POSTPONE_HEARING, ABOUT_TO_SUBMIT_URL);

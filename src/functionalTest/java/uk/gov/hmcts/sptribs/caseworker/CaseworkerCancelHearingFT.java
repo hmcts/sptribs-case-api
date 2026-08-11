@@ -125,6 +125,7 @@ public class CaseworkerCancelHearingFT extends FunctionalTestSuite {
     @Test
     public void shouldReturnHearingDateNullAfterCancelInAboutToSubmit() throws Exception {
         final Map<String, Object> caseData = caseData(REQUEST_ABOUT_TO_SUBMIT);
+        final String hearingCode = "18b88d33-9da8-4ee0-946d-de71d33e4d6f";
         caseData.put("hearingDate", "2023-04-21");
         caseData.put("hearingList", List.of(
             Map.of(
@@ -138,8 +139,8 @@ public class CaseworkerCancelHearingFT extends FunctionalTestSuite {
             )
         ));
         caseData.put("cicCaseHearingList", Map.of(
-            "value", Map.of("code", "test-code", "label", "1 - Case management - 21 Apr 2023 09:00"),
-            "list_items", List.of(Map.of("code", "test-code", "label", "1 - Case management - 21 Apr 2023 09:00"))
+            "value", Map.of("code", hearingCode, "label", "1 - Case management - 21 Apr 2023 09:00"),
+            "list_items", List.of(Map.of("code", hearingCode, "label", "1 - Case management - 21 Apr 2023 09:00"))
         ));
 
         final Response response = triggerCallback(caseData, CASEWORKER_CANCEL_HEARING, ABOUT_TO_SUBMIT_URL);
