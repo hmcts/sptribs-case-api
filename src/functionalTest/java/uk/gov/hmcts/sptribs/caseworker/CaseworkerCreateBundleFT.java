@@ -3,8 +3,12 @@ package uk.gov.hmcts.sptribs.caseworker;
 import io.restassured.response.Response;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
+import uk.gov.hmcts.sptribs.document.bundling.AudioVideoEvidenceBundleException;
+import uk.gov.hmcts.sptribs.document.bundling.AudioVideoEvidenceBundleService;
 import uk.gov.hmcts.sptribs.testutil.FunctionalTestSuite;
 
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -15,6 +19,8 @@ import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
 import static net.javacrumbs.jsonunit.assertj.JsonAssertions.json;
 import static net.javacrumbs.jsonunit.core.Option.IGNORING_EXTRA_FIELDS;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.doThrow;
 import static org.springframework.http.HttpStatus.OK;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CREATE_BUNDLE;
 import static uk.gov.hmcts.sptribs.testutil.CaseDataUtil.caseData;
@@ -24,6 +30,9 @@ import static uk.gov.hmcts.sptribs.testutil.TestResourceUtil.expectedResponse;
 
 @SpringBootTest
 public class CaseworkerCreateBundleFT extends FunctionalTestSuite {
+
+    @MockitoSpyBean
+    private AudioVideoEvidenceBundleService audioVideoEvidenceBundleService;
 
     private static final String REQUEST =
         "classpath:request/casedata/ccd-callback-casedata-caseworker-create-bundle-about-to-submit.json";
@@ -164,5 +173,202 @@ public class CaseworkerCreateBundleFT extends FunctionalTestSuite {
             .inPath("$.data.cicCaseApplicantDocumentsUploaded[*].value.documentLink.document_filename")
             .isArray()
             .contains("media-a.mp3", "media-b.mp4", "pdf.pdf");
+    }
+
+    @Test
+    public void shouldCreateBundleWhenNoAudioVideoDocumentsExist() throws Exception {
+        final Map<String, Object> caseData = caseData(REQUEST);
+
+        final Response response = triggerCallback(caseData, CREATE_BUNDLE, ABOUT_TO_SUBMIT_URL, false);
+
+        assertThat(response.getStatusCode()).isEqualTo(OK.value());
+        assertThatJson(response.asString())
+            .when(IGNORING_EXTRA_FIELDS)
+            .inPath("$.errors")
+            .isAbsent();
+        assertThatJson(response.asString())
+            .when(IGNORING_EXTRA_FIELDS)
+            .inPath("$.data.caseBundles")
+            .isArray();
+    }
+
+    @Test
+    public void shouldCreateBundleWithSingleAudioDocument() throws Exception {
+        final Map<String, Object> caseData = caseData(REQUEST);
+        Long caseRef = createPersistedCaseReference(caseData);
+
+        String documentId = UUID.randomUUID().toString();
+        caseDocumentsFTDataManager.saveTestDocumentEntity(
+            caseRef,
+            "http://dm-store.service.core-compute.internal/documents/" + documentId,
+            "http://dm-store.service.core-compute.internal/documents/" + documentId + "/binary",
+            "hearing-audio.mp3",
+            "LINKED_DOCS",
+            OffsetDateTime.parse("2026-01-10T10:00:00Z")
+        );
+
+        final Response response = triggerCallback(caseData, CREATE_BUNDLE, ABOUT_TO_SUBMIT_URL, caseRef);
+
+        assertThat(response.getStatusCode()).isEqualTo(OK.value());
+        assertThatJson(response.asString())
+            .when(IGNORING_EXTRA_FIELDS)
+            .inPath("$.errors")
+            .isAbsent();
+    }
+
+    @Test
+    public void shouldCreateBundleWithSingleVideoDocument() throws Exception {
+        final Map<String, Object> caseData = caseData(REQUEST);
+        Long caseRef = createPersistedCaseReference(caseData);
+
+        String documentId = UUID.randomUUID().toString();
+        caseDocumentsFTDataManager.saveTestDocumentEntity(
+            caseRef,
+            "http://dm-store.service.core-compute.internal/documents/" + documentId,
+            "http://dm-store.service.core-compute.internal/documents/" + documentId + "/binary",
+            "hearing-video.mp4",
+            "POLICE_EVIDENCE",
+            OffsetDateTime.parse("2026-01-11T10:00:00Z")
+        );
+
+        final Response response = triggerCallback(caseData, CREATE_BUNDLE, ABOUT_TO_SUBMIT_URL, caseRef);
+
+        assertThat(response.getStatusCode()).isEqualTo(OK.value());
+        assertThatJson(response.asString())
+            .when(IGNORING_EXTRA_FIELDS)
+            .inPath("$.errors")
+            .isAbsent();
+    }
+
+    @Test
+    public void shouldCreateBundleWithMultipleAudioDocuments() throws Exception {
+        final Map<String, Object> caseData = caseData(REQUEST);
+        Long caseRef = createPersistedCaseReference(caseData);
+
+        String audioOne = UUID.randomUUID().toString();
+        String audioTwo = UUID.randomUUID().toString();
+
+        caseDocumentsFTDataManager.saveTestDocumentEntity(
+            caseRef,
+            "http://dm-store.service.core-compute.internal/documents/" + audioOne,
+            "http://dm-store.service.core-compute.internal/documents/" + audioOne + "/binary",
+            "audio-1.mp3",
+            "LINKED_DOCS",
+            OffsetDateTime.parse("2026-01-10T10:00:00Z")
+        );
+        caseDocumentsFTDataManager.saveTestDocumentEntity(
+            caseRef,
+            "http://dm-store.service.core-compute.internal/documents/" + audioTwo,
+            "http://dm-store.service.core-compute.internal/documents/" + audioTwo + "/binary",
+            "audio-2.MP3",
+            "LINKED_DOCS",
+            OffsetDateTime.parse("2026-01-11T10:00:00Z")
+        );
+
+        final Response response = triggerCallback(caseData, CREATE_BUNDLE, ABOUT_TO_SUBMIT_URL, caseRef);
+
+        assertThat(response.getStatusCode()).isEqualTo(OK.value());
+        assertThatJson(response.asString())
+            .when(IGNORING_EXTRA_FIELDS)
+            .inPath("$.errors")
+            .isAbsent();
+    }
+
+    @Test
+    public void shouldCreateBundleWithMultipleVideoDocuments() throws Exception {
+        final Map<String, Object> caseData = caseData(REQUEST);
+        Long caseRef = createPersistedCaseReference(caseData);
+
+        String videoOne = UUID.randomUUID().toString();
+        String videoTwo = UUID.randomUUID().toString();
+
+        caseDocumentsFTDataManager.saveTestDocumentEntity(
+            caseRef,
+            "http://dm-store.service.core-compute.internal/documents/" + videoOne,
+            "http://dm-store.service.core-compute.internal/documents/" + videoOne + "/binary",
+            "video-1.mp4",
+            "POLICE_EVIDENCE",
+            OffsetDateTime.parse("2026-01-12T10:00:00Z")
+        );
+        caseDocumentsFTDataManager.saveTestDocumentEntity(
+            caseRef,
+            "http://ccd-case-document-am-api.service.core-compute.internal/cases/documents/" + videoTwo,
+            "http://ccd-case-document-am-api.service.core-compute.internal/cases/documents/" + videoTwo + "/binary",
+            "video-2.MP4",
+            "POLICE_EVIDENCE",
+            OffsetDateTime.parse("2026-01-13T10:00:00Z")
+        );
+
+        final Response response = triggerCallback(caseData, CREATE_BUNDLE, ABOUT_TO_SUBMIT_URL, caseRef);
+
+        assertThat(response.getStatusCode()).isEqualTo(OK.value());
+        assertThatJson(response.asString())
+            .when(IGNORING_EXTRA_FIELDS)
+            .inPath("$.errors")
+            .isAbsent();
+    }
+
+    @Test
+    public void shouldCreateBundleWithMixedAudioAndVideoDocuments() throws Exception {
+        final Map<String, Object> caseData = caseData(REQUEST);
+        Long caseRef = createPersistedCaseReference(caseData);
+
+        String audioOne = UUID.randomUUID().toString();
+        String videoOne = UUID.randomUUID().toString();
+
+        caseDocumentsFTDataManager.saveTestDocumentEntity(
+            caseRef,
+            "http://dm-store.service.core-compute.internal/documents/" + audioOne,
+            "http://dm-store.service.core-compute.internal/documents/" + audioOne + "/binary",
+            "audio-1.mp3",
+            "LINKED_DOCS",
+            OffsetDateTime.parse("2026-01-10T10:00:00Z")
+        );
+        caseDocumentsFTDataManager.saveTestDocumentEntity(
+            caseRef,
+            "http://ccd-case-document-am-api.service.core-compute.internal/cases/documents/" + videoOne,
+            "http://ccd-case-document-am-api.service.core-compute.internal/cases/documents/" + videoOne + "/binary",
+            "video-1.MP4",
+            "POLICE_EVIDENCE",
+            OffsetDateTime.parse("2026-01-13T10:00:00Z")
+        );
+
+        final Response response = triggerCallback(caseData, CREATE_BUNDLE, ABOUT_TO_SUBMIT_URL, caseRef);
+
+        assertThat(response.getStatusCode()).isEqualTo(OK.value());
+        assertThatJson(response.asString())
+            .when(IGNORING_EXTRA_FIELDS)
+            .inPath("$.errors")
+            .isAbsent();
+    }
+
+    @Test
+    public void shouldReturnErrorWhenAudioVideoPdfGenerationFails() throws Exception {
+        final Map<String, Object> caseData = caseData(REQUEST);
+        doThrow(new AudioVideoEvidenceBundleException(1234567890123456L, new RuntimeException("PDF generation failed")))
+            .when(audioVideoEvidenceBundleService)
+            .createAudioVideoEvidenceBundleDocument(anyLong());
+
+        final Response response = triggerCallback(caseData, CREATE_BUNDLE, ABOUT_TO_SUBMIT_URL, false);
+
+        assertThat(response.getStatusCode()).isEqualTo(OK.value());
+        assertThatJson(response.asString())
+            .inPath("$.errors[0]")
+            .isEqualTo("The audio/video evidence document could not be created. No bundle has been created. Please try again.");
+    }
+
+    @Test
+    public void shouldReturnErrorWhenAudioVideoUploadFails() throws Exception {
+        final Map<String, Object> caseData = caseData(REQUEST);
+        doThrow(new AudioVideoEvidenceBundleException(1234567890123456L, new RuntimeException("CDAM upload failed")))
+            .when(audioVideoEvidenceBundleService)
+            .createAudioVideoEvidenceBundleDocument(anyLong());
+
+        final Response response = triggerCallback(caseData, CREATE_BUNDLE, ABOUT_TO_SUBMIT_URL, false);
+
+        assertThat(response.getStatusCode()).isEqualTo(OK.value());
+        assertThatJson(response.asString())
+            .inPath("$.errors[0]")
+            .isEqualTo("The audio/video evidence document could not be created. No bundle has been created. Please try again.");
     }
 }

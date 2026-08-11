@@ -19,6 +19,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
+import uk.gov.hmcts.sptribs.document.bundling.AudioVideoEvidenceBundleException;
 import uk.gov.hmcts.sptribs.document.bundling.AudioVideoEvidenceBundleService;
 import uk.gov.hmcts.sptribs.document.bundling.client.BundlingService;
 import uk.gov.hmcts.sptribs.document.bundling.model.Bundle;
@@ -124,13 +125,22 @@ public class CaseworkerCreateBundle implements CCDConfig<CaseData, State, UserRo
         caseData.setSubjectRepFullName(caseData.getCicCase().getFullName());
         caseData.setSchemeLabel(caseData.getCicCase().getSchemeCic() != null ? caseData.getCicCase().getSchemeCic().getLabel() : "");
 
+        caseData.setAudioVideoEvidenceBundleDocument(null);
+
         try {
-            var audioVideoEvidenceBundleDocument =
-                audioVideoEvidenceBundleService.createAudioVideoEvidenceBundleDocument(caseData, details.getId());
-            caseData.setAudioVideoEvidenceBundleDocument(audioVideoEvidenceBundleDocument);
-        } catch (RuntimeException exception) {
-            log.warn("Unable to create audio/video evidence bundle document for case {}", details.getId(), exception);
-            caseData.setAudioVideoEvidenceBundleDocument(null);
+            audioVideoEvidenceBundleService
+                .createAudioVideoEvidenceBundleDocument(details.getId())
+                .ifPresent(caseData::setAudioVideoEvidenceBundleDocument);
+        } catch (AudioVideoEvidenceBundleException exception) {
+            log.error("Unable to create audio/video evidence document for case {}", details.getId(), exception);
+            clearTemporaryBundleData(caseData);
+            return AboutToStartOrSubmitResponse.<CaseData, State>builder()
+                .data(caseData)
+                .errors(List.of(
+                    "The audio/video evidence document could not be created. "
+                        + "No bundle has been created. Please try again."
+                ))
+                .build();
         }
 
         details.setData(caseData);
@@ -141,10 +151,7 @@ public class CaseworkerCreateBundle implements CCDConfig<CaseData, State, UserRo
         List<ListValue<Bundle>> existingBundles = getExistingBundles(beforeDetails);
         caseData.setCaseBundles(getConfiguredCaseBundles(caseData, bundleCallback, existingBundles));
 
-        caseData.setMultiBundleConfiguration(null);
-        caseData.setCaseDocuments(null);
-        caseData.setFurtherCaseDocuments(null);
-        caseData.setAudioVideoEvidenceBundleDocument(null);
+        clearTemporaryBundleData(caseData);
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
             .data(caseData)
@@ -237,8 +244,8 @@ public class CaseworkerCreateBundle implements CCDConfig<CaseData, State, UserRo
     }
 
     private List<ListValue<Bundle>> getConfiguredCaseBundles(CaseData caseData,
-                                                             BundleCallback bundleCallback,
-                                                             List<ListValue<Bundle>> existingBundles) {
+                                                              BundleCallback bundleCallback,
+                                                              List<ListValue<Bundle>> existingBundles) {
         List<ListValue<Bundle>> caseBundles = bundlingService.buildBundleListValues(bundlingService.createBundle(bundleCallback,
             Long.parseLong(caseData.getCaseNumber())));
 
@@ -302,5 +309,12 @@ public class CaseworkerCreateBundle implements CCDConfig<CaseData, State, UserRo
         }
 
         return caseBundles;
+    }
+
+    private void clearTemporaryBundleData(CaseData caseData) {
+        caseData.setMultiBundleConfiguration(null);
+        caseData.setCaseDocuments(null);
+        caseData.setFurtherCaseDocuments(null);
+        caseData.setAudioVideoEvidenceBundleDocument(null);
     }
 }

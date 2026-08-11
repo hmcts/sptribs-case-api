@@ -9,14 +9,12 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.pdf.service.client.PDFServiceClient;
 import uk.gov.hmcts.sptribs.cdam.model.UploadResponse;
-import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.document.bundling.model.AudioVideoEvidenceBundleDocument;
 import uk.gov.hmcts.sptribs.document.model.DocumentEntity;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
 import uk.gov.hmcts.sptribs.document.service.DocumentsService;
 import uk.gov.hmcts.sptribs.services.cdam.CaseDocumentClientApi;
 
-import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
 import java.time.Clock;
 import java.time.Instant;
@@ -25,6 +23,7 @@ import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -32,8 +31,10 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -52,296 +53,328 @@ class AudioVideoEvidenceBundleServiceTest {
     private DocumentsService documentsService;
 
     @Mock
+    private ManageCaseDocumentUrlBuilder manageCaseDocumentUrlBuilder;
+
+    @Mock
     private HttpServletRequest request;
 
     @Mock
     private Clock clock;
 
     @Test
-    void shouldExtractOnlyAudioVideoRowsFromCaseDocumentsAndSortBySavedDateWithEmptyValues() {
-        CaseData caseData = CaseData.builder().build();
-        caseData.setCaseNumber("12345");
+    void shouldReturnEmptyWhenNoMedia() {
+        AudioVideoEvidenceBundleService service = service();
+        when(documentsService.getAudioVideoDocuments(12345L)).thenReturn(Stream.empty());
 
-        AudioVideoEvidenceBundleService service = new AudioVideoEvidenceBundleService(
-            pdfServiceClient,
-            caseDocumentClientApi,
-            documentsService,
-            authTokenGenerator,
-            request,
-            clock
-        );
+        Optional<AudioVideoEvidenceBundleDocument> result = service.createAudioVideoEvidenceBundleDocument(12345L);
 
-        DocumentEntity audioDoc = DocumentEntity.builder()
-            .documentFilename("hearing-audio.MP3")
-            .documentBinaryUrl("http://dm/documents/11111111-1111-1111-1111-111111111111/binary")
-            .documentTypeName(DocumentType.LINKED_DOCS.name())
-            .savedAt(OffsetDateTime.parse("2026-01-10T10:15:30Z"))
-            .build();
-
-        DocumentEntity videoDoc = DocumentEntity.builder()
-            .documentFilename("hearing-video.mp4")
-            .documentBinaryUrl("http://dm/documents/22222222-2222-2222-2222-222222222222/binary")
-            .documentTypeName(null)
-            .savedAt(null)
-            .build();
-
-        when(documentsService.getAudioVideoDocuments(12345L))
-            .thenReturn(Stream.of(audioDoc, videoDoc));
-
-        List<AudioVideoEvidenceBundleService.AudioVideoDocumentRow> rows = service.extractRows(caseData);
-
-        assertThat(rows).hasSize(2);
-        assertThat(rows)
-            .extracting(AudioVideoEvidenceBundleService.AudioVideoDocumentRow::documentUrl)
-            .containsExactly(
-                "http://dm/documents/11111111-1111-1111-1111-111111111111/binary",
-                "http://dm/documents/22222222-2222-2222-2222-222222222222/binary"
-            );
-        assertThat(rows)
-            .extracting(AudioVideoEvidenceBundleService.AudioVideoDocumentRow::dateAdded)
-            .containsExactly("2026-01-10", "");
-        assertThat(rows)
-            .extracting(AudioVideoEvidenceBundleService.AudioVideoDocumentRow::documentType)
-            .containsExactly("Audio Document", "Video Document");
-        assertThat(rows)
-            .extracting(AudioVideoEvidenceBundleService.AudioVideoDocumentRow::documentCategory)
-            .containsExactly("L - Linked docs", "Unknown");
+        assertThat(result).isEmpty();
+        verify(documentsService).getAudioVideoDocuments(12345L);
+        verifyNoInteractions(pdfServiceClient, caseDocumentClientApi, authTokenGenerator, manageCaseDocumentUrlBuilder);
     }
 
     @Test
-    void shouldUseLastModifiedByWhenCreatedByIsBlank() {
-        CaseData caseData = CaseData.builder().build();
-        caseData.setCaseNumber("12345");
-
-        AudioVideoEvidenceBundleService service = new AudioVideoEvidenceBundleService(
-            pdfServiceClient,
-            caseDocumentClientApi,
-            documentsService,
-            authTokenGenerator,
-            request,
-            clock
+    void shouldGenerateForAudioOnly() {
+        DocumentEntity audioDoc = documentEntity(
+            "hearing-audio.MP3",
+            "http://dm/documents/11111111-1111-1111-1111-111111111111/binary",
+            DocumentType.LINKED_DOCS.name(),
+            "2026-01-10T12:00:00Z"
         );
 
-        DocumentEntity audioDoc = DocumentEntity.builder()
-            .documentFilename("hearing-audio.mp3")
-            .documentBinaryUrl("http://dm/documents/11111111-1111-1111-1111-111111111111/binary")
-            .documentTypeName(DocumentType.LINKED_DOCS.name())
-            .savedAt(OffsetDateTime.parse("2026-01-10T10:15:30Z"))
-            .build();
-
-        when(documentsService.getAudioVideoDocuments(12345L)).thenReturn(Stream.of(audioDoc));
-
-        List<AudioVideoEvidenceBundleService.AudioVideoDocumentRow> rows = service.extractRows(caseData);
-
-        assertThat(rows).hasSize(1);
-    }
-
-    @Test
-    void shouldReturnNullAndSkipPdfUploadWhenNoAudioVideoRows() {
-        AudioVideoEvidenceBundleService service = new AudioVideoEvidenceBundleService(
-            pdfServiceClient,
-            caseDocumentClientApi,
-            documentsService,
-            authTokenGenerator,
-            request,
-            clock
-        );
-
-        CaseData caseData = CaseData.builder().build();
-        caseData.setCaseNumber("12345");
-
-        when(documentsService.getAudioVideoDocuments(12345L))
-            .thenReturn(Stream.empty());
-
-        AudioVideoEvidenceBundleDocument result = service.createAudioVideoEvidenceBundleDocument(caseData, 12345L);
-
-        assertThat(result).isNull();
-        verifyNoInteractions(pdfServiceClient, caseDocumentClientApi, authTokenGenerator);
-    }
-
-    @Test
-    void shouldReturnEmptyRowsWhenCaseNumberIsNull() {
-        AudioVideoEvidenceBundleService service = new AudioVideoEvidenceBundleService(
-            pdfServiceClient,
-            caseDocumentClientApi,
-            documentsService,
-            authTokenGenerator,
-            request,
-            clock
-        );
-
-        CaseData caseData = CaseData.builder().build();
-
-        List<AudioVideoEvidenceBundleService.AudioVideoDocumentRow> rows = service.extractRows(caseData);
-
-        assertThat(rows).isEmpty();
-        verifyNoInteractions(documentsService);
-    }
-
-    @Test
-    void shouldGenerateUploadAndReturnAudioVideoEvidenceBundleDocument() {
-        CaseData caseData = CaseData.builder().build();
-        caseData.setCaseNumber("12345");
-
-        DocumentEntity audioDoc = DocumentEntity.builder()
-            .documentFilename("hearing-audio.mp3")
-            .documentBinaryUrl("http://dm/documents/33333333-3333-3333-3333-333333333333/binary?a=1&b=<x>\"'")
-            .documentTypeName(DocumentType.LINKED_DOCS.name())
-            .savedAt(OffsetDateTime.parse("2026-01-10T12:00:00Z"))
-            .build();
-
-        byte[] generatedPdf = "generated-pdf".getBytes(StandardCharsets.UTF_8);
-        when(pdfServiceClient.generateFromHtml(any(byte[].class), anyMap())).thenReturn(generatedPdf);
+        when(documentsService.getAudioVideoDocuments(12345L)).thenAnswer(invocation -> Stream.of(audioDoc));
+        when(manageCaseDocumentUrlBuilder.buildPublicBinaryUrl(audioDoc.getDocumentBinaryUrl()))
+            .thenReturn("https://manage-case.demo.platform.hmcts.net/documents/11111111-1111-1111-1111-111111111111/binary");
+        when(pdfServiceClient.generateFromHtml(any(byte[].class), anyMap()))
+            .thenReturn("generated-pdf".getBytes(StandardCharsets.UTF_8));
         when(authTokenGenerator.generate()).thenReturn("service-token");
         when(request.getHeader("Authorization")).thenReturn("Bearer user-token");
         when(caseDocumentClientApi.uploadDocuments(eq("Bearer user-token"), eq("service-token"), any()))
-            .thenReturn(buildUploadResponse("http://dm-store/documents/generated", "http://dm-store/documents/generated/binary"));
-        when(documentsService.getAudioVideoDocuments(12345L))
-            .thenReturn(Stream.of(audioDoc));
-
+            .thenReturn(uploadResponse(
+                "audio-video-evidence-12345.pdf",
+                "http://dm-store/documents/generated",
+                "http://dm-store/documents/generated/binary"
+            ));
         when(clock.instant()).thenReturn(Instant.parse("2026-08-05T00:00:00Z"));
         when(clock.getZone()).thenReturn(ZoneId.of("UTC"));
 
-        AudioVideoEvidenceBundleService service = new AudioVideoEvidenceBundleService(
-            pdfServiceClient,
-            caseDocumentClientApi,
-            documentsService,
-            authTokenGenerator,
-            request,
-            clock
-        );
-        AudioVideoEvidenceBundleDocument result = service.createAudioVideoEvidenceBundleDocument(caseData, 12345L);
+        AudioVideoEvidenceBundleService service = service();
+        Optional<AudioVideoEvidenceBundleDocument> result = service.createAudioVideoEvidenceBundleDocument(12345L);
 
-        assertThat(result).isNotNull();
-        assertThat(result.getDocumentLink()).isNotNull();
-        assertThat(result.getDocumentLink().getFilename()).isEqualTo("audio-video-evidence-12345.pdf");
-        assertThat(result.getDocumentLink().getUrl()).isEqualTo("http://dm-store/documents/generated");
-        assertThat(result.getDocumentLink().getBinaryUrl()).isEqualTo("http://dm-store/documents/generated/binary");
-        assertThat(result.getDate()).isEqualTo(LocalDate.of(2026, 8, 5));
+        assertThat(result).isPresent();
+        assertThat(result.get().getDate()).isEqualTo(LocalDate.of(2026, 8, 5));
 
-        ArgumentCaptor<byte[]> htmlTemplateCaptor = ArgumentCaptor.forClass(byte[].class);
         @SuppressWarnings("unchecked")
         ArgumentCaptor<Map<String, Object>> placeholdersCaptor = ArgumentCaptor.forClass(Map.class);
-        verify(pdfServiceClient).generateFromHtml(htmlTemplateCaptor.capture(), placeholdersCaptor.capture());
-        String htmlTemplate = new String(htmlTemplateCaptor.getValue(), StandardCharsets.UTF_8);
-        assertThat(htmlTemplate).contains("Audio/video evidence document - case {{caseId}}");
-        assertThat(htmlTemplate).contains("{{rowsHtml | raw}}");
-
-        assertThat(placeholdersCaptor.getValue()).containsEntry("caseId", "12345");
+        verify(pdfServiceClient).generateFromHtml(any(byte[].class), placeholdersCaptor.capture());
         assertThat(placeholdersCaptor.getValue().get("rowsHtml").toString())
-            .contains("<a href=\"http://dm/documents/33333333-3333-3333-3333-333333333333/binary?a=1&amp;b=&lt;x&gt;&quot;&#39;\">"
-                + "hearing-audio.mp3</a>")
-            .contains("<td>2026-01-10</td>")
-            .contains("<td>L - Linked docs</td>");
-        verify(caseDocumentClientApi).uploadDocuments(eq("Bearer user-token"), eq("service-token"), any());
+            .contains("Audio Document")
+            .contains("hearing-audio.MP3")
+            .contains("https://manage-case.demo.platform.hmcts.net/documents/11111111-1111-1111-1111-111111111111/binary");
+        verify(manageCaseDocumentUrlBuilder).buildPublicBinaryUrl(audioDoc.getDocumentBinaryUrl());
     }
 
     @Test
-    void shouldThrowWhenUploadResponseIsNull() {
-        when(pdfServiceClient.generateFromHtml(any(byte[].class), anyMap())).thenReturn("pdf".getBytes(StandardCharsets.UTF_8));
+    void shouldGenerateForVideoOnly() {
+        DocumentEntity videoDoc = documentEntity(
+            "hearing-video.mp4",
+            "http://dm/documents/22222222-2222-2222-2222-222222222222/binary",
+            null,
+            null
+        );
+
+        when(documentsService.getAudioVideoDocuments(12345L)).thenReturn(Stream.of(videoDoc));
+        when(manageCaseDocumentUrlBuilder.buildPublicBinaryUrl(videoDoc.getDocumentBinaryUrl()))
+            .thenReturn("https://manage-case.demo.platform.hmcts.net/documents/22222222-2222-2222-2222-222222222222/binary");
+        when(pdfServiceClient.generateFromHtml(any(byte[].class), anyMap()))
+            .thenReturn("generated-pdf".getBytes(StandardCharsets.UTF_8));
         when(authTokenGenerator.generate()).thenReturn("service-token");
         when(request.getHeader("Authorization")).thenReturn("Bearer user-token");
+        when(caseDocumentClientApi.uploadDocuments(eq("Bearer user-token"), eq("service-token"), any()))
+            .thenReturn(uploadResponse(
+                "audio-video-evidence-12345.pdf",
+                "http://dm-store/documents/generated",
+                "http://dm-store/documents/generated/binary"
+            ));
+        when(clock.instant()).thenReturn(Instant.parse("2026-08-05T00:00:00Z"));
+        when(clock.getZone()).thenReturn(ZoneId.of("UTC"));
+
+        AudioVideoEvidenceBundleService service = service();
+        Optional<AudioVideoEvidenceBundleDocument> result = service.createAudioVideoEvidenceBundleDocument(12345L);
+
+        assertThat(result).isPresent();
+        @SuppressWarnings("unchecked")
+        ArgumentCaptor<Map<String, Object>> placeholdersCaptor = ArgumentCaptor.forClass(Map.class);
+        verify(pdfServiceClient).generateFromHtml(any(byte[].class), placeholdersCaptor.capture());
+        assertThat(placeholdersCaptor.getValue().get("rowsHtml").toString())
+            .contains("Video Document")
+            .contains("hearing-video.mp4")
+            .contains("Unknown");
+    }
+
+    @Test
+    void shouldGenerateForMixedRowsInSavedDateOrder() {
+        DocumentEntity audioDoc = documentEntity(
+            "audio.mp3",
+            "http://dm/documents/33333333-3333-3333-3333-333333333333/binary",
+            DocumentType.LINKED_DOCS.name(),
+            "2026-01-10T10:00:00Z"
+        );
+        DocumentEntity videoDoc = documentEntity(
+            "video.mp4",
+            "http://dm/documents/44444444-4444-4444-4444-444444444444/binary",
+            DocumentType.POLICE_EVIDENCE.name(),
+            "2026-01-11T10:00:00Z"
+        );
+
+        when(documentsService.getAudioVideoDocuments(12345L)).thenReturn(Stream.of(audioDoc, videoDoc));
+        when(manageCaseDocumentUrlBuilder.buildPublicBinaryUrl(audioDoc.getDocumentBinaryUrl()))
+            .thenReturn("https://manage-case.demo.platform.hmcts.net/documents/33333333-3333-3333-3333-333333333333/binary");
+        when(manageCaseDocumentUrlBuilder.buildPublicBinaryUrl(videoDoc.getDocumentBinaryUrl()))
+            .thenReturn("https://manage-case.demo.platform.hmcts.net/documents/44444444-4444-4444-4444-444444444444/binary");
+        when(pdfServiceClient.generateFromHtml(any(byte[].class), anyMap()))
+            .thenReturn("generated-pdf".getBytes(StandardCharsets.UTF_8));
+        when(authTokenGenerator.generate()).thenReturn("service-token");
+        when(request.getHeader("Authorization")).thenReturn("Bearer user-token");
+        when(caseDocumentClientApi.uploadDocuments(eq("Bearer user-token"), eq("service-token"), any()))
+            .thenReturn(uploadResponse(
+                "audio-video-evidence-12345.pdf",
+                "http://dm-store/documents/generated",
+                "http://dm-store/documents/generated/binary"
+            ));
+        when(clock.instant()).thenReturn(Instant.parse("2026-08-05T00:00:00Z"));
+        when(clock.getZone()).thenReturn(ZoneId.of("UTC"));
+
+        AudioVideoEvidenceBundleService service = service();
+        Optional<AudioVideoEvidenceBundleDocument> result = service.createAudioVideoEvidenceBundleDocument(12345L);
+
+        assertThat(result).isPresent();
+
+        @SuppressWarnings("unchecked")
+        ArgumentCaptor<Map<String, Object>> placeholdersCaptor = ArgumentCaptor.forClass(Map.class);
+        verify(pdfServiceClient).generateFromHtml(any(byte[].class), placeholdersCaptor.capture());
+        String rowsHtml = placeholdersCaptor.getValue().get("rowsHtml").toString();
+        assertThat(rowsHtml.indexOf("audio.mp3")).isLessThan(rowsHtml.indexOf("video.mp4"));
+    }
+
+    @Test
+    void shouldWrapLookupFailureInCustomException() {
+        when(documentsService.getAudioVideoDocuments(12345L)).thenThrow(new RuntimeException("db down"));
+
+        AudioVideoEvidenceBundleService service = service();
+
+        assertThatThrownBy(() -> service.createAudioVideoEvidenceBundleDocument(12345L))
+            .isInstanceOf(AudioVideoEvidenceBundleException.class)
+            .hasMessage("Unable to create audio/video evidence document for case 12345")
+            .hasCauseInstanceOf(RuntimeException.class);
+    }
+
+    @Test
+    void shouldWrapInvalidStoredDocumentUrlInCustomException() {
+        DocumentEntity audioDoc = documentEntity(
+            "audio.mp3",
+            "http://dm/documents/not-a-uuid/binary",
+            DocumentType.LINKED_DOCS.name(),
+            "2026-01-10T10:00:00Z"
+        );
+        when(documentsService.getAudioVideoDocuments(12345L)).thenAnswer(invocation -> Stream.of(audioDoc));
+        when(manageCaseDocumentUrlBuilder.buildPublicBinaryUrl(audioDoc.getDocumentBinaryUrl()))
+            .thenThrow(new IllegalArgumentException("Invalid document identifier"));
+
+        AudioVideoEvidenceBundleService service = service();
+
+        assertThatThrownBy(() -> service.createAudioVideoEvidenceBundleDocument(12345L))
+            .isInstanceOf(AudioVideoEvidenceBundleException.class)
+            .hasCauseInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
+    void shouldWrapPdfGenerationFailureInCustomException() {
+        DocumentEntity audioDoc = documentEntity(
+            "audio.mp3",
+            "http://dm/documents/33333333-3333-3333-3333-333333333333/binary",
+            DocumentType.LINKED_DOCS.name(),
+            "2026-01-10T10:00:00Z"
+        );
+        when(documentsService.getAudioVideoDocuments(12345L)).thenReturn(Stream.of(audioDoc));
+        when(manageCaseDocumentUrlBuilder.buildPublicBinaryUrl(audioDoc.getDocumentBinaryUrl()))
+            .thenReturn("https://manage-case.demo.platform.hmcts.net/documents/33333333-3333-3333-3333-333333333333/binary");
+        when(pdfServiceClient.generateFromHtml(any(byte[].class), anyMap())).thenThrow(new RuntimeException("pdf fail"));
+
+        AudioVideoEvidenceBundleService service = service();
+
+        assertThatThrownBy(() -> service.createAudioVideoEvidenceBundleDocument(12345L))
+            .isInstanceOf(AudioVideoEvidenceBundleException.class)
+            .hasCauseInstanceOf(RuntimeException.class);
+        verify(caseDocumentClientApi, never()).uploadDocuments(any(), any(), any());
+    }
+
+    @Test
+    void shouldWrapUploadFailureInCustomExceptionWhenResponseIsNull() {
+        setupSingleAudioGeneration();
         when(caseDocumentClientApi.uploadDocuments(eq("Bearer user-token"), eq("service-token"), any())).thenReturn(null);
 
-        AudioVideoEvidenceBundleService service = new AudioVideoEvidenceBundleService(
-            pdfServiceClient,
-            caseDocumentClientApi,
-            documentsService,
-            authTokenGenerator,
-            request,
-            clock
-        );
-        assertThatThrownBy(() -> service.createAudioVideoEvidenceBundleDocument(caseDataWithAudioVideoDoc(), 111L))
-            .isInstanceOf(IllegalStateException.class)
-            .hasMessage("Unable to upload audio/video evidence bundle document");
+        AudioVideoEvidenceBundleService service = service();
+
+        assertThatThrownBy(() -> service.createAudioVideoEvidenceBundleDocument(12345L))
+            .isInstanceOf(AudioVideoEvidenceBundleException.class)
+            .hasCauseInstanceOf(IllegalStateException.class);
     }
 
     @Test
-    void shouldThrowWhenUploadResponseHasNullDocumentList() {
-        UploadResponse uploadResponse = new UploadResponse();
-        uploadResponse.setDocuments(null);
+    void shouldWrapUploadFailureInCustomExceptionWhenDocumentListIsNull() {
+        setupSingleAudioGeneration();
 
-        when(pdfServiceClient.generateFromHtml(any(byte[].class), anyMap())).thenReturn("pdf".getBytes(StandardCharsets.UTF_8));
+        UploadResponse nullDocs = new UploadResponse();
+        nullDocs.setDocuments(null);
+        when(caseDocumentClientApi.uploadDocuments(eq("Bearer user-token"), eq("service-token"), any()))
+            .thenReturn(nullDocs);
+
+        AudioVideoEvidenceBundleService service = service();
+        assertThatThrownBy(() -> service.createAudioVideoEvidenceBundleDocument(12345L))
+            .isInstanceOf(AudioVideoEvidenceBundleException.class)
+            .hasCauseInstanceOf(IllegalStateException.class);
+    }
+
+    @Test
+    void shouldWrapUploadFailureInCustomExceptionWhenDocumentListIsEmpty() {
+        setupSingleAudioGeneration();
+
+        UploadResponse emptyDocs = new UploadResponse();
+        emptyDocs.setDocuments(List.of());
+        when(caseDocumentClientApi.uploadDocuments(eq("Bearer user-token"), eq("service-token"), any()))
+            .thenReturn(emptyDocs);
+
+        AudioVideoEvidenceBundleService service = service();
+        assertThatThrownBy(() -> service.createAudioVideoEvidenceBundleDocument(12345L))
+            .isInstanceOf(AudioVideoEvidenceBundleException.class)
+            .hasCauseInstanceOf(IllegalStateException.class);
+    }
+
+    @Test
+    void shouldWrapUploadFailureWhenUploadedDocumentMissingMandatoryProperties() {
+        setupSingleAudioGeneration();
+        when(caseDocumentClientApi.uploadDocuments(eq("Bearer user-token"), eq("service-token"), any()))
+            .thenReturn(uploadResponse(null, null, null));
+
+        AudioVideoEvidenceBundleService service = service();
+
+        assertThatThrownBy(() -> service.createAudioVideoEvidenceBundleDocument(12345L))
+            .isInstanceOf(AudioVideoEvidenceBundleException.class)
+            .hasCauseInstanceOf(IllegalStateException.class);
+    }
+
+    @Test
+    void shouldEscapeGeneratedPublicUrlAndNotContainRawInternalUrlInHtml() {
+        DocumentEntity audioDoc = documentEntity(
+            "audio.mp3",
+            "http://dm/documents/33333333-3333-3333-3333-333333333333/binary?a=1",
+            DocumentType.LINKED_DOCS.name(),
+            "2026-01-10T10:00:00Z"
+        );
+        when(documentsService.getAudioVideoDocuments(12345L)).thenReturn(Stream.of(audioDoc));
+        when(manageCaseDocumentUrlBuilder.buildPublicBinaryUrl(audioDoc.getDocumentBinaryUrl()))
+            .thenReturn("https://manage-case.demo.platform.hmcts.net/documents/33333333-3333-3333-3333-333333333333/binary?x=<x>");
+        when(pdfServiceClient.generateFromHtml(any(byte[].class), anyMap()))
+            .thenReturn("generated-pdf".getBytes(StandardCharsets.UTF_8));
         when(authTokenGenerator.generate()).thenReturn("service-token");
         when(request.getHeader("Authorization")).thenReturn("Bearer user-token");
-        when(caseDocumentClientApi.uploadDocuments(eq("Bearer user-token"), eq("service-token"), any())).thenReturn(uploadResponse);
+        when(caseDocumentClientApi.uploadDocuments(eq("Bearer user-token"), eq("service-token"), any()))
+            .thenReturn(uploadResponse(
+                "audio-video-evidence-12345.pdf",
+                "http://dm-store/documents/generated",
+                "http://dm-store/documents/generated/binary"
+            ));
+        when(clock.instant()).thenReturn(Instant.parse("2026-08-05T00:00:00Z"));
+        when(clock.getZone()).thenReturn(ZoneId.of("UTC"));
 
-        AudioVideoEvidenceBundleService service = new AudioVideoEvidenceBundleService(
-            pdfServiceClient,
-            caseDocumentClientApi,
-            documentsService,
-            authTokenGenerator,
-            request,
-            clock
-        );
-        assertThatThrownBy(() -> service.createAudioVideoEvidenceBundleDocument(caseDataWithAudioVideoDoc(), 111L))
-            .isInstanceOf(IllegalStateException.class)
-            .hasMessage("Unable to upload audio/video evidence bundle document");
+        AudioVideoEvidenceBundleService service = service();
+        Optional<AudioVideoEvidenceBundleDocument> result = service.createAudioVideoEvidenceBundleDocument(12345L);
+
+        assertThat(result).isPresent();
+        @SuppressWarnings("unchecked")
+        ArgumentCaptor<Map<String, Object>> placeholdersCaptor = ArgumentCaptor.forClass(Map.class);
+        verify(pdfServiceClient).generateFromHtml(any(byte[].class), placeholdersCaptor.capture());
+        String rowsHtml = placeholdersCaptor.getValue().get("rowsHtml").toString();
+        assertThat(rowsHtml).contains("https://manage-case.demo.platform.hmcts.net/documents/33333333-3333-3333-3333-333333333333/binary?x=&lt;x&gt;");
+        assertThat(rowsHtml).doesNotContain("http://dm/documents/33333333-3333-3333-3333-333333333333/binary?a=1");
     }
 
     @Test
-    void shouldThrowWhenUploadResponseHasEmptyDocumentList() {
-        UploadResponse uploadResponse = new UploadResponse();
-        uploadResponse.setDocuments(List.of());
+    void shouldNotGeneratePdfOrUploadWhenNoMedia() {
+        AudioVideoEvidenceBundleService service = service();
+        when(documentsService.getAudioVideoDocuments(22222L)).thenReturn(Stream.empty());
 
-        when(pdfServiceClient.generateFromHtml(any(byte[].class), anyMap())).thenReturn("pdf".getBytes(StandardCharsets.UTF_8));
-        when(authTokenGenerator.generate()).thenReturn("service-token");
-        when(request.getHeader("Authorization")).thenReturn("Bearer user-token");
-        when(caseDocumentClientApi.uploadDocuments(eq("Bearer user-token"), eq("service-token"), any())).thenReturn(uploadResponse);
+        Optional<AudioVideoEvidenceBundleDocument> result = service.createAudioVideoEvidenceBundleDocument(22222L);
 
-        AudioVideoEvidenceBundleService service = new AudioVideoEvidenceBundleService(
+        assertThat(result).isEmpty();
+        verifyNoInteractions(pdfServiceClient, caseDocumentClientApi, authTokenGenerator);
+        verifyNoInteractions(manageCaseDocumentUrlBuilder);
+        verifyNoMoreInteractions(documentsService);
+    }
+
+    private AudioVideoEvidenceBundleService service() {
+        return new AudioVideoEvidenceBundleService(
             pdfServiceClient,
             caseDocumentClientApi,
             documentsService,
+            manageCaseDocumentUrlBuilder,
             authTokenGenerator,
             request,
             clock
         );
-        assertThatThrownBy(() -> service.createAudioVideoEvidenceBundleDocument(caseDataWithAudioVideoDoc(), 111L))
-            .isInstanceOf(IllegalStateException.class)
-            .hasMessage("Unable to upload audio/video evidence bundle document");
     }
 
-    @Test
-    void shouldHandlePrivateHtmlHelpersForEdgeCases() throws Exception {
-        AudioVideoEvidenceBundleService service = new AudioVideoEvidenceBundleService(
-            pdfServiceClient,
-            caseDocumentClientApi,
-            documentsService,
-            authTokenGenerator,
-            request,
-            clock
-        );
-
-        Method buildRowsHtml = AudioVideoEvidenceBundleService.class.getDeclaredMethod("buildRowsHtml", List.class);
-        buildRowsHtml.setAccessible(true);
-
-        String rowsHtml = (String) buildRowsHtml.invoke(service, List.of());
-        assertThat(rowsHtml).contains("No active MP3/MP4 documents found.");
-
-        Method escapeHtml = AudioVideoEvidenceBundleService.class.getDeclaredMethod("escapeHtml", String.class);
-        escapeHtml.setAccessible(true);
-
-        String escapedNull = (String) escapeHtml.invoke(service, new Object[] {null});
-        String escapedValue = (String) escapeHtml.invoke(service, "a&b<c>d\"e'f");
-        assertThat(escapedNull).isEmpty();
-        assertThat(escapedValue).isEqualTo("a&amp;b&lt;c&gt;d&quot;e&#39;f");
-    }
-
-    private CaseData caseDataWithAudioVideoDoc() {
-        CaseData caseData = CaseData.builder().build();
-        caseData.setCaseNumber("111");
-        DocumentEntity mediaDoc = DocumentEntity.builder()
-            .documentFilename("media.mp4")
-            .documentBinaryUrl("http://dm/documents/44444444-4444-4444-4444-444444444444/binary")
-            .documentTypeName(DocumentType.LINKED_DOCS.name())
-            .savedAt(OffsetDateTime.parse("2026-02-05T10:00:00Z"))
+    private DocumentEntity documentEntity(String fileName, String binaryUrl, String typeName, String savedAt) {
+        return DocumentEntity.builder()
+            .documentFilename(fileName)
+            .documentBinaryUrl(binaryUrl)
+            .documentTypeName(typeName)
+            .savedAt(savedAt == null ? null : OffsetDateTime.parse(savedAt))
             .build();
-        when(documentsService.getAudioVideoDocuments(111L)).thenReturn(Stream.of(mediaDoc));
-        return caseData;
     }
 
-    private UploadResponse buildUploadResponse(String selfUrl, String binaryUrl) {
+    private UploadResponse uploadResponse(String originalFilename, String selfUrl, String binaryUrl) {
         uk.gov.hmcts.sptribs.cdam.model.Document.DocumentLink self = new uk.gov.hmcts.sptribs.cdam.model.Document.DocumentLink();
         self.href = selfUrl;
         uk.gov.hmcts.sptribs.cdam.model.Document.DocumentLink binary = new uk.gov.hmcts.sptribs.cdam.model.Document.DocumentLink();
@@ -351,12 +384,28 @@ class AudioVideoEvidenceBundleServiceTest {
         links.self = self;
         links.binary = binary;
 
-        uk.gov.hmcts.sptribs.cdam.model.Document uploadedDoc = new uk.gov.hmcts.sptribs.cdam.model.Document();
-        uploadedDoc.links = links;
+        uk.gov.hmcts.sptribs.cdam.model.Document uploaded = new uk.gov.hmcts.sptribs.cdam.model.Document();
+        uploaded.originalDocumentName = originalFilename;
+        uploaded.links = links;
 
-        UploadResponse uploadResponse = new UploadResponse();
-        uploadResponse.setDocuments(List.of(uploadedDoc));
-        return uploadResponse;
+        UploadResponse response = new UploadResponse();
+        response.setDocuments(List.of(uploaded));
+        return response;
     }
 
+    private void setupSingleAudioGeneration() {
+        DocumentEntity audioDoc = documentEntity(
+            "audio.mp3",
+            "http://dm/documents/55555555-5555-5555-5555-555555555555/binary",
+            DocumentType.LINKED_DOCS.name(),
+            "2026-01-10T10:00:00Z"
+        );
+
+        when(documentsService.getAudioVideoDocuments(12345L)).thenReturn(Stream.of(audioDoc));
+        when(manageCaseDocumentUrlBuilder.buildPublicBinaryUrl(audioDoc.getDocumentBinaryUrl()))
+            .thenReturn("https://manage-case.demo.platform.hmcts.net/documents/55555555-5555-5555-5555-555555555555/binary");
+        when(pdfServiceClient.generateFromHtml(any(byte[].class), anyMap())).thenReturn("pdf".getBytes(StandardCharsets.UTF_8));
+        when(authTokenGenerator.generate()).thenReturn("service-token");
+        when(request.getHeader("Authorization")).thenReturn("Bearer user-token");
+    }
 }
