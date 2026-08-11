@@ -346,20 +346,6 @@ class HearingServiceTest {
     }
 
     @Test
-    void shouldUseListingIdWhenMatchingHearingsWithSameTypeDateAndTime() {
-        Listing duplicateOne = getRecordListing();
-        Listing duplicateTwo = getRecordListing();
-
-        ListValue<Listing> firstValue = ListValue.<Listing>builder().id("1").value(duplicateOne).build();
-        ListValue<Listing> secondValue = ListValue.<Listing>builder().id("2").value(duplicateTwo).build();
-
-        String selectedSecondLabel = "2 - Final - 21 Apr 2023 10:00";
-
-        assertThat(HearingService.isMatchingHearing(firstValue, selectedSecondLabel)).isFalse();
-        assertThat(HearingService.isMatchingHearing(secondValue, selectedSecondLabel)).isTrue();
-    }
-
-    @Test
     void shouldUpdateToNextEarliestDateWhenEarliestHearingIsCancelled() throws JsonProcessingException {
         Listing earliestListing = getRecordListing();
         Listing laterListing = getRecordListing();

@@ -145,22 +145,9 @@ public class HearingService {
     }
 
     public static boolean isMatchingHearing(ListValue<Listing> listingListValue, String hearingName) {
-        if (listingListValue == null || listingListValue.getValue() == null || hearingName == null) {
-            return false;
-        }
-
-        final String hearingId = listingListValue.getId();
-        if (hearingId != null) {
-            return hearingName.startsWith(hearingId + SPACE + HYPHEN + SPACE);
-        }
-
-        final Listing listing = listingListValue.getValue();
-        return listing.getHearingTime() != null
-            && listing.getHearingType() != null
-            && listing.getDate() != null
-            && hearingName.contains(listing.getHearingTime())
-            && hearingName.contains(listing.getHearingType().getLabel())
-            && hearingName.contains(listing.getDate().format(dateFormatter));
+        return hearingName.contains(listingListValue.getValue().getHearingTime())
+            && hearingName.contains(listingListValue.getValue().getHearingType().getLabel())
+            && hearingName.contains(listingListValue.getValue().getDate().format(dateFormatter));
     }
 
     private String getHearingDate(String id, Listing listing) {
