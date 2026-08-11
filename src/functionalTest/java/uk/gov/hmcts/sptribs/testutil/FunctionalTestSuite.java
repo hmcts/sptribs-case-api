@@ -132,7 +132,6 @@ public abstract class FunctionalTestSuite {
             .data(Map.of(
             ))
             .build();
-
         return submitNewCase(caseDataContent, caseworkerToken, s2sTokenForCaseApi, caseworkerUserId);
     }
 

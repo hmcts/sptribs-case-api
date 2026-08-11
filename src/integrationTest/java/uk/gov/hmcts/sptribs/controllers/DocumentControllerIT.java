@@ -1,5 +1,8 @@
 package uk.gov.hmcts.sptribs.controllers;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -16,6 +19,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.idam.client.models.UserInfo;
 import uk.gov.hmcts.sptribs.cdam.model.Document;
+import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.service.CicaCaseService;
 import uk.gov.hmcts.sptribs.common.config.WebMvcConfig;
 import uk.gov.hmcts.sptribs.common.repositories.model.CicaCaseEntity;
@@ -29,6 +34,7 @@ import uk.gov.hmcts.sptribs.idam.IdamService;
 import uk.gov.hmcts.sptribs.services.cdam.CaseDocumentClientApi;
 import uk.gov.hmcts.sptribs.testutil.IdamWireMock;
 
+import java.util.Map;
 import java.util.UUID;
 
 import static java.util.Collections.emptyList;
@@ -57,6 +63,8 @@ class DocumentControllerIT {
 
     private static final String DOWNLOAD_DOCUMENT_URL = "/cases/CIC/" + TEST_CASE_ID_STRING + "/documents/%s/download";
     private static final String GET_DOCUMENTS_URL = "/cases/CIC/" + TEST_CASE_ID_STRING + "/documents";
+    private static final String TEST_SUBJECT_EMAIL = "subject@test.com";
+    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
     @Autowired
     private MockMvc mockMvc;
@@ -83,7 +91,7 @@ class DocumentControllerIT {
     private IdamService idamService;
 
     private static final CICUser CIC_USER
-        = new CICUser(TEST_AUTHORIZATION_TOKEN, UserInfo.builder().build());
+        = new CICUser(TEST_AUTHORIZATION_TOKEN, UserInfo.builder().sub(TEST_SUBJECT_EMAIL).build());
 
     @BeforeAll
     static void setUp() {
@@ -98,6 +106,8 @@ class DocumentControllerIT {
     @Test
     void shouldDownloadDocumentSuccessfully() throws Exception {
         // Given
+        mockAuthorisedCaseAccess();
+
         String fileName = "test-document.pdf";
         String mimeType = "application/pdf";
 
@@ -134,7 +144,10 @@ class DocumentControllerIT {
     @Test
     void shouldReturn500WhenDocumentNotFound() throws Exception {
         // Given
+        mockAuthorisedCaseAccess();
+
         when(authTokenGenerator.generate()).thenReturn(TEST_SERVICE_AUTH_TOKEN);
+        when(idamService.retrieveSystemUpdateUserDetails()).thenReturn(CIC_USER);
         when(caseDocumentClientApi.getDocument(
             eq(TEST_AUTHORIZATION_TOKEN),
             eq(TEST_SERVICE_AUTH_TOKEN),
@@ -152,6 +165,8 @@ class DocumentControllerIT {
     @Test
     void shouldReturn500WhenDocumentBinaryNotFound() throws Exception {
         // Given
+        mockAuthorisedCaseAccess();
+
         String fileName = "test-document.pdf";
         String mimeType = "application/pdf";
 
@@ -161,6 +176,7 @@ class DocumentControllerIT {
         UUID documentId = UUID.randomUUID();
 
         when(authTokenGenerator.generate()).thenReturn(TEST_SERVICE_AUTH_TOKEN);
+        when(idamService.retrieveSystemUpdateUserDetails()).thenReturn(CIC_USER);
         when(caseDocumentClientApi.getDocument(
             eq(TEST_AUTHORIZATION_TOKEN),
             eq(TEST_SERVICE_AUTH_TOKEN),
@@ -183,7 +199,10 @@ class DocumentControllerIT {
     @Test
     void shouldReturn500WhenApiCallFails() throws Exception {
         // Given
+        mockAuthorisedCaseAccess();
+
         when(authTokenGenerator.generate()).thenReturn(TEST_SERVICE_AUTH_TOKEN);
+        when(idamService.retrieveSystemUpdateUserDetails()).thenReturn(CIC_USER);
         when(caseDocumentClientApi.getDocument(
             eq(TEST_AUTHORIZATION_TOKEN),
             eq(TEST_SERVICE_AUTH_TOKEN),
@@ -201,6 +220,8 @@ class DocumentControllerIT {
     @Test
     void shouldReturn500ForInvalidDocumentId() throws Exception {
         // Given
+        mockAuthorisedCaseAccess();
+
         String invalidDocumentId = "invalid-uuid-format";
 
         // When & Then
@@ -214,6 +235,8 @@ class DocumentControllerIT {
     @Test
     void shouldDownloadDocumentWithDifferentMimeTypes() throws Exception {
         // Given
+        mockAuthorisedCaseAccess();
+
         String fileName = "test-document.html";
         String mimeType = "text/html";
 
@@ -251,13 +274,11 @@ class DocumentControllerIT {
     @Test
     void shouldGetDocumentsSuccessfully() throws Exception {
         // Given
-        CicaCaseEntity cicaCaseEntity = CicaCaseEntity.builder()
-            .id(TEST_CASE_ID_STRING)
-            .state("CaseManagement")
-            .build();
+        CicaCaseEntity cicaCaseEntity = buildAuthorisedCaseEntity();
 
         when(cicaCaseService.checkIfUserHasAccessWithPostcode(TEST_CASE_ID_STRING, TEST_AUTHORIZATION_TOKEN, TEST_POSTCODE))
             .thenReturn(cicaCaseEntity);
+        when(idamService.retrieveUser(TEST_AUTHORIZATION_TOKEN)).thenReturn(CIC_USER);
 
         DocumentDashboardModel dashboardModel = DocumentDashboardModel.builder()
             .contactPartiesDocuments(emptyList())
@@ -370,8 +391,32 @@ class DocumentControllerIT {
                 .header("X-Postcode", TEST_POSTCODE))
             .andExpect(status().isBadRequest());
     }
-}
 
+    private void mockAuthorisedCaseAccess() {
+        when(cicaCaseService.checkIfUserHasAccessWithPostcode(TEST_CASE_ID_STRING, TEST_AUTHORIZATION_TOKEN, TEST_POSTCODE))
+            .thenReturn(buildAuthorisedCaseEntity());
+        when(idamService.retrieveUser(TEST_AUTHORIZATION_TOKEN)).thenReturn(CIC_USER);
+    }
+
+    private CicaCaseEntity buildAuthorisedCaseEntity() {
+        CaseData caseData = new CaseData();
+        CicCase cicCase = new CicCase();
+        cicCase.setEmail(TEST_SUBJECT_EMAIL);
+        caseData.setCicCase(cicCase);
+
+        Map<String, JsonNode> caseDataMap = OBJECT_MAPPER.convertValue(
+            caseData,
+            new TypeReference<>() {
+            }
+        );
+
+        return CicaCaseEntity.builder()
+            .id(TEST_CASE_ID_STRING)
+            .state("CaseManagement")
+            .data(caseDataMap)
+            .build();
+    }
+}
 
 
 

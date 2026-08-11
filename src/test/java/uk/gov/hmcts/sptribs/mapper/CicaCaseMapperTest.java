@@ -15,12 +15,15 @@ class CicaCaseMapperTest {
     private final CicaCaseMapper mapper = new CicaCaseMapper();
 
     @Test
-    void shouldReturnNullWhenEntityIsNull() {
+    void shouldReturnEmptyResponseWhenEntityIsNull() {
         // When
         CicaCaseResponse result = mapper.toResponse(null);
 
         // Then
-        assertNull(result);
+        assertNotNull(result);
+        assertNull(result.getId());
+        assertNull(result.getState());
+        assertNull(result.getData());
     }
 
     @Test

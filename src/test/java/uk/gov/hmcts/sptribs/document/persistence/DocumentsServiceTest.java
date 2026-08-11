@@ -11,6 +11,7 @@ import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.sptribs.caseworker.model.DocumentManagement;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.ciccase.util.CasePartyUtil;
 import uk.gov.hmcts.sptribs.common.repositories.DocumentsRepository;
 import uk.gov.hmcts.sptribs.common.repositories.exception.document.DocumentDeleteException;
 import uk.gov.hmcts.sptribs.common.repositories.exception.document.DocumentLookupException;
@@ -22,7 +23,6 @@ import uk.gov.hmcts.sptribs.document.model.DocumentEntity;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
 import uk.gov.hmcts.sptribs.document.service.CaseDocumentTypesCache;
 import uk.gov.hmcts.sptribs.document.service.DocumentsService;
-import uk.gov.hmcts.sptribs.notification.model.Party;
 
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
@@ -56,12 +56,6 @@ public class DocumentsServiceTest {
     private static final DocumentType ORDER_AND_DECISION_DOCUMENT = DocumentType.TRIBUNAL_DIRECTION;
 
     private static final List<Long> ORDER_AND_DECISION_TYPE_IDS = List.of(3L, 5L, 6L);
-
-    private static final List<Party> CONTACT_PARTIES = List.of(
-        Party.APPLICANT,
-        Party.REPRESENTATIVE,
-        Party.SUBJECT
-    );
 
     @Test
      void shouldBuildAndSaveNewCaseworkerDocumentEntity() {
@@ -265,7 +259,8 @@ public class DocumentsServiceTest {
         when(caseDocumentTypesCache.getId(CaseDocumentType.DECISION)).thenReturn(5L);
         when(caseDocumentTypesCache.getId(CaseDocumentType.FINAL_DECISION)).thenReturn(6L);
         when(caseDocumentTypesCache.getId(CaseDocumentType.BUNDLE)).thenReturn(9L);
-        when(documentsRepository.findContactPartyDocuments(TEST_CASE_ID, CONTACT_PARTIES, ORDER_AND_DECISION_TYPE_IDS))
+        when(documentsRepository
+            .findContactPartyDocuments(TEST_CASE_ID, CasePartyUtil.CITIZEN_CONTACT_PARTIES, ORDER_AND_DECISION_TYPE_IDS))
             .thenReturn(contactPartyDocumentDetailsList);
         when(documentsRepository
             .findFirstByCaseReferenceNumberAndCaseDocumentTypeIdOrderBySavedAtDesc(TEST_CASE_ID, 9L))
@@ -297,7 +292,8 @@ public class DocumentsServiceTest {
         when(caseDocumentTypesCache.getId(CaseDocumentType.DECISION)).thenReturn(5L);
         when(caseDocumentTypesCache.getId(CaseDocumentType.FINAL_DECISION)).thenReturn(6L);
         when(caseDocumentTypesCache.getId(CaseDocumentType.BUNDLE)).thenReturn(9L);
-        when(documentsRepository.findContactPartyDocuments(TEST_CASE_ID, CONTACT_PARTIES, ORDER_AND_DECISION_TYPE_IDS))
+        when(documentsRepository
+            .findContactPartyDocuments(TEST_CASE_ID, CasePartyUtil.CITIZEN_CONTACT_PARTIES, ORDER_AND_DECISION_TYPE_IDS))
             .thenReturn(List.of());
         when(documentsRepository
             .findFirstByCaseReferenceNumberAndCaseDocumentTypeIdOrderBySavedAtDesc(TEST_CASE_ID, 9L))
@@ -413,5 +409,4 @@ public class DocumentsServiceTest {
             .categoryId(categoryId)
             .build();
     }
-
 }
