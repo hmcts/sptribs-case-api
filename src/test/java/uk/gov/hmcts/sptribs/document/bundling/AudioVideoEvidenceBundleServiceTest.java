@@ -414,22 +414,22 @@ class AudioVideoEvidenceBundleServiceTest {
         UploadResponse responseWithNullBinary = new UploadResponse();
         responseWithNullBinary.setDocuments(List.of(documentWithNullBinary));
 
-        uk.gov.hmcts.sptribs.cdam.model.Document documentWithBlankSelf = new uk.gov.hmcts.sptribs.cdam.model.Document();
         uk.gov.hmcts.sptribs.cdam.model.Document.Links blankSelfLinks = new uk.gov.hmcts.sptribs.cdam.model.Document.Links();
         blankSelfLinks.self = new uk.gov.hmcts.sptribs.cdam.model.Document.DocumentLink();
         blankSelfLinks.self.href = " ";
         blankSelfLinks.binary = new uk.gov.hmcts.sptribs.cdam.model.Document.DocumentLink();
         blankSelfLinks.binary.href = "http://dm-store/documents/generated/binary";
+        uk.gov.hmcts.sptribs.cdam.model.Document documentWithBlankSelf = new uk.gov.hmcts.sptribs.cdam.model.Document();
         documentWithBlankSelf.links = blankSelfLinks;
         UploadResponse responseWithBlankSelf = new UploadResponse();
         responseWithBlankSelf.setDocuments(List.of(documentWithBlankSelf));
 
-        uk.gov.hmcts.sptribs.cdam.model.Document documentWithBlankBinary = new uk.gov.hmcts.sptribs.cdam.model.Document();
         uk.gov.hmcts.sptribs.cdam.model.Document.Links blankBinaryLinks = new uk.gov.hmcts.sptribs.cdam.model.Document.Links();
         blankBinaryLinks.self = new uk.gov.hmcts.sptribs.cdam.model.Document.DocumentLink();
         blankBinaryLinks.self.href = "http://dm-store/documents/generated";
         blankBinaryLinks.binary = new uk.gov.hmcts.sptribs.cdam.model.Document.DocumentLink();
         blankBinaryLinks.binary.href = "";
+        uk.gov.hmcts.sptribs.cdam.model.Document documentWithBlankBinary = new uk.gov.hmcts.sptribs.cdam.model.Document();
         documentWithBlankBinary.links = blankBinaryLinks;
         UploadResponse responseWithBlankBinary = new UploadResponse();
         responseWithBlankBinary.setDocuments(List.of(documentWithBlankBinary));
