@@ -24,25 +24,42 @@ public class CcdCaseRoleService {
     private final AuthTokenGenerator authTokenGenerator;
 
     public void assignCreatorRole(String ccdReference, String userId) {
-        CICUser systemUser = idamService.retrieveSystemUpdateUserDetails();
+        log.info("assignCreatorRole called for case {} and user {}", ccdReference, userId);
+        try {
+            log.info("Retrieving system update user details");
+            CICUser systemUser = idamService.retrieveSystemUpdateUserDetails();
+            log.info("Successfully retrieved system update user details");
 
-        CaseAssignmentUserRoleWithOrganisation creatorRole =
-            CaseAssignmentUserRoleWithOrganisation.builder()
-                .caseDataId(ccdReference)
-                .userId(userId)
-                .caseRole(CREATOR_ROLE)
+            log.info("Building creator role payload for case {} and user {}", ccdReference, userId);
+            CaseAssignmentUserRoleWithOrganisation creatorRole =
+                CaseAssignmentUserRoleWithOrganisation.builder()
+                    .caseDataId(ccdReference)
+                    .userId(userId)
+                    .caseRole(CREATOR_ROLE)
+                    .build();
+
+            log.info("Building case assignment request for case {}", ccdReference);
+            CaseAssignmentUserRolesRequest request = CaseAssignmentUserRolesRequest.builder()
+                .caseAssignmentUserRolesWithOrganisation(List.of(creatorRole))
                 .build();
 
-        CaseAssignmentUserRolesRequest request = CaseAssignmentUserRolesRequest.builder()
-            .caseAssignmentUserRolesWithOrganisation(List.of(creatorRole))
-            .build();
+            log.info("Calling CCD addCaseUserRoles for case {} and user {}", ccdReference, userId);
+            caseAssignmentApi.addCaseUserRoles(
+                systemUser.getAuthToken(),
+                authTokenGenerator.generate(),
+                request
+            );
 
-        caseAssignmentApi.addCaseUserRoles(
-            systemUser.getAuthToken(),
-            authTokenGenerator.generate(),
-            request
-        );
-
-        log.info("Assigned {} case role for case {}", CREATOR_ROLE, ccdReference);
+            log.info("Assigned {} case role for case {} and user {}", CREATOR_ROLE, ccdReference, userId);
+        } catch (Exception ex) {
+            log.error(
+                "Failed to assign {} case role for case {} and user {}",
+                CREATOR_ROLE,
+                ccdReference,
+                userId,
+                ex
+            );
+            throw ex;
+        }
     }
 }
