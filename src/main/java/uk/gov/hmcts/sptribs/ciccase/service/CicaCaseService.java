@@ -91,9 +91,7 @@ public class CicaCaseService {
 
     public void linkCaseToUser(String ccdReference, String authorisation, String submittedPostcode) {
         checkIfUserHasAccessWithPostcode(ccdReference, authorisation, submittedPostcode);
-
-        CICUser user = idamService.retrieveUser(authorisation);
-        ccdCaseRoleService.assignCreatorRole(ccdReference, user.getUserInfo().getSub());
+        ccdCaseRoleService.assignCreatorRole(ccdReference, authorisation);
     }
 
     private String normalize(String postcode) {

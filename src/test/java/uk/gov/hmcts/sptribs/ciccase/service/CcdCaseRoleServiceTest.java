@@ -9,13 +9,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.ccd.client.CaseAssignmentApi;
 import uk.gov.hmcts.reform.ccd.client.model.CaseAssignmentUserRolesRequest;
-import uk.gov.hmcts.reform.idam.client.IdamClient;
-import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 import uk.gov.hmcts.reform.idam.client.models.UserInfo;
 import uk.gov.hmcts.sptribs.idam.CICUser;
 import uk.gov.hmcts.sptribs.idam.IdamService;
-
-import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.verify;
@@ -26,7 +22,7 @@ import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_SERVICE_AUTH_TOKE
 @ExtendWith(MockitoExtension.class)
 class CcdCaseRoleServiceTest {
 
-    private static final String USER_EMAIL = "citizen@example.com";
+    private static final String USER_AUTH_TOKEN = "Bearer citizen-token";
     private static final String USER_ID = "citizen-user-id";
     private static final String SYSTEM_TOKEN = "Bearer system-token";
 
@@ -35,9 +31,6 @@ class CcdCaseRoleServiceTest {
 
     @Mock
     private IdamService idamService;
-
-    @Mock
-    private IdamClient idamClient;
 
     @Mock
     private AuthTokenGenerator authTokenGenerator;
@@ -49,11 +42,11 @@ class CcdCaseRoleServiceTest {
     void shouldAssignCreatorRoleViaCcdDataStore() {
         when(idamService.retrieveSystemUpdateUserDetails())
             .thenReturn(new CICUser(SYSTEM_TOKEN, UserInfo.builder().build()));
-        when(idamClient.searchUsers(SYSTEM_TOKEN, "email:\"" + USER_EMAIL + "\""))
-            .thenReturn(List.of(UserDetails.builder().id(USER_ID).build()));
+        when(idamService.retrieveUser(USER_AUTH_TOKEN))
+            .thenReturn(new CICUser(USER_AUTH_TOKEN, UserInfo.builder().uid(USER_ID).build()));
         when(authTokenGenerator.generate()).thenReturn(TEST_SERVICE_AUTH_TOKEN);
 
-        ccdCaseRoleService.assignCreatorRole(TEST_CASE_ID_STRING, USER_EMAIL);
+        ccdCaseRoleService.assignCreatorRole(TEST_CASE_ID_STRING, USER_AUTH_TOKEN);
 
         ArgumentCaptor<CaseAssignmentUserRolesRequest> requestCaptor =
             ArgumentCaptor.forClass(CaseAssignmentUserRolesRequest.class);

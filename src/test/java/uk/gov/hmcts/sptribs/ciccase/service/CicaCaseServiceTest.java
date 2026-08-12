@@ -179,8 +179,7 @@ class CicaCaseServiceTest {
 
         cicaCaseService.linkCaseToUser(TEST_CASE_ID_STRING, TEST_AUTHORIZATION, TEST_POSTCODE);
 
-        verify(ccdCaseRoleService).assignCreatorRole(TEST_CASE_ID_STRING, TEST_SYSTEM_UPDATE_USER_EMAIL);
+        verify(ccdCaseRoleService).assignCreatorRole(TEST_CASE_ID_STRING, TEST_AUTHORIZATION);
     }
 }
-
 

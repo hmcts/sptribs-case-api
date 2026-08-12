@@ -7,8 +7,6 @@ import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.ccd.client.CaseAssignmentApi;
 import uk.gov.hmcts.reform.ccd.client.model.CaseAssignmentUserRoleWithOrganisation;
 import uk.gov.hmcts.reform.ccd.client.model.CaseAssignmentUserRolesRequest;
-import uk.gov.hmcts.reform.idam.client.IdamClient;
-import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 import uk.gov.hmcts.sptribs.idam.CICUser;
 import uk.gov.hmcts.sptribs.idam.IdamService;
 
@@ -23,14 +21,14 @@ public class CcdCaseRoleService {
 
     private final CaseAssignmentApi caseAssignmentApi;
     private final IdamService idamService;
-    private final IdamClient idamClient;
     private final AuthTokenGenerator authTokenGenerator;
 
-    public void assignCreatorRole(String ccdReference, String userEmail) {
-        log.info("assignCreatorRole called for case {} and email {}", ccdReference, userEmail);
+    public void assignCreatorRole(String ccdReference, String userAuthToken) {
+        log.info("assignCreatorRole called for case {}", ccdReference);
         try {
             CICUser systemUser = idamService.retrieveSystemUpdateUserDetails();
-            String actorId = getActorIdForEmail(systemUser.getAuthToken(), userEmail);
+            CICUser user = idamService.retrieveUser(userAuthToken);
+            String actorId = user.getUserInfo().getUid();
             log.info("Building creator role payload for case {} and actorId {}", ccdReference, actorId);
             CaseAssignmentUserRoleWithOrganisation creatorRole =
                 CaseAssignmentUserRoleWithOrganisation.builder()
@@ -53,21 +51,12 @@ public class CcdCaseRoleService {
             log.info("Assigned {} case role for case {} and actorId {}", CREATOR_ROLE, ccdReference, actorId);
         } catch (Exception ex) {
             log.error(
-                "Failed to assign {} case role for case {} and email {}",
+                "Failed to assign {} case role for case {}",
                 CREATOR_ROLE,
                 ccdReference,
-                userEmail,
                 ex
             );
             throw ex;
         }
-    }
-
-    private String getActorIdForEmail(String systemToken, String userEmail) {
-        List<UserDetails> users = idamClient.searchUsers(systemToken, "email:\"" + userEmail + "\"");
-        if (users == null || users.isEmpty() || users.getFirst().getId() == null) {
-            throw new IllegalStateException("Unable to resolve IDAM actor id for email: " + userEmail);
-        }
-        return users.getFirst().getId();
     }
 }
