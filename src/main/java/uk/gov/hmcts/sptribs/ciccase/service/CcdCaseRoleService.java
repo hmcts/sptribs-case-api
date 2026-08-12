@@ -26,10 +26,6 @@ public class CcdCaseRoleService {
     public void assignCreatorRole(String ccdReference, String userId) {
         log.info("assignCreatorRole called for case {} and user {}", ccdReference, userId);
         try {
-            log.info("Retrieving system update user details");
-            CICUser systemUser = idamService.retrieveSystemUpdateUserDetails();
-            log.info("Successfully retrieved system update user details");
-
             log.info("Building creator role payload for case {} and user {}", ccdReference, userId);
             CaseAssignmentUserRoleWithOrganisation creatorRole =
                 CaseAssignmentUserRoleWithOrganisation.builder()
@@ -38,12 +34,14 @@ public class CcdCaseRoleService {
                     .caseRole(CREATOR_ROLE)
                     .build();
 
+            log.info("Calling CCD addCaseUserRoles for case {} and user {}", ccdReference, userId);
+            log.info("Retrieving system update user details");
+            CICUser systemUser = idamService.retrieveSystemUpdateUserDetails();
+            log.info("Successfully retrieved system update user details");
             log.info("Building case assignment request for case {}", ccdReference);
             CaseAssignmentUserRolesRequest request = CaseAssignmentUserRolesRequest.builder()
                 .caseAssignmentUserRolesWithOrganisation(List.of(creatorRole))
                 .build();
-
-            log.info("Calling CCD addCaseUserRoles for case {} and user {}", ccdReference, userId);
             caseAssignmentApi.addCaseUserRoles(
                 systemUser.getAuthToken(),
                 authTokenGenerator.generate(),
