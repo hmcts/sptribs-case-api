@@ -11,7 +11,6 @@ import org.springframework.stereotype.Component;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -81,11 +80,19 @@ public class FunctionalTestDataManager {
         deleteFromTable(TABLE_CASE_CORRESPONDENCES, KEY_CASE_CORRESPONDENCES_REFERENCE, reference);
     }
 
-    public void deleteCaseEvent(long reference) throws SQLException {
-        long caseDataId = getCaseDataId(reference);
+    public void deleteCaseEvent(long reference) {
+        String sql = "DELETE FROM " + TABLE_CASE_EVENT
+            + " WHERE " + KEY_CASE_EVENT_REFERENCE + " IN ("
+            + "SELECT " + KEY_CASE_DATA_ID + " FROM " + TABLE_CASE_DATA + " WHERE " + KEY_CASE_DATA_REFERENCE + " = ?)";
 
-        if (caseDataId != -1) {
-            deleteFromTable(TABLE_CASE_EVENT, KEY_CASE_EVENT_REFERENCE, caseDataId);
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setLong(1, reference);
+            int rowsAffected = statement.executeUpdate();
+            log.info("Deleted {} row(s) for case reference {} from table {}.",
+                rowsAffected, reference, TABLE_CASE_EVENT);
+        } catch (SQLException e) {
+            log.error("Error deleting case events for case reference {}.", reference, e);
+            throw new RuntimeException("Failed to delete case events for case reference: " + reference, e);
         }
     }
 
@@ -101,18 +108,6 @@ public class FunctionalTestDataManager {
             log.error("Error deleting reference {} from table {}.", reference, table, e);
             throw new RuntimeException(
                 "Failed to delete from " + table + " for reference: " + reference, e);
-        }
-    }
-
-    private long getCaseDataId(long reference) throws SQLException {
-        String sql = "SELECT " + KEY_CASE_DATA_ID + " FROM " + TABLE_CASE_DATA + " WHERE " + KEY_CASE_DATA_REFERENCE + " = ?";
-        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
-            stmt.setLong(1, reference);
-            ResultSet rs = stmt.executeQuery();
-            if (rs.next()) {
-                return rs.getLong(KEY_CASE_DATA_ID);
-            }
-            return -1;
         }
     }
 
@@ -156,7 +151,12 @@ public class FunctionalTestDataManager {
         return Collections.unmodifiableList(testReferences);
     }
 
+    public void clearReferences() {
+        testReferences.clear();
+    }
+
     public void closeAll() {
+        clearReferences();
         if (connection != null) {
             try {
                 if (!connection.isClosed()) {
