@@ -7,6 +7,8 @@ import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.ccd.client.CaseAssignmentApi;
 import uk.gov.hmcts.reform.ccd.client.model.CaseAssignmentUserRoleWithOrganisation;
 import uk.gov.hmcts.reform.ccd.client.model.CaseAssignmentUserRolesRequest;
+import uk.gov.hmcts.reform.idam.client.IdamClient;
+import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 import uk.gov.hmcts.sptribs.idam.CICUser;
 import uk.gov.hmcts.sptribs.idam.IdamService;
 
@@ -21,23 +23,23 @@ public class CcdCaseRoleService {
 
     private final CaseAssignmentApi caseAssignmentApi;
     private final IdamService idamService;
+    private final IdamClient idamClient;
     private final AuthTokenGenerator authTokenGenerator;
 
-    public void assignCreatorRole(String ccdReference, String userId) {
-        log.info("assignCreatorRole called for case {} and user {}", ccdReference, userId);
+    public void assignCreatorRole(String ccdReference, String userEmail) {
+        log.info("assignCreatorRole called for case {} and email {}", ccdReference, userEmail);
         try {
-            log.info("Building creator role payload for case {} and user {}", ccdReference, userId);
+            CICUser systemUser = idamService.retrieveSystemUpdateUserDetails();
+            String actorId = getActorIdForEmail(systemUser.getAuthToken(), userEmail);
+            log.info("Building creator role payload for case {} and actorId {}", ccdReference, actorId);
             CaseAssignmentUserRoleWithOrganisation creatorRole =
                 CaseAssignmentUserRoleWithOrganisation.builder()
                     .caseDataId(ccdReference)
-                    .userId(userId)
+                    .userId(actorId)
                     .caseRole(CREATOR_ROLE)
                     .build();
 
-            log.info("Calling CCD addCaseUserRoles for case {} and user {}", ccdReference, userId);
-            log.info("Retrieving system update user details");
-            CICUser systemUser = idamService.retrieveSystemUpdateUserDetails();
-            log.info("Successfully retrieved system update user details");
+            log.info("Calling CCD addCaseUserRoles for case {} and actorId {}", ccdReference, actorId);
             log.info("Building case assignment request for case {}", ccdReference);
             CaseAssignmentUserRolesRequest request = CaseAssignmentUserRolesRequest.builder()
                 .caseAssignmentUserRolesWithOrganisation(List.of(creatorRole))
@@ -48,16 +50,24 @@ public class CcdCaseRoleService {
                 request
             );
 
-            log.info("Assigned {} case role for case {} and user {}", CREATOR_ROLE, ccdReference, userId);
+            log.info("Assigned {} case role for case {} and actorId {}", CREATOR_ROLE, ccdReference, actorId);
         } catch (Exception ex) {
             log.error(
-                "Failed to assign {} case role for case {} and user {}",
+                "Failed to assign {} case role for case {} and email {}",
                 CREATOR_ROLE,
                 ccdReference,
-                userId,
+                userEmail,
                 ex
             );
             throw ex;
         }
+    }
+
+    private String getActorIdForEmail(String systemToken, String userEmail) {
+        List<UserDetails> users = idamClient.searchUsers(systemToken, "email:\"" + userEmail + "\"");
+        if (users == null || users.isEmpty() || users.getFirst().getId() == null) {
+            throw new IllegalStateException("Unable to resolve IDAM actor id for email: " + userEmail);
+        }
+        return users.getFirst().getId();
     }
 }
