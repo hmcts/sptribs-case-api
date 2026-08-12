@@ -165,15 +165,16 @@ public class DocumentsService {
             .build();
     }
 
-    public Stream<DocumentEntity> getAudioVideoDocuments(Long caseReferenceNumber) {
+    public List<DocumentEntity> getAudioVideoDocuments(Long caseReferenceNumber) {
         if (caseReferenceNumber == null) {
-            return Stream.empty();
+            return List.of();
         }
 
         try {
             return documentsRepository.findByCaseReferenceNumberOrderBySavedAtAsc(caseReferenceNumber)
                 .stream()
-                .filter(this::isAudioVideo);
+                .filter(this::isAudioVideo)
+                .toList();
         } catch (DataAccessException e) {
             throw new DocumentLookupException("Error getting audio video documents by case reference", e);
         }

@@ -52,7 +52,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.stream.Stream;
 
 import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
 import static net.javacrumbs.jsonunit.assertj.JsonAssertions.json;
@@ -227,7 +226,7 @@ public class CaseworkerCreateBundleIT {
             .documentTypeName(DocumentType.POLICE_EVIDENCE.name())
             .savedAt(OffsetDateTime.parse("2026-01-12T10:00:00Z"))
             .build();
-        when(documentsService.getAudioVideoDocuments(any())).thenAnswer(inv -> Stream.of(audioDoc1, audioDoc2));
+        when(documentsService.getAudioVideoDocuments(any())).thenReturn(List.of(audioDoc1, audioDoc2));
 
         DocumentLink self = new DocumentLink();
         self.href = "http://dm-store/documents/generated";
@@ -333,7 +332,7 @@ public class CaseworkerCreateBundleIT {
             .documentTypeName(DocumentType.LINKED_DOCS.name())
             .savedAt(OffsetDateTime.parse("2026-01-10T10:00:00Z"))
             .build();
-        when(documentsService.getAudioVideoDocuments(any())).thenAnswer(inv -> Stream.of(audioDoc));
+        when(documentsService.getAudioVideoDocuments(any())).thenReturn(List.of(audioDoc));
 
         DocumentLink self = new DocumentLink();
         self.href = "http://dm-store/documents/generated";
@@ -411,7 +410,7 @@ public class CaseworkerCreateBundleIT {
         final BundleResponse bundleResponse = mock(BundleResponse.class);
         when(bundleResponse.getData()).thenReturn(new LinkedHashMap<>());
         when(authTokenGenerator.generate()).thenReturn(SERVICE_AUTHORIZATION);
-        when(documentsService.getAudioVideoDocuments(any())).thenReturn(Stream.empty());
+        when(documentsService.getAudioVideoDocuments(any())).thenReturn(List.of());
 
         AtomicReference<AudioVideoEvidenceBundleDocument> callbackAudioVideoDocument = new AtomicReference<>();
         AtomicReference<List<String>> callbackCaseDocumentNames = new AtomicReference<>(List.of());
@@ -453,7 +452,7 @@ public class CaseworkerCreateBundleIT {
         caseData.setCaseNumber("1616591401473378");
 
         when(documentsService.getAudioVideoDocuments(any()))
-            .thenReturn(Stream.of(buildAudioVideoDocumentEntity("media-1.mp3", VALID_DOCUMENT_ID_1)));
+            .thenReturn(List.of(buildAudioVideoDocumentEntity("media-1.mp3", VALID_DOCUMENT_ID_1)));
         when(pdfServiceClient.generateFromHtml(any(byte[].class), anyMap()))
             .thenThrow(new RuntimeException("PDF generation failed"));
 
@@ -481,7 +480,7 @@ public class CaseworkerCreateBundleIT {
 
         when(authTokenGenerator.generate()).thenReturn(SERVICE_AUTHORIZATION);
         when(documentsService.getAudioVideoDocuments(any()))
-            .thenReturn(Stream.of(buildAudioVideoDocumentEntity("media-2.mp4", VALID_DOCUMENT_ID_2)));
+            .thenReturn(List.of(buildAudioVideoDocumentEntity("media-2.mp4", VALID_DOCUMENT_ID_2)));
         when(pdfServiceClient.generateFromHtml(any(byte[].class), anyMap())).thenReturn("pdf".getBytes());
         when(caseDocumentClientApi.uploadDocuments(any(), any(), any()))
             .thenThrow(new RuntimeException("CDAM upload failed"));

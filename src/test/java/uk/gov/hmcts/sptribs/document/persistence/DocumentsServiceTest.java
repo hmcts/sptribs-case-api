@@ -349,13 +349,13 @@ public class DocumentsServiceTest {
         when(documentsRepository.findByCaseReferenceNumberOrderBySavedAtAsc(TEST_CASE_ID))
             .thenReturn(List.of(audioDocument, pdfDocument, videoDocument));
 
-        List<DocumentEntity> result = documentsService.getAudioVideoDocuments(TEST_CASE_ID).toList();
+        List<DocumentEntity> result = documentsService.getAudioVideoDocuments(TEST_CASE_ID);
 
         assertThat(result).containsExactly(audioDocument, videoDocument);
     }
 
     @Test
-    void shouldReturnEmptyStreamWhenCaseReferenceNullForAudioVideoLookup() {
+    void shouldReturnEmptyListWhenCaseReferenceNullForAudioVideoLookup() {
         assertThat(documentsService.getAudioVideoDocuments(null)).isEmpty();
     }
 
@@ -364,7 +364,7 @@ public class DocumentsServiceTest {
         when(documentsRepository.findByCaseReferenceNumberOrderBySavedAtAsc(TEST_CASE_ID))
             .thenThrow(new DataAccessResourceFailureException("DB error"));
 
-        assertThatThrownBy(() -> documentsService.getAudioVideoDocuments(TEST_CASE_ID).toList())
+        assertThatThrownBy(() -> documentsService.getAudioVideoDocuments(TEST_CASE_ID))
             .isInstanceOf(DocumentLookupException.class)
             .hasMessageContaining("Error getting audio video documents by case reference")
             .hasCauseInstanceOf(DataAccessException.class);

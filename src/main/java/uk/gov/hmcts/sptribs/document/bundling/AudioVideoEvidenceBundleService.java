@@ -5,7 +5,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.jspecify.annotations.NonNull;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
@@ -26,15 +25,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.time.Clock;
 import java.time.LocalDate;
-import java.time.OffsetDateTime;
-import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
-import java.util.stream.Stream;
 
-import static java.util.Collections.singletonList;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 
 @Service
@@ -42,7 +38,6 @@ import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 @Slf4j
 public class AudioVideoEvidenceBundleService {
 
-    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
     private static final String UNKNOWN = "Unknown";
     private static final String AUDIO_DOCUMENT_TYPE = "Audio Document";
     private static final String VIDEO_DOCUMENT_TYPE = "Video Document";
@@ -58,56 +53,54 @@ public class AudioVideoEvidenceBundleService {
 
     public Optional<AudioVideoEvidenceBundleDocument> createAudioVideoEvidenceBundleDocument(Long caseId) {
         try {
-            List<AudioVideoDocumentRow> rows = extractRows(caseId);
-            if (rows.isEmpty()) {
-                return Optional.empty();
-            }
-
-            byte[] pdf = generatePdf(rows, caseId);
-            String fileName = "audio-video-evidence-" + caseId + ".pdf";
-            Document generatedPdf = upload(pdf, fileName);
-            validateUploadedDocument(generatedPdf);
-
-            return Optional.of(buildBundleDocument(generatedPdf));
-        } catch (AudioVideoEvidenceBundleException exception) {
-            throw exception;
+            return createBundleDocument(caseId);
         } catch (RuntimeException exception) {
             throw new AudioVideoEvidenceBundleException(caseId, exception);
         }
     }
 
-    List<AudioVideoDocumentRow> extractRows(Long caseId) {
-        try (Stream<DocumentEntity> stream = documentsService.getAudioVideoDocuments(caseId)) {
-            List<DocumentEntity> documents = stream.toList();
-            if (documents.isEmpty()) {
-                return List.of();
-            }
-
-            return documents.stream()
-                .map(entity -> new AudioVideoDocumentRow(
-                    resolveMediaType(entity.getDocumentFilename()),
-                    entity.getDocumentFilename(),
-                    manageCaseDocumentUrlBuilder.buildPublicBinaryUrl(entity.getDocumentBinaryUrl()),
-                    formatDate(getSavedAtDate(entity)),
-                    resolveDocumentType(entity.getDocumentTypeName()),
-                    getSavedAtDate(entity)
-                ))
-                .toList();
+    private Optional<AudioVideoEvidenceBundleDocument> createBundleDocument(Long caseId) {
+        List<AudioVideoDocumentRow> rows = extractRows(caseId);
+        if (rows.isEmpty()) {
+            return Optional.empty();
         }
+
+        String filename = "audio-video-evidence-" + caseId + ".pdf";
+        byte[] pdf = generatePdf(rows, caseId);
+        Document uploadedDocument = upload(pdf, filename);
+        return Optional.of(buildBundleDocument(uploadedDocument));
+    }
+
+    List<AudioVideoDocumentRow> extractRows(Long caseId) {
+        List<AudioVideoDocumentRow> rows = new ArrayList<>();
+        for (DocumentEntity entity : documentsService.getAudioVideoDocuments(caseId)) {
+            rows.add(toRow(entity));
+        }
+        return rows;
+    }
+
+    private AudioVideoDocumentRow toRow(DocumentEntity entity) {
+        LocalDate savedDate = entity.getSavedAt() == null ? null : entity.getSavedAt().toLocalDate();
+        return new AudioVideoDocumentRow(
+            resolveMediaType(entity.getDocumentFilename()),
+            entity.getDocumentFilename(),
+            manageCaseDocumentUrlBuilder.buildPublicBinaryUrl(entity.getDocumentBinaryUrl()),
+            savedDate == null ? UNKNOWN : savedDate.toString(),
+            resolveDocumentType(entity.getDocumentTypeName())
+        );
     }
 
     private String resolveMediaType(String documentFilename) {
         String extension = StringUtils.substringAfterLast(
-            StringUtils.defaultString(documentFilename),
+            documentFilename,
             "."
-        ).toLowerCase();
-        if ("mp3".equals(extension)) {
-            return AUDIO_DOCUMENT_TYPE;
-        }
-        if ("mp4".equals(extension)) {
-            return VIDEO_DOCUMENT_TYPE;
-        }
-        return UNKNOWN;
+        ).toLowerCase(Locale.ROOT);
+
+        return switch (extension) {
+            case "mp3" -> AUDIO_DOCUMENT_TYPE;
+            case "mp4" -> VIDEO_DOCUMENT_TYPE;
+            default -> throw new IllegalStateException("Unsupported audio/video document extension");
+        };
     }
 
     private String resolveDocumentType(String documentTypeName) {
@@ -121,21 +114,6 @@ public class AudioVideoEvidenceBundleService {
         }
     }
 
-    private String formatDate(LocalDate date) {
-        if (date == null) {
-            return UNKNOWN;
-        }
-        return DATE_FORMATTER.format(date);
-    }
-
-    private LocalDate getSavedAtDate(DocumentEntity documentEntity) {
-        if (documentEntity == null) {
-            return null;
-        }
-        OffsetDateTime savedAt = documentEntity.getSavedAt();
-        return savedAt == null ? null : savedAt.toLocalDate();
-    }
-
     private byte[] generatePdf(List<AudioVideoDocumentRow> rows, Long caseId) {
         byte[] template = loadTemplate();
         Map<String, Object> placeholders = Map.of(
@@ -143,7 +121,11 @@ public class AudioVideoEvidenceBundleService {
             "rowsHtml", buildRowsHtml(rows)
         );
         log.info("Generating audio/video evidence PDF for case {} with {} rows", caseId, rows.size());
-        return pdfServiceClient.generateFromHtml(template, placeholders);
+        byte[] pdf = pdfServiceClient.generateFromHtml(template, placeholders);
+        if (pdf == null || pdf.length == 0) {
+            throw new IllegalStateException("PDF service returned an empty audio/video evidence document");
+        }
+        return pdf;
     }
 
     private String buildRowsHtml(List<AudioVideoDocumentRow> rows) {
@@ -163,19 +145,20 @@ public class AudioVideoEvidenceBundleService {
     }
 
     private byte[] loadTemplate() {
-        try (InputStream inputStream = getClass().getResourceAsStream(AUDIO_VIDEO_EVIDENCE_TEMPLATE)) {
-            return IOUtils.toByteArray(Objects.requireNonNull(inputStream));
+        InputStream inputStream = getClass().getResourceAsStream(AUDIO_VIDEO_EVIDENCE_TEMPLATE);
+        if (inputStream == null) {
+            throw new IllegalStateException("Audio/video evidence PDF template was not found");
+        }
+
+        try (inputStream) {
+            return IOUtils.toByteArray(inputStream);
         } catch (IOException exception) {
             throw new IllegalStateException("Unable to load audio/video evidence PDF template", exception);
         }
     }
 
     private String buildDocumentLink(String filename, String documentUrl) {
-        if (StringUtils.isBlank(documentUrl)) {
-            return "";
-        }
-
-        String safeFileName = escapeHtml(StringUtils.defaultIfBlank(filename, documentUrl));
+        String safeFileName = escapeHtml(filename);
         String safeUrl = escapeHtml(documentUrl);
         return "<a href=\"" + safeUrl + "\">" + safeFileName + "</a>";
     }
@@ -200,48 +183,51 @@ public class AudioVideoEvidenceBundleService {
             .build();
     }
 
-    private void validateUploadedDocument(Document generatedPdf) {
-        if (generatedPdf == null
-            || StringUtils.isBlank(generatedPdf.getUrl())
-            || StringUtils.isBlank(generatedPdf.getBinaryUrl())
-            || StringUtils.isBlank(generatedPdf.getFilename())) {
-            throw new IllegalStateException("Generated audio/video evidence document missing mandatory properties");
-        }
-    }
-
     private Document upload(byte[] pdf, String fileName) {
-        InMemoryMultipartFile multipartFile = new InMemoryMultipartFile(fileName, pdf);
-        DocumentUploadRequest uploadRequest = new DocumentUploadRequest(
-            Classification.RESTRICTED.toString(),
-            CcdCaseType.CIC.getCaseTypeName(),
-            CcdJurisdiction.CRIMINAL_INJURIES_COMPENSATION.getJurisdictionId(),
-            singletonList(multipartFile)
-        );
-
         String serviceToken = authTokenGenerator.generate();
         String authorizationHeader = request.getHeader(AUTHORIZATION);
 
-        UploadResponse uploadResponse = caseDocumentClientApi.uploadDocuments(
+        UploadResponse response = caseDocumentClientApi.uploadDocuments(
             authorizationHeader,
             serviceToken,
-            uploadRequest
+            buildUploadRequest(pdf, fileName)
         );
-        return getDocument(uploadResponse);
+        return toCcdDocument(response, fileName);
     }
 
-    private static @NonNull Document getDocument(UploadResponse uploadResponse) {
-        if (uploadResponse == null || uploadResponse.getDocuments() == null || uploadResponse.getDocuments().isEmpty()) {
-            throw new IllegalStateException("Unable to upload audio/video evidence bundle document");
+    private DocumentUploadRequest buildUploadRequest(byte[] pdf, String fileName) {
+        return new DocumentUploadRequest(
+            Classification.RESTRICTED.toString(),
+            CcdCaseType.CIC.getCaseTypeName(),
+            CcdJurisdiction.CRIMINAL_INJURIES_COMPENSATION.getJurisdictionId(),
+            List.of(new InMemoryMultipartFile(fileName, pdf))
+        );
+    }
+
+    private Document toCcdDocument(UploadResponse response, String filename) {
+        if (response == null || response.getDocuments() == null || response.getDocuments().isEmpty()) {
+            throw invalidUploadResponse();
         }
 
-        uk.gov.hmcts.sptribs.cdam.model.Document uploadedDocument = uploadResponse.getDocuments().getFirst();
-        Document document = new Document();
-        document.setFilename(uploadedDocument.originalDocumentName);
-        document.setUrl(uploadedDocument.links != null && uploadedDocument.links.self != null
-            ? uploadedDocument.links.self.href : null);
-        document.setBinaryUrl(uploadedDocument.links != null && uploadedDocument.links.binary != null
-            ? uploadedDocument.links.binary.href : null);
-        return document;
+        uk.gov.hmcts.sptribs.cdam.model.Document uploaded = response.getDocuments().getFirst();
+        if (uploaded == null
+            || uploaded.links == null
+            || uploaded.links.self == null
+            || uploaded.links.binary == null
+            || StringUtils.isBlank(uploaded.links.self.href)
+            || StringUtils.isBlank(uploaded.links.binary.href)) {
+            throw invalidUploadResponse();
+        }
+
+        return Document.builder()
+            .filename(filename)
+            .url(uploaded.links.self.href)
+            .binaryUrl(uploaded.links.binary.href)
+            .build();
+    }
+
+    private IllegalStateException invalidUploadResponse() {
+        return new IllegalStateException("CDAM returned an incomplete audio/video evidence document");
     }
 
     record AudioVideoDocumentRow(
@@ -249,8 +235,7 @@ public class AudioVideoEvidenceBundleService {
         String documentFilename,
         String documentUrl,
         String dateAdded,
-        String documentCategory,
-        LocalDate sortableDate
+        String documentCategory
     ) {
     }
 }
