@@ -499,7 +499,7 @@ public abstract class FunctionalTestSuite {
     @AfterAll
     void tearDownDataManager() throws SQLException {
 
-        for (long reference : functionalTestDataManager.getTestReferences()) {
+        for (long reference : functionalTestDataManager.drainReferences()) {
             functionalTestDataManager.clearDown(reference);
         }
         functionalTestDataManager.closeAll();

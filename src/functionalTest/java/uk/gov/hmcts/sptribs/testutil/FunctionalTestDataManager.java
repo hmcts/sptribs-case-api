@@ -13,8 +13,9 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 import static uk.gov.hmcts.sptribs.testutil.FunctionalTestConstants.KEY_CASE_CORRESPONDENCES_REFERENCE;
 import static uk.gov.hmcts.sptribs.testutil.FunctionalTestConstants.KEY_CASE_DATA_ID;
@@ -29,10 +30,7 @@ import static uk.gov.hmcts.sptribs.testutil.FunctionalTestConstants.TABLE_CASE_E
 public class FunctionalTestDataManager {
 
     private static final Logger log = LoggerFactory.getLogger(FunctionalTestDataManager.class);
-
-    private static final List<Long> testReferences = Collections.synchronizedList(new ArrayList<>());
-
-    private Connection connection;
+    private static final Set<Long> testReferences = new LinkedHashSet<>();
 
     @Value("${postgres.host}")
     private String host;
@@ -50,37 +48,36 @@ public class FunctionalTestDataManager {
     private String password;
 
     public void connectToDB() {
-        String connectionString = String.format("jdbc:postgresql://%s:%s/%s", host, port, dbName);
-
-        try {
-            connection = DriverManager.getConnection(connectionString, username, password);
-            log.info("Successfully connected to database: {}", connectionString);
+        try (Connection connection = createConnection()) {
+            log.info("Successfully connected to database: {}", connectionString());
         } catch (SQLException e) {
-            log.error("Failed to establish database connection to {}.", connectionString, e);
-            throw new RuntimeException("Failed to establish database connection to: " + connectionString, e);
+            log.error("Failed to establish database connection to {}.", connectionString(), e);
+            throw new RuntimeException("Failed to establish database connection to: " + connectionString(), e);
         }
     }
 
     public void clearDown(long reference) throws SQLException {
         log.info("Starting clearDown for reference: {}", reference);
 
-        deleteCaseEvent(reference);
-        deleteCaseData(reference);
-        deleteCaseCorrespondences(reference);
+        try (Connection connection = createConnection()) {
+            deleteCaseEvent(connection, reference);
+            deleteCaseData(connection, reference);
+            deleteCaseCorrespondences(connection, reference);
+        }
         deleteCaseFromElasticsearch(reference);
 
         log.info("Clear down completed for reference: {}", reference);
     }
 
-    public void deleteCaseData(long reference) {
-        deleteFromTable(TABLE_CASE_DATA, KEY_CASE_DATA_REFERENCE, reference);
+    public void deleteCaseData(Connection connection, long reference) {
+        deleteFromTable(connection, TABLE_CASE_DATA, KEY_CASE_DATA_REFERENCE, reference);
     }
 
-    public void deleteCaseCorrespondences(long reference) {
-        deleteFromTable(TABLE_CASE_CORRESPONDENCES, KEY_CASE_CORRESPONDENCES_REFERENCE, reference);
+    public void deleteCaseCorrespondences(Connection connection, long reference) {
+        deleteFromTable(connection, TABLE_CASE_CORRESPONDENCES, KEY_CASE_CORRESPONDENCES_REFERENCE, reference);
     }
 
-    public void deleteCaseEvent(long reference) {
+    public void deleteCaseEvent(Connection connection, long reference) {
         String sql = "DELETE FROM " + TABLE_CASE_EVENT
             + " WHERE " + KEY_CASE_EVENT_REFERENCE + " IN ("
             + "SELECT " + KEY_CASE_DATA_ID + " FROM " + TABLE_CASE_DATA + " WHERE " + KEY_CASE_DATA_REFERENCE + " = ?)";
@@ -96,7 +93,7 @@ public class FunctionalTestDataManager {
         }
     }
 
-    private void deleteFromTable(String table, String column, long reference) {
+    private void deleteFromTable(Connection connection, String table, String column, long reference) {
         String sql = "DELETE FROM " + table + " WHERE " + column + " = ?";
 
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
@@ -109,6 +106,14 @@ public class FunctionalTestDataManager {
             throw new RuntimeException(
                 "Failed to delete from " + table + " for reference: " + reference, e);
         }
+    }
+
+    private String connectionString() {
+        return String.format("jdbc:postgresql://%s:%s/%s", host, port, dbName);
+    }
+
+    private Connection createConnection() throws SQLException {
+        return DriverManager.getConnection(connectionString(), username, password);
     }
 
     public void deleteCaseFromElasticsearch(long reference) {
@@ -143,29 +148,28 @@ public class FunctionalTestDataManager {
         }
     }
 
-    public void addReference(Long id) {
-        testReferences.add(id);
+    public void closeAll() {
+        clearReferences();
+        log.debug("No shared database connection to close.");
     }
 
-    public List<Long> getTestReferences() {
-        return Collections.unmodifiableList(testReferences);
+    public void addReference(Long reference) {
+        synchronized (testReferences) {
+            testReferences.add(reference);
+        }
+    }
+
+    public List<Long> drainReferences() {
+        synchronized (testReferences) {
+            List<Long> snapshot = new ArrayList<>(testReferences);
+            testReferences.clear();
+            return snapshot;
+        }
     }
 
     public void clearReferences() {
-        testReferences.clear();
-    }
-
-    public void closeAll() {
-        clearReferences();
-        if (connection != null) {
-            try {
-                if (!connection.isClosed()) {
-                    connection.close();
-                    log.info("Database connection closed.");
-                }
-            } catch (SQLException e) {
-                log.error("Error while closing the database connection.", e);
-            }
+        synchronized (testReferences) {
+            testReferences.clear();
         }
     }
 }
