@@ -93,7 +93,7 @@ public class CicaCaseService {
         checkIfUserHasAccessWithPostcode(ccdReference, authorisation, submittedPostcode);
 
         CICUser user = idamService.retrieveUser(authorisation);
-        ccdCaseRoleService.assignCreatorRole(ccdReference, user.getUserInfo().getUid());
+        ccdCaseRoleService.assignCreatorRole(ccdReference, user.getUserInfo().getSub());
     }
 
     private String normalize(String postcode) {
