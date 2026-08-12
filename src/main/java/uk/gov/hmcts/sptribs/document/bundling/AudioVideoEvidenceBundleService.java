@@ -53,22 +53,18 @@ public class AudioVideoEvidenceBundleService {
 
     public Optional<AudioVideoEvidenceBundleDocument> createAudioVideoEvidenceBundleDocument(Long caseId) {
         try {
-            return createBundleDocument(caseId);
+            List<AudioVideoDocumentRow> rows = extractRows(caseId);
+            if (rows.isEmpty()) {
+                return Optional.empty();
+            }
+
+            String filename = "audio-video-evidence-" + caseId + ".pdf";
+            byte[] pdf = generatePdf(rows, caseId);
+            Document uploadedDocument = upload(pdf, filename);
+            return Optional.of(buildBundleDocument(uploadedDocument));
         } catch (RuntimeException exception) {
             throw new AudioVideoEvidenceBundleException(caseId, exception);
         }
-    }
-
-    private Optional<AudioVideoEvidenceBundleDocument> createBundleDocument(Long caseId) {
-        List<AudioVideoDocumentRow> rows = extractRows(caseId);
-        if (rows.isEmpty()) {
-            return Optional.empty();
-        }
-
-        String filename = "audio-video-evidence-" + caseId + ".pdf";
-        byte[] pdf = generatePdf(rows, caseId);
-        Document uploadedDocument = upload(pdf, filename);
-        return Optional.of(buildBundleDocument(uploadedDocument));
     }
 
     List<AudioVideoDocumentRow> extractRows(Long caseId) {
