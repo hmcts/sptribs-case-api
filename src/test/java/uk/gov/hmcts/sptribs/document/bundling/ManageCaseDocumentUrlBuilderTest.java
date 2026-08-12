@@ -147,4 +147,18 @@ class ManageCaseDocumentUrlBuilderTest {
 
         assertThat(result).startsWith("https://manage-case.aat.platform.hmcts.net/");
     }
+
+    @Test
+    void shouldRejectRelativeCaseApiBaseUrl() {
+        assertThatThrownBy(() -> new ManageCaseDocumentUrlBuilder("/manage-case"))
+            .isInstanceOf(IllegalArgumentException.class)
+            .hasMessage("case-api.url must be an absolute HTTP(S) URL");
+    }
+
+    @Test
+    void shouldRejectNonHttpCaseApiBaseUrl() {
+        assertThatThrownBy(() -> new ManageCaseDocumentUrlBuilder("ftp://manage-case.demo.platform.hmcts.net"))
+            .isInstanceOf(IllegalArgumentException.class)
+            .hasMessage("case-api.url must be an absolute HTTP(S) URL");
+    }
 }

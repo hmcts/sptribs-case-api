@@ -7,6 +7,8 @@ import org.springframework.stereotype.Component;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
+import java.util.Locale;
+import java.util.Set;
 import java.util.UUID;
 
 @Component
@@ -20,50 +22,65 @@ public class ManageCaseDocumentUrlBuilder {
     private final URI manageCaseBaseUri;
 
     public ManageCaseDocumentUrlBuilder(@Value("${case-api.url}") String manageCaseBaseUrl) {
-        this.manageCaseBaseUri = parseUri(manageCaseBaseUrl, "case-api.url");
+        this.manageCaseBaseUri = parseBaseUri(manageCaseBaseUrl);
     }
 
     public String buildPublicBinaryUrl(String storedBinaryUrl) {
-        if (StringUtils.isBlank(storedBinaryUrl)) {
+        URI sourceUri = parseStoredUri(storedBinaryUrl);
+        List<String> segments = pathSegments(sourceUri.getPath());
+
+        String publicRoute;
+        String documentId;
+
+        if (isLegacyPath(segments)) {
+            publicRoute = DOCUMENTS;
+            documentId = segments.get(1);
+        } else if (isCdamPath(segments)) {
+            publicRoute = DOCUMENTS_V2;
+            documentId = segments.get(2);
+        } else {
+            throw new IllegalArgumentException("Unsupported document binary URL format");
+        }
+
+        validateUuid(documentId);
+        return buildPath(publicRoute, documentId, BINARY);
+    }
+
+    private URI parseBaseUri(String value) {
+        URI uri = parseUri(value, "case-api.url");
+        String scheme = StringUtils.lowerCase(uri.getScheme(), Locale.ROOT);
+        if (!uri.isAbsolute() || StringUtils.isBlank(uri.getHost()) || !Set.of("http", "https").contains(scheme)) {
+            throw new IllegalArgumentException("case-api.url must be an absolute HTTP(S) URL");
+        }
+        return uri;
+    }
+
+    private URI parseStoredUri(String value) {
+        if (StringUtils.isBlank(value)) {
             throw new IllegalArgumentException("Document binary URL must not be blank");
         }
-
-        URI sourceUri = parseUri(storedBinaryUrl, "stored document binary URL");
-        List<String> segments = pathSegments(sourceUri.getPath());
-        if (segments.size() < 3) {
-            throw new IllegalArgumentException("Unsupported document binary URL format");
-        }
-
-        if (!BINARY.equals(segments.getLast())) {
-            throw new IllegalArgumentException("Unsupported document binary URL format");
-        }
-
-        String uuidValue = segments.get(segments.size() - 2);
-        validateUuid(uuidValue);
-
-        if (segments.size() == 3 && DOCUMENTS.equals(segments.getFirst())) {
-            return buildPath(DOCUMENTS, uuidValue, BINARY);
-        }
-
-        if (segments.size() == 4
-            && CASES.equals(segments.getFirst())
-            && DOCUMENTS.equals(segments.get(1))) {
-            return buildPath(DOCUMENTS_V2, uuidValue, BINARY);
-        }
-
-        throw new IllegalArgumentException("Unsupported document binary URL format");
+        return parseUri(value, "stored document binary URL");
     }
 
     private URI parseUri(String value, String sourceName) {
         try {
-            URI uri = new URI(value);
-            if (!uri.isAbsolute() && StringUtils.isBlank(uri.getPath())) {
-                throw new IllegalArgumentException("Invalid " + sourceName);
-            }
-            return uri;
+            return new URI(value);
         } catch (URISyntaxException exception) {
             throw new IllegalArgumentException("Invalid " + sourceName, exception);
         }
+    }
+
+    private boolean isLegacyPath(List<String> segments) {
+        return segments.size() == 3
+            && DOCUMENTS.equals(segments.get(0))
+            && BINARY.equals(segments.get(2));
+    }
+
+    private boolean isCdamPath(List<String> segments) {
+        return segments.size() == 4
+            && CASES.equals(segments.get(0))
+            && DOCUMENTS.equals(segments.get(1))
+            && BINARY.equals(segments.get(3));
     }
 
     private List<String> pathSegments(String path) {
