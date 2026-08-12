@@ -20,6 +20,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.HearingState;
 import uk.gov.hmcts.sptribs.ciccase.model.RetiredFields;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -206,5 +207,139 @@ class HearingServiceTest {
         hearingService.updateHearingList(caseData, hearingName);
 
         assertNotEquals(caseData.getHearingList().get(0).getValue(), completedListing);
+    }
+
+    @Test
+    void shouldSetHearingDateOnAddListing() {
+        // Given
+        CaseData caseData = CaseData.builder().build();
+        Listing listing = getRecordListing(); // status Listed, date 2023-04-21
+
+        // When
+        hearingService.addListing(caseData, listing);
+
+        // Then
+        assertThat(caseData.getHearingDate()).isEqualTo(LocalDate.of(2023, 4, 21));
+    }
+
+    @Test
+    void shouldUpdateHearingDateOnUpdateHearingList() throws JsonProcessingException {
+        // Given
+        Listing listing = getRecordListing(); // status Listed, date 2023-04-21
+        CaseData caseData = CaseData.builder().build();
+        hearingService.addListing(caseData, listing);
+
+        Listing updatedListing = getRecordListing();
+        updatedListing.setDate(LocalDate.of(2023, 5, 25));
+        caseData.setListing(updatedListing);
+
+        doReturn("test string")
+            .when(objectMapper)
+            .writeValueAsString(any(Listing.class));
+        doReturn(updatedListing)
+            .when(objectMapper)
+            .readValue("test string", Listing.class);
+
+        // When
+        hearingService.updateHearingList(caseData, "1 - Final - 21 Apr 2023 10:00");
+
+        // Then
+        assertThat(caseData.getHearingDate()).isEqualTo(LocalDate.of(2023, 5, 25));
+    }
+
+    @Test
+    void shouldClearHearingDateWhenNoListedHearing() {
+        // Given
+        CaseData caseData = CaseData.builder().build();
+        Listing listing = getRecordListing();
+        listing.setHearingStatus(HearingState.Complete);
+
+        // When
+        hearingService.addListing(caseData, listing);
+
+        // Then
+        assertThat(caseData.getHearingDate()).isNull();
+    }
+
+    @Test
+    void shouldClearHearingDateWhenHearingIsPostponedAndNoOtherListedHearingsExist() throws JsonProcessingException {
+        // Given
+        Listing listing = getRecordListing(); // status Listed, date 2023-04-21
+        CaseData caseData = CaseData.builder().build();
+        hearingService.addListing(caseData, listing);
+
+        Listing updatedListing = getRecordListing();
+        updatedListing.setHearingStatus(HearingState.Postponed);
+        caseData.setListing(updatedListing);
+
+        doReturn("test string")
+            .when(objectMapper)
+            .writeValueAsString(any(Listing.class));
+        doReturn(updatedListing)
+            .when(objectMapper)
+            .readValue("test string", Listing.class);
+
+        // When
+        hearingService.updateHearingList(caseData, "1 - Final - 21 Apr 2023 10:00");
+
+        // Then
+        assertThat(caseData.getHearingDate()).isNull();
+    }
+
+    @Test
+    void shouldClearHearingDateWhenHearingIsCancelledAndNoOtherListedHearingsExist() throws JsonProcessingException {
+        // Given
+        Listing listing = getRecordListing(); // status Listed, date 2023-04-21
+        CaseData caseData = CaseData.builder().build();
+        hearingService.addListing(caseData, listing);
+
+        Listing updatedListing = getRecordListing();
+        updatedListing.setHearingStatus(HearingState.Cancelled);
+        caseData.setListing(updatedListing);
+
+        doReturn("test string")
+            .when(objectMapper)
+            .writeValueAsString(any(Listing.class));
+        doReturn(updatedListing)
+            .when(objectMapper)
+            .readValue("test string", Listing.class);
+
+        // When
+        hearingService.updateHearingList(caseData, "1 - Final - 21 Apr 2023 10:00");
+
+        // Then
+        assertThat(caseData.getHearingDate()).isNull();
+    }
+
+    @Test
+    void shouldUpdateHearingDateToNextEarliestListedWhenOneHearingIsPostponed() throws JsonProcessingException {
+        // Given
+        Listing listing1 = getRecordListing(); // status Listed, date 2023-04-21
+        CaseData caseData = CaseData.builder().build();
+        hearingService.addListing(caseData, listing1);
+
+        Listing listing2 = getRecordListing(); // status Listed, date 2023-04-21
+        listing2.setDate(LocalDate.of(2023, 6, 15));
+        hearingService.addListing(caseData, listing2);
+
+        // Expect hearing date to be earliest of listed (2023-04-21)
+        assertThat(caseData.getHearingDate()).isEqualTo(LocalDate.of(2023, 4, 21));
+
+        Listing updatedListing1 = getRecordListing();
+        updatedListing1.setHearingStatus(HearingState.Postponed);
+        caseData.setListing(updatedListing1);
+
+        doReturn("test string")
+            .when(objectMapper)
+            .writeValueAsString(any(Listing.class));
+        doReturn(updatedListing1)
+            .when(objectMapper)
+            .readValue("test string", Listing.class);
+
+        // When - postponing the 2023-04-21 hearing
+        hearingService.updateHearingList(caseData, "2 - Final - 21 Apr 2023 10:00");
+
+        // Then - earliest listed should now be 2023-06-15
+        assertThat(caseData.getHearingDate()).isEqualTo(LocalDate.of(2023, 6, 15));
     }
 }
