@@ -1,18 +1,25 @@
 package uk.gov.hmcts.sptribs.caseworker.event;
 
-import lombok.Setter;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.RestClientException;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
+import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
+import uk.gov.hmcts.sptribs.common.service.AnonymisationService;
 import uk.gov.hmcts.sptribs.common.service.CcdSupplementaryDataService;
+import uk.gov.hmcts.sptribs.notification.dispatcher.AnonymityAppliedNotification;
+import uk.gov.hmcts.sptribs.notification.exception.NotificationException;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static java.lang.String.format;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_CASE_FLAG;
@@ -33,13 +40,14 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 
 @Component
 @Slf4j
-@Setter
+@RequiredArgsConstructor
 public class CaseworkerCaseFlag implements CCDConfig<CaseData, State, UserRole> {
 
     private static final String ALWAYS_HIDE = "flagLauncher = \"ALWAYS_HIDE\"";
 
-    @Autowired
-    private CcdSupplementaryDataService coreCaseApiService;
+    private final CcdSupplementaryDataService coreCaseApiService;
+    private final AnonymisationService anonymisationService;
+    private final AnonymityAppliedNotification anonymityAppliedNotification;
 
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
@@ -49,6 +57,7 @@ public class CaseworkerCaseFlag implements CCDConfig<CaseData, State, UserRole> 
             .name("Create Flag")
             .description("Create Flag")
             .showSummary()
+            .aboutToSubmitCallback(this::aboutToSubmit)
             .submittedCallback(this::submitted)
             .grant(CREATE_READ_UPDATE, AC_CASE_FLAGS_ADMIN, SUPER_USER,
                 ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER, ST_CIC_HEARING_CENTRE_ADMIN,
@@ -65,13 +74,43 @@ public class CaseworkerCaseFlag implements CCDConfig<CaseData, State, UserRole> 
                 null, null, null, null, "#ARGUMENT(CREATE)");
     }
 
+    public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(CaseDetails<CaseData, State> details,
+                                                                        CaseDetails<CaseData, State> beforeDetails) {
+        CaseData caseData = details.getData() == null ? CaseData.builder().build() : details.getData();
+        CaseData beforeData = beforeDetails == null ? null : beforeDetails.getData();
+        List<String> errors = new ArrayList<>();
+
+        anonymisationService.processAnonymityFlag(caseData, beforeData, errors);
+
+        if (details.getState() != null) {
+            caseData.setCaseStatus(details.getState());
+        }
+
+        return AboutToStartOrSubmitResponse.<CaseData, State>builder()
+            .data(caseData)
+            .errors(errors)
+            .build();
+    }
+
     public SubmittedCallbackResponse submitted(CaseDetails<CaseData, State> details,
                                                CaseDetails<CaseData, State> beforeDetails) {
 
-        coreCaseApiService.submitSupplementaryDataToCcd(details.getId().toString());
+        coreCaseApiService.submitSupplementaryDataToCcd(details.getId() == null ? null : details.getId().toString());
+
+        try {
+            anonymityAppliedNotification.sendAnonymityNotificationIfNewlyApplied(
+                details.getData(),
+                beforeDetails == null ? null : beforeDetails.getData()
+            );
+        } catch (NotificationException | RestClientException notificationException) {
+            log.warn("Failed to send anonymity notifications for case {}", details.getId(), notificationException);
+            return SubmittedCallbackResponse.builder()
+                .confirmationHeader(format("# Create flag notification failed %n## Please try again"))
+                .build();
+        }
 
         return SubmittedCallbackResponse.builder()
-                .confirmationHeader(format("# Flag created %n## This Flag has been added to case"))
-                .build();
+            .confirmationHeader(format("# Flag created %n## This Flag has been added to case"))
+            .build();
     }
 }

@@ -11,10 +11,10 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
-import uk.gov.hmcts.reform.idam.client.models.User;
-import uk.gov.hmcts.reform.idam.client.models.UserDetails;
+import uk.gov.hmcts.reform.idam.client.models.UserInfo;
 import uk.gov.hmcts.sptribs.common.repositories.CaseEventRepository;
 import uk.gov.hmcts.sptribs.common.repositories.exception.CaseEventRepositoryException;
+import uk.gov.hmcts.sptribs.idam.CICUser;
 import uk.gov.hmcts.sptribs.idam.IdamService;
 import uk.gov.hmcts.sptribs.systemupdate.service.CcdManagementException;
 import uk.gov.hmcts.sptribs.systemupdate.service.CcdUpdateService;
@@ -97,14 +97,14 @@ class SystemMigrateInitialCaseDocumentsTaskTest {
         @Captor
         private ArgumentCaptor<String> skipEventIdCaptor;
 
-        private User user;
+        private CICUser user;
 
         @BeforeEach
         void setUp() {
-            user = new User(SYSTEM_UPDATE_AUTH_TOKEN,
-                UserDetails.builder()
-                    .id("test-id-123")
-                    .email(TEST_SYSTEM_UPDATE_USER_EMAIL)
+            user = new CICUser(SYSTEM_UPDATE_AUTH_TOKEN,
+                UserInfo.builder()
+                    .uid("test-id-123")
+                    .sub(TEST_SYSTEM_UPDATE_USER_EMAIL)
                     .roles(List.of("caseworker"))
                     .build());
 

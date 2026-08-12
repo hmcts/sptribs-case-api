@@ -11,11 +11,11 @@ import uk.gov.hmcts.ccd.sdk.type.DynamicList;
 import uk.gov.hmcts.ccd.sdk.type.DynamicListElement;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
-import uk.gov.hmcts.reform.idam.client.models.User;
 import uk.gov.hmcts.sptribs.caseworker.model.HearingSummary;
 import uk.gov.hmcts.sptribs.caseworker.model.Judge;
 import uk.gov.hmcts.sptribs.caseworker.model.Listing;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
+import uk.gov.hmcts.sptribs.idam.CICUser;
 import uk.gov.hmcts.sptribs.idam.IdamService;
 import uk.gov.hmcts.sptribs.judicialrefdata.model.UserProfileRefreshResponse;
 import uk.gov.hmcts.sptribs.testutil.TestDataHelper;
@@ -93,7 +93,7 @@ class JudicialServiceTest {
         final CaseData caseData = CaseData.builder().build();
 
         //When
-        final User user = TestDataHelper.getUser();
+        final CICUser user = TestDataHelper.getUser();
         when(idamService.retrieveSystemUpdateUserDetails()).thenReturn(user);
         when(authTokenGenerator.generate()).thenReturn(TEST_SERVICE_AUTH_TOKEN);
         when(judicialClient.getUserProfiles(
@@ -126,7 +126,7 @@ class JudicialServiceTest {
     @Test
     void shouldReturnEmptyDynamicListWhenListFromJudicialRefDataCallIsNull() {
         //When
-        final User user = TestDataHelper.getUser();
+        final CICUser user = TestDataHelper.getUser();
         when(idamService.retrieveSystemUpdateUserDetails()).thenReturn(user);
         when(authTokenGenerator.generate()).thenReturn(TEST_SERVICE_AUTH_TOKEN);
         when(judicialClient.getUserProfiles(
@@ -144,7 +144,7 @@ class JudicialServiceTest {
     @Test
     void shouldReturnEmptyDynamicListWhenExceptionFromJudicialRefDataCall() {
         //When
-        final User user = TestDataHelper.getUser();
+        final CICUser user = TestDataHelper.getUser();
         when(idamService.retrieveSystemUpdateUserDetails()).thenReturn(user);
         when(authTokenGenerator.generate()).thenReturn(TEST_SERVICE_AUTH_TOKEN);
 
