@@ -43,10 +43,9 @@ import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 public class AudioVideoEvidenceBundleService {
 
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-    private static final String UNKNOWN_TYPE = "Unknown";
+    private static final String UNKNOWN = "Unknown";
     private static final String AUDIO_DOCUMENT_TYPE = "Audio Document";
     private static final String VIDEO_DOCUMENT_TYPE = "Video Document";
-    private static final String EMPTY_VALUE = "";
     private static final String AUDIO_VIDEO_EVIDENCE_TEMPLATE = "/templates/audio_video_evidence.html";
 
     private final PDFServiceClient pdfServiceClient;
@@ -108,12 +107,12 @@ public class AudioVideoEvidenceBundleService {
         if ("mp4".equals(extension)) {
             return VIDEO_DOCUMENT_TYPE;
         }
-        return UNKNOWN_TYPE;
+        return UNKNOWN;
     }
 
     private String resolveDocumentType(String documentTypeName) {
         if (StringUtils.isBlank(documentTypeName)) {
-            return UNKNOWN_TYPE;
+            return UNKNOWN;
         }
         try {
             return DocumentType.valueOf(documentTypeName).getLabel();
@@ -124,7 +123,7 @@ public class AudioVideoEvidenceBundleService {
 
     private String formatDate(LocalDate date) {
         if (date == null) {
-            return EMPTY_VALUE;
+            return UNKNOWN;
         }
         return DATE_FORMATTER.format(date);
     }

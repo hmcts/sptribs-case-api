@@ -261,7 +261,7 @@ public class CaseData {
         label = "Audio/video evidence bundle documents",
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
     )
-    private AudioVideoEvidenceBundleDocument audioVideoEvidenceBundleDocument; // bundle field
+    private AudioVideoEvidenceBundleDocument audioVideoEvidenceBundleDocument;
 
     @CCD(
         access = {DefaultAccess.class, CaseworkerWithCAAAccess.class}
