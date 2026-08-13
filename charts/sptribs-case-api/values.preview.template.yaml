@@ -72,7 +72,7 @@ ccd:
   consulIP: ${CONSUL_LB_IP}
 
   global:
-    idamApiUrl: https://idam-web-public.aat.platform.hmcts.net
+    idamApiUrl: https://idam-api.aat.platform.hmcts.net
     idamWebUrl: https://idam-web-public.aat.platform.hmcts.net
     dmStoreUrl: http://dm-store-aat.service.core-compute-aat.internal
     ccdAdminWebIngress: admin-web-${SERVICE_FQDN}
@@ -451,7 +451,7 @@ ccd-case-document-am-api:
     ingressHost: ccd-case-document-am-api-${SERVICE_FQDN}
     environment:
       CASE_DOCUMENT_S2S_AUTHORISED_SERVICES: ccd_case_document_am_api,ccd_gw,xui_webapp,ccd_data,bulk_scan_processor,em_npa_app,dg_docassembly_api,em_stitching_api,em_ccd_orchestrator,bulk_scan_orchestrator,sptribs_case_api,sptribs_frontend
-      IDAM_API_URL: https://idam-web-public.aat.platform.hmcts.net
+      IDAM_API_URL: https://idam-api.aat.platform.hmcts.net
       IDAM_OIDC_URL: https://idam-web-public.aat.platform.hmcts.net
       OIDC_ISSUER: https://forgerock-am.service.core-compute-idam-aat.internal:8443/openam/oauth2/hmcts
       S2S_URL: http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
@@ -472,6 +472,7 @@ xui-webapp:
     devmemoryRequests: 1024Mi
     devmemoryLimits: 1024Mi
     environment:
+      SERVICES_IDAM_API_URL: https://idam-api.aat.platform.hmcts.net
       SERVICES_CCD_COMPONENT_API: http://{{ .Release.Name }}-ccd-api-gw
       SERVICES_CCD_DATA_STORE_API: http://{{ .Release.Name }}-ccd-data-store-api
       SERVICES_DOCUMENTS_API_V2: http://{{ .Release.Name }}-ccd-case-document-am-api
@@ -493,6 +494,7 @@ xui-mo-webapp:
     image: hmctsprod.azurecr.io/xui/mo-webapp:latest
     ingressHost: xui-mo-${SERVICE_FQDN}
     environment:
+      IDAM_API_SERVICE: https://idam-api.aat.platform.hmcts.net
       MANAGE_CASE_LINK: https://xui-${SERVICE_FQDN}/cases
       MANAGE_ORG_LINK: https://xui-mo-${SERVICE_FQDN}
       SERVICES_CCD_DATA_STORE_API: http://{{ .Release.Name }}-ccd-data-store-api
@@ -523,6 +525,8 @@ aac-manage-case-assignment:
     image: hmctsprod.azurecr.io/aac/manage-case-assignment:latest
     ingressHost: aac-${SERVICE_FQDN}
     environment:
+      IDAM_API_URL: https://idam-api.aat.platform.hmcts.net
+      IDAM_OIDC_URL: https://idam-web-public.aat.platform.hmcts.net
       MCA_DS_PROXY_URLS_ALLOWED_LIST: /searchCases.*,/internal/searchCases.*,/internal/cases.*
       MCA_DEF_STORE_PROXY_URLS_ALLOWED_LIST: /api/display/challenge-questions.*
       MANAGE_CASE_S2S_AUTHORISED_SERVICES: xui_webapp,ccd_data,fpl_case_service,sptribs_frontend,sptribs_ccd_submission,finrem_case_orchestration
@@ -540,6 +544,7 @@ em-ccdorc:
     image: hmctsprod.azurecr.io/em/ccdorc:latest
     ingressHost: em-ccdorc-${SERVICE_FQDN}
     environment:
+      IDAM_API_BASE_URI: https://idam-api.aat.platform.hmcts.net
       EM_STITCHING_API_URL: https://em-stitching-${SERVICE_FQDN}
       CCD_DATA_API_URL: https://ccd-data-store-api-${SERVICE_FQDN}
       CALLBACK_DOMAIN: em-ccdorc-${SERVICE_FQDN}
@@ -566,6 +571,7 @@ em-stitching:
     image: hmctsprod.azurecr.io/em/stitching:latest
     ingressHost: em-stitching-${SERVICE_FQDN}
     environment:
+      IDAM_API_BASE_URI: https://idam-api.aat.platform.hmcts.net
       CDAM_URL: http://{{ .Release.Name }}-ccd-case-document-am-api
       SPRING_DATASOURCE_HOST: '{{ tpl .Values.global.postgresHostname $}}'
       SPRING_DATASOURCE_NAME: "pr-${CHANGE_ID}-emstitch"
