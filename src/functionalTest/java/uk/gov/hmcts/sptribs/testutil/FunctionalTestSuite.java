@@ -42,8 +42,11 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
@@ -92,6 +95,8 @@ public abstract class FunctionalTestSuite {
 
     @Autowired
     protected FunctionalTestDataManager functionalTestDataManager;
+
+    private final Set<Long> trackedReferences = new LinkedHashSet<>();
 
     protected static final String EVENT_PARAM = "event";
     protected static final String UPDATE = "UPDATE";
@@ -148,8 +153,23 @@ public abstract class FunctionalTestSuite {
         CaseData formatter = CaseData.builder().build();
         caseData.put("hyphenatedCaseRef", formatter.formatCaseRef(createdCase.getId()));
 
-        functionalTestDataManager.addReference(createdCase.getId());
+        trackReference(createdCase.getId());
         return createdCase.getId();
+    }
+
+    protected Long trackReference(Long reference) {
+        synchronized (trackedReferences) {
+            trackedReferences.add(reference);
+        }
+        return reference;
+    }
+
+    private List<Long> drainTrackedReferences() {
+        synchronized (trackedReferences) {
+            List<Long> snapshot = new ArrayList<>(trackedReferences);
+            trackedReferences.clear();
+            return snapshot;
+        }
     }
 
     protected Response triggerCallback(Map<String, Object> caseData, String eventId, String url) throws IOException {
@@ -311,7 +331,7 @@ public abstract class FunctionalTestSuite {
         CaseDetails caseDetails = createCitizenCase();
 
         CaseDetails updatedCase = updateCitizenCase(EventConstants.CITIZEN_CIC_SUBMIT_CASE, caseDetails.getId(), caseData);
-        functionalTestDataManager.addReference(updatedCase.getId());
+        trackReference(updatedCase.getId());
         return updatedCase;
     }
 
@@ -499,7 +519,7 @@ public abstract class FunctionalTestSuite {
     @AfterAll
     void tearDownDataManager() throws SQLException {
 
-        for (long reference : functionalTestDataManager.drainReferences()) {
+        for (long reference : drainTrackedReferences()) {
             functionalTestDataManager.clearDown(reference);
         }
         functionalTestDataManager.closeAll();

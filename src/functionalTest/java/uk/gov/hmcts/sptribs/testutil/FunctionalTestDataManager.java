@@ -12,10 +12,6 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
 
 import static uk.gov.hmcts.sptribs.testutil.FunctionalTestConstants.KEY_CASE_CORRESPONDENCES_REFERENCE;
 import static uk.gov.hmcts.sptribs.testutil.FunctionalTestConstants.KEY_CASE_DATA_ID;
@@ -30,7 +26,6 @@ import static uk.gov.hmcts.sptribs.testutil.FunctionalTestConstants.TABLE_CASE_E
 public class FunctionalTestDataManager {
 
     private static final Logger log = LoggerFactory.getLogger(FunctionalTestDataManager.class);
-    private static final Set<Long> testReferences = new LinkedHashSet<>();
 
     @Value("${postgres.host}")
     private String host;
@@ -149,27 +144,6 @@ public class FunctionalTestDataManager {
     }
 
     public void closeAll() {
-        clearReferences();
         log.debug("No shared database connection to close.");
-    }
-
-    public void addReference(Long reference) {
-        synchronized (testReferences) {
-            testReferences.add(reference);
-        }
-    }
-
-    public List<Long> drainReferences() {
-        synchronized (testReferences) {
-            List<Long> snapshot = new ArrayList<>(testReferences);
-            testReferences.clear();
-            return snapshot;
-        }
-    }
-
-    public void clearReferences() {
-        synchronized (testReferences) {
-            testReferences.clear();
-        }
     }
 }
