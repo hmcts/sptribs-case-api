@@ -517,11 +517,23 @@ public abstract class FunctionalTestSuite {
 
 
     @AfterAll
-    void tearDownDataManager() throws SQLException {
+    void tearDownDataManager() {
+        List<Long> references = drainTrackedReferences();
+        int failedCleanups = 0;
 
-        for (long reference : drainTrackedReferences()) {
-            functionalTestDataManager.clearDown(reference);
+        for (long reference : references) {
+            try {
+                functionalTestDataManager.clearDown(reference);
+            } catch (Exception e) {
+                failedCleanups++;
+                log.error("Failed to clear down reference {}", reference, e);
+            }
         }
+
+        if (failedCleanups > 0) {
+            log.warn("clearDown failed for {} out of {} reference(s)", failedCleanups, references.size());
+        }
+
         functionalTestDataManager.closeAll();
     }
 }

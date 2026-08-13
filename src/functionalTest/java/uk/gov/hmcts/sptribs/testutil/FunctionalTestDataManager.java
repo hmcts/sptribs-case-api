@@ -56,8 +56,8 @@ public class FunctionalTestDataManager {
 
         try (Connection connection = createConnection()) {
             deleteCaseEvent(connection, reference);
-            deleteCaseData(connection, reference);
             deleteCaseCorrespondences(connection, reference);
+            deleteCaseData(connection, reference);
         }
         deleteCaseFromElasticsearch(reference);
 
