@@ -47,7 +47,6 @@ public class CcdCaseRoleService {
                 authTokenGenerator.generate(),
                 request
             );
-
             log.info("Assigned {} case role for case {} and actorId {}", CREATOR_ROLE, ccdReference, actorId);
         } catch (Exception ex) {
             log.error(
