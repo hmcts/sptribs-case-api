@@ -107,7 +107,7 @@ ccd:
         LOG_CALLBACK_DETAILS: "*"
         DATA_STORE_S2S_AUTHORISED_SERVICES: ccd_gw,ccd_gateway,ccd_data,aac_manage_case_assignment,xui_webapp,ccd_case_document_am_api,sptribs_frontend,sptribs_case_api,sptribs_dss_update_case_web,em_ccd_orchestrator,wa_task_management_api,wa_task_monitor,wa_case_event_handler,wa_workflow_api
         CCD_S2S_AUTHORISED_SERVICES_CASE_USER_ROLES: aac_manage_case_assignment,fpl_case_service,finrem_case_orchestration,iac,sptribs_frontend,civil_service,sptribs_case_api
-        ELASTIC_SEARCH_HOSTS: {{ .Release.Name }}-es-master:9200
+        ELASTIC_SEARCH_HOSTS: "{{ .Release.Name }}-es-master:9200"
         ELASTIC_SEARCH_DATA_NODES_HOSTS: http://{{ .Release.Name }}-es-master:9200
         CASE_DOCUMENT_AM_URL: http://{{ .Release.Name }}-ccd-case-document-am-api
         CCD_DECENTRALISED_CASE-TYPE-SERVICE-URLS_CriminalInjuriesCompensation: https://${SERVICE_FQDN}
@@ -170,7 +170,7 @@ ccd:
         DEFINITION_STORE_IDAM_KEY: ${DEFINITION_STORE_S2S_KEY}
         IDAM_USER_URL: https://idam-web-public.aat.platform.hmcts.net
         ELASTIC_SEARCH_ENABLED: true
-        ELASTIC_SEARCH_HOST: {{ .Release.Name }}-es-master
+        ELASTIC_SEARCH_HOST: "{{ .Release.Name }}-es-master"
       ingressHost: ccd-definition-store-${SERVICE_FQDN}
       autoscaling:
         enabled: false
