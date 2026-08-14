@@ -33,6 +33,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.common.ccd.CcdJurisdiction;
 import uk.gov.hmcts.sptribs.common.ccd.CcdServiceCode;
 import uk.gov.hmcts.sptribs.common.config.AppsConfig;
+import uk.gov.hmcts.sptribs.document.model.DocumentType;
 import uk.gov.hmcts.sptribs.idam.IdamService;
 import uk.gov.hmcts.sptribs.services.cdam.CaseDocumentClientApi;
 import uk.gov.hmcts.sptribs.systemupdate.service.CcdSearchService;
@@ -47,16 +48,20 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static org.camunda.bpm.model.xml.impl.util.ModelUtil.valueAsString;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_CONTACT_PARTIES;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_CREATE_CASE;
 import static uk.gov.hmcts.sptribs.common.config.ControllerConstants.SERVICE_AUTHORIZATION;
 import static uk.gov.hmcts.sptribs.controllers.model.DssCaseDataRequest.convertDssCaseDataToRequest;
@@ -111,12 +116,7 @@ public abstract class FunctionalTestSuite {
     @Autowired
     protected CaseDocumentsFTDataManager caseDocumentsFTDataManager;
 
-    protected static final String EVENT_PARAM = "event";
-    protected static final String UPDATE = "UPDATE";
-    protected static final String UPDATE_CASE = "UPDATE_CASE";
-    protected static final String SUBMIT = "SUBMIT";
-
-    protected CaseDetails createCaseInCcd() {
+    protected CaseDetails createCaseInCcd(boolean createCaseWithIdamAccessEmail) {
         String caseworkerToken = idamTokenGenerator.generateIdamTokenForCaseworker();
         String s2sTokenForCaseApi = serviceAuthenticationGenerator.generate();
         String caseworkerUserId = idamTokenGenerator.getUserInfoFor(caseworkerToken).getUid();
@@ -129,10 +129,20 @@ public abstract class FunctionalTestSuite {
                 .summary("Create draft case")
                 .description("Create draft case for functional tests")
                 .build())
-            .data(Map.of(
-            ))
+            .data(Map.of())
             .build();
-        return submitNewCase(caseDataContent, caseworkerToken, s2sTokenForCaseApi, caseworkerUserId);
+
+        if (createCaseWithIdamAccessEmail) {
+            caseDataContent.setData(Map.of(
+                "cicCaseEmail", "sptribsauto-citizen@mailinator.com",
+                "cicCaseAddress", Map.of("PostCode", "SW1A 1AA")
+            ));
+        }
+
+        CaseDetails createdCase = submitNewCase(caseDataContent, caseworkerToken, s2sTokenForCaseApi, caseworkerUserId);
+        functionalTestDataManager.addReference(createdCase.getId());
+
+        return createdCase;
     }
 
     private StartEventResponse startEventForCreateCase(String caseworkerToken, String s2sToken, String caseworkerUserId) {
@@ -160,15 +170,6 @@ public abstract class FunctionalTestSuite {
         );
     }
 
-    protected Long createPersistedCaseReference(Map<String, Object> caseData) {
-        CaseDetails createdCase = createCaseInCcd();
-        CaseData formatter = CaseData.builder().build();
-        caseData.put("hyphenatedCaseRef", formatter.formatCaseRef(createdCase.getId()));
-
-        functionalTestDataManager.addReference(createdCase.getId());
-        return createdCase.getId();
-    }
-
     protected Response triggerCallback(Map<String, Object> caseData, String eventId, String url, boolean createTestDocument)
         throws IOException, SQLException {
 
@@ -185,8 +186,16 @@ public abstract class FunctionalTestSuite {
         boolean createCaseForSubmittedOrAboutToSubmitEvent =
             createCase && (TestConstants.SUBMITTED_URL.equals(url) || TestConstants.ABOUT_TO_SUBMIT_URL.equals(url));
 
+        CaseDetails createdCase = null;
         if (createTestDocument || createCaseForSubmittedOrAboutToSubmitEvent) {
-            testCaseRef = createPersistedCaseReference(caseData);
+            if (eventId.contains(CASEWORKER_CONTACT_PARTIES)) {
+                createdCase = createCaseInCcd(true);
+            } else {
+                createdCase = createCaseInCcd(false);
+            }
+            CaseData formatter = CaseData.builder().build();
+            testCaseRef = createdCase.getId();
+            caseData.put("hyphenatedCaseRef", formatter.formatCaseRef(testCaseRef));
         }
 
         if (createTestDocument) {
@@ -461,7 +470,8 @@ public abstract class FunctionalTestSuite {
             final String jurisdiction = appsConfig.getApps().getFirst().getJurisdiction();
             try {
                 final InMemoryMultipartFile inMemoryMultipartFile =
-                    new InMemoryMultipartFile(resource.getFilename(), resource.getContentAsByteArray());
+                    new InMemoryMultipartFile(resource.getFilename().split("\\.")[0] + "_" + UUID.randomUUID() + ".pdf",
+                        resource.getContentAsByteArray());
 
                 final DocumentUploadRequest documentUploadRequest =
                     new DocumentUploadRequest(Classification.RESTRICTED.toString(),
@@ -519,16 +529,13 @@ public abstract class FunctionalTestSuite {
             String uuid = placeholdersAndUuids.get(placeholder);
 
             if (uuid == null) {
-                uuid = UUID.randomUUID().toString();
+                Document testDocument = uploadTestDocument(new ClassPathResource("data/sample_file.pdf")).getDocuments().getFirst();
+                uuid = testDocument.links.self.href.split("/documents/")[1];
                 placeholdersAndUuids.put(placeholder, uuid);
-                caseDocumentsFTDataManager.saveTestDocumentEntity(testCaseRef, uuid);
+                caseDocumentsFTDataManager.saveTestDocumentEntity(testCaseRef, testDocument.links.self.href,
+                    testDocument.originalDocumentName, DocumentType.APPLICATION_FORM.name());
             }
         }
-
-        for (Map.Entry<String, String> placeholderAndUuid : placeholdersAndUuids.entrySet()) {
-            caseDataJsonString = caseDataJsonString.replace(placeholderAndUuid.getKey(), placeholderAndUuid.getValue());
-        }
-
         caseData.clear();
         caseData.putAll(CaseDataUtil.caseDataFromString(caseDataJsonString));
     }

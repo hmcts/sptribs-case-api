@@ -2,6 +2,7 @@ package uk.gov.hmcts.sptribs.testutil.data;
 
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.sptribs.cdam.model.Document;
 import uk.gov.hmcts.sptribs.document.model.DocumentEntity;
 
 import java.sql.PreparedStatement;
@@ -69,7 +70,33 @@ public class CaseDocumentsFTDataManager extends FunctionalTestDataManager {
     }
 
 
-    public void saveTestDocumentEntity(long reference, String docUrlUuid) throws SQLException {
+    public void saveTestDocumentEntity(long reference, String testDocumentUrl, String testDocumentFilename, String documentTypeName) throws SQLException {
+        Timestamp currentDateTime = Timestamp.valueOf(LocalDateTime.now());
+        //always sets case-document type to doc management (2)
+        String sql = "INSERT INTO " + TABLE_CASE_DOCUMENTS + " ("
+            + KEY_CASE_DOCUMENTS_REFERENCE
+            + ", saved_at"
+            + ", document_url"
+            + ", document_binary_url"
+            + ", document_filename"
+            + ", document_type_name"
+            + ", case_document_type_id"
+            + ", updated_at"
+            + ") VALUES (?, ?, ?, ?, ?, ?, CAST(2 AS bigint), ?)";
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setLong(1, reference);
+            stmt.setTimestamp(2, currentDateTime);
+            stmt.setString(3, testDocumentUrl);
+            stmt.setString(4, testDocumentUrl + "/binary");
+            stmt.setString(5, testDocumentFilename);
+            stmt.setString(6, documentTypeName);
+            stmt.setTimestamp(7, currentDateTime);
+            stmt.executeUpdate();
+        }
+    }
+
+    public void saveTestBundleDocumentsAndContactPartiesDocumentsAndOrderAndDecisionDocuments(long reference, String docUrlUuid)
+        throws SQLException {
         //always sets case-document type to doc management (2)
         String sql = "INSERT INTO " + TABLE_CASE_DOCUMENTS + " ("
             + KEY_CASE_DOCUMENTS_REFERENCE
