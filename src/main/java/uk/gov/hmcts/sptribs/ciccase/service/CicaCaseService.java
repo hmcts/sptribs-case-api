@@ -98,3 +98,4 @@ public class CicaCaseService {
         return postcode != null ? postcode.replace(" ", "").toLowerCase() : "";
     }
 }
+
