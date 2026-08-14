@@ -70,6 +70,7 @@ ccd:
 
   global:
     IDAM_API_URL: https://idam-web-public.aat.platform.hmcts.net
+    idamApiUrl: https://idam-web-public.aat.platform.hmcts.net
     idamWebUrl: https://idam-web-public.aat.platform.hmcts.net
     dmStoreUrl: http://dm-store-aat.service.core-compute-aat.internal
     ccdAdminWebIngress: admin-web-${SERVICE_FQDN}
