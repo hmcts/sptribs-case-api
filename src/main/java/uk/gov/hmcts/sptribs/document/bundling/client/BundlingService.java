@@ -25,8 +25,10 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Stream;
 
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static uk.gov.hmcts.sptribs.document.bundling.BundlingConstants.CASE_BUNDLES;
@@ -54,6 +56,9 @@ import static uk.gov.hmcts.sptribs.document.bundling.BundlingConstants.VALUE;
 public class BundlingService {
 
     private static final String BUNDLE_FILE_NAME = "st_cic_bundle_all_case.yaml";
+    private static final String FURTHER_DOCUMENTS_FOLDER = "Further Documents";
+    private static final String SOURCE_DOCUMENT = "sourceDocument";
+    private static final String CATEGORY_ID = "category_id";
 
     @Autowired
     private HttpServletRequest httpServletRequest;
@@ -165,7 +170,9 @@ public class BundlingService {
                 }
                 bundleList.add(bundle);
             }));
-
+        if (containsFurtherDocumentFolder(bundleList)) {
+            appendCategoryIdToFurtherDocumentNames(bundleList);
+        }
         return bundleList;
     }
 
@@ -227,14 +234,64 @@ public class BundlingService {
         List<BundleDocument> documents = new ArrayList<>();
         documentsList.forEach(listItem -> {
             Map<String, Object> document = (Map<String, Object>) listItem.get(VALUE);
+            Map<String, Object> sourceDocument = (Map<String, Object>) document.get(SOURCE_DOCUMENT);
             BundleDocument bundleDocument = BundleDocument.builder()
                 .name(MapUtils.getString(document, NAME, ""))
                 .description(MapUtils.getString(document, DESCRIPTION, ""))
                 .sortIndex(MapUtils.getIntValue(document, SORT_INDEX))
+                .sourceDocument(sourceDocument == null ? null : Document.builder()
+                    .url(MapUtils.getString(sourceDocument, DOCUMENT_URL, ""))
+                    .binaryUrl(MapUtils.getString(sourceDocument, DOCUMENT_BINARY_URL, ""))
+                    .filename(MapUtils.getString(sourceDocument, DOCUMENT_FILENAME, ""))
+                    .categoryId(MapUtils.getString(sourceDocument, CATEGORY_ID, ""))
+                    .build())
                 .build();
             documents.add(bundleDocument);
         });
 
         return documents;
+    }
+
+    private void appendCategoryIdToFurtherDocumentNames(List<Bundle> bundleList) {
+        getFurtherDocumentFolders(bundleList)
+            .flatMap(this::getFolderDocuments)
+            .forEach(this::prependCategoryIdToDocumentName);
+    }
+
+    private Stream<BundleFolder> getFurtherDocumentFolders(List<Bundle> bundleList) {
+        return bundleList.stream()
+            .map(Bundle::getFolders)
+            .filter(folders -> !CollectionUtils.isEmpty(folders))
+            .flatMap(List::stream)
+            .map(ListValue::getValue)
+            .filter(folder -> folder != null && FURTHER_DOCUMENTS_FOLDER.equalsIgnoreCase(folder.getName()));
+    }
+
+    private Stream<BundleDocument> getFolderDocuments(BundleFolder folder) {
+        return Optional.ofNullable(folder.getDocuments()).orElse(List.of()).stream()
+            .map(ListValue::getValue)
+            .filter(Objects::nonNull);
+    }
+
+    private void prependCategoryIdToDocumentName(BundleDocument document) {
+        Optional.ofNullable(document)
+            .map(BundleDocument::getSourceDocument)
+            .map(Document::getCategoryId)
+            .filter(categoryId -> !categoryId.isBlank())
+            .ifPresent(categoryId -> {
+                String prefix = categoryId + " - ";
+                if (document.getName() != null && !document.getName().startsWith(prefix)) {
+                    document.setName(prefix + document.getName());
+                }
+            });
+    }
+
+    private boolean containsFurtherDocumentFolder(List<Bundle> bundleList) {
+        return bundleList.stream()
+            .anyMatch(bundle -> !CollectionUtils.isEmpty(bundle.getFolders())
+                && bundle.getFolders().stream()
+                .map(ListValue::getValue)
+                .anyMatch(folder -> folder != null && FURTHER_DOCUMENTS_FOLDER.equalsIgnoreCase(folder.getName())));
+
     }
 }

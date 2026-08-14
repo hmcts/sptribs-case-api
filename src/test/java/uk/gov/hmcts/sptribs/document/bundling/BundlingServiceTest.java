@@ -75,6 +75,9 @@ public class BundlingServiceTest {
     public static final String DOCUMENT_NAME = "documentName";
     public static final String DOCUMENT_NAME_1 = "documentName1";
     public static final String DOCUMENT_NAME_2 = "documentName2";
+    public static final String FURTHER_DOCUMENTS_FOLDER = "Further Documents";
+    public static final String SOURCE_DOCUMENT = "sourceDocument";
+    public static final String CATEGORY_ID = "category_id";
     public static LinkedHashMap<String, Object> DEFAULT_BUNDLE_MAP;
     public static LinkedHashMap<String, Object> DEFAULT_BUNDLE_MAP_NULL_FOLDER;
     public static LinkedHashMap<String, Object> BUNDLE_MAP_NULL_FOLDER_DOCUMENT_NULL_DOCUMENTS;
@@ -267,6 +270,92 @@ public class BundlingServiceTest {
         final List<BundleDocument> bundleDocumentList = Collections.emptyList();
         final List<ListValue<BundleDocument>> resultList = bundlingService.buildBundleDocumentListValues(bundleDocumentList);
         assertThat(resultList).isNull();
+    }
+
+    @Test
+    void shouldPrefixFurtherDocumentsWithCategoryId() {
+        final LinkedHashMap<String, Object> furtherDoc = createDocumentMap(DOCUMENT_NAME, "CI-123");
+        final List<LinkedHashMap<String, Object>> folderDocuments = new ArrayList<>();
+        final LinkedHashMap<String, Object> folderDocumentListMap = new LinkedHashMap<>();
+        folderDocumentListMap.put("value", furtherDoc);
+        folderDocuments.add(folderDocumentListMap);
+
+        final LinkedHashMap<String, Object> bundleMap = new LinkedHashMap<>();
+        bundleMap.put(ID, "1");
+        bundleMap.put(PAGINATION_STYLE, BundlePaginationStyle.off);
+        bundleMap.put(PAGE_NUMBER_FORMAT, PageNumberFormat.numberOfPages);
+        bundleMap.put(STITCHING_FAILURE_MESSAGE, "1");
+        bundleMap.put(STITCHING_STATUS, "1");
+        bundleMap.put("stitchedDocument", null);
+        bundleMap.put(DOCUMENTS, null);
+
+        final LinkedHashMap<String, Object> folder = createFolderMap(FURTHER_DOCUMENTS_FOLDER, folderDocuments);
+        final LinkedHashMap<String, Object> folderListMap = new LinkedHashMap<>();
+        folderListMap.put("value", folder);
+        bundleMap.put(FOLDERS, List.of(folderListMap));
+
+        final LinkedHashMap<String, Object> bundleListMap = new LinkedHashMap<>();
+        bundleListMap.put("value", bundleMap);
+
+        final LinkedHashMap<String, Object> caseBundlesMap = new LinkedHashMap<>();
+        caseBundlesMap.put("caseBundles", List.of(bundleListMap));
+
+        final BundleResponse bundleResponse = new BundleResponse();
+        bundleResponse.setData(caseBundlesMap);
+
+        when(authTokenGenerator.generate()).thenReturn(TEST_SERVICE_AUTH_TOKEN);
+        when(httpServletRequest.getHeader(AUTHORIZATION)).thenReturn(TEST_AUTHORIZATION_TOKEN);
+        when(bundlingClient.createBundle(any(), any(), any())).thenReturn(bundleResponse);
+        when(clock.instant()).thenReturn(instant);
+        when(clock.getZone()).thenReturn(zoneId);
+
+        final Callback callback = new Callback(updatedCaseDetails, beforeCaseDetails, CREATE_BUNDLE, true);
+        final BundleCallback bundleCallback = new BundleCallback(callback);
+
+        final List<Bundle> result = bundlingService.createBundle(bundleCallback);
+
+        assertThat(result).hasSize(1);
+        assertThat(result.get(0).getFolders()).hasSize(1);
+        final BundleFolder parsedFolder = result.get(0).getFolders().get(0).getValue();
+        assertThat(parsedFolder.getName()).isEqualTo(FURTHER_DOCUMENTS_FOLDER);
+        assertThat(parsedFolder.getDocuments()).hasSize(1);
+        final BundleDocument parsedDocument = parsedFolder.getDocuments().get(0).getValue();
+        assertThat(parsedDocument.getName()).isEqualTo("CI-123 - " + DOCUMENT_NAME);
+        assertThat(parsedDocument.getSourceDocument()).isNotNull();
+        assertThat(parsedDocument.getSourceDocument().getCategoryId()).isEqualTo("CI-123");
+    }
+
+    @Test
+    void shouldNotPrefixWhenFolderIsNotFurtherDocuments() {
+        final LinkedHashMap<String, Object> folderDoc = createDocumentMap(DOCUMENT_NAME, "CI-123");
+        final List<LinkedHashMap<String, Object>> folderDocuments = new ArrayList<>();
+        final LinkedHashMap<String, Object> folderDocumentListMap = new LinkedHashMap<>();
+        folderDocumentListMap.put("value", folderDoc);
+        folderDocuments.add(folderDocumentListMap);
+
+        final LinkedHashMap<String, Object> bundleListMap = createBundleList(null, folderDocuments, null);
+        final LinkedHashMap<String, Object> caseBundlesMap = new LinkedHashMap<>();
+        caseBundlesMap.put("caseBundles", List.of(bundleListMap));
+
+        final BundleResponse bundleResponse = new BundleResponse();
+        bundleResponse.setData(caseBundlesMap);
+
+        when(authTokenGenerator.generate()).thenReturn(TEST_SERVICE_AUTH_TOKEN);
+        when(httpServletRequest.getHeader(AUTHORIZATION)).thenReturn(TEST_AUTHORIZATION_TOKEN);
+        when(bundlingClient.createBundle(any(), any(), any())).thenReturn(bundleResponse);
+        when(clock.instant()).thenReturn(instant);
+        when(clock.getZone()).thenReturn(zoneId);
+
+        final Callback callback = new Callback(updatedCaseDetails, beforeCaseDetails, CREATE_BUNDLE, true);
+        final BundleCallback bundleCallback = new BundleCallback(callback);
+
+        final List<Bundle> result = bundlingService.createBundle(bundleCallback);
+
+        assertThat(result).hasSize(1);
+        assertThat(result.get(0).getFolders()).hasSize(1);
+        assertThat(result.get(0).getFolders().get(0).getValue().getDocuments()).hasSize(1);
+        assertThat(result.get(0).getFolders().get(0).getValue().getDocuments().get(0).getValue().getName())
+            .isEqualTo(DOCUMENT_NAME);
     }
 
     static Stream<Arguments> createBundleTestValues() {
@@ -519,9 +608,25 @@ public class BundlingServiceTest {
         return document;
     }
 
+    private static LinkedHashMap<String, Object> createDocumentMap(String name, String categoryId) {
+        final LinkedHashMap<String, Object> document = createDocumentMap(name);
+        final LinkedHashMap<String, Object> sourceDocument = new LinkedHashMap<>();
+        sourceDocument.put(DOCUMENT_URL, "http://url/documents/id");
+        sourceDocument.put(DOCUMENT_FILENAME, name + ".pdf");
+        sourceDocument.put(DOCUMENT_BINARY_URL, "http://url/documents/id/binary");
+        sourceDocument.put(CATEGORY_ID, categoryId);
+        document.put(SOURCE_DOCUMENT, sourceDocument);
+        return document;
+    }
+
     private static LinkedHashMap<String, Object> createFolderMap(List<LinkedHashMap<String, Object>> folderDocumentsList) {
+        return createFolderMap(FOLDER_NAME, folderDocumentsList);
+    }
+
+    private static LinkedHashMap<String, Object> createFolderMap(String folderName,
+                                                                  List<LinkedHashMap<String, Object>> folderDocumentsList) {
         final LinkedHashMap<String, Object> folder = new LinkedHashMap<>();
-        folder.put(NAME, FOLDER_NAME);
+        folder.put(NAME, folderName);
         folder.put(SORT_INDEX, 1);
         folder.put(DOCUMENTS, folderDocumentsList);
         return folder;
