@@ -160,8 +160,7 @@ public class NotificationServiceCIC {
         final String referenceId = UUID.randomUUID().toString();
 
         try {
-            if (!CollectionUtils.isEmpty(notificationRequest.getTemplateDocumentVars())
-                && !CollectionUtils.isEmpty(notificationRequest.getAttachedDocuments())) {
+            if (!CollectionUtils.isEmpty(notificationRequest.getTemplateDocumentVars())) {
                 addAttachmentsToTemplateVars(templateVars,
                     notificationRequest.getTemplateDocumentVars(),
                     notificationRequest.getAttachedDocuments());
@@ -294,63 +293,61 @@ public class NotificationServiceCIC {
             if (templatePlaceHolder.contains(DOC_AVAILABLE)) {
                 templateVars.put(templatePlaceHolder, value);
             } else {
-                addDocumentDetailsIfCDEnabled(templateVars, selectedDocuments, value, templatePlaceHolder);
+                addLinkOrDocumentDetails(templateVars, selectedDocuments, templatePlaceHolder, value);
             }
-        }
-    }
-
-    private void addDocumentDetailsIfCDEnabled(
-        Map<String, Object> templateVars,
-        List<CaseworkerCICDocument> selectedDocuments,
-        String value,
-        String templatePlaceHolder
-    ) {
-        if (citizenDashboardEnabled) {
-            addSimpleDocumentDetails(templateVars, selectedDocuments, value, templatePlaceHolder);
-        } else {
-            addLinkOrDocumentDetails(templateVars, selectedDocuments, value, templatePlaceHolder);
         }
     }
 
     private void addLinkOrDocumentDetails(Map<String, Object> templateVars,
                                           List<CaseworkerCICDocument> selectedDocuments,
-                                          String documentUUID,
-                                          String documentTemplateName) {
+                                          String documentTemplateName,
+                                          String documentUUID) {
+        if (StringUtils.isEmpty(documentUUID)) {
+            log.info("Document not available for: {}", documentTemplateName);
+            templateVars.put(documentTemplateName, "");
+            return;
+        }
+
+        byte[] uploadedDocument = fetchDocumentBinary(documentUUID);
+        if (uploadedDocument == null) {
+            templateVars.put(documentTemplateName, "");
+            return;
+        }
+
+        log.debug("Document available for: {}", documentTemplateName);
+
+        boolean attachLink = !citizenDashboardEnabled && uploadedDocument.length <= TWO_MEGABYTES;
+        if (attachLink) {
+            templateVars.put(documentTemplateName, getJsonFileAttachment(uploadedDocument));
+        } else if (citizenDashboardEnabled) {
+            addSimpleDocumentDetails(templateVars, selectedDocuments, documentTemplateName, documentUUID);
+        } else {
+            addDocumentDetails(templateVars, selectedDocuments, documentTemplateName, documentUUID);
+        }
+    }
+
+    private byte[] fetchDocumentBinary(String documentUUID) {
         final CICUser user = idamService.retrieveUser(request.getHeader(AUTHORIZATION));
         final String authorisation = user.getAuthToken();
         final String serviceAuthorization = authTokenGenerator.generate();
 
-        if (StringUtils.isNotEmpty(documentUUID)) {
-            ResponseEntity<byte[]> documentBinaryResponse =
-                caseDocumentClientApi.getDocumentBinary(authorisation, serviceAuthorization, UUID.fromString(documentUUID));
-            if (!documentBinaryResponse.getStatusCode().is2xxSuccessful()) {
-                log.error("Response code {} received when fetching document binary for id {}",
-                    documentBinaryResponse.getStatusCode(), documentUUID);
-                throw new NotificationException(
-                    new Exception(String.format("Failed to get document binary for id %s", documentUUID)));
-            }
+        ResponseEntity<byte[]> documentBinaryResponse =
+            caseDocumentClientApi.getDocumentBinary(authorisation, serviceAuthorization, UUID.fromString(documentUUID));
 
-            byte[] uploadedDocument = documentBinaryResponse.getBody();
-            if (uploadedDocument != null) {
-                log.debug("Document available for: {}", documentTemplateName);
-                if (uploadedDocument.length <= TWO_MEGABYTES) {
-                    templateVars.put(documentTemplateName, getJsonFileAttachment(uploadedDocument));
-                } else {
-                    addDocumentDetails(templateVars, selectedDocuments, documentUUID, documentTemplateName);
-                }
-            } else {
-                templateVars.put(documentTemplateName, "");
-            }
-        } else {
-            log.info("Document not available for: {}", documentTemplateName);
-            templateVars.put(documentTemplateName, "");
+        if (!documentBinaryResponse.getStatusCode().is2xxSuccessful()) {
+            log.error("Response code {} received when fetching document binary for id {}",
+                documentBinaryResponse.getStatusCode(), documentUUID);
+            throw new NotificationException(
+                new Exception(String.format("Failed to get document binary for id %s", documentUUID)));
         }
+
+        return documentBinaryResponse.getBody();
     }
 
     private static void addDocumentDetails(Map<String, Object> templateVars,
                                            List<CaseworkerCICDocument> selectedDocuments,
-                                           String item,
-                                           String docName) {
+                                           String docName,
+                                           String item) {
         CaseworkerCICDocument document = selectedDocuments.stream()
             .filter(doc -> doc.getDocumentLink().getBinaryUrl().contains(item))
             .findFirst()
@@ -372,11 +369,13 @@ public class NotificationServiceCIC {
             .orElseThrow(() -> new NotificationException(
                     new Exception(String.format("Unable to find document details for document id: %s", documentId))));
 
-        String documentDetails = String.format(
-                "%nFilename: %s%nDescription: %s%n",
-                document.getDocumentLink().getFilename(), document.getDocumentEmailContent());
+        StringBuilder documentDetails = new StringBuilder(String.format("%nFilename: %s%n", document.getDocumentLink().getFilename()));
 
-        templateVars.put(docTemplateVar, documentDetails);
+        if (document.getDocumentEmailContent() != null) {
+            documentDetails.append(String.format("Description: %s%n", document.getDocumentEmailContent()));
+        }
+
+        templateVars.put(docTemplateVar, documentDetails.toString());
     }
 
     private JSONObject getJsonFileAttachment(byte[] fileContents) {
