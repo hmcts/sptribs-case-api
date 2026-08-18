@@ -75,7 +75,7 @@ public class BundlingService {
     public List<Bundle> createBundle(Callback callback) {
         BundleResponse response;
         try {
-            response = bundlingClient.createBundle(
+            response = bundlingClient.createBundle( // call EM
                 authTokenGenerator.generate(),
                 httpServletRequest.getHeader(AUTHORIZATION),
                 callback);

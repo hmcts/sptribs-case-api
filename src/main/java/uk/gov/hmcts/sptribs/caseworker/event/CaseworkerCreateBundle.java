@@ -12,6 +12,7 @@ import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.Event;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
+import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
@@ -61,6 +62,8 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 @RequiredArgsConstructor
 public class CaseworkerCreateBundle implements CCDConfig<CaseData, State, UserRole> {
 
+    private static final String CATEGORY_FILENAME_SEPARATOR = " - ";
+
     private final BundlingService bundlingService;
 
     @Autowired
@@ -96,13 +99,13 @@ public class CaseworkerCreateBundle implements CCDConfig<CaseData, State, UserRo
         final List<CaseworkerCICDocument> allCaseDocuments = extractDocumentsFromListValues(getAllCaseDocuments(caseData));
 
         if (caseData.isBundleOrderEnabled()) {
-            setCaseBundleRequestDocuments(caseData, allCaseDocuments);
+            setCaseBundleRequestDocuments(caseData, allCaseDocuments);//
         } else {
             var cicDocumentList = convertToBundleDocumentType(allCaseDocuments);
             caseData.setCaseDocuments(cicDocumentList);
         }
 
-        caseData.setBundleConfiguration(bundlingService.getMultiBundleConfig());
+        caseData.setBundleConfiguration(bundlingService.getMultiBundleConfig());//
         caseData.setMultiBundleConfiguration(bundlingService.getMultiBundleConfigs());
         caseData.setCaseNumber(String.valueOf(details.getId()));
         caseData.setSubjectRepFullName(caseData.getCicCase().getFullName());
@@ -110,7 +113,7 @@ public class CaseworkerCreateBundle implements CCDConfig<CaseData, State, UserRo
         details.setData(caseData);
 
         final Callback callback = new Callback(details, beforeDetails, CREATE_BUNDLE, true);
-        final BundleCallback bundleCallback = new BundleCallback(callback);
+        final BundleCallback bundleCallback = new BundleCallback(callback);//
 
         List<ListValue<Bundle>> existingBundles = getExistingBundles(beforeDetails);
         caseData.setCaseBundles(getConfiguredCaseBundles(caseData, bundleCallback, existingBundles));
@@ -129,10 +132,49 @@ public class CaseworkerCreateBundle implements CCDConfig<CaseData, State, UserRo
 
         if (!CollectionUtils.isEmpty(initialDocuments)) {
             caseData.setCaseDocuments(convertToBundleDocumentType(initialDocuments));
-            caseData.setFurtherCaseDocuments(convertToBundleDocumentType(getFurtherDocuments(allDocuments, initialDocuments)));
+            List<CaseworkerCICDocument> furtherDocuments = prependCategoryToFilename(getFurtherDocuments(allDocuments, initialDocuments));
+            caseData.setFurtherCaseDocuments(convertToBundleDocumentType(furtherDocuments));
         } else {
             caseData.setCaseDocuments(convertToBundleDocumentType(allDocuments));
         }
+    }
+
+    private static List<CaseworkerCICDocument> prependCategoryToFilename(List<CaseworkerCICDocument> documents) {
+        return documents.stream()
+            .map(CaseworkerCreateBundle::withCategoryPrefixedFilename)
+            .collect(Collectors.toCollection(ArrayList::new));
+    }
+
+    private static CaseworkerCICDocument withCategoryPrefixedFilename(CaseworkerCICDocument document) {
+        if (document == null || document.getDocumentLink() == null || document.getDocumentCategory() == null) {
+            return document;
+        }
+
+        String filename = document.getDocumentLink().getFilename();
+        String categoryLabel = document.getDocumentCategory().getLabel();
+        if (filename == null || categoryLabel == null || categoryLabel.isBlank()) {
+            return document;
+        }
+
+        String prefixedFilename = categoryLabel + CATEGORY_FILENAME_SEPARATOR;
+        if (filename.startsWith(prefixedFilename)) {
+            return document;
+        }
+
+        Document originalDocument = document.getDocumentLink();
+        Document copiedDocument = new Document(
+            originalDocument.getUrl(),
+            prefixedFilename + filename,
+            originalDocument.getBinaryUrl(),
+            originalDocument.getCategoryId()
+        );
+
+        return CaseworkerCICDocument.builder()
+            .documentCategory(document.getDocumentCategory())
+            .documentEmailContent(document.getDocumentEmailContent())
+            .documentLink(copiedDocument)
+            .date(document.getDate())
+            .build();
     }
 
     private static List<CaseworkerCICDocument> getFurtherDocuments(List<CaseworkerCICDocument> allDocuments,
@@ -166,7 +208,7 @@ public class CaseworkerCreateBundle implements CCDConfig<CaseData, State, UserRo
     private List<ListValue<Bundle>> getConfiguredCaseBundles(CaseData caseData,
                                                              BundleCallback bundleCallback,
                                                              List<ListValue<Bundle>> existingBundles) {
-        List<ListValue<Bundle>> caseBundles = bundlingService.buildBundleListValues(bundlingService.createBundle(bundleCallback));
+        List<ListValue<Bundle>> caseBundles = bundlingService.buildBundleListValues(bundlingService.createBundle(bundleCallback));//
 
         if (caseBundles == null) {
             return null;
