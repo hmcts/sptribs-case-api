@@ -508,7 +508,8 @@ public abstract class FunctionalTestSuite {
         caseData.put("cicCaseDraftOrderCICList", draftOrderList);
     }
 
-    private void generateAndSetUuidInCaseDataAndDB(Map<String, Object> caseData, Long testCaseRef, boolean isDraftOrder) throws SQLException, IOException {
+    private void generateAndSetUuidInCaseDataAndDB(Map<String, Object> caseData, Long testCaseRef,
+                                                   boolean isDraftOrder) throws SQLException, IOException {
         String caseDataJsonString = JSON.getDefault().toJSON(caseData);
 
         Pattern placeholderPattern = Pattern.compile("\\$\\{UUID(\\d+)}");
