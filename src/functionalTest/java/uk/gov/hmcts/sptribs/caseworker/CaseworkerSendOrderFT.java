@@ -3,6 +3,7 @@ package uk.gov.hmcts.sptribs.caseworker;
 import io.restassured.response.Response;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
+import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.sptribs.document.model.DocumentEntity;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
 import uk.gov.hmcts.sptribs.notification.persistence.CorrespondenceEntity;
@@ -85,31 +86,32 @@ public class CaseworkerSendOrderFT extends FunctionalTestSuite {
     public void shouldSendAndUpdateDraftOrderDocumentWhenAboutToSubmitCallbackIsTriggered() throws Exception {
         final Map<String, Object> caseData = caseData(SEND_DRAFT_CALLBACK_REQUEST);
 
-        //we should replace the boolean here with an object to create the test document!!
-        final Response response = triggerCallback(caseData, CASEWORKER_SEND_ORDER, ABOUT_TO_SUBMIT_URL, true);
-        assertThat(response.getStatusCode()).isEqualTo(OK.value());
+        final CaseDetails caseDetails = createCaseInCcd(true);
+        final Long appealId = caseDetails.getId();
+        functionalTestDataManager.addReference(appealId);
+        caseDetails.setData(caseData);
+        checkAndUpdateDraftOrderDocument(caseData, appealId);
 
-        System.out.println(response.asString());
+        final Response response = triggerCallback(caseData, caseData, CASEWORKER_SEND_ORDER, ABOUT_TO_SUBMIT_URL);
+
+        assertThat(response.getStatusCode()).isEqualTo(OK.value());
 
         assertThatJson(response.asString())
             .when(IGNORING_EXTRA_FIELDS)
             .when(IGNORING_ARRAY_ORDER)
             .isEqualTo(json(expectedResponse(DRAFT_RESPONSE)));
 
-        long testCaseRef = Long.parseLong(caseData.get("hyphenatedCaseRef").toString().replace("-", ""));
 
-        List<DocumentEntity> documentEntities = caseDocumentsFTDataManager.getDocumentEntities(testCaseRef);
+        List<DocumentEntity> documentEntities = caseDocumentsFTDataManager.getDocumentEntities(appealId);
         assertThat(documentEntities).hasSize(1);
 
         DocumentEntity firstDocumentEntity = documentEntities.getFirst();
 
         assertThat(firstDocumentEntity.getId()).isNotNull();
-        assertThat(firstDocumentEntity.getCaseReferenceNumber()).isEqualTo(Long.parseLong(caseData.get("hyphenatedCaseRef")
-            .toString().replace("-", "")));
-        assertThat(firstDocumentEntity.getDocumentTypeName()).isEqualTo(DocumentType.HOSPITAL_RECORDS.name());
-        assertThat(firstDocumentEntity.getCaseDocumentTypeId()).isEqualTo(3L);
+        assertThat(firstDocumentEntity.getCaseReferenceNumber()).isEqualTo(appealId);
+        assertThat(firstDocumentEntity.getDocumentTypeName()).isEqualTo(DocumentType.TRIBUNAL_DIRECTION.name());
+        assertThat(firstDocumentEntity.getCaseDocumentTypeId()).isEqualTo(4L);
         assertThat(firstDocumentEntity.getUpdatedAt()).isNotNull();
-
     }
 
     @Test

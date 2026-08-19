@@ -48,16 +48,13 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static org.camunda.bpm.model.xml.impl.util.ModelUtil.valueAsString;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
@@ -199,7 +196,7 @@ public abstract class FunctionalTestSuite {
         }
 
         if (createTestDocument) {
-            generateAndSetUuidInCaseDataAndDB(caseData, testCaseRef);
+            generateAndSetUuidInCaseDataAndDB(caseData, testCaseRef, false);
         }
 
         if (createCaseForSubmittedOrAboutToSubmitEvent) {
@@ -342,7 +339,6 @@ public abstract class FunctionalTestSuite {
 
     protected CaseDetails createAndSubmitCitizenCaseAndGetCaseDetails() {
         CaseData caseData = getCaseDataWithDssData();
-        AppsConfig.AppsDetails details = AppsUtil.getExactAppsDetails(appsConfig, caseData.getDssCaseData());
         CaseDetails caseDetails = createCitizenCase();
 
         return updateCitizenCase(EventConstants.CITIZEN_CIC_SUBMIT_CASE, caseDetails.getId(),caseData);
@@ -429,13 +425,8 @@ public abstract class FunctionalTestSuite {
         );
     }
 
-    protected void checkAndUpdateDraftOrderDocument(Map<String, Object> caseData) {
-        UploadResponse uploadResponse = uploadTestDocumentIfMissing("5d76ff31-8547-4702-b2c8-34c43a53d220", DRAFT_ORDER_FILE);
-
-        if (uploadResponse != null) {
-            log.info("Document uploaded: {}", uploadResponse.getDocuments().getFirst());
-            updateOrderTemplate(uploadResponse.getDocuments().getFirst(), caseData);
-        }
+    protected void checkAndUpdateDraftOrderDocument(Map<String, Object> caseData, long caseReference) throws SQLException, IOException {
+        generateAndSetUuidInCaseDataAndDB(caseData, caseReference, true);
     }
 
     protected UploadResponse uploadTestDocumentIfMissing(String documentId, ClassPathResource resource) {
@@ -517,25 +508,43 @@ public abstract class FunctionalTestSuite {
         caseData.put("cicCaseDraftOrderCICList", draftOrderList);
     }
 
-    private void generateAndSetUuidInCaseDataAndDB(Map<String, Object> caseData, Long testCaseRef) throws SQLException, IOException {
+    private void generateAndSetUuidInCaseDataAndDB(Map<String, Object> caseData, Long testCaseRef, boolean isDraftOrder) throws SQLException, IOException {
         String caseDataJsonString = JSON.getDefault().toJSON(caseData);
 
         Pattern placeholderPattern = Pattern.compile("\\$\\{UUID(\\d+)}");
         Matcher matcher = placeholderPattern.matcher(caseDataJsonString);
         Map<String, String> placeholdersAndUuids = new HashMap<>();
+        String assignedPlaceholder = "";
 
         while (matcher.find()) {
             String placeholder = matcher.group();
+            if (placeholder.equals(assignedPlaceholder)) {
+                continue;
+            }
+
             String uuid = placeholdersAndUuids.get(placeholder);
 
             if (uuid == null) {
                 Document testDocument = uploadTestDocument(new ClassPathResource("data/sample_file.pdf")).getDocuments().getFirst();
                 uuid = testDocument.links.self.href.split("/documents/")[1];
                 placeholdersAndUuids.put(placeholder, uuid);
-                caseDocumentsFTDataManager.saveTestDocumentEntity(testCaseRef, testDocument.links.self.href,
-                    testDocument.originalDocumentName, DocumentType.APPLICATION_FORM.name());
+                if (isDraftOrder) {
+                    CaseDocumentsFTDataManager.saveTestDocumentEntity(testCaseRef, testDocument.links.self.href,
+                        testDocument.originalDocumentName, DocumentType.TRIBUNAL_DIRECTION.name(), true);
+                    updateOrderTemplate(testDocument, caseData);
+                    log.info("Document uploaded: {}", testDocument);
+                } else {
+                    CaseDocumentsFTDataManager.saveTestDocumentEntity(testCaseRef, testDocument.links.self.href,
+                        testDocument.originalDocumentName, DocumentType.APPLICATION_FORM.name(), false);
+                }
             }
+            assignedPlaceholder = placeholder;
         }
+
+        for (Map.Entry<String, String> placeholderAndUuid : placeholdersAndUuids.entrySet()) {
+            caseDataJsonString = caseDataJsonString.replace(placeholderAndUuid.getKey(), placeholderAndUuid.getValue());
+        }
+
         caseData.clear();
         caseData.putAll(CaseDataUtil.caseDataFromString(caseDataJsonString));
     }
