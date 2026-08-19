@@ -146,8 +146,8 @@ public class CaseworkerBundleStitchCompleteIT {
                     .build());
         caseData.setCaseBundles(testCaseBundles);
 
-       doThrow(new RuntimeException("Error saving document entity to database"))
-       .when(documentsService).buildAndSaveNewDocumentEntity(eq(caseData.getCaseBundles().getFirst().getValue().getStitchedDocument()),
+        doThrow(new RuntimeException("Error saving document entity to database"))
+            .when(documentsService).buildAndSaveNewDocumentEntity(eq(caseData.getCaseBundles().getFirst().getValue().getStitchedDocument()),
                 eq(TEST_CASE_ID), eq(null), eq(CaseDocumentType.BUNDLE));
 
         String response = mockMvc.perform(post(SUBMITTED_URL)
