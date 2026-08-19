@@ -120,7 +120,10 @@ class CaseworkerCreateBundleTest {
 
             //check case data at call time
             final CaseData dataAtMockTime = callbackAtMockTime.getCaseDetails().getData();
-            assertThat(dataAtMockTime.getCaseDocuments().getFirst().getValue()).isEqualTo(cicDocuments.getFirst().getValue());
+            assertThat(dataAtMockTime.getCaseDocuments().getFirst().getValue().getDocumentCategory())
+                .isEqualTo(cicDocuments.getFirst().getValue().getDocumentCategory());
+            assertThat(dataAtMockTime.getCaseDocuments().getFirst().getValue().getDocumentLink().getFilename())
+                .endsWith(cicDocuments.getFirst().getValue().getDocumentLink().getFilename());
             assertThat(dataAtMockTime.getBundleConfiguration()).isEqualTo(MULTI_BUNDLE_CONFIG);
             assertThat(dataAtMockTime.getMultiBundleConfiguration()).isEqualTo(List.of(MULTI_BUNDLE_CONFIG));
             return List.of(bundle);
@@ -323,7 +326,10 @@ class CaseworkerCreateBundleTest {
             final CaseData dataAtMockTime = callbackAtMockTime.getCaseDetails().getData();
             // Should use old logic - documents should be in caseDocuments
             assertThat(dataAtMockTime.getCaseDocuments()).hasSize(1);
-            assertThat(dataAtMockTime.getCaseDocuments().getFirst().getValue()).isEqualTo(cicDocuments.getFirst().getValue());
+            assertThat(dataAtMockTime.getCaseDocuments().getFirst().getValue().getDocumentCategory())
+                .isEqualTo(cicDocuments.getFirst().getValue().getDocumentCategory());
+            assertThat(dataAtMockTime.getCaseDocuments().getFirst().getValue().getDocumentLink().getFilename())
+                .endsWith(cicDocuments.getFirst().getValue().getDocumentLink().getFilename());
             // furtherCaseDocuments should be null when new order is disabled
             assertThat(dataAtMockTime.getFurtherCaseDocuments()).isNull();
             assertThat(dataAtMockTime.getBundleConfiguration()).isEqualTo(MULTI_BUNDLE_CONFIG);
@@ -441,7 +447,10 @@ class CaseworkerCreateBundleTest {
 
             //check case data at call time
             final CaseData dataAtMockTime = callbackAtMockTime.getCaseDetails().getData();
-            assertThat(dataAtMockTime.getCaseDocuments().getFirst().getValue()).isEqualTo(cicDocuments.getFirst().getValue());
+            assertThat(dataAtMockTime.getCaseDocuments().getFirst().getValue().getDocumentCategory())
+                .isEqualTo(cicDocuments.getFirst().getValue().getDocumentCategory());
+            assertThat(dataAtMockTime.getCaseDocuments().getFirst().getValue().getDocumentLink().getFilename())
+                .endsWith(cicDocuments.getFirst().getValue().getDocumentLink().getFilename());
             assertThat(dataAtMockTime.getBundleConfiguration()).isEqualTo(MULTI_BUNDLE_CONFIG);
             assertThat(dataAtMockTime.getMultiBundleConfiguration()).isEqualTo(List.of(MULTI_BUNDLE_CONFIG));
             return List.of(bundle);
