@@ -28,6 +28,7 @@ import uk.gov.hmcts.sptribs.common.service.CcdSupplementaryDataService;
 import uk.gov.hmcts.sptribs.testutil.IdamWireMock;
 import uk.gov.service.notify.NotificationClient;
 
+import java.lang.constant.Constable;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -166,20 +167,24 @@ public class CicSubmitCaseEventIT {
                 .andExpect(
                     status().isOk());
 
+            Map<String, ? extends Constable> templateVars = Map.of(
+                TRIBUNAL_NAME, CIC,
+                CONTACT_PARTY_INFO, "A message",
+                CIC_CASE_SUBJECT_NAME, "Test Subject",
+                CONTACT_NAME, "Test Subject",
+                CIC_CASE_NUMBER, TEST_CASE_ID_HYPHENATED,
+                HAS_CICA_NUMBER, true,
+                CICA_REF_NUMBER, TEST_CICA_REF_NUMBER
+            );
             verify(notificationClient).sendEmail(
                 eq("48ccf890-0550-48ca-8c52-fa68cec09947"),
                 eq("test@subject.com"),
-                eq(Map.of(
-                    TRIBUNAL_NAME, CIC,
-                    CONTACT_PARTY_INFO, "A message",
-                    CIC_CASE_SUBJECT_NAME, "Test Subject",
-                    CONTACT_NAME, "Test Subject",
-                    CIC_CASE_NUMBER, TEST_CASE_ID_HYPHENATED,
-                    HAS_CICA_NUMBER, true,
-                    CICA_REF_NUMBER, TEST_CICA_REF_NUMBER
-                )),
+                templateVarsCaptor.capture(),
                 anyString()
             );
+            assertThat(templateVarsCaptor.getValue())
+                .doesNotContainKey(DASHBOARD_KEY)
+                .containsAllEntriesOf(templateVars);
         }
 
         @Test
@@ -210,20 +215,24 @@ public class CicSubmitCaseEventIT {
                 .andExpect(
                     status().isOk());
 
+            Map<String, ? extends Constable> templateVars = Map.of(
+                TRIBUNAL_NAME, CIC,
+                CONTACT_PARTY_INFO, "A message",
+                CIC_CASE_SUBJECT_NAME, "Test Subject",
+                CONTACT_NAME, "Test Subject",
+                CIC_CASE_NUMBER, TEST_CASE_ID_HYPHENATED,
+                HAS_CICA_NUMBER, true,
+                CICA_REF_NUMBER, TEST_CICA_REF_NUMBER
+            );
             verify(notificationClient).sendEmail(
                 eq("86e6988c-dfc8-43de-8890-e38269ee40d1"),
                 eq("test@subject.com"),
-                eq(Map.of(
-                    TRIBUNAL_NAME, CIC,
-                    CONTACT_PARTY_INFO, "A message",
-                    CIC_CASE_SUBJECT_NAME, "Test Subject",
-                    CONTACT_NAME, "Test Subject",
-                    CIC_CASE_NUMBER, TEST_CASE_ID_HYPHENATED,
-                    HAS_CICA_NUMBER, true,
-                    CICA_REF_NUMBER, TEST_CICA_REF_NUMBER
-                )),
+                templateVarsCaptor.capture(),
                 anyString()
             );
+            assertThat(templateVarsCaptor.getValue())
+                .doesNotContainKey(DASHBOARD_KEY)
+                .containsAllEntriesOf(templateVars);
         }
 
         @Test
@@ -254,21 +263,25 @@ public class CicSubmitCaseEventIT {
                 .andExpect(
                     status().isOk());
 
+            Map<String, ? extends Constable> templateVars = Map.of(
+                TRIBUNAL_NAME, CIC,
+                CONTACT_PARTY_INFO, "A message",
+                CIC_CASE_SUBJECT_NAME, "Test Subject",
+                CIC_CASE_REPRESENTATIVE_NAME, "Test Representative",
+                CONTACT_NAME, "Test Representative",
+                CIC_CASE_NUMBER, TEST_CASE_ID_HYPHENATED,
+                HAS_CICA_NUMBER, true,
+                CICA_REF_NUMBER, TEST_CICA_REF_NUMBER
+            );
             verify(notificationClient).sendEmail(
                 eq("48ccf890-0550-48ca-8c52-fa68cec09947"),
                 eq("test@representative.com"),
-                eq(Map.of(
-                    TRIBUNAL_NAME, CIC,
-                    CONTACT_PARTY_INFO, "A message",
-                    CIC_CASE_SUBJECT_NAME, "Test Subject",
-                    CIC_CASE_REPRESENTATIVE_NAME, "Test Representative",
-                    CONTACT_NAME, "Test Representative",
-                    CIC_CASE_NUMBER, TEST_CASE_ID_HYPHENATED,
-                    HAS_CICA_NUMBER, true,
-                    CICA_REF_NUMBER, TEST_CICA_REF_NUMBER
-                )),
+                templateVarsCaptor.capture(),
                 anyString()
             );
+            assertThat(templateVarsCaptor.getValue())
+                .doesNotContainKey(DASHBOARD_KEY)
+                .containsAllEntriesOf(templateVars);
         }
     }
 
@@ -282,7 +295,7 @@ public class CicSubmitCaseEventIT {
         private String citizenDashboardUrl;
 
         @BeforeEach
-        void onlyRunWhenDisabled() {
+        void onlyRunWhenEnabled() {
             assumeTrue(environment.getProperty("feature.citizen-dashboard.enabled", Boolean.class, false),
                 "Skipping: feature.citizen-dashboard.enabled is currently false");
         }
