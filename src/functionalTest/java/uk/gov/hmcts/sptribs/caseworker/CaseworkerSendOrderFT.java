@@ -88,7 +88,6 @@ public class CaseworkerSendOrderFT extends FunctionalTestSuite {
 
         final CaseDetails caseDetails = createCaseInCcd(true);
         final Long appealId = caseDetails.getId();
-        functionalTestDataManager.addReference(appealId);
         caseDetails.setData(caseData);
         checkAndUpdateDraftOrderDocument(caseData, appealId);
 
@@ -110,7 +109,7 @@ public class CaseworkerSendOrderFT extends FunctionalTestSuite {
         assertThat(firstDocumentEntity.getId()).isNotNull();
         assertThat(firstDocumentEntity.getCaseReferenceNumber()).isEqualTo(appealId);
         assertThat(firstDocumentEntity.getDocumentTypeName()).isEqualTo(DocumentType.TRIBUNAL_DIRECTION.name());
-        assertThat(firstDocumentEntity.getCaseDocumentTypeId()).isEqualTo(4L);
+        assertThat(firstDocumentEntity.getCaseDocumentTypeId()).isEqualTo(3L);
         assertThat(firstDocumentEntity.getUpdatedAt()).isNotNull();
     }
 

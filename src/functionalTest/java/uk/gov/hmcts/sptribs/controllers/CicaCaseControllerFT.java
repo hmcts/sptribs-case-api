@@ -19,7 +19,6 @@ public class CicaCaseControllerFT extends FunctionalTestSuite {
     @Test
     public void shouldReturnOkWhenAppealExistsAndCitizenHasAccess() {
         final Long appealIdForAppealThatExists = createCaseInCcd(true).getId();
-        functionalTestDataManager.addReference(appealIdForAppealThatExists);
 
         final Response response = RestAssured
             .given()
@@ -36,7 +35,6 @@ public class CicaCaseControllerFT extends FunctionalTestSuite {
     @Test
     public void shouldReturnForbiddenWhenAppealExistsAndCitizenDoesNotHaveAccess() {
         final Long appealIdForAppealWithoutMatchingEmail = createCaseInCcd(false).getId();
-        functionalTestDataManager.addReference(appealIdForAppealWithoutMatchingEmail);
 
         final Response response = RestAssured
             .given()
