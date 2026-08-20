@@ -1,5 +1,6 @@
 package uk.gov.hmcts.sptribs.common.notification;
 
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -7,6 +8,8 @@ import org.mockito.Captor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.TestPropertySources;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
@@ -27,9 +30,12 @@ import static uk.gov.hmcts.sptribs.common.CommonConstants.CIC_CASE_APPLICANT_NAM
 import static uk.gov.hmcts.sptribs.common.CommonConstants.CIC_CASE_NUMBER;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.CIC_CASE_REPRESENTATIVE_NAME;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.CONTACT_NAME;
+import static uk.gov.hmcts.sptribs.common.CommonConstants.DASHBOARD_KEY;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.TRIBUNAL_NAME;
 import static uk.gov.hmcts.sptribs.common.ccd.CcdCaseType.CIC;
 import static uk.gov.hmcts.sptribs.notification.TemplateName.BUNDLE_CREATED_EMAIL;
+import static uk.gov.hmcts.sptribs.notification.TemplateName.BUNDLE_CREATED_EMAIL_CITIZEN;
+import static uk.gov.hmcts.sptribs.notification.TemplateName.BUNDLE_CREATED_EMAIL_RESPONDENT;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID;
 
 @ExtendWith(SpringExtension.class)
@@ -37,99 +43,140 @@ import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID;
 @AutoConfigureMockMvc
 public class BundleCreatedNotificationIT {
 
-    @MockitoBean
-    private NotificationServiceCIC notificationServiceCIC;
-
-    @Autowired
-    private BundleCreatedNotification bundleCreatedNotification;
-
     @Captor
     ArgumentCaptor<NotificationRequest> notificationRequestCaptor;
 
-    @Test
-    void shouldSendEmailToRepresentative() {
-        final CaseData data = CaseData.builder()
-            .cicCase(CicCase.builder()
-                .representativeFullName("Representative Name")
-                .representativeEmailAddress("representative@email.com")
-                .build())
-            .build();
+    @Nested
+    @TestPropertySource(properties = "feature.citizen-dashboard.enabled=false")
+    class WhenCitizenDashboardDisabled {
+        @Autowired
+        private BundleCreatedNotification bundleCreatedNotification;
 
-        bundleCreatedNotification.sendToRepresentative(data, TEST_CASE_ID.toString());
+        @MockitoBean
+        private NotificationServiceCIC notificationServiceCIC;
 
-        verify(notificationServiceCIC).sendEmail(notificationRequestCaptor.capture(), eq(TEST_CASE_ID.toString()), eq(null));
+        @Test
+        void shouldSendEmailToRepresentative() {
+            final CaseData data = CaseData.builder()
+                .cicCase(CicCase.builder()
+                    .representativeFullName("Representative Name")
+                    .representativeEmailAddress("representative@email.com")
+                    .build())
+                .build();
 
-        NotificationRequest notificationRequest = notificationRequestCaptor.getValue();
+            bundleCreatedNotification.sendToRepresentative(data, TEST_CASE_ID.toString());
 
-        assertThat(notificationRequest.getDestinationAddress())
-            .isEqualTo("representative@email.com");
-        assertThat(notificationRequest.getTemplate())
-            .isEqualTo(BUNDLE_CREATED_EMAIL);
-        assertThat(notificationRequest.getTemplateVars())
-            .containsAllEntriesOf(Map.of(
-                TRIBUNAL_NAME, CIC,
-                CIC_CASE_NUMBER, TEST_CASE_ID.toString(),
-                CIC_CASE_REPRESENTATIVE_NAME, "Representative Name",
-                BUNDLE_CREATED_EMAIL_TEXT, EmailBundleCreatedResponses.REPRESENTATIVE_APPLICANT_RESPONSE.getEmailResponse()
-            ));
+            verify(notificationServiceCIC).sendEmail(notificationRequestCaptor.capture(), eq(TEST_CASE_ID.toString()), eq(null));
+
+            NotificationRequest notificationRequest = notificationRequestCaptor.getValue();
+
+            assertThat(notificationRequest.getDestinationAddress())
+                .isEqualTo("representative@email.com");
+            assertThat(notificationRequest.getTemplate())
+                .isEqualTo(BUNDLE_CREATED_EMAIL_CITIZEN);
+            assertThat(notificationRequest.getTemplateVars())
+                .containsAllEntriesOf(Map.of(
+                    TRIBUNAL_NAME, CIC,
+                    CIC_CASE_NUMBER, TEST_CASE_ID.toString(),
+                    CIC_CASE_REPRESENTATIVE_NAME, "Representative Name"
+                ));
+        }
+
+        @Test
+        void shouldSendEmailToApplicant() {
+            final CaseData data = CaseData.builder()
+                .cicCase(CicCase.builder()
+                    .contactPreferenceType(EMAIL)
+                    .applicantFullName("Applicant Name")
+                    .applicantEmailAddress("applicant@email.com")
+                    .build())
+                .build();
+
+            bundleCreatedNotification.sendToApplicant(data, TEST_CASE_ID.toString());
+
+            verify(notificationServiceCIC).sendEmail(notificationRequestCaptor.capture(), eq(TEST_CASE_ID.toString()), eq(null));
+
+            NotificationRequest notificationRequest = notificationRequestCaptor.getValue();
+
+            assertThat(notificationRequest.getDestinationAddress())
+                .isEqualTo("applicant@email.com");
+            assertThat(notificationRequest.getTemplate())
+                .isEqualTo(BUNDLE_CREATED_EMAIL_CITIZEN);
+            assertThat(notificationRequest.getTemplateVars())
+                .containsAllEntriesOf(Map.of(
+                    TRIBUNAL_NAME, CIC,
+                    CIC_CASE_NUMBER, TEST_CASE_ID.toString(),
+                    CIC_CASE_APPLICANT_NAME, "Applicant Name"
+                ));
+        }
+
+        @Test
+        void shouldSendEmailToRespondent() {
+            final CaseData data = CaseData.builder()
+                .cicCase(CicCase.builder()
+                    .contactPreferenceType(EMAIL)
+                    .respondentName("Respondent Name")
+                    .respondentEmail("respondent@email.com")
+                    .build())
+                .build();
+
+            bundleCreatedNotification.sendToRespondent(data, TEST_CASE_ID.toString());
+
+            verify(notificationServiceCIC).sendEmail(notificationRequestCaptor.capture(), eq(TEST_CASE_ID.toString()), eq(null));
+
+            NotificationRequest notificationRequest = notificationRequestCaptor.getValue();
+
+            assertThat(notificationRequest.getDestinationAddress())
+                .isEqualTo("respondent@email.com");
+            assertThat(notificationRequest.getTemplate())
+                .isEqualTo(BUNDLE_CREATED_EMAIL_RESPONDENT);
+            assertThat(notificationRequest.getTemplateVars())
+                .containsAllEntriesOf(Map.of(
+                    TRIBUNAL_NAME, CIC,
+                    CIC_CASE_NUMBER, TEST_CASE_ID.toString(),
+                    CONTACT_NAME, "Respondent Name"
+                ));
+        }
     }
 
-    @Test
-    void shouldSendEmailToApplicant() {
-        final CaseData data = CaseData.builder()
-            .cicCase(CicCase.builder()
-                .contactPreferenceType(EMAIL)
-                .applicantFullName("Applicant Name")
-                .applicantEmailAddress("applicant@email.com")
-                .build())
-            .build();
+    @Nested
+    @TestPropertySource(properties = """
+        feature.citizen-dashboard.enabled=true
+        sptribs-frontend.dashboard-url=https://frontend.url/dashboard
+    """)
+    class WhenCitizenDashboardEnabled {
+        @Autowired
+        private BundleCreatedNotification bundleCreatedNotification;
 
-        bundleCreatedNotification.sendToApplicant(data, TEST_CASE_ID.toString());
+        @MockitoBean
+        private NotificationServiceCIC notificationServiceCIC;
 
-        verify(notificationServiceCIC).sendEmail(notificationRequestCaptor.capture(), eq(TEST_CASE_ID.toString()), eq(null));
+        @Test
+        void shouldSendEmailToRepresentative() {
+            final CaseData data = CaseData.builder()
+                .cicCase(CicCase.builder()
+                    .representativeFullName("Representative Name")
+                    .representativeEmailAddress("representative@email.com")
+                    .build())
+                .build();
 
-        NotificationRequest notificationRequest = notificationRequestCaptor.getValue();
+            bundleCreatedNotification.sendToRepresentative(data, TEST_CASE_ID.toString());
 
-        assertThat(notificationRequest.getDestinationAddress())
-            .isEqualTo("applicant@email.com");
-        assertThat(notificationRequest.getTemplate())
-            .isEqualTo(BUNDLE_CREATED_EMAIL);
-        assertThat(notificationRequest.getTemplateVars())
-            .containsAllEntriesOf(Map.of(
-                TRIBUNAL_NAME, CIC,
-                CIC_CASE_NUMBER, TEST_CASE_ID.toString(),
-                CIC_CASE_APPLICANT_NAME, "Applicant Name",
-                BUNDLE_CREATED_EMAIL_TEXT, EmailBundleCreatedResponses.REPRESENTATIVE_APPLICANT_RESPONSE.getEmailResponse()
-            ));
+            verify(notificationServiceCIC).sendEmail(notificationRequestCaptor.capture(), eq(TEST_CASE_ID.toString()), eq(null));
+
+            NotificationRequest notificationRequest = notificationRequestCaptor.getValue();
+
+            assertThat(notificationRequest.getDestinationAddress())
+                .isEqualTo("representative@email.com");
+            assertThat(notificationRequest.getTemplate())
+                .isEqualTo(BUNDLE_CREATED_EMAIL_CITIZEN);
+            assertThat(notificationRequest.getTemplateVars())
+                .containsAllEntriesOf(Map.of(
+                    TRIBUNAL_NAME, CIC,
+                    CIC_CASE_NUMBER, TEST_CASE_ID.toString(),
+                    CIC_CASE_REPRESENTATIVE_NAME, "Representative Name",
+                    DASHBOARD_KEY, "https://frontend.url/dashboard"
+                ));
+        }
     }
-
-    @Test
-    void shouldSendEmailToRespondent() {
-        final CaseData data = CaseData.builder()
-            .cicCase(CicCase.builder()
-                .contactPreferenceType(EMAIL)
-                .respondentName("Respondent Name")
-                .respondentEmail("respondent@email.com")
-                .build())
-            .build();
-
-        bundleCreatedNotification.sendToRespondent(data, TEST_CASE_ID.toString());
-
-        verify(notificationServiceCIC).sendEmail(notificationRequestCaptor.capture(), eq(TEST_CASE_ID.toString()), eq(null));
-
-        NotificationRequest notificationRequest = notificationRequestCaptor.getValue();
-
-        assertThat(notificationRequest.getDestinationAddress())
-            .isEqualTo("respondent@email.com");
-        assertThat(notificationRequest.getTemplate())
-            .isEqualTo(BUNDLE_CREATED_EMAIL);
-        assertThat(notificationRequest.getTemplateVars())
-            .containsAllEntriesOf(Map.of(
-                TRIBUNAL_NAME, CIC,
-                CIC_CASE_NUMBER, TEST_CASE_ID.toString(),
-                CONTACT_NAME, "Respondent Name",
-                BUNDLE_CREATED_EMAIL_TEXT, EmailBundleCreatedResponses.RESPONDENT_RESPONSE.getEmailResponse()
-            ));
-    }
-
 }

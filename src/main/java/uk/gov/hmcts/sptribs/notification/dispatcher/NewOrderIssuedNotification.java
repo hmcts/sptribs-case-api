@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.sptribs.caseworker.model.Order;
@@ -20,7 +21,10 @@ import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
 import java.util.HashMap;
 import java.util.Map;
 
+import static uk.gov.hmcts.sptribs.common.CommonConstants.DASHBOARD_KEY;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.TRIBUNAL_ORDER;
+import static uk.gov.hmcts.sptribs.notification.TemplateName.NEW_ORDER_ISSUED_EMAIL;
+import static uk.gov.hmcts.sptribs.notification.TemplateName.NEW_ORDER_ISSUED_EMAIL_NEW_CD;
 
 @Component
 @Slf4j
@@ -29,6 +33,12 @@ public class NewOrderIssuedNotification implements PartiesNotification {
     private final NotificationServiceCIC notificationService;
 
     private final NotificationHelper notificationHelper;
+
+    @Value("${sptribs-frontend.dashboard-url}")
+    private String citizenDashboardUrl;
+
+    @Value("${feature.citizen-dashboard.enabled}")
+    private boolean citizenDashboardEnabled;
 
     @Autowired
     public NewOrderIssuedNotification(NotificationServiceCIC notificationService, NotificationHelper notificationHelper) {
@@ -43,9 +53,10 @@ public class NewOrderIssuedNotification implements PartiesNotification {
 
         final NotificationResponse notificationResponse;
         if (cicCase.getContactPreferenceType() == ContactPreferenceType.EMAIL) {
+            addDashboardLink(templateVars);
             final Map<String, String> uploadedDocuments = getUploadedDocumentIds(caseData);
             notificationResponse = sendEmailNotificationWithAttachment(cicCase.getEmail(),
-                uploadedDocuments, templateVars, caseNumber);
+                uploadedDocuments, templateVars, getTemplateName(), caseNumber);
         } else {
             notificationHelper.addAddressTemplateVars(cicCase.getAddress(), templateVars);
             notificationResponse = sendLetterNotification(templateVars, caseNumber);
@@ -60,9 +71,10 @@ public class NewOrderIssuedNotification implements PartiesNotification {
 
         final NotificationResponse notificationResponse;
         if (cicCase.getRepresentativeContactDetailsPreference() == ContactPreferenceType.EMAIL) {
+            addDashboardLink(templateVars);
             final Map<String, String> uploadedDocuments = getUploadedDocumentIds(caseData);
             notificationResponse = sendEmailNotificationWithAttachment(cicCase.getRepresentativeEmailAddress(),
-                uploadedDocuments, templateVars, caseNumber);
+                uploadedDocuments, templateVars, getTemplateName(), caseNumber);
         } else {
             notificationHelper.addAddressTemplateVars(cicCase.getRepresentativeAddress(), templateVars);
             notificationResponse = sendLetterNotification(templateVars, caseNumber);
@@ -78,7 +90,7 @@ public class NewOrderIssuedNotification implements PartiesNotification {
         final Map<String, Object> respondentTemplateVars = notificationHelper.getRespondentCommonVars(caseNumber, caseData);
         final Map<String, String> uploadedDocuments = getUploadedDocumentIds(caseData);
         final NotificationResponse notificationResponse = sendEmailNotificationWithAttachment(cicCase.getRespondentEmail(),
-            uploadedDocuments, respondentTemplateVars, caseNumber);
+            uploadedDocuments, respondentTemplateVars, NEW_ORDER_ISSUED_EMAIL, caseNumber);
         cicCase.setResNotificationResponse(notificationResponse);
     }
 
@@ -89,10 +101,11 @@ public class NewOrderIssuedNotification implements PartiesNotification {
 
         final NotificationResponse notificationResponse;
         if (cicCase.getContactPreferenceType() == ContactPreferenceType.EMAIL) {
+            addDashboardLink(templateVars);
             final Map<String, String> uploadedDocuments = getUploadedDocumentIds(caseData);
 
             notificationResponse = sendEmailNotificationWithAttachment(cicCase.getApplicantEmailAddress(),
-                uploadedDocuments, templateVars, caseNumber);
+                uploadedDocuments, templateVars, getTemplateName(), caseNumber);
         } else {
             notificationHelper.addAddressTemplateVars(cicCase.getAddress(), templateVars);
             notificationResponse = sendLetterNotification(templateVars, caseNumber);
@@ -104,13 +117,14 @@ public class NewOrderIssuedNotification implements PartiesNotification {
     private NotificationResponse sendEmailNotificationWithAttachment(final String destinationAddress,
                                                                      Map<String, String> uploadedDocuments,
                                                                      final Map<String, Object> templateVars,
+                                                                     TemplateName templateName,
                                                                      String caseReferenceNumber) {
         final NotificationRequest emailRequest = notificationHelper.buildEmailNotificationRequest(
             destinationAddress,
             true,
             uploadedDocuments,
             templateVars,
-            TemplateName.NEW_ORDER_ISSUED_EMAIL);
+            templateName);
         return notificationService.sendEmail(emailRequest, caseReferenceNumber, null);
     }
 
@@ -149,4 +163,13 @@ public class NewOrderIssuedNotification implements PartiesNotification {
         return null;
     }
 
+    private TemplateName getTemplateName() {
+        return citizenDashboardEnabled ? NEW_ORDER_ISSUED_EMAIL_NEW_CD : NEW_ORDER_ISSUED_EMAIL;
+    }
+
+    private void addDashboardLink(Map<String, Object> templateVars) {
+        if (citizenDashboardEnabled) {
+            templateVars.put(DASHBOARD_KEY, citizenDashboardUrl);
+        }
+    }
 }
