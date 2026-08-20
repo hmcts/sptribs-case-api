@@ -18,6 +18,7 @@ import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
 import java.util.Map;
 
 import static uk.gov.hmcts.sptribs.ciccase.model.LanguagePreference.ENGLISH;
+import static uk.gov.hmcts.sptribs.ciccase.model.LanguagePreference.WELSH;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.CICA_REF_NUMBER;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.CIC_CASE_REPRESENTATIVE_NAME;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.CIC_CASE_SUBJECT_NAME;
@@ -95,7 +96,7 @@ public class DssApplicationReceivedNotification implements PartiesNotification {
                                                        LanguagePreference languagePreference,
                                                        String caseReferenceNumber) {
 
-        TemplateName templateName = ENGLISH.equals(languagePreference) ? getTemplateName() : APPLICATION_RECEIVED_CY;
+        TemplateName templateName = WELSH.equals(languagePreference) ? APPLICATION_RECEIVED_CY : getTemplateName();
         NotificationRequest request =
             dssNotificationHelper.buildEmailNotificationRequest(toEmail, templateVars, templateName);
         return notificationService.sendEmail(request, caseReferenceNumber, null);

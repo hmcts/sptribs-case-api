@@ -26,3 +26,8 @@ core_case_data:
     url: http://localhost:4012
   search:
     page_size: 100
+
+
+feature:
+  citizen-dashboard:
+    enabled: false
