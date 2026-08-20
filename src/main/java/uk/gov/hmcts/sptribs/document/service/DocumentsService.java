@@ -119,7 +119,7 @@ public class DocumentsService {
 
         try {
             Long orderDocumentTypeId = caseDocumentTypesCache.getId(CaseDocumentType.ORDER);
-            log.info("Draft order updated {} to non draft case document type successfully for url: {}",
+            log.info("Draft order updated {} document to non draft case document type successfully for url: {}",
                 documentsRepository.updateCaseDocumentTypeIdByDocumentBinaryUrl(documentBinaryUrl, orderDocumentTypeId), documentBinaryUrl);
         } catch (DataAccessException e) {
             throw new DocumentUpdateException("Error updating case document type from draft order to order", e);
