@@ -531,12 +531,12 @@ public abstract class FunctionalTestSuite {
                 placeholdersAndUuids.put(placeholder, uuid);
                 if (isDraftOrder) {
                     CaseDocumentsFTDataManager.saveTestDocumentEntity(testCaseRef, testDocument.links.self.href,
-                        testDocument.originalDocumentName, DocumentType.TRIBUNAL_DIRECTION.name(), true);
+                        testDocument.originalDocumentName, DocumentType.TRIBUNAL_DIRECTION.name(), "4");
                     updateOrderTemplate(testDocument, caseData);
                     log.info("Document uploaded: {}", testDocument);
                 } else {
                     CaseDocumentsFTDataManager.saveTestDocumentEntity(testCaseRef, testDocument.links.self.href,
-                        testDocument.originalDocumentName, DocumentType.APPLICATION_FORM.name(), false);
+                        testDocument.originalDocumentName, DocumentType.APPLICATION_FORM.name(), "2");
                 }
             }
             assignedPlaceholder = placeholder;

@@ -3,7 +3,6 @@ package uk.gov.hmcts.sptribs.testutil.data;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.sptribs.document.model.DocumentEntity;
-import uk.gov.hmcts.sptribs.document.model.DocumentType;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -71,37 +70,7 @@ public class CaseDocumentsFTDataManager extends FunctionalTestDataManager {
 
 
     public static void saveTestDocumentEntity(long reference, String testDocumentUrl, String testDocumentFilename,
-                                              String documentTypeName, boolean isDraftOrder) throws SQLException {
-        if (isDraftOrder) {
-            saveTestDraftOrderDocumentEntity(reference, testDocumentUrl, testDocumentFilename);
-        } else {
-            Timestamp currentDateTime = Timestamp.valueOf(LocalDateTime.now());
-            //always sets case-document type to doc management (2)
-            String sql = "INSERT INTO " + TABLE_CASE_DOCUMENTS + " ("
-                + KEY_CASE_DOCUMENTS_REFERENCE
-                + ", saved_at"
-                + ", document_url"
-                + ", document_binary_url"
-                + ", document_filename"
-                + ", document_type_name"
-                + ", case_document_type_id"
-                + ", updated_at"
-                + ") VALUES (?, ?, ?, ?, ?, ?, CAST(2 AS bigint), ?)";
-            try (PreparedStatement stmt = connection.prepareStatement(sql)) {
-                stmt.setLong(1, reference);
-                stmt.setTimestamp(2, currentDateTime);
-                stmt.setString(3, testDocumentUrl);
-                stmt.setString(4, testDocumentUrl + "/binary");
-                stmt.setString(5, testDocumentFilename);
-                stmt.setString(6, documentTypeName);
-                stmt.setTimestamp(7, currentDateTime);
-                stmt.executeUpdate();
-            }
-        }
-    }
-
-    public static void saveTestDraftOrderDocumentEntity(long reference, String testDocumentUrl,
-                                                        String testDocumentFilename) throws SQLException {
+                                              String documentTypeName, String caseDocumentTypeId) throws SQLException {
         Timestamp currentDateTime = Timestamp.valueOf(LocalDateTime.now());
         String sql = "INSERT INTO " + TABLE_CASE_DOCUMENTS + " ("
             + KEY_CASE_DOCUMENTS_REFERENCE
@@ -112,14 +81,14 @@ public class CaseDocumentsFTDataManager extends FunctionalTestDataManager {
             + ", document_type_name"
             + ", case_document_type_id"
             + ", updated_at"
-            + ") VALUES (?, ?, ?, ?, ?, ?, CAST(4 AS bigint), ?)";
+            + ") VALUES (?, ?, ?, ?, ?, ?, CAST(" + caseDocumentTypeId + " AS bigint), ?)";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setLong(1, reference);
             stmt.setTimestamp(2, currentDateTime);
             stmt.setString(3, testDocumentUrl);
             stmt.setString(4, testDocumentUrl + "/binary");
             stmt.setString(5, testDocumentFilename);
-            stmt.setString(6, DocumentType.TRIBUNAL_DIRECTION.name());
+            stmt.setString(6, documentTypeName);
             stmt.setTimestamp(7, currentDateTime);
             stmt.executeUpdate();
         }
