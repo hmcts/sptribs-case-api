@@ -398,9 +398,6 @@ public class DecisionIssuedNotificationIT {
         @Autowired
         Environment environment;
 
-        @Value("${sptribs-frontend.dashboard-url}")
-        private String citizenDashboardUrl;
-
         @BeforeEach
         void onlyRunWhenEnabled() {
             assumeTrue(environment.getProperty("feature.citizen-dashboard.enabled", Boolean.class, false),

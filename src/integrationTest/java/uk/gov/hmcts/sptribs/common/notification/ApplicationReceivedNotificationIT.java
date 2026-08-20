@@ -31,7 +31,6 @@ import static uk.gov.hmcts.sptribs.common.CommonConstants.CIC_CASE_NUMBER;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.CIC_CASE_SUBJECT_NAME;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.CONTACT_NAME;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.DASHBOARD_KEY;
-import static uk.gov.hmcts.sptribs.common.CommonConstants.DASHBOARD_LINK;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.TRIBUNAL_NAME;
 import static uk.gov.hmcts.sptribs.common.ccd.CcdCaseType.CIC;
 import static uk.gov.hmcts.sptribs.notification.TemplateName.APPLICATION_RECEIVED;
@@ -173,9 +172,6 @@ public class ApplicationReceivedNotificationIT {
 
         @Autowired
         Environment environment;
-
-        @Value("${sptribs-frontend.dashboard-url}")
-        private String citizenDashboardUrl;
 
         @BeforeEach
         void onlyRunWhenEnabled() {
