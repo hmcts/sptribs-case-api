@@ -130,7 +130,7 @@ public class CaseworkerCreateBundle implements CCDConfig<CaseData, State, UserRo
 
         if (!CollectionUtils.isEmpty(initialDocuments)) {
             caseData.setCaseDocuments(convertToBundleDocumentType(initialDocuments));
-            caseData.setFurtherCaseDocuments(convertToBundleDocumentType(getFurtherDocuments(allDocuments, initialDocuments)));
+            caseData.setFurtherCaseDocuments(convertToBundleDocumentTypeFurtherDocs(getFurtherDocuments(allDocuments, initialDocuments)));
         } else {
             caseData.setCaseDocuments(convertToBundleDocumentType(allDocuments));
         }
@@ -153,6 +153,11 @@ public class CaseworkerCreateBundle implements CCDConfig<CaseData, State, UserRo
     }
 
     private List<AbstractCaseworkerCICDocument<CaseworkerCICDocument>> convertToBundleDocumentType(List<CaseworkerCICDocument> docs) {
+
+        return docs.stream().filter(CaseworkerCICDocument::isValidBundleDocument).map(AbstractCaseworkerCICDocument::new).toList();
+    }
+
+    private List<AbstractCaseworkerCICDocument<CaseworkerCICDocument>> convertToBundleDocumentTypeFurtherDocs(List<CaseworkerCICDocument> docs) {
         return docs.stream()
             .filter(CaseworkerCICDocument::isValidBundleDocument)
             .map(this::toBundleDocument)
