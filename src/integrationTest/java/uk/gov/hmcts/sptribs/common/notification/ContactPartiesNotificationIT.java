@@ -195,7 +195,7 @@ public class ContactPartiesNotificationIT {
                     CONTACT_PARTY_INFO, "a message"
                 ))
                 .doesNotContainKey(DASHBOARD_KEY);
-            assertThat(notificationRequest.getUploadedDocuments())
+            assertThat(notificationRequest.getTemplateDocumentVars())
                 .containsAllEntriesOf(uploadedDocuments);
         }
 
@@ -285,7 +285,7 @@ public class ContactPartiesNotificationIT {
                     CONTACT_PARTY_INFO, "a message"
                 ))
                 .doesNotContainKey(DASHBOARD_KEY);
-            assertThat(notificationRequest.getUploadedDocuments())
+            assertThat(notificationRequest.getTemplateDocumentVars())
                 .containsAllEntriesOf(uploadedDocuments);
         }
 
@@ -377,7 +377,7 @@ public class ContactPartiesNotificationIT {
                     CONTACT_PARTY_INFO, "a message"
                 ))
                 .doesNotContainKey(DASHBOARD_KEY);
-            assertThat(notificationRequest.getUploadedDocuments())
+            assertThat(notificationRequest.getTemplateDocumentVars())
                 .containsAllEntriesOf(uploadedDocuments);
         }
 
@@ -505,7 +505,7 @@ public class ContactPartiesNotificationIT {
                     CONTACT_NAME, "Respondent Name",
                     CONTACT_PARTY_INFO, "a message"
                 ));
-            assertThat(notificationRequest.getUploadedDocuments())
+            assertThat(notificationRequest.getTemplateDocumentVars())
                 .containsAllEntriesOf(uploadedDocuments);
         }
 
@@ -584,7 +584,7 @@ public class ContactPartiesNotificationIT {
                     CONTACT_NAME, TRIBUNAL_NAME_VALUE,
                     CONTACT_PARTY_INFO, "a message"
                 ));
-            assertThat(notificationRequest.getUploadedDocuments())
+            assertThat(notificationRequest.getTemplateDocumentVars())
                 .containsAllEntriesOf(uploadedDocuments)
                 .doesNotContainKey(DASHBOARD_KEY);
         }
@@ -645,7 +645,7 @@ public class ContactPartiesNotificationIT {
                     CONTACT_PARTY_INFO, "a message"
                 ))
                 .containsKey(DASHBOARD_KEY);
-            assertThat(notificationRequest.getUploadedDocuments())
+            assertThat(notificationRequest.getTemplateDocumentVars())
                 .containsAllEntriesOf(uploadedDocuments);
         }
 
@@ -693,7 +693,7 @@ public class ContactPartiesNotificationIT {
                     CONTACT_PARTY_INFO, "a message"
                 ))
                 .containsKey(DASHBOARD_KEY);
-            assertThat(notificationRequest.getUploadedDocuments())
+            assertThat(notificationRequest.getTemplateDocumentVars())
                 .containsAllEntriesOf(uploadedDocuments);
         }
 
@@ -741,7 +741,7 @@ public class ContactPartiesNotificationIT {
                     CONTACT_PARTY_INFO, "a message"
                 ))
                 .containsKey(DASHBOARD_KEY);
-            assertThat(notificationRequest.getUploadedDocuments())
+            assertThat(notificationRequest.getTemplateDocumentVars())
                 .containsAllEntriesOf(uploadedDocuments);
         }
     }

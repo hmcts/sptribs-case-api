@@ -134,7 +134,7 @@ public class CaseFinalDecisionIssuedNotificationIT {
                     CONTACT_NAME, "Subject Name"
                 ))
                 .doesNotContainKey(DASHBOARD_KEY);
-            assertThat(notificationRequest.getUploadedDocuments())
+            assertThat(notificationRequest.getTemplateDocumentVars())
                 .isEqualTo(Map.of(
                     FINAL_DECISION_NOTICE, "0ebad3a7-223e-4185-b8ce-ccb50a87e982",
                     FINAL_DECISION_GUIDANCE, "b7377096-880b-4dab-b9f9-97bd62f14589"
@@ -240,7 +240,7 @@ public class CaseFinalDecisionIssuedNotificationIT {
                     CONTACT_NAME, "Representative Name"
                 ))
                 .doesNotContainKey(DASHBOARD_KEY);
-            assertThat(notificationRequest.getUploadedDocuments())
+            assertThat(notificationRequest.getTemplateDocumentVars())
                 .isEqualTo(Map.of(
                     FINAL_DECISION_NOTICE, "0ebad3a7-223e-4185-b8ce-ccb50a87e982",
                     FINAL_DECISION_GUIDANCE, "b7377096-880b-4dab-b9f9-97bd62f14589"
@@ -346,7 +346,7 @@ public class CaseFinalDecisionIssuedNotificationIT {
                     CONTACT_NAME, "Respondent Name"
                 ))
                 .doesNotContainKey(DASHBOARD_KEY);
-            assertThat(notificationRequest.getUploadedDocuments())
+            assertThat(notificationRequest.getTemplateDocumentVars())
                 .isEqualTo(Map.of(
                     FINAL_DECISION_NOTICE, "0ebad3a7-223e-4185-b8ce-ccb50a87e982",
                     FINAL_DECISION_GUIDANCE, "b7377096-880b-4dab-b9f9-97bd62f14589"
@@ -410,7 +410,7 @@ public class CaseFinalDecisionIssuedNotificationIT {
                     CONTACT_NAME, "Applicant Name"
                 ))
                 .doesNotContainKey(DASHBOARD_KEY);
-            assertThat(notificationRequest.getUploadedDocuments())
+            assertThat(notificationRequest.getTemplateDocumentVars())
                 .isEqualTo(Map.of(
                     FINAL_DECISION_NOTICE, "0ebad3a7-223e-4185-b8ce-ccb50a87e982",
                     FINAL_DECISION_GUIDANCE, "b7377096-880b-4dab-b9f9-97bd62f14589"
@@ -519,7 +519,7 @@ public class CaseFinalDecisionIssuedNotificationIT {
                     CONTACT_NAME, "Subject Name"
                 ))
                 .containsKey(DASHBOARD_KEY);
-            assertThat(notificationRequest.getUploadedDocuments())
+            assertThat(notificationRequest.getTemplateDocumentVars())
                 .isEqualTo(Map.of(
                     FINAL_DECISION_NOTICE, "0ebad3a7-223e-4185-b8ce-ccb50a87e982",
                     FINAL_DECISION_GUIDANCE, "b7377096-880b-4dab-b9f9-97bd62f14589"
@@ -584,7 +584,7 @@ public class CaseFinalDecisionIssuedNotificationIT {
                     CONTACT_NAME, "Representative Name"
                 ))
                 .containsKey(DASHBOARD_KEY);
-            assertThat(notificationRequest.getUploadedDocuments())
+            assertThat(notificationRequest.getTemplateDocumentVars())
                 .isEqualTo(Map.of(
                     FINAL_DECISION_NOTICE, "0ebad3a7-223e-4185-b8ce-ccb50a87e982",
                     FINAL_DECISION_GUIDANCE, "b7377096-880b-4dab-b9f9-97bd62f14589"
@@ -647,7 +647,7 @@ public class CaseFinalDecisionIssuedNotificationIT {
                     CONTACT_NAME, "Respondent Name"
                 ))
                 .doesNotContainKey(DASHBOARD_KEY);
-            assertThat(notificationRequest.getUploadedDocuments())
+            assertThat(notificationRequest.getTemplateDocumentVars())
                 .isEqualTo(Map.of(
                     FINAL_DECISION_NOTICE, "0ebad3a7-223e-4185-b8ce-ccb50a87e982",
                     FINAL_DECISION_GUIDANCE, "b7377096-880b-4dab-b9f9-97bd62f14589"
@@ -711,7 +711,7 @@ public class CaseFinalDecisionIssuedNotificationIT {
                     CONTACT_NAME, "Applicant Name"
                 ))
                 .containsKey(DASHBOARD_KEY);
-            assertThat(notificationRequest.getUploadedDocuments())
+            assertThat(notificationRequest.getTemplateDocumentVars())
                 .isEqualTo(Map.of(
                     FINAL_DECISION_NOTICE, "0ebad3a7-223e-4185-b8ce-ccb50a87e982",
                     FINAL_DECISION_GUIDANCE, "b7377096-880b-4dab-b9f9-97bd62f14589"

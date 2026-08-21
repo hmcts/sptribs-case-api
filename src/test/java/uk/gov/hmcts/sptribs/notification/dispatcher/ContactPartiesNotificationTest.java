@@ -67,7 +67,7 @@ class ContactPartiesNotificationTest {
 
         //When
         when(notificationHelper.buildEmailNotificationRequest(any(), anyBoolean(), anyMap(), anyMap(), any(TemplateName.class)))
-            .thenReturn(NotificationRequest.builder().uploadedDocuments(uploadedDocuments).build());
+            .thenReturn(NotificationRequest.builder().templateDocumentVars(uploadedDocuments).build());
         when(notificationService.sendEmail(any(NotificationRequest.class), eq(TEST_CASE_ID.toString()), eq(Party.SUBJECT)))
             .thenReturn(notificationResponse);
 
@@ -137,7 +137,7 @@ class ContactPartiesNotificationTest {
 
         //When
         when(notificationHelper.buildEmailNotificationRequest(any(), anyBoolean(), anyMap(), anyMap(), any(TemplateName.class)))
-            .thenReturn(NotificationRequest.builder().uploadedDocuments(getDocumentUploadMap()).build());
+            .thenReturn(NotificationRequest.builder().templateDocumentVars(getDocumentUploadMap()).build());
 
         when(notificationService.sendEmail(any(NotificationRequest.class), eq(TEST_CASE_ID.toString()), eq(Party.APPLICANT)))
             .thenReturn(notificationResponse);
@@ -209,7 +209,7 @@ class ContactPartiesNotificationTest {
 
         //When
         when(notificationHelper.buildEmailNotificationRequest(any(), anyBoolean(), anyMap(), anyMap(), any(TemplateName.class)))
-            .thenReturn(NotificationRequest.builder().uploadedDocuments(getDocumentUploadMap()).build());
+            .thenReturn(NotificationRequest.builder().templateDocumentVars(getDocumentUploadMap()).build());
         when(notificationService.sendEmail(any(NotificationRequest.class), eq(TEST_CASE_ID.toString()), eq(Party.REPRESENTATIVE)))
             .thenReturn(notificationResponse);
 
@@ -311,7 +311,7 @@ class ContactPartiesNotificationTest {
 
         //When
         when(notificationHelper.buildEmailNotificationRequest(any(), anyBoolean(), anyMap(), anyMap(), any(TemplateName.class)))
-            .thenReturn(NotificationRequest.builder().uploadedDocuments(getDocumentUploadMap()).build());
+            .thenReturn(NotificationRequest.builder().templateDocumentVars(getDocumentUploadMap()).build());
         when(notificationService.sendEmail(any(NotificationRequest.class), eq(TEST_CASE_ID.toString()), eq(Party.RESPONDENT)))
             .thenReturn(notificationResponse);
 
@@ -377,7 +377,7 @@ class ContactPartiesNotificationTest {
 
         //When
         when(notificationHelper.buildEmailNotificationRequest(any(), anyBoolean(), anyMap(), anyMap(), any(TemplateName.class)))
-            .thenReturn(NotificationRequest.builder().uploadedDocuments(getDocumentUploadMap()).build());
+            .thenReturn(NotificationRequest.builder().templateDocumentVars(getDocumentUploadMap()).build());
 
         when(notificationService.sendEmail(any(NotificationRequest.class), eq(TEST_CASE_ID.toString()), eq(Party.TRIBUNAL)))
             .thenReturn(notificationResponse);

@@ -126,7 +126,7 @@ public class DecisionIssuedNotificationIT {
                     CONTACT_NAME, "Subject Name"
                 ))
                 .doesNotContainKey(DASHBOARD_KEY);
-            assertThat(notificationRequest.getUploadedDocuments())
+            assertThat(notificationRequest.getTemplateDocumentVars())
                 .containsAllEntriesOf(Map.of(
                     DOC_AVAILABLE + 1, "yes",
                     DECISION_NOTICE + 1, "0ebad3a7-223e-4185-b8ce-ccb50a87e982",
@@ -210,7 +210,7 @@ public class DecisionIssuedNotificationIT {
                     CONTACT_NAME, "Representative Name"
                 ))
                 .doesNotContainKey(DASHBOARD_KEY);
-            assertThat(notificationRequest.getUploadedDocuments())
+            assertThat(notificationRequest.getTemplateDocumentVars())
                 .containsAllEntriesOf(Map.of(
                     DOC_AVAILABLE + 1, "yes",
                     DECISION_NOTICE + 1, "0ebad3a7-223e-4185-b8ce-ccb50a87e982",
@@ -295,7 +295,7 @@ public class DecisionIssuedNotificationIT {
                     CONTACT_NAME, "Respondent Name"
                 ))
                 .doesNotContainKey(DASHBOARD_KEY);
-            assertThat(notificationRequest.getUploadedDocuments())
+            assertThat(notificationRequest.getTemplateDocumentVars())
                 .containsAllEntriesOf(Map.of(
                     DOC_AVAILABLE + 1, "yes",
                     DECISION_NOTICE + 1, "0ebad3a7-223e-4185-b8ce-ccb50a87e982",
@@ -346,7 +346,7 @@ public class DecisionIssuedNotificationIT {
                     CONTACT_NAME, "Applicant Name"
                 ))
                 .doesNotContainKey(DASHBOARD_KEY);
-            assertThat(notificationRequest.getUploadedDocuments())
+            assertThat(notificationRequest.getTemplateDocumentVars())
                 .containsAllEntriesOf(Map.of(
                     DOC_AVAILABLE + 1, "yes",
                     DECISION_NOTICE + 1, "0ebad3a7-223e-4185-b8ce-ccb50a87e982",
@@ -444,7 +444,7 @@ public class DecisionIssuedNotificationIT {
                     CONTACT_NAME, "Subject Name"
                 ))
                 .containsKey(DASHBOARD_KEY);
-            assertThat(notificationRequest.getUploadedDocuments())
+            assertThat(notificationRequest.getTemplateDocumentVars())
                 .containsAllEntriesOf(Map.of(
                     DOC_AVAILABLE + 1, "yes",
                     DECISION_NOTICE + 1, "0ebad3a7-223e-4185-b8ce-ccb50a87e982",
@@ -495,7 +495,7 @@ public class DecisionIssuedNotificationIT {
                     CONTACT_NAME, "Representative Name"
                 ))
                 .containsKey(DASHBOARD_KEY);
-            assertThat(notificationRequest.getUploadedDocuments())
+            assertThat(notificationRequest.getTemplateDocumentVars())
                 .containsAllEntriesOf(Map.of(
                     DOC_AVAILABLE + 1, "yes",
                     DECISION_NOTICE + 1, "0ebad3a7-223e-4185-b8ce-ccb50a87e982",
@@ -545,7 +545,7 @@ public class DecisionIssuedNotificationIT {
                     CONTACT_NAME, "Respondent Name"
                 ))
                 .doesNotContainKey(DASHBOARD_KEY);
-            assertThat(notificationRequest.getUploadedDocuments())
+            assertThat(notificationRequest.getTemplateDocumentVars())
                 .containsAllEntriesOf(Map.of(
                     DOC_AVAILABLE + 1, "yes",
                     DECISION_NOTICE + 1, "0ebad3a7-223e-4185-b8ce-ccb50a87e982",
@@ -596,7 +596,7 @@ public class DecisionIssuedNotificationIT {
                     CONTACT_NAME, "Applicant Name"
                 ))
                 .containsKey(DASHBOARD_KEY);
-            assertThat(notificationRequest.getUploadedDocuments())
+            assertThat(notificationRequest.getTemplateDocumentVars())
                 .containsAllEntriesOf(Map.of(
                     DOC_AVAILABLE + 1, "yes",
                     DECISION_NOTICE + 1, "0ebad3a7-223e-4185-b8ce-ccb50a87e982",

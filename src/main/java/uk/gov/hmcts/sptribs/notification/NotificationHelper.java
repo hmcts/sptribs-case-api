@@ -109,7 +109,7 @@ public class NotificationHelper {
         return NotificationRequest.builder()
             .destinationAddress(destinationAddress)
             .hasFileAttachments(hasFileAttachment)
-            .uploadedDocuments(uploadedDocuments)
+            .templateDocumentVars(uploadedDocuments)
             .template(emailTemplateName)
             .templateVars(templateVars)
             .build();

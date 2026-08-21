@@ -28,6 +28,6 @@ core_case_data:
     page_size: 100
 
 
-feature:
-  citizen-dashboard:
-    enabled: false
+#feature:
+#  citizen-dashboard:
+#    enabled: false

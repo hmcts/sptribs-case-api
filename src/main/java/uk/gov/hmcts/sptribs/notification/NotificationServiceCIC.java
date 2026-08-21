@@ -8,6 +8,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.NullArgumentException;
 import org.apache.commons.lang.StringUtils;
 import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
@@ -81,6 +82,9 @@ public class NotificationServiceCIC {
 
     private static final long TWO_MEGABYTES = 2_048_000;
 
+    @Value("${feature.citizen-dashboard.enabled}")
+    private boolean citizenDashboardEnabled;
+
     public void saveEmailCorrespondence(String templateName,
                                         SendEmailResponse sendEmailResponse,
                                         String sentTo,
@@ -111,11 +115,10 @@ public class NotificationServiceCIC {
                 .receivingParty(receivingParty)
                 .build();
             correspondenceRepository.save(correspondence);
-        } catch (java.io.IOException | RestClientException e) {
+        } catch (IOException | RestClientException e) {
             log.error("Failed to store pdf document", e);
             throw e;
         }
-
     }
 
     public void saveLetterCorrespondence(String templateName,
@@ -141,7 +144,7 @@ public class NotificationServiceCIC {
                 .correspondenceType("Letter")
                 .build();
             correspondenceRepository.save(correspondence);
-        } catch (java.io.IOException | RestClientException e) {
+        } catch (IOException | RestClientException e) {
             log.error("Failed to store pdf document", e);
             throw e;
         }
@@ -165,7 +168,7 @@ public class NotificationServiceCIC {
 
         try {
             if (notificationRequest.isHasFileAttachments()) {
-                addAttachmentsToTemplateVars(templateVars, notificationRequest.getUploadedDocuments(), selectedDocuments);
+                addAttachmentsToTemplateVars(templateVars, notificationRequest.getTemplateDocumentVars(), selectedDocuments);
             }
 
             String templateId = emailTemplatesConfig.getTemplatesCIC().get(template.name());
@@ -286,78 +289,46 @@ public class NotificationServiceCIC {
     }
 
     private void addAttachmentsToTemplateVars(Map<String, Object> templateVars,
-                                              Map<String, String> uploadedDocuments,
+                                              Map<String, String> templateDocumentVars,
                                               List<CaseworkerCICDocument> selectedDocuments) {
-        for (Map.Entry<String, String> uploadDocumentEntry : uploadedDocuments.entrySet()) {
-            final String docName = uploadDocumentEntry.getKey();
-            final String item = uploadDocumentEntry.getValue();
+        for (Map.Entry<String, String> templateDocVar : templateDocumentVars.entrySet()) {
+            final String templatePlaceholder = templateDocVar.getKey();
+            final String value = templateDocVar.getValue();
 
-            if (docName.contains(DOC_AVAILABLE)) {
-                templateVars.put(docName, item);
+            if (templatePlaceholder.contains(DOC_AVAILABLE)) {
+                templateVars.put(templatePlaceholder, value);
             } else {
-                addLinkOrDocumentDetails(templateVars, selectedDocuments, item, docName);
+                addLinkOrDocumentDetails(templateVars, selectedDocuments, value, templatePlaceholder);
             }
         }
     }
 
     private void addLinkOrDocumentDetails(Map<String, Object> templateVars,
                                           List<CaseworkerCICDocument> selectedDocuments,
-                                          String item,
-                                          String docName) {
-        final CICUser user = idamService.retrieveUser(request.getHeader(AUTHORIZATION));
-        final String authorisation = user.getAuthToken();
-        final String serviceAuthorization = authTokenGenerator.generate();
-
-        if (StringUtils.isNotEmpty(item)) {
-            ResponseEntity<byte[]> documentBinaryResponse =
-                caseDocumentClientApi.getDocumentBinary(authorisation, serviceAuthorization, UUID.fromString(item));
-            if (!documentBinaryResponse.getStatusCode().is2xxSuccessful()) {
-                log.error("Response code {} received when fetching document binary for id {}",
-                    documentBinaryResponse.getStatusCode(), item);
-                throw new NotificationException(
-                    new Exception(String.format("Failed to get document binary for id %s", item)));
-            }
-
-            byte[] uploadedDocument = documentBinaryResponse.getBody();
-            if (uploadedDocument != null) {
-                log.debug("Document available for: {}", docName);
-
-                if (!selectedDocuments.isEmpty()) {
-
-                    addDocumentDescription(templateVars, selectedDocuments, item, docName);
-
-                } else {
-
-                    if (uploadedDocument.length <= TWO_MEGABYTES) {
-                        templateVars.put(docName, getJsonFileAttachment(uploadedDocument));
-                    } else {
-                        addDocumentDetails(templateVars, selectedDocuments, item, docName);
-                    }
-                }
-            } else {
-                templateVars.put(docName, "");
-            }
-        } else {
-            log.info("Document not available for: {}", docName);
-            templateVars.put(docName, "");
+                                          String documentUuid,
+                                          String documentPlaceholder) {
+        if (StringUtils.isEmpty(documentUuid)) {
+            log.info("Document not available for: {}", documentPlaceholder);
+            templateVars.put(documentPlaceholder, "");
+            return;
         }
-    }
 
-    private static void addDocumentDescription(Map<String, Object> templateVars,
-                                               List<CaseworkerCICDocument> selectedDocuments,
-                                               String item,
-                                               String docName) {
-        CaseworkerCICDocument document = selectedDocuments.stream()
-            .filter(doc -> doc.getDocumentLink().getBinaryUrl().contains(item))
-            .findFirst()
-            .orElseThrow(() -> new NotificationException(
-                new Exception(String.format("Unable to find document details for document id: %s", item))));
+        byte[] uploadedDocument = fetchDocumentBinary(documentUuid);
+        if (uploadedDocument == null) {
+            templateVars.put(documentPlaceholder, "");
+            return;
+        }
 
-        String documentNotification = String.format(
-            "%nFilename: %s%nDescription: %s%n",
-            document.getDocumentLink().getFilename(), document.getDocumentEmailContent());
+        log.debug("Document available for: {}", documentPlaceholder);
 
-        templateVars.put(docName, documentNotification);
+        boolean attachLink = !citizenDashboardEnabled && uploadedDocument.length <= TWO_MEGABYTES;
+        if (attachLink) {
+            templateVars.put(documentPlaceholder, getJsonFileAttachment(uploadedDocument));
+        } else if (citizenDashboardEnabled) {
+            addSimpleDocumentDetails(templateVars, selectedDocuments, documentPlaceholder, documentUuid);
+        } else {
+            addDocumentDetails(templateVars, selectedDocuments, documentPlaceholder, documentUuid);
+        }
     }
 
     private static void addDocumentDetails(Map<String, Object> templateVars,
@@ -373,6 +344,43 @@ public class NotificationServiceCIC {
         String documentNotification = String.format("%nFilename: %s%nDescription: %s%nUpload Date: %s",
             document.getDocumentLink().getFilename(), document.getDocumentEmailContent(), document.getDate());
         templateVars.put(docName, documentNotification);
+    }
+
+    private void addSimpleDocumentDetails(Map<String, Object> templateVars,
+                                          List<CaseworkerCICDocument> selectedDocuments,
+                                          String docTemplateVar,
+                                          String documentId) {
+        CaseworkerCICDocument document = selectedDocuments.stream()
+            .filter(doc -> doc.getDocumentLink().getBinaryUrl().contains(documentId))
+            .findFirst()
+            .orElseThrow(() -> new NotificationException(
+                new Exception(String.format("Unable to find document details for document id: %s", documentId))));
+
+        StringBuilder documentDetails = new StringBuilder(String.format("%nFilename: %s%n", document.getDocumentLink().getFilename()));
+
+        if (document.getDocumentEmailContent() != null) {
+            documentDetails.append(String.format("Description: %s%n", document.getDocumentEmailContent()));
+        }
+
+        templateVars.put(docTemplateVar, documentDetails.toString());
+    }
+
+    private byte[] fetchDocumentBinary(String documentUUID) {
+        final CICUser user = idamService.retrieveUser(request.getHeader(AUTHORIZATION));
+        final String authorisation = user.getAuthToken();
+        final String serviceAuthorization = authTokenGenerator.generate();
+
+        ResponseEntity<byte[]> documentBinaryResponse =
+            caseDocumentClientApi.getDocumentBinary(authorisation, serviceAuthorization, UUID.fromString(documentUUID));
+
+        if (!documentBinaryResponse.getStatusCode().is2xxSuccessful()) {
+            log.error("Response code {} received when fetching document binary for id {}",
+                documentBinaryResponse.getStatusCode(), documentUUID);
+            throw new NotificationException(
+                new Exception(String.format("Failed to get document binary for id %s", documentUUID)));
+        }
+
+        return documentBinaryResponse.getBody();
     }
 
     private JSONObject getJsonFileAttachment(byte[] fileContents) {
@@ -484,7 +492,7 @@ public class NotificationServiceCIC {
 
             return uploadedPDF;
         } catch (RestClientException e) {
-            log.error("Failed to store correspondence document [" + correspondenceDocumentFilename + "]", e);
+            log.error("Failed to store correspondence document [{}]", correspondenceDocumentFilename, e);
             throw e;
         }
     }
