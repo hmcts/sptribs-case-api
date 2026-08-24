@@ -4,11 +4,13 @@ import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.sptribs.caseworker.util.DocumentListUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.ContactPreferenceType;
 import uk.gov.hmcts.sptribs.ciccase.model.NotificationResponse;
 import uk.gov.hmcts.sptribs.common.CommonConstants;
+import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.notification.NotificationHelper;
 import uk.gov.hmcts.sptribs.notification.NotificationServiceCIC;
 import uk.gov.hmcts.sptribs.notification.PartiesNotification;
@@ -16,6 +18,7 @@ import uk.gov.hmcts.sptribs.notification.TemplateName;
 import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
 import uk.gov.hmcts.sptribs.notification.model.Party;
 
+import java.util.List;
 import java.util.Map;
 
 import static uk.gov.hmcts.sptribs.common.CommonConstants.DASHBOARD_KEY;
@@ -27,6 +30,8 @@ import static uk.gov.hmcts.sptribs.notification.TemplateName.CONTACT_PARTIES_EMA
 @Component
 @RequiredArgsConstructor
 public class ContactPartiesNotification implements PartiesNotification {
+
+    private static final int DOC_ATTACH_LIMIT = 10;
 
     private final NotificationServiceCIC notificationService;
 
@@ -52,7 +57,7 @@ public class ContactPartiesNotification implements PartiesNotification {
             notificationResponse = sendEmailNotificationWithAttachment(
                 cicCase.getEmail(),
                 templateVarsSubject,
-                uploadedDocuments,
+                caseData,
                 getTemplateName(),
                 caseNumber,
                 Party.SUBJECT);
@@ -79,7 +84,7 @@ public class ContactPartiesNotification implements PartiesNotification {
             notificationResponse = sendEmailNotificationWithAttachment(
                 cicCase.getApplicantEmailAddress(),
                 templateVarsApplicant,
-                uploadedDocuments,
+                caseData,
                 getTemplateName(),
                 caseNumber,
                 Party.APPLICANT);
@@ -107,7 +112,7 @@ public class ContactPartiesNotification implements PartiesNotification {
             notificationResponse = sendEmailNotificationWithAttachment(
                 cicCase.getRepresentativeEmailAddress(),
                 templateVarsRepresentative,
-                uploadedDocuments,
+                caseData,
                 getTemplateName(),
                 caseNumber,
                 Party.REPRESENTATIVE);
@@ -135,7 +140,7 @@ public class ContactPartiesNotification implements PartiesNotification {
 
             notificationResponse = sendEmailNotificationWithAttachment(cicCase.getRespondentEmail(),
                 templateVarsRespondent,
-                uploadedDocuments,
+                caseData,
                 CONTACT_PARTIES_EMAIL,
                 caseNumber,
                 Party.RESPONDENT);
@@ -161,7 +166,7 @@ public class ContactPartiesNotification implements PartiesNotification {
 
             notificationResponse = sendEmailNotificationWithAttachment(TRIBUNAL_EMAIL_VALUE,
                 templateVarsTribunal,
-                uploadedDocuments,
+                caseData,
                 CONTACT_PARTIES_EMAIL,
                 caseNumber,
                 Party.TRIBUNAL);
@@ -183,12 +188,15 @@ public class ContactPartiesNotification implements PartiesNotification {
         return notificationService.sendEmail(request, caseReferenceNumber, receivingParty);
     }
 
-    private NotificationResponse sendEmailNotificationWithAttachment(
-        String toEmail, final Map<String, Object> templateVars,
-        Map<String, String> uploadedDocuments,
-        TemplateName emailTemplateName,
-        String caseReferenceNumber,
-        Party receivingParty) {
+    private NotificationResponse sendEmailNotificationWithAttachment(String toEmail, final Map<String, Object> templateVars,
+                                                                     CaseData caseData,
+                                                                     TemplateName emailTemplateName,
+                                                                     String caseReferenceNumber,
+                                                                     Party receivingParty) {
+        Map<String, String> uploadedDocuments = notificationHelper.buildDocumentList(caseData.getContactPartiesDocuments()
+            .getDocumentList(), DOC_ATTACH_LIMIT);
+        List<CaseworkerCICDocument> selectedDocuments = DocumentListUtil.getSelectedDocumentsFromDynamicList(caseData,
+            caseData.getContactPartiesDocuments().getDocumentList());
 
         final NotificationRequest request = notificationHelper.buildEmailNotificationRequest(toEmail,
             true,
@@ -196,7 +204,7 @@ public class ContactPartiesNotification implements PartiesNotification {
             templateVars,
             emailTemplateName);
 
-        return notificationService.sendEmail(request, caseReferenceNumber, receivingParty);
+        return notificationService.sendEmail(request, selectedDocuments, caseReferenceNumber, receivingParty);
     }
 
     private NotificationResponse sendLetterNotification(Map<String, Object> templateVarsLetter,

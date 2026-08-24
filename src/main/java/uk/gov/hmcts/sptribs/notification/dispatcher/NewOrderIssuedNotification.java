@@ -8,17 +8,22 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.type.Document;
 import uk.gov.hmcts.sptribs.caseworker.model.Order;
+import uk.gov.hmcts.sptribs.caseworker.util.OrderDocumentListUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.ContactPreferenceType;
 import uk.gov.hmcts.sptribs.ciccase.model.NotificationResponse;
+import uk.gov.hmcts.sptribs.document.DocumentUtil;
+import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.notification.NotificationHelper;
 import uk.gov.hmcts.sptribs.notification.NotificationServiceCIC;
 import uk.gov.hmcts.sptribs.notification.PartiesNotification;
 import uk.gov.hmcts.sptribs.notification.TemplateName;
 import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static uk.gov.hmcts.sptribs.common.CommonConstants.DASHBOARD_KEY;
@@ -54,9 +59,8 @@ public class NewOrderIssuedNotification implements PartiesNotification {
         final NotificationResponse notificationResponse;
         if (cicCase.getContactPreferenceType() == ContactPreferenceType.EMAIL) {
             addDashboardLink(templateVars);
-            final Map<String, String> uploadedDocuments = getUploadedDocumentIds(caseData);
             notificationResponse = sendEmailNotificationWithAttachment(cicCase.getEmail(),
-                uploadedDocuments, templateVars, getTemplateName(), caseNumber);
+                caseData, templateVars, getTemplateName(), caseNumber);
         } else {
             notificationHelper.addAddressTemplateVars(cicCase.getAddress(), templateVars);
             notificationResponse = sendLetterNotification(templateVars, caseNumber);
@@ -72,9 +76,8 @@ public class NewOrderIssuedNotification implements PartiesNotification {
         final NotificationResponse notificationResponse;
         if (cicCase.getRepresentativeContactDetailsPreference() == ContactPreferenceType.EMAIL) {
             addDashboardLink(templateVars);
-            final Map<String, String> uploadedDocuments = getUploadedDocumentIds(caseData);
             notificationResponse = sendEmailNotificationWithAttachment(cicCase.getRepresentativeEmailAddress(),
-                uploadedDocuments, templateVars, getTemplateName(), caseNumber);
+                caseData, templateVars, getTemplateName(), caseNumber);
         } else {
             notificationHelper.addAddressTemplateVars(cicCase.getRepresentativeAddress(), templateVars);
             notificationResponse = sendLetterNotification(templateVars, caseNumber);
@@ -88,9 +91,8 @@ public class NewOrderIssuedNotification implements PartiesNotification {
         final CicCase cicCase = caseData.getCicCase();
 
         final Map<String, Object> respondentTemplateVars = notificationHelper.getRespondentCommonVars(caseNumber, caseData);
-        final Map<String, String> uploadedDocuments = getUploadedDocumentIds(caseData);
         final NotificationResponse notificationResponse = sendEmailNotificationWithAttachment(cicCase.getRespondentEmail(),
-            uploadedDocuments, respondentTemplateVars, NEW_ORDER_ISSUED_EMAIL, caseNumber);
+            caseData, respondentTemplateVars, NEW_ORDER_ISSUED_EMAIL, caseNumber);
         cicCase.setResNotificationResponse(notificationResponse);
     }
 
@@ -102,10 +104,9 @@ public class NewOrderIssuedNotification implements PartiesNotification {
         final NotificationResponse notificationResponse;
         if (cicCase.getContactPreferenceType() == ContactPreferenceType.EMAIL) {
             addDashboardLink(templateVars);
-            final Map<String, String> uploadedDocuments = getUploadedDocumentIds(caseData);
 
             notificationResponse = sendEmailNotificationWithAttachment(cicCase.getApplicantEmailAddress(),
-                uploadedDocuments, templateVars, getTemplateName(), caseNumber);
+                caseData, templateVars, getTemplateName(), caseNumber);
         } else {
             notificationHelper.addAddressTemplateVars(cicCase.getAddress(), templateVars);
             notificationResponse = sendLetterNotification(templateVars, caseNumber);
@@ -115,17 +116,17 @@ public class NewOrderIssuedNotification implements PartiesNotification {
     }
 
     private NotificationResponse sendEmailNotificationWithAttachment(final String destinationAddress,
-                                                                     Map<String, String> uploadedDocuments,
+                                                                     CaseData caseData,
                                                                      final Map<String, Object> templateVars,
                                                                      TemplateName templateName,
                                                                      String caseReferenceNumber) {
         final NotificationRequest emailRequest = notificationHelper.buildEmailNotificationRequest(
             destinationAddress,
             true,
-            uploadedDocuments,
+            getUploadedDocumentIds(caseData),
             templateVars,
             templateName);
-        return notificationService.sendEmail(emailRequest, caseReferenceNumber, null);
+        return notificationService.sendEmail(emailRequest, getOrder(caseData), caseReferenceNumber, null);
     }
 
     private NotificationResponse sendLetterNotification(Map<String, Object> templateVarsLetter, String caseReferenceNumber) {
@@ -161,6 +162,16 @@ public class NewOrderIssuedNotification implements PartiesNotification {
         }
 
         return null;
+    }
+
+    private List<CaseworkerCICDocument> getOrder(CaseData caseData) {
+        List<CaseworkerCICDocument> orderDocuments = OrderDocumentListUtil.getOrderDocuments(caseData.getCicCase());
+        Document lastOrderDocument = getLastSelectedOrder(caseData.getCicCase());
+        if (lastOrderDocument == null) {
+            return new ArrayList<>();
+        }
+        String lastOrderUUID = DocumentUtil.getUuid(lastOrderDocument);
+        return orderDocuments.stream().filter(doc -> doc.getDocumentLink().getBinaryUrl().contains(lastOrderUUID)).toList();
     }
 
     private TemplateName getTemplateName() {

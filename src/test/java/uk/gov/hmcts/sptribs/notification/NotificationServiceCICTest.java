@@ -182,7 +182,7 @@ public class NotificationServiceCICTest {
                     .templateDocumentVars(templateDocumentVars)
                     .build();
 
-                notificationService.sendEmail(request, TEST_CASE_ID.toString(), Party.RESPONDENT);
+                notificationService.sendEmail(request, attachedDocument, TEST_CASE_ID.toString(), Party.RESPONDENT);
 
                 verify(notificationClient).sendEmail(eq(TEMPLATE_ID), eq(EMAIL_ADDRESS), templateVarsArgCaptor.capture(), anyString());
                 assertThat(templateVarsArgCaptor.getValue()).containsEntry("DocumentAvailable1", "yes");
@@ -210,7 +210,7 @@ public class NotificationServiceCICTest {
                     .templateDocumentVars(templateDocumentVars)
                     .build();
 
-                notificationService.sendEmail(request, TEST_CASE_ID.toString(), Party.RESPONDENT);
+                notificationService.sendEmail(request, attachedDocs, TEST_CASE_ID.toString(), Party.RESPONDENT);
 
                 verify(notificationClient).sendEmail(eq(TEMPLATE_ID), eq(EMAIL_ADDRESS), templateVarsArgCaptor.capture(), anyString());
                 String detail = templateVarsArgCaptor.getValue().get("CaseDocument1").toString();
@@ -220,7 +220,7 @@ public class NotificationServiceCICTest {
             }
 
             @Test
-            void throwsWhenDocumentNotFoundInSelectedDocumentsOverTwoMegabytes() {
+            void throwsWhenDocumentNotFoundInSelectedDocumentsOverTwoMegabytes() throws NotificationClientException {
                 stubAuth();
                 String missingDocumentUuid = UUID.randomUUID().toString();
                 stubDocumentBinary(missingDocumentUuid, LARGE_FILE);
@@ -231,10 +231,12 @@ public class NotificationServiceCICTest {
 
                 NotificationRequest request = emailRequestBuilder()
                     .template(CASE_ISSUED_RESPONDENT_EMAIL)
+                    .hasFileAttachments(true)
                     .templateDocumentVars(templateDocumentVars)
                     .build();
+                List<CaseworkerCICDocument> attachedDocs = singleDocumentAttached();
 
-                assertThatThrownBy(() -> notificationService.sendEmail(request, TEST_CASE_ID.toString(), null))
+                assertThatThrownBy(() -> notificationService.sendEmail(request, attachedDocs, TEST_CASE_ID.toString(), null))
                     .isInstanceOf(NotificationException.class)
                     .hasMessageContaining("Unable to find document details for document id: " + missingDocumentUuid);
             }
@@ -251,6 +253,7 @@ public class NotificationServiceCICTest {
 
                 NotificationRequest request = emailRequestBuilder()
                     .templateDocumentVars(templateDocumentVars)
+                    .hasFileAttachments(true)
                     .build();
 
                 notificationService.sendEmail(request, TEST_CASE_ID.toString(), Party.APPLICANT);
@@ -275,7 +278,10 @@ public class NotificationServiceCICTest {
                 templateDocumentVars.put("DocumentAvailable1", "yes");
                 templateDocumentVars.put("CaseDocument1", documentUuid);
 
-                NotificationRequest request = emailRequestBuilder().templateDocumentVars(templateDocumentVars).build();
+                NotificationRequest request = emailRequestBuilder()
+                    .hasFileAttachments(true)
+                    .templateDocumentVars(templateDocumentVars)
+                    .build();
                 notificationService.sendEmail(request, TEST_CASE_ID.toString(), Party.APPLICANT);
 
                 verify(notificationClient).sendEmail(eq(TEMPLATE_ID), eq(EMAIL_ADDRESS), templateVarsArgCaptor.capture(), anyString());
@@ -293,7 +299,10 @@ public class NotificationServiceCICTest {
                 templateDocumentVars.put("DocumentAvailable1", "yes");
                 templateDocumentVars.put("CaseDocument1", documentUuid);
 
-                NotificationRequest request = emailRequestBuilder().templateDocumentVars(templateDocumentVars).build();
+                NotificationRequest request = emailRequestBuilder()
+                    .hasFileAttachments(true)
+                    .templateDocumentVars(templateDocumentVars)
+                    .build();
 
                 assertThatThrownBy(() -> notificationService.sendEmail(request, TEST_CASE_ID.toString(), null))
                     .isInstanceOf(NotificationException.class)
