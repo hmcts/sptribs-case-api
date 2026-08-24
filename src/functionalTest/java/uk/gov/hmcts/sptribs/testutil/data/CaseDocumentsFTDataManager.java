@@ -70,8 +70,7 @@ public class CaseDocumentsFTDataManager extends FunctionalTestDataManager {
 
 
     public static void saveTestDocumentEntity(long reference, String testDocumentUrl, String testDocumentFilename,
-                                              String documentTypeName, String caseDocumentTypeId) throws SQLException {
-        Timestamp currentDateTime = Timestamp.valueOf(LocalDateTime.now());
+                                              String documentTypeName, String caseDocumentTypeId, Timestamp savedAt) throws SQLException {
         String sql = "INSERT INTO " + TABLE_CASE_DOCUMENTS + " ("
             + KEY_CASE_DOCUMENTS_REFERENCE
             + ", saved_at"
@@ -84,12 +83,12 @@ public class CaseDocumentsFTDataManager extends FunctionalTestDataManager {
             + ") VALUES (?, ?, ?, ?, ?, ?, CAST(" + caseDocumentTypeId + " AS bigint), ?)";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setLong(1, reference);
-            stmt.setTimestamp(2, currentDateTime);
+            stmt.setTimestamp(2, savedAt);
             stmt.setString(3, testDocumentUrl);
             stmt.setString(4, testDocumentUrl + "/binary");
             stmt.setString(5, testDocumentFilename);
             stmt.setString(6, documentTypeName);
-            stmt.setTimestamp(7, currentDateTime);
+            stmt.setTimestamp(7, savedAt);
             stmt.executeUpdate();
         }
     }

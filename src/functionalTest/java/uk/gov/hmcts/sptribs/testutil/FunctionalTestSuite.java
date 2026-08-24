@@ -46,6 +46,7 @@ import wiremock.org.eclipse.jetty.util.ajax.JSON;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -196,7 +197,7 @@ public abstract class FunctionalTestSuite {
         }
 
         if (createTestDocument) {
-            generateAndSetUuidInCaseDataAndDB(caseData, testCaseRef, false);
+            generateAndSetUuidInCaseDataAndDB(caseData, testCaseRef, "2");
         }
 
         if (createCaseForSubmittedOrAboutToSubmitEvent) {
@@ -426,12 +427,20 @@ public abstract class FunctionalTestSuite {
     }
 
     protected void checkAndUpdateDraftOrderDocument(Map<String, Object> caseData, long caseReference) throws SQLException, IOException {
-        generateAndSetUuidInCaseDataAndDB(caseData, caseReference, true);
+        generateAndSetUuidInCaseDataAndDB(caseData, caseReference, "4");
+    }
+
+    protected Long saveTestBundleDocuments(Map<String, Object> caseData) throws SQLException, IOException {
+        final CaseDetails caseDetails = createCaseInCcd(true);
+        final Long appealId = caseDetails.getId();
+        caseDetails.setData(caseData);
+        generateAndSetUuidInCaseDataAndDB(caseData, appealId, "9");
+        return appealId;
     }
 
     protected UploadResponse uploadTestDocumentIfMissing(String documentId, ClassPathResource resource) {
         if (!checkDocumentExists(documentId)) {
-            return uploadTestDocument(resource);
+            return uploadTestDocument(resource, resource.getFilename().split("\\.")[0] + "_" + UUID.randomUUID() + ".pdf");
         }
         return null;
     }
@@ -453,7 +462,7 @@ public abstract class FunctionalTestSuite {
         }
     }
 
-    private UploadResponse uploadTestDocument(ClassPathResource resource) {
+    private UploadResponse uploadTestDocument(ClassPathResource resource, String filename) {
         log.debug("Uploading FT test document");
         final List<AppsConfig.AppsDetails> appDetails = appsConfig.getApps();
         if (!appDetails.isEmpty() && appDetails.getFirst() != null) {
@@ -461,8 +470,7 @@ public abstract class FunctionalTestSuite {
             final String jurisdiction = appsConfig.getApps().getFirst().getJurisdiction();
             try {
                 final InMemoryMultipartFile inMemoryMultipartFile =
-                    new InMemoryMultipartFile(resource.getFilename().split("\\.")[0] + "_" + UUID.randomUUID() + ".pdf",
-                        resource.getContentAsByteArray());
+                    new InMemoryMultipartFile(filename, resource.getContentAsByteArray());
 
                 final DocumentUploadRequest documentUploadRequest =
                     new DocumentUploadRequest(Classification.RESTRICTED.toString(),
@@ -509,13 +517,22 @@ public abstract class FunctionalTestSuite {
     }
 
     private void generateAndSetUuidInCaseDataAndDB(Map<String, Object> caseData, Long testCaseRef,
-                                                   boolean isDraftOrder) throws SQLException, IOException {
+                                                   String caseDocumentTypeId) throws SQLException, IOException {
         String caseDataJsonString = JSON.getDefault().toJSON(caseData);
 
         Pattern placeholderPattern = Pattern.compile("\\$\\{UUID(\\d+)}");
         Matcher matcher = placeholderPattern.matcher(caseDataJsonString);
         Map<String, String> placeholdersAndUuids = new HashMap<>();
         String assignedPlaceholder = "";
+
+        String documentTypeName = getDocumentTypeFromCaseDocumentTypeId(caseDocumentTypeId);
+        ClassPathResource testFileResource = new ClassPathResource("data/sample_file.pdf");
+        String filename = testFileResource.getFilename().split("\\.")[0] + "_" + UUID.randomUUID() + ".pdf";
+        if (caseDocumentTypeId.equals("4")) {
+            testFileResource = DRAFT_ORDER_FILE;
+            filename = testFileResource.getFilename();
+        }
+        Timestamp savedAt = Timestamp.valueOf(LocalDateTime.now());
 
         while (matcher.find()) {
             String placeholder = matcher.group();
@@ -525,19 +542,22 @@ public abstract class FunctionalTestSuite {
 
             String uuid = placeholdersAndUuids.get(placeholder);
 
+            if (caseDocumentTypeId.equals("9")) {
+                Map<String, Timestamp> filenameAndTimestamp = getTimestampAndFilenameForBundleDocument(placeholder);
+                filename = filenameAndTimestamp.keySet().iterator().next();
+                savedAt = filenameAndTimestamp.get(filename);
+            }
+
             if (uuid == null) {
-                Document testDocument = uploadTestDocument(new ClassPathResource("data/sample_file.pdf")).getDocuments().getFirst();
+                Document testDocument = uploadTestDocument(testFileResource, filename).getDocuments().getFirst();
                 uuid = testDocument.links.self.href.split("/documents/")[1];
                 placeholdersAndUuids.put(placeholder, uuid);
-                if (isDraftOrder) {
-                    CaseDocumentsFTDataManager.saveTestDocumentEntity(testCaseRef, testDocument.links.self.href,
-                        testDocument.originalDocumentName, DocumentType.TRIBUNAL_DIRECTION.name(), "4");
+                if (caseDocumentTypeId.equals("4")) {
                     updateOrderTemplate(testDocument, caseData);
-                    log.info("Document uploaded: {}", testDocument);
-                } else {
-                    CaseDocumentsFTDataManager.saveTestDocumentEntity(testCaseRef, testDocument.links.self.href,
-                        testDocument.originalDocumentName, DocumentType.APPLICATION_FORM.name(), "2");
                 }
+                CaseDocumentsFTDataManager.saveTestDocumentEntity(testCaseRef, testDocument.links.self.href,
+                    testDocument.originalDocumentName, documentTypeName, caseDocumentTypeId, savedAt);
+                log.info("Document uploaded: {}", testDocument);
             }
             assignedPlaceholder = placeholder;
         }
@@ -553,6 +573,32 @@ public abstract class FunctionalTestSuite {
     @BeforeAll
     void setUpDataManager() {
         functionalTestDataManager.connectToDB();
+    }
+
+    private String getDocumentTypeFromCaseDocumentTypeId(String caseDocumentTypeId) {
+        return switch (caseDocumentTypeId) {
+            case "1", "2" -> DocumentType.APPLICATION_FORM.name();
+            case "3", "4" -> DocumentType.TRIBUNAL_DIRECTION.name();
+            case "9" -> null;
+            default -> "InvalidType";
+        };
+    }
+
+    private Map<String, Timestamp> getTimestampAndFilenameForBundleDocument(String placeholder) {
+        switch (placeholder) {
+            case "${UUID1}" -> {
+                return Map.of("1-cicBundle.pdf", Timestamp.valueOf("2024-06-11 12:00:00.000"));
+            }
+            case "${UUID2}" -> {
+                return Map.of("2-cicBundle.pdf", Timestamp.valueOf("2024-06-10 12:00:00.000"));
+            }
+            case "${UUID3}" -> {
+                return Map.of("3-cicBundle.pdf", Timestamp.valueOf("2024-06-09 12:00:00.000"));
+            }
+            default -> {
+                return Map.of();
+            }
+        }
     }
 
 
