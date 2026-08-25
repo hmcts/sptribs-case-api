@@ -208,8 +208,7 @@ case-api:
   url: ${CASE_API_DOCUMENT_DOWNLOAD_URL:http://manage-case.demo.platform.hmcts.net/}
 
 sptribs-frontend:
-  #  dashboard-url: ${SPTRIBS_FRONTEND_URL:https://sptribs-frontend.aat.platform.hmcts.net/dashboard}
-  dashboard-url: ${SPTRIBS_FRONTEND_URL:http://localhost:3001/dashboard}
+    dashboard-url: ${SPTRIBS_FRONTEND_URL:https://sptribs-frontend.demo.platform.hmcts.net/dashboard}
 
 doc_assembly:
   url: ${DOC_ASSEMBLY_URL:http://dg-docassembly-aat.service.core-compute-aat.internal}
