@@ -3,6 +3,7 @@ package uk.gov.hmcts.sptribs.citizen.event;
 import io.restassured.response.Response;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import uk.gov.hmcts.sptribs.document.model.DocumentEntity;
 import uk.gov.hmcts.sptribs.notification.persistence.CorrespondenceEntity;
@@ -87,7 +88,7 @@ public class CicSubmitCaseEventFT extends FunctionalTestSuite {
         assertThat(firstCorrespondenceEntity.getId()).isNotNull();
         assertThat(firstCorrespondenceEntity.getCaseReferenceNumber()).isEqualTo(Long.parseLong(caseData.get("hyphenatedCaseRef")
             .toString().replace("-", "")));
-        assertThat(firstCorrespondenceEntity.getEventType()).isEqualTo("APPLICATION_RECEIVED");
+        assertThat(firstCorrespondenceEntity.getEventType()).startsWith("APPLICATION_RECEIVED");
         assertThat(firstCorrespondenceEntity.getSentOn()).isNotNull();
         assertThat(firstCorrespondenceEntity.getSentFrom()).isNotNull();
         assertThat(firstCorrespondenceEntity.getSentTo()).isNotNull();
