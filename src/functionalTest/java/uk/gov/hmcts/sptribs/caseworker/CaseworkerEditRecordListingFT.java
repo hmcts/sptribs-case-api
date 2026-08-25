@@ -144,4 +144,38 @@ public class CaseworkerEditRecordListingFT extends FunctionalTestSuite {
             .isString()
             .contains("# Update listing notification failed \n## Please resend the notification");
     }
+
+    @Test
+    public void shouldReturnHearingDateAfterEditInAboutToSubmit() throws Exception {
+        final Map<String, Object> caseData = caseData(CALLBACK_REQUEST_HAPPY);
+        final String hearingCode = "18b88d33-9da8-4ee0-946d-de71d33e4d6f";
+        caseData.put("hearingDate", "2023-04-21");
+        caseData.put("hearingType", "Final");
+        caseData.put("hearingStatus", "Listed");
+        caseData.put("date", "2023-05-25");
+        caseData.put("hearingTime", "10:00");
+
+        caseData.put("hearingList", List.of(
+            Map.of(
+                "id", "1",
+                "value", Map.of(
+                    "hearingType", "Final",
+                    "date", "2023-04-21",
+                    "hearingTime", "10:00",
+                    "hearingStatus", "Listed"
+                )
+            )
+        ));
+        caseData.put("cicCaseHearingList", Map.of(
+            "value", Map.of("code", hearingCode, "label", "1 - Final - 21 Apr 2023 10:00"),
+            "list_items", List.of(Map.of("code", hearingCode, "label", "1 - Final - 21 Apr 2023 10:00"))
+        ));
+
+        final Response response = triggerCallback(caseData, CASEWORKER_EDIT_RECORD_LISTING, ABOUT_TO_SUBMIT_URL);
+
+        assertThat(response.getStatusCode()).isEqualTo(OK.value());
+        assertThatJson(response.asString())
+            .inPath("$.data.hearingDate")
+            .isEqualTo("2023-05-25");
+    }
 }
