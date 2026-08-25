@@ -171,7 +171,7 @@ public class CaseworkerEditRecordListingFT extends FunctionalTestSuite {
             "list_items", List.of(Map.of("code", hearingCode, "label", "1 - Final - 21 Apr 2023 10:00"))
         ));
 
-        final Response response = triggerCallback(caseData, CASEWORKER_EDIT_RECORD_LISTING, ABOUT_TO_SUBMIT_URL);
+        final Response response = triggerCallback(caseData, CASEWORKER_EDIT_RECORD_LISTING, ABOUT_TO_SUBMIT_URL, false);
 
         assertThat(response.getStatusCode()).isEqualTo(OK.value());
         assertThatJson(response.asString())
