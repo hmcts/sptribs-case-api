@@ -24,6 +24,7 @@ import java.util.Map;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assumptions.assumeFalse;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
+import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.sptribs.ciccase.model.ContactPreferenceType.EMAIL;
@@ -97,7 +98,8 @@ public class NewOrderIssuedNotificationIT {
 
             newOrderIssuedNotification.sendToSubject(data, TEST_CASE_ID.toString());
 
-            verify(notificationServiceCIC).sendEmail(notificationRequestCaptor.capture(), eq(TEST_CASE_ID.toString()), eq(null));
+            verify(notificationServiceCIC)
+                .sendEmail(notificationRequestCaptor.capture(), anyList(), eq(TEST_CASE_ID.toString()), eq(null));
 
             NotificationRequest notificationRequest = notificationRequestCaptor.getValue();
 
@@ -164,7 +166,8 @@ public class NewOrderIssuedNotificationIT {
 
             newOrderIssuedNotification.sendToApplicant(data, TEST_CASE_ID.toString());
 
-            verify(notificationServiceCIC).sendEmail(notificationRequestCaptor.capture(), eq(TEST_CASE_ID.toString()), eq(null));
+            verify(notificationServiceCIC)
+                .sendEmail(notificationRequestCaptor.capture(), anyList(), eq(TEST_CASE_ID.toString()), eq(null));
 
             NotificationRequest notificationRequest = notificationRequestCaptor.getValue();
 
@@ -232,7 +235,8 @@ public class NewOrderIssuedNotificationIT {
 
             newOrderIssuedNotification.sendToRepresentative(data, TEST_CASE_ID.toString());
 
-            verify(notificationServiceCIC).sendEmail(notificationRequestCaptor.capture(), eq(TEST_CASE_ID.toString()), eq(null));
+            verify(notificationServiceCIC)
+                .sendEmail(notificationRequestCaptor.capture(), anyList(), eq(TEST_CASE_ID.toString()), eq(null));
 
             NotificationRequest notificationRequest = notificationRequestCaptor.getValue();
 
@@ -299,7 +303,8 @@ public class NewOrderIssuedNotificationIT {
 
             newOrderIssuedNotification.sendToRespondent(data, TEST_CASE_ID.toString());
 
-            verify(notificationServiceCIC).sendEmail(notificationRequestCaptor.capture(), eq(TEST_CASE_ID.toString()), eq(null));
+            verify(notificationServiceCIC)
+                .sendEmail(notificationRequestCaptor.capture(), anyList(), eq(TEST_CASE_ID.toString()), eq(null));
 
             NotificationRequest notificationRequest = notificationRequestCaptor.getValue();
 
@@ -343,7 +348,7 @@ public class NewOrderIssuedNotificationIT {
 
             newOrderIssuedNotification.sendToSubject(data, TEST_CASE_ID.toString());
 
-            verify(notificationServiceCIC).sendEmail(notificationRequestCaptor.capture(), eq(TEST_CASE_ID.toString()), eq(null));
+            verify(notificationServiceCIC).sendEmail(notificationRequestCaptor.capture(), anyList(), eq(TEST_CASE_ID.toString()), eq(null));
 
             NotificationRequest notificationRequest = notificationRequestCaptor.getValue();
 
@@ -376,7 +381,7 @@ public class NewOrderIssuedNotificationIT {
 
             newOrderIssuedNotification.sendToApplicant(data, TEST_CASE_ID.toString());
 
-            verify(notificationServiceCIC).sendEmail(notificationRequestCaptor.capture(), eq(TEST_CASE_ID.toString()), eq(null));
+            verify(notificationServiceCIC).sendEmail(notificationRequestCaptor.capture(), anyList(), eq(TEST_CASE_ID.toString()), eq(null));
 
             NotificationRequest notificationRequest = notificationRequestCaptor.getValue();
 
@@ -409,7 +414,7 @@ public class NewOrderIssuedNotificationIT {
 
             newOrderIssuedNotification.sendToRepresentative(data, TEST_CASE_ID.toString());
 
-            verify(notificationServiceCIC).sendEmail(notificationRequestCaptor.capture(), eq(TEST_CASE_ID.toString()), eq(null));
+            verify(notificationServiceCIC).sendEmail(notificationRequestCaptor.capture(), anyList(), eq(TEST_CASE_ID.toString()), eq(null));
 
             NotificationRequest notificationRequest = notificationRequestCaptor.getValue();
 
@@ -441,7 +446,7 @@ public class NewOrderIssuedNotificationIT {
 
             newOrderIssuedNotification.sendToRespondent(data, TEST_CASE_ID.toString());
 
-            verify(notificationServiceCIC).sendEmail(notificationRequestCaptor.capture(), eq(TEST_CASE_ID.toString()), eq(null));
+            verify(notificationServiceCIC).sendEmail(notificationRequestCaptor.capture(), anyList(), eq(TEST_CASE_ID.toString()), eq(null));
 
             NotificationRequest notificationRequest = notificationRequestCaptor.getValue();
 
