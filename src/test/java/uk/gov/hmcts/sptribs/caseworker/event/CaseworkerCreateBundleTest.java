@@ -3,6 +3,9 @@ package uk.gov.hmcts.sptribs.caseworker.event;
 import org.jspecify.annotations.NonNull;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -37,6 +40,7 @@ import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -206,8 +210,12 @@ class CaseworkerCreateBundleTest {
         assertThat(responseData.getMultiBundleConfiguration()).isNull();
     }
 
-    @Test
-    void shouldSuccessfullyCreateBundleWithNewOrderEnabled_FurtherUploadsAfterCicaUpload() {
+    @ParameterizedTest
+    @MethodSource("furtherUploadsAfterCicaUploadCases")
+    void shouldSuccessfullyCreateBundleWithNewOrderEnabled_FurtherUploadsAfterCicaUpload(DocumentType additionalDocCategory,
+                                                                                          String additionalDocFilename,
+                                                                                          int expectedFurtherDocs,
+                                                                                          boolean expectAdditionalDocInFurtherDocs) {
         final CaseData caseData = caseData();
         caseData.setNewBundleOrderEnabled(YesNo.YES);
 
@@ -223,8 +231,19 @@ class CaseworkerCreateBundleTest {
             getCaseworkerCICDocument("tribunalForm2.pdf", DocumentType.DSS_TRIBUNAL_FORM, additionalApplicantDocsDate);
         final ListValue<CaseworkerCICDocument> supportingDocs2 =
             getCaseworkerCICDocument("supportingDoc2.docx", DocumentType.DSS_SUPPORTING, additionalApplicantDocsDate);
-        final ListValue<CaseworkerCICDocument> otherDocs2 =
-            getCaseworkerCICDocument("otherDoc2.txt", DocumentType.DSS_OTHER, additionalApplicantDocsDate);
+        final ListValue<CaseworkerCICDocument> otherDocs2 = ListValue.<CaseworkerCICDocument>builder()
+            .id("edge-doc")
+            .value(CaseworkerCICDocument.builder()
+                .documentLink(Document.builder()
+                    .url("http://edge/url")
+                    .binaryUrl("http://edge/url/binary")
+                    .filename(additionalDocFilename)
+                    .build())
+                .documentCategory(additionalDocCategory)
+                .documentEmailContent("some email content")
+                .date(additionalApplicantDocsDate)
+                .build())
+            .build();
         allApplicantDocs.add(tribunalForm2);
         allApplicantDocs.add(supportingDocs2);
         allApplicantDocs.add(otherDocs2);
@@ -263,8 +282,9 @@ class CaseworkerCreateBundleTest {
             final CaseData dataAtMockTime = callbackAtMockTime.getCaseDetails().getData();
             // Initial documents should be in caseDocuments
             assertThat(dataAtMockTime.getCaseDocuments()).hasSize(3);
-            // furtherCaseDocuments should have the additional documents
-            assertThat(dataAtMockTime.getFurtherCaseDocuments()).hasSize(6);
+            // Further documents should include only valid additional docs.
+            assertThat(dataAtMockTime.getFurtherCaseDocuments()).hasSize(expectedFurtherDocs);
+
             assertThat(dataAtMockTime.getBundleConfiguration()).isEqualTo(MULTI_BUNDLE_CONFIG);
             assertThat(dataAtMockTime.getMultiBundleConfiguration()).isEqualTo(List.of(MULTI_BUNDLE_CONFIG));
             return List.of(bundle);
@@ -284,6 +304,15 @@ class CaseworkerCreateBundleTest {
         assertThat(responseData.getCaseBundles()).isNotNull();
         assertThat(responseData.getCaseDocuments()).isNull();
         assertThat(responseData.getMultiBundleConfiguration()).isNull();
+    }
+
+    private static Stream<Arguments> furtherUploadsAfterCicaUploadCases() {
+        return Stream.of(
+            Arguments.of(DocumentType.DSS_OTHER, "otherDoc2.txt", 6, true),
+            Arguments.of(null, "otherDoc2.txt", 6, true),
+            Arguments.of(DocumentType.DSS_OTHER, null, 5, false),
+            Arguments.of(null, null, 5, false)
+        );
     }
 
     private static @NonNull List<ListValue<CaseworkerCICDocument>> setApplicantDocsForDate(LocalDate date) {
