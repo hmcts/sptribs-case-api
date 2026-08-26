@@ -218,7 +218,6 @@ class CaseworkerCreateBundleTest {
                                                                                           boolean expectAdditionalDocInFurtherDocs) {
         final CaseData caseData = caseData();
         caseData.setNewBundleOrderEnabled(YesNo.YES);
-
         final CicCase cicCase = CicCase.builder().build();
 
         LocalDate applicantDocsDate = LocalDate.of(2026, 1, 10);
