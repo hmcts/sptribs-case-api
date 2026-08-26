@@ -177,7 +177,7 @@ public class CaseworkerCreateBundle implements CCDConfig<CaseData, State, UserRo
             .documentLink(Document.builder()
                 .url(doc.getDocumentLink().getUrl())
                 .binaryUrl(doc.getDocumentLink().getBinaryUrl())
-                .categoryId(doc.getDocumentCategory() != null ? doc.getDocumentCategory().getCategory() : null)
+                .categoryId(doc.getDocumentCategory().getCategory())
                 .filename(updatedFilename)
                 .build())
             .date(doc.getDate())
