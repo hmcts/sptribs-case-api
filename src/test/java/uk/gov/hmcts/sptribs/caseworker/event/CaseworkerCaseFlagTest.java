@@ -3,8 +3,14 @@ package uk.gov.hmcts.sptribs.caseworker.event;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.boot.SpringApplicationRunListener;
+import org.springframework.test.util.ReflectionTestUtils;
 import uk.gov.hmcts.ccd.sdk.ConfigBuilderImpl;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.Event;
@@ -22,6 +28,9 @@ import uk.gov.hmcts.sptribs.common.repositories.AnonymisationRepository;
 import uk.gov.hmcts.sptribs.common.service.AnonymisationService;
 import uk.gov.hmcts.sptribs.common.service.CcdSupplementaryDataService;
 import uk.gov.hmcts.sptribs.notification.dispatcher.AnonymityAppliedNotification;
+import uk.gov.hmcts.sptribs.notification.dispatcher.NotificationDispatcher;
+import uk.gov.hmcts.sptribs.notification.model.NotificationContext;
+import uk.gov.hmcts.sptribs.notification.model.NotificationContextRequest;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -33,9 +42,11 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigBuilder;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.getEventsFrom;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID;
+import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID_HYPHENATED;
 import static uk.gov.hmcts.sptribs.testutil.TestEventConstants.CASEWORKER_CASE_FLAG;
 
 @ExtendWith(MockitoExtension.class)
@@ -50,14 +61,21 @@ class CaseworkerCaseFlagTest {
     @Mock
     private AnonymisationRepository anonymisationRepository;
 
+    @Captor
+    private ArgumentCaptor<NotificationContext> notificationContextCaptor;
+
+    @Mock
+    private NotificationDispatcher notificationDispatcher;
+
     private AnonymisationService anonymisationService;
 
+    @InjectMocks
     private CaseworkerCaseFlag caseworkerCaseFlag;
 
     @BeforeEach
     void setUp() {
         anonymisationService = spy(new AnonymisationService(anonymisationRepository));
-        caseworkerCaseFlag = new CaseworkerCaseFlag(coreCaseApiService, anonymisationService, anonymityAppliedNotification);
+        ReflectionTestUtils.setField(caseworkerCaseFlag, "anonymisationService", anonymisationService);
     }
 
     @Test
@@ -74,6 +92,11 @@ class CaseworkerCaseFlagTest {
     @Test
     void shouldSuccessfullyAddFlagSubject() {
         final CaseDetails<CaseData, State> details = new CaseDetails<>();
+        CaseData caseData = CaseData.builder()
+            .cicCase(new CicCase())
+            .hyphenatedCaseRef(TEST_CASE_ID_HYPHENATED)
+            .build();
+        details.setData(caseData);
         details.setId(TEST_CASE_ID);
 
         SubmittedCallbackResponse submittedCallbackResponse = caseworkerCaseFlag.submitted(details, details);
@@ -154,6 +177,12 @@ class CaseworkerCaseFlagTest {
         SubmittedCallbackResponse submittedResponse = caseworkerCaseFlag.submitted(caseDetails, beforeDetails);
 
         assertThat(submittedResponse.getConfirmationHeader()).contains("Flag created");
-        verify(anonymityAppliedNotification).sendAnonymityNotificationIfNewlyApplied(caseData, beforeCaseData);
+
+        verify(notificationDispatcher).sendToCorrespondenceParties(notificationContextCaptor.capture());
+        NotificationContext capturedContext = notificationContextCaptor.getValue();
+        assertThat(capturedContext.getCaseData()).isEqualTo(caseData);
+        assertThat(capturedContext.getCaseReference()).isEqualTo("1234-5678-9012-3456");
+        assertThat(capturedContext.getNotification()).isEqualTo(anonymityAppliedNotification);
+        assertThat(capturedContext.getBeforeData()).isEqualTo(beforeCaseData);
     }
 }

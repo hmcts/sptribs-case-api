@@ -1,5 +1,6 @@
 package uk.gov.hmcts.sptribs.caseworker.event;
 
+import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,20 +17,24 @@ import uk.gov.hmcts.sptribs.caseworker.event.page.CancelHearingReasonSelect;
 import uk.gov.hmcts.sptribs.caseworker.event.page.RecordNotifyParties;
 import uk.gov.hmcts.sptribs.caseworker.event.page.SelectHearing;
 import uk.gov.hmcts.sptribs.caseworker.service.HearingService;
-import uk.gov.hmcts.sptribs.caseworker.util.MessageUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
-import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
-import uk.gov.hmcts.sptribs.ciccase.model.NotificationParties;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
+import uk.gov.hmcts.sptribs.notification.NotificationConstantProfiles;
 import uk.gov.hmcts.sptribs.notification.dispatcher.CancelHearingNotification;
+import uk.gov.hmcts.sptribs.notification.dispatcher.NotificationDispatcher;
+import uk.gov.hmcts.sptribs.notification.model.NotificationContext;
+import uk.gov.hmcts.sptribs.notification.model.NotificationContextRequest;
 
 import java.time.LocalDate;
 
 import static java.lang.String.format;
+import static org.springframework.util.CollectionUtils.isEmpty;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_CANCEL_HEARING;
+import static uk.gov.hmcts.sptribs.caseworker.util.MessageUtil.generateSimpleErrorMessage;
+import static uk.gov.hmcts.sptribs.caseworker.util.MessageUtil.generateSimpleMessageFromCorrespondenceParties;
 import static uk.gov.hmcts.sptribs.ciccase.model.HearingState.Cancelled;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
@@ -45,6 +50,7 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 
 @Component
 @Slf4j
+@RequiredArgsConstructor
 public class CaseworkerCancelHearing implements CCDConfig<CaseData, State, UserRole> {
 
     private static final CcdPageConfiguration hearingDateSelect = new SelectHearing();
@@ -56,12 +62,7 @@ public class CaseworkerCancelHearing implements CCDConfig<CaseData, State, UserR
 
     private final CancelHearingNotification cancelHearingNotification;
 
-    @Autowired
-    public CaseworkerCancelHearing(HearingService hearingService,
-                                   CancelHearingNotification cancelHearingNotification) {
-        this.hearingService = hearingService;
-        this.cancelHearingNotification = cancelHearingNotification;
-    }
+    private final NotificationDispatcher notificationDispatcher;
 
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
@@ -124,35 +125,32 @@ public class CaseworkerCancelHearing implements CCDConfig<CaseData, State, UserR
 
     public SubmittedCallbackResponse submitted(CaseDetails<CaseData, State> details,
                                                CaseDetails<CaseData, State> beforeDetails) {
-        try {
-            sendHearingCancelledNotification(details.getData().getHyphenatedCaseRef(), details.getData());
-        } catch (Exception notificationException) {
-            log.error("Cancel hearing notification failed with exception : {}", notificationException.getMessage());
+        final CaseData caseData = details.getData();
+        final String caseReference = caseData.getHyphenatedCaseRef();
+
+        NotificationContextRequest notificationContextRequest = NotificationContextRequest.builder()
+            .caseData(caseData)
+            .caseReference(caseReference)
+            .notification(cancelHearingNotification)
+            .build();
+
+        NotificationContext notificationContext = NotificationConstantProfiles.CANCEL_HEARING
+            .buildContext(notificationContextRequest);
+
+        notificationDispatcher.sendToCorrespondenceParties(notificationContext);
+
+        if (isEmpty(notificationContext.getErrors())) {
             return SubmittedCallbackResponse.builder()
-                .confirmationHeader(format("# Cancel hearing notification failed %n## Please resend the notification"))
+                .confirmationHeader(format("# Hearing cancelled %n## %s",
+                    generateSimpleMessageFromCorrespondenceParties(notificationContext.getCorrespondenceParties())))
+                .build();
+        } else {
+            return SubmittedCallbackResponse.builder()
+                .confirmationHeader(
+                    format("# Cancel hearing notification failed %n## %s %n## Please resend the notification.",
+                        generateSimpleErrorMessage(notificationContext.getErrors()))
+                )
                 .build();
         }
-        return SubmittedCallbackResponse.builder()
-            .confirmationHeader(format("# Hearing cancelled %n## %s",
-                MessageUtil.generateSimpleMessage(details.getData().getCicCase().getHearingNotificationParties())))
-            .build();
     }
-
-    private void sendHearingCancelledNotification(String caseNumber, CaseData data) {
-        CicCase cicCase = data.getCicCase();
-
-        if (cicCase.getHearingNotificationParties().contains(NotificationParties.SUBJECT)) {
-            cancelHearingNotification.sendToSubject(data, caseNumber);
-        }
-        if (cicCase.getHearingNotificationParties().contains(NotificationParties.REPRESENTATIVE)) {
-            cancelHearingNotification.sendToRepresentative(data, caseNumber);
-        }
-        if (cicCase.getHearingNotificationParties().contains(NotificationParties.RESPONDENT)) {
-            cancelHearingNotification.sendToRespondent(data, caseNumber);
-        }
-        if (cicCase.getHearingNotificationParties().contains(NotificationParties.APPLICANT)) {
-            cancelHearingNotification.sendToApplicant(data, caseNumber);
-        }
-    }
-
 }

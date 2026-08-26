@@ -17,6 +17,8 @@ import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.SubjectCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.notification.dispatcher.CaseUnlinkedNotification;
+import uk.gov.hmcts.sptribs.notification.dispatcher.NotificationDispatcher;
+import uk.gov.hmcts.sptribs.notification.model.NotificationContext;
 
 import java.util.Set;
 
@@ -24,6 +26,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigBuilder;
@@ -40,6 +43,9 @@ class CaseworkerMaintainLinkCaseTest {
 
     @Mock
     private CaseUnlinkedNotification caseUnlinkedNotification;
+
+    @Mock
+    private NotificationDispatcher notificationDispatcher;
 
     @Test
     void shouldAddConfigurationToConfigBuilder() {
@@ -68,9 +74,7 @@ class CaseworkerMaintainLinkCaseTest {
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
         //When
-        doNothing().when(caseUnlinkedNotification).sendToSubject(any(CaseData.class), eq(null));
-        doNothing().when(caseUnlinkedNotification).sendToApplicant(any(CaseData.class), eq(null));
-        doNothing().when(caseUnlinkedNotification).sendToRepresentative(any(CaseData.class), eq(null));
+
         SubmittedCallbackResponse response =
             caseWorkerMaintainLinkCase.submitted(updatedCaseDetails, beforeDetails);
         //Then
@@ -91,11 +95,17 @@ class CaseworkerMaintainLinkCaseTest {
         updatedCaseDetails.setId(TEST_CASE_ID);
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
         // When
-        doThrow(new RuntimeException("Notification error")).when(caseUnlinkedNotification).sendToSubject(any(CaseData.class), anyString());
+        doAnswer(invocation -> {
+            NotificationContext context = invocation.getArgument(0);
+            context.getErrors().add("Subject");
+            return null;
+        }).when(notificationDispatcher).sendToCorrespondenceParties(any(NotificationContext.class));
+
         SubmittedCallbackResponse response = caseWorkerMaintainLinkCase.submitted(updatedCaseDetails, beforeDetails);
         // Then
         assertThat(response).isNotNull();
         assertThat(response.getConfirmationHeader()).contains("Case Link update notification failed");
         assertThat(response.getConfirmationHeader()).contains("Please resend the notification");
+        assertThat(response.getConfirmationHeader()).contains("Subject");
     }
 }

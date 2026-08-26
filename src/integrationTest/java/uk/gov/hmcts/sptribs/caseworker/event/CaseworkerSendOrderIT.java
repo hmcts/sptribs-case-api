@@ -227,7 +227,7 @@ public class CaseworkerSendOrderIT {
         assertThatJson(response)
             .inPath(CONFIRMATION_HEADER)
             .isString()
-            .contains("# Order sent \n## A notification has been sent to: Subject, Respondent, Representative, Applicant");
+            .contains("# Order sent \n## A notification has been sent to: Applicant, Representative, Respondent, Subject");
 
         verify(notificationServiceCIC, times(4)).sendEmail(any(), eq(TEST_CASE_ID_HYPHENATED), eq(null));
         verifyNoMoreInteractions(notificationServiceCIC);
@@ -263,8 +263,8 @@ public class CaseworkerSendOrderIT {
         assertThatJson(response)
             .inPath(CONFIRMATION_HEADER)
             .isString()
-            .contains("# Send order notification failed \n## Please resend the order");
-
-        verifyNoInteractions(notificationServiceCIC);
+            .contains("# Send order notification failed")
+            .contains("## A notification could not be sent to: Applicant, Representative, Subject")
+            .contains("## Please resend the notification.");
     }
 }

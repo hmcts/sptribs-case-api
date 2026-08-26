@@ -269,7 +269,7 @@ public class CaseworkerIssueDecisionIT extends IntegrationTestBase {
         assertThatJson(response)
             .inPath(CONFIRMATION_HEADER)
             .isString()
-            .contains("# Decision notice issued \n## A notification has been sent to: Subject, Respondent, Representative, Applicant");
+            .contains("# Decision notice issued \n## A notification has been sent to: Applicant, Representative, Respondent, Subject");
 
         verify(notificationServiceCIC, times(4)).sendEmail(any(), eq(TEST_CASE_ID_HYPHENATED), eq(null));
         verifyNoMoreInteractions(notificationServiceCIC);
@@ -304,7 +304,9 @@ public class CaseworkerIssueDecisionIT extends IntegrationTestBase {
         assertThatJson(response)
             .inPath(CONFIRMATION_HEADER)
             .isString()
-            .contains("# Issue a decision notification failed \n## Please resend the notification");
+            .contains("# Issue a decision notification failed")
+            .contains("## A notification could not be sent to: Applicant, Representative, Subject")
+            .contains("## Please resend the notification.");
 
         verifyNoMoreInteractions(notificationServiceCIC);
     }

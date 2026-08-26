@@ -1,8 +1,10 @@
 package uk.gov.hmcts.sptribs.caseworker.event;
 
+import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
+import org.aspectj.weaver.ast.Not;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
@@ -30,14 +32,21 @@ import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
+import uk.gov.hmcts.sptribs.notification.NotificationConstantProfiles;
 import uk.gov.hmcts.sptribs.notification.dispatcher.ListingUpdatedNotification;
+import uk.gov.hmcts.sptribs.notification.dispatcher.NotificationDispatcher;
+import uk.gov.hmcts.sptribs.notification.model.NotificationContext;
+import uk.gov.hmcts.sptribs.notification.model.NotificationContextRequest;
 
 import java.util.List;
 import java.util.Set;
 
 import static java.lang.String.format;
 import static java.util.Objects.isNull;
+import static org.springframework.util.CollectionUtils.isEmpty;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_EDIT_RECORD_LISTING;
+import static uk.gov.hmcts.sptribs.caseworker.util.MessageUtil.generateSimpleErrorMessage;
+import static uk.gov.hmcts.sptribs.caseworker.util.MessageUtil.generateSimpleMessageFromCorrespondenceParties;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_CASEWORKER;
@@ -52,6 +61,7 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 
 @Component
 @Slf4j
+@RequiredArgsConstructor
 public class CaseworkerEditRecordListing implements CCDConfig<CaseData, State, UserRole> {
 
     private static final CcdPageConfiguration selectHearing = new SelectHearing();
@@ -66,14 +76,13 @@ public class CaseworkerEditRecordListing implements CCDConfig<CaseData, State, U
 
     private static final CcdPageConfiguration remoteHearingInfo = new RemoteHearingInfo();
 
-    @Autowired
-    private RecordListHelper recordListHelper;
+    private final RecordListHelper recordListHelper;
 
-    @Autowired
-    private HearingService hearingService;
+    private final HearingService hearingService;
 
-    @Autowired
-    private ListingUpdatedNotification listingUpdatedNotification;
+    private final ListingUpdatedNotification listingUpdatedNotification;
+
+    private final NotificationDispatcher notificationDispatcher;
 
     @Override
     public void configure(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
@@ -175,32 +184,32 @@ public class CaseworkerEditRecordListing implements CCDConfig<CaseData, State, U
                                                CaseDetails<CaseData, State> beforeDetails) {
 
         final CaseData caseData = details.getData();
-        final CicCase cicCase = caseData.getCicCase();
-        Set<NotificationParties> notificationPartiesSet = cicCase.getHearingNotificationParties();
-        String caseNumber = caseData.getHyphenatedCaseRef();
+        final String caseReference = caseData.getHyphenatedCaseRef();
 
-        try {
-            if (notificationPartiesSet.contains(NotificationParties.SUBJECT)) {
-                listingUpdatedNotification.sendToSubject(details.getData(), caseNumber);
-            }
-            if (notificationPartiesSet.contains(NotificationParties.REPRESENTATIVE)) {
-                listingUpdatedNotification.sendToRepresentative(details.getData(), caseNumber);
-            }
-            if (notificationPartiesSet.contains(NotificationParties.RESPONDENT)) {
-                listingUpdatedNotification.sendToRespondent(details.getData(), caseNumber);
-            }
-        } catch (Exception notificationException) {
-            log.error("Update listing notification failed with exception : {}", notificationException.getMessage());
+        NotificationContextRequest notificationContextRequest = NotificationContextRequest.builder()
+            .caseData(caseData)
+            .caseReference(caseReference)
+            .notification(listingUpdatedNotification)
+            .build();
+
+        NotificationContext notificationContext = NotificationConstantProfiles.EDIT_RECORD_LISTING
+            .buildContext(notificationContextRequest);
+
+        notificationDispatcher.sendToCorrespondenceParties(notificationContext);
+
+        if (isEmpty(notificationContext.getErrors())) {
             return SubmittedCallbackResponse.builder()
-                .confirmationHeader(format("# Update listing notification failed %n## Please resend the notification"))
+                .confirmationHeader(format("# Listing record updated %n## If any changes are made to this hearing, %n## remember to make those changes in this listing record. %n## %s",
+                    generateSimpleMessageFromCorrespondenceParties(notificationContext.getCorrespondenceParties())))
+                .build();
+        } else {
+            return SubmittedCallbackResponse.builder()
+                .confirmationHeader(
+                    format("# Update listing notification failed %n## %s %n## Please resend the notification.",
+                        generateSimpleErrorMessage(notificationContext.getErrors()))
+                )
                 .build();
         }
-
-        return SubmittedCallbackResponse.builder()
-            .confirmationHeader(format("# Listing record updated %n##  If any changes are made to this hearing, "
-                    + " remember to make those changes in this listing record. %n## %s",
-                MessageUtil.generateSimpleMessage(details.getData().getCicCase().getHearingNotificationParties())))
-            .build();
     }
 
     private void addRegionInfo(PageBuilder pageBuilder) {

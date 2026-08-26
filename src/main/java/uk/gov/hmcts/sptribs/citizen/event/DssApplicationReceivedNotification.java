@@ -7,14 +7,18 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.DssCaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.LanguagePreference;
+import uk.gov.hmcts.sptribs.ciccase.model.NotificationParties;
 import uk.gov.hmcts.sptribs.ciccase.model.NotificationResponse;
 import uk.gov.hmcts.sptribs.notification.DssNotificationHelper;
 import uk.gov.hmcts.sptribs.notification.NotificationServiceCIC;
 import uk.gov.hmcts.sptribs.notification.PartiesNotification;
 import uk.gov.hmcts.sptribs.notification.TemplateName;
+import uk.gov.hmcts.sptribs.notification.model.NotificationContextRequest;
 import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
 
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import static uk.gov.hmcts.sptribs.ciccase.model.LanguagePreference.ENGLISH;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.CICA_REF_NUMBER;
@@ -92,6 +96,22 @@ public class DssApplicationReceivedNotification implements PartiesNotification {
         NotificationRequest request =
             dssNotificationHelper.buildEmailNotificationRequest(toEmail, templateVars, templateName);
         return notificationService.sendEmail(request, caseReferenceNumber, null);
+    }
+
+    public Set<NotificationParties> buildCorrespondenceParties(NotificationContextRequest request) {
+        Set<NotificationParties> correspondenceParties = new HashSet<>();
+        CaseData caseData = request.getCaseData();
+        DssCaseData dssCaseData = caseData.getDssCaseData();
+
+        if (dssCaseData.getSubjectEmailAddress() != null) {
+            correspondenceParties.add(NotificationParties.SUBJECT);
+        }
+
+        if (dssCaseData.getRepresentativeEmailAddress() != null) {
+            correspondenceParties.add(NotificationParties.REPRESENTATIVE);
+        }
+
+        return correspondenceParties;
     }
 
 }

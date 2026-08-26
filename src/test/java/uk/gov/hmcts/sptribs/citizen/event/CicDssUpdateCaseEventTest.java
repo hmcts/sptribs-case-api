@@ -27,7 +27,8 @@ import uk.gov.hmcts.sptribs.document.model.DocumentType;
 import uk.gov.hmcts.sptribs.document.service.DocumentsService;
 import uk.gov.hmcts.sptribs.idam.IdamService;
 import uk.gov.hmcts.sptribs.notification.dispatcher.DssUpdateCaseSubmissionNotification;
-import uk.gov.hmcts.sptribs.notification.exception.NotificationException;
+import uk.gov.hmcts.sptribs.notification.dispatcher.NotificationDispatcher;
+import uk.gov.hmcts.sptribs.notification.model.NotificationContext;
 import uk.gov.hmcts.sptribs.testutil.TestDataHelper;
 
 import java.time.LocalDate;
@@ -38,6 +39,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.times;
@@ -72,6 +74,9 @@ class CicDssUpdateCaseEventTest {
 
     @InjectMocks
     private CicDssUpdateCaseEvent cicDssUpdateCaseEvent;
+
+    @Mock
+    private NotificationDispatcher notificationDispatcher;
 
     @Test
     void shouldAddPublishToCamundaWhenWAIsEnabled() {
@@ -338,15 +343,10 @@ class CicDssUpdateCaseEventTest {
         SubmittedCallbackResponse response = cicDssUpdateCaseEvent.submitted(details, details);
 
         assertThat(response.getConfirmationHeader())
-            .isEqualTo("# CIC Dss Update Case Event Email notifications sent");
+            .contains("# CIC Dss Update Case Event Email notifications sent");
 
-        verify(dssUpdateCaseSubmissionNotification).sendToApplicant(
-            details.getData(),
-            TEST_CASE_ID.toString()
-        );
-        verify(dssUpdateCaseSubmissionNotification).sendToTribunal(
-            details.getData(),
-            TEST_CASE_ID.toString()
+        verify(notificationDispatcher).sendToCorrespondenceParties(
+           any(NotificationContext.class)
         );
     }
 
@@ -357,14 +357,20 @@ class CicDssUpdateCaseEventTest {
         details.setId(TEST_CASE_ID);
         details.setData(caseData);
 
-        doThrow(NotificationException.class)
-            .when(dssUpdateCaseSubmissionNotification)
-            .sendToApplicant(details.getData(), TEST_CASE_ID.toString());
+        doAnswer(invocation -> {
+            NotificationContext context = invocation.getArgument(0);
+            if (context.getNotification() == dssUpdateCaseSubmissionNotification) {
+                context.getErrors().add("Respondent");
+            }
+            return null;
+        }).when(notificationDispatcher).sendToCorrespondenceParties(any(NotificationContext.class));
 
         SubmittedCallbackResponse response = cicDssUpdateCaseEvent.submitted(details, details);
 
         assertThat(response.getConfirmationHeader())
-            .contains("# CIC Dss Update Case Event Email notification failed %n## Please resend the notification");
+            .contains("# CIC Dss Update Case Event Email notification failed")
+            .contains("Please resend the notification")
+            .contains("Respondent");
     }
 
     @Test

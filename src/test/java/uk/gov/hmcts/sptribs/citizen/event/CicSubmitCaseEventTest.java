@@ -31,7 +31,9 @@ import uk.gov.hmcts.sptribs.document.model.CitizenCICDocument;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
 import uk.gov.hmcts.sptribs.document.service.DocumentsService;
 import uk.gov.hmcts.sptribs.idam.IdamService;
+import uk.gov.hmcts.sptribs.notification.dispatcher.NotificationDispatcher;
 import uk.gov.hmcts.sptribs.notification.exception.NotificationException;
+import uk.gov.hmcts.sptribs.notification.model.NotificationContext;
 import uk.gov.hmcts.sptribs.testutil.TestDataHelper;
 import uk.gov.hmcts.sptribs.util.AppsUtil;
 
@@ -44,12 +46,17 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
+import static uk.gov.hmcts.sptribs.ciccase.model.NotificationParties.APPLICANT;
+import static uk.gov.hmcts.sptribs.ciccase.model.NotificationParties.REPRESENTATIVE;
+import static uk.gov.hmcts.sptribs.ciccase.model.NotificationParties.RESPONDENT;
+import static uk.gov.hmcts.sptribs.ciccase.model.NotificationParties.SUBJECT;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_WA_CONFIG_USER;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigBuilder;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.getEventsFrom;
@@ -91,6 +98,9 @@ class CicSubmitCaseEventTest {
 
     @Mock
     private DocumentsService documentsService;
+
+    @Mock
+    private NotificationDispatcher notificationDispatcher;
 
     @BeforeEach
     public void setUp() {
@@ -322,12 +332,23 @@ class CicSubmitCaseEventTest {
         assertThat(aboutToSubmitResponse.getData().getDssAnswer2()).isEqualTo("case_data.dssCaseDataSubjectDateOfBirth");
         assertThat(aboutToSubmitResponse.getData().getDssHeaderDetails()).isEqualTo("Subject of this case");
 
+        doAnswer(invocation -> {
+            NotificationContext context = invocation.getArgument(0);
+            if (context.getNotification() == dssApplicationReceivedNotification) {
+                context.getCorrespondenceParties().add(REPRESENTATIVE);
+                context.getCorrespondenceParties().add(SUBJECT);
+            }
+            return null;
+        }).when(notificationDispatcher).sendToCorrespondenceParties(any(NotificationContext.class));
+
         SubmittedCallbackResponse submittedResponse = cicSubmitCaseEvent.submitted(caseDetails, beforeCaseDetails);
 
-        assertThat(submittedResponse.getConfirmationHeader())
-            .isEqualTo("# Application Received \n## A notification has been sent to: Subject, Representative");
-        verify(dssApplicationReceivedNotification).sendToSubject(any(CaseData.class), any());
-        verify(dssApplicationReceivedNotification).sendToRepresentative(any(CaseData.class), any());
+        assertThat(submittedResponse.getConfirmationHeader()).contains("# Application Received.")
+            .contains("## A notification has been sent to:")
+            .contains("Subject")
+            .contains("Representative");
+
+        verify(notificationDispatcher).sendToCorrespondenceParties(any(NotificationContext.class));
     }
 
     @Test
@@ -370,7 +391,7 @@ class CicSubmitCaseEventTest {
         SubmittedCallbackResponse submittedResponse = cicSubmitCaseEvent.submitted(caseDetails, beforeCaseDetails);
 
         assertThat(submittedResponse.getConfirmationHeader())
-            .isEqualTo("# Application Received %n##");
+            .contains("# Application Received.");
     }
 
     @Test
@@ -385,17 +406,20 @@ class CicSubmitCaseEventTest {
         details.setId(TEST_CASE_ID);
         details.setData(caseData);
 
-        doThrow(NotificationException.class)
-            .when(dssApplicationReceivedNotification)
-            .sendToSubject(any(CaseData.class), anyString());
-        doThrow(NotificationException.class)
-            .when(dssApplicationReceivedNotification)
-            .sendToRepresentative(any(DssCaseData.class), anyString());
+        doAnswer(invocation -> {
+            NotificationContext context = invocation.getArgument(0);
+            if (context.getNotification() == dssApplicationReceivedNotification) {
+                context.getErrors().add("Respondent");
+            }
+            return null;
+        }).when(notificationDispatcher).sendToCorrespondenceParties(any(NotificationContext.class));
 
         SubmittedCallbackResponse response = cicSubmitCaseEvent.submitted(details, details);
 
         assertThat(response.getConfirmationHeader())
-            .contains("# Application Received notification failed %n## Please resend the notification");
+            .contains("# Application Received notification failed")
+            .contains("## A notification could not be sent to: Respondent")
+            .contains("## Please resend the notification");
     }
 
     @Test

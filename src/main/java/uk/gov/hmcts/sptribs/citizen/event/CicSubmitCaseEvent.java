@@ -38,6 +38,10 @@ import uk.gov.hmcts.sptribs.document.model.DocumentType;
 import uk.gov.hmcts.sptribs.document.service.DocumentsService;
 import uk.gov.hmcts.sptribs.idam.CICUser;
 import uk.gov.hmcts.sptribs.idam.IdamService;
+import uk.gov.hmcts.sptribs.notification.NotificationConstantProfiles;
+import uk.gov.hmcts.sptribs.notification.dispatcher.NotificationDispatcher;
+import uk.gov.hmcts.sptribs.notification.model.NotificationContext;
+import uk.gov.hmcts.sptribs.notification.model.NotificationContextRequest;
 import uk.gov.hmcts.sptribs.util.AppsUtil;
 
 import java.time.LocalDate;
@@ -51,6 +55,9 @@ import static java.lang.String.format;
 import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
 import static org.apache.commons.lang.StringUtils.isNotBlank;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
+import static org.springframework.util.CollectionUtils.isEmpty;
+import static uk.gov.hmcts.sptribs.caseworker.util.MessageUtil.generateSimpleErrorMessage;
+import static uk.gov.hmcts.sptribs.caseworker.util.MessageUtil.generateSimpleMessageFromCorrespondenceParties;
 import static uk.gov.hmcts.sptribs.caseworker.util.MessageUtil.handleDocumentException;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.DSS_Draft;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.DSS_Submitted;
@@ -78,6 +85,7 @@ public class CicSubmitCaseEvent implements CCDConfig<CaseData, State, UserRole> 
     private final IdamService idamService;
     private final AppsConfig appsConfig;
     private final DssApplicationReceivedNotification dssApplicationReceivedNotification;
+    private final NotificationDispatcher notificationDispatcher;
     private final DocumentsService documentsService;
 
     @Override
@@ -123,31 +131,33 @@ public class CicSubmitCaseEvent implements CCDConfig<CaseData, State, UserRole> 
 
     public SubmittedCallbackResponse submitted(CaseDetails<CaseData, State> details,
                                                CaseDetails<CaseData, State> beforeDetails) {
-        final CaseData data = details.getData();
-        DssCaseData dssCaseData = data.getDssCaseData();
-        generateNotifyParties(dssCaseData);
+        final CaseData caseData = details.getData();
+        final String caseReference = caseData.getHyphenatedCaseRef();
 
-        final String caseNumber = data.getHyphenatedCaseRef();
-
-        try {
-            sendApplicationReceivedNotification(caseNumber, data);
-        } catch (Exception notificationException) {
-            log.error("Application Received notification failed with exception : {}", notificationException.getMessage());
-            return SubmittedCallbackResponse.builder()
-                .confirmationHeader("# Application Received notification failed %n## Please resend the notification")
-                .build();
-        }
-
-        if (isNotEmpty(dssCaseData.getNotificationParties())) {
-            return SubmittedCallbackResponse.builder()
-                .confirmationHeader(format("# Application Received %n## %s",
-                    MessageUtil.generateSimpleMessage(dssCaseData.getNotificationParties())))
-                .build();
-        }
-
-        return SubmittedCallbackResponse.builder()
-            .confirmationHeader("# Application Received %n##")
+        NotificationContextRequest notificationContextRequest = NotificationContextRequest.builder()
+            .caseData(caseData)
+            .caseReference(caseReference)
+            .notification(dssApplicationReceivedNotification)
             .build();
+
+        NotificationContext notificationContext = NotificationConstantProfiles.CIC_SUBMIT_CASE
+            .buildContext(notificationContextRequest);
+
+        notificationDispatcher.sendToCorrespondenceParties(notificationContext);
+
+        if (isEmpty(notificationContext.getErrors())) {
+            return SubmittedCallbackResponse.builder()
+                .confirmationHeader(format("# Application Received. %n## %s",
+                    generateSimpleMessageFromCorrespondenceParties(notificationContext.getCorrespondenceParties())))
+                .build();
+        } else {
+            return SubmittedCallbackResponse.builder()
+                .confirmationHeader(
+                    format("# Application Received notification failed %n## %s %n## Please resend the notification.",
+                        generateSimpleErrorMessage(notificationContext.getErrors()))
+                )
+                .build();
+        }
     }
 
     private void setDssMetaData(CaseData data) {
@@ -156,31 +166,6 @@ public class CicSubmitCaseEvent implements CCDConfig<CaseData, State, UserRole> 
         data.setDssAnswer1("case_data.dssCaseDataSubjectFullName");
         data.setDssAnswer2("case_data.dssCaseDataSubjectDateOfBirth");
         data.setDssHeaderDetails("Subject of this case");
-    }
-
-    private void generateNotifyParties(DssCaseData dssCaseData) {
-        Set<NotificationParties> notificationParties = new HashSet<>();
-
-        if (dssCaseData.getSubjectEmailAddress() != null) {
-            notificationParties.add(NotificationParties.SUBJECT);
-        }
-
-        if (dssCaseData.getRepresentativeEmailAddress() != null) {
-            notificationParties.add(NotificationParties.REPRESENTATIVE);
-        }
-
-        dssCaseData.setNotificationParties(notificationParties);
-    }
-
-    private void sendApplicationReceivedNotification(String caseNumber, CaseData caseData) {
-        final DssCaseData dssCaseData = caseData.getDssCaseData();
-        if (dssCaseData.getNotificationParties().contains(NotificationParties.SUBJECT)) {
-            dssApplicationReceivedNotification.sendToSubject(caseData, caseNumber);
-        }
-
-        if (dssCaseData.getNotificationParties().contains(NotificationParties.REPRESENTATIVE)) {
-            dssApplicationReceivedNotification.sendToRepresentative(caseData, caseNumber);
-        }
     }
 
     private CaseData getCaseData(final CaseData caseData, final DssCaseData dssCaseData, List<String> errors) {

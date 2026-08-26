@@ -1,8 +1,7 @@
 package uk.gov.hmcts.sptribs.caseworker.event;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections4.CollectionUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
@@ -16,19 +15,24 @@ import uk.gov.hmcts.sptribs.caseworker.event.page.PostponeHearingSelectReason;
 import uk.gov.hmcts.sptribs.caseworker.event.page.SelectHearing;
 import uk.gov.hmcts.sptribs.caseworker.helper.RecordListHelper;
 import uk.gov.hmcts.sptribs.caseworker.service.HearingService;
-import uk.gov.hmcts.sptribs.caseworker.util.MessageUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
-import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
+import uk.gov.hmcts.sptribs.notification.NotificationConstantProfiles;
 import uk.gov.hmcts.sptribs.notification.dispatcher.HearingPostponedNotification;
+import uk.gov.hmcts.sptribs.notification.dispatcher.NotificationDispatcher;
+import uk.gov.hmcts.sptribs.notification.model.NotificationContext;
+import uk.gov.hmcts.sptribs.notification.model.NotificationContextRequest;
 
 import java.time.LocalDate;
 
 import static java.lang.String.format;
+import static org.springframework.util.CollectionUtils.isEmpty;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_POSTPONE_HEARING;
+import static uk.gov.hmcts.sptribs.caseworker.util.MessageUtil.generateSimpleErrorMessage;
+import static uk.gov.hmcts.sptribs.caseworker.util.MessageUtil.generateSimpleMessageFromCorrespondenceParties;
 import static uk.gov.hmcts.sptribs.ciccase.model.HearingState.Postponed;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseManagement;
@@ -44,6 +48,7 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 
 @Component
 @Slf4j
+@RequiredArgsConstructor
 public class CaseworkerPostponeHearing implements CCDConfig<CaseData, State, UserRole> {
 
     private static final CcdPageConfiguration selectHearing = new SelectHearing();
@@ -56,14 +61,7 @@ public class CaseworkerPostponeHearing implements CCDConfig<CaseData, State, Use
 
     private final HearingPostponedNotification hearingPostponedNotification;
 
-    @Autowired
-    public CaseworkerPostponeHearing(HearingService hearingService,
-                                     RecordListHelper recordListHelper,
-                                     HearingPostponedNotification hearingPostponedNotification) {
-        this.hearingService = hearingService;
-        this.recordListHelper = recordListHelper;
-        this.hearingPostponedNotification = hearingPostponedNotification;
-    }
+    private final NotificationDispatcher notificationDispatcher;
 
     @Override
     public void configure(final ConfigBuilder<CaseData, State, UserRole> configBuilder) {
@@ -121,35 +119,33 @@ public class CaseworkerPostponeHearing implements CCDConfig<CaseData, State, Use
 
     public SubmittedCallbackResponse submitted(CaseDetails<CaseData, State> details,
                                                CaseDetails<CaseData, State> beforeDetails) {
-        try {
-            sendHearingPostponedNotification(details.getData().getHyphenatedCaseRef(), details.getData());
-        } catch (Exception notificationException) {
-            log.error("Postpone hearing notification failed with exception : {}", notificationException.getMessage());
+
+        final CaseData caseData = details.getData();
+        final String caseReference = caseData.getHyphenatedCaseRef();
+
+        NotificationContextRequest notificationContextRequest = NotificationContextRequest.builder()
+            .caseData(caseData)
+            .caseReference(caseReference)
+            .notification(hearingPostponedNotification)
+            .build();
+
+        NotificationContext notificationContext = NotificationConstantProfiles.POSTPONE_HEARING
+            .buildContext(notificationContextRequest);
+
+        notificationDispatcher.sendToCorrespondenceParties(notificationContext);
+
+        if (isEmpty(notificationContext.getErrors())) {
             return SubmittedCallbackResponse.builder()
-                .confirmationHeader(format("# Postpone hearing notification failed %n## Please resend the notification"))
+                .confirmationHeader(format("# Hearing Postponed %n## The hearing has been postponed, the case has been updated %n## %s",
+                    generateSimpleMessageFromCorrespondenceParties(notificationContext.getCorrespondenceParties())))
+                .build();
+        } else {
+            return SubmittedCallbackResponse.builder()
+                .confirmationHeader(
+                    format("# Postpone hearing notification failed %n## %s %n## Please resend the notification.",
+                        generateSimpleErrorMessage(notificationContext.getErrors()))
+                )
                 .build();
         }
-
-        return SubmittedCallbackResponse.builder()
-            .confirmationHeader(format("# Hearing Postponed %n## The hearing has been postponed, the case has been updated %n## %s",
-                MessageUtil.generateSimpleMessage(details.getData().getCicCase().getHearingNotificationParties())))
-            .build();
     }
-
-    private void sendHearingPostponedNotification(String caseNumber, CaseData caseData) {
-        CicCase cicCase = caseData.getCicCase();
-
-        if (CollectionUtils.isNotEmpty(cicCase.getNotifyPartySubject())) {
-            hearingPostponedNotification.sendToSubject(caseData, caseNumber);
-        }
-
-        if (CollectionUtils.isNotEmpty(cicCase.getNotifyPartyRepresentative())) {
-            hearingPostponedNotification.sendToRepresentative(caseData, caseNumber);
-        }
-
-        if (CollectionUtils.isNotEmpty(cicCase.getNotifyPartyRespondent())) {
-            hearingPostponedNotification.sendToRespondent(caseData, caseNumber);
-        }
-    }
-
 }

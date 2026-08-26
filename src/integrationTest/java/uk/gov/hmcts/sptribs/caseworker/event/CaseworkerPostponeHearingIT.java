@@ -26,8 +26,10 @@ import uk.gov.hmcts.sptribs.ciccase.model.RepresentativeCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.RespondentCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.SubjectCIC;
 import uk.gov.hmcts.sptribs.common.config.WebMvcConfig;
-import uk.gov.hmcts.sptribs.notification.dispatcher.HearingPostponedNotification;
+import uk.gov.hmcts.sptribs.notification.NotificationServiceCIC;
+import uk.gov.hmcts.sptribs.notification.exception.NotificationException;
 import uk.gov.hmcts.sptribs.testutil.IdamWireMock;
+import uk.gov.service.notify.NotificationClientException;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -38,11 +40,11 @@ import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
 import static net.javacrumbs.jsonunit.assertj.JsonAssertions.json;
 import static net.javacrumbs.jsonunit.core.Option.IGNORING_EXTRA_FIELDS;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -94,7 +96,7 @@ public class CaseworkerPostponeHearingIT {
     private WebMvcConfig webMvcConfig;
 
     @MockitoBean
-    private HearingPostponedNotification hearingPostponedNotification;
+    private NotificationServiceCIC notificationServiceCIC;
 
     @BeforeAll
     static void setUp() {
@@ -235,23 +237,33 @@ public class CaseworkerPostponeHearingIT {
             .contains("""
                 # Hearing Postponed\s
                 ## The hearing has been postponed, the case has been updated\s
-                ## A notification has been sent to: Subject, Respondent, Representative""");
+                ## A notification has been sent to: Representative, Respondent, Subject""");
 
-        verify(hearingPostponedNotification, times(1)).sendToSubject((CaseData) any(), anyString());
-        verify(hearingPostponedNotification, times(1)).sendToRespondent(any(), anyString());
-        verify(hearingPostponedNotification, times(1)).sendToRepresentative((CaseData) any(), anyString());
-        verifyNoMoreInteractions(hearingPostponedNotification);
+        verify(notificationServiceCIC, times(3)).sendEmail(any(), eq(TEST_CASE_ID_HYPHENATED), eq(null));
+        verifyNoMoreInteractions(notificationServiceCIC);
     }
 
     @Test
     void shouldReturnErrorMessageIfNotificationsFailOnSubmitted() throws Exception {
+        final CaseData caseData = CaseData.builder()
+            .hyphenatedCaseRef(TEST_CASE_ID_HYPHENATED)
+            .cicCase(CicCase.builder()
+                .notifyPartySubject(Set.of(SubjectCIC.SUBJECT))
+                .notifyPartyRepresentative(Set.of(RepresentativeCIC.REPRESENTATIVE))
+                .notifyPartyRespondent(Set.of(RespondentCIC.RESPONDENT))
+                .build())
+            .build();
+
+        when(notificationServiceCIC.sendEmail(any(), eq(TEST_CASE_ID_HYPHENATED), eq(null)))
+            .thenThrow(new NotificationException(new NotificationClientException("")));
+
         String response = mockMvc.perform(post(SUBMITTED_URL)
                 .contentType(APPLICATION_JSON)
                 .header(SERVICE_AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
                 .header(AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
                 .content(objectMapper.writeValueAsString(
                     callbackRequest(
-                        null,
+                        caseData,
                         CASEWORKER_POSTPONE_HEARING)))
                 .accept(APPLICATION_JSON))
             .andExpect(
@@ -263,8 +275,8 @@ public class CaseworkerPostponeHearingIT {
         assertThatJson(response)
             .inPath(CONFIRMATION_HEADER)
             .isString()
-            .contains("# Postpone hearing notification failed \n## Please resend the notification");
-
-        verifyNoInteractions(hearingPostponedNotification);
+            .contains("# Postpone hearing notification failed")
+            .contains("## A notification could not be sent to: Representative, Respondent, Subject")
+            .contains("## Please resend the notification.");
     }
 }

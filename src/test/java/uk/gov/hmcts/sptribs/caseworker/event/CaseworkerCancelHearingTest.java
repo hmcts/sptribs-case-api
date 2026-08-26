@@ -2,6 +2,8 @@ package uk.gov.hmcts.sptribs.caseworker.event;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -26,6 +28,8 @@ import uk.gov.hmcts.sptribs.ciccase.model.SubjectCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.ciccase.model.access.Permissions;
 import uk.gov.hmcts.sptribs.notification.dispatcher.CancelHearingNotification;
+import uk.gov.hmcts.sptribs.notification.dispatcher.NotificationDispatcher;
+import uk.gov.hmcts.sptribs.notification.model.NotificationContext;
 import uk.gov.hmcts.sptribs.testutil.TestEventConstants;
 
 import java.time.LocalDate;
@@ -36,6 +40,7 @@ import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_WA_CONFIG_USER;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigBuilder;
@@ -61,6 +66,15 @@ class CaseworkerCancelHearingTest {
 
     @Mock
     private CancelHearingNotification cancelHearingNotification;
+
+    @Mock
+    NotificationContext notificationContext;
+
+    @Mock
+    private NotificationDispatcher notificationDispatcher;
+
+    @Captor
+    private ArgumentCaptor<NotificationContext> notificationContextCaptor;
 
     @Test
     void shouldAddPublishToCamundaWhenWAIsEnabled() {
@@ -216,7 +230,7 @@ class CaseworkerCancelHearingTest {
         SubmittedCallbackResponse cancelled = caseworkerCancelHearing.submitted(updatedCaseDetails, beforeDetails);
 
         //Then
-        assertThat(cancelled.getConfirmationHeader()).contains(NotificationParties.SUBJECT.getLabel());
+        assertThat(cancelled.getConfirmationHeader()).contains("Hearing cancelled");
         assertThat(response).isNotNull();
         assertThat(response.getState()).isEqualTo(State.CaseManagement);
         assertThat(response.getData().getListing().getHearingStatus()).isEqualTo(HearingState.Cancelled);

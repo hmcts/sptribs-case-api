@@ -21,6 +21,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.SubjectCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.notification.dispatcher.CaseStayedNotification;
+import uk.gov.hmcts.sptribs.notification.dispatcher.NotificationDispatcher;
 
 import java.time.LocalDate;
 import java.util.Set;
@@ -46,6 +47,9 @@ class CaseworkerStayTheCaseTest {
 
     @Mock
     private CaseStayedNotification caseStayedNotification;
+
+    @Mock
+    private NotificationDispatcher notificationDispatcher;
 
     @Test
     void shouldAddConfigurationToConfigBuilder() {
@@ -109,10 +113,6 @@ class CaseworkerStayTheCaseTest {
         updatedCaseDetails.setCreatedDate(LOCAL_DATE_TIME);
 
         //When
-        doNothing().when(caseStayedNotification).sendToSubject(any(CaseData.class), eq(null));
-        doNothing().when(caseStayedNotification).sendToApplicant(any(CaseData.class), eq(null));
-        doNothing().when(caseStayedNotification).sendToRepresentative(any(CaseData.class), eq(null));
-
         AboutToStartOrSubmitResponse<CaseData, State> response =
             caseworkerStayTheCase.aboutToSubmit(updatedCaseDetails, beforeDetails);
         SubmittedCallbackResponse stayedResponse = caseworkerStayTheCase.submitted(updatedCaseDetails, beforeDetails);
@@ -125,39 +125,5 @@ class CaseworkerStayTheCaseTest {
         assertThat(stay.getAdditionalDetail()).isNotNull();
         assertThat(stay.getExpirationDate()).isNotNull();
         assertThat(stay.getFlagType()).isNull();
-    }
-
-    @Test
-    void shouldNotSendNotificationIfApplicantSubjectRepresentativeSetIsEmpty() {
-        //Given
-        final CaseData caseData = caseData();
-        caseData.getCicCase().setSubjectCIC(emptySet());
-        caseData.getCicCase().setSubjectCIC(emptySet());
-        caseData.getCicCase().setSubjectCIC(emptySet());
-        final CaseDetails<CaseData, State> details = new CaseDetails<>();
-        details.setData(caseData);
-
-        //When
-        caseworkerStayTheCase.submitted(details, details);
-
-        //Then
-        verifyNoInteractions(caseStayedNotification);
-    }
-
-    @Test
-    void shouldNotSendNotificationIfApplicantSubjectRepresentativeSetIsNull() {
-        //Given
-        final CaseData caseData = caseData();
-        caseData.getCicCase().setSubjectCIC(null);
-        caseData.getCicCase().setSubjectCIC(null);
-        caseData.getCicCase().setSubjectCIC(null);
-        final CaseDetails<CaseData, State> details = new CaseDetails<>();
-        details.setData(caseData);
-
-        //When
-        caseworkerStayTheCase.submitted(details, details);
-
-        //Then
-        verifyNoInteractions(caseStayedNotification);
     }
 }

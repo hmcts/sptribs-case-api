@@ -18,6 +18,7 @@ import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.common.config.WebMvcConfig;
 import uk.gov.hmcts.sptribs.notification.NotificationServiceCIC;
+import uk.gov.hmcts.sptribs.notification.dispatcher.NotificationDispatcher;
 import uk.gov.hmcts.sptribs.testutil.IdamWireMock;
 
 import java.util.List;
@@ -194,7 +195,11 @@ public class CaseworkerCancelHearingIT {
             .inPath(CONFIRMATION_HEADER)
             .isString()
             .contains("# Hearing cancelled \n"
-                + "## A notification has been sent to: Subject, Respondent, Representative, Applicant");
+                + "## A notification has been sent to:")
+            .contains("Subject")
+            .contains("Respondent")
+            .contains("Representative")
+            .contains("Applicant");
 
         verify(notificationServiceCIC, times(4)).sendEmail(any(), eq(TEST_CASE_ID_HYPHENATED), eq(null));
         verifyNoMoreInteractions(notificationServiceCIC);
@@ -232,8 +237,10 @@ public class CaseworkerCancelHearingIT {
         assertThatJson(response)
             .inPath(CONFIRMATION_HEADER)
             .isString()
-            .contains("# Cancel hearing notification failed \n## Please resend the notification");
-
-        verifyNoInteractions(notificationServiceCIC);
+            .contains("# Cancel hearing notification failed")
+            .contains("## Please resend the notification")
+            .contains("Representative")
+            .contains("Applicant")
+            .contains("Subject");
     }
 }

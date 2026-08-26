@@ -7,15 +7,24 @@ import uk.gov.hmcts.sptribs.caseworker.model.Listing;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.ContactPreferenceType;
+import uk.gov.hmcts.sptribs.ciccase.model.NotificationParties;
 import uk.gov.hmcts.sptribs.ciccase.model.NotificationResponse;
 import uk.gov.hmcts.sptribs.common.CommonConstants;
 import uk.gov.hmcts.sptribs.notification.NotificationHelper;
 import uk.gov.hmcts.sptribs.notification.NotificationServiceCIC;
 import uk.gov.hmcts.sptribs.notification.PartiesNotification;
 import uk.gov.hmcts.sptribs.notification.TemplateName;
+import uk.gov.hmcts.sptribs.notification.model.NotificationContextRequest;
 import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
 
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
+
+import static uk.gov.hmcts.sptribs.ciccase.model.NotificationParties.APPLICANT;
+import static uk.gov.hmcts.sptribs.ciccase.model.NotificationParties.REPRESENTATIVE;
+import static uk.gov.hmcts.sptribs.ciccase.model.NotificationParties.RESPONDENT;
+import static uk.gov.hmcts.sptribs.ciccase.model.NotificationParties.SUBJECT;
 
 @Component
 @Slf4j
@@ -101,5 +110,23 @@ public class ListingUpdatedNotification implements PartiesNotification {
             templateVarsLetter,
             TemplateName.HEARING_UPDATED_POST);
         return notificationService.sendLetter(letterRequest, caseReferenceNumber);
+    }
+
+    @Override
+    public Set<NotificationParties> buildCorrespondenceParties(NotificationContextRequest request) {
+        Set<NotificationParties> correspondenceParties = new HashSet<>();
+        CicCase cicCase = request.getCaseData().getCicCase();
+
+        if (cicCase.getHearingNotificationParties().contains(SUBJECT)) {
+            correspondenceParties.add(SUBJECT);
+        }
+        if (cicCase.getHearingNotificationParties().contains(REPRESENTATIVE)) {
+            correspondenceParties.add(REPRESENTATIVE);
+        }
+        if (cicCase.getHearingNotificationParties().contains(RESPONDENT)) {
+            correspondenceParties.add(RESPONDENT);
+        }
+
+        return correspondenceParties;
     }
 }

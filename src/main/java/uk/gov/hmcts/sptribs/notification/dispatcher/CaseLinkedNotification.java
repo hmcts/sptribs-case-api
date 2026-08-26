@@ -3,17 +3,26 @@ package uk.gov.hmcts.sptribs.notification.dispatcher;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.ContactPreferenceType;
+import uk.gov.hmcts.sptribs.ciccase.model.NotificationParties;
 import uk.gov.hmcts.sptribs.ciccase.model.NotificationResponse;
 import uk.gov.hmcts.sptribs.notification.NotificationHelper;
 import uk.gov.hmcts.sptribs.notification.NotificationServiceCIC;
 import uk.gov.hmcts.sptribs.notification.PartiesNotification;
 import uk.gov.hmcts.sptribs.notification.TemplateName;
+import uk.gov.hmcts.sptribs.notification.model.NotificationContextRequest;
 import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
 
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
+
+import static uk.gov.hmcts.sptribs.ciccase.model.NotificationParties.APPLICANT;
+import static uk.gov.hmcts.sptribs.ciccase.model.NotificationParties.REPRESENTATIVE;
+import static uk.gov.hmcts.sptribs.ciccase.model.NotificationParties.SUBJECT;
 
 @Component
 @Slf4j
@@ -92,6 +101,24 @@ public class CaseLinkedNotification implements PartiesNotification {
         final NotificationRequest letterRequest = notificationHelper.buildLetterNotificationRequest(templateVarsLetter,
             TemplateName.CASE_LINKED_POST);
         return notificationService.sendLetter(letterRequest, caseReferenceNumber);
+    }
+
+    @Override
+    public Set<NotificationParties> buildCorrespondenceParties(NotificationContextRequest request) {
+        Set<NotificationParties> correspondenceParties = new HashSet<>();
+        CicCase cicCase = request.getCaseData().getCicCase();
+
+        if (cicCase.getSubjectCIC() != null && !cicCase.getSubjectCIC().isEmpty()) {
+            correspondenceParties.add(SUBJECT);
+        }
+        if (cicCase.getApplicantCIC() != null && !cicCase.getApplicantCIC().isEmpty()) {
+            correspondenceParties.add(APPLICANT);
+        }
+        if (cicCase.getRepresentativeCIC() != null && !cicCase.getRepresentativeCIC().isEmpty()) {
+            correspondenceParties.add(REPRESENTATIVE);
+        }
+
+        return correspondenceParties;
     }
 
 }

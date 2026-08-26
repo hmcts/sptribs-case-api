@@ -150,7 +150,7 @@ public class CicDssUpdateCaseEventIT {
             .isString()
             .contains("# CIC Dss Update Case Event Email notifications sent");
 
-        verify(notificationServiceCIC, times(2)).sendEmail(any(), eq(TEST_CASE_ID.toString()), eq(null));
+        verify(notificationServiceCIC, times(2)).sendEmail(any(), eq(TEST_CASE_ID_HYPHENATED.toString()), eq(null));
         verifyNoMoreInteractions(notificationServiceCIC);
     }
 
@@ -161,7 +161,7 @@ public class CicDssUpdateCaseEventIT {
 
         doThrow(NotificationException.class)
             .when(notificationServiceCIC)
-            .sendEmail(any(NotificationRequest.class), eq(TEST_CASE_ID.toString()), eq(null));
+            .sendEmail(any(NotificationRequest.class), eq(TEST_CASE_ID_HYPHENATED.toString()), eq(null));
 
         String response = mockMvc.perform(post(SUBMITTED_URL)
             .contentType(APPLICATION_JSON)
@@ -181,6 +181,8 @@ public class CicDssUpdateCaseEventIT {
         assertThatJson(response)
             .inPath(CONFIRMATION_HEADER)
             .isString()
-            .contains("# CIC Dss Update Case Event Email notification failed %n## Please resend the notification");
+            .contains("# CIC Dss Update Case Event Email notification failed")
+            .contains("## A notification could not be sent to: Applicant, Tribunal")
+            .contains("## Please resend the notification.");
     }
 }

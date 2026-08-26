@@ -259,7 +259,7 @@ public class CaseworkerContactPartiesIT extends IntegrationTestBase {
         assertThatJson(response)
             .inPath(CONFIRMATION_HEADER)
             .isString()
-            .contains("# Message sent \n## A notification has been sent to: Subject, Respondent, Representative, Applicant");
+            .contains("# Message sent \n## A notification has been sent to: Applicant, Representative, Respondent, Subject");
 
         verify(notificationServiceCIC, times(1)).sendEmail(any(), eq(TEST_CASE_ID_HYPHENATED), eq(Party.SUBJECT));
         verify(notificationServiceCIC, times(1)).sendEmail(any(), eq(TEST_CASE_ID_HYPHENATED), eq(Party.RESPONDENT));
@@ -281,6 +281,20 @@ public class CaseworkerContactPartiesIT extends IntegrationTestBase {
 
     @Test
     void shouldReturnErrorMessageIfNotificationsFailOnSubmitted() throws Exception {
+        final ContactPartiesDocuments contactPartiesDocuments = new ContactPartiesDocuments();
+        List<DynamicListElement> elements = new ArrayList<>();
+        UUID testDocumentID = UUID.randomUUID();
+        final DynamicListElement listItem = DynamicListElement
+            .builder()
+            .label("[pdf.pdf A - Application Form](http://manage-case.demo.platform.hmcts.net/documents/" + testDocumentID + "/binary)")
+            .code(UUID.randomUUID())
+            .build();
+        elements.add(listItem);
+        contactPartiesDocuments.setDocumentList(DynamicMultiSelectList
+            .builder()
+            .value(elements)
+            .listItems(elements)
+            .build());
         final CaseData caseData = CaseData.builder()
             .cicCase(CicCase.builder()
                 .notifyPartySubject(Set.of(SUBJECT))
@@ -290,6 +304,7 @@ public class CaseworkerContactPartiesIT extends IntegrationTestBase {
                 .build()
             )
             .build();
+        caseData.setContactPartiesDocuments(contactPartiesDocuments);
 
         String response = mockMvc.perform(post(SUBMITTED_URL)
             .contentType(APPLICATION_JSON)
@@ -309,8 +324,8 @@ public class CaseworkerContactPartiesIT extends IntegrationTestBase {
         assertThatJson(response)
             .inPath(CONFIRMATION_HEADER)
             .isString()
-            .contains("# Contact Parties notification failed \n## Please resend the notification");
-
-        verifyNoInteractions(notificationServiceCIC);
+            .contains("# Contact Parties notification failed")
+            .contains("## A notification could not be sent to: Applicant, Representative, Respondent, Subject")
+            .contains("## Please resend the notification.");
     }
 }

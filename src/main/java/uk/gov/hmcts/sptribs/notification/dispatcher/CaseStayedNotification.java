@@ -8,15 +8,23 @@ import uk.gov.hmcts.sptribs.caseworker.model.CaseStay;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.ContactPreferenceType;
+import uk.gov.hmcts.sptribs.ciccase.model.NotificationParties;
 import uk.gov.hmcts.sptribs.ciccase.model.NotificationResponse;
 import uk.gov.hmcts.sptribs.notification.NotificationHelper;
 import uk.gov.hmcts.sptribs.notification.NotificationServiceCIC;
 import uk.gov.hmcts.sptribs.notification.PartiesNotification;
 import uk.gov.hmcts.sptribs.notification.TemplateName;
+import uk.gov.hmcts.sptribs.notification.model.NotificationContextRequest;
 import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
 
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
+import static org.apache.commons.collections4.CollectionUtils.isEmpty;
+import static uk.gov.hmcts.sptribs.ciccase.model.NotificationParties.APPLICANT;
+import static uk.gov.hmcts.sptribs.ciccase.model.NotificationParties.REPRESENTATIVE;
+import static uk.gov.hmcts.sptribs.ciccase.model.NotificationParties.SUBJECT;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.NONE_PROVIDED;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.STAY_ADDITIONAL_DETAIL;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.STAY_EXPIRATION_DATE;
@@ -111,5 +119,23 @@ public class CaseStayedNotification implements PartiesNotification {
         templateVars.put(STAY_EXPIRATION_DATE, caseStay.getExpirationDate());
         templateVars.put(STAY_REASON, caseStay.getStayReason().getLabel());
         templateVars.put(STAY_ADDITIONAL_DETAIL, additionalDetail);
+    }
+
+    @Override
+    public Set<NotificationParties> buildCorrespondenceParties(NotificationContextRequest request) {
+        Set<NotificationParties> correspondenceParties = new HashSet<>();
+        CicCase cicCase = request.getCaseData().getCicCase();
+
+        if (!isEmpty(cicCase.getSubjectCIC())) {
+           correspondenceParties.add(SUBJECT);
+        }
+        if (!isEmpty(cicCase.getApplicantCIC())) {
+            correspondenceParties.add(APPLICANT);
+        }
+        if (!isEmpty(cicCase.getRepresentativeCIC())) {
+            correspondenceParties.add(REPRESENTATIVE);
+        }
+
+        return correspondenceParties;
     }
 }

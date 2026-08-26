@@ -1,5 +1,6 @@
 package uk.gov.hmcts.sptribs.caseworker.event;
 
+import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,15 +28,22 @@ import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
 import uk.gov.hmcts.sptribs.common.ccd.PageBuilder;
+import uk.gov.hmcts.sptribs.notification.NotificationConstantProfiles;
 import uk.gov.hmcts.sptribs.notification.dispatcher.ListingCreatedNotification;
+import uk.gov.hmcts.sptribs.notification.dispatcher.NotificationDispatcher;
+import uk.gov.hmcts.sptribs.notification.model.NotificationContext;
+import uk.gov.hmcts.sptribs.notification.model.NotificationContextRequest;
 
 import java.time.LocalDate;
 import java.util.Set;
 
 import static java.lang.String.format;
 import static java.util.Objects.isNull;
+import static org.springframework.util.CollectionUtils.isEmpty;
 import static uk.gov.hmcts.sptribs.caseworker.model.YesNo.NO;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_RECORD_LISTING;
+import static uk.gov.hmcts.sptribs.caseworker.util.MessageUtil.generateSimpleErrorMessage;
+import static uk.gov.hmcts.sptribs.caseworker.util.MessageUtil.generateSimpleMessageFromCorrespondenceParties;
 import static uk.gov.hmcts.sptribs.ciccase.model.HearingState.Listed;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingOutcome;
@@ -53,6 +61,7 @@ import static uk.gov.hmcts.sptribs.ciccase.model.access.Permissions.CREATE_READ_
 
 @Component
 @Slf4j
+@RequiredArgsConstructor
 public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserRole> {
 
     private static final String ALWAYS_HIDE = "venueNotListedOption=\"ALWAYS_HIDE\"";
@@ -68,14 +77,7 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
 
     private final ListingCreatedNotification listingCreatedNotification;
 
-    @Autowired
-    public CaseworkerRecordListing(HearingService hearingService,
-                                   RecordListHelper recordListHelper,
-                                   ListingCreatedNotification listingCreatedNotification) {
-        this.hearingService = hearingService;
-        this.recordListHelper = recordListHelper;
-        this.listingCreatedNotification = listingCreatedNotification;
-    }
+    private final NotificationDispatcher notificationDispatcher;
 
     @Override
     public void configure(ConfigBuilder<CaseData, State, UserRole> configBuilder) {
@@ -157,33 +159,34 @@ public class CaseworkerRecordListing implements CCDConfig<CaseData, State, UserR
 
     public SubmittedCallbackResponse submitted(CaseDetails<CaseData, State> details,
                                                CaseDetails<CaseData, State> beforeDetails) {
-        final CaseData data = details.getData();
-        final CicCase cicCase = data.getCicCase();
-        Set<NotificationParties> notificationPartiesSet = cicCase.getHearingNotificationParties();
-        String caseNumber = data.getHyphenatedCaseRef();
-        try {
-            if (notificationPartiesSet.contains(NotificationParties.SUBJECT)) {
-                listingCreatedNotification.sendToSubject(details.getData(), caseNumber);
-            }
-            if (notificationPartiesSet.contains(NotificationParties.REPRESENTATIVE)) {
-                listingCreatedNotification.sendToRepresentative(details.getData(), caseNumber);
-            }
-            if (notificationPartiesSet.contains(NotificationParties.RESPONDENT)) {
-                listingCreatedNotification.sendToRespondent(details.getData(), caseNumber);
-            }
-            if (notificationPartiesSet.contains(NotificationParties.APPLICANT)) {
-                listingCreatedNotification.sendToApplicant(details.getData(), caseNumber);
-            }
-        } catch (Exception notificationException) {
-            log.error("Create listing notification failed with exception : {}", notificationException.getMessage());
+
+        final CaseData caseData = details.getData();
+        final String caseReference = caseData.getHyphenatedCaseRef();
+
+        NotificationContextRequest notificationContextRequest = NotificationContextRequest.builder()
+            .caseData(caseData)
+            .caseReference(caseReference)
+            .notification(listingCreatedNotification)
+            .build();
+
+        NotificationContext notificationContext = NotificationConstantProfiles.RECORD_LISTING
+            .buildContext(notificationContextRequest);
+
+        notificationDispatcher.sendToCorrespondenceParties(notificationContext);
+
+        if (isEmpty(notificationContext.getErrors())) {
             return SubmittedCallbackResponse.builder()
-                .confirmationHeader(format("# Create listing notification failed %n## Please resend the notification"))
+                .confirmationHeader(format("# Listing record created %n## %s",
+                    generateSimpleMessageFromCorrespondenceParties(notificationContext.getCorrespondenceParties())))
+                .build();
+        } else {
+            return SubmittedCallbackResponse.builder()
+                .confirmationHeader(
+                    format("# Create listing notification failed %n## %s %n## Please resend the notification.",
+                        generateSimpleErrorMessage(notificationContext.getErrors()))
+                )
                 .build();
         }
-        return SubmittedCallbackResponse.builder()
-            .confirmationHeader(format("# Listing record created %n## %s",
-                MessageUtil.generateSimpleMessage(details.getData().getCicCase().getHearingNotificationParties())))
-            .build();
     }
 
 

@@ -17,6 +17,7 @@ import uk.gov.hmcts.ccd.sdk.type.DynamicListElement;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.idam.client.models.UserInfo;
 import uk.gov.hmcts.sptribs.caseworker.model.DraftOrderContentCIC;
+import uk.gov.hmcts.sptribs.caseworker.model.Listing;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.common.config.WebMvcConfig;
@@ -25,9 +26,11 @@ import uk.gov.hmcts.sptribs.idam.IdamService;
 import uk.gov.hmcts.sptribs.judicialrefdata.JudicialClient;
 import uk.gov.hmcts.sptribs.judicialrefdata.JudicialUsersRequest;
 import uk.gov.hmcts.sptribs.judicialrefdata.model.UserProfileRefreshResponse;
+import uk.gov.hmcts.sptribs.notification.NotificationServiceCIC;
 import uk.gov.hmcts.sptribs.notification.dispatcher.ListingUpdatedNotification;
 import uk.gov.hmcts.sptribs.testutil.IdamWireMock;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Set;
 
@@ -96,7 +99,7 @@ public class CaseworkerEditRecordListingIT {
     private JudicialClient judicialClient;
 
     @MockitoBean
-    private ListingUpdatedNotification listingUpdatedNotification;
+    private NotificationServiceCIC notificationServiceCIC;
 
     private static final String CASEWORKER_EDIT_RECORD_LISTING_ABOUT_TO_START_RESPONSE =
         "classpath:responses/caseworker-edit-record-listing-about-to-start-response.json";
@@ -245,6 +248,52 @@ public class CaseworkerEditRecordListingIT {
 
     @Test
     void shouldSuccessfullyDispatchNotificationsOnSubmitted() throws Exception {
+        final CaseData caseData = CaseData.builder()
+            .hyphenatedCaseRef(TEST_CASE_ID_HYPHENATED)
+            .listing(Listing.builder()
+                .date(LocalDate.now())
+                .build())
+            .cicCase(CicCase.builder()
+                .contactPreferenceType(EMAIL)
+                .representativeContactDetailsPreference(EMAIL)
+                .fullName("Test Name")
+                .email("test@test.com")
+                .representativeFullName("Rep Name")
+                .representativeEmailAddress("representative@test.com")
+                .respondentName("Respondent Name")
+                .respondentEmail("respondent@test.com")
+                .hearingNotificationParties(Set.of(SUBJECT, REPRESENTATIVE, RESPONDENT))
+                .build())
+            .build();
+
+        String response = mockMvc.perform(post(SUBMITTED_URL)
+                .contentType(APPLICATION_JSON)
+                .header(SERVICE_AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
+                .header(AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
+                .content(objectMapper.writeValueAsString(
+                    callbackRequest(
+                        caseData,
+                        CASEWORKER_EDIT_RECORD_LISTING)))
+                .accept(APPLICATION_JSON))
+            .andExpect(
+                status().isOk())
+            .andReturn()
+            .getResponse()
+            .getContentAsString();
+
+        assertThatJson(response)
+            .inPath(CONFIRMATION_HEADER)
+            .isString()
+            .contains("# Listing record updated")
+            .contains("## If any changes are made to this hearing,")
+            .contains("## remember to make those changes in this listing record.")
+            .contains("## A notification has been sent to: Representative, Respondent, Subject");
+
+        verify(notificationServiceCIC, times(3)).sendEmail(any(), eq(TEST_CASE_ID_HYPHENATED), eq(null));
+    }
+
+    @Test
+    void shouldReturnErrorMessageOnSubmitted() throws Exception {
         final CaseData caseData = caseData();
         caseData.setHyphenatedCaseRef(TEST_CASE_ID_HYPHENATED);
         caseData.setCicCase(
@@ -281,41 +330,9 @@ public class CaseworkerEditRecordListingIT {
         assertThatJson(response)
             .inPath(CONFIRMATION_HEADER)
             .isString()
-            .contains("""
-                # Listing record updated\s
-                ##  If any changes are made to this hearing,  remember to make those changes in this listing record.\s
-                ## A notification has been sent to: Subject, Respondent, Representative""");
-
-        verify(listingUpdatedNotification, times(1)).sendToSubject((CaseData) any(), anyString());
-        verify(listingUpdatedNotification, times(1)).sendToRespondent(any(), anyString());
-        verify(listingUpdatedNotification, times(1)).sendToRepresentative((CaseData) any(), anyString());
-        verifyNoMoreInteractions(listingUpdatedNotification);
-    }
-
-    @Test
-    void shouldReturnErrorMessageOnSubmitted() throws Exception {
-        String response = mockMvc.perform(post(SUBMITTED_URL)
-                .contentType(APPLICATION_JSON)
-                .header(SERVICE_AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
-                .header(AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
-                .content(objectMapper.writeValueAsString(
-                    callbackRequest(
-                        caseData(),
-                        CASEWORKER_EDIT_RECORD_LISTING)))
-                .accept(APPLICATION_JSON))
-            .andExpect(
-                status().isOk())
-            .andReturn()
-            .getResponse()
-            .getContentAsString();
-
-        assertThatJson(response)
-            .inPath(CONFIRMATION_HEADER)
-            .isString()
-            .contains("# Update listing notification failed \n"
-                + "## Please resend the notification");
-
-        verifyNoInteractions(listingUpdatedNotification);
+            .contains("# Update listing notification failed")
+            .contains("## A notification could not be sent to: Representative, Respondent, Subject")
+            .contains("## Please resend the notification.");
     }
 
     private List<UserProfileRefreshResponse> getUserProfiles() {

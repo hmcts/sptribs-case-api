@@ -38,6 +38,7 @@ import uk.gov.hmcts.sptribs.document.model.CaseDocumentType;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
 import uk.gov.hmcts.sptribs.document.service.DocumentsService;
 import uk.gov.hmcts.sptribs.notification.dispatcher.CaseFinalDecisionIssuedNotification;
+import uk.gov.hmcts.sptribs.notification.dispatcher.NotificationDispatcher;
 
 import java.time.Clock;
 import java.time.LocalDate;
@@ -51,6 +52,7 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseClosed;
 import static uk.gov.hmcts.sptribs.ciccase.model.UserRole.ST_CIC_WA_CONFIG_USER;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigBuilder;
@@ -87,26 +89,21 @@ class CaseworkerIssueFinalDecisionTest {
     @Mock
     private HttpServletRequest httpServletRequest;
 
+    @Mock
+    private NotificationDispatcher notificationDispatcher;
+
+    @Mock
+    private Clock clock;
+
+    @InjectMocks
+    private CaseworkerIssueFinalDecision issueFinalDecision;
+
     private final Clock fixedClock = Clock.fixed(
         LocalDate.of(2026, 5, 15)
             .atStartOfDay(ZoneId.systemDefault())
             .toInstant(),
         ZoneId.systemDefault()
     );
-
-    private CaseworkerIssueFinalDecision issueFinalDecision;
-
-    @BeforeEach
-    void setUp() {
-        issueFinalDecision = new CaseworkerIssueFinalDecision(
-            issueFinalDecisionFooter,
-            httpServletRequest,
-            caseDataDocumentService,
-            caseFinalDecisionIssuedNotification,
-            fixedClock,
-            documentsService
-        );
-    }
 
     @Test
     void shouldAddPublishToCamundaWhenWAIsEnabled() {
@@ -154,7 +151,7 @@ class CaseworkerIssueFinalDecisionTest {
 
         //Then
         assertThat(response.getConfirmationHeader())
-            .contains("Respondent");
+            .contains("Final decision notice issued");
     }
 
     @Test
@@ -176,6 +173,8 @@ class CaseworkerIssueFinalDecisionTest {
         details.setData(caseData);
 
         //When
+        when(clock.instant()).thenReturn(fixedClock.instant());
+        when(clock.getZone()).thenReturn(fixedClock.getZone());
         AboutToStartOrSubmitResponse<CaseData, State> response = issueFinalDecision.aboutToSubmit(details, beforeDetails);
 
         //Then
@@ -207,6 +206,8 @@ class CaseworkerIssueFinalDecisionTest {
         details.setData(caseData);
 
         //When
+        when(clock.instant()).thenReturn(fixedClock.instant());
+        when(clock.getZone()).thenReturn(fixedClock.getZone());
         AboutToStartOrSubmitResponse<CaseData, State> response = issueFinalDecision.aboutToSubmit(details, beforeDetails);
 
         //Then
@@ -278,6 +279,8 @@ class CaseworkerIssueFinalDecisionTest {
             .when(documentsService).buildAndSaveNewDocumentEntity(any(), eq(TEST_CASE_ID), eq(DocumentType.TRIBUNAL_DIRECTION),
                 eq(CaseDocumentType.FINAL_DECISION));
 
+        when(clock.instant()).thenReturn(fixedClock.instant());
+        when(clock.getZone()).thenReturn(fixedClock.getZone());
         AboutToStartOrSubmitResponse<CaseData, State> response = issueFinalDecision.aboutToSubmit(details, beforeDetails);
 
         assertThat(response.getErrors()).hasSize(1);
@@ -317,6 +320,9 @@ class CaseworkerIssueFinalDecisionTest {
         caseData.setCaseIssueFinalDecision(caseIssueFinalDecision);
         caseData.setHyphenatedCaseRef(TEST_CASE_ID_HYPHENATED);
         details.setData(caseData);
+
+        when(clock.instant()).thenReturn(fixedClock.instant());
+        when(clock.getZone()).thenReturn(fixedClock.getZone());
 
         issueFinalDecision.aboutToSubmit(details, beforeDetails);
 

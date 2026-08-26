@@ -8,6 +8,7 @@ import uk.gov.hmcts.sptribs.caseworker.model.ContactParties;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.ciccase.model.NotificationParties;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 
@@ -110,8 +111,9 @@ public final class MessageUtil {
         final StringBuilder message = new StringBuilder(100);
 
         message.append("A notification could not be sent to: ");
-        errors.forEach(e -> message.append(e).append(COMMA_SPACE));
-
+        errors.stream()
+            .sorted()
+            .forEach(e -> message.append(e).append(COMMA_SPACE));
         return message.substring(0, message.length() - 2);
     }
 
@@ -139,6 +141,27 @@ public final class MessageUtil {
         if (cicCase.getAppNotificationResponse() != null) {
             message.append(APPLICANT + COMMA_SPACE);
         }
+        return message.substring(0, message.length() - 2);
+    }
+
+    public static String generateHeaderFooterMessageFromCorrespondenceParties(Set<NotificationParties> correspondenceParties, String header, String footer) {
+        final String notificationMessage = generateSimpleMessageFromCorrespondenceParties(correspondenceParties);
+        String message = format("# %s %n## %s", header, notificationMessage);
+        if (StringUtils.hasText(footer)) {
+            message = message + format(" %n## %s", footer);
+        }
+        return message;
+    }
+
+    public static String generateSimpleMessageFromCorrespondenceParties(Set<NotificationParties> correspondenceParties) {
+
+        final StringBuilder message = new StringBuilder(100);
+        message.append("A notification has been sent to: ");
+
+        correspondenceParties.stream()
+            .sorted(Comparator.comparing(NotificationParties::getLabel))
+            .forEach(party -> message.append(party.getLabel()).append(COMMA_SPACE));
+
         return message.substring(0, message.length() - 2);
     }
 }
