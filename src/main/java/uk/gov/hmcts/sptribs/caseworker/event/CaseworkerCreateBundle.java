@@ -161,12 +161,12 @@ public class CaseworkerCreateBundle implements CCDConfig<CaseData, State, UserRo
         List<CaseworkerCICDocument> docs) {
         return docs.stream()
             .filter(CaseworkerCICDocument::isValidBundleDocument)
-            .map(this::toBundleDocument)
+            .map(this::updateFurtherDocumentFileNames)
             .map(AbstractCaseworkerCICDocument::new)
             .toList();
     }
 
-    private CaseworkerCICDocument toBundleDocument(CaseworkerCICDocument doc) {
+    private CaseworkerCICDocument updateFurtherDocumentFileNames(CaseworkerCICDocument doc) {
         String filename = doc.getDocumentLink().getFilename();
         String category = doc.getDocumentCategory() != null ? doc.getDocumentCategory().getType() : null;
         String updatedFilename = filename != null && category != null ? category + " - " + filename : filename;
