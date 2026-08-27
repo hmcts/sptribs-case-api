@@ -325,7 +325,7 @@ public class NotificationServiceCIC {
         if (attachLink) {
             templateVars.put(documentPlaceholder, getJsonFileAttachment(uploadedDocument));
         } else if (citizenDashboardEnabled) {
-            addSimpleDocumentDetails(templateVars, selectedDocuments, documentPlaceholder, documentUuid);
+            addDocumentFilenameAndDescription(templateVars, selectedDocuments, documentPlaceholder, documentUuid);
         } else {
             addDocumentDetails(templateVars, selectedDocuments, documentPlaceholder, documentUuid);
         }
@@ -346,10 +346,10 @@ public class NotificationServiceCIC {
         templateVars.put(documentPlaceholder, documentNotification);
     }
 
-    private void addSimpleDocumentDetails(Map<String, Object> templateVars,
-                                          List<CaseworkerCICDocument> selectedDocuments,
-                                          String docTemplateVar,
-                                          String documentId) {
+    private void addDocumentFilenameAndDescription(Map<String, Object> templateVars,
+                                                   List<CaseworkerCICDocument> selectedDocuments,
+                                                   String docTemplateVar,
+                                                   String documentId) {
         CaseworkerCICDocument document = selectedDocuments.stream()
             .filter(doc -> doc.getDocumentLink().getBinaryUrl().contains(documentId))
             .findFirst()

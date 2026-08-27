@@ -302,8 +302,9 @@ public final class DocumentListUtil {
         if (ObjectUtils.isEmpty(list)) {
             return new ArrayList<>();
         }
-        var selectedDocIds = extractDocumentIds(list.getValue());
-        return selectedDocIds.stream().map(id -> DocumentListUtil.getCaseDocumentById(id, caseData))
+        return extractDocumentIds(list.getValue())
+            .stream()
+            .map(id -> DocumentListUtil.getCaseDocumentById(id, caseData))
             .filter(Optional::isPresent)
             .map(Optional::get)
             .toList();
