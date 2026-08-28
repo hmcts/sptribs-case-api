@@ -11,11 +11,10 @@ import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.api.ConfigBuilder;
 import uk.gov.hmcts.ccd.sdk.api.Event;
 import uk.gov.hmcts.ccd.sdk.api.callback.AboutToStartOrSubmitResponse;
-import uk.gov.hmcts.ccd.sdk.type.DynamicMultiSelectList;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
+import uk.gov.hmcts.sptribs.caseworker.event.page.ContactPartiesReview;
 import uk.gov.hmcts.sptribs.caseworker.event.page.ContactPartiesSelectDocument;
 import uk.gov.hmcts.sptribs.caseworker.model.ContactParties;
-import uk.gov.hmcts.sptribs.caseworker.util.DocumentListUtil;
 import uk.gov.hmcts.sptribs.caseworker.util.MessageUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
@@ -28,6 +27,7 @@ import uk.gov.hmcts.sptribs.notification.dispatcher.ContactPartiesNotification;
 
 import static java.lang.String.format;
 import static uk.gov.hmcts.sptribs.caseworker.util.EventConstants.CASEWORKER_CONTACT_PARTIES;
+import static uk.gov.hmcts.sptribs.caseworker.util.EventUtil.getCaseDataStateAboutToStartOrSubmitResponse;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingHearing;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.AwaitingOutcome;
 import static uk.gov.hmcts.sptribs.ciccase.model.State.CaseClosed;
@@ -59,9 +59,12 @@ public class CaseworkerContactParties implements CCDConfig<CaseData, State, User
     @Value("${case-api.url}")
     private String baseUrl;
 
+    @Value("${case_document_am.url}")
+    private String documentBaseUrl;
+
     private static final CcdPageConfiguration partiesToContact = new PartiesToContact();
     private final ContactPartiesSelectDocument contactPartiesSelectDocument;
-
+    private final ContactPartiesReview contactPartiesReview;
     private final ContactPartiesNotification contactPartiesNotification;
 
     @Override
@@ -81,8 +84,9 @@ public class CaseworkerContactParties implements CCDConfig<CaseData, State, User
                     CaseClosed,
                     CaseStayed)
                 .name("Case: Contact parties")
-                .showSummary()
+                .showSummary(false)
                 .aboutToStartCallback(this::aboutToStart)
+                .aboutToSubmitCallback(this::aboutToSubmit)
                 .submittedCallback(this::submitted)
                 .grant(CREATE_READ_UPDATE, SUPER_USER,
                     ST_CIC_CASEWORKER, ST_CIC_SENIOR_CASEWORKER, ST_CIC_HEARING_CENTRE_ADMIN,
@@ -100,17 +104,35 @@ public class CaseworkerContactParties implements CCDConfig<CaseData, State, User
         PageBuilder pageBuilder = new PageBuilder(eventBuilder);
         contactPartiesSelectDocument.addTo(pageBuilder);
         partiesToContact.addTo(pageBuilder);
+        contactPartiesReview.addTo(pageBuilder);
     }
 
     public AboutToStartOrSubmitResponse<CaseData, State> aboutToStart(CaseDetails<CaseData, State> details) {
-        final CaseData caseData = details.getData();
-        caseData.setContactParties(new ContactParties());
-        DynamicMultiSelectList documentList = DocumentListUtil.prepareContactPartiesDocumentList(caseData, baseUrl);
-        caseData.getContactPartiesDocuments().setDocumentList(documentList);
-        caseData.getCicCase().setNotifyPartyMessage("");
+        return getCaseDataStateAboutToStartOrSubmitResponse(details, baseUrl, documentBaseUrl);
+    }
+
+    public AboutToStartOrSubmitResponse<CaseData, State> aboutToSubmit(CaseDetails<CaseData, State> details,
+                                                                        CaseDetails<CaseData, State> beforeDetails) {
+        final CaseData data = details.getData();
+        final CicCase cicCase = data.getCicCase();
+
+        data.setContactPartiesReview(
+            uk.gov.hmcts.sptribs.caseworker.model.ContactPartiesReview.builder()
+                .previewDoc(data.getContactPartiesDocuments().getPreviewDoc())
+                .contactParties(ContactParties.builder()
+                    .subjectContactParties(cicCase.getNotifyPartySubject())
+                    .representativeContactParties(cicCase.getNotifyPartyRepresentative())
+                    .applicantContactParties(cicCase.getNotifyPartyApplicant())
+                    .respondent(cicCase.getNotifyPartyRespondent())
+                    .message(cicCase.getNotifyPartyMessage())
+                    .build())
+                .message(cicCase.getNotifyPartyMessage())
+                .build()
+        );
 
         return AboutToStartOrSubmitResponse.<CaseData, State>builder()
-            .data(caseData)
+            .data(data)
+            .state(details.getState())
             .build();
     }
 

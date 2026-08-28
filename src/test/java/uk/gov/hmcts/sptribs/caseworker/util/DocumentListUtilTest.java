@@ -6,6 +6,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
 import uk.gov.hmcts.ccd.sdk.type.Document;
+import uk.gov.hmcts.ccd.sdk.type.DynamicListElement;
 import uk.gov.hmcts.ccd.sdk.type.DynamicMultiSelectList;
 import uk.gov.hmcts.ccd.sdk.type.ListValue;
 import uk.gov.hmcts.sptribs.caseworker.model.CaseIssueDecision;
@@ -27,6 +28,7 @@ import uk.gov.hmcts.sptribs.testutil.TestDataHelper;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID;
@@ -609,10 +611,11 @@ public class DocumentListUtilTest {
 
     @Test
     void shouldExtractDocumentIds() {
+        String documentId = UUID.randomUUID().toString();
         final Document document = Document.builder()
             .filename("test file")
-            .url("test.url/documentId")
-            .binaryUrl("test.url/documentId/binary")
+            .url("test.url/" + documentId)
+            .binaryUrl("test.url/" + documentId + "/binary")
             .build();
         final CaseworkerCICDocument cicDocument = CaseworkerCICDocument.builder()
             .date(LocalDate.of(2025, 12, 11))
@@ -639,7 +642,22 @@ public class DocumentListUtilTest {
         dynamicMultiSelectList.setValue(dynamicMultiSelectList.getListItems());
 
         List<String> documentIds = DocumentListUtil.extractDocumentIds(dynamicMultiSelectList.getListItems());
-        assertThat(documentIds).contains("documentId").hasSize(1);
+        assertThat(documentIds).contains(documentId).hasSize(1);
+    }
+
+    @Test
+    void shouldExtractDocumentIdsFromPreviewUrl() {
+        String documentId = UUID.randomUUID().toString();
+        String label = "[file.docx L - Linked docs](http://exui.net/media-viewer?document_url="
+            + "http%3A%2F%2Fdoc-store%2Fdocuments%2F" + documentId + ")";
+
+        DynamicListElement element = DynamicListElement.builder()
+            .label(label)
+            .code(UUID.randomUUID())
+            .build();
+
+        List<String> documentIds = DocumentListUtil.extractDocumentIds(List.of(element));
+        assertThat(documentIds).contains(documentId).hasSize(1);
     }
 
     @Test
@@ -647,6 +665,256 @@ public class DocumentListUtilTest {
         DynamicMultiSelectList dynamicMultiSelectList = DynamicMultiSelectList.builder().build();
         List<String> documentIds = DocumentListUtil.extractDocumentIds(dynamicMultiSelectList.getListItems());
         assertThat(documentIds).isEmpty();
+    }
+
+    @Test
+    void shouldReturnEmptyDocumentIdsForNullElements() {
+        List<String> documentIds = DocumentListUtil.extractDocumentIds(null);
+
+        assertThat(documentIds).isEmpty();
+    }
+
+    @Test
+    void shouldExtractDocumentIdFromLabelWhenUrlDoesNotContainUuid() {
+        String documentId = UUID.randomUUID().toString();
+        DynamicListElement element = DynamicListElement.builder()
+            .label("[file.pdf](http://example/no-id) linked-id " + documentId)
+            .code(UUID.randomUUID())
+            .build();
+
+        assertThat(DocumentListUtil.extractDocumentId(element)).contains(documentId);
+    }
+
+    @Test
+    void shouldReturnEmptyDocumentIdWhenElementOrLabelIsInvalid() {
+        DynamicListElement noLabel = DynamicListElement.builder().code(UUID.randomUUID()).build();
+        DynamicListElement invalidLabel = DynamicListElement.builder()
+            .label("file.pdf without markdown link")
+            .code(UUID.randomUUID())
+            .build();
+
+        assertThat(DocumentListUtil.extractDocumentId(null)).isEmpty();
+        assertThat(DocumentListUtil.extractDocumentId(noLabel)).isEmpty();
+        assertThat(DocumentListUtil.extractDocumentId(invalidLabel)).isEmpty();
+    }
+
+    @Test
+    void shouldBuildMediaViewerUrl() {
+        String documentId = UUID.randomUUID().toString();
+
+        String mediaViewerUrl = DocumentListUtil.buildMediaViewerUrl(
+            "https://xui.example.net/",
+            "https://doc-store.example.net",
+            documentId
+        );
+
+        assertThat(mediaViewerUrl)
+            .isEqualTo("https://xui.example.net/media-viewer?document_url="
+                + "https%3A%2F%2Fdoc-store.example.net%2Fdocuments%2F" + documentId);
+    }
+
+    @Test
+    void shouldPrepareContactPartiesDocumentListForPreviewWithAllowedDocumentsOnly() {
+        List<ListValue<CaseworkerCICDocument>> listValueList = new ArrayList<>();
+
+        CaseworkerCICDocument pdfDoc = CaseworkerCICDocument.builder()
+            .documentCategory(DocumentType.LINKED_DOCS)
+            .documentLink(Document.builder()
+                .url("https://doc-store/documents/11111111-1111-1111-1111-111111111111")
+                .binaryUrl("https://doc-store/documents/11111111-1111-1111-1111-111111111111/binary")
+                .filename("allowed.pdf")
+                .build())
+            .build();
+
+        CaseworkerCICDocument mp4Doc = CaseworkerCICDocument.builder()
+            .documentCategory(DocumentType.LINKED_DOCS)
+            .documentLink(Document.builder()
+                .url("https://doc-store/documents/22222222-2222-2222-2222-222222222222")
+                .binaryUrl("https://doc-store/documents/22222222-2222-2222-2222-222222222222/binary")
+                .filename("blocked.mp4")
+                .build())
+            .build();
+
+        ListValue<CaseworkerCICDocument> pdfListValue = new ListValue<>();
+        pdfListValue.setValue(pdfDoc);
+        listValueList.add(pdfListValue);
+        ListValue<CaseworkerCICDocument> mp4ListValue = new ListValue<>();
+        mp4ListValue.setValue(mp4Doc);
+        listValueList.add(mp4ListValue);
+
+        CaseData caseData = CaseData.builder()
+            .cicCase(CicCase.builder().reinstateDocuments(listValueList).build())
+            .build();
+
+        DynamicMultiSelectList result = DocumentListUtil.prepareContactPartiesDocumentListForPreview(
+            caseData,
+            "https://xui.example.net",
+            "https://doc-store.example.net"
+        );
+
+        assertThat(result.getListItems()).hasSize(1);
+        assertThat(result.getListItems().getFirst().getLabel()).contains("allowed.pdf");
+        assertThat(result.getListItems().getFirst().getLabel()).contains("media-viewer?document_url=");
+    }
+
+    @Test
+    void shouldAddToExistingDocumentList() {
+        CaseworkerCICDocument firstDoc = CaseworkerCICDocument.builder()
+            .documentCategory(DocumentType.LINKED_DOCS)
+            .documentLink(Document.builder().url("url-1").binaryUrl("url-1").filename("first.pdf").build())
+            .build();
+        CaseworkerCICDocument secondDoc = CaseworkerCICDocument.builder()
+            .documentCategory(DocumentType.LINKED_DOCS)
+            .documentLink(Document.builder().url("url-2").binaryUrl("url-2").filename("second.pdf").build())
+            .build();
+
+        List<ListValue<CaseworkerCICDocument>> existing = new ArrayList<>();
+        ListValue<CaseworkerCICDocument> existingListValue = new ListValue<>();
+        existingListValue.setValue(firstDoc);
+        existing.add(existingListValue);
+
+        List<ListValue<CaseworkerCICDocument>> toAdd = new ArrayList<>();
+        ListValue<CaseworkerCICDocument> toAddListValue = new ListValue<>();
+        toAddListValue.setValue(secondDoc);
+        toAdd.add(toAddListValue);
+
+        List<ListValue<CaseworkerCICDocument>> merged = DocumentListUtil.addToExistingDocumentList(existing, toAdd);
+        List<ListValue<CaseworkerCICDocument>> fromEmpty = DocumentListUtil.addToExistingDocumentList(new ArrayList<>(), toAdd);
+
+        assertThat(merged).hasSize(2);
+        assertThat(fromEmpty).isEqualTo(toAdd);
+    }
+
+    @Test
+    void shouldGetCaseDocumentById() {
+        String matchingId = UUID.randomUUID().toString();
+        CaseworkerCICDocument matchingDoc = CaseworkerCICDocument.builder()
+            .documentCategory(DocumentType.LINKED_DOCS)
+            .documentLink(Document.builder()
+                .url("https://doc-store/documents/" + matchingId)
+                .binaryUrl("https://doc-store/documents/" + matchingId + "/binary")
+                .filename("match.pdf")
+                .build())
+            .build();
+
+        CaseData caseData = CaseData.builder()
+            .cicCase(CicCase.builder()
+                .reinstateDocuments(List.of(ListValue.<CaseworkerCICDocument>builder().value(matchingDoc).build()))
+                .build())
+            .build();
+
+        assertThat(DocumentListUtil.getCaseDocumentById(matchingId, caseData)).contains(matchingDoc);
+        assertThat(DocumentListUtil.getCaseDocumentById(UUID.randomUUID().toString(), caseData)).isEmpty();
+    }
+
+    @Test
+    void shouldGetContactPartiesCaseDocuments() {
+        List<ListValue<CaseworkerCICDocument>> listValueList = new ArrayList<>();
+        CaseworkerCICDocument pdfDoc = CaseworkerCICDocument.builder()
+            .documentCategory(DocumentType.LINKED_DOCS)
+            .documentLink(Document.builder().url("url").binaryUrl("url").filename("name.pdf").build())
+            .build();
+        CaseworkerCICDocument mp4Doc = CaseworkerCICDocument.builder()
+            .documentCategory(DocumentType.LINKED_DOCS)
+            .documentLink(Document.builder().url("url").binaryUrl("url").filename("name.mp4").build())
+            .build();
+
+        ListValue<CaseworkerCICDocument> pdfListValue = new ListValue<>();
+        pdfListValue.setValue(pdfDoc);
+        listValueList.add(pdfListValue);
+        ListValue<CaseworkerCICDocument> mp4ListValue = new ListValue<>();
+        mp4ListValue.setValue(mp4Doc);
+        listValueList.add(mp4ListValue);
+
+        CaseData caseData = CaseData.builder()
+            .cicCase(CicCase.builder().reinstateDocuments(listValueList).build())
+            .build();
+
+        List<ListValue<CaseworkerCICDocument>> result = DocumentListUtil.getContactPartiesCaseDocuments(caseData);
+
+        assertThat(result).hasSize(1);
+        assertThat(result.getFirst().getValue().getDocumentLink().getFilename()).isEqualTo("name.pdf");
+    }
+
+    @Test
+    void shouldPrepareCicDocumentListWithAllDocuments() {
+        List<ListValue<CaseworkerCICDocument>> applicantDocs = new ArrayList<>();
+        CaseworkerCICDocument applicantDoc = CaseworkerCICDocument.builder()
+            .documentCategory(DocumentType.LINKED_DOCS)
+            .documentLink(Document.builder().url("url-a").binaryUrl("url-a").filename("a.pdf").build())
+            .build();
+        ListValue<CaseworkerCICDocument> applicantListValue = new ListValue<>();
+        applicantListValue.setValue(applicantDoc);
+        applicantDocs.add(applicantListValue);
+
+        List<ListValue<CaseworkerCICDocument>> reinstateDocs = new ArrayList<>();
+        CaseworkerCICDocument reinstateDoc = CaseworkerCICDocument.builder()
+            .documentCategory(DocumentType.LINKED_DOCS)
+            .documentLink(Document.builder().url("url-r").binaryUrl("url-r").filename("r.pdf").build())
+            .build();
+        ListValue<CaseworkerCICDocument> reinstateListValue = new ListValue<>();
+        reinstateListValue.setValue(reinstateDoc);
+        reinstateDocs.add(reinstateListValue);
+
+        List<ListValue<CaseworkerCICDocument>> docMgmtDocs = new ArrayList<>();
+        CaseworkerCICDocument docMgmtDoc = CaseworkerCICDocument.builder()
+            .documentCategory(DocumentType.LINKED_DOCS)
+            .documentLink(Document.builder().url("url-d").binaryUrl("url-d").filename("d.pdf").build())
+            .build();
+        ListValue<CaseworkerCICDocument> docMgmtListValue = new ListValue<>();
+        docMgmtListValue.setValue(docMgmtDoc);
+        docMgmtDocs.add(docMgmtListValue);
+
+        List<ListValue<CaseworkerCICDocument>> closeCaseDocs = new ArrayList<>();
+        CaseworkerCICDocument closeDoc = CaseworkerCICDocument.builder()
+            .documentCategory(DocumentType.LINKED_DOCS)
+            .documentLink(Document.builder().url("url-c").binaryUrl("url-c").filename("c.pdf").build())
+            .build();
+        ListValue<CaseworkerCICDocument> closeListValue = new ListValue<>();
+        closeListValue.setValue(closeDoc);
+        closeCaseDocs.add(closeListValue);
+
+        List<ListValue<CaseworkerCICDocument>> summaryDocs = new ArrayList<>();
+        CaseworkerCICDocument summaryDoc = CaseworkerCICDocument.builder()
+            .documentCategory(DocumentType.LINKED_DOCS)
+            .documentLink(Document.builder().url("url-h").binaryUrl("url-h").filename("h.pdf").build())
+            .build();
+        ListValue<CaseworkerCICDocument> summaryListValue = new ListValue<>();
+        summaryListValue.setValue(summaryDoc);
+        summaryDocs.add(summaryListValue);
+
+        Listing listing = Listing.builder().summary(HearingSummary.builder().recFile(summaryDocs).build()).build();
+        ListValue<Listing> listingListValue = new ListValue<>();
+        listingListValue.setValue(listing);
+
+        CaseData caseData = CaseData.builder()
+            .cicCase(CicCase.builder()
+                .applicantDocumentsUploaded(applicantDocs)
+                .reinstateDocuments(reinstateDocs)
+                .build())
+            .allDocManagement(DocumentManagement.builder().caseworkerCICDocument(docMgmtDocs).build())
+            .closeCase(CloseCase.builder().documents(closeCaseDocs).build())
+            .hearingList(List.of(listingListValue))
+            .build();
+
+        var result = DocumentListUtil.prepareCICDocumentListWithAllDocuments(caseData);
+
+        assertThat(result.getListItems()).hasSize(5);
+    }
+
+    @Test
+    void shouldExtractDocumentsFromListValues() {
+        CaseworkerCICDocument doc = CaseworkerCICDocument.builder()
+            .documentCategory(DocumentType.LINKED_DOCS)
+            .documentLink(Document.builder().url("url").binaryUrl("url").filename("name.pdf").build())
+            .build();
+
+        ListValue<CaseworkerCICDocument> listValue = new ListValue<>();
+        listValue.setValue(doc);
+
+        assertThat(DocumentListUtil.extractDocumentsFromListValues(List.of(listValue))).containsExactly(doc);
+        assertThat(DocumentListUtil.extractDocumentsFromListValues(new ArrayList<>())).isEmpty();
+        assertThat(DocumentListUtil.extractDocumentsFromListValues(null)).isEmpty();
     }
 
 

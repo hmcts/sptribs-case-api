@@ -1,7 +1,6 @@
 package uk.gov.hmcts.sptribs.caseworker.util;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang3.Strings;
 import org.springframework.util.CollectionUtils;
 import uk.gov.hmcts.ccd.sdk.type.DynamicList;
 import uk.gov.hmcts.ccd.sdk.type.DynamicListElement;
@@ -14,11 +13,15 @@ import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
 import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -38,6 +41,10 @@ import static uk.gov.hmcts.sptribs.document.DocumentConstants.REINSTATE_TYPE;
 public final class DocumentListUtil {
 
     private static final String DOCUMENT_BINARY_PATH = "documents/%s/binary";
+    private static final String DOCUMENT_PATH = "documents/%s";
+    private static final String MEDIA_VIEWER_PATH = "media-viewer?document_url=%s";
+    private static final Pattern UUID_PATTERN =
+        Pattern.compile("[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}");
 
     private DocumentListUtil() {
 
@@ -73,6 +80,10 @@ public final class DocumentListUtil {
 
     public static List<ListValue<CaseworkerCICDocument>> getAllCaseDocuments(final CaseData data) {
         return buildListValues(prepareList(data));
+    }
+
+    public static List<ListValue<CaseworkerCICDocument>> getContactPartiesCaseDocuments(final CaseData data) {
+        return buildListValues(getContactPartiesAllowedDocuments(data));
     }
 
     public static DynamicList prepareCICDocumentListWithAllDocuments(final CaseData data) {
@@ -127,7 +138,7 @@ public final class DocumentListUtil {
 
     public static DynamicMultiSelectList prepareDocumentList(final CaseData data, String baseUrl) {
         List<CaseworkerCICDocument> docList = prepareList(data);
-        String apiUrl = baseUrl + DOCUMENT_BINARY_PATH;
+        String apiUrl = appendPath(baseUrl, DOCUMENT_BINARY_PATH);
         List<DynamicListElement> dynamicListElements = new ArrayList<>();
         for (CaseworkerCICDocument doc : docList) {
             String documentId = StringUtils.substringAfterLast(doc.getDocumentLink().getUrl(),
@@ -147,17 +158,35 @@ public final class DocumentListUtil {
     }
 
     public static DynamicMultiSelectList prepareContactPartiesDocumentList(final CaseData data, String baseUrl) {
-        List<CaseworkerCICDocument> docList = prepareList(data);
+        List<CaseworkerCICDocument> docList = getContactPartiesAllowedDocuments(data);
 
-
-        String apiUrl = baseUrl + "/documents/%s/binary";
+        String apiUrl = appendPath(baseUrl, DOCUMENT_BINARY_PATH);
         List<DynamicListElement> dynamicListElements = new ArrayList<>();
         for (CaseworkerCICDocument doc : docList) {
-            String fileName = doc.getDocumentLink().getFilename();
-            String fileExtension = StringUtils.substringAfterLast(fileName, ".");
-            if (ContactPartiesAllowedFileTypes.isFileTypeValid(fileExtension)) {
-                createDocumentList(apiUrl, dynamicListElements, doc);
-            }
+            createDocumentList(apiUrl, dynamicListElements, doc);
+        }
+
+        return DynamicMultiSelectList
+            .builder()
+            .listItems(dynamicListElements)
+            .value(new ArrayList<>())
+            .build();
+    }
+
+    public static DynamicMultiSelectList prepareContactPartiesDocumentListForPreview(
+        final CaseData data,
+        String viewerBaseUrl,
+        String documentBaseUrl
+    ) {
+        List<CaseworkerCICDocument> docList = getContactPartiesAllowedDocuments(data);
+        List<DynamicListElement> dynamicListElements = new ArrayList<>();
+        for (CaseworkerCICDocument doc : docList) {
+            String documentId = StringUtils.substringAfterLast(doc.getDocumentLink().getUrl(), "/");
+            String previewUrl = buildMediaViewerUrl(viewerBaseUrl, documentBaseUrl, documentId);
+            DynamicListElement element = DynamicListElement.builder().label("[" + doc.getDocumentLink().getFilename()
+                + " " + doc.getDocumentCategory().getLabel()
+                + "](" + previewUrl + ")").code(UUID.randomUUID()).build();
+            dynamicListElements.add(element);
         }
 
         return DynamicMultiSelectList
@@ -185,6 +214,31 @@ public final class DocumentListUtil {
             + " " + doc.getDocumentCategory().getLabel()
             + "](" + url + ")").code(UUID.randomUUID()).build();
         dynamicListElements.add(element);
+    }
+
+    private static List<CaseworkerCICDocument> getContactPartiesAllowedDocuments(CaseData data) {
+        return prepareList(data).stream()
+            .filter(DocumentListUtil::isContactPartiesFileTypeAllowed)
+            .toList();
+    }
+
+    private static boolean isContactPartiesFileTypeAllowed(CaseworkerCICDocument document) {
+        String fileName = document.getDocumentLink().getFilename();
+        String fileExtension = StringUtils.substringAfterLast(fileName, ".");
+        return ContactPartiesAllowedFileTypes.isFileTypeValid(fileExtension);
+    }
+
+    public static String buildMediaViewerUrl(String viewerBaseUrl, String documentBaseUrl, String documentId) {
+        String documentUrl = String.format(appendPath(documentBaseUrl, DOCUMENT_PATH), documentId);
+        String encodedDocumentUrl = URLEncoder.encode(documentUrl, StandardCharsets.UTF_8);
+        return String.format(appendPath(viewerBaseUrl, MEDIA_VIEWER_PATH), encodedDocumentUrl);
+    }
+
+    private static String appendPath(String baseUrl, String path) {
+        if (StringUtils.isBlank(baseUrl)) {
+            return path;
+        }
+        return StringUtils.stripEnd(baseUrl, "/") + "/" + path;
     }
 
 
@@ -272,7 +326,7 @@ public final class DocumentListUtil {
             .toList();
     }
 
-    private static Optional<String> extractDocumentId(DynamicListElement element) {
+    public static Optional<String> extractDocumentId(DynamicListElement element) {
         if (element == null || element.getLabel() == null) {
             return Optional.empty();
         }
@@ -286,12 +340,17 @@ public final class DocumentListUtil {
         }
 
         String url = label.substring(open + 1, close).trim();
-        if (Strings.CS.endsWith(url, "/binary")) {
-            url = org.apache.commons.lang3.StringUtils.substringBeforeLast(url, "/");
+        Optional<String> fromUrl = extractUuid(url);
+        if (fromUrl.isPresent()) {
+            return fromUrl;
         }
 
-        String documentId = org.apache.commons.lang3.StringUtils.substringAfterLast(url, "/");
-        return org.apache.commons.lang3.StringUtils.isEmpty(documentId) ? Optional.empty() : Optional.of(documentId);
+        return extractUuid(label);
+    }
+
+    private static Optional<String> extractUuid(String value) {
+        Matcher matcher = UUID_PATTERN.matcher(value);
+        return matcher.find() ? Optional.of(matcher.group()) : Optional.empty();
     }
 
     public static void removeFurtherUploadedDocument(CaseData caseData, ListValue<CaseworkerCICDocument> cicDocumentListValue) {

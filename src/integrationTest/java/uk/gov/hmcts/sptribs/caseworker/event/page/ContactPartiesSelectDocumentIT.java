@@ -185,6 +185,42 @@ public class ContactPartiesSelectDocumentIT {
                 + " is larger than 2MB"));
     }
 
+    @Test
+    void shouldReturnErrorWhenPreviewDocumentSizeExceedsLimit() throws Exception {
+        UUID documentId = UUID.randomUUID();
+        String label = "[Oversized Preview Document](http://manage-case.demo.platform.hmcts.net/media-viewer?document_url="
+            + "http%3A%2F%2Fdoc-store%2Fdocuments%2F" + documentId + ")";
+
+        DynamicListElement element = DynamicListElement.builder()
+            .label(label)
+            .code(UUID.randomUUID())
+            .build();
+
+        ContactPartiesDocuments contactPartiesDocuments = new ContactPartiesDocuments();
+        contactPartiesDocuments.setDocumentList(DynamicMultiSelectList.builder()
+            .value(List.of(element))
+            .listItems(List.of(element))
+            .build());
+
+        Document oversizedDocument = new Document();
+        oversizedDocument.size = 3_000_000;
+        when(caseDocumentClientApi.getDocument(eq(SYSTEM_AUTH), eq(SERVICE_AUTH), eq(documentId)))
+            .thenReturn(org.springframework.http.ResponseEntity.ok(oversizedDocument));
+
+        mockMvc.perform(post(CONTACT_PARTIES_SELECT_DOCUMENT_MID_EVENT_URL)
+                .contentType(APPLICATION_JSON)
+                .header(SERVICE_AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
+                .header(AUTHORIZATION, TEST_AUTHORIZATION_TOKEN)
+                .content(objectMapper.writeValueAsString(
+                    callbackRequest(CaseData.builder()
+                            .contactPartiesDocuments(contactPartiesDocuments)
+                            .build(),
+                        CASEWORKER_CONTACT_PARTIES)))
+                .accept(APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.errors[0]").value("Unable to proceed because Oversized Preview Document is larger than 2MB"));
+    }
+
     private List<DynamicListElement> populateContactPartiesDocumentsList() {
         List<DynamicListElement> contactPartiesDocumentsList = Arrays.asList(new DynamicListElement[12]);
         contactPartiesDocumentsList.replaceAll(o -> getListItem());

@@ -42,6 +42,11 @@ public class CaseworkerContactPartiesFT extends FunctionalTestSuite {
         assertThatJson(response.asString())
             .when(IGNORING_EXTRA_FIELDS)
             .isEqualTo(json(expectedResponse(ABOUT_TO_START_RESPONSE)));
+
+        assertThatJson(response.asString())
+            .inPath("$.data.contactPartiesDocumentsDocumentList.list_items[0].label")
+            .asString()
+            .contains("media-viewer?document_url=");
     }
 
     @Test
