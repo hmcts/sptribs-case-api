@@ -43,6 +43,16 @@ public class CaseDataBuilder {
         return this;
     }
 
+    public CaseDataBuilder withHearingDate(LocalDate date) {
+        caseData.put("hearingDate", date);
+        return this;
+    }
+
+    public CaseDataBuilder withDate(LocalDate date) {
+        caseData.put("date", date);
+        return this;
+    }
+
     private static class MapTypeReference extends TypeReference<Map<String, Object>> {
     }
 }
