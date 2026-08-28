@@ -39,11 +39,13 @@ import uk.gov.hmcts.sptribs.systemupdate.service.CcdSearchService;
 import uk.gov.hmcts.sptribs.util.AppsUtil;
 
 import java.io.IOException;
-import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
@@ -92,6 +94,8 @@ public abstract class FunctionalTestSuite {
 
     @Autowired
     protected FunctionalTestDataManager functionalTestDataManager;
+
+    private final Set<Long> trackedReferences = new LinkedHashSet<>();
 
     protected static final String EVENT_PARAM = "event";
     protected static final String UPDATE = "UPDATE";
@@ -148,8 +152,23 @@ public abstract class FunctionalTestSuite {
         CaseData formatter = CaseData.builder().build();
         caseData.put("hyphenatedCaseRef", formatter.formatCaseRef(createdCase.getId()));
 
-        functionalTestDataManager.addReference(createdCase.getId());
+        trackReference(createdCase.getId());
         return createdCase.getId();
+    }
+
+    protected Long trackReference(Long reference) {
+        synchronized (trackedReferences) {
+            trackedReferences.add(reference);
+        }
+        return reference;
+    }
+
+    private List<Long> drainTrackedReferences() {
+        synchronized (trackedReferences) {
+            List<Long> snapshot = new ArrayList<>(trackedReferences);
+            trackedReferences.clear();
+            return snapshot;
+        }
     }
 
     protected Response triggerCallback(Map<String, Object> caseData, String eventId, String url) throws IOException {
@@ -310,7 +329,9 @@ public abstract class FunctionalTestSuite {
         AppsConfig.AppsDetails details = AppsUtil.getExactAppsDetails(appsConfig, caseData.getDssCaseData());
         CaseDetails caseDetails = createCitizenCase();
 
-        return updateCitizenCase(EventConstants.CITIZEN_CIC_SUBMIT_CASE, caseDetails.getId(),caseData);
+        CaseDetails updatedCase = updateCitizenCase(EventConstants.CITIZEN_CIC_SUBMIT_CASE, caseDetails.getId(), caseData);
+        trackReference(updatedCase.getId());
+        return updatedCase;
     }
 
     protected CaseDetails updateCitizenCase(String eventId, Long caseId, CaseData caseData) {
@@ -387,7 +408,7 @@ public abstract class FunctionalTestSuite {
 
         final CaseDataContent caseDataContent = CaseDataContent.builder()
             .data(convertDssCaseDataToRequest(getDssCaseData()))
-            .event(uk.gov.hmcts.reform.ccd.client.model.Event.builder().id(appsDetails.getEventIds().getCreateEvent()).build())
+            .event(Event.builder().id(appsDetails.getEventIds().getCreateEvent()).build())
             .eventToken(createEventResponseToken)
             .build();
         return coreCaseDataApi.submitForCitizen(
@@ -495,11 +516,23 @@ public abstract class FunctionalTestSuite {
 
 
     @AfterAll
-    void tearDownDataManager() throws SQLException {
+    void tearDownDataManager() {
+        List<Long> references = drainTrackedReferences();
+        int failedCleanups = 0;
 
-        for (long reference : functionalTestDataManager.getTestReferences()) {
-            functionalTestDataManager.clearDown(reference);
+        for (long reference : references) {
+            try {
+                functionalTestDataManager.clearDown(reference);
+            } catch (Exception e) {
+                failedCleanups++;
+                log.error("Failed to clear down reference {}", reference, e);
+            }
         }
+
+        if (failedCleanups > 0) {
+            log.warn("clearDown failed for {} out of {} reference(s)", failedCleanups, references.size());
+        }
+
         functionalTestDataManager.closeAll();
     }
 }

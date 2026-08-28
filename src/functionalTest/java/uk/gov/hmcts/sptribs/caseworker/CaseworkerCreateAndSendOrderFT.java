@@ -209,8 +209,7 @@ public class CaseworkerCreateAndSendOrderFT extends FunctionalTestSuite {
 
     private Response triggerSubmittedCallbackWithBefore(Map<String, Object> caseDataAfter,
                                                         Map<String, Object> caseDataBefore) {
-        final Long caseId = createCaseInCcd().getId();
-        functionalTestDataManager.addReference(caseId);
+        final Long caseId = trackReference(createCaseInCcd().getId());
 
         final String hyphenatedCaseRef = CaseData.builder().build().formatCaseRef(caseId);
         caseDataAfter.put("hyphenatedCaseRef", hyphenatedCaseRef);
