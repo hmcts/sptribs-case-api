@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 import uk.gov.hmcts.reform.authorisation.exceptions.InvalidTokenException;
 import uk.gov.hmcts.sptribs.common.config.interceptors.UnAuthorisedServiceException;
+import uk.gov.hmcts.sptribs.exception.CaseNotFoundException;
+import uk.gov.hmcts.sptribs.exception.DocumentDownloadException;
 import uk.gov.hmcts.sptribs.notification.exception.NotificationException;
 import uk.gov.service.notify.NotificationClientException;
 
@@ -51,5 +53,23 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return status(exception.status()).body(
             String.format("%s - %s", exception.getMessage(), exception.contentUTF8())
         );
+    }
+
+    @ExceptionHandler(DocumentDownloadException.class)
+    public ResponseEntity<Object> handleDocumentDownloadException(DocumentDownloadException exception) {
+        log.error("Document download error: {}", exception.getMessage(), exception);
+        return status(HttpStatus.INTERNAL_SERVER_ERROR).body(exception.getMessage());
+    }
+
+    @ExceptionHandler(CaseNotFoundException.class)
+    public ResponseEntity<Object> handleCaseNotFoundException(CaseNotFoundException exception) {
+        log.warn("Case not found: {}", exception.getMessage());
+        return status(HttpStatus.NOT_FOUND).build();
+    }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<Object> handleIllegalArgumentException(IllegalArgumentException exception) {
+        log.warn("Bad request: {}", exception.getMessage());
+        return status(HttpStatus.BAD_REQUEST).body(exception.getMessage());
     }
 }
