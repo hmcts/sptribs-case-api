@@ -9,7 +9,6 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.CCDDefinitionGenerator;
 import uk.gov.hmcts.rse.ccd.lib.api.CFTLib;
 import uk.gov.hmcts.rse.ccd.lib.api.CFTLibConfigurer;
-import uk.gov.hmcts.sptribs.common.ccd.CcdJurisdiction;
 import uk.gov.hmcts.sptribs.common.ccd.CcdServiceCode;
 
 import java.io.File;
@@ -38,12 +37,19 @@ public class CftLibConfig implements CFTLibConfigurer {
 
         Map<String, List<String>> users = Map.of(
             "TEST_CASE_WORKER_USER@mailinator.com", roleList,
-            "TEST_SOLICITOR@mailinator.com", roleList);
+            "TEST_SOLICITOR@mailinator.com", roleList,
+            // The citizen-facing journeys need a citizen to sign in as. Without
+            // one, only caseworker paths are exercisable locally.
+            "TEST_CITIZEN_USER@mailinator.com", List.of("citizen"));
 
         for (Map.Entry<String, List<String>> p : users.entrySet()) {
             lib.createIdamUser(p.getKey(), p.getValue().toArray(new String[0]));
-            lib.createProfile(p.getKey(), CcdJurisdiction.CRIMINAL_INJURIES_COMPENSATION.getJurisdictionId(),
-                CcdServiceCode.ST_CIC.getCaseType().getCaseTypeName(), state);
+            // CCD needs a profile row per (user, jurisdiction, case type), so
+            // every user gets one for every case type this service registers.
+            for (CcdServiceCode serviceCode : CcdServiceCode.values()) {
+                lib.createProfile(p.getKey(), serviceCode.getJurisdiction().getJurisdictionId(),
+                    serviceCode.getCaseType().getCaseTypeName(), state);
+            }
         }
 
         lib.createRoles(
@@ -82,8 +88,10 @@ public class CftLibConfig implements CFTLibConfigurer {
         lib.configureRoleAssignments(json);
 
         configWriter.generateAllCaseTypesToJSON(new File(BUILD_DEFINITIONS));
-        // Load the JSON definitions for ST_CIC caseType.
-        lib.importJsonDefinition(new File(BUILD_DEFINITIONS + CcdServiceCode.ST_CIC.getCaseType().getCaseTypeName()));
+        // One definition directory per case type, named after the case type id.
+        for (CcdServiceCode serviceCode : CcdServiceCode.values()) {
+            lib.importJsonDefinition(new File(BUILD_DEFINITIONS + serviceCode.getCaseType().getCaseTypeName()));
+        }
     }
 
 }
