@@ -3,6 +3,7 @@ package uk.gov.hmcts.sptribs.citizen.event;
 import lombok.Setter;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.DssCaseData;
@@ -16,16 +17,16 @@ import uk.gov.hmcts.sptribs.notification.model.NotificationRequest;
 
 import java.util.Map;
 
-import static uk.gov.hmcts.sptribs.ciccase.model.LanguagePreference.ENGLISH;
+import static uk.gov.hmcts.sptribs.ciccase.model.LanguagePreference.WELSH;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.CICA_REF_NUMBER;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.CIC_CASE_REPRESENTATIVE_NAME;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.CIC_CASE_SUBJECT_NAME;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.CONTACT_PARTY_INFO;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.DASHBOARD_KEY;
-import static uk.gov.hmcts.sptribs.common.CommonConstants.DASHBOARD_LINK;
 import static uk.gov.hmcts.sptribs.common.CommonConstants.HAS_CICA_NUMBER;
 import static uk.gov.hmcts.sptribs.notification.TemplateName.APPLICATION_RECEIVED;
 import static uk.gov.hmcts.sptribs.notification.TemplateName.APPLICATION_RECEIVED_CY;
+import static uk.gov.hmcts.sptribs.notification.TemplateName.APPLICATION_RECEIVED_NEW_CD;
 
 @Component
 @Setter
@@ -37,13 +38,19 @@ public class DssApplicationReceivedNotification implements PartiesNotification {
     @Autowired
     private DssNotificationHelper dssNotificationHelper;
 
+    @Value("${sptribs-frontend.dashboard-url}")
+    private String citizenDashboardUrl;
+
+    @Value("${feature.citizen-dashboard.enabled}")
+    private boolean citizenDashboardEnabled;
+
     @Override
     public void sendToSubject(final CaseData caseData, final String caseNumber) {
         final DssCaseData dssCaseData = caseData.getDssCaseData();
         final Map<String, Object> templateVarsSubject = dssNotificationHelper.getSubjectCommonVars(caseNumber, caseData);
         templateVarsSubject.put(CIC_CASE_SUBJECT_NAME, dssCaseData.getSubjectFullName());
         templateVarsSubject.put(CONTACT_PARTY_INFO, dssCaseData.getNotifyPartyMessage());
-        templateVarsSubject.put(DASHBOARD_KEY, DASHBOARD_LINK);
+        addDashboardLink(templateVarsSubject);
         if (caseData.getEditCicaCaseDetails() != null && !StringUtils.isEmpty(caseData.getEditCicaCaseDetails().getCicaReferenceNumber())) {
             templateVarsSubject.put(HAS_CICA_NUMBER, true);
             templateVarsSubject.put(CICA_REF_NUMBER, caseData.getEditCicaCaseDetails().getCicaReferenceNumber());
@@ -66,7 +73,7 @@ public class DssApplicationReceivedNotification implements PartiesNotification {
         final Map<String, Object> templateVarsRep = dssNotificationHelper.getRepresentativeCommonVars(caseNumber, caseData);
         templateVarsRep.put(CIC_CASE_REPRESENTATIVE_NAME, dssCaseData.getRepresentativeFullName());
         templateVarsRep.put(CONTACT_PARTY_INFO, dssCaseData.getNotifyPartyMessage());
-        templateVarsRep.put(DASHBOARD_KEY, DASHBOARD_LINK);
+        addDashboardLink(templateVarsRep);
         if (caseData.getEditCicaCaseDetails() != null && !StringUtils.isEmpty(caseData.getEditCicaCaseDetails().getCicaReferenceNumber())) {
             templateVarsRep.put(HAS_CICA_NUMBER, true);
             templateVarsRep.put(CICA_REF_NUMBER, caseData.getEditCicaCaseDetails().getCicaReferenceNumber());
@@ -88,10 +95,19 @@ public class DssApplicationReceivedNotification implements PartiesNotification {
                                                        LanguagePreference languagePreference,
                                                        String caseReferenceNumber) {
 
-        TemplateName templateName = ENGLISH.equals(languagePreference) ? APPLICATION_RECEIVED : APPLICATION_RECEIVED_CY;
+        TemplateName templateName = WELSH.equals(languagePreference) ? APPLICATION_RECEIVED_CY : getTemplateName();
         NotificationRequest request =
             dssNotificationHelper.buildEmailNotificationRequest(toEmail, templateVars, templateName);
         return notificationService.sendEmail(request, caseReferenceNumber, null);
     }
 
+    private TemplateName getTemplateName() {
+        return citizenDashboardEnabled ? APPLICATION_RECEIVED_NEW_CD : APPLICATION_RECEIVED;
+    }
+
+    private void addDashboardLink(Map<String, Object> templateVars) {
+        if (citizenDashboardEnabled) {
+            templateVars.put(DASHBOARD_KEY, citizenDashboardUrl);
+        }
+    }
 }
