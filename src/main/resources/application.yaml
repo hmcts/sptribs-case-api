@@ -262,7 +262,7 @@ feature:
     batchSize: ${INITIAL_DOCUMENTS_MIGRATION_BATCH_SIZE:100}
     batchPauseMs: ${INITIAL_DOCUMENTS_MIGRATION_BATCH_PAUSE:5000}
   citizen-dashboard:
-    enabled: ${CITIZEN_DASHBOARD_ENABLED:true}
+    enabled: ${CITIZEN_DASHBOARD_ENABLED:false}
 
 caseinfo:
   apps:
