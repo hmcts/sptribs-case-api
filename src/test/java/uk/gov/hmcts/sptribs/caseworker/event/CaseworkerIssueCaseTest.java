@@ -34,7 +34,6 @@ import uk.gov.hmcts.sptribs.document.model.CaseworkerCICDocument;
 import uk.gov.hmcts.sptribs.document.model.DocumentType;
 import uk.gov.hmcts.sptribs.notification.dispatcher.CaseIssuedNotification;
 import uk.gov.hmcts.sptribs.notification.dispatcher.NotificationDispatcher;
-import uk.gov.hmcts.sptribs.notification.exception.NotificationException;
 import uk.gov.hmcts.sptribs.notification.model.NotificationContext;
 
 import java.time.LocalDate;
@@ -47,8 +46,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -197,7 +194,7 @@ class CaseworkerIssueCaseTest {
         assertThat(submittedResponse.getConfirmationHeader())
             .isEqualTo("""
                 # Issue case notification failed\s
-                ## A notification could not be sent to: Subject, Applicant, Representative, Respondent\s
+                ## A notification could not be sent to: Applicant, Representative, Respondent, Subject\s
                 ## Please resend the notification.""");
     }
 

@@ -4,8 +4,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
-import org.aspectj.weaver.ast.Not;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.ccd.sdk.api.CCDConfig;
 import uk.gov.hmcts.ccd.sdk.api.CaseDetails;
@@ -24,10 +22,7 @@ import uk.gov.hmcts.sptribs.caseworker.event.page.SelectHearing;
 import uk.gov.hmcts.sptribs.caseworker.helper.RecordListHelper;
 import uk.gov.hmcts.sptribs.caseworker.model.Listing;
 import uk.gov.hmcts.sptribs.caseworker.service.HearingService;
-import uk.gov.hmcts.sptribs.caseworker.util.MessageUtil;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
-import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
-import uk.gov.hmcts.sptribs.ciccase.model.NotificationParties;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
 import uk.gov.hmcts.sptribs.ciccase.model.UserRole;
 import uk.gov.hmcts.sptribs.common.ccd.CcdPageConfiguration;
@@ -39,7 +34,6 @@ import uk.gov.hmcts.sptribs.notification.model.NotificationContext;
 import uk.gov.hmcts.sptribs.notification.model.NotificationContextRequest;
 
 import java.util.List;
-import java.util.Set;
 
 import static java.lang.String.format;
 import static java.util.Objects.isNull;
@@ -199,7 +193,8 @@ public class CaseworkerEditRecordListing implements CCDConfig<CaseData, State, U
 
         if (isEmpty(notificationContext.getErrors())) {
             return SubmittedCallbackResponse.builder()
-                .confirmationHeader(format("# Listing record updated %n## If any changes are made to this hearing, %n## remember to make those changes in this listing record. %n## %s",
+                .confirmationHeader(format("# Listing record updated %n## If any changes are made to this hearing,"
+                        + " %n## remember to make those changes in this listing record. %n## %s",
                     generateSimpleMessageFromCorrespondenceParties(notificationContext.getCorrespondenceParties())))
                 .build();
         } else {

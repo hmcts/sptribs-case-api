@@ -17,7 +17,6 @@ import uk.gov.hmcts.sptribs.caseworker.model.ReinstateReason;
 import uk.gov.hmcts.sptribs.ciccase.model.ApplicantCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.CicCase;
-import uk.gov.hmcts.sptribs.ciccase.model.NotificationParties;
 import uk.gov.hmcts.sptribs.ciccase.model.RepresentativeCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.RespondentCIC;
 import uk.gov.hmcts.sptribs.ciccase.model.State;
@@ -142,7 +141,7 @@ class ReinstateCaseTest {
             .isEqualTo("content");
         assertThat(response.getData().getCicCase().getReinstateDocuments().get(0).getValue().getDocumentLink()).isNotNull();
         assertThat(response.getData().getCicCase().getReinstateDocuments().get(0).getValue().getDate()).isNull();
-        assertThat(responseReinstate.getConfirmationHeader()).contains("# Case reinstated \n##  The case record will now be reopened");
+        assertThat(responseReinstate.getConfirmationHeader()).contains("# Case reinstated. \n## The case record will now be reopened.");
         assertThat(responseReinstate.getConfirmationHeader()).contains("Subject");
         assertThat(responseReinstate.getConfirmationHeader()).contains("Respondent");
         assertThat(responseReinstate.getConfirmationHeader()).contains("Representative");
@@ -204,7 +203,7 @@ class ReinstateCaseTest {
             reinstateCase.submitted(updatedCaseDetails, beforeDetails);
 
         assertThat(responseReinstate).isNotNull();
-        assertThat(responseReinstate.getConfirmationHeader()).contains("# Case reinstated \n##  The case record will now be reopened");
+        assertThat(responseReinstate.getConfirmationHeader()).contains("# Case reinstated. \n## The case record will now be reopened.");
         assertThat(responseReinstate.getConfirmationHeader()).contains("Subject");
         assertThat(responseReinstate.getConfirmationHeader()).contains("Respondent");
         assertThat(responseReinstate.getConfirmationHeader()).contains("Representative");

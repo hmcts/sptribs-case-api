@@ -254,5 +254,5 @@ public enum NotificationConstantProfiles {
         }
     };
 
-public abstract NotificationContext buildContext(NotificationContextRequest request);
+    public abstract NotificationContext buildContext(NotificationContextRequest request);
 }

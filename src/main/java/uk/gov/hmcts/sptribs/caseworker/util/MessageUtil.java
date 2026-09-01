@@ -144,7 +144,9 @@ public final class MessageUtil {
         return message.substring(0, message.length() - 2);
     }
 
-    public static String generateHeaderFooterMessageFromCorrespondenceParties(Set<NotificationParties> correspondenceParties, String header, String footer) {
+    public static String generateHeaderFooterMessageFromCorrespondenceParties(
+        Set<NotificationParties> correspondenceParties, String header, String footer) {
+
         final String notificationMessage = generateSimpleMessageFromCorrespondenceParties(correspondenceParties);
         String message = format("# %s %n## %s", header, notificationMessage);
         if (StringUtils.hasText(footer)) {

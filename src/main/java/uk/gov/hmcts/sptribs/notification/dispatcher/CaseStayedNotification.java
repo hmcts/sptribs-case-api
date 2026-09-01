@@ -127,7 +127,7 @@ public class CaseStayedNotification implements PartiesNotification {
         CicCase cicCase = request.getCaseData().getCicCase();
 
         if (!isEmpty(cicCase.getSubjectCIC())) {
-           correspondenceParties.add(SUBJECT);
+            correspondenceParties.add(SUBJECT);
         }
         if (!isEmpty(cicCase.getApplicantCIC())) {
             correspondenceParties.add(APPLICANT);

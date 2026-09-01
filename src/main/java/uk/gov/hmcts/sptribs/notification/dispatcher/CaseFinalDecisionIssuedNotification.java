@@ -167,6 +167,7 @@ public class CaseFinalDecisionIssuedNotification implements PartiesNotification 
 
         return finalDecisionNotice;
     }
+
     @Override
     public Set<NotificationParties> buildCorrespondenceParties(NotificationContextRequest request) {
         Set<NotificationParties> correspondenceParties = new HashSet<>();

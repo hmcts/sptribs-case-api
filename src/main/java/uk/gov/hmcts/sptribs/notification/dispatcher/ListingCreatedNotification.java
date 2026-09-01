@@ -134,13 +134,14 @@ public class ListingCreatedNotification implements PartiesNotification {
             TemplateName.HEARING_CREATED_POST);
         return notificationService.sendLetter(letterRequest, caseReferenceNumber);
     }
+
     @Override
     public Set<NotificationParties> buildCorrespondenceParties(NotificationContextRequest request) {
         Set<NotificationParties> correspondenceParties = new HashSet<>();
         CicCase cicCase = request.getCaseData().getCicCase();
 
         if (cicCase.getHearingNotificationParties().contains(SUBJECT)) {
-         correspondenceParties.add(SUBJECT);
+            correspondenceParties.add(SUBJECT);
         }
         if (cicCase.getHearingNotificationParties().contains(REPRESENTATIVE)) {
             correspondenceParties.add(REPRESENTATIVE);

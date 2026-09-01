@@ -24,11 +24,7 @@ import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.doThrow;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.createCaseDataConfigBuilder;
 import static uk.gov.hmcts.sptribs.testutil.ConfigTestUtil.getEventsFrom;
 import static uk.gov.hmcts.sptribs.testutil.TestConstants.TEST_CASE_ID;
@@ -102,7 +98,7 @@ class CaseworkerLinkCaseTest {
         SubmittedCallbackResponse response = caseWorkerLinkCase.submitted(updatedCaseDetails, beforeDetails);
         // Then
         assertThat(response).isNotNull();
-        assertThat(response.getConfirmationHeader()).contains("Case Link notification failed");
+        assertThat(response.getConfirmationHeader()).contains("Case link notification failed");
         assertThat(response.getConfirmationHeader()).contains("Please resend the notification");
     }
 }

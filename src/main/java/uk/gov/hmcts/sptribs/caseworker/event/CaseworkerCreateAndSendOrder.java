@@ -316,7 +316,8 @@ public class CaseworkerCreateAndSendOrder implements CCDConfig<CaseData, State, 
 
         if (isEmpty(combinedErrors)) {
             return SubmittedCallbackResponse.builder()
-                .confirmationHeader(format("# Order sent %n## %s", MessageUtil.generateSimpleMessageFromCorrespondenceParties(combinedCorrespondence)))
+                .confirmationHeader(format("# Order sent %n## %s",
+                    MessageUtil.generateSimpleMessageFromCorrespondenceParties(combinedCorrespondence)))
                 .build();
         } else {
             return SubmittedCallbackResponse.builder()

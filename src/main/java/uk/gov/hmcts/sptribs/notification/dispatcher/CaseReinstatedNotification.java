@@ -132,7 +132,7 @@ public class CaseReinstatedNotification implements PartiesNotification {
         CicCase cicCase = request.getCaseData().getCicCase();
 
         if (!isEmpty(cicCase.getNotifyPartySubject())) {
-           correspondenceParties.add(SUBJECT);
+            correspondenceParties.add(SUBJECT);
         }
         if (!isEmpty(cicCase.getNotifyPartyRepresentative())) {
             correspondenceParties.add(REPRESENTATIVE);

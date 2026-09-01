@@ -346,7 +346,7 @@ class CicDssUpdateCaseEventTest {
             .contains("# CIC Dss Update Case Event Email notifications sent");
 
         verify(notificationDispatcher).sendToCorrespondenceParties(
-           any(NotificationContext.class)
+            any(NotificationContext.class)
         );
     }
 

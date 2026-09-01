@@ -107,5 +107,5 @@ public class NotificationDispatcher {
             context.getCaseData(),
             context.getCaseReference()
         );
-
-    }}
+    }
+}
