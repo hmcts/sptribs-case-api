@@ -34,6 +34,13 @@ public class CancellationScenarioBuilder {
         return this;
     }
 
+    public CancellationScenarioBuilder reconfigureAll() {
+        results.add(Map.of(
+            "action", "Reconfigure"
+        ));
+        return this;
+    }
+
     public Arguments build() {
         return Arguments.of(
             null,

@@ -13,6 +13,7 @@ import uk.gov.hmcts.sptribs.caseworker.service.HearingService;
 import uk.gov.hmcts.sptribs.ciccase.model.CaseData;
 import uk.gov.hmcts.sptribs.ciccase.model.RetiredFields;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -125,5 +126,45 @@ public class HearingServiceIT {
         final String hearingName = "1 - Final - 14 Aug 2024 10:00";
 
         assertThat(isMatchingHearing(listingListValue, hearingName)).isFalse();
+    }
+
+    @Test
+    void shouldSetHearingDateOnAddListingAndClearOnCompleteInIntegration() {
+        // Given
+        final Listing listing = getRecordListing(); // status Listed, date 2023-04-21
+        final CaseData caseData = CaseData.builder()
+            .hearingList(new ArrayList<>())
+            .build();
+
+        // When (Add listing)
+        hearingService.addListing(caseData, listing);
+
+        // Then (hearingDate should be populated)
+        assertThat(caseData.getHearingDate()).isEqualTo(LocalDate.of(2023, 4, 21));
+
+        // When (listing completed)
+        caseData.getHearingList().get(0).getValue().setHearingStatus(Complete);
+        hearingService.addListingIfExists(caseData); // runs updateHearingDate
+
+        // Then (hearingDate should be cleared)
+        assertThat(caseData.getHearingDate()).isNull();
+    }
+
+    @Test
+    void shouldUpdateHearingDateOnUpdateHearingListInIntegration() {
+        // Given
+        final Listing listing = getRecordListing(); // status Listed, date 2023-04-21
+        final CaseData caseData = CaseData.builder()
+            .listing(listing)
+            .hearingList(getHearingList()) // contains Final on 2024-08-14
+            .build();
+
+        final String hearingName = "1 - Final - 14 Aug 2024 10:00";
+
+        // When (Update listing with the one on 2023-04-21)
+        hearingService.updateHearingList(caseData, hearingName);
+
+        // Then (hearingDate should be updated)
+        assertThat(caseData.getHearingDate()).isEqualTo(LocalDate.of(2023, 4, 21));
     }
 }
